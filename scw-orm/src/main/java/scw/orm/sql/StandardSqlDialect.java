@@ -18,7 +18,6 @@ import scw.env.Sys;
 import scw.lang.Nullable;
 import scw.lang.ParameterException;
 import scw.mapper.Field;
-import scw.mapper.FieldDescriptor;
 import scw.orm.annotation.Version;
 import scw.orm.sql.annotation.AnnotationTableResolver;
 import scw.orm.sql.annotation.Counter;
@@ -59,7 +58,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 	}
 
 	public Object getDataBaseValue(Object entity, Field field) {
-		return toDataBaseValue(field.getGetter().get(entity), new TypeDescriptor(field.getGetter()));
+		return toDataBaseValue(field.get(entity), new TypeDescriptor(field.getGetter()));
 	}
 
 	public Object toDataBaseValue(Object value) {
@@ -142,10 +141,6 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		this.escapeCharacter = escapeCharacter;
 	}
 
-	public void appendFieldName(StringBuilder sb, FieldDescriptor fieldDescriptor) {
-		keywordProcessing(sb, getName(fieldDescriptor));
-	}
-
 	public void keywordProcessing(StringBuilder sb, String column) {
 		sb.append(getEscapeCharacter()).append(column).append(getEscapeCharacter());
 	}
@@ -168,7 +163,6 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 
 	// --------------以下为标准实现-----------------
 
-	
 	@Override
 	public Sql toSelectByIdsSql(TableStructure tableStructure, Object... ids) throws SqlDialectException {
 		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
@@ -199,7 +193,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		}
 		return new SimpleSql(sb.toString(), params);
 	}
-	
+
 	@Override
 	public <T> Sql save(TableStructure tableStructure, T entity) throws SqlDialectException {
 		StringBuilder cols = new StringBuilder();
@@ -209,7 +203,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if(column.isAutoIncrement()) {
+			if (column.isAutoIncrement()) {
 				continue;
 			}
 
@@ -231,7 +225,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		sql.append(")");
 		return new SimpleSql(sql.toString(), params.toArray());
 	}
-	
+
 	@Override
 	public <T> Sql delete(TableStructure tableStructure, T entity) throws SqlDialectException {
 		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
@@ -267,7 +261,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		});
 		return new SimpleSql(sql.toString(), params.toArray());
 	}
-	
+
 	@Override
 	public Sql deleteById(TableStructure tableStructure, Object... ids) throws SqlDialectException {
 		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
@@ -299,7 +293,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		}
 		return new SimpleSql(sql.toString(), params);
 	}
-	
+
 	@Override
 	public Sql getInIds(TableStructure tableStructure, Object[] primaryKeys, Collection<?> inPrimaryKeys)
 			throws SqlDialectException {
@@ -354,14 +348,14 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		sb.append(WHERE).append(where);
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
-	
+
 	@Override
 	public Sql toMaxIdSql(TableStructure tableStructure, Field field) throws SqlDialectException {
 		Column column = tableStructure.getColumn(field);
-		if(column == null) {
+		if (column == null) {
 			throw new SqlDialectException("not found " + field);
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("select ");
 		keywordProcessing(sb, column.getName());
@@ -369,19 +363,6 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		keywordProcessing(sb, tableStructure.getName());
 		sb.append(" order by ");
 		keywordProcessing(sb, column.getName());
-		sb.append(" desc");
-		return new SimpleSql(sb.toString());
-	}
-	
-	@Override
-	public Sql toMaxIdSql(Class<?> clazz, String tableName, Field field) throws SqlDialectException {
-		StringBuilder sb = new StringBuilder();
-		sb.append("select ");
-		appendFieldName(sb, field.getGetter());
-		sb.append(" from ");
-		keywordProcessing(sb, tableName);
-		sb.append(" order by ");
-		appendFieldName(sb, field.getGetter());
 		sb.append(" desc");
 		return new SimpleSql(sb.toString());
 	}
@@ -397,7 +378,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		}
 		return changeMap;
 	}
-	
+
 	@Override
 	public <T> Sql update(TableStructure tableStructure, T entity) throws SqlDialectException {
 		List<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
@@ -458,7 +439,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 					oldVersion = new AnyValue(changeMap.get(column.getField().getSetter().getName()));
 					if (oldVersion.getAsDoubleValue() == 0) {
 						// 如果存在变更但版本号为0就忽略此条件
-						return ;
+						return;
 					}
 				}
 
@@ -475,11 +456,11 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
 
-
 	protected final void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Column column,
 			Map<String, Object> changeMap) {
 		AnyValue newValue = new AnyValue(getDataBaseValue(entity, column.getField()));
-		AnyValue oldValue = new AnyValue(changeMap == null ? null : changeMap.get(column.getField().getSetter().getName()));
+		AnyValue oldValue = new AnyValue(
+				changeMap == null ? null : changeMap.get(column.getField().getSetter().getName()));
 		appendUpdateValue(sb, params, entity, column, oldValue, newValue);
 	}
 

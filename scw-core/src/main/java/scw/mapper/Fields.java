@@ -12,6 +12,18 @@ import scw.util.page.Pageables;
 
 public interface Fields extends Pageables<Class<?>, Field> {
 
+	default Fields find(String name) {
+		AcceptFieldDescriptor acceptFieldDescriptor = new AcceptFieldDescriptor(name, null);
+		return accept(new Accept<Field>() {
+
+			@Override
+			public boolean accept(Field e) {
+				return (e.isSupportGetter() && acceptFieldDescriptor.accept(e.getGetter()))
+						|| (e.isSupportSetter() && acceptFieldDescriptor.accept(e.getSetter()));
+			}
+		});
+	}
+
 	@Nullable
 	default Field find(String name, @Nullable Type type) {
 		return accept(name, type).first();
@@ -36,16 +48,13 @@ public interface Fields extends Pageables<Class<?>, Field> {
 	}
 
 	default Fields accept(String name, @Nullable Type type) {
-		AcceptFieldDescriptor acceptFieldDescriptor = new AcceptFieldDescriptor(
-				name, type);
+		AcceptFieldDescriptor acceptFieldDescriptor = new AcceptFieldDescriptor(name, type);
 		return accept(new Accept<Field>() {
 
 			@Override
 			public boolean accept(Field e) {
-				return (e.isSupportGetter() && acceptFieldDescriptor.accept(e
-						.getGetter()))
-						|| (e.isSupportSetter() && acceptFieldDescriptor
-								.accept(e.getSetter()));
+				return (e.isSupportGetter() && acceptFieldDescriptor.accept(e.getGetter()))
+						|| (e.isSupportSetter() && acceptFieldDescriptor.accept(e.getSetter()));
 			}
 		});
 	}
@@ -90,23 +99,25 @@ public interface Fields extends Pageables<Class<?>, Field> {
 	default Fields distinct() {
 		return new StreamFields(getCursorId(), this, stream().distinct());
 	}
-	
+
 	/**
 	 * 获取实体的所的字段(抽象的字段，不一定存在{@link java.lang.reflect.Field})，即不包含静态字段
+	 * 
 	 * @return
 	 */
 	default Fields entity() {
 		return accept(FieldFeature.IGNORE_STATIC).accept(FieldFeature.IGNORE_TRANSIENT);
 	}
-	
+
 	/**
 	 * 严格的字段约定(包含getter setter)
+	 * 
 	 * @return
 	 */
-	default Fields strict(){
+	default Fields strict() {
 		return accept(FieldFeature.STRICT);
 	}
-	
+
 	default Fields accept(Accept<Field> accept) {
 		return new AcceptFields(this, accept);
 	}
@@ -139,10 +150,8 @@ public interface Fields extends Pageables<Class<?>, Field> {
 		return exclude(new Accept<Field>() {
 
 			public boolean accept(Field e) {
-				return (e.isSupportGetter() && names.contains(e.getGetter()
-						.getName()))
-						|| (e.isSupportSetter() && names.contains(e.getSetter()
-								.getName()));
+				return (e.isSupportGetter() && names.contains(e.getGetter().getName()))
+						|| (e.isSupportSetter() && names.contains(e.getSetter().getName()));
 			}
 		});
 	}
@@ -191,7 +200,7 @@ public interface Fields extends Pageables<Class<?>, Field> {
 	 * @return
 	 */
 	default Fields all() {
-		if(hasNext()) {
+		if (hasNext()) {
 			return new StreamFields(getCursorId(), null, this, streamAll());
 		}
 		return this;

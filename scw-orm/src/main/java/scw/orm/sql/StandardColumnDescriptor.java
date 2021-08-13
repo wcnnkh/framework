@@ -4,7 +4,7 @@ public class StandardColumnDescriptor implements ColumnDescriptor{
 	private String name;
 	private boolean primaryKey;
 	private boolean autoIncrement;
-	private boolean nullable;
+	private boolean nullable = true;
 	private boolean unique;
 	private String type;
 	private Long length;
@@ -30,6 +30,9 @@ public class StandardColumnDescriptor implements ColumnDescriptor{
 		this.autoIncrement = autoIncrement;
 	}
 	public boolean isNullable() {
+		if(isPrimaryKey()) {
+			return false;
+		}
 		return nullable;
 	}
 	public void setNullable(boolean nullable) {

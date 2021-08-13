@@ -1,6 +1,12 @@
 package scw.mapper;
 
 import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import scw.core.utils.CollectionUtils;
+import scw.util.stream.StreamProcessorSupport;
 
 public final class Field extends FieldMetadata {
 	private final Field parentField;
@@ -24,5 +30,27 @@ public final class Field extends FieldMetadata {
 
 	public Field getParentField() {
 		return parentField;
+	}
+
+	/**
+	 * 获取所有的父级
+	 * 
+	 * @return
+	 */
+	public Stream<Field> parents() {
+		Iterator<Field> iterator = new ParentFieldIterator(this);
+		return StreamProcessorSupport.stream(iterator);
+	}
+
+	public Object get(Object instance) {
+		if (parentField == null) {
+			return getGetter().get(instance);
+		}
+
+		Object parentValue = instance;
+		for (Field parentField : CollectionUtils.reversal(parents().collect(Collectors.toList()))) {
+			parentValue = parentField.getGetter().get(parentValue);
+		}
+		return getGetter().get(parentValue);
 	}
 }
