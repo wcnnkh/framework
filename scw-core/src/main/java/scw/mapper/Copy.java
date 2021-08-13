@@ -188,8 +188,8 @@ public class Copy {
 			return;
 		}
 
-		Fields sourceFields = fieldFactory.getFields(sourceClass, parentField).accept(fieldAccept);
-		for (Field field : fieldFactory.getFields(targetClass, parentField).accept(fieldAccept)) {
+		Fields sourceFields = fieldFactory.getFields(sourceClass, parentField).all().accept(fieldAccept);
+		for (Field field : fieldFactory.getFields(targetClass, parentField).all().accept(fieldAccept)) {
 			if (!field.isSupportSetter()) {
 				continue;
 			}

@@ -42,7 +42,7 @@ public class AcceptFields implements Fields, Serializable {
 	public List<Field> rows() {
 		if(fieldList == null) {
 			synchronized (this) {
-				fieldList = stream().collect(Collectors.toList());
+				fieldList = fields.rows().stream().filter(accept).collect(Collectors.toList());
 			}
 		}
 		return fieldList;
