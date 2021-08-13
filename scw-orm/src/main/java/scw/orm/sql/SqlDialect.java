@@ -55,7 +55,7 @@ public interface SqlDialect extends ObjectKeyFormat, TableResolver {
 	<T> Sql toSaveOrUpdateSql(TableStructure tableStructure, T entity) throws SqlDialectException;
 
 	default <T> Sql toSaveOrUpdateSql(String tableName, Class<? extends T> entityClass, T entity) throws SqlDialectException{
-		return update(resolve(entityClass).rename(tableName), entity);
+		return toSaveOrUpdateSql(resolve(entityClass).rename(tableName), entity);
 	}
 
 	Sql toLastInsertIdSql(String tableName) throws SqlDialectException;

@@ -6,10 +6,12 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 import scw.convert.TypeDescriptor;
+import scw.mapper.MapProcessDecorator;
+import scw.mapper.Mapper;
 import scw.util.stream.Cursor;
 import scw.util.stream.Processor;
 
-public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor, MapperProcessorFactory {
+public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor, MapProcessorFactory {
 
 	default PreparedStatementProcessor prepare(Connection connection, Sql sql,
 			SqlStatementProcessor statementProcessor) {
@@ -92,21 +94,30 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor,
 		}
 	}
 	
+	Mapper<ResultSet, Throwable> getMapper();
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	default <T> Processor<ResultSet, T, Throwable> getMapProcessor(
+			TypeDescriptor type){
+		return new MapProcessDecorator<>(getMapper(), new MapProcessor<>(type), (Class<T>) type.getType());
+	}
+	
 	default <T> Cursor<T> query(Connection connection, TypeDescriptor resultType, Sql sql,
 			SqlStatementProcessor statementProcessor) {
-		return prepare(connection, sql, statementProcessor).query().stream(getMapperProcessor(resultType));
+		return prepare(connection, sql, statementProcessor).query().stream(getMapProcessor(resultType));
 	}
 
 	default <T> Cursor<T> query(Connection connection, TypeDescriptor resultType, Sql sql) {
-		return prepare(connection, sql).query().stream(getMapperProcessor(resultType));
+		return prepare(connection, sql).query().stream(getMapProcessor(resultType));
 	}
 
 	default <T> Cursor<T> query(TypeDescriptor resultType, Sql sql, SqlStatementProcessor statementProcessor) {
-		return prepare(sql, statementProcessor).query().stream(getMapperProcessor(resultType));
+		return prepare(sql, statementProcessor).query().stream(getMapProcessor(resultType));
 	}
 
 	default <T> Cursor<T> query(TypeDescriptor resultType, Sql sql) {
-		return prepare(sql).query().stream(getMapperProcessor(resultType));
+		return prepare(sql).query().stream(getMapProcessor(resultType));
 	}
 
 	default <T> Cursor<T> query(Connection connection, Class<? extends T> resultType, Sql sql,

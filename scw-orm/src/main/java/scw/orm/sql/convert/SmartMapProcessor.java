@@ -8,7 +8,7 @@ import scw.env.Sys;
 import scw.orm.ObjectRelationalMapping;
 import scw.orm.OrmUtils;
 import scw.orm.convert.PropertyFactoryToEntityConversionService;
-import scw.sql.DefaultMapperProcessor;
+import scw.sql.MapProcessor;
 
 /**
  * 对ResultSet和实体之间的映射做了最大的兼容,支持任意对象的组合
@@ -19,24 +19,24 @@ import scw.sql.DefaultMapperProcessor;
  *
  * @param <T>
  */
-public class SmartMapperProcessor<T> extends DefaultMapperProcessor<T> {
+public class SmartMapProcessor<T> extends MapProcessor<T> {
 	private final ObjectRelationalMapping objectRelationalMapping;
 
-	public SmartMapperProcessor(TypeDescriptor typeDescriptor) {
+	public SmartMapProcessor(TypeDescriptor typeDescriptor) {
 		this(OrmUtils.getMapping(), typeDescriptor);
 	}
 
-	public SmartMapperProcessor(
+	public SmartMapProcessor(
 			ObjectRelationalMapping objectRelationalMapping,
 			TypeDescriptor typeDescriptor) {
 		this(objectRelationalMapping, Sys.env.getConversionService(),
 				typeDescriptor);
 	}
 
-	public SmartMapperProcessor(
+	public SmartMapProcessor(
 			ObjectRelationalMapping objectRelationalMapping,
 			ConversionService conversionService, TypeDescriptor typeDescriptor) {
-		super(conversionService, typeDescriptor);
+		super(conversionService, objectRelationalMapping, typeDescriptor);
 		this.objectRelationalMapping = objectRelationalMapping;
 	}
 

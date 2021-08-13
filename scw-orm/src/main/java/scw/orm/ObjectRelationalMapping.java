@@ -67,7 +67,7 @@ public interface ObjectRelationalMapping extends FieldFactory{
 	 * @return
 	 */
 	boolean isEntity(FieldDescriptor fieldDescriptor);
-
+	
 	boolean isEntity(Class<?> clazz);
 
 	boolean isVersionField(FieldDescriptor fieldDescriptor);
@@ -92,17 +92,7 @@ public interface ObjectRelationalMapping extends FieldFactory{
 	 * @return
 	 */
 	default Fields getFields(Class<?> clazz, Field parentField) {
-		return MapperUtils.getFields(ProxyUtils.getFactory().getUserClass(clazz)).entity();
-	}
-
-	/**
-	 * 此方法返回结果不包含entity字段
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	default Fields getFields(Class<?> clazz) {
-		return getFields(clazz, null).accept(getEntityAccept().negate());
+		return MapperUtils.getFields(ProxyUtils.getFactory().getUserClass(clazz), parentField).entity();
 	}
 
 	default Fields getPrimaryKeys(Class<?> clazz) {
@@ -110,6 +100,6 @@ public interface ObjectRelationalMapping extends FieldFactory{
 	}
 
 	default Fields getNotPrimaryKeys(Class<?> clazz) {
-		return getFields(clazz).accept(getPrimaryKeyAccept().negate());
+		return getFields(clazz).accept(getEntityAccept().negate()).accept(getPrimaryKeyAccept().negate());
 	}
 }

@@ -76,7 +76,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 				sb.append(" UNIQUE");
 			}
 
-			if (col.isNullable()) {
+			if (!col.isNullable()) {
 				sb.append(" not null");
 			}
 

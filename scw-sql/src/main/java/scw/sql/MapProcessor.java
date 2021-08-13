@@ -7,31 +7,67 @@ import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.env.Sys;
 import scw.mapper.Field;
+import scw.mapper.FieldFactory;
 import scw.mapper.FieldFeature;
 import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
 import scw.util.stream.Processor;
 import scw.value.Value;
 
-public class DefaultMapperProcessor<T> implements Processor<ResultSet, T, Throwable> {
+public class MapProcessor<T> implements Processor<ResultSet, T, Throwable> {
 	private final ConversionService conversionService;
 	private final TypeDescriptor typeDescriptor;
+	private final FieldFactory fieldFactory;
 
-	public DefaultMapperProcessor(TypeDescriptor typeDescriptor) {
-		this(Sys.env.getConversionService(), typeDescriptor);
+	public MapProcessor(Class<T> type) {
+		this(MapperUtils.getFieldFactory(), TypeDescriptor.valueOf(type));
 	}
 
-	public DefaultMapperProcessor(ConversionService conversionService, TypeDescriptor typeDescriptor) {
+	public MapProcessor(FieldFactory fieldFactory, Class<T> type) {
+		this(fieldFactory, TypeDescriptor.valueOf(type));
+	}
+
+	public MapProcessor(ConversionService conversionService,
+			FieldFactory fieldFactory, Class<T> type) {
+		this(conversionService, fieldFactory, TypeDescriptor.valueOf(type));
+	}
+
+	public MapProcessor(TypeDescriptor typeDescriptor) {
+		this(Sys.env.getConversionService(), MapperUtils.getFieldFactory(),
+				typeDescriptor);
+	}
+
+	public MapProcessor(FieldFactory fieldFactory, TypeDescriptor typeDescriptor) {
+		this(Sys.env.getConversionService(), fieldFactory, typeDescriptor);
+	}
+
+	public MapProcessor(ConversionService conversionService,
+			FieldFactory fieldFactory, TypeDescriptor typeDescriptor) {
 		this.conversionService = conversionService;
+		this.fieldFactory = fieldFactory;
 		this.typeDescriptor = typeDescriptor;
+	}
+
+	public ConversionService getConversionService() {
+		return conversionService;
+	}
+
+	public TypeDescriptor getTypeDescriptor() {
+		return typeDescriptor;
+	}
+
+	public FieldFactory getFieldFactory() {
+		return fieldFactory;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public T process(ResultSet rs) throws Throwable {
 		if (typeDescriptor.isArray() || typeDescriptor.isCollection()) {
-			Object[] array = SqlUtils.getRowValues(rs, rs.getMetaData().getColumnCount());
-			return (T) conversionService.convert(array, TypeDescriptor.forObject(array), typeDescriptor);
+			Object[] array = SqlUtils.getRowValues(rs, rs.getMetaData()
+					.getColumnCount());
+			return (T) conversionService.convert(array,
+					TypeDescriptor.forObject(array), typeDescriptor);
 		}
 
 		if (isEntity(typeDescriptor)) {
@@ -45,14 +81,16 @@ public class DefaultMapperProcessor<T> implements Processor<ResultSet, T, Throwa
 		}
 
 		Object value = rs.getObject(1);
-		return (T) conversionService.convert(value, TypeDescriptor.forObject(value), typeDescriptor);
+		return (T) conversionService.convert(value,
+				TypeDescriptor.forObject(value), typeDescriptor);
 	}
 
 	protected boolean isEntity(TypeDescriptor typeDescriptor) {
 		return !Value.isBaseType(typeDescriptor.getType());
 	}
 
-	protected Object mapEntity(ResultSet rs, TypeDescriptor typeDescriptor, ConversionService conversionService)
+	protected Object mapEntity(ResultSet rs, TypeDescriptor typeDescriptor,
+			ConversionService conversionService)
 			throws Throwable {
 		Object instance = typeDescriptor.getType().newInstance();
 		Fields fields = MapperUtils.getFields(typeDescriptor.getType()).all().accept(FieldFeature.SUPPORT_SETTER)
@@ -61,7 +99,7 @@ public class DefaultMapperProcessor<T> implements Processor<ResultSet, T, Throwa
 		int cols = metaData.getColumnCount();
 		for (int i = 1; i <= cols; i++) {
 			String name = SqlUtils.lookupColumnName(metaData, i);
-			Field field = fields.acceptSetter(name, null).first();
+			Field field = fields.find(name).first();
 			if (field == null) {
 				continue;
 			}

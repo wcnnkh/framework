@@ -26,6 +26,8 @@ import java.util.stream.StreamSupport;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Nullable;
+import scw.util.LinkedMultiValueMap;
+import scw.util.MultiValueMap;
 import scw.util.stream.Callback;
 import scw.util.stream.Cursor;
 import scw.util.stream.Processor;
@@ -331,5 +333,17 @@ public final class SqlUtils {
 			SqlStatementProcessor statementProcessor, Processor<ResultSet, ? extends T, ? extends Throwable> processor)
 			throws SqlException {
 		return prepare(connectionFactory, sql, statementProcessor).query().stream(processor);
+	}
+	
+	public static MultiValueMap<String, Object> getRowValueMap(ResultSet rs) throws SQLException{
+		ResultSetMetaData metaData = rs.getMetaData();
+		int cols = metaData.getColumnCount();
+		MultiValueMap<String, Object> values = new LinkedMultiValueMap<String, Object>();
+		for (int i = 1; i <= cols; i++) {
+			String name = SqlUtils.lookupColumnName(metaData, i);
+			Object value = rs.getObject(i);
+			values.add(name, value);
+		}
+		return values;
 	}
 }
