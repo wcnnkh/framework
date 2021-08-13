@@ -4,12 +4,12 @@ import java.io.IOException;
 
 import scw.convert.TypeDescriptor;
 import scw.json.JSONSupport;
+import scw.mapper.MapperUtils;
+import scw.mapper.ToMap;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
-import scw.util.ToMap;
-import scw.util.XUtils;
 
 public final class JsonMessageConverter extends AbstractMessageConverter<Object> {
 	public static final MimeType JSON_ALL = new MimeType("application", "*+json");
@@ -48,7 +48,7 @@ public final class JsonMessageConverter extends AbstractMessageConverter<Object>
 		}
 
 		if (body instanceof ToMap) {
-			return jsonSupport.toJSONString(XUtils.toMap(body));
+			return jsonSupport.toJSONString(MapperUtils.toMap(body));
 		} else {
 			return jsonSupport.toJSONString(body);
 		}

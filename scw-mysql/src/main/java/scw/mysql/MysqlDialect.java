@@ -78,7 +78,7 @@ public class MysqlDialect extends StandardSqlDialect {
 	public <T> Sql toSaveOrUpdateSql(String tableName, Class<? extends T> entityClass, T entity)
 			throws SqlDialectException {
 		Fields primaryKeys = getPrimaryKeys(entityClass);
-		if (primaryKeys.size() == 0) {
+		if (primaryKeys.getCount() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
 		
@@ -154,7 +154,7 @@ public class MysqlDialect extends StandardSqlDialect {
 		sb.append(" (");
 
 		Fields primaryKeys = getPrimaryKeys(entityClass);
-		Fields columns = getFields(entityClass).duplicateRemoval();
+		Fields columns = getFields(entityClass).distinct();
 		Iterator<Field> iterator = columns.iterator();
 		while (iterator.hasNext()) {
 			Field col = iterator.next();
@@ -167,7 +167,7 @@ public class MysqlDialect extends StandardSqlDialect {
 				sb.append("(" + sqlType.getLength() + ")");
 			}
 
-			if (primaryKeys.size() == 1) {
+			if (primaryKeys.getCount() == 1) {
 				if (isPrimaryKey(col)) {
 					sb.append(" PRIMARY KEY");
 				}
@@ -234,7 +234,7 @@ public class MysqlDialect extends StandardSqlDialect {
 		}
 
 		// primary keys
-		if (primaryKeys.size() > 1) {
+		if (primaryKeys.getCount() > 1) {
 			// 多主键
 			sb.append(",primary key(");
 			iterator = primaryKeys.iterator();

@@ -1,6 +1,5 @@
 package scw.util.page;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,11 +18,6 @@ public class StreamPageable<K, T> implements Pageable<K, T> {
 		this.stream = stream;
 		this.count = count;
 		this.hasNext = hasNext;
-	}
-
-	@Override
-	public Iterator<T> iterator() {
-		return stream.iterator();
 	}
 
 	@Override
@@ -49,5 +43,10 @@ public class StreamPageable<K, T> implements Pageable<K, T> {
 	@Override
 	public boolean hasNext() {
 		return hasNext;
+	}
+
+	@Override
+	public Stream<T> stream() {
+		return stream;
 	}
 }

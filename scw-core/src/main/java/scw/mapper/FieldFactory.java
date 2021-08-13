@@ -5,7 +5,7 @@ import scw.lang.Nullable;
 @FunctionalInterface
 public interface FieldFactory {
 	/**
-	 * 获取珍上类所有的字段(包含父类)
+	 * 获取珍上类所有的字段
 	 * @param entityClass
 	 * @return
 	 */
@@ -14,7 +14,7 @@ public interface FieldFactory {
 	}
 
 	/**
-	 * 获取一个类所有的字段(包含父类)
+	 * 获取一个类所有的字段
 	 * @param entityClass
 	 * @param parentField 父级字段
 	 * @return

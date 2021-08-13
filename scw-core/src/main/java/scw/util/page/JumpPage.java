@@ -1,37 +1,13 @@
 package scw.util.page;
 
-import java.util.Iterator;
-import java.util.List;
-
-public class JumpPage<T> implements Page<T> {
-	private final Pageable<Long, T> pageable;
+public class JumpPage<T> extends PageableWrapper<Pageable<Long, T>, Long, T> implements Page<T> {
 	private final long pageNumber;
 	private final long total;
 
 	public JumpPage(Pageable<Long, T> pageable, long pageNumber, long total) {
-		this.pageable = pageable;
+		super(pageable);
 		this.pageNumber = pageNumber;
 		this.total = total;
-	}
-
-	@Override
-	public Long getCursorId() {
-		return pageable.getCursorId();
-	}
-
-	@Override
-	public long getCount() {
-		return pageable.getCount();
-	}
-
-	@Override
-	public boolean hasNext() {
-		return pageable.hasNext();
-	}
-
-	@Override
-	public Iterator<T> iterator() {
-		return pageable.iterator();
 	}
 
 	@Override
@@ -41,16 +17,11 @@ public class JumpPage<T> implements Page<T> {
 
 	@Override
 	public long getPages() {
-		return PageSupport.getPages(total, pageable.getCount());
+		return PageSupport.getPages(total, wrappedTarget.getCount());
 	}
 
 	@Override
 	public long getTotal() {
 		return total;
-	}
-
-	@Override
-	public List<T> rows() {
-		return pageable.rows();
 	}
 }

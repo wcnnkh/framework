@@ -1060,7 +1060,7 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().getFields(EurekaServerConfigBean.class).getValueMap(this).toString();
+		return MapperUtils.toString(this);
 	}
 
 }

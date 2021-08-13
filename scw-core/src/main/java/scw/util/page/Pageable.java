@@ -2,9 +2,7 @@ package scw.util.page;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Spliterators;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import scw.core.utils.CollectionUtils;
 import scw.lang.Nullable;
@@ -34,6 +32,10 @@ public interface Pageable<K, T> extends Iterable<T>{
 	K getNextCursorId();
 	
 	List<T> rows();
+	
+	default Stream<T> stream(){
+		return rows().stream();
+	}
 
 	/**
 	 * 是否还有更多数据
@@ -54,6 +56,8 @@ public interface Pageable<K, T> extends Iterable<T>{
 		return rows.get(0);
 	}
 	
+	
+	
 	/**
 	 * 获取当前分页的最后一条数据
 	 * @return
@@ -68,10 +72,6 @@ public interface Pageable<K, T> extends Iterable<T>{
 	
 	@Override
 	default Iterator<T> iterator() {
-		return rows().iterator();
-	}
-	
-	default Stream<T> stream(){
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator(), 0), false);
+		return stream().iterator();
 	}
 }

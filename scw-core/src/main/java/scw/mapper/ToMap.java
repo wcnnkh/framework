@@ -1,4 +1,4 @@
-package scw.util;
+package scw.mapper;
 
 import java.util.Map;
 

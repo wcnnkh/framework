@@ -6,7 +6,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import scw.convert.TypeDescriptor;
-import scw.util.ToMap;
+import scw.mapper.ToMap;
 
 public class ToMapAppendChildService implements AppendChildService{
 	private final AppendChildService appendChild;

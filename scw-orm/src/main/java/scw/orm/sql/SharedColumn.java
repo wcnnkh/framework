@@ -1,12 +1,14 @@
 package scw.orm.sql;
 
-import scw.orm.SharedProperty;
+import scw.orm.SharedPropertyDescriptor;
 
-public class SharedColumn extends SharedProperty implements Column {
+public class SharedColumn extends SharedPropertyDescriptor implements Column {
 	private static final long serialVersionUID = 1L;
 	private boolean autoIncrement;
 	private String comment;
-	private SqlType sqlType;
+	private String charsetName;
+	private Class<?> type;
+	private Long maxLength;
 	private boolean unique;
 	private String indexName;
 	private boolean nullable;
@@ -25,14 +27,6 @@ public class SharedColumn extends SharedProperty implements Column {
 
 	public void setComment(String comment) {
 		this.comment = comment;
-	}
-
-	public SqlType getSqlType() {
-		return sqlType;
-	}
-
-	public void setSqlType(SqlType sqlType) {
-		this.sqlType = sqlType;
 	}
 
 	public boolean isUnique() {
@@ -57,5 +51,29 @@ public class SharedColumn extends SharedProperty implements Column {
 
 	public void setNullable(boolean nullable) {
 		this.nullable = nullable;
+	}
+
+	public String getCharsetName() {
+		return charsetName;
+	}
+
+	public void setCharsetName(String charsetName) {
+		this.charsetName = charsetName;
+	}
+
+	public Class<?> getType() {
+		return type;
+	}
+
+	public void setType(Class<?> type) {
+		this.type = type;
+	}
+
+	public Long getMaxLength() {
+		return maxLength;
+	}
+
+	public void setMaxLength(Long maxLength) {
+		this.maxLength = maxLength;
 	}
 }

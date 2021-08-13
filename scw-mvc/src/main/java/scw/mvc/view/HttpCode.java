@@ -20,6 +20,6 @@ public class HttpCode implements View {
 
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().getFields(HttpCode.class).getValueMap(this).toString();
+		return MapperUtils.toString(this);
 	}
 }

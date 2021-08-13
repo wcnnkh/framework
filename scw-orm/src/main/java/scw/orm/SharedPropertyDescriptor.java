@@ -2,7 +2,7 @@ package scw.orm;
 
 import java.io.Serializable;
 
-public class SharedProperty implements PropertyDescribe, Serializable {
+public class SharedPropertyDescriptor implements PropertyDescriptor, Serializable {
 	private static final long serialVersionUID = 1L;
 	private String name;
 	private boolean primaryKey;

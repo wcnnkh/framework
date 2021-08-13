@@ -1,6 +1,5 @@
 package scw.mapper;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,7 +29,7 @@ public class StreamFields extends AbstractFields implements Fields {
 	}
 
 	@Override
-	public Iterator<Field> iterator() {
-		return stream.iterator();
+	public Stream<Field> stream() {
+		return stream;
 	}
 }

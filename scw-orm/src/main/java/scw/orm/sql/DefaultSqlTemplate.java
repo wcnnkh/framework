@@ -255,7 +255,8 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 		Page<T> page = new SharedPage<T>(start, cursor.shared(), limit, total);
 		return PageSupport.getPages(page, (startIndex, count) -> {
 			Cursor<T> rows = query(resultType, sqlDialect.toPaginationSql(sql, startIndex, count).getResultSql());
-			return rows.shared();
+			//因为是分页，每一页的内部没必要使用流，所在这里调用了shared
+			return rows.shared().stream();
 		});
 	}
 

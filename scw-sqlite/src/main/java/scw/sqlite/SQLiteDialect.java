@@ -61,7 +61,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 				sb.append("(" + sqlType.getLength() + ")");
 			}
 
-			if (primaryKeys.size() == 1) {
+			if (primaryKeys.getCount() == 1) {
 				if (isPrimaryKey(col)) {
 					sb.append(" PRIMARY KEY");
 				}
@@ -90,7 +90,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 		}
 
 		// primary keys
-		if (primaryKeys.size() > 1) {
+		if (primaryKeys.getCount() > 1) {
 			// 多主键
 			sb.append(",primary key(");
 			iterator = primaryKeys.iterator();
@@ -117,7 +117,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 	public <T> Sql toSaveOrUpdateSql(String tableName, Class<? extends T> entityClass, T entity)
 			throws SqlDialectException {
 		Fields primaryKeys = getPrimaryKeys(entityClass);
-		if (primaryKeys.size() == 0) {
+		if (primaryKeys.getCount() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
 		

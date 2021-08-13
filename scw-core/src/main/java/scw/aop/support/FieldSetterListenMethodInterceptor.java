@@ -11,9 +11,7 @@ public class FieldSetterListenMethodInterceptor extends FieldSetterListenImpl im
 	private static final long serialVersionUID = 1L;
 
 	private Field getField(Class<?> clazz, String name, Class<?> type) {
-		return MapperUtils.getFields(clazz).stream().filter(FieldFeature.SUPPORT_GETTER).filter(FieldFeature.IGNORE_STATIC).filter((field) -> {})
-		return MapperUtils.getMapper().getFields(clazz).accept(FieldFeature.SUPPORT_GETTER)
-				.accept(FieldFeature.IGNORE_STATIC).find(name, type);
+		return MapperUtils.getFields(clazz).entity().all().accept(FieldFeature.SUPPORT_GETTER).find(name, type);
 	}
 
 	private final Object change(MethodInvoker invoker, Object[] args, Field field) throws Throwable {

@@ -62,7 +62,7 @@ public interface ObjectRelationalMapping {
 	}
 
 	default boolean isNullable(FieldDescriptor fieldDescriptor) {
-		return AnnotatedElementUtils.isNullable(fieldDescriptor, ()-> !isPrimaryKey(fieldDescriptor));
+		return AnnotatedElementUtils.isNullable(fieldDescriptor, () -> !isPrimaryKey(fieldDescriptor));
 	}
 
 	default boolean isNullable(Field field) {
@@ -102,7 +102,7 @@ public interface ObjectRelationalMapping {
 	 * @return
 	 */
 	default Fields getFields(Class<?> clazz, boolean useSuperClass, Field parentField) {
-		return MapperUtils.getMapper().getFields(ProxyUtils.getFactory().getUserClass(clazz))
+		return MapperUtils.getFields(ProxyUtils.getFactory().getUserClass(clazz)).all()
 				.accept(FieldFeature.IGNORE_STATIC);
 	}
 

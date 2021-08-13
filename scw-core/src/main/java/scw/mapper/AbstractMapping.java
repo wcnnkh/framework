@@ -30,7 +30,7 @@ public abstract class AbstractMapping implements Mapping {
 	}
 	
 	public boolean accept(Field field) {
-		return FieldFeature.GETTER_IGNORE_STATIC.accept(field);
+		return FieldFeature.IGNORE_STATIC.accept(field);
 	}
 
 	protected boolean isNesting(FieldDescriptor fieldDescriptor) {

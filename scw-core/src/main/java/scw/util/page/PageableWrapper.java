@@ -2,6 +2,8 @@ package scw.util.page;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.stream.Stream;
 
 import scw.util.Wrapper;
 
@@ -39,5 +41,25 @@ public class PageableWrapper<P extends Pageable<K, T>, K, T> extends Wrapper<P> 
 	@Override
 	public List<T> rows() {
 		return wrappedTarget.rows();
+	}
+
+	@Override
+	public Stream<T> stream() {
+		return wrappedTarget.stream();
+	}
+
+	@Override
+	public T first() {
+		return wrappedTarget.first();
+	}
+
+	@Override
+	public T last() {
+		return wrappedTarget.last();
+	}
+
+	@Override
+	public Spliterator<T> spliterator() {
+		return wrappedTarget.spliterator();
 	}
 }

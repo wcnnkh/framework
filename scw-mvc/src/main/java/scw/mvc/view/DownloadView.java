@@ -52,6 +52,6 @@ public final class DownloadView implements View {
 	
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().getFields(DownloadView.class).getValueMap(this).toString();
+		return MapperUtils.getFields(DownloadView.class).all().getValueMap(this).toString();
 	}
 }

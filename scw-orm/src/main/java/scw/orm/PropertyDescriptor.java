@@ -5,7 +5,7 @@ package scw.orm;
  * @author shuchaowen
  *
  */
-public interface PropertyDescribe {
+public interface PropertyDescriptor {
 	String getName();
 
 	boolean isPrimaryKey();

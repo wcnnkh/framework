@@ -219,7 +219,7 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 	@Override
 	public Sql toSelectByIdsSql(String tableName, Class<?> entityClass, Object... ids) throws SqlDialectException {
 		Fields primaryKeys = getPrimaryKeys(entityClass).shared();
-		if (ids.length > primaryKeys.size()) {
+		if (ids.length > primaryKeys.getCount()) {
 			throw new SqlDialectException("Wrong number of primary key parameters");
 		}
 
@@ -282,11 +282,11 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 	@Override
 	public <T> Sql delete(String tableName, Class<? extends T> entityClass, T entity) throws SqlDialectException {
 		Fields primaryKeys = getPrimaryKeys(entityClass).shared();
-		if (primaryKeys.size() == 0) {
+		if (primaryKeys.getCount() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
 
-		List<Object> params = new ArrayList<Object>(primaryKeys.size());
+		List<Object> params = new ArrayList<Object>();
 		StringBuilder sql = new StringBuilder();
 		sql.append(DELETE_PREFIX);
 		keywordProcessing(sql, tableName);
@@ -318,11 +318,11 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 	@Override
 	public Sql deleteById(String tableName, Class<?> entityClass, Object... ids) throws SqlDialectException {
 		Fields primaryKeys = getPrimaryKeys(entityClass);
-		if (primaryKeys.size() == 0) {
+		if (primaryKeys.getCount() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
 
-		if (primaryKeys.size() != ids.length) {
+		if (primaryKeys.getCount() != ids.length) {
 			throw new ParameterException("主键数量不一致:" + tableName);
 		}
 
@@ -356,7 +356,7 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 
 		Fields primaryKeyColumns = getPrimaryKeys(entityClass);
 		int whereSize = ArrayUtils.isEmpty(primaryKeys) ? 0 : primaryKeys.length;
-		if (whereSize > primaryKeyColumns.size()) {
+		if (whereSize > primaryKeyColumns.getCount()) {
 			throw new NullPointerException("primaryKeys length  greater than primary key lenght");
 		}
 
@@ -430,7 +430,7 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 	@Override
 	public <T> Sql update(String tableName, Class<? extends T> entityClass, T entity) throws SqlDialectException {
 		Fields primaryKeys = getPrimaryKeys(entityClass).shared();
-		if (primaryKeys.size() == 0) {
+		if (primaryKeys.getCount() == 0) {
 			throw new SqlDialectException(tableName + " not found primary key");
 		}
 
@@ -447,7 +447,7 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		sb.append(UPDATE_PREFIX);
 		keywordProcessing(sb, tableName);
 		sb.append(SET);
-		List<Object> params = new ArrayList<Object>(notPrimaryKeys.size());
+		List<Object> params = new ArrayList<Object>();
 		Iterator<Field> iterator = notPrimaryKeys.iterator();
 		while (iterator.hasNext()) {
 			Field column = iterator.next();

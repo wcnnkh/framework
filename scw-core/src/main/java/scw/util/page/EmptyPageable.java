@@ -3,6 +3,9 @@ package scw.util.page;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
+
+import scw.util.stream.StreamProcessorSupport;
 
 public class EmptyPageable<K, T> implements Pageable<K, T>, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -37,6 +40,11 @@ public class EmptyPageable<K, T> implements Pageable<K, T>, Serializable {
 	@Override
 	public List<T> rows() {
 		return Collections.emptyList();
+	}
+
+	@Override
+	public Stream<T> stream() {
+		return StreamProcessorSupport.emptyStream();
 	}
 
 }

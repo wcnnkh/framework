@@ -1,6 +1,5 @@
 package scw.util.page;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -44,16 +43,16 @@ public class DefaultPages<T> implements Pages<T> {
 	}
 
 	@Override
-	public Iterator<T> iterator() {
-		return page.iterator();
-	}
-
-	@Override
 	public Pages<T> jumpTo(Long cursorId) {
 		Stream<T> stream = cursorProcessor.process(cursorId, page.getCount());
 		Page<T> page = new StreamPage<>(cursorId, stream, this.page.getCount(),
 				this.page.getTotal());
 		return new DefaultPages<>(page, cursorProcessor);
+	}
+
+	@Override
+	public Stream<T> stream() {
+		return page.stream();
 	}
 
 }

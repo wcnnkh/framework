@@ -1,7 +1,7 @@
 package scw.util.page;
 
 import java.io.Serializable;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
@@ -21,13 +21,8 @@ public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 	}
 
 	@Override
-	public Iterator<T> iterator() {
-		return list.iterator();
-	}
-
-	@Override
 	public List<T> rows() {
-		return list;
+		return Collections.unmodifiableList(list);
 	}
 
 	@Override

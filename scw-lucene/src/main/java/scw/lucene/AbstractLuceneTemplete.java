@@ -35,8 +35,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 	private ConversionService conversionService;
 
 	public ConversionService getConversionService() {
-		return conversionService == null ? Sys.env.getConversionService()
-				: conversionService;
+		return conversionService == null ? Sys.env.getConversionService() : conversionService;
 	}
 
 	public void setConversionService(ConversionService conversionService) {
@@ -44,10 +43,8 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 	}
 
 	private Fields getFields(Class<?> clazz) {
-		return MapperUtils.getMapper().getFields(clazz)
-				.accept(FieldFeature.EXISTING_GETTER_FIELD)
-				.accept(FieldFeature.EXISTING_SETTER_FIELD)
-				.accept(FieldFeature.IGNORE_STATIC);
+		return MapperUtils.getFields(clazz).entity().accept(FieldFeature.EXISTING_GETTER_FIELD)
+				.accept(FieldFeature.EXISTING_SETTER_FIELD);
 	}
 
 	@Override
@@ -59,14 +56,12 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 	public <T> T mapping(Document document, T instance, Fields fields) {
 		for (IndexableField field : document) {
 			if (!field.fieldType().stored()) {
-				//忽略不保存的字段
+				// 忽略不保存的字段
 				continue;
 			}
 
-			for (scw.mapper.Field javaField : fields.acceptSetter(field.name(),
-					null)) {
-				MapperUtils.setValue(getConversionService(), instance, javaField,
-						field.stringValue());
+			for (scw.mapper.Field javaField : fields.acceptSetter(field.name(), null)) {
+				MapperUtils.setValue(getConversionService(), instance, javaField, field.stringValue());
 			}
 		}
 		return instance;
@@ -78,15 +73,9 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 
 	@Override
 	public Document wrap(Document document, Object instance) {
-		return wrap(
-				document,
-				instance,
-				getFields(instance.getClass()).accept(
-						(field) -> {
-							return field.isAnnotationPresent(LuceneField.class)
-									|| Value.isBaseType(field.getGetter()
-											.getType());
-						}));
+		return wrap(document, instance, getFields(instance.getClass()).accept((field) -> {
+			return field.isAnnotationPresent(LuceneField.class) || Value.isBaseType(field.getGetter().getType());
+		}));
 	}
 
 	@Override
@@ -101,8 +90,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 			if (Value.isBaseType(field.getGetter().getType())) {
 				v = new AnyValue(value, getConversionService());
 			} else {
-				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(
-						value));
+				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
 			}
 
 			Field luceneField = toField(field.getGetter(), v);
@@ -124,36 +112,28 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 		return true;
 	}
 
-	public void addField(Document document, FieldDescriptor fieldDescriptor,
-			Value value) {
-		if (ClassUtils.isLong(fieldDescriptor.getType())
-				|| ClassUtils.isInt(fieldDescriptor.getType())
+	public void addField(Document document, FieldDescriptor fieldDescriptor, Value value) {
+		if (ClassUtils.isLong(fieldDescriptor.getType()) || ClassUtils.isInt(fieldDescriptor.getType())
 				|| ClassUtils.isShort(fieldDescriptor.getType())) {
-			document.add(new NumericDocValuesField(fieldDescriptor.getName(),
-					value.getAsLong()));
+			document.add(new NumericDocValuesField(fieldDescriptor.getName(), value.getAsLong()));
 			if (isStored(fieldDescriptor)) {
-				document.add(new StoredField(fieldDescriptor.getName(), value
-						.getAsString()));
+				document.add(new StoredField(fieldDescriptor.getName(), value.getAsString()));
 			}
 			return;
 		}
 
 		if (ClassUtils.isDouble(fieldDescriptor.getType())) {
-			document.add(new DoubleDocValuesField(fieldDescriptor.getName(),
-					value.getAsDoubleValue()));
+			document.add(new DoubleDocValuesField(fieldDescriptor.getName(), value.getAsDoubleValue()));
 			if (isStored(fieldDescriptor)) {
-				document.add(new StoredField(fieldDescriptor.getName(), value
-						.getAsString()));
+				document.add(new StoredField(fieldDescriptor.getName(), value.getAsString()));
 			}
 			return;
 		}
 
 		if (ClassUtils.isFloat(fieldDescriptor.getType())) {
-			document.add(new FloatDocValuesField(fieldDescriptor.getName(),
-					value.getAsFloatValue()));
+			document.add(new FloatDocValuesField(fieldDescriptor.getName(), value.getAsFloatValue()));
 			if (isStored(fieldDescriptor)) {
-				document.add(new StoredField(fieldDescriptor.getName(), value
-						.getAsString()));
+				document.add(new StoredField(fieldDescriptor.getName(), value.getAsString()));
 			}
 			return;
 		}
@@ -161,24 +141,20 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 		scw.lucene.annotation.LuceneField annotation = fieldDescriptor
 				.getAnnotation(scw.lucene.annotation.LuceneField.class);
 		if (annotation == null) {
-			document.add(new StringField(fieldDescriptor.getName(), value
-					.getAsString(), Store.YES));
+			document.add(new StringField(fieldDescriptor.getName(), value.getAsString(), Store.YES));
 			return;
 		}
 
 		if (annotation.indexed()) {
 			if (annotation.tokenized()) {
-				document.add(new TextField(fieldDescriptor.getName(), value
-						.getAsString(), annotation.stored() ? Store.YES
-						: Store.NO));
+				document.add(new TextField(fieldDescriptor.getName(), value.getAsString(),
+						annotation.stored() ? Store.YES : Store.NO));
 			} else {
-				document.add(new StringField(fieldDescriptor.getName(), value
-						.getAsString(), annotation.stored() ? Store.YES
-						: Store.NO));
+				document.add(new StringField(fieldDescriptor.getName(), value.getAsString(),
+						annotation.stored() ? Store.YES : Store.NO));
 			}
 		} else {
-			document.add(new StoredField(fieldDescriptor.getName(), value
-					.getAsString()));
+			document.add(new StoredField(fieldDescriptor.getName(), value.getAsString()));
 		}
 	}
 
@@ -186,41 +162,32 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 		scw.lucene.annotation.LuceneField annotation = fieldDescriptor
 				.getAnnotation(scw.lucene.annotation.LuceneField.class);
 		if (annotation == null) {
-			if (ClassUtils.isLong(fieldDescriptor.getType())
-					|| ClassUtils.isInt(fieldDescriptor.getType())
+			if (ClassUtils.isLong(fieldDescriptor.getType()) || ClassUtils.isInt(fieldDescriptor.getType())
 					|| ClassUtils.isShort(fieldDescriptor.getType())) {
-				return new NumericDocValuesField(fieldDescriptor.getName(),
-						value.getAsLong());
+				return new NumericDocValuesField(fieldDescriptor.getName(), value.getAsLong());
 			}
 
 			if (ClassUtils.isDouble(fieldDescriptor.getType())) {
-				return new DoubleDocValuesField(fieldDescriptor.getName(),
-						value.getAsDoubleValue());
+				return new DoubleDocValuesField(fieldDescriptor.getName(), value.getAsDoubleValue());
 			}
 
 			if (ClassUtils.isFloat(fieldDescriptor.getType())) {
-				return new FloatDocValuesField(fieldDescriptor.getName(),
-						value.getAsFloatValue());
+				return new FloatDocValuesField(fieldDescriptor.getName(), value.getAsFloatValue());
 			}
-			return new StringField(fieldDescriptor.getName(),
-					value.getAsString(), Store.YES);
+			return new StringField(fieldDescriptor.getName(), value.getAsString(), Store.YES);
 		} else {
 			if (annotation.indexed()) {
 				if (annotation.tokenized()) {
-					return new TextField(fieldDescriptor.getName(),
-							value.getAsString(),
+					return new TextField(fieldDescriptor.getName(), value.getAsString(),
 							annotation.stored() ? Store.YES : Store.NO);
 				} else {
-					return new StringField(fieldDescriptor.getName(),
-							value.getAsString(),
+					return new StringField(fieldDescriptor.getName(), value.getAsString(),
 							annotation.stored() ? Store.YES : Store.NO);
 				}
 			} else if (annotation.stored()) {
-				return new StoredField(fieldDescriptor.getName(),
-						value.getAsString());
+				return new StoredField(fieldDescriptor.getName(), value.getAsString());
 			} else {
-				return new StringField(fieldDescriptor.getName(),
-						value.getAsString(), Store.NO);
+				return new StringField(fieldDescriptor.getName(), value.getAsString(), Store.NO);
 			}
 		}
 	}
@@ -230,10 +197,8 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 	protected abstract IndexReader getIndexReader() throws IOException;
 
 	@Override
-	public <T, E extends Throwable> T write(
-			Processor<IndexWriter, T, E> processor) throws LuceneWriteException {
-		Transaction transaction = TransactionUtils.getManager()
-				.getTransaction();
+	public <T, E extends Throwable> T write(Processor<IndexWriter, T, E> processor) throws LuceneWriteException {
+		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		IndexWriter indexWriter = null;
 		try {
 			indexWriter = getTransactionIndexWrite();
@@ -266,8 +231,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 	}
 
 	@Override
-	public <T, E extends Throwable> T read(
-			Processor<IndexReader, T, E> processor) throws LuceneException {
+	public <T, E extends Throwable> T read(Processor<IndexReader, T, E> processor) throws LuceneException {
 		IndexReader indexReader = null;
 		try {
 			indexReader = getIndexReader();
@@ -289,16 +253,12 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 	}
 
 	private final IndexWriter getTransactionIndexWrite() throws IOException {
-		Transaction transaction = TransactionUtils.getManager()
-				.getTransaction();
+		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		if (transaction != null) {
-			IndexWriterResource resource = transaction
-					.getResource(IndexWriter.class);
+			IndexWriterResource resource = transaction.getResource(IndexWriter.class);
 			if (resource == null) {
-				IndexWriterResource indexWriterResource = new IndexWriterResource(
-						getIndexWrite());
-				resource = transaction.bindResource(IndexWriter.class,
-						indexWriterResource);
+				IndexWriterResource indexWriterResource = new IndexWriterResource(getIndexWrite());
+				resource = transaction.bindResource(IndexWriter.class, indexWriterResource);
 				if (resource == null) {
 					resource = indexWriterResource;
 				}

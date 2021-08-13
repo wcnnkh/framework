@@ -36,7 +36,7 @@ public final class PropertiesFileValueProcesser extends AbstractObservableValueP
 		} else {
 			Class<?> fieldType = field.getSetter().getType();
 			Object obj = Sys.env.getInstance(fieldType);
-			Fields fields = MapperUtils.getMapper().getFields(fieldType).accept(FieldFeature.SUPPORT_SETTER);
+			Fields fields = MapperUtils.getFields(fieldType).all().accept(FieldFeature.SUPPORT_SETTER);
 			for (final Object key : properties.keySet()) {
 				Field keyField = fields.findSetter(key.toString(), null);
 				if (keyField == null) {
@@ -45,8 +45,6 @@ public final class PropertiesFileValueProcesser extends AbstractObservableValueP
 				
 				MapperUtils.setValue(beanFactory.getEnvironment().getConversionService(), obj, keyField, properties.getProperty(keyField.getSetter().getName()));
 			}
-			
-			MapperUtils.getFields(fieldType).
 			return obj;
 		}
 	}

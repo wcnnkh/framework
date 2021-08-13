@@ -83,6 +83,6 @@ public class KindManagerResult implements Serializable, Text {
 	
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().getFields(KindManagerResult.class).getValueMap(this).toString();
+		return MapperUtils.toString(this);
 	}
 }
