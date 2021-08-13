@@ -32,7 +32,10 @@ public interface Pageables<K, T> extends Pageable<K, T>{
 	 * @return
 	 */
 	default Stream<T> streamAll() {
-		Iterator<T> iterator = new IteratorAll<>(this);
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false);
+		if(hasNext()) {
+			Iterator<T> iterator = new IteratorAll<>(this);
+			return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false);
+		}
+		return stream();
 	}
 }

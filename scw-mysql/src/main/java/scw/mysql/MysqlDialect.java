@@ -17,17 +17,15 @@ import java.util.Map.Entry;
 
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.mapper.Field;
-import scw.mapper.Fields;
-import scw.orm.sql.IndexInfo;
+import scw.orm.sql.Column;
 import scw.orm.sql.PaginationSql;
 import scw.orm.sql.SqlDialectException;
 import scw.orm.sql.SqlType;
+import scw.orm.sql.StandardColumnDescriptor;
 import scw.orm.sql.StandardSqlDialect;
+import scw.orm.sql.TableStructure;
 import scw.orm.sql.TableStructureMapping;
 import scw.orm.sql.annotation.Counter;
-import scw.orm.sql.annotation.IndexMethod;
-import scw.orm.sql.annotation.IndexOrder;
 import scw.orm.sql.annotation.Table;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
@@ -75,25 +73,23 @@ public class MysqlDialect extends StandardSqlDialect {
 	};
 
 	@Override
-	public <T> Sql toSaveOrUpdateSql(String tableName, Class<? extends T> entityClass, T entity)
-			throws SqlDialectException {
-		Fields primaryKeys = getPrimaryKeys(entityClass);
-		if (primaryKeys.getCount() == 0) {
+	public <T> Sql toSaveOrUpdateSql(TableStructure tableStructure, T entity) throws SqlDialectException {
+		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
+		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
-		
+
 		Map<String, Object> changeMap = getChangeMap(entity);
 		StringBuilder sb = new StringBuilder(512);
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
-		Fields fields = getFields(entityClass).shared();
-		Iterator<Field> iterator = fields.iterator();
+		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
-			Field column = iterator.next();
-			appendFieldName(cols, column.getGetter());
+			Column column = iterator.next();
+			keywordProcessing(cols, column.getName());
 			values.append("?");
-			params.add(getDataBaseValue(entity, column));
+			params.add(getDataBaseValue(entity, column.getField()));
 
 			if (iterator.hasNext()) {
 				cols.append(",");
@@ -102,64 +98,61 @@ public class MysqlDialect extends StandardSqlDialect {
 		}
 
 		sb.append(INSERT_INTO_PREFIX);
-		keywordProcessing(sb, tableName);
+		keywordProcessing(sb, tableStructure.getName());
 		sb.append("(");
 		sb.append(cols);
 		sb.append(VALUES);
 		sb.append(values);
 		sb.append(")");
 		sb.append(DUPLICATE_KEY);
-		
-		iterator = fields.iterator();
+
+		iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
-			Field column = iterator.next();
-			appendFieldName(sb, column.getGetter());
+			Column column = iterator.next();
+			keywordProcessing(sb, column.getName());
 			sb.append("=");
-			AnyValue newValue = new AnyValue(getDataBaseValue(entity, column));
-			AnyValue oldValue = new AnyValue(changeMap == null? null:changeMap.get(column.getSetter().getName()));
-			appendUpdateValue(sb, params, entity, column, oldValue, newValue);
+			appendUpdateValue(sb, params, entity, column, changeMap);
 			if (iterator.hasNext()) {
 				sb.append(",");
 			}
 		}
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
-	
+
 	@Override
-	protected void appendCounterValue(StringBuilder sb, List<Object> params, Object entity, Field column,
+	protected void appendCounterValue(StringBuilder sb, List<Object> params, Object entity, Column column,
 			AnyValue oldValue, AnyValue newValue, Counter counter) {
 		double change = newValue.getAsDoubleValue() - oldValue.getAsDoubleValue();
 		sb.append(IF);
-		appendFieldName(sb, column.getGetter());
+		keywordProcessing(sb, column.getName());
 		sb.append("+").append(change);
 		sb.append(">=").append(counter.min());
 		sb.append(AND);
-		appendFieldName(sb, column.getGetter());
+		keywordProcessing(sb, column.getName());
 		sb.append("+").append(change);
 		sb.append("<=").append(counter.max());
 		sb.append(",");
-		appendFieldName(sb, column.getGetter());
+		keywordProcessing(sb, column.getName());
 		sb.append("+").append(change);
 		sb.append(",");
-		appendFieldName(sb, column.getGetter());
+		keywordProcessing(sb, column.getName());
 		sb.append(")");
 	}
-	
+
 	@Override
-	public Sql toCreateTableSql(String tableName, Class<?> entityClass) throws SqlDialectException {
+	public Sql toCreateTableSql(TableStructure tableStructure) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCreateTablePrefix());
 		sb.append(" ");
-		keywordProcessing(sb, tableName);
+		keywordProcessing(sb, tableStructure.getName());
 		sb.append(" (");
 
-		Fields primaryKeys = getPrimaryKeys(entityClass);
-		Fields columns = getFields(entityClass).distinct();
-		Iterator<Field> iterator = columns.iterator();
+		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
+		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
-			Field col = iterator.next();
-			SqlType sqlType = getSqlType(col.getGetter().getType());
-			appendFieldName(sb, col.getGetter());
+			Column col = iterator.next();
+			SqlType sqlType = getSqlType(col.getField().getGetter().getType());
+			keywordProcessing(sb, col.getName());
 
 			sb.append(" ");
 			sb.append(sqlType.getName());
@@ -167,27 +160,26 @@ public class MysqlDialect extends StandardSqlDialect {
 				sb.append("(" + sqlType.getLength() + ")");
 			}
 
-			if (primaryKeys.getCount() == 1) {
-				if (isPrimaryKey(col)) {
+			if (primaryKeys.size() == 1) {
+				if (col.isPrimaryKey()) {
 					sb.append(" PRIMARY KEY");
 				}
 
-				if (isAutoIncrement(col.getGetter())) {
+				if (col.isAutoIncrement()) {
 					sb.append(" AUTO_INCREMENT");
 				}
 			}
 
-			if (isUnique(col.getGetter()) || isUnique(col.getSetter())) {
+			if (col.isUnique()) {
 				sb.append(" UNIQUE");
 			}
 
-			if (!isNullable(col)) {
+			if (col.isNullable()) {
 				sb.append(" not null");
 			}
 
-			String comment = getComment(col);
+			String comment = col.getComment();
 			if (StringUtils.isNotEmpty(comment)) {
-
 				sb.append(" comment \'").append(comment).append("\'");
 			}
 
@@ -196,36 +188,16 @@ public class MysqlDialect extends StandardSqlDialect {
 			}
 		}
 
-		for (Entry<IndexInfo, List<IndexInfo>> entry : getIndexInfoMap(entityClass).entrySet()) {
+		for (Entry<String, List<Column>> entry : tableStructure.getIndexGroup().entrySet()) {
 			sb.append(",");
-			if (entry.getKey().getMethod() != IndexMethod.DEFAULT) {
-				sb.append(" ");
-				sb.append(entry.getKey().getMethod().name());
-			}
-
 			sb.append(" INDEX");
-
-			if (!StringUtils.isEmpty(entry.getKey().getName())) {
-				sb.append(" ");
-				keywordProcessing(sb, entry.getKey().getName());
-			}
-
+			sb.append(" ");
+			keywordProcessing(sb, entry.getKey());
 			sb.append(" (");
-			Iterator<IndexInfo> indexIterator = entry.getValue().iterator();
+			Iterator<Column> indexIterator = entry.getValue().iterator();
 			while (indexIterator.hasNext()) {
-				IndexInfo indexInfo = indexIterator.next();
-				appendFieldName(sb, indexInfo.getColumn().getGetter());
-				if (indexInfo.getLength() != -1) {
-					sb.append("(");
-					sb.append(indexInfo.getLength());
-					sb.append(")");
-				}
-
-				if (indexInfo.getOrder() != IndexOrder.DEFAULT) {
-					sb.append(" ");
-					appendFieldName(sb, indexInfo.getColumn().getGetter());
-				}
-
+				Column column = indexIterator.next();
+				keywordProcessing(sb, column.getName());
 				if (indexIterator.hasNext()) {
 					sb.append(",");
 				}
@@ -234,13 +206,13 @@ public class MysqlDialect extends StandardSqlDialect {
 		}
 
 		// primary keys
-		if (primaryKeys.getCount() > 1) {
+		if (primaryKeys.size() > 1) {
 			// 多主键
 			sb.append(",primary key(");
 			iterator = primaryKeys.iterator();
 			while (iterator.hasNext()) {
-				Field column = iterator.next();
-				appendFieldName(sb, column.getGetter());
+				Column column = iterator.next();
+				keywordProcessing(sb, column.getName());
 				if (iterator.hasNext()) {
 					sb.append(",");
 				}
@@ -249,7 +221,7 @@ public class MysqlDialect extends StandardSqlDialect {
 		}
 		sb.append(")");
 
-		Table table = entityClass.getAnnotation(Table.class);
+		Table table = tableStructure.getEntityClass().getAnnotation(Table.class);
 		if (table != null) {
 			if (StringUtils.isNotEmpty(table.engine())) {
 				sb.append(" ENGINE=").append(table.engine());
@@ -319,8 +291,10 @@ public class MysqlDialect extends StandardSqlDialect {
 						tableName);
 			}
 
-			public String getName(ResultSet resultSet) throws SQLException {
-				return resultSet.getString("COLUMN_NAME");
+			public StandardColumnDescriptor getName(ResultSet resultSet) throws SQLException {
+				StandardColumnDescriptor descriptor = new StandardColumnDescriptor();
+				descriptor.setName(resultSet.getString("COLUMN_NAME"));
+				return descriptor;
 			}
 		};
 	}

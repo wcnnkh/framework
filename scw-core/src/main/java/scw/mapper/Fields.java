@@ -191,7 +191,10 @@ public interface Fields extends Pageables<Class<?>, Field> {
 	 * @return
 	 */
 	default Fields all() {
-		return new StreamFields(getCursorId(), null, this, streamAll());
+		if(hasNext()) {
+			return new StreamFields(getCursorId(), null, this, streamAll());
+		}
+		return this;
 	}
 
 	@Override

@@ -26,6 +26,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	boolean createTable(@Nullable String tableName, Class<?> entityClass);
+	
+	boolean createTable(TableStructure tableStructure);
 
 	@Override
 	default <T> boolean save(Class<? extends T> entityClass, T entity) {
@@ -37,7 +39,9 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	<T> boolean save(@Nullable String tableName, Class<? extends T> entityClass, T entity);
-
+	
+	<T> int save(TableStructure tableStructure, T entity);
+	
 	@Override
 	default <T> boolean delete(Class<? extends T> entityClass, T entity) {
 		if (entityClass == null || entity == null) {
@@ -46,6 +50,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 		return delete(null, entityClass, entity);
 	}
+	
+	<T> int delete(TableStructure tableStructure, T entity);
 
 	<T> boolean delete(@Nullable String tableName, Class<? extends T> entityClass, T entity);
 
@@ -57,7 +63,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 		return deleteById(null, entityClass, ids);
 	}
-
+	
 	boolean deleteById(@Nullable String tableName, Class<?> entityClass, Object... ids);
 
 	@Override
@@ -68,6 +74,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 		return update(null, entityClass, entity);
 	}
+	
+	<T> int update(TableStructure tableStructure, T entity);
 
 	<T> boolean update(@Nullable String tableName, Class<? extends T> entityClass, T entity);
 
@@ -79,6 +87,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 		return saveOrUpdate(null, entityClass, entity);
 	}
+	
+	<T> int saveOrUpdate(TableStructure tableStructure, T entity);
 
 	<T> boolean saveOrUpdate(@Nullable String tableName, Class<? extends T> entityClass, T entity);
 
@@ -87,7 +97,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	default <T> T getById(Class<? extends T> entityClass, Object... ids) {
 		return getById(null, entityClass, ids);
 	}
-
+	
 	@Nullable
 	<T> T getById(@Nullable String tableName, Class<? extends T> entityClass, Object... ids);
 

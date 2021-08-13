@@ -8,5 +8,5 @@ import scw.sql.Sql;
 public interface TableStructureMapping {
 	Sql getSql();
 	
-	String getName(ResultSet resultSet) throws SQLException;
+	ColumnDescriptor getName(ResultSet resultSet) throws SQLException;
 }

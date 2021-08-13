@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -17,15 +16,11 @@ import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.core.utils.StringUtils;
 import scw.env.Sys;
-import scw.json.JSONUtils;
 import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mapper.Field;
 import scw.mapper.Fields;
-import scw.orm.cache.CacheManager;
-import scw.orm.generator.DefaultGeneratorProcessor;
-import scw.orm.generator.GeneratorProcessor;
 import scw.orm.sql.convert.SmartMapperProcessor;
 import scw.sql.ConnectionFactory;
 import scw.sql.DefaultSqlOperations;
@@ -41,33 +36,14 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	private static Logger logger = LoggerFactory.getLogger(DefaultSqlTemplate.class);
 	private final SqlDialect sqlDialect;
 	private ConversionService conversionService;
-	private CacheManager cacheManager;
-	private GeneratorProcessor generatorProcessor;
 
 	public DefaultSqlTemplate(ConnectionFactory connectionFactory, SqlDialect sqlDialect) {
 		super(connectionFactory);
 		this.sqlDialect = sqlDialect;
-		this.generatorProcessor = new DefaultGeneratorProcessor(this);
-	}
-
-	public GeneratorProcessor getGeneratorProcessor() {
-		return generatorProcessor;
-	}
-
-	public void setGeneratorProcessor(GeneratorProcessor generatorProcessor) {
-		this.generatorProcessor = generatorProcessor;
 	}
 
 	public SqlDialect getSqlDialect() {
 		return sqlDialect;
-	}
-
-	public CacheManager getCacheManager() {
-		return cacheManager;
-	}
-
-	public void setCacheManager(CacheManager cacheManager) {
-		this.cacheManager = cacheManager;
 	}
 
 	public ConversionService getConversionService() {
@@ -113,13 +89,13 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 	private void setAutoIncrementLastId(int updateCount, Sql sql, Connection connection, String tableName,
 			Class<?> entityClass, Object entity) throws SQLException {
-		for (Field field : sqlDialect.getFields(entityClass)) {
-			if (sqlDialect.isAutoIncrement(field.getSetter())) {
+		for (Column column : sqlDialect.resolve(entityClass)) {
+			if (column.isAutoIncrement() && column.getField() != null) {
 				if (updateCount == 0) {
 					logger.error("Number of rows affected is 0, execute: {}", sql);
 				} else if (updateCount == 1) {
 					Object lastId = getAutoIncrementLastId(connection, tableName);
-					field.getSetter().set(entity, lastId, getConversionService());
+					column.getField().getSetter().set(entity, lastId, getConversionService());
 				}
 			}
 		}
@@ -127,16 +103,6 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 	@Override
 	public <T> boolean save(String tableName, Class<? extends T> entityClass, T entity) {
-		generatorProcessor.process(entityClass, entity);
-		CacheManager cacheManager = getCacheManager();
-		if (cacheManager != null) {
-			if (!cacheManager.save(entityClass, entity)) {
-				logger.error("save [{}] to cache error: {}", entityClass,
-						JSONUtils.getJsonSupport().toJSONString(entity));
-				return false;
-			}
-		}
-
 		String tName = getTableName(tableName, entityClass, entity);
 		Sql sql = sqlDialect.save(tName, entityClass, entity);
 		return prepare(sql).process((ps) -> {
@@ -148,16 +114,6 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 	@Override
 	public <T> boolean saveOrUpdate(String tableName, Class<? extends T> entityClass, T entity) {
-		generatorProcessor.process(entityClass, entity);
-		CacheManager cacheManager = getCacheManager();
-		if (cacheManager != null) {
-			if (!cacheManager.saveOrUpdate(entityClass, entity)) {
-				logger.error("saveOrUpdate [{}] to cache error: {}", entityClass,
-						JSONUtils.getJsonSupport().toJSONString(entity));
-				return false;
-			}
-		}
-
 		String tName = getTableName(tableName, entityClass, entity);
 		Sql sql = sqlDialect.toSaveOrUpdateSql(tName, entityClass, entity);
 		return prepare(sql).process((ps) -> {
@@ -169,15 +125,6 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 	@Override
 	public <T> boolean delete(String tableName, Class<? extends T> entityClass, T entity) {
-		CacheManager cacheManager = getCacheManager();
-		if (cacheManager != null) {
-			if (!cacheManager.delete(entity)) {
-				logger.error("delete [{}] to cache error: {}", entityClass,
-						JSONUtils.getJsonSupport().toJSONString(entity));
-				return false;
-			}
-		}
-
 		Class<?> clazz = getUserEntityClass(entity.getClass());
 		Sql sql = sqlDialect.delete(getTableName(tableName, clazz, entity), clazz, entity);
 		return prepare(sql).update() > 0;
@@ -185,14 +132,6 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 	@Override
 	public boolean deleteById(String tableName, Class<?> entityClass, Object... ids) {
-		CacheManager cacheManager = getCacheManager();
-		if (cacheManager != null) {
-			if (!cacheManager.deleteById(entityClass, ids)) {
-				logger.error("deleteById [{}] to cache error: {}", entityClass, Arrays.toString(ids));
-				return false;
-			}
-		}
-
 		Class<?> clazz = getUserEntityClass(entityClass);
 		Sql sql = sqlDialect.deleteById(getTableName(tableName, clazz, null), clazz, ids);
 		return prepare(sql).update() > 0;
@@ -200,14 +139,6 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 	@Override
 	public <T> boolean update(String tableName, Class<? extends T> entityClass, T entity) {
-		CacheManager cacheManager = getCacheManager();
-		if (cacheManager != null) {
-			if (!cacheManager.update(entityClass, entity)) {
-				logger.error("update [{}] to cache error: {}", entityClass, entity);
-				return false;
-			}
-		}
-
 		Class<?> clazz = getUserEntityClass(entity.getClass());
 		Sql sql = sqlDialect.update(getTableName(tableName, clazz, entity), clazz, entity);
 		return prepare(sql).update() > 0;
@@ -215,47 +146,34 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 	@Override
 	public <T> T getById(String tableName, Class<? extends T> entityClass, Object... ids) {
-		CacheManager cacheManager = getCacheManager();
-		T value = null;
-		if (cacheManager != null) {
-			value = cacheManager.getById(entityClass, ids);
-		}
-
-		if (cacheManager == null || (value == null && cacheManager.isKeepLooking(entityClass, ids))) {
-			Class<?> clazz = getUserEntityClass(entityClass);
-			Sql sql = sqlDialect.toSelectByIdsSql(getTableName(tableName, clazz, null), clazz, ids);
-			value = query(entityClass, sql).first();
-			if (value != null && cacheManager != null) {
-				cacheManager.save(value);
-			}
-		}
-		return value;
+		Class<?> clazz = getUserEntityClass(entityClass);
+		Sql sql = sqlDialect.toSelectByIdsSql(getTableName(tableName, clazz, null), clazz, ids);
+		return query(entityClass, sql).first();
 	}
-	
+
 	@Override
 	public <T> Processor<ResultSet, T, ? extends Throwable> getMapperProcessor(TypeDescriptor type) {
 		return new SmartMapperProcessor<T>(sqlDialect, type);
 	}
-	
+
 	@Override
-	public <T> Pages<T> getPages(TypeDescriptor resultType, Sql sql, long pageNumber,
-			long limit) {
+	public <T> Pages<T> getPages(TypeDescriptor resultType, Sql sql, long pageNumber, long limit) {
 		if (limit <= 0 || pageNumber <= 0) {
 			throw new RuntimeException("page=" + pageNumber + ", limit=" + limit);
 		}
-		
+
 		long start = PageSupport.getStart(pageNumber, limit);
 		PaginationSql paginationSql = sqlDialect.toPaginationSql(sql, start, limit);
 		Long total = query(Long.class, paginationSql.getCountSql()).first();
-		if(total == null || total == 0){
+		if (total == null || total == 0) {
 			return PageSupport.emptyPages(pageNumber, limit);
 		}
-		
+
 		Cursor<T> cursor = query(resultType, paginationSql.getResultSql());
 		Page<T> page = new SharedPage<T>(start, cursor.shared(), limit, total);
 		return PageSupport.getPages(page, (startIndex, count) -> {
 			Cursor<T> rows = query(resultType, sqlDialect.toPaginationSql(sql, startIndex, count).getResultSql());
-			//因为是分页，每一页的内部没必要使用流，所在这里调用了shared
+			// 因为是分页，每一页的内部没必要使用流，所在这里调用了shared
 			return rows.shared().stream();
 		});
 	}
@@ -263,17 +181,17 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	public TableChanges getTableChanges(Class<?> tableClass, String tableName) {
 		String tName = getTableName(tableName, tableClass, null);
 		TableStructureMapping tableStructureMapping = sqlDialect.getTableStructureMapping(tableClass, tName);
-		List<String> list = prepare(tableStructureMapping.getSql()).query().process((rs, rowNum) -> {
+		List<ColumnDescriptor> list = prepare(tableStructureMapping.getSql()).query().process((rs, rowNum) -> {
 			return tableStructureMapping.getName(rs);
 		});
 		HashSet<String> hashSet = new HashSet<String>();
 		List<String> deleteList = new ArrayList<String>();
 		Fields fields = sqlDialect.getFields(tableClass);
-		for (String name : list) {
-			hashSet.add(name);
-			Field column = fields.find(name, null);
+		for (ColumnDescriptor columnDescriptor : list) {
+			hashSet.add(columnDescriptor.getName());
+			Field column = fields.find(columnDescriptor.getName(), null);
 			if (column == null) {// 在现在的表结构中不存在，应该删除
-				deleteList.add(name);
+				deleteList.add(columnDescriptor.getName());
 			}
 		}
 
@@ -320,5 +238,44 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 			map.put(keyMap.get(key), v);
 		}
 		return map;
+	}
+
+	@Override
+	public boolean createTable(TableStructure tableStructure) {
+		Sql sql = sqlDialect.toCreateTableSql(tableStructure);
+		prepare(sql).execute();
+		return true;
+	}
+
+	@Override
+	public <T> int save(TableStructure tableStructure, T entity) {
+		Sql sql = sqlDialect.save(tableStructure, entity);
+		return prepare(sql).process((ps) -> {
+			int updateCount = ps.executeUpdate();
+			setAutoIncrementLastId(updateCount, sql, ps.getConnection(), tableStructure.getName(), tableStructure.getEntityClass(), entity);
+			return updateCount;
+		});
+	}
+
+	@Override
+	public <T> int delete(TableStructure tableStructure, T entity) {
+		Sql sql = sqlDialect.delete(tableStructure, entity);
+		return prepare(sql).update();
+	}
+
+	@Override
+	public <T> int update(TableStructure tableStructure, T entity) {
+		Sql sql = sqlDialect.update(tableStructure, entity);
+		return prepare(sql).update();
+	}
+
+	@Override
+	public <T> int saveOrUpdate(TableStructure tableStructure, T entity) {
+		Sql sql = sqlDialect.toSaveOrUpdateSql(tableStructure, entity);
+		return prepare(sql).process((ps) -> {
+			int updateCount = ps.executeUpdate();
+			setAutoIncrementLastId(updateCount, sql, ps.getConnection(), tableStructure.getName(), tableStructure.getEntityClass(), entity);
+			return updateCount;
+		});
 	}
 }

@@ -23,11 +23,7 @@ import scw.value.support.SystemPropertyFactory;
 
 public class MapperUtils {
 	private static final FieldFactory FIELD_FACTORY = new DefaultServiceLoaderFactory(new SystemPropertyFactory())
-			.getServiceLoader(FieldFactory.class).first(() -> {
-				return new DefaultFieldFactory(
-						new String[] { Getter.BOOLEAN_GETTER_METHOD_PREFIX, Getter.DEFAULT_GETTER_METHOD_PREFIX },
-						new String[] { Setter.DEFAULT_SETTER_METHOD_PREFIX });
-			});
+			.getServiceLoader(FieldFactory.class).first(() -> new DefaultFieldFactory());
 
 	private MapperUtils() {
 	};

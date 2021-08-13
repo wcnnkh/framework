@@ -1,4 +1,4 @@
-package scw.orm;
+package scw.orm.annotation;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
@@ -13,12 +13,9 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Ignore;
 import scw.mapper.FieldDescriptor;
-import scw.orm.annotation.Alias;
-import scw.orm.annotation.Entity;
-import scw.orm.annotation.PrimaryKey;
-import scw.orm.annotation.Version;
+import scw.orm.ObjectRelationalMapping;
 
-public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
+public class AnnotationObjectRelationalMapping implements ObjectRelationalMapping {
 	/**
 	 * 是否将驼峰命名转换为下划线的名称 myAbc-> my_abc
 	 */

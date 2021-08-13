@@ -99,7 +99,7 @@ public enum FieldFeature implements Accept<Field> {
 			}
 			return true;
 		case IGNORE_TRANSIENT:
-			if (field.isSupportGetter() && Modifier.isTransient(field.getSetter().getModifiers())) {
+			if (field.isSupportGetter() && Modifier.isTransient(field.getGetter().getModifiers())) {
 				return false;
 			}
 

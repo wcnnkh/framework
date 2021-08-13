@@ -12,7 +12,6 @@ import java.util.Map;
 import scw.aop.support.FieldSetterListen;
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
-import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.env.Sys;
@@ -20,10 +19,8 @@ import scw.lang.Nullable;
 import scw.lang.ParameterException;
 import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
-import scw.mapper.FieldFeature;
-import scw.mapper.Fields;
-import scw.orm.DefaultObjectRelationalMapping;
 import scw.orm.annotation.Version;
+import scw.orm.sql.annotation.AnnotationTableResolver;
 import scw.orm.sql.annotation.Counter;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
@@ -35,7 +32,7 @@ import scw.value.AnyValue;
  * @author shuchaowen
  *
  */
-public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping implements SqlDialect {
+public abstract class StandardSqlDialect extends AnnotationTableResolver implements SqlDialect {
 	protected static final String UPDATE_PREFIX = "update ";
 	protected static final String DELETE_PREFIX = "delete from ";
 	protected static final String SELECT_ALL_PREFIX = "select * from ";
@@ -61,12 +58,6 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		this.conversionService = conversionService;
 	}
 
-	@Override
-	public Fields getFields(Class<?> clazz, boolean useSuperClass, Field parentField) {
-		return super.getFields(clazz, useSuperClass, parentField).accept(FieldFeature.SUPPORT_GETTER)
-				.accept(FieldFeature.SUPPORT_SETTER).accept(FieldFeature.EXISTING_GETTER_FIELD);
-	}
-
 	public Object getDataBaseValue(Object entity, Field field) {
 		return toDataBaseValue(field.getGetter().get(entity), new TypeDescriptor(field.getGetter()));
 	}
@@ -86,10 +77,6 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		}
 
 		return getConversionService().convert(value, sourceType, TypeDescriptor.valueOf(sqlType.getType()));
-	}
-
-	public Counter getCounter(Field field) {
-		return field.getAnnotation(Counter.class);
 	}
 
 	private void appendObjectKeyByValue(StringBuilder appendable, Field field, Object value) {
@@ -179,65 +166,20 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		return "CREATE TABLE IF NOT EXISTS";
 	}
 
-	public Map<IndexInfo, List<IndexInfo>> getIndexInfoMap(Class<?> entityClass) {
-		Map<IndexInfo, List<IndexInfo>> indexMap = new LinkedHashMap<IndexInfo, List<IndexInfo>>();
-		for (Field column : getFields(entityClass)) {
-			scw.orm.sql.annotation.Index index = AnnotatedElementUtils.getMergedAnnotation(column,
-					scw.orm.sql.annotation.Index.class);
-			if (index == null) {
-				continue;
-			}
-
-			IndexInfo indexInfo = new IndexInfo(column, index.name(), index.type(), index.length(), index.method(),
-					index.order());
-			List<IndexInfo> list = indexMap.get(indexInfo);
-			if (list == null) {
-				list = new ArrayList<IndexInfo>();
-				indexMap.put(indexInfo, list);
-			}
-			list.add(indexInfo);
-		}
-		return indexMap;
-	}
-
-	/**
-	 * 字段描述
-	 * 
-	 * @param field
-	 * @return
-	 */
-	@Nullable
-	public String getComment(FieldDescriptor fieldDescriptor) {
-		return AnnotatedElementUtils.getDescription(fieldDescriptor);
-	}
-
-	@Override
-	public String getComment(Field field) {
-		String desc = getComment(field.getGetter());
-		if (desc == null) {
-			desc = getComment(field.getSetter());
-		}
-		return desc;
-	}
-
-	@Override
-	public String getCharsetName(FieldDescriptor fieldDescriptor) {
-		return AnnotatedElementUtils.getCharsetName(fieldDescriptor, null);
-	}
-
 	// --------------以下为标准实现-----------------
 
+	
 	@Override
-	public Sql toSelectByIdsSql(String tableName, Class<?> entityClass, Object... ids) throws SqlDialectException {
-		Fields primaryKeys = getPrimaryKeys(entityClass).shared();
-		if (ids.length > primaryKeys.getCount()) {
+	public Sql toSelectByIdsSql(TableStructure tableStructure, Object... ids) throws SqlDialectException {
+		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
+		if (ids.length > primaryKeys.size()) {
 			throw new SqlDialectException("Wrong number of primary key parameters");
 		}
 
 		StringBuilder sb = new StringBuilder();
 		sb.append(SELECT_ALL_PREFIX);
-		keywordProcessing(sb, tableName);
-		Iterator<Field> iterator = primaryKeys.iterator();
+		keywordProcessing(sb, tableStructure.getName());
+		Iterator<Column> iterator = primaryKeys.iterator();
 		Iterator<Object> valueIterator = Arrays.asList(ids).iterator();
 		if (iterator.hasNext() && valueIterator.hasNext()) {
 			sb.append(WHERE);
@@ -246,10 +188,10 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		Object[] params = new Object[ids.length];
 		int i = 0;
 		while (iterator.hasNext() && valueIterator.hasNext()) {
-			Field column = iterator.next();
+			Column column = iterator.next();
 			Object value = valueIterator.next();
 			params[i++] = toDataBaseValue(value, TypeDescriptor.forObject(value));
-			appendFieldName(sb, column.getGetter());
+			keywordProcessing(sb, column.getName());
 			sb.append("=?");
 			if (iterator.hasNext() && valueIterator.hasNext()) {
 				sb.append(AND);
@@ -257,17 +199,17 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		}
 		return new SimpleSql(sb.toString(), params);
 	}
-
+	
 	@Override
-	public <T> Sql save(String tableName, Class<? extends T> entityClass, T entity) throws SqlDialectException {
+	public <T> Sql save(TableStructure tableStructure, T entity) throws SqlDialectException {
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		StringBuilder sql = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
-		Iterator<Field> iterator = getFields(entityClass).iterator();
+		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
-			Field column = iterator.next();
-			if (isAutoIncrement(column.getSetter())) {
+			Column column = iterator.next();
+			if(column.isAutoIncrement()) {
 				continue;
 			}
 
@@ -276,12 +218,12 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 				values.append(",");
 			}
 
-			appendFieldName(cols, column.getGetter());
+			keywordProcessing(cols, column.getName());
 			values.append("?");
-			params.add(getDataBaseValue(entity, column));
+			params.add(getDataBaseValue(entity, column.getField()));
 		}
 		sql.append(INSERT_INTO_PREFIX);
-		keywordProcessing(sql, tableName);
+		keywordProcessing(sql, tableStructure.getName());
 		sql.append("(");
 		sql.append(cols);
 		sql.append(VALUES);
@@ -289,65 +231,65 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		sql.append(")");
 		return new SimpleSql(sql.toString(), params.toArray());
 	}
-
+	
 	@Override
-	public <T> Sql delete(String tableName, Class<? extends T> entityClass, T entity) throws SqlDialectException {
-		Fields primaryKeys = getPrimaryKeys(entityClass).shared();
-		if (primaryKeys.getCount() == 0) {
+	public <T> Sql delete(TableStructure tableStructure, T entity) throws SqlDialectException {
+		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
+		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
 
 		List<Object> params = new ArrayList<Object>();
 		StringBuilder sql = new StringBuilder();
 		sql.append(DELETE_PREFIX);
-		keywordProcessing(sql, tableName);
+		keywordProcessing(sql, tableStructure.getName());
 		sql.append(WHERE);
-		Iterator<Field> iterator = primaryKeys.iterator();
+		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
-			Field column = iterator.next();
-			appendFieldName(sql, column.getGetter());
+			Column column = iterator.next();
+			keywordProcessing(sql, column.getName());
 			sql.append("=?");
-			params.add(getDataBaseValue(entity, column));
+			params.add(getDataBaseValue(entity, column.getField()));
 			if (iterator.hasNext()) {
 				sql.append(AND);
 			}
 		}
 
 		// 添加版本号字段变更条件
-		for (Field column : getNotPrimaryKeys(entityClass)) {
-			if (column.isAnnotationPresent(Version.class)) {
+		tableStructure.getNotPrimaryKeys().forEach((column) -> {
+			if (column.getField().isAnnotationPresent(Version.class)) {
 				// 因为一定存在主键，所有一定有where条件，此处直接and
 				sql.append(AND);
-				appendFieldName(sql, column.getGetter());
+				keywordProcessing(sql, column.getName());
 				sql.append("=?");
-				params.add(getDataBaseValue(entity, column));
+				params.add(getDataBaseValue(entity, column.getField()));
 			}
-		}
+		});
 		return new SimpleSql(sql.toString(), params.toArray());
 	}
-
+	
 	@Override
-	public Sql deleteById(String tableName, Class<?> entityClass, Object... ids) throws SqlDialectException {
-		Fields primaryKeys = getPrimaryKeys(entityClass);
-		if (primaryKeys.getCount() == 0) {
+	public Sql deleteById(TableStructure tableStructure, Object... ids) throws SqlDialectException {
+		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
+		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
 
-		if (primaryKeys.getCount() != ids.length) {
-			throw new ParameterException("主键数量不一致:" + tableName);
+		if (primaryKeys.size() != ids.length) {
+			throw new ParameterException("主键数量不一致:" + tableStructure.getName());
 		}
 
 		StringBuilder sql = new StringBuilder();
 		sql.append(DELETE_PREFIX);
-		keywordProcessing(sql, tableName);
+		keywordProcessing(sql, tableStructure.getName());
 		sql.append(WHERE);
 
 		int i = 0;
 		Object[] params = new Object[ids.length];
-		Iterator<Field> iterator = primaryKeys.iterator();
+		Iterator<Column> iterator = primaryKeys.iterator();
 		while (iterator.hasNext()) {
-			Field column = iterator.next();
-			appendFieldName(sql, column.getGetter());
+			Column column = iterator.next();
+			keywordProcessing(sql, column.getName());
 			sql.append("=?");
 			params[i] = toDataBaseValue(ids[i]);
 			i++;
@@ -357,31 +299,31 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		}
 		return new SimpleSql(sql.toString(), params);
 	}
-
+	
 	@Override
-	public Sql getInIds(String tableName, Class<?> entityClass, Object[] primaryKeys, Collection<?> inPrimaryKeys)
+	public Sql getInIds(TableStructure tableStructure, Object[] primaryKeys, Collection<?> inPrimaryKeys)
 			throws SqlDialectException {
 		if (CollectionUtils.isEmpty(inPrimaryKeys)) {
 			throw new SqlDialectException("in 语句至少要有一个in条件");
 		}
 
-		Fields primaryKeyColumns = getPrimaryKeys(entityClass);
+		List<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
 		int whereSize = ArrayUtils.isEmpty(primaryKeys) ? 0 : primaryKeys.length;
-		if (whereSize > primaryKeyColumns.getCount()) {
+		if (whereSize > primaryKeyColumns.size()) {
 			throw new NullPointerException("primaryKeys length  greater than primary key lenght");
 		}
 
 		List<Object> params = new ArrayList<Object>(inPrimaryKeys.size() + whereSize);
 		StringBuilder sb = new StringBuilder();
-		Iterator<Field> iterator = primaryKeyColumns.iterator();
+		Iterator<Column> iterator = primaryKeyColumns.iterator();
 		if (whereSize > 0) {
 			for (int i = 0; i < whereSize && iterator.hasNext(); i++) {
 				if (sb.length() != 0) {
 					sb.append(AND);
 				}
 
-				Field column = iterator.next();
-				appendFieldName(sb, column.getGetter());
+				Column column = iterator.next();
+				keywordProcessing(sb, column.getName());
 				sb.append("=?");
 				params.add(toDataBaseValue(primaryKeys[i]));
 			}
@@ -392,7 +334,7 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 				sb.append(AND);
 			}
 
-			appendFieldName(sb, iterator.next().getGetter());
+			keywordProcessing(sb, iterator.next().getName());
 			sb.append(IN);
 			Iterator<?> valueIterator = inPrimaryKeys.iterator();
 			while (valueIterator.hasNext()) {
@@ -408,11 +350,29 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		String where = sb.toString();
 		sb = new StringBuilder();
 		sb.append(SELECT_ALL_PREFIX);
-		keywordProcessing(sb, tableName);
+		keywordProcessing(sb, tableStructure.getName());
 		sb.append(WHERE).append(where);
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
-
+	
+	@Override
+	public Sql toMaxIdSql(TableStructure tableStructure, Field field) throws SqlDialectException {
+		Column column = tableStructure.getColumn(field);
+		if(column == null) {
+			throw new SqlDialectException("not found " + field);
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("select ");
+		keywordProcessing(sb, column.getName());
+		sb.append(" from ");
+		keywordProcessing(sb, tableStructure.getName());
+		sb.append(" order by ");
+		keywordProcessing(sb, column.getName());
+		sb.append(" desc");
+		return new SimpleSql(sb.toString());
+	}
+	
 	@Override
 	public Sql toMaxIdSql(Class<?> clazz, String tableName, Field field) throws SqlDialectException {
 		StringBuilder sb = new StringBuilder();
@@ -437,107 +397,99 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		}
 		return changeMap;
 	}
-
+	
 	@Override
-	public <T> Sql update(String tableName, Class<? extends T> entityClass, T entity) throws SqlDialectException {
-		Fields primaryKeys = getPrimaryKeys(entityClass).shared();
-		if (primaryKeys.getCount() == 0) {
-			throw new SqlDialectException(tableName + " not found primary key");
+	public <T> Sql update(TableStructure tableStructure, T entity) throws SqlDialectException {
+		List<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
+		if (primaryKeyColumns.size() == 0) {
+			throw new SqlDialectException(tableStructure.getName() + " not found primary key");
 		}
 
-		Map<String, Object> changeMap = null;
-		if (entity instanceof FieldSetterListen) {
-			changeMap = ((FieldSetterListen) entity)._getFieldSetterMap();
-			if (CollectionUtils.isEmpty(changeMap)) {
-				throw new SqlDialectException("not change properties");
-			}
-		}
-
-		Fields notPrimaryKeys = getNotPrimaryKeys(entityClass).shared();
+		Map<String, Object> changeMap = getChangeMap(entity);
+		List<Column> notPrimaryKeys = tableStructure.getNotPrimaryKeys();
 		StringBuilder sb = new StringBuilder(512);
 		sb.append(UPDATE_PREFIX);
-		keywordProcessing(sb, tableName);
+		keywordProcessing(sb, tableStructure.getName());
 		sb.append(SET);
 		List<Object> params = new ArrayList<Object>();
-		Iterator<Field> iterator = notPrimaryKeys.iterator();
+		Iterator<Column> iterator = notPrimaryKeys.iterator();
 		while (iterator.hasNext()) {
-			Field column = iterator.next();
-			if (changeMap != null && !changeMap.containsKey(column.getSetter().getName())) {
+			Column column = iterator.next();
+			if (changeMap != null && !changeMap.containsKey(column.getField().getSetter().getName())) {
 				// 忽略没有变化的字段
 				continue;
 			}
 
-			appendFieldName(sb, column.getGetter());
+			keywordProcessing(sb, column.getName());
 			sb.append("=");
-			AnyValue newValue = new AnyValue(getDataBaseValue(entity, column));
-			AnyValue oldValue = new AnyValue(changeMap == null ? null : changeMap.get(column.getSetter().getName()));
-			appendUpdateValue(sb, params, entity, column, oldValue, newValue);
+			appendUpdateValue(sb, params, entity, column, changeMap);
 			if (iterator.hasNext()) {
 				sb.append(",");
 			}
 		}
 
 		sb.append(WHERE);
-		iterator = primaryKeys.iterator();
+		iterator = primaryKeyColumns.iterator();
 		while (iterator.hasNext()) {
-			Field column = iterator.next();
-			appendFieldName(sb, column.getGetter());
+			Column column = iterator.next();
+			keywordProcessing(sb, column.getName());
 			sb.append("=?");
-			params.add(getDataBaseValue(entity, column));
+			params.add(getDataBaseValue(entity, column.getField()));
 			if (iterator.hasNext()) {
 				sb.append(AND);
 			}
 		}
 
 		// 添加版本号字段变更条件
-		for (Field column : notPrimaryKeys) {
-			Counter counter = getCounter(column);
+		notPrimaryKeys.forEach((column) -> {
+			Counter counter = getCounter(column.getField());
 			if (counter != null) {
 				sb.append(AND);
-				appendFieldName(sb, column.getGetter());
+				keywordProcessing(sb, column.getName());
 				sb.append(">=").append(counter.min());
 				sb.append(AND);
-				appendFieldName(sb, column.getGetter());
+				keywordProcessing(sb, column.getName());
 				sb.append("<=").append(counter.max());
 			}
 
-			if (column.isAnnotationPresent(Version.class)) {
+			if (column.getField().isAnnotationPresent(Version.class)) {
 				AnyValue oldVersion = null;
-				if (changeMap != null && changeMap.containsKey(column.getSetter().getName())) {
-					oldVersion = new AnyValue(changeMap.get(column.getSetter().getName()));
+				if (changeMap != null && changeMap.containsKey(column.getField().getSetter().getName())) {
+					oldVersion = new AnyValue(changeMap.get(column.getField().getSetter().getName()));
 					if (oldVersion.getAsDoubleValue() == 0) {
 						// 如果存在变更但版本号为0就忽略此条件
-						continue;
+						return ;
 					}
 				}
 
 				// 因为一定存在主键，所有一定有where条件，此处直接and
 				sb.append(AND);
-				appendFieldName(sb, column.getGetter());
+				keywordProcessing(sb, column.getName());
 				sb.append("=?");
 
 				// 如果存在旧值就使用旧值
-				params.add(oldVersion == null ? getDataBaseValue(entity, column)
+				params.add(oldVersion == null ? getDataBaseValue(entity, column.getField())
 						: toDataBaseValue(oldVersion.getAsLongValue()));
 			}
-		}
+		});
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
 
-	protected final void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Field column,
+
+	protected final void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Column column,
 			Map<String, Object> changeMap) {
-		AnyValue newValue = new AnyValue(getDataBaseValue(entity, column));
-		AnyValue oldValue = new AnyValue(changeMap == null ? null : changeMap.get(column.getSetter().getName()));
+		AnyValue newValue = new AnyValue(getDataBaseValue(entity, column.getField()));
+		AnyValue oldValue = new AnyValue(changeMap == null ? null : changeMap.get(column.getField().getSetter().getName()));
 		appendUpdateValue(sb, params, entity, column, oldValue, newValue);
 	}
 
-	protected void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Field column,
+	protected void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Column column,
 			AnyValue oldValue, AnyValue newValue) {
-		Counter counter = getCounter(column);
+		Counter counter = getCounter(column.getField());
 		if (counter != null) {
 			appendCounterValue(sb, params, entity, column, oldValue, newValue, counter);
-		} else if (column.isAnnotationPresent(Version.class)) {
-			appendFieldName(sb, column.getGetter());
+		} else if (column.getField().isAnnotationPresent(Version.class)) {
+			keywordProcessing(sb, column.getName());
 			sb.append("+");
 			sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
 		} else {
@@ -546,7 +498,7 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		}
 	}
 
-	protected void appendCounterValue(StringBuilder sb, List<Object> params, Object entity, Field column,
+	protected void appendCounterValue(StringBuilder sb, List<Object> params, Object entity, Column column,
 			AnyValue oldValue, AnyValue newValue, Counter counter) {
 		throw new SqlDialectException("This counter field cannot be processed: " + column);
 	}

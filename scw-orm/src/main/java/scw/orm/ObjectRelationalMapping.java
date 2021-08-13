@@ -6,7 +6,7 @@ import scw.aop.support.ProxyUtils;
 import scw.core.annotation.AnnotatedElementUtils;
 import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
-import scw.mapper.FieldFeature;
+import scw.mapper.FieldFactory;
 import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
 import scw.util.Accept;
@@ -17,7 +17,7 @@ import scw.util.Accept;
  * @author shuchaowen
  *
  */
-public interface ObjectRelationalMapping {
+public interface ObjectRelationalMapping extends FieldFactory{
 	boolean ignore(FieldDescriptor fieldDescriptor);
 
 	String getName(FieldDescriptor fieldDescriptor);
@@ -91,9 +91,8 @@ public interface ObjectRelationalMapping {
 	 * @param parentField
 	 * @return
 	 */
-	default Fields getFields(Class<?> clazz, boolean useSuperClass, Field parentField) {
-		return MapperUtils.getFields(ProxyUtils.getFactory().getUserClass(clazz)).all()
-				.accept(FieldFeature.IGNORE_STATIC);
+	default Fields getFields(Class<?> clazz, Field parentField) {
+		return MapperUtils.getFields(ProxyUtils.getFactory().getUserClass(clazz)).entity();
 	}
 
 	/**
@@ -103,7 +102,7 @@ public interface ObjectRelationalMapping {
 	 * @return
 	 */
 	default Fields getFields(Class<?> clazz) {
-		return getFields(clazz, true, null).accept(getEntityAccept().negate());
+		return getFields(clazz, null).accept(getEntityAccept().negate());
 	}
 
 	default Fields getPrimaryKeys(Class<?> clazz) {
