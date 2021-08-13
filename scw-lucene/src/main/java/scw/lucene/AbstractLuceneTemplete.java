@@ -43,7 +43,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 	}
 
 	private Fields getFields(Class<?> clazz) {
-		return MapperUtils.getFields(clazz).entity().accept(FieldFeature.EXISTING_GETTER_FIELD)
+		return MapperUtils.getFields(clazz).entity().all().accept(FieldFeature.EXISTING_GETTER_FIELD)
 				.accept(FieldFeature.EXISTING_SETTER_FIELD);
 	}
 
@@ -60,7 +60,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 				continue;
 			}
 
-			for (scw.mapper.Field javaField : fields.acceptSetter(field.name(), null)) {
+			for (scw.mapper.Field javaField : fields.find(field.name())) {
 				MapperUtils.setValue(getConversionService(), instance, javaField, field.stringValue());
 			}
 		}

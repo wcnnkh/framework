@@ -100,12 +100,18 @@ public interface LuceneTemplate {
 
 	default <T> SearchResults<T> search(SearchParameters parameters,
 			ScoreDocMapper<T> rowMapper) throws LuceneSearchException {
+		if(!indexExists()){
+			return new SearchResults<T>(parameters, null, rowMapper, this);
+		}
 		return search(new SearchProcessor<>(this, null, parameters, rowMapper));
 	}
 
 	default <T> SearchResults<T> searchAfter(ScoreDoc after,
 			SearchParameters parameters, ScoreDocMapper<T> rowMapper)
 			throws LuceneSearchException {
+		if(!indexExists()){
+			return new SearchResults<T>(parameters, after, rowMapper, this);
+		}
 		return search(new SearchProcessor<>(this, after, parameters, rowMapper));
 	}
 	

@@ -1,5 +1,6 @@
 package scw.lucene;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -8,6 +9,8 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
+import org.apache.lucene.search.TotalHits;
+import org.apache.lucene.search.TotalHits.Relation;
 
 import scw.util.page.Pageables;
 
@@ -19,6 +22,17 @@ public class SearchResults<T> extends TopFieldDocs implements Pageables<ScoreDoc
 	private final ScoreDocMapper<T> rowMapper;
 	private final ScoreDoc cursorId;
 	private ScoreDoc nextCursorId;
+	
+	/**
+	 * 构造一个空的结果
+	 * @param parameters
+	 * @param cursorId
+	 * @param rowMapper
+	 * @param luceneTemplete
+	 */
+	public SearchResults(SearchParameters parameters, ScoreDoc cursorId, ScoreDocMapper<T> rowMapper, LuceneTemplate luceneTemplete){
+		this(parameters, cursorId, new TopDocs(new TotalHits(0, Relation.EQUAL_TO), new ScoreDoc[0]), Collections.emptyList(), rowMapper, luceneTemplete);
+	}
 
 	public SearchResults(SearchParameters parameters, ScoreDoc cursorId, TopDocs topDocs, SortField[] fields,
 			List<T> rows, ScoreDocMapper<T> rowMapper, LuceneTemplate luceneTemplete) {
