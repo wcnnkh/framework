@@ -87,4 +87,10 @@ public interface SqlDialect extends ObjectKeyFormat, TableResolver {
 	}
 
 	TableStructureMapping getTableStructureMapping(Class<?> clazz, String tableName);
+	
+	Sql query(TableStructure tableStructure, Object query);
+	
+	default <T> Sql query(String tableName, Class<T> queryClass, T query){
+		return query(resolve(queryClass).rename(tableName), query);
+	}
 }

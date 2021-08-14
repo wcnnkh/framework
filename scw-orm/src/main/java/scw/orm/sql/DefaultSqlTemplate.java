@@ -185,10 +185,10 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements
 				new SmartMapProcessor<>(sqlDialect, type),
 				(Class<T>) type.getType());
 	}
-
+	
 	@Override
-	public <T> Pages<T> getPages(TypeDescriptor resultType, Sql sql,
-			long pageNumber, long limit) {
+	public <T> Pages<T> getPages(Sql sql, long pageNumber, long limit,
+			Processor<ResultSet, T, ? extends Throwable> mapProcessor) {
 		if (limit <= 0 || pageNumber <= 0) {
 			throw new RuntimeException("page=" + pageNumber + ", limit="
 					+ limit);
@@ -201,15 +201,15 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements
 		if (total == null || total == 0) {
 			return PageSupport.emptyPages(pageNumber, limit);
 		}
-
-		Cursor<T> cursor = query(resultType, paginationSql.getResultSql());
+		
+		Cursor<T> cursor = query(paginationSql.getResultSql(), mapProcessor);
 		Page<T> page = new SharedPage<T>(start, cursor.shared(), limit, total);
 		return PageSupport.getPages(
 				page,
 				(startIndex, count) -> {
-					Cursor<T> rows = query(resultType, sqlDialect
+					Cursor<T> rows = query(sqlDialect
 							.toPaginationSql(sql, startIndex, count)
-							.getResultSql());
+							.getResultSql(), mapProcessor);
 					// 因为是分页，每一页的内部没必要使用流，所在这里调用了shared
 					return rows.shared().stream();
 				});
