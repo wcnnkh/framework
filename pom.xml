@@ -233,6 +233,18 @@
 				<artifactId>scw-mysql</artifactId>
 				<version>2.1</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-oracle</artifactId>
+				<version>2.1</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-sqlserver</artifactId>
+				<version>2.1</version>
+			</dependency>
 
 			<dependency>
 				<groupId>scw</groupId>
@@ -775,5 +787,7 @@
 		<module>scw-swagger</module>
 		<module>scw-jpa</module>
 		<module>scw-validation</module>
+		<module>scw-oracle</module>
+		<module>scw-sqlserver</module>
 	</modules>
 </project>

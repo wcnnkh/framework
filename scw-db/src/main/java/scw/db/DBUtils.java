@@ -6,13 +6,7 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 
 import scw.convert.TypeDescriptor;
-import scw.core.utils.StringUtils;
-import scw.db.database.DataBase;
-import scw.db.database.MysqlDataBase;
-import scw.db.database.OracleDataBase;
-import scw.db.database.SqlServerDataBase;
 import scw.env.Sys;
-import scw.lang.NotSupportedException;
 import scw.logger.Levels;
 import scw.orm.convert.EntityConversionService;
 import scw.orm.convert.PropertyFactoryToEntityConversionService;
@@ -53,48 +47,6 @@ public final class DBUtils {
 		configure.setLoggerLevel(Levels.INFO.getValue());
 		configure.configurationProperties(propertyFactory, TypeDescriptor.forObject(propertyFactory), instance,
 				TypeDescriptor.forObject(instance));
-	}
-
-	/**
-	 * 自动识别数据库 driverClassName和url两个参数至少要存在一个
-	 * 
-	 * @param driverClassName
-	 * @param url
-	 * @param username
-	 * @param password
-	 * @return
-	 * @throws NotSupportedException
-	 */
-	public static DataBase automaticRecognition(String driverClassName, String url, String username, String password)
-			throws NotSupportedException {
-		if (StringUtils.isEmpty(driverClassName) && StringUtils.isEmpty(url)) {
-			throw new NotSupportedException("driverClassName和url至少要存在一个有效的参数");
-		}
-
-		if (StringUtils.isEmpty(driverClassName)) {// 没有驱动名，只能根据URL来判断
-			if (url.startsWith("jdbc:mysql:")) {
-				return new MysqlDataBase(driverClassName, url, username, password);
-			} else if (url.startsWith("jdbc:microsoft:sqlserver:")) {
-				return new SqlServerDataBase(driverClassName, url, username, password);
-			} else if (url.startsWith("jdbc:oracle:thin:")) {
-				return new OracleDataBase(driverClassName, url, username, password);
-			} else if (url.startsWith("jdbc:db2:")) {
-			} else if (url.startsWith("jdbc:sybase:")) {
-			} else if (url.startsWith("jdbc:informix-sqli:")) {
-			} else if (url.startsWith("jdbc:postgresql:")) {
-			}
-
-		} else {// 根据驱动名称来判断
-			if (driverClassName.equals("com.mysql.jdbc.Driver") || driverClassName.equals("com.mysql.cj.jdbc.Driver")) {
-				return new MysqlDataBase(driverClassName, url, username, password);
-			} else if (driverClassName.equals("oracle.jdbc.driver.OracleDriver")) {
-				return new OracleDataBase(driverClassName, url, username, password);
-			} else if (driverClassName.equals("com.microsoft.jdbc.sqlserver.SQLServerDriver")) {
-				return new SqlServerDataBase(driverClassName, url, username, password);
-			}
-		}
-
-		throw new NotSupportedException("不支持的数据库类型,driver=" + driverClassName + ",url=" + url);
 	}
 
 	public static void deregisterDriver() {

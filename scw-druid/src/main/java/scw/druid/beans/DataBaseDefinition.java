@@ -1,12 +1,13 @@
 package scw.druid.beans;
 
-import com.alibaba.druid.pool.DruidDataSource;
-
 import scw.beans.ConfigurableBeanFactory;
 import scw.beans.support.DefaultBeanDefinition;
-import scw.db.DBUtils;
-import scw.db.database.DataBase;
+import scw.db.DataBase;
+import scw.db.DataBaseResolver;
+import scw.druid.DruidUtils;
 import scw.instance.InstanceException;
+
+import com.alibaba.druid.pool.DruidDataSource;
 
 public class DataBaseDefinition extends DefaultBeanDefinition {
 
@@ -16,13 +17,15 @@ public class DataBaseDefinition extends DefaultBeanDefinition {
 
 	@Override
 	public boolean isInstance() {
-		return beanFactory.isInstance(DruidDataSource.class);
+		return beanFactory.isInstance(DruidDataSource.class)
+				&& beanFactory.isInstance(DataBaseResolver.class);
 	}
 
 	@Override
 	public Object create() throws InstanceException {
-		DruidDataSource druidDataSource = beanFactory.getInstance(DruidDataSource.class);
-		return DBUtils.automaticRecognition(druidDataSource.getDriverClassName(), druidDataSource.getUrl(),
-				druidDataSource.getUsername(), druidDataSource.getPassword());
+		DruidDataSource druidDataSource = beanFactory
+				.getInstance(DruidDataSource.class);
+		return DruidUtils.resolve(druidDataSource,
+				beanFactory.getInstance(DataBaseResolver.class));
 	}
 }
