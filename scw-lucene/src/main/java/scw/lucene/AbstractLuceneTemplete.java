@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.DoubleDocValuesField;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.FloatDocValuesField;
 import org.apache.lucene.document.NumericDocValuesField;
@@ -13,7 +12,6 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexableField;
 
 import scw.convert.ConversionService;
 import scw.core.utils.ClassUtils;
@@ -54,15 +52,13 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 
 	@Override
 	public <T> T mapping(Document document, T instance, Fields fields) {
-		for (IndexableField field : document) {
-			if (!field.fieldType().stored()) {
-				// 忽略不保存的字段
-				continue;
+		for (scw.mapper.Field javaField : fields) {
+			String value = document.get(javaField.getSetter().getName());
+			if(value == null){
+				continue; 
 			}
-
-			for (scw.mapper.Field javaField : fields.find(field.name())) {
-				MapperUtils.setValue(getConversionService(), instance, javaField, field.stringValue());
-			}
+			
+			javaField.set(instance, value, getConversionService());
 		}
 		return instance;
 	}
@@ -75,7 +71,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 	public Document wrap(Document document, Object instance) {
 		return wrap(document, instance, getFields(instance.getClass()).accept((field) -> {
 			return field.isAnnotationPresent(LuceneField.class) || Value.isBaseType(field.getGetter().getType());
-		}));
+		}).all());
 	}
 
 	@Override
@@ -93,12 +89,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
 			}
 
-			Field luceneField = toField(field.getGetter(), v);
-			if (luceneField == null) {
-				continue;
-			}
-
-			document.add(luceneField);
+			addField(document, field.getGetter(), v);
 		}
 		return document;
 	}
@@ -155,40 +146,6 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 			}
 		} else {
 			document.add(new StoredField(fieldDescriptor.getName(), value.getAsString()));
-		}
-	}
-
-	protected Field toField(FieldDescriptor fieldDescriptor, Value value) {
-		scw.lucene.annotation.LuceneField annotation = fieldDescriptor
-				.getAnnotation(scw.lucene.annotation.LuceneField.class);
-		if (annotation == null) {
-			if (ClassUtils.isLong(fieldDescriptor.getType()) || ClassUtils.isInt(fieldDescriptor.getType())
-					|| ClassUtils.isShort(fieldDescriptor.getType())) {
-				return new NumericDocValuesField(fieldDescriptor.getName(), value.getAsLong());
-			}
-
-			if (ClassUtils.isDouble(fieldDescriptor.getType())) {
-				return new DoubleDocValuesField(fieldDescriptor.getName(), value.getAsDoubleValue());
-			}
-
-			if (ClassUtils.isFloat(fieldDescriptor.getType())) {
-				return new FloatDocValuesField(fieldDescriptor.getName(), value.getAsFloatValue());
-			}
-			return new StringField(fieldDescriptor.getName(), value.getAsString(), Store.YES);
-		} else {
-			if (annotation.indexed()) {
-				if (annotation.tokenized()) {
-					return new TextField(fieldDescriptor.getName(), value.getAsString(),
-							annotation.stored() ? Store.YES : Store.NO);
-				} else {
-					return new StringField(fieldDescriptor.getName(), value.getAsString(),
-							annotation.stored() ? Store.YES : Store.NO);
-				}
-			} else if (annotation.stored()) {
-				return new StoredField(fieldDescriptor.getName(), value.getAsString());
-			} else {
-				return new StringField(fieldDescriptor.getName(), value.getAsString(), Store.NO);
-			}
 		}
 	}
 

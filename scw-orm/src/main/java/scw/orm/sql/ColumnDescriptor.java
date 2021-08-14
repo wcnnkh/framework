@@ -1,13 +1,9 @@
 package scw.orm.sql;
 
-public interface ColumnDescriptor {
-	String getName();
+import scw.orm.PropertyDescriptor;
 
-	boolean isPrimaryKey();
-
+public interface ColumnDescriptor extends PropertyDescriptor{
 	boolean isAutoIncrement();
-
-	boolean isNullable();
 
 	boolean isUnique();
 

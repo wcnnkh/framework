@@ -1,21 +1,15 @@
 package scw.orm.sql;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
-import scw.util.Wrapper;
+import scw.orm.EntityStructureWrapper;
 
-public class TableStructureWrapper extends Wrapper<TableStructure> implements TableStructure {
+public class TableStructureWrapper<M extends TableStructure> extends
+		EntityStructureWrapper<M, Column> implements TableStructure {
 
-	public TableStructureWrapper(TableStructure tableStructure) {
+	public TableStructureWrapper(M tableStructure) {
 		super(tableStructure);
-	}
-
-	@Override
-	public Class<?> getEntityClass() {
-		return wrappedTarget.getEntityClass();
 	}
 
 	@Override
@@ -24,33 +18,7 @@ public class TableStructureWrapper extends Wrapper<TableStructure> implements Ta
 	}
 
 	@Override
-	public List<Column> getColumns() {
-		return wrappedTarget.getColumns();
-	}
-
-	@Override
 	public Map<String, List<Column>> getIndexGroup() {
 		return wrappedTarget.getIndexGroup();
 	}
-
-	@Override
-	public List<Column> getNotPrimaryKeys() {
-		return wrappedTarget.getNotPrimaryKeys();
-	}
-
-	@Override
-	public List<Column> getPrimaryKeys() {
-		return wrappedTarget.getPrimaryKeys();
-	}
-
-	@Override
-	public Stream<Column> stream() {
-		return wrappedTarget.stream();
-	}
-
-	@Override
-	public Iterator<Column> iterator() {
-		return wrappedTarget.iterator();
-	}
-
 }

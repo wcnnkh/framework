@@ -27,6 +27,7 @@ public class ApiTest {
 	}
 	
 	@GET
+	@POST
 	@Path("/test")
 	public ApiResponse test(ApiRequest apiRequest){
 		return new ApiResponse();

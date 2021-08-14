@@ -1,13 +1,9 @@
 package scw.orm.sql;
 
-import java.lang.reflect.Modifier;
 import java.sql.ResultSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import scw.convert.ConversionService;
-import scw.convert.TypeDescriptor;
-import scw.core.utils.CollectionUtils;
 import scw.env.Sys;
 import scw.mapper.Field;
 import scw.sql.SqlUtils;
@@ -37,34 +33,11 @@ public class TableStructureMapProcessor<T> implements
 		for (Column column : tableStructure) {
 			if (valueMap.containsKey(column.getName())) {
 				Field field = column.getField();
-				Object parentValue = instance;
-				for (Field parentField : CollectionUtils.reversal(field
-						.parents().collect(Collectors.toList()))) {
-					boolean isStatic = Modifier.isStatic(parentField
-							.getGetter().getModifiers());
-					if (isStatic) {
-						// 如果是静态方法
-						parentValue = null;
-					} else {
-						Object value = parentField.getGetter().get(parentValue);
-						if (value == null) {
-							value = Sys.env.getInstance(parentField.getSetter()
-									.getType());
-							parentField.getSetter().set(parentValue, value);
-						}
-						parentValue = value;
-					}
-				}
-
-				List<Object> values = valueMap.get(column.getName());
-				Object value = values.size() == 1 ? values.get(0) : values;
-				value = conversionService.convert(value, TypeDescriptor
-						.forObject(value),
-						new TypeDescriptor(field.getSetter()));
-				field.getSetter().set(parentValue, value);
+				List<Object> columnValues = valueMap.get(column.getName());
+				Object columnValue = columnValues.size() == 1 ? columnValues.get(0) : columnValues;
+				field.set(instance, columnValue, conversionService);
 			}
 		}
 		return (T) instance;
 	}
-
 }

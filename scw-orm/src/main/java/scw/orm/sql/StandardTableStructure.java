@@ -7,40 +7,13 @@ import java.util.Map;
 
 import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
-import scw.mapper.MapperUtils;
 import scw.orm.OrmUtils;
+import scw.orm.StandardEntityStructure;
 import scw.util.Accept;
 import scw.value.Value;
 
-public class StandardTableStructure implements TableStructure {
-	private Class<?> entityClass;
-	private String name;
-	private List<Column> columns;
+public class StandardTableStructure extends StandardEntityStructure<Column> implements TableStructure {
 	private Map<String, List<Column>> indexGroup;
-
-	public Class<?> getEntityClass() {
-		return entityClass;
-	}
-
-	public void setEntityClass(Class<?> entityClass) {
-		this.entityClass = entityClass;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public List<Column> getColumns() {
-		return columns;
-	}
-
-	public void setColumns(List<Column> columns) {
-		this.columns = columns;
-	}
 
 	public Map<String, List<Column>> getIndexGroup() {
 		if (indexGroup == null) {
@@ -71,13 +44,8 @@ public class StandardTableStructure implements TableStructure {
 		standardTableStructure.setName(OrmUtils.getMapping().getName(
 				entityClass));
 		standardTableStructure.setEntityClass(entityClass);
-		standardTableStructure.setColumns(StandardColumn.wrapper(OrmUtils
+		standardTableStructure.setRows(StandardColumn.wrapper(OrmUtils
 				.getMapping().getFields(entityClass), entityAccept));
 		return standardTableStructure;
-	}
-	
-	@Override
-	public String toString() {
-		return MapperUtils.toString(this);
 	}
 }

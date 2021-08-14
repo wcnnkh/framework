@@ -351,7 +351,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 
 	@Override
 	public Sql toMaxIdSql(TableStructure tableStructure, Field field) throws SqlDialectException {
-		Column column = tableStructure.getColumn(field);
+		Column column = tableStructure.find(field);
 		if (column == null) {
 			throw new SqlDialectException("not found " + field);
 		}

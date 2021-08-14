@@ -96,7 +96,7 @@ public class AnnotationTableResolver extends AnnotationObjectRelationalMapping i
 		}
 
 		@Override
-		public List<Column> getColumns() {
+		public List<Column> getRows() {
 			if (columns == null) {
 				synchronized (this) {
 					if (columns == null) {
