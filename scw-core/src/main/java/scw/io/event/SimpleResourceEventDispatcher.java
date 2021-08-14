@@ -10,13 +10,13 @@ import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.EventType;
-import scw.event.support.DefaultEventDispatcher;
+import scw.event.support.SimpleEventDispatcher;
 import scw.io.AbstractResource;
 import scw.io.Resource;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
-public class SimpleResourceEventDispatcher extends DefaultEventDispatcher<ChangeEvent<Resource>> {
+public class SimpleResourceEventDispatcher extends SimpleEventDispatcher<ChangeEvent<Resource>> {
 	private static Logger logger = LoggerFactory.getLogger(SimpleResourceEventDispatcher.class);
 	/**
 	 * 默认的监听周期5s(经过多次尝试，在性能和实时性间取舍)

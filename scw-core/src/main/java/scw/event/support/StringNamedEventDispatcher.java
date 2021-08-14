@@ -7,7 +7,7 @@ import scw.event.EventDispatcher;
 import scw.util.StringMatcher;
 import scw.util.StringMatchers;
 
-public class StringNamedEventDispatcher<T extends Event> extends DefaultNamedEventDispatcher<String, T> {
+public class StringNamedEventDispatcher<T extends Event> extends SimpleNamedEventDispatcher<String, T> {
 	private StringMatcher stringMatcher;
 
 	public StringNamedEventDispatcher(boolean concurrent) {

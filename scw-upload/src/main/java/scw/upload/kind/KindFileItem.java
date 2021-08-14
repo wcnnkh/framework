@@ -87,6 +87,6 @@ public class KindFileItem implements Serializable {
 
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().getFields(KindFileItem.class).getValueMap(this).toString();
+		return MapperUtils.toString(this);
 	}
 }

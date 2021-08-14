@@ -4,10 +4,9 @@ import java.util.Collection;
 
 import scw.aop.support.ProxyUtils;
 import scw.core.annotation.AnnotatedElementUtils;
-import scw.lang.Nullable;
 import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
-import scw.mapper.FieldFeature;
+import scw.mapper.FieldFactory;
 import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
 import scw.util.Accept;
@@ -18,7 +17,7 @@ import scw.util.Accept;
  * @author shuchaowen
  *
  */
-public interface ObjectRelationalMapping {
+public interface ObjectRelationalMapping extends FieldFactory{
 	boolean ignore(FieldDescriptor fieldDescriptor);
 
 	String getName(FieldDescriptor fieldDescriptor);
@@ -28,15 +27,6 @@ public interface ObjectRelationalMapping {
 	String getName(Class<?> clazz);
 
 	Collection<String> getAliasNames(Class<?> entityClass);
-
-	/**
-	 * 字段描述
-	 * 
-	 * @param field
-	 * @return
-	 */
-	@Nullable
-	String getDescription(FieldDescriptor fieldDescriptor);
 
 	/**
 	 * 是否是主键
@@ -62,7 +52,7 @@ public interface ObjectRelationalMapping {
 	}
 
 	default boolean isNullable(FieldDescriptor fieldDescriptor) {
-		return AnnotatedElementUtils.isNullable(fieldDescriptor, ()-> !isPrimaryKey(fieldDescriptor));
+		return AnnotatedElementUtils.isNullable(fieldDescriptor, () -> !isPrimaryKey(fieldDescriptor));
 	}
 
 	default boolean isNullable(Field field) {
@@ -77,7 +67,7 @@ public interface ObjectRelationalMapping {
 	 * @return
 	 */
 	boolean isEntity(FieldDescriptor fieldDescriptor);
-
+	
 	boolean isEntity(Class<?> clazz);
 
 	boolean isVersionField(FieldDescriptor fieldDescriptor);
@@ -101,19 +91,8 @@ public interface ObjectRelationalMapping {
 	 * @param parentField
 	 * @return
 	 */
-	default Fields getFields(Class<?> clazz, boolean useSuperClass, Field parentField) {
-		return MapperUtils.getMapper().getFields(ProxyUtils.getFactory().getUserClass(clazz))
-				.accept(FieldFeature.IGNORE_STATIC);
-	}
-
-	/**
-	 * 此方法返回结果不包含entity字段
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	default Fields getFields(Class<?> clazz) {
-		return getFields(clazz, true, null).accept(getEntityAccept().negate());
+	default Fields getFields(Class<?> clazz, Field parentField) {
+		return MapperUtils.getFields(ProxyUtils.getFactory().getUserClass(clazz), parentField).entity();
 	}
 
 	default Fields getPrimaryKeys(Class<?> clazz) {
@@ -121,6 +100,6 @@ public interface ObjectRelationalMapping {
 	}
 
 	default Fields getNotPrimaryKeys(Class<?> clazz) {
-		return getFields(clazz).accept(getPrimaryKeyAccept().negate());
+		return getFields(clazz).accept(getEntityAccept().negate()).accept(getPrimaryKeyAccept().negate());
 	}
 }

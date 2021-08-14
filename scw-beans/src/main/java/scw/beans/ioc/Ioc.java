@@ -40,7 +40,7 @@ public final class Ioc {
 			destroy.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
 		}
 
-		for (Field field : MapperUtils.getMapper().getFields(targetClass, false).accept(FieldFeature.SUPPORT_SETTER)) {
+		for (Field field : MapperUtils.getFields(targetClass).accept(FieldFeature.SUPPORT_SETTER)) {
 			AnnotatedElement annotatedElement = field.getSetter();
 			Autowired autowired = annotatedElement.getAnnotation(Autowired.class);
 			if (autowired != null) {

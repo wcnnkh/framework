@@ -223,7 +223,7 @@ public final class XmlDubboUtils {
 
 	private static <T> void loader(Object instance, Environment environment, Node node) {
 		NamedNodeMap namedNodeMap = node.getAttributes();
-		Fields fields = MapperUtils.getMapper().getFields(instance.getClass()).accept(FieldFeature.SETTER);
+		Fields fields = MapperUtils.getFields(instance.getClass()).all().accept(FieldFeature.SETTER);
 		for (int i = 0, len = namedNodeMap.getLength(); i < len; i++) {
 			Node n = namedNodeMap.item(i);
 			String name = n.getNodeName();

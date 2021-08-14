@@ -1,32 +1,27 @@
 package scw.mapper;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import scw.core.utils.CollectionUtils;
 import scw.lang.Nullable;
 import scw.util.Accept;
+import scw.util.page.Pageables;
 
-public interface Fields extends Iterable<Field> {
-	/**
-	 * 获取第一个字段
-	 * 
-	 * @return
-	 */
-	@Nullable
-	default Field first() {
-		for (Field field : this) {
-			return field;
-		}
-		return null;
+public interface Fields extends Pageables<Class<?>, Field> {
+
+	default Fields find(String name) {
+		AcceptFieldDescriptor acceptFieldDescriptor = new AcceptFieldDescriptor(name, null);
+		return accept(new Accept<Field>() {
+
+			@Override
+			public boolean accept(Field e) {
+				return (e.isSupportGetter() && acceptFieldDescriptor.accept(e.getGetter()))
+						|| (e.isSupportSetter() && acceptFieldDescriptor.accept(e.getSetter()));
+			}
+		});
 	}
 
 	@Nullable
@@ -91,44 +86,36 @@ public interface Fields extends Iterable<Field> {
 		});
 	}
 
+	@Override
+	public default Fields shared() {
+		return new SharedFields(getCursorId(), this, rows());
+	}
+
 	/**
 	 * 去重
 	 * 
 	 * @return
 	 */
-	default Fields duplicateRemoval() {
-		Set<Field> fields = new LinkedHashSet<Field>();
-		for (Field field : this) {
-			fields.add(field);
-		}
-		return new SharedFields(fields);
+	default Fields distinct() {
+		return new StreamFields(getCursorId(), this, stream().distinct());
 	}
 
 	/**
-	 * 可共享的
+	 * 获取实体的所的字段(抽象的字段，不一定存在{@link java.lang.reflect.Field})，即不包含静态字段
 	 * 
 	 * @return
 	 */
-	default Fields shared() {
-		List<Field> fields = new ArrayList<Field>();
-		for (Field field : this) {
-			fields.add(field);
-		}
-		return new SharedFields(fields);
+	default Fields entity() {
+		return accept(FieldFeature.IGNORE_STATIC).accept(FieldFeature.IGNORE_TRANSIENT);
 	}
 
 	/**
-	 * 获取字段数量，在非shared下字段的数量通过遍历获取的,所以推荐先调用shared再获取数量
+	 * 严格的字段约定(包含getter setter)
 	 * 
-	 * @see SharedFields
+	 * @return
 	 */
-	default int size() {
-		int size = 0;
-		for (@SuppressWarnings("unused")
-		Field field : this) {
-			size++;
-		}
-		return size;
+	default Fields strict() {
+		return accept(FieldFeature.STRICT);
 	}
 
 	default Fields accept(Accept<Field> accept) {
@@ -194,11 +181,36 @@ public interface Fields extends Iterable<Field> {
 		return map;
 	}
 
-	default Stream<Field> stream() {
-		return StreamSupport.stream(spliterator(), false);
+	@Override
+	default boolean hasNext() {
+		Class<?> next = getNextCursorId();
+		return next != null && next != Object.class;
 	}
 
-	default Fields merge(Fields fields) {
-		return new MultiFields(this, fields);
+	@Override
+	default Class<?> getNextCursorId() {
+		return getCursorId().getSuperclass();
 	}
+
+	/**
+	 * 获取全部字段
+	 * 
+	 * @see StreamFields
+	 * @see Fields#streamAll()
+	 * @return
+	 */
+	default Fields all() {
+		if (hasNext()) {
+			return new StreamFields(getCursorId(), null, this, streamAll());
+		}
+		return this;
+	}
+
+	@Override
+	public default Fields next() {
+		return jumpTo(getNextCursorId());
+	}
+
+	@Override
+	Fields jumpTo(Class<?> cursorId);
 }

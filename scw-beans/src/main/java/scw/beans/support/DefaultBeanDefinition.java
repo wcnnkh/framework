@@ -235,7 +235,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 	}
 
 	protected String getStringDescribe() {
-		return MapperUtils.getMapper().getFields(getClass()).accept(FieldFeature.EXISTING_GETTER_FIELD)
+		return MapperUtils.getFields(getClass()).all().accept(FieldFeature.EXISTING_GETTER_FIELD)
 				.getValueMap(this).toString();
 	}
 

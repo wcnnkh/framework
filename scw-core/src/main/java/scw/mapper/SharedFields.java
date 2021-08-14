@@ -1,38 +1,35 @@
 package scw.mapper;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.Collections;
+import java.util.List;
 
-public class SharedFields implements Fields, Serializable {
-	private static final long serialVersionUID = 1L;
-	private final Collection<Field> fields;
+public class SharedFields extends AbstractFields implements Fields {
+	private final List<Field> sharedFields;
 
-	public SharedFields(Collection<Field> fields) {
-		this.fields = fields;
+	public SharedFields(Class<?> cursorId, Fields fields,
+			List<Field> sharedFields) {
+		super(cursorId, fields);
+		this.sharedFields = sharedFields;
 	}
 
-	public Iterator<Field> iterator() {
-		return fields.iterator();
-	}
-
-	@Override
-	public Fields duplicateRemoval() {
-		if (fields instanceof Set) {
-			return new SharedFields(fields);
-		}
-		return Fields.super.duplicateRemoval();
+	public SharedFields(Class<?> cursorId, Class<?> nextCursorId,
+			Fields fields, List<Field> sharedFields) {
+		super(cursorId, nextCursorId, fields);
+		this.sharedFields = sharedFields;
 	}
 
 	@Override
 	public Fields shared() {
-		return new SharedFields(fields);
+		return this;
 	}
 
 	@Override
-	public int size() {
-		return fields.size();
+	public long getCount() {
+		return sharedFields.size();
 	}
 
+	@Override
+	public List<Field> rows() {
+		return Collections.unmodifiableList(sharedFields);
+	}
 }

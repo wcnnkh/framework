@@ -13,7 +13,7 @@ public interface WebMessageConverter {
 	Object read(ParameterDescriptor parameterDescriptor, ServerHttpRequest request)
 			throws IOException, WebMessagelConverterException;
 
-	boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request);
+	boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response);
 
 	void write(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response)
 			throws IOException, WebMessagelConverterException;

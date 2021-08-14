@@ -41,7 +41,7 @@ public class FactoryResultMessageConverter implements WebMessageConverter, WebMe
 	}
 
 	@Override
-	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request) {
+	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response) {
 		if (body == null) {
 			return false;
 		}

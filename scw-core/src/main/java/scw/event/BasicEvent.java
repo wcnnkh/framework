@@ -26,6 +26,6 @@ public class BasicEvent implements Event, Serializable{
 	}
 
 	public String toString() {
-		return XTime.format(createTime, "yyyy-MM-dd HH:mm:ss") + " <" + MapperUtils.getMapper().getFields(getClass()).getValueMap(this).toString() + ">";
+		return XTime.format(createTime, "yyyy-MM-dd HH:mm:ss") + " <" + MapperUtils.getFieldFactory().getFields(getClass()).getValueMap(this).toString() + ">";
 	};
 }

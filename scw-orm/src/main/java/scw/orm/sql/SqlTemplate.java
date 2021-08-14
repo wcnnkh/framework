@@ -11,7 +11,8 @@ import scw.orm.EntityOperations;
 import scw.orm.MaxValueFactory;
 import scw.sql.Sql;
 import scw.sql.SqlOperations;
-import scw.util.Pagination;
+import scw.util.page.Page;
+import scw.util.page.Pages;
 
 public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFactory {
 	SqlDialect getSqlDialect();
@@ -25,6 +26,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	boolean createTable(@Nullable String tableName, Class<?> entityClass);
+	
+	boolean createTable(TableStructure tableStructure);
 
 	@Override
 	default <T> boolean save(Class<? extends T> entityClass, T entity) {
@@ -36,7 +39,9 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	<T> boolean save(@Nullable String tableName, Class<? extends T> entityClass, T entity);
-
+	
+	<T> int save(TableStructure tableStructure, T entity);
+	
 	@Override
 	default <T> boolean delete(Class<? extends T> entityClass, T entity) {
 		if (entityClass == null || entity == null) {
@@ -45,6 +50,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 		return delete(null, entityClass, entity);
 	}
+	
+	<T> int delete(TableStructure tableStructure, T entity);
 
 	<T> boolean delete(@Nullable String tableName, Class<? extends T> entityClass, T entity);
 
@@ -56,7 +63,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 		return deleteById(null, entityClass, ids);
 	}
-
+	
 	boolean deleteById(@Nullable String tableName, Class<?> entityClass, Object... ids);
 
 	@Override
@@ -67,6 +74,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 		return update(null, entityClass, entity);
 	}
+	
+	<T> int update(TableStructure tableStructure, T entity);
 
 	<T> boolean update(@Nullable String tableName, Class<? extends T> entityClass, T entity);
 
@@ -78,6 +87,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 		return saveOrUpdate(null, entityClass, entity);
 	}
+	
+	<T> int saveOrUpdate(TableStructure tableStructure, T entity);
 
 	<T> boolean saveOrUpdate(@Nullable String tableName, Class<? extends T> entityClass, T entity);
 
@@ -86,7 +97,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	default <T> T getById(Class<? extends T> entityClass, Object... ids) {
 		return getById(null, entityClass, ids);
 	}
-
+	
 	@Nullable
 	<T> T getById(@Nullable String tableName, Class<? extends T> entityClass, Object... ids);
 
@@ -103,11 +114,20 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	<K, V> Map<K, V> getInIds(String tableName, Class<? extends V> entityClass, Collection<? extends K> inPrimaryKeys,
 			Object... primaryKeys);
+	
+	default <T> Page<T> getPage(TypeDescriptor resultType, Sql sql, long pageNumber, long limit){
+		Pages<T> pages = getPages(resultType, sql, pageNumber, limit);
+		return pages.shared();
+	}
+	
+	default <T> Page<T> getPage(Class<? extends T> resultType, Sql sql, long pageNumber, long limit) {
+		return getPage(TypeDescriptor.valueOf(resultType), sql, pageNumber, limit);
+	}
+	
+	<T> Pages<T> getPages(TypeDescriptor resultType, Sql sql, long pageNumber, long limit);
 
-	<T> Pagination<T> paginationQuery(TypeDescriptor resultType, Sql sql, long page, int limit);
-
-	default <T> Pagination<T> paginationQuery(Class<? extends T> resultType, Sql sql, long page, int limit) {
-		return paginationQuery(TypeDescriptor.valueOf(resultType), sql, page, limit);
+	default <T> Pages<T> getPages(Class<? extends T> resultType, Sql sql, long pageNumber, int limit){
+		return getPages(TypeDescriptor.valueOf(resultType), sql, pageNumber, limit);
 	}
 
 	/**

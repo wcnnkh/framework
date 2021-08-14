@@ -1,50 +1,59 @@
 package scw.lucene;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.NumericDocValuesField;
-import org.apache.lucene.document.StoredField;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.MMapDirectory;
 
-import scw.convert.ConversionService;
-import scw.core.utils.ClassUtils;
-import scw.mapper.FieldDescriptor;
-import scw.value.Value;
+import scw.core.Assert;
+import scw.core.utils.ArrayUtils;
+import scw.env.Sys;
 
 public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
+	public static final String DIRECTORY_PREFIX = "lucene-documents";
 	private final Directory directory;
 	private final Analyzer analyzer;
-	private final ConversionService conversionService;
-
-	public DefaultLuceneTemplete(String directory, ConversionService conversionService) throws IOException {
-		this(directory, new StandardAnalyzer(), conversionService);
+	
+	/**
+	 * @param more 注意此参数并不是一个路径，只是一个名称，使用的是workPath下此名称的目录
+	 * @see Paths#get(String, String...)
+	 * @see Sys#getWorkPath()
+	 * @throws LuceneException
+	 */
+	public DefaultLuceneTemplete(String ...more) throws LuceneException{
+		this(Paths.get(Paths.get(new File(Sys.env.getWorkPath()).toPath().toString(), DIRECTORY_PREFIX).toString(), checkAndReturnMore(more)));
 	}
 	
-	public DefaultLuceneTemplete(String directory, Analyzer analyzer, ConversionService conversionService) throws IOException {
-		this(FSDirectory.open(Paths.get(directory)), new StandardAnalyzer(), conversionService);
+	private static String[] checkAndReturnMore(String ...more) {
+		Assert.requiredArgument(!ArrayUtils.isEmpty(more), "more");
+		return more;
 	}
 	
-	public DefaultLuceneTemplete(Directory directory, Analyzer analyzer, ConversionService conversionService) {
+	public DefaultLuceneTemplete(Path directory) throws LuceneException {
+		this(directory, new StandardAnalyzer());
+	}
+	
+	public DefaultLuceneTemplete(Path directory, Analyzer analyzer) throws LuceneException {
+		try {
+			this.directory = MMapDirectory.open(directory);
+		} catch (IOException e) {
+			throw new LuceneException(e);
+		}
+		this.analyzer = analyzer;
+	}
+	
+	public DefaultLuceneTemplete(Directory directory, Analyzer analyzer) {
 		this.directory = directory;
 		this.analyzer = analyzer;
-		this.conversionService = conversionService;
-	}
-	
-	@Override
-	protected ConversionService getConversionService() {
-		return conversionService;
 	}
 
 	public final Directory getDirectory() {
@@ -62,32 +71,16 @@ public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 	}
 
 	@Override
-	protected Field toField(FieldDescriptor fieldDescriptor, Value value) {
-		if (ClassUtils.isLong(fieldDescriptor.getType()) || ClassUtils.isInt(fieldDescriptor.getType())
-				|| ClassUtils.isShort(fieldDescriptor.getType())) {
-			return new NumericDocValuesField(fieldDescriptor.getName(), value.getAsLong());
-		}
-
-		scw.lucene.annotation.Field annotation = fieldDescriptor.getAnnotation(scw.lucene.annotation.Field.class);
-		if (annotation == null) {
-			return new StringField(fieldDescriptor.getName(), value.getAsString(), Store.YES);
-		}
-		if (annotation.indexed()) {
-			if (annotation.tokenized()) {
-				return new TextField(fieldDescriptor.getName(), value.getAsString(),
-						annotation.stored() ? Store.YES : Store.NO);
-			} else {
-				return new StringField(fieldDescriptor.getName(), value.getAsString(),
-						annotation.stored() ? Store.YES : Store.NO);
-			}
-		} else if (annotation.stored()) {
-			return new StoredField(fieldDescriptor.getName(), value.getAsString());
-		}
-		return null;
+	protected IndexReader getIndexReader() throws IOException {
+		return DirectoryReader.open(directory);
 	}
 
 	@Override
-	protected IndexReader getIndexReader() throws IOException {
-		return DirectoryReader.open(directory);
+	public boolean indexExists() throws LuceneException{
+		try {
+			return DirectoryReader.indexExists(directory);
+		} catch (IOException e) {
+			throw new LuceneException(e);
+		}
 	}
 }

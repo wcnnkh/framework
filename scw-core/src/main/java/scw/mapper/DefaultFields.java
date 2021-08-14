@@ -1,62 +1,56 @@
 package scw.mapper;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
-
-import scw.util.AbstractIterator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class DefaultFields implements Fields {
-	private final FieldMetadataFactory metadataFactory;
-	private final Class<?> entityClass;
-	private final boolean useSuperClass;
+	private FieldMetadatas fieldMetadatas;
 	private final Field parentField;
 
-	public DefaultFields(FieldMetadataFactory metadataFactory, Class<?> entityClass, boolean useSuperClass, Field parentField) {
-		this.metadataFactory = metadataFactory;
-		this.entityClass = entityClass;
-		this.useSuperClass = useSuperClass;
+	public DefaultFields(Field parentField, FieldMetadatas fieldMetadatas) {
 		this.parentField = parentField;
+		this.fieldMetadatas = fieldMetadatas;
 	}
 
 	public Iterator<Field> iterator() {
-		return new FieldIterator();
+		return fieldMetadatas.stream().map((metadata) -> createField(metadata))
+				.iterator();
 	}
 
 	protected Field createField(FieldMetadata fieldMetadata) {
 		return new Field(parentField, fieldMetadata);
 	}
 
-	private final class FieldIterator extends AbstractIterator<Field> {
-		private Iterator<FieldMetadata> iterator;
-		private Class<?> entityClass = DefaultFields.this.entityClass;
+	@Override
+	public Class<?> getCursorId() {
+		return fieldMetadatas.getCursorId();
+	}
 
-		public FieldIterator() {
-			this.iterator = metadataFactory.getFieldMetadatas(entityClass).iterator();
-		}
+	@Override
+	public long getCount() {
+		return fieldMetadatas.getCount();
+	}
 
-		public boolean hasNext() {
-			if(iterator.hasNext()){
-				return true;
-			}
+	@Override
+	public Class<?> getNextCursorId() {
+		return fieldMetadatas.getNextCursorId();
+	}
 
-			if (useSuperClass && entityClass !=null && entityClass != Object.class) {
-				this.entityClass = entityClass.getSuperclass();
-				if (entityClass == null || entityClass == Object.class) {
-					return false;
-				}
+	@Override
+	public List<Field> rows() {
+		return fieldMetadatas.rows().stream()
+				.map((metadata) -> createField(metadata))
+				.collect(Collectors.toList());
+	}
 
-				iterator = metadataFactory.getFieldMetadatas(entityClass).iterator();
-				return hasNext();
-			}
-			return false;
-		}
-
-		public Field next() {
-			if (!hasNext()) {
-				throw new NoSuchElementException();
-			}
-			
-			return createField(iterator.next());
-		}
+	@Override
+	public boolean hasNext() {
+		return fieldMetadatas.hasNext();
+	}
+	
+	public Fields jumpTo(Class<?> cursorId) {
+		FieldMetadatas fieldMetadatas = this.fieldMetadatas.jumpTo(cursorId);
+		return new DefaultFields(parentField, fieldMetadatas);
 	}
 }

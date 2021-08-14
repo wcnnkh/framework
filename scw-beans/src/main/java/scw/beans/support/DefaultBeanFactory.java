@@ -18,6 +18,7 @@ import scw.beans.BeanUtils;
 import scw.beans.BeanlifeCycleEvent;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
+import scw.beans.ContextLoader;
 import scw.beans.SingletonBeanRegistry;
 import scw.beans.ioc.Ioc;
 import scw.context.Destroy;
@@ -29,7 +30,7 @@ import scw.core.utils.ClassUtils;
 import scw.env.Environment;
 import scw.env.Sys;
 import scw.event.EventDispatcher;
-import scw.event.support.DefaultEventDispatcher;
+import scw.event.support.SimpleEventDispatcher;
 import scw.instance.InstanceFactory;
 import scw.instance.NoArgsInstanceFactory;
 import scw.instance.ServiceLoaderFactory;
@@ -46,7 +47,7 @@ import scw.util.Status;
 public class DefaultBeanFactory extends AbstractConfigurableContext
 		implements ConfigurableBeanFactory, ServiceLoaderFactory, Init, Destroy {
 	private static Logger logger = LoggerFactory.getLogger(DefaultBeanFactory.class);
-	private final DefaultEventDispatcher<BeanlifeCycleEvent> beanLifeCycleEventDispatcher = new DefaultEventDispatcher<BeanlifeCycleEvent>(
+	private final SimpleEventDispatcher<BeanlifeCycleEvent> beanLifeCycleEventDispatcher = new SimpleEventDispatcher<BeanlifeCycleEvent>(
 			true);
 	private final DefaultConfigurableAop aop = new DefaultConfigurableAop();
 	private final BeanDefinitionRegistry beanDefinitionRegistry = new LazyBeanDefinitionRegsitry(this);
@@ -344,6 +345,8 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 			}
 			//在定义初始完成后就可以认为已经初始化了
 			initialized = true;
+			
+			ContextLoader.bindBeanFactory(this);
 			
 			configure(this);
 			

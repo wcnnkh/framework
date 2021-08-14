@@ -22,11 +22,11 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
 
+import com.netflix.appinfo.InstanceInfo;
+
 import scw.cloud.ServiceInstance;
 import scw.core.Assert;
 import scw.mapper.MapperUtils;
-
-import com.netflix.appinfo.InstanceInfo;
 
 /**
  * An Eureka-specific {@link ServiceInstance} implementation.
@@ -103,6 +103,6 @@ public class EurekaServiceInstance implements ServiceInstance {
 
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().getFields(EurekaServiceInstance.class).getValueMap(this).toString();
+		return MapperUtils.toString(this);
 	}
 }

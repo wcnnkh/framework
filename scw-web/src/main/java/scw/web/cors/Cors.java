@@ -157,6 +157,6 @@ public class Cors {
 
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().getFields(Cors.class).getValueMap(this).toString();
+		return MapperUtils.toString(this);
 	}
 }

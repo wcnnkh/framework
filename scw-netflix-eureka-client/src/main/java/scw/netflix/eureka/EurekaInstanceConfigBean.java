@@ -21,6 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import com.netflix.appinfo.DataCenterInfo;
+import com.netflix.appinfo.InstanceInfo.InstanceStatus;
+import com.netflix.appinfo.MyDataCenterInfo;
+
 import scw.beans.annotation.Autowired;
 import scw.beans.annotation.ConfigurationProperties;
 import scw.boot.support.ApplicationUtils;
@@ -29,10 +33,6 @@ import scw.cloud.commons.util.InetUtils.HostInfo;
 import scw.core.utils.StringUtils;
 import scw.env.Environment;
 import scw.mapper.MapperUtils;
-
-import com.netflix.appinfo.DataCenterInfo;
-import com.netflix.appinfo.InstanceInfo.InstanceStatus;
-import com.netflix.appinfo.MyDataCenterInfo;
 
 /**
  * @author Dave Syer
@@ -609,7 +609,7 @@ public class EurekaInstanceConfigBean implements CloudEurekaInstanceConfig {
 
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().getFields(EurekaInstanceConfigBean.class).getValueMap(this).toString();
+		return MapperUtils.toString(this);
 	}
 
 }

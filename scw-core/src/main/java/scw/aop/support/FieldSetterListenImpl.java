@@ -12,12 +12,14 @@ public class FieldSetterListenImpl implements FieldSetterListen, Serializable {
 	public static final String FIELD_SETTER_MAP_FIELD_NAME = "field_setter_map";
 	
 	private Map<String, Object> field_setter_map;
-
-	public Map<String, Object> get_field_setter_map() {
+	
+	@Override
+	public Map<String, Object> _getFieldSetterMap() {
 		return field_setter_map;
 	}
-
-	public void field_setter(MethodInvoker invoker, Field field, Object oldValue) {
+	
+	@Override
+	public void _fieldSet(MethodInvoker invoker, Field field, Object oldValue) {
 		if (field_setter_map == null) {
 			field_setter_map = new LinkedHashMap<String, Object>(8);
 		}
@@ -29,7 +31,8 @@ public class FieldSetterListenImpl implements FieldSetterListen, Serializable {
 		field_setter_map.put(field.getGetter().getName(), oldValue);
 	}
 
-	public void clear_field_setter_listen() {
+	@Override
+	public void _clearFieldSetterMap() {
 		this.field_setter_map = null;
 	}
 

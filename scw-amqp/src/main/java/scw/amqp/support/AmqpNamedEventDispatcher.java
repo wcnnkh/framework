@@ -2,11 +2,11 @@ package scw.amqp.support;
 
 import scw.amqp.Exchange;
 import scw.amqp.QueueDeclare;
-import scw.event.EventDispatcher;
 import scw.event.Event;
-import scw.event.support.DefaultNamedEventDispatcher;
+import scw.event.EventDispatcher;
+import scw.event.support.SimpleNamedEventDispatcher;
 
-public class AmqpNamedEventDispatcher<T extends Event> extends DefaultNamedEventDispatcher<String, T> {
+public class AmqpNamedEventDispatcher<T extends Event> extends SimpleNamedEventDispatcher<String, T> {
 	private Exchange exchange;
 
 	public AmqpNamedEventDispatcher(Exchange exchange) {
@@ -20,7 +20,7 @@ public class AmqpNamedEventDispatcher<T extends Event> extends DefaultNamedEvent
 	}
 
 	@Override
-	protected EventDispatcher<T> createBasicEventDispatcher(String name) {
+	protected EventDispatcher<T> createEventDispatcher(String name) {
 		return new AmqpEventDisabtcher<T>(exchange, name, createQueueDeclare(name));
 	}
 }

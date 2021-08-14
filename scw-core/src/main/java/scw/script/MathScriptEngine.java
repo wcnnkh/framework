@@ -239,7 +239,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 		public ObjectFieldScriptResolver(Object instance) {
 			this.instance = instance;
 			this.fields = instance == null ? null
-					: MapperUtils.getMapper().getFields(instance.getClass()).accept(FieldFeature.SUPPORT_GETTER);
+					: MapperUtils.getFields(instance.getClass()).all().accept(FieldFeature.SUPPORT_GETTER);
 		}
 
 		public boolean isSupport(String script) {

@@ -22,7 +22,6 @@ import scw.orm.ObjectRelationalMapping;
 import scw.orm.generator.annotation.CreateTime;
 import scw.orm.generator.annotation.Generator;
 import scw.orm.generator.annotation.UUID;
-import scw.orm.sql.SqlTemplate;
 import scw.util.XUtils;
 
 public class DefaultGeneratorProcessor implements GeneratorProcessor {
@@ -32,15 +31,6 @@ public class DefaultGeneratorProcessor implements GeneratorProcessor {
 	private final Counter counter;
 	private final LockFactory lockFactory;
 	private final MaxValueFactory maxValueFactory;
-
-	public DefaultGeneratorProcessor(SqlTemplate sqlTemplate) {
-		this(sqlTemplate.getSqlDialect(), sqlTemplate);
-	}
-
-	public DefaultGeneratorProcessor(SqlTemplate sqlTemplate, SequenceIdGenerator sequeueIdGenerator, Counter counter,
-			LockFactory lockFactory) {
-		this(sqlTemplate.getSqlDialect(), sqlTemplate, sequeueIdGenerator, counter, lockFactory);
-	}
 
 	public DefaultGeneratorProcessor(ObjectRelationalMapping objectRelationalMapping, MaxValueFactory maxValueFactory) {
 		this(objectRelationalMapping, maxValueFactory, new SequenceIdGenerator(), new MemoryDataOperations(),

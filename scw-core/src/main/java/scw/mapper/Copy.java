@@ -3,6 +3,7 @@ package scw.mapper;
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 
+import scw.core.Assert;
 import scw.core.reflect.ReflectionUtils;
 import scw.env.Sys;
 import scw.instance.NoArgsInstanceFactory;
@@ -12,7 +13,7 @@ import scw.util.ConfigurableAccept;
 @SuppressWarnings("unchecked")
 public class Copy {
 	private NoArgsInstanceFactory instanceFactory;
-	private Mapper mapper = MapperUtils.getMapper();
+	private FieldFactory fieldFactory = MapperUtils.getFieldFactory();
 	private final ConfigurableAccept<Field> fieldAccept = new ConfigurableAccept<Field>();
 
 	/**
@@ -48,12 +49,12 @@ public class Copy {
 		return this;
 	}
 
-	public final Mapper getMapper() {
-		return mapper;
+	public final FieldFactory getFieldFactory() {
+		return fieldFactory;
 	}
 
-	public Copy setMapper(Mapper mapper) {
-		this.mapper = mapper;
+	public Copy setFieldFactory(FieldFactory fieldFactory) {
+		this.fieldFactory = fieldFactory;
 		return this;
 	}
 
@@ -187,8 +188,8 @@ public class Copy {
 			return;
 		}
 
-		Fields sourceFields = mapper.getFields(sourceClass, parentField).accept(fieldAccept);
-		for (Field field : mapper.getFields(targetClass, parentField).accept(fieldAccept)) {
+		Fields sourceFields = fieldFactory.getFields(sourceClass, parentField).all().accept(fieldAccept);
+		for (Field field : fieldFactory.getFields(targetClass, parentField).all().accept(fieldAccept)) {
 			if (!field.isSupportSetter()) {
 				continue;
 			}
@@ -276,7 +277,7 @@ public class Copy {
 
 		Object target = getInstanceFactory().getInstance(sourceClass);
 		while (sourceClass != null && sourceClass != Object.class) {
-			Fields fields = mapper.getFields(sourceClass, false, parentField).accept(fieldAccept);
+			Fields fields = fieldFactory.getFields(sourceClass, parentField).accept(fieldAccept);
 			for (Field field : fields) {
 				if (!(field.isSupportGetter() && field.isSupportSetter() && field.getGetter().getField() != null
 						&& field.getSetter().getField() != null)) {
@@ -319,6 +320,8 @@ public class Copy {
 	}
 
 	public static <T> T copy(Class<? extends T> targetClass, Object source) {
+		Assert.requiredArgument(targetClass != null, "targetClass");
+		Assert.requiredArgument(source != null, "source");
 		return DEFAULT_COPY.copy(targetClass, source.getClass(), source, null);
 	}
 
@@ -329,6 +332,8 @@ public class Copy {
 	 * @param source
 	 */
 	public static void copy(Object target, Object source) {
+		Assert.requiredArgument(target != null, "target");
+		Assert.requiredArgument(source != null, "source");
 		DEFAULT_COPY.copy(target.getClass(), target, source.getClass(), source, null);
 	}
 }

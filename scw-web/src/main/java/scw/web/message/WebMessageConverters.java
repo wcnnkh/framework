@@ -126,7 +126,7 @@ public class WebMessageConverters implements WebMessageConverter, WebMessageConv
 	}
 
 	@Override
-	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request) {
+	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response) {
 		if (body != null && body instanceof WebMessageWriter) {
 			return true;
 		}
@@ -138,14 +138,14 @@ public class WebMessageConverters implements WebMessageConverter, WebMessageConv
 
 			NESTED.set(converter);
 			try {
-				if (converter.canWrite(type, body, request)) {
+				if (converter.canWrite(type, body, request, response)) {
 					return true;
 				}
 			} finally {
 				NESTED.remove(converter);
 			}
 		}
-		return (parentMessageConverter != null && parentMessageConverter.canWrite(type, body, request));
+		return (parentMessageConverter != null && parentMessageConverter.canWrite(type, body, request, response));
 	}
 
 	@Override
@@ -163,7 +163,7 @@ public class WebMessageConverters implements WebMessageConverter, WebMessageConv
 
 			NESTED.set(converter);
 			try {
-				if (converter.canWrite(type, body, request)) {
+				if (converter.canWrite(type, body, request, response)) {
 					converter.write(type, body, request, response);
 					return;
 				}
@@ -172,7 +172,7 @@ public class WebMessageConverters implements WebMessageConverter, WebMessageConv
 			}
 		}
 
-		if (parentMessageConverter != null && parentMessageConverter.canWrite(type, body, request)) {
+		if (parentMessageConverter != null && parentMessageConverter.canWrite(type, body, request, response)) {
 			parentMessageConverter.write(type, body, request, response);
 			return;
 		}

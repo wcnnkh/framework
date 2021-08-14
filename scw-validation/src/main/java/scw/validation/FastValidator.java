@@ -10,6 +10,11 @@ import javax.validation.metadata.BeanDescriptor;
 
 import scw.context.annotation.Provider;
 
+/**
+ * 快速验证
+ * @author shuchaowen
+ *
+ */
 @Provider
 public class FastValidator implements Validator {
 	private static final Validator VALIDATOR = Validation.byProvider(org.hibernate.validator.HibernateValidator.class)
@@ -17,6 +22,10 @@ public class FastValidator implements Validator {
 
 	public static Validator getValidator() {
 		return VALIDATOR;
+	}
+	
+	public static void validate(Object instance) throws ValidationException{
+		ValidationUtils.validate(() -> VALIDATOR.validate(instance));
 	}
 
 	@Override

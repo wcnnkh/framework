@@ -1,11 +1,11 @@
 package scw.event;
 
-import scw.event.support.DefaultEventDispatcher;
+import scw.event.support.SimpleEventDispatcher;
 import scw.util.CacheableSupplier;
 import scw.util.Supplier;
 
 public abstract class AbstractObservable<T> extends
-		DefaultEventDispatcher<ChangeEvent<T>> implements Observable<T> {
+		SimpleEventDispatcher<ChangeEvent<T>> implements Observable<T> {
 	private final CacheableSupplier<T> valueSupplier = new CacheableSupplier<T>(
 			new Supplier<T>() {
 				public T get() {

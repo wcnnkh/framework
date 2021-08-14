@@ -68,7 +68,7 @@ public class AutoCloseStreamProcessorWrapper<T, E extends Throwable> extends Wra
 				throw new StreamException(e);
 			}
 		});
-		return new AutoCloseStreamWrapper<>(stream);
+		return new AutoCloseStream<>(stream);
 	}
 
 	@Override

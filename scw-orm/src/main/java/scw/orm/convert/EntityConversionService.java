@@ -20,6 +20,7 @@ import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mapper.Field;
+import scw.mapper.FieldFactory;
 import scw.mapper.FieldFeature;
 import scw.mapper.Fields;
 import scw.orm.ObjectRelationalMapping;
@@ -27,7 +28,7 @@ import scw.orm.OrmUtils;
 import scw.util.ConfigurableAccept;
 import scw.util.alias.AliasRegistry;
 
-public abstract class EntityConversionService extends ConditionalConversionService implements ConversionServiceAware {
+public abstract class EntityConversionService extends ConditionalConversionService implements ConversionServiceAware, FieldFactory {
 	private static Logger logger = LoggerFactory.getLogger(EntityConversionService.class);
 	private AliasRegistry aliasRegistry;
 	private final ConfigurableAccept<Field> fieldAccept = new ConfigurableAccept<Field>();
@@ -38,13 +39,22 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	private NoArgsInstanceFactory instanceFactory;
 	private Level loggerLevel = scw.logger.Levels.DEBUG.getValue();
 	private ObjectRelationalMapping objectRelationalMapping;
-	private boolean useSuperClass = true;// 默认也使用父类
 	private Field parentField;
 	//是否先检查key存在
 	private boolean checkKeyExists = false;
+	//默认是所有字段
+	private boolean useSuperClass = true;
 	
 	public final boolean isCheckKeyExists() {
 		return checkKeyExists;
+	}
+
+	public boolean isUseSuperClass() {
+		return useSuperClass;
+	}
+
+	public void setUseSuperClass(boolean useSuperClass) {
+		this.useSuperClass = useSuperClass;
 	}
 
 	public void setCheckKeyExists(boolean checkKeyExists) {
@@ -101,14 +111,6 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 
 	public boolean isStrict() {
 		return strict;
-	}
-
-	public boolean isUseSuperClass() {
-		return useSuperClass;
-	}
-
-	public void setUseSuperClass(boolean useSuperClass) {
-		this.useSuperClass = useSuperClass;
 	}
 
 	public void setStrict(boolean strict) {
@@ -186,10 +188,15 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	}
 
 	protected abstract Object getProperty(Object source, String key);
-
-	protected Fields getFields(Class<?> type, Field parentField) {
-		return getObjectRelationalMapping().getFields(type, isUseSuperClass(), parentField)
+	
+	
+	public Fields getFields(Class<?> type, Field parentField) {
+		Fields fields = getObjectRelationalMapping().getFields(type, parentField)
 				.accept(FieldFeature.SUPPORT_SETTER).accept(getFieldAccept());
+		if(isUseSuperClass()) {
+			fields = fields.all();
+		}
+		return fields;
 	}
 
 	private void setValue(Field field, Object value, TypeDescriptor sourceType, Object target) {

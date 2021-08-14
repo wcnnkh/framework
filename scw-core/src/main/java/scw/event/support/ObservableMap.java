@@ -18,7 +18,7 @@ public class ObservableMap<K, V> extends SmartMap<K, V> {
 	private final NamedEventDispatcher<K, ChangeEvent<Pair<K, V>>> eventDispatcher;
 
 	public ObservableMap(boolean concurrent) {
-		this(concurrent, new DefaultNamedEventDispatcher<K, ChangeEvent<Pair<K, V>>>(concurrent));
+		this(concurrent, new SimpleNamedEventDispatcher<K, ChangeEvent<Pair<K, V>>>(concurrent));
 	}
 
 	public ObservableMap(boolean concurrent, NamedEventDispatcher<K, ChangeEvent<Pair<K, V>>> eventDispatcher) {

@@ -17,8 +17,8 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Nullable;
+import scw.mapper.MapperUtils;
 import scw.util.MultiValueMap;
-import scw.util.XUtils;
 import scw.value.Value;
 
 public class UriUtils {
@@ -240,7 +240,7 @@ public class UriUtils {
 			return body.toString();
 		}
 
-		return toQueryString(XUtils.toMap(body), encoder, parameterConnector, nameValueConnector);
+		return toQueryString(MapperUtils.toMap(body), encoder, parameterConnector, nameValueConnector);
 	}
 
 	@SuppressWarnings("rawtypes")

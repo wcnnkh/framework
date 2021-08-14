@@ -349,7 +349,7 @@ public final class WebUtils {
 
 	public static Object getRequestBody(ServerHttpRequest request) throws IOException {
 		if (request.getHeaders().isJsonContentType()) {
-			return JSONUtils.getJsonSupport().parseJson(request);
+			return JSONUtils.getJsonSupport().parseJson(request.getReader());
 		} else if (request.getHeaders().isXmlContentType()) {
 			Document document = DomUtils.getDomBuilder().parse(request.getReader());
 			return document;
