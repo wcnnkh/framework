@@ -1,10 +1,10 @@
 package scw.hikari;
 
-import com.zaxxer.hikari.HikariConfig;
-
 import scw.db.Configurable;
-import scw.db.DBUtils;
-import scw.db.database.DataBase;
+import scw.db.DataBase;
+import scw.db.DataBaseResolver;
+
+import com.zaxxer.hikari.HikariConfig;
 
 public class HikariUtils {
 	public static void config(HikariConfig hikariConfig, Configurable configurable) {
@@ -16,8 +16,8 @@ public class HikariUtils {
 		hikariConfig.setMaximumPoolSize(configurable.getMaxSize());
 	}
 
-	public static DataBase resolveDataBase(HikariConfig config) {
-		return DBUtils.automaticRecognition(config.getDriverClassName(), config.getJdbcUrl(), config.getUsername(),
+	public static DataBase resolveDataBase(HikariConfig config, DataBaseResolver resolver) {
+		return resolver.resolve(config.getDriverClassName(), config.getJdbcUrl(), config.getUsername(),
 				config.getPassword());
 	}
 }

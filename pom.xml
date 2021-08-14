@@ -775,5 +775,7 @@
 		<module>scw-swagger</module>
 		<module>scw-jpa</module>
 		<module>scw-validation</module>
+		<module>scw-oracle</module>
+		<module>scw-sqlserver</module>
 	</modules>
 </project>

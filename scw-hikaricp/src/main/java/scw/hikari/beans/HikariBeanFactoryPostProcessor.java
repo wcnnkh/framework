@@ -6,7 +6,7 @@ import scw.beans.BeanFactoryPostProcessor;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
 import scw.context.annotation.Provider;
-import scw.db.database.DataBase;
+import scw.db.DataBase;
 import scw.sql.ConnectionFactory;
 
 @Provider

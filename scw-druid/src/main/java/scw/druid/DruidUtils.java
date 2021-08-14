@@ -1,8 +1,10 @@
 package scw.druid;
 
-import com.alibaba.druid.pool.DruidDataSource;
-
 import scw.db.Configurable;
+import scw.db.DataBase;
+import scw.db.DataBaseResolver;
+
+import com.alibaba.druid.pool.DruidDataSource;
 
 public final class DruidUtils {
 	private DruidUtils() {
@@ -16,5 +18,10 @@ public final class DruidUtils {
 		dataSource.setInitialSize(config.getMinSize());
 		dataSource.setMinIdle(config.getMinSize());
 		dataSource.setMaxActive(config.getMaxSize());
+	}
+	
+	public static DataBase resolve(DruidDataSource druidDataSource, DataBaseResolver dataBaseResolver){
+		return dataBaseResolver.resolve(druidDataSource.getDriverClassName(), druidDataSource.getUrl(),
+				druidDataSource.getUsername(), druidDataSource.getPassword());
 	}
 }
