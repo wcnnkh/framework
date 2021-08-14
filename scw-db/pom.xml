@@ -12,10 +12,5 @@
 			<groupId>scw</groupId>
 			<artifactId>scw-beans</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>scw</groupId>
-			<artifactId>scw-orm</artifactId>
-		</dependency>
 	</dependencies>
 </project>
