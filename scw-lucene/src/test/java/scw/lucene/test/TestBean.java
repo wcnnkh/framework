@@ -1,5 +1,7 @@
 package scw.lucene.test;
 
+import scw.mapper.MapperUtils;
+
 public class TestBean {
 	private String name;
 	private String value;
@@ -18,5 +20,10 @@ public class TestBean {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+	
+	@Override
+	public String toString() {
+		return MapperUtils.toString(this);
 	}
 }

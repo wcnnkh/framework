@@ -21,7 +21,7 @@ public class AnnotationTableResolver extends AnnotationObjectRelationalMapping i
 
 	@Override
 	public Fields getFields(Class<?> clazz, Field parentField) {
-		return super.getFields(clazz, parentField).strict().accept(FieldFeature.EXISTING_FIELD);
+		return super.getFields(clazz, parentField).entity().accept(FieldFeature.EXISTING_FIELD);
 	}
 
 	public Counter getCounter(Field field) {

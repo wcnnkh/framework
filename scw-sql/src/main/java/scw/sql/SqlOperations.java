@@ -100,7 +100,7 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor,
 	@Override
 	default <T> Processor<ResultSet, T, Throwable> getMapProcessor(
 			TypeDescriptor type){
-		return new MapProcessDecorator<>(getMapper(), new MapProcessor<>(type), (Class<T>) type.getType());
+		return new MapProcessDecorator<>(getMapper(), new ResultSetMapProcessor<>(type), (Class<T>) type.getType());
 	}
 	
 	default <T> Cursor<T> query(Connection connection, TypeDescriptor resultType, Sql sql,

@@ -83,14 +83,6 @@ public interface ObjectRelationalMapping extends FieldFactory{
 		};
 	}
 
-	/**
-	 * 此方法返回结果包含entity字段
-	 * 
-	 * @param clazz
-	 * @param useSuperClass
-	 * @param parentField
-	 * @return
-	 */
 	default Fields getFields(Class<?> clazz, Field parentField) {
 		return MapperUtils.getFields(ProxyUtils.getFactory().getUserClass(clazz), parentField).entity();
 	}
@@ -102,4 +94,6 @@ public interface ObjectRelationalMapping extends FieldFactory{
 	default Fields getNotPrimaryKeys(Class<?> clazz) {
 		return getFields(clazz).accept(getEntityAccept().negate()).accept(getPrimaryKeyAccept().negate());
 	}
+	
+	EntityStructure<? extends Property> resolve(Class<?> entityClass);
 }

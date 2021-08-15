@@ -1,15 +1,53 @@
 package scw.orm.sql;
 
+import scw.orm.PropertyDescriptor;
 import scw.orm.StandardPropertyDescriptor;
 
 public class StandardColumnDescriptor extends StandardPropertyDescriptor
 		implements ColumnDescriptor {
 	private boolean autoIncrement;
 	private boolean unique;
-	private String type;
-	private Long length;
 	private String charsetName;
 	private String comment;
+
+	public StandardColumnDescriptor() {
+	}
+
+	public StandardColumnDescriptor(String name) {
+		super(name, false);
+	}
+
+	public StandardColumnDescriptor(String name, boolean primaryKey) {
+		super(name, primaryKey);
+	}
+
+	public StandardColumnDescriptor(
+			StandardPropertyDescriptor standardPropertyDescriptor) {
+		super(standardPropertyDescriptor);
+	}
+	
+	public StandardColumnDescriptor(
+			PropertyDescriptor propertyDescriptor) {
+		super(propertyDescriptor);
+	}
+
+	public StandardColumnDescriptor(
+			StandardColumnDescriptor standardPropertyDescriptor) {
+		super(standardPropertyDescriptor);
+		this.autoIncrement = standardPropertyDescriptor.autoIncrement;
+		this.unique = standardPropertyDescriptor.unique;
+		this.charsetName = standardPropertyDescriptor.charsetName;
+		this.comment = standardPropertyDescriptor.comment;
+	}
+	
+	public StandardColumnDescriptor(
+			ColumnDescriptor columnDescriptor) {
+		super(columnDescriptor);
+		this.autoIncrement = columnDescriptor.isAutoIncrement();
+		this.unique = columnDescriptor.isUnique();
+		this.charsetName = columnDescriptor.getCharsetName();
+		this.comment = columnDescriptor.getComment();
+	}
 
 	public boolean isAutoIncrement() {
 		return autoIncrement;
@@ -25,22 +63,6 @@ public class StandardColumnDescriptor extends StandardPropertyDescriptor
 
 	public void setUnique(boolean unique) {
 		this.unique = unique;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public Long getLength() {
-		return length;
-	}
-
-	public void setLength(Long length) {
-		this.length = length;
 	}
 
 	public String getCharsetName() {
