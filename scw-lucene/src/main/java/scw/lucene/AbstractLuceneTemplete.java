@@ -30,7 +30,6 @@ import scw.transaction.Transaction;
 import scw.transaction.TransactionUtils;
 import scw.util.stream.Processor;
 import scw.value.AnyValue;
-import scw.value.EmptyValue;
 import scw.value.StringValue;
 import scw.value.Value;
 
@@ -109,10 +108,12 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 			EntityStructure<? extends Property> structure, Object instance) {
 		for(Property property : structure){
 			Object value = property.getField().get(instance);
-			Value v;
 			if(value == null){
-				v = new EmptyValue();
-			} else if (Value.isBaseType(property.getField().getGetter().getType())) {
+				continue;
+			}
+			
+			Value v;
+			if (Value.isBaseType(property.getField().getGetter().getType())) {
 				v = new AnyValue(value, getConversionService());
 			} else {
 				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
