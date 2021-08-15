@@ -91,7 +91,8 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 			Object value = field.getGetter().get(instance);
 			Value v;
 			if(value == null){
-				v = new EmptyValue();
+				//如果为空应该覆盖旧值
+				v = new StringValue("");
 			} else if (Value.isBaseType(field.getGetter().getType())) {
 				v = new AnyValue(value, getConversionService());
 			} else {
