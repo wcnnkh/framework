@@ -7,6 +7,7 @@ import scw.core.annotation.AnnotatedElementUtils;
 import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
 import scw.mapper.FieldFactory;
+import scw.mapper.FieldFeature;
 import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
 import scw.util.Accept;
@@ -84,7 +85,7 @@ public interface ObjectRelationalMapping extends FieldFactory{
 	}
 
 	default Fields getFields(Class<?> clazz, Field parentField) {
-		return MapperUtils.getFields(ProxyUtils.getFactory().getUserClass(clazz), parentField).entity();
+		return MapperUtils.getFields(ProxyUtils.getFactory().getUserClass(clazz), parentField).accept(FieldFeature.IGNORE_STATIC);
 	}
 
 	default Fields getPrimaryKeys(Class<?> clazz) {
