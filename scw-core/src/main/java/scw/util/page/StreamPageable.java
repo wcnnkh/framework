@@ -1,17 +1,18 @@
 package scw.util.page;
 
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class StreamPageable<K, T> implements Pageable<K, T> {
-	private final Stream<T> stream;
+	private final Supplier<Stream<T>> stream;
 	private final K cursorId;
 	private final K nextCursorId;
 	private final long count;
 	private final boolean hasNext;
 
-	public StreamPageable(K cursorId, Stream<T> stream, K nextCursorId,
+	public StreamPageable(K cursorId, Supplier<Stream<T>> stream, K nextCursorId,
 			long count, boolean hasNext) {
 		this.cursorId = cursorId;
 		this.nextCursorId = nextCursorId;
@@ -22,7 +23,7 @@ public class StreamPageable<K, T> implements Pageable<K, T> {
 
 	@Override
 	public List<T> rows() {
-		return stream.collect(Collectors.toList());
+		return stream.get().collect(Collectors.toList());
 	}
 
 	@Override
@@ -47,6 +48,6 @@ public class StreamPageable<K, T> implements Pageable<K, T> {
 
 	@Override
 	public Stream<T> stream() {
-		return stream;
+		return stream.get();
 	}
 }
