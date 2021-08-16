@@ -44,8 +44,7 @@ public class DefaultPages<T> implements Pages<T> {
 
 	@Override
 	public Pages<T> jumpTo(Long cursorId) {
-		Stream<T> stream = cursorProcessor.process(cursorId, page.getCount());
-		Page<T> page = new StreamPage<>(cursorId, stream, this.page.getCount(),
+		Page<T> page = new StreamPage<>(cursorId, () -> cursorProcessor.process(cursorId, this.page.getCount()), this.page.getCount(),
 				this.page.getTotal());
 		return new DefaultPages<>(page, cursorProcessor);
 	}
