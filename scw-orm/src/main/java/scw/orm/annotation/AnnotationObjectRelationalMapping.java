@@ -13,7 +13,10 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Ignore;
 import scw.mapper.FieldDescriptor;
+import scw.orm.DefaultEntityStructure;
+import scw.orm.EntityStructure;
 import scw.orm.ObjectRelationalMapping;
+import scw.orm.Property;
 
 public class AnnotationObjectRelationalMapping implements ObjectRelationalMapping {
 	/**
@@ -172,5 +175,10 @@ public class AnnotationObjectRelationalMapping implements ObjectRelationalMappin
 	@Override
 	public boolean isVersionField(FieldDescriptor fieldDescriptor) {
 		return AnnotatedElementUtils.isAnnotated(fieldDescriptor, Version.class);
+	}
+
+	@Override
+	public EntityStructure<? extends Property> resolve(Class<?> entityClass) {
+		return new DefaultEntityStructure(entityClass, this);
 	}
 }

@@ -21,7 +21,11 @@ import scw.lucene.annotation.LuceneField;
 import scw.mapper.FieldDescriptor;
 import scw.mapper.FieldFeature;
 import scw.mapper.Fields;
+import scw.mapper.Mapper;
 import scw.mapper.MapperUtils;
+import scw.mapper.SimpleMapper;
+import scw.orm.EntityStructure;
+import scw.orm.Property;
 import scw.transaction.Transaction;
 import scw.transaction.TransactionUtils;
 import scw.util.stream.Processor;
@@ -31,6 +35,7 @@ import scw.value.Value;
 
 public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 	private ConversionService conversionService;
+	private final Mapper<Document, LuceneException> mapper = new SimpleMapper<Document, LuceneException>();
 
 	public ConversionService getConversionService() {
 		return conversionService == null ? Sys.env.getConversionService() : conversionService;
@@ -38,6 +43,11 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 
 	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
+	}
+	
+	@Override
+	public Mapper<Document, LuceneException> getMapper() {
+		return mapper;
 	}
 
 	private Fields getFields(Class<?> clazz) {
@@ -78,18 +88,38 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 	public Document wrap(Document document, Object instance, Fields fields) {
 		for (scw.mapper.Field field : fields) {
 			Object value = field.getGetter().get(instance);
-			if (value == null) {
-				continue;
-			}
-
 			Value v;
-			if (Value.isBaseType(field.getGetter().getType())) {
+			if(value == null){
+				//如果为空应该覆盖旧值
+				v = new StringValue("");
+			} else if (Value.isBaseType(field.getGetter().getType())) {
 				v = new AnyValue(value, getConversionService());
 			} else {
 				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
 			}
 
 			addField(document, field.getGetter(), v);
+		}
+		return document;
+	}
+	
+	@Override
+	public Document wrap(Document document,
+			EntityStructure<? extends Property> structure, Object instance) {
+		for(Property property : structure){
+			Object value = property.getField().get(instance);
+			if(value == null){
+				continue;
+			}
+			
+			Value v;
+			if (Value.isBaseType(property.getField().getGetter().getType())) {
+				v = new AnyValue(value, getConversionService());
+			} else {
+				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
+			}
+
+			addField(document, property.getField().getGetter(), v);
 		}
 		return document;
 	}

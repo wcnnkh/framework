@@ -97,25 +97,19 @@ public interface Fields extends Pageables<Class<?>, Field> {
 	 * @return
 	 */
 	default Fields distinct() {
-		return new StreamFields(getCursorId(), this, stream().distinct());
+		return new StreamFields(getCursorId(), this, () -> stream().distinct());
 	}
 
 	/**
-	 * 获取实体的所的字段(抽象的字段，不一定存在{@link java.lang.reflect.Field})，即不包含静态字段
+	 * 获取实体的所的字段(抽象的字段，不一定存在{@link java.lang.reflect.Field})
 	 * 
+	 * @see FieldFeature#IGNORE_STATIC
+	 * @see FieldFeature#IGNORE_STATIC
+	 * @see FieldFeature#STRICT
 	 * @return
 	 */
 	default Fields entity() {
-		return accept(FieldFeature.IGNORE_STATIC).accept(FieldFeature.IGNORE_TRANSIENT);
-	}
-
-	/**
-	 * 严格的字段约定(包含getter setter)
-	 * 
-	 * @return
-	 */
-	default Fields strict() {
-		return accept(FieldFeature.STRICT);
+		return accept(FieldFeature.IGNORE_STATIC).accept(FieldFeature.IGNORE_TRANSIENT).accept(FieldFeature.STRICT);
 	}
 
 	default Fields accept(Accept<Field> accept) {
@@ -201,7 +195,7 @@ public interface Fields extends Pageables<Class<?>, Field> {
 	 */
 	default Fields all() {
 		if (hasNext()) {
-			return new StreamFields(getCursorId(), null, this, streamAll());
+			return new StreamFields(getCursorId(), null, this, () -> streamAll());
 		}
 		return this;
 	}

@@ -2,6 +2,7 @@ package scw.orm.sql;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import scw.orm.EntityStructure;
 
@@ -15,5 +16,23 @@ public interface TableStructure extends EntityStructure<Column> {
 				return name;
 			}
 		};
+	}
+	
+	default boolean indexExists(Column column){
+		if(column.isPrimaryKey() || column.isUnique()){
+			return true;
+		}
+
+		Map<String, List<Column>> indexGroup = getIndexGroup();
+		if(indexGroup != null){
+			for(Entry<String, List<Column>> entry : indexGroup.entrySet()){
+				for(Column col : entry.getValue()){
+					if(col.getName().equals(col.getName())){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 }

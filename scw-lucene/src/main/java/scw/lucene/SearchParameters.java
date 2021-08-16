@@ -63,9 +63,13 @@ public class SearchParameters implements Cloneable {
 		parameters.doDocScores = doDocScores;
 		return parameters;
 	}
-
+	
 	@Override
 	public SearchParameters clone() {
 		return new SearchParameters(this);
+	}
+	
+	public static SearchParameters top(Query query, int top){
+		return new SearchParameters(query, top);
 	}
 }

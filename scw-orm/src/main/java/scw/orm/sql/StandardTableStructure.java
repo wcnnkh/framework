@@ -1,19 +1,31 @@
 package scw.orm.sql;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import scw.mapper.Field;
-import scw.mapper.FieldDescriptor;
-import scw.orm.OrmUtils;
+import scw.orm.EntityStructure;
+import scw.orm.Property;
 import scw.orm.StandardEntityStructure;
 import scw.util.Accept;
-import scw.value.Value;
 
-public class StandardTableStructure extends StandardEntityStructure<Column> implements TableStructure {
+public class StandardTableStructure extends StandardEntityStructure<Column>
+		implements TableStructure {
 	private Map<String, List<Column>> indexGroup;
+
+	public StandardTableStructure() {
+	}
+
+	public StandardTableStructure(
+			EntityStructure<? extends Property> entityStructure) {
+		setEntityClass(entityStructure.getEntityClass());
+		setName(entityStructure.getName());
+		setRows(entityStructure.stream()
+				.map((property) -> new StandardColumn(property))
+				.collect(Collectors.toList()));
+	}
 
 	public Map<String, List<Column>> getIndexGroup() {
 		if (indexGroup == null) {
@@ -27,25 +39,14 @@ public class StandardTableStructure extends StandardEntityStructure<Column> impl
 	}
 
 	public static StandardTableStructure wrapper(Class<?> entityClass) {
-		return wrapper(entityClass, (field) -> isEntity(field.getGetter()));
-	}
-
-	public static boolean isEntity(FieldDescriptor fieldDescriptor) {
-		Class<?> type = fieldDescriptor.getType();
-		return !(Value.isBaseType(type) || type.isArray()
-				|| Collection.class.isAssignableFrom(type) || Map.class
-					.isAssignableFrom(type))
-				|| OrmUtils.getMapping().isEntity(fieldDescriptor);
+		return wrapper(entityClass,
+				(field) -> StandardEntityStructure.isEntity(field.getGetter())
+						|| StandardEntityStructure.isEntity(field.getSetter()));
 	}
 
 	public static StandardTableStructure wrapper(Class<?> entityClass,
 			Accept<Field> entityAccept) {
-		StandardTableStructure standardTableStructure = new StandardTableStructure();
-		standardTableStructure.setName(OrmUtils.getMapping().getName(
-				entityClass));
-		standardTableStructure.setEntityClass(entityClass);
-		standardTableStructure.setRows(StandardColumn.wrapper(OrmUtils
-				.getMapping().getFields(entityClass), entityAccept));
-		return standardTableStructure;
+		return new StandardTableStructure(StandardEntityStructure.resolve(
+				entityClass, entityAccept));
 	}
 }

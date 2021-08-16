@@ -1,5 +1,6 @@
 package scw.orm.sql;
 
+import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,8 @@ import scw.sql.Sql;
 import scw.sql.SqlOperations;
 import scw.util.page.Page;
 import scw.util.page.Pages;
+import scw.util.stream.Cursor;
+import scw.util.stream.Processor;
 
 public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFactory {
 	SqlDialect getSqlDialect();
@@ -124,7 +127,11 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return getPage(TypeDescriptor.valueOf(resultType), sql, pageNumber, limit);
 	}
 	
-	<T> Pages<T> getPages(TypeDescriptor resultType, Sql sql, long pageNumber, long limit);
+	default <T> Pages<T> getPages(TypeDescriptor resultType, Sql sql, long pageNumber, long limit){
+		return getPages(sql, pageNumber, limit, getMapProcessor(resultType));
+	}
+	
+	<T> Pages<T> getPages(Sql sql, long pageNumber, long limit, Processor<ResultSet, T, ? extends Throwable> mapProcessor);
 
 	default <T> Pages<T> getPages(Class<? extends T> resultType, Sql sql, long pageNumber, int limit){
 		return getPages(TypeDescriptor.valueOf(resultType), sql, pageNumber, limit);
@@ -174,4 +181,22 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	 */
 	@Nullable
 	<T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, @Nullable String tableName, Field field);
+	
+	default <T> Cursor<T> query(TableStructure tableStructure, T query){
+		Sql sql = getSqlDialect().query(tableStructure, query);
+		return query(sql, new TableStructureMapProcessor<T>(tableStructure));
+	}
+	
+	default <T> Cursor<T> query(Class<? extends T> queryClass, T query){
+		return query(getSqlDialect().resolve(queryClass), query);
+	}
+	
+	default <T> Pages<T> getPages(TableStructure tableStructure, T query, long getNumber, long limit){
+		Sql sql = getSqlDialect().query(tableStructure, query);
+		return getPages(sql, getNumber, limit, new TableStructureMapProcessor<T>(tableStructure));
+	}
+	
+	default <T> Pages<T> getPages(Class<? extends T> queryClass, T query, long getNumber, long limit){
+		return getPages(getSqlDialect().resolve(queryClass), query, getNumber, limit);
+	}
 }

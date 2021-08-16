@@ -9,6 +9,11 @@ public interface Setter extends FieldDescriptor {
 	void set(Object instance, Object value);
 	
 	default void set(Object instance, Object value, ConversionService conversionService) {
+		if(conversionService == null){
+			set(instance, value);
+			return ;
+		}
+		
 		Object targetValue = conversionService.convert(value, TypeDescriptor.forObject(value), new TypeDescriptor(this));
 		set(instance, targetValue);
 	}

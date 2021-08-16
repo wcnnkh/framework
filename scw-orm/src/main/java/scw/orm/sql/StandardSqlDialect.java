@@ -14,6 +14,7 @@ import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringUtils;
 import scw.env.Sys;
 import scw.lang.Nullable;
 import scw.lang.ParameterException;
@@ -478,9 +479,47 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 			params.add(newValue.getValue());
 		}
 	}
+	
+	@Override
+	public Sql query(TableStructure tableStructure, Object query) {
+		StringBuilder sb = new StringBuilder(SELECT_ALL_PREFIX);
+		keywordProcessing(sb, tableStructure.getName());
+		
+		Sql where = getConditionalStatement(tableStructure, query);
+		if(StringUtils.isEmpty(where.getSql())){
+			return new SimpleSql(sb.toString());
+		}
+		
+		return new SimpleSql(sb.append(" where ").append(where.getSql()).toString(), where.getParams());
+	}
 
 	protected void appendCounterValue(StringBuilder sb, List<Object> params, Object entity, Column column,
 			AnyValue oldValue, AnyValue newValue, Counter counter) {
 		throw new SqlDialectException("This counter field cannot be processed: " + column);
+	}
+	
+	private void and(StringBuilder sb, List<Object> params, Object entity, Iterator<Column> columns){
+		while(columns.hasNext()){
+			Column column = columns.next();
+			Object value = column.getField().get(entity);
+			if(value == null){
+				continue;
+			}
+			
+			if(sb.length() != 0){
+				sb.append(" and ");
+			}
+			keywordProcessing(sb, column.getName());
+			sb.append(" = ?");
+			params.add(value);
+		}
+	}
+	
+	private Sql getConditionalStatement(TableStructure tableStructure, Object entity){
+		StringBuilder sb = new StringBuilder();
+		List<Object> params = new ArrayList<Object>(8);
+		and(sb, params, entity, tableStructure.stream().filter((col) -> tableStructure.indexExists(col)).iterator());
+		and(sb, params, entity, tableStructure.stream().filter((col) -> !tableStructure.indexExists(col)).iterator());
+		return new SimpleSql(sb.toString(), params.toArray());
 	}
 }

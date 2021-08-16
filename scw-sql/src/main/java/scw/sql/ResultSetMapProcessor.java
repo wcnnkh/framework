@@ -14,34 +14,34 @@ import scw.mapper.MapperUtils;
 import scw.util.stream.Processor;
 import scw.value.Value;
 
-public class MapProcessor<T> implements Processor<ResultSet, T, Throwable> {
+public class ResultSetMapProcessor<T> implements Processor<ResultSet, T, Throwable> {
 	private final ConversionService conversionService;
 	private final TypeDescriptor typeDescriptor;
 	private final FieldFactory fieldFactory;
 
-	public MapProcessor(Class<T> type) {
+	public ResultSetMapProcessor(Class<T> type) {
 		this(MapperUtils.getFieldFactory(), TypeDescriptor.valueOf(type));
 	}
 
-	public MapProcessor(FieldFactory fieldFactory, Class<T> type) {
+	public ResultSetMapProcessor(FieldFactory fieldFactory, Class<T> type) {
 		this(fieldFactory, TypeDescriptor.valueOf(type));
 	}
 
-	public MapProcessor(ConversionService conversionService,
+	public ResultSetMapProcessor(ConversionService conversionService,
 			FieldFactory fieldFactory, Class<T> type) {
 		this(conversionService, fieldFactory, TypeDescriptor.valueOf(type));
 	}
 
-	public MapProcessor(TypeDescriptor typeDescriptor) {
+	public ResultSetMapProcessor(TypeDescriptor typeDescriptor) {
 		this(Sys.env.getConversionService(), MapperUtils.getFieldFactory(),
 				typeDescriptor);
 	}
 
-	public MapProcessor(FieldFactory fieldFactory, TypeDescriptor typeDescriptor) {
+	public ResultSetMapProcessor(FieldFactory fieldFactory, TypeDescriptor typeDescriptor) {
 		this(Sys.env.getConversionService(), fieldFactory, typeDescriptor);
 	}
 
-	public MapProcessor(ConversionService conversionService,
+	public ResultSetMapProcessor(ConversionService conversionService,
 			FieldFactory fieldFactory, TypeDescriptor typeDescriptor) {
 		this.conversionService = conversionService;
 		this.fieldFactory = fieldFactory;

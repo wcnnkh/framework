@@ -8,7 +8,7 @@ import scw.env.Sys;
 import scw.orm.ObjectRelationalMapping;
 import scw.orm.OrmUtils;
 import scw.orm.convert.PropertyFactoryToEntityConversionService;
-import scw.sql.MapProcessor;
+import scw.sql.ResultSetMapProcessor;
 
 /**
  * 对ResultSet和实体之间的映射做了最大的兼容,支持任意对象的组合
@@ -19,7 +19,7 @@ import scw.sql.MapProcessor;
  *
  * @param <T>
  */
-public class SmartMapProcessor<T> extends MapProcessor<T> {
+public class SmartMapProcessor<T> extends ResultSetMapProcessor<T> {
 	private final ObjectRelationalMapping objectRelationalMapping;
 
 	public SmartMapProcessor(TypeDescriptor typeDescriptor) {
