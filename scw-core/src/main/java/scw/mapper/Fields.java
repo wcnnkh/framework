@@ -97,7 +97,7 @@ public interface Fields extends Pageables<Class<?>, Field> {
 	 * @return
 	 */
 	default Fields distinct() {
-		return new StreamFields(getCursorId(), this, stream().distinct());
+		return new StreamFields(getCursorId(), this, () -> stream().distinct());
 	}
 
 	/**
@@ -195,7 +195,7 @@ public interface Fields extends Pageables<Class<?>, Field> {
 	 */
 	default Fields all() {
 		if (hasNext()) {
-			return new StreamFields(getCursorId(), null, this, streamAll());
+			return new StreamFields(getCursorId(), null, this, () -> streamAll());
 		}
 		return this;
 	}
