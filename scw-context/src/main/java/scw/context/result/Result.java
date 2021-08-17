@@ -3,6 +3,7 @@ package scw.context.result;
 import java.io.Serializable;
 
 import scw.context.transaction.RollbackOnlyResult;
+import scw.mapper.MapperUtils;
 import scw.util.Status;
 
 public class Result implements Status<Long>, ResultMsgCode, RollbackOnlyResult, Serializable {
@@ -84,5 +85,10 @@ public class Result implements Status<Long>, ResultMsgCode, RollbackOnlyResult, 
 	@Override
 	public final boolean isActive() {
 		return isSuccess();
+	}
+	
+	@Override
+	public String toString() {
+		return MapperUtils.toString(this);
 	}
 }
