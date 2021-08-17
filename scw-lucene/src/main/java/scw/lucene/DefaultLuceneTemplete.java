@@ -11,47 +11,71 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
 
 import scw.core.Assert;
 import scw.core.utils.ArrayUtils;
 import scw.env.Sys;
+import scw.lang.NamedThreadLocal;
+import scw.util.concurrent.AsyncExecutor;
 
 public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 	public static final String DIRECTORY_PREFIX = "lucene-documents";
+	private ThreadLocal<DirectoryReader> localReader = new NamedThreadLocal<>(DIRECTORY_PREFIX);
 	private final Directory directory;
 	private final Analyzer analyzer;
-	
+
+	public DefaultLuceneTemplete(String... more) throws LuceneException {
+		this(new StandardAnalyzer(), more);
+	}
+
 	/**
-	 * @param more 注意此参数并不是一个路径，只是一个名称，使用的是workPath下此名称的目录
+	 * @param more 注意此参数并不是一个路径，只是一个名称，使用的是workPath/{DIRECTORY_PREFIX}/{more}下此名称的目录
 	 * @see Paths#get(String, String...)
 	 * @see Sys#getWorkPath()
 	 * @throws LuceneException
 	 */
-	public DefaultLuceneTemplete(String ...more) throws LuceneException{
-		this(Paths.get(Paths.get(new File(Sys.env.getWorkPath()).toPath().toString(), DIRECTORY_PREFIX).toString(), checkAndReturnMore(more)));
+	public DefaultLuceneTemplete(Analyzer analyzer, String... more) throws LuceneException {
+		this(analyzer,
+				Paths.get(Paths.get(new File(Sys.env.getWorkPath()).toPath().toString(), DIRECTORY_PREFIX).toString(),
+						checkAndReturnMore(more)));
 	}
-	
-	private static String[] checkAndReturnMore(String ...more) {
+
+	private static String[] checkAndReturnMore(String... more) {
 		Assert.requiredArgument(!ArrayUtils.isEmpty(more), "more");
 		return more;
 	}
-	
-	public DefaultLuceneTemplete(Path directory) throws LuceneException {
-		this(directory, new StandardAnalyzer());
-	}
-	
-	public DefaultLuceneTemplete(Path directory, Analyzer analyzer) throws LuceneException {
+
+	public DefaultLuceneTemplete(Analyzer analyzer, Path path) throws LuceneException {
+		super();
+		this.analyzer = analyzer;
 		try {
-			this.directory = MMapDirectory.open(directory);
+			this.directory = MMapDirectory.open(path);
 		} catch (IOException e) {
-			throw new LuceneException(e);
+			throw new LuceneException(path.toString(), e);
 		}
+	}
+
+	public DefaultLuceneTemplete(AsyncExecutor writeExecutor, Analyzer analyzer, Path path) throws LuceneException {
+		super(writeExecutor);
+		this.analyzer = analyzer;
+		try {
+			this.directory = MMapDirectory.open(path);
+		} catch (IOException e) {
+			throw new LuceneException(path.toString(), e);
+		}
+	}
+
+	public DefaultLuceneTemplete(Analyzer analyzer, Directory directory) {
+		super();
+		this.directory = directory;
 		this.analyzer = analyzer;
 	}
-	
-	public DefaultLuceneTemplete(Directory directory, Analyzer analyzer) {
+
+	public DefaultLuceneTemplete(AsyncExecutor writeExecutor, Analyzer analyzer, Directory directory) {
+		super(writeExecutor);
 		this.directory = directory;
 		this.analyzer = analyzer;
 	}
@@ -65,22 +89,56 @@ public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 	}
 
 	@Override
-	public IndexWriter getIndexWrite() throws IOException {
+	public IndexWriter getIndexWriter() throws IOException {
 		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
 		return new IndexWriter(getDirectory(), indexWriterConfig);
 	}
 
 	@Override
 	protected IndexReader getIndexReader() throws IOException {
-		return DirectoryReader.open(directory);
+		DirectoryReader reader = localReader.get();
+		if (reader == null) {
+			reader = DirectoryReader.open(directory);
+			localReader.set(reader);
+		} else {
+			DirectoryReader newReader = DirectoryReader.openIfChanged(reader);
+			if (newReader != null) {
+				reader.close();
+				reader = newReader;
+				localReader.set(reader);
+			}
+		}
+		return reader;
+	}
+	
+	@Override
+	protected void closeIndexReader(IndexReader indexReader) throws IOException {
+		//不关闭
 	}
 
-	@Override
-	public boolean indexExists() throws LuceneException{
+	public boolean indexExists() throws LuceneException {
 		try {
 			return DirectoryReader.indexExists(directory);
 		} catch (IOException e) {
 			throw new LuceneException(e);
 		}
+	}
+
+	@Override
+	public <T> SearchResults<T> search(SearchParameters parameters, ScoreDocMapper<T> rowMapper)
+			throws LuceneSearchException {
+		if (!indexExists()) {
+			return new SearchResults<>(parameters, null, rowMapper, this);
+		}
+		return super.search(parameters, rowMapper);
+	}
+
+	@Override
+	public <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters, ScoreDocMapper<T> rowMapper)
+			throws LuceneSearchException {
+		if (!indexExists()) {
+			return new SearchResults<>(parameters, null, rowMapper, this);
+		}
+		return super.searchAfter(after, parameters, rowMapper);
 	}
 }

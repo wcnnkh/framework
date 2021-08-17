@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package scw.util.task;
+package scw.util.concurrent;
 
 import java.io.Serializable;
+import java.util.concurrent.Executor;
 
 import scw.core.Assert;
 
@@ -32,10 +33,10 @@ import scw.core.Assert;
  * asynchronous execution will be preferable: choose an asynchronous
  * {@code TaskExecutor} instead for such scenarios.
  *
- * @see SimpleAsyncTaskExecutor
+ * @see SimpleAsyncExecutor
  */
 @SuppressWarnings("serial")
-public class SyncTaskExecutor implements TaskExecutor, Serializable {
+public class SyncExecutor implements Executor, Serializable {
 
 	/**
 	 * Executes the given {@code task} synchronously, through direct

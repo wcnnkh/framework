@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package scw.util.task;
+package scw.util.concurrent;
 
 /**
  * A callback interface for a decorator to be applied to any {@link Runnable}
@@ -28,7 +28,7 @@ package scw.util.task;
  * invocation, or to provide some monitoring/statistics for task execution.
  *
  * @see TaskExecutor#execute(Runnable)
- * @see SimpleAsyncTaskExecutor#setTaskDecorator
+ * @see SimpleAsyncExecutor#setTaskDecorator
  */
 public interface TaskDecorator {
 

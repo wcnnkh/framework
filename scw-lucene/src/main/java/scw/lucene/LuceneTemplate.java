@@ -1,6 +1,8 @@
 package scw.lucene;
 
 import java.io.IOException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
@@ -19,7 +21,6 @@ import scw.mapper.Mapper;
 import scw.orm.EntityStructure;
 import scw.orm.Property;
 import scw.util.stream.Processor;
-import scw.util.task.support.TaskExecutors;
 
 public interface LuceneTemplate {
 	Mapper<Document, LuceneException> getMapper();
@@ -32,7 +33,7 @@ public interface LuceneTemplate {
 		return mapping(document, Sys.env.getInstance(type));
 	}
 
-	default long save(Object doc) throws LuceneWriteException {
+	default Future<Long> save(Object doc) throws LuceneWriteException {
 		return write((indexWriter) -> {
 			if (doc == null) {
 				return 0L;
@@ -52,30 +53,24 @@ public interface LuceneTemplate {
 		});
 	}
 
-	default long delete(Query... queries) throws LuceneWriteException {
+	default Future<Long> delete(Query... queries) throws LuceneWriteException {
 		return write((writer) -> writer.deleteDocuments(queries));
 	}
 
-	default long delete(Term... terms) throws LuceneWriteException {
+	default Future<Long> delete(Term... terms) throws LuceneWriteException {
 		return write((writer) -> writer.deleteDocuments(terms));
 	}
 
-	default long saveOrUpdate(Term term, Object doc)
-			throws LuceneWriteException {
-		if (indexExists()) {
-			Document document = search(
-					new SearchParameters(new TermQuery(term), 1),
-					(reader, source) -> reader.doc(source.doc)).first();
-			if (document == null) {
-				return save(doc);
-			} else {
-				return update(term, doc);
-			}
+	default Future<Long> saveOrUpdate(Term term, Object doc) throws LuceneWriteException {
+		if (search(new SearchParameters(new TermQuery(term), 1), (search, d) -> d.doc).stream().findFirst()
+				.isPresent()) {
+			return update(term, doc);
+		} else {
+			return save(doc);
 		}
-		return save(doc);
 	}
 
-	default long update(Term term, Object doc) throws LuceneWriteException {
+	default Future<Long> update(Term term, Object doc) throws LuceneWriteException {
 		return write((writer) -> {
 			if (doc == null) {
 				return 0L;
@@ -94,13 +89,11 @@ public interface LuceneTemplate {
 		});
 	}
 
-	default <T, E extends Throwable> T search(
-			Processor<IndexSearcher, T, ? extends E> processor)
+	default <T, E extends Exception> T search(Processor<IndexSearcher, T, ? extends E> processor)
 			throws LuceneSearchException {
 		try {
 			return read((reader) -> {
-				IndexSearcher indexSearcher = new IndexSearcher(reader,
-						TaskExecutors.getGlobalExecutor());
+				IndexSearcher indexSearcher = new IndexSearcher(reader, ForkJoinPool.commonPool());
 				return processor.process(indexSearcher);
 			});
 		} catch (LuceneException e) {
@@ -110,46 +103,34 @@ public interface LuceneTemplate {
 		}
 	}
 
-	default <T> SearchResults<T> search(SearchParameters parameters,
-			ScoreDocMapper<T> rowMapper) throws LuceneSearchException {
-		if (!indexExists()) {
-			return new SearchResults<T>(parameters, null, rowMapper, this);
-		}
+	default <T> SearchResults<T> search(SearchParameters parameters, ScoreDocMapper<T> rowMapper)
+			throws LuceneSearchException {
 		return search(new SearchProcessor<>(this, null, parameters, rowMapper));
 	}
 
-	default <T> SearchResults<T> search(SearchParameters parameters,
-			Processor<Document, T, LuceneException> mapProcessor)
+	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters, ScoreDocMapper<T> rowMapper)
 			throws LuceneSearchException {
+		return search(new SearchProcessor<>(this, after, parameters, rowMapper));
+	}
+
+	default <T> SearchResults<T> search(SearchParameters parameters,
+			Processor<Document, T, LuceneException> mapProcessor) throws LuceneSearchException {
 		return search(parameters, new ScoreDocMapper<T>() {
 
 			@Override
-			public T map(IndexSearcher indexSearcher, ScoreDoc scoreDoc)
-					throws IOException {
+			public T map(IndexSearcher indexSearcher, ScoreDoc scoreDoc) throws IOException {
 				Document document = indexSearcher.doc(scoreDoc.doc);
 				return mapProcessor.process(document);
 			}
 		});
 	}
 
-	default <T> SearchResults<T> searchAfter(ScoreDoc after,
-			SearchParameters parameters, ScoreDocMapper<T> rowMapper)
-			throws LuceneSearchException {
-		if (!indexExists()) {
-			return new SearchResults<T>(parameters, after, rowMapper, this);
-		}
-		return search(new SearchProcessor<>(this, after, parameters, rowMapper));
-	}
-
-	default <T> SearchResults<T> searchAfter(ScoreDoc after,
-			SearchParameters parameters,
-			Processor<Document, T, LuceneException> mapProcessor)
-			throws LuceneSearchException {
+	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters,
+			Processor<Document, T, LuceneException> mapProcessor) throws LuceneSearchException {
 		return searchAfter(after, parameters, new ScoreDocMapper<T>() {
 
 			@Override
-			public T map(IndexSearcher indexSearcher, ScoreDoc scoreDoc)
-					throws IOException {
+			public T map(IndexSearcher indexSearcher, ScoreDoc scoreDoc) throws IOException {
 				Document document = indexSearcher.doc(scoreDoc.doc);
 				return mapProcessor.process(document);
 			}
@@ -157,63 +138,46 @@ public interface LuceneTemplate {
 	}
 
 	@SuppressWarnings("unchecked")
-	default <T> Processor<Document, T, LuceneException> getMapProcessor(
-			TypeDescriptor type) {
-		return new MapProcessDecorator<>(getMapper(),
-				new DefaultMapProcessor<T, LuceneException>(type),
+	default <T> Processor<Document, T, LuceneException> getMapProcessor(TypeDescriptor type) {
+		return new MapProcessDecorator<>(getMapper(), new DefaultMapProcessor<T, LuceneException>(type),
 				(Class<T>) type.getType());
 	}
 
-	default <T> SearchResults<T> search(SearchParameters parameters,
-			TypeDescriptor resultType) throws LuceneSearchException {
+	default <T> SearchResults<T> search(SearchParameters parameters, TypeDescriptor resultType)
+			throws LuceneSearchException {
 		return search(parameters, getMapProcessor(resultType));
 	}
 
-	default <T> SearchResults<T> search(SearchParameters parameters,
-			Class<? extends T> resultType) throws LuceneSearchException {
+	default <T> SearchResults<T> search(SearchParameters parameters, Class<? extends T> resultType)
+			throws LuceneSearchException {
 		return search(parameters, TypeDescriptor.valueOf(resultType));
 	}
 
-	default <T> SearchResults<T> searchAfter(ScoreDoc after,
-			SearchParameters parameters, TypeDescriptor resultType)
+	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters, TypeDescriptor resultType)
 			throws LuceneSearchException {
 		return searchAfter(after, parameters, getMapProcessor(resultType));
 	}
 
-	default <T> SearchResults<T> searchAfter(ScoreDoc after,
-			SearchParameters parameters, Class<? extends T> resultType)
+	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters, Class<? extends T> resultType)
 			throws LuceneSearchException {
+		return searchAfter(after, parameters, TypeDescriptor.valueOf(resultType));
+	}
+
+	@SuppressWarnings("unchecked")
+	default <T> SearchResults<T> search(SearchParameters parameters, EntityStructure<? extends Property> structure)
+			throws LuceneSearchException {
+		return search(parameters,
+				new MapProcessDecorator<>(getMapper(), new DefaultStructureMapProcessor<T, LuceneException>(structure),
+						(Class<T>) structure.getEntityClass()));
+	}
+
+	@SuppressWarnings("unchecked")
+	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters,
+			EntityStructure<? extends Property> structure) throws LuceneSearchException {
 		return searchAfter(after, parameters,
-				TypeDescriptor.valueOf(resultType));
+				new MapProcessDecorator<>(getMapper(), new DefaultStructureMapProcessor<T, LuceneException>(structure),
+						(Class<T>) structure.getEntityClass()));
 	}
-
-	@SuppressWarnings("unchecked")
-	default <T> SearchResults<T> search(SearchParameters parameters,
-			EntityStructure<? extends Property> structure)
-			throws LuceneSearchException {
-		return search(
-				parameters,
-				new MapProcessDecorator<>(getMapper(),
-						new DefaultStructureMapProcessor<T, LuceneException>(
-								structure), (Class<T>) structure
-								.getEntityClass()));
-	}
-
-	@SuppressWarnings("unchecked")
-	default <T> SearchResults<T> searchAfter(ScoreDoc after,
-			SearchParameters parameters,
-			EntityStructure<? extends Property> structure)
-			throws LuceneSearchException {
-		return searchAfter(
-				after,
-				parameters,
-				new MapProcessDecorator<>(getMapper(),
-						new DefaultStructureMapProcessor<T, LuceneException>(
-								structure), (Class<T>) structure
-								.getEntityClass()));
-	}
-
-	boolean indexExists() throws LuceneException;
 
 	<T> T mapping(Document document, T instance);
 
@@ -223,12 +187,9 @@ public interface LuceneTemplate {
 
 	Document wrap(Document document, Object instance, Fields fields);
 
-	<T, E extends Throwable> T write(Processor<IndexWriter, T, E> processor)
-			throws LuceneWriteException;
+	<T, E extends Exception> Future<T> write(Processor<IndexWriter, T, E> processor) throws LuceneWriteException;
 
-	<T, E extends Throwable> T read(Processor<IndexReader, T, E> processor)
-			throws LuceneReadException;
+	<T, E extends Exception> T read(Processor<IndexReader, T, E> processor) throws LuceneReadException;
 
-	Document wrap(Document document,
-			EntityStructure<? extends Property> structure, Object instance);
+	Document wrap(Document document, EntityStructure<? extends Property> structure, Object instance);
 }

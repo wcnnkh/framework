@@ -48,7 +48,7 @@ public class DefaultInstanceFactory extends AbstractServiceLoaderFactory impleme
 	public <T> T getInstance(Class<T> clazz) {
 		InstanceDefinition instanceBuilder = getDefinition(clazz);
 		if (instanceBuilder == null) {
-
+			return null;
 		}
 		return (T) instanceBuilder.create();
 	}

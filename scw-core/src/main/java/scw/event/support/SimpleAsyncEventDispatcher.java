@@ -1,17 +1,17 @@
 package scw.event.support;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
 
 import scw.event.Event;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
-import scw.util.task.support.TaskExecutors;
 
 public class SimpleAsyncEventDispatcher<T extends Event> extends SimpleEventDispatcher<T> {
 	private Executor executor;
 
 	public SimpleAsyncEventDispatcher() {
-		this(TaskExecutors.getGlobalExecutor());
+		this(ForkJoinPool.commonPool());
 	}
 
 	public SimpleAsyncEventDispatcher(Executor executor) {

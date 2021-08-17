@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-package scw.util.task.support;
+package scw.util.concurrent.support;
 
 import java.util.concurrent.Executor;
 
 import scw.core.Assert;
-import scw.util.task.TaskExecutor;
 
 public class ConcurrentExecutorAdapter implements Executor {
 
-	private final TaskExecutor taskExecutor;
+	private final Executor executor;
 
-	public ConcurrentExecutorAdapter(TaskExecutor taskExecutor) {
-		Assert.notNull(taskExecutor, "TaskExecutor must not be null");
-		this.taskExecutor = taskExecutor;
+	public ConcurrentExecutorAdapter(Executor executor) {
+		Assert.notNull(executor, "executor must not be null");
+		this.executor = executor;
 	}
 
-
 	public void execute(Runnable command) {
-		this.taskExecutor.execute(command);
+		this.executor.execute(command);
 	}
 
 }
