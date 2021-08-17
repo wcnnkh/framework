@@ -23,7 +23,8 @@ import scw.util.concurrent.AsyncExecutor;
 
 public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 	public static final String DIRECTORY_PREFIX = "lucene-documents";
-	private ThreadLocal<DirectoryReader> localReader = new NamedThreadLocal<>(DIRECTORY_PREFIX);
+	private ThreadLocal<DirectoryReader> localReader = new NamedThreadLocal<>(
+			DIRECTORY_PREFIX);
 	private final Directory directory;
 	private final Analyzer analyzer;
 
@@ -32,15 +33,18 @@ public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 	}
 
 	/**
-	 * @param more 注意此参数并不是一个路径，只是一个名称，使用的是workPath/{DIRECTORY_PREFIX}/{more}下此名称的目录
+	 * @param more
+	 *            注意此参数并不是一个路径，只是一个名称，使用的是workPath/{DIRECTORY_PREFIX}/{more}
+	 *            下此名称的目录
 	 * @see Paths#get(String, String...)
 	 * @see Sys#getWorkPath()
 	 * @throws LuceneException
 	 */
-	public DefaultLuceneTemplete(Analyzer analyzer, String... more) throws LuceneException {
-		this(analyzer,
-				Paths.get(Paths.get(new File(Sys.env.getWorkPath()).toPath().toString(), DIRECTORY_PREFIX).toString(),
-						checkAndReturnMore(more)));
+	public DefaultLuceneTemplete(Analyzer analyzer, String... more)
+			throws LuceneException {
+		this(analyzer, Paths.get(
+				Paths.get(new File(Sys.env.getWorkPath()).toPath().toString(),
+						DIRECTORY_PREFIX).toString(), checkAndReturnMore(more)));
 	}
 
 	private static String[] checkAndReturnMore(String... more) {
@@ -48,7 +52,8 @@ public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 		return more;
 	}
 
-	public DefaultLuceneTemplete(Analyzer analyzer, Path path) throws LuceneException {
+	public DefaultLuceneTemplete(Analyzer analyzer, Path path)
+			throws LuceneException {
 		super();
 		this.analyzer = analyzer;
 		try {
@@ -58,7 +63,8 @@ public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 		}
 	}
 
-	public DefaultLuceneTemplete(AsyncExecutor writeExecutor, Analyzer analyzer, Path path) throws LuceneException {
+	public DefaultLuceneTemplete(AsyncExecutor writeExecutor,
+			Analyzer analyzer, Path path) throws LuceneException {
 		super(writeExecutor);
 		this.analyzer = analyzer;
 		try {
@@ -74,7 +80,8 @@ public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 		this.analyzer = analyzer;
 	}
 
-	public DefaultLuceneTemplete(AsyncExecutor writeExecutor, Analyzer analyzer, Directory directory) {
+	public DefaultLuceneTemplete(AsyncExecutor writeExecutor,
+			Analyzer analyzer, Directory directory) {
 		super(writeExecutor);
 		this.directory = directory;
 		this.analyzer = analyzer;
@@ -110,35 +117,59 @@ public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 		}
 		return reader;
 	}
-	
+
 	@Override
 	protected void closeIndexReader(IndexReader indexReader) throws IOException {
-		//不关闭
+		// 不关闭
 	}
+
+	private volatile Boolean indexExists;
 
 	public boolean indexExists() throws LuceneException {
+		if (indexExists == null) {
+			synchronized (this) {
+				if (indexExists == null) {
+					try {
+						indexExists = DirectoryReader.indexExists(directory);
+					} catch (IOException e) {
+						throw new LuceneException(e);
+					}
+				}
+			}
+		}
+		return indexExists;
+	}
+
+	@Override
+	public <T> SearchResults<T> search(SearchParameters parameters,
+			ScoreDocMapper<T> rowMapper) throws LuceneSearchException {
+		if (!indexExists()) {
+			return new SearchResults<>(parameters, null, rowMapper, this);
+		}
+
 		try {
-			return DirectoryReader.indexExists(directory);
-		} catch (IOException e) {
-			throw new LuceneException(e);
+			return super.search(parameters, rowMapper);
+		} catch (LuceneException e) {
+			indexExists = null;
+			throw e;
 		}
+
 	}
 
 	@Override
-	public <T> SearchResults<T> search(SearchParameters parameters, ScoreDocMapper<T> rowMapper)
+	public <T> SearchResults<T> searchAfter(ScoreDoc after,
+			SearchParameters parameters, ScoreDocMapper<T> rowMapper)
 			throws LuceneSearchException {
 		if (!indexExists()) {
 			return new SearchResults<>(parameters, null, rowMapper, this);
 		}
-		return super.search(parameters, rowMapper);
-	}
 
-	@Override
-	public <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters, ScoreDocMapper<T> rowMapper)
-			throws LuceneSearchException {
-		if (!indexExists()) {
-			return new SearchResults<>(parameters, null, rowMapper, this);
+		try {
+			return super.searchAfter(after, parameters, rowMapper);
+		} catch (LuceneException e) {
+			indexExists = null;
+			throw e;
 		}
-		return super.searchAfter(after, parameters, rowMapper);
+
 	}
 }

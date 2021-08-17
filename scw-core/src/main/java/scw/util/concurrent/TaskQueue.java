@@ -33,16 +33,16 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 
 	@Nullable
 	public Runnable poll() {
-		synchronized (this) {
+		synchronized (queue) {
 			return queue.poll();
 		}
 	}
-
+	
 	@Override
 	public void run() {
 		while (!Thread.currentThread().isInterrupted()) {
 			Runnable task;
-			synchronized (this) {
+			synchronized (queue) {
 				try {
 					task = queue.take();
 				} catch (InterruptedException e) {
@@ -63,6 +63,10 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 
 	@Override
 	public <T> Future<T> submit(Callable<T> task) {
+		if(isInterrupted()){
+			throw new RejectedExecutionException(String.valueOf(task));
+		}
+		
 		FutureTask<T> future = new FutureTask<T>(task);
 		if (!queue.offer(future)) {
 			throw new RejectedExecutionException(String.valueOf(task));

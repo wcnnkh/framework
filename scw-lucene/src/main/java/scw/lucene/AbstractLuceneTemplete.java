@@ -1,11 +1,15 @@
 package scw.lucene;
 
 import java.io.IOException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.IndexSearcher;
 
 import scw.core.Assert;
 import scw.json.JSONUtils;
@@ -24,8 +28,8 @@ import scw.value.AnyValue;
 import scw.value.StringValue;
 import scw.value.Value;
 
-public abstract class AbstractLuceneTemplete extends MapperConfigurator<Document, LuceneException>
-		implements LuceneTemplate {
+public abstract class AbstractLuceneTemplete extends
+		MapperConfigurator<Document, LuceneException> implements LuceneTemplate {
 	// 默认的写操作队列, 所有的写都排队处理
 	protected static final TaskQueue TASK_QUEUE = new TaskQueue();
 
@@ -36,13 +40,27 @@ public abstract class AbstractLuceneTemplete extends MapperConfigurator<Document
 
 	private FieldResolver fieldResolver = new AnnotationFieldResolver();
 	private final AsyncExecutor writeExecutor;// 写执行器
+	private final Executor searchExecutor;// 搜索执行器
 
 	public AbstractLuceneTemplete() {
-		this(TASK_QUEUE);
+		this.writeExecutor = TASK_QUEUE;
+		ExecutorService executorService = Executors.newCachedThreadPool();
+		Thread thread = new Thread(() -> {
+			executorService.shutdown();
+		});
+		thread.setName(getClass().getName() + "-shutdown");
+		Runtime.getRuntime().addShutdownHook(thread);
+		this.searchExecutor = executorService;
 	}
 
-	public AbstractLuceneTemplete(AsyncExecutor writeExecutor) {
+	public AbstractLuceneTemplete(Executor searchExecutor) {
+		this(TASK_QUEUE, searchExecutor);
+	}
+
+	public AbstractLuceneTemplete(AsyncExecutor writeExecutor,
+			@Nullable Executor searchExecutor) {
 		this.writeExecutor = writeExecutor;
+		this.searchExecutor = searchExecutor;
 	}
 
 	public final FieldResolver getFieldResolver() {
@@ -57,8 +75,8 @@ public abstract class AbstractLuceneTemplete extends MapperConfigurator<Document
 	protected abstract IndexWriter getIndexWriter() throws IOException;
 
 	@Override
-	public <T, E extends Exception> Future<T> write(Processor<IndexWriter, T, E> processor)
-			throws LuceneWriteException {
+	public <T, E extends Exception> Future<T> write(
+			Processor<IndexWriter, T, E> processor) throws LuceneWriteException {
 		return writeExecutor.submit(() -> {
 			IndexWriter indexWriter = null;
 			try {
@@ -91,7 +109,8 @@ public abstract class AbstractLuceneTemplete extends MapperConfigurator<Document
 	}
 
 	@Override
-	public <T, E extends Exception> T read(Processor<IndexReader, T, E> processor) throws LuceneReadException {
+	public <T, E extends Exception> T read(
+			Processor<IndexReader, T, E> processor) throws LuceneReadException {
 
 		IndexReader indexReader = null;
 		try {
@@ -105,6 +124,25 @@ public abstract class AbstractLuceneTemplete extends MapperConfigurator<Document
 			} catch (IOException e) {
 				throw new LuceneReadException(e);
 			}
+		}
+	}
+
+	@Override
+	public <T, E extends Exception> T search(
+			Processor<IndexSearcher, T, ? extends E> processor)
+			throws LuceneSearchException {
+		if(searchExecutor == null){
+			return LuceneTemplate.super.search(processor);
+		}
+		try {
+			return read((reader) -> {
+				IndexSearcher indexSearcher = new IndexSearcher(reader, searchExecutor);
+				return processor.process(indexSearcher);
+			});
+		} catch (LuceneException e) {
+			throw e;
+		} catch (Throwable e) {
+			throw new LuceneSearchException(e);
 		}
 	}
 
@@ -133,9 +171,15 @@ public abstract class AbstractLuceneTemplete extends MapperConfigurator<Document
 
 	@Override
 	public Document wrap(Document document, Object instance) {
-		return wrap(document, instance, getFields(instance.getClass()).accept((field) -> {
-			return field.isAnnotationPresent(LuceneField.class) || Value.isBaseType(field.getGetter().getType());
-		}).all());
+		return wrap(
+				document,
+				instance,
+				getFields(instance.getClass()).accept(
+						(field) -> {
+							return field.isAnnotationPresent(LuceneField.class)
+									|| Value.isBaseType(field.getGetter()
+											.getType());
+						}).all());
 	}
 
 	@Override
@@ -150,16 +194,19 @@ public abstract class AbstractLuceneTemplete extends MapperConfigurator<Document
 			if (Value.isBaseType(field.getGetter().getType())) {
 				v = new AnyValue(value, getConversionService());
 			} else {
-				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
+				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(
+						value));
 			}
 
-			fieldResolver.resolve(field.getGetter(), v).forEach((f) -> document.add(f));
+			fieldResolver.resolve(field.getGetter(), v).forEach(
+					(f) -> document.add(f));
 		}
 		return document;
 	}
 
 	@Override
-	public Document wrap(Document document, EntityStructure<? extends Property> structure, Object instance) {
+	public Document wrap(Document document,
+			EntityStructure<? extends Property> structure, Object instance) {
 		for (Property property : structure) {
 			Object value = property.getField().get(instance);
 			if (value == null) {
@@ -170,10 +217,12 @@ public abstract class AbstractLuceneTemplete extends MapperConfigurator<Document
 			if (Value.isBaseType(property.getField().getGetter().getType())) {
 				v = new AnyValue(value, getConversionService());
 			} else {
-				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
+				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(
+						value));
 			}
 
-			fieldResolver.resolve(property.getField().getGetter(), v).forEach((f) -> document.add(f));
+			fieldResolver.resolve(property.getField().getGetter(), v).forEach(
+					(f) -> document.add(f));
 		}
 		return document;
 	}

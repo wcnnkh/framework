@@ -1,7 +1,6 @@
 package scw.lucene;
 
 import java.io.IOException;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 
 import org.apache.lucene.document.Document;
@@ -93,7 +92,7 @@ public interface LuceneTemplate {
 			throws LuceneSearchException {
 		try {
 			return read((reader) -> {
-				IndexSearcher indexSearcher = new IndexSearcher(reader, ForkJoinPool.commonPool());
+				IndexSearcher indexSearcher = new IndexSearcher(reader);
 				return processor.process(indexSearcher);
 			});
 		} catch (LuceneException e) {
