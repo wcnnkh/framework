@@ -3,7 +3,6 @@ package scw.instance.support;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import scw.core.parameter.ExecutableParameterDescriptorsIterator;
 import scw.core.parameter.ParameterDescriptors;
@@ -34,26 +33,27 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 	public Class<?> getTargetClass() {
 		return targetClass;
 	}
-	
-	protected Object createInternal(Class<?> targetClass, ParameterDescriptors parameterDescriptors, Object[] params){
-		Constructor<?> constructor = ReflectionUtils.findConstructor(targetClass, false, parameterDescriptors.getTypes());
+
+	protected Object createInternal(Class<?> targetClass, ParameterDescriptors parameterDescriptors, Object[] params) {
+		Constructor<?> constructor = ReflectionUtils.findConstructor(targetClass, false,
+				parameterDescriptors.getTypes());
 		try {
-			return constructor.newInstance(params == null? new Object[0]:params);
+			return constructor.newInstance(params == null ? new Object[0] : params);
 		} catch (Exception e) {
 			ReflectionUtils.handleReflectionException(e);
 		}
 		throw new IllegalStateException("Should never get here");
 	}
-	
-	protected ParameterDescriptors getParameterDescriptors(Object[] params){
+
+	protected ParameterDescriptors getParameterDescriptors(Object[] params) {
 		for (ParameterDescriptors parameterDescriptors : this) {
-			if(ParameterUtils.isAssignableValue(parameterDescriptors, params)){
+			if (ParameterUtils.isAssignableValue(parameterDescriptors, params)) {
 				return parameterDescriptors;
 			}
 		}
 		return null;
 	}
-	
+
 	public boolean isInstance(Object... params) {
 		return getParameterDescriptors(params) != null;
 	}
@@ -65,16 +65,16 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 		}
 		return createInternal(getTargetClass(), parameterDescriptors, params);
 	}
-	
-	protected ParameterDescriptors getParameterDescriptors(Class<?>[] parameterTypes){
+
+	protected ParameterDescriptors getParameterDescriptors(Class<?>[] parameterTypes) {
 		for (ParameterDescriptors parameterDescriptors : this) {
-			if(ParameterUtils.isisAssignable(parameterDescriptors, parameterTypes)){
+			if (ParameterUtils.isisAssignable(parameterDescriptors, parameterTypes)) {
 				return parameterDescriptors;
 			}
 		}
 		return null;
 	}
-	
+
 	public boolean isInstance(Class<?>[] parameterTypes) {
 		return getParameterDescriptors(parameterTypes) != null;
 	}
@@ -92,49 +92,53 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 		return new ExecutableParameterDescriptorsIterator(getTargetClass());
 	}
 
+	private volatile Boolean instanced;
 	public boolean isInstance() {
-		return isInstance(false);
+		if(instanced == null) {
+			synchronized (this) {
+				if(instanced == null) {
+					instanced = isInstance(false);
+				}
+			}
+		}
+		return instanced;
 	}
-	
-	protected <S> ServiceLoader<S> getServiceLoader(Class<S> clazz){
+
+	protected <S> ServiceLoader<S> getServiceLoader(Class<S> clazz) {
 		return serviceLoaderFactory.getServiceLoader(clazz);
 	}
 
-	private final AtomicBoolean init = new AtomicBoolean(false);
 	private volatile ParameterDescriptors parameterDescriptors;
+	public ParameterDescriptors getParameterDescriptors() {
+		if(parameterDescriptors == null) {
+			synchronized (this) {
+				if(parameterDescriptors == null) {
+					ParameterDescriptors parameterDescriptors = checkParameterDescriptors();
+					if (parameterDescriptors != null) {
+						this.parameterDescriptors = parameterDescriptors;
+					}
+				}
+			}
+		}
+		return parameterDescriptors;
+	}
 
 	public boolean isInstance(boolean supportAbstract) {
-		if (init.get()) {
-			if (serviceLoader != null && serviceLoader.iterator().hasNext()) {
-				return true;
-			}
-
-			return parameterDescriptors != null;
+		if (serviceLoader == null) {
+			serviceLoader = getServiceLoader(targetClass);
 		}
 
-		if (init.compareAndSet(false, true)) {
-			if (serviceLoader == null) {
-				serviceLoader = getServiceLoader(targetClass);
-			}
-			
-			if(serviceLoader.iterator().hasNext()){
-				return true;
-			}
-			
-			if (!supportAbstract && Modifier.isAbstract(getTargetClass().getModifiers())) {
-				return false;
-			}
-			
-			ParameterDescriptors parameterDescriptors = checkParameterDescriptors();
-			if(parameterDescriptors != null){
-				this.parameterDescriptors = parameterDescriptors;
-				return true;
-			}
+		if (serviceLoader.iterator().hasNext()) {
+			return true;
 		}
-		return false;
+
+		if (!supportAbstract && Modifier.isAbstract(getTargetClass().getModifiers())) {
+			return false;
+		}
+		return getParameterDescriptors() != null;
 	}
-	
-	protected ParameterDescriptors checkParameterDescriptors(){
+
+	protected ParameterDescriptors checkParameterDescriptors() {
 		for (ParameterDescriptors parameterDescriptors : this) {
 			if (isAccept(parameterDescriptors)) {
 				return parameterDescriptors;
@@ -154,6 +158,7 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 			}
 		}
 
+		ParameterDescriptors parameterDescriptors = getParameterDescriptors();
 		return createInternal(getTargetClass(), parameterDescriptors, getParameters(parameterDescriptors));
 	}
 }

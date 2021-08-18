@@ -9,13 +9,13 @@ import scw.sqlite.SQLiteDB;
 import scw.util.XUtils;
 
 public class OrmTest {
-	private DB db = new SQLiteDB(Sys.env.getWorkPath() + "/orm_test.db");
+	private static DB db = new SQLiteDB(Sys.env.getWorkPath() + "/orm_test.db");
 
-	{
+	static{
 		db.createTable(TestTable1.class);
 	}
 
-	private void initData() {
+	private static void initData() {
 		for (int i = 0; i < 5; i++) {
 			TestTable1 table1 = db.getById(TestTable1.class, i);
 			if (table1 == null) {
@@ -29,7 +29,7 @@ public class OrmTest {
 		}
 	}
 
-	private void saveOrUpdate() {
+	private static void saveOrUpdate() {
 		for (int i = 0; i < 5; i++) {
 			TestTable1 table1 = new TestTable1();
 			table1.setId(i);
@@ -38,6 +38,19 @@ public class OrmTest {
 			boolean b = db.saveOrUpdate(table1);
 			System.out.println("saveOrUpdate数据" + (b ? "成功" : "失败"));
 		}
+	}
+	
+	public static void query() {
+		for(int i=0; i<100; i++) {
+			int v = i;
+			new Thread(()->{
+				System.out.println(JSONUtils.getJsonSupport().toJSONString(db.getByIdList(TestTable1.class, v)));
+			}) .start();
+		}
+	}
+	
+	public static void main(String[] args) {
+		query();
 	}
 
 	@Test

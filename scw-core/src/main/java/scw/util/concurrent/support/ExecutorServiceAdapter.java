@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package scw.util.task.support;
+package scw.util.concurrent.support;
 
 import java.util.List;
 import java.util.concurrent.AbstractExecutorService;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 import scw.core.Assert;
-import scw.util.task.TaskExecutor;
 
 /**
  * {@code java.util.concurrent.ExecutorService} for it.
@@ -37,7 +37,7 @@ import scw.util.task.TaskExecutor;
  */
 public class ExecutorServiceAdapter extends AbstractExecutorService {
 
-	private final TaskExecutor taskExecutor;
+	private final Executor executor;
 
 	/**
 	 * Create a new ExecutorServiceAdapter, using the given target executor.
@@ -45,13 +45,13 @@ public class ExecutorServiceAdapter extends AbstractExecutorService {
 	 * @param taskExecutor
 	 *            the target executor to delegate to
 	 */
-	public ExecutorServiceAdapter(TaskExecutor taskExecutor) {
-		Assert.notNull(taskExecutor, "TaskExecutor must not be null");
-		this.taskExecutor = taskExecutor;
+	public ExecutorServiceAdapter(Executor executor) {
+		Assert.notNull(executor, "executor must not be null");
+		this.executor = executor;
 	}
 
 	public void execute(Runnable task) {
-		this.taskExecutor.execute(task);
+		this.executor.execute(task);
 	}
 
 	public void shutdown() {

@@ -15,7 +15,7 @@ public final class AutoZooKeeperServerStart implements ApplicationPostProcessor 
 			start = new ZooKeeperServerStart(
 					application.getEnvironment().getProperties(DEFAULT_ZOOKEEPER_CONFIG).get());
 		} else {
-			Integer port = application.getEnvironment().getInteger("zookeeper.port");
+			Integer port = application.getEnvironment().getInteger("zookeeper.server.port");
 			if (port != null) {
 				start = new ZooKeeperServerStart(port);
 			}

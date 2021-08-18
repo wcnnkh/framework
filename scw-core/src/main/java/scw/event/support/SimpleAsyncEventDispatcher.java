@@ -5,20 +5,24 @@ import java.util.concurrent.Executor;
 import scw.event.Event;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
-import scw.util.task.support.TaskExecutors;
+import scw.util.concurrent.TaskQueue;
 
-public class SimpleAsyncEventDispatcher<T extends Event> extends SimpleEventDispatcher<T> {
+public class SimpleAsyncEventDispatcher<T extends Event> extends
+		SimpleEventDispatcher<T> {
 	private Executor executor;
 
 	public SimpleAsyncEventDispatcher() {
-		this(TaskExecutors.getGlobalExecutor());
+		super(true);
+		TaskQueue taskQueue = new TaskQueue();
+		taskQueue.start();
+		this.executor = taskQueue;
 	}
 
 	public SimpleAsyncEventDispatcher(Executor executor) {
 		super(true);
 		this.executor = executor;
 	}
-
+	
 	@Override
 	public void publishEvent(T event) {
 		executor.execute(() -> super.publishEvent(event));
@@ -26,6 +30,7 @@ public class SimpleAsyncEventDispatcher<T extends Event> extends SimpleEventDisp
 
 	@Override
 	public EventRegistration registerListener(EventListener<T> eventListener) {
-		return super.registerListener((event) -> executor.execute(() -> eventListener.onEvent(event)));
+		return super.registerListener((event) -> executor
+				.execute(() -> eventListener.onEvent(event)));
 	}
 }

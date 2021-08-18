@@ -101,10 +101,10 @@ public interface Fields extends Pageables<Class<?>, Field> {
 	}
 
 	/**
-	 * 获取实体的所的字段(抽象的字段，不一定存在{@link java.lang.reflect.Field})
+	 * 获取实体类字段(抽象的字段，不一定存在{@link java.lang.reflect.Field})
 	 * 
 	 * @see FieldFeature#IGNORE_STATIC
-	 * @see FieldFeature#IGNORE_STATIC
+	 * @see FieldFeature#IGNORE_TRANSIENT
 	 * @see FieldFeature#STRICT
 	 * @return
 	 */
