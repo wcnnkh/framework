@@ -66,10 +66,6 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 	@Override
 	public <T> Future<T> submit(Callable<T> task) {
 		Assert.requiredArgument(task != null, "task");
-		if(isInterrupted()){
-			throw new RejectedExecutionException(String.valueOf(task));
-		}
-		
 		final String taskId = XUtils.getUUID();
 		FutureTask<T> future = new FutureTask<T>(task) {
 			@Override
@@ -78,12 +74,16 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 			}
 		};
 		
+		if(isInterrupted()){
+			throw new RejectedExecutionException(String.valueOf(future));
+		}
+		
 		if(logger.isDebugEnabled()) {
 			logger.debug("submit: {}", future);
 		}
 		
 		if (!queue.offer(future)) {
-			throw new RejectedExecutionException(String.valueOf(task));
+			throw new RejectedExecutionException(String.valueOf(future));
 		}
 		return future;
 	}
