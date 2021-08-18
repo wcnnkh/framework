@@ -14,7 +14,7 @@ import scw.core.Assert;
  *
  */
 public abstract class RenewableLock extends AbstractLock{
-	private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newScheduledThreadPool(1);
+	private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
 	
 	static{
 		Runtime.getRuntime().addShutdownHook(new Thread(){

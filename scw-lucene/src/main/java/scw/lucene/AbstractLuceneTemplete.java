@@ -2,7 +2,6 @@ package scw.lucene;
 
 import java.io.IOException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
@@ -43,14 +42,7 @@ public abstract class AbstractLuceneTemplete extends
 	private final Executor searchExecutor;// 搜索执行器
 
 	public AbstractLuceneTemplete() {
-		this.writeExecutor = TASK_QUEUE;
-		ExecutorService executorService = Executors.newCachedThreadPool();
-		Thread thread = new Thread(() -> {
-			executorService.shutdown();
-		});
-		thread.setName(getClass().getName() + "-shutdown");
-		Runtime.getRuntime().addShutdownHook(thread);
-		this.searchExecutor = executorService;
+		this(Executors.newWorkStealingPool());
 	}
 
 	public AbstractLuceneTemplete(Executor searchExecutor) {

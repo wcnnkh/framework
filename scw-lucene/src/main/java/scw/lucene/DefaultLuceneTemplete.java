@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.Executor;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -19,6 +20,7 @@ import scw.core.Assert;
 import scw.core.utils.ArrayUtils;
 import scw.env.Sys;
 import scw.lang.NamedThreadLocal;
+import scw.lang.Nullable;
 import scw.util.concurrent.AsyncExecutor;
 
 public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
@@ -83,6 +85,13 @@ public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 	public DefaultLuceneTemplete(AsyncExecutor writeExecutor,
 			Analyzer analyzer, Directory directory) {
 		super(writeExecutor);
+		this.directory = directory;
+		this.analyzer = analyzer;
+	}
+	
+	public DefaultLuceneTemplete(AsyncExecutor writeExecutor, @Nullable Executor readExecutor,
+			Analyzer analyzer, Directory directory) {
+		super(writeExecutor, readExecutor);
 		this.directory = directory;
 		this.analyzer = analyzer;
 	}

@@ -16,18 +16,10 @@ public final class MemoryDataManager implements Destroy {
 	// 单位：秒
 	private static final int DEFAULT_CLEAR_PERIOD = Sys.env
 			.getValue("memory.temporary.cache.clear.period", int.class, 60);
+	//守护线程，自动退出
 	private static final Timer TIMER = new Timer(MemoryDataManager.class.getSimpleName(), true);
 
 	private static Logger logger = LoggerFactory.getLogger(MemoryDataManager.class);
-
-	static {
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				TIMER.cancel();
-			}
-		});
-	}
 
 	private final ConcurrentHashMap<String, MemoryData> cacheMap = new ConcurrentHashMap<String, MemoryData>();
 	private TimerTask timerTask;
