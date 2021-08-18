@@ -51,7 +51,7 @@ public final class StringUtils {
 	}
 
 	public static final char[] DEFAULT_SPLIT_CHARS = new char[] { ' ', ',', ';', '、' };
-	
+
 	public static final String[] MEPTY_ARRAY = new String[0];
 
 	public static final Accept<CharSequence> EMPTY = new Accept<CharSequence>() {
@@ -61,20 +61,20 @@ public final class StringUtils {
 			return text == null || text.length() == 0;
 		}
 	};
-	
+
 	public static final Accept<CharSequence> HAS_TEXT = new Accept<CharSequence>() {
 
 		@Override
 		public boolean accept(CharSequence str) {
-			if(str == null) {
+			if (str == null) {
 				return false;
 			}
-			
+
 			int len = str.length();
-			if(len == 0) {
+			if (len == 0) {
 				return false;
 			}
-			
+
 			for (int i = 0; i < len; i++) {
 				if (!Character.isWhitespace(str.charAt(i))) {
 					return true;
@@ -86,19 +86,40 @@ public final class StringUtils {
 
 	private StringUtils() {
 	};
-	
+
 	public static boolean isEmpty(CharSequence text) {
 		return EMPTY.accept(text);
+	}
+
+	/**
+	 * 
+	 * @param value
+	 * @return false 不是{@link java.lang.String}类型, <code>null</code>, ''
+	 */
+	public static boolean isEmpty(Object value) {
+		return value == null || "".equals(value);
 	}
 
 	public static boolean isNotEmpty(CharSequence text) {
 		return !isEmpty(text);
 	}
 
+	/**
+	 * all not empty
+	 * 
+	 * @param text
+	 * @return
+	 */
 	public static boolean isNotEmpty(CharSequence... text) {
 		return !isEmpty(text);
 	}
 
+	/**
+	 * all is empty
+	 * 
+	 * @param text
+	 * @return
+	 */
 	public static boolean isEmpty(CharSequence... text) {
 		for (CharSequence s : text) {
 			if (isEmpty(s)) {
