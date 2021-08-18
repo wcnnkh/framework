@@ -7,19 +7,19 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
 import org.junit.Test;
 
-import scw.lucene.DefaultLuceneTemplete;
+import scw.lucene.DefaultLuceneTemplate;
 import scw.lucene.SearchParameters;
 
 public class LuceneTest {
 
 	@Test
 	public void saveTest() {
-		DefaultLuceneTemplete templete = new DefaultLuceneTemplete("test");
+		DefaultLuceneTemplate templete = new DefaultLuceneTemplate("test");
 		templete.saveOrUpdate(new Term("name", "1"), new TestBean());
 	}
 
 	public static void main(String[] args) throws InterruptedException, ExecutionException {
-		DefaultLuceneTemplete templete = new DefaultLuceneTemplete("test");
+		DefaultLuceneTemplate templete = new DefaultLuceneTemplate("test");
 		TestBean bean1 = new TestBean();
 		bean1.setName("a");
 		bean1.setValue("sss");

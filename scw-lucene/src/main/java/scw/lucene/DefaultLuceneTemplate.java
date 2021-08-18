@@ -23,14 +23,14 @@ import scw.lang.NamedThreadLocal;
 import scw.lang.Nullable;
 import scw.util.concurrent.AsyncExecutor;
 
-public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
+public class DefaultLuceneTemplate extends AbstractLuceneTemplate {
 	public static final String DIRECTORY_PREFIX = "lucene-documents";
 	private ThreadLocal<DirectoryReader> localReader = new NamedThreadLocal<>(
 			DIRECTORY_PREFIX);
 	private final Directory directory;
 	private final Analyzer analyzer;
 
-	public DefaultLuceneTemplete(String... more) throws LuceneException {
+	public DefaultLuceneTemplate(String... more) throws LuceneException {
 		this(new StandardAnalyzer(), more);
 	}
 
@@ -42,7 +42,7 @@ public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 	 * @see Sys#getWorkPath()
 	 * @throws LuceneException
 	 */
-	public DefaultLuceneTemplete(Analyzer analyzer, String... more)
+	public DefaultLuceneTemplate(Analyzer analyzer, String... more)
 			throws LuceneException {
 		this(analyzer, Paths.get(
 				Paths.get(new File(Sys.env.getWorkPath()).toPath().toString(),
@@ -54,7 +54,7 @@ public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 		return more;
 	}
 
-	public DefaultLuceneTemplete(Analyzer analyzer, Path path)
+	public DefaultLuceneTemplate(Analyzer analyzer, Path path)
 			throws LuceneException {
 		super();
 		this.analyzer = analyzer;
@@ -65,7 +65,7 @@ public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 		}
 	}
 
-	public DefaultLuceneTemplete(AsyncExecutor writeExecutor,
+	public DefaultLuceneTemplate(AsyncExecutor writeExecutor,
 			Analyzer analyzer, Path path) throws LuceneException {
 		super(writeExecutor);
 		this.analyzer = analyzer;
@@ -76,20 +76,20 @@ public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 		}
 	}
 
-	public DefaultLuceneTemplete(Analyzer analyzer, Directory directory) {
+	public DefaultLuceneTemplate(Analyzer analyzer, Directory directory) {
 		super();
 		this.directory = directory;
 		this.analyzer = analyzer;
 	}
 
-	public DefaultLuceneTemplete(AsyncExecutor writeExecutor,
+	public DefaultLuceneTemplate(AsyncExecutor writeExecutor,
 			Analyzer analyzer, Directory directory) {
 		super(writeExecutor);
 		this.directory = directory;
 		this.analyzer = analyzer;
 	}
 	
-	public DefaultLuceneTemplete(AsyncExecutor writeExecutor, @Nullable Executor readExecutor,
+	public DefaultLuceneTemplate(AsyncExecutor writeExecutor, @Nullable Executor readExecutor,
 			Analyzer analyzer, Directory directory) {
 		super(writeExecutor, readExecutor);
 		this.directory = directory;

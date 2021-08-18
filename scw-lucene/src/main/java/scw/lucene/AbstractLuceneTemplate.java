@@ -27,7 +27,7 @@ import scw.value.AnyValue;
 import scw.value.StringValue;
 import scw.value.Value;
 
-public abstract class AbstractLuceneTemplete extends
+public abstract class AbstractLuceneTemplate extends
 		MapperConfigurator<Document, LuceneException> implements LuceneTemplate {
 	// 默认的写操作队列, 所有的写都排队处理
 	protected static final TaskQueue TASK_QUEUE = new TaskQueue();
@@ -41,15 +41,15 @@ public abstract class AbstractLuceneTemplete extends
 	private final AsyncExecutor writeExecutor;// 写执行器
 	private final Executor searchExecutor;// 搜索执行器
 
-	public AbstractLuceneTemplete() {
+	public AbstractLuceneTemplate() {
 		this(Executors.newWorkStealingPool());
 	}
 
-	public AbstractLuceneTemplete(Executor searchExecutor) {
+	public AbstractLuceneTemplate(Executor searchExecutor) {
 		this(TASK_QUEUE, searchExecutor);
 	}
 
-	public AbstractLuceneTemplete(AsyncExecutor writeExecutor,
+	public AbstractLuceneTemplate(AsyncExecutor writeExecutor,
 			@Nullable Executor searchExecutor) {
 		this.writeExecutor = writeExecutor;
 		this.searchExecutor = searchExecutor;
