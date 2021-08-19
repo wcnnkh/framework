@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import scw.convert.TypeDescriptor;
+import scw.core.utils.StringUtils;
 import scw.lang.Nullable;
 import scw.mapper.Field;
 import scw.orm.EntityOperations;
@@ -28,7 +29,13 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return createTable(null, entityClass);
 	}
 
-	boolean createTable(@Nullable String tableName, Class<?> entityClass);
+	default boolean createTable(@Nullable String tableName, Class<?> entityClass) {
+		TableStructure tableStructure = getSqlDialect().resolve(entityClass);
+		if(StringUtils.isNotEmpty(tableName)) {
+			tableStructure = tableStructure.rename(tableName);
+		}
+		return createTable(tableStructure);
+	}
 	
 	boolean createTable(TableStructure tableStructure);
 

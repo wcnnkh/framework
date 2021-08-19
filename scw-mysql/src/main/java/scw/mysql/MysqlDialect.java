@@ -10,6 +10,8 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -140,7 +142,7 @@ public class MysqlDialect extends StandardSqlDialect {
 	}
 
 	@Override
-	public Sql toCreateTableSql(TableStructure tableStructure) {
+	public Collection<Sql> createTable(TableStructure tableStructure) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCreateTablePrefix());
 		sb.append(" ");
@@ -239,7 +241,8 @@ public class MysqlDialect extends StandardSqlDialect {
 		if (table != null && !StringUtils.isEmpty(table.comment())) {
 			sb.append(" comment=\'").append(table.comment()).append("\'");
 		}
-		return new SimpleSql(sb.toString());
+		
+		return Arrays.asList(new SimpleSql(sb.toString()));
 	}
 
 	@Override
