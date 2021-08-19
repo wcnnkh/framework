@@ -5,11 +5,10 @@ import java.util.concurrent.Executor;
 import scw.event.Event;
 import scw.util.concurrent.TaskQueue;
 
-public class SimpleAsyncEventDispatcher<T extends Event> extends
-		SimpleEventDispatcher<T> {
+public class SimpleAsyncNamedEventDispatcher<K, T extends Event> extends SimpleNamedEventDispatcher<K, T> {
 	private Executor executor;
 
-	public SimpleAsyncEventDispatcher() {
+	public SimpleAsyncNamedEventDispatcher() {
 		super(true);
 		TaskQueue taskQueue = new TaskQueue();
 		taskQueue.setName(getClass().getName());
@@ -17,13 +16,13 @@ public class SimpleAsyncEventDispatcher<T extends Event> extends
 		this.executor = taskQueue;
 	}
 
-	public SimpleAsyncEventDispatcher(Executor executor) {
+	public SimpleAsyncNamedEventDispatcher(Executor executor) {
 		super(true);
 		this.executor = executor;
 	}
-	
+
 	@Override
-	public void publishEvent(T event) {
-		executor.execute(() -> super.publishEvent(event));
+	public void publishEvent(K name, T event) {
+		executor.execute(() -> super.publishEvent(name, event));
 	}
 }
