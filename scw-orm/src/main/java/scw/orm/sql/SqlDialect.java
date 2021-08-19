@@ -16,10 +16,10 @@ public interface SqlDialect extends ObjectKeyFormat, TableResolver {
 
 	Object toDataBaseValue(Object value, TypeDescriptor sourceType);
 
-	Sql toCreateTableSql(TableStructure tableStructure) throws SqlDialectException;
+	Collection<Sql> createTable(TableStructure tableStructure) throws SqlDialectException;
 	
-	default Sql toCreateTableSql(String tableName, Class<?> entityClass) throws SqlDialectException{
-		return toCreateTableSql(resolve(entityClass).rename(tableName));
+	default Collection<Sql> createTable(String tableName, Class<?> entityClass) throws SqlDialectException{
+		return createTable(resolve(entityClass).rename(tableName));
 	}
 	
 	Sql toSelectByIdsSql(TableStructure tableStructure, Object... ids) throws SqlDialectException;

@@ -200,6 +200,10 @@ public interface Fields extends Pageables<Class<?>, Field> {
 		return this;
 	}
 
+	default Fields merge(Fields fields) {
+		return new MergeFields(this, fields);
+	}
+
 	@Override
 	public default Fields next() {
 		return jumpTo(getNextCursorId());

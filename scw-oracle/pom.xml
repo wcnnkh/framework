@@ -1,15 +1,24 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>scw</groupId>
-    <artifactId>scw</artifactId>
-    <version>2.1</version>
-  </parent>
-  <artifactId>scw-oracle</artifactId>
-  <dependencies>
-  	<dependency>
-  		<groupId>scw</groupId>
-  		<artifactId>scw-db</artifactId>
-  	</dependency>
-  </dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>scw</groupId>
+		<artifactId>scw</artifactId>
+		<version>2.1</version>
+	</parent>
+	<artifactId>scw-oracle</artifactId>
+	<dependencies>
+		<dependency>
+			<groupId>scw</groupId>
+			<artifactId>scw-db</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc8 -->
+		<dependency>
+			<groupId>com.oracle.database.jdbc</groupId>
+			<artifactId>ojdbc8</artifactId>
+			<version>21.1.0.0</version>
+			<scope>runtime</scope>
+		</dependency>
+	</dependencies>
 </project>

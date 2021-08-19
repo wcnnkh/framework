@@ -26,6 +26,7 @@ import scw.orm.sql.convert.SmartMapProcessor;
 import scw.sql.ConnectionFactory;
 import scw.sql.DefaultSqlOperations;
 import scw.sql.Sql;
+import scw.sql.SqlException;
 import scw.util.page.Page;
 import scw.util.page.PageSupport;
 import scw.util.page.Pages;
@@ -78,15 +79,6 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements
 			entityName = sqlDialect.getName(entityClass);
 		}
 		return entityName;
-	}
-
-	@Override
-	public boolean createTable(String tableName, Class<?> entityClass) {
-		Class<?> clazz = getUserEntityClass(entityClass);
-		Sql sql = sqlDialect.toCreateTableSql(
-				getTableName(tableName, clazz, null), clazz);
-		prepare(sql).execute();
-		return true;
 	}
 
 	private Object getAutoIncrementLastId(Connection connection,
@@ -286,8 +278,16 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements
 
 	@Override
 	public boolean createTable(TableStructure tableStructure) {
-		Sql sql = sqlDialect.toCreateTableSql(tableStructure);
-		prepare(sql).execute();
+		Collection<Sql> sqls = sqlDialect.createTable(tableStructure);
+		try {
+			process((conn) -> {
+				for(Sql sql : sqls) {
+					prepare(conn, sql).execute();
+				}
+			});
+		} catch (SQLException e) {
+			throw new SqlException(tableStructure.getEntityClass().getName(), e);
+		}
 		return true;
 	}
 

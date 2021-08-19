@@ -4,6 +4,8 @@ import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +45,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 	}
 
 	@Override
-	public Sql toCreateTableSql(TableStructure tableStructure) throws SqlDialectException {
+	public Collection<Sql> createTable(TableStructure tableStructure) throws SqlDialectException {
 		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCreateTablePrefix());
@@ -106,7 +108,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 		}
 
 		sb.append(")");
-		return new SimpleSql(sb.toString());
+		return Arrays.asList(new SimpleSql(sb.toString()));
 	}
 
 	@Override

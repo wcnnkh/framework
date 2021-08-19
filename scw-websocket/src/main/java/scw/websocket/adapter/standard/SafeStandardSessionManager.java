@@ -15,6 +15,7 @@ import scw.logger.LoggerFactory;
 
 /**
  * 这是一个安全的session管理器
+ * 
  * @author shuchaowen
  *
  * @param <T>
@@ -49,10 +50,15 @@ public class SafeStandardSessionManager<T> {
 		Assert.requiredArgument(session != null, "session");
 		Assert.requiredArgument(group != null, "group");
 		if (session.getUserProperties().putIfAbsent(groupKey, group) == null) {
-			logger.debug("{}[{}][{}]插入标识成功", groupKey, group, session.getId());
+			if (logger.isDebugEnabled()) {
+				logger.debug("{}[{}][{}]插入标识成功", groupKey, group, session.getId());
+			}
 			return true;
 		}
-		logger.error("{}[{}][{}]插入标识失败", groupKey, group, session.getId());
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("{}[{}][{}]插入标识失败", groupKey, group, session.getId());
+		}
 		return false;
 	}
 
@@ -68,19 +74,21 @@ public class SafeStandardSessionManager<T> {
 		Assert.requiredArgument(session != null, "session");
 		SafeSessionProxy safeSessionProxy = SafeSessionProxy.proxy(session);
 		ConcurrentHashMap<String, Session> sessionMap = groupMap.get(group);
-		if(sessionMap == null) {
+		if (sessionMap == null) {
 			ConcurrentHashMap<String, Session> newSessionMap = new ConcurrentHashMap<>(4);
 			sessionMap = groupMap.putIfAbsent(group, newSessionMap);
-			if(sessionMap == null) {
+			if (sessionMap == null) {
 				sessionMap = newSessionMap;
 			}
 		}
-		
-		if(sessionMap.putIfAbsent(session.getId(), safeSessionProxy) == null) {
-			logger.info("{}[{}][{}]保存session成功", groupKey, group, session.getId());
+
+		if (sessionMap.putIfAbsent(session.getId(), safeSessionProxy) == null) {
+			if (logger.isDebugEnabled()) {
+				logger.info("{}[{}][{}]保存session成功", groupKey, group, session.getId());
+			}
 			return safeSessionProxy;
 		}
-		
+
 		return null;
 	}
 
@@ -113,7 +121,9 @@ public class SafeStandardSessionManager<T> {
 
 		Session session = sessionMap.remove(sessionId);
 		if (session != null) {
-			logger.info("{}[{}][{}]移除session成功", groupKey, group, sessionId);
+			if (logger.isDebugEnabled()) {
+				logger.debug("{}[{}][{}]移除session成功", groupKey, group, sessionId);
+			}
 		}
 		return session;
 	}
@@ -208,10 +218,12 @@ public class SafeStandardSessionManager<T> {
 
 		Collection<Session> sessions = sessionMap.values();
 		if (!sessions.isEmpty() && logger.isDebugEnabled()) {
-			logger.info("{}[{}][{}]移除session成功", groupKey, group,
-					sessions.stream().map((session) -> session.getId()).collect(Collectors.toList()));
+			if (logger.isDebugEnabled()) {
+				logger.info("{}[{}][{}]移除session成功", groupKey, group,
+						sessions.stream().map((session) -> session.getId()).collect(Collectors.toList()));
+			}
 		}
-		return sessions.stream().filter((session) -> session.isOpen()).collect(Collectors.toList());
+		return sessions;
 	}
 
 	public int getGroupSize() {
