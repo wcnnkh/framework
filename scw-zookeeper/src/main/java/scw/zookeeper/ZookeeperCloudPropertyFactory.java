@@ -19,7 +19,7 @@ import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.EventType;
 import scw.event.NamedEventDispatcher;
-import scw.event.support.StringNamedEventDispatcher;
+import scw.event.support.SimpleStringNamedEventDispatcher;
 import scw.io.JavaSerializer;
 import scw.io.Serializer;
 import scw.logger.Logger;
@@ -38,7 +38,7 @@ import scw.value.Value;
 @Provider(order = Integer.MIN_VALUE)
 public class ZookeeperCloudPropertyFactory implements ConfigurablePropertyFactory, Watcher {
 	private static Logger logger = LoggerFactory.getLogger(ZookeeperCloudPropertyFactory.class);
-	private final NamedEventDispatcher<String, ChangeEvent<String>> eventDispatcher = new StringNamedEventDispatcher<ChangeEvent<String>>(
+	private final NamedEventDispatcher<String, ChangeEvent<String>> eventDispatcher = new SimpleStringNamedEventDispatcher<ChangeEvent<String>>(
 			true);
 	private final ZooKeeper zooKeeper;
 	private final String parentPath;

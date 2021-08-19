@@ -9,7 +9,7 @@ import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 import scw.context.annotation.Provider;
 import scw.event.ChangeEvent;
 import scw.event.EventType;
-import scw.event.support.StringNamedEventDispatcher;
+import scw.event.support.SimpleStringNamedEventDispatcher;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.value.AnyValue;
@@ -17,7 +17,7 @@ import scw.value.PropertyFactory;
 import scw.value.Value;
 
 @Provider
-public class ApolloClientPropertyFactory extends StringNamedEventDispatcher<ChangeEvent<String>>
+public class ApolloClientPropertyFactory extends SimpleStringNamedEventDispatcher<ChangeEvent<String>>
 		implements PropertyFactory, ConfigChangeListener {
 	private static Logger logger = LoggerFactory.getLogger(ApolloClientPropertyFactory.class);
 	private final Config config;

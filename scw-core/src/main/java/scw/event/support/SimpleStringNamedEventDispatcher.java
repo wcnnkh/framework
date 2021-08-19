@@ -7,10 +7,10 @@ import scw.event.EventDispatcher;
 import scw.util.StringMatcher;
 import scw.util.StringMatchers;
 
-public class StringNamedEventDispatcher<T extends Event> extends SimpleNamedEventDispatcher<String, T> {
+public class SimpleStringNamedEventDispatcher<T extends Event> extends SimpleNamedEventDispatcher<String, T> {
 	private StringMatcher stringMatcher;
 
-	public StringNamedEventDispatcher(boolean concurrent) {
+	public SimpleStringNamedEventDispatcher(boolean concurrent) {
 		super(concurrent);
 		setStringMatcher(StringMatchers.SIMPLE);
 	}

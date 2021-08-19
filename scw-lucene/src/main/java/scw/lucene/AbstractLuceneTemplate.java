@@ -34,6 +34,7 @@ public abstract class AbstractLuceneTemplate extends
 
 	static {
 		// 启动写操作队列
+		TASK_QUEUE.setName(AbstractLuceneTemplate.class.getName());
 		TASK_QUEUE.start();
 	}
 
