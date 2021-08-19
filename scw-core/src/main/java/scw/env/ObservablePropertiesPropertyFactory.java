@@ -15,7 +15,7 @@ import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.NamedEventDispatcher;
 import scw.event.Observable;
-import scw.event.support.StringNamedEventDispatcher;
+import scw.event.support.SimpleStringNamedEventDispatcher;
 import scw.value.AnyValue;
 import scw.value.PropertyFactory;
 import scw.value.StringValue;
@@ -23,7 +23,7 @@ import scw.value.Value;
 
 public class ObservablePropertiesPropertyFactory extends ConvertibleObservable<Properties, Map<String, Value>>
 		implements PropertyFactory {
-	private final NamedEventDispatcher<String, ChangeEvent<String>> dispatcher = new StringNamedEventDispatcher<ChangeEvent<String>>(
+	private final NamedEventDispatcher<String, ChangeEvent<String>> dispatcher = new SimpleStringNamedEventDispatcher<ChangeEvent<String>>(
 			true);
 	private final EventRegistration eventRegistration;
 
