@@ -5,18 +5,18 @@ import java.util.concurrent.TimeUnit;
 import scw.core.Assert;
 import scw.event.DelayNamedEventDispatcher;
 import scw.event.Event;
-import scw.util.concurrent.DefaultDelayExecutor;
-import scw.util.concurrent.DelayExecutor;
+import scw.util.concurrent.DefaultDelayableExecutor;
+import scw.util.concurrent.DelayableExecutor;
 
 public class SimpleDelayNamedEventDispatcher<K, T extends Event> extends SimpleNamedEventDispatcher<K, T>
 		implements DelayNamedEventDispatcher<K, T> {
-	private final DelayExecutor delayExecutor;
+	private final DelayableExecutor delayExecutor;
 
 	public SimpleDelayNamedEventDispatcher() {
-		this(new DefaultDelayExecutor());
+		this(new DefaultDelayableExecutor());
 	}
 
-	public SimpleDelayNamedEventDispatcher(DelayExecutor delayExecutor) {
+	public SimpleDelayNamedEventDispatcher(DelayableExecutor delayExecutor) {
 		super(true);
 		this.delayExecutor = delayExecutor;
 	}

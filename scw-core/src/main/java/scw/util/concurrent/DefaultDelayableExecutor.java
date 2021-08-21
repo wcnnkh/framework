@@ -11,17 +11,17 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.util.XUtils;
 
-public class DefaultDelayExecutor implements DelayExecutor {
+public class DefaultDelayableExecutor implements DelayableExecutor {
 	private static Logger logger = LoggerFactory
-			.getLogger(DefaultDelayExecutor.class);
+			.getLogger(DefaultDelayableExecutor.class);
 	private final ScheduledExecutorService scheduledExecutorService;
 
-	public DefaultDelayExecutor() {
+	public DefaultDelayableExecutor() {
 		this(Executors.newScheduledThreadPool(Runtime.getRuntime()
 				.availableProcessors()));
 	}
 
-	public DefaultDelayExecutor(
+	public DefaultDelayableExecutor(
 			ScheduledExecutorService scheduledExecutorService) {
 		this.scheduledExecutorService = scheduledExecutorService;
 	}

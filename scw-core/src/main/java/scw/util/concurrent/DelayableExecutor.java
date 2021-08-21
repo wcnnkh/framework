@@ -7,7 +7,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public interface DelayExecutor extends AsyncExecutor {
+public interface DelayableExecutor extends AsyncExecutor {
 
 	default <V> java.util.concurrent.Future<V> submit(Callable<V> task)
 			throws RejectedExecutionException {
@@ -27,7 +27,7 @@ public interface DelayExecutor extends AsyncExecutor {
 		ListenableFutureTask<Object> future = new ListenableFutureTask<>(
 				command, null);
 		Delayed scheduledFuture = schedule(future, delay, delayTimeUnit);
-		return new ScheduledListenableFuture<>(future, scheduledFuture);
+		return new ScheduledListenableFutureAdapter<>(future, scheduledFuture);
 	}
 
 	default <V> ScheduledListenableFuture<V> scheduleListenable(
@@ -35,6 +35,6 @@ public interface DelayExecutor extends AsyncExecutor {
 		ListenableFutureTask<V> future = new ListenableFutureTask<V>(callable);
 		ScheduledFuture<?> scheduledFuture = schedule(future, delay,
 				delayTimeUnit);
-		return new ScheduledListenableFuture<V>(future, scheduledFuture);
+		return new ScheduledListenableFutureAdapter<V>(future, scheduledFuture);
 	}
 }
