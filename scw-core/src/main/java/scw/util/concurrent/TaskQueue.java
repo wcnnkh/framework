@@ -22,6 +22,7 @@ import scw.util.XUtils;
 public class TaskQueue extends Thread implements AsyncExecutor {
 	private static Logger logger = LoggerFactory.getLogger(TaskQueue.class);
 	private final BlockingQueue<Runnable> queue;
+	private boolean tryGet = true;
 
 	public TaskQueue() {
 		this(new LinkedBlockingQueue<>());
@@ -39,7 +40,31 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 			return queue.poll();
 		}
 	}
-	
+
+	/**
+	 * 执行完后是否尝试调用{@see Future#get()}
+	 * 
+	 * @return
+	 */
+	public boolean isTryGet() {
+		return tryGet;
+	}
+
+	public void setTryGet(boolean tryGet) {
+		this.tryGet = tryGet;
+	}
+
+	protected void run(Runnable task) throws Throwable {
+		task.run();
+		
+		if (isTryGet()) {
+			//其中一个目的是为了方便输出异常日志
+			if (task instanceof Future) {
+				((Future<?>) task).get();
+			}
+		}
+	}
+
 	@Override
 	public void run() {
 		while (!Thread.currentThread().isInterrupted()) {
@@ -52,11 +77,11 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 				}
 			}
 
-			if(logger.isDebugEnabled()) {
+			if (logger.isDebugEnabled()) {
 				logger.debug("thread[{}] execute: {}", getName(), task);
 			}
 			try {
-				task.run();
+				run(task);
 			} catch (Throwable e) {
 				logger.error(e, "thread[{}] fail: {}", getName(), task);
 			}
@@ -73,15 +98,15 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 				return taskId + "[" + task.toString() + "]";
 			}
 		};
-		
-		if(isInterrupted()){
+
+		if (isInterrupted()) {
 			throw new RejectedExecutionException(String.valueOf(future));
 		}
-		
-		if(logger.isDebugEnabled()) {
+
+		if (logger.isDebugEnabled()) {
 			logger.debug("thread[{}] submit: {}", getName(), future);
 		}
-		
+
 		if (!queue.offer(future)) {
 			throw new RejectedExecutionException(String.valueOf(future));
 		}

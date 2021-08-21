@@ -1,24 +1,25 @@
 package scw.event.support;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import scw.core.Assert;
 import scw.event.DelayNamedEventDispatcher;
 import scw.event.Event;
+import scw.util.concurrent.DefaultDelayableExecutor;
+import scw.util.concurrent.DelayableExecutor;
 
-public class SimpleDelayStringNamedEventDispatcher<T extends Event> extends SimpleStringNamedEventDispatcher<T>
-		implements DelayNamedEventDispatcher<String, T> {
-	private final ScheduledExecutorService scheduledExecutorService;
+public class SimpleDelayStringNamedEventDispatcher<T extends Event> extends
+		SimpleStringNamedEventDispatcher<T> implements
+		DelayNamedEventDispatcher<String, T> {
+	private final DelayableExecutor delayExecutor;
 
 	public SimpleDelayStringNamedEventDispatcher() {
-		this(Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors()));
+		this(new DefaultDelayableExecutor());
 	}
 
-	public SimpleDelayStringNamedEventDispatcher(ScheduledExecutorService scheduledExecutorService) {
+	public SimpleDelayStringNamedEventDispatcher(DelayableExecutor delayExecutor) {
 		super(true);
-		this.scheduledExecutorService = scheduledExecutorService;
+		this.delayExecutor = delayExecutor;
 	}
 
 	@Override
@@ -28,9 +29,10 @@ public class SimpleDelayStringNamedEventDispatcher<T extends Event> extends Simp
 	}
 
 	@Override
-	public void publishEvent(String name, T event, long delay, TimeUnit delayTimeUnit) {
+	public void publishEvent(String name, T event, long delay,
+			TimeUnit delayTimeUnit) {
 		Assert.requiredArgument(delay >= 0, "delay");
-		scheduledExecutorService.schedule(() -> {
+		delayExecutor.schedule(() -> {
 			super.publishEvent(name, event);
 		}, delay, delayTimeUnit);
 	}

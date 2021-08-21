@@ -19,6 +19,7 @@ package scw.util.concurrent;
 /**
  * Failure callback for a {@link ListenableFuture}.
  */
+@FunctionalInterface
 public interface FailureCallback {
 
 	/**
