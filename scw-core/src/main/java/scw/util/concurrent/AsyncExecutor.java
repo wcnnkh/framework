@@ -67,7 +67,7 @@ public interface AsyncExecutor extends Executor {
 	 * @param task the {@code Callable} to execute (never {@code null})
 	 * @return a Future representing pending completion of the task
 	 */
-	<T> Future<T> submit(Callable<T> task) throws RejectedExecutionException;
+	<V> Future<V> submit(Callable<V> task) throws RejectedExecutionException;
 
 	/**
 	 * Submit a {@code Runnable} task for execution, receiving a
@@ -93,8 +93,8 @@ public interface AsyncExecutor extends Executor {
 	 * @return a {@code ListenableFuture} representing pending completion of the
 	 *         task
 	 */
-	default <T> ListenableFuture<T> submitListenable(Callable<T> task) throws RejectedExecutionException {
-		ListenableFutureTask<T> future = new ListenableFutureTask<T>(task);
+	default <V> ListenableFuture<V> submitListenable(Callable<V> task) throws RejectedExecutionException {
+		ListenableFutureTask<V> future = new ListenableFutureTask<V>(task);
 		submit(future);
 		return future;
 	}
