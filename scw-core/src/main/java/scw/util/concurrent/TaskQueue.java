@@ -78,12 +78,12 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 			}
 
 			if (logger.isDebugEnabled()) {
-				logger.debug("thread[{}] execute: {}", getName(), task);
+				logger.debug("Thread[{}] execute task: {}", getName(), task);
 			}
 			try {
 				run(task);
 			} catch (Throwable e) {
-				logger.error(e, "thread[{}] fail: {}", getName(), task);
+				logger.error(e, "Thread[{}] execute task fail: {}", getName(), task);
 			}
 		}
 	}
@@ -104,7 +104,7 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 		}
 
 		if (logger.isDebugEnabled()) {
-			logger.debug("thread[{}] submit: {}", getName(), future);
+			logger.debug("Thread[{}] submit task: {}", Thread.currentThread().getName(), future);
 		}
 
 		if (!queue.offer(future)) {
