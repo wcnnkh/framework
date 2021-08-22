@@ -2,7 +2,7 @@ package scw.event;
 
 import java.util.concurrent.TimeUnit;
 
-public interface DelayNamedEventDispatcher<K, T extends Event> extends NamedEventDispatcher<K, T>{
+public interface DelayableNamedEventDispatcher<K, T extends Event> extends NamedEventDispatcher<K, T>{
 	/**
 	 * 延迟触发
 	 * @param name
