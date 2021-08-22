@@ -3,23 +3,23 @@ package scw.event.support;
 import java.util.concurrent.TimeUnit;
 
 import scw.core.Assert;
-import scw.event.DelayNamedEventDispatcher;
+import scw.event.DelayableNamedEventDispatcher;
 import scw.event.Event;
 import scw.util.concurrent.DefaultDelayableExecutor;
 import scw.util.concurrent.DelayableExecutor;
 
-public class SimpleDelayStringNamedEventDispatcher<T extends Event> extends
+public class SimpleDelayableStringNamedEventDispatcher<T extends Event> extends
 		SimpleStringNamedEventDispatcher<T> implements
-		DelayNamedEventDispatcher<String, T> {
-	private final DelayableExecutor delayExecutor;
+		DelayableNamedEventDispatcher<String, T> {
+	private final DelayableExecutor delayableExecutor;
 
-	public SimpleDelayStringNamedEventDispatcher() {
+	public SimpleDelayableStringNamedEventDispatcher() {
 		this(new DefaultDelayableExecutor());
 	}
 
-	public SimpleDelayStringNamedEventDispatcher(DelayableExecutor delayExecutor) {
+	public SimpleDelayableStringNamedEventDispatcher(DelayableExecutor delayableExecutor) {
 		super(true);
-		this.delayExecutor = delayExecutor;
+		this.delayableExecutor = delayableExecutor;
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class SimpleDelayStringNamedEventDispatcher<T extends Event> extends
 	public void publishEvent(String name, T event, long delay,
 			TimeUnit delayTimeUnit) {
 		Assert.requiredArgument(delay >= 0, "delay");
-		delayExecutor.schedule(() -> {
+		delayableExecutor.schedule(() -> {
 			super.publishEvent(name, event);
 		}, delay, delayTimeUnit);
 	}
