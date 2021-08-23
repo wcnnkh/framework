@@ -34,13 +34,12 @@ public class Jaxrs2HttpPatternResolver implements HttpPatternResolver,
 
 	@Override
 	public boolean canResolveHttpPattern(Class<?> clazz) {
-		return AnnotatedElementUtils.isAnnotated(clazz, Path.class);
+		return true;
 	}
 
 	@Override
 	public boolean canResolveHttpPattern(Class<?> clazz, Method method) {
-		return AnnotatedElementUtils.isAnnotated(clazz, Path.class)
-				&& AnnotatedElementUtils.isAnnotated(method, Path.class)
+		return AnnotatedElementUtils.isAnnotated(method, Path.class)
 				&& AnnotatedElementUtils.isAnnotated(method, HttpMethod.class);
 	}
 
@@ -53,7 +52,7 @@ public class Jaxrs2HttpPatternResolver implements HttpPatternResolver,
 				Path.class);
 		Path methodPath = AnnotatedElementUtils.getMergedAnnotation(method,
 				Path.class);
-		String path = StringUtils.mergePath("/", clazzPath.value(),
+		String path = StringUtils.mergePath("/", clazzPath == null? "/":clazzPath.value(),
 				methodPath.value());
 		if (propertyResolver != null) {
 			path = propertyResolver.resolvePlaceholders(path);
