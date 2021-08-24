@@ -14,7 +14,7 @@ import scw.util.ConfigurableAccept;
 public class Copy {
 	private NoArgsInstanceFactory instanceFactory;
 	private FieldFactory fieldFactory = MapperUtils.getFieldFactory();
-	private final ConfigurableAccept<Field> fieldAccept = new ConfigurableAccept<Field>();
+	private final ConfigurableAccept<Field> filter = new ConfigurableAccept<Field>();
 
 	/**
 	 * 如果对象实现了java.lang.Cloneable 接口，是否反射调用clone方法
@@ -67,8 +67,8 @@ public class Copy {
 		return this;
 	}
 
-	public ConfigurableAccept<Field> getFieldAccept() {
-		return fieldAccept;
+	public ConfigurableAccept<Field> getFilter() {
+		return filter;
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class Copy {
 	}
 
 	/**
-	 * 克隆transient修辞符字段
+	 * 在里深拷贝时是否克隆transient修辞符字段
 	 * 
 	 * @return
 	 */
@@ -137,11 +137,13 @@ public class Copy {
 		return this;
 	}
 
-	protected <T> T cloneArray(Class<T> targetClass, Object array, Field parentField) {
-		int size = Array.getLength(array);
+	protected <T> T cloneArray(Class<T> targetClass, Object sourceArray,
+			Field sourceParentField) {
+		int size = Array.getLength(sourceArray);
 		Object newArr = Array.newInstance(targetClass.getComponentType(), size);
 		for (int i = 0; i < size; i++) {
-			Array.set(newArr, i, clone(Array.get(array, i), parentField));
+			Array.set(newArr, i,
+					clone(Array.get(sourceArray, i), sourceParentField));
 		}
 		return (T) newArr;
 	}
@@ -149,11 +151,13 @@ public class Copy {
 	/**
 	 * 获取对应的数据来源字段
 	 * 
-	 * @param sourceClass 数据来源
-	 * @param targetField 要插入的字段
+	 * @param sourceClass
+	 *            数据来源
+	 * @param targetField
+	 *            要插入的字段
 	 * @return
 	 */
-	protected Field getSourceField(Class<?> sourceClass, Fields sourceFields, final Field targetField) {
+	protected Field getSourceField(Fields sourceFields, final Field targetField) {
 		return sourceFields.accept(new Accept<Field>() {
 
 			public boolean accept(Field field) {
@@ -161,64 +165,79 @@ public class Copy {
 					return false;
 				}
 
-				if (!targetField.getSetter().getName().equals(field.getGetter().getName())) {
+				if (!targetField.getSetter().getName()
+						.equals(field.getGetter().getName())) {
 					return false;
 				}
 
 				if (isGenericTypeEqual()) {
-					if (!targetField.getSetter().getGenericType().equals(field.getGetter().getGenericType())) {
+					if (!targetField.getSetter().getGenericType()
+							.equals(field.getGetter().getGenericType())) {
 						return false;
 					}
 				} else {
-					if (!targetField.getSetter().getType().equals(field.getGetter().getType())) {
+					if (!targetField.getSetter().getType()
+							.equals(field.getGetter().getType())) {
 						return false;
 					}
 				}
 
 				// 使用异或，只有两个都是静态或都不是静态时才通过
-				return !(Modifier.isStatic(targetField.getSetter().getModifiers())
-						^ Modifier.isStatic(field.getGetter().getModifiers()));
+				return !(Modifier.isStatic(targetField.getSetter()
+						.getModifiers()) ^ Modifier.isStatic(field.getGetter()
+						.getModifiers()));
 			}
 		}).first();
 	}
 
-	public <T, S> void copy(Class<? extends T> targetClass, T target, Class<? extends S> sourceClass, S source,
-			Field parentField) {
+	public <T, S> void copy(Fields targetFields, T target, Fields sourceFields,
+			S source) {
 		if (source == null) {
 			return;
 		}
 
-		Fields sourceFields = fieldFactory.getFields(sourceClass, parentField).all().accept(fieldAccept);
-		for (Field field : fieldFactory.getFields(targetClass, parentField).all().accept(fieldAccept)) {
-			if (!field.isSupportSetter()) {
-				continue;
-			}
+		targetFields
+				.accept(FieldFeature.SUPPORT_SETTER)
+				.accept(FieldFeature.EXISTING_SETTER_FIELD)
+				.accept((targetField) -> {
+					// 是否忽略静态字段
+					if (isIgnoreStaticField()
+							&& Modifier.isStatic(targetField.getSetter()
+									.getModifiers())) {
+						return false;
+					}
+					return true;
+				})
+				.accept(getFilter())
+				.forEach(
+						(targetField) -> {
+							Field sourceField = getSourceField(sourceFields,
+									targetField);
+							if (sourceField == null) {
+								return;
+							}
 
-			/**
-			 * 目标字段应该存在实际的java.lang.Field
-			 */
-			if (field.getSetter().getField() == null) {
-				continue;
-			}
+							Object value = sourceField.getGetter().get(source);
+							if (value == null) {
+								return;
+							}
 
-			// 是否忽略静态字段
-			if (isIgnoreStaticField() && Modifier.isStatic(field.getSetter().getModifiers())) {
-				continue;
-			}
+							value = copyValue(targetField, value);
+							setValue(sourceField, targetField, target, value);
+						});
+	}
 
-			Field sourceField = getSourceField(sourceClass, sourceFields, field);
-			if (sourceField == null) {
-				continue;
-			}
-
-			Object value = sourceField.getGetter().get(source);
-			if (value == null) {
-				continue;
-			}
-
-			value = copyValue(field, value);
-			field.getSetter().set(target, value);
+	public <T, S> void copy(Class<? extends T> targetClass, T target,
+			Field targetParentField, Class<? extends S> sourceClass, S source,
+			Field sourceParentField) {
+		if (source == null) {
+			return;
 		}
+
+		copy(getFieldFactory().getFields(targetClass, targetParentField).all(),
+				source,
+				getFieldFactory().getFields(sourceClass, sourceParentField)
+						.all(), source);
 	}
 
 	private Object copyValue(Field field, Object value) {
@@ -235,13 +254,15 @@ public class Copy {
 		return valueToUse;
 	}
 
-	public <T, S> T copy(Class<? extends T> targetClass, Class<? extends S> sourceClass, S source, Field parentField) {
+	public <T, S> T copy(Class<? extends T> targetClass,
+			Field targetParentField, Class<? extends S> sourceClass, S source,
+			Field sourceParentField) {
 		if (source == null) {
 			return null;
 		}
 
 		if (targetClass.isArray() && sourceClass.isArray()) {
-			return cloneArray(targetClass, source, parentField);
+			return cloneArray(targetClass, source, sourceParentField);
 		}
 
 		if (!getInstanceFactory().isInstance(targetClass)) {
@@ -249,11 +270,13 @@ public class Copy {
 			if (targetClass.isInstance(source)) {
 				return targetClass.cast(source);
 			}
-			throw new RuntimeException("Unable to copy " + sourceClass + " -> " + targetClass);
+			throw new RuntimeException("Unable to copy " + sourceClass + " -> "
+					+ targetClass);
 		}
 
 		T target = getInstanceFactory().getInstance(targetClass);
-		copy(targetClass, target, sourceClass, source, parentField);
+		copy(targetClass, target, targetParentField, sourceClass, source,
+				sourceParentField);
 		return target;
 	}
 
@@ -262,8 +285,17 @@ public class Copy {
 			return null;
 		}
 
-		Class<?> sourceClass = source.getClass();
-		if (sourceClass.isPrimitive() || sourceClass.isEnum() || !getInstanceFactory().isInstance(sourceClass)) {
+		return (T) clone(source.getClass(), source, parentField);
+	}
+
+	public <T> T clone(Class<? extends T> sourceClass, T source,
+			Field parentField) {
+		if (source == null) {
+			return null;
+		}
+
+		if (sourceClass.isPrimitive() || sourceClass.isEnum()
+				|| !getInstanceFactory().isInstance(sourceClass)) {
 			return source;
 		}
 
@@ -276,30 +308,40 @@ public class Copy {
 		}
 
 		Object target = getInstanceFactory().getInstance(sourceClass);
-		while (sourceClass != null && sourceClass != Object.class) {
-			Fields fields = fieldFactory.getFields(sourceClass, parentField).accept(fieldAccept);
-			for (Field field : fields) {
-				if (!(field.isSupportGetter() && field.isSupportSetter() && field.getGetter().getField() != null
-						&& field.getSetter().getField() != null)) {
-					continue;
-				}
+		getFieldFactory()
+				.getFields(sourceClass, parentField)
+				.accept(getFilter())
+				.streamAll()
+				.forEach(
+						(field) -> {
+							if (!(field.isSupportGetter()
+									&& field.isSupportSetter()
+									&& field.getGetter().getField() != null && field
+									.getSetter().getField() != null)) {
+								return;
+							}
 
-				// 是否忽略静态字段
-				if (isIgnoreStaticField() && Modifier.isStatic(field.getSetter().getModifiers())) {
-					continue;
-				}
+							// 是否忽略静态字段
+							if (isIgnoreStaticField()
+									&& Modifier.isStatic(field.getSetter()
+											.getModifiers())) {
+								return;
+							}
 
-				Object value = field.getGetter().get(source);
-				if (value == null) {
-					continue;
-				}
+							Object value = field.getGetter().get(source);
+							if (value == null) {
+								return;
+							}
 
-				value = copyValue(field, value);
-				field.getSetter().set(target, value);
-			}
-			sourceClass = sourceClass.getSuperclass();
-		}
+							value = copyValue(field, value);
+							setValue(field, field, target, value);
+						});
 		return (T) target;
+	}
+
+	protected void setValue(Field sourceField, Field targetField,
+			Object target, Object value) {
+		targetField.getSetter().set(target, value);
 	}
 
 	private static final Copy DEFAULT_COPY = new Copy();
@@ -322,7 +364,8 @@ public class Copy {
 	public static <T> T copy(Class<? extends T> targetClass, Object source) {
 		Assert.requiredArgument(targetClass != null, "targetClass");
 		Assert.requiredArgument(source != null, "source");
-		return DEFAULT_COPY.copy(targetClass, source.getClass(), source, null);
+		return DEFAULT_COPY.copy(targetClass, null, source.getClass(), source,
+				null);
 	}
 
 	/**
@@ -334,6 +377,7 @@ public class Copy {
 	public static void copy(Object target, Object source) {
 		Assert.requiredArgument(target != null, "target");
 		Assert.requiredArgument(source != null, "source");
-		DEFAULT_COPY.copy(target.getClass(), target, source.getClass(), source, null);
+		DEFAULT_COPY.copy(target.getClass(), target, null, source.getClass(),
+				source, null);
 	}
 }
