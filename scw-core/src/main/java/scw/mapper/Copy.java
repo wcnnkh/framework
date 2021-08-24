@@ -183,6 +183,7 @@ public class Copy {
 				}
 
 				// 使用异或，只有两个都是静态或都不是静态时才通过
+				//异或  true ^ false = true   true ^ true = false false ^ false = false
 				return !(Modifier.isStatic(targetField.getSetter()
 						.getModifiers()) ^ Modifier.isStatic(field.getGetter()
 						.getModifiers()));
