@@ -2,20 +2,37 @@ package scw.mapper;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
+import java.util.Comparator;
 
 import scw.core.Assert;
 import scw.core.ResolvableType;
 import scw.core.reflect.ReflectionUtils;
 import scw.env.Sys;
 import scw.instance.NoArgsInstanceFactory;
+import scw.lang.Nullable;
 import scw.util.Accept;
 import scw.util.ConfigurableAccept;
 
 @SuppressWarnings("unchecked")
 public class Copy {
+	public static final Comparator<FieldDescriptor> COMPARATOR = new Comparator<FieldDescriptor>() {
+
+		@Override
+		public int compare(FieldDescriptor target, FieldDescriptor source) {
+			if (!target.getName().equals(source.getName())) {
+				return -1;
+			}
+
+			ResolvableType targetType = ResolvableType.forType(target.getGenericType());
+			ResolvableType sourceType = ResolvableType.forType(source.getGenericType());
+			return targetType.isAssignableFrom(sourceType) ? 0 : -1;
+		}
+	};
+
 	private NoArgsInstanceFactory instanceFactory;
 	private FieldFactory fieldFactory = MapperUtils.getFieldFactory();
 	private final ConfigurableAccept<Field> filter = new ConfigurableAccept<Field>();
+	private Comparator<FieldDescriptor> fieldMatcher;
 
 	/**
 	 * 如果对象实现了java.lang.Cloneable 接口，是否反射调用clone方法
@@ -36,22 +53,51 @@ public class Copy {
 	 */
 	private boolean deepCopy = false;
 
-	public boolean isDeepCopy() {
+	/**
+	 * 是否校验字段的Modifiers
+	 */
+	private boolean checkModifiers = true;
+
+	public Comparator<FieldDescriptor> getFieldMatcher() {
+		return fieldMatcher == null ? COMPARATOR : fieldMatcher;
+	}
+
+	public void setFieldMatcher(Comparator<FieldDescriptor> fieldMatcher) {
+		this.fieldMatcher = fieldMatcher;
+	}
+
+	/**
+	 * 是否校验字段的Modifiers
+	 * 
+	 * @return
+	 */
+	public final boolean isCheckModifiers() {
+		return checkModifiers;
+	}
+
+	/**
+	 * 是否校验字段的Modifiers
+	 * 
+	 * @param checkModifiers
+	 */
+	public void setCheckModifiers(boolean checkModifiers) {
+		this.checkModifiers = checkModifiers;
+	}
+
+	public final boolean isDeepCopy() {
 		return deepCopy;
 	}
 
-	public Copy setDeepCopy(boolean deepCopy) {
+	public void setDeepCopy(boolean deepCopy) {
 		this.deepCopy = deepCopy;
-		return this;
 	}
 
 	public final FieldFactory getFieldFactory() {
 		return fieldFactory;
 	}
 
-	public Copy setFieldFactory(FieldFactory fieldFactory) {
+	public void setFieldFactory(FieldFactory fieldFactory) {
 		this.fieldFactory = fieldFactory;
-		return this;
 	}
 
 	/**
@@ -59,13 +105,12 @@ public class Copy {
 	 * 
 	 * @return
 	 */
-	public boolean isIgnoreStaticField() {
+	public final boolean isIgnoreStaticField() {
 		return ignoreStaticField;
 	}
 
-	public Copy setIgnoreStaticField(boolean ignoreStaticField) {
+	public void setIgnoreStaticField(boolean ignoreStaticField) {
 		this.ignoreStaticField = ignoreStaticField;
-		return this;
 	}
 
 	public ConfigurableAccept<Field> getFilter() {
@@ -86,18 +131,16 @@ public class Copy {
 	 * 
 	 * @param invokeCloneableMethod
 	 */
-	public Copy setInvokeCloneableMethod(boolean invokeCloneableMethod) {
+	public void setInvokeCloneableMethod(boolean invokeCloneableMethod) {
 		this.invokeCloneableMethod = invokeCloneableMethod;
-		return this;
 	}
 
 	public final NoArgsInstanceFactory getInstanceFactory() {
 		return instanceFactory == null ? Sys.env : instanceFactory;
 	}
 
-	public Copy setInstanceFactory(NoArgsInstanceFactory instanceFactory) {
+	public void setInstanceFactory(NoArgsInstanceFactory instanceFactory) {
 		this.instanceFactory = instanceFactory;
-		return this;
 	}
 
 	/**
@@ -105,7 +148,7 @@ public class Copy {
 	 * 
 	 * @return
 	 */
-	public boolean isCloneTransientField() {
+	public final boolean isCloneTransientField() {
 		return cloneTransientField;
 	}
 
@@ -128,14 +171,8 @@ public class Copy {
 		return (T) newArr;
 	}
 
-	/**
-	 * 获取对应的数据来源字段
-	 * 
-	 * @param sourceClass 数据来源
-	 * @param targetField 要插入的字段
-	 * @return
-	 */
-	protected Field getSourceField(Fields sourceFields, final Field targetField) {
+	private Field getSourceField(Fields sourceFields, final Field targetField,
+			Comparator<FieldDescriptor> fieldMatcher) {
 		return sourceFields.accept(new Accept<Field>() {
 
 			public boolean accept(Field sourceField) {
@@ -143,24 +180,27 @@ public class Copy {
 					return false;
 				}
 
-				if (!targetField.getSetter().getName().equals(sourceField.getGetter().getName())) {
-					return false;
-				}
-				
-				ResolvableType targetType = ResolvableType.forType(targetField.getSetter().getGenericType());
-				ResolvableType sourceType = ResolvableType.forType(sourceField.getGetter().getGenericType());
-				if(!targetType.isAssignableFrom(sourceType)) {
-					return false;
-				}
-
 				// 使用异或，只有两个都是静态或都不是静态时才通过
 				// 异或 true ^ false = true true ^ true = false false ^ false = false
-				return !(Modifier.isStatic(targetField.getSetter().getModifiers())
-						^ Modifier.isStatic(sourceField.getGetter().getModifiers()));
+				if (checkModifiers && (Modifier.isStatic(targetField.getSetter().getModifiers())
+						^ Modifier.isStatic(sourceField.getGetter().getModifiers()))) {
+					return false;
+				}
+				return fieldMatcher.compare(targetField.getSetter(), sourceField.getGetter()) == 0;
 			}
 		}).first();
 	}
 
+	/**
+	 * 拷贝
+	 * 
+	 * @param <T>
+	 * @param <S>
+	 * @param targetFields 目标字段
+	 * @param target       目标对象
+	 * @param sourceFields 来源字段
+	 * @param source       来源
+	 */
 	public <T, S> void copy(Fields targetFields, T target, Fields sourceFields, S source) {
 		if (source == null) {
 			return;
@@ -169,12 +209,12 @@ public class Copy {
 		targetFields.accept(FieldFeature.SUPPORT_SETTER).accept(FieldFeature.EXISTING_SETTER_FIELD)
 				.accept((targetField) -> {
 					// 是否忽略静态字段
-					if (isIgnoreStaticField() && Modifier.isStatic(targetField.getSetter().getModifiers())) {
+					if (ignoreStaticField && Modifier.isStatic(targetField.getSetter().getModifiers())) {
 						return false;
 					}
 					return true;
 				}).accept(getFilter()).forEach((targetField) -> {
-					Field sourceField = getSourceField(sourceFields, targetField);
+					Field sourceField = getSourceField(sourceFields, targetField, getFieldMatcher());
 					if (sourceField == null) {
 						return;
 					}
@@ -189,8 +229,8 @@ public class Copy {
 				});
 	}
 
-	public <T, S> void copy(Class<? extends T> targetClass, T target, Field targetParentField,
-			Class<? extends S> sourceClass, S source, Field sourceParentField) {
+	public <T, S> void copy(Class<? extends T> targetClass, T target, @Nullable Field targetParentField,
+			Class<? extends S> sourceClass, S source, @Nullable Field sourceParentField) {
 		if (source == null) {
 			return;
 		}
@@ -201,9 +241,9 @@ public class Copy {
 
 	private Object copyValue(Field field, Object value) {
 		Object valueToUse = value;
-		if (isDeepCopy()) {
+		if (deepCopy) {
 			if (Modifier.isTransient(field.getSetter().getModifiers())) {
-				if (isCloneTransientField()) {
+				if (cloneTransientField) {
 					valueToUse = clone(valueToUse, field);
 				}
 			} else {
@@ -213,8 +253,8 @@ public class Copy {
 		return valueToUse;
 	}
 
-	public <T, S> T copy(Class<? extends T> targetClass, Field targetParentField, Class<? extends S> sourceClass,
-			S source, Field sourceParentField) {
+	public <T, S> T copy(Class<? extends T> targetClass, @Nullable Field targetParentField,
+			Class<? extends S> sourceClass, S source, @Nullable Field sourceParentField) {
 		if (source == null) {
 			return null;
 		}
@@ -236,7 +276,7 @@ public class Copy {
 		return target;
 	}
 
-	public <T> T clone(T source, Field parentField) {
+	public <T> T clone(T source, @Nullable Field parentField) {
 		if (source == null) {
 			return null;
 		}
@@ -244,7 +284,7 @@ public class Copy {
 		return (T) clone(source.getClass(), source, parentField);
 	}
 
-	public <T> T clone(Class<? extends T> sourceClass, T source, Field parentField) {
+	public <T> T clone(Class<? extends T> sourceClass, T source, @Nullable Field parentField) {
 		if (source == null) {
 			return null;
 		}
@@ -269,7 +309,7 @@ public class Copy {
 			}
 
 			// 是否忽略静态字段
-			if (isIgnoreStaticField() && Modifier.isStatic(field.getSetter().getModifiers())) {
+			if (ignoreStaticField && Modifier.isStatic(field.getSetter().getModifiers())) {
 				return;
 			}
 
@@ -305,6 +345,14 @@ public class Copy {
 		return CLONE_COPY.clone(source, null);
 	}
 
+	/**
+	 * 浅拷贝
+	 * 
+	 * @param <T>
+	 * @param targetClass
+	 * @param source
+	 * @return
+	 */
 	public static <T> T copy(Class<? extends T> targetClass, Object source) {
 		Assert.requiredArgument(targetClass != null, "targetClass");
 		Assert.requiredArgument(source != null, "source");
@@ -312,7 +360,7 @@ public class Copy {
 	}
 
 	/**
-	 * 推荐使用此方法
+	 * 浅拷贝
 	 * 
 	 * @param target
 	 * @param source

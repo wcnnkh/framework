@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.websocket.Session;
 
 import scw.core.Assert;
+import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
@@ -111,6 +112,13 @@ public class SafeStandardSessionManager<T> {
 		return remove(group, session.getId()) != null;
 	}
 
+	/**
+	 * 移除指定session
+	 * @param group
+	 * @param sessionId
+	 * @return 如果移除成功返回移除的session，否则返回空
+	 */
+	@Nullable
 	public Session remove(T group, String sessionId) {
 		Assert.requiredArgument(group != null, "group");
 		Assert.requiredArgument(sessionId != null, "sessionId");
@@ -128,6 +136,13 @@ public class SafeStandardSessionManager<T> {
 		return session;
 	}
 
+	/**
+	 * 获取指定session
+	 * @param group
+	 * @param sessionId
+	 * @return 如果存在返回session,否则返回空
+	 */
+	@Nullable
 	public Session getSession(T group, String sessionId) {
 		Assert.requiredArgument(group != null, "group");
 		Assert.requiredArgument(sessionId != null, "sessionId");
