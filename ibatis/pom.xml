@@ -1,0 +1,33 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.basc.framework</groupId>
+		<artifactId>framework</artifactId>
+		<version>1.8.0</version>
+	</parent>
+	<artifactId>ibatis</artifactId>
+	<dependencies>
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>beans</artifactId>
+		</dependency>
+		<!-- mybatis相关 -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.4.6</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>boot</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>druid</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
