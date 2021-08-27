@@ -1,10 +1,9 @@
 package scw.test;
 
 import static org.junit.Assert.assertTrue;
+import io.basc.framework.codec.support.CharsetCodec;
 
 import org.junit.Test;
-
-import scw.codec.support.CharsetCodec;
 
 public class GzipTest {
 	@Test

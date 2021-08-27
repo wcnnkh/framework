@@ -1,15 +1,15 @@
 package scw.test;
 
+import io.basc.framework.util.XUtils;
+import io.basc.framework.util.stream.StreamProcessor;
+import io.basc.framework.util.stream.StreamProcessorSupport;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.junit.Test;
-
-import scw.util.XUtils;
-import scw.util.stream.StreamProcessor;
-import scw.util.stream.StreamProcessorSupport;
 
 public class StreamProcessorTest {
 	@Test

@@ -1,12 +1,12 @@
 package scw.test;
 
+import io.basc.framework.mapper.Copy;
+import io.basc.framework.mapper.MapperUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-
-import scw.mapper.Copy;
-import scw.mapper.MapperUtils;
 
 public class CopyTest {
 	@Test

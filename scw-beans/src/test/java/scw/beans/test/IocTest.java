@@ -1,13 +1,13 @@
 package scw.beans.test;
 
+import io.basc.framework.beans.annotation.Value;
+import io.basc.framework.beans.ioc.value.ResourceValueProcesser;
+import io.basc.framework.beans.support.DefaultBeanFactory;
+import io.basc.framework.orm.annotation.PrimaryKey;
+
 import java.util.Map;
 
 import org.junit.Test;
-
-import scw.beans.annotation.Value;
-import scw.beans.ioc.value.ResourceValueProcesser;
-import scw.beans.support.DefaultBeanFactory;
-import scw.orm.annotation.PrimaryKey;
 
 public class IocTest {
 	private static DefaultBeanFactory beanFactory = new DefaultBeanFactory();

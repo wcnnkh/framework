@@ -1,6 +1,16 @@
 package scw.test;
 
 import static org.junit.Assert.assertTrue;
+import io.basc.framework.codec.Codec;
+import io.basc.framework.codec.Signer;
+import io.basc.framework.codec.signer.SHA1WithRSASigner;
+import io.basc.framework.codec.support.AES;
+import io.basc.framework.codec.support.Base64;
+import io.basc.framework.codec.support.CharsetCodec;
+import io.basc.framework.codec.support.DES;
+import io.basc.framework.codec.support.HexCodec;
+import io.basc.framework.codec.support.RSA;
+import io.basc.framework.codec.support.URLCodec;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -10,17 +20,6 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
 import org.junit.Test;
-
-import scw.codec.Codec;
-import scw.codec.Signer;
-import scw.codec.signer.SHA1WithRSASigner;
-import scw.codec.support.AES;
-import scw.codec.support.Base64;
-import scw.codec.support.CharsetCodec;
-import scw.codec.support.DES;
-import scw.codec.support.HexCodec;
-import scw.codec.support.RSA;
-import scw.codec.support.URLCodec;
 
 public class CodecTest {
 	public static String content = "这是一段加解密测试内容!";

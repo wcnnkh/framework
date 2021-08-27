@@ -1,18 +1,17 @@
 package scw.orm.test;
 
 import static org.junit.Assert.assertTrue;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.env.Sys;
+import io.basc.framework.io.Resource;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.orm.annotation.PrimaryKey;
 
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-
-import scw.convert.TypeDescriptor;
-import scw.env.Sys;
-import scw.io.Resource;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
-import scw.orm.annotation.PrimaryKey;
 
 public class XmlResolverTest {
 	private static Logger logger = LoggerFactory.getLogger(XmlResolverTest.class);

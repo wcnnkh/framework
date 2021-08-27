@@ -1,11 +1,11 @@
 package scw.log4j.test;
 
-import org.junit.Test;
+import io.basc.framework.log4j.Log4jLoggerFactory;
+import io.basc.framework.logger.ILoggerFactory;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 
-import scw.log4j.Log4jLoggerFactory;
-import scw.logger.ILoggerFactory;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import org.junit.Test;
 
 public class Log4jTest {
 	@Test

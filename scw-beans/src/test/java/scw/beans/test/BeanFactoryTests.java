@@ -1,15 +1,14 @@
 package scw.beans.test;
 
 import static org.junit.Assert.assertTrue;
+import io.basc.framework.beans.annotation.ConfigurationProperties;
+import io.basc.framework.beans.support.DefaultBeanFactory;
+import io.basc.framework.json.JSONUtils;
+import io.basc.framework.util.XUtils;
 
 import java.util.Properties;
 
 import org.junit.Test;
-
-import scw.beans.annotation.ConfigurationProperties;
-import scw.beans.support.DefaultBeanFactory;
-import scw.json.JSONUtils;
-import scw.util.XUtils;
 
 @SuppressWarnings("unused")
 public class BeanFactoryTests {

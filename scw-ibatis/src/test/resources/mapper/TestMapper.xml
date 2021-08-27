@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="scw.ibatis.test.mapper.TestMapper">
+<mapper namespace="io.basc.framework.ibatis.test.mapper.TestMapper">
 	<select id="query" resultType="java.lang.String">
 		select uid from user
 	</select>

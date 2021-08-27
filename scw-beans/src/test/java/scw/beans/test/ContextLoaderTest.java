@@ -1,12 +1,11 @@
 package scw.beans.test;
 
 import static org.junit.Assert.assertTrue;
+import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.beans.ContextLoader;
+import io.basc.framework.beans.support.DefaultBeanFactory;
 
 import org.junit.Test;
-
-import scw.beans.BeanFactory;
-import scw.beans.ContextLoader;
-import scw.beans.support.DefaultBeanFactory;
 
 public class ContextLoaderTest {
 	@Test

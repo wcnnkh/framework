@@ -1,11 +1,11 @@
 package scw.boot.test;
 
+import io.basc.framework.boot.Application;
+import io.basc.framework.boot.support.MainApplication;
+
 import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
-
-import scw.boot.Application;
-import scw.boot.support.MainApplication;
 
 public class BootTest {
 	@Test

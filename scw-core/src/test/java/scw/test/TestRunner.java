@@ -1,11 +1,11 @@
 package scw.test;
 
+import io.basc.framework.core.type.scanner.ClassPathClassScanner;
+import io.basc.framework.core.utils.ClassUtils;
+
 import java.util.Set;
 
 import org.junit.runner.JUnitCore;
-
-import scw.core.type.scanner.ClassPathClassScanner;
-import scw.core.utils.ClassUtils;
 
 public class TestRunner {
 	public static void main(String[] args) {

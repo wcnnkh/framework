@@ -1,10 +1,10 @@
 package scw.test;
 
-import org.junit.Test;
+import io.basc.framework.logger.Levels;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 
-import scw.logger.Levels;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import org.junit.Test;
 
 public class LoggerLevelTest {
 	@Test

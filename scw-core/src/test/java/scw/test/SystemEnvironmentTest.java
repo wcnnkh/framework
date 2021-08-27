@@ -1,10 +1,9 @@
 package scw.test;
 
 import static org.junit.Assert.assertTrue;
+import io.basc.framework.env.Sys;
 
 import org.junit.Test;
-
-import scw.env.Sys;
 
 public class SystemEnvironmentTest {
 	@Test

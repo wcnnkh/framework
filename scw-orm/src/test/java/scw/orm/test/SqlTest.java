@@ -1,12 +1,11 @@
 package scw.orm.test;
 
 import static org.junit.Assert.assertTrue;
+import io.basc.framework.orm.ObjectRelationalMapping;
+import io.basc.framework.orm.annotation.AnnotationObjectRelationalMapping;
+import io.basc.framework.orm.sql.annotation.Table;
 
 import org.junit.Test;
-
-import scw.orm.ObjectRelationalMapping;
-import scw.orm.annotation.AnnotationObjectRelationalMapping;
-import scw.orm.sql.annotation.Table;
 
 @Table
 public class SqlTest {
