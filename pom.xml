@@ -492,6 +492,18 @@
 				<artifactId>jackson</artifactId>
 				<version>${basc.version}</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>seata</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>solr</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
 
 			<dependency>
 				<groupId>io.basc.framework</groupId>
