@@ -6,7 +6,7 @@
 		<artifactId>framework</artifactId>
 		<version>1.8.0</version>
 	</parent>
-	<artifactId>scw-nacos-client</artifactId>
+	<artifactId>nacos-client</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
