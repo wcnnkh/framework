@@ -5,14 +5,14 @@ import io.basc.framework.event.Observable;
 
 public class HttpClientConfigAccessor {
 	private static final Observable<Integer> DEFAULT_CONNECT_TIMEOUT = Sys.env
-			.getObservableValue("scw.http.client.connect.timeout",
+			.getObservableValue("io.basc.framework.http.client.connect.timeout",
 					Integer.class, 10000);
 	private static final Observable<Integer> DEFAULT_READ_TIMEOUT = Sys.env
-			.getObservableValue("scw.http.client.read.timeout", Integer.class,
+			.getObservableValue("io.basc.framework.http.client.read.timeout", Integer.class,
 					10000);
 	private static final Observable<String> DEFAULT_UA = Sys.env
 			.getObservableValue(
-					"scw.http.client.headers.ua",
+					"io.basc.framework.http.client.headers.ua",
 					String.class,
 					"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
 

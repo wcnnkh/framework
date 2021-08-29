@@ -97,7 +97,7 @@ public final class ResourceUtils {
 	private static final String[] RESOURCE_PREFIXS;
 	
 	static{
-		String prefixs = System.getProperty("scw.resource.prefixs");
+		String prefixs = System.getProperty("io.basc.framework.resource.prefixs");
 		String[] resourcePrefixs = new String[]{"resources/"};
 		if(StringUtils.isEmpty(prefixs)){
 			String[] array = StringUtils.commonSplit(prefixs);

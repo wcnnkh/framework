@@ -188,7 +188,7 @@ public final class WebUtils {
 	}
 
 	/**
-	 * 此方法不一定返回scw.web.JsonServerHttpRequest
+	 * 此方法不一定返回 io.basc.framework.web.JsonServerHttpRequest
 	 * @param request
 	 * @return
 	 */
@@ -211,7 +211,7 @@ public final class WebUtils {
 	}
 
 	/**
-	 * 此方法不一定返回scw.web.MultiPartServerHttpRequest
+	 * 此方法不一定返回 io.basc.framework.web.MultiPartServerHttpRequest
 	 * @param request
 	 * @param multipartMessageResolver
 	 * @return

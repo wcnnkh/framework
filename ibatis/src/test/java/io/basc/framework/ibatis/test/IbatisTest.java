@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutionException;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
-@MapperScan("scw.ibatis.test.mapper")
+@MapperScan("io.basc.framework.ibatis.test.mapper")
 @MapperResources("classpath:/mapper/*.xml")
 public class IbatisTest {
 	public static void main(String[] args) throws InterruptedException, ExecutionException {

@@ -26,9 +26,9 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 @RequiredJavaVersion(8)
 public class PoiExcelOperations implements ExcelOperations {
 	private static final ExcelReader OLE2_READER = Sys.env
-			.getInstance("scw.microsoft.poi.HSSFExcelReader");
+			.getInstance("io.basc.framework.microsoft.poi.HSSFExcelReader");
 	private static final ExcelReader OOXML_READER = Sys.env
-			.getInstance("scw.microsoft.poi.XSSFExcelReader");
+			.getInstance("io.basc.framework.microsoft.poi.XSSFExcelReader");
 	private static final boolean XSSF_SUPPORT = ClassUtils
 			.isPresent("org.apache.poi.xssf.usermodel.XSSFWorkbookFactory", null);
 	@SuppressWarnings("unchecked")

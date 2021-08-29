@@ -13,8 +13,8 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 
 public class RabbitmqExchange extends AbstractRabbitmqExchange {
-	private static final String DIX_PREFIX = "scw.dix.";
-	private static final String DELAY_PREFIX = "scw.delay.";
+	private static final String DIX_PREFIX = "io.basc.framework.dix.";
+	private static final String DELAY_PREFIX = "io.basc.framework.delay.";
 	private static final String DELAY_EXCHANGE_TYPE = "fanout";
 
 	private final ThreadLocal<Channel> channelThreadLocal = new NamedThreadLocal<Channel>(RabbitmqExchange.class.getSimpleName() + "-channel");

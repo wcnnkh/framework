@@ -12,8 +12,8 @@ import javax.servlet.ServletContext;
 
 public abstract class ServletContextUtils {
 	private static final ServletApplicationStartup SERVLET_APPLICATION_STARTUP = Sys.env
-			.getServiceLoader(ServletApplicationStartup.class, "scw.boot.servlet.support.Servlet3ApplicationStartup",
-					"scw.boot.servlet.support.DefaultServletApplicationStartup")
+			.getServiceLoader(ServletApplicationStartup.class, ServletApplicationStartup.class.getPackage().getName() + ".support.Servlet3ApplicationStartup",
+					ServletApplicationStartup.class.getPackage().getName() + ".support.DefaultServletApplicationStartup")
 			.first();
 
 	public static ServletApplicationStartup getServletApplicationStartup() {

@@ -15,9 +15,9 @@ import java.io.IOException;
 import com.rabbitmq.client.Channel;
 
 public abstract class AbstractRabbitmqExchange extends AbstractExchange implements Init {
-	static final String DIX_ROUTING_KEY = "scw.dix.routingKey";
+	static final String DIX_ROUTING_KEY = "io.basc.framework.dix.routingKey";
 	static final String X_DEAD_LETTER_EXCHANGE = "x-dead-letter-exchange";
-	static final String DELAY_ROUTING_KEY = "scw.delay.routingKey";
+	static final String DELAY_ROUTING_KEY = "io.basc.framework.delay.routingKey";
 
 	public AbstractRabbitmqExchange(Serializer serializer, ExchangeDeclare exchangeDeclare) {
 		super(serializer, exchangeDeclare);

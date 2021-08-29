@@ -12,7 +12,7 @@ import java.io.IOException;
 
 /**
  * Simple implementation of the {@link MetadataReaderFactory} interface,
- * creating a new ASM {@link scw.asm.ClassReader} for every request.
+ * creating a new ASM {@link io.basc.framework.asm.ClassReader} for every request.
  */
 public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 	private final ResourceLoader resourceLoader;

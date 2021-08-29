@@ -41,7 +41,7 @@ public final class LoggerFactory {
 		}
 
 		// 使用spi机制加载handlers
-		if(propertyFactory.getValue("scw.logger.handlers.enable", boolean.class, true)) {
+		if(propertyFactory.getValue("io.basc.framework.logger.handlers.enable", boolean.class, true)) {
 			List<Handler> handlers = serviceLoaderFactory.getServiceLoader(Handler.class).toList();
 			if (!CollectionUtils.isEmpty(handlers)) {
 				// 存在自定义handler的情况不使用父级的handler

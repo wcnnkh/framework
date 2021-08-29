@@ -20,7 +20,7 @@ public final class HttpUtils {
 	};
 
 	private static final HttpClient HTTP_CLIENT = Sys.env
-			.getServiceLoader(HttpClient.class, "scw.http.client.DefaultHttpClient").first();
+			.getServiceLoader(HttpClient.class, "io.basc.framework.http.client.DefaultHttpClient").first();
 
 	/**
 	 * 获取默认的HttpClient(获取spi机制加载)

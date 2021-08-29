@@ -48,8 +48,8 @@ public final class Sys extends DefaultEnvironment implements ServiceLoaderFactor
 		env.load();
 		unsafeInstanceFactory = instanceFactory.getServiceLoader(
 				NoArgsInstanceFactory.class,
-				"scw.instance.support.SunNoArgsInstanceFactory",
-				"scw.instance.support.UnsafeNoArgsInstanceFactory").first();
+				"io.basc.framework.instance.support.SunNoArgsInstanceFactory",
+				"io.basc.framework.instance.support.UnsafeNoArgsInstanceFactory").first();
 		clock = env.getServiceLoader(Clock.class).first();
 		if (clock == null) {
 			clock = Clock.SYSTEM;
@@ -66,7 +66,7 @@ public final class Sys extends DefaultEnvironment implements ServiceLoaderFactor
 
 		// 初始化日志管理器
 		Observable<Properties> observable = getProperties(getValue(
-				"scw.logger.level.config", String.class,
+				"io.basc.framework.logger.level.config", String.class,
 				"/logger-level.properties"));
 		LoggerFactory.getLevelManager().combine(observable);
 

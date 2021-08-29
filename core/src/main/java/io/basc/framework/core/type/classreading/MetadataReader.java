@@ -6,7 +6,7 @@ import io.basc.framework.io.Resource;
 
 /**
  * Simple facade for accessing class metadata,
- * as read by an ASM {@link scw.asm.ClassReader}.
+ * as read by an ASM {@link io.basc.framework.asm.ClassReader}.
  */
 public interface MetadataReader {
 

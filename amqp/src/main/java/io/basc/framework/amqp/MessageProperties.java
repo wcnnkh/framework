@@ -16,14 +16,14 @@ import java.util.concurrent.TimeUnit;
 
 public class MessageProperties implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
-	private static final String DELAY_MESSAGE = "scw.delay";
-	private static final String RETRY_COUNT = "scw.retry.count";
-	private static final String MAX_RETRY_COUNT = "scw.retry.max.count";
-	private static final String RETRY_DELAY = "scw.retry.delay";
-	private static final String RETRY_DELAY_SCRIPT = "scw.retry.delay";
-	private static final String RETRY_DELAY_MULTIPLE = "scw.retry.delay.multiple";
-	private static final String PUBLISH_ROUTING_KEY = "scw.publish.routingKey";
-	private static final String TRANSACTION_MESSAGE_CONFIRM_DELAY_KEY = "scw.transaction.message.confirm.delay";
+	private static final String DELAY_MESSAGE = "framework.amqp.message.delay";
+	private static final String RETRY_COUNT = "framework.amqp.message.retry.count";
+	private static final String MAX_RETRY_COUNT = "framework.amqp.message.retry.max.count";
+	private static final String RETRY_DELAY = "framework.amqp.message.retry.delay";
+	private static final String RETRY_DELAY_SCRIPT = "framework.amqp.message.retry.delay";
+	private static final String RETRY_DELAY_MULTIPLE = "framework.amqp.message.retry.delay.multiple";
+	private static final String PUBLISH_ROUTING_KEY = "framework.amqp.message.publish.routingKey";
+	private static final String TRANSACTION_MESSAGE_CONFIRM_DELAY_KEY = "framework.amqp.message.transaction.confirm.delay";
 
 	private String contentType;
 	private String contentEncoding;

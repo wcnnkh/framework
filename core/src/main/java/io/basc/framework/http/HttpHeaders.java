@@ -545,7 +545,7 @@ public class HttpHeaders extends Headers {
 	
 	static {
 		AJAX_HEADERS.combine(Sys.env.getProperties("/io/basc/framework/net/headers/ajax.headers.properties"));
-		AJAX_HEADERS.combine(Sys.env.getProperties(Sys.env.getValue("scw.net.ajax.headers", String.class,
+		AJAX_HEADERS.combine(Sys.env.getProperties(Sys.env.getValue("io.basc.framework.net.ajax.headers", String.class,
 				"/ajax-headers.properties")));
 	}
 

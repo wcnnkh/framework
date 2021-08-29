@@ -31,7 +31,8 @@ import java.util.Map;
 
 public final class BeanUtils {
 	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = Sys.env.getServiceLoader(AopEnableSpi.class).toList();
-
+	private static final String IGNORE_PACKAGE_NAME_PREFIX = BeanUtils.class.getPackage().getName() + ".";
+	
 	private BeanUtils() {
 	};
 
@@ -222,7 +223,7 @@ public final class BeanUtils {
 
 				// 如果字段上存在beans下的注解应该忽略此字段
 				for (Annotation annotation : field.getAnnotations()) {
-					if (annotation.annotationType().getName().startsWith("scw.beans.")) {
+					if (annotation.annotationType().getName().startsWith(IGNORE_PACKAGE_NAME_PREFIX)) {
 						return false;
 					}
 				}

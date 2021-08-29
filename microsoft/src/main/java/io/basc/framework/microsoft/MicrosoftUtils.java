@@ -22,7 +22,7 @@ public final class MicrosoftUtils {
 	};
 
 	private static final ExcelOperations EXCEL_OPERATIONS = Sys.env.getServiceLoader(ExcelOperations.class,
-			"scw.microsoft.poi.PoiExcelOperations", "scw.microsoft.jxl.JxlExcelOperations").first();
+			"io.basc.framework.microsoft.poi.PoiExcelOperations", "io.basc.framework.microsoft.jxl.JxlExcelOperations").first();
 
 	static {
 		if (EXCEL_OPERATIONS == null) {

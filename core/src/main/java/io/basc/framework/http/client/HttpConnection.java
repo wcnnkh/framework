@@ -28,7 +28,7 @@ import java.util.Arrays;
 public interface HttpConnection extends HttpConnectionFactory {
 	static final RedirectManager REDIRECT_MANAGER = Sys.env.getServiceLoader(
 			RedirectManager.class,
-			"scw.http.client.HttpConnection.DefaultRedirectManager").first();
+			"io.basc.framework.http.client.HttpConnection.DefaultRedirectManager").first();
 
 	/**
 	 * Add the given, single header value under the given name.

@@ -1,1 +1,1 @@
-scw.boot.servlet.support.ApplicationServletContainerInitializer
+io.basc.framework.boot.servlet.support.ApplicationServletContainerInitializer

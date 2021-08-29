@@ -28,9 +28,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class DefaultHttpClient extends AbstractHttpConnectionFactory implements HttpClient {
-	private static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = Sys.env.getServiceLoader(ClientHttpRequestFactory.class, "scw.http.client.SimpleClientHttpRequestFactory").first();
+	private static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = Sys.env.getServiceLoader(ClientHttpRequestFactory.class, "io.basc.framework.http.client.SimpleClientHttpRequestFactory").first();
 	private static final UriTemplateHandler URI_TEMPLATE_HANDLER = Sys.env.getServiceLoader(UriTemplateHandler.class,
-			"scw.net.uri.DefaultUriTemplateHandler").first();
+			"io.basc.framework.net.uri.DefaultUriTemplateHandler").first();
 	static final ClientHttpResponseErrorHandler CLIENT_HTTP_RESPONSE_ERROR_HANDLER = Sys.env.getServiceLoader(ClientHttpResponseErrorHandler.class, DefaultClientHttpResponseErrorHandler.class).first();
 	static final HttpClientCookieManager COOKIE_MANAGER = Sys.env.getServiceLoader(HttpClientCookieManager.class).first();
 	static final List<ClientHttpRequestInterceptor> ROOT_INTERCEPTORS = Sys.

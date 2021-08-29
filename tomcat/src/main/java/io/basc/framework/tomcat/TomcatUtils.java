@@ -90,10 +90,10 @@ public final class TomcatUtils {
 	public static void addWsSci(Context context, Set<Class<?>> classes,
 			ClassLoader classLoader) {
 		// init websocket
-		if (ClassUtils.isPresent("scw.tomcat.WsServletContainerInitializer",
+		if (ClassUtils.isPresent("io.basc.framework.tomcat.WsServletContainerInitializer",
 				classLoader)) {
 			ServletContainerInitializer initializer = ClassUtils.newInstance(
-					"scw.tomcat.WsServletContainerInitializer", classLoader);
+					"io.basc.framework.tomcat.WsServletContainerInitializer", classLoader);
 			context.addServletContainerInitializer(initializer, classes);
 		}
 	}

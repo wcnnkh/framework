@@ -29,7 +29,7 @@ import java.util.Map;
  *
  * @author Rossen Stoyanchev
  * @see io.basc.framework.websocket.server.support.WebSocketHttpRequestHandler
- * @see scw.websocket.sockjs.transport.handler.DefaultSockJsService
+ * @see io.basc.framework.websocket.sockjs.transport.handler.DefaultSockJsService
  */
 public interface HandshakeInterceptor {
 
