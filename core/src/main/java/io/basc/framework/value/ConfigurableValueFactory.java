@@ -1,6 +1,6 @@
 package io.basc.framework.value;
 
-import io.basc.framework.core.Assert;
+import io.basc.framework.util.Assert;
 
 public interface ConfigurableValueFactory<K> extends ValueFactory<K> {
 	boolean put(K key, Value value);

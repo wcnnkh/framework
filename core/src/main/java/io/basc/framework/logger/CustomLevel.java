@@ -1,8 +1,8 @@
 package io.basc.framework.logger;
 
-import io.basc.framework.core.Assert;
-
 import java.util.logging.Level;
+
+import io.basc.framework.util.Assert;
 
 public class CustomLevel extends Level {
 	private static final long serialVersionUID = 1L;

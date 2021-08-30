@@ -1,8 +1,8 @@
 package io.basc.framework.web.jsonp;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.http.MediaType;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.ServerHttpResponseWrapper;
 

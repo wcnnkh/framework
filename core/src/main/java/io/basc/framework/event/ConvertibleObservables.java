@@ -2,8 +2,8 @@ package io.basc.framework.event;
 
 import io.basc.framework.convert.Converter;
 import io.basc.framework.core.OrderComparator;
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.util.CollectionFactory;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Combiner;
 
 import java.util.ArrayList;

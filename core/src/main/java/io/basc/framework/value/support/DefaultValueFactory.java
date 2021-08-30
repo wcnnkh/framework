@@ -1,6 +1,5 @@
 package io.basc.framework.value.support;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.core.OrderComparator;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
@@ -8,6 +7,7 @@ import io.basc.framework.event.EventRegistration;
 import io.basc.framework.event.MultiEventRegistration;
 import io.basc.framework.event.support.ObservableMap;
 import io.basc.framework.event.support.SimpleNamedEventDispatcher;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.Pair;
 import io.basc.framework.value.ConfigurableValueFactory;

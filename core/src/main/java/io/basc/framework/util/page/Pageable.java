@@ -1,7 +1,7 @@
 package io.basc.framework.util.page;
 
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.CollectionUtils;
 
 import java.util.Iterator;
 import java.util.List;

@@ -1,6 +1,5 @@
 package io.basc.framework.lucene;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.json.JSONUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lucene.annotation.AnnotationFieldResolver;
@@ -10,6 +9,7 @@ import io.basc.framework.mapper.Fields;
 import io.basc.framework.mapper.MapperConfigurator;
 import io.basc.framework.orm.EntityStructure;
 import io.basc.framework.orm.Property;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.concurrent.AsyncExecutor;
 import io.basc.framework.util.concurrent.TaskQueue;
 import io.basc.framework.util.stream.Processor;

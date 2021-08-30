@@ -1,9 +1,9 @@
 package io.basc.framework.data.generator;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.StringUtils;
-import io.basc.framework.core.utils.XTime;
 import io.basc.framework.data.Counter;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.XTime;
 
 /**
  * 一个纯数字的流水号生成器,最后10位是一个定长的流水号，除去最后10位，前面剩下的是时间格式化后的结果

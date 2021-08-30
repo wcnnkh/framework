@@ -1,7 +1,7 @@
 package io.basc.framework.http.client;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.http.HttpMethod;
+import io.basc.framework.util.Assert;
 
 import java.io.IOException;
 import java.net.URI;

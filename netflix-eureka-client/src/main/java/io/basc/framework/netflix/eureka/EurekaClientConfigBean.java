@@ -19,8 +19,8 @@ package io.basc.framework.netflix.eureka;
 import static io.basc.framework.netflix.eureka.EurekaConstants.DEFAULT_PREFIX;
 import io.basc.framework.beans.annotation.Autowired;
 import io.basc.framework.beans.annotation.ConfigurationProperties;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.env.Environment;
+import io.basc.framework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,7 +1,7 @@
 package io.basc.framework.aop.jdk;
 
 import io.basc.framework.aop.support.ProxyUtils;
-import io.basc.framework.core.reflect.DefaultMethodInvoker;
+import io.basc.framework.reflect.DefaultMethodInvoker;
 
 import java.lang.reflect.Method;
 

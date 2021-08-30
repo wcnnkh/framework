@@ -1,8 +1,8 @@
 package io.basc.framework.instance;
 
 import io.basc.framework.core.OrderComparator;
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Supplier;
 
 import java.util.Iterator;

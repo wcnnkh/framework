@@ -1,10 +1,10 @@
 package io.basc.framework.mail.simple;
 
-import io.basc.framework.core.utils.StringUtils;
-
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
+
+import io.basc.framework.util.StringUtils;
 
 public class SimpleMessage extends MimeMessage {
 	private final SimpleProperties properties;

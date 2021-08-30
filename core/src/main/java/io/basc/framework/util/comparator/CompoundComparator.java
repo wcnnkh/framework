@@ -1,11 +1,11 @@
 package io.basc.framework.util.comparator;
 
-import io.basc.framework.core.Assert;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
+import io.basc.framework.util.Assert;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class CompoundComparator<T> implements Comparator<T>, Serializable {

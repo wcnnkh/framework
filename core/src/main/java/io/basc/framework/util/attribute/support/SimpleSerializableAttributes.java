@@ -1,6 +1,6 @@
 package io.basc.framework.util.attribute.support;
 
-import io.basc.framework.core.utils.ObjectUtils;
+import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.attribute.Attributes;
 
 import java.io.Serializable;

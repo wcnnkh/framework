@@ -1,10 +1,10 @@
 package io.basc.framework.cloud.loadbalancer;
 
-import io.basc.framework.core.utils.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import io.basc.framework.util.CollectionUtils;
 
 public class RoundRobinLoadBalancer<T> extends AbstractLoadBalancer<T> {
 	private AtomicInteger position = new AtomicInteger();

@@ -2,10 +2,10 @@ package io.basc.framework.beans.support;
 
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanDefinitionRegistry;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.alias.DefaultAliasRegistry;
 
 import java.util.HashMap;

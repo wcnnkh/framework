@@ -1,7 +1,7 @@
 package io.basc.framework.web.jsonp;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.http.HttpMethod;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;

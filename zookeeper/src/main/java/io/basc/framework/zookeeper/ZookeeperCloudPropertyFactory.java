@@ -1,8 +1,6 @@
 package io.basc.framework.zookeeper;
 
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
@@ -13,6 +11,8 @@ import io.basc.framework.io.JavaSerializer;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.ConfigurablePropertyFactory;
 import io.basc.framework.value.EmptyValue;

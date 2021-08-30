@@ -1,7 +1,5 @@
 package io.basc.framework.io;
 
-import io.basc.framework.core.Assert;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -15,6 +13,8 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
+
+import io.basc.framework.util.Assert;
 
 /**
  * Simple utility methods for file and stream copying. All copy methods use a block size

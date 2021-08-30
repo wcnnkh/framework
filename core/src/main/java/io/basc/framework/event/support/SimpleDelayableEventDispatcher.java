@@ -1,8 +1,8 @@
 package io.basc.framework.event.support;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.event.DelayableEventDispatcher;
 import io.basc.framework.event.Event;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.concurrent.DefaultDelayableExecutor;
 import io.basc.framework.util.concurrent.DelayableExecutor;
 

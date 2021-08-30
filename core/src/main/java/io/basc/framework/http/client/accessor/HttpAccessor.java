@@ -16,13 +16,13 @@
 
 package io.basc.framework.http.client.accessor;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpRequestFactory;
 import io.basc.framework.http.client.SimpleClientHttpRequestFactory;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Assert;
 
 import java.io.IOException;
 import java.net.URI;

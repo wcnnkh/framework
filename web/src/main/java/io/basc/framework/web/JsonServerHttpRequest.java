@@ -1,7 +1,5 @@
 package io.basc.framework.web;
 
-import io.basc.framework.core.Constants;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.json.EmptyJsonElement;
 import io.basc.framework.json.JSONSupport;
@@ -9,8 +7,10 @@ import io.basc.framework.json.JSONUtils;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
+import io.basc.framework.lang.Constants;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

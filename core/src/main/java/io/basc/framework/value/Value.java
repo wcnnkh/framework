@@ -1,8 +1,8 @@
 package io.basc.framework.value;
 
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.core.utils.ClassUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ClassUtils;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;

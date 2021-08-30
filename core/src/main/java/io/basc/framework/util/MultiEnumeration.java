@@ -1,7 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.utils.CollectionUtils;
-
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;

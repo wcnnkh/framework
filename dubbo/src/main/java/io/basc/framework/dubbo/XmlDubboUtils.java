@@ -1,8 +1,7 @@
 package io.basc.framework.dubbo;
 
+import io.basc.framework.annotation.AnnotatedElementUtils;
 import io.basc.framework.context.ClassesLoaderFactory;
-import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
@@ -14,6 +13,7 @@ import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.Fields;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;

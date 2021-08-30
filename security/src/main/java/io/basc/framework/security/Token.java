@@ -1,9 +1,9 @@
 package io.basc.framework.security;
 
-import io.basc.framework.core.utils.StringUtils;
-
 import java.io.Serializable;
 import java.util.Date;
+
+import io.basc.framework.util.StringUtils;
 
 /**
  * 一个令牌的定义

@@ -4,7 +4,7 @@ import io.basc.framework.beans.BeanFactoryPostProcessor;
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.util.StringUtils;
 
 @Provider
 public class RmiClientBeanfactoryPostProcessor implements BeanFactoryPostProcessor {

@@ -1,11 +1,11 @@
 package io.basc.framework.io;
 
-import io.basc.framework.core.Assert;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+
+import io.basc.framework.util.Assert;
 
 /**
  * {@link Resource} implementation for a given byte array.

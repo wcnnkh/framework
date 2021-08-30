@@ -1,10 +1,10 @@
 package io.basc.framework.logger;
 
-import io.basc.framework.core.utils.ObjectUtils;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ObjectUtils;
 
 import java.util.logging.Level;
 

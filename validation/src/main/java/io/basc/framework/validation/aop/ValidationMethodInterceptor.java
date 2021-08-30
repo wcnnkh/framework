@@ -2,7 +2,7 @@ package io.basc.framework.validation.aop;
 
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.reflect.MethodInvoker;
+import io.basc.framework.reflect.MethodInvoker;
 import io.basc.framework.validation.FastValidator;
 
 import javax.validation.Validator;

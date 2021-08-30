@@ -1,7 +1,7 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.core.utils.ClassUtils;
 import io.basc.framework.env.Sys;
+import io.basc.framework.util.ClassUtils;
 
 import java.util.LinkedList;
 import java.util.ListIterator;

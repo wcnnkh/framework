@@ -1,15 +1,15 @@
 package io.basc.framework.http;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.Constants;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.ObjectUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.env.Sys;
 import io.basc.framework.http.client.HttpClient;
+import io.basc.framework.lang.Constants;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.uri.UriComponentsBuilder;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.StringUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;

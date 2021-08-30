@@ -1,7 +1,7 @@
 package io.basc.framework.convert;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.util.AbstractIterator;
+import io.basc.framework.util.Assert;
 
 import java.util.Iterator;
 

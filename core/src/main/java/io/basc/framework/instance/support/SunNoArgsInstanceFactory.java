@@ -1,7 +1,7 @@
 package io.basc.framework.instance.support;
 
-import io.basc.framework.core.utils.ClassUtils;
 import io.basc.framework.instance.InstanceException;
+import io.basc.framework.util.ClassUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;

@@ -16,9 +16,9 @@
 
 package io.basc.framework.http;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.ObjectUtils;
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,9 +1,9 @@
 package io.basc.framework.context.support;
 
 import io.basc.framework.context.ClassesLoader;
-import io.basc.framework.core.type.scanner.ClassResolver;
-import io.basc.framework.core.utils.ClassUtils;
+import io.basc.framework.type.scanner.ClassResolver;
 import io.basc.framework.util.ClassLoaderProvider;
+import io.basc.framework.util.ClassUtils;
 
 import java.util.Iterator;
 import java.util.Set;

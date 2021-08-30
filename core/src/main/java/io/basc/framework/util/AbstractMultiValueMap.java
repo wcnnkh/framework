@@ -1,7 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.utils.CollectionUtils;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;

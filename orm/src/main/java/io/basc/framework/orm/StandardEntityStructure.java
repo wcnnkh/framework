@@ -1,10 +1,10 @@
 package io.basc.framework.orm;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.Accept;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.Value;
 
 import java.util.Collection;

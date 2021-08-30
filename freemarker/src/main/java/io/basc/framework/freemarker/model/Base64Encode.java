@@ -1,8 +1,8 @@
 package io.basc.framework.freemarker.model;
 
 import io.basc.framework.codec.support.CharsetCodec;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.freemarker.annotation.SharedVariable;
+import io.basc.framework.util.StringUtils;
 
 import java.util.List;
 

@@ -1,9 +1,9 @@
 package io.basc.framework.redis.core.cas;
 
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.data.cas.CAS;
 import io.basc.framework.data.cas.CASOperations;
 import io.basc.framework.redis.core.RedisCommands;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.value.AnyValue;
 
 import java.util.Arrays;

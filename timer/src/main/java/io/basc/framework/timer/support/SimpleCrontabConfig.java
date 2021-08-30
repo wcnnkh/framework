@@ -1,10 +1,10 @@
 package io.basc.framework.timer.support;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.timer.CrontabTaskConfig;
 import io.basc.framework.timer.Task;
 import io.basc.framework.timer.TaskListener;
 import io.basc.framework.timer.annotation.Crontab;
+import io.basc.framework.util.StringUtils;
 
 public class SimpleCrontabConfig extends SimpleTaskConfig implements CrontabTaskConfig {
 	private String dayOfWeek;

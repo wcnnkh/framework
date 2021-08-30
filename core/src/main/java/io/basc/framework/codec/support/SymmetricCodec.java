@@ -3,8 +3,8 @@ package io.basc.framework.codec.support;
 import io.basc.framework.codec.CodecException;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;

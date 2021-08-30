@@ -15,8 +15,8 @@
  */
 package io.basc.framework.redis.core;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
 
 /**
  * Default message implementation.

@@ -21,9 +21,9 @@ import io.basc.framework.beans.annotation.ConfigurationProperties;
 import io.basc.framework.boot.support.ApplicationUtils;
 import io.basc.framework.cloud.commons.util.InetUtils;
 import io.basc.framework.cloud.commons.util.InetUtils.HostInfo;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.HashMap;

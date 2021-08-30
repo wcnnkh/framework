@@ -1,10 +1,10 @@
 package io.basc.framework.sqlserver;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.db.AbstractDataBase;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.StringUtils;
 
 /**
  * Sql Server7.0/2000数据库

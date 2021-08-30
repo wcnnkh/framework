@@ -1,9 +1,9 @@
 package io.basc.framework.security.authority.http;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.json.JSONUtils;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.security.authority.DefaultAuthorityManager;
+import io.basc.framework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;

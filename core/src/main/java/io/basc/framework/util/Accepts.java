@@ -1,7 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.utils.ArrayUtils;
-
 import java.util.Arrays;
 
 public class Accepts<E> implements Accept<E>{

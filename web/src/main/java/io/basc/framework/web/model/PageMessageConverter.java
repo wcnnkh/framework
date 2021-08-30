@@ -1,9 +1,9 @@
 package io.basc.framework.web.model;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.net.message.Headers;
+import io.basc.framework.parameter.ParameterDescriptor;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessageConverter;

@@ -1,12 +1,12 @@
 package io.basc.framework.ibatis;
 
-import io.basc.framework.core.utils.ArrayUtils;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+
+import io.basc.framework.util.ArrayUtils;
 
 public class SqlSessionFactoryProxyInvocationHandler implements InvocationHandler {
 	private final SqlSessionFactory sqlSessionFactory;

@@ -1,7 +1,7 @@
 package io.basc.framework.value.support;
 
 import io.basc.framework.convert.ConvertibleEnumeration;
-import io.basc.framework.core.utils.CollectionUtils;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.MultiIterator;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.StringValue;

@@ -1,8 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.ObjectUtils;
-
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;

@@ -1,9 +1,9 @@
 package io.basc.framework.util.comparator;
 
-import io.basc.framework.core.Assert;
-
 import java.io.Serializable;
 import java.util.Comparator;
+
+import io.basc.framework.util.Assert;
 
 public class InvertibleComparator<T> implements Comparator<T>, Serializable {
 	private static final long serialVersionUID = 1L;

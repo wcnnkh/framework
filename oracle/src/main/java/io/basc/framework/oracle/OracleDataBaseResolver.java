@@ -1,9 +1,9 @@
 package io.basc.framework.oracle;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.db.DataBase;
 import io.basc.framework.db.DataBaseResolver;
 import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.util.StringUtils;
 
 public class OracleDataBaseResolver implements DataBaseResolver {
 

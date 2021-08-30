@@ -16,10 +16,10 @@
 
 package io.basc.framework.http.client;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.io.FileCopyUtils;
+import io.basc.framework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

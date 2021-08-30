@@ -1,8 +1,8 @@
 package io.basc.framework.security.session;
 
-import io.basc.framework.core.utils.ObjectUtils;
-
 import java.util.Enumeration;
+
+import io.basc.framework.util.ObjectUtils;
 
 public class SessionWrapper implements Session {
 	private final Session session;

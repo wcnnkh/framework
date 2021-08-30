@@ -1,8 +1,8 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Accept;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.page.Pageables;
 
 import java.lang.reflect.Type;

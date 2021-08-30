@@ -1,11 +1,11 @@
 package io.basc.framework.hibernate;
 
-import io.basc.framework.core.utils.ArrayUtils;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 import org.hibernate.Session;
+
+import io.basc.framework.util.ArrayUtils;
 
 public class SessionProxyInvocationHandler implements InvocationHandler{
 	private Session targetSession;

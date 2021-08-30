@@ -1,7 +1,5 @@
 package io.basc.framework.mysql;
 
-import io.basc.framework.core.utils.ClassUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.orm.sql.Column;
 import io.basc.framework.orm.sql.PaginationSql;
 import io.basc.framework.orm.sql.SqlDialectException;
@@ -14,6 +12,8 @@ import io.basc.framework.orm.sql.annotation.Counter;
 import io.basc.framework.orm.sql.annotation.Table;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.AnyValue;
 
 import java.math.BigDecimal;

@@ -3,7 +3,7 @@ package io.basc.framework.aop.cglib;
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.Proxy;
 import io.basc.framework.aop.jdk.JdkProxyFactory;
-import io.basc.framework.core.utils.ClassUtils;
+import io.basc.framework.util.ClassUtils;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;

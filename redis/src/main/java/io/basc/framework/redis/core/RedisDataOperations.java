@@ -1,9 +1,9 @@
 package io.basc.framework.redis.core;
 
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.data.DataOperations;
 import io.basc.framework.redis.core.RedisStringCommands.ExpireOption;
+import io.basc.framework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.Collections;

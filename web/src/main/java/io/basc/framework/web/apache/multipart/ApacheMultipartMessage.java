@@ -1,9 +1,9 @@
 package io.basc.framework.web.apache.multipart;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.message.Headers;
 import io.basc.framework.net.message.multipart.MultipartMessage;
+import io.basc.framework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;

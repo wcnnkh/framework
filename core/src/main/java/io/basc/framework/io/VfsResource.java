@@ -1,7 +1,7 @@
 package io.basc.framework.io;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.lang.NestedIOException;
+import io.basc.framework.util.Assert;
 
 import java.io.File;
 import java.io.IOException;

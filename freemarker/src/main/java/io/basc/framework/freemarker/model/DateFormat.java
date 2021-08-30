@@ -1,7 +1,7 @@
 package io.basc.framework.freemarker.model;
 
-import io.basc.framework.core.utils.XTime;
 import io.basc.framework.freemarker.annotation.SharedVariable;
+import io.basc.framework.util.XTime;
 
 import java.util.List;
 

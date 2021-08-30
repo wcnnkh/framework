@@ -1,12 +1,12 @@
 package io.basc.framework.hessian;
 
-import io.basc.framework.core.utils.ClassUtils;
-
 import java.math.BigDecimal;
 
 import com.caucho.hessian.io.BigDecimalDeserializer;
 import com.caucho.hessian.io.SerializerFactory;
 import com.caucho.hessian.io.StringValueSerializer;
+
+import io.basc.framework.util.ClassUtils;
 
 public class DefaultSerializerFactory extends SerializerFactory {
 

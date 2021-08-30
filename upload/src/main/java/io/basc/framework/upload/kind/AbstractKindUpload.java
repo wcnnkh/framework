@@ -1,11 +1,11 @@
 package io.basc.framework.upload.kind;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.io.FileUtils;
 import io.basc.framework.net.message.multipart.MultipartMessage;
 import io.basc.framework.upload.UploaderException;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.Arrays;

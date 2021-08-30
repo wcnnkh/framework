@@ -4,8 +4,6 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.lang.ConditionalConversionService;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.env.Sys;
 import io.basc.framework.instance.NoArgsInstanceFactory;
 import io.basc.framework.lang.Nullable;
@@ -17,7 +15,9 @@ import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.Fields;
 import io.basc.framework.orm.ObjectRelationalMapping;
 import io.basc.framework.orm.OrmUtils;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConfigurableAccept;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.alias.AliasRegistry;
 
 import java.util.ArrayList;

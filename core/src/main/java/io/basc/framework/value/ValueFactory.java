@@ -1,12 +1,12 @@
 package io.basc.framework.value;
 
-import io.basc.framework.core.utils.ClassUtils;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
 import io.basc.framework.event.NamedEventRegistry;
 import io.basc.framework.event.Observable;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ClassUtils;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;

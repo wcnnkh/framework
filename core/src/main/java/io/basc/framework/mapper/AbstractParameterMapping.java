@@ -1,8 +1,8 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.core.parameter.OverrideParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.parameter.OverrideParameterDescriptor;
+import io.basc.framework.parameter.ParameterDescriptor;
+import io.basc.framework.util.StringUtils;
 
 public abstract class AbstractParameterMapping extends AbstractMapping {
 	private String basePrefix;

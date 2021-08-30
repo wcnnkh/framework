@@ -1,10 +1,10 @@
 package io.basc.framework.http;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.Constants;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.ObjectUtils;
+import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 

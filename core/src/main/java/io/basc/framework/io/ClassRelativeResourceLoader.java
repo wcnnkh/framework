@@ -1,8 +1,8 @@
 package io.basc.framework.io;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.DefaultClassLoaderProvider;
+import io.basc.framework.util.StringUtils;
 
 /**
  * {@link ResourceLoader} implementation that interprets plain resource paths

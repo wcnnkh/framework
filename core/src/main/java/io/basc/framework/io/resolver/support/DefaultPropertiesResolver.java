@@ -1,12 +1,12 @@
 package io.basc.framework.io.resolver.support;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.PropertiesResolver;
 import io.basc.framework.lang.NestedRuntimeException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.reflect.ReflectionUtils;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

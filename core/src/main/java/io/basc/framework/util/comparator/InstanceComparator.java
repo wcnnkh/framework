@@ -1,8 +1,8 @@
 package io.basc.framework.util.comparator;
 
-import io.basc.framework.core.Assert;
-
 import java.util.Comparator;
+
+import io.basc.framework.util.Assert;
 
 public class InstanceComparator<T> implements Comparator<T> {
 	private final Class<?>[] instanceOrder;

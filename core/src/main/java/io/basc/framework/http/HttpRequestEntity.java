@@ -1,10 +1,10 @@
 package io.basc.framework.http;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.utils.ObjectUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.ObjectUtils;
 
 import java.net.URI;
 import java.nio.charset.Charset;

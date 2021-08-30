@@ -1,6 +1,5 @@
 package io.basc.framework.net;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.message.Headers;
@@ -8,6 +7,7 @@ import io.basc.framework.net.message.Message;
 import io.basc.framework.net.message.OutputMessage;
 import io.basc.framework.net.message.multipart.MultipartMessageResolver;
 import io.basc.framework.util.Accept;
+import io.basc.framework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.Inet4Address;

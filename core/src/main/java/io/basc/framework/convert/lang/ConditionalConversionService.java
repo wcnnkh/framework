@@ -2,7 +2,7 @@ package io.basc.framework.convert.lang;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.utils.ClassUtils;
+import io.basc.framework.util.ClassUtils;
 
 public abstract class ConditionalConversionService extends AbstractConversionService implements ConversionService, ConvertibleConditional {
 	

@@ -1,7 +1,5 @@
 package io.basc.framework.freemarker;
 
-import io.basc.framework.core.utils.NumberUtils;
-
 import java.util.Map;
 
 import freemarker.core.Environment;
@@ -10,6 +8,7 @@ import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateNumberModel;
 import freemarker.template.TemplateScalarModel;
+import io.basc.framework.util.NumberUtils;
 
 /**
  * freemarker工具类

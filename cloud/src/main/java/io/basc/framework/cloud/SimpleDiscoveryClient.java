@@ -16,14 +16,14 @@
 
 package io.basc.framework.cloud;
 
-import io.basc.framework.core.utils.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import io.basc.framework.util.CollectionUtils;
 
 public class SimpleDiscoveryClient<T extends ServiceInstance> implements DiscoveryClient, ServiceRegistry<T> {
 	private final ConcurrentHashMap<String, Map<String, T>> instanceMap = new ConcurrentHashMap<String, Map<String, T>>();

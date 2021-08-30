@@ -2,9 +2,9 @@ package io.basc.framework.ibatis.beans;
 
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.instance.InstanceException;
 import io.basc.framework.io.Resource;
+import io.basc.framework.util.StringUtils;
 
 import org.apache.ibatis.session.Configuration;
 

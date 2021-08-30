@@ -1,9 +1,9 @@
 package io.basc.framework.mvc;
 
+import io.basc.framework.annotation.AnnotationUtils;
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.annotation.AnnotationUtils;
 import io.basc.framework.json.JSONSupport;
 import io.basc.framework.json.JSONUtils;
 import io.basc.framework.lang.NotSupportedException;

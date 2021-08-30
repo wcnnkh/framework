@@ -1,6 +1,10 @@
 package io.basc.framework.web.resource;
 
+import java.io.IOException;
+import java.util.LinkedList;
+
 import io.basc.framework.http.HttpMethod;
+import io.basc.framework.instance.ServiceLoaderFactory;
 import io.basc.framework.io.Resource;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.web.HttpService;
@@ -9,36 +13,40 @@ import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.pattern.ServerHttpRequestAccept;
 
-import java.io.IOException;
+public class StaticResourceHttpService extends LinkedList<StaticResourceResolver>
+		implements HttpService, ServerHttpRequestAccept {
+	private static final long serialVersionUID = 1L;
 
-public class StaticResourceHttpService implements HttpService, ServerHttpRequestAccept {
-	private StaticResourceLoader resourceLoader;
-
-	public StaticResourceLoader getResourceLoader() {
-		return resourceLoader;
+	public StaticResourceHttpService() {
 	}
 
-	public void setResourceLoader(StaticResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
+	public StaticResourceHttpService(ServiceLoaderFactory serviceLoaderFactory) {
+		addAll(serviceLoaderFactory.getServiceLoader(StaticResourceResolver.class).toList());
 	}
 
 	public boolean accept(ServerHttpRequest request) {
-		if (resourceLoader == null) {
-			return false;
-		}
-
 		if (request.getMethod() != HttpMethod.GET) {
 			return false;
 		}
 
-		Resource resource = resourceLoader.getResource(request.getPath());
-		return resource != null && resource.exists();
+		for (StaticResourceResolver resolver : this) {
+			Resource resource = resolver.getResource(request);
+			if (resource != null && resource.exists()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		Resource resource = resourceLoader.getResource(request.getPath());
-		MimeType mimeType = resourceLoader.getMimeType(resource);
-		WebUtils.writeStaticResource(request, response, resource, mimeType);
+		for (StaticResourceResolver resolver : this) {
+			Resource resource = resolver.getResource(request);
+			if (resource != null && resource.exists()) {
+				MimeType mimeType = resolver.getMimeType(resource);
+				WebUtils.writeStaticResource(request, response, resource, mimeType);
+				break;
+			}
+		}
 	}
 }

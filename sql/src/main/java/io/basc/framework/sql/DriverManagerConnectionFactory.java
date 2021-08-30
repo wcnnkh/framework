@@ -1,11 +1,11 @@
 package io.basc.framework.sql;
 
-import io.basc.framework.core.utils.StringUtils;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+
+import io.basc.framework.util.StringUtils;
 
 public class DriverManagerConnectionFactory implements ConnectionFactory {
 	private final String url;

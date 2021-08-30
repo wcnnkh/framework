@@ -16,10 +16,10 @@
 
 package io.basc.framework.retry.policy;
 
-import io.basc.framework.core.utils.ClassUtils;
 import io.basc.framework.retry.RetryContext;
 import io.basc.framework.retry.RetryPolicy;
 import io.basc.framework.retry.context.DefaultRetryContext;
+import io.basc.framework.util.ClassUtils;
 
 /**
  *

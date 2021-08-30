@@ -16,8 +16,8 @@
 
 package io.basc.framework.util.alias;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.StringValueResolver;
 
 import java.util.ArrayList;

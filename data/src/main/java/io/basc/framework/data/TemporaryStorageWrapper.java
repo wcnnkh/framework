@@ -1,6 +1,6 @@
 package io.basc.framework.data;
 
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.util.StringUtils;
 
 public final class TemporaryStorageWrapper extends AbstractTemporaryStorageWrapper<TemporaryStorage> {
 	private String keyPrefix;

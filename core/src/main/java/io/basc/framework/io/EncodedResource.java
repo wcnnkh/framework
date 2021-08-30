@@ -16,8 +16,8 @@
 
 package io.basc.framework.io;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.ObjectUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.ObjectUtils;
 
 import java.io.IOException;
 import java.io.InputStream;

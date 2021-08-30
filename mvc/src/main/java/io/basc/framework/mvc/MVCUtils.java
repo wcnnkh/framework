@@ -1,11 +1,11 @@
 package io.basc.framework.mvc;
 
-import io.basc.framework.core.annotation.AnnotationUtils;
-import io.basc.framework.core.utils.ClassUtils;
-import io.basc.framework.core.utils.CollectionUtils;
+import io.basc.framework.annotation.AnnotationUtils;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.mvc.action.Action;
 import io.basc.framework.mvc.annotation.LoggerEnable;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.web.ServerHttpRequest;
 

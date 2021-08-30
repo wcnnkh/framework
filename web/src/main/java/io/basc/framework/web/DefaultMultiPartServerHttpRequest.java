@@ -1,11 +1,11 @@
 package io.basc.framework.web;
 
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.message.multipart.MultipartMessage;
 import io.basc.framework.net.message.multipart.MultipartMessageResolver;
+import io.basc.framework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.util.Collections;

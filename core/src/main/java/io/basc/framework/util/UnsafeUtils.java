@@ -1,11 +1,10 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.core.utils.ClassUtils;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+
+import io.basc.framework.reflect.ReflectionUtils;
 
 public class UnsafeUtils {
 	private static final Object UNSAFE;

@@ -1,7 +1,7 @@
 package io.basc.framework.io.support;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.io.Resource;
+import io.basc.framework.util.Assert;
 
 public class ResourceRegion {
 

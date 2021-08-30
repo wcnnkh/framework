@@ -5,7 +5,7 @@ import io.basc.framework.cloud.DiscoveryClientException;
 import io.basc.framework.cloud.ServiceInstance;
 import io.basc.framework.cloud.ServiceRegistry;
 import io.basc.framework.cloud.ServiceRegistryException;
-import io.basc.framework.core.utils.CollectionUtils;
+import io.basc.framework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;

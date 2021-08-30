@@ -1,7 +1,7 @@
 package io.basc.framework.mvc.view;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.mvc.HttpChannel;
+import io.basc.framework.util.StringUtils;
 
 import java.io.IOException;
 

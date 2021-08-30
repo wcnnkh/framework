@@ -4,10 +4,10 @@ import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.BeanFactoryAware;
 import io.basc.framework.consistency.CompensatePolicy;
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
 
 public abstract class AbstractCompensatePolicy implements CompensatePolicy,
 		BeanFactoryAware {

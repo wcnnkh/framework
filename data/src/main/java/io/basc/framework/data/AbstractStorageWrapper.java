@@ -1,9 +1,9 @@
 package io.basc.framework.data;
 
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.transaction.DefaultTransactionLifecycle;
 import io.basc.framework.transaction.TransactionManager;
 import io.basc.framework.transaction.TransactionUtils;
+import io.basc.framework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

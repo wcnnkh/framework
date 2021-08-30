@@ -2,9 +2,9 @@ package io.basc.framework.codec.support;
 
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
-import io.basc.framework.core.Assert;
 import io.basc.framework.io.UnsafeByteArrayOutputStream;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
 
 import java.security.Key;
 

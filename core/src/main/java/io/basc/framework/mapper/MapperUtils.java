@@ -2,10 +2,10 @@ package io.basc.framework.mapper;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.instance.support.DefaultServiceLoaderFactory;
 import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.Value;
 import io.basc.framework.value.support.SystemPropertyFactory;
 

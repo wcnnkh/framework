@@ -1,7 +1,7 @@
 package io.basc.framework.websocket.handler;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.messageing.Message;
+import io.basc.framework.util.Assert;
 import io.basc.framework.websocket.CloseStatus;
 import io.basc.framework.websocket.WebSocketHandler;
 import io.basc.framework.websocket.WebSocketSession;

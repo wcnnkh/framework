@@ -1,8 +1,8 @@
 package io.basc.framework.consistency.policy;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.io.JavaSerializer;
 import io.basc.framework.io.Serializer;
+import io.basc.framework.util.Assert;
 
 /**
  * 基于存储的实现

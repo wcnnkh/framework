@@ -1,8 +1,8 @@
 package io.basc.framework.messageing;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.ObjectUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.ObjectUtils;
 
 public abstract class AbstractMessage<T> implements Message<T>{
 	private final T payload;

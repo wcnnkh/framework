@@ -1,10 +1,10 @@
 package io.basc.framework.net;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.Constants;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.lang.Constants;
 import io.basc.framework.net.MimeType.SpecificityComparator;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
 
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;

@@ -1,9 +1,5 @@
 package io.basc.framework.zookeeper;
 
-import io.basc.framework.core.utils.ArrayUtils;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,6 +9,10 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
+
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
 
 public final class ZooKeeperUtils {
 	public static final String PATH_PREFIX = "/";

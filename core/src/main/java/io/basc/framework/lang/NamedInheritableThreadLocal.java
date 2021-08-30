@@ -1,6 +1,6 @@
 package io.basc.framework.lang;
 
-import io.basc.framework.core.Assert;
+import io.basc.framework.util.Assert;
 
 /**
  * {@link InheritableThreadLocal} subclass that exposes a specified name

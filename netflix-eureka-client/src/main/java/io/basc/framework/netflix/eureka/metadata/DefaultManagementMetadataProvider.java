@@ -16,8 +16,8 @@
 
 package io.basc.framework.netflix.eureka.metadata;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.netflix.eureka.EurekaInstanceConfigBean;
+import io.basc.framework.util.StringUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;

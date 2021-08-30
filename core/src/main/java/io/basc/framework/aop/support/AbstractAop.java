@@ -5,9 +5,9 @@ import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.Proxy;
 import io.basc.framework.aop.ProxyFactory;
 import io.basc.framework.aop.ProxyInstanceTarget;
-import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.core.utils.ArrayUtils;
 import io.basc.framework.instance.InstanceException;
+import io.basc.framework.reflect.MethodInvoker;
+import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.StaticSupplier;
 
 import java.lang.reflect.Method;

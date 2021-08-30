@@ -1,7 +1,7 @@
 package io.basc.framework.beans.annotation;
 
+import io.basc.framework.annotation.AliasFor;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
-import io.basc.framework.core.annotation.AliasFor;
 import io.basc.framework.logger.Levels;
 
 import java.lang.annotation.ElementType;

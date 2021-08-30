@@ -1,7 +1,7 @@
 package io.basc.framework.convert;
 
-import io.basc.framework.core.utils.ObjectUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ObjectUtils;
 
 /**
  * Exception to be thrown when an actual type conversion attempt fails.

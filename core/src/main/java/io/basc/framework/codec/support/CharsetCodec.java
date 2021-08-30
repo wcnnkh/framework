@@ -6,7 +6,7 @@ import io.basc.framework.codec.EncodeException;
 import io.basc.framework.codec.Encoder;
 import io.basc.framework.codec.encoder.HmacMD5;
 import io.basc.framework.codec.encoder.HmacSHA1;
-import io.basc.framework.core.Constants;
+import io.basc.framework.lang.Constants;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;

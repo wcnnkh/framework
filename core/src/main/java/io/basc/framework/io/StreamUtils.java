@@ -1,7 +1,5 @@
 package io.basc.framework.io;
 
-import io.basc.framework.core.Assert;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterInputStream;
@@ -13,6 +11,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+
+import io.basc.framework.util.Assert;
 
 /**
  * Simple utility methods for dealing with streams. The copy methods of this class are

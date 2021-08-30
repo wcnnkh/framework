@@ -1,9 +1,9 @@
 package io.basc.framework.env;
 
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.util.AbstractIterator;
 import io.basc.framework.util.Pair;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.StringValue;

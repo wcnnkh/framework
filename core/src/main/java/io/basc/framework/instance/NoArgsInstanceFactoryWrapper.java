@@ -1,6 +1,6 @@
 package io.basc.framework.instance;
 
-import io.basc.framework.core.utils.ObjectUtils;
+import io.basc.framework.util.ObjectUtils;
 
 public class NoArgsInstanceFactoryWrapper<I extends NoArgsInstanceFactory> extends AbstractNoArgsInstanceFactoryWrapper
 		implements NoArgsInstanceFactory {

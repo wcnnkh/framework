@@ -1,8 +1,8 @@
 package io.basc.framework.timer.support;
 
-import io.basc.framework.core.IteratorCallback;
 import io.basc.framework.timer.TaskConfig;
 import io.basc.framework.timer.TaskFactory;
+import io.basc.framework.util.IteratorCallback;
 
 import java.util.concurrent.ConcurrentHashMap;
 

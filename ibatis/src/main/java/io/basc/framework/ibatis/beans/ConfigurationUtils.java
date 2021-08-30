@@ -3,8 +3,6 @@ package io.basc.framework.ibatis.beans;
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.ibatis.IbatisException;
 import io.basc.framework.ibatis.beans.annotation.MapperResources;
 import io.basc.framework.ibatis.beans.annotation.MapperScan;
@@ -14,6 +12,8 @@ import io.basc.framework.io.Resource;
 import io.basc.framework.io.support.PathMatchingResourcePatternResolver;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 
 import java.io.IOException;

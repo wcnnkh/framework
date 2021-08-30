@@ -1,13 +1,13 @@
 package io.basc.framework.dom;
 
 import io.basc.framework.convert.Converter;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.env.Sys;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Accept;
 import io.basc.framework.util.Pair;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.placeholder.PropertyResolver;
 import io.basc.framework.value.StringValue;
 

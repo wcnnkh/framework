@@ -1,14 +1,14 @@
 package io.basc.framework.mail.simple;
 
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.Constants;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.utils.ArrayUtils;
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.lang.Constants;
 import io.basc.framework.mail.MailClient;
 import io.basc.framework.mail.MailException;
 import io.basc.framework.mail.MessageCallback;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 

@@ -1,7 +1,7 @@
 package io.basc.framework.core;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.core.utils.ClassUtils;
+import io.basc.framework.reflect.ReflectionUtils;
+import io.basc.framework.util.ClassUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;

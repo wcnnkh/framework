@@ -4,8 +4,8 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
-import io.basc.framework.core.Assert;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
 
 import java.lang.reflect.Array;
 import java.util.Collections;

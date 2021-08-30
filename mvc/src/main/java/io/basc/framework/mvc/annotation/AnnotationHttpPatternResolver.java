@@ -1,9 +1,9 @@
 package io.basc.framework.mvc.annotation;
 
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.mvc.HttpPatternResolver;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.placeholder.PropertyResolver;
 import io.basc.framework.util.placeholder.PropertyResolverAware;
 import io.basc.framework.web.pattern.HttpPattern;

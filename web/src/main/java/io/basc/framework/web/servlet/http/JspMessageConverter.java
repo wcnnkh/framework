@@ -3,7 +3,7 @@ package io.basc.framework.web.servlet.http;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;

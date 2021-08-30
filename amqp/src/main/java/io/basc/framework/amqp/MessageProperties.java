@@ -1,9 +1,9 @@
 package io.basc.framework.amqp;
 
-import io.basc.framework.core.utils.StringUtils;
-import io.basc.framework.core.utils.XTime;
 import io.basc.framework.math.NumberHolder;
 import io.basc.framework.script.MathScriptEngine;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.XTime;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
 

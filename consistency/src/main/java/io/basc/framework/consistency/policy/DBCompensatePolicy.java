@@ -3,8 +3,6 @@ package io.basc.framework.consistency.policy;
 import io.basc.framework.codec.support.Base64;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.XTime;
 import io.basc.framework.db.DB;
 import io.basc.framework.db.locks.TableLockFactory;
 import io.basc.framework.io.SerializerException;
@@ -12,6 +10,8 @@ import io.basc.framework.orm.annotation.PrimaryKey;
 import io.basc.framework.orm.sql.annotation.Table;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.XTime;
 
 import java.util.Collections;
 import java.util.Enumeration;

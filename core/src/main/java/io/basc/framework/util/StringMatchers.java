@@ -1,7 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.utils.StringUtils;
-
 /**
  * 常用的匹配方式
  * 

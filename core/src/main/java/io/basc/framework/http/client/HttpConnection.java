@@ -1,7 +1,6 @@
 package io.basc.framework.http.client;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.env.Sys;
 import io.basc.framework.http.ContentDisposition;
 import io.basc.framework.http.HttpHeaders;
@@ -17,6 +16,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.InetUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 
 import java.io.File;

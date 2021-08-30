@@ -1,6 +1,5 @@
 package io.basc.framework.instance.support;
 
-import io.basc.framework.core.utils.ClassUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.instance.AbstractServiceLoaderFactory;
 import io.basc.framework.instance.InstanceDefinition;
@@ -9,6 +8,7 @@ import io.basc.framework.instance.InstanceFactory;
 import io.basc.framework.instance.NoArgsInstanceFactory;
 import io.basc.framework.instance.ServiceLoaderFactory;
 import io.basc.framework.util.ClassLoaderProvider;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.DefaultClassLoaderProvider;
 import io.basc.framework.util.XUtils;

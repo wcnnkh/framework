@@ -1,12 +1,12 @@
 package io.basc.framework.beans.xml;
 
+import io.basc.framework.annotation.EmptyAnnotatedElement;
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.BeansException;
-import io.basc.framework.core.annotation.EmptyAnnotatedElement;
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.lang.NotFoundException;
+import io.basc.framework.parameter.ParameterDescriptor;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 

@@ -1,9 +1,9 @@
 package io.basc.framework.codec;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.UnsafeByteArrayInputStream;
 import io.basc.framework.io.UnsafeByteArrayOutputStream;
+import io.basc.framework.util.Assert;
 
 import java.io.File;
 import java.io.FileInputStream;

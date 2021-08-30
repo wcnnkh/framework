@@ -1,8 +1,5 @@
 package io.basc.framework.cloud.loadbalancer;
 
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.XTime;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,6 +7,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.XTime;
 
 public class TimerServerSupplier<T> extends TimerTask implements
 		ServerSupplier<T> {

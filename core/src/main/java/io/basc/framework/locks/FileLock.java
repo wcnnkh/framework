@@ -1,7 +1,7 @@
 package io.basc.framework.locks;
 
-import io.basc.framework.core.Constants;
 import io.basc.framework.io.FileUtils;
+import io.basc.framework.lang.Constants;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.XUtils;

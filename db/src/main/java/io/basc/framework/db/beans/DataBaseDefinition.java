@@ -2,7 +2,6 @@ package io.basc.framework.db.beans;
 
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.db.Configurable;
 import io.basc.framework.db.DB;
 import io.basc.framework.db.DataBase;
@@ -12,6 +11,7 @@ import io.basc.framework.instance.InstanceException;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.orm.sql.SqlDialect;
 import io.basc.framework.sql.ConnectionFactory;
+import io.basc.framework.util.StringUtils;
 
 public class DataBaseDefinition extends DefaultBeanDefinition {
 

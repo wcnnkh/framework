@@ -1,8 +1,8 @@
 package io.basc.framework.convert.lang;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.ClassUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.ClassUtils;
 
 public class ConvertiblePair implements Comparable<ConvertiblePair>{
 

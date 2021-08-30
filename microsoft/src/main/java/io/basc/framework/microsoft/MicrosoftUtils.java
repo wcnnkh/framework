@@ -1,6 +1,5 @@
 package io.basc.framework.microsoft;
 
-import io.basc.framework.core.utils.ArrayUtils;
 import io.basc.framework.env.Sys;
 import io.basc.framework.http.HttpOutputMessage;
 import io.basc.framework.http.HttpUtils;
@@ -9,6 +8,7 @@ import io.basc.framework.io.Resource;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.ArrayUtils;
 
 import java.io.IOException;
 import java.io.InputStream;

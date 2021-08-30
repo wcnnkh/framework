@@ -1,9 +1,9 @@
 package io.basc.framework.instance.support;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.instance.SingletonRegistry;
 import io.basc.framework.util.Creator;
 import io.basc.framework.util.DefaultStatus;
+import io.basc.framework.util.StringUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

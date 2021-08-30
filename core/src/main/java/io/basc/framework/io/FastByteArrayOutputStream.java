@@ -1,13 +1,13 @@
 package io.basc.framework.io;
 
-import io.basc.framework.core.Assert;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import io.basc.framework.util.Assert;
 
 /**
  * A speedy alternative to {@link java.io.ByteArrayOutputStream}. Note that

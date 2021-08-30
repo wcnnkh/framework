@@ -1,7 +1,7 @@
 package io.basc.framework.logger;
 
-import io.basc.framework.core.utils.XTime;
 import io.basc.framework.util.FormatUtils;
+import io.basc.framework.util.XTime;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

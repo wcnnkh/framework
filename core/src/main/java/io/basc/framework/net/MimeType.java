@@ -1,10 +1,10 @@
 package io.basc.framework.net;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.ObjectUtils;
 import io.basc.framework.lang.Ignore;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.LinkedCaseInsensitiveMap;
+import io.basc.framework.util.ObjectUtils;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;

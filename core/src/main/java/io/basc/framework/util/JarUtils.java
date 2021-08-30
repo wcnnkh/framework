@@ -1,6 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.io.IOUtils;
 
 import java.io.IOException;

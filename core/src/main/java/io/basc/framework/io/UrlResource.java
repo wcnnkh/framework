@@ -1,9 +1,9 @@
 package io.basc.framework.io;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpInputMessage;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;

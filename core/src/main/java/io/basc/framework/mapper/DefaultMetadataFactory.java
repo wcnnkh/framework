@@ -1,8 +1,8 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.core.utils.ArrayUtils;
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.reflect.ReflectionUtils;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

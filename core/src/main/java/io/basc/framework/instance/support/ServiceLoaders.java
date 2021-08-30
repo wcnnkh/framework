@@ -1,7 +1,7 @@
 package io.basc.framework.instance.support;
 
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.instance.ServiceLoader;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.MultiIterable;
 
 import java.util.Arrays;

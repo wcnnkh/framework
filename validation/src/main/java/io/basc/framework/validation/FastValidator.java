@@ -2,7 +2,7 @@ package io.basc.framework.validation;
 
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.utils.CollectionUtils;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.stream.CallableProcessor;
 
 import java.util.Set;

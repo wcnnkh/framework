@@ -1,14 +1,14 @@
 package io.basc.framework.net.uri;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.ObjectUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.uri.HierarchicalUriComponents.PathComponent;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.LinkedMultiValueMap;
 import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.StringUtils;
 
 import java.net.URI;
 import java.util.ArrayList;

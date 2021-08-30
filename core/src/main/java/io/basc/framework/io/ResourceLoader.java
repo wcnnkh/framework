@@ -36,7 +36,7 @@ public interface ResourceLoader extends ClassLoaderProvider{
 	 * on the thread context ClassLoader.
 	 * @return the ClassLoader (only {@code null} if even the system
 	 * ClassLoader isn't accessible)
-	 * @see io.basc.framework.core.utils.ClassUtils#getDefaultClassLoader()
+	 * @see io.basc.framework.util.ClassUtils#getDefaultClassLoader()
 	 */
 	ClassLoader getClassLoader();
 

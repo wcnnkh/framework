@@ -2,8 +2,8 @@ package io.basc.framework.netflix.eureka.server;
 
 import io.basc.framework.boot.servlet.FilterRegistration;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.netflix.eureka.EurekaConstants;
+import io.basc.framework.util.StringUtils;
 
 import java.util.Collection;
 import java.util.Collections;

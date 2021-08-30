@@ -3,8 +3,8 @@ package io.basc.framework.netflix.hystrix;
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.MethodInterceptorAccept;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.netflix.hystrix.annotation.Hystrix;
+import io.basc.framework.reflect.MethodInvoker;
 
 import com.netflix.hystrix.HystrixCommand;
 

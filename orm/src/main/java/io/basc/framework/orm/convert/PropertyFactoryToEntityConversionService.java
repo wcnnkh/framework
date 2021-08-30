@@ -1,7 +1,7 @@
 package io.basc.framework.orm.convert;
 
 import io.basc.framework.convert.lang.ConvertiblePair;
-import io.basc.framework.core.utils.CollectionUtils;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.value.PropertyFactory;
 
 import java.util.Collections;

@@ -1,6 +1,6 @@
 package io.basc.framework.util.concurrent;
 
-import io.basc.framework.core.Assert;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.ConcurrencyThrottleSupport;
 import io.basc.framework.util.CustomizableThreadCreator;
 

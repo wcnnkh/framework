@@ -1,7 +1,7 @@
 package io.basc.framework.websocket;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.ObjectUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.ObjectUtils;
 
 public class CloseStatus {
 	/**

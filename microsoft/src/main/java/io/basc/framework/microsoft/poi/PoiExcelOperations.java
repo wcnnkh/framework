@@ -1,6 +1,5 @@
 package io.basc.framework.microsoft.poi;
 
-import io.basc.framework.core.utils.ClassUtils;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.RequiredJavaVersion;
 import io.basc.framework.microsoft.DefaultExcelExport;
@@ -12,6 +11,7 @@ import io.basc.framework.microsoft.ExcelReader;
 import io.basc.framework.microsoft.ExcelVersion;
 import io.basc.framework.microsoft.RowCallback;
 import io.basc.framework.microsoft.WritableExcel;
+import io.basc.framework.util.ClassUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;

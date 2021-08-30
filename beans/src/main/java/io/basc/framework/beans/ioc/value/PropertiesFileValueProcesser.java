@@ -3,13 +3,13 @@ package io.basc.framework.beans.ioc.value;
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.annotation.Value;
-import io.basc.framework.core.utils.ClassUtils;
 import io.basc.framework.env.Sys;
 import io.basc.framework.event.Observable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.Fields;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.value.StringValue;
 
 import java.nio.charset.Charset;

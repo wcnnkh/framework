@@ -2,7 +2,6 @@ package io.basc.framework.mvc.action;
 
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.instance.supplier.NameInstanceSupplier;
 import io.basc.framework.instance.supplier.SimpleInstanceSupplier;
 import io.basc.framework.instance.support.InstanceIterable;
@@ -11,6 +10,7 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mvc.HttpPatternResolver;
 import io.basc.framework.mvc.annotation.ActionInterceptors;
 import io.basc.framework.mvc.annotation.Controller;
+import io.basc.framework.reflect.MethodInvoker;
 import io.basc.framework.util.Supplier;
 
 import java.lang.reflect.Method;

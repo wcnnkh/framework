@@ -1,12 +1,12 @@
 package io.basc.framework.redis.core;
 
 import io.basc.framework.convert.Converter;
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.data.geo.Circle;
 import io.basc.framework.data.geo.Distance;
 import io.basc.framework.data.geo.Lbs;
 import io.basc.framework.data.geo.Marker;
 import io.basc.framework.data.geo.Point;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.comparator.Sort;
 import io.basc.framework.util.stream.Cursor;
 import io.basc.framework.util.stream.StreamProcessorSupport;

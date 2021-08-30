@@ -1,7 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.utils.ObjectUtils;
-
 import java.io.Serializable;
 
 public class Pair<K, V> implements Serializable, Cloneable {

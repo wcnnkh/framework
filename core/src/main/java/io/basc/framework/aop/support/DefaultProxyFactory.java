@@ -3,7 +3,7 @@ package io.basc.framework.aop.support;
 import io.basc.framework.aop.ConfigurableProxyFactory;
 import io.basc.framework.aop.ProxyFactory;
 import io.basc.framework.core.OrderComparator;
-import io.basc.framework.core.utils.CollectionUtils;
+import io.basc.framework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;

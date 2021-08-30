@@ -1,10 +1,10 @@
 package io.basc.framework.zookeeper;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.env.Sys;
 import io.basc.framework.json.JSONUtils;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Assert;
 
 import java.io.File;
 import java.io.IOException;

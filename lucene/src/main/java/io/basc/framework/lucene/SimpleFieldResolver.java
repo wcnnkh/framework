@@ -1,7 +1,7 @@
 package io.basc.framework.lucene;
 
-import io.basc.framework.core.utils.ClassUtils;
 import io.basc.framework.mapper.FieldDescriptor;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.value.Value;
 
 import java.util.ArrayList;

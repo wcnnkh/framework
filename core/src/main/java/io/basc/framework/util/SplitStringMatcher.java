@@ -1,7 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.utils.StringUtils;
-
 public class SplitStringMatcher implements StringMatcher {
 	private final StringMatcher stringMatcher;
 	private final String split;

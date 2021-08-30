@@ -1,7 +1,6 @@
 package io.basc.framework.orm.generator;
 
-import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.core.utils.NumberUtils;
+import io.basc.framework.annotation.AnnotatedElementUtils;
 import io.basc.framework.data.Counter;
 import io.basc.framework.data.generator.SequenceId;
 import io.basc.framework.data.generator.SequenceIdGenerator;
@@ -18,6 +17,7 @@ import io.basc.framework.orm.ObjectRelationalMapping;
 import io.basc.framework.orm.generator.annotation.CreateTime;
 import io.basc.framework.orm.generator.annotation.Generator;
 import io.basc.framework.orm.generator.annotation.UUID;
+import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.XUtils;
 
 import java.util.HashMap;

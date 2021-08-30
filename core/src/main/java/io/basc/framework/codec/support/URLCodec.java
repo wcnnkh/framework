@@ -3,7 +3,7 @@ package io.basc.framework.codec.support;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.codec.MultipleCodec;
-import io.basc.framework.core.Constants;
+import io.basc.framework.lang.Constants;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

@@ -1,8 +1,5 @@
 package io.basc.framework.sqlite;
 
-import io.basc.framework.core.utils.ClassUtils;
-import io.basc.framework.core.utils.NumberUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.orm.sql.Column;
 import io.basc.framework.orm.sql.ColumnDescriptor;
 import io.basc.framework.orm.sql.PaginationSql;
@@ -15,6 +12,9 @@ import io.basc.framework.orm.sql.TableStructureMapping;
 import io.basc.framework.orm.sql.annotation.Counter;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.NumberUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.AnyValue;
 
 import java.sql.Blob;

@@ -1,16 +1,16 @@
 package io.basc.framework.beans.ioc;
 
+import io.basc.framework.annotation.AnnotationUtils;
 import io.basc.framework.beans.annotation.Autowired;
 import io.basc.framework.beans.annotation.Destroy;
 import io.basc.framework.beans.annotation.InitMethod;
 import io.basc.framework.beans.annotation.Value;
-import io.basc.framework.core.annotation.AnnotationUtils;
-import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.parameter.ParameterUtils;
 import io.basc.framework.util.AbstractIterator;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 

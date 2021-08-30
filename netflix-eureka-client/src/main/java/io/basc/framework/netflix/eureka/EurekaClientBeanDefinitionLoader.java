@@ -12,10 +12,10 @@ import io.basc.framework.cloud.commons.util.IdUtils;
 import io.basc.framework.cloud.commons.util.InetUtils;
 import io.basc.framework.cloud.commons.util.InetUtilsProperties;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.netflix.eureka.metadata.DefaultManagementMetadataProvider;
 import io.basc.framework.netflix.eureka.metadata.ManagementMetadata;
 import io.basc.framework.netflix.eureka.metadata.ManagementMetadataProvider;
+import io.basc.framework.util.StringUtils;
 
 import java.util.Map;
 

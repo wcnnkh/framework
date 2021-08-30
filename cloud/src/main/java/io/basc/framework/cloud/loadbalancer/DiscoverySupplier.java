@@ -2,7 +2,7 @@ package io.basc.framework.cloud.loadbalancer;
 
 import io.basc.framework.cloud.DiscoveryClient;
 import io.basc.framework.cloud.ServiceInstance;
-import io.basc.framework.core.utils.CollectionUtils;
+import io.basc.framework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -3,7 +3,6 @@ package io.basc.framework.dom.convert;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.utils.ClassUtils;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.net.MimeType;
@@ -11,6 +10,7 @@ import io.basc.framework.net.message.InputMessage;
 import io.basc.framework.net.message.OutputMessage;
 import io.basc.framework.net.message.convert.AbstractMessageConverter;
 import io.basc.framework.net.message.convert.MessageConvertException;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 

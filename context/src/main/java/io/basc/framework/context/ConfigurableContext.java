@@ -1,7 +1,7 @@
 package io.basc.framework.context;
 
-import io.basc.framework.core.type.scanner.ConfigurableClassScanner;
 import io.basc.framework.env.ConfigurableEnvironment;
+import io.basc.framework.type.scanner.ConfigurableClassScanner;
 
 public interface ConfigurableContext extends Context {
 

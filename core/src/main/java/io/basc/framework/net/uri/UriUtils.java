@@ -1,13 +1,13 @@
 package io.basc.framework.net.uri;
 
 import io.basc.framework.codec.Encoder;
-import io.basc.framework.core.Constants;
-import io.basc.framework.core.utils.ArrayUtils;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.Value;
 
 import java.io.UnsupportedEncodingException;

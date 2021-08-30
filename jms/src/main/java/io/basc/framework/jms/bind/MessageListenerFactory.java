@@ -1,8 +1,8 @@
 package io.basc.framework.jms.bind;
 
-import io.basc.framework.core.reflect.MethodInvoker;
-
 import javax.jms.MessageListener;
+
+import io.basc.framework.reflect.MethodInvoker;
 
 public interface MessageListenerFactory {
 	MessageListener getMessageListener(MethodInvoker invoker);

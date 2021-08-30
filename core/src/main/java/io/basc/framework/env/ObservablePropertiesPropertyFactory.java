@@ -1,7 +1,6 @@
 package io.basc.framework.env;
 
 import io.basc.framework.convert.Converter;
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.ConvertibleObservable;
 import io.basc.framework.event.EventListener;
@@ -9,6 +8,7 @@ import io.basc.framework.event.EventRegistration;
 import io.basc.framework.event.NamedEventDispatcher;
 import io.basc.framework.event.Observable;
 import io.basc.framework.event.support.SimpleStringNamedEventDispatcher;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.StringValue;

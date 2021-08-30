@@ -1,6 +1,6 @@
 package io.basc.framework.json;
 
-import io.basc.framework.core.utils.ClassUtils;
+import io.basc.framework.util.ClassUtils;
 
 public abstract class AbstractJSONSupport implements JSONSupport {
 

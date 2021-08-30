@@ -1,7 +1,7 @@
 package io.basc.framework.event;
 
-import io.basc.framework.core.utils.XTime;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.XTime;
 
 import java.io.Serializable;
 

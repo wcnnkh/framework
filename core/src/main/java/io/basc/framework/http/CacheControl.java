@@ -16,9 +16,9 @@
 
 package io.basc.framework.http;
 
-import io.basc.framework.core.utils.StringUtils;
-
 import java.util.concurrent.TimeUnit;
+
+import io.basc.framework.util.StringUtils;
 
 /**
  * A builder for creating "Cache-Control" HTTP response headers.

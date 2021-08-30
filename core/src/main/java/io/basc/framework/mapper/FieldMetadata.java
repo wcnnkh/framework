@@ -1,9 +1,9 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.core.annotation.MultiAnnotatedElement;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.ObjectUtils;
+import io.basc.framework.annotation.AnnotatedElementUtils;
+import io.basc.framework.annotation.MultiAnnotatedElement;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ObjectUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;

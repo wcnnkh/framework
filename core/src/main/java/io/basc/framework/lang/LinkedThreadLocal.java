@@ -1,7 +1,7 @@
 package io.basc.framework.lang;
 
 import io.basc.framework.convert.ConversionException;
-import io.basc.framework.core.utils.ObjectUtils;
+import io.basc.framework.util.ObjectUtils;
 
 import java.util.LinkedList;
 

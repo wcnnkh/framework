@@ -1,8 +1,6 @@
 package io.basc.framework.web;
 
 import io.basc.framework.codec.support.CharsetCodec;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.http.HttpCookie;
 import io.basc.framework.http.HttpMethod;
@@ -19,6 +17,8 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.message.multipart.MultipartMessage;
 import io.basc.framework.net.message.multipart.MultipartMessageResolver;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.EmptyValue;

@@ -1,7 +1,5 @@
 package io.basc.framework.io;
 
-import io.basc.framework.core.Assert;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -17,6 +15,8 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+
+import io.basc.framework.util.Assert;
 
 /**
  * java7的Path实现

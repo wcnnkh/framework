@@ -1,17 +1,17 @@
 package io.basc.framework.orm.annotation;
 
+import io.basc.framework.annotation.AnnotatedElementUtils;
+import io.basc.framework.annotation.AnnotationAttributes;
+import io.basc.framework.annotation.Named;
 import io.basc.framework.aop.support.ProxyUtils;
-import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.core.annotation.AnnotationAttributes;
-import io.basc.framework.core.annotation.Named;
-import io.basc.framework.core.utils.ArrayUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.orm.DefaultEntityStructure;
 import io.basc.framework.orm.EntityStructure;
 import io.basc.framework.orm.ObjectRelationalMapping;
 import io.basc.framework.orm.Property;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.StringUtils;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;

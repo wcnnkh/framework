@@ -2,12 +2,12 @@ package io.basc.framework.beans.xml;
 
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.support.DefaultBeanFactory;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.http.HttpUtils;
 import io.basc.framework.io.Resource;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.Collection;

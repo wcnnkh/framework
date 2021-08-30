@@ -16,9 +16,9 @@
 
 package io.basc.framework.util.concurrent.support;
 
-import io.basc.framework.core.Assert;
-
 import java.util.concurrent.Executor;
+
+import io.basc.framework.util.Assert;
 
 public class ConcurrentExecutorAdapter implements Executor {
 

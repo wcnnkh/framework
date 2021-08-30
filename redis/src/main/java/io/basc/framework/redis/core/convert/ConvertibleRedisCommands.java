@@ -3,7 +3,6 @@ package io.basc.framework.redis.core.convert;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.IdentityConverter;
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.data.geo.Circle;
 import io.basc.framework.data.geo.Distance;
@@ -22,6 +21,7 @@ import io.basc.framework.redis.core.ScanOptions;
 import io.basc.framework.redis.core.SetOption;
 import io.basc.framework.redis.core.Subscription;
 import io.basc.framework.util.CollectionFactory;
+import io.basc.framework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;

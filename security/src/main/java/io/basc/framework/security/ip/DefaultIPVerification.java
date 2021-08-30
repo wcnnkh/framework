@@ -1,12 +1,12 @@
 package io.basc.framework.security.ip;
 
-import io.basc.framework.core.utils.ArrayUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.instance.annotation.PropertyName;
 import io.basc.framework.instance.annotation.PropertyParameter;
 import io.basc.framework.lang.DefaultValue;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.InetUtils;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.StringUtils;
 
 public class DefaultIPVerification implements IPVerification {
 	private final BlacklistIPVerification blacklistIPVerification;

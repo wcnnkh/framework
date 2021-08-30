@@ -1,10 +1,10 @@
 package io.basc.framework.jpa;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
-
 import java.lang.reflect.Method;
 
 import javax.persistence.EntityManager;
+
+import io.basc.framework.reflect.ReflectionUtils;
 
 public class JpaUtils {
 	private JpaUtils(){};

@@ -1,9 +1,9 @@
 package io.basc.framework.websocket.adapter.standard;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Assert;
 
 import java.util.Collection;
 import java.util.Collections;

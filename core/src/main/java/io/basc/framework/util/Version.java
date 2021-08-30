@@ -1,7 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.value.StringValue;
 
 import java.io.Serializable;

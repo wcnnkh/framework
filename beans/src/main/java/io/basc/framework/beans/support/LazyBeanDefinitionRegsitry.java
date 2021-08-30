@@ -8,13 +8,13 @@ import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.annotation.AutoImpl;
 import io.basc.framework.beans.annotation.Proxy;
 import io.basc.framework.context.annotation.ProviderClassesLoader;
-import io.basc.framework.core.utils.ClassUtils;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.instance.ServiceLoader;
 import io.basc.framework.instance.support.InstanceIterable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 
 import java.lang.reflect.Modifier;

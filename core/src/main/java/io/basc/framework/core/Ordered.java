@@ -18,8 +18,8 @@ package io.basc.framework.core;
  *
  * @see PriorityOrdered
  * @see OrderComparator
- * @see io.basc.framework.core.annotation.Order
- * @see io.basc.framework.core.annotation.AnnotationAwareOrderComparator
+ * @see io.basc.framework.annotation.Order
+ * @see io.basc.framework.annotation.AnnotationAwareOrderComparator
  */
 public interface Ordered {
 

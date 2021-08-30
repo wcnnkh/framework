@@ -26,10 +26,10 @@
  */
 package io.basc.framework.net.ssl;
 
-import io.basc.framework.core.Assert;
-
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+
+import io.basc.framework.util.Assert;
 
 /**
  * Private key details.

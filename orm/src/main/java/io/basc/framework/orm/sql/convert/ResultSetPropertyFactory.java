@@ -1,11 +1,11 @@
 package io.basc.framework.orm.sql.convert;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.sql.SqlUtils;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.MultiIterator;
 import io.basc.framework.util.StringMatcher;
 import io.basc.framework.util.StringMatchers;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;

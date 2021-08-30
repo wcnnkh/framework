@@ -1,7 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.utils.ClassUtils;
-
 public class ClassLoaderAccessor implements ClassLoaderProvider {
 	private ClassLoaderProvider classLoaderProvider;
 

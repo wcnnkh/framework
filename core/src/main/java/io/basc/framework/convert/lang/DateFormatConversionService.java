@@ -5,8 +5,8 @@ import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.annotation.DateFormat;
-import io.basc.framework.core.utils.NumberUtils;
 import io.basc.framework.util.FormatUtils;
+import io.basc.framework.util.NumberUtils;
 import io.basc.framework.value.AnyValue;
 
 import java.util.Date;

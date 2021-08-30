@@ -1,8 +1,8 @@
 package io.basc.framework.net.message.multipart;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.io.AbstractResource;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
 
 import java.io.IOException;
 import java.io.InputStream;

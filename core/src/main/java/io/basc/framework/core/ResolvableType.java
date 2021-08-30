@@ -3,10 +3,11 @@ package io.basc.framework.core;
 import io.basc.framework.core.SerializableTypeWrapper.FieldTypeProvider;
 import io.basc.framework.core.SerializableTypeWrapper.MethodParameterTypeProvider;
 import io.basc.framework.core.SerializableTypeWrapper.TypeProvider;
-import io.basc.framework.core.utils.ClassUtils;
-import io.basc.framework.core.utils.ObjectUtils;
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
+import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.StringUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;

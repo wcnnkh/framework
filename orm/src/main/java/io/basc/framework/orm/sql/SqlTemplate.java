@@ -1,13 +1,13 @@
 package io.basc.framework.orm.sql;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.orm.EntityOperations;
 import io.basc.framework.orm.MaxValueFactory;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.SqlOperations;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.page.Page;
 import io.basc.framework.util.page.Pages;
 import io.basc.framework.util.stream.Cursor;

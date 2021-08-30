@@ -1,12 +1,12 @@
 package io.basc.framework.io;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
 import io.basc.framework.event.MultiEventRegistration;
 import io.basc.framework.event.Observable;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
 
 import java.util.Arrays;
 import java.util.Collection;

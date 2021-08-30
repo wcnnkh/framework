@@ -1,8 +1,8 @@
 package io.basc.framework.mysql;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.db.AbstractDataBase;
 import io.basc.framework.lang.NotFoundException;
+import io.basc.framework.util.StringUtils;
 
 public class MysqlDataBase extends AbstractDataBase {
 	private String name;

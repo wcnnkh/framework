@@ -4,9 +4,9 @@ import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.Decoder;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.codec.Encoder;
-import io.basc.framework.core.Assert;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionFactory;
 
 import java.lang.reflect.Array;

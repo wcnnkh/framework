@@ -1,7 +1,7 @@
 package io.basc.framework.mail.simple;
 
 import io.basc.framework.beans.annotation.ConfigurationProperties;
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.Verify;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;

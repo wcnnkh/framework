@@ -3,7 +3,7 @@ package io.basc.framework.beans.support;
 import io.basc.framework.beans.BeanUtils;
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.annotation.Service;
-import io.basc.framework.core.utils.ArrayUtils;
+import io.basc.framework.util.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.Collection;

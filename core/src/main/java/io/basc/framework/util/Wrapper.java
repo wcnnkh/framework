@@ -1,8 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.ObjectUtils;
-
 public class Wrapper<W> implements Decorator{
 	protected final W wrappedTarget;
 

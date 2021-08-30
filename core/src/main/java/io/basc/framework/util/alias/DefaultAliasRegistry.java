@@ -1,6 +1,6 @@
 package io.basc.framework.util.alias;
 
-import io.basc.framework.core.Assert;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.SmartMap;
 
 import java.util.Collections;

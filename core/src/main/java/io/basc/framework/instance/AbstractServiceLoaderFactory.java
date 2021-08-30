@@ -1,9 +1,9 @@
 package io.basc.framework.instance;
 
-import io.basc.framework.core.Constants;
 import io.basc.framework.instance.support.ConfigServiceLoader;
 import io.basc.framework.instance.support.ServiceLoaders;
 import io.basc.framework.instance.support.SpiServiceLoader;
+import io.basc.framework.lang.Constants;
 import io.basc.framework.value.ValueFactory;
 
 public abstract class AbstractServiceLoaderFactory extends AbstractNoArgsInstanceFactoryWrapper

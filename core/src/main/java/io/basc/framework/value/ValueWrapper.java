@@ -1,7 +1,7 @@
 package io.basc.framework.value;
 
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.core.utils.ObjectUtils;
+import io.basc.framework.util.ObjectUtils;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;

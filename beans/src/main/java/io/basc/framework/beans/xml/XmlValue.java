@@ -1,11 +1,11 @@
 package io.basc.framework.beans.xml;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.http.HttpUtils;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.io.ResourceUtils;
+import io.basc.framework.util.StringUtils;
 
 import org.w3c.dom.Node;
 

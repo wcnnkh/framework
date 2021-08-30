@@ -15,9 +15,9 @@
  */
 package io.basc.framework.redis.jedis;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.redis.core.DefaultMessage;
 import io.basc.framework.redis.core.MessageListener;
+import io.basc.framework.util.Assert;
 import redis.clients.jedis.BinaryJedisPubSub;
 
 /**

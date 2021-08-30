@@ -1,7 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.utils.ClassUtils;
-
 import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 

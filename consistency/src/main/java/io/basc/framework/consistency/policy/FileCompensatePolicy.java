@@ -1,16 +1,16 @@
 package io.basc.framework.consistency.policy;
 
 import io.basc.framework.codec.support.URLCodec;
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.ArrayUtils;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.StringUtils;
-import io.basc.framework.core.utils.XTime;
 import io.basc.framework.io.FileUtils;
 import io.basc.framework.io.SerializerException;
 import io.basc.framework.locks.FileLockFactory;
 import io.basc.framework.locks.LockFactory;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.XTime;
 import io.basc.framework.util.comparator.CompareUtils;
 
 import java.io.File;

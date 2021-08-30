@@ -1,6 +1,6 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.core.Assert;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.stream.Processor;
 
 import java.util.Map;

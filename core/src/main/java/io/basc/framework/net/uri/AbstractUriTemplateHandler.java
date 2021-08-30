@@ -1,12 +1,12 @@
 package io.basc.framework.net.uri;
 
-import io.basc.framework.core.Assert;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import io.basc.framework.util.Assert;
 
 public abstract class AbstractUriTemplateHandler implements UriTemplateHandler {
 

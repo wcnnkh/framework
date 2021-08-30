@@ -1,8 +1,8 @@
 package io.basc.framework.util.page;
 
-import io.basc.framework.core.Assert;
-
 import java.util.List;
+
+import io.basc.framework.util.Assert;
 
 public class PageSupport {
 	private PageSupport() {

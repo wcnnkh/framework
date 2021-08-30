@@ -16,12 +16,12 @@
 
 package io.basc.framework.util.concurrent.support;
 
-import io.basc.framework.core.Assert;
-
 import java.util.List;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+
+import io.basc.framework.util.Assert;
 
 /**
  * {@code java.util.concurrent.ExecutorService} for it.

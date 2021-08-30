@@ -1,6 +1,6 @@
 package io.basc.framework.core;
 
-import io.basc.framework.core.utils.ObjectUtils;
+import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.comparator.CompareUtils;
 
 import java.util.Arrays;
@@ -25,7 +25,7 @@ import java.util.List;
  * same order value.
  *
  * @see Ordered
- * @see io.basc.framework.core.annotation.AnnotationAwareOrderComparator
+ * @see io.basc.framework.annotation.AnnotationAwareOrderComparator
  * @see java.util.Collections#sort(java.util.List, java.util.Comparator)
  * @see java.util.Arrays#sort(Object[], java.util.Comparator)
  */
@@ -71,7 +71,7 @@ public class OrderComparator implements Comparator<Object> {
 		return compare(i1, i2);
 	}
 	
-	protected int compare(int o1, int o2){
+	public int compare(int o1, int o2){
 		return CompareUtils.compare(o1, o2, false);
 	}
 

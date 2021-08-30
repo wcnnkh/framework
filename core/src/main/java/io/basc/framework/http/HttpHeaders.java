@@ -1,10 +1,6 @@
 package io.basc.framework.http;
 
 import io.basc.framework.convert.Converter;
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.ArrayUtils;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.env.Sys;
 import io.basc.framework.io.event.ConvertibleObservableProperties;
 import io.basc.framework.lang.Nullable;
@@ -14,8 +10,12 @@ import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.net.message.Headers;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringMatchers;
+import io.basc.framework.util.StringUtils;
 
 import java.net.InetAddress;
 import java.net.URI;

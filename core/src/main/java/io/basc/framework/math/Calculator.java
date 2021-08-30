@@ -1,8 +1,8 @@
 package io.basc.framework.math;
 
-import io.basc.framework.core.Assert;
-
 import java.math.BigDecimal;
+
+import io.basc.framework.util.Assert;
 
 /**
  * 运算器/计算器

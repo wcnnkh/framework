@@ -7,7 +7,7 @@ import io.basc.framework.beans.BeanlifeCycleEvent.Step;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.env.Environment;
 import io.basc.framework.web.HttpServiceRegistry;
-import io.basc.framework.web.support.StaticResourceRegistry;
+import io.basc.framework.web.resource.StaticResourceRegistry;
 import io.swagger.v3.oas.integration.api.OpenApiContext;
 
 @Provider

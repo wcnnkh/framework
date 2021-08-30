@@ -3,7 +3,7 @@ package io.basc.framework.beans.ioc;
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.BeansException;
-import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.reflect.ReflectionUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

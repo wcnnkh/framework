@@ -1,8 +1,8 @@
 package io.basc.framework.util.comparator;
 
-import io.basc.framework.core.Assert;
-
 import java.util.Comparator;
+
+import io.basc.framework.util.Assert;
 
 public class NullSafeComparator<T> implements Comparator<T> {
 

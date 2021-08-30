@@ -1,12 +1,12 @@
 package io.basc.framework.io;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.ArrayUtils;
-import io.basc.framework.core.utils.ClassUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.lang.NestedRuntimeException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.InetUtils;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.StringUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;

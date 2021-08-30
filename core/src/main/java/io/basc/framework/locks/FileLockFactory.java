@@ -1,8 +1,8 @@
 package io.basc.framework.locks;
 
 import io.basc.framework.codec.support.URLCodec;
-import io.basc.framework.core.Assert;
 import io.basc.framework.io.FileUtils;
+import io.basc.framework.util.Assert;
 
 import java.io.File;
 import java.util.concurrent.locks.Lock;

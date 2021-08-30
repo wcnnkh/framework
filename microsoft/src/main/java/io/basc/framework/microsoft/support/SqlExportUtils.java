@@ -1,12 +1,12 @@
 package io.basc.framework.microsoft.support;
 
-import io.basc.framework.core.utils.ArrayUtils;
 import io.basc.framework.db.DB;
 import io.basc.framework.http.HttpOutputMessage;
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.ExcelExport;
 import io.basc.framework.microsoft.MicrosoftUtils;
 import io.basc.framework.sql.Sql;
+import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.stream.Processor;
 
 import java.io.IOException;

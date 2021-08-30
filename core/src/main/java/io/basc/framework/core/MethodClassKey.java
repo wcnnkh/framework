@@ -1,8 +1,8 @@
 package io.basc.framework.core;
 
-import io.basc.framework.core.utils.ObjectUtils;
-
 import java.lang.reflect.Method;
+
+import io.basc.framework.util.ObjectUtils;
 
 /**
  * A common key class for a method against a specific target class,

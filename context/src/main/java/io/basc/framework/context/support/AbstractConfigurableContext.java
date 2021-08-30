@@ -9,13 +9,13 @@ import io.basc.framework.context.annotation.ComponentScan;
 import io.basc.framework.context.annotation.ComponentScans;
 import io.basc.framework.context.locks.LockMethodInterceptor;
 import io.basc.framework.context.transaction.TransactionMethodInterceptor;
-import io.basc.framework.core.Constants;
-import io.basc.framework.core.type.scanner.ConfigurableClassScanner;
-import io.basc.framework.core.type.scanner.DefaultClassScanner;
 import io.basc.framework.env.ConfigurableEnvironment;
 import io.basc.framework.env.DefaultEnvironment;
 import io.basc.framework.instance.Configurable;
 import io.basc.framework.instance.ServiceLoaderFactory;
+import io.basc.framework.lang.Constants;
+import io.basc.framework.type.scanner.ConfigurableClassScanner;
+import io.basc.framework.type.scanner.DefaultClassScanner;
 import io.basc.framework.value.ValueFactory;
 
 import java.util.Iterator;

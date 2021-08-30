@@ -1,7 +1,7 @@
 package io.basc.framework.net.message;
 
-import io.basc.framework.core.Constants;
 import io.basc.framework.io.InputStreamSource;
+import io.basc.framework.lang.Constants;
 
 import java.io.IOException;
 

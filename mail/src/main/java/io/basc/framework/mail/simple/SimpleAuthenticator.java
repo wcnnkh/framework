@@ -1,6 +1,6 @@
 package io.basc.framework.mail.simple;
 
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.Verify;
 
 import javax.mail.Authenticator;

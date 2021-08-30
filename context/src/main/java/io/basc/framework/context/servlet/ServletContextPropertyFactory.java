@@ -1,6 +1,6 @@
 package io.basc.framework.context.servlet;
 
-import io.basc.framework.core.utils.CollectionUtils;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;

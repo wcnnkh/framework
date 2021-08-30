@@ -1,6 +1,6 @@
 package io.basc.framework.sql;
 
-import io.basc.framework.core.utils.ObjectUtils;
+import io.basc.framework.util.ObjectUtils;
 
 public abstract class AbstractSql implements Sql{
 	

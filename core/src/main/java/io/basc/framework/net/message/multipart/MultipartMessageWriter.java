@@ -1,7 +1,6 @@
 package io.basc.framework.net.message.multipart;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
 import io.basc.framework.lang.NotSupportedException;
@@ -13,6 +12,7 @@ import io.basc.framework.net.message.InputMessage;
 import io.basc.framework.net.message.OutputMessage;
 import io.basc.framework.net.message.convert.AbstractMessageConverter;
 import io.basc.framework.net.message.convert.MessageConvertException;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 
 import java.io.File;

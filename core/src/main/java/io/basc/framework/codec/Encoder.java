@@ -1,9 +1,9 @@
 package io.basc.framework.codec;
 
 import io.basc.framework.convert.Converter;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.ObjectUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;

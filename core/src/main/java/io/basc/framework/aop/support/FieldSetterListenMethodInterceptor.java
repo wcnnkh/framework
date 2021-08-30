@@ -1,11 +1,11 @@
 package io.basc.framework.aop.support;
 
 import io.basc.framework.aop.MethodInterceptor;
-import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.mapper.Copy;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.reflect.MethodInvoker;
 
 public class FieldSetterListenMethodInterceptor extends FieldSetterListenImpl implements MethodInterceptor {
 	private static final long serialVersionUID = 1L;

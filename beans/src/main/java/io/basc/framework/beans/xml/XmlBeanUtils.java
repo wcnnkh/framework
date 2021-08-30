@@ -2,13 +2,13 @@ package io.basc.framework.beans.xml;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.ioc.IocProcessor;
-import io.basc.framework.core.utils.ClassUtils;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;

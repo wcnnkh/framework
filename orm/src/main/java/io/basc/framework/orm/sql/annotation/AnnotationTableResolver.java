@@ -1,7 +1,6 @@
 package io.basc.framework.orm.sql.annotation;
 
-import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.annotation.AnnotatedElementUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
@@ -11,6 +10,7 @@ import io.basc.framework.orm.annotation.AnnotationObjectRelationalMapping;
 import io.basc.framework.orm.sql.Column;
 import io.basc.framework.orm.sql.TableResolver;
 import io.basc.framework.orm.sql.TableStructure;
+import io.basc.framework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

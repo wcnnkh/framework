@@ -3,10 +3,10 @@ package io.basc.framework.beans.ioc.value;
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.annotation.Value;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
+import io.basc.framework.util.StringUtils;
 
 import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;

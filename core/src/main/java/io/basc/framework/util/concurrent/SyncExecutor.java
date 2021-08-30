@@ -16,10 +16,10 @@
 
 package io.basc.framework.util.concurrent;
 
-import io.basc.framework.core.Assert;
-
 import java.io.Serializable;
 import java.util.concurrent.Executor;
+
+import io.basc.framework.util.Assert;
 
 /**
  * {@link TaskExecutor} implementation that executes each task <i>synchronously</i>

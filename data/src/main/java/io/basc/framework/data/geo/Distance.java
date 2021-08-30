@@ -1,9 +1,9 @@
 package io.basc.framework.data.geo;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.data.domain.Range.Bound;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
 
 import java.io.Serializable;
 

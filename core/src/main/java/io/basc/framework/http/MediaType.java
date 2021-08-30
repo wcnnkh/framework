@@ -1,11 +1,11 @@
 package io.basc.framework.http;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.net.InvalidMimeTypeException;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.comparator.CompoundComparator;
 
 import java.io.Serializable;

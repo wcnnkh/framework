@@ -1,10 +1,10 @@
 package io.basc.framework.sql;
 
-import io.basc.framework.core.utils.ClassUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.LinkedMultiValueMap;
 import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.stream.Callback;
 import io.basc.framework.util.stream.Cursor;
 import io.basc.framework.util.stream.Processor;

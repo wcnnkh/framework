@@ -1,8 +1,8 @@
 package io.basc.framework.http;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.StringUtils;
 
 import java.io.Serializable;
 import java.net.URL;

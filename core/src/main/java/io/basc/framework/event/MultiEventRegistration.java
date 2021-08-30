@@ -1,11 +1,11 @@
 package io.basc.framework.event;
 
-import io.basc.framework.core.utils.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import io.basc.framework.util.CollectionUtils;
 
 public class MultiEventRegistration implements EventRegistration {
 	private List<EventRegistration> eventRegistrations;

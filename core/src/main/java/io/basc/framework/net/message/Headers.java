@@ -1,9 +1,9 @@
 package io.basc.framework.net.message;
 
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.util.AbstractMultiValueMap;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.LinkedCaseInsensitiveMap;
+import io.basc.framework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;

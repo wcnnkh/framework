@@ -2,10 +2,10 @@ package io.basc.framework.freemarker;
 
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.freemarker.annotation.SharedVariable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.StringUtils;
 
 import java.io.IOException;
 

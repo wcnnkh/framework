@@ -1,7 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.Assert;
-
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

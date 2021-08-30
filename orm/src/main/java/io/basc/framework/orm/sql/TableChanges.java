@@ -1,7 +1,7 @@
 package io.basc.framework.orm.sql;
 
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.mapper.Field;
+import io.basc.framework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.Collections;

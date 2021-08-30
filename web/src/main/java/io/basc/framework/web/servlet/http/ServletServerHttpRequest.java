@@ -1,7 +1,5 @@
 package io.basc.framework.web.servlet.http;
 
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.http.HttpCookie;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpMethod;
@@ -9,9 +7,11 @@ import io.basc.framework.http.InvalidMediaTypeException;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.security.session.Session;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Decorator;
 import io.basc.framework.util.LinkedCaseInsensitiveMap;
 import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.web.ServerHttpAsyncControl;
 import io.basc.framework.web.ServerHttpRequest;

@@ -1,7 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.utils.ArrayUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.lang.FormatterException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.placeholder.PropertyResolver;

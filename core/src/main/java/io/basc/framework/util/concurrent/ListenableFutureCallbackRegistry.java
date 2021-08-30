@@ -16,10 +16,10 @@
 
 package io.basc.framework.util.concurrent;
 
-import io.basc.framework.core.Assert;
-
 import java.util.LinkedList;
 import java.util.Queue;
+
+import io.basc.framework.util.Assert;
 
 /**
  * Helper class for {@link ListenableFuture} implementations that maintains a of

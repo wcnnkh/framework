@@ -1,11 +1,11 @@
 package io.basc.framework.event.support;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.event.Event;
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
 import io.basc.framework.lang.AlreadyExistsException;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionFactory;
 
 import java.util.Collection;

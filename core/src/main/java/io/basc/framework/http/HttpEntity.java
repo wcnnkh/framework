@@ -16,9 +16,9 @@
 
 package io.basc.framework.http;
 
-import io.basc.framework.core.utils.ObjectUtils;
 import io.basc.framework.net.message.Entity;
 import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.ObjectUtils;
 
 import java.io.Serializable;
 

@@ -1,10 +1,10 @@
 package io.basc.framework.instance.support;
 
-import io.basc.framework.core.utils.ClassUtils;
 import io.basc.framework.instance.NoArgsInstanceFactory;
 import io.basc.framework.instance.ServiceLoader;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.util.ClassLoaderProvider;
+import io.basc.framework.util.ClassUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

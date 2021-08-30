@@ -20,7 +20,7 @@ import io.basc.framework.aop.ProxyInstanceTarget;
 import io.basc.framework.boot.Application;
 import io.basc.framework.cloud.DefaultServiceInstance;
 import io.basc.framework.cloud.ServiceInstance;
-import io.basc.framework.core.Assert;
+import io.basc.framework.util.Assert;
 
 import java.net.URI;
 import java.util.Map;

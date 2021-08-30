@@ -2,7 +2,7 @@ package io.basc.framework.value.support;
 
 import io.basc.framework.convert.ConvertibleIterator;
 import io.basc.framework.convert.lang.ObjectToStringConverter;
-import io.basc.framework.core.utils.CollectionUtils;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.value.PropertyFactory;
 
 import java.util.Iterator;

@@ -1,9 +1,9 @@
 package io.basc.framework.io.support;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.io.DefaultResourceLoader;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
+import io.basc.framework.util.Assert;
 
 import java.util.Locale;
 

@@ -2,10 +2,10 @@ package io.basc.framework.rabbitmq;
 
 import io.basc.framework.amqp.ExchangeDeclare;
 import io.basc.framework.amqp.QueueDeclare;
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.lang.NamedThreadLocal;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
 
 import java.io.IOException;
 

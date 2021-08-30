@@ -1,8 +1,8 @@
 package io.basc.framework.data.memory;
 
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.data.cas.CAS;
 import io.basc.framework.data.cas.CASOperations;
+import io.basc.framework.util.CollectionUtils;
 
 import java.util.Collection;
 import java.util.Collections;

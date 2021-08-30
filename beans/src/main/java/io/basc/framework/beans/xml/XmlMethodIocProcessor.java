@@ -4,10 +4,10 @@ import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.ioc.AbstractIocProcessor;
-import io.basc.framework.core.parameter.ExecutableParameterDescriptors;
-import io.basc.framework.core.parameter.ParameterDescriptors;
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.json.JSONUtils;
+import io.basc.framework.parameter.ExecutableParameterDescriptors;
+import io.basc.framework.parameter.ParameterDescriptors;
+import io.basc.framework.reflect.ReflectionUtils;
 
 import java.lang.reflect.Method;
 import java.util.List;

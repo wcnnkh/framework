@@ -1,7 +1,7 @@
 package io.basc.framework.data.domain;
 
 import io.basc.framework.convert.Converter;
-import io.basc.framework.core.Assert;
+import io.basc.framework.util.Assert;
 
 import java.util.Comparator;
 import java.util.Optional;

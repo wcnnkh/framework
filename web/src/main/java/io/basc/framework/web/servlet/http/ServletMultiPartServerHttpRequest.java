@@ -1,7 +1,7 @@
 package io.basc.framework.web.servlet.http;
 
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.net.message.multipart.MultipartMessage;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.web.MultiPartServerHttpRequest;
 import io.basc.framework.web.WebException;
 

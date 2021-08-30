@@ -1,6 +1,5 @@
 package io.basc.framework.script;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.env.Sys;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
@@ -11,6 +10,7 @@ import io.basc.framework.math.Calculator;
 import io.basc.framework.math.Calculators;
 import io.basc.framework.math.NumberHolder;
 import io.basc.framework.util.Pair;
+import io.basc.framework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;

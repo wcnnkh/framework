@@ -1,8 +1,8 @@
 package io.basc.framework.net.uri;
 
-import io.basc.framework.core.utils.ObjectUtils;
 import io.basc.framework.util.LinkedMultiValueMap;
 import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.ObjectUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;

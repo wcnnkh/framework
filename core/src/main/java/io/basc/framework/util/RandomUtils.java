@@ -1,7 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.utils.StringUtils;
-
 import java.util.Random;
 
 public final class RandomUtils {

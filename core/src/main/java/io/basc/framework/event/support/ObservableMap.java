@@ -1,9 +1,9 @@
 package io.basc.framework.event.support;
 
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventType;
 import io.basc.framework.event.NamedEventDispatcher;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.SmartMap;
 

@@ -1,7 +1,7 @@
 package io.basc.framework.data.geo;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
 
 import java.io.Serializable;
 import java.util.Locale;

@@ -2,7 +2,7 @@ package io.basc.framework.boot.servlet.support;
 
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.servlet.FilterRegistration;
-import io.basc.framework.core.utils.CollectionUtils;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.XUtils;
 
 import java.util.Collection;

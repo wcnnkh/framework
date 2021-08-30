@@ -1,7 +1,7 @@
 package io.basc.framework.util.placeholder.support;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.placeholder.PlaceholderReplacer;
 import io.basc.framework.util.placeholder.PlaceholderResolver;
 

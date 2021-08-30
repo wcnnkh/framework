@@ -16,7 +16,7 @@
 
 package io.basc.framework.util.concurrent.support;
 
-import io.basc.framework.core.Assert;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.concurrent.AsyncExecutor;
 import io.basc.framework.util.concurrent.ListenableFuture;
 import io.basc.framework.util.concurrent.ListenableFutureTask;

@@ -1,8 +1,8 @@
 package io.basc.framework.tomcat;
 
-import io.basc.framework.core.utils.ClassUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.env.Environment;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.StringUtils;
 
 import java.util.Properties;
 import java.util.Set;

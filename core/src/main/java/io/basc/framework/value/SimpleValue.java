@@ -1,10 +1,10 @@
 package io.basc.framework.value;
 
-import io.basc.framework.core.utils.ClassUtils;
-import io.basc.framework.core.utils.StringUtils;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
+
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.StringUtils;
 
 public interface SimpleValue extends Value {
 	default Value getDefaultValue() {

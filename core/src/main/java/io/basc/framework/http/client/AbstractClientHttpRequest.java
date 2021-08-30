@@ -1,8 +1,8 @@
 package io.basc.framework.http.client;
 
-import io.basc.framework.core.Assert;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.MediaType;
+import io.basc.framework.util.Assert;
 
 import java.io.IOException;
 import java.io.OutputStream;

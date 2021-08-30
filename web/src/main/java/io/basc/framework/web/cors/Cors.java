@@ -1,10 +1,10 @@
 package io.basc.framework.web.cors;
 
-import io.basc.framework.core.utils.ArrayUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.ServerHttpRequest;
 
 import java.util.Arrays;

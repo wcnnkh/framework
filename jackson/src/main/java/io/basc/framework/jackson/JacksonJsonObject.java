@@ -2,10 +2,10 @@ package io.basc.framework.jackson;
 
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.ConvertibleIterator;
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.value.EmptyValue;
 

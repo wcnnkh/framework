@@ -1,8 +1,8 @@
 package io.basc.framework.web.message;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.utils.ObjectUtils;
+import io.basc.framework.parameter.ParameterDescriptor;
+import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebException;
 

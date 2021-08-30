@@ -16,12 +16,12 @@
 
 package io.basc.framework.util.concurrent;
 
-import io.basc.framework.core.Assert;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import io.basc.framework.util.Assert;
 
 /**
  * A {@link ListenableFuture} whose value can be set via {@link #set(Object)} or

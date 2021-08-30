@@ -1,9 +1,6 @@
 package io.basc.framework.redis.jedis;
 
 import io.basc.framework.convert.lang.NumberToBooleanConverter;
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.CollectionUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.data.geo.Circle;
 import io.basc.framework.data.geo.Distance;
@@ -25,7 +22,10 @@ import io.basc.framework.redis.core.ScanOptions;
 import io.basc.framework.redis.core.SetOption;
 import io.basc.framework.redis.core.Subscription;
 import io.basc.framework.redis.core.convert.RedisConverters;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Decorator;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.comparator.Sort;
 

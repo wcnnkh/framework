@@ -1,10 +1,10 @@
 package io.basc.framework.lucene;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.ArrayUtils;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.concurrent.AsyncExecutor;
 
 import java.io.File;

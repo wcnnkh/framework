@@ -3,8 +3,8 @@ package io.basc.framework.aop.jdk;
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.Proxy;
 import io.basc.framework.aop.ProxyFactory;
-import io.basc.framework.core.utils.ArrayUtils;
-import io.basc.framework.core.utils.ClassUtils;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.ClassUtils;
 
 import java.util.Arrays;
 

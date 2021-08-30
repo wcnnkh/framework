@@ -1,11 +1,11 @@
 package io.basc.framework.sql;
 
-import io.basc.framework.core.utils.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import io.basc.framework.util.StringUtils;
 
 public class WhereSql extends SerializableSql {
 	private static final long serialVersionUID = 1L;

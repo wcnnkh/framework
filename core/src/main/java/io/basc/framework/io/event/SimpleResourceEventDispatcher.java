@@ -1,6 +1,5 @@
 package io.basc.framework.io.event;
 
-import io.basc.framework.core.utils.XTime;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
@@ -10,6 +9,7 @@ import io.basc.framework.io.AbstractResource;
 import io.basc.framework.io.Resource;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.XTime;
 
 import java.io.IOException;
 import java.util.Timer;

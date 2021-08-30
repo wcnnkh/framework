@@ -4,7 +4,7 @@ import static io.seata.common.DefaultValues.DEFAULT_DISABLE_GLOBAL_TRANSACTION;
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.reflect.MethodInvoker;
+import io.basc.framework.reflect.MethodInvoker;
 import io.seata.common.Constants;
 import io.seata.config.ConfigurationFactory;
 import io.seata.core.constants.ConfigurationKeys;

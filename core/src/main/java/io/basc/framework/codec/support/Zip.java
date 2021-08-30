@@ -2,8 +2,8 @@ package io.basc.framework.codec.support;
 
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
-import io.basc.framework.core.Assert;
 import io.basc.framework.io.IOUtils;
+import io.basc.framework.util.Assert;
 
 import java.io.IOException;
 import java.io.InputStream;

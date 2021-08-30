@@ -16,12 +16,12 @@
 
 package io.basc.framework.util.concurrent;
 
-import io.basc.framework.core.Assert;
-
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import io.basc.framework.util.Assert;
 
 /**
  * Abstract class that adapts a {@link Future} parameterized over S into a {@code Future}

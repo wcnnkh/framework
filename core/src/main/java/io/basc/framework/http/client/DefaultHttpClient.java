@@ -2,7 +2,6 @@ package io.basc.framework.http.client;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.Assert;
 import io.basc.framework.env.Sys;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpRequestEntity;
@@ -21,6 +20,7 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.message.convert.DefaultMessageConverters;
 import io.basc.framework.net.message.convert.MessageConverters;
 import io.basc.framework.net.uri.UriTemplateHandler;
+import io.basc.framework.util.Assert;
 
 import java.io.IOException;
 import java.net.URI;

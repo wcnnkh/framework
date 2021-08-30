@@ -1,11 +1,11 @@
 package io.basc.framework.fastjson;
 
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.json.AbstractJsonElement;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
+import io.basc.framework.util.StringUtils;
 
 import java.io.Serializable;
 

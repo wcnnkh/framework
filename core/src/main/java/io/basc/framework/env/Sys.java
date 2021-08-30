@@ -1,7 +1,6 @@
 package io.basc.framework.env;
 
 import io.basc.framework.convert.ConvertibleEnumeration;
-import io.basc.framework.core.utils.CollectionUtils;
 import io.basc.framework.event.Observable;
 import io.basc.framework.instance.InstanceDefinition;
 import io.basc.framework.instance.InstanceFactory;
@@ -12,6 +11,7 @@ import io.basc.framework.instance.support.DefaultInstanceFactory;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Clock;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.MultiIterator;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.value.StringValue;

@@ -1,8 +1,8 @@
 package io.basc.framework.oauth2;
 
-import io.basc.framework.core.utils.StringUtils;
-
 import java.io.Serializable;
+
+import io.basc.framework.util.StringUtils;
 
 /**
  * 令牌类型

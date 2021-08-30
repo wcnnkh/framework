@@ -1,19 +1,19 @@
 package io.basc.framework.rpc.http.annotation;
 
-import io.basc.framework.core.Constants;
-import io.basc.framework.core.parameter.OverrideParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterUtils;
-import io.basc.framework.core.utils.ArrayUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.HttpConnection;
 import io.basc.framework.http.client.HttpConnectionFactory;
+import io.basc.framework.lang.Constants;
 import io.basc.framework.net.uri.UriComponents;
 import io.basc.framework.net.uri.UriComponentsBuilder;
+import io.basc.framework.parameter.OverrideParameterDescriptor;
+import io.basc.framework.parameter.ParameterDescriptor;
+import io.basc.framework.parameter.ParameterUtils;
 import io.basc.framework.rpc.http.HttpConnectionCallableFactory;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.StringValue;
 
 import java.io.UnsupportedEncodingException;

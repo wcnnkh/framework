@@ -2,7 +2,7 @@ package io.basc.framework.orm.convert;
 
 import io.basc.framework.convert.ConvertibleEnumeration;
 import io.basc.framework.convert.lang.ConvertiblePair;
-import io.basc.framework.core.utils.CollectionUtils;
+import io.basc.framework.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.Enumeration;

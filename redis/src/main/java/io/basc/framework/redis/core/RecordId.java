@@ -15,12 +15,12 @@
  */
 package io.basc.framework.redis.core;
 
-import io.basc.framework.core.Assert;
-import io.basc.framework.core.utils.NumberUtils;
-import io.basc.framework.core.utils.ObjectUtils;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.io.support.LocalLogger.Record;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.NumberUtils;
+import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.StringUtils;
 
 /**
  * The id of a single {@link Record} within a stream. Composed of two parts:

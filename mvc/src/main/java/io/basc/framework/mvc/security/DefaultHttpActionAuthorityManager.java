@@ -1,10 +1,10 @@
 package io.basc.framework.mvc.security;
 
+import io.basc.framework.annotation.KeyValuePair;
+import io.basc.framework.annotation.MultiAnnotatedElement;
 import io.basc.framework.codec.Encoder;
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.annotation.KeyValuePair;
-import io.basc.framework.core.annotation.MultiAnnotatedElement;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.mvc.action.Action;

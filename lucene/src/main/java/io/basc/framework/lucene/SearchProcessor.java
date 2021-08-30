@@ -1,6 +1,6 @@
 package io.basc.framework.lucene;
 
-import io.basc.framework.core.utils.ArrayUtils;
+import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.stream.Processor;
 
 import java.io.IOException;

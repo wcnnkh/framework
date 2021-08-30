@@ -1,6 +1,5 @@
 package io.basc.framework.http.client;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.env.Sys;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.client.accessor.HttpClientConfigAccessor;
@@ -10,6 +9,7 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.ssl.SSLContexts;
 import io.basc.framework.net.ssl.TrustAllManager;
+import io.basc.framework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;

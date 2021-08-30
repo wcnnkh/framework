@@ -18,8 +18,8 @@ package io.basc.framework.netflix.eureka;
 
 import static com.netflix.appinfo.InstanceInfo.PortType.SECURE;
 import io.basc.framework.cloud.ServiceInstance;
-import io.basc.framework.core.Assert;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.Assert;
 
 import java.net.URI;
 import java.util.Map;

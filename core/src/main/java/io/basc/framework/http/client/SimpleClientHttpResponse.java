@@ -16,9 +16,9 @@
 
 package io.basc.framework.http.client;
 
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.io.StreamUtils;
+import io.basc.framework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;

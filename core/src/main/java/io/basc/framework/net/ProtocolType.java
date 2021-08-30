@@ -1,6 +1,6 @@
 package io.basc.framework.net;
 
-import io.basc.framework.core.utils.StringUtils;
+import io.basc.framework.util.StringUtils;
 
 public enum ProtocolType {
 	HTTP("http://"),

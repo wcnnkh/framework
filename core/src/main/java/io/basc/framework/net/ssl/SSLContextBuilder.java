@@ -27,8 +27,6 @@
 
 package io.basc.framework.net.ssl;
 
-import io.basc.framework.core.Assert;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -59,6 +57,8 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509ExtendedKeyManager;
 import javax.net.ssl.X509TrustManager;
+
+import io.basc.framework.util.Assert;
 
 /**
  * Builder for {@link javax.net.ssl.SSLContext} instances.

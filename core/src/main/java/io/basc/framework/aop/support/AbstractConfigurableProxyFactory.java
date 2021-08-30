@@ -4,8 +4,8 @@ import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.Proxy;
 import io.basc.framework.aop.ProxyFactory;
 import io.basc.framework.aop.cglib.CglibProxyFactory;
-import io.basc.framework.core.utils.ClassUtils;
 import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.util.ClassUtils;
 
 public abstract class AbstractConfigurableProxyFactory extends CglibProxyFactory implements ProxyFactory,
 		Iterable<ProxyFactory> {

@@ -1,8 +1,8 @@
 package io.basc.framework.rpc.http.annotation;
 
-import io.basc.framework.core.Constants;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.MediaType;
+import io.basc.framework.lang.Constants;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

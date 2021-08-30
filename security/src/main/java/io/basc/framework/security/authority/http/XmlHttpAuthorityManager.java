@@ -1,7 +1,6 @@
 package io.basc.framework.security.authority.http;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.utils.StringUtils;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
@@ -11,6 +10,7 @@ import io.basc.framework.json.JSONUtils;
 import io.basc.framework.lang.DefaultValue;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.StringUtils;
 
 import java.util.Map;
 

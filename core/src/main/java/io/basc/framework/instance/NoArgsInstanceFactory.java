@@ -1,7 +1,7 @@
 package io.basc.framework.instance;
 
-import io.basc.framework.core.utils.ClassUtils;
 import io.basc.framework.util.ClassLoaderProvider;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Supplier;
 
 public interface NoArgsInstanceFactory extends ClassLoaderProvider{

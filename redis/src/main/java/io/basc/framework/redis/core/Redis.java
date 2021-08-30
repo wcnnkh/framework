@@ -2,13 +2,13 @@ package io.basc.framework.redis.core;
 
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.support.CharsetCodec;
-import io.basc.framework.core.Constants;
 import io.basc.framework.data.DataOperations;
 import io.basc.framework.data.cas.CASOperations;
 import io.basc.framework.data.geo.Lbs;
 import io.basc.framework.io.JavaSerializer;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.Serializer;
+import io.basc.framework.lang.Constants;
 import io.basc.framework.redis.core.cas.RedisCASOperations;
 import io.basc.framework.redis.core.convert.ConvertibleRedisConnection;
 import io.basc.framework.redis.core.convert.ConvertibleRedisConnectionFactory;

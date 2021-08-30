@@ -1,8 +1,8 @@
 package io.basc.framework.timer;
 
 import io.basc.framework.beans.annotation.AutoImpl;
-import io.basc.framework.core.IteratorCallback;
 import io.basc.framework.timer.support.DefaultTaskFactory;
+import io.basc.framework.util.IteratorCallback;
 
 @AutoImpl({ DefaultTaskFactory.class })
 public interface TaskFactory {
