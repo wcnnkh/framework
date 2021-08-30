@@ -4,8 +4,7 @@ import io.basc.framework.boot.support.MainApplication;
 
 public class SwaggerTest {
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) {
 		MainApplication.run(SwaggerTest.class);
-		Thread.sleep(Long.MAX_VALUE);
 	}
 }

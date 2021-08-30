@@ -27,8 +27,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 
-public abstract class AbstractLuceneTemplate extends
-		MapperConfigurator<Document, LuceneException> implements LuceneTemplate {
+public abstract class AbstractLuceneTemplate extends MapperConfigurator<Document, LuceneException>
+		implements LuceneTemplate {
 	// 默认的写操作队列, 所有的写都排队处理
 	protected static final TaskQueue TASK_QUEUE = new TaskQueue();
 
@@ -50,8 +50,7 @@ public abstract class AbstractLuceneTemplate extends
 		this(TASK_QUEUE, searchExecutor);
 	}
 
-	public AbstractLuceneTemplate(AsyncExecutor writeExecutor,
-			@Nullable Executor searchExecutor) {
+	public AbstractLuceneTemplate(AsyncExecutor writeExecutor, @Nullable Executor searchExecutor) {
 		this.writeExecutor = writeExecutor;
 		this.searchExecutor = searchExecutor;
 	}
@@ -68,8 +67,8 @@ public abstract class AbstractLuceneTemplate extends
 	protected abstract IndexWriter getIndexWriter() throws IOException;
 
 	@Override
-	public <T, E extends Exception> Future<T> write(
-			Processor<IndexWriter, T, E> processor) throws LuceneWriteException {
+	public <T, E extends Exception> Future<T> write(Processor<IndexWriter, T, E> processor)
+			throws LuceneWriteException {
 		return writeExecutor.submit(() -> {
 			IndexWriter indexWriter = null;
 			try {
@@ -102,8 +101,7 @@ public abstract class AbstractLuceneTemplate extends
 	}
 
 	@Override
-	public <T, E extends Exception> T read(
-			Processor<IndexReader, T, E> processor) throws LuceneReadException {
+	public <T, E extends Exception> T read(Processor<IndexReader, T, E> processor) throws LuceneReadException {
 
 		IndexReader indexReader = null;
 		try {
@@ -121,10 +119,9 @@ public abstract class AbstractLuceneTemplate extends
 	}
 
 	@Override
-	public <T, E extends Exception> T search(
-			Processor<IndexSearcher, T, ? extends E> processor)
+	public <T, E extends Exception> T search(Processor<IndexSearcher, T, ? extends E> processor)
 			throws LuceneSearchException {
-		if(searchExecutor == null){
+		if (searchExecutor == null) {
 			return LuceneTemplate.super.search(processor);
 		}
 		try {
@@ -164,15 +161,9 @@ public abstract class AbstractLuceneTemplate extends
 
 	@Override
 	public Document wrap(Document document, Object instance) {
-		return wrap(
-				document,
-				instance,
-				getFields(instance.getClass()).accept(
-						(field) -> {
-							return field.isAnnotationPresent(LuceneField.class)
-									|| Value.isBaseType(field.getGetter()
-											.getType());
-						}).all());
+		return wrap(document, instance, getFields(instance.getClass()).accept((field) -> {
+			return field.isAnnotationPresent(LuceneField.class) || Value.isBaseType(field.getGetter().getType());
+		}).all());
 	}
 
 	@Override
@@ -187,19 +178,16 @@ public abstract class AbstractLuceneTemplate extends
 			if (Value.isBaseType(field.getGetter().getType())) {
 				v = new AnyValue(value, getConversionService());
 			} else {
-				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(
-						value));
+				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
 			}
 
-			fieldResolver.resolve(field.getGetter(), v).forEach(
-					(f) -> document.add(f));
+			fieldResolver.resolve(field.getGetter(), v).forEach((f) -> document.add(f));
 		}
 		return document;
 	}
 
 	@Override
-	public Document wrap(Document document,
-			EntityStructure<? extends Property> structure, Object instance) {
+	public Document wrap(Document document, EntityStructure<? extends Property> structure, Object instance) {
 		for (Property property : structure) {
 			Object value = property.getField().get(instance);
 			if (value == null) {
@@ -210,12 +198,10 @@ public abstract class AbstractLuceneTemplate extends
 			if (Value.isBaseType(property.getField().getGetter().getType())) {
 				v = new AnyValue(value, getConversionService());
 			} else {
-				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(
-						value));
+				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
 			}
 
-			fieldResolver.resolve(property.getField().getGetter(), v).forEach(
-					(f) -> document.add(f));
+			fieldResolver.resolve(property.getField().getGetter(), v).forEach((f) -> document.add(f));
 		}
 		return document;
 	}

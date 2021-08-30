@@ -29,5 +29,15 @@
 			<artifactId>tomcat</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>tomcat</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>log4j</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

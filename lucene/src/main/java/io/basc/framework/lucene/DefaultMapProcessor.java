@@ -6,7 +6,7 @@ import io.basc.framework.mapper.Field;
 
 import org.apache.lucene.document.Document;
 
-public class DefaultMapProcessor<T, E extends Throwable> extends AbstractMapProcessor<Document, T, E>{
+public class DefaultMapProcessor<T, E extends Throwable> extends AbstractMapProcessor<Document, T, E> {
 
 	public DefaultMapProcessor(TypeDescriptor typeDescriptor) {
 		super(typeDescriptor);

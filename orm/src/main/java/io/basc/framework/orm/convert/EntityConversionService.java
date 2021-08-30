@@ -213,13 +213,15 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		configurationProperties(source, TypeDescriptor.forObject(source), target, TypeDescriptor.forObject(target));
 	}
 
-	private Collection<String> getUseSetterNames(Field field) {
+	private Collection<String> getUseSetterNames(AliasRegistry aliasRegistry, Field field) {
 		List<String> useNames = new ArrayList<String>(8);
 		Collection<String> names = getObjectRelationalMapping().getAliasNames(field.getSetter());
 		for (String name : names) {
 			useNames.add(name);
-			for (String alias : getAliasRegistry().getAliases(name)) {
-				useNames.add(alias);
+			if(aliasRegistry != null) {
+				for (String alias : aliasRegistry.getAliases(name)) {
+					useNames.add(alias);
+				}
 			}
 		}
 		return useNames;
@@ -271,7 +273,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 				}
 			}
 		} else {
-			for (String name : getUseSetterNames(parent)) {
+			for (String name : getUseSetterNames(aliasRegistry, parent)) {
 				appendNames(aliasRegistry, names,
 						parentName == null ? (name + connector) : (name + connector + parentName),
 						field.getParentField());

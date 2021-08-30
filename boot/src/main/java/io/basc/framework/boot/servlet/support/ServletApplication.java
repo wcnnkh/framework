@@ -32,7 +32,7 @@ public class ServletApplication extends DefaultApplication {
 	public static String getConfigXml(ServletContext servletContext) {
 		String config = servletContext.getInitParameter("shuchaowen");
 		if (config == null) {
-			config = servletContext.getInitParameter("scw");
+			config = servletContext.getInitParameter("io.basc.framework.boot");
 		}
 
 		if (config == null) {

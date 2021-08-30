@@ -16,7 +16,7 @@ import org.apache.zookeeper.ZooKeeper;
 @Provider(order=Integer.MIN_VALUE + 1)
 public class ZooKeeperServiceDiscovery extends SimpleDiscoveryClient<ServiceInstance> implements Watcher {
 	private static Logger logger = LoggerFactory.getLogger(ZooKeeperServiceDiscovery.class);
-	public static final String DEFAULT_PARENT_PATH = "/scw";
+	public static final String DEFAULT_PARENT_PATH = "/io/basc/framework/zookeeper/service/discovery";
 	private final ZooKeeper zooKeeper;
 	private final String parentPath;
 

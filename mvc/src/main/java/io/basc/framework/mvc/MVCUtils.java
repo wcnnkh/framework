@@ -16,7 +16,7 @@ import java.util.Map.Entry;
 
 public final class MVCUtils {
 	private static final boolean SUPPORT_SERVLET = ClassUtils.isPresent("javax.servlet.Servlet", null);
-	private static final String REQUEST_LOG_ID = "_scw_request_log_id";
+	private static final String REQUEST_LOG_ID = "io.basc.framework.mvc.request.log.id";
 
 	private MVCUtils() {
 	};

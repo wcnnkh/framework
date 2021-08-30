@@ -12,7 +12,7 @@
 	<packaging>pom</packaging>
 	<name>framework</name>
 	<description>一些常见的实现</description>
-	<url>https://github.com/wcnnkh/scw</url>
+	<url>https://github.com/wcnnkh/framework</url>
 	<licenses>
 		<license>
 			<name>MIT License</name>
@@ -24,19 +24,19 @@
 		<developer>
 			<email>247044007@qq.com</email>
 			<name>chaowen.shu</name>
-			<url>https://github.com/wcnnkh/scw</url>
-			<id>scw</id>
+			<url>https://github.com/wcnnkh/framework</url>
+			<id>wcnnkh</id>
 		</developer>
 	</developers>
 	<issueManagement>
 		<system>Github Issue</system>
-		<url>https://github.com/wcnnkh/scw/issues</url>
+		<url>https://github.com/wcnnkh/framework/issues</url>
 	</issueManagement>
 
 	<scm>
-		<connection>scm:git@https://github.com/wcnnkh/scw.git</connection>
-		<developerConnection>scm:git@https://github.com/wcnnkh/scw.git</developerConnection>
-		<url>https://github.com/wcnnkh/scw.git</url>
+		<connection>scm:git@https://github.com/wcnnkh/framework.git</connection>
+		<developerConnection>scm:git@https://github.com/wcnnkh/framework.git</developerConnection>
+		<url>https://github.com/wcnnkh/framework.git</url>
 	</scm>
 
 	<distributionManagement>
@@ -54,6 +54,7 @@
 		<basc.version>1.8.0</basc.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit.version>4.13.2</junit.version>
+		<!-- https://mvnrepository.com/artifact/io.swagger.core.v3 -->
 		<swagger.version>2.1.10</swagger.version>
 		<!-- tomcat7只支持jdk1.6及以上的版本 -->
 		<!-- tomcat8只支持jdk1.7及以上的版本 -->
@@ -102,13 +103,6 @@
 				<groupId>io.swagger.core.v3</groupId>
 				<artifactId>swagger-jaxrs2</artifactId>
 				<version>${swagger.version}</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-simple</artifactId>
-				<version>1.7.30</version>
 			</dependency>
 
 			<!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
@@ -578,13 +572,6 @@
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

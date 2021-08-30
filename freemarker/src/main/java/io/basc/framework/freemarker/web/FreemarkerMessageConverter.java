@@ -16,8 +16,8 @@ import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessagelConverterException;
-import io.basc.framework.web.model.Page;
-import io.basc.framework.web.model.PageMessageConverter;
+import io.basc.framework.web.model.ModelAndView;
+import io.basc.framework.web.model.ModelAndViewMessageConverter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -27,7 +27,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
-public class FreemarkerMessageConverter extends PageMessageConverter implements WebMessageConverter, MessageConverter {
+public class FreemarkerMessageConverter extends ModelAndViewMessageConverter implements WebMessageConverter, MessageConverter {
 	private final Configuration configuration;
 
 	public FreemarkerMessageConverter(Configuration configuration) {
@@ -47,7 +47,7 @@ public class FreemarkerMessageConverter extends PageMessageConverter implements 
 	@Override
 	public void write(TypeDescriptor typeDescriptor, Object body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException {
-		Page page = (Page) body;
+		ModelAndView page = (ModelAndView) body;
 		HttpHeaders headers = page.getHeaders();
 		if (headers != null) {
 			outputMessage.getHeaders().putAll(headers);
@@ -72,13 +72,13 @@ public class FreemarkerMessageConverter extends PageMessageConverter implements 
 	}
 
 	@Override
-	protected boolean canWrite(Page page) {
+	protected boolean canWrite(ModelAndView page) {
 		return StringUtils.endsWithIgnoreCase(page.getName(), ".ftl")
 				|| StringUtils.endsWithIgnoreCase(page.getName(), ".html");
 	}
 
 	@Override
-	protected void writePage(TypeDescriptor type, Page page, ServerHttpRequest request, ServerHttpResponse response)
+	protected void writePage(TypeDescriptor type, ModelAndView page, ServerHttpRequest request, ServerHttpResponse response)
 			throws IOException, WebMessagelConverterException {
 		Template template = configuration.getTemplate(page.getName(), response.getCharacterEncoding());
 		try {
@@ -90,6 +90,6 @@ public class FreemarkerMessageConverter extends PageMessageConverter implements 
 
 	@Override
 	public boolean canWrite(TypeDescriptor typeDescriptor, Object body, MimeType contentType) {
-		return body != null && body instanceof Page && canWrite((Page) body);
+		return body != null && body instanceof ModelAndView && canWrite((ModelAndView) body);
 	}
 }

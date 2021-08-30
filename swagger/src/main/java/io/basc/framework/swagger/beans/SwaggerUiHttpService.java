@@ -10,6 +10,12 @@ import io.basc.framework.web.ServerHttpResponse;
 import io.swagger.v3.oas.integration.api.OpenApiContext;
 import io.swagger.v3.oas.models.OpenAPI;
 
+/**
+ * 
+ * {@link https://github.com/swagger-api/swagger-ui}
+ * @author shuchaowen
+ *
+ */
 public class SwaggerUiHttpService implements HttpService {
 	private final OpenApiContext openApiContext;
 
