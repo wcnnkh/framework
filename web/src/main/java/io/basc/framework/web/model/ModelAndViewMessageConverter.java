@@ -12,7 +12,7 @@ import io.basc.framework.web.message.WebMessagelConverterException;
 import java.io.IOException;
 import java.util.Enumeration;
 
-public abstract class PageMessageConverter implements WebMessageConverter {
+public abstract class ModelAndViewMessageConverter implements WebMessageConverter {
 	static final String REQUEST = "_request";
 
 	@Override
@@ -28,15 +28,15 @@ public abstract class PageMessageConverter implements WebMessageConverter {
 
 	@Override
 	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response) {
-		return body != null && body instanceof Page && canWrite((Page) body);
+		return body != null && body instanceof ModelAndView && canWrite((ModelAndView) body);
 	}
 	
-	protected abstract boolean canWrite(Page page);
+	protected abstract boolean canWrite(ModelAndView page);
 
 	@Override
 	public void write(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response)
 			throws IOException, WebMessagelConverterException {
-		Page page = ((Page) body).clone();
+		ModelAndView page = ((ModelAndView) body).clone();
 		if (!page.containsKey(REQUEST)) {
 			page.put(REQUEST, request);
 		}
@@ -60,8 +60,12 @@ public abstract class PageMessageConverter implements WebMessageConverter {
 		}
 
 		writePage(type, page, request, response);
+		
+		if(page.getHttpStatus() != null) {
+			response.setStatusCode(page.getHttpStatus());
+		}
 	}
 
-	protected abstract void writePage(TypeDescriptor type, Page page, ServerHttpRequest request,
+	protected abstract void writePage(TypeDescriptor type, ModelAndView page, ServerHttpRequest request,
 			ServerHttpResponse response) throws IOException, WebMessagelConverterException;
 }
