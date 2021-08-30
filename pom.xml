@@ -12,7 +12,7 @@
 	<packaging>pom</packaging>
 	<name>framework</name>
 	<description>一些常见的实现</description>
-	<url>https://github.com/wcnnkh/scw</url>
+	<url>https://github.com/wcnnkh/framework</url>
 	<licenses>
 		<license>
 			<name>MIT License</name>
@@ -24,19 +24,19 @@
 		<developer>
 			<email>247044007@qq.com</email>
 			<name>chaowen.shu</name>
-			<url>https://github.com/wcnnkh/scw</url>
-			<id>scw</id>
+			<url>https://github.com/wcnnkh/framework</url>
+			<id>wcnnkh</id>
 		</developer>
 	</developers>
 	<issueManagement>
 		<system>Github Issue</system>
-		<url>https://github.com/wcnnkh/scw/issues</url>
+		<url>https://github.com/wcnnkh/framework/issues</url>
 	</issueManagement>
 
 	<scm>
-		<connection>scm:git@https://github.com/wcnnkh/scw.git</connection>
-		<developerConnection>scm:git@https://github.com/wcnnkh/scw.git</developerConnection>
-		<url>https://github.com/wcnnkh/scw.git</url>
+		<connection>scm:git@https://github.com/wcnnkh/framework.git</connection>
+		<developerConnection>scm:git@https://github.com/wcnnkh/framework.git</developerConnection>
+		<url>https://github.com/wcnnkh/framework.git</url>
 	</scm>
 
 	<distributionManagement>
