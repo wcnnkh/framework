@@ -15,7 +15,7 @@
 
 2.示例:
 -----------------
-[示例](https://github.com/wcnnkh/scw-example/blob/master/src/main/java/scw/example/ExampleApplication.java)
+[示例](https://github.com/wcnnkh/start-example/blob/master/src/main/java/io/basc/start/example/ExampleApplication.java)
 
 3.即将开始模块(不分先后顺序)
 -----------------

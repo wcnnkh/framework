@@ -1,0 +1,11 @@
+if redis.call('exists', KEYS[1]) == 1 
+then 
+   return redis.call('incrby', KEYS[1], ARGV[1]) 
+else 
+   redis.call('set', KEYS[1], ARGV[2])
+   if tonumber(ARGV[3]) > 0
+   then
+     redis.call('expire', KEYS[1], ARGV[3])
+   end
+   return ARGV[2]
+end

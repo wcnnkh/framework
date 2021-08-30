@@ -2,15 +2,15 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>scw</groupId>
-	<artifactId>scw</artifactId>
+	<groupId>io.basc.framework</groupId>
+	<artifactId>framework</artifactId>
 	<!-- 批量修改模块系统中的版本号 http://www.mojohaus.org/versions-maven-plugin/set-mojo.html -->
 	<!-- generateBackupPoms 是否备份旧的pom.xml -->
 	<!-- newVersion 新的版本号 -->
 	<!-- mvn versions:set -DnewVersion=2.0 -DgenerateBackupPoms=false -->
-	<version>2.1</version>
+	<version>1.8.0</version>
 	<packaging>pom</packaging>
-	<name>scw</name>
+	<name>framework</name>
 	<description>一些常见的实现</description>
 	<url>https://github.com/wcnnkh/scw</url>
 	<licenses>
@@ -51,9 +51,9 @@
 	</distributionManagement>
 
 	<properties>
+		<basc.version>1.8.0</basc.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit.version>4.13.2</junit.version>
-		<commons-fileupload.version>1.4</commons-fileupload.version>
 		<swagger.version>2.1.10</swagger.version>
 		<!-- tomcat7只支持jdk1.6及以上的版本 -->
 		<!-- tomcat8只支持jdk1.7及以上的版本 -->
@@ -131,398 +131,7 @@
 				<artifactId>javax.websocket-api</artifactId>
 				<version>1.1</version>
 			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-core</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-context</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-transaction</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-beans</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-tcc</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-messageing</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-boot</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-sql</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-log4j</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-log4j2</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-cloud</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-lucene</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-web</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-rpc</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-orm</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-yaml</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-mysql</artifactId>
-				<version>2.1</version>
-			</dependency>
 			
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-oracle</artifactId>
-				<version>2.1</version>
-			</dependency>
-			
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-sqlserver</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-sqlite</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-websocket</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-dubbo</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-timer</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-mvc</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-security</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-data</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-memcached</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-redis</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-druid</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-hikaricp</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-hibernate</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-ibatis</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-db</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-amqp</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-jms</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-activemq</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-microsoft</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-freemarker</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-mail</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-rabbitmq</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-upload</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-zookeeper</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-netflix-eureka-client</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-netflix-eureka-server</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-netflix-hystrix</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-feign</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-tomcat</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-quartz</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-rmi</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-elasticsearch</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-jmx</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-protobuf</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-kryo</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-fastjson</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-hessian</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-kafka</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-netty</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-slf4j</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-consistency</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-jackson</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-apollo-client</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-dom</artifactId>
-				<version>2.1</version>
-			</dependency>
-			
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-swagger</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-jpa</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-validation</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<!-- 通用的依赖版本定义 -->
 			<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
 			<dependency>
 				<groupId>javax.servlet</groupId>
@@ -530,11 +139,406 @@
 				<version>3.0.1</version>
 			</dependency>
 
-			<!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
 			<dependency>
-				<groupId>commons-fileupload</groupId>
-				<artifactId>commons-fileupload</artifactId>
-				<version>${commons-fileupload.version}</version>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>core</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>context</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>transaction</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>beans</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>tcc</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>messageing</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>boot</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>sql</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>log4j</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>log4j2</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>cloud</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>lucene</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>web</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>rpc</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>orm</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>yaml</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>mysql</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>oracle</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>sqlserver</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>sqlite</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>websocket</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>dubbo</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>timer</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>mvc</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>security</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>data</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>memcached</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>redis</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>druid</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>hikaricp</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>hibernate</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>ibatis</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>db</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>amqp</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>jms</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>activemq</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>microsoft</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>freemarker</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>mail</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>rabbitmq</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>upload</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>zookeeper</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>netflix-eureka-client</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>netflix-eureka-server</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>netflix-hystrix</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>feign</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>tomcat</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>quartz</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>rmi</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>elasticsearch</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>jmx</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>protobuf</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>kryo</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>fastjson</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>hessian</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>kafka</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>netty</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>slf4j</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>consistency</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>jackson</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>seata</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>solr</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>apollo-client</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>dom</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>swagger</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>jpa</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>validation</artifactId>
+				<version>${basc.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -721,73 +725,73 @@
 		</plugins>
 	</build>
 	<modules>
-		<module>scw-core</module>
-		<module>scw-upload</module>
-		<module>scw-freemarker</module>
-		<module>scw-timer</module>
-		<module>scw-db</module>
-		<module>scw-data</module>
-		<module>scw-mvc</module>
-		<module>scw-websocket</module>
-		<module>scw-cloud</module>
-		<module>scw-security</module>
-		<module>scw-microsoft</module>
-		<module>scw-dubbo</module>
-		<module>scw-zookeeper</module>
-		<module>scw-netflix-eureka-client</module>
-		<module>scw-netflix-eureka-server</module>
-		<module>scw-netflix-hystrix</module>
-		<module>scw-feign</module>
-		<module>scw-tomcat</module>
-		<module>scw-web</module>
-		<module>scw-memcached</module>
-		<module>scw-redis</module>
-		<module>scw-hibernate</module>
-		<module>scw-ibatis</module>
-		<module>scw-druid</module>
-		<module>scw-hikaricp</module>
-		<module>scw-sqlite</module>
-		<module>scw-mysql</module>
-		<module>scw-lucene</module>
-		<module>scw-yaml</module>
-		<module>scw-log4j</module>
-		<module>scw-log4j2</module>
-		<module>scw-mail</module>
-		<module>scw-quartz</module>
-		<module>scw-jmx</module>
-		<module>scw-elasticsearch</module>
-		<module>scw-rmi</module>
-		<module>scw-solr</module>
-		<module>scw-beans</module>
-		<module>scw-transaction</module>
-		<module>scw-boot</module>
-		<module>scw-sql</module>
-		<module>scw-tcc</module>
-		<module>scw-messageing</module>
-		<module>scw-context</module>
-		<module>scw-jms</module>
-		<module>scw-activemq</module>
-		<module>scw-amqp</module>
-		<module>scw-rabbitmq</module>
-		<module>scw-protobuf</module>
-		<module>scw-kryo</module>
-		<module>scw-fastjson</module>
-		<module>scw-hessian</module>
-		<module>scw-rpc</module>
-		<module>scw-seata</module>
-		<module>scw-nacos-client</module>
-		<module>scw-kafka</module>
-		<module>scw-netty</module>
-		<module>scw-slf4j</module>
-		<module>scw-consistency</module>
-		<module>scw-jackson</module>
-		<module>scw-orm</module>
-		<module>scw-apollo-client</module>
-		<module>scw-dom</module>
-		<module>scw-swagger</module>
-		<module>scw-jpa</module>
-		<module>scw-validation</module>
-		<module>scw-oracle</module>
-		<module>scw-sqlserver</module>
+		<module>core</module>
+		<module>upload</module>
+		<module>freemarker</module>
+		<module>timer</module>
+		<module>db</module>
+		<module>data</module>
+		<module>mvc</module>
+		<module>websocket</module>
+		<module>cloud</module>
+		<module>security</module>
+		<module>microsoft</module>
+		<module>dubbo</module>
+		<module>zookeeper</module>
+		<module>netflix-eureka-client</module>
+		<module>netflix-eureka-server</module>
+		<module>netflix-hystrix</module>
+		<module>feign</module>
+		<module>tomcat</module>
+		<module>web</module>
+		<module>memcached</module>
+		<module>redis</module>
+		<module>hibernate</module>
+		<module>ibatis</module>
+		<module>druid</module>
+		<module>hikaricp</module>
+		<module>sqlite</module>
+		<module>mysql</module>
+		<module>lucene</module>
+		<module>yaml</module>
+		<module>log4j</module>
+		<module>log4j2</module>
+		<module>mail</module>
+		<module>quartz</module>
+		<module>jmx</module>
+		<module>elasticsearch</module>
+		<module>rmi</module>
+		<module>solr</module>
+		<module>beans</module>
+		<module>transaction</module>
+		<module>boot</module>
+		<module>sql</module>
+		<module>tcc</module>
+		<module>messageing</module>
+		<module>context</module>
+		<module>jms</module>
+		<module>activemq</module>
+		<module>amqp</module>
+		<module>rabbitmq</module>
+		<module>protobuf</module>
+		<module>kryo</module>
+		<module>fastjson</module>
+		<module>hessian</module>
+		<module>rpc</module>
+		<module>seata</module>
+		<module>nacos-client</module>
+		<module>kafka</module>
+		<module>netty</module>
+		<module>slf4j</module>
+		<module>consistency</module>
+		<module>jackson</module>
+		<module>orm</module>
+		<module>apollo-client</module>
+		<module>dom</module>
+		<module>swagger</module>
+		<module>jpa</module>
+		<module>validation</module>
+		<module>oracle</module>
+		<module>sqlserver</module>
 	</modules>
 </project>

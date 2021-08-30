@@ -1,0 +1,16 @@
+## SQL TYPE ##
+io.basc.framework.orm.sql.convert.DateConversionService
+io.basc.framework.orm.sql.convert.ResultSetRowToEntityConversionService
+## SQL TYPE ##
+
+## DOM ##
+io.basc.framework.orm.convert.dom.DocumentParseConversionService
+io.basc.framework.orm.convert.dom.NodeListToCollectionConversionService
+io.basc.framework.orm.convert.dom.NodeListToMapConversionService
+io.basc.framework.orm.convert.dom.NodeToObjectConversionService
+io.basc.framework.orm.convert.dom.NodeListToEntityConversionService
+## DOM ##
+
+io.basc.framework.orm.convert.CollectionToMapConversionService
+io.basc.framework.orm.convert.PropertyFactoryToEntityConversionService
+io.basc.framework.orm.convert.MapToEntityConversionService
