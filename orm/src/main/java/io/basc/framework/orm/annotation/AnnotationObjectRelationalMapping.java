@@ -1,9 +1,9 @@
 package io.basc.framework.orm.annotation;
 
-import io.basc.framework.annotation.AnnotatedElementUtils;
-import io.basc.framework.annotation.AnnotationAttributes;
-import io.basc.framework.annotation.Named;
 import io.basc.framework.aop.support.ProxyUtils;
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
+import io.basc.framework.core.annotation.AnnotationAttributes;
+import io.basc.framework.core.annotation.Named;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.orm.DefaultEntityStructure;

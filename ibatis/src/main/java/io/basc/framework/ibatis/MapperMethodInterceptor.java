@@ -1,7 +1,7 @@
 package io.basc.framework.ibatis;
 
 import io.basc.framework.aop.MethodInterceptor;
-import io.basc.framework.reflect.MethodInvoker;
+import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.util.stream.Processor;
 
 import java.lang.reflect.Method;

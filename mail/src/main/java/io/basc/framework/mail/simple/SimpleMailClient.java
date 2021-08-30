@@ -56,7 +56,7 @@ public class SimpleMailClient implements MailClient {
 	@Override
 	public void transport(MessageCallback callback) throws MailException {
 		SimpleAuthenticator authenticator = new SimpleAuthenticator(properties);
-		Session session = Session.getDefaultInstance(properties, authenticator.isVerified() ? authenticator : null);
+		Session session = Session.getDefaultInstance(properties, authenticator);
 		SimpleMessage message = new SimpleMessage(session, properties);
 		Address from = null;
 		String user = properties.getUser();

@@ -1,7 +1,7 @@
 package io.basc.framework.security.session;
 
-import io.basc.framework.annotation.Order;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.core.annotation.Order;
 import io.basc.framework.data.TemporaryStorage;
 import io.basc.framework.data.memory.MemoryDataOperations;
 import io.basc.framework.logger.Logger;

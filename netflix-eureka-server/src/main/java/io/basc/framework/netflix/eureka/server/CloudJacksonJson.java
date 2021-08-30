@@ -2,7 +2,7 @@ package io.basc.framework.netflix.eureka.server;
 
 import static com.netflix.discovery.converters.wrappers.CodecWrappers.getCodecName;
 
-import io.basc.framework.reflect.ReflectionUtils;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.StringUtils;
 
 import java.io.IOException;

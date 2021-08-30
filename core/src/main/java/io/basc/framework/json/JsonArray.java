@@ -1,7 +1,7 @@
 package io.basc.framework.json;
 
 import io.basc.framework.convert.Converter;
-import io.basc.framework.reflect.ReflectionUtils;
+import io.basc.framework.core.reflect.ReflectionUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

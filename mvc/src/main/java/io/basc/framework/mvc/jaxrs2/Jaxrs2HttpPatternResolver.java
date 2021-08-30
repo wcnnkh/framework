@@ -1,7 +1,7 @@
 package io.basc.framework.mvc.jaxrs2;
 
-import io.basc.framework.annotation.AnnotatedElementUtils;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.mvc.HttpPatternResolver;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.net.MimeTypes;

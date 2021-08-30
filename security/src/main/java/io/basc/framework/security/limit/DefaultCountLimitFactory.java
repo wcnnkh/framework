@@ -1,8 +1,8 @@
 package io.basc.framework.security.limit;
 
-import io.basc.framework.parameter.ParameterDescriptor;
-import io.basc.framework.parameter.ParameterUtils;
-import io.basc.framework.reflect.MethodInvoker;
+import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.core.parameter.ParameterUtils;
+import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.security.limit.annotation.CountLimitParameter;
 import io.basc.framework.security.limit.annotation.CountLimitSecurity;
 

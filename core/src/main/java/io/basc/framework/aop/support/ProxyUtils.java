@@ -5,9 +5,9 @@ import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.Proxy;
 import io.basc.framework.aop.ProxyFactory;
 import io.basc.framework.aop.WriteReplaceInterface;
+import io.basc.framework.core.reflect.MethodInvoker;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.instance.support.SpiServiceLoader;
-import io.basc.framework.reflect.MethodInvoker;
-import io.basc.framework.reflect.ReflectionUtils;
 import io.basc.framework.util.ArrayUtils;
 
 import java.io.Serializable;

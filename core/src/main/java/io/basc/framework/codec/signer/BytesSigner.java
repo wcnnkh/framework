@@ -1,7 +1,7 @@
 package io.basc.framework.codec.signer;
 
 import io.basc.framework.codec.Signer;
-import io.basc.framework.codec.encoder.BytesEncoder;
+import io.basc.framework.codec.encode.BytesEncoder;
 import io.basc.framework.codec.support.Base64;
 import io.basc.framework.codec.support.HexCodec;
 

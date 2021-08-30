@@ -1,7 +1,7 @@
 package io.basc.framework.dubbo;
 
-import io.basc.framework.annotation.AnnotatedElementUtils;
 import io.basc.framework.context.ClassesLoaderFactory;
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;

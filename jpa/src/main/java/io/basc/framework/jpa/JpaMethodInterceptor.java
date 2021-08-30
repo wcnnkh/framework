@@ -1,7 +1,7 @@
 package io.basc.framework.jpa;
 
 import io.basc.framework.aop.MethodInterceptor;
-import io.basc.framework.reflect.MethodInvoker;
+import io.basc.framework.core.reflect.MethodInvoker;
 
 import java.lang.reflect.Modifier;
 

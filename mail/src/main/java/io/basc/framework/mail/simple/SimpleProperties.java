@@ -1,17 +1,16 @@
 package io.basc.framework.mail.simple;
 
-import io.basc.framework.beans.annotation.ConfigurationProperties;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.Verify;
-import io.basc.framework.value.AnyValue;
-import io.basc.framework.value.Value;
-
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import io.basc.framework.beans.annotation.ConfigurationProperties;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.value.AnyValue;
+import io.basc.framework.value.Value;
+
 @ConfigurationProperties("mail")
-public class SimpleProperties extends Properties implements Verify {
+public class SimpleProperties extends Properties {
 	private static final long serialVersionUID = 1L;
 	public static final String PREFIX = "mail.";
 	protected static final String HOST = "host";
@@ -155,11 +154,6 @@ public class SimpleProperties extends Properties implements Verify {
 
 	public void setCharset(String charset) {
 		setMailProperty(CHARSET, charset);
-	}
-
-	@Override
-	public boolean isVerified() {
-		return StringUtils.isNotEmpty(getHost());
 	}
 
 	@Override

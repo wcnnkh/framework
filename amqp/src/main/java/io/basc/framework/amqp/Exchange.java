@@ -1,6 +1,6 @@
 package io.basc.framework.amqp;
 
-import io.basc.framework.reflect.MethodInvoker;
+import io.basc.framework.core.reflect.MethodInvoker;
 
 
 public interface Exchange {

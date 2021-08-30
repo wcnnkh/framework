@@ -1,8 +1,8 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.parameter.ParameterDescriptor;
-import io.basc.framework.reflect.FieldHolder;
-import io.basc.framework.reflect.MethodHolder;
+import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.core.reflect.FieldHolder;
+import io.basc.framework.core.reflect.MethodHolder;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

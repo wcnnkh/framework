@@ -2,9 +2,9 @@ package io.basc.framework.web.message.support;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.json.JSONUtils;
 import io.basc.framework.net.MimeTypeUtils;
-import io.basc.framework.parameter.ParameterDescriptor;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.value.Value;

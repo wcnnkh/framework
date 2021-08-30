@@ -1,6 +1,6 @@
 package io.basc.framework.test;
 
-import io.basc.framework.type.scanner.ClassPathClassScanner;
+import io.basc.framework.core.type.scanner.ClassPathClassScanner;
 import io.basc.framework.util.ClassUtils;
 
 import java.util.Set;

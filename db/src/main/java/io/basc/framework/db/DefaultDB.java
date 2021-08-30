@@ -2,6 +2,7 @@ package io.basc.framework.db;
 
 import io.basc.framework.context.ClassesLoaderFactory;
 import io.basc.framework.context.support.DefaultClassesLoaderFactory;
+import io.basc.framework.core.type.scanner.DefaultClassScanner;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
@@ -10,7 +11,6 @@ import io.basc.framework.orm.sql.SqlDialect;
 import io.basc.framework.orm.sql.TableChanges;
 import io.basc.framework.orm.sql.annotation.Table;
 import io.basc.framework.sql.ConnectionFactory;
-import io.basc.framework.type.scanner.DefaultClassScanner;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 

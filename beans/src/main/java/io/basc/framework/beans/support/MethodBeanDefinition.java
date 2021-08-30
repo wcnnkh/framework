@@ -2,11 +2,11 @@ package io.basc.framework.beans.support;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.ConfigurableBeanFactory;
+import io.basc.framework.core.parameter.ExecutableParameterDescriptors;
+import io.basc.framework.core.parameter.ExecutableParameterDescriptorsIterator;
+import io.basc.framework.core.parameter.ParameterDescriptors;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.NotSupportedException;
-import io.basc.framework.parameter.ExecutableParameterDescriptors;
-import io.basc.framework.parameter.ExecutableParameterDescriptorsIterator;
-import io.basc.framework.parameter.ParameterDescriptors;
-import io.basc.framework.reflect.ReflectionUtils;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;

@@ -4,8 +4,8 @@ import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.codec.Encoder;
-import io.basc.framework.codec.encoder.HmacMD5;
-import io.basc.framework.codec.encoder.HmacSHA1;
+import io.basc.framework.codec.encode.HmacMD5;
+import io.basc.framework.codec.encode.HmacSHA1;
 import io.basc.framework.lang.Constants;
 
 import java.io.UnsupportedEncodingException;

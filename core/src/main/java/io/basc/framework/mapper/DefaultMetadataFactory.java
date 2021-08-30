@@ -1,6 +1,6 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.reflect.ReflectionUtils;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.StringUtils;
 

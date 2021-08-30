@@ -2,7 +2,7 @@ package io.basc.framework.instance;
 
 import java.util.Iterator;
 
-import io.basc.framework.parameter.ParameterDescriptors;
+import io.basc.framework.core.parameter.ParameterDescriptors;
 
 public interface InstanceDefinition extends Iterable<ParameterDescriptors>, InstanceCreator<Object>{
 	Class<?> getTargetClass();

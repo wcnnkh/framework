@@ -2,8 +2,8 @@ package io.basc.framework.tcc;
 
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.BeanFactoryAware;
-import io.basc.framework.reflect.ReflectionUtils;
-import io.basc.framework.reflect.SerializableMethod;
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.core.reflect.SerializableMethod;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

@@ -4,8 +4,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import io.basc.framework.reflect.ReflectionUtils;
+import io.basc.framework.core.reflect.ReflectionUtils;
 
+/**
+ * @see sun.misc.Unsafe
+ * @author shuchaowen
+ *
+ */
+@SuppressWarnings("restriction")
 public class UnsafeUtils {
 	private static final Object UNSAFE;
 	private static final String CLASS_NAME = "sun.misc.Unsafe";

@@ -1,8 +1,8 @@
 package io.basc.framework.aop.support;
 
 import io.basc.framework.aop.MethodInterceptor;
-import io.basc.framework.reflect.MethodInvoker;
-import io.basc.framework.reflect.MethodInvokerWrapper;
+import io.basc.framework.core.reflect.MethodInvoker;
+import io.basc.framework.core.reflect.MethodInvokerWrapper;
 
 public class MethodInterceptorInvoker extends MethodInvokerWrapper{
 	private static final long serialVersionUID = 1L;

@@ -1,6 +1,5 @@
 package io.basc.framework.beans;
 
-import io.basc.framework.annotation.AnnotatedElementUtils;
 import io.basc.framework.aop.support.ProxyUtils;
 import io.basc.framework.beans.annotation.AopEnable;
 import io.basc.framework.beans.annotation.ConfigurationProperties;
@@ -9,6 +8,7 @@ import io.basc.framework.beans.annotation.Service;
 import io.basc.framework.beans.annotation.Singleton;
 import io.basc.framework.context.ContextAware;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.env.Sys;

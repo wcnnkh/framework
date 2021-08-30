@@ -1,9 +1,9 @@
 package io.basc.framework.beans.xml;
 
 import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.parameter.AbstractParametersFactory;
-import io.basc.framework.parameter.ParameterDescriptor;
-import io.basc.framework.parameter.ParameterDescriptors;
+import io.basc.framework.core.parameter.AbstractParametersFactory;
+import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.core.parameter.ParameterDescriptors;
 
 public class XmlParametersFactory extends AbstractParametersFactory {
 	private final XmlBeanParameter[] xmlBeanParameters;

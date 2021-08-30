@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import io.basc.framework.annotation.AnnotatedElementUtils;
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
 
 public class DefaultGetter extends AbstractFieldDescriptor implements Getter {
 	private final String name;

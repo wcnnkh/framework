@@ -1,7 +1,7 @@
 package io.basc.framework.codec.support;
 
 import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.encoder.BytesEncoder;
+import io.basc.framework.codec.encode.BytesEncoder;
 
 public interface BytesCodec<D> extends Codec<D, byte[]>, BytesEncoder<D> {
 

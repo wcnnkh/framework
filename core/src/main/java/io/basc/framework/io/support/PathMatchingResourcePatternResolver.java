@@ -16,6 +16,7 @@
 
 package io.basc.framework.io.support;
 
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.io.DefaultResourceLoader;
 import io.basc.framework.io.FileSystemResource;
 import io.basc.framework.io.Resource;
@@ -26,7 +27,6 @@ import io.basc.framework.io.UrlResource;
 import io.basc.framework.io.VfsResource;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.reflect.ReflectionUtils;
 import io.basc.framework.util.AntPathMatcher;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;

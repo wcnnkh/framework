@@ -1,7 +1,7 @@
 package io.basc.framework.rpc.remote;
 
 import io.basc.framework.codec.Signer;
-import io.basc.framework.codec.encoder.MD5;
+import io.basc.framework.codec.encode.MD5;
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Serializer;

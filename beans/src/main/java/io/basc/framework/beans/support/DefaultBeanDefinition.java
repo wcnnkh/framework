@@ -14,6 +14,7 @@ import io.basc.framework.beans.BeanlifeCycleEvent.Step;
 import io.basc.framework.beans.annotation.Bean;
 import io.basc.framework.beans.ioc.Ioc;
 import io.basc.framework.context.support.LifecycleAuxiliary;
+import io.basc.framework.core.parameter.ParameterDescriptors;
 import io.basc.framework.env.Sys;
 import io.basc.framework.instance.InstanceException;
 import io.basc.framework.instance.support.DefaultInstanceDefinition;
@@ -21,7 +22,6 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.parameter.ParameterDescriptors;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.StringUtils;
 

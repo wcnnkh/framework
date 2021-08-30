@@ -1,5 +1,6 @@
 package io.basc.framework.io;
 
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
@@ -7,7 +8,6 @@ import io.basc.framework.event.EventRegistration;
 import io.basc.framework.io.event.SimpleResourceEventDispatcher;
 import io.basc.framework.lang.NestedIOException;
 import io.basc.framework.lang.NotSupportedException;
-import io.basc.framework.reflect.ReflectionUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.JavaVersion;
 

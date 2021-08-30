@@ -1,7 +1,7 @@
 package io.basc.framework.orm;
 
-import io.basc.framework.annotation.AnnotatedElementUtils;
 import io.basc.framework.aop.support.ProxyUtils;
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.mapper.FieldFactory;

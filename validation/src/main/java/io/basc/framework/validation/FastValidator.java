@@ -16,6 +16,7 @@ import javax.validation.metadata.BeanDescriptor;
 
 /**
  * 快速验证
+ * 
  * @author shuchaowen
  *
  */
@@ -27,17 +28,30 @@ public class FastValidator implements Validator {
 	public static Validator getValidator() {
 		return VALIDATOR;
 	}
-	
-	public static void validate(Object instance) throws ConstraintViolationException{
+
+	public static void validate(Object instance) throws ConstraintViolationException {
 		validate(() -> VALIDATOR.validate(instance));
 	}
-	
-	public static void validate(CallableProcessor<Set<? extends ConstraintViolation<?>>, ? extends RuntimeException> validateProcessor) throws ConstraintViolationException{
+
+	public static boolean isVerified(Object instance) throws ConstraintViolationException {
+		return isVerified(() -> VALIDATOR.validate(instance));
+	}
+
+	public static void validate(
+			CallableProcessor<Set<? extends ConstraintViolation<?>>, ? extends RuntimeException> validateProcessor)
+			throws ConstraintViolationException {
 		Set<? extends ConstraintViolation<?>> violations = validateProcessor.process();
-		if(CollectionUtils.isEmpty(violations)) {
-			return ;
+		if (CollectionUtils.isEmpty(violations)) {
+			return;
 		}
 		throw new ConstraintViolationException(violations);
+	}
+
+	public static boolean isVerified(
+			CallableProcessor<Set<? extends ConstraintViolation<?>>, ? extends RuntimeException> validateProcessor)
+			throws ConstraintViolationException {
+		Set<? extends ConstraintViolation<?>> violations = validateProcessor.process();
+		return CollectionUtils.isEmpty(violations);
 	}
 
 	@Override

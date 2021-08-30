@@ -1,11 +1,11 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.annotation.AnnotatedElementWrapper;
-import io.basc.framework.annotation.AnnotationArrayAnnotatedElement;
-import io.basc.framework.annotation.MultiAnnotatedElement;
+import io.basc.framework.core.annotation.AnnotatedElementWrapper;
+import io.basc.framework.core.annotation.AnnotationArrayAnnotatedElement;
+import io.basc.framework.core.annotation.MultiAnnotatedElement;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.lang.NotSupportedException;
-import io.basc.framework.reflect.ReflectionUtils;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;

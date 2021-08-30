@@ -1,6 +1,6 @@
 package io.basc.framework.core;
 
-import io.basc.framework.parameter.ParameterNameDiscoverer;
+import io.basc.framework.core.parameter.ParameterNameDiscoverer;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
@@ -21,11 +21,11 @@ import java.util.Map;
  * or {@link Constructor} plus a parameter index and a nested type index for a declared generic
  * type. Useful as a specification object to pass along.
  *
- * <p>As of 4.2, there is a {@link io.basc.framework.annotation.SynthesizingMethodParameter}
+ * <p>As of 4.2, there is a {@link io.basc.framework.core.annotation.SynthesizingMethodParameter}
  * subclass available which synthesizes annotations with attribute aliases. That subclass is used
  * for web and message endpoint processing, in particular.
  *
- * @see io.basc.framework.annotation.SynthesizingMethodParameter
+ * @see io.basc.framework.core.annotation.SynthesizingMethodParameter
  */
 public class MethodParameter {
 

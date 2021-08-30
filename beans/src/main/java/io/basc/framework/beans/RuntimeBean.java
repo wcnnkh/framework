@@ -2,7 +2,7 @@ package io.basc.framework.beans;
 
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.MethodInterceptorAccept;
-import io.basc.framework.reflect.MethodInvoker;
+import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.util.ArrayUtils;
 
 import java.lang.reflect.Method;

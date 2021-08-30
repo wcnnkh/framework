@@ -16,12 +16,12 @@
 
 package io.basc.framework.convert;
 
-import io.basc.framework.annotation.AnnotatedElementUtils;
-import io.basc.framework.annotation.AnnotationArrayAnnotatedElement;
 import io.basc.framework.core.MethodParameter;
 import io.basc.framework.core.ResolvableType;
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
+import io.basc.framework.core.annotation.AnnotationArrayAnnotatedElement;
+import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.parameter.ParameterDescriptor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;

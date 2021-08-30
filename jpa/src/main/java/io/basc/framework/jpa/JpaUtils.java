@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 
 import javax.persistence.EntityManager;
 
-import io.basc.framework.reflect.ReflectionUtils;
+import io.basc.framework.core.reflect.ReflectionUtils;
 
 public class JpaUtils {
 	private JpaUtils(){};

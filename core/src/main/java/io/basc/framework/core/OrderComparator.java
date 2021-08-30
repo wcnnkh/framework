@@ -25,7 +25,7 @@ import java.util.List;
  * same order value.
  *
  * @see Ordered
- * @see io.basc.framework.annotation.AnnotationAwareOrderComparator
+ * @see io.basc.framework.core.annotation.AnnotationAwareOrderComparator
  * @see java.util.Collections#sort(java.util.List, java.util.Comparator)
  * @see java.util.Arrays#sort(Object[], java.util.Comparator)
  */

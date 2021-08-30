@@ -1,6 +1,6 @@
 package io.basc.framework.orm.generator;
 
-import io.basc.framework.annotation.AnnotatedElementUtils;
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.data.Counter;
 import io.basc.framework.data.generator.SequenceId;
 import io.basc.framework.data.generator.SequenceIdGenerator;

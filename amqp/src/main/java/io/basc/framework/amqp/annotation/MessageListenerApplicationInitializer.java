@@ -2,12 +2,12 @@ package io.basc.framework.amqp.annotation;
 
 import io.basc.framework.amqp.Exchange;
 import io.basc.framework.amqp.QueueDeclare;
-import io.basc.framework.annotation.AnnotationUtils;
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.core.annotation.AnnotationUtils;
+import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.instance.supplier.NameInstanceSupplier;
-import io.basc.framework.reflect.MethodInvoker;
 import io.basc.framework.util.Supplier;
 
 import java.lang.reflect.Method;

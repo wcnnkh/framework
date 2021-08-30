@@ -1,10 +1,10 @@
 package io.basc.framework.upload.ueditor.define;
 
-import io.basc.framework.codec.encoder.UnicodeEncoder;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import io.basc.framework.codec.encode.UnicodeEncoder;
 
 public class BaseState implements State {
 

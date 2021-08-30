@@ -1,8 +1,8 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.annotation.AnnotatedElementUtils;
-import io.basc.framework.parameter.DefaultParameterDescriptor;
-import io.basc.framework.parameter.ParameterDescriptor;
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
+import io.basc.framework.core.parameter.DefaultParameterDescriptor;
+import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.value.Value;
 

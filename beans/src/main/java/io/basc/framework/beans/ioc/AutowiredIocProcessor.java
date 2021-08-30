@@ -4,9 +4,9 @@ import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.annotation.Autowired;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.reflect.ReflectionUtils;
 
 public class AutowiredIocProcessor extends AbstractFieldIocProcessor {
 

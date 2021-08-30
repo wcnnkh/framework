@@ -1,7 +1,7 @@
 package io.basc.framework.web.message;
 
-import io.basc.framework.parameter.ParameterDescriptor;
-import io.basc.framework.parameter.ParameterFactory;
+import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.web.ServerHttpRequest;
 
 public class RequestParameterFactory implements ParameterFactory {

@@ -1,7 +1,7 @@
 package io.basc.framework.aop.interceptor;
 
 import io.basc.framework.aop.MethodInterceptor;
-import io.basc.framework.reflect.MethodInvoker;
+import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.util.ConcurrencyThrottleSupport;
 
 import java.io.Serializable;

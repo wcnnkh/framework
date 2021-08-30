@@ -2,8 +2,8 @@ package io.basc.framework.aop.support;
 
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.ProxyInstanceTarget;
-import io.basc.framework.reflect.DefaultMethodInvoker;
-import io.basc.framework.reflect.MethodInvoker;
+import io.basc.framework.core.reflect.DefaultMethodInvoker;
+import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.util.ArrayUtils;
 
 import java.lang.reflect.Method;

@@ -1,7 +1,7 @@
 package io.basc.framework.instance;
 
+import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.instance.annotation.PropertyName;
-import io.basc.framework.parameter.ParameterDescriptor;
 import io.basc.framework.util.StringUtils;
 
 public final class InstanceUtils {

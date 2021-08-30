@@ -1,8 +1,8 @@
 package io.basc.framework.mvc.action;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.parameter.ParameterDescriptors;
-import io.basc.framework.reflect.MethodInvoker;
+import io.basc.framework.core.parameter.ParameterDescriptors;
+import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.web.pattern.HttpPattern;
 
 import java.lang.reflect.AnnotatedElement;

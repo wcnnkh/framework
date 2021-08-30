@@ -1,7 +1,7 @@
 package io.basc.framework.util;
 
+import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.lang.RequiredJavaVersion;
-import io.basc.framework.type.AnnotationMetadata;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
 

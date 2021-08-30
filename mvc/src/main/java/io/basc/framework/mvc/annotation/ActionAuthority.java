@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.basc.framework.annotation.KeyValuePair;
+import io.basc.framework.core.annotation.KeyValuePair;
 
 /**
  * 配置权限，如果是定义的类上的就是父级

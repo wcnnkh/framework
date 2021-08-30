@@ -1,6 +1,6 @@
 package io.basc.framework.orm.sql.annotation;
 
-import io.basc.framework.annotation.AnnotatedElementUtils;
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
