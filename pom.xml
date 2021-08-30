@@ -54,7 +54,6 @@
 		<basc.version>1.8.0</basc.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit.version>4.13.2</junit.version>
-		<commons-fileupload.version>1.4</commons-fileupload.version>
 		<swagger.version>2.1.10</swagger.version>
 		<!-- tomcat7只支持jdk1.6及以上的版本 -->
 		<!-- tomcat8只支持jdk1.7及以上的版本 -->
@@ -131,6 +130,13 @@
 				<groupId>javax.websocket</groupId>
 				<artifactId>javax.websocket-api</artifactId>
 				<version>1.1</version>
+			</dependency>
+			
+			<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>3.0.1</version>
 			</dependency>
 
 			<dependency>
@@ -533,21 +539,6 @@
 				<groupId>io.basc.framework</groupId>
 				<artifactId>validation</artifactId>
 				<version>${basc.version}</version>
-			</dependency>
-
-			<!-- 通用的依赖版本定义 -->
-			<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>3.0.1</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
-			<dependency>
-				<groupId>commons-fileupload</groupId>
-				<artifactId>commons-fileupload</artifactId>
-				<version>${commons-fileupload.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
