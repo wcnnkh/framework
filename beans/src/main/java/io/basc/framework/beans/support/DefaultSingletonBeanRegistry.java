@@ -3,7 +3,7 @@ package io.basc.framework.beans.support;
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanDefinitionFactory;
 import io.basc.framework.beans.SingletonBeanRegistry;
-import io.basc.framework.instance.support.DefaultSingletonRegistry;
+import io.basc.framework.factory.support.DefaultSingletonRegistry;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Status;

@@ -27,8 +27,7 @@ public class BaseIPVerification extends HashSet<String> implements IPVerificatio
 		this.matcher = matcher;
 	}
 
-	protected void appendIPFile(Environment environment, String path) {
-		Resource resource = environment.getResource(path);
+	protected void appendIPFile(Environment environment, Resource resource) {
 		if (resource != null && resource.exists()) {
 			List<String> contentList = ResourceUtils.getLines(resource, environment.getCharsetName());
 			if (!CollectionUtils.isEmpty(contentList)) {

@@ -4,7 +4,7 @@ import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.db.Configurable;
 import io.basc.framework.db.DBUtils;
-import io.basc.framework.instance.InstanceException;
+import io.basc.framework.factory.InstanceException;
 import io.basc.framework.value.support.PropertiesPropertyFactory;
 
 import java.util.Properties;

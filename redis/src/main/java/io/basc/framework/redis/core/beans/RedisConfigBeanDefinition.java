@@ -3,7 +3,7 @@ package io.basc.framework.redis.core.beans;
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.instance.InstanceException;
+import io.basc.framework.factory.InstanceException;
 import io.basc.framework.orm.convert.EntityConversionService;
 import io.basc.framework.orm.convert.PropertyFactoryToEntityConversionService;
 import io.basc.framework.redis.core.RedisConfiguration;

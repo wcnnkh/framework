@@ -2,9 +2,9 @@ package io.basc.framework.rpc.remote.web;
 
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
+import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.MediaType;
-import io.basc.framework.instance.NoArgsInstanceFactory;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.rpc.CallableFactory;

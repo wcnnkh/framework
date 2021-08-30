@@ -5,7 +5,7 @@ import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.instance.InstanceException;
+import io.basc.framework.factory.InstanceException;
 import io.basc.framework.rpc.remote.RemoteMessageCodec;
 import io.basc.framework.rpc.remote.SignerRemoteMessageCodec;
 

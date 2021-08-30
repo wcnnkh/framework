@@ -7,7 +7,7 @@ import io.basc.framework.aop.ProxyFactory;
 import io.basc.framework.aop.WriteReplaceInterface;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.instance.support.SpiServiceLoader;
+import io.basc.framework.factory.support.SpiServiceLoader;
 import io.basc.framework.util.ArrayUtils;
 
 import java.io.Serializable;

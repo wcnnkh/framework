@@ -1,13 +1,13 @@
 package io.basc.framework.core.reflect;
 
-import io.basc.framework.instance.NoArgsInstanceFactory;
-import io.basc.framework.instance.supplier.NameInstanceSupplier;
-
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
+
+import io.basc.framework.factory.NoArgsInstanceFactory;
+import io.basc.framework.factory.supplier.NameInstanceSupplier;
 
 public class DefaultMethodInvoker implements MethodInvoker, Serializable, Cloneable, Supplier<Object> {
 	private static final long serialVersionUID = 1L;

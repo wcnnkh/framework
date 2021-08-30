@@ -3,7 +3,7 @@ package io.basc.framework.druid.beans;
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.druid.DruidConnectionFactory;
-import io.basc.framework.instance.InstanceException;
+import io.basc.framework.factory.InstanceException;
 
 import com.alibaba.druid.pool.DruidDataSource;
 

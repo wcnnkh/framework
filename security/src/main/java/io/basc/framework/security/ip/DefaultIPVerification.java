@@ -1,7 +1,5 @@
 package io.basc.framework.security.ip;
 
-import io.basc.framework.instance.annotation.PropertyName;
-import io.basc.framework.instance.annotation.PropertyParameter;
 import io.basc.framework.lang.DefaultValue;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.InetUtils;
@@ -14,16 +12,12 @@ public class DefaultIPVerification implements IPVerification {
 	private final boolean ignoreInnerIp;
 
 	/**
-	 * @param blacklistIPVerification
-	 *            黑名单检查
-	 * @param whitelistIPVerification
-	 *            白名单检查
-	 * @param ignoreInnerIp
-	 *            是否不检查内网ip
+	 * @param blacklistIPVerification 黑名单检查
+	 * @param whitelistIPVerification 白名单检查
+	 * @param ignoreInnerIp           是否不检查内网ip
 	 */
-	public DefaultIPVerification(@Nullable @PropertyParameter(false) BlacklistIPVerification blacklistIPVerification,
-			@PropertyParameter(false) WhitelistIPVerification whitelistIPVerification,
-			@PropertyName(IGNORE_INNER_IP_NAME) @DefaultValue("true") boolean ignoreInnerIp) {
+	public DefaultIPVerification(@Nullable BlacklistIPVerification blacklistIPVerification,
+			WhitelistIPVerification whitelistIPVerification, @DefaultValue("true") boolean ignoreInnerIp) {
 		this.blacklistIPVerification = blacklistIPVerification;
 		this.whitelistIPVerification = whitelistIPVerification;
 		this.ignoreInnerIp = ignoreInnerIp;

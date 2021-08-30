@@ -1,8 +1,8 @@
 package io.basc.framework.util.placeholder.support;
 
-import io.basc.framework.instance.Configurable;
-import io.basc.framework.instance.ConfigurableServices;
-import io.basc.framework.instance.ServiceLoaderFactory;
+import io.basc.framework.factory.Configurable;
+import io.basc.framework.factory.ConfigurableServices;
+import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
 import io.basc.framework.util.placeholder.PlaceholderReplacer;
 import io.basc.framework.util.placeholder.PlaceholderResolver;

@@ -5,7 +5,7 @@ import io.basc.framework.aop.Proxy;
 import io.basc.framework.aop.support.ProxyUtils;
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
-import io.basc.framework.instance.InstanceException;
+import io.basc.framework.factory.InstanceException;
 import io.basc.framework.rpc.CallableFactory;
 
 public class RemoteCallableBeanDefinition extends DefaultBeanDefinition{

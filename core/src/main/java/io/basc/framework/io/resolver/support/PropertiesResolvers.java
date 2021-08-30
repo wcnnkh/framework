@@ -1,8 +1,8 @@
 package io.basc.framework.io.resolver.support;
 
-import io.basc.framework.instance.Configurable;
-import io.basc.framework.instance.ConfigurableServices;
-import io.basc.framework.instance.ServiceLoaderFactory;
+import io.basc.framework.factory.Configurable;
+import io.basc.framework.factory.ConfigurableServices;
+import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.ConfigurablePropertiesResolver;
 import io.basc.framework.io.resolver.PropertiesResolver;

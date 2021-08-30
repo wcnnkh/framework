@@ -4,8 +4,8 @@ import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.db.DataBase;
 import io.basc.framework.db.DataBaseResolver;
+import io.basc.framework.factory.InstanceException;
 import io.basc.framework.hikari.HikariUtils;
-import io.basc.framework.instance.InstanceException;
 
 import com.zaxxer.hikari.HikariDataSource;
 

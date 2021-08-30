@@ -3,8 +3,8 @@ package io.basc.framework.web.resource;
 import java.io.IOException;
 import java.util.LinkedList;
 
+import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.http.HttpMethod;
-import io.basc.framework.instance.ServiceLoaderFactory;
 import io.basc.framework.io.Resource;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.web.HttpService;

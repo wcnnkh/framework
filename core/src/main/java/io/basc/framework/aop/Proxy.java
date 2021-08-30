@@ -1,6 +1,6 @@
 package io.basc.framework.aop;
 
-import io.basc.framework.instance.InstanceCreator;
+import io.basc.framework.factory.InstanceCreator;
 
 /**
   *  代理

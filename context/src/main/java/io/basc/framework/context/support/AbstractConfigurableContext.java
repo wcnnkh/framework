@@ -13,8 +13,8 @@ import io.basc.framework.core.type.scanner.ConfigurableClassScanner;
 import io.basc.framework.core.type.scanner.DefaultClassScanner;
 import io.basc.framework.env.ConfigurableEnvironment;
 import io.basc.framework.env.DefaultEnvironment;
-import io.basc.framework.instance.Configurable;
-import io.basc.framework.instance.ServiceLoaderFactory;
+import io.basc.framework.factory.Configurable;
+import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.value.ValueFactory;
 

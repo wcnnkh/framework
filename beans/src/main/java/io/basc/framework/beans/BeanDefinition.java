@@ -1,9 +1,9 @@
 package io.basc.framework.beans;
 
-import io.basc.framework.instance.InstanceDefinition;
-
 import java.lang.reflect.AnnotatedElement;
 import java.util.Collection;
+
+import io.basc.framework.factory.InstanceDefinition;
 
 public interface BeanDefinition extends InstanceDefinition{
 	String getId();

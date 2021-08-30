@@ -2,8 +2,8 @@ package io.basc.framework.hikari.beans;
 
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
+import io.basc.framework.factory.InstanceException;
 import io.basc.framework.hikari.HikariConnectionFactory;
-import io.basc.framework.instance.InstanceException;
 
 import com.zaxxer.hikari.HikariDataSource;
 

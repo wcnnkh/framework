@@ -7,7 +7,7 @@ import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.annotation.AnnotationUtils;
 import io.basc.framework.core.reflect.Invoker;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.instance.supplier.NameInstanceSupplier;
+import io.basc.framework.factory.supplier.NameInstanceSupplier;
 import io.basc.framework.timer.annotation.Crontab;
 import io.basc.framework.timer.annotation.Schedule;
 import io.basc.framework.timer.support.SimpleCrontabConfig;

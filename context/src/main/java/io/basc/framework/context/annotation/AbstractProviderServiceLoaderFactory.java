@@ -2,9 +2,9 @@ package io.basc.framework.context.annotation;
 
 import io.basc.framework.context.ClassesLoader;
 import io.basc.framework.context.support.AcceptClassesLoader;
-import io.basc.framework.instance.AbstractServiceLoaderFactory;
-import io.basc.framework.instance.ServiceLoader;
-import io.basc.framework.instance.support.ServiceLoaders;
+import io.basc.framework.factory.AbstractServiceLoaderFactory;
+import io.basc.framework.factory.ServiceLoader;
+import io.basc.framework.factory.support.ServiceLoaders;
 import io.basc.framework.util.SmartMap;
 
 public abstract class AbstractProviderServiceLoaderFactory extends AbstractServiceLoaderFactory {

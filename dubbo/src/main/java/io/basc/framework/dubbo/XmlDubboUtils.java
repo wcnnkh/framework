@@ -5,7 +5,7 @@ import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
-import io.basc.framework.instance.NoArgsInstanceFactory;
+import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Copy;

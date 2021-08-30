@@ -6,7 +6,7 @@ import io.basc.framework.aop.Proxy;
 import io.basc.framework.aop.ProxyFactory;
 import io.basc.framework.aop.ProxyInstanceTarget;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.instance.InstanceException;
+import io.basc.framework.factory.InstanceException;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.StaticSupplier;
 

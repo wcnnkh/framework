@@ -2,7 +2,7 @@ package io.basc.framework.mapper;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.env.Sys;
-import io.basc.framework.instance.NoArgsInstanceFactory;
+import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.stream.StreamProcessorSupport;

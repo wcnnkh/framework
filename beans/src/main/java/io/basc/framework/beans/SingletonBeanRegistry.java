@@ -1,6 +1,6 @@
 package io.basc.framework.beans;
 
-import io.basc.framework.instance.SingletonRegistry;
+import io.basc.framework.factory.SingletonRegistry;
 import io.basc.framework.util.Status;
 
 public interface SingletonBeanRegistry extends SingletonRegistry {

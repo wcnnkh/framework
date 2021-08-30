@@ -13,7 +13,7 @@ import io.basc.framework.convert.lang.StringToCharsetConverter;
 import io.basc.framework.convert.lang.StringToCurrencyConverter;
 import io.basc.framework.convert.lang.StringToLocaleConverter;
 import io.basc.framework.convert.lang.StringToTimeZoneConverter;
-import io.basc.framework.instance.Configurable;
+import io.basc.framework.factory.Configurable;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.PropertiesResolver;
 import io.basc.framework.lang.Nullable;

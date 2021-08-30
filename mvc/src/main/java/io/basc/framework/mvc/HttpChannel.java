@@ -2,7 +2,7 @@ package io.basc.framework.mvc;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterFactory;
-import io.basc.framework.instance.NoArgsInstanceFactory;
+import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mvc.security.UserSessionFactoryAdapter;
 import io.basc.framework.mvc.security.UserSessionResolver;

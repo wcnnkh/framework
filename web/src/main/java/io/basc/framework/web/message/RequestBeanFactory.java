@@ -11,7 +11,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptors;
 import io.basc.framework.core.parameter.ParameterFactory;
-import io.basc.framework.instance.NoArgsInstanceFactory;
+import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.orm.convert.EntityConversionService;
 import io.basc.framework.util.Accept;

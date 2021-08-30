@@ -1,7 +1,7 @@
 package io.basc.framework.netflix.hystrix;
 
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.instance.NoArgsInstanceFactory;
+import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.netflix.hystrix.annotation.Hystrix;
 
 import com.netflix.hystrix.HystrixCommand;

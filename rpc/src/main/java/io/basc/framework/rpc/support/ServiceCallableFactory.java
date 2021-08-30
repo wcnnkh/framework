@@ -1,6 +1,6 @@
 package io.basc.framework.rpc.support;
 
-import io.basc.framework.instance.NoArgsInstanceFactory;
+import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.rpc.CallableFactory;
 
 import java.lang.reflect.Method;

@@ -1,6 +1,6 @@
 package io.basc.framework.beans;
 
-import io.basc.framework.instance.DefinitionFactory;
+import io.basc.framework.factory.DefinitionFactory;
 import io.basc.framework.util.alias.AliasFactory;
 
 

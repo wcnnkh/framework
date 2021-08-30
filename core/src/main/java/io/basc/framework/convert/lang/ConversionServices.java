@@ -5,9 +5,9 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.instance.Configurable;
-import io.basc.framework.instance.ConfigurableServices;
-import io.basc.framework.instance.ServiceLoaderFactory;
+import io.basc.framework.factory.Configurable;
+import io.basc.framework.factory.ConfigurableServices;
+import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.lang.LinkedThreadLocal;
 
 import java.util.Iterator;

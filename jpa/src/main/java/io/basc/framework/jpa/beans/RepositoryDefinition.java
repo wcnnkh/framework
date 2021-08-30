@@ -2,7 +2,7 @@ package io.basc.framework.jpa.beans;
 
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
-import io.basc.framework.instance.InstanceException;
+import io.basc.framework.factory.InstanceException;
 import io.basc.framework.jpa.JpaMethodInterceptor;
 
 import javax.persistence.EntityManagerFactory;

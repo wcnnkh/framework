@@ -1,22 +1,20 @@
 package io.basc.framework.security.authority.http;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.dom.DomUtils;
-import io.basc.framework.env.Environment;
-import io.basc.framework.env.Sys;
-import io.basc.framework.instance.annotation.PropertyName;
-import io.basc.framework.instance.annotation.ResourceParameter;
-import io.basc.framework.json.JSONUtils;
-import io.basc.framework.lang.DefaultValue;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.StringUtils;
-
 import java.util.Map;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.dom.DomUtils;
+import io.basc.framework.env.Environment;
+import io.basc.framework.env.Sys;
+import io.basc.framework.io.Resource;
+import io.basc.framework.json.JSONUtils;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.StringUtils;
 
 public class XmlHttpAuthorityManager extends
 		DefaultHttpAuthorityManager<HttpAuthority> {
@@ -25,25 +23,24 @@ public class XmlHttpAuthorityManager extends
 	private final Environment environment;
 
 	public XmlHttpAuthorityManager(
-			Environment environment,
-			@PropertyName("xml.http.authority") @ResourceParameter @DefaultValue("classpath:/http-authority.xml") String xml) {
-		this(environment, xml, null);
+			Environment environment, Resource resource) {
+		this(environment, resource, null);
 	}
 
-	public XmlHttpAuthorityManager(Environment environment, String xml,
+	public XmlHttpAuthorityManager(Environment environment, Resource resource,
 			String parentId) {
 		this.environment = environment;
-		addByXml(xml, StringUtils.isEmpty(parentId) ? "" : parentId);
+		addByXml(resource, StringUtils.isEmpty(parentId) ? "" : parentId);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void addByXml(String xml, String defParentId) {
-		if (!environment.exists(xml)) {
-			logger.warn("not found:{}", xml);
+	private void addByXml(Resource resource, String defParentId) {
+		if (!resource.exists()) {
+			logger.warn("not found:{}", resource);
 			return;
 		}
 
-		Element element = DomUtils.getRootElement(environment, xml);
+		Element element = DomUtils.getRootElement(resource);
 		String prefix = DomUtils.getNodeAttributeValue(element, "prefix");
 		NodeList nodeList = DomUtils.getChildNodes(element, environment);
 		if (nodeList == null) {
@@ -99,7 +96,7 @@ public class XmlHttpAuthorityManager extends
 
 		String include = map.remove("include");
 		if (!StringUtils.isEmpty(include)) {
-			addByXml(include, parentId);
+			addByXml(environment.getResource(include), parentId);
 		}
 
 		String path = map.remove("path");

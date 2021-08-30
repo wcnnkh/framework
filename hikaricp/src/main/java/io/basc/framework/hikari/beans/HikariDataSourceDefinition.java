@@ -3,7 +3,7 @@ package io.basc.framework.hikari.beans;
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
-import io.basc.framework.instance.InstanceException;
+import io.basc.framework.factory.InstanceException;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

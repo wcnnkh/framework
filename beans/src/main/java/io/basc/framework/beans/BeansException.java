@@ -1,6 +1,6 @@
 package io.basc.framework.beans;
 
-import io.basc.framework.instance.InstanceException;
+import io.basc.framework.factory.InstanceException;
 
 public class BeansException extends InstanceException{
 	private static final long serialVersionUID = 1L;

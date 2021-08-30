@@ -7,7 +7,7 @@ import io.basc.framework.db.DB;
 import io.basc.framework.db.DataBase;
 import io.basc.framework.db.DataBaseResolver;
 import io.basc.framework.db.DefaultDB;
-import io.basc.framework.instance.InstanceException;
+import io.basc.framework.factory.InstanceException;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.orm.sql.SqlDialect;
 import io.basc.framework.sql.ConnectionFactory;

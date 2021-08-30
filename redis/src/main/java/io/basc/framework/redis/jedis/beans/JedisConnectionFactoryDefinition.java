@@ -2,7 +2,7 @@ package io.basc.framework.redis.jedis.beans;
 
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
-import io.basc.framework.instance.InstanceException;
+import io.basc.framework.factory.InstanceException;
 import io.basc.framework.redis.jedis.JedisConnectionFactory;
 import redis.clients.jedis.JedisPool;
 

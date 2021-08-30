@@ -1,9 +1,9 @@
 package io.basc.framework.context.annotation;
 
 import io.basc.framework.context.ClassesLoader;
-import io.basc.framework.instance.NoArgsInstanceFactory;
-import io.basc.framework.instance.ServiceLoader;
-import io.basc.framework.instance.support.ClassInstanceIterator;
+import io.basc.framework.factory.NoArgsInstanceFactory;
+import io.basc.framework.factory.ServiceLoader;
+import io.basc.framework.factory.support.ClassInstanceIterator;
 
 import java.util.Iterator;
 

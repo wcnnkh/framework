@@ -1,8 +1,8 @@
 package io.basc.framework.aop.support;
 
 import io.basc.framework.aop.MethodInterceptor;
-import io.basc.framework.instance.Configurable;
-import io.basc.framework.instance.ServiceLoaderFactory;
+import io.basc.framework.factory.Configurable;
+import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.MultiIterator;
 

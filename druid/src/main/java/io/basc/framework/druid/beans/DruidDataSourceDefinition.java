@@ -6,7 +6,7 @@ import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.db.Configurable;
 import io.basc.framework.druid.DruidUtils;
-import io.basc.framework.instance.InstanceException;
+import io.basc.framework.factory.InstanceException;
 import io.basc.framework.logger.Levels;
 
 import com.alibaba.druid.pool.DruidDataSource;

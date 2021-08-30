@@ -1,6 +1,6 @@
 package io.basc.framework.context.support;
 
-import io.basc.framework.instance.NoArgsInstanceFactory;
+import io.basc.framework.factory.NoArgsInstanceFactory;
 
 public class DefaultContext extends AbstractConfigurableContext {
 	private final NoArgsInstanceFactory instanceFactory;

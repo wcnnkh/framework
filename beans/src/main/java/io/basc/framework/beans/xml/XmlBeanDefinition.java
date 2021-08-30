@@ -7,7 +7,7 @@ import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.core.parameter.ParameterDescriptors;
 import io.basc.framework.dom.DomUtils;
-import io.basc.framework.instance.support.InstanceIterable;
+import io.basc.framework.factory.support.InstanceIterable;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;

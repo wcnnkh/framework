@@ -2,6 +2,7 @@ package io.basc.framework.dom;
 
 import io.basc.framework.convert.Converter;
 import io.basc.framework.env.Sys;
+import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.Nullable;
@@ -44,12 +45,14 @@ public final class DomUtils {
 	private static final DomBuilder DOM_BUILDER;
 
 	static {
-		DOCUMENT_BUILDER_FACTORY.setIgnoringElementContentWhitespace(Sys.env.getValue("dom.ignoring.element.content.whitespace", boolean.class, true));
+		DOCUMENT_BUILDER_FACTORY.setIgnoringElementContentWhitespace(
+				Sys.env.getValue("dom.ignoring.element.content.whitespace", boolean.class, true));
 		DOCUMENT_BUILDER_FACTORY.setIgnoringComments(Sys.env.getValue("dom.ignoring.comments", boolean.class, true));
 		DOCUMENT_BUILDER_FACTORY.setCoalescing(Sys.env.getValue("dom.coalescing", boolean.class, true));
-		DOCUMENT_BUILDER_FACTORY.setExpandEntityReferences(Sys.env.getValue("dom.expand.entity.references", boolean.class, false));
+		DOCUMENT_BUILDER_FACTORY
+				.setExpandEntityReferences(Sys.env.getValue("dom.expand.entity.references", boolean.class, false));
 		DOCUMENT_BUILDER_FACTORY.setNamespaceAware(Sys.env.getValue("dom.namespace.aware", boolean.class, false));
-		
+
 		DomBuilder domBuilder = Sys.env.getServiceLoader(DomBuilder.class).first();
 		DOM_BUILDER = domBuilder == null ? new DomBuilder(DOCUMENT_BUILDER_FACTORY, TRANSFORMER_FACTORY) : domBuilder;
 	}
@@ -65,8 +68,17 @@ public final class DomUtils {
 		return getDomBuilder().parse(resourceLoader.getResource(path));
 	}
 
+	public static Document getDocument(Resource resource) throws NotFoundException {
+		return getDomBuilder().parse(resource);
+	}
+
 	public static Element getRootElement(ResourceLoader resourceLoader, String xmlPath) {
 		Document document = getDocument(resourceLoader, xmlPath);
+		return document.getDocumentElement();
+	}
+
+	public static Element getRootElement(Resource resource) {
+		Document document = getDocument(resource);
 		return document.getDocumentElement();
 	}
 

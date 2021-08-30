@@ -1,6 +1,6 @@
 package io.basc.framework.context;
 
-import io.basc.framework.instance.ServiceLoader;
+import io.basc.framework.factory.ServiceLoader;
 
 public interface ClassesLoader extends ServiceLoader<Class<?>> {
 	static final String SUFFIX = ".class";

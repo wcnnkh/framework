@@ -5,7 +5,7 @@ import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.db.DataBase;
 import io.basc.framework.db.DataBaseResolver;
 import io.basc.framework.druid.DruidUtils;
-import io.basc.framework.instance.InstanceException;
+import io.basc.framework.factory.InstanceException;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
