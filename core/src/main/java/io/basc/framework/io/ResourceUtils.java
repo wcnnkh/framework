@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * 资源工具
  * 
- * @author scw
+ * @author shuchaowen
  */
 public final class ResourceUtils {
 	private ResourceUtils() {
