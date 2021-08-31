@@ -1,6 +1,9 @@
 package io.basc.framework.mvc;
 
+import java.io.IOException;
+
 import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.core.parameter.ParameterDefaultValueFactory;
 import io.basc.framework.net.message.multipart.MultipartMessageResolver;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
@@ -9,8 +12,6 @@ import io.basc.framework.web.jsonp.JsonpUtils;
 import io.basc.framework.web.message.WebMessageConverters;
 import io.basc.framework.web.message.support.DefaultWebMessageConverters;
 import io.basc.framework.web.pattern.HttpPatterns;
-
-import java.io.IOException;
 
 public class DefaultHttpChannelFactory implements HttpChannelFactory {
 	protected final BeanFactory beanFactory;
@@ -23,7 +24,7 @@ public class DefaultHttpChannelFactory implements HttpChannelFactory {
 	public DefaultHttpChannelFactory(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
 		webMessageConverters = new DefaultWebMessageConverters(beanFactory.getEnvironment().getConversionService(),
-				beanFactory);
+				beanFactory, new ParameterDefaultValueFactory(beanFactory));
 	}
 
 	public MultipartMessageResolver getMultipartMessageResolver() {

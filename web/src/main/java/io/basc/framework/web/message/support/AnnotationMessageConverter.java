@@ -1,7 +1,11 @@
 package io.basc.framework.web.message.support;
 
+import java.io.IOException;
+
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.parameter.ParameterDefaultValueFactory;
 import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.value.AnyValue;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessageConverter;
@@ -9,10 +13,13 @@ import io.basc.framework.web.message.WebMessagelConverterException;
 import io.basc.framework.web.message.annotation.Attribute;
 import io.basc.framework.web.message.annotation.IP;
 
-import java.io.IOException;
-
 public class AnnotationMessageConverter implements WebMessageConverter {
-
+	private final ParameterDefaultValueFactory defaultValueFactory;
+	
+	public AnnotationMessageConverter(ParameterDefaultValueFactory defaultValueFactory) {
+		this.defaultValueFactory = defaultValueFactory;
+	}
+	
 	@Override
 	public boolean canRead(ParameterDescriptor parameterDescriptor, ServerHttpRequest request) {
 		return parameterDescriptor.isAnnotationPresent(IP.class)
@@ -24,7 +31,10 @@ public class AnnotationMessageConverter implements WebMessageConverter {
 			throws IOException, WebMessagelConverterException {
 		if (parameterDescriptor.isAnnotationPresent(IP.class)) {
 			String ip = request.getIp();
-			return ip == null ? parameterDescriptor.getDefaultValue().getAsString() : ip;
+			if(ip == null) {
+				ip = new AnyValue(defaultValueFactory.getParameter(parameterDescriptor)).getAsString();
+			}
+			return ip;
 		}
 
 		Attribute attribute = parameterDescriptor.getAnnotation(Attribute.class);

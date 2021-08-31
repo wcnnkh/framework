@@ -1,6 +1,7 @@
 package io.basc.framework.rpc.http.annotation;
 
 import io.basc.framework.core.parameter.OverrideParameterDescriptor;
+import io.basc.framework.core.parameter.ParameterDefaultValueFactory;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.http.HttpHeaders;
@@ -37,19 +38,23 @@ public class AnnotationHttpRequestEntityFactory implements HttpRequestEntityFact
 	private final String host;
 	private final HttpMethod defaultHttpMethod;
 	private final MediaType mediaType;
+	private final ParameterDefaultValueFactory defaultValueFactory;
 
-	AnnotationHttpRequestEntityFactory(HttpRemote host) {
-		this(host.value(), host.method(), new MediaType(MediaType.valueOf(host.contentType()), host.charsetName()));
+	AnnotationHttpRequestEntityFactory(HttpRemote host, ParameterDefaultValueFactory defaultValueFactory) {
+		this(host.value(), host.method(), new MediaType(MediaType.valueOf(host.contentType()), host.charsetName()),
+				defaultValueFactory);
 	}
 
-	AnnotationHttpRequestEntityFactory(Path path) {
-		this(path.value(), HttpMethod.GET, MediaType.APPLICATION_FORM_URLENCODED);
+	AnnotationHttpRequestEntityFactory(Path path, ParameterDefaultValueFactory defaultValueFactory) {
+		this(path.value(), HttpMethod.GET, MediaType.APPLICATION_FORM_URLENCODED, defaultValueFactory);
 	}
 
-	public AnnotationHttpRequestEntityFactory(String host, HttpMethod defaultHttpMethod, MediaType mediaType) {
+	public AnnotationHttpRequestEntityFactory(String host, HttpMethod defaultHttpMethod, MediaType mediaType,
+			ParameterDefaultValueFactory defaultValueFactory) {
 		this.host = host;
 		this.defaultHttpMethod = defaultHttpMethod;
 		this.mediaType = mediaType;
+		this.defaultValueFactory = defaultValueFactory;
 	}
 
 	public final String getHost() {
@@ -141,8 +146,8 @@ public class AnnotationHttpRequestEntityFactory implements HttpRequestEntityFact
 							new StringValue(defaultValue.value()));
 				}
 
-				if (value == null && parameterDescriptor.getDefaultValue() != null) {
-					value = parameterDescriptor.getDefaultValue().getAsString();
+				if(value == null) {
+					value = defaultValueFactory.getParameter(parameterDescriptor);
 				}
 
 				HeaderParam headerParam = parameterDescriptor.getAnnotation(HeaderParam.class);

@@ -1,7 +1,11 @@
 package io.basc.framework.web.message.support;
 
+import java.io.IOException;
+import java.util.List;
+
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.parameter.ParameterDefaultValueFactory;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.json.JSONUtils;
 import io.basc.framework.net.MimeTypeUtils;
@@ -14,14 +18,13 @@ import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessagelConverterException;
 
-import java.io.IOException;
-import java.util.List;
-
 public class ConversionMessageConverter implements WebMessageConverter {
 	private final ConversionService conversionService;
+	private final ParameterDefaultValueFactory defaultValueFactory;
 
-	public ConversionMessageConverter(ConversionService conversionService) {
+	public ConversionMessageConverter(ConversionService conversionService, ParameterDefaultValueFactory defaultValueFactory) {
 		this.conversionService = conversionService;
+		this.defaultValueFactory = defaultValueFactory;
 	}
 
 	@Override
@@ -39,21 +42,17 @@ public class ConversionMessageConverter implements WebMessageConverter {
 		if (parameterDescriptor.getClass().isArray()) {
 			Value[] values = WebUtils.getParameterValues(request, parameterDescriptor.getName());
 			if(ArrayUtils.isEmpty(values)){
-				Value defaultValue = parameterDescriptor.getDefaultValue();
-				if(defaultValue != null){
-					values = new Value[]{defaultValue};
-				}
+				source = defaultValueFactory.getParameter(parameterDescriptor);
+			}else {
+				source = values;
 			}
-			source = values;
 		} else {
 			Value value = WebUtils.getParameter(request, parameterDescriptor.getName());
 			if(value == null || value.isEmpty()){
-				Value defaultValue = parameterDescriptor.getDefaultValue();
-				if(defaultValue != null){
-					value = defaultValue;
-				}
+				source = defaultValueFactory.getParameter(parameterDescriptor);
+			}else {
+				source = value;
 			}
-			source = value;
 		}
 		return conversionService.convert(source, TypeDescriptor.forObject(source), new TypeDescriptor(parameterDescriptor));
 	}
