@@ -1,4 +1,4 @@
-package io.basc.framework.codec.signer;
+package io.basc.framework.codec.sign;
 
 import io.basc.framework.codec.Signer;
 import io.basc.framework.codec.encode.BytesEncoder;
