@@ -60,6 +60,9 @@ public abstract class InstanceParametersFactory extends AbstractParametersFactor
 		Value value = getEnvironment().getValue(name);
 		if (value == null) {
 			value = new AnyValue(defaultValueFactory.getParameter(parameterDescriptor));
+			if(value.isEmpty()) {
+				return null;
+			}
 		}
 		return value;
 	}

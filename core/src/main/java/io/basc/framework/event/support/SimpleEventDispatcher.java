@@ -1,5 +1,8 @@
 package io.basc.framework.event.support;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import io.basc.framework.event.Event;
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
@@ -7,10 +10,6 @@ import io.basc.framework.event.EventRegistration;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionFactory;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.Executor;
 
 /**
  * 这是一个同步的事件分发服务
@@ -22,7 +21,6 @@ public class SimpleEventDispatcher<T extends Event> implements EventDispatcher<T
 	private volatile Collection<EventRegistrationInternal> eventListeners;
 	private final boolean concurrent;
 	private final int initialCapacity;
-	private Executor executor;
 	
 	public SimpleEventDispatcher(boolean concurrent) {
 		this(concurrent, 8);
@@ -31,14 +29,6 @@ public class SimpleEventDispatcher<T extends Event> implements EventDispatcher<T
 	public SimpleEventDispatcher(boolean concurrent, int initialCapacity) {
 		this.concurrent = concurrent;
 		this.initialCapacity = initialCapacity;
-	}
-
-	public Executor getExecutor() {
-		return executor;
-	}
-
-	public void setExecutor(Executor executor) {
-		this.executor = executor;
 	}
 
 	public Collection<EventRegistrationInternal> getEventListeners() {
