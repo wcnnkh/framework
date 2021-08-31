@@ -1,12 +1,19 @@
 package io.basc.framework.convert.support;
 
+import java.io.Reader;
+import java.nio.charset.Charset;
+import java.util.Currency;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.TimeZone;
+import java.util.function.Supplier;
+
 import io.basc.framework.convert.lang.ConversionServices;
 import io.basc.framework.convert.lang.ConverterConversionService;
 import io.basc.framework.convert.lang.DateFormatConversionService;
 import io.basc.framework.convert.lang.JsonConversionService;
 import io.basc.framework.convert.lang.JsonToObjectConversionService;
 import io.basc.framework.convert.lang.ObjectToStringConverter;
-import io.basc.framework.convert.lang.PrimitiveConversionService;
 import io.basc.framework.convert.lang.ReaderToStringConverter;
 import io.basc.framework.convert.lang.ResourceToPropertiesConverter;
 import io.basc.framework.convert.lang.StringToCharsetConverter;
@@ -17,22 +24,12 @@ import io.basc.framework.factory.Configurable;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.PropertiesResolver;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.value.EmptyValue;
-
-import java.io.Reader;
-import java.nio.charset.Charset;
-import java.util.Currency;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.TimeZone;
-import java.util.function.Supplier;
 
 public class DefaultConversionService extends ConversionServices implements Configurable {
 
 	public DefaultConversionService() {
 		addConversionService(new ArrayToArrayConversionService(this));
 		addConversionService(new ArrayToCollectionConversionService(this));
-		addConversionService(new PrimitiveConversionService(EmptyValue.INSTANCE));
 
 		addConversionService(new ByteBufferConversionService(this));
 

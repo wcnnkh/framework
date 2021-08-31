@@ -1,13 +1,5 @@
 package io.basc.framework.fastjson;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.convert.ConvertibleIterator;
-import io.basc.framework.json.AbstractJson;
-import io.basc.framework.json.EmptyJsonElement;
-import io.basc.framework.json.JsonArray;
-import io.basc.framework.json.JsonElement;
-import io.basc.framework.json.JsonObject;
-
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.Iterator;
@@ -15,6 +7,13 @@ import java.util.Iterator;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONAware;
+
+import io.basc.framework.convert.Converter;
+import io.basc.framework.convert.ConvertibleIterator;
+import io.basc.framework.json.AbstractJson;
+import io.basc.framework.json.JsonArray;
+import io.basc.framework.json.JsonElement;
+import io.basc.framework.json.JsonObject;
 
 public final class FastJsonArray extends AbstractJson<Integer> implements JsonArray, JSONAware, Serializable, Converter<Object, JsonElement> {
 	private static final long serialVersionUID = 1L;
@@ -32,7 +31,7 @@ public final class FastJsonArray extends AbstractJson<Integer> implements JsonAr
 		if (k instanceof JsonElement) {
 			return (JsonElement) k;
 		}
-		return new FastJsonElement(k.toString(), EmptyJsonElement.INSTANCE);
+		return new FastJsonElement(k.toString());
 	}
 
 	public Iterator<JsonElement> iterator() {
@@ -41,7 +40,11 @@ public final class FastJsonArray extends AbstractJson<Integer> implements JsonAr
 
 	public JsonElement getValue(Integer index) {
 		String text = jsonArray.getString(index);
-		return text == null ? null : new FastJsonElement(text, getDefaultValue(index));
+		if(text == null) {
+			return getDefaultValue(index);
+		}
+		
+		return new FastJsonElement(text);
 	}
 	
 	public boolean remove(int index) {

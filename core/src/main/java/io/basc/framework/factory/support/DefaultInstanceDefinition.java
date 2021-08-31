@@ -1,7 +1,12 @@
 package io.basc.framework.factory.support;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+import java.util.Iterator;
+
 import io.basc.framework.core.parameter.ExecutableParameterDescriptorsIterator;
 import io.basc.framework.core.parameter.ParameterDescriptors;
+import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Environment;
@@ -13,10 +18,6 @@ import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.NotSupportedException;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
-import java.util.Iterator;
-
 public class DefaultInstanceDefinition extends InstanceParametersFactory implements InstanceDefinition {
 	private Class<?> targetClass;
 	@SuppressWarnings("rawtypes")
@@ -24,8 +25,9 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 	private final ServiceLoaderFactory serviceLoaderFactory;
 
 	public DefaultInstanceDefinition(NoArgsInstanceFactory instanceFactory, Environment environment,
-			Class<?> targetClass, ServiceLoaderFactory serviceLoaderFactory) {
-		super(instanceFactory, environment);
+			Class<?> targetClass, ServiceLoaderFactory serviceLoaderFactory,
+			ParameterFactory defaultValueFactory) {
+		super(instanceFactory, environment, defaultValueFactory);
 		this.targetClass = targetClass;
 		this.serviceLoaderFactory = serviceLoaderFactory;
 	}
@@ -93,10 +95,11 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 	}
 
 	private volatile Boolean instanced;
+
 	public boolean isInstance() {
-		if(instanced == null) {
+		if (instanced == null) {
 			synchronized (this) {
-				if(instanced == null) {
+				if (instanced == null) {
 					instanced = isInstance(false);
 				}
 			}
@@ -109,10 +112,11 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 	}
 
 	private volatile ParameterDescriptors parameterDescriptors;
+
 	public ParameterDescriptors getParameterDescriptors() {
-		if(parameterDescriptors == null) {
+		if (parameterDescriptors == null) {
 			synchronized (this) {
-				if(parameterDescriptors == null) {
+				if (parameterDescriptors == null) {
 					ParameterDescriptors parameterDescriptors = checkParameterDescriptors();
 					if (parameterDescriptors != null) {
 						this.parameterDescriptors = parameterDescriptors;

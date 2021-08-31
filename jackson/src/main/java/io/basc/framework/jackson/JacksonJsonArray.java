@@ -1,12 +1,5 @@
 package io.basc.framework.jackson;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.convert.ConvertibleIterator;
-import io.basc.framework.json.AbstractJson;
-import io.basc.framework.json.EmptyJsonElement;
-import io.basc.framework.json.JsonArray;
-import io.basc.framework.json.JsonElement;
-
 import java.io.IOException;
 import java.util.Iterator;
 
@@ -17,6 +10,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+
+import io.basc.framework.convert.Converter;
+import io.basc.framework.convert.ConvertibleIterator;
+import io.basc.framework.json.AbstractJson;
+import io.basc.framework.json.JsonArray;
+import io.basc.framework.json.JsonElement;
 
 public class JacksonJsonArray extends AbstractJson<Integer> implements
 		JsonArray, JsonSerializable, Converter<JsonNode, JsonElement> {
@@ -40,7 +39,7 @@ public class JacksonJsonArray extends AbstractJson<Integer> implements
 
 	@Override
 	public JsonElement convert(JsonNode o) {
-		return new JacksonJsonElement(EmptyJsonElement.INSTANCE, o, mapper);
+		return new JacksonJsonElement(o, mapper);
 	}
 
 	@Override

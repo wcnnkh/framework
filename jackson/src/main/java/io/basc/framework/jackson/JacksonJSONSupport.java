@@ -1,11 +1,5 @@
 package io.basc.framework.jackson;
 
-import io.basc.framework.env.Sys;
-import io.basc.framework.json.AbstractJSONSupport;
-import io.basc.framework.json.EmptyJsonElement;
-import io.basc.framework.json.JSONException;
-import io.basc.framework.json.JsonElement;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,6 +8,11 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+
+import io.basc.framework.env.Sys;
+import io.basc.framework.json.AbstractJSONSupport;
+import io.basc.framework.json.JSONException;
+import io.basc.framework.json.JsonElement;
 
 public class JacksonJSONSupport extends AbstractJSONSupport {
 	private ObjectMapper mapper;
@@ -50,7 +49,7 @@ public class JacksonJSONSupport extends AbstractJSONSupport {
 		} catch (JsonProcessingException e) {
 			throw new JSONException(e);
 		}
-		return new JacksonJsonElement(EmptyJsonElement.INSTANCE, jsonNode,
+		return new JacksonJsonElement(jsonNode,
 				mapper);
 	}
 

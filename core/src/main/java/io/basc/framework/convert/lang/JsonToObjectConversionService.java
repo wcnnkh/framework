@@ -13,6 +13,10 @@ public class JsonToObjectConversionService extends JSONSupportAccessor implement
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if(sourceType == null || targetType == null) {
+			return false;
+		}
+		
 		return (String.class == sourceType.getType() || Reader.class.isAssignableFrom(targetType.getType()))
 				&& targetType.isAnnotationPresent(JSON.class);
 	}

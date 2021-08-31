@@ -1,7 +1,7 @@
 package io.basc.framework.core.annotation;
 
 import io.basc.framework.core.BridgeMethodResolver;
-import io.basc.framework.lang.DefaultValue;
+import io.basc.framework.core.parameter.DefaultValue;
 import io.basc.framework.lang.Description;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;

@@ -1,17 +1,17 @@
 package io.basc.framework.gson;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import com.google.gson.Gson;
+
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.ConvertibleIterator;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
 import io.basc.framework.util.Pair;
-
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import com.google.gson.Gson;
 
 public final class GsonObject extends AbstractJson<String> implements JsonObject, Converter<Entry<String, com.google.gson.JsonElement>, Pair<String, JsonElement>> {
 	private com.google.gson.JsonObject gsonJsonObject;
@@ -33,12 +33,15 @@ public final class GsonObject extends AbstractJson<String> implements JsonObject
 
 	public JsonElement getValue(String key) {
 		com.google.gson.JsonElement gsonJsonElement = gsonJsonObject.get(key);
-		return gsonJsonElement == null ? null : new GsonElement(gsonJsonElement, gson, getDefaultValue(key));
+		if(gsonJsonElement == null) {
+			return getDefaultValue(key);
+		}
+
+		return new GsonElement(gsonJsonElement, gson);
 	}
 
 	public Set<String> keySet() {
-		//return gsonJsonObject.keySet();
-		return null;
+		return gsonJsonObject.keySet();
 	}
 
 	public boolean containsKey(String key) {

@@ -1,14 +1,5 @@
 package io.basc.framework.jackson;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.convert.ConvertibleIterator;
-import io.basc.framework.json.AbstractJson;
-import io.basc.framework.json.JsonElement;
-import io.basc.framework.json.JsonObject;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Pair;
-import io.basc.framework.value.EmptyValue;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Iterator;
@@ -23,6 +14,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import io.basc.framework.convert.Converter;
+import io.basc.framework.convert.ConvertibleIterator;
+import io.basc.framework.json.AbstractJson;
+import io.basc.framework.json.JsonElement;
+import io.basc.framework.json.JsonObject;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Pair;
 
 public class JacksonJsonObject extends AbstractJson<String> implements
 		JsonObject, JsonSerializable, Converter<JsonNode, JsonElement> {
@@ -98,7 +97,7 @@ public class JacksonJsonObject extends AbstractJson<String> implements
 
 	@Override
 	public JsonElement convert(JsonNode o) {
-		return new JacksonJsonElement(EmptyValue.INSTANCE, o, mapper);
+		return new JacksonJsonElement(o, mapper);
 	}
 
 }

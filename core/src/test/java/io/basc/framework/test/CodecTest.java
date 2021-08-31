@@ -3,7 +3,7 @@ package io.basc.framework.test;
 import static org.junit.Assert.assertTrue;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.Signer;
-import io.basc.framework.codec.signer.SHA1WithRSASigner;
+import io.basc.framework.codec.sign.SHA1WithRSASigner;
 import io.basc.framework.codec.support.AES;
 import io.basc.framework.codec.support.Base64;
 import io.basc.framework.codec.support.CharsetCodec;

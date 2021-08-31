@@ -21,6 +21,10 @@ public class ObjectToStringConverter extends JSONSupportAccessor implements Conv
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if(sourceType == null || targetType == null) {
+			return false;
+		}
+		
 		return targetType.getType() == String.class;
 	}
 

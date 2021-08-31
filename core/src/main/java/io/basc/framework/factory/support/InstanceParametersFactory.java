@@ -6,18 +6,22 @@ import java.util.Map;
 import io.basc.framework.core.parameter.AbstractParametersFactory;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptors;
+import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.factory.NoArgsInstanceFactory;
+import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
 
 public abstract class InstanceParametersFactory extends AbstractParametersFactory {
 	private final NoArgsInstanceFactory instanceFactory;
 	private final Environment environment;
+	private final ParameterFactory defaultValueFactory;
 
-	public InstanceParametersFactory(NoArgsInstanceFactory instanceFactory, Environment environment) {
+	public InstanceParametersFactory(NoArgsInstanceFactory instanceFactory, Environment environment, ParameterFactory defaultValueFactory) {
 		this.instanceFactory = instanceFactory;
 		this.environment = environment;
+		this.defaultValueFactory = defaultValueFactory;
 	}
 
 	public NoArgsInstanceFactory getInstanceFactory() {
@@ -26,6 +30,10 @@ public abstract class InstanceParametersFactory extends AbstractParametersFactor
 
 	public Environment getEnvironment() {
 		return environment;
+	}
+
+	public ParameterFactory getDefaultValueFactory() {
+		return defaultValueFactory;
 	}
 
 	protected boolean isProerptyType(ParameterDescriptor parameterConfig) {
@@ -51,7 +59,10 @@ public abstract class InstanceParametersFactory extends AbstractParametersFactor
 		String name = getParameterName(parameterDescriptors, parameterDescriptor);
 		Value value = getEnvironment().getValue(name);
 		if (value == null) {
-			value = parameterDescriptor.getDefaultValue();
+			value = new AnyValue(defaultValueFactory.getParameter(parameterDescriptor));
+			if(value.isEmpty()) {
+				return null;
+			}
 		}
 		return value;
 	}

@@ -1,12 +1,7 @@
 package io.basc.framework.jackson;
 
-import io.basc.framework.core.ResolvableType;
-import io.basc.framework.json.AbstractJsonElement;
-import io.basc.framework.json.JsonArray;
-import io.basc.framework.json.JsonObject;
-import io.basc.framework.value.Value;
-
 import java.io.IOException;
+import java.io.Serializable;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JavaType;
@@ -18,15 +13,19 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import io.basc.framework.core.ResolvableType;
+import io.basc.framework.json.AbstractJsonElement;
+import io.basc.framework.json.JsonArray;
+import io.basc.framework.json.JsonObject;
+
 public class JacksonJsonElement extends AbstractJsonElement implements
-		JsonSerializable {
+		JsonSerializable, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final JsonNode jsonNode;
 	private final ObjectMapper mapper;
 
-	public JacksonJsonElement(Value defaultValue, JsonNode jsonNode,
+	public JacksonJsonElement(JsonNode jsonNode,
 			ObjectMapper mapper) {
-		super(defaultValue);
 		this.mapper = mapper;
 		this.jsonNode = jsonNode;
 	}

@@ -1,5 +1,9 @@
 package io.basc.framework.value;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
@@ -7,28 +11,16 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
-public class AnyValue extends AbstractValue {
+public class AnyValue extends AbstractValue implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private transient ConversionService conversionService;
 	private final Object value;
 
 	public AnyValue(Object value) {
-		this(value, null, null);
+		this(value, null);
 	}
 
 	public AnyValue(Object value, @Nullable ConversionService conversionService) {
-		this(value, EmptyValue.INSTANCE, conversionService);
-	}
-
-	public AnyValue(Object value, @Nullable Value defaultValue) {
-		this(value, defaultValue, null);
-	}
-
-	public AnyValue(Object value, Value defaultValue, @Nullable ConversionService conversionService) {
-		super(defaultValue);
 		this.value = value;
 		this.conversionService = conversionService;
 	}
@@ -46,7 +38,7 @@ public class AnyValue extends AbstractValue {
 
 	public String getAsString() {
 		if (value == null) {
-			return getDefaultValue().getAsString();
+			return null;
 		}
 
 		if (value instanceof String) {
@@ -65,7 +57,7 @@ public class AnyValue extends AbstractValue {
 
 	public Byte getAsByte() {
 		if (value == null) {
-			return getDefaultValue().getAsByte();
+			return null;
 		}
 
 		if (value instanceof Byte) {
@@ -84,7 +76,7 @@ public class AnyValue extends AbstractValue {
 
 	public byte getAsByteValue() {
 		if (value == null) {
-			return getDefaultValue().getAsByteValue();
+			return 0;
 		}
 
 		if (value instanceof Byte) {
@@ -103,7 +95,7 @@ public class AnyValue extends AbstractValue {
 
 	public Short getAsShort() {
 		if (value == null) {
-			return getDefaultValue().getAsShort();
+			return null;
 		}
 
 		if (value instanceof Short) {
@@ -122,7 +114,7 @@ public class AnyValue extends AbstractValue {
 
 	public short getAsShortValue() {
 		if (value == null) {
-			return getDefaultValue().getAsShortValue();
+			return 0;
 		}
 
 		if (value instanceof Short) {
@@ -141,7 +133,7 @@ public class AnyValue extends AbstractValue {
 
 	public Integer getAsInteger() {
 		if (value == null) {
-			return getDefaultValue().getAsInteger();
+			return null;
 		}
 
 		if (value instanceof Integer) {
@@ -160,7 +152,7 @@ public class AnyValue extends AbstractValue {
 
 	public int getAsIntValue() {
 		if (value == null) {
-			return getDefaultValue().getAsIntValue();
+			return 0;
 		}
 
 		if (value instanceof Integer) {
@@ -179,7 +171,7 @@ public class AnyValue extends AbstractValue {
 
 	public Long getAsLong() {
 		if (value == null) {
-			return getDefaultValue().getAsLong();
+			return null;
 		}
 
 		if (value instanceof Long) {
@@ -198,7 +190,7 @@ public class AnyValue extends AbstractValue {
 
 	public long getAsLongValue() {
 		if (value == null) {
-			return getDefaultValue().getAsLongValue();
+			return 0;
 		}
 
 		if (value instanceof Long) {
@@ -217,7 +209,7 @@ public class AnyValue extends AbstractValue {
 
 	public Boolean getAsBoolean() {
 		if (value == null) {
-			return getDefaultValue().getAsBoolean();
+			return null;
 		}
 
 		if (value instanceof Boolean) {
@@ -236,7 +228,7 @@ public class AnyValue extends AbstractValue {
 
 	public boolean getAsBooleanValue() {
 		if (value == null) {
-			return getDefaultValue().getAsBooleanValue();
+			return false;
 		}
 
 		if (value instanceof Boolean) {
@@ -255,7 +247,7 @@ public class AnyValue extends AbstractValue {
 
 	public Float getAsFloat() {
 		if (value == null) {
-			return getDefaultValue().getAsFloat();
+			return null;
 		}
 
 		if (value instanceof Float) {
@@ -274,7 +266,7 @@ public class AnyValue extends AbstractValue {
 
 	public float getAsFloatValue() {
 		if (value == null) {
-			return getDefaultValue().getAsFloatValue();
+			return 0;
 		}
 
 		if (value instanceof Float) {
@@ -293,7 +285,7 @@ public class AnyValue extends AbstractValue {
 
 	public Double getAsDouble() {
 		if (value == null) {
-			return getDefaultValue().getAsDouble();
+			return null;
 		}
 
 		if (value instanceof Double) {
@@ -312,7 +304,7 @@ public class AnyValue extends AbstractValue {
 
 	public double getAsDoubleValue() {
 		if (value == null) {
-			return getDefaultValue().getAsDoubleValue();
+			return 0;
 		}
 
 		if (value instanceof Double) {
@@ -331,7 +323,7 @@ public class AnyValue extends AbstractValue {
 
 	public char getAsChar() {
 		if (value == null) {
-			return getDefaultValue().getAsChar();
+			return 0;
 		}
 
 		if (value instanceof Character) {
@@ -346,7 +338,7 @@ public class AnyValue extends AbstractValue {
 
 	public Character getAsCharacter() {
 		if (value == null) {
-			return getDefaultValue().getAsCharacter();
+			return null;
 		}
 
 		if (value instanceof Character) {
@@ -361,7 +353,7 @@ public class AnyValue extends AbstractValue {
 
 	public BigInteger getAsBigInteger() {
 		if (value == null) {
-			return getDefaultValue().getAsBigInteger();
+			return null;
 		}
 
 		if (value instanceof BigInteger) {
@@ -380,7 +372,7 @@ public class AnyValue extends AbstractValue {
 
 	public BigDecimal getAsBigDecimal() {
 		if (value == null) {
-			return getDefaultValue().getAsBigDecimal();
+			return null;
 		}
 
 		if (value instanceof BigDecimal) {
@@ -403,7 +395,7 @@ public class AnyValue extends AbstractValue {
 
 	public Number getAsNumber() {
 		if (value == null) {
-			return getDefaultValue().getAsNumber();
+			return null;
 		}
 
 		if (value instanceof Number) {
@@ -418,7 +410,7 @@ public class AnyValue extends AbstractValue {
 
 	public Class<?> getAsClass() {
 		if (value == null) {
-			return getDefaultValue().getAsClass();
+			return null;
 		}
 
 		if (value instanceof Class) {
@@ -433,7 +425,7 @@ public class AnyValue extends AbstractValue {
 
 	public Enum<?> getAsEnum(Class<?> enumType) {
 		if (value == null) {
-			return getDefaultValue().getAsEnum(enumType);
+			return null;
 		}
 
 		if (value instanceof Enum<?>) {
@@ -450,7 +442,7 @@ public class AnyValue extends AbstractValue {
 	@Override
 	protected Object getAsNonBaseType(ResolvableType type) {
 		if (value == null) {
-			return getDefaultValue().getAsObject(type);
+			return null;
 		}
 		
 		if(type.isInstance(value)) {

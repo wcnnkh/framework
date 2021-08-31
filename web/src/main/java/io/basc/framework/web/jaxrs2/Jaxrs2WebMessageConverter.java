@@ -1,7 +1,18 @@
 package io.basc.framework.web.jaxrs2;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+
 import io.basc.framework.aop.support.ProxyUtils;
+import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.Ordered;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
@@ -11,18 +22,8 @@ import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessagelConverterException;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
-
 @SuppressWarnings({ "rawtypes", "unchecked" })
-@Provider
+@Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class Jaxrs2WebMessageConverter implements WebMessageConverter, Configurable {
 	private final ConfigurableServices<MessageBodyReader> messageBodyReaders = new ConfigurableServices<>(
 			MessageBodyReader.class);
