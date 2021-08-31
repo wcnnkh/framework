@@ -1,4 +1,4 @@
-package io.basc.framework.web.message.support;
+package io.basc.framework.web.jaxrs2;
 
 import javax.ws.rs.DefaultValue;
 
@@ -21,5 +21,4 @@ public class JrsDefaultValueFactory implements ParameterFactory {
 		DefaultValue defaultValue = AnnotatedElementUtils.getMergedAnnotation(parameterDescriptor, DefaultValue.class);
 		return defaultValue == null ? null : defaultValue.value();
 	}
-
 }

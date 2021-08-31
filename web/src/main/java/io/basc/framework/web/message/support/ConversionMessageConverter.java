@@ -22,9 +22,18 @@ public class ConversionMessageConverter implements WebMessageConverter {
 	private final ConversionService conversionService;
 	private final ParameterDefaultValueFactory defaultValueFactory;
 
-	public ConversionMessageConverter(ConversionService conversionService, ParameterDefaultValueFactory defaultValueFactory) {
+	public ConversionMessageConverter(ConversionService conversionService,
+			ParameterDefaultValueFactory defaultValueFactory) {
 		this.conversionService = conversionService;
 		this.defaultValueFactory = defaultValueFactory;
+	}
+
+	public ConversionService getConversionService() {
+		return conversionService;
+	}
+
+	public ParameterDefaultValueFactory getDefaultValueFactory() {
+		return defaultValueFactory;
 	}
 
 	@Override
@@ -35,26 +44,33 @@ public class ConversionMessageConverter implements WebMessageConverter {
 						new TypeDescriptor(parameterDescriptor));
 	}
 
-	@Override
-	public Object read(ParameterDescriptor parameterDescriptor, ServerHttpRequest request)
+	protected Object readValue(ParameterDescriptor parameterDescriptor, ServerHttpRequest request)
 			throws IOException, WebMessagelConverterException {
 		Object source;
 		if (parameterDescriptor.getClass().isArray()) {
 			Value[] values = WebUtils.getParameterValues(request, parameterDescriptor.getName());
-			if(ArrayUtils.isEmpty(values)){
+			if (ArrayUtils.isEmpty(values)) {
 				source = defaultValueFactory.getParameter(parameterDescriptor);
-			}else {
+			} else {
 				source = values;
 			}
 		} else {
 			Value value = WebUtils.getParameter(request, parameterDescriptor.getName());
-			if(value == null || value.isEmpty()){
+			if (value == null || value.isEmpty()) {
 				source = defaultValueFactory.getParameter(parameterDescriptor);
-			}else {
+			} else {
 				source = value;
 			}
 		}
-		return conversionService.convert(source, TypeDescriptor.forObject(source), new TypeDescriptor(parameterDescriptor));
+		return source;
+	}
+
+	@Override
+	public Object read(ParameterDescriptor parameterDescriptor, ServerHttpRequest request)
+			throws IOException, WebMessagelConverterException {
+		Object source = readValue(parameterDescriptor, request);
+		return conversionService.convert(source, TypeDescriptor.forObject(source),
+				new TypeDescriptor(parameterDescriptor));
 	}
 
 	@Override
