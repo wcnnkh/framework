@@ -1,12 +1,16 @@
 package io.basc.framework.factory.support;
 
+import java.util.concurrent.ConcurrentMap;
+
+import io.basc.framework.convert.ConversionService;
+import io.basc.framework.core.parameter.ConfigurableDefaultValueFactory;
+import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.env.Environment;
 import io.basc.framework.factory.AbstractServiceLoaderFactory;
 import io.basc.framework.factory.InstanceDefinition;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.factory.NoArgsInstanceFactory;
-import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
@@ -14,19 +18,19 @@ import io.basc.framework.util.DefaultClassLoaderProvider;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.value.ValueFactory;
 
-import java.util.concurrent.ConcurrentMap;
-
 @SuppressWarnings("unchecked")
 public class DefaultInstanceFactory extends AbstractServiceLoaderFactory implements InstanceFactory {
 	private ConcurrentMap<Class<?>, InstanceDefinition> cacheMap;
 	private final Environment environment;
 	private ClassLoaderProvider classLoaderProvider;
+	private final ConfigurableDefaultValueFactory defaultValueFactory = new ConfigurableDefaultValueFactory();
 
 	public DefaultInstanceFactory(Environment environment, boolean cache) {
 		this.environment = environment;
 		if (cache) {
 			cacheMap = new ConcurrentReferenceHashMap<Class<?>, InstanceDefinition>();
 		}
+		defaultValueFactory.configure(this);
 	}
 
 	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
@@ -166,11 +170,19 @@ public class DefaultInstanceFactory extends AbstractServiceLoaderFactory impleme
 		}
 
 		if (ClassUtils.isAssignableValue(clazz, this)) {
-			return new InternalInstanceBuilder(this, environment, clazz, this, clazz.cast(this));
+			return new InternalInstanceBuilder(clazz, clazz.cast(this));
 		}
 
 		if (Environment.class == clazz) {
-			return new InternalInstanceBuilder(this, environment, clazz, this, clazz.cast(environment));
+			return new InternalInstanceBuilder(clazz, clazz.cast(environment));
+		}
+
+		if (ConversionService.class == clazz) {
+			return new InternalInstanceBuilder(clazz, clazz.cast(environment.getConversionService()));
+		}
+
+		if (ParameterFactory.class == clazz) {
+			return new InternalInstanceBuilder(clazz, clazz.cast(defaultValueFactory));
 		}
 
 		InstanceDefinition instanceBuilder = cacheMap == null ? null : (InstanceDefinition) cacheMap.get(clazz);
@@ -179,7 +191,7 @@ public class DefaultInstanceFactory extends AbstractServiceLoaderFactory impleme
 				return null;
 			}
 
-			instanceBuilder = new DefaultInstanceDefinition(this, environment, clazz, this);
+			instanceBuilder = new DefaultInstanceDefinition(this, environment, clazz, this, defaultValueFactory);
 			InstanceDefinition cache = cacheMap == null ? null
 					: (InstanceDefinition) cacheMap.putIfAbsent(clazz, instanceBuilder);
 			if (cache != null) {
@@ -189,12 +201,12 @@ public class DefaultInstanceFactory extends AbstractServiceLoaderFactory impleme
 		return instanceBuilder;
 	}
 
-	private static final class InternalInstanceBuilder extends DefaultInstanceDefinition {
+	private final class InternalInstanceBuilder extends DefaultInstanceDefinition {
 		private final Object instance;
 
-		public InternalInstanceBuilder(NoArgsInstanceFactory instanceFactory, Environment environment,
-				Class<?> targetClass, ServiceLoaderFactory serviceLoaderFactory, Object instance) {
-			super(instanceFactory, environment, targetClass, serviceLoaderFactory);
+		public InternalInstanceBuilder(Class<?> targetClass, Object instance) {
+			super(DefaultInstanceFactory.this, environment, targetClass, DefaultInstanceFactory.this,
+					defaultValueFactory);
 			this.instance = instance;
 		}
 

@@ -1,5 +1,10 @@
 package io.basc.framework.beans.support;
 
+import java.lang.reflect.AnnotatedElement;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.Proxy;
 import io.basc.framework.aop.support.ConfigurableMethodInterceptor;
@@ -7,10 +12,10 @@ import io.basc.framework.beans.AopEnableSpi;
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanUtils;
 import io.basc.framework.beans.BeanlifeCycleEvent;
+import io.basc.framework.beans.BeanlifeCycleEvent.Step;
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.RuntimeBean;
-import io.basc.framework.beans.BeanlifeCycleEvent.Step;
 import io.basc.framework.beans.annotation.Bean;
 import io.basc.framework.beans.ioc.Ioc;
 import io.basc.framework.context.support.LifecycleAuxiliary;
@@ -25,11 +30,6 @@ import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.StringUtils;
 
-import java.lang.reflect.AnnotatedElement;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
 public class DefaultBeanDefinition extends DefaultInstanceDefinition
 		implements BeanDefinition, Cloneable, AopEnableSpi {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -39,7 +39,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 	private final ConfigurableMethodInterceptor methodInterceptors = new ConfigurableMethodInterceptor();
 
 	public DefaultBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
-		super(beanFactory, beanFactory.getEnvironment(), sourceClass, Sys.env);
+		super(beanFactory, beanFactory.getEnvironment(), sourceClass, Sys.env, beanFactory.getDefaultValueFactory());
 		this.beanFactory = beanFactory;
 	}
 

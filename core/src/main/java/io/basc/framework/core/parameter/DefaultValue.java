@@ -1,4 +1,4 @@
-package io.basc.framework.lang;
+package io.basc.framework.core.parameter;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -7,10 +7,6 @@ import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
 
 public interface SimpleValue extends Value {
-	default Value getDefaultValue() {
-		return EmptyValue.INSTANCE;
-	}
-
 	default int getNumberRadix() {
 		return 10;
 	}
@@ -24,7 +20,7 @@ public interface SimpleValue extends Value {
 		if (StringUtils.hasText(v)) {
 			return Byte.parseByte(v, getNumberRadix());
 		}
-		return getDefaultValue().getAsByte();
+		return null;
 	}
 
 	default byte getAsByteValue() {
@@ -32,7 +28,7 @@ public interface SimpleValue extends Value {
 		if (StringUtils.hasText(v)) {
 			return Byte.parseByte(v, getNumberRadix());
 		}
-		return getDefaultValue().getAsByteValue();
+		return 0;
 	}
 
 	default Short getAsShort() {
@@ -40,7 +36,7 @@ public interface SimpleValue extends Value {
 		if (StringUtils.hasText(v)) {
 			return Short.parseShort(v, getNumberRadix());
 		}
-		return getDefaultValue().getAsShort();
+		return null;
 	}
 
 	default short getAsShortValue() {
@@ -48,7 +44,7 @@ public interface SimpleValue extends Value {
 		if (StringUtils.hasText(v)) {
 			return Short.parseShort(v, getNumberRadix());
 		}
-		return getDefaultValue().getAsShortValue();
+		return 0;
 	}
 
 	default Integer getAsInteger() {
@@ -56,7 +52,7 @@ public interface SimpleValue extends Value {
 		if (StringUtils.hasText(v)) {
 			return Integer.parseInt(v, getNumberRadix());
 		}
-		return getDefaultValue().getAsInteger();
+		return null;
 	}
 
 	default int getAsIntValue() {
@@ -64,7 +60,7 @@ public interface SimpleValue extends Value {
 		if (StringUtils.hasText(v)) {
 			return Integer.parseInt(v, getNumberRadix());
 		}
-		return getDefaultValue().getAsIntValue();
+		return 0;
 	}
 
 	default Long getAsLong() {
@@ -72,7 +68,7 @@ public interface SimpleValue extends Value {
 		if (StringUtils.hasText(v)) {
 			return Long.parseLong(v, getNumberRadix());
 		}
-		return getDefaultValue().getAsLong();
+		return null;
 	}
 
 	default long getAsLongValue() {
@@ -80,7 +76,7 @@ public interface SimpleValue extends Value {
 		if (StringUtils.hasText(v)) {
 			return Long.parseLong(v, getNumberRadix());
 		}
-		return getDefaultValue().getAsLongValue();
+		return 0;
 	}
 
 	default Boolean getAsBoolean() {
@@ -88,7 +84,7 @@ public interface SimpleValue extends Value {
 		if (StringUtils.hasText(v)) {
 			return StringUtils.parseBoolean(v);
 		}
-		return getDefaultValue().getAsBoolean();
+		return null;
 	}
 
 	default boolean getAsBooleanValue() {
@@ -96,7 +92,7 @@ public interface SimpleValue extends Value {
 		if (StringUtils.hasText(v)) {
 			return StringUtils.parseBoolean(v);
 		}
-		return getDefaultValue().getAsBooleanValue();
+		return false;
 	}
 
 	default Float getAsFloat() {
@@ -104,7 +100,7 @@ public interface SimpleValue extends Value {
 		if (StringUtils.hasText(v)) {
 			return Float.parseFloat(v);
 		}
-		return getDefaultValue().getAsFloat();
+		return null;
 	}
 
 	default float getAsFloatValue() {
@@ -112,7 +108,7 @@ public interface SimpleValue extends Value {
 		if (StringUtils.hasText(v)) {
 			return Float.valueOf(v);
 		}
-		return getDefaultValue().getAsFloatValue();
+		return 0;
 	}
 
 	default Double getAsDouble() {
@@ -120,7 +116,7 @@ public interface SimpleValue extends Value {
 		if (StringUtils.hasText(v)) {
 			return Double.valueOf(v);
 		}
-		return getDefaultValue().getAsDouble();
+		return null;
 	}
 
 	default double getAsDoubleValue() {
@@ -128,13 +124,13 @@ public interface SimpleValue extends Value {
 		if (StringUtils.hasText(v)) {
 			return Double.parseDouble(v);
 		}
-		return getDefaultValue().getAsDoubleValue();
+		return 0;
 	}
 
 	default char getAsChar() {
 		String v = getAsString();
 		if (StringUtils.isEmpty(v)) {
-			return getDefaultValue().getAsChar();
+			return 0;
 		}
 		return v.charAt(0);
 	}
@@ -142,7 +138,7 @@ public interface SimpleValue extends Value {
 	default Character getAsCharacter() {
 		String v = getAsString();
 		if (StringUtils.isEmpty(v)) {
-			return getDefaultValue().getAsCharacter();
+			return null;
 		}
 
 		return v.charAt(0);
@@ -153,7 +149,7 @@ public interface SimpleValue extends Value {
 		if (StringUtils.hasText(v)) {
 			return new BigInteger(v, getNumberRadix());
 		}
-		return getDefaultValue().getAsBigInteger();
+		return null;
 	}
 
 	default BigDecimal getAsBigDecimal() {
@@ -161,7 +157,7 @@ public interface SimpleValue extends Value {
 		if (StringUtils.hasText(v)) {
 			return new BigDecimal(v);
 		}
-		return getDefaultValue().getAsBigDecimal();
+		return null;
 	}
 
 	default Class<?> getAsClass() {
@@ -173,7 +169,7 @@ public interface SimpleValue extends Value {
 				return null;
 			}
 		}
-		return getDefaultValue().getAsClass();
+		return null;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -182,7 +178,7 @@ public interface SimpleValue extends Value {
 		if (StringUtils.hasText(v)) {
 			return Enum.valueOf((Class<? extends Enum>) enumType, v);
 		}
-		return getDefaultValue().getAsEnum(enumType);
+		return null;
 	}
 
 	default Number getAsNumber() {

@@ -1,7 +1,6 @@
 package io.basc.framework.core.parameter;
 
 import io.basc.framework.factory.ConfigurableServices;
-import io.basc.framework.factory.ServiceLoaderFactory;
 
 /**
  * 获取默认值
@@ -9,15 +8,11 @@ import io.basc.framework.factory.ServiceLoaderFactory;
  * @author shuchaowen
  *
  */
-public class ParameterDefaultValueFactory extends ConfigurableServices<ParameterFactory> implements ParameterFactory {
+public class ConfigurableDefaultValueFactory extends ConfigurableServices<ParameterFactory>
+		implements ParameterFactory {
 
-	public ParameterDefaultValueFactory() {
+	public ConfigurableDefaultValueFactory() {
 		super(ParameterFactory.class);
-	}
-
-	public ParameterDefaultValueFactory(ServiceLoaderFactory serviceLoaderFactory) {
-		this();
-		configure(serviceLoaderFactory);
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.lang.LinkedThreadLocal;
+import io.basc.framework.value.EmptyValue;
 
 import java.util.Iterator;
 import java.util.TreeSet;
@@ -105,6 +106,11 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 
 		if (canDirectlyConvert(sourceTypeToUse, targetType)) {
 			return source;
+		}
+		
+		if(sourceTypeToUse == null) {
+			Object value = EmptyValue.INSTANCE.getAsObject(targetType.getResolvableType());
+			return value;
 		}
 
 		throw new ConverterNotFoundException(sourceTypeToUse, targetType);

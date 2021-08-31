@@ -20,6 +20,10 @@ public class DateFormatConversionService implements ConversionService {
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
+		if(sourceType == null || targetType == null) {
+			return false;
+		}
+		
 		return canConvert(sourceType.getType())
 				&& canConvert(targetType.getType());
 	}

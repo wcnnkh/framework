@@ -1,26 +1,21 @@
 package io.basc.framework.value;
 
-import io.basc.framework.core.ResolvableType;
-import io.basc.framework.json.JSONSupport;
-import io.basc.framework.json.JSONUtils;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.StringUtils;
-
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 
-public class StringValue extends AbstractValue {
+import io.basc.framework.core.ResolvableType;
+import io.basc.framework.json.JSONSupport;
+import io.basc.framework.json.JSONUtils;
+import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.StringUtils;
+
+public class StringValue extends AbstractValue implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String value;
 	private transient JSONSupport jsonSupport;
-
+	
 	public StringValue(String value) {
-		this(value, null);
-	}
-
-	public StringValue(String value, @Nullable Value defaultValue) {
-		super(defaultValue);
 		this.value = value;
 	}
 
@@ -45,7 +40,7 @@ public class StringValue extends AbstractValue {
 	}
 
 	protected Value parseValue(String text) {
-		return new StringValue(text, getDefaultValue());
+		return new StringValue(text);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -73,7 +68,7 @@ public class StringValue extends AbstractValue {
 	@Override
 	protected Object getAsNonBaseType(ResolvableType type) {
 		if (value == null) {
-			return getDefaultValue().getAsObject(type);
+			return null;
 		}
 		
 		if(type.isInstance(value)) {

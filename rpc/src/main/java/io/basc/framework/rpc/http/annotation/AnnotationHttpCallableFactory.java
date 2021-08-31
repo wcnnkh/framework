@@ -17,8 +17,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import io.basc.framework.core.parameter.OverrideParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterDefaultValueFactory;
 import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpMethod;
@@ -39,28 +39,28 @@ public class AnnotationHttpCallableFactory extends HttpConnectionCallableFactory
 	private final String host;
 	private final HttpMethod defaultHttpMethod;
 	private final MediaType mediaType;
-	private final ParameterDefaultValueFactory parameterDefaultValueFactory;
+	private final ParameterFactory defaultValueFactory;
 
 	public AnnotationHttpCallableFactory(HttpConnectionFactory connectionFactory, HttpRemote host,
-			ParameterDefaultValueFactory parameterDefaultValueFactory) {
+			ParameterFactory defaultValueFactory) {
 		this(connectionFactory, host.value(), host.method(),
-				new MediaType(MediaType.valueOf(host.contentType()), host.charsetName()), parameterDefaultValueFactory);
+				new MediaType(MediaType.valueOf(host.contentType()), host.charsetName()), defaultValueFactory);
 	}
 
 	public AnnotationHttpCallableFactory(HttpConnectionFactory connectionFactory, Path path,
-			ParameterDefaultValueFactory parameterDefaultValueFactory) {
+			ParameterFactory defaultValueFactory) {
 		this(connectionFactory, path.value(), HttpMethod.GET, MediaType.APPLICATION_FORM_URLENCODED,
-				parameterDefaultValueFactory);
+				defaultValueFactory);
 	}
 
 	public AnnotationHttpCallableFactory(HttpConnectionFactory httpConnectionFactory, String host,
 			HttpMethod defaultHttpMethod, MediaType mediaType,
-			ParameterDefaultValueFactory parameterDefaultValueFactory) {
+			ParameterFactory defaultValueFactory) {
 		this.httpConnectionFactory = httpConnectionFactory;
 		this.host = host;
 		this.defaultHttpMethod = defaultHttpMethod;
 		this.mediaType = mediaType;
-		this.parameterDefaultValueFactory = parameterDefaultValueFactory;
+		this.defaultValueFactory = defaultValueFactory;
 	}
 
 	@Override
@@ -140,7 +140,7 @@ public class AnnotationHttpCallableFactory extends HttpConnectionCallableFactory
 				}
 
 				if (value == null) {
-					value = parameterDefaultValueFactory.getParameter(parameterDescriptor);
+					value = defaultValueFactory.getParameter(parameterDescriptor);
 				}
 
 				HeaderParam headerParam = parameterDescriptor.getAnnotation(HeaderParam.class);

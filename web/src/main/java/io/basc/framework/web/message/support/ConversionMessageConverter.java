@@ -5,8 +5,8 @@ import java.util.List;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDefaultValueFactory;
 import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.json.JSONUtils;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.util.ArrayUtils;
@@ -20,10 +20,10 @@ import io.basc.framework.web.message.WebMessagelConverterException;
 
 public class ConversionMessageConverter implements WebMessageConverter {
 	private final ConversionService conversionService;
-	private final ParameterDefaultValueFactory defaultValueFactory;
+	private final ParameterFactory defaultValueFactory;
 
 	public ConversionMessageConverter(ConversionService conversionService,
-			ParameterDefaultValueFactory defaultValueFactory) {
+			ParameterFactory defaultValueFactory) {
 		this.conversionService = conversionService;
 		this.defaultValueFactory = defaultValueFactory;
 	}
@@ -32,7 +32,7 @@ public class ConversionMessageConverter implements WebMessageConverter {
 		return conversionService;
 	}
 
-	public ParameterDefaultValueFactory getDefaultValueFactory() {
+	public ParameterFactory getDefaultValueFactory() {
 		return defaultValueFactory;
 	}
 

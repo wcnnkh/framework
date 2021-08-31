@@ -1,25 +1,13 @@
 package io.basc.framework.value;
 
-import io.basc.framework.core.ResolvableType;
-import io.basc.framework.lang.Nullable;
-
-import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public abstract class AbstractValue implements SimpleValue, Serializable {
-	private static final long serialVersionUID = 1L;
-	private final Value defaultValue;
+import io.basc.framework.core.ResolvableType;
 
-	public AbstractValue(@Nullable Value defaultValue) {
-		this.defaultValue = defaultValue;
-	}
-
-	public Value getDefaultValue() {
-		return defaultValue == null ? SimpleValue.super.getDefaultValue() : defaultValue;
-	}
-
+public abstract class AbstractValue implements SimpleValue {
+	
 	@SuppressWarnings("unchecked")
 	public final <T> T getAsObject(Class<T> type) {
 		Object v = null;
@@ -71,9 +59,6 @@ public abstract class AbstractValue implements SimpleValue, Serializable {
 			v = this;
 		} else {
 			v = getAsNonBaseType(ResolvableType.forClass(type));
-			if (v == null) {
-				v = getDefaultValue().getAsObject(type);
-			}
 		}
 		return (T) v;
 	}
@@ -82,11 +67,7 @@ public abstract class AbstractValue implements SimpleValue, Serializable {
 		if (type instanceof Class) {
 			return getAsObject((Class<?>) type);
 		}
-		Object v = getAsNonBaseType(ResolvableType.forType(type));
-		if (v == null) {
-			v = getDefaultValue().getAsObject(type);
-		}
-		return v;
+		return getAsNonBaseType(ResolvableType.forType(type));
 	}
 
 	public final Object getAsObject(ResolvableType type) {
@@ -95,11 +76,7 @@ public abstract class AbstractValue implements SimpleValue, Serializable {
 			return getAsObject(rawClass);
 		}
 
-		Object v = getAsNonBaseType(type);
-		if (v == null) {
-			v = getDefaultValue().getAsObject(type);
-		}
-		return v;
+		return getAsNonBaseType(type);
 	}
 
 	@Override

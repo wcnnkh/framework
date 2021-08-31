@@ -1,22 +1,5 @@
 package io.basc.framework.rpc.http.annotation;
 
-import io.basc.framework.core.parameter.OverrideParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterDefaultValueFactory;
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterUtils;
-import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.http.HttpMethod;
-import io.basc.framework.http.HttpRequestEntity;
-import io.basc.framework.http.MediaType;
-import io.basc.framework.http.HttpRequestEntity.BodyBuilder;
-import io.basc.framework.lang.Constants;
-import io.basc.framework.net.uri.UriComponents;
-import io.basc.framework.net.uri.UriComponentsBuilder;
-import io.basc.framework.rpc.http.HttpRequestEntityFactory;
-import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.StringValue;
-
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -33,24 +16,41 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
+import io.basc.framework.core.parameter.OverrideParameterDescriptor;
+import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.core.parameter.ParameterFactory;
+import io.basc.framework.core.parameter.ParameterUtils;
+import io.basc.framework.http.HttpHeaders;
+import io.basc.framework.http.HttpMethod;
+import io.basc.framework.http.HttpRequestEntity;
+import io.basc.framework.http.HttpRequestEntity.BodyBuilder;
+import io.basc.framework.http.MediaType;
+import io.basc.framework.lang.Constants;
+import io.basc.framework.net.uri.UriComponents;
+import io.basc.framework.net.uri.UriComponentsBuilder;
+import io.basc.framework.rpc.http.HttpRequestEntityFactory;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.value.StringValue;
+
 public class AnnotationHttpRequestEntityFactory implements HttpRequestEntityFactory {
 	private static final Pattern REQUEST_LINE_PATTERN = Pattern.compile("^([A-Z]+)[ ]*(.*)$");
 	private final String host;
 	private final HttpMethod defaultHttpMethod;
 	private final MediaType mediaType;
-	private final ParameterDefaultValueFactory defaultValueFactory;
+	private final ParameterFactory defaultValueFactory;
 
-	AnnotationHttpRequestEntityFactory(HttpRemote host, ParameterDefaultValueFactory defaultValueFactory) {
+	AnnotationHttpRequestEntityFactory(HttpRemote host, ParameterFactory defaultValueFactory) {
 		this(host.value(), host.method(), new MediaType(MediaType.valueOf(host.contentType()), host.charsetName()),
 				defaultValueFactory);
 	}
 
-	AnnotationHttpRequestEntityFactory(Path path, ParameterDefaultValueFactory defaultValueFactory) {
+	AnnotationHttpRequestEntityFactory(Path path, ParameterFactory defaultValueFactory) {
 		this(path.value(), HttpMethod.GET, MediaType.APPLICATION_FORM_URLENCODED, defaultValueFactory);
 	}
 
 	public AnnotationHttpRequestEntityFactory(String host, HttpMethod defaultHttpMethod, MediaType mediaType,
-			ParameterDefaultValueFactory defaultValueFactory) {
+			ParameterFactory defaultValueFactory) {
 		this.host = host;
 		this.defaultHttpMethod = defaultHttpMethod;
 		this.mediaType = mediaType;

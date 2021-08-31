@@ -1,15 +1,14 @@
 package io.basc.framework.gson;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.convert.ConvertibleIterator;
-import io.basc.framework.json.AbstractJson;
-import io.basc.framework.json.EmptyJsonElement;
-import io.basc.framework.json.JsonArray;
-import io.basc.framework.json.JsonElement;
-
 import java.util.Iterator;
 
 import com.google.gson.Gson;
+
+import io.basc.framework.convert.Converter;
+import io.basc.framework.convert.ConvertibleIterator;
+import io.basc.framework.json.AbstractJson;
+import io.basc.framework.json.JsonArray;
+import io.basc.framework.json.JsonElement;
 
 public final class GsonArray extends AbstractJson<Integer>
 		implements JsonArray, Converter<com.google.gson.JsonElement, JsonElement> {
@@ -22,7 +21,7 @@ public final class GsonArray extends AbstractJson<Integer>
 	}
 
 	public JsonElement convert(com.google.gson.JsonElement gsonJsonElement) {
-		return new GsonElement(gsonJsonElement, gson, EmptyJsonElement.INSTANCE);
+		return new GsonElement(gsonJsonElement, gson);
 	}
 
 	public Iterator<io.basc.framework.json.JsonElement> iterator() {
@@ -31,7 +30,11 @@ public final class GsonArray extends AbstractJson<Integer>
 
 	public JsonElement getValue(Integer index) {
 		com.google.gson.JsonElement element = gsonJsonArray.get(index);
-		return element == null ? null : new GsonElement(element, gson, getDefaultValue(index));
+		if(element == null) {
+			return getDefaultValue(index);
+		}
+		
+		return new GsonElement(element, gson);
 	}
 
 	public boolean add(Object value) {

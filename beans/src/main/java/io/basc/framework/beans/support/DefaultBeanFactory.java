@@ -18,7 +18,9 @@ import io.basc.framework.context.Destroy;
 import io.basc.framework.context.Init;
 import io.basc.framework.context.support.AbstractConfigurableContext;
 import io.basc.framework.core.parameter.ExecutableParameterDescriptorsIterator;
+import io.basc.framework.core.parameter.ConfigurableDefaultValueFactory;
 import io.basc.framework.core.parameter.ParameterDescriptors;
+import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
 import io.basc.framework.event.EventDispatcher;
@@ -55,7 +57,8 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 	private ClassLoaderProvider classLoaderProvider;
 	private volatile boolean initialized;
 	private List<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<BeanFactoryPostProcessor>(8);
-
+	private final ConfigurableDefaultValueFactory defaultValueFactory = new ConfigurableDefaultValueFactory();
+	
 	public DefaultBeanFactory() {
 		super(true);
 		aop.addAopPolicy((instance) -> BeanUtils.getRuntimeBean(instance) != null);
@@ -66,6 +69,13 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 		registerAlias(BeanFactory.class.getName(), NoArgsInstanceFactory.class.getName());
 
 		registerSingleton(Environment.class.getName(), getEnvironment());
+		
+		registerSingleton(ParameterFactory.class.getName(), defaultValueFactory);
+	}
+	
+	@Override
+	public ConfigurableDefaultValueFactory getDefaultValueFactory() {
+		return defaultValueFactory;
 	}
 
 	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
@@ -314,6 +324,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 	
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		defaultValueFactory.configure(serviceLoaderFactory);
 		aop.configure(serviceLoaderFactory);
 		super.configure(serviceLoaderFactory);
 	}
@@ -347,7 +358,6 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 			initialized = true;
 			
 			ContextLoader.bindBeanFactory(this);
-			
 			configure(this);
 			
 			// TODO 初始化所有单例(原来是想全部懒加载，但是后来出现问题了)

@@ -3,8 +3,8 @@ package io.basc.framework.web.message.support;
 import java.io.IOException;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDefaultValueFactory;
 import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
@@ -14,9 +14,9 @@ import io.basc.framework.web.message.annotation.Attribute;
 import io.basc.framework.web.message.annotation.IP;
 
 public class AnnotationMessageConverter implements WebMessageConverter {
-	private final ParameterDefaultValueFactory defaultValueFactory;
+	private final ParameterFactory defaultValueFactory;
 	
-	public AnnotationMessageConverter(ParameterDefaultValueFactory defaultValueFactory) {
+	public AnnotationMessageConverter(ParameterFactory defaultValueFactory) {
 		this.defaultValueFactory = defaultValueFactory;
 	}
 	

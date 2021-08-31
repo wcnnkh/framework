@@ -24,6 +24,10 @@ class ValueConversionService implements ConversionService {
 	
 	public boolean canConvert(TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
+		if(sourceType == null || targetType == null) {
+			return false;
+		}
+		
 		return Value.isBaseType(sourceType.getType())
 				|| Value.class.isAssignableFrom(sourceType.getType())
 				|| Value.isBaseType(targetType.getType())

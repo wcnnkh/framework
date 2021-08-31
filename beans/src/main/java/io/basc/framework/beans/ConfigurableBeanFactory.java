@@ -3,6 +3,7 @@ package io.basc.framework.beans;
 import io.basc.framework.aop.ConfigurableAop;
 import io.basc.framework.context.ConfigurableClassesLoader;
 import io.basc.framework.context.ConfigurableContext;
+import io.basc.framework.core.parameter.ConfigurableDefaultValueFactory;
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.factory.SingletonRegistry;
 
@@ -19,4 +20,6 @@ public interface ConfigurableBeanFactory
 	 * @return
 	 */
 	boolean isInitialized();
+	
+	ConfigurableDefaultValueFactory getDefaultValueFactory();
 }

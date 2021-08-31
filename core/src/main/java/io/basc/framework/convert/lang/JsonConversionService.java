@@ -15,6 +15,10 @@ public class JsonConversionService extends JSONSupportAccessor implements Conver
 	
 	public boolean canConvert(TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
+		if(sourceType == null || targetType == null) {
+			return false;
+		}
+		
 		return isJsonType(sourceType.getType()) || isJsonType(targetType.getType());
 	}
 

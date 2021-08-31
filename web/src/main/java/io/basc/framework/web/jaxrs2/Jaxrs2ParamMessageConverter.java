@@ -3,14 +3,14 @@ package io.basc.framework.web.jaxrs2;
 import java.io.IOException;
 
 import javax.ws.rs.FormParam;
+import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 
-import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.Ordered;
-import io.basc.framework.core.parameter.ParameterDefaultValueFactory;
 import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
@@ -23,18 +23,19 @@ import io.basc.framework.web.message.support.ConversionMessageConverter;
  * @author shuchaowen
  *
  */
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class Jaxrs2ParamMessageConverter extends ConversionMessageConverter {
 
 	public Jaxrs2ParamMessageConverter(ConversionService conversionService,
-			ParameterDefaultValueFactory defaultValueFactory) {
+			ParameterFactory defaultValueFactory) {
 		super(conversionService, defaultValueFactory);
 	}
 
 	@Override
 	public boolean canRead(ParameterDescriptor parameterDescriptor, ServerHttpRequest request) {
 		return (parameterDescriptor.isAnnotationPresent(FormParam.class)
-				|| parameterDescriptor.isAnnotationPresent(PathParam.class))
+				|| parameterDescriptor.isAnnotationPresent(PathParam.class)
+				|| parameterDescriptor.isAnnotationPresent(QueryParam.class)
+				|| parameterDescriptor.isAnnotationPresent(MatrixParam.class))
 				&& super.canRead(parameterDescriptor, request);
 	}
 
@@ -49,6 +50,16 @@ public class Jaxrs2ParamMessageConverter extends ConversionMessageConverter {
 		PathParam pathParam = parameterDescriptor.getAnnotation(PathParam.class);
 		if (pathParam != null && StringUtils.isNotEmpty(pathParam.value())) {
 			return super.read(parameterDescriptor.rename(pathParam.value()), request);
+		}
+
+		QueryParam queryParam = parameterDescriptor.getAnnotation(QueryParam.class);
+		if (queryParam != null && StringUtils.isNotEmpty(queryParam.value())) {
+			return super.read(parameterDescriptor.rename(queryParam.value()), request);
+		}
+		
+		MatrixParam matrixParam = parameterDescriptor.getAnnotation(MatrixParam.class);
+		if (matrixParam != null && StringUtils.isNotEmpty(matrixParam.value())) {
+			return super.read(parameterDescriptor.rename(matrixParam.value()), request);
 		}
 		return super.read(parameterDescriptor, request);
 	}
