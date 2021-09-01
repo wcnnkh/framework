@@ -7,6 +7,9 @@
 		<version>1.8.0</version>
 	</parent>
 	<artifactId>kryo</artifactId>
+	<properties>
+		<kryo.version>5.2.0</kryo.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
@@ -16,7 +19,7 @@
 		<dependency>
 			<groupId>com.esotericsoftware</groupId>
 			<artifactId>kryo</artifactId>
-			<version>4.0.2</version>
+			<version>${kryo.version}</version>
 		</dependency>
 	</dependencies>
 </project>

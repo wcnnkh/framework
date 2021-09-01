@@ -11,13 +11,13 @@
 		<!-- Sonar -->
 		<eureka-jersey.version>1.19.4</eureka-jersey.version>
 		<xstream.version>1.4.13</xstream.version>
+		<eureka.version>1.10.16</eureka.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>web</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		
 		<dependency>
@@ -35,7 +35,7 @@
 		<dependency>
 			<groupId>com.netflix.eureka</groupId>
 			<artifactId>eureka-core</artifactId>
-			<version>1.10.7</version>
+			<version>${eureka.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.httpcomponents</groupId>

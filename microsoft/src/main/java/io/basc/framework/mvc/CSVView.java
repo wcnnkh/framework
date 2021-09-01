@@ -1,13 +1,12 @@
-package io.basc.framework.csv.mvc;
-
-import io.basc.framework.http.HttpUtils;
-import io.basc.framework.mvc.HttpChannel;
+package io.basc.framework.mvc;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+
+import io.basc.framework.http.HttpUtils;
 
 public class CSVView extends ArrayList<Object[]> implements io.basc.framework.mvc.view.View {
 	private static final long serialVersionUID = 1L;

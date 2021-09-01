@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONAware;
+import com.alibaba.fastjson.JSONValidator;
+import com.alibaba.fastjson.JSONValidator.Type;
 import com.alibaba.fastjson.parser.Feature;
 
 import io.basc.framework.core.ResolvableType;
@@ -42,11 +44,11 @@ public final class FastJsonElement extends AbstractJsonElement implements JSONAw
 	}
 
 	public boolean isJsonArray() {
-		return text == null ? false : JSON.isValidArray(text);
+		return text == null ? false : JSONValidator.from(text).getType() == Type.Array;
 	}
 
 	public boolean isJsonObject() {
-		return text == null ? false : JSON.isValidObject(text);
+		return text == null ? false : JSONValidator.from(text).getType() == Type.Object;
 	}
 
 	public boolean isEmpty() {

@@ -7,6 +7,9 @@
 		<version>1.8.0</version>
 	</parent>
 	<artifactId>solr</artifactId>
+	<properties>
+		<solr.version>8.9.0</solr.version>
+	</properties>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/org.apache.solr/solr-solrj -->
 		<dependency>
@@ -17,7 +20,7 @@
 		<dependency>
 			<groupId>org.apache.solr</groupId>
 			<artifactId>solr-solrj</artifactId>
-			<version>8.7.0</version>
+			<version>${solr.version}</version>
 		</dependency>
 		
 		<dependency>

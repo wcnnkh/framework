@@ -41,7 +41,7 @@ public class KryoSerializer implements Serializer, CrossLanguageSerializer {
 
 	public static Output getOutput() {
 		Output output = outputLocal.get();
-		output.clear();
+		output.reset();
 		return output;
 	}
 

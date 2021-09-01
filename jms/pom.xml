@@ -8,6 +8,9 @@
 		<version>1.8.0</version>
 	</parent>
 	<artifactId>jms</artifactId>
+	<properties>
+		<jms.version>1.1</jms.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
@@ -18,7 +21,7 @@
 		<dependency>
 			<groupId>javax.jms</groupId>
 			<artifactId>jms</artifactId>
-			<version>1.1</version>
+			<version>${jms.version}</version>
 		</dependency>
 	</dependencies>
 </project>

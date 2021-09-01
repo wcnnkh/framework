@@ -7,7 +7,9 @@
 		<version>1.8.0</version>
 	</parent>
 	<artifactId>rpc</artifactId>
-
+	<properties>
+		<jsr311.version>1.1.1</jsr311.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
@@ -27,7 +29,7 @@
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>jsr311-api</artifactId>
-			<version>1.1.1</version>
+			<version>${jsr311.version}</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -7,6 +7,9 @@
 		<version>1.8.0</version>
 	</parent>
 	<artifactId>validation</artifactId>
+	<properties>
+		<hibernate.validator.veersion>6.2.0.Final</hibernate.validator.veersion>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
@@ -17,7 +20,7 @@
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>6.2.0.Final</version>
+			<version>${hibernate.validator.veersion}</version>
 		</dependency>
 
 		<dependency>

@@ -1,11 +1,13 @@
 package io.basc.framework.microsoft.jxl;
 
+import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.WritableExcel;
 import io.basc.framework.microsoft.WritableSheet;
 
 import java.io.IOException;
 
 import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
 
 public class JxlWritableExcel implements WritableExcel {
 	private WritableWorkbook workbook;
@@ -15,7 +17,11 @@ public class JxlWritableExcel implements WritableExcel {
 	}
 
 	public void close() throws IOException {
-		workbook.close();
+		try {
+			workbook.close();
+		} catch (WriteException e) {
+			throw new ExcelException(e);
+		}
 	}
 
 	public void flush() throws IOException {
