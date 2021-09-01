@@ -1,11 +1,9 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.lang.Nullable;
-
 import java.beans.Introspector;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
@@ -23,6 +21,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.lang.Nullable;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -1526,11 +1527,12 @@ public final class ClassUtils {
 	}
 	
 	public static <T> T newInstance(Class<T> clazz){
+		//不直接使用Class.newInstance()方法的原因是jdk1.9弃用了此方法
 		try {
-			return clazz.newInstance();
-		} catch (IllegalAccessException e) {
+			return clazz.getDeclaredConstructor().newInstance();
+		} catch (IllegalAccessException | IllegalArgumentException e) {
 			ReflectionUtils.handleReflectionException(e);
-		} catch (InstantiationException e) {
+		} catch (InstantiationException | InvocationTargetException | NoSuchMethodException e) {
 			throw new UndeclaredThrowableException(e);
 		}
 		throw new IllegalStateException("Should never get here");

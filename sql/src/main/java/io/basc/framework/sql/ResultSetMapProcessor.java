@@ -8,6 +8,7 @@ import io.basc.framework.mapper.FieldFactory;
 import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.Fields;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.Value;
 
@@ -92,7 +93,7 @@ public class ResultSetMapProcessor<T> implements Processor<ResultSet, T, Throwab
 	protected Object mapEntity(ResultSet rs, TypeDescriptor typeDescriptor,
 			ConversionService conversionService)
 			throws Throwable {
-		Object instance = typeDescriptor.getType().newInstance();
+		Object instance = ClassUtils.newInstance(typeDescriptor.getType());
 		Fields fields = MapperUtils.getFields(typeDescriptor.getType()).all().accept(FieldFeature.SUPPORT_SETTER)
 				.shared();
 		ResultSetMetaData metaData = rs.getMetaData();
