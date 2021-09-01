@@ -17,6 +17,7 @@ public final class UnmodifiableProxyFactories extends AbstractConfigurableProxyF
 		this(Arrays.asList(proxyFactories));
 	}
 	
+	@Override
 	public Iterator<ProxyFactory> iterator() {
 		if(iterable == null){
 			return Collections.emptyIterator();

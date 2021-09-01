@@ -12,10 +12,13 @@ import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.Factory;
 
 public class CglibProxyFactory extends JdkProxyFactory {
+	
+	@Override
 	public boolean canProxy(Class<?> clazz) {
 		return super.canProxy(clazz) || !Modifier.isFinal(clazz.getModifiers());
 	}
 
+	@Override
 	public boolean isProxy(Class<?> clazz) {
 		return super.isProxy(clazz) || Enhancer.isEnhanced(clazz);
 	}
@@ -37,6 +40,7 @@ public class CglibProxyFactory extends JdkProxyFactory {
 		return Arrays.copyOf(interfacesToUse, index);
 	}
 
+	@Override
 	public Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
 		if(super.canProxy(clazz)){
 			return super.getProxyClass(clazz, interfaces);
@@ -47,6 +51,7 @@ public class CglibProxyFactory extends JdkProxyFactory {
 		return enhancer.createClass();
 	}
 
+	@Override
 	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, MethodInterceptor methodInterceptor) {
 		if(super.canProxy(clazz)){
 			return super.getProxy(clazz, interfaces, methodInterceptor);
@@ -55,6 +60,7 @@ public class CglibProxyFactory extends JdkProxyFactory {
 		return new CglibProxy(clazz, getInterfaces(clazz, interfaces), methodInterceptor);
 	}
 
+	@Override
 	public Class<?> getUserClass(Class<?> clazz) {
 		if(super.isProxy(clazz)){
 			return super.getUserClass(clazz);
@@ -70,6 +76,7 @@ public class CglibProxyFactory extends JdkProxyFactory {
 	/** The CGLIB class separator: "$$" */
 	public static final String CGLIB_CLASS_SEPARATOR = "$$";
 
+	@Override
 	public boolean isProxy(String className, ClassLoader classLoader) throws ClassNotFoundException{
 		if(className == null){
 			return false;
@@ -78,6 +85,7 @@ public class CglibProxyFactory extends JdkProxyFactory {
 		return super.isProxy(className, classLoader) || className.contains(CGLIB_CLASS_SEPARATOR);
 	}
 
+	@Override
 	public Class<?> getUserClass(String className, ClassLoader classLoader)
 			throws ClassNotFoundException {
 		if(super.isProxy(className, classLoader)){

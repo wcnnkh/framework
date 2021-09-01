@@ -9,10 +9,13 @@ import io.basc.framework.util.ClassUtils;
 import java.util.Arrays;
 
 public class JdkProxyFactory implements ProxyFactory {
+	
+	@Override
 	public boolean canProxy(Class<?> clazz) {
 		return clazz.isInterface();
 	}
 
+	@Override
 	public boolean isProxy(Class<?> clazz) {
 		return java.lang.reflect.Proxy.isProxyClass(clazz);
 	}
@@ -44,24 +47,29 @@ public class JdkProxyFactory implements ProxyFactory {
 		}
 	}
 
+	@Override
 	public Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
 		return java.lang.reflect.Proxy.getProxyClass(clazz.getClassLoader(), mergeInterfaces(clazz, interfaces));
 	}
 
+	@Override
 	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, MethodInterceptor methodInterceptor) {
 		return new JdkProxy(clazz, mergeInterfaces(clazz, interfaces), methodInterceptor);
 	}
 
+	@Override
 	public Class<?> getUserClass(Class<?> clazz) {
 		return clazz.getInterfaces()[0];
 	}
 	
 	public static final String PROXY_NAME_PREFIX = "java.lang.reflect.Proxy";
 
+	@Override
 	public boolean isProxy(String className, ClassLoader classLoader) throws ClassNotFoundException{
 		return className.startsWith(PROXY_NAME_PREFIX);
 	}
 
+	@Override
 	public Class<?> getUserClass(String className, ClassLoader classLoader)
 			throws ClassNotFoundException {
 		return getUserClass(ClassUtils.forName(className, classLoader));

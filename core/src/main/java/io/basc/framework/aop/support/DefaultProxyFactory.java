@@ -14,6 +14,7 @@ public class DefaultProxyFactory extends AbstractConfigurableProxyFactory
 		implements ConfigurableProxyFactory {
 	private volatile List<ProxyFactory> proxyFactories;
 
+	@Override
 	public Iterator<ProxyFactory> iterator() {
 		if (proxyFactories == null) {
 			return Collections.emptyIterator();
@@ -21,6 +22,7 @@ public class DefaultProxyFactory extends AbstractConfigurableProxyFactory
 		return CollectionUtils.getIterator(proxyFactories, true);
 	}
 
+	@Override
 	public void addProxyFactory(ProxyFactory proxyFactory) {
 		if (proxyFactory == null) {
 			return;
