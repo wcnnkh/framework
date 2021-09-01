@@ -10,6 +10,7 @@ import io.basc.framework.util.ClassUtils;
 public abstract class AbstractConfigurableProxyFactory extends CglibProxyFactory implements ProxyFactory,
 		Iterable<ProxyFactory> {
 
+	@Override
 	public boolean canProxy(Class<?> clazz) {
 		for (ProxyFactory proxyFactory : this) {
 			if (proxyFactory.canProxy(clazz)) {
@@ -19,19 +20,7 @@ public abstract class AbstractConfigurableProxyFactory extends CglibProxyFactory
 		return super.canProxy(clazz);
 	}
 
-	public Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
-		for (ProxyFactory proxyFactory : this) {
-			if (proxyFactory.canProxy(clazz)) {
-				return proxyFactory.getProxyClass(clazz, interfaces);
-			}
-		}
-		
-		if(super.canProxy(clazz)){
-			return super.getProxyClass(clazz, interfaces);
-		}
-		throw new NotSupportedException(clazz.getName());
-	}
-
+	@Override
 	public boolean isProxy(Class<?> clazz) {
 		for (ProxyFactory proxyFactory : this) {
 			if (proxyFactory.isProxy(clazz)) {
@@ -41,6 +30,7 @@ public abstract class AbstractConfigurableProxyFactory extends CglibProxyFactory
 		return super.isProxy(clazz);
 	}
 
+	@Override
 	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, MethodInterceptor methodInterceptor) {
 		for (ProxyFactory proxyFactory : this) {
 			if (proxyFactory.canProxy(clazz)) {
@@ -55,6 +45,7 @@ public abstract class AbstractConfigurableProxyFactory extends CglibProxyFactory
 		throw new NotSupportedException(clazz.getName());
 	}
 
+	@Override
 	public Class<?> getUserClass(Class<?> proxyClass) {
 		for (ProxyFactory proxyFactory : this) {
 			if (proxyFactory.isProxy(proxyClass)) {

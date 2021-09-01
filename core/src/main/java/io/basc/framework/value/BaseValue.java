@@ -6,7 +6,7 @@ import java.math.BigInteger;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
 
-public interface SimpleValue extends Value {
+public interface BaseValue extends Value {
 	default int getNumberRadix() {
 		return 10;
 	}

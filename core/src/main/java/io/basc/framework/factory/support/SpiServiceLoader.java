@@ -24,7 +24,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.ServiceConfigurationError;
 
-public final class SpiServiceLoader <S> implements ServiceLoader<S>, ClassLoaderProvider {
+public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderProvider {
 
 	private static final String PREFIX = ResourceUtils.META_INF_PREFIX + "services/";
 
@@ -42,18 +42,18 @@ public final class SpiServiceLoader <S> implements ServiceLoader<S>, ClassLoader
 
 	// The current lazy-lookup iterator
 	private LazyIterator lookupIterator;
-	
+
 	private NoArgsInstanceFactory instanceFactory;
-	
+
 	public SpiServiceLoader(Class<S> svc) {
-		this(svc, (NoArgsInstanceFactory)null);
+		this(svc, (NoArgsInstanceFactory) null);
 	}
 
 	public SpiServiceLoader(Class<S> svc, ClassLoader cl) {
-		this(svc, (NoArgsInstanceFactory)null);
+		this(svc, (NoArgsInstanceFactory) null);
 		this.loader = cl;
 	}
-	
+
 	public SpiServiceLoader(Class<S> svc, NoArgsInstanceFactory instanceFactory) {
 		service = Objects.requireNonNull(svc, "Service interface cannot be null");
 		this.instanceFactory = instanceFactory;
@@ -99,7 +99,8 @@ public final class SpiServiceLoader <S> implements ServiceLoader<S>, ClassLoader
 				if (!Character.isJavaIdentifierPart(cp) && (cp != '.'))
 					fail(service, u, lc, "Illegal provider-class name: " + ln);
 			}
-			if (!providers.containsKey(ln) && !names.contains(ln) && (instanceFactory == null || instanceFactory.isInstance(ln)))
+			if (!providers.containsKey(ln) && !names.contains(ln)
+					&& (instanceFactory == null || instanceFactory.isInstance(ln)))
 				names.add(ln);
 		}
 		return lc + 1;
@@ -202,13 +203,13 @@ public final class SpiServiceLoader <S> implements ServiceLoader<S>, ClassLoader
 			if (!service.isAssignableFrom(c)) {
 				fail(service, "Provider " + cn + " not a subtype");
 			}
-			
-			if(instanceFactory != null && !instanceFactory.isInstance(c)){
+
+			if (instanceFactory != null && !instanceFactory.isInstance(c)) {
 				fail(service, "Provider " + cn + " not instantiation");
 			}
-			
+
 			try {
-				Object instance = instanceFactory == null? c.newInstance():instanceFactory.getInstance(c);
+				Object instance = instanceFactory == null ? ClassUtils.newInstance(c) : instanceFactory.getInstance(c);
 				S p = service.cast(instance);
 				providers.put(cn, p);
 				return p;
@@ -254,53 +255,48 @@ public final class SpiServiceLoader <S> implements ServiceLoader<S>, ClassLoader
 	 * Lazily loads the available providers of this loader's service.
 	 *
 	 * <p>
-	 * The iterator returned by this method first yields all of the elements
-	 * of the provider cache, in instantiation order. It then lazily loads
-	 * and instantiates any remaining providers, adding each one to the
-	 * cache in turn.
+	 * The iterator returned by this method first yields all of the elements of the
+	 * provider cache, in instantiation order. It then lazily loads and instantiates
+	 * any remaining providers, adding each one to the cache in turn.
 	 *
 	 * <p>
 	 * To achieve laziness the actual work of parsing the available
-	 * provider-configuration files and instantiating providers must be done
-	 * by the iterator itself. Its {@link java.util.Iterator#hasNext
-	 * hasNext} and {@link java.util.Iterator#next next} methods can
-	 * therefore throw a {@link ServiceConfigurationError} if a
-	 * provider-configuration file violates the specified format, or if it
-	 * names a provider class that cannot be found and instantiated, or if
-	 * the result of instantiating the class is not assignable to the
-	 * service type, or if any other kind of exception or error is thrown as
-	 * the next provider is located and instantiated. To write robust code
-	 * it is only necessary to catch {@link ServiceConfigurationError} when
-	 * using a service iterator.
+	 * provider-configuration files and instantiating providers must be done by the
+	 * iterator itself. Its {@link java.util.Iterator#hasNext hasNext} and
+	 * {@link java.util.Iterator#next next} methods can therefore throw a
+	 * {@link ServiceConfigurationError} if a provider-configuration file violates
+	 * the specified format, or if it names a provider class that cannot be found
+	 * and instantiated, or if the result of instantiating the class is not
+	 * assignable to the service type, or if any other kind of exception or error is
+	 * thrown as the next provider is located and instantiated. To write robust code
+	 * it is only necessary to catch {@link ServiceConfigurationError} when using a
+	 * service iterator.
 	 *
 	 * <p>
-	 * If such an error is thrown then subsequent invocations of the
-	 * iterator will make a best effort to locate and instantiate the next
-	 * available provider, but in general such recovery cannot be
-	 * guaranteed.
+	 * If such an error is thrown then subsequent invocations of the iterator will
+	 * make a best effort to locate and instantiate the next available provider, but
+	 * in general such recovery cannot be guaranteed.
 	 *
 	 * <blockquote style="font-size: smaller; line-height: 1.2"><span style=
-	 * "padding-right: 1em; font-weight: bold">Design Note</span> Throwing
-	 * an error in these cases may seem extreme. The rationale for this
-	 * behavior is that a malformed provider-configuration file, like a
-	 * malformed class file, indicates a serious problem with the way the
-	 * Java virtual machine is configured or is being used. As such it is
-	 * preferable to throw an error rather than try to recover or, even
-	 * worse, fail silently.</blockquote>
+	 * "padding-right: 1em; font-weight: bold">Design Note</span> Throwing an error
+	 * in these cases may seem extreme. The rationale for this behavior is that a
+	 * malformed provider-configuration file, like a malformed class file, indicates
+	 * a serious problem with the way the Java virtual machine is configured or is
+	 * being used. As such it is preferable to throw an error rather than try to
+	 * recover or, even worse, fail silently.</blockquote>
 	 *
 	 * <p>
-	 * The iterator returned by this method does not support removal.
-	 * Invoking its {@link java.util.Iterator#remove() remove} method will
-	 * cause an {@link UnsupportedOperationException} to be thrown.
+	 * The iterator returned by this method does not support removal. Invoking its
+	 * {@link java.util.Iterator#remove() remove} method will cause an
+	 * {@link UnsupportedOperationException} to be thrown.
 	 *
-	 * @implNote When adding providers to the cache, the {@link #iterator
-	 *           Iterator} processes resources in the order that the
+	 * @implNote When adding providers to the cache, the {@link #iterator Iterator}
+	 *           processes resources in the order that the
 	 *           {@link java.lang.ClassLoader#getResources(java.lang.String)
 	 *           ClassLoader.getResources(String)} method finds the service
 	 *           configuration files.
 	 *
-	 * @return An iterator that lazily loads providers for this loader's
-	 *         service
+	 * @return An iterator that lazily loads providers for this loader's service
 	 */
 	public Iterator<S> iterator() {
 		return new Iterator<S>() {
@@ -334,11 +330,11 @@ public final class SpiServiceLoader <S> implements ServiceLoader<S>, ClassLoader
 	public String toString() {
 		return getClass().getName() + "[" + service.getName() + "]";
 	}
-	
+
 	public ClassLoader getClassLoader() {
-		return instanceFactory == null? loader:instanceFactory.getClassLoader();
+		return instanceFactory == null ? loader : instanceFactory.getClassLoader();
 	}
-	
+
 	public NoArgsInstanceFactory getInstanceFactory() {
 		return instanceFactory;
 	}
@@ -348,18 +344,16 @@ public final class SpiServiceLoader <S> implements ServiceLoader<S>, ClassLoader
 	}
 
 	/**
-	 * Clear this loader's provider cache so that all providers will be
-	 * reloaded.
+	 * Clear this loader's provider cache so that all providers will be reloaded.
 	 *
 	 * <p>
-	 * After invoking this method, subsequent invocations of the
-	 * {@link #iterator() iterator} method will lazily look up and
-	 * instantiate providers from scratch, just as is done by a
-	 * newly-created loader.
+	 * After invoking this method, subsequent invocations of the {@link #iterator()
+	 * iterator} method will lazily look up and instantiate providers from scratch,
+	 * just as is done by a newly-created loader.
 	 *
 	 * <p>
-	 * This method is intended for use in situations in which new providers
-	 * can be installed into a running Java virtual machine.
+	 * This method is intended for use in situations in which new providers can be
+	 * installed into a running Java virtual machine.
 	 */
 	public void reload() {
 		providers.clear();

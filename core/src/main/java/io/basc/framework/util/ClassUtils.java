@@ -1,11 +1,9 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.lang.Nullable;
-
 import java.beans.Introspector;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
@@ -23,6 +21,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.lang.Nullable;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -48,14 +49,14 @@ public final class ClassUtils {
 	private static final Class<?>[] EMPTY_ARRAY = new Class<?>[0];
 
 	/**
-	 * Map with primitive wrapper type as key and corresponding primitive type
-	 * as value, for example: Integer.class -> int.class.
+	 * Map with primitive wrapper type as key and corresponding primitive type as
+	 * value, for example: Integer.class -> int.class.
 	 */
 	private static final Map<Class<?>, Class<?>> primitiveWrapperTypeMap = new IdentityHashMap<Class<?>, Class<?>>(8);
 
 	/**
-	 * Map with primitive type as key and corresponding wrapper type as value,
-	 * for example: int.class -> Integer.class.
+	 * Map with primitive type as key and corresponding wrapper type as value, for
+	 * example: int.class -> Integer.class.
 	 */
 	private static final Map<Class<?>, Class<?>> primitiveTypeToWrapperMap = new IdentityHashMap<Class<?>, Class<?>>(8);
 
@@ -112,14 +113,11 @@ public final class ClassUtils {
 	/**
 	 * Determine the common ancestor of the given classes, if any.
 	 * 
-	 * @param clazz1
-	 *            the class to introspect
-	 * @param clazz2
-	 *            the other class to introspect
-	 * @return the common ancestor (i.e. common superclass, one interface
-	 *         extending the other), or {@code null} if none found. If any of
-	 *         the given classes is {@code null}, the other class will be
-	 *         returned.
+	 * @param clazz1 the class to introspect
+	 * @param clazz2 the other class to introspect
+	 * @return the common ancestor (i.e. common superclass, one interface extending
+	 *         the other), or {@code null} if none found. If any of the given
+	 *         classes is {@code null}, the other class will be returned.
 	 */
 	public static Class<?> determineCommonAncestor(Class<?> clazz1, Class<?> clazz2) {
 		if (clazz1 == null) {
@@ -145,11 +143,10 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Return the qualified name of the given method, consisting of fully
-	 * qualified interface/class name + "." + method name.
+	 * Return the qualified name of the given method, consisting of fully qualified
+	 * interface/class name + "." + method name.
 	 * 
-	 * @param method
-	 *            the method
+	 * @param method the method
 	 * @return the qualified name of the method
 	 */
 	public static String getQualifiedMethodName(Method method) {
@@ -157,14 +154,12 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Return the qualified name of the given method, consisting of fully
-	 * qualified interface/class name + "." + method name.
+	 * Return the qualified name of the given method, consisting of fully qualified
+	 * interface/class name + "." + method name.
 	 * 
-	 * @param method
-	 *            the method
-	 * @param clazz
-	 *            the clazz that the method is being invoked on (may be
-	 *            {@code null} to indicate the method's declaring class)
+	 * @param method the method
+	 * @param clazz  the clazz that the method is being invoked on (may be
+	 *               {@code null} to indicate the method's declaring class)
 	 * @return the qualified name of the method
 	 */
 	public static String getQualifiedMethodName(Method method, Class<?> clazz) {
@@ -178,10 +173,8 @@ public final class ClassUtils {
 	 * <p>
 	 * Essentially translates {@code NoSuchMethodException} to "false".
 	 * 
-	 * @param clazz
-	 *            the clazz to analyze
-	 * @param paramTypes
-	 *            the parameter types of the method
+	 * @param clazz      the clazz to analyze
+	 * @param paramTypes the parameter types of the method
 	 * @return whether the class has a corresponding constructor
 	 * @see Class#getMethod
 	 */
@@ -195,10 +188,8 @@ public final class ClassUtils {
 	 * <p>
 	 * Essentially translates {@code NoSuchMethodException} to {@code null}.
 	 * 
-	 * @param clazz
-	 *            the clazz to analyze
-	 * @param paramTypes
-	 *            the parameter types of the method
+	 * @param clazz      the clazz to analyze
+	 * @param paramTypes the parameter types of the method
 	 * @return the constructor, or {@code null} if not found
 	 * @see Class#getConstructor
 	 */
@@ -217,12 +208,9 @@ public final class ClassUtils {
 	 * <p>
 	 * Essentially translates {@code NoSuchMethodException} to "false".
 	 * 
-	 * @param clazz
-	 *            the clazz to analyze
-	 * @param methodName
-	 *            the name of the method
-	 * @param paramTypes
-	 *            the parameter types of the method
+	 * @param clazz      the clazz to analyze
+	 * @param methodName the name of the method
+	 * @param paramTypes the parameter types of the method
 	 * @return whether the class has a corresponding method
 	 * @see Class#getMethod
 	 */
@@ -241,16 +229,12 @@ public final class ClassUtils {
 	 * Essentially translates {@code NoSuchMethodException} to
 	 * {@code IllegalStateException}.
 	 * 
-	 * @param clazz
-	 *            the clazz to analyze
-	 * @param methodName
-	 *            the name of the method
-	 * @param paramTypes
-	 *            the parameter types of the method (may be {@code null} to
-	 *            indicate any signature)
+	 * @param clazz      the clazz to analyze
+	 * @param methodName the name of the method
+	 * @param paramTypes the parameter types of the method (may be {@code null} to
+	 *                   indicate any signature)
 	 * @return the method (never {@code null})
-	 * @throws IllegalStateException
-	 *             if the method has not been found
+	 * @throws IllegalStateException if the method has not been found
 	 * @see Class#getMethod
 	 */
 	public static Method getMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
@@ -289,13 +273,10 @@ public final class ClassUtils {
 	 * <p>
 	 * Essentially translates {@code NoSuchMethodException} to {@code null}.
 	 * 
-	 * @param clazz
-	 *            the clazz to analyze
-	 * @param methodName
-	 *            the name of the method
-	 * @param paramTypes
-	 *            the parameter types of the method (may be {@code null} to
-	 *            indicate any signature)
+	 * @param clazz      the clazz to analyze
+	 * @param methodName the name of the method
+	 * @param paramTypes the parameter types of the method (may be {@code null} to
+	 *                   indicate any signature)
 	 * @return the method, or {@code null} if not found
 	 * @see Class#getMethod
 	 */
@@ -324,13 +305,11 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Return the number of methods with a given name (with any argument types),
-	 * for the given class and/or its superclasses. Includes non-public methods.
+	 * Return the number of methods with a given name (with any argument types), for
+	 * the given class and/or its superclasses. Includes non-public methods.
 	 * 
-	 * @param clazz
-	 *            the clazz to check
-	 * @param methodName
-	 *            the name of the method
+	 * @param clazz      the clazz to check
+	 * @param methodName the name of the method
 	 * @return the number of methods with the given name
 	 */
 	public static int getMethodCountForName(Class<?> clazz, String methodName) {
@@ -355,13 +334,11 @@ public final class ClassUtils {
 
 	/**
 	 * Does the given class or one of its superclasses at least have one or more
-	 * methods with the supplied name (with any argument types)? Includes
-	 * non-public methods.
+	 * methods with the supplied name (with any argument types)? Includes non-public
+	 * methods.
 	 * 
-	 * @param clazz
-	 *            the clazz to check
-	 * @param methodName
-	 *            the name of the method
+	 * @param clazz      the clazz to check
+	 * @param methodName the name of the method
 	 * @return whether there is at least one method with the given name
 	 */
 	public static boolean hasAtLeastOneMethodWithName(Class<?> clazz, String methodName) {
@@ -383,18 +360,16 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Given a method, which may come from an interface, and a target class used
-	 * in the current reflective invocation, find the corresponding target
-	 * method if there is one. E.g. the method may be {@code IFoo.bar()} and the
-	 * target class may be {@code DefaultFoo}. In this case, the method may be
-	 * {@code DefaultFoo.bar()}. This enables attributes on that method to be
-	 * found.
+	 * Given a method, which may come from an interface, and a target class used in
+	 * the current reflective invocation, find the corresponding target method if
+	 * there is one. E.g. the method may be {@code IFoo.bar()} and the target class
+	 * may be {@code DefaultFoo}. In this case, the method may be
+	 * {@code DefaultFoo.bar()}. This enables attributes on that method to be found.
 	 * <p>
-	 * @param method
-	 *            the method to be invoked, which may come from an interface
-	 * @param targetClass
-	 *            the target class for the current invocation. May be
-	 *            {@code null} or may not even implement the method.
+	 * 
+	 * @param method      the method to be invoked, which may come from an interface
+	 * @param targetClass the target class for the current invocation. May be
+	 *                    {@code null} or may not even implement the method.
 	 * @return the specific target method, or the original method if the
 	 *         {@code targetClass} doesn't implement it or is {@code null}
 	 */
@@ -425,18 +400,16 @@ public final class ClassUtils {
 	 * Determine whether the given method is declared by the user or at least
 	 * pointing to a user-declared method.
 	 * <p>
-	 * Checks {@link Method#isSynthetic()} (for implementation methods) as well
-	 * as the {@code GroovyObject} interface (for interface methods; on an
+	 * Checks {@link Method#isSynthetic()} (for implementation methods) as well as
+	 * the {@code GroovyObject} interface (for interface methods; on an
 	 * implementation class, implementations of the {@code GroovyObject} methods
 	 * will be marked as synthetic anyway). Note that, despite being synthetic,
 	 * bridge methods ({@link Method#isBridge()}) are considered as user-level
-	 * methods since they are eventually pointing to a user-declared generic
-	 * method.
+	 * methods since they are eventually pointing to a user-declared generic method.
 	 * 
-	 * @param method
-	 *            the method to check
-	 * @return {@code true} if the method can be considered as user-declared;
-	 *         [@code false} otherwise
+	 * @param method the method to check
+	 * @return {@code true} if the method can be considered as user-declared; [@code
+	 *         false} otherwise
 	 */
 	public static boolean isUserLevelMethod(Method method) {
 		Assert.notNull(method, "Method must not be null");
@@ -448,13 +421,10 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Determine whether the given method is overridable in the given target
-	 * class.
+	 * Determine whether the given method is overridable in the given target class.
 	 * 
-	 * @param method
-	 *            the method to check
-	 * @param targetClass
-	 *            the target class to check against
+	 * @param method      the method to check
+	 * @param targetClass the target class to check against
 	 */
 	private static boolean isOverridable(Method method, Class<?> targetClass) {
 		if (Modifier.isPrivate(method.getModifiers())) {
@@ -469,15 +439,12 @@ public final class ClassUtils {
 	/**
 	 * Return a public static method of a class.
 	 * 
-	 * @param clazz
-	 *            the class which defines the method
-	 * @param methodName
-	 *            the static method name
-	 * @param args
-	 *            the parameter types to the method
+	 * @param clazz      the class which defines the method
+	 * @param methodName the static method name
+	 * @param args       the parameter types to the method
 	 * @return the static method, or {@code null} if no static method was found
-	 * @throws IllegalArgumentException
-	 *             if the method name is blank or the clazz is null
+	 * @throws IllegalArgumentException if the method name is blank or the clazz is
+	 *                                  null
 	 */
 	public static Method getStaticMethod(Class<?> clazz, String methodName, Class<?>... args) {
 		Assert.notNull(clazz, "Class must not be null");
@@ -534,14 +501,14 @@ public final class ClassUtils {
 
 	/**
 	 * Return the default ClassLoader to use: typically the thread context
-	 * ClassLoader, if available; the ClassLoader that loaded the ClassUtils
-	 * class will be used as fallback.
+	 * ClassLoader, if available; the ClassLoader that loaded the ClassUtils class
+	 * will be used as fallback.
 	 * <p>
 	 * Call this method if you intend to use the thread context ClassLoader in a
 	 * scenario where you absolutely need a non-null ClassLoader reference: for
 	 * example, for class path resource loading (but not necessarily for
-	 * {@code Class.forName}, which accepts a {@code null} ClassLoader reference
-	 * as well).
+	 * {@code Class.forName}, which accepts a {@code null} ClassLoader reference as
+	 * well).
 	 * 
 	 * @return the default ClassLoader (never {@code null})
 	 * @see Thread#getContextClassLoader()
@@ -563,11 +530,10 @@ public final class ClassUtils {
 
 	/**
 	 * Override the thread context ClassLoader with the environment's bean
-	 * ClassLoader if necessary, i.e. if the bean ClassLoader is not equivalent
-	 * to the thread context ClassLoader already.
+	 * ClassLoader if necessary, i.e. if the bean ClassLoader is not equivalent to
+	 * the thread context ClassLoader already.
 	 * 
-	 * @param classLoaderToUse
-	 *            the actual ClassLoader to use for the thread context
+	 * @param classLoaderToUse the actual ClassLoader to use for the thread context
 	 * @return the original thread context ClassLoader, or {@code null} if not
 	 *         overridden
 	 */
@@ -595,16 +561,17 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Replacement for {@code Class.forName()} that also returns Class instances
-	 * for primitives (e.g. "int") and array class names (e.g. "String[]").
-	 * Furthermore, it is also capable of resolving inner class names in Java source
-	 * style (e.g. "java.lang.Thread.State" instead of "java.lang.Thread$State").
-	 * @param name the name of the Class
-	 * @param classLoader the class loader to use
-	 * (may be {@code null}, which indicates the default class loader)
+	 * Replacement for {@code Class.forName()} that also returns Class instances for
+	 * primitives (e.g. "int") and array class names (e.g. "String[]"). Furthermore,
+	 * it is also capable of resolving inner class names in Java source style (e.g.
+	 * "java.lang.Thread.State" instead of "java.lang.Thread$State").
+	 * 
+	 * @param name        the name of the Class
+	 * @param classLoader the class loader to use (may be {@code null}, which
+	 *                    indicates the default class loader)
 	 * @return a class instance for the supplied name
 	 * @throws ClassNotFoundException if the class was not found
-	 * @throws LinkageError if the class file could not be loaded
+	 * @throws LinkageError           if the class file could not be loaded
 	 * @see Class#forName(String, boolean, ClassLoader)
 	 */
 	public static Class<?> forName(String name, @Nullable ClassLoader classLoader)
@@ -667,27 +634,32 @@ public final class ClassUtils {
 		}
 	}
 
-	private static Class<?> forName0(String name, ClassLoader classLoader)
-			throws ClassNotFoundException {
+	private static Class<?> forName0(String name, ClassLoader classLoader) throws ClassNotFoundException {
 		return Class.forName(name, false, classLoader);
 	}
-	
+
 	/**
-	 * Resolve the given class name into a Class instance. Supports
-	 * primitives (like "int") and array class names (like "String[]").
-	 * <p>This is effectively equivalent to the {@code forName}
-	 * method with the same arguments, with the only difference being
-	 * the exceptions thrown in case of class loading failure.
-	 * @param className the name of the Class
-	 * @param classLoader the class loader to use
-	 * (may be {@code null}, which indicates the default class loader)
+	 * Resolve the given class name into a Class instance. Supports primitives (like
+	 * "int") and array class names (like "String[]").
+	 * <p>
+	 * This is effectively equivalent to the {@code forName} method with the same
+	 * arguments, with the only difference being the exceptions thrown in case of
+	 * class loading failure.
+	 * 
+	 * @param className   the name of the Class
+	 * @param classLoader the class loader to use (may be {@code null}, which
+	 *                    indicates the default class loader)
 	 * @return a class instance for the supplied name
-	 * @throws IllegalArgumentException if the class name was not resolvable
-	 * (that is, the class could not be found or the class file could not be loaded)
-	 * @throws IllegalStateException if the corresponding class is resolvable but
-	 * there was a readability mismatch in the inheritance hierarchy of the class
-	 * (typically a missing dependency declaration in a Jigsaw module definition
-	 * for a superclass or interface implemented by the class to be loaded here)
+	 * @throws IllegalArgumentException if the class name was not resolvable (that
+	 *                                  is, the class could not be found or the
+	 *                                  class file could not be loaded)
+	 * @throws IllegalStateException    if the corresponding class is resolvable but
+	 *                                  there was a readability mismatch in the
+	 *                                  inheritance hierarchy of the class
+	 *                                  (typically a missing dependency declaration
+	 *                                  in a Jigsaw module definition for a
+	 *                                  superclass or interface implemented by the
+	 *                                  class to be loaded here)
 	 * @see #forName(String, ClassLoader)
 	 */
 	public static Class<?> resolveClassName(String className, @Nullable ClassLoader classLoader)
@@ -695,50 +667,51 @@ public final class ClassUtils {
 
 		try {
 			return forName(className, classLoader);
-		}
-		catch (IllegalAccessError err) {
-			throw new IllegalStateException("Readability mismatch in inheritance hierarchy of class [" +
-					className + "]: " + err.getMessage(), err);
-		}
-		catch (LinkageError err) {
+		} catch (IllegalAccessError err) {
+			throw new IllegalStateException(
+					"Readability mismatch in inheritance hierarchy of class [" + className + "]: " + err.getMessage(),
+					err);
+		} catch (LinkageError err) {
 			throw new IllegalArgumentException("Unresolvable class definition for class [" + className + "]", err);
-		}
-		catch (ClassNotFoundException ex) {
+		} catch (ClassNotFoundException ex) {
 			throw new IllegalArgumentException("Could not find class [" + className + "]", ex);
 		}
 	}
-	
+
 	/**
-	 * Determine whether the {@link Class} identified by the supplied name is present
-	 * and can be loaded. Will return {@code false} if either the class or
+	 * Determine whether the {@link Class} identified by the supplied name is
+	 * present and can be loaded. Will return {@code false} if either the class or
 	 * one of its dependencies is not present or cannot be loaded.
-	 * @param className the name of the class to check
-	 * @param classLoader the class loader to use
-	 * (may be {@code null} which indicates the default class loader)
+	 * 
+	 * @param className   the name of the class to check
+	 * @param classLoader the class loader to use (may be {@code null} which
+	 *                    indicates the default class loader)
 	 * @return whether the specified class is present (including all of its
-	 * superclasses and interfaces)
+	 *         superclasses and interfaces)
 	 * @throws IllegalStateException if the corresponding class is resolvable but
-	 * there was a readability mismatch in the inheritance hierarchy of the class
-	 * (typically a missing dependency declaration in a Jigsaw module definition
-	 * for a superclass or interface implemented by the class to be checked here)
+	 *                               there was a readability mismatch in the
+	 *                               inheritance hierarchy of the class (typically a
+	 *                               missing dependency declaration in a Jigsaw
+	 *                               module definition for a superclass or interface
+	 *                               implemented by the class to be checked here)
 	 */
 	public static boolean isPresent(String className, @Nullable ClassLoader classLoader) {
 		try {
 			forName(className, classLoader);
 			return true;
-		}
-		catch (IllegalAccessError err) {
-			throw new IllegalStateException("Readability mismatch in inheritance hierarchy of class [" +
-					className + "]: " + err.getMessage(), err);
-		}
-		catch (Throwable ex) {
+		} catch (IllegalAccessError err) {
+			throw new IllegalStateException(
+					"Readability mismatch in inheritance hierarchy of class [" + className + "]: " + err.getMessage(),
+					err);
+		} catch (Throwable ex) {
 			// Typically ClassNotFoundException or NoClassDefFoundError...
 			return false;
 		}
 	}
-	
+
 	/**
 	 * 如果类不存在将返回空
+	 * 
 	 * @param name
 	 * @param classLoader
 	 * @return
@@ -749,27 +722,26 @@ public final class ClassUtils {
 		try {
 			clazz = forName(className, classLoader);
 		} catch (IllegalAccessError err) {
-			throw new IllegalStateException("Readability mismatch in inheritance hierarchy of class [" +
-					className + "]: " + err.getMessage(), err);
-		}
-		catch (Throwable ex) {
+			throw new IllegalStateException(
+					"Readability mismatch in inheritance hierarchy of class [" + className + "]: " + err.getMessage(),
+					err);
+		} catch (Throwable ex) {
 			// Typically ClassNotFoundException or NoClassDefFoundError...
 		}
 		return clazz;
 	}
 
 	/**
-	 * Resolve the given class name as primitive class, if appropriate,
-	 * according to the JVM's naming rules for primitive classes.
+	 * Resolve the given class name as primitive class, if appropriate, according to
+	 * the JVM's naming rules for primitive classes.
 	 * <p>
 	 * Also supports the JVM's internal class names for primitive arrays. Does
 	 * <i>not</i> support the "[]" suffix notation for primitive arrays; this is
 	 * only supported by {@link #forName(String, ClassLoader)}.
 	 * 
-	 * @param name
-	 *            the name of the potentially primitive class
-	 * @return the primitive class, or {@code null} if the name does not denote
-	 *         a primitive class or primitive array class
+	 * @param name the name of the potentially primitive class
+	 * @return the primitive class, or {@code null} if the name does not denote a
+	 *         primitive class or primitive array class
 	 */
 	public static Class<?> resolvePrimitiveClassName(String name) {
 		Class<?> result = null;
@@ -786,10 +758,8 @@ public final class ClassUtils {
 	 * Check whether the given class is cache-safe in the given context, i.e.
 	 * whether it is loaded by the given ClassLoader or a parent of it.
 	 * 
-	 * @param clazz
-	 *            the class to analyze
-	 * @param classLoader
-	 *            the ClassLoader to potentially cache metadata in
+	 * @param clazz       the class to analyze
+	 * @param classLoader the ClassLoader to potentially cache metadata in
 	 */
 	public static boolean isCacheSafe(Class<?> clazz, ClassLoader classLoader) {
 		Assert.notNull(clazz, "Class must not be null");
@@ -813,11 +783,9 @@ public final class ClassUtils {
 	/**
 	 * Get the class name without the qualified package name.
 	 * 
-	 * @param className
-	 *            the className to get the short name for
+	 * @param className the className to get the short name for
 	 * @return the class name of the class without the package name
-	 * @throws IllegalArgumentException
-	 *             if the className is empty
+	 * @throws IllegalArgumentException if the className is empty
 	 */
 	public static String getShortName(String className) {
 		Assert.hasLength(className, "Class name must not be empty");
@@ -830,8 +798,7 @@ public final class ClassUtils {
 	/**
 	 * Get the class name without the qualified package name.
 	 * 
-	 * @param clazz
-	 *            the class to get the short name for
+	 * @param clazz the class to get the short name for
 	 * @return the class name of the class without the package name
 	 */
 	public static String getShortName(Class<?> clazz) {
@@ -842,8 +809,7 @@ public final class ClassUtils {
 	 * Return the short string name of a Java class in uncapitalized JavaBeans
 	 * property format. Strips the outer class name in case of an inner class.
 	 * 
-	 * @param clazz
-	 *            the class
+	 * @param clazz the class
 	 * @return the short name rendered in a standard JavaBeans property format
 	 * @see java.beans.Introspector#decapitalize(String)
 	 */
@@ -858,8 +824,7 @@ public final class ClassUtils {
 	 * Determine the name of the class file, relative to the containing package:
 	 * e.g. "String.class"
 	 * 
-	 * @param clazz
-	 *            the class
+	 * @param clazz the class
 	 * @return the file name of the ".class" file
 	 */
 	public static String getClassFileName(Class<?> clazz) {
@@ -870,13 +835,12 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Determine the name of the package of the given class, e.g. "java.lang"
-	 * for the {@code java.lang.String} class.
+	 * Determine the name of the package of the given class, e.g. "java.lang" for
+	 * the {@code java.lang.String} class.
 	 * 
-	 * @param clazz
-	 *            the class
-	 * @return the package name, or the empty String if the class is defined in
-	 *         the default package
+	 * @param clazz the class
+	 * @return the package name, or the empty String if the class is defined in the
+	 *         default package
 	 */
 	public static String getPackageName(Class<?> clazz) {
 		Assert.notNull(clazz, "Class must not be null");
@@ -884,13 +848,12 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Determine the name of the package of the given fully-qualified class
-	 * name, e.g. "java.lang" for the {@code java.lang.String} class name.
+	 * Determine the name of the package of the given fully-qualified class name,
+	 * e.g. "java.lang" for the {@code java.lang.String} class name.
 	 * 
-	 * @param fqClassName
-	 *            the fully-qualified class name
-	 * @return the package name, or the empty String if the class is defined in
-	 *         the default package
+	 * @param fqClassName the fully-qualified class name
+	 * @return the package name, or the empty String if the class is defined in the
+	 *         default package
 	 */
 	public static String getPackageName(String fqClassName) {
 		Assert.notNull(fqClassName, "Class name must not be null");
@@ -899,11 +862,10 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Return the qualified name of the given class: usually simply the class
-	 * name, but component type class name + "[]" for arrays.
+	 * Return the qualified name of the given class: usually simply the class name,
+	 * but component type class name + "[]" for arrays.
 	 * 
-	 * @param clazz
-	 *            the class
+	 * @param clazz the class
 	 * @return the qualified name of the class
 	 */
 	public static String getQualifiedName(Class<?> clazz) {
@@ -916,11 +878,9 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Build a nice qualified name for an array: component type class name +
-	 * "[]".
+	 * Build a nice qualified name for an array: component type class name + "[]".
 	 * 
-	 * @param clazz
-	 *            the array class
+	 * @param clazz the array class
 	 * @return a qualified name for the array class
 	 */
 	private static String getQualifiedNameForArray(Class<?> clazz) {
@@ -935,11 +895,10 @@ public final class ClassUtils {
 
 	/**
 	 * Return a descriptive name for the given object's type: usually simply the
-	 * class name, but component type class name + "[]" for arrays, and an
-	 * appended list of implemented interfaces for JDK proxies.
+	 * class name, but component type class name + "[]" for arrays, and an appended
+	 * list of implemented interfaces for JDK proxies.
 	 * 
-	 * @param value
-	 *            the value to introspect
+	 * @param value the value to introspect
 	 * @return the qualified name of the class
 	 */
 	public static String getDescriptiveType(Object value) {
@@ -968,10 +927,8 @@ public final class ClassUtils {
 	/**
 	 * Check whether the given class matches the user-specified type name.
 	 * 
-	 * @param clazz
-	 *            the class to check
-	 * @param typeName
-	 *            the type name to match
+	 * @param clazz    the class to check
+	 * @param typeName the type name to match
 	 */
 	public static boolean matchesTypeName(Class<?> clazz, String typeName) {
 		return (typeName != null && (typeName.equals(clazz.getName()) || typeName.equals(clazz.getSimpleName())
@@ -979,11 +936,10 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Check if the given class represents a primitive wrapper, i.e. Boolean,
-	 * Byte, Character, Short, Integer, Long, Float, or Double.
+	 * Check if the given class represents a primitive wrapper, i.e. Boolean, Byte,
+	 * Character, Short, Integer, Long, Float, or Double.
 	 * 
-	 * @param clazz
-	 *            the class to check
+	 * @param clazz the class to check
 	 * @return whether the given class is a primitive wrapper class
 	 */
 	public static boolean isPrimitiveWrapper(Type type) {
@@ -992,29 +948,27 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Check if the given class represents a primitive (i.e. boolean, byte,
-	 * char, short, int, long, float, or double) or a primitive wrapper (i.e.
-	 * Boolean, Byte, Character, Short, Integer, Long, Float, or Double).
+	 * Check if the given class represents a primitive (i.e. boolean, byte, char,
+	 * short, int, long, float, or double) or a primitive wrapper (i.e. Boolean,
+	 * Byte, Character, Short, Integer, Long, Float, or Double).
 	 * 
-	 * @param clazz
-	 *            the class to check
+	 * @param clazz the class to check
 	 * @return whether the given class is a primitive or primitive wrapper class
 	 */
 	public static boolean isPrimitiveOrWrapper(Type type) {
 		Assert.notNull(type, "Class must not be null");
 		return isPrimitive(type) || isPrimitiveWrapper(type);
 	}
-	
-	public static boolean isPrimitive(Type type){
-		return type instanceof Class && ((Class<?>)type).isPrimitive();
+
+	public static boolean isPrimitive(Type type) {
+		return type instanceof Class && ((Class<?>) type).isPrimitive();
 	}
 
 	/**
 	 * Check if the given class represents an array of primitives, i.e. boolean,
 	 * byte, char, short, int, long, float, or double.
 	 * 
-	 * @param clazz
-	 *            the class to check
+	 * @param clazz the class to check
 	 * @return whether the given class is a primitive array class
 	 */
 	public static boolean isPrimitiveArray(Class<?> clazz) {
@@ -1026,8 +980,7 @@ public final class ClassUtils {
 	 * Check if the given class represents an array of primitive wrappers, i.e.
 	 * Boolean, Byte, Character, Short, Integer, Long, Float, or Double.
 	 * 
-	 * @param clazz
-	 *            the class to check
+	 * @param clazz the class to check
 	 * @return whether the given class is a primitive wrapper array class
 	 */
 	public static boolean isPrimitiveWrapperArray(Class<?> clazz) {
@@ -1039,10 +992,9 @@ public final class ClassUtils {
 	 * Resolve the given class if it is a primitive class, returning the
 	 * corresponding primitive wrapper type instead.
 	 * 
-	 * @param clazz
-	 *            the class to check
-	 * @return the original class, or a primitive wrapper for the original
-	 *         primitive type
+	 * @param clazz the class to check
+	 * @return the original class, or a primitive wrapper for the original primitive
+	 *         type
 	 */
 	public static Class<?> resolvePrimitiveIfNecessary(Class<?> clazz) {
 		Assert.notNull(clazz, "Class must not be null");
@@ -1050,14 +1002,12 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Check if the right-hand side type may be assigned to the left-hand side
-	 * type, assuming setting by reflection. Considers primitive wrapper classes
-	 * as assignable to the corresponding primitive types.
+	 * Check if the right-hand side type may be assigned to the left-hand side type,
+	 * assuming setting by reflection. Considers primitive wrapper classes as
+	 * assignable to the corresponding primitive types.
 	 * 
-	 * @param lhsType
-	 *            the target type
-	 * @param rhsType
-	 *            the value type that should be assigned to the target type
+	 * @param lhsType the target type
+	 * @param rhsType the value type that should be assigned to the target type
 	 * @return if the target type is assignable from the value type
 	 * @see CGLIBTypeUtils#isAssignable
 	 */
@@ -1136,13 +1086,11 @@ public final class ClassUtils {
 
 	/**
 	 * Determine if the given type is assignable from the given value, assuming
-	 * setting by reflection. Considers primitive wrapper classes as assignable
-	 * to the corresponding primitive types.
+	 * setting by reflection. Considers primitive wrapper classes as assignable to
+	 * the corresponding primitive types.
 	 * 
-	 * @param type
-	 *            the target type
-	 * @param value
-	 *            the value that should be assigned to the type
+	 * @param type  the target type
+	 * @param value the value that should be assigned to the type
 	 * @return if the type is assignable from the value
 	 */
 	public static boolean isAssignableValue(Class<?> type, Object value) {
@@ -1170,11 +1118,9 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Convert a "/"-based resource path to a "."-based fully qualified class
-	 * name.
+	 * Convert a "/"-based resource path to a "."-based fully qualified class name.
 	 * 
-	 * @param resourcePath
-	 *            the resource path pointing to a class
+	 * @param resourcePath the resource path pointing to a class
 	 * @return the corresponding fully qualified class name
 	 */
 	public static String convertResourcePathToClassName(String resourcePath) {
@@ -1183,11 +1129,9 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Convert a "."-based fully qualified class name to a "/"-based resource
-	 * path.
+	 * Convert a "."-based fully qualified class name to a "/"-based resource path.
 	 * 
-	 * @param className
-	 *            the fully qualified class name
+	 * @param className the fully qualified class name
 	 * @return the corresponding resource path, pointing to the class
 	 */
 	public static String convertClassNameToResourcePath(String className) {
@@ -1197,16 +1141,13 @@ public final class ClassUtils {
 
 	/**
 	 * Return a path suitable for use with {@code ClassLoader.getResource} (also
-	 * suitable for use with {@code Class.getResource} by prepending a slash
-	 * ('/') to the return value). Built by taking the package of the specified
-	 * class file, converting all dots ('.') to slashes ('/'), adding a trailing
-	 * slash if necessary, and concatenating the specified resource name to
-	 * this. <br/>
+	 * suitable for use with {@code Class.getResource} by prepending a slash ('/')
+	 * to the return value). Built by taking the package of the specified class
+	 * file, converting all dots ('.') to slashes ('/'), adding a trailing slash if
+	 * necessary, and concatenating the specified resource name to this. <br/>
 	 * 
-	 * @param clazz
-	 *            the Class whose package will be used as the base
-	 * @param resourceName
-	 *            the resource name to append. A leading slash is optional.
+	 * @param clazz        the Class whose package will be used as the base
+	 * @param resourceName the resource name to append. A leading slash is optional.
 	 * @return the built-up resource path
 	 * @see ClassLoader#getResource
 	 * @see Class#getResource
@@ -1220,17 +1161,16 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Given an input class object, return a string which consists of the
-	 * class's package name as a pathname, i.e., all dots ('.') are replaced by
-	 * slashes ('/'). Neither a leading nor trailing slash is added. The result
-	 * could be concatenated with a slash and the name of a resource and fed
-	 * directly to {@code ClassLoader.getResource()}. For it to be fed to
+	 * Given an input class object, return a string which consists of the class's
+	 * package name as a pathname, i.e., all dots ('.') are replaced by slashes
+	 * ('/'). Neither a leading nor trailing slash is added. The result could be
+	 * concatenated with a slash and the name of a resource and fed directly to
+	 * {@code ClassLoader.getResource()}. For it to be fed to
 	 * {@code Class.getResource} instead, a leading slash would also have to be
 	 * prepended to the returned value.
 	 * 
-	 * @param clazz
-	 *            the input class. A {@code null} value or the default (empty)
-	 *            package will result in an empty string ("") being returned.
+	 * @param clazz the input class. A {@code null} value or the default (empty)
+	 *              package will result in an empty string ("") being returned.
 	 * @return a path which represents the package name
 	 * @see ClassLoader#getResource
 	 * @see Class#getResource
@@ -1249,14 +1189,13 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Build a String that consists of the names of the classes/interfaces in
-	 * the given array.
+	 * Build a String that consists of the names of the classes/interfaces in the
+	 * given array.
 	 * <p>
 	 * Basically like {@code AbstractCollection.toString()}, but stripping the
 	 * "class "/"interface " prefix before every class name.
 	 * 
-	 * @param classes
-	 *            a Collection of Class objects (may be {@code null})
+	 * @param classes a Collection of Class objects (may be {@code null})
 	 * @return a String of form "[com.foo.Bar, com.foo.Baz]"
 	 * @see java.util.AbstractCollection#toString()
 	 */
@@ -1266,14 +1205,13 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Build a String that consists of the names of the classes/interfaces in
-	 * the given collection.
+	 * Build a String that consists of the names of the classes/interfaces in the
+	 * given collection.
 	 * <p>
 	 * Basically like {@code AbstractCollection.toString()}, but stripping the
 	 * "class "/"interface " prefix before every class name.
 	 * 
-	 * @param classes
-	 *            a Collection of Class objects (may be {@code null})
+	 * @param classes a Collection of Class objects (may be {@code null})
 	 * @return a String of form "[com.foo.Bar, com.foo.Baz]"
 	 * @see java.util.AbstractCollection#toString()
 	 */
@@ -1298,8 +1236,7 @@ public final class ClassUtils {
 	 * Copy the given Collection into a Class array. The Collection must contain
 	 * Class elements only.
 	 * 
-	 * @param collection
-	 *            the Collection to copy
+	 * @param collection the Collection to copy
 	 * @return the Class array ({@code null} if the passed-in Collection was
 	 *         {@code null})
 	 */
@@ -1311,11 +1248,10 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Return all interfaces that the given instance implements as array,
-	 * including ones implemented by superclasses.
+	 * Return all interfaces that the given instance implements as array, including
+	 * ones implemented by superclasses.
 	 * 
-	 * @param instance
-	 *            the instance to analyze for interfaces
+	 * @param instance the instance to analyze for interfaces
 	 * @return all interfaces that the given instance implements as array
 	 */
 	@SuppressWarnings("rawtypes")
@@ -1330,8 +1266,7 @@ public final class ClassUtils {
 	 * <p>
 	 * If the class itself is an interface, it gets returned as sole interface.
 	 * 
-	 * @param clazz
-	 *            the class to analyze for interfaces
+	 * @param clazz the class to analyze for interfaces
 	 * @return all interfaces that the given object implements as array
 	 */
 	public static Class<?>[] getAllInterfacesForClass(Class<?> clazz) {
@@ -1344,11 +1279,10 @@ public final class ClassUtils {
 	 * <p>
 	 * If the class itself is an interface, it gets returned as sole interface.
 	 * 
-	 * @param clazz
-	 *            the class to analyze for interfaces
-	 * @param classLoader
-	 *            the ClassLoader that the interfaces need to be visible in (may
-	 *            be {@code null} when accepting all declared interfaces)
+	 * @param clazz       the class to analyze for interfaces
+	 * @param classLoader the ClassLoader that the interfaces need to be visible in
+	 *                    (may be {@code null} when accepting all declared
+	 *                    interfaces)
 	 * @return all interfaces that the given object implements as array
 	 */
 	@SuppressWarnings("rawtypes")
@@ -1358,11 +1292,10 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Return all interfaces that the given instance implements as Set,
-	 * including ones implemented by superclasses.
+	 * Return all interfaces that the given instance implements as Set, including
+	 * ones implemented by superclasses.
 	 * 
-	 * @param instance
-	 *            the instance to analyze for interfaces
+	 * @param instance the instance to analyze for interfaces
 	 * @return all interfaces that the given instance implements as Set
 	 */
 	@SuppressWarnings("rawtypes")
@@ -1377,8 +1310,7 @@ public final class ClassUtils {
 	 * <p>
 	 * If the class itself is an interface, it gets returned as sole interface.
 	 * 
-	 * @param clazz
-	 *            the class to analyze for interfaces
+	 * @param clazz the class to analyze for interfaces
 	 * @return all interfaces that the given object implements as Set
 	 */
 	@SuppressWarnings("rawtypes")
@@ -1392,11 +1324,10 @@ public final class ClassUtils {
 	 * <p>
 	 * If the class itself is an interface, it gets returned as sole interface.
 	 * 
-	 * @param clazz
-	 *            the class to analyze for interfaces
-	 * @param classLoader
-	 *            the ClassLoader that the interfaces need to be visible in (may
-	 *            be {@code null} when accepting all declared interfaces)
+	 * @param clazz       the class to analyze for interfaces
+	 * @param classLoader the ClassLoader that the interfaces need to be visible in
+	 *                    (may be {@code null} when accepting all declared
+	 *                    interfaces)
 	 * @return all interfaces that the given object implements as Set
 	 */
 	@SuppressWarnings("rawtypes")
@@ -1419,11 +1350,9 @@ public final class ClassUtils {
 	/**
 	 * Check whether the given class is visible in the given ClassLoader.
 	 * 
-	 * @param clazz
-	 *            the class to check (typically an interface)
-	 * @param classLoader
-	 *            the ClassLoader to check against (may be {@code null}, in
-	 *            which case this method will always return {@code true})
+	 * @param clazz       the class to check (typically an interface)
+	 * @param classLoader the ClassLoader to check against (may be {@code null}, in
+	 *                    which case this method will always return {@code true})
 	 */
 	public static boolean isVisible(Class<?> clazz, ClassLoader classLoader) {
 		if (classLoader == null) {
@@ -1518,34 +1447,78 @@ public final class ClassUtils {
 		}
 		return array;
 	}
-	
+
+	/**
+	 * 公有的无参构造方法
+	 * 
+	 * @param <T>
+	 * @param className
+	 * @param classLoader
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T newInstance(String className, ClassLoader classLoader) {
 		Class<?> clazz = resolveClassName(className, classLoader);
-		return newInstance((Class<T>)clazz);
+		return newInstance((Class<T>) clazz);
 	}
-	
-	public static <T> T newInstance(Class<T> clazz){
+
+	/**
+	 * 是否存在public无参的构造方法
+	 * @param className
+	 * @param classLoader
+	 * @return
+	 */
+	public static boolean isInstance(String className, ClassLoader classLoader) {
 		try {
-			return clazz.newInstance();
-		} catch (IllegalAccessException e) {
+			Class<?> clazz = resolveClassName(className, classLoader);
+			return isInstance(clazz);
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
+	}
+
+	/**
+	 * 是否存在public无参的构造方法
+	 * @param clazz
+	 * @return
+	 */
+	public static boolean isInstance(Class<?> clazz) {
+		try {
+			return clazz.getConstructor() != null;
+		} catch (NoSuchMethodException e) {
+			return false;
+		}
+	}
+
+	/**
+	 * 公有的无参构造方法
+	 * 
+	 * @param <T>
+	 * @param clazz
+	 * @return
+	 */
+	public static <T> T newInstance(Class<T> clazz) {
+		// 不直接使用Class.newInstance()方法的原因是jdk1.9弃用了此方法
+		try {
+			return clazz.getConstructor().newInstance();
+		} catch (IllegalAccessException | IllegalArgumentException e) {
 			ReflectionUtils.handleReflectionException(e);
-		} catch (InstantiationException e) {
+		} catch (InstantiationException | InvocationTargetException | NoSuchMethodException e) {
 			throw new UndeclaredThrowableException(e);
 		}
 		throw new IllegalStateException("Should never get here");
 	}
-	
+
 	/**
 	 * @see #getDefaultClassLoader()
 	 * @param classLoaderProvider
 	 * @return
 	 */
-	public static ClassLoader getClassLoader(ClassLoaderProvider classLoaderProvider){
-		ClassLoader classLoader = classLoaderProvider == null? null:classLoaderProvider.getClassLoader();
-		return classLoader == null? ClassUtils.getDefaultClassLoader():classLoader;
+	public static ClassLoader getClassLoader(ClassLoaderProvider classLoaderProvider) {
+		ClassLoader classLoader = classLoaderProvider == null ? null : classLoaderProvider.getClassLoader();
+		return classLoader == null ? ClassUtils.getDefaultClassLoader() : classLoader;
 	}
-	
+
 	public static boolean isString(Type type) {
 		return type == String.class;
 	}

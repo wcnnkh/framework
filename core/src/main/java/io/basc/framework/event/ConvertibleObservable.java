@@ -2,7 +2,7 @@ package io.basc.framework.event;
 
 import io.basc.framework.convert.Converter;
 
-public class ConvertibleObservable<O, T> extends AbstractObservable<T> {
+public class ConvertibleObservable<O, T> extends AbstractObservable<T> implements AutoCloseable {
 	private final Observable<O> observable;
 	private final Converter<O, T> converter;
 	private final EventRegistration eventRegistration;
@@ -22,15 +22,15 @@ public class ConvertibleObservable<O, T> extends AbstractObservable<T> {
 	}
 	
 	@Override
-	protected void finalize() throws Throwable {
+	public void close() {
 		eventRegistration.unregister();
-		super.finalize();
 	}
-
+	
 	public Observable<O> getOriginObservable() {
 		return observable;
 	}
 
+	@Override
 	public T forceGet() {
 		return converter.convert(observable.get());
 	}

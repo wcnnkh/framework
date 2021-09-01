@@ -1,5 +1,12 @@
 package io.basc.framework.env;
 
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+
 import io.basc.framework.convert.Converter;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.ConvertibleObservable;
@@ -13,13 +20,6 @@ import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
-
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
 
 public class ObservablePropertiesPropertyFactory extends ConvertibleObservable<Properties, Map<String, Value>>
 		implements PropertyFactory {
@@ -64,11 +64,11 @@ public class ObservablePropertiesPropertyFactory extends ConvertibleObservable<P
 	}
 	
 	@Override
-	protected void finalize() throws Throwable {
+	public void close() {
 		eventRegistration.unregister();
-		super.finalize();
+		super.close();
 	}
-
+	
 	@Override
 	public Map<String, Value> get() {
 		Map<String, Value> valueMap = super.get();

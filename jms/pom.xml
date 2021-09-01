@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>jms</artifactId>
 	<properties>
-		<jms.version>1.1</jms.version>
+		<jms.api.version>1.1-rev-1</jms.api.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -17,11 +17,11 @@
 			<artifactId>boot</artifactId>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/javax.jms/jms -->
+		<!-- https://mvnrepository.com/artifact/javax.jms/jms-api -->
 		<dependency>
 			<groupId>javax.jms</groupId>
-			<artifactId>jms</artifactId>
-			<version>${jms.version}</version>
+			<artifactId>jms-api</artifactId>
+			<version>${jms.api.version}</version>
 		</dependency>
 	</dependencies>
 </project>

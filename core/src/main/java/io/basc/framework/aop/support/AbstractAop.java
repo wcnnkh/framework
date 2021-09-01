@@ -22,10 +22,6 @@ public abstract class AbstractAop implements Aop{
 		return getProxyFactory().canProxy(clazz);
 	}
 	
-	public final Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
-		return getProxyFactory().getProxyClass(clazz, interfaces);
-	}
-	
 	public final Class<?> getUserClass(Class<?> clazz) {
 		return getProxyFactory().getUserClass(clazz);
 	}

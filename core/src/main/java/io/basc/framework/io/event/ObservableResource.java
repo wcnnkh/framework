@@ -7,7 +7,7 @@ import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
 import io.basc.framework.io.Resource;
 
-public class ObservableResource<T> extends AbstractObservable<T> {
+public class ObservableResource<T> extends AbstractObservable<T> implements AutoCloseable {
 	private final Resource resource;
 	private final Converter<Resource, T> converter;
 	private final EventRegistration eventRegistration;
@@ -34,8 +34,7 @@ public class ObservableResource<T> extends AbstractObservable<T> {
 	}
 	
 	@Override
-	protected void finalize() throws Throwable {
+	public void close() {
 		eventRegistration.unregister();
-		super.finalize();
 	}
 }

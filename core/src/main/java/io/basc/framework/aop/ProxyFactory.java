@@ -34,15 +34,6 @@ public interface ProxyFactory {
 	Class<?> getUserClass(Class<?> clazz);
 	
 	/**
-	  *  获取代理类
-	 * 
-	 * @param clazz source class
-	 * @param interfaceClass interfaces
-	 * @return
-	 */
-	Class<?> getProxyClass(Class<?> clazz, @Nullable Class<?>[] interfaces);
-
-	/**
 	  *  获取代理
 	 * @param clazz source class
 	 * @param interfaces interfaces

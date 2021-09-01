@@ -8,7 +8,7 @@ import io.basc.framework.util.ObjectUtils;
 
 import java.util.logging.Level;
 
-public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<LevelRegistry>> {
+public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<LevelRegistry>>, AutoCloseable {
 	private EventRegistration eventRegistration;
 	private Level level;
 
@@ -48,12 +48,11 @@ public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<
 	}
 	
 	@Override
-	protected void finalize() throws Throwable {
+	public void close() {
 		if (eventRegistration != null) {
 			eventRegistration.unregister();
 		}
 		eventRegistration = null;
-		super.finalize();
 	}
 	
 	@Override
