@@ -1,17 +1,15 @@
 package io.basc.framework.microsoft.poi;
 
-import io.basc.framework.io.IOUtils;
-import io.basc.framework.lang.RequiredJavaVersion;
-import io.basc.framework.microsoft.ExcelException;
-import io.basc.framework.microsoft.ExcelReader;
-import io.basc.framework.microsoft.RowCallback;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
@@ -24,11 +22,16 @@ import org.apache.poi.xssf.model.SharedStringsTable;
 import org.apache.poi.xssf.usermodel.XSSFComment;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
+
+import io.basc.framework.io.IOUtils;
+import io.basc.framework.lang.RequiredJavaVersion;
+import io.basc.framework.microsoft.ExcelException;
+import io.basc.framework.microsoft.ExcelReader;
+import io.basc.framework.microsoft.RowCallback;
 
 @RequiredJavaVersion(8)
 public class XSSFExcelReader implements ExcelReader {
+	private SAXParserFactory parserFactory = SAXParserFactory.newInstance();
 	private boolean firstSheet = false;
 	private boolean formulasNotResults = true;
 
@@ -41,25 +44,29 @@ public class XSSFExcelReader implements ExcelReader {
 	}
 
 	public void read(OPCPackage opcPackage, RowCallback rowCallback) throws IOException, ExcelException {
+		SAXParser parser;
+		try {
+			parser = parserFactory.newSAXParser();
+		} catch (ParserConfigurationException | SAXException e) {
+			throw new ExcelException(e);
+		}
+		
 		XSSFReader reader;
-		XMLReader parser;
 		SharedStringsTable sst = null;
+	
 		try {
 			reader = new XSSFReader(opcPackage);
 			sst = reader.getSharedStringsTable();
 			XssfSheetContentsHandler contentsHandler = new XssfSheetContentsHandler(rowCallback, 0);
-			XSSFSheetXMLHandler handler = new XSSFSheetXMLHandler(reader.getStylesTable(), sst,
-					contentsHandler, formulasNotResults);
-			
-			parser = XMLReaderFactory.createXMLReader();
-			parser.setContentHandler(handler);
+			XSSFSheetXMLHandler handler = new XSSFSheetXMLHandler(reader.getStylesTable(), sst, contentsHandler,
+					formulasNotResults);
 			Iterator<InputStream> iterator = reader.getSheetsData();
 			while (iterator.hasNext()) {
 				InputStream inputStream = null;
 				try {
 					inputStream = iterator.next();
 					InputSource sheetSource = new InputSource(inputStream);
-					parser.parse(sheetSource);
+					parser.parse(sheetSource, handler);
 					contentsHandler.setSheetIndex(contentsHandler.getSheetIndex() + 1);
 					if (firstSheet) {
 						break;
@@ -72,7 +79,7 @@ public class XSSFExcelReader implements ExcelReader {
 			throw new ExcelException(e);
 		} catch (SAXException e) {
 			throw new ExcelException(e);
-		}finally {
+		} finally {
 			sst.close();
 		}
 	}

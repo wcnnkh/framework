@@ -6,17 +6,10 @@ import java.lang.reflect.Modifier;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
 
-/**
- * @see sun.misc.Unsafe
- * @author shuchaowen
- *
- */
-@SuppressWarnings("restriction")
 public class UnsafeUtils {
 	private static final Object UNSAFE;
 	private static final String CLASS_NAME = "sun.misc.Unsafe";
-	private static final Method ALLOCATE_INSTANCE = getMethod(
-			"allocateInstance", Class.class);
+	private static final Method ALLOCATE_INSTANCE = getMethod("allocateInstance", Class.class);
 
 	static {
 		UNSAFE = getInvokeInstance();
@@ -44,17 +37,15 @@ public class UnsafeUtils {
 		return UNSAFE;
 	}
 
-	public static Method getMethod(String methodName,
-			Class<?>... parameterTypes) {
-		return ReflectionUtils
-				.getMethod(CLASS_NAME, null, methodName, parameterTypes);
+	public static Method getMethod(String methodName, Class<?>... parameterTypes) {
+		return ReflectionUtils.getMethod(CLASS_NAME, null, methodName, parameterTypes);
 	}
 
 	public static Object invoke(Method method, Object... args) {
 		ReflectionUtils.makeAccessible(method);
-		return ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers())? null:UNSAFE, args);
+		return ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null : UNSAFE, args);
 	}
-	
+
 	public static Object allocateInstance(Class<?> type) {
 		return invoke(ALLOCATE_INSTANCE, type);
 	}

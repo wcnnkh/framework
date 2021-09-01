@@ -6,7 +6,7 @@ import java.math.BigInteger;
 
 import io.basc.framework.core.ResolvableType;
 
-public abstract class AbstractValue implements SimpleValue {
+public abstract class AbstractValue implements BaseValue {
 	
 	@SuppressWarnings("unchecked")
 	public final <T> T getAsObject(Class<T> type) {

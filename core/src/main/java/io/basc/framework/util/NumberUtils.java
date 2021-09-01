@@ -16,13 +16,13 @@
 
 package io.basc.framework.util;
 
-import io.basc.framework.lang.ParameterException;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+
+import io.basc.framework.lang.ParameterException;
 
 /**
  * Miscellaneous utility methods for number conversion and parsing. Mainly for
@@ -99,21 +99,21 @@ public abstract class NumberUtils {
 			if (value < Byte.MIN_VALUE || value > Byte.MAX_VALUE) {
 				raiseOverflowException(number, targetClass);
 			}
-			return (T) new Byte(number.byteValue());
+			return (T) Byte.valueOf(number.byteValue());
 		} else if (targetClass.equals(Short.class)) {
 			long value = number.longValue();
 			if (value < Short.MIN_VALUE || value > Short.MAX_VALUE) {
 				raiseOverflowException(number, targetClass);
 			}
-			return (T) new Short(number.shortValue());
+			return (T) Short.valueOf(number.shortValue());
 		} else if (targetClass.equals(Integer.class)) {
 			long value = number.longValue();
 			if (value < Integer.MIN_VALUE || value > Integer.MAX_VALUE) {
 				raiseOverflowException(number, targetClass);
 			}
-			return (T) new Integer(number.intValue());
+			return (T) Integer.valueOf(number.intValue());
 		} else if (targetClass.equals(Long.class)) {
-			return (T) new Long(number.longValue());
+			return (T) Long.valueOf(number.longValue());
 		} else if (targetClass.equals(BigInteger.class)) {
 			if (number instanceof BigDecimal) {
 				// do not lose precision - use BigDecimal's own conversion
@@ -124,9 +124,9 @@ public abstract class NumberUtils {
 				return (T) BigInteger.valueOf(number.longValue());
 			}
 		} else if (targetClass.equals(Float.class)) {
-			return (T) new Float(number.floatValue());
+			return (T) Float.valueOf(number.floatValue());
 		} else if (targetClass.equals(Double.class)) {
-			return (T) new Double(number.doubleValue());
+			return (T) Double.valueOf(number.doubleValue());
 		} else if (targetClass.equals(BigDecimal.class)) {
 			// always use BigDecimal(String) here to avoid unpredictability of
 			// BigDecimal(double)
