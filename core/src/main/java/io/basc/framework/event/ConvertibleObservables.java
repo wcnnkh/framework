@@ -1,17 +1,17 @@
 package io.basc.framework.event;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
 import io.basc.framework.convert.Converter;
 import io.basc.framework.core.OrderComparator;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Combiner;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
-public class ConvertibleObservables<S, T> extends AbstractObservable<T> {
+public class ConvertibleObservables<S, T> extends AbstractObservable<T> implements AutoCloseable {
 	private final Set<Observable<S>> observables;
 	private final Combiner<S> combiner;
 	private final Converter<S, T> converter;
@@ -72,13 +72,9 @@ public class ConvertibleObservables<S, T> extends AbstractObservable<T> {
 	}
 
 	@Override
-	protected void finalize() throws Throwable {
-		try {
-			for (EventRegistration registration : registrations) {
-				registration.unregister();
-			}
-		} finally {
-			super.finalize();
+	public void close() {
+		for (EventRegistration registration : registrations) {
+			registration.unregister();
 		}
 	}
 }
