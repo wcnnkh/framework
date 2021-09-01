@@ -55,6 +55,7 @@ public class ConvertibleObservables<S, T> extends AbstractObservable<T> {
 		return observables;
 	}
 
+	@Override
 	protected T forceGet() {
 		List<Observable<S>> observables = getObservables();
 		List<S> list;
@@ -72,9 +73,12 @@ public class ConvertibleObservables<S, T> extends AbstractObservable<T> {
 
 	@Override
 	protected void finalize() throws Throwable {
-		for (EventRegistration registration : registrations) {
-			registration.unregister();
+		try {
+			for (EventRegistration registration : registrations) {
+				registration.unregister();
+			}
+		} finally {
+			super.finalize();
 		}
-		super.finalize();
 	}
 }
