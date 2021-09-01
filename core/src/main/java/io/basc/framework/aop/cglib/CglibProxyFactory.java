@@ -1,13 +1,12 @@
 package io.basc.framework.aop.cglib;
 
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.Proxy;
 import io.basc.framework.aop.jdk.JdkProxyFactory;
 import io.basc.framework.util.ClassUtils;
-
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.Factory;
 
@@ -40,12 +39,7 @@ public class CglibProxyFactory extends JdkProxyFactory {
 		return Arrays.copyOf(interfacesToUse, index);
 	}
 
-	@Override
 	public Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
-		if(super.canProxy(clazz)){
-			return super.getProxyClass(clazz, interfaces);
-		}
-		
 		Enhancer enhancer = CglibUtils.createEnhancer(clazz, getInterfaces(clazz, interfaces));
 		enhancer.setCallbackType(CglibMethodInterceptor.class);
 		return enhancer.createClass();

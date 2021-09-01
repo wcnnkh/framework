@@ -1,12 +1,12 @@
 package io.basc.framework.aop.jdk;
 
+import java.util.Arrays;
+
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.Proxy;
 import io.basc.framework.aop.ProxyFactory;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.ClassUtils;
-
-import java.util.Arrays;
 
 public class JdkProxyFactory implements ProxyFactory {
 	
@@ -45,11 +45,6 @@ public class JdkProxyFactory implements ProxyFactory {
 				return array;
 			}
 		}
-	}
-
-	@Override
-	public Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
-		return java.lang.reflect.Proxy.getProxyClass(clazz.getClassLoader(), mergeInterfaces(clazz, interfaces));
 	}
 
 	@Override

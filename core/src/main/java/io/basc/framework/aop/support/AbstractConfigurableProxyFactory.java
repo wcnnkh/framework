@@ -21,20 +21,6 @@ public abstract class AbstractConfigurableProxyFactory extends CglibProxyFactory
 	}
 
 	@Override
-	public Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
-		for (ProxyFactory proxyFactory : this) {
-			if (proxyFactory.canProxy(clazz)) {
-				return proxyFactory.getProxyClass(clazz, interfaces);
-			}
-		}
-		
-		if(super.canProxy(clazz)){
-			return super.getProxyClass(clazz, interfaces);
-		}
-		throw new NotSupportedException(clazz.getName());
-	}
-
-	@Override
 	public boolean isProxy(Class<?> clazz) {
 		for (ProxyFactory proxyFactory : this) {
 			if (proxyFactory.isProxy(clazz)) {
