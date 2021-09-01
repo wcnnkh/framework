@@ -7,6 +7,9 @@
 		<version>1.8.0</version>
 	</parent>
 	<artifactId>druid</artifactId>
+	<properties>
+		<druid.version>1.2.6</druid.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
@@ -22,7 +25,7 @@
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid</artifactId>
-			<version>1.1.14</version>
+			<version>${druid.version}</version>
 		</dependency>
 	</dependencies>
 </project>

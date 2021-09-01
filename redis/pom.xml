@@ -9,22 +9,24 @@
 	</parent>
 	<artifactId>redis</artifactId>
 	<properties>
-		<jedis.version>3.6.0</jedis.version>
+		<jedis.version>3.7.0</jedis.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>data</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>beans</artifactId>
-			<scope>provided</scope>
-		</dependency>
+		
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
 			<version>${jedis.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>beans</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

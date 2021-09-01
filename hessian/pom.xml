@@ -7,6 +7,9 @@
 		<version>1.8.0</version>
 	</parent>
 	<artifactId>hessian</artifactId>
+	<properties>
+		<hessian.version>4.0.65</hessian.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
@@ -18,7 +21,7 @@
 		<dependency>
 			<groupId>com.caucho</groupId>
 			<artifactId>hessian</artifactId>
-			<version>4.0.60</version>
+			<version>${hessian.version}</version>
 		</dependency>
 	</dependencies>
 </project>

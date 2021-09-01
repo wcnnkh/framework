@@ -7,6 +7,9 @@
 		<version>1.8.0</version>
 	</parent>
 	<artifactId>ibatis</artifactId>
+	<properties>
+		<mybatis.version>3.5.7</mybatis.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
@@ -16,7 +19,7 @@
 		<dependency>
 			<groupId>org.mybatis</groupId>
 			<artifactId>mybatis</artifactId>
-			<version>3.4.6</version>
+			<version>${mybatis.version}</version>
 		</dependency>
 		
 		<!-- 测试使用 -->

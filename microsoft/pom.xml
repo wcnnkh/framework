@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -9,22 +10,24 @@
 	<artifactId>microsoft</artifactId>
 	<properties>
 		<poi.version>4.1.2</poi.version>
-		<jxl.version>2.4.2</jxl.version>
+		<jxl.version>2.6.12</jxl.version>
+		<csv.version>1.9.0</csv.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>core</artifactId>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.sourceforge.jexcelapi/jxl -->
 		<dependency>
-			<groupId>jexcelapi</groupId>
+			<groupId>net.sourceforge.jexcelapi</groupId>
 			<artifactId>jxl</artifactId>
 			<version>${jxl.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-csv</artifactId>
-			<version>1.4</version>
+			<version>${csv.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>

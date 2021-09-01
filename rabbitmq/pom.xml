@@ -7,6 +7,9 @@
 		<version>1.8.0</version>
 	</parent>
 	<artifactId>rabbitmq</artifactId>
+	<properties>
+		<amqp.client.version>5.13.1</amqp.client.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
@@ -15,7 +18,7 @@
 		<dependency>
 			<groupId>com.rabbitmq</groupId>
 			<artifactId>amqp-client</artifactId>
-			<version>5.7.3</version>
+			<version>${amqp.client.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>

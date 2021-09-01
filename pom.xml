@@ -58,7 +58,7 @@
 		<swagger.version>2.1.10</swagger.version>
 		<!-- tomcat7只支持jdk1.6及以上的版本 -->
 		<!-- tomcat8只支持jdk1.7及以上的版本 -->
-		<tomcat.version>9.0.50</tomcat.version>
+		<tomcat.version>9.0.52</tomcat.version>
 	</properties>
 
 	<dependencyManagement>

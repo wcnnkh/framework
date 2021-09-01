@@ -1,17 +1,16 @@
 package io.basc.framework.protobuf;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.io.CrossLanguageSerializer;
-import io.basc.framework.lang.NamedThreadLocal;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.dyuproject.protostuff.LinkedBuffer;
-import com.dyuproject.protostuff.ProtostuffIOUtil;
-import com.dyuproject.protostuff.Schema;
-import com.dyuproject.protostuff.runtime.RuntimeSchema;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.io.CrossLanguageSerializer;
+import io.basc.framework.lang.NamedThreadLocal;
+import io.protostuff.LinkedBuffer;
+import io.protostuff.ProtostuffIOUtil;
+import io.protostuff.Schema;
+import io.protostuff.runtime.RuntimeSchema;
 
 public class PrototufSerializer implements CrossLanguageSerializer {
 	private static final ThreadLocal<LinkedBuffer> bufferLocal = new NamedThreadLocal<LinkedBuffer>(PrototufSerializer.class.getName()) {

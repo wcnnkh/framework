@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>memcached</artifactId>
 	<properties>
-		<xmemcached.version>2.4.6</xmemcached.version>
+		<xmemcached.version>2.4.7</xmemcached.version>
 	</properties>
 	<dependencies>
 		<dependency>
