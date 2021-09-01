@@ -1,15 +1,15 @@
 package io.basc.framework.value;
 
+import java.lang.reflect.Type;
+import java.util.function.Supplier;
+
 import io.basc.framework.event.AbstractObservable;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
 import io.basc.framework.util.StaticSupplier;
 
-import java.lang.reflect.Type;
-import java.util.function.Supplier;
-
-public class ObservableValue<K, V> extends AbstractObservable<V> {
+public class ObservableValue<K, V> extends AbstractObservable<V> implements AutoCloseable{
 	private final ValueFactory<K> valueFactory;
 	private final K name;
 	private final Supplier<? extends V> defaultValue;
@@ -38,11 +38,10 @@ public class ObservableValue<K, V> extends AbstractObservable<V> {
 	}
 	
 	@Override
-	protected void finalize() throws Throwable {
+	public void close() {
 		eventRegistration.unregister();
-		super.finalize();
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public V forceGet() {
 		return (V) valueFactory.getValue(name, type, defaultValue);
