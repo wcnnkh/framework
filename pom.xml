@@ -111,7 +111,8 @@
 				<artifactId>javax.ws.rs-api</artifactId>
 				<version>2.1.1</version>
 			</dependency>
-
+			
+			<!-- tomcat -->
 			<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-el -->
 			<dependency>
 				<groupId>org.apache.tomcat.embed</groupId>
@@ -119,13 +120,34 @@
 				<version>${tomcat.version}</version>
 			</dependency>
 
+			<dependency>
+				<groupId>org.apache.tomcat.embed</groupId>
+				<artifactId>tomcat-embed-websocket</artifactId>
+				<version>${tomcat.version}</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
+			<dependency>
+				<groupId>org.apache.tomcat.embed</groupId>
+				<artifactId>tomcat-embed-core</artifactId>
+				<version>${tomcat.version}</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper -->
+			<dependency>
+				<groupId>org.apache.tomcat.embed</groupId>
+				<artifactId>tomcat-embed-jasper</artifactId>
+				<version>${tomcat.version}</version>
+			</dependency>
+			<!-- tomcat -->
+
 			<!-- https://mvnrepository.com/artifact/javax.websocket/javax.websocket-api -->
 			<dependency>
 				<groupId>javax.websocket</groupId>
 				<artifactId>javax.websocket-api</artifactId>
 				<version>1.1</version>
 			</dependency>
-			
+
 			<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
 			<dependency>
 				<groupId>javax.servlet</groupId>
@@ -234,13 +256,13 @@
 				<artifactId>mysql</artifactId>
 				<version>${basc.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>oracle</artifactId>
 				<version>${basc.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>sqlserver</artifactId>
@@ -492,13 +514,13 @@
 				<artifactId>jackson</artifactId>
 				<version>${basc.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>seata</artifactId>
 				<version>${basc.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>solr</artifactId>
@@ -516,7 +538,7 @@
 				<artifactId>dom</artifactId>
 				<version>${basc.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>swagger</artifactId>
