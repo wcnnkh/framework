@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 public class ServletServerHttpResponse implements ServerHttpResponse, Decorator {
@@ -74,7 +75,8 @@ public class ServletServerHttpResponse implements ServerHttpResponse, Decorator 
 	}
 
 	public void addCookie(String name, String value) {
-		httpServletResponse.addCookie(new javax.servlet.http.Cookie(name, value));
+		Cookie cookie = new Cookie(name, value);
+		httpServletResponse.addCookie(cookie);
 	}
 
 	public void sendError(int sc) throws IOException {

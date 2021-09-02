@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -22,18 +23,34 @@ import org.apache.poi.xssf.model.SharedStringsTable;
 import org.apache.poi.xssf.usermodel.XSSFComment;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.RequiredJavaVersion;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.ExcelReader;
 import io.basc.framework.microsoft.RowCallback;
 
 @RequiredJavaVersion(8)
 public class XSSFExcelReader implements ExcelReader {
+	private static Logger logger = LoggerFactory.getLogger(XSSFExcelReader.class);
 	private SAXParserFactory parserFactory = SAXParserFactory.newInstance();
 	private boolean firstSheet = false;
 	private boolean formulasNotResults = true;
+
+	{
+		try {
+			parserFactory.setValidating(true);
+			parserFactory.setNamespaceAware(false);
+			parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		} catch (SAXNotRecognizedException | SAXNotSupportedException | ParserConfigurationException e) {
+			// 配置异常
+			logger.error(e, "Config SAX parser factory error");
+		}
+	}
 
 	public boolean isFirstSheet() {
 		return firstSheet;
@@ -50,10 +67,10 @@ public class XSSFExcelReader implements ExcelReader {
 		} catch (ParserConfigurationException | SAXException e) {
 			throw new ExcelException(e);
 		}
-		
+
 		XSSFReader reader;
 		SharedStringsTable sst = null;
-	
+
 		try {
 			reader = new XSSFReader(opcPackage);
 			sst = reader.getSharedStringsTable();
