@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>druid</artifactId>
 	<properties>
-		<druid.version>1.2.6</druid.version>
+		<druid.version>1.2.5</druid.version>
 	</properties>
 	<dependencies>
 		<dependency>
