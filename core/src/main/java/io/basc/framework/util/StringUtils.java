@@ -49,7 +49,7 @@ public final class StringUtils {
 
 	public static final char[] DEFAULT_SPLIT_CHARS = new char[] { ' ', ',', ';', '、' };
 
-	public static final String[] MEPTY_ARRAY = new String[0];
+	public static final String[] EMPTY_ARRAY = new String[0];
 
 	public static final Accept<CharSequence> EMPTY = new Accept<CharSequence>() {
 

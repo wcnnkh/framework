@@ -124,7 +124,7 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 				return value.getAsObject(String[].class);
 			}
 		}
-		return StringUtils.MEPTY_ARRAY;
+		return StringUtils.EMPTY_ARRAY;
 	}
 
 	/**

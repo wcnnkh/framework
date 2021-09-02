@@ -64,18 +64,20 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 
 	@Override
 	public Resource get(String key) throws StorageException, IOException {
-		File file = new File(directory, key);
+		String cleanKey = StringUtils.cleanPath(key);
+		File file = new File(directory, cleanKey);
 		StringBuilder sb = new StringBuilder();
 		sb.append(getBaseUrl());
 		sb.append("/");
-		sb.append(key);
+		sb.append(cleanKey);
 		return new UploadResource(file, UriUtils.toUri(sb.toString()));
 	}
 
 	@Override
 	public boolean put(String key, InputMessage input) throws StorageException, IOException {
 		logger.info("put [{}]", key);
-		File file = new File(directory, key);
+		String cleanKey = cleanPath(key);
+		File file = new File(directory, cleanKey);
 		InputStream is = null;
 		try {
 			is = input.getInputStream();
@@ -89,7 +91,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	@Override
 	public boolean delete(String key) throws StorageException {
 		logger.info("delete [{}]", key);
-		File file = new File(directory, StringUtils.cleanPath(key));
+		File file = new File(directory, cleanPath(key));
 		return file.delete();
 	}
 
@@ -97,7 +99,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	public boolean delete(URI uri) throws StorageException {
 		logger.info("delete [{}]", uri);
 		String str = uri.toString();
-		str = StringUtils.cleanPath(str);
+		str = cleanPath(str);
 		if (!str.startsWith(getBaseUrl())) {
 			return false;
 		}
@@ -111,7 +113,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	}
 
 	public void setBaseUrl(String baseUrl) {
-		this.baseUrl = StringUtils.cleanPath(baseUrl);
+		this.baseUrl = cleanPath(baseUrl);
 	}
 
 	public String getController() {
@@ -119,7 +121,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	}
 
 	public void setController(String controller) {
-		this.controller = StringUtils.cleanPath(controller);
+		this.controller = cleanPath(controller);
 	}
 
 	public String getSign() {
@@ -129,9 +131,13 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	public void setSign(String sign) {
 		this.sign = sign;
 	}
+	
+	protected String cleanPath(String key) {
+		return StringUtils.cleanPath(key);
+	}
 
 	public String getSign(String key, Date expiration) {
-		return CharsetCodec.UTF_8.toMD5().encode(key + expiration.getTime() + sign);
+		return CharsetCodec.UTF_8.toMD5().encode(cleanPath(key) + expiration.getTime() + sign);
 	}
 
 	public Status<String> checkSign(String key, String expiration, String sign) {
