@@ -109,7 +109,7 @@ public class DomBuilder {
 		return parse(getDocumentBuilder(), source);
 	}
 
-	public Document parse(DocumentBuilder documentBuilder, InputSource source) {
+	private Document parse(DocumentBuilder documentBuilder, InputSource source) {
 		try {
 			return documentBuilder.parse(source);
 		} catch (SAXException e) {
@@ -120,14 +120,10 @@ public class DomBuilder {
 	}
 
 	public Document parse(InputStream source) {
-		return parse(getDocumentBuilder(), source);
+		return parse(getDocumentBuilder(), source, null);
 	}
 
-	public Document parse(DocumentBuilder documentBuilder, InputStream source) {
-		return parse(documentBuilder, source, null);
-	}
-
-	public Document parse(DocumentBuilder documentBuilder, InputStream source, String systemId) {
+	protected Document parse(DocumentBuilder documentBuilder, InputStream source, @Nullable String systemId) {
 		try {
 			return systemId == null ? documentBuilder.parse(source) : documentBuilder.parse(source, systemId);
 		} catch (SAXException e) {
@@ -145,7 +141,7 @@ public class DomBuilder {
 		return parse(getDocumentBuilder(), source, systemId);
 	}
 
-	public Document parse(DocumentBuilder documentBuilder, Reader source, String systemId) {
+	protected Document parse(DocumentBuilder documentBuilder, Reader source, String systemId) {
 		InputSource inputSource = new InputSource(source);
 		if (systemId != null) {
 			inputSource.setSystemId(systemId);
@@ -161,7 +157,7 @@ public class DomBuilder {
 		return parse(getDocumentBuilder(), source, systemId);
 	}
 
-	public Document parse(DocumentBuilder documentBuilder, String source, String systemId) {
+	protected Document parse(DocumentBuilder documentBuilder, String source, String systemId) {
 		StringReader stringReader = new StringReader(source);
 		try {
 			return parse(documentBuilder, stringReader, systemId);
@@ -174,7 +170,7 @@ public class DomBuilder {
 		return parse(getDocumentBuilder(), file);
 	}
 
-	public Document parse(DocumentBuilder documentBuilder, File file) {
+	private Document parse(DocumentBuilder documentBuilder, File file) {
 		try {
 			return documentBuilder.parse(file);
 		} catch (SAXException e) {
@@ -192,11 +188,7 @@ public class DomBuilder {
 		return parse(getDocumentBuilder(), resource, systemId);
 	}
 
-	public Document parse(DocumentBuilder documentBuilder, Resource resource) {
-		return parse(documentBuilder, resource, null);
-	}
-
-	public Document parse(DocumentBuilder documentBuilder, Resource resource, String systemId) {
+	protected Document parse(DocumentBuilder documentBuilder, Resource resource, String systemId) {
 		InputStream is = null;
 		try {
 			is = resource.getInputStream();
@@ -214,7 +206,7 @@ public class DomBuilder {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Document parse(DocumentBuilder documentBuilder, Map source) {
+	private Document parse(DocumentBuilder documentBuilder, Map source) {
 		return parse(documentBuilder, "xml", source);
 	}
 
@@ -222,7 +214,7 @@ public class DomBuilder {
 		return parse(getDocumentBuilder(), rootNodeName, source);
 	}
 
-	public Document parse(DocumentBuilder documentBuilder, String rootNodeName, Object source) {
+	private Document parse(DocumentBuilder documentBuilder, String rootNodeName, Object source) {
 		Document document = documentBuilder.newDocument();
 		getAppendChildService().append(document, document, rootNodeName, source, TypeDescriptor.forObject(source));
 		return document;

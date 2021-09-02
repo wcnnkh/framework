@@ -59,7 +59,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	private String sign;
 
 	public Uploader(String directory) {
-		this.directory = directory;
+		this.directory = StringUtils.cleanPath(directory);
 	}
 
 	@Override

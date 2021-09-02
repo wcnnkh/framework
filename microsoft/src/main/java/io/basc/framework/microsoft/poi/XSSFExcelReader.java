@@ -43,6 +43,8 @@ public class XSSFExcelReader implements ExcelReader {
 
 	{
 		try {
+			parserFactory.setValidating(true);
+			parserFactory.setNamespaceAware(false);
 			parserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 		} catch (SAXNotRecognizedException | SAXNotSupportedException | ParserConfigurationException e) {
 			// 配置异常
