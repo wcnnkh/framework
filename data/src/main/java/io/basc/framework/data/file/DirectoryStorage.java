@@ -10,7 +10,6 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +46,7 @@ public class DirectoryStorage extends TimerTask implements Storage {
 	}
 
 	public DirectoryStorage(int exp, Serializer serializer, String directory) {
-		this(exp, SerializerUtils.getSerializer(), new File(StringUtils.cleanPath(directory)));
+		this(exp, SerializerUtils.getSerializer(), new File(Assert.securePathArgument(directory, "directory")));
 	}
 
 	/**

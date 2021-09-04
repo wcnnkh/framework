@@ -106,12 +106,8 @@ public class DomBuilder {
 	}
 
 	public Document parse(InputSource source) {
-		return parse(getDocumentBuilder(), source);
-	}
-
-	private Document parse(DocumentBuilder documentBuilder, InputSource source) {
 		try {
-			return documentBuilder.parse(source);
+			return getDocumentBuilder().parse(source);
 		} catch (SAXException e) {
 			throw new ConversionException(source.toString(), e);
 		} catch (IOException e) {
@@ -120,12 +116,12 @@ public class DomBuilder {
 	}
 
 	public Document parse(InputStream source) {
-		return parse(getDocumentBuilder(), source, null);
+		return parse(source, null);
 	}
 
-	protected Document parse(DocumentBuilder documentBuilder, InputStream source, @Nullable String systemId) {
+	protected Document parse(InputStream source, @Nullable String systemId) {
 		try {
-			return systemId == null ? documentBuilder.parse(source) : documentBuilder.parse(source, systemId);
+			return systemId == null ? getDocumentBuilder().parse(source) : getDocumentBuilder().parse(source, systemId);
 		} catch (SAXException e) {
 			throw new ConversionException(source.toString(), e);
 		} catch (IOException e) {
@@ -138,15 +134,11 @@ public class DomBuilder {
 	}
 
 	public Document parse(Reader source, String systemId) {
-		return parse(getDocumentBuilder(), source, systemId);
-	}
-
-	protected Document parse(DocumentBuilder documentBuilder, Reader source, String systemId) {
 		InputSource inputSource = new InputSource(source);
 		if (systemId != null) {
 			inputSource.setSystemId(systemId);
 		}
-		return parse(documentBuilder, inputSource);
+		return parse(inputSource);
 	}
 
 	public Document parse(String source) {
@@ -154,25 +146,17 @@ public class DomBuilder {
 	}
 
 	public Document parse(String source, String systemId) {
-		return parse(getDocumentBuilder(), source, systemId);
-	}
-
-	protected Document parse(DocumentBuilder documentBuilder, String source, String systemId) {
 		StringReader stringReader = new StringReader(source);
 		try {
-			return parse(documentBuilder, stringReader, systemId);
+			return parse(stringReader, systemId);
 		} finally {
 			IOUtils.closeQuietly(stringReader);
 		}
 	}
 
 	public Document parse(File file) {
-		return parse(getDocumentBuilder(), file);
-	}
-
-	private Document parse(DocumentBuilder documentBuilder, File file) {
 		try {
-			return documentBuilder.parse(file);
+			return getDocumentBuilder().parse(file);
 		} catch (SAXException e) {
 			throw new ConversionException(file.toString(), e);
 		} catch (IOException e) {
@@ -185,14 +169,10 @@ public class DomBuilder {
 	}
 
 	public Document parse(Resource resource, String systemId) {
-		return parse(getDocumentBuilder(), resource, systemId);
-	}
-
-	protected Document parse(DocumentBuilder documentBuilder, Resource resource, String systemId) {
 		InputStream is = null;
 		try {
 			is = resource.getInputStream();
-			return parse(documentBuilder, is, systemId);
+			return parse(is, systemId);
 		} catch (IOException e) {
 			throw new RuntimeException(resource.getDescription(), e);
 		} finally {
@@ -202,22 +182,13 @@ public class DomBuilder {
 
 	@SuppressWarnings("rawtypes")
 	public Document parse(Map source) {
-		return parse(getDocumentBuilder(), source);
-	}
-
-	@SuppressWarnings("rawtypes")
-	private Document parse(DocumentBuilder documentBuilder, Map source) {
-		return parse(documentBuilder, "xml", source);
-	}
-
-	public Document parse(String rootNodeName, Object source) {
-		return parse(getDocumentBuilder(), rootNodeName, source);
-	}
-
-	private Document parse(DocumentBuilder documentBuilder, String rootNodeName, Object source) {
-		Document document = documentBuilder.newDocument();
-		getAppendChildService().append(document, document, rootNodeName, source, TypeDescriptor.forObject(source));
+		Document document = getDocumentBuilder().newDocument();
+		append(document, "xml", source);
 		return document;
+	}
+	
+	public void append(Document document, String rootNodeName, Object source){
+		getAppendChildService().append(document, document, rootNodeName, source, TypeDescriptor.forObject(source));
 	}
 
 	public AppendChildService getAppendChildService() {
@@ -229,10 +200,6 @@ public class DomBuilder {
 	@SuppressWarnings("rawtypes")
 	public String toString(Map source) {
 		return toString(parse(source));
-	}
-
-	public String toString(String rootNodeName, Object source) {
-		return toString(parse(rootNodeName, source));
 	}
 
 	public String toString(Node node) {

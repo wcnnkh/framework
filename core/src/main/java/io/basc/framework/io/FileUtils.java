@@ -2254,7 +2254,7 @@ public final class FileUtils {
 			while (ens.hasMoreElements()) {
 				zipEntry = ens.nextElement();
 				String dirName = zipEntry.getName();
-				dirName = StringUtils.cleanPath(dirName);
+				dirName = Assert.securePath(dirName);
 				if (zipEntry.isDirectory()) {
 					// dirName = dirName.substring(0, dirName.length() - 1);
 					File f = new File(toPathToUse + dirName);

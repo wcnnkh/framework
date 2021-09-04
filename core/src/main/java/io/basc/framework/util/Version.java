@@ -1,17 +1,19 @@
 package io.basc.framework.util;
 
 import io.basc.framework.value.StringValue;
+import io.basc.framework.value.Value;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
-public class Version implements Serializable, Comparable<Version> {
+public class Version implements Serializable, Comparable<Version>, Comparator<Value> {
 	private static final long serialVersionUID = 1L;
 	/**
 	 * 默认的版本分割符
 	 */
 	public static final char DIVIDEERS = '.';
 
-	private final VersionFragment[] fragments;
+	private final Value[] fragments;
 	private final char dividers;
 
 	public Version(String version) {
@@ -22,13 +24,13 @@ public class Version implements Serializable, Comparable<Version> {
 		Assert.requiredArgument(version != null, "version");
 		this.dividers = dividers;
 		String[] arr = StringUtils.split(version, dividers);
-		fragments = new VersionFragment[arr.length];
+		fragments = new Value[arr.length];
 		for (int i = 0; i < arr.length; i++) {
-			this.fragments[i] = new DefaultVersionFragment(new StringValue(arr[i]));
+			this.fragments[i] = new StringValue(arr[i]);
 		}
 	}
 
-	public Version(VersionFragment[] fragments, char dividers) {
+	public Version(Value[] fragments, char dividers) {
 		this.fragments = fragments;
 		this.dividers = dividers;
 	}
@@ -37,7 +39,7 @@ public class Version implements Serializable, Comparable<Version> {
 		return dividers;
 	}
 
-	public VersionFragment[] getFragments() {
+	public Value[] getFragments() {
 		return fragments.clone();
 	}
 
@@ -45,7 +47,7 @@ public class Version implements Serializable, Comparable<Version> {
 		return fragments.length;
 	}
 
-	public VersionFragment get(int index) {
+	public Value get(int index) {
 		return fragments[index];
 	}
 
@@ -54,11 +56,11 @@ public class Version implements Serializable, Comparable<Version> {
 	 * @param fragments
 	 * @return
 	 */
-	public int compareTo(VersionFragment[] fragments) {
+	public int compareTo(Value[] fragments) {
 		for (int i = 0; i < fragments.length && i < this.fragments.length; i++) {
-			VersionFragment fragment1 = this.fragments[i];
-			VersionFragment fragment2 = fragments[i];
-			int compare = fragment1.compareTo(fragment2);
+			Value fragment1 = this.fragments[i];
+			Value fragment2 = fragments[i];
+			int compare = compare(fragment1, fragment2);
 			if (compare == 0) {
 				continue;
 			}
@@ -94,7 +96,7 @@ public class Version implements Serializable, Comparable<Version> {
 				sb.append(dividers);
 			}
 
-			sb.append(fragments[i].getFragment().getAsString());
+			sb.append(fragments[i].getAsString());
 		}
 		return sb.toString();
 	}
@@ -136,5 +138,14 @@ public class Version implements Serializable, Comparable<Version> {
 
 	public static Version valueOf(String version) {
 		return new Version(version);
+	}
+
+	@Override
+	public int compare(Value v1, Value v2) {
+		if (v1.isNumber() && v2.isNumber()) {
+			return v1.getAsDouble().compareTo(v2.getAsDouble());
+		}
+
+		return v1.getAsString().compareTo(v2.getAsString());
 	}
 }

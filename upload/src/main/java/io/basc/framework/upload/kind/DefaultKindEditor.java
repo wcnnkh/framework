@@ -3,6 +3,7 @@ package io.basc.framework.upload.kind;
 import io.basc.framework.io.FileUtils;
 import io.basc.framework.net.message.multipart.MultipartMessage;
 import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XTime;
 import io.basc.framework.util.comparator.FileComparator;
@@ -30,7 +31,9 @@ public class DefaultKindEditor extends AbstractKindUpload {
 
 	@Override
 	protected List<KindFileItem> managerInternal(String group, KindDirType dir, String path, KindOrderType orderType) {
-		return list(new File(StringUtils.mergePath(rootPath, path)), orderType);
+		String filePath = StringUtils.mergePath(rootPath, path);
+		filePath = Assert.securePath(filePath);
+		return list(new File(filePath), orderType);
 	}
 
 	private List<KindFileItem> list(File rootFile, KindOrderType type) {

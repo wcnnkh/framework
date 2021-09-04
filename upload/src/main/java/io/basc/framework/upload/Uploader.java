@@ -59,12 +59,12 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	private String sign;
 
 	public Uploader(String directory) {
-		this.directory = StringUtils.cleanPath(directory);
+		this.directory = cleanPath(directory);
 	}
 
 	@Override
 	public Resource get(String key) throws StorageException, IOException {
-		String cleanKey = StringUtils.cleanPath(key);
+		String cleanKey = cleanPath(key);
 		File file = new File(directory, cleanKey);
 		StringBuilder sb = new StringBuilder();
 		sb.append(getBaseUrl());
@@ -133,6 +133,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	}
 	
 	protected String cleanPath(String key) {
+		Assert.securePathArgument(key, "key");
 		return StringUtils.cleanPath(key);
 	}
 
@@ -183,8 +184,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	@Override
 	public UploadPolicy generatePolicy(String key, Date expiration) throws StorageException {
 		String sign = getSign(key, expiration);
-		String baseUrl = StringUtils
-				.cleanPath((StringUtils.isEmpty(getBaseUrl()) ? "" : getBaseUrl()) + getController());
+		String baseUrl = cleanPath((StringUtils.isEmpty(getBaseUrl()) ? "" : getBaseUrl()) + getController());
 		URI uri = UriComponentsBuilder.fromUriString(baseUrl).queryParam("key", key).queryParam("sign", sign)
 				.queryParam("expiration", expiration.getTime()).build().toUri();
 		HttpRequestEntity<?> requestEntity = HttpRequestEntity.post(uri).contentType(MediaType.MULTIPART_FORM_DATA)
@@ -218,7 +218,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 
 	@Override
 	public List<Resource> list(String keyPrefix, String marker, int limit) throws StorageException, IOException {
-		String prefix = StringUtils.isEmpty(keyPrefix) ? "" : StringUtils.cleanPath(keyPrefix);
+		String prefix = StringUtils.isEmpty(keyPrefix) ? "" : cleanPath(keyPrefix);
 		File file;
 		if (StringUtils.isEmpty(prefix)) {
 			file = new File(directory);
@@ -285,7 +285,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 
 	private String getKey(File file) {
 		String key = file.getPath();
-		key = StringUtils.cleanPath(key);
+		key = cleanPath(key);
 		Assert.isTrue(key.startsWith(directory));
 		key = key.substring(directory.length());
 		return key.startsWith("/") ? key.substring(1) : key;

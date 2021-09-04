@@ -335,6 +335,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 				throwInitializedBeanException();
 			}
 
+			ContextLoader.bindBeanFactory(this);
 			postProcessBeanFactory(new MethodBeanFactoryPostProcessor());
 			postProcessBeanFactory(new ServiceBeanFactoryPostProcessor());
 			postProcessBeanFactory(new ExecutorBeanFactoryPostProcessor());
@@ -357,7 +358,6 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 			//在定义初始完成后就可以认为已经初始化了
 			initialized = true;
 			
-			ContextLoader.bindBeanFactory(this);
 			configure(this);
 			
 			// TODO 初始化所有单例(原来是想全部懒加载，但是后来出现问题了)

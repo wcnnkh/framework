@@ -15,10 +15,10 @@ public class JavaVersion extends Version {
 	static {
 		Version version = new Version(System.getProperty("java.version"));
 		if (version.length() > 1) {
-			Value fragment = version.get(0).getFragment();
+			Value fragment = version.get(0);
 			if (fragment.isNumber() && fragment.getAsIntValue() > 1) {// java9以上
-				VersionFragment[] fragments = new VersionFragment[version.length() + 1];
-				fragments[0] = new DefaultVersionFragment(new AnyValue(1));
+				Value[] fragments = new Value[version.length() + 1];
+				fragments[0] = new AnyValue(1);
 				System.arraycopy(version.getFragments(), 0, fragments, 1, version.length());
 				version = new Version(fragments, version.getDividers());
 			}
@@ -26,7 +26,7 @@ public class JavaVersion extends Version {
 		INSTANCE = new JavaVersion(version.getFragments(), version.getDividers());
 	}
 
-	JavaVersion(VersionFragment[] fragments, char dividers) {
+	JavaVersion(Value[] fragments, char dividers) {
 		super(fragments, dividers);
 	}
 
@@ -36,7 +36,7 @@ public class JavaVersion extends Version {
 	 * @return
 	 */
 	public int getMasterVersion() {
-		return getFragments()[1].getFragment().getAsNumber().intValue();
+		return getFragments()[1].getAsNumber().intValue();
 	}
 
 	public boolean isJava5() {
