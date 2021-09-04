@@ -25,8 +25,8 @@ import java.util.Map;
  * For example:
  *
  * <pre class="code">
- * Assert.notNull(clazz, "The class must not be null");
- * Assert.isTrue(i > 0, "The value must be greater than zero");
+ * Assert.notNull(clazz, &quot;The class must not be null&quot;);
+ * Assert.isTrue(i &gt; 0, &quot;The value must be greater than zero&quot;);
  * </pre>
  *
  * Mainly for internal use within the framework; consider Jakarta's Commons Lang
@@ -40,7 +40,7 @@ public abstract class Assert {
 	 * the test result is {@code false}.
 	 * 
 	 * <pre class="code">
-	 * Assert.isTrue(i &gt; 0, "The value must be greater than zero");
+	 * Assert.isTrue(i &gt; 0, &quot;The value must be greater than zero&quot;);
 	 * </pre>
 	 * 
 	 * @param expression
@@ -77,7 +77,7 @@ public abstract class Assert {
 	 * Assert that an object is {@code null} .
 	 * 
 	 * <pre class="code">
-	 * Assert.isNull(value, "The value must be null");
+	 * Assert.isNull(value, &quot;The value must be null&quot;);
 	 * </pre>
 	 * 
 	 * @param object
@@ -113,7 +113,7 @@ public abstract class Assert {
 	 * Assert that an object is not {@code null} .
 	 * 
 	 * <pre class="code">
-	 * Assert.notNull(clazz, "The class must not be null");
+	 * Assert.notNull(clazz, &quot;The class must not be null&quot;);
 	 * </pre>
 	 * 
 	 * @param object
@@ -130,11 +130,13 @@ public abstract class Assert {
 	}
 
 	/**
-	 * @param expression false的情况下会抛出异常
+	 * @param expression
+	 *            false的情况下会抛出异常
 	 * @param name
 	 */
 	public static void requiredArgument(boolean expression, String name) {
-		isTrue(expression, "[Assertion failed] - [" + name + "] argument is required");
+		isTrue(expression, "[Assertion failed] - [" + name
+				+ "] argument is required");
 	}
 
 	/**
@@ -150,7 +152,8 @@ public abstract class Assert {
 	 *             if the object is {@code null}
 	 */
 	public static void notNull(Object object) {
-		notNull(object, "[Assertion failed] - this argument is required; it must not be null");
+		notNull(object,
+				"[Assertion failed] - this argument is required; it must not be null");
 	}
 
 	/**
@@ -158,7 +161,7 @@ public abstract class Assert {
 	 * {@code null} and not the empty String.
 	 * 
 	 * <pre class="code">
-	 * Assert.hasLength(name, "Name must not be empty");
+	 * Assert.hasLength(name, &quot;Name must not be empty&quot;);
 	 * </pre>
 	 * 
 	 * @param text
@@ -186,7 +189,9 @@ public abstract class Assert {
 	 * @see StringUtils#hasLength
 	 */
 	public static void hasLength(String text) {
-		hasLength(text, "[Assertion failed] - this String argument must have length; it must not be null or empty");
+		hasLength(
+				text,
+				"[Assertion failed] - this String argument must have length; it must not be null or empty");
 	}
 
 	/**
@@ -194,7 +199,7 @@ public abstract class Assert {
 	 * be {@code null} and must contain at least one non-whitespace character.
 	 * 
 	 * <pre class="code">
-	 * Assert.hasText(name, "'name' must not be empty");
+	 * Assert.hasText(name, &quot;'name' must not be empty&quot;);
 	 * </pre>
 	 * 
 	 * @param text
@@ -214,7 +219,7 @@ public abstract class Assert {
 	 * be {@code null} and must contain at least one non-whitespace character.
 	 * 
 	 * <pre class="code">
-	 * Assert.hasText(name, "'name' must not be empty");
+	 * Assert.hasText(name, &quot;'name' must not be empty&quot;);
 	 * </pre>
 	 * 
 	 * @param text
@@ -222,14 +227,15 @@ public abstract class Assert {
 	 * @see StringUtils#hasText
 	 */
 	public static void hasText(String text) {
-		hasText(text, "[Assertion failed] - this String argument must have text; it must not be null, empty, or blank");
+		hasText(text,
+				"[Assertion failed] - this String argument must have text; it must not be null, empty, or blank");
 	}
 
 	/**
 	 * Assert that the given text does not contain the given substring.
 	 * 
 	 * <pre class="code">
-	 * Assert.doesNotContain(name, "rod", "Name must not contain 'rod'");
+	 * Assert.doesNotContain(name, &quot;rod&quot;, &quot;Name must not contain 'rod'&quot;);
 	 * </pre>
 	 * 
 	 * @param textToSearch
@@ -239,8 +245,10 @@ public abstract class Assert {
 	 * @param message
 	 *            the exception message to use if the assertion fails
 	 */
-	public static void doesNotContain(String textToSearch, String substring, String message) {
-		if (StringUtils.isEmpty(textToSearch) && StringUtils.isEmpty(substring) && textToSearch.contains(substring)) {
+	public static void doesNotContain(String textToSearch, String substring,
+			String message) {
+		if (StringUtils.isEmpty(textToSearch) && StringUtils.isEmpty(substring)
+				&& textToSearch.contains(substring)) {
 			throw new IllegalArgumentException(message);
 		}
 	}
@@ -249,7 +257,7 @@ public abstract class Assert {
 	 * Assert that the given text does not contain the given substring.
 	 * 
 	 * <pre class="code">
-	 * Assert.doesNotContain(name, "rod");
+	 * Assert.doesNotContain(name, &quot;rod&quot;);
 	 * </pre>
 	 * 
 	 * @param textToSearch
@@ -259,7 +267,8 @@ public abstract class Assert {
 	 */
 	public static void doesNotContain(String textToSearch, String substring) {
 		doesNotContain(textToSearch, substring,
-				"[Assertion failed] - this String argument must not contain the substring [" + substring + "]");
+				"[Assertion failed] - this String argument must not contain the substring ["
+						+ substring + "]");
 	}
 
 	/**
@@ -267,7 +276,7 @@ public abstract class Assert {
 	 * and must have at least one element.
 	 * 
 	 * <pre class="code">
-	 * Assert.notEmpty(array, "The array must have elements");
+	 * Assert.notEmpty(array, &quot;The array must have elements&quot;);
 	 * </pre>
 	 * 
 	 * @param array
@@ -297,7 +306,9 @@ public abstract class Assert {
 	 *             if the object array is {@code null} or has no elements
 	 */
 	public static void notEmpty(Object[] array) {
-		notEmpty(array, "[Assertion failed] - this array must not be empty: it must contain at least 1 element");
+		notEmpty(
+				array,
+				"[Assertion failed] - this array must not be empty: it must contain at least 1 element");
 	}
 
 	/**
@@ -305,7 +316,7 @@ public abstract class Assert {
 	 * array is empty!
 	 * 
 	 * <pre class="code">
-	 * Assert.noNullElements(array, "The array must have non-null elements");
+	 * Assert.noNullElements(array, &quot;The array must have non-null elements&quot;);
 	 * </pre>
 	 * 
 	 * @param array
@@ -339,7 +350,8 @@ public abstract class Assert {
 	 *             if the object array contains a {@code null} element
 	 */
 	public static void noNullElements(Object[] array) {
-		noNullElements(array, "[Assertion failed] - this array must not contain any null elements");
+		noNullElements(array,
+				"[Assertion failed] - this array must not contain any null elements");
 	}
 
 	/**
@@ -347,7 +359,7 @@ public abstract class Assert {
 	 * {@code null} and must have at least one element.
 	 * 
 	 * <pre class="code">
-	 * Assert.notEmpty(collection, "Collection must have elements");
+	 * Assert.notEmpty(collection, &quot;Collection must have elements&quot;);
 	 * </pre>
 	 * 
 	 * @param collection
@@ -369,7 +381,7 @@ public abstract class Assert {
 	 * {@code null} and must have at least one element.
 	 * 
 	 * <pre class="code">
-	 * Assert.notEmpty(collection, "Collection must have elements");
+	 * Assert.notEmpty(collection, &quot;Collection must have elements&quot;);
 	 * </pre>
 	 * 
 	 * @param collection
@@ -379,7 +391,8 @@ public abstract class Assert {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static void notEmpty(Collection collection) {
-		notEmpty(collection,
+		notEmpty(
+				collection,
 				"[Assertion failed] - this collection must not be empty: it must contain at least 1 element");
 	}
 
@@ -388,7 +401,7 @@ public abstract class Assert {
 	 * must have at least one entry.
 	 * 
 	 * <pre class="code">
-	 * Assert.notEmpty(map, "Map must have entries");
+	 * Assert.notEmpty(map, &quot;Map must have entries&quot;);
 	 * </pre>
 	 * 
 	 * @param map
@@ -420,7 +433,9 @@ public abstract class Assert {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static void notEmpty(Map map) {
-		notEmpty(map, "[Assertion failed] - this map must not be empty; it must contain at least one entry");
+		notEmpty(
+				map,
+				"[Assertion failed] - this map must not be empty; it must contain at least one entry");
 	}
 
 	/**
@@ -465,8 +480,11 @@ public abstract class Assert {
 	public static void isInstanceOf(Class<?> type, Object obj, String message) {
 		notNull(type, "Type to check against must not be null");
 		if (!type.isInstance(obj)) {
-			throw new IllegalArgumentException((StringUtils.isEmpty(message) ? message + " " : "") + "Object of class ["
-					+ (obj != null ? obj.getClass().getName() : "null") + "] must be an instance of " + type);
+			throw new IllegalArgumentException(
+					(StringUtils.isEmpty(message) ? message + " " : "")
+							+ "Object of class ["
+							+ (obj != null ? obj.getClass().getName() : "null")
+							+ "] must be an instance of " + type);
 		}
 	}
 
@@ -507,10 +525,12 @@ public abstract class Assert {
 	 * @throws IllegalArgumentException
 	 *             if the classes are not assignable
 	 */
-	public static void isAssignable(Class<?> superType, Class<?> subType, String message) {
+	public static void isAssignable(Class<?> superType, Class<?> subType,
+			String message) {
 		notNull(superType, "Type to check against must not be null");
 		if (subType == null || !superType.isAssignableFrom(subType)) {
-			throw new IllegalArgumentException(message + subType + " is not assignable to " + superType);
+			throw new IllegalArgumentException(message + subType
+					+ " is not assignable to " + superType);
 		}
 	}
 
@@ -520,7 +540,7 @@ public abstract class Assert {
 	 * IllegalArgumentException on an assertion failure.
 	 * 
 	 * <pre class="code">
-	 * Assert.state(id == null, "The id property must not already be initialized");
+	 * Assert.state(id == null, &quot;The id property must not already be initialized&quot;);
 	 * </pre>
 	 * 
 	 * @param expression
@@ -553,7 +573,27 @@ public abstract class Assert {
 	 *             if the supplied expression is {@code false}
 	 */
 	public static void state(boolean expression) {
-		state(expression, "[Assertion failed] - this state invariant must be true");
+		state(expression,
+				"[Assertion failed] - this state invariant must be true");
 	}
 
+	public static String securePath(String path) {
+		return securePath(path, () -> "Unsafe path: " + path);
+	}
+
+	public static String securePath(String path, Supplier<String> message) {
+		if (StringUtils.isEmpty(path)) {
+			return path;
+		}
+
+		if (path.indexOf("../") != -1 || path.indexOf("..\\") != -1) {
+			throw new IllegalArgumentException(message.get());
+		}
+		return path;
+	}
+
+	public static String securePathArgument(String path, String name) {
+		return securePath(path, () -> "[Assertion failed] - [" + name
+				+ "] argument is unsafe path: " + path);
+	}
 }

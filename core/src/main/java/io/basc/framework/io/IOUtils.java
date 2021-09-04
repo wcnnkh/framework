@@ -23,6 +23,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 public final class IOUtils {
 	// NOTE: This class is focussed on InputStream, OutputStream, Reader and
@@ -368,6 +369,32 @@ public final class IOUtils {
 
 		closeable.close();
 	}
+	
+	public static void close(Closeable ...closeables) throws IOException {
+		if (closeables == null) {
+			return;
+		}
+
+		IOException exception = null;
+		for(Closeable closeable : closeables){
+			if(closeable == null){
+				continue;
+			}
+			
+			try {
+				closeable.close();
+			} catch (IOException e) {
+				if(exception == null){
+					exception = e;
+				}else{
+					exception.addSuppressed(e);
+				}
+			}
+		}
+		if(exception != null){
+			throw exception;
+		}
+	}
 
 	/**
 	 * Unconditionally close a <code>Writer</code>.
@@ -393,11 +420,20 @@ public final class IOUtils {
 	 * @param output the Writer to close, may be null or already closed
 	 */
 	public static void closeQuietly(Closeable closeable) {
-		try {
-			close(closeable);
-		} catch (IOException e) {
-		}
+		closeQuietly(closeable, null);
 	}
+	
+	public static void closeQuietly(final Closeable closeable, final Consumer<IOException> consumer) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (final IOException e) {
+                if (consumer != null) {
+                    consumer.accept(e);
+                }
+            }
+        }
+    }
 
 	public static void closeQuietly(Closeable... closeables) {
 		if (closeables == null) {

@@ -42,6 +42,7 @@ public final class LocalLogger {
 	}
 
 	private File getFile(String key) {
+		Assert.securePathArgument(key, "key");
 		return new File(directory + "/" + StringUtils.cleanPath(key));
 	}
 

@@ -9,6 +9,7 @@ import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.ServerHttpRequest;
@@ -61,6 +62,7 @@ public class StaticResourceRegistry extends HttpPatterns<String>
 		}
 
 		String realPath = StringUtils.cleanPath(location + path);
+		Assert.securePath(realPath);
 		return getResourceLoader().getResource(realPath);
 	}
 
