@@ -2234,6 +2234,8 @@ public final class FileUtils {
 	}
 
 	public static boolean unZip(String zipPath, String toPath) {
+		Assert.securePathArgument(zipPath, "zipPath");
+		Assert.securePathArgument(toPath, "toPath");
 		String zipPathToUse = StringUtils.cleanPath(zipPath);
 		String toPathToUse = StringUtils.cleanPath(toPath);
 		try {
@@ -2255,13 +2257,11 @@ public final class FileUtils {
 				zipEntry = ens.nextElement();
 				String dirName = zipEntry.getName();
 				dirName = Assert.securePath(dirName);
+				File f = new File(toPathToUse, dirName);
 				if (zipEntry.isDirectory()) {
 					// dirName = dirName.substring(0, dirName.length() - 1);
-					File f = new File(toPathToUse + dirName);
 					f.mkdirs();
 				} else {
-					String strFilePath = toPathToUse + dirName;
-					File f = new File(strFilePath);
 					/*
 					 * if(!f.exists()){ String[] arrFolderName = dirName.split("/"); StringBuilder
 					 * sb = new StringBuilder(); sb.append(toPath + File.separator); for(int i=0;
@@ -2270,19 +2270,13 @@ public final class FileUtils {
 					 * 
 					 * File tempDir = new File(sb.toString()); tempDir.mkdir(); }
 					 */
-
 					f.createNewFile();
-
 					InputStream is = zipFile.getInputStream(zipEntry);
-					FileOutputStream fos = new FileOutputStream(f);
-					int len;
-					byte[] by = new byte[1024];
-					while ((len = is.read(by)) != -1) {
-						fos.write(by, 0, len);
+					try {
+						copyInputStreamToFile(is, f);
+					} finally{
+						IOUtils.close(is);
 					}
-					fos.flush();
-					fos.close();
-					is.close();
 				}
 			}
 			zipFile.close();
