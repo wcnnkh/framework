@@ -100,73 +100,8 @@ public final class IOUtils {
 	}
 
 	public static InputStream limitedInputStream(final InputStream is,
-			final int limit) throws IOException {
-		return new InputStream() {
-			private int mPosition = 0, mMark = 0, mLimit = Math.min(limit,
-					is.available());
-
-			public int read() throws IOException {
-				if (mPosition < mLimit) {
-					mPosition++;
-					return is.read();
-				}
-				return -1;
-			}
-
-			public int read(byte b[], int off, int len) throws IOException {
-				if (b == null)
-					throw new NullPointerException();
-
-				if (off < 0 || len < 0 || len > b.length - off)
-					throw new IndexOutOfBoundsException();
-
-				if (mPosition >= mLimit)
-					return -1;
-
-				if (mPosition + len > mLimit)
-					len = mLimit - mPosition;
-
-				if (len <= 0)
-					return 0;
-
-				is.read(b, off, len);
-				mPosition += len;
-				return len;
-			}
-
-			public long skip(long len) throws IOException {
-				if (mPosition + len > mLimit)
-					len = mLimit - mPosition;
-
-				if (len <= 0)
-					return 0;
-
-				is.skip(len);
-				mPosition += len;
-				return len;
-			}
-
-			public int available() {
-				return mLimit - mPosition;
-			}
-
-			public boolean markSupported() {
-				return is.markSupported();
-			}
-
-			public void mark(int readlimit) {
-				is.mark(readlimit);
-				mMark = mPosition;
-			}
-
-			public void reset() throws IOException {
-				is.reset();
-				mPosition = mMark;
-			}
-
-			public void close() throws IOException {
-			}
-		};
+			final long limit) {
+		return new LimitedInputStream(is, limit);
 	}
 
 	public static InputStream markSupportedInputStream(final InputStream is,
@@ -749,29 +684,9 @@ public final class IOUtils {
 	 */
 	public static String toString(InputStream input, String encoding)
 			throws IOException {
-		UnsafeStringWriter sw = new UnsafeStringWriter();
-		copy(input, sw, encoding);
-		return sw.toString();
-	}
-
-	/**
-	 * Get the contents of a <code>Reader</code> as a String.
-	 * <p>
-	 * This method buffers the input internally, so there is no need to use a
-	 * <code>BufferedReader</code>.
-	 * 
-	 * @param input
-	 *            the <code>Reader</code> to read from
-	 * @return the requested String
-	 * @throws NullPointerException
-	 *             if the input is null
-	 * @throws IOException
-	 *             if an I/O error occurs
-	 */
-	public static String toString(Reader input) throws IOException {
-		UnsafeStringWriter sw = new UnsafeStringWriter();
-		copy(input, sw);
-		return sw.toString();
+		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream();
+		copy(input, out);
+		return out.toString(encoding);
 	}
 
 	/**
@@ -914,15 +829,17 @@ public final class IOUtils {
 	}
 
 	/**
-	 * @param reader 使用过后会自动 关闭
+	 * @param reader
+	 *            使用过后会自动 关闭
 	 * @return
 	 * @see AutoCloseStream
 	 */
 	public static Stream<String> stream(Reader reader) {
 		LineIterator iterator = new LineIterator(reader);
-		return StreamProcessorSupport.stream(iterator).onClose(() -> closeQuietly(iterator));
+		return StreamProcessorSupport.stream(iterator).onClose(
+				() -> closeQuietly(iterator));
 	}
-	
+
 	// -----------------------------------------------------------------------
 	/**
 	 * Convert the specified CharSequence to an input stream, encoded as bytes
