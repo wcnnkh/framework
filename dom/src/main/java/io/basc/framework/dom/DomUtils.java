@@ -46,12 +46,12 @@ public final class DomUtils {
 
 	static {
 		DOCUMENT_BUILDER_FACTORY.setIgnoringElementContentWhitespace(
-				Sys.env.getValue("dom.ignoring.element.content.whitespace", boolean.class, true));
-		DOCUMENT_BUILDER_FACTORY.setIgnoringComments(Sys.env.getValue("dom.ignoring.comments", boolean.class, true));
-		DOCUMENT_BUILDER_FACTORY.setCoalescing(Sys.env.getValue("dom.coalescing", boolean.class, true));
+				Sys.env.getValue("io.basc.framework.dom.ignoring.element.content.whitespace", boolean.class, true));
+		DOCUMENT_BUILDER_FACTORY.setIgnoringComments(Sys.env.getValue("io.basc.framework.dom.ignoring.comments", boolean.class, true));
+		DOCUMENT_BUILDER_FACTORY.setCoalescing(Sys.env.getValue("io.basc.framework.dom.coalescing", boolean.class, true));
 		DOCUMENT_BUILDER_FACTORY
-				.setExpandEntityReferences(Sys.env.getValue("dom.expand.entity.references", boolean.class, false));
-		DOCUMENT_BUILDER_FACTORY.setNamespaceAware(Sys.env.getValue("dom.namespace.aware", boolean.class, false));
+				.setExpandEntityReferences(Sys.env.getValue("io.basc.framework.dom.expand.entity.references", boolean.class, false));
+		DOCUMENT_BUILDER_FACTORY.setNamespaceAware(Sys.env.getValue("io.basc.framework.dom.namespace.aware", boolean.class, false));
 
 		DomBuilder domBuilder = Sys.env.getServiceLoader(DomBuilder.class).first();
 		DOM_BUILDER = domBuilder == null ? new DomBuilder(DOCUMENT_BUILDER_FACTORY, TRANSFORMER_FACTORY) : domBuilder;
