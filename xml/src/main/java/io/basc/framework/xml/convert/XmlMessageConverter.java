@@ -1,9 +1,14 @@
-package io.basc.framework.dom.convert;
+package io.basc.framework.xml.convert;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
+
+import org.w3c.dom.Document;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.dom.DomUtils;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.message.InputMessage;
@@ -13,12 +18,7 @@ import io.basc.framework.net.message.convert.MessageConvertException;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-
-import org.w3c.dom.Document;
+import io.basc.framework.xml.XmlUtils;
 
 public class XmlMessageConverter extends AbstractMessageConverter<Object> implements ConversionServiceAware {
 	private ConversionService conversionService;
@@ -52,7 +52,7 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> implem
 			return value.getAsObject(type.getResolvableType());
 		}
 
-		Document document = DomUtils.getDomBuilder().parse(text);
+		Document document = XmlUtils.getTemplate().getParser().parse(text);
 		return conversionService.convert(document, TypeDescriptor.valueOf(Document.class), type);
 	}
 
@@ -65,10 +65,10 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> implem
 				|| Value.class.isAssignableFrom(type.getType())) {
 			writeBody = body.toString();
 		} else if (body instanceof Map) {
-			writeBody = DomUtils.getDomBuilder().toString((Map) body);
+			writeBody = XmlUtils.getTemplate().toString((Map) body);
 		} else {
 			Map map = getJsonSupport().parseObject(getJsonSupport().toJSONString(body), Map.class);
-			writeBody = DomUtils.getDomBuilder().toString(map);
+			writeBody = XmlUtils.getTemplate().toString(map);
 		}
 		writeTextBody(writeBody, contentType, outputMessage);
 	}

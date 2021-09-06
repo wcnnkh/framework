@@ -5,6 +5,9 @@ import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
+import io.basc.framework.util.stream.Callback;
+import io.basc.framework.util.stream.Processor;
+
 public interface OutputStreamSource {
 	OutputStream getOutputStream() throws IOException;
 
@@ -28,7 +31,7 @@ public interface OutputStreamSource {
 		return Channels.newChannel(getOutputStream());
 	}
 
-	default <T> T write(IoProcessor<OutputStream, ? extends T> processor) throws IOException {
+	default <T, E extends Throwable> T write(Processor<OutputStream, ? extends T, E> processor) throws IOException, E {
 		OutputStream os = null;
 		try {
 			os = getOutputStream();
@@ -46,7 +49,7 @@ public interface OutputStreamSource {
 	 * @param callback
 	 * @throws IOException
 	 */
-	default void write(IoCallback<OutputStream> callback) throws IOException {
+	default <E extends Throwable> void write(Callback<OutputStream, E> callback) throws IOException, E {
 		write((is) -> {
 			callback.call(is);
 			return null;

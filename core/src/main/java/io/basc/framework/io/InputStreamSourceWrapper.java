@@ -1,12 +1,14 @@
 package io.basc.framework.io;
 
-import io.basc.framework.util.Wrapper;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
+
+import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.stream.Callback;
+import io.basc.framework.util.stream.Processor;
 
 public class InputStreamSourceWrapper<I extends InputStreamSource> extends Wrapper<I>
 		implements InputStreamSource {
@@ -24,17 +26,17 @@ public class InputStreamSourceWrapper<I extends InputStreamSource> extends Wrapp
 	public byte[] getBytes() throws IOException {
 		return wrappedTarget.getBytes();
 	}
-
+	
 	@Override
-	public void read(IoCallback<InputStream> callback) throws IOException {
+	public <E extends Throwable> void read(Callback<InputStream, E> callback) throws IOException, E {
 		wrappedTarget.read(callback);
 	}
-
+	
 	@Override
-	public <T> T read(IoProcessor<InputStream, ? extends T> processor) throws IOException {
+	public <T, E extends Throwable> T read(Processor<InputStream, ? extends T, E> processor) throws IOException, E {
 		return wrappedTarget.read(processor);
 	}
-
+	
 	@Override
 	public ReadableByteChannel readableChannel() throws IOException {
 		return wrappedTarget.readableChannel();

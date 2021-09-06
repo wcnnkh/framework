@@ -1,13 +1,14 @@
 package io.basc.framework.beans.xml;
 
+import org.w3c.dom.Node;
+
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.http.HttpUtils;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.util.StringUtils;
-
-import org.w3c.dom.Node;
+import io.basc.framework.xml.XmlUtils;
 
 public class XmlValue {
 	private final String value;
@@ -56,9 +57,9 @@ public class XmlValue {
 	public String formatValue(final Environment environment) {
 		return DomUtils.formatNodeValue(environment, node, value);
 	}
-	
+
 	@Override
 	public String toString() {
-		return DomUtils.getDomBuilder().toString(node);
+		return XmlUtils.getTemplate().getTransformer().toString(node);
 	}
 }

@@ -1,10 +1,11 @@
 package io.basc.framework.io;
 
-import io.basc.framework.lang.NotFoundException;
-import io.basc.framework.lang.NotSupportedException;
-
 import java.io.IOException;
 import java.io.OutputStream;
+
+import io.basc.framework.lang.NotFoundException;
+import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.util.stream.Processor;
 
 public interface WritableResource extends Resource, OutputStreamSource {
 	/**
@@ -32,7 +33,8 @@ public interface WritableResource extends Resource, OutputStreamSource {
 	 */
 	OutputStream getOutputStream() throws IOException;
 
-	default <T> T write(IoProcessor<OutputStream, ? extends T> processor) throws IOException {
+	@Override
+	default <T, E extends Throwable> T write(Processor<OutputStream, ? extends T, E> processor) throws IOException, E {
 		if (!exists()) {
 			throw new NotFoundException("not found: " + getDescription());
 		}

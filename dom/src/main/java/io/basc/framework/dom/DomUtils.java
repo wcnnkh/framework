@@ -1,147 +1,36 @@
 package io.basc.framework.dom;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import io.basc.framework.convert.Converter;
 import io.basc.framework.env.Sys;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.lang.NotFoundException;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Accept;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.placeholder.PropertyResolver;
 import io.basc.framework.value.StringValue;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.TransformerFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 public final class DomUtils {
-	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
-	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
-	public static final NodeList EMPTY_NODE_LIST = new NodeList() {
+	private static final DocumentTemplate TEMPLATE = Sys.env.getServiceLoader(DocumentTemplate.class).first(() -> {
+		DocumentTemplate template = new DocumentTemplate();
+		template.configure(Sys.env);
+		return template;
+	});
 
-		public Node item(int index) {
-			return null;
-		}
-
-		public int getLength() {
-			return 0;
-		}
-	};
-
-	private static final DomBuilder DOM_BUILDER;
-
-	static {
-		DOCUMENT_BUILDER_FACTORY.setIgnoringElementContentWhitespace(
-				Sys.env.getValue("dom.ignoring.element.content.whitespace", boolean.class, true));
-		DOCUMENT_BUILDER_FACTORY.setIgnoringComments(Sys.env.getValue("dom.ignoring.comments", boolean.class, true));
-		DOCUMENT_BUILDER_FACTORY.setCoalescing(Sys.env.getValue("dom.coalescing", boolean.class, true));
-		DOCUMENT_BUILDER_FACTORY
-				.setExpandEntityReferences(Sys.env.getValue("dom.expand.entity.references", boolean.class, false));
-		DOCUMENT_BUILDER_FACTORY.setNamespaceAware(Sys.env.getValue("dom.namespace.aware", boolean.class, false));
-
-		DomBuilder domBuilder = Sys.env.getServiceLoader(DomBuilder.class).first();
-		DOM_BUILDER = domBuilder == null ? new DomBuilder(DOCUMENT_BUILDER_FACTORY, TRANSFORMER_FACTORY) : domBuilder;
+	public static DocumentTemplate getTemplate() {
+		return TEMPLATE;
 	}
 
 	private DomUtils() {
-	}
-
-	public static DomBuilder getDomBuilder() {
-		return DOM_BUILDER;
-	}
-
-	public static Document getDocument(ResourceLoader resourceLoader, String path) throws NotFoundException {
-		return getDomBuilder().parse(resourceLoader.getResource(path));
-	}
-
-	public static Document getDocument(Resource resource) throws NotFoundException {
-		return getDomBuilder().parse(resource);
-	}
-
-	public static Element getRootElement(ResourceLoader resourceLoader, String xmlPath) {
-		Document document = getDocument(resourceLoader, xmlPath);
-		return document.getDocumentElement();
-	}
-
-	public static Element getRootElement(Resource resource) {
-		Document document = getDocument(resource);
-		return document.getDocumentElement();
-	}
-
-	private static MyNodeList getIncludeNodeList(ResourceLoader resourceLoader, HashSet<String> includeHashSet,
-			Node includeNode) {
-		String file = getNodeAttributeValueOrNodeContent(includeNode, "file");
-		if (StringUtils.isEmpty(file)) {
-			return new MyNodeList();
-		}
-
-		if (includeHashSet.contains(file)) {
-			throw new RuntimeException(file + "存在循环引用，请检查include地址");
-		}
-
-		includeHashSet.add(file);
-		Document document = DomUtils.getDocument(resourceLoader, file);
-		Node root = document.getDocumentElement();
-		if (root == null) {
-			return new MyNodeList();
-		}
-
-		NodeList nodeList = root.getChildNodes();
-		MyNodeList list = new MyNodeList();
-		for (int i = 0, size = nodeList.getLength(); i < size; i++) {
-			Node n = nodeList.item(i);
-			if (n == null) {
-				continue;
-			}
-
-			list.add(n);
-		}
-		return list;
-	}
-
-	private static MyNodeList converIncludeNodeList(ResourceLoader resourceLoader, NodeList nodeList,
-			HashSet<String> includeHashSet) {
-		MyNodeList list = new MyNodeList();
-		if (nodeList != null) {
-			for (int i = 0, size = nodeList.getLength(); i < size; i++) {
-				Node n = nodeList.item(i);
-				if (n == null) {
-					continue;
-				}
-
-				if (n.getNodeName().equalsIgnoreCase("include")) {
-					MyNodeList n2 = getIncludeNodeList(resourceLoader, includeHashSet, n);
-					list.addAll(converIncludeNodeList(resourceLoader, n2, includeHashSet));
-				} else {
-					list.add(n);
-				}
-			}
-		}
-		return list;
-	}
-
-	public static NodeList getChildNodes(Node node, @Nullable ResourceLoader resourceLoader) {
-		if (node == null) {
-			return null;
-		}
-
-		return resourceLoader != null
-				? converIncludeNodeList(resourceLoader, node.getChildNodes(), new HashSet<String>())
-				: node.getChildNodes();
 	}
 
 	public static List<Object> toRecursionList(Node node) {
@@ -294,7 +183,7 @@ public final class DomUtils {
 	public static String getRequireNodeAttributeValue(Node node, String name) {
 		String value = getNodeAttributeValue(node, name);
 		if (StringUtils.isEmpty(value)) {
-			throw new NotFoundException("not found attribute [" + name + "], " + getDomBuilder().toString(node));
+			throw new NotFoundException("not found attribute [" + name + "]");
 		}
 		return value;
 	}
@@ -302,7 +191,7 @@ public final class DomUtils {
 	public static void requireAttribute(Node node, String... name) {
 		for (String n : name) {
 			if (StringUtils.isEmpty(DomUtils.getNodeAttributeValue(node, n))) {
-				throw new NotFoundException("not found attribute [" + n + "], " + getDomBuilder().toString(node));
+				throw new NotFoundException("not found attribute [" + n + "]");
 			}
 		}
 	}
@@ -427,17 +316,4 @@ public final class DomUtils {
 		}
 		return null;
 	}
-}
-
-final class MyNodeList extends ArrayList<Node> implements NodeList {
-	private static final long serialVersionUID = 1L;
-
-	public Node item(int index) {
-		return get(index);
-	}
-
-	public int getLength() {
-		return size();
-	}
-
 }

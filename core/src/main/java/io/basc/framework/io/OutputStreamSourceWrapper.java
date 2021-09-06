@@ -1,10 +1,12 @@
 package io.basc.framework.io;
 
-import io.basc.framework.util.Wrapper;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
+
+import io.basc.framework.util.Wrapper;
+import io.basc.framework.util.stream.Callback;
+import io.basc.framework.util.stream.Processor;
 
 public class OutputStreamSourceWrapper<W extends OutputStreamSource> extends Wrapper<W>
 		implements OutputStreamSource {
@@ -22,15 +24,15 @@ public class OutputStreamSourceWrapper<W extends OutputStreamSource> extends Wra
 	public WritableByteChannel writableChannel() throws IOException {
 		return wrappedTarget.writableChannel();
 	}
-
+	
 	@Override
-	public void write(IoCallback<OutputStream> callback) throws IOException {
+	public <E extends Throwable> void write(Callback<OutputStream, E> callback) throws IOException, E {
 		wrappedTarget.write(callback);
-		;
 	}
-
+	
 	@Override
-	public <T> T write(IoProcessor<OutputStream, ? extends T> processor) throws IOException {
+	public <T, E extends Throwable> T write(Processor<OutputStream, ? extends T, E> processor) throws IOException, E {
 		return wrappedTarget.write(processor);
 	}
+		
 }

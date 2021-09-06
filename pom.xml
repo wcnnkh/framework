@@ -538,6 +538,12 @@
 				<artifactId>dom</artifactId>
 				<version>${basc.version}</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>xml</artifactId>
+				<version>${basc.version}</version>
+			</dependency>
 
 			<dependency>
 				<groupId>io.basc.framework</groupId>
@@ -802,5 +808,6 @@
 		<module>validation</module>
 		<module>oracle</module>
 		<module>sqlserver</module>
+		<module>xml</module>
 	</modules>
 </project>

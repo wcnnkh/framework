@@ -1,10 +1,5 @@
 package io.basc.framework.io;
 
-import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventRegistration;
-import io.basc.framework.event.Observable;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,6 +8,13 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
+
+import io.basc.framework.event.ChangeEvent;
+import io.basc.framework.event.EventListener;
+import io.basc.framework.event.EventRegistration;
+import io.basc.framework.event.Observable;
+import io.basc.framework.util.stream.Callback;
+import io.basc.framework.util.stream.Processor;
 
 public abstract class ResourceWrapper implements Resource, Observable<Resource> {
 
@@ -73,9 +75,9 @@ public abstract class ResourceWrapper implements Resource, Observable<Resource> 
 	public boolean isFile() {
 		return get().isFile();
 	}
-
+	
 	@Override
-	public <T> T read(IoProcessor<InputStream, ? extends T> processor) throws IOException {
+	public <T, E extends Throwable> T read(Processor<InputStream, ? extends T, E> processor) throws IOException, E {
 		return get().read(processor);
 	}
 
@@ -85,10 +87,10 @@ public abstract class ResourceWrapper implements Resource, Observable<Resource> 
 	}
 
 	@Override
-	public void read(IoCallback<InputStream> callback) throws IOException {
+	public <E extends Throwable> void read(Callback<InputStream, E> callback) throws IOException, E {
 		get().read(callback);
 	}
-
+	
 	@Override
 	public byte[] getBytes() throws IOException {
 		return get().getBytes();

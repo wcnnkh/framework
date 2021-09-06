@@ -8,6 +8,9 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import io.basc.framework.util.stream.Callback;
+import io.basc.framework.util.stream.Processor;
+
 /**
  * Simple interface for objects that are sources for an {@link InputStream}.
  */
@@ -44,7 +47,7 @@ public interface InputStreamSource {
 		return Channels.newChannel(getInputStream());
 	}
 
-	default <T> T read(IoProcessor<InputStream, ? extends T> processor) throws IOException {
+	default <T, E extends Throwable> T read(Processor<InputStream, ? extends T, E> processor) throws IOException, E {
 		InputStream is = null;
 		try {
 			is = getInputStream();
@@ -62,7 +65,7 @@ public interface InputStreamSource {
 	 * @param callback
 	 * @throws IOException
 	 */
-	default void read(IoCallback<InputStream> callback) throws IOException {
+	default <E extends Throwable> void read(Callback<InputStream, E> callback) throws IOException, E {
 		read((is) -> {
 			callback.call(is);
 			return null;
