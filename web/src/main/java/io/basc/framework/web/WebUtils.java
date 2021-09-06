@@ -1,7 +1,15 @@
 package io.basc.framework.web;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.w3c.dom.Document;
+
 import io.basc.framework.codec.support.CharsetCodec;
-import io.basc.framework.dom.DomUtils;
 import io.basc.framework.http.HttpCookie;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpStatus;
@@ -25,15 +33,7 @@ import io.basc.framework.value.EmptyValue;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 import io.basc.framework.web.support.DefaultHttpService;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.w3c.dom.Document;
+import io.basc.framework.xml.XmlUtils;
 
 public final class WebUtils {
 	private static Logger logger = LoggerFactory.getLogger(WebUtils.class);
@@ -351,7 +351,7 @@ public final class WebUtils {
 		if (request.getHeaders().isJsonContentType()) {
 			return JSONUtils.getJsonSupport().parseJson(request.getReader());
 		} else if (request.getHeaders().isXmlContentType()) {
-			Document document = DomUtils.getDomBuilder().parse(request.getReader());
+			Document document = XmlUtils.getTemplate().getParser().parse(request.getReader());
 			return document;
 		} else {
 			return WebUtils.getParameterMap(request, null);

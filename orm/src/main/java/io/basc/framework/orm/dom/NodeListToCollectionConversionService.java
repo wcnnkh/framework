@@ -1,4 +1,4 @@
-package io.basc.framework.orm.convert.dom;
+package io.basc.framework.orm.dom;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
@@ -8,15 +8,15 @@ import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.util.CollectionFactory;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-@SuppressWarnings({ "unchecked", "rawtypes" })
-class NodeListToMapConversionService extends ConditionalConversionService implements ConversionServiceAware {
+@SuppressWarnings({ "rawtypes", "unchecked" })
+class NodeListToCollectionConversionService extends ConditionalConversionService implements ConversionServiceAware {
 	private ConversionService conversionService;
 
 	@Override
@@ -25,7 +25,7 @@ class NodeListToMapConversionService extends ConditionalConversionService implem
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
-		return Collections.singleton(new ConvertiblePair(NodeList.class, Map.class));
+		return Collections.singleton(new ConvertiblePair(NodeList.class, Collection.class));
 	}
 
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
@@ -34,21 +34,19 @@ class NodeListToMapConversionService extends ConditionalConversionService implem
 		}
 
 		NodeList nodeList = (NodeList) source;
-		Map map = CollectionFactory.createMap(targetType.getType(), targetType.getMapKeyTypeDescriptor().getType(),
-				nodeList.getLength());
 		int len = nodeList.getLength();
+		Collection collection = CollectionFactory.createCollection(targetType.getType(),
+				targetType.getElementTypeDescriptor().getType(), len);
 		for (int i = 0; i < len; i++) {
 			Node node = nodeList.item(i);
 			if (DomUtils.ignoreNode(node)) {
 				continue;
 			}
 
-			Object key = conversionService.convert(node.getNodeName(), TypeDescriptor.valueOf(String.class),
-					targetType.getMapKeyTypeDescriptor());
 			Object value = conversionService.convert(node, TypeDescriptor.valueOf(Node.class),
-					targetType.getMapValueTypeDescriptor());
-			map.put(key, value);
+					targetType.getElementTypeDescriptor());
+			collection.add(value);
 		}
-		return map;
+		return collection;
 	}
 }

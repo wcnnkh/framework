@@ -1,17 +1,15 @@
-package io.basc.framework.dom.convert;
+package io.basc.framework.dom.resolve;
+
+import org.w3c.dom.Document;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.resolve.ResourceResolver;
-import io.basc.framework.dom.DomBuilder;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.io.Resource;
 
-import org.w3c.dom.Document;
-
 public class DocumentResourceResolver implements ResourceResolver, ConversionServiceAware {
-	private DomBuilder domBuilder;
 	private ConversionService conversionService;
 
 	public ConversionService getConversionService() {
@@ -23,23 +21,13 @@ public class DocumentResourceResolver implements ResourceResolver, ConversionSer
 		this.conversionService = conversionService;
 	}
 
-	public DomBuilder getDomBuilder() {
-		return domBuilder == null ? DomUtils.getDomBuilder() : domBuilder;
-	}
-
-	public void setDomBuilder(DomBuilder domBuilder) {
-		this.domBuilder = domBuilder;
-	}
-
 	public boolean canResolveResource(Resource resource, TypeDescriptor targetType) {
-		return resource.exists() && resource.getName().endsWith(".xml");
+		return DomUtils.getTemplate().canParse(resource)
+				&& getConversionService().canConvert(TypeDescriptor.valueOf(Document.class), targetType);
 	}
 
 	public Object resolveResource(Resource resource, TypeDescriptor targetType) {
-		Document document = getDomBuilder().parse(resource);
-		if (document == null) {
-			return null;
-		}
-		return getConversionService().convert(document, TypeDescriptor.forObject(document), targetType);
+		return DomUtils.getTemplate().parse(resource,
+				(document) -> getConversionService().convert(document, TypeDescriptor.forObject(document), targetType));
 	}
 }

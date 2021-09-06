@@ -1,5 +1,12 @@
 package io.basc.framework.io;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
+
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
@@ -7,13 +14,7 @@ import io.basc.framework.event.EventRegistry;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.NotSupportedException;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
+import io.basc.framework.util.stream.Processor;
 
 @Ignore
 public interface Resource extends InputStreamSource, EventRegistry<ChangeEvent<Resource>> {
@@ -71,8 +72,9 @@ public interface Resource extends InputStreamSource, EventRegistry<ChangeEvent<R
 	default EventRegistration registerListener(EventListener<ChangeEvent<Resource>> eventListener) {
 		return EventRegistration.EMPTY;
 	}
-
-	default <T> T read(IoProcessor<InputStream, ? extends T> processor) throws IOException {
+	
+	@Override
+	default <T, E extends Throwable> T read(Processor<InputStream, ? extends T, E> processor) throws IOException, E {
 		if (!exists()) {
 			throw new NotFoundException("not found: " + getDescription());
 		}

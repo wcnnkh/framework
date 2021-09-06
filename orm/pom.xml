@@ -13,7 +13,7 @@
   	</dependency>
   	<dependency>
   		<groupId>io.basc.framework</groupId>
-  		<artifactId>dom</artifactId>
+  		<artifactId>xml</artifactId>
   	</dependency>
   	<dependency>
   		<groupId>io.basc.framework</groupId>

@@ -3,6 +3,7 @@ package io.basc.framework.beans.xml;
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.support.DefaultBeanFactory;
 import io.basc.framework.dom.DomUtils;
+import io.basc.framework.dom.EmptyNodeList;
 import io.basc.framework.http.HttpUtils;
 import io.basc.framework.io.Resource;
 import io.basc.framework.logger.Logger;
@@ -28,7 +29,7 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 	}
 
 	public NodeList getNodeList() {
-		return nodeList == null ? DomUtils.EMPTY_NODE_LIST : nodeList;
+		return nodeList == null ? EmptyNodeList.EMPTY : nodeList;
 	}
 
 	public String getXml() {

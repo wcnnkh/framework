@@ -4,11 +4,11 @@ io.basc.framework.orm.sql.convert.ResultSetRowToEntityConversionService
 ## SQL TYPE ##
 
 ## DOM ##
-io.basc.framework.orm.convert.dom.DocumentParseConversionService
-io.basc.framework.orm.convert.dom.NodeListToCollectionConversionService
-io.basc.framework.orm.convert.dom.NodeListToMapConversionService
-io.basc.framework.orm.convert.dom.NodeToObjectConversionService
-io.basc.framework.orm.convert.dom.NodeListToEntityConversionService
+io.basc.framework.orm.xml.XmlParseConversionService
+io.basc.framework.orm.dom.NodeListToCollectionConversionService
+io.basc.framework.orm.dom.NodeListToMapConversionService
+io.basc.framework.orm.dom.NodeToObjectConversionService
+io.basc.framework.orm.dom.NodeListToEntityConversionService
 ## DOM ##
 
 io.basc.framework.orm.convert.CollectionToMapConversionService

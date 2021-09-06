@@ -1,4 +1,4 @@
-package io.basc.framework.orm.convert.dom;
+package io.basc.framework.orm.dom;
 
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.dom.DomUtils;
