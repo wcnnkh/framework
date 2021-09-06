@@ -15,6 +15,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.dom.writer.ArrayWriter;
 import io.basc.framework.dom.writer.CollectionWriter;
 import io.basc.framework.dom.writer.MapWriter;
+import io.basc.framework.dom.writer.ToMapWriter;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
@@ -37,6 +38,7 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 		writers.addService(new MapWriter(this));
 		writers.addService(new CollectionWriter(this));
 		writers.addService(new ArrayWriter(this));
+		writers.addService(new ToMapWriter(this));
 	}
 
 	@Override

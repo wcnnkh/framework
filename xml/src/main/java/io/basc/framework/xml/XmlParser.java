@@ -1,5 +1,14 @@
 package io.basc.framework.xml;
 
+import io.basc.framework.dom.DocumentParser;
+import io.basc.framework.dom.DomException;
+import io.basc.framework.env.Sys;
+import io.basc.framework.io.Resource;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.stream.Processor;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,16 +24,6 @@ import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-import io.basc.framework.dom.DefaultEntityResolver;
-import io.basc.framework.dom.DocumentParser;
-import io.basc.framework.dom.DomException;
-import io.basc.framework.env.Sys;
-import io.basc.framework.io.Resource;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.Processor;
 
 public class XmlParser implements DocumentParser {
 	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
@@ -58,7 +57,7 @@ public class XmlParser implements DocumentParser {
 
 	public EntityResolver getEntityResolver() {
 		if (entityResolver == null) {
-			return DefaultEntityResolver.INSTANCE;
+			return IgnoreDTDResolver.INSTANCE;
 		}
 		return entityResolver;
 	}
