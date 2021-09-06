@@ -38,11 +38,6 @@ public class DefaultApplication extends XmlBeanFactory
 	private volatile boolean initialized;
 
 	public DefaultApplication() {
-		this(XmlBeanFactory.DEFAULT_CONFIG);
-	}
-
-	public DefaultApplication(String xml) {
-		super(xml);
 		this.createTime = Sys.currentTimeMillis();
 		registerSingleton(Application.class.getName(), this);
 		getLifecycleDispatcher().registerListener(this);

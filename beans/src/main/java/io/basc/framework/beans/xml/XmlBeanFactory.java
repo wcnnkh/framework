@@ -1,14 +1,16 @@
 package io.basc.framework.beans.xml;
 
 import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.support.DefaultBeanFactory;
 import io.basc.framework.dom.DomUtils;
-import io.basc.framework.dom.EmptyNodeList;
 import io.basc.framework.http.HttpUtils;
 import io.basc.framework.io.Resource;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.stream.Callback;
+import io.basc.framework.xml.XmlUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -17,46 +19,35 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class XmlBeanFactory extends DefaultBeanFactory {
-	public static final String DEFAULT_CONFIG = "beans.xml";
-	public static final String CONFIG_NAME = "contextConfigLocation";
+	private static final String DEFAULT_CONFIG = "beans.xml";
 	private static Logger logger = LoggerFactory.getLogger(XmlBeanFactory.class);
 	private static final String TAG_NAME = "bean";
-	private NodeList nodeList;
-	private String xml;
+	private Resource configurationFile;
 
-	public XmlBeanFactory(String xml) {
-		this.xml = StringUtils.isEmpty(xml) ? DEFAULT_CONFIG : xml;
+	public void readConfigurationFile(Callback<NodeList, Throwable> callback){
+		XmlUtils.getTemplate().read(getConfigurationFile(), (document) -> {
+			Node node = document.getDocumentElement();
+			if (!"beans".equals(node.getNodeName())) {
+				throw new BeansException("root tag name error [" + node.getNodeName() + "]");
+			}
+			
+			NodeList nodeList = DomUtils.getTemplate().getChildNodes(node, getEnvironment());
+			callback.call(nodeList);
+		});
 	}
 
-	public NodeList getNodeList() {
-		return nodeList == null ? EmptyNodeList.EMPTY : nodeList;
+	public Resource getConfigurationFile() {
+		return configurationFile == null? getEnvironment().getResource(DEFAULT_CONFIG):configurationFile;
 	}
 
-	public String getXml() {
-		return xml;
+	public void setConfigurationFile(Resource configurationFile) {
+		this.configurationFile = configurationFile;
 	}
 
 	@Override
 	public synchronized void init() throws Throwable {
-		Resource resource = null;
-		if (StringUtils.isNotEmpty(xml)) {
-			resource = getEnvironment().getResource(xml);
-		}
-
-		if (resource == null || !resource.exists()) {
-			String config = getEnvironment().getString(CONFIG_NAME);
-			if (StringUtils.isNotEmpty(config)) {
-				resource = getEnvironment().getResource(config);
-			}
-		}
-
-		if (resource == null || !resource.exists()) {
-			resource = getEnvironment().getResource(DEFAULT_CONFIG);
-		}
-
-		if (resource != null && resource.exists()) {
-			this.nodeList = XmlBeanUtils.getRootNodeList(resource, getEnvironment());
-			logger.info("Use config {}", resource);
+		readConfigurationFile((nodeList) -> {
+			logger.info("Use config {}", getConfigurationFile().getDescription());
 			loadXmlEnv(nodeList);
 			addXmlBeanNameMapping(nodeList);
 
@@ -67,7 +58,7 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 					registerDefinition(beanDefinition);
 				}
 			}
-		}
+		});
 		super.init();
 	}
 

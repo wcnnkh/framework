@@ -1,6 +1,12 @@
 package io.basc.framework.beans.xml;
 
-import java.io.IOException;
+import io.basc.framework.beans.ioc.IocProcessor;
+import io.basc.framework.dom.DomUtils;
+import io.basc.framework.env.Environment;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -8,16 +14,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ioc.IocProcessor;
-import io.basc.framework.dom.DomUtils;
-import io.basc.framework.env.Environment;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.ResourceLoader;
-import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.StringUtils;
 
 public final class XmlBeanUtils {
 	private XmlBeanUtils() {
@@ -73,16 +69,6 @@ public final class XmlBeanUtils {
 			}
 		}
 		return xmlBeanParameters;
-	}
-
-	public static NodeList getRootNodeList(Resource resource, ResourceLoader resourceLoader) throws IOException {
-		return DomUtils.getTemplate().parse(resource, (document) -> {
-			Node node = document.getDocumentElement();
-			if (!"beans".equals(node.getNodeName())) {
-				throw new BeansException("root tag name error [" + node.getNodeName() + "]");
-			}
-			return DomUtils.getTemplate().getChildNodes(node, resourceLoader);
-		});
 	}
 
 	public static String getPackageName(Environment environment, Node node) {

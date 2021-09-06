@@ -31,50 +31,51 @@ public class HttpRemoteBeanFactoryPostProcessor implements BeanFactoryPostProces
 	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)
 			throws BeansException {
 		if (beanFactory instanceof XmlBeanFactory) {
-			NodeList rootNodeList = ((XmlBeanFactory) beanFactory).getNodeList();
-			for (int i = 0; i < rootNodeList.getLength(); i++) {
-				Node node = rootNodeList.item(i);
-				if (node == null) {
-					continue;
-				}
+			((XmlBeanFactory) beanFactory).readConfigurationFile((rootNodeList) -> {
+				for (int i = 0; i < rootNodeList.getLength(); i++) {
+					Node node = rootNodeList.item(i);
+					if (node == null) {
+						continue;
+					}
 
-				if (!TAG_NAME.equals(node.getNodeName())) {
-					continue;
-				}
-				
-				String packageName = XmlBeanUtils.getPackageName(beanFactory.getEnvironment(), node);
-				CallableFactorySupplier supplier = new CallableFactorySupplier();
-				supplier.config(node, beanFactory);
-				CallableFactory callableFactory = supplier.get();
-				if (!StringUtils.isEmpty(packageName)) {
-					for (Class<?> clz : beanFactory.getClassesLoaderFactory().getClassesLoader(packageName)) {
-						if (!clz.isInterface() || AnnotatedElementUtils.isIgnore(clz)) {
+					if (!TAG_NAME.equals(node.getNodeName())) {
+						continue;
+					}
+					
+					String packageName = XmlBeanUtils.getPackageName(beanFactory.getEnvironment(), node);
+					CallableFactorySupplier supplier = new CallableFactorySupplier();
+					supplier.config(node, beanFactory);
+					CallableFactory callableFactory = supplier.get();
+					if (!StringUtils.isEmpty(packageName)) {
+						for (Class<?> clz : beanFactory.getClassesLoaderFactory().getClassesLoader(packageName)) {
+							if (!clz.isInterface() || AnnotatedElementUtils.isIgnore(clz)) {
+								continue;
+							}
+
+							RemoteCallableBeanDefinition definition = new RemoteCallableBeanDefinition(beanFactory, callableFactory, clz);
+							beanFactory.registerDefinition(definition);
+						}
+					}
+
+					NodeList nodeList = node.getChildNodes();
+					for (int a = 0; a < nodeList.getLength(); a++) {
+						Node n = nodeList.item(a);
+						if (n == null) {
 							continue;
 						}
-
+						
+						String className = DomUtils.getNodeAttributeValue(beanFactory.getEnvironment(), n, "interface");
+						if (StringUtils.isEmpty(className)) {
+							continue;
+						}
+						
+						Class<?> clz = ClassUtils.getClass(className, beanFactory.getClassLoader());
+						supplier.config(n, beanFactory);
 						RemoteCallableBeanDefinition definition = new RemoteCallableBeanDefinition(beanFactory, callableFactory, clz);
 						beanFactory.registerDefinition(definition);
 					}
 				}
-
-				NodeList nodeList = node.getChildNodes();
-				for (int a = 0; a < nodeList.getLength(); a++) {
-					Node n = nodeList.item(a);
-					if (n == null) {
-						continue;
-					}
-					
-					String className = DomUtils.getNodeAttributeValue(beanFactory.getEnvironment(), n, "interface");
-					if (StringUtils.isEmpty(className)) {
-						continue;
-					}
-					
-					Class<?> clz = ClassUtils.getClass(className, beanFactory.getClassLoader());
-					supplier.config(n, beanFactory);
-					RemoteCallableBeanDefinition definition = new RemoteCallableBeanDefinition(beanFactory, callableFactory, clz);
-					beanFactory.registerDefinition(definition);
-				}
-			}
+			});
 		}
 	}
 	
