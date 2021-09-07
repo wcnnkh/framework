@@ -10,7 +10,6 @@ import org.xml.sax.InputSource;
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.io.Resource;
 import io.basc.framework.xml.XmlUtils;
 
 public class XmlParseConversionService implements ConversionService{
@@ -23,7 +22,6 @@ public class XmlParseConversionService implements ConversionService{
 				|| String.class.isAssignableFrom(sourceType.getType())
 				|| InputSource.class.isAssignableFrom(sourceType.getType())
 				|| File.class.isAssignableFrom(sourceType.getType())
-				|| Resource.class.isAssignableFrom(sourceType.getType())
 				);
 	}
 
@@ -39,8 +37,6 @@ public class XmlParseConversionService implements ConversionService{
 			return XmlUtils.getTemplate().getParser().parse((InputSource)source);
 		}else if(File.class.isAssignableFrom(sourceType.getType())){
 			return XmlUtils.getTemplate().getParser().parse((File)source);
-		}else if(Resource.class.isAssignableFrom(sourceType.getType())){
-			return XmlUtils.getTemplate().parse((Resource)source, (dom) -> dom);
 		}
 		throw new ConversionException(sourceType.toString());
 	}
