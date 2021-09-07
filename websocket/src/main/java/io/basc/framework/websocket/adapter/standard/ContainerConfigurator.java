@@ -1,4 +1,4 @@
-package io.basc.framework.web.servlet.socket;
+package io.basc.framework.websocket.adapter.standard;
 
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.ContextLoader;
