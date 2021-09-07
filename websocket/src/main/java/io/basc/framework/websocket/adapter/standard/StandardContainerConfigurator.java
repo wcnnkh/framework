@@ -1,11 +1,16 @@
-package io.basc.framework.web.servlet.socket;
+package io.basc.framework.websocket.adapter.standard;
 
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.ContextLoader;
 
 import javax.websocket.server.ServerEndpointConfig.Configurator;
 
-public class ContainerConfigurator extends Configurator {
+/**
+ * 使用容器来管理websocket
+ * @author shuchaowen
+ *
+ */
+public class StandardContainerConfigurator extends Configurator {
 
 	@Override
 	public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {

@@ -15,18 +15,18 @@ import java.util.stream.Collectors;
 import javax.websocket.Session;
 
 /**
- * 这是一个安全的session管理器
+ * 一个标准的session管理器
  * 
  * @author shuchaowen
  *
  * @param <T>
  */
-public class SafeStandardSessionManager<T> {
-	private static Logger logger = LoggerFactory.getLogger(SafeStandardSessionManager.class);
+public class StandardSessionManager<T> {
+	private static Logger logger = LoggerFactory.getLogger(StandardSessionManager.class);
 	private final String groupKey;
 	private final ConcurrentHashMap<T, ConcurrentHashMap<String, Session>> groupMap = new ConcurrentHashMap<>();
 
-	public SafeStandardSessionManager(String groupKey) {
+	public StandardSessionManager(String groupKey) {
 		this.groupKey = groupKey;
 	}
 
