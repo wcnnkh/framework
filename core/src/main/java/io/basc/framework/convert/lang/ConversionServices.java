@@ -118,10 +118,10 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 
 	public int compareTo(Object o) {
 		for (ConversionService service : this) {
-			if (ConvertibleConditionalComparator.INSTANCE.compare(service, o) == 1) {
-				return 1;
+			if (ConvertibleConditionalComparator.INSTANCE.compare(service, o) == -1) {
+				return -1;
 			}
 		}
-		return -1;
+		return 1;
 	}
 }

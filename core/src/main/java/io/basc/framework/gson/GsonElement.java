@@ -18,6 +18,9 @@ public final class GsonElement extends AbstractJsonElement {
 	}
 
 	public String getAsString() {
+		if (gsonJsonElement.isJsonArray() || gsonJsonElement.isJsonObject()) {
+			return gsonJsonElement.toString();
+		}
 		return gsonJsonElement.getAsString();
 	}
 	
