@@ -57,6 +57,10 @@ class CollectionToMapConversionService implements ConversionService, ConversionS
 		} else {
 			sources = (Collection) conversionService.convert(source, sourceType, COLLECTION_TYPE);
 		}
+		
+		if(sources == null) {
+			return null;
+		}
 
 		TypeDescriptor itemType = getValueType(targetType);
 		Map map = CollectionFactory.createMap(targetType.getType(), targetType.getMapKeyTypeDescriptor().getType(),
