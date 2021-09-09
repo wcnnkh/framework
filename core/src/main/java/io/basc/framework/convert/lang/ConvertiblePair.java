@@ -1,10 +1,11 @@
 package io.basc.framework.convert.lang;
 
+import io.basc.framework.core.OrderComparator;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.comparator.TypeComparator;
 
-public class ConvertiblePair implements Comparable<ConvertiblePair>{
+public class ConvertiblePair extends TypeComparator implements Comparable<ConvertiblePair>{
 
 	private final Class<?> sourceType;
 
@@ -53,15 +54,12 @@ public class ConvertiblePair implements Comparable<ConvertiblePair>{
 	}
 
 	public int compareTo(ConvertiblePair o) {
-		if(o.sourceType.equals(sourceType)){
-			if(ClassUtils.isAssignable(targetType, targetType)){
-				return 1;
-			}
+		int v = compare(sourceType, o.sourceType);
+		int ov = compare(targetType, o.targetType);
+		if(v == ov) {
+			return v;
+		}else {
+			return OrderComparator.INSTANCE.compare(v, ov);
 		}
-		
-		if(ClassUtils.isAssignable(sourceType, o.sourceType)){
-			return 1;
-		}
-		return -1;
 	}
 }

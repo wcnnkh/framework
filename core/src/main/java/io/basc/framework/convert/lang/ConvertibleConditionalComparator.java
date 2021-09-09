@@ -15,11 +15,22 @@ public class ConvertibleConditionalComparator<T> implements Comparator<T>{
 			for (ConvertiblePair pair : pairs) {
 				for (ConvertiblePair other : otherPairs) {
 					if (pair.compareTo(other) == 1) {
-						return 1;
+						return -1;
 					}
 				}
 			}
+			
+			return ComparableComparator.INSTANCE.compare(o1, o2) == 1? 1:-1;
 		}
+		
+		if(o1 instanceof ConvertibleConditional) {
+			return -1;
+		}
+		
+		if(o2 instanceof ConvertibleConditional) {
+			return 1;
+		}
+		
 		return ComparableComparator.INSTANCE.compare(o1, o2) == 1? 1:-1;
 	}
 }
