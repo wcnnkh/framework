@@ -124,4 +124,9 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 		}
 		return 1;
 	}
+	
+	@Override
+	public String toString() {
+		return conversionServices.toString();
+	}
 }
