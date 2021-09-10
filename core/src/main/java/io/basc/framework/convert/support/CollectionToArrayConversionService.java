@@ -11,11 +11,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-class CollectionToArrayConversionService extends ConditionalConversionService{
-	private final ConversionService conversionService;
+class CollectionToArrayConversionService extends ConditionalConversionService {
 
 	public CollectionToArrayConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
+		setConversionService(conversionService);
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
@@ -32,7 +31,7 @@ class CollectionToArrayConversionService extends ConditionalConversionService{
 		Object array = Array.newInstance(targetElementType.getType(), sourceCollection.size());
 		int i = 0;
 		for (Object sourceElement : sourceCollection) {
-			Object targetElement = this.conversionService.convert(sourceElement,
+			Object targetElement = this.getConversionService().convert(sourceElement,
 					sourceType.elementTypeDescriptor(sourceElement), targetElementType);
 			Array.set(array, i++, targetElement);
 		}

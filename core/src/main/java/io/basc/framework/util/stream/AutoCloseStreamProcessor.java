@@ -30,12 +30,12 @@ public interface AutoCloseStreamProcessor<T, E extends Throwable> extends Stream
 	@Override
 	default <TE extends Throwable> AutoCloseStreamProcessor<T, TE> exceptionConvert(
 			Converter<Throwable, TE> exceptionConverter) {
-		return new AutoCloseStreamProcessorWrapper<>(StreamProcessor.super.exceptionConvert(exceptionConverter));
+		return new AutoCloseStreamProcessorWrapper<T, TE>(StreamProcessor.super.exceptionConvert(exceptionConverter));
 	}
 
 	@Override
 	default <V> AutoCloseStream<V> stream(Processor<T, Spliterator<V>, E> processor) throws E {
-		return new AutoCloseStream<>(StreamProcessor.super.stream(processor));
+		return new AutoCloseStream<V>(StreamProcessor.super.stream(processor));
 	}
 
 	@Override

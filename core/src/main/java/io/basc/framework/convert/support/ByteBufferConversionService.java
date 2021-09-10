@@ -29,11 +29,8 @@ class ByteBufferConversionService extends ConditionalConversionService{
 		CONVERTIBLE_PAIRS = Collections.unmodifiableSet(convertiblePairs);
 	}
 
-	private final ConversionService conversionService;
-
-
 	public ByteBufferConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
+		setConversionService(conversionService);
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
@@ -61,12 +58,12 @@ class ByteBufferConversionService extends ConditionalConversionService{
 		if (targetType.isAssignableTo(BYTE_ARRAY_TYPE)) {
 			return bytes;
 		}
-		return this.conversionService.convert(bytes, BYTE_ARRAY_TYPE, targetType);
+		return this.getConversionService().convert(bytes, BYTE_ARRAY_TYPE, targetType);
 	}
 
 	private Object convertToByteBuffer(@Nullable Object source, TypeDescriptor sourceType) {
 		byte[] bytes = (byte[]) (source instanceof byte[] ? source :
-				this.conversionService.convert(source, sourceType, BYTE_ARRAY_TYPE));
+				this.getConversionService().convert(source, sourceType, BYTE_ARRAY_TYPE));
 
 		if (bytes == null) {
 			return ByteBuffer.wrap(new byte[0]);

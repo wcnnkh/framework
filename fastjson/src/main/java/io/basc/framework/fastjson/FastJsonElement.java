@@ -1,5 +1,11 @@
 package io.basc.framework.fastjson;
 
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.json.AbstractJsonElement;
+import io.basc.framework.json.JsonArray;
+import io.basc.framework.json.JsonObject;
+import io.basc.framework.util.StringUtils;
+
 import java.io.Serializable;
 
 import com.alibaba.fastjson.JSON;
@@ -7,12 +13,6 @@ import com.alibaba.fastjson.JSONAware;
 import com.alibaba.fastjson.JSONValidator;
 import com.alibaba.fastjson.JSONValidator.Type;
 import com.alibaba.fastjson.parser.Feature;
-
-import io.basc.framework.core.ResolvableType;
-import io.basc.framework.json.AbstractJsonElement;
-import io.basc.framework.json.JsonArray;
-import io.basc.framework.json.JsonObject;
-import io.basc.framework.util.StringUtils;
 
 public final class FastJsonElement extends AbstractJsonElement implements JSONAware, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -23,8 +23,8 @@ public final class FastJsonElement extends AbstractJsonElement implements JSONAw
 	}
 
 	@Override
-	protected Object getAsNonBaseType(ResolvableType type) {
-		return JSON.parseObject(text, type.getType(), Feature.SupportNonPublicField);
+	protected Object getAsNonBaseType(TypeDescriptor type) {
+		return JSON.parseObject(text, type.getResolvableType().getType(), Feature.SupportNonPublicField);
 	}
 
 	public JsonArray getAsJsonArray() {

@@ -1,15 +1,14 @@
 package io.basc.framework.value;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.ResolvableType;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class AnyValue extends AbstractValue implements Serializable{
 	private static final long serialVersionUID = 1L;
@@ -440,16 +439,16 @@ public class AnyValue extends AbstractValue implements Serializable{
 	}
 
 	@Override
-	protected Object getAsNonBaseType(ResolvableType type) {
+	protected Object getAsNonBaseType(TypeDescriptor type) {
 		if (value == null) {
 			return null;
 		}
 		
-		if(type.isInstance(value)) {
+		if(type.getType().isInstance(value)) {
 			return value;
 		}
 
-		Class<?> rawClass = type.getRawClass();
+		Class<?> rawClass = type.getType();
 		if (rawClass == Object.class || rawClass == null) {
 			return value;
 		}
@@ -457,7 +456,7 @@ public class AnyValue extends AbstractValue implements Serializable{
 		if (value instanceof Value) {
 			return ((Value) value).getAsObject(type);
 		}
-		return getConversionService().convert(value, TypeDescriptor.forObject(value), TypeDescriptor.valueOf(type));
+		return getConversionService().convert(value, TypeDescriptor.forObject(value), type);
 	}
 
 	@Override

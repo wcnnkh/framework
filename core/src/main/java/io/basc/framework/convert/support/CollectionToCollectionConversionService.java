@@ -11,10 +11,9 @@ import java.util.Collections;
 import java.util.Set;
 
 class CollectionToCollectionConversionService extends ConditionalConversionService{
-	private final ConversionService conversionService;
 
 	public CollectionToCollectionConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
+		setConversionService(conversionService);
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
@@ -47,7 +46,7 @@ class CollectionToCollectionConversionService extends ConditionalConversionServi
 		}
 		else {
 			for (Object sourceElement : sourceCollection) {
-				Object targetElement = this.conversionService.convert(sourceElement,
+				Object targetElement = this.getConversionService().convert(sourceElement,
 						sourceType.elementTypeDescriptor(sourceElement), elementDesc);
 				target.add(targetElement);
 				if (sourceElement != targetElement) {

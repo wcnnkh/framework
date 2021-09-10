@@ -14,3 +14,4 @@ io.basc.framework.orm.dom.NodeListToEntityConversionService
 io.basc.framework.orm.convert.CollectionToMapConversionService
 io.basc.framework.orm.convert.PropertyFactoryToEntityConversionService
 io.basc.framework.orm.convert.MapToEntityConversionService
+io.basc.framework.orm.convert.EntityToMapConversionService

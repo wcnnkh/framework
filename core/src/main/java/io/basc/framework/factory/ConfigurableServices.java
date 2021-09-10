@@ -123,4 +123,9 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 			this.services = newServices;
 		}
 	}
+	
+	@Override
+	public String toString() {
+		return "[" + serviceClass.getName() + "] services " + services == null? "[]":services.toString();
+	}
 }

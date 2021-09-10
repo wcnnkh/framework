@@ -14,7 +14,7 @@ import io.basc.framework.value.EmptyValue;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-public class ConversionServices extends ConvertibleConditionalComparator<Object>
+public class ConversionServices extends ConversionComparator<Object>
 		implements ConfigurableConversionService, Comparable<Object>, ConversionServiceAware,
 		Iterable<ConversionService>, Configurable {
 	private static final LinkedThreadLocal<ConversionService> NESTED = new LinkedThreadLocal<ConversionService>(
@@ -109,7 +109,7 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 		}
 		
 		if(sourceTypeToUse == null) {
-			Object value = EmptyValue.INSTANCE.getAsObject(targetType.getResolvableType());
+			Object value = EmptyValue.INSTANCE.getAsObject(targetType);
 			return value;
 		}
 
@@ -118,10 +118,15 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 
 	public int compareTo(Object o) {
 		for (ConversionService service : this) {
-			if (ConvertibleConditionalComparator.INSTANCE.compare(service, o) == 1) {
-				return 1;
+			if (compare(service, o) == -1) {
+				return -1;
 			}
 		}
-		return -1;
+		return 1;
+	}
+	
+	@Override
+	public String toString() {
+		return conversionServices.toString();
 	}
 }

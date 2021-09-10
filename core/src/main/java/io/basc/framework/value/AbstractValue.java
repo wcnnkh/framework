@@ -1,10 +1,10 @@
 package io.basc.framework.value;
 
+import io.basc.framework.convert.TypeDescriptor;
+
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-
-import io.basc.framework.core.ResolvableType;
 
 public abstract class AbstractValue implements BaseValue {
 	
@@ -58,7 +58,7 @@ public abstract class AbstractValue implements BaseValue {
 		} else if (type == Value.class) {
 			v = this;
 		} else {
-			v = getAsNonBaseType(ResolvableType.forClass(type));
+			v = getAsNonBaseType(TypeDescriptor.valueOf(type));
 		}
 		return (T) v;
 	}
@@ -67,11 +67,11 @@ public abstract class AbstractValue implements BaseValue {
 		if (type instanceof Class) {
 			return getAsObject((Class<?>) type);
 		}
-		return getAsNonBaseType(ResolvableType.forType(type));
+		return getAsNonBaseType(TypeDescriptor.valueOf(type));
 	}
 
-	public final Object getAsObject(ResolvableType type) {
-		Class<?> rawClass = type.getRawClass();
+	public final Object getAsObject(TypeDescriptor type) {
+		Class<?> rawClass = type.getType();
 		if (Value.isBaseType(rawClass)) {
 			return getAsObject(rawClass);
 		}
@@ -84,5 +84,5 @@ public abstract class AbstractValue implements BaseValue {
 		return getAsString();
 	}
 
-	protected abstract Object getAsNonBaseType(ResolvableType type);
+	protected abstract Object getAsNonBaseType(TypeDescriptor type);
 }

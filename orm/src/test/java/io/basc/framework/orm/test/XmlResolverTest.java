@@ -1,17 +1,18 @@
 package io.basc.framework.orm.test;
 
 import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Test;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.io.Resource;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.orm.annotation.PrimaryKey;
-
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Test;
 
 public class XmlResolverTest {
 	private static Logger logger = LoggerFactory.getLogger(XmlResolverTest.class);

@@ -1,13 +1,5 @@
 package io.basc.framework.orm.dom;
 
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.ConversionServiceAware;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.ConditionalConversionService;
-import io.basc.framework.convert.lang.ConvertiblePair;
-import io.basc.framework.dom.DomUtils;
-import io.basc.framework.util.CollectionFactory;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -15,14 +7,14 @@ import java.util.Set;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-@SuppressWarnings({ "rawtypes", "unchecked" })
-class NodeListToCollectionConversionService extends ConditionalConversionService implements ConversionServiceAware {
-	private ConversionService conversionService;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.ConditionalConversionService;
+import io.basc.framework.convert.lang.ConvertiblePair;
+import io.basc.framework.dom.DomUtils;
+import io.basc.framework.util.CollectionFactory;
 
-	@Override
-	public void setConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
-	}
+@SuppressWarnings({ "rawtypes", "unchecked" })
+class NodeListToCollectionConversionService extends ConditionalConversionService {
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(NodeList.class, Collection.class));
@@ -43,7 +35,7 @@ class NodeListToCollectionConversionService extends ConditionalConversionService
 				continue;
 			}
 
-			Object value = conversionService.convert(node, TypeDescriptor.valueOf(Node.class),
+			Object value = getConversionService().convert(node, TypeDescriptor.valueOf(Node.class),
 					targetType.getElementTypeDescriptor());
 			collection.add(value);
 		}

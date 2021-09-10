@@ -7,8 +7,6 @@ import io.basc.framework.convert.annotation.JSON;
 import io.basc.framework.json.JSONSupportAccessor;
 import io.basc.framework.json.JsonElement;
 
-import java.io.Reader;
-
 public class JsonToObjectConversionService extends JSONSupportAccessor implements ConversionService {
 
 	@Override
@@ -17,8 +15,7 @@ public class JsonToObjectConversionService extends JSONSupportAccessor implement
 			return false;
 		}
 		
-		return (String.class == sourceType.getType() || Reader.class.isAssignableFrom(targetType.getType()))
-				&& targetType.isAnnotationPresent(JSON.class);
+		return targetType.isAnnotationPresent(JSON.class);
 	}
 
 	@Override
@@ -29,6 +26,6 @@ public class JsonToObjectConversionService extends JSONSupportAccessor implement
 			return null;
 		}
 
-		return jsonElement.getAsObject(targetType.getResolvableType());
+		return jsonElement.getAsObject(targetType);
 	}
 }

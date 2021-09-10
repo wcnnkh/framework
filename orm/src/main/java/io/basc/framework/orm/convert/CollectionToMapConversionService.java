@@ -1,9 +1,16 @@
 package io.basc.framework.orm.convert;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import io.basc.framework.convert.ConversionFailedException;
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.ConditionalConversionService;
+import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
@@ -13,14 +20,8 @@ import io.basc.framework.orm.ObjectRelationalMapping;
 import io.basc.framework.orm.OrmUtils;
 import io.basc.framework.util.CollectionFactory;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-class CollectionToMapConversionService implements ConversionService, ConversionServiceAware {
-	private static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
-	private ConversionService conversionService;
+public class CollectionToMapConversionService extends ConditionalConversionService {
+	public static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
 	private ObjectRelationalMapping objectRelationalMapping;
 
 	public ObjectRelationalMapping getObjectRelationalMapping() {
@@ -32,17 +33,8 @@ class CollectionToMapConversionService implements ConversionService, ConversionS
 	}
 
 	@Override
-	public void setConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
-	}
-
-	@Override
-	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (sourceType == null || sourceType.isMap() || !targetType.isMap()) {
-			return false;
-		}
-
-		return conversionService.canConvert(sourceType, COLLECTION_TYPE);
+	public Set<ConvertiblePair> getConvertibleTypes() {
+		return Collections.singleton(new ConvertiblePair(Collection.class, Map.class));
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -55,7 +47,11 @@ class CollectionToMapConversionService implements ConversionService, ConversionS
 		if (sourceType.isCollection()) {
 			sources = (Collection) source;
 		} else {
-			sources = (Collection) conversionService.convert(source, sourceType, COLLECTION_TYPE);
+			sources = (Collection) getConversionService().convert(source, sourceType, COLLECTION_TYPE);
+		}
+
+		if (sources == null) {
+			return null;
 		}
 
 		TypeDescriptor itemType = getValueType(targetType);
@@ -66,7 +62,7 @@ class CollectionToMapConversionService implements ConversionService, ConversionS
 				continue;
 			}
 
-			Object value = conversionService.convert(item, sourceType.narrow(item), itemType);
+			Object value = getConversionService().convert(item, sourceType.narrow(item), itemType);
 			Fields primaryKeyFields = MapperUtils.getFields(itemType.getType()).all()
 					.accept(FieldFeature.SUPPORT_GETTER).accept(getObjectRelationalMapping().getPrimaryKeyAccept())
 					.shared();
@@ -78,7 +74,7 @@ class CollectionToMapConversionService implements ConversionService, ConversionS
 				Field primaryKeyField = primaryKeyIterator.next();
 				Object key = primaryKeyField.getGetter().get(value);
 
-				key = conversionService.convert(key, new TypeDescriptor(primaryKeyField.getGetter()), keyType);
+				key = getConversionService().convert(key, new TypeDescriptor(primaryKeyField.getGetter()), keyType);
 				if (primaryKeyIterator.hasNext()) {
 					if (!valueType.isMap()) {
 						throw new ConversionFailedException(sourceType, targetType, source, null);
@@ -104,7 +100,7 @@ class CollectionToMapConversionService implements ConversionService, ConversionS
 		return map;
 	}
 
-	private TypeDescriptor getValueType(TypeDescriptor typeDescriptor) {
+	public static TypeDescriptor getValueType(TypeDescriptor typeDescriptor) {
 		TypeDescriptor valueType = typeDescriptor;
 		while (valueType.isMap()) {
 			valueType = valueType.getMapValueTypeDescriptor();
