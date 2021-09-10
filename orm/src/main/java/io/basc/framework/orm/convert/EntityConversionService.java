@@ -1,7 +1,14 @@
 package io.basc.framework.orm.convert;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+
 import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.env.Sys;
@@ -20,31 +27,22 @@ import io.basc.framework.util.ConfigurableAccept;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.alias.AliasRegistry;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-
-public abstract class EntityConversionService extends ConditionalConversionService implements ConversionServiceAware, FieldFactory {
+public abstract class EntityConversionService extends ConditionalConversionService implements FieldFactory {
 	private static Logger logger = LoggerFactory.getLogger(EntityConversionService.class);
 	private AliasRegistry aliasRegistry;
 	private final ConfigurableAccept<Field> fieldAccept = new ConfigurableAccept<Field>();
 	private String prefix;
 	private String connector = ".";
 	private boolean strict = false;
-	private ConversionService conversionService;
 	private NoArgsInstanceFactory instanceFactory;
 	private Level loggerLevel = io.basc.framework.logger.Levels.DEBUG.getValue();
 	private ObjectRelationalMapping objectRelationalMapping;
 	private Field parentField;
-	//是否先检查key存在
+	// 是否先检查key存在
 	private boolean checkKeyExists = false;
-	//默认是所有字段
+	// 默认是所有字段
 	private boolean useSuperClass = true;
-	
+
 	public final boolean isCheckKeyExists() {
 		return checkKeyExists;
 	}
@@ -85,12 +83,10 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		this.instanceFactory = instanceFactory;
 	}
 
-	public final ConversionService getConversionService() {
+	@Override
+	public ConversionService getConversionService() {
+		ConversionService conversionService = super.getConversionService();
 		return conversionService == null ? Sys.env.getConversionService() : conversionService;
-	}
-
-	public void setConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
 	}
 
 	public Level getLoggerLevel() {
@@ -160,7 +156,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	@Nullable
 	private Object getProperty(Object source, Field field) {
 		Collection<String> names = getSetterNames(field);
-		if(logger.isTraceEnabled()) {
+		if (logger.isTraceEnabled()) {
 			logger.trace(field + " - " + names);
 		}
 		for (String name : names) {
@@ -188,12 +184,11 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	}
 
 	protected abstract Object getProperty(Object source, String key);
-	
-	
+
 	public Fields getFields(Class<?> type, Field parentField) {
-		Fields fields = getObjectRelationalMapping().getFields(type, parentField)
-				.accept(FieldFeature.SUPPORT_SETTER).accept(getFieldAccept());
-		if(isUseSuperClass()) {
+		Fields fields = getObjectRelationalMapping().getFields(type, parentField).accept(FieldFeature.SUPPORT_SETTER)
+				.accept(getFieldAccept());
+		if (isUseSuperClass()) {
 			fields = fields.all();
 		}
 		return fields;
@@ -218,7 +213,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		Collection<String> names = getObjectRelationalMapping().getAliasNames(field.getSetter());
 		for (String name : names) {
 			useNames.add(name);
-			if(aliasRegistry != null) {
+			if (aliasRegistry != null) {
 				for (String alias : aliasRegistry.getAliases(name)) {
 					useNames.add(alias);
 				}
@@ -249,7 +244,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 			Field field) {
 		Field parent = field.getParentField();
 		if (parent == null) {
-			//最顶层的字段
+			// 最顶层的字段
 			Collection<String> aliasNames = getObjectRelationalMapping().getAliasNames(field.getSetter());
 			for (String name : aliasNames) {
 				names.add(toUseName(parentName, name));
@@ -259,11 +254,11 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 					}
 				}
 			}
-			
-			//该字段的声明类
+
+			// 该字段的声明类
 			Class<?> declaringClass = field.getSetter().getDeclaringClass();
-			for(String entityName : getObjectRelationalMapping().getAliasNames(declaringClass)) {
-				for(String alias : aliasNames) {
+			for (String entityName : getObjectRelationalMapping().getAliasNames(declaringClass)) {
+				for (String alias : aliasNames) {
 					names.add(toUseName(parentName, entityName + connector + alias));
 					if (aliasRegistry != null) {
 						for (String aliasName : aliasRegistry.getAliases(alias)) {

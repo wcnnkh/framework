@@ -9,8 +9,6 @@ import java.util.Set;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
@@ -21,9 +19,8 @@ import io.basc.framework.orm.convert.CollectionToMapConversionService;
 import io.basc.framework.util.CollectionFactory;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-class NodeListToMapConversionService extends ConditionalConversionService implements ConversionServiceAware {
+class NodeListToMapConversionService extends ConditionalConversionService {
 	private static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
-	private ConversionService conversionService;
 	private ObjectRelationalMapping objectRelationalMapping;
 
 	public ObjectRelationalMapping getObjectRelationalMapping() {
@@ -32,11 +29,6 @@ class NodeListToMapConversionService extends ConditionalConversionService implem
 
 	public void setObjectRelationalMapping(ObjectRelationalMapping objectRelationalMapping) {
 		this.objectRelationalMapping = objectRelationalMapping;
-	}
-
-	@Override
-	public void setConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
 	}
 
 	/**
@@ -51,7 +43,7 @@ class NodeListToMapConversionService extends ConditionalConversionService implem
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return super.canConvert(sourceType, targetType) && conversionService.canConvert(sourceType, COLLECTION_TYPE);
+		return super.canConvert(sourceType, targetType) && getConversionService().canConvert(sourceType, COLLECTION_TYPE);
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
@@ -65,10 +57,10 @@ class NodeListToMapConversionService extends ConditionalConversionService implem
 
 		TypeDescriptor lastValueType = CollectionToMapConversionService.getValueType(targetType);
 		TypeDescriptor collectionType = TypeDescriptor.collection(Collection.class, lastValueType);
-		if (isExistPrimary(lastValueType) && conversionService.canConvert(sourceType, collectionType)) {
+		if (isExistPrimary(lastValueType) && getConversionService().canConvert(sourceType, collectionType)) {
 			// 如果是存在主键的，应该进行类解析
-			Collection<?> list = (Collection<?>) conversionService.convert(source, sourceType, collectionType);
-			return conversionService.convert(list, collectionType, targetType);
+			Collection<?> list = (Collection<?>) getConversionService().convert(source, sourceType, collectionType);
+			return getConversionService().convert(list, collectionType, targetType);
 		}
 
 		NodeList nodeList = (NodeList) source;
@@ -81,9 +73,9 @@ class NodeListToMapConversionService extends ConditionalConversionService implem
 				continue;
 			}
 
-			Object key = conversionService.convert(node.getNodeName(), TypeDescriptor.valueOf(String.class),
+			Object key = getConversionService().convert(node.getNodeName(), TypeDescriptor.valueOf(String.class),
 					targetType.getMapKeyTypeDescriptor());
-			Object value = conversionService.convert(node, TypeDescriptor.valueOf(Node.class),
+			Object value = getConversionService().convert(node, TypeDescriptor.valueOf(Node.class),
 					targetType.getMapValueTypeDescriptor());
 			map.put(key, value);
 		}

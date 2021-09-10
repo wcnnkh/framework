@@ -15,10 +15,9 @@ import java.util.Map;
 import java.util.Set;
 
 class MapToMapConversionService extends ConditionalConversionService{
-	private final ConversionService conversionService;
 	
 	public MapToMapConversionService(ConversionService conversionService){
-		this.conversionService = conversionService;
+		setConversionService(conversionService);
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -65,14 +64,14 @@ class MapToMapConversionService extends ConditionalConversionService{
 		if (targetType == null) {
 			return sourceKey;
 		}
-		return this.conversionService.convert(sourceKey, sourceType.getMapKeyTypeDescriptor(sourceKey), targetType);
+		return getConversionService().convert(sourceKey, sourceType.getMapKeyTypeDescriptor(sourceKey), targetType);
 	}
 
 	private Object convertValue(Object sourceValue, TypeDescriptor sourceType, @Nullable TypeDescriptor targetType) {
 		if (targetType == null) {
 			return sourceValue;
 		}
-		return this.conversionService.convert(sourceValue, sourceType.getMapValueTypeDescriptor(sourceValue), targetType);
+		return getConversionService().convert(sourceValue, sourceType.getMapValueTypeDescriptor(sourceValue), targetType);
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {

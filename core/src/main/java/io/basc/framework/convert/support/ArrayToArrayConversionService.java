@@ -10,10 +10,9 @@ import java.util.Collections;
 import java.util.Set;
 
 class ArrayToArrayConversionService extends ConditionalConversionService {
-	private final ConversionService conversionService;
 
 	public ArrayToArrayConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
+		setConversionService(conversionService);
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
@@ -32,7 +31,7 @@ class ArrayToArrayConversionService extends ConditionalConversionService {
 		Object targetArray = Array.newInstance(targetElementType.getType(), len);
 		for(int i=0; i<len; i++){
 			Object sourceElement = Array.get(source, i);
-			Object targetElement = conversionService.convert(sourceElement, sourceType.elementTypeDescriptor(sourceElement), targetElementType);
+			Object targetElement = getConversionService().convert(sourceElement, sourceType.elementTypeDescriptor(sourceElement), targetElementType);
 			Array.set(targetArray, i, targetElement);
 		}
 		return targetArray;

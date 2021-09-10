@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import io.basc.framework.convert.ConversionFailedException;
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
@@ -22,9 +20,8 @@ import io.basc.framework.orm.ObjectRelationalMapping;
 import io.basc.framework.orm.OrmUtils;
 import io.basc.framework.util.CollectionFactory;
 
-public class CollectionToMapConversionService extends ConditionalConversionService implements ConversionServiceAware {
+public class CollectionToMapConversionService extends ConditionalConversionService {
 	public static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
-	private ConversionService conversionService;
 	private ObjectRelationalMapping objectRelationalMapping;
 
 	public ObjectRelationalMapping getObjectRelationalMapping() {
@@ -33,11 +30,6 @@ public class CollectionToMapConversionService extends ConditionalConversionServi
 
 	public void setObjectRelationalMapping(ObjectRelationalMapping objectRelationalMapping) {
 		this.objectRelationalMapping = objectRelationalMapping;
-	}
-
-	@Override
-	public void setConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
 	}
 
 	@Override
@@ -55,7 +47,7 @@ public class CollectionToMapConversionService extends ConditionalConversionServi
 		if (sourceType.isCollection()) {
 			sources = (Collection) source;
 		} else {
-			sources = (Collection) conversionService.convert(source, sourceType, COLLECTION_TYPE);
+			sources = (Collection) getConversionService().convert(source, sourceType, COLLECTION_TYPE);
 		}
 
 		if (sources == null) {
@@ -70,7 +62,7 @@ public class CollectionToMapConversionService extends ConditionalConversionServi
 				continue;
 			}
 
-			Object value = conversionService.convert(item, sourceType.narrow(item), itemType);
+			Object value = getConversionService().convert(item, sourceType.narrow(item), itemType);
 			Fields primaryKeyFields = MapperUtils.getFields(itemType.getType()).all()
 					.accept(FieldFeature.SUPPORT_GETTER).accept(getObjectRelationalMapping().getPrimaryKeyAccept())
 					.shared();
@@ -82,7 +74,7 @@ public class CollectionToMapConversionService extends ConditionalConversionServi
 				Field primaryKeyField = primaryKeyIterator.next();
 				Object key = primaryKeyField.getGetter().get(value);
 
-				key = conversionService.convert(key, new TypeDescriptor(primaryKeyField.getGetter()), keyType);
+				key = getConversionService().convert(key, new TypeDescriptor(primaryKeyField.getGetter()), keyType);
 				if (primaryKeyIterator.hasNext()) {
 					if (!valueType.isMap()) {
 						throw new ConversionFailedException(sourceType, targetType, source, null);

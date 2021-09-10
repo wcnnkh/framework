@@ -11,11 +11,10 @@ import java.util.Set;
 
 class CollectionToObjectConversionService extends
 		ConditionalConversionService {
-	private final ConversionService conversionService;
 
 	public CollectionToObjectConversionService(
 			ConversionService conversionService) {
-		this.conversionService = conversionService;
+		setConversionService(conversionService);
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
@@ -36,7 +35,7 @@ class CollectionToObjectConversionService extends
 			return null;
 		}
 		Object firstElement = sourceCollection.iterator().next();
-		return this.conversionService.convert(firstElement,
+		return getConversionService().convert(firstElement,
 				sourceType.elementTypeDescriptor(firstElement), targetType);
 	}
 

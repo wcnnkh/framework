@@ -1,22 +1,19 @@
 package io.basc.framework.convert.support;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.util.CollectionFactory;
 
-import java.lang.reflect.Array;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
 class ArrayToCollectionConversionService extends ConditionalConversionService{
-	private final ConversionService conversionService;
-
-
 	public ArrayToCollectionConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
+		setConversionService(conversionService);
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
@@ -42,7 +39,7 @@ class ArrayToCollectionConversionService extends ConditionalConversionService{
 		else {
 			for (int i = 0; i < length; i++) {
 				Object sourceElement = Array.get(source, i);
-				Object targetElement = this.conversionService.convert(sourceElement,
+				Object targetElement = getConversionService().convert(sourceElement,
 						sourceType.elementTypeDescriptor(sourceElement), elementDesc);
 				target.add(targetElement);
 			}

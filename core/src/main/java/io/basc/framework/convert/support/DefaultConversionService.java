@@ -54,7 +54,6 @@ public class DefaultConversionService extends ConversionServices implements Conf
 				new ConverterConversionService(String.class, Currency.class, new StringToCurrencyConverter()));
 		addConversionService(new ConverterConversionService(Reader.class, String.class, new ReaderToStringConverter()));
 
-		addConversionService(new EntityToMapConversionService(this));
 		addConversionService(new ObjectToArrayConversionService(this));
 		addConversionService(new ObjectToCollectionConversionService(this));
 		addConversionService(new ObjectToStringConverter());
