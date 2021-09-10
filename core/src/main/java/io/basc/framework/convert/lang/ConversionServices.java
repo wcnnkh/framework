@@ -14,7 +14,7 @@ import io.basc.framework.value.EmptyValue;
 import java.util.Iterator;
 import java.util.TreeSet;
 
-public class ConversionServices extends ConvertibleConditionalComparator<Object>
+public class ConversionServices extends ConversionComparator<Object>
 		implements ConfigurableConversionService, Comparable<Object>, ConversionServiceAware,
 		Iterable<ConversionService>, Configurable {
 	private static final LinkedThreadLocal<ConversionService> NESTED = new LinkedThreadLocal<ConversionService>(

@@ -28,6 +28,6 @@ public class ConverterConversionService extends ConditionalConversionService{
 
 	@Override
 	public String toString() {
-		return "<" + converter.toString() + ">" + convertibleTypes.toString();
+		return "<" + String.valueOf(converter) + ">" + convertibleTypes.toString();
 	}
 }
