@@ -1,5 +1,10 @@
 package io.basc.framework.jackson;
 
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.json.AbstractJsonElement;
+import io.basc.framework.json.JsonArray;
+import io.basc.framework.json.JsonObject;
+
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -12,11 +17,6 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import io.basc.framework.core.ResolvableType;
-import io.basc.framework.json.AbstractJsonElement;
-import io.basc.framework.json.JsonArray;
-import io.basc.framework.json.JsonObject;
 
 public class JacksonJsonElement extends AbstractJsonElement implements
 		JsonSerializable, Serializable {
@@ -61,8 +61,8 @@ public class JacksonJsonElement extends AbstractJsonElement implements
 	}
 
 	@Override
-	protected Object getAsNonBaseType(ResolvableType type) {
-		JavaType javaType = mapper.constructType(type.getType());
+	protected Object getAsNonBaseType(TypeDescriptor type) {
+		JavaType javaType = mapper.constructType(type.getResolvableType().getType());
 		return mapper.convertValue(jsonNode, javaType);
 	}
 

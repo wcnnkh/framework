@@ -109,7 +109,7 @@ public class ConversionServices extends ConversionComparator<Object>
 		}
 		
 		if(sourceTypeToUse == null) {
-			Object value = EmptyValue.INSTANCE.getAsObject(targetType.getResolvableType());
+			Object value = EmptyValue.INSTANCE.getAsObject(targetType);
 			return value;
 		}
 

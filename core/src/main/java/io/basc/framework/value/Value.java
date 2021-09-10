@@ -1,6 +1,6 @@
 package io.basc.framework.value;
 
-import io.basc.framework.core.ResolvableType;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 
@@ -18,7 +18,7 @@ public interface Value {
 	Object getAsObject(Type type);
 
 	@Nullable
-	Object getAsObject(ResolvableType type);
+	Object getAsObject(TypeDescriptor type);
 
 	@Nullable
 	String getAsString();

@@ -1,6 +1,6 @@
 package io.basc.framework.value;
 
-import io.basc.framework.core.ResolvableType;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.ObjectUtils;
 
 import java.io.Serializable;
@@ -20,7 +20,7 @@ public class ValueWrapper<V extends Value> implements Value, Serializable {
 		return targetValue;
 	}
 
-	public Object getAsObject(ResolvableType type) {
+	public Object getAsObject(TypeDescriptor type) {
 		return targetValue.getAsObject(type);
 	}
 

@@ -1,14 +1,14 @@
 package io.basc.framework.value;
 
-import java.io.Serializable;
-import java.lang.reflect.Array;
-import java.lang.reflect.Type;
-
-import io.basc.framework.core.ResolvableType;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.json.JSONSupport;
 import io.basc.framework.json.JSONUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
+
+import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 
 public class StringValue extends AbstractValue implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -44,13 +44,13 @@ public class StringValue extends AbstractValue implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <E> E[] getAsArray(ResolvableType componentType) {
+	public <E> E[] getAsArray(TypeDescriptor componentType) {
 		String[] values = split(getAsString());
 		if (values == null) {
 			return null;
 		}
 
-		Object array = Array.newInstance(componentType.getRawClass(),
+		Object array = Array.newInstance(componentType.getType(),
 				values.length);
 		for (int i = 0; i < values.length; i++) {
 			Value value = parseValue(values[i]);
@@ -62,26 +62,26 @@ public class StringValue extends AbstractValue implements Serializable {
 	}
 
 	public <E> E[] getAsArray(Class<E> componentType) {
-		return getAsArray(ResolvableType.forClass(componentType));
+		return getAsArray(TypeDescriptor.valueOf(componentType));
 	}
 
 	@Override
-	protected Object getAsNonBaseType(ResolvableType type) {
+	protected Object getAsNonBaseType(TypeDescriptor type) {
 		if (value == null) {
 			return null;
 		}
 		
-		if(type.isInstance(value)) {
+		if(type.getType().isInstance(value)) {
 			return value;
 		}
 
-		Class<?> rawClass = type.getRawClass();
+		Class<?> rawClass = type.getType();
 		if (rawClass == Object.class || rawClass == null) {
 			return value;
 		}
 		
 		if (isSupportArray() && type.isArray()) {
-			return getAsArray(type.getComponentType());
+			return getAsArray(type.getElementTypeDescriptor());
 		}
 		return getJsonSupport().parseObject(getAsString(), type.getType());
 	}

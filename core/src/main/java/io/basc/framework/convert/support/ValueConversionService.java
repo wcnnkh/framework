@@ -19,7 +19,7 @@ class ValueConversionService implements ConversionService {
 			return value;
 		}
 		
-		return value.getAsObject(targetType.getResolvableType());
+		return value.getAsObject(targetType);
 	}
 	
 	public boolean canConvert(TypeDescriptor sourceType,

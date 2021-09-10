@@ -26,6 +26,6 @@ public class JsonToObjectConversionService extends JSONSupportAccessor implement
 			return null;
 		}
 
-		return jsonElement.getAsObject(targetType.getResolvableType());
+		return jsonElement.getAsObject(targetType);
 	}
 }

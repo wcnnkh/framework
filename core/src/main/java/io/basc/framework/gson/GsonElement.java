@@ -1,12 +1,12 @@
 package io.basc.framework.gson;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-
-import io.basc.framework.core.ResolvableType;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.json.AbstractJsonElement;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonObject;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
 public final class GsonElement extends AbstractJsonElement {
 	private JsonElement gsonJsonElement;
@@ -25,8 +25,8 @@ public final class GsonElement extends AbstractJsonElement {
 	}
 	
 	@Override
-	protected Object getAsNonBaseType(ResolvableType type) {
-		return gson.fromJson(gsonJsonElement, type.getType());
+	protected Object getAsNonBaseType(TypeDescriptor type) {
+		return gson.fromJson(gsonJsonElement, type.getResolvableType().getType());
 	}
 
 	public JsonArray getAsJsonArray() {

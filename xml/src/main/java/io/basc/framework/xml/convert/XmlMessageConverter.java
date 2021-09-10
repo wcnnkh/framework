@@ -1,11 +1,5 @@
 package io.basc.framework.xml.convert;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-
-import org.w3c.dom.Document;
-
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
@@ -19,6 +13,12 @@ import io.basc.framework.util.ClassUtils;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 import io.basc.framework.xml.XmlUtils;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
+
+import org.w3c.dom.Document;
 
 public class XmlMessageConverter extends AbstractMessageConverter<Object> implements ConversionServiceAware {
 	private ConversionService conversionService;
@@ -49,7 +49,7 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> implem
 				|| Value.class == type.getType()) {
 			StringValue value = new StringValue(text);
 			value.setJsonSupport(getJsonSupport());
-			return value.getAsObject(type.getResolvableType());
+			return value.getAsObject(type);
 		}
 
 		Document document = XmlUtils.getTemplate().getParser().parse(text);

@@ -69,7 +69,7 @@ public class DateFormatConversionService implements ConversionService {
 			}
 			
 			if(NumberUtils.isNumber(targetType.getType())){
-				return new AnyValue(source).getAsObject(targetType.getResolvableType());
+				return new AnyValue(source).getAsObject(targetType);
 			}
 		}
 		
@@ -105,8 +105,7 @@ public class DateFormatConversionService implements ConversionService {
 
 	private Object dateToNumber(Date source, TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
-		return new AnyValue(source.getTime()).getAsObject(targetType
-				.getResolvableType());
+		return new AnyValue(source.getTime()).getAsObject(targetType);
 	}
 	
 	private Date numberToDate(Object source, TypeDescriptor sourceType, TypeDescriptor targetType){
