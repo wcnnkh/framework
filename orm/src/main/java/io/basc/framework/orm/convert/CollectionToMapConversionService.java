@@ -1,9 +1,18 @@
 package io.basc.framework.orm.convert;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.ConditionalConversionService;
+import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
@@ -13,13 +22,8 @@ import io.basc.framework.orm.ObjectRelationalMapping;
 import io.basc.framework.orm.OrmUtils;
 import io.basc.framework.util.CollectionFactory;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-class CollectionToMapConversionService implements ConversionService, ConversionServiceAware {
-	private static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
+public class CollectionToMapConversionService extends ConditionalConversionService implements ConversionServiceAware {
+	public static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
 	private ConversionService conversionService;
 	private ObjectRelationalMapping objectRelationalMapping;
 
@@ -37,12 +41,8 @@ class CollectionToMapConversionService implements ConversionService, ConversionS
 	}
 
 	@Override
-	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (sourceType == null || sourceType.isMap() || !targetType.isMap()) {
-			return false;
-		}
-
-		return conversionService.canConvert(sourceType, COLLECTION_TYPE);
+	public Set<ConvertiblePair> getConvertibleTypes() {
+		return Collections.singleton(new ConvertiblePair(Collection.class, Map.class));
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -57,8 +57,8 @@ class CollectionToMapConversionService implements ConversionService, ConversionS
 		} else {
 			sources = (Collection) conversionService.convert(source, sourceType, COLLECTION_TYPE);
 		}
-		
-		if(sources == null) {
+
+		if (sources == null) {
 			return null;
 		}
 
@@ -108,7 +108,7 @@ class CollectionToMapConversionService implements ConversionService, ConversionS
 		return map;
 	}
 
-	private TypeDescriptor getValueType(TypeDescriptor typeDescriptor) {
+	public static TypeDescriptor getValueType(TypeDescriptor typeDescriptor) {
 		TypeDescriptor valueType = typeDescriptor;
 		while (valueType.isMap()) {
 			valueType = valueType.getMapValueTypeDescriptor();

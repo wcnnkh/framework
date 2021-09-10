@@ -1,6 +1,12 @@
 package io.basc.framework.orm.test;
 
 import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Test;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.io.Resource;
@@ -8,18 +14,12 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.orm.annotation.PrimaryKey;
 
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Test;
-
 public class XmlResolverTest {
 	private static Logger logger = LoggerFactory.getLogger(XmlResolverTest.class);
 	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
-		System.out.println(Sys.env.getConversionService());
 		TypeDescriptor mapType = TypeDescriptor.map(Map.class, String.class, TestBean.class);
 		TypeDescriptor listType = TypeDescriptor.collection(List.class, TestBean.class);
 		Resource resource = Sys.env.getResource("test.xml");

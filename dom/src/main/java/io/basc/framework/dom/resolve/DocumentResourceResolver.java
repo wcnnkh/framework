@@ -27,7 +27,8 @@ public class DocumentResourceResolver implements ResourceResolver, ConversionSer
 	}
 
 	public Object resolveResource(Resource resource, TypeDescriptor targetType) {
+		//注意，这里使用的是Document.class而不是使用document.getClass(),原因是在一些实现中，Doument的实现类实现的node,和nodelist接口
 		return DomUtils.getTemplate().parse(resource,
-				(document) -> getConversionService().convert(document, TypeDescriptor.forObject(document), targetType));
+				(document) -> getConversionService().convert(document, TypeDescriptor.valueOf(Document.class), targetType));
 	}
 }
