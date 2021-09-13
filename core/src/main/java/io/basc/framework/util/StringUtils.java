@@ -112,7 +112,7 @@ public final class StringUtils {
 	}
 
 	/**
-	 * all is empty
+	 * any is empty
 	 * 
 	 * @param text
 	 * @return

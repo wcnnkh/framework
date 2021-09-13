@@ -2,6 +2,11 @@ package io.basc.framework.util;
 
 import java.util.Calendar;
 
+/**
+ * 日历操作工具类
+ * @author shuchaowen
+ *
+ */
 public final class CalendarUtils {
 	private CalendarUtils() {
 	};
@@ -9,7 +14,7 @@ public final class CalendarUtils {
 	/**
 	 * 获取一个月的第一天
 	 * 
-	 * @param millis
+	 * @param millis 0表示当前时间
 	 * @return
 	 */
 	public static Calendar getMonthBeginCalendar(long millis) {
@@ -28,7 +33,7 @@ public final class CalendarUtils {
 	/**
 	 * 获取一个月的最后一天
 	 * 
-	 * @param millis
+	 * @param millis 0表示当前时间
 	 * @return
 	 */
 	public static Calendar getMonthEndCalendar(long millis) {
@@ -47,7 +52,7 @@ public final class CalendarUtils {
 	/**
 	 * 获取一年的第一天
 	 * 
-	 * @param millis
+	 * @param millis 0表示当前时间
 	 * @return
 	 */
 	public static Calendar getYearBeginCalendar(long millis) {
@@ -87,7 +92,7 @@ public final class CalendarUtils {
 	/**
 	 * 获取一天凌晨时间
 	 * 
-	 * @param timeInMillis
+	 * @param timeInMillis 0表示当前时间
 	 * @return
 	 */
 	public static Calendar getDayBeginCalendar(long millis) {
@@ -103,9 +108,9 @@ public final class CalendarUtils {
 	}
 
 	/**
-	 * 获取一天凌晨时间
+	 * 获取一天结束时间
 	 * 
-	 * @param timeInMillis
+	 * @param timeInMillis 0表示当前时间
 	 * @return
 	 */
 	public static Calendar getDayEndCalendar(long millis) {

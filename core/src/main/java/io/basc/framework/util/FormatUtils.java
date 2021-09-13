@@ -1,9 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.lang.FormatterException;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.placeholder.PropertyResolver;
-
 import java.io.IOException;
 import java.nio.CharBuffer;
 import java.text.DecimalFormat;
@@ -12,6 +8,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map.Entry;
 import java.util.Properties;
+
+import io.basc.framework.lang.FormatterException;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.placeholder.PropertyResolver;
 
 public final class FormatUtils {
 	private static final String DEFAULT_PLACEHOLDER = "{}";
@@ -101,15 +101,24 @@ public final class FormatUtils {
 		return new DecimalFormat(new String(charBuffer.array())).format(number);
 	}
 
-	public static Date getDate(String date, String formatter) throws FormatterException {
+	public static Date parse(String date, String formatter) throws FormatterException {
+		Assert.requiredArgument(StringUtils.hasText(formatter), "formatter");
+		if(StringUtils.isEmpty(date)) {
+			return null;
+		}
+		
 		try {
 			return new SimpleDateFormat(formatter).parse(date);
 		} catch (ParseException e) {
-			throw new FormatterException("time=" + date + ", formatter=" + formatter, e);
+			throw new FormatterException("date=" + date + ", formatter=" + formatter, e);
 		}
 	}
 
-	public static String dateFormat(Date date, String formatter) {
+	public static String format(Date date, String formatter) {
+		Assert.requiredArgument(StringUtils.hasText(formatter), "formatter");
+		if(date == null) {
+			return null;
+		}
 		return new SimpleDateFormat(formatter).format(date);
 	}
 	

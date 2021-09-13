@@ -3,7 +3,9 @@ package io.basc.framework.yaml;
 import io.basc.framework.convert.Converter;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
+import io.basc.framework.io.WritableResource;
 import io.basc.framework.io.resolver.PropertiesResolver;
+import io.basc.framework.lang.NestedRuntimeException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -16,7 +18,9 @@ import io.basc.framework.util.StringUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,7 +40,7 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.reader.UnicodeReader;
 import org.yaml.snakeyaml.representer.Representer;
 
-public class YamlProcessor implements Converter<Resource, Properties>, PropertiesResolver{
+public class YamlProcessor implements Converter<Resource, Properties>, PropertiesResolver {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private ResolutionMethod resolutionMethod = ResolutionMethod.OVERRIDE;
@@ -48,10 +52,10 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 	private Set<String> supportedTypes = Collections.emptySet();
 
 	/**
-	 * A map of document matchers allowing callers to selectively use only some
-	 * of the documents in a YAML resource. In YAML documents are separated by
-	 * {@code ---} lines, and each document is converted to properties before
-	 * the match is made. E.g.
+	 * A map of document matchers allowing callers to selectively use only some of
+	 * the documents in a YAML resource. In YAML documents are separated by
+	 * {@code ---} lines, and each document is converted to properties before the
+	 * match is made. E.g.
 	 * 
 	 * <pre class="code">
 	 * environment: dev
@@ -66,8 +70,7 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 	 * when mapped with
 	 * 
 	 * <pre class="code">
-	 * setDocumentMatchers(properties -&gt; (&quot;prod&quot;.equals(properties
-	 * 		.getProperty(&quot;environment&quot;)) ? MatchStatus.FOUND
+	 * setDocumentMatchers(properties -&gt; (&quot;prod&quot;.equals(properties.getProperty(&quot;environment&quot;)) ? MatchStatus.FOUND
 	 * 		: MatchStatus.NOT_FOUND));
 	 * </pre>
 	 * 
@@ -85,18 +88,17 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 
 	/**
 	 * Flag indicating that a document for which all the
-	 * {@link #setDocumentMatchers(DocumentMatcher...) document matchers}
-	 * abstain will nevertheless match. Default is {@code true}.
+	 * {@link #setDocumentMatchers(DocumentMatcher...) document matchers} abstain
+	 * will nevertheless match. Default is {@code true}.
 	 */
 	public void setMatchDefault(boolean matchDefault) {
 		this.matchDefault = matchDefault;
 	}
 
 	/**
-	 * Method to use for resolving resources. Each resource will be converted to
-	 * a Map, so this property is used to decide which map entries to keep in
-	 * the final output from this factory. Default is
-	 * {@link ResolutionMethod#OVERRIDE}.
+	 * Method to use for resolving resources. Each resource will be converted to a
+	 * Map, so this property is used to decide which map entries to keep in the
+	 * final output from this factory. Default is {@link ResolutionMethod#OVERRIDE}.
 	 */
 	public void setResolutionMethod(ResolutionMethod resolutionMethod) {
 		Assert.notNull(resolutionMethod, "ResolutionMethod must not be null");
@@ -106,23 +108,20 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 	/**
 	 * Set the supported types that can be loaded from YAML documents.
 	 * <p>
-	 * If no supported types are configured, all types encountered in YAML
-	 * documents will be supported. If an unsupported type is encountered, an
-	 * {@link IllegalStateException} will be thrown when the corresponding YAML
-	 * node is processed.
+	 * If no supported types are configured, all types encountered in YAML documents
+	 * will be supported. If an unsupported type is encountered, an
+	 * {@link IllegalStateException} will be thrown when the corresponding YAML node
+	 * is processed.
 	 * 
-	 * @param supportedTypes
-	 *            the supported types, or an empty array to clear the supported
-	 *            types
-	 * @since 5.1.16
+	 * @param supportedTypes the supported types, or an empty array to clear the
+	 *                       supported types
 	 * @see #createYaml()
 	 */
 	public void setSupportedTypes(Class<?>... supportedTypes) {
 		if (ObjectUtils.isEmpty(supportedTypes)) {
 			this.supportedTypes = Collections.emptySet();
 		} else {
-			Assert.noNullElements(supportedTypes,
-					"'supportedTypes' must not contain null elements");
+			Assert.noNullElements(supportedTypes, "'supportedTypes' must not contain null elements");
 			this.supportedTypes = new HashSet<String>();
 			for (Class<?> type : supportedTypes) {
 				this.supportedTypes.add(type.getName());
@@ -132,19 +131,16 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 
 	/**
 	 * Provide an opportunity for subclasses to process the Yaml parsed from the
-	 * supplied resources. Each resource is parsed in turn and the documents
-	 * inside checked against the
-	 * {@link #setDocumentMatchers(DocumentMatcher...) matchers}. If a document
-	 * matches it is passed into the callback, along with its representation as
-	 * Properties. Depending on the
-	 * {@link #setResolutionMethod(ResolutionMethod)} not all of the documents
-	 * will be parsed.
+	 * supplied resources. Each resource is parsed in turn and the documents inside
+	 * checked against the {@link #setDocumentMatchers(DocumentMatcher...)
+	 * matchers}. If a document matches it is passed into the callback, along with
+	 * its representation as Properties. Depending on the
+	 * {@link #setResolutionMethod(ResolutionMethod)} not all of the documents will
+	 * be parsed.
 	 * 
-	 * @param callback
-	 *            a callback to delegate to once matching documents are found
+	 * @param callback  a callback to delegate to once matching documents are found
 	 * @param charset
-	 * @param resources
-	 *            locations of YAML {@link Resource resources} to be loaded
+	 * @param resources locations of YAML {@link Resource resources} to be loaded
 	 * @see #createYaml()
 	 */
 	public void process(MatchCallback callback, Charset charset, Iterable<? extends Resource> resources) {
@@ -154,17 +150,17 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 
 		Yaml yaml = createYaml();
 		for (Resource resource : resources) {
-			if(resource == null || !resource.exists()){
+			if (resource == null || !resource.exists()) {
 				continue;
 			}
-			
+
 			boolean found = process(callback, yaml, charset, resource);
 			if (this.resolutionMethod == ResolutionMethod.FIRST_FOUND && found) {
 				return;
 			}
 		}
 	}
-	
+
 	public void process(MatchCallback callback, @Nullable Charset charset, Resource... resources) {
 		if (ArrayUtils.isEmpty(resources)) {
 			return;
@@ -177,8 +173,7 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 	 * Create the {@link Yaml} instance to use.
 	 * <p>
 	 * The default implementation sets the "allowDuplicateKeys" flag to
-	 * {@code false}, enabling built-in duplicate key handling in SnakeYAML
-	 * 1.18+.
+	 * {@code false}, enabling built-in duplicate key handling in SnakeYAML 1.18+.
 	 * <p>
 	 * a {@code Yaml} instance that filters out unsupported types encountered in
 	 * YAML documents. If an unsupported type is encountered, an
@@ -191,8 +186,8 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 		loaderOptions.setAllowDuplicateKeys(false);
 
 		if (!this.supportedTypes.isEmpty()) {
-			return new Yaml(new FilteringConstructor(loaderOptions),
-					new Representer(), new DumperOptions(), loaderOptions);
+			return new Yaml(new FilteringConstructor(loaderOptions), new Representer(), new DumperOptions(),
+					loaderOptions);
 		}
 		return new Yaml(loaderOptions);
 	}
@@ -206,7 +201,7 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 		InputStream is = null;
 		try {
 			is = resource.getInputStream();
-			reader = charset == null? new UnicodeReader(is):new InputStreamReader(is, charset);
+			reader = charset == null ? new UnicodeReader(is) : new InputStreamReader(is, charset);
 			for (Object object : yaml.loadAll(reader)) {
 				if (object != null && process(asMap(object), callback)) {
 					count++;
@@ -217,9 +212,8 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 			}
 
 			if (logger.isDebugEnabled()) {
-				logger.debug("Loaded " + count + " document"
-						+ (count > 1 ? "s" : "") + " from YAML resource: "
-						+ resource);
+				logger.debug(
+						"Loaded " + count + " document" + (count > 1 ? "s" : "") + " from YAML resource: " + resource);
 			}
 		} catch (IOException e) {
 			handleProcessError(resource, e);
@@ -237,8 +231,7 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 			throw new IllegalStateException(ex);
 		}
 		if (logger.isWarnEnabled()) {
-			logger.warn("Could not load map from " + resource + ": "
-					+ ex.getMessage());
+			logger.warn("Could not load map from " + resource + ": " + ex.getMessage());
 		}
 	}
 
@@ -270,8 +263,7 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 	}
 
 	private boolean process(Map<String, Object> map, MatchCallback callback) {
-		Properties properties = CollectionFactory
-				.createStringAdaptingProperties();
+		Properties properties = CollectionFactory.createStringAdaptingProperties();
 		properties.putAll(getFlattenedMap(map));
 
 		if (this.documentMatchers.isEmpty()) {
@@ -288,8 +280,7 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 			result = MatchStatus.getMostSpecific(match, result);
 			if (match == MatchStatus.FOUND) {
 				if (logger.isDebugEnabled()) {
-					logger.debug("Matched document with document matcher: "
-							+ properties);
+					logger.debug("Matched document with document matcher: " + properties);
 				}
 				callback.process(properties, map);
 				return true;
@@ -311,26 +302,23 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 	}
 
 	/**
-	 * Return a flattened version of the given map, recursively following any
-	 * nested Map or Collection values. Entries from the resulting map retain
-	 * the same order as the source. When called with the Map from a
-	 * {@link MatchCallback} the result will contain the same values as the
-	 * {@link MatchCallback} Properties.
+	 * Return a flattened version of the given map, recursively following any nested
+	 * Map or Collection values. Entries from the resulting map retain the same
+	 * order as the source. When called with the Map from a {@link MatchCallback}
+	 * the result will contain the same values as the {@link MatchCallback}
+	 * Properties.
 	 * 
-	 * @param source
-	 *            the source map
+	 * @param source the source map
 	 * @return a flattened map
 	 * @since 4.1.3
 	 */
-	protected final Map<String, Object> getFlattenedMap(
-			Map<String, Object> source) {
+	protected final Map<String, Object> getFlattenedMap(Map<String, Object> source) {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
 		buildFlattenedMap(result, source, null);
 		return result;
 	}
 
-	private void buildFlattenedMap(Map<String, Object> result,
-			Map<String, Object> source, @Nullable String path) {
+	private void buildFlattenedMap(Map<String, Object> result, Map<String, Object> source, @Nullable String path) {
 		for (Entry<String, Object> entry : source.entrySet()) {
 			String key = entry.getKey();
 			Object value = entry.getValue();
@@ -357,8 +345,7 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 				} else {
 					int count = 0;
 					for (Object object : collection) {
-						buildFlattenedMap(result, Collections.singletonMap("["
-								+ (count++) + "]", object), key);
+						buildFlattenedMap(result, Collections.singletonMap("[" + (count++) + "]", object), key);
 					}
 				}
 			} else {
@@ -377,12 +364,10 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 		/**
 		 * Process the given representation of the parsing results.
 		 * 
-		 * @param properties
-		 *            the properties to process (as a flattened representation
-		 *            with indexed keys in case of a collection or map)
-		 * @param map
-		 *            the result map (preserving the original value structure in
-		 *            the YAML document)
+		 * @param properties the properties to process (as a flattened representation
+		 *                   with indexed keys in case of a collection or map)
+		 * @param map        the result map (preserving the original value structure in
+		 *                   the YAML document)
 		 */
 		void process(Properties properties, Map<String, Object> map);
 	}
@@ -396,16 +381,14 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 		/**
 		 * Test if the given properties match.
 		 * 
-		 * @param properties
-		 *            the properties to test
+		 * @param properties the properties to test
 		 * @return the status of the match
 		 */
 		MatchStatus matches(Properties properties);
 	}
 
 	/**
-	 * Status returned from
-	 * {@link DocumentMatcher#matches(java.util.Properties)}.
+	 * Status returned from {@link DocumentMatcher#matches(java.util.Properties)}.
 	 */
 	public enum MatchStatus {
 
@@ -425,8 +408,7 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 		ABSTAIN;
 
 		/**
-		 * Compare two {@link MatchStatus} items, returning the most specific
-		 * status.
+		 * Compare two {@link MatchStatus} items, returning the most specific status.
 		 */
 		public static MatchStatus getMostSpecific(MatchStatus a, MatchStatus b) {
 			return (a.ordinal() < b.ordinal() ? a : b);
@@ -458,8 +440,7 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 	 * {@link Constructor} that supports filtering of unsupported types.
 	 * <p>
 	 * If an unsupported type is encountered in a YAML document, an
-	 * {@link IllegalStateException} will be thrown from
-	 * {@link #getClassForName}.
+	 * {@link IllegalStateException} will be thrown from {@link #getClassForName}.
 	 */
 	private class FilteringConstructor extends Constructor {
 
@@ -468,8 +449,7 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 		}
 
 		@Override
-		protected Class<?> getClassForName(String name)
-				throws ClassNotFoundException {
+		protected Class<?> getClassForName(String name) throws ClassNotFoundException {
 			Assert.state(YamlProcessor.this.supportedTypes.contains(name),
 					"Unsupported type encountered in YAML document: " + name);
 			return super.getClassForName(name);
@@ -487,20 +467,37 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 		}, null, resource);
 		return allProperties;
 	}
-	
+
 	@Override
 	public boolean canResolveProperties(Resource resource) {
 		return resource.exists() && resource.getName().endsWith(".yaml") || resource.getName().endsWith(".yml");
 	}
 
 	@Override
-	public void resolveProperties(Properties properties, Resource resource,
-			Charset charset) {
+	public void resolveProperties(Properties properties, Resource resource, Charset charset) {
 		process(new MatchCallback() {
 
 			public void process(Properties props, Map<String, Object> map) {
 				properties.putAll(props);
 			}
 		}, charset, resource);
+	}
+
+	@Override
+	public void persistenceProperties(Properties properties, WritableResource resource, Charset charset) {
+		try {
+			resource.write((output) -> {
+				Yaml yaml = createYaml();
+				Writer writer = charset == null ? new OutputStreamWriter(output)
+						: new OutputStreamWriter(output, charset);
+				try {
+					yaml.dump(properties, writer);
+				} finally {
+					writer.close();
+				}
+			});
+		} catch (IOException e) {
+			throw new NestedRuntimeException(resource.getDescription(), e);
+		}
 	}
 }

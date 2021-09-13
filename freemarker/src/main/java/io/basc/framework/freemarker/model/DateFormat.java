@@ -1,6 +1,7 @@
 package io.basc.framework.freemarker.model;
 
 import io.basc.framework.freemarker.annotation.SharedVariable;
+import io.basc.framework.util.FormatUtils;
 import io.basc.framework.util.XTime;
 
 import java.util.List;
@@ -28,9 +29,9 @@ public class DateFormat implements TemplateMethodModelEx{
 		if(SimpleNumber.class.isAssignableFrom(obj.getClass())){
 			return XTime.format(((SimpleNumber)obj).getAsNumber().longValue(), format);
 		}else if(SimpleDate.class.isAssignableFrom(obj.getClass())){
-			return XTime.format(((SimpleDate)obj).getAsDate(), format);
+			return FormatUtils.format(((SimpleDate)obj).getAsDate(), format);
 		}else{
-			return XTime.getTime(obj.toString(), format);
+			return XTime.parse(obj.toString(), format);
 		}
 	}
 }
