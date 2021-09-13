@@ -1,13 +1,5 @@
 package io.basc.framework.io;
 
-import io.basc.framework.lang.NestedRuntimeException;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.net.InetUtils;
-import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.StringUtils;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -22,6 +14,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
+
+import io.basc.framework.convert.Converter;
+import io.basc.framework.io.resolver.PropertiesResolver;
+import io.basc.framework.lang.NestedRuntimeException;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.net.InetUtils;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.StringUtils;
 
 /**
  * 资源工具
@@ -790,8 +793,19 @@ public final class ResourceUtils {
 		return new UnsafeByteArrayInputStream(data);
 	}
 	
-	public static boolean exists(ResourceLoader resourceLoader, String location){
-		Resource resource = resourceLoader.getResource(location);
-		return resource != null && resource.exists();
+	public static Converter<Resource, Properties> toPropertiesConverter(PropertiesResolver propertiesResolver){
+		return toPropertiesConverter(propertiesResolver, null);
+	}
+	
+	public static Converter<Resource, Properties> toPropertiesConverter(PropertiesResolver propertiesResolver, Charset charset){
+		return new Converter<Resource, Properties>() {
+			
+			@Override
+			public Properties convert(Resource o) {
+				Properties properties = new Properties();
+				propertiesResolver.resolveProperties(properties, o, charset);
+				return properties;
+			}
+		};
 	}
 }

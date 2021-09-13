@@ -80,9 +80,9 @@ public class DateFormatConversionService implements ConversionService {
 			TypeDescriptor targetType) {
 		DateFormat dateFormat = sourceType.getAnnotation(DateFormat.class);
 		if (dateFormat == null) {
-			return FormatUtils.getDate(source, "");
+			return FormatUtils.parse(source, "");
 		} else {
-			return FormatUtils.getDate(source, dateFormat.value());
+			return FormatUtils.parse(source, dateFormat.value());
 		}
 	}
 
@@ -99,7 +99,7 @@ public class DateFormatConversionService implements ConversionService {
 		if (dateFormat == null) {
 			return String.valueOf(source);
 		} else {
-			return FormatUtils.dateFormat(source, dateFormat.value());
+			return FormatUtils.format(source, dateFormat.value());
 		}
 	}
 
@@ -120,7 +120,7 @@ public class DateFormatConversionService implements ConversionService {
 		if (dateFormat == null) {
 			return String.valueOf(date);
 		} else {
-			return FormatUtils.dateFormat(date, dateFormat.value());
+			return FormatUtils.format(date, dateFormat.value());
 		}
 	}
 }

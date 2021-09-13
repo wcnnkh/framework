@@ -1,5 +1,8 @@
 package io.basc.framework.env;
 
+import java.nio.charset.Charset;
+import java.util.Properties;
+
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
@@ -18,9 +21,6 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.placeholder.PlaceholderReplacer;
 import io.basc.framework.util.placeholder.PropertyResolver;
 import io.basc.framework.value.PropertyFactory;
-
-import java.nio.charset.Charset;
-import java.util.Properties;
 
 public interface Environment extends ResourcePatternResolver, PropertyFactory, PropertyResolver {
 	public static final String CHARSET_PROPERTY = "charset.name";
@@ -84,7 +84,8 @@ public interface Environment extends ResourcePatternResolver, PropertyFactory, P
 	 * @return
 	 */
 	default boolean exists(String location) {
-		return ResourceUtils.exists(this, location);
+		Resource resource = getResource(location);
+		return resource != null && resource.exists();
 	}
 
 	default Observable<Properties> getProperties(String location) {
@@ -127,7 +128,7 @@ public interface Environment extends ResourcePatternResolver, PropertyFactory, P
 	default Observable<Properties> toObservableProperties(PropertiesResolver propertiesResolver,
 			@Nullable Charset charset, Resource... resources) {
 		ObservableProperties properties = new ObservableProperties();
-		Converter<Resource, Properties> converter = propertiesResolver.toPropertiesConverter(charset);
+		Converter<Resource, Properties> converter = ResourceUtils.toPropertiesConverter(propertiesResolver, charset);
 		for (Resource resource : resources) {
 			properties.combine(resource, converter);
 		}

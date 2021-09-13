@@ -5,6 +5,7 @@ import io.basc.framework.convert.resolve.ConfigurableResourceResolver;
 import io.basc.framework.event.Observable;
 import io.basc.framework.io.ConfigurableResourceLoader;
 import io.basc.framework.io.Resource;
+import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.event.ObservableResource;
 import io.basc.framework.io.resolver.ConfigurablePropertiesResolver;
 import io.basc.framework.lang.NotSupportedException;
@@ -26,7 +27,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 		}
 		
 		Observable<Properties> observable = new ObservableResource<Properties>(resource,
-				getPropertiesResolver().toPropertiesConverter());
+				ResourceUtils.toPropertiesConverter(getPropertiesResolver()));
 		loadProperties(observable);
 	}
 
