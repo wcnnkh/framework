@@ -118,7 +118,7 @@ public abstract class HttpRange {
 	 *             greater than 100
 	 */
 	public static List<HttpRange> parseRanges(String ranges) {
-		if (!StringUtils.hasLength(ranges)) {
+		if (StringUtils.isEmpty(ranges)) {
 			return Collections.emptyList();
 		}
 		if (!ranges.startsWith(BYTE_RANGE_PREFIX)) {

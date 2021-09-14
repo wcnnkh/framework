@@ -221,7 +221,7 @@ public final class MimeTypeUtils {
 	 *             if the string cannot be parsed
 	 */
 	public static MimeType parseMimeType(String mimeType) {
-		if (!StringUtils.hasLength(mimeType)) {
+		if (StringUtils.isEmpty(mimeType)) {
 			throw new InvalidMimeTypeException(mimeType, "'mimeType' must not be empty");
 		}
 
@@ -298,7 +298,7 @@ public final class MimeTypeUtils {
 	 *             if the string cannot be parsed
 	 */
 	public static List<MimeType> parseMimeTypes(String mimeTypes) {
-		if (!StringUtils.hasLength(mimeTypes)) {
+		if (StringUtils.isEmpty(mimeTypes)) {
 			return Collections.emptyList();
 		}
 		String[] tokens = StringUtils.tokenizeToStringArray(mimeTypes, ",");

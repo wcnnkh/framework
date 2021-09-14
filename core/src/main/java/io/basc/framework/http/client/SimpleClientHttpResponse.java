@@ -50,13 +50,13 @@ final class SimpleClientHttpResponse implements ClientHttpResponse {
 			// Header field 0 is the status line for most HttpURLConnections,
 			// but not on GAE
 			String name = this.connection.getHeaderFieldKey(0);
-			if (StringUtils.hasLength(name)) {
+			if (StringUtils.isNotEmpty(name)) {
 				this.headers.add(name, this.connection.getHeaderField(0));
 			}
 			int i = 1;
 			while (true) {
 				name = this.connection.getHeaderFieldKey(i);
-				if (!StringUtils.hasLength(name)) {
+				if (StringUtils.isEmpty(name)) {
 					break;
 				}
 				this.headers.add(name, this.connection.getHeaderField(i));

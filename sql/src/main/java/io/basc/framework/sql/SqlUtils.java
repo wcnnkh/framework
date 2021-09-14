@@ -115,7 +115,7 @@ public final class SqlUtils {
 	 */
 	public static String lookupColumnName(ResultSetMetaData resultSetMetaData, int columnIndex) throws SQLException {
 		String name = resultSetMetaData.getColumnLabel(columnIndex);
-		if (!StringUtils.hasLength(name)) {
+		if (StringUtils.isEmpty(name)) {
 			name = resultSetMetaData.getColumnName(columnIndex);
 		}
 		return name;

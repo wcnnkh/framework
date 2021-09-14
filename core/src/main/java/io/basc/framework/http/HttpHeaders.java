@@ -917,7 +917,7 @@ public class HttpHeaders extends Headers {
 	 */
 	public MediaType getContentType() {
 		String value = getFirst(CONTENT_TYPE);
-		return (StringUtils.hasLength(value) ? MediaType.parseMediaType(value) : null);
+		return (StringUtils.isEmpty(value) ? null : MediaType.parseMediaType(value));
 	}
 
 	/**

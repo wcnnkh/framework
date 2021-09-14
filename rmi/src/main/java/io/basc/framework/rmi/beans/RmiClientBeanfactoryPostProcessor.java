@@ -18,7 +18,7 @@ public class RmiClientBeanfactoryPostProcessor implements BeanFactoryPostProcess
 			}
 
 			if (!beanFactory.containsDefinition(clazz.getName())) {
-				String host = StringUtils.EMPTY.negate().first(client.host(), client.value());
+				String host = StringUtils.IS_EMPTY.negate().first(client.host(), client.value());
 				beanFactory.registerDefinition(new RmiClientBeanDefinition(beanFactory, clazz, host));
 			}
 		}

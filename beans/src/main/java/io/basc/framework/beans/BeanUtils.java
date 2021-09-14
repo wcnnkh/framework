@@ -264,7 +264,7 @@ public final class BeanUtils {
 	}
 
 	private static String getPrefix(ConfigurationProperties configurationProperties) {
-		return StringUtils.EMPTY.negate().first(configurationProperties.prefix(), configurationProperties.value());
+		return StringUtils.IS_EMPTY.negate().first(configurationProperties.prefix(), configurationProperties.value());
 	}
 
 	private static void configurationProperties(ConfigurationProperties configurationProperties, Object instance,

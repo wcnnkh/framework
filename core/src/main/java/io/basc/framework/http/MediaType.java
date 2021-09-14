@@ -520,7 +520,7 @@ public class MediaType extends MimeType implements Serializable {
 	 *             if the media type value cannot be parsed
 	 */
 	public static List<MediaType> parseMediaTypes(String mediaTypes) {
-		if (!StringUtils.hasLength(mediaTypes)) {
+		if (StringUtils.isEmpty(mediaTypes)) {
 			return Collections.emptyList();
 		}
 		String[] tokens = StringUtils.tokenizeToStringArray(mediaTypes, ",");

@@ -158,7 +158,7 @@ public class UriComponentsBuilder implements Cloneable {
 			String query = matcher.group(11);
 			String fragment = matcher.group(13);
 			boolean opaque = false;
-			if (StringUtils.hasLength(scheme)) {
+			if (StringUtils.isNotEmpty(scheme)) {
 				String rest = uri.substring(scheme.length());
 				if (!rest.startsWith(":/")) {
 					opaque = true;
@@ -167,7 +167,7 @@ public class UriComponentsBuilder implements Cloneable {
 			builder.scheme(scheme);
 			if (opaque) {
 				String ssp = uri.substring(scheme.length()).substring(1);
-				if (StringUtils.hasLength(fragment)) {
+				if (StringUtils.isNotEmpty(fragment)) {
 					ssp = ssp.substring(0, ssp.length() - (fragment.length() + 1));
 				}
 				builder.schemeSpecificPart(ssp);
@@ -175,7 +175,7 @@ public class UriComponentsBuilder implements Cloneable {
 			else {
 				builder.userInfo(userInfo);
 				builder.host(host);
-				if (StringUtils.hasLength(port)) {
+				if (StringUtils.isNotEmpty(port)) {
 					builder.port(port);
 				}
 				builder.path(path);
@@ -214,12 +214,12 @@ public class UriComponentsBuilder implements Cloneable {
 			builder.scheme(scheme != null ? scheme.toLowerCase() : null);
 			builder.userInfo(matcher.group(4));
 			String host = matcher.group(5);
-			if (StringUtils.hasLength(scheme) && !StringUtils.hasLength(host)) {
+			if (StringUtils.isNotEmpty(scheme) && StringUtils.isEmpty(host)) {
 				throw new IllegalArgumentException("[" + httpUrl + "] is not a valid HTTP URL");
 			}
 			builder.host(host);
 			String port = matcher.group(7);
-			if (StringUtils.hasLength(port)) {
+			if (StringUtils.isNotEmpty(port)) {
 				builder.port(port);
 			}
 			builder.path(matcher.group(8));
@@ -259,11 +259,11 @@ public class UriComponentsBuilder implements Cloneable {
 			String scheme = matcher.group(2);
 			String host = matcher.group(6);
 			String port = matcher.group(8);
-			if (StringUtils.hasLength(scheme)) {
+			if (StringUtils.isNotEmpty(scheme)) {
 				builder.scheme(scheme);
 			}
 			builder.host(host);
-			if (StringUtils.hasLength(port)) {
+			if (StringUtils.isNotEmpty(port)) {
 				builder.port(port);
 			}
 			return builder;
@@ -358,10 +358,10 @@ public class UriComponentsBuilder implements Cloneable {
 			if (uri.getPort() != -1) {
 				this.port = String.valueOf(uri.getPort());
 			}
-			if (StringUtils.hasLength(uri.getRawPath())) {
+			if (StringUtils.isNotEmpty(uri.getRawPath())) {
 				this.pathBuilder = new CompositePathComponentBuilder(uri.getRawPath());
 			}
-			if (StringUtils.hasLength(uri.getRawQuery())) {
+			if (StringUtils.isNotEmpty(uri.getRawQuery())) {
 				this.queryParams.clear();
 				query(uri.getRawQuery());
 			}
@@ -521,7 +521,7 @@ public class UriComponentsBuilder implements Cloneable {
 				String name = matcher.group(1);
 				String eq = matcher.group(2);
 				String value = matcher.group(3);
-				queryParam(name, (value != null ? value : (StringUtils.hasLength(eq) ? "" : null)));
+				queryParam(name, (value != null ? value : (StringUtils.isNotEmpty(eq) ? "" : null)));
 			}
 		}
 		else {
