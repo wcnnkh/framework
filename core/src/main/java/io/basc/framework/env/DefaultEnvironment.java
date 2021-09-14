@@ -43,8 +43,7 @@ import java.util.List;
 import java.util.Properties;
 
 public class DefaultEnvironment extends DefaultPropertyFactory implements ConfigurableEnvironment, Configurable {
-	private static final String[] SUFFIXS = new String[] { "scw_res_suffix", "SHUCHAOWEN_CONFIG_SUFFIX",
-			"resource.suffix" };
+	private static final String[] PROFILES = new String[] { "io.basc.framework.env.profiles", "io_basc_framework_env_profiles" };
 	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
 
 	private final ConcurrentReferenceHashMap<String, Resource> cacheMap = new ConcurrentReferenceHashMap<String, Resource>();
@@ -116,9 +115,9 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	 * 
 	 * @return
 	 */
-	protected String[] getResourceEnvironmentalNames() {
+	protected String[] getResourceEnvironmentalProfiles() {
 		Value value = null;
-		for (String suffix : SUFFIXS) {
+		for (String suffix : PROFILES) {
 			value = getValue(suffix);
 			if (value != null && !value.isEmpty()) {
 				return value.getAsObject(String[].class);
@@ -134,15 +133,15 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	 * @return
 	 */
 	public List<String> getEnvironmentalResourceNameList(String resourceName) {
-		String[] suffixs = getResourceEnvironmentalNames();
+		String[] profiles = getResourceEnvironmentalProfiles();
 		String resourceNameToUse = resolvePlaceholders(resourceName);
-		if (ArrayUtils.isEmpty(suffixs)) {
+		if (ArrayUtils.isEmpty(profiles)) {
 			return Arrays.asList(resourceNameToUse);
 		}
 
-		List<String> list = new ArrayList<String>(suffixs.length + 1);
-		for (int i = suffixs.length - 1; i >= 0; i--) {
-			list.add(getEnvironmentalResourceName(resourceNameToUse, suffixs[i]));
+		List<String> list = new ArrayList<String>(profiles.length + 1);
+		for (int i = profiles.length - 1; i >= 0; i--) {
+			list.add(getEnvironmentalResourceName(resourceNameToUse, profiles[i]));
 		}
 		list.add(resourceNameToUse);
 		return list;
@@ -151,9 +150,9 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	protected String getEnvironmentalResourceName(String resourceName, String evnironmental) {
 		int index = resourceName.lastIndexOf(".");
 		if (index == -1) {// 不存在
-			return resourceName + evnironmental;
+			return resourceName + "-" + evnironmental;
 		} else {
-			return resourceName.substring(0, index) + evnironmental + resourceName.substring(index);
+			return resourceName.substring(0, index) + "-" +  evnironmental + resourceName.substring(index);
 		}
 	};
 
