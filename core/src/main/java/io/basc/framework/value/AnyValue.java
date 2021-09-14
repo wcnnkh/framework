@@ -7,10 +7,13 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Map;
 
-public class AnyValue extends AbstractValue implements Serializable{
+public class AnyValue extends AbstractValue implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private transient ConversionService conversionService;
 	private final Object value;
@@ -51,6 +54,7 @@ public class AnyValue extends AbstractValue implements Serializable{
 		if (value instanceof Value) {
 			return ((Value) value).getAsString();
 		}
+		
 		return value.toString();
 	}
 
@@ -443,8 +447,8 @@ public class AnyValue extends AbstractValue implements Serializable{
 		if (value == null) {
 			return null;
 		}
-		
-		if(type.getType().isInstance(value)) {
+
+		if (type.getType().isInstance(value)) {
 			return value;
 		}
 
@@ -481,6 +485,7 @@ public class AnyValue extends AbstractValue implements Serializable{
 		return false;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public boolean isEmpty() {
 		if (value == null) {
 			return true;
@@ -488,6 +493,22 @@ public class AnyValue extends AbstractValue implements Serializable{
 
 		if (value instanceof Value) {
 			return ((Value) value).isEmpty();
+		}
+
+		if (value instanceof Collection) {
+			return ((Collection) value).isEmpty();
+		}
+
+		if (value instanceof Map) {
+			return ((Map) value).isEmpty();
+		}
+
+		if (value.getClass().isArray()) {
+			return Array.getLength(value) == 0;
+		}
+		
+		if ("".equals(value)) {
+			return true;
 		}
 		return super.isEmpty();
 	}

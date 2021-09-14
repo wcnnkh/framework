@@ -124,13 +124,13 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator {
 				MediaType contentType = this.headers.getContentType();
 				if (contentType == null) {
 					String requestContentType = httpServletRequest.getContentType();
-					if (StringUtils.hasLength(requestContentType)) {
+					if (StringUtils.isNotEmpty(requestContentType)) {
 						this.headers.set(HttpHeaders.CONTENT_TYPE, requestContentType);
 					}
 				}
 				if (contentType != null && contentType.getCharset() == null) {
 					String requestEncoding = getCharacterEncoding();
-					if (StringUtils.hasLength(requestEncoding)) {
+					if (StringUtils.isNotEmpty(requestEncoding)) {
 						Charset charSet = Charset.forName(requestEncoding);
 						Map<String, String> params = new LinkedCaseInsensitiveMap<String>();
 						params.putAll(contentType.getParameters());

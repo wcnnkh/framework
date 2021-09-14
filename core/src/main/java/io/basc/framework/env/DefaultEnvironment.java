@@ -1,5 +1,11 @@
 package io.basc.framework.env;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
 import io.basc.framework.convert.ConfigurableConversionService;
 import io.basc.framework.convert.resolve.ConfigurableResourceResolver;
 import io.basc.framework.convert.resolve.ResourceResolverConversionService;
@@ -20,14 +26,12 @@ import io.basc.framework.io.resolver.support.PropertiesResolvers;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.DefaultClassLoaderProvider;
 import io.basc.framework.util.MultiIterator;
-import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
 import io.basc.framework.util.placeholder.support.DefaultPlaceholderReplacer;
 import io.basc.framework.value.AnyValue;
@@ -36,15 +40,7 @@ import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 import io.basc.framework.value.support.DefaultPropertyFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-
 public class DefaultEnvironment extends DefaultPropertyFactory implements ConfigurableEnvironment, Configurable {
-	private static final String[] SUFFIXS = new String[] { "scw_res_suffix", "SHUCHAOWEN_CONFIG_SUFFIX",
-			"resource.suffix" };
 	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
 
 	private final ConcurrentReferenceHashMap<String, Resource> cacheMap = new ConcurrentReferenceHashMap<String, Resource>();
@@ -60,6 +56,8 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	private final DefaultResourceResolver configurableResourceResolver = new DefaultResourceResolver(
 			configurableConversionService, configurablePropertiesResolver, getObservableCharset());
 	private final DefaultPlaceholderReplacer placeholderReplacer = new DefaultPlaceholderReplacer();
+	private volatile ProfilesResolver profilesResolver = new DefaultProfilesResolver();
+
 	private ClassLoaderProvider classLoaderProvider;
 
 	public DefaultEnvironment() {
@@ -72,6 +70,16 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 		configurableResourceLoader.setClassLoaderProvider(this);
 		configurableConversionService
 				.addConversionService(new ResourceResolverConversionService(configurableResourceResolver));
+	}
+
+	public ProfilesResolver getProfilesResolver() {
+		return profilesResolver;
+	}
+
+	public void setProfilesResolver(ProfilesResolver profilesResolver) {
+		Assert.requiredArgument(profilesResolver != null, "profilesResolver");
+		logger.info("Set profiles resolver [{}]", profilesResolver);
+		this.profilesResolver = profilesResolver;
 	}
 
 	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
@@ -111,56 +119,10 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 		return resource;
 	}
 
-	/**
-	 * 可使用的资源别名，使用优先级从左到右
-	 * 
-	 * @return
-	 */
-	protected String[] getResourceEnvironmentalNames() {
-		Value value = null;
-		for (String suffix : SUFFIXS) {
-			value = getValue(suffix);
-			if (value != null && !value.isEmpty()) {
-				return value.getAsObject(String[].class);
-			}
-		}
-		return StringUtils.EMPTY_ARRAY;
-	}
-
-	/**
-	 * 预计使用的资源列表，返回的资源并不一定存在, 使用优先级从高到低
-	 * 
-	 * @param resourceName
-	 * @return
-	 */
-	public List<String> getEnvironmentalResourceNameList(String resourceName) {
-		String[] suffixs = getResourceEnvironmentalNames();
-		String resourceNameToUse = resolvePlaceholders(resourceName);
-		if (ArrayUtils.isEmpty(suffixs)) {
-			return Arrays.asList(resourceNameToUse);
-		}
-
-		List<String> list = new ArrayList<String>(suffixs.length + 1);
-		for (int i = suffixs.length - 1; i >= 0; i--) {
-			list.add(getEnvironmentalResourceName(resourceNameToUse, suffixs[i]));
-		}
-		list.add(resourceNameToUse);
-		return list;
-	}
-
-	protected String getEnvironmentalResourceName(String resourceName, String evnironmental) {
-		int index = resourceName.lastIndexOf(".");
-		if (index == -1) {// 不存在
-			return resourceName + evnironmental;
-		} else {
-			return resourceName.substring(0, index) + evnironmental + resourceName.substring(index);
-		}
-	};
-
 	public Resource[] getResources(String locationPattern) {
-		List<String> nameList = getEnvironmentalResourceNameList(locationPattern);
-		List<Resource> resources = new ArrayList<Resource>(nameList.size());
-		for (String name : nameList) {
+		Collection<String> names = profilesResolver.resolve(this, resolvePlaceholders(locationPattern));
+		List<Resource> resources = new ArrayList<Resource>(names.size());
+		for (String name : names) {
 			Resource res = getResourceByCache(name);
 			if (res == null) {
 				continue;
@@ -266,6 +228,10 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		if (serviceLoaderFactory.isInstance(ProfilesResolver.class)) {
+			setProfilesResolver(serviceLoaderFactory.getInstance(ProfilesResolver.class));
+		}
+
 		configurablePropertiesResolver.configure(serviceLoaderFactory);
 		configurableResourceResolver.configure(serviceLoaderFactory);
 		configurableConversionService.configure(serviceLoaderFactory);

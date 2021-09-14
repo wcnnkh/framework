@@ -51,29 +51,29 @@ public final class StringUtils {
 
 	public static final String[] EMPTY_ARRAY = new String[0];
 
-	public static final Accept<CharSequence> EMPTY = new Accept<CharSequence>() {
+	public static final Accept<CharSequence> IS_EMPTY = new Accept<CharSequence>() {
 
 		@Override
 		public boolean accept(CharSequence text) {
-			return text == null || text.length() == 0;
+			return text == null || text.length() <= 0;
 		}
 	};
 
 	public static final Accept<CharSequence> HAS_TEXT = new Accept<CharSequence>() {
 
 		@Override
-		public boolean accept(CharSequence str) {
-			if (str == null) {
+		public boolean accept(CharSequence value) {
+			if (value == null) {
 				return false;
 			}
 
-			int len = str.length();
+			int len = value.length();
 			if (len == 0) {
 				return false;
 			}
 
 			for (int i = 0; i < len; i++) {
-				if (!Character.isWhitespace(str.charAt(i))) {
+				if (!Character.isWhitespace(value.charAt(i))) {
 					return true;
 				}
 			}
@@ -84,79 +84,49 @@ public final class StringUtils {
 	private StringUtils() {
 	};
 
-	public static boolean isEmpty(CharSequence text) {
-		return EMPTY.accept(text);
+	public static boolean isEmpty(CharSequence value) {
+		return IS_EMPTY.accept(value);
 	}
 
 	/**
-	 * 
 	 * @param value
-	 * @return false 不是{@link java.lang.String}类型, <code>null</code>, ''
+	 * @return false {@link #isEmpty(CharSequence)} or not string type {@link String#equals(Object)}
 	 */
 	public static boolean isEmpty(Object value) {
 		return value == null || "".equals(value);
 	}
 
-	public static boolean isNotEmpty(CharSequence text) {
-		return !isEmpty(text);
+	public static boolean isNotEmpty(CharSequence value) {
+		return !isEmpty(value);
 	}
 
 	/**
 	 * all not empty
 	 * 
-	 * @param text
+	 * @param values
 	 * @return
 	 */
-	public static boolean isNotEmpty(CharSequence... text) {
-		return !isEmpty(text);
+	public static boolean isNotEmpty(CharSequence... values) {
+		return !isEmpty(values);
 	}
 
 	/**
 	 * any is empty
 	 * 
-	 * @param text
+	 * @param values
 	 * @return
 	 */
-	public static boolean isEmpty(CharSequence... text) {
-		for (CharSequence s : text) {
+	public static boolean isEmpty(CharSequence... values) {
+		if (values == null || values.length == 0) {
+			return true;
+		}
+
+		for (CharSequence s : values) {
 			if (isEmpty(s)) {
 				return true;
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Check that the given CharSequence is neither {@code null} nor of length 0.
-	 * Note: Will return {@code true} for a CharSequence that purely consists of
-	 * whitespace.
-	 * <p>
-	 * 
-	 * <pre>
-	 * StringUtils.hasLength(null) = false
-	 * StringUtils.hasLength("") = false
-	 * StringUtils.hasLength(" ") = true
-	 * StringUtils.hasLength("Hello") = true
-	 * </pre>
-	 * 
-	 * @param str the CharSequence to check (may be {@code null})
-	 * @return {@code true} if the CharSequence is not null and has length
-	 * @see #hasText(String)
-	 */
-	public static boolean hasLength(CharSequence str) {
-		return (str != null && str.length() > 0);
-	}
-
-	/**
-	 * Check that the given String is neither {@code null} nor of length 0. Note:
-	 * Will return {@code true} for a String that purely consists of whitespace.
-	 * 
-	 * @param str the String to check (may be {@code null})
-	 * @return {@code true} if the String is not null and has length
-	 * @see #hasLength(CharSequence)
-	 */
-	public static boolean hasLength(String str) {
-		return hasLength((CharSequence) str);
 	}
 
 	/**
@@ -173,40 +143,45 @@ public final class StringUtils {
 	 * StringUtils.hasText(" 12345 ") = true
 	 * </pre>
 	 * 
-	 * @param str the CharSequence to check (may be {@code null})
+	 * @param value the CharSequence to check (may be {@code null})
 	 * @return {@code true} if the CharSequence is not {@code null}, its length is
 	 *         greater than 0, and it does not contain whitespace only
 	 * @see Character#isWhitespace
 	 */
-	public static boolean hasText(CharSequence str) {
-		return HAS_TEXT.accept(str);
+	public static boolean hasText(CharSequence value) {
+		return HAS_TEXT.accept(value);
 	}
 
 	/**
-	 * Check whether the given String has actual text. More specifically, returns
-	 * {@code true} if the string not {@code null}, its length is greater than 0,
-	 * and it contains at least one non-whitespace character.
+	 * all has text
 	 * 
-	 * @param str the String to check (may be {@code null})
-	 * @return {@code true} if the String is not {@code null}, its length is greater
-	 *         than 0, and it does not contain whitespace only
-	 * @see #hasText(CharSequence)
+	 * @param values
+	 * @return
 	 */
-	public static boolean hasText(String str) {
-		return hasText((CharSequence) str);
+	public static boolean hasText(CharSequence... values) {
+		if (values == null || values.length == 0) {
+			return false;
+		}
+
+		for (CharSequence s : values) {
+			if (!hasText(s)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
-	public static boolean hasText(String text, int fromIndex, int endIndex) {
+	public static boolean hasText(CharSequence value, int fromIndex, int endIndex) {
 		if (fromIndex == endIndex) {
 			return false;
 		}
 
-		if (!hasLength(text)) {
+		if (isEmpty(value)) {
 			return false;
 		}
 
-		for (int i = fromIndex, end = Math.min(text.length(), endIndex); i < end; i++) {
-			if (!Character.isWhitespace(text.charAt(i))) {
+		for (int i = fromIndex, end = Math.min(value.length(), endIndex); i < end; i++) {
+			if (!Character.isWhitespace(value.charAt(i))) {
 				return true;
 			}
 		}
@@ -222,7 +197,7 @@ public final class StringUtils {
 	 * @see Character#isWhitespace
 	 */
 	public static boolean containsWhitespace(CharSequence str) {
-		if (!hasLength(str)) {
+		if (isEmpty(str)) {
 			return false;
 		}
 		int strLen = str.length();
@@ -254,7 +229,7 @@ public final class StringUtils {
 	 * @see java.lang.Character#isWhitespace
 	 */
 	public static String trimWhitespace(String str) {
-		if (!hasLength(str)) {
+		if (isEmpty(str)) {
 			return str;
 		}
 		StringBuilder sb = new StringBuilder(str);
@@ -276,7 +251,7 @@ public final class StringUtils {
 	 * @see java.lang.Character#isWhitespace
 	 */
 	public static String trimAllWhitespace(String str) {
-		if (!hasLength(str)) {
+		if (isEmpty(str)) {
 			return str;
 		}
 		StringBuilder sb = new StringBuilder(str);
@@ -299,7 +274,7 @@ public final class StringUtils {
 	 * @see java.lang.Character#isWhitespace
 	 */
 	public static String trimLeadingWhitespace(String str) {
-		if (!hasLength(str)) {
+		if (isEmpty(str)) {
 			return str;
 		}
 		StringBuilder sb = new StringBuilder(str);
@@ -317,7 +292,7 @@ public final class StringUtils {
 	 * @see java.lang.Character#isWhitespace
 	 */
 	public static String trimTrailingWhitespace(String str) {
-		if (!hasLength(str)) {
+		if (isEmpty(str)) {
 			return str;
 		}
 		StringBuilder sb = new StringBuilder(str);
@@ -335,7 +310,7 @@ public final class StringUtils {
 	 * @return the trimmed String
 	 */
 	public static String trimLeadingCharacter(String str, char leadingCharacter) {
-		if (!hasLength(str)) {
+		if (isEmpty(str)) {
 			return str;
 		}
 		StringBuilder sb = new StringBuilder(str);
@@ -353,7 +328,7 @@ public final class StringUtils {
 	 * @return the trimmed String
 	 */
 	public static String trimTrailingCharacter(String str, char trailingCharacter) {
-		if (!hasLength(str)) {
+		if (isEmpty(str)) {
 			return str;
 		}
 		StringBuilder sb = new StringBuilder(str);
@@ -456,7 +431,7 @@ public final class StringUtils {
 	 * @return a String with the replacements
 	 */
 	public static String replace(String inString, String oldPattern, String newPattern) {
-		if (!hasLength(inString) || !hasLength(oldPattern) || newPattern == null) {
+		if (isEmpty(inString) || isEmpty(oldPattern) || newPattern == null) {
 			return inString;
 		}
 		StringBuilder sb = new StringBuilder();
@@ -495,7 +470,7 @@ public final class StringUtils {
 	 * @return the resulting String
 	 */
 	public static String deleteAny(String inString, String charsToDelete) {
-		if (!hasLength(inString) || !hasLength(charsToDelete)) {
+		if (isEmpty(inString) || isEmpty(charsToDelete)) {
 			return inString;
 		}
 		StringBuilder sb = new StringBuilder();
@@ -1568,7 +1543,7 @@ public final class StringUtils {
 	}
 
 	private static String changeFirstCharacterCase(String str, boolean capitalize) {
-		if (!hasLength(str)) {
+		if (isEmpty(str)) {
 			return str;
 		}
 
@@ -1949,7 +1924,7 @@ public final class StringUtils {
 		}
 
 		String v = (value instanceof String) ? (String) value : value.toString();
-		if (checkLength && !StringUtils.hasLength(v)) {
+		if (checkLength && isEmpty(v)) {
 			return defaultValue.toString();
 		}
 		return v;

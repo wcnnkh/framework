@@ -171,7 +171,7 @@ public abstract class Assert {
 	 * @see StringUtils#hasLength
 	 */
 	public static void hasLength(String text, String message) {
-		if (!StringUtils.hasLength(text)) {
+		if (StringUtils.isEmpty(text)) {
 			throw new IllegalArgumentException(message);
 		}
 	}
