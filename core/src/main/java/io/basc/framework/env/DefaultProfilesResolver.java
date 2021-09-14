@@ -15,6 +15,7 @@ public class DefaultProfilesResolver implements ProfilesResolver {
 			"io_basc_framework_env_profiles" };
 
 	private String connector = "-";
+	private boolean ignoreCase = true;
 
 	public String getConnector() {
 		return connector == null ? "" : connector;
@@ -22,6 +23,14 @@ public class DefaultProfilesResolver implements ProfilesResolver {
 
 	public void setConnector(String connector) {
 		this.connector = connector;
+	}
+
+	public boolean isIgnoreCase() {
+		return ignoreCase;
+	}
+
+	public void setIgnoreCase(boolean ignoreCase) {
+		this.ignoreCase = ignoreCase;
 	}
 
 	@Override
@@ -54,10 +63,10 @@ public class DefaultProfilesResolver implements ProfilesResolver {
 		Value value = null;
 		for (String key : PROFILES) {
 			value = factory.getValue(key);
-			if(value == null || value.isEmpty()) {
+			if (isIgnoreCase() && (value == null || value.isEmpty())) {
 				value = factory.getValue(key.toUpperCase());
 			}
-			
+
 			if (value != null && !value.isEmpty()) {
 				return value.getAsObject(String[].class);
 			}
