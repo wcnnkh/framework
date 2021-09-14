@@ -40,12 +40,12 @@ public class DefaultProfilesResolver implements ProfilesResolver {
 		return list;
 	}
 
-	protected String resolve(String name, String connector, String profiles) {
+	protected String resolve(String name, String connector, String profile) {
 		int index = name.lastIndexOf(".");
 		if (index == -1) {// 不存在
-			return name + connector + profiles;
+			return name + connector + profile;
 		} else {
-			return name.substring(0, index) + connector + profiles + name.substring(index);
+			return name.substring(0, index) + connector + profile + name.substring(index);
 		}
 	};
 
@@ -54,6 +54,10 @@ public class DefaultProfilesResolver implements ProfilesResolver {
 		Value value = null;
 		for (String key : PROFILES) {
 			value = factory.getValue(key);
+			if(value == null || value.isEmpty()) {
+				value = factory.getValue(key.toUpperCase());
+			}
+			
 			if (value != null && !value.isEmpty()) {
 				return value.getAsObject(String[].class);
 			}

@@ -120,7 +120,7 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	}
 
 	public Resource[] getResources(String locationPattern) {
-		Collection<String> names = profilesResolver.resolve(this, resolvePlaceholder(locationPattern));
+		Collection<String> names = profilesResolver.resolve(this, resolvePlaceholders(locationPattern));
 		List<Resource> resources = new ArrayList<Resource>(names.size());
 		for (String name : names) {
 			Resource res = getResourceByCache(name);

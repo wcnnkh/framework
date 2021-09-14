@@ -470,7 +470,7 @@ public final class StringUtils {
 	 * @return the resulting String
 	 */
 	public static String deleteAny(String inString, String charsToDelete) {
-		if (isEmpty(inString) || !isEmpty(charsToDelete)) {
+		if (isEmpty(inString) || isEmpty(charsToDelete)) {
 			return inString;
 		}
 		StringBuilder sb = new StringBuilder();
