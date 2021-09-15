@@ -7,13 +7,11 @@ public class StreamPage<T> extends StreamPageable<Long, T> implements Page<T> {
 	private final long total;
 
 	public StreamPage(long cursorId, Supplier<Stream<T>> stream, long count, long total) {
-		this(cursorId, stream, PageSupport.getNextStart(cursorId, count),
-				count, total, PageSupport.hasMore(total, count, cursorId));
+		this(cursorId, stream, PageSupport.getNextStart(cursorId, count), count, total);
 	}
 
-	public StreamPage(long cursorId, Supplier<Stream<T>> stream, long nextCursorId,
-			long count, long total, boolean hasNext) {
-		super(cursorId, stream, nextCursorId, count, hasNext);
+	public StreamPage(long cursorId, Supplier<Stream<T>> stream, long nextCursorId, long count, long total) {
+		super(cursorId, stream, nextCursorId, count);
 		this.total = total;
 	}
 

@@ -44,4 +44,8 @@ public interface Page<T> extends Pageable<Long, T> {
 		}
 		return PageSupport.getNextStart(start, getCount());
 	}
+	
+	default Page<T> shared(){
+		return new SharedPage<>(this);
+	}
 }

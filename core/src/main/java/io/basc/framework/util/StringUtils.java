@@ -55,7 +55,7 @@ public final class StringUtils {
 
 		@Override
 		public boolean accept(CharSequence text) {
-			return text == null || text.length() <= 0;
+			return text == null || text.length() == 0;
 		}
 	};
 

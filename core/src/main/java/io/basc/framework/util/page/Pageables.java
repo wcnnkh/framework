@@ -8,10 +8,6 @@ import java.util.stream.StreamSupport;
 
 public interface Pageables<K, T> extends Pageable<K, T>{
 	Pageables<K, T> jumpTo(K cursorId);
-
-	default Pageable<K, T> shared() {
-		return new SharedPageable<K, T>(getCursorId(), rows(), getNextCursorId(), getCount(), hasNext());
-	}
 	
 	default Pageables<K, T> next() {
 		if (!hasNext()) {

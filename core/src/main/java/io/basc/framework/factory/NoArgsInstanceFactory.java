@@ -5,6 +5,13 @@ import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Supplier;
 
 public interface NoArgsInstanceFactory extends ClassLoaderProvider{
+	
+	/**
+	 * 根据名称获取一个实例
+	 * @param <T>
+	 * @param name
+	 * @return
+	 */
 	default <T> T getInstance(String name){
 		@SuppressWarnings("unchecked")
 		Class<T> clazz = (Class<T>) ClassUtils.getClass(name, getClassLoader());
@@ -20,6 +27,12 @@ public interface NoArgsInstanceFactory extends ClassLoaderProvider{
 		};
 	}
 	
+	/**
+	 * 获取一个实例
+	 * @param <T>
+	 * @param clazz
+	 * @return
+	 */
 	<T> T getInstance(Class<T> clazz);
 	
 	default <T> Supplier<T> getInstanceSupplier(Class<T> clazz){
