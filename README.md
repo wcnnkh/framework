@@ -8,7 +8,7 @@
 		  <repository>
 			  <id>scw</id>
 			  <name>scw</name>
-			  <url>http://maven.shuchaowen.com</url>
+			  <url>http://basc.io</url>
 		  </repository>
     </repositories>
 或下载源码maven clean install
