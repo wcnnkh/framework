@@ -10,15 +10,13 @@ public class StreamPageable<K, T> implements Pageable<K, T> {
 	private final K cursorId;
 	private final K nextCursorId;
 	private final long count;
-	private final boolean hasNext;
 
 	public StreamPageable(K cursorId, Supplier<Stream<T>> stream, K nextCursorId,
-			long count, boolean hasNext) {
+			long count) {
 		this.cursorId = cursorId;
 		this.nextCursorId = nextCursorId;
 		this.stream = stream;
 		this.count = count;
-		this.hasNext = hasNext;
 	}
 
 	@Override
@@ -39,11 +37,6 @@ public class StreamPageable<K, T> implements Pageable<K, T> {
 	@Override
 	public K getNextCursorId() {
 		return nextCursorId;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return hasNext;
 	}
 
 	@Override

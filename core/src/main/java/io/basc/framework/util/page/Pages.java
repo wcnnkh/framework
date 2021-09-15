@@ -7,15 +7,6 @@ import java.util.stream.StreamSupport;
 
 public interface Pages<T> extends Page<T>, Pageables<Long, T> {
 
-	default Page<T> shared(){
-		return new SharedPage<>(getCursorId(), rows(), getCount(), getTotal());
-	}
-
-	@Override
-	default boolean hasNext() {
-		return Page.super.hasNext();
-	}
-
 	@Override
 	default Pages<T> next() {
 		return jumpTo(getNextCursorId());

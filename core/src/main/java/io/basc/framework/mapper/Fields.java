@@ -86,7 +86,6 @@ public interface Fields extends Pageables<Class<?>, Field> {
 		});
 	}
 
-	@Override
 	public default Fields shared() {
 		return new SharedFields(getCursorId(), this, rows());
 	}

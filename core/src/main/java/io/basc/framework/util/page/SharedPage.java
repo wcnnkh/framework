@@ -25,25 +25,29 @@ public class SharedPage<T> extends SharedPageable<Long, T> implements Page<T> {
 	/**
 	 * @param cursorId
 	 * @param rows
-	 * @param count 每页的数量
+	 * @param count    每页的数量
 	 * @param total
 	 */
 	public SharedPage(long cursorId, List<T> rows, long count, long total) {
-		this(cursorId, rows, PageSupport.getNextStart(cursorId, count), count, total,
-				PageSupport.hasMore(total, count, cursorId));
+		this(cursorId, rows, PageSupport.getNextStart(cursorId, count), count, total);
 	}
 
 	/**
 	 * @param cursorId
 	 * @param rows
 	 * @param nextCursorId
-	 * @param count 每页的数量
+	 * @param count        每页的数量
 	 * @param total
 	 * @param hasMore
 	 */
-	public SharedPage(long cursorId, List<T> rows, long nextCursorId, long count, long total, boolean hasMore) {
-		super(cursorId, rows, nextCursorId, count, hasMore);
+	public SharedPage(long cursorId, List<T> rows, long nextCursorId, long count, long total) {
+		super(cursorId, rows, nextCursorId, count);
 		this.total = total;
+	}
+
+	public SharedPage(Page<T> page) {
+		super(page);
+		this.total = page.getTotal();
 	}
 
 	@Override
@@ -65,7 +69,7 @@ public class SharedPage<T> extends SharedPageable<Long, T> implements Page<T> {
 	public long getPageNumber() {
 		return PageSupport.getPageNumber(getCount(), getCursorId());
 	}
-	
+
 	public void setPageNumber(long pageNumber) {
 		setCursorId(PageSupport.getStart(pageNumber, getCount()));
 	}
