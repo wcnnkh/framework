@@ -6,8 +6,8 @@
 -------------------
     <repositories>
 		  <repository>
-			  <id>scw</id>
-			  <name>scw</name>
+			  <id>wcnnkh</id>
+			  <name>wcnnkh</name>
 			  <url>http://basc.io</url>
 		  </repository>
     </repositories>
