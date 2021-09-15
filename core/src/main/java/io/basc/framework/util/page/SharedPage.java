@@ -2,6 +2,8 @@ package io.basc.framework.util.page;
 
 import java.util.List;
 
+import io.basc.framework.lang.Nullable;
+
 public class SharedPage<T> extends SharedPageable<Long, T> implements Page<T> {
 	private static final long serialVersionUID = 1L;
 	private long total;
@@ -29,18 +31,18 @@ public class SharedPage<T> extends SharedPageable<Long, T> implements Page<T> {
 	 * @param total
 	 */
 	public SharedPage(long cursorId, List<T> rows, long count, long total) {
-		this(cursorId, rows, PageSupport.getNextStart(cursorId, count), count, total);
+		this(cursorId, rows, null, count, total);
 	}
 
 	/**
 	 * @param cursorId
 	 * @param rows
-	 * @param nextCursorId
+	 * @param nextCursorId 如果为空自动计算下一页的起始点{@link Page#getNextCursorId()}
 	 * @param count        每页的数量
 	 * @param total
 	 * @param hasMore
 	 */
-	public SharedPage(long cursorId, List<T> rows, long nextCursorId, long count, long total) {
+	public SharedPage(long cursorId, List<T> rows, @Nullable Long nextCursorId, long count, long total) {
 		super(cursorId, rows, nextCursorId, count);
 		this.total = total;
 	}
