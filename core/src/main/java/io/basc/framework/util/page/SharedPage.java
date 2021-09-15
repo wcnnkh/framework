@@ -6,11 +6,41 @@ public class SharedPage<T> extends SharedPageable<Long, T> implements Page<T> {
 	private static final long serialVersionUID = 1L;
 	private long total;
 
+	/**
+	 * 默认的构造方法
+	 * 
+	 * @see SharedPageable#DEFAULT_PAGE_SIZE
+	 */
+	public SharedPage() {
+		this(DEFAULT_PAGE_SIZE);
+	}
+
+	/**
+	 * @param count 每页的数量
+	 */
+	public SharedPage(long count) {
+		super(0L, count);
+	}
+
+	/**
+	 * @param cursorId
+	 * @param list
+	 * @param count 每页的数量
+	 * @param total
+	 */
 	public SharedPage(long cursorId, List<T> list, long count, long total) {
 		this(cursorId, list, PageSupport.getNextStart(cursorId, count), count, total,
 				PageSupport.hasMore(total, count, cursorId));
 	}
 
+	/**
+	 * @param cursorId
+	 * @param list
+	 * @param nextCursorId
+	 * @param count 每页的数量
+	 * @param total
+	 * @param hasMore
+	 */
 	public SharedPage(long cursorId, List<T> list, long nextCursorId, long count, long total, boolean hasMore) {
 		super(cursorId, list, nextCursorId, count, hasMore);
 		this.total = total;
@@ -35,5 +65,12 @@ public class SharedPage<T> extends SharedPageable<Long, T> implements Page<T> {
 	public long getPageNumber() {
 		return PageSupport.getPageNumber(getCount(), getCursorId());
 	}
+	
+	public void setPageNumber(long pageNumber) {
+		setCursorId(PageSupport.getStart(pageNumber, getCount()));
+	}
 
+	public void setTotal(long total) {
+		this.total = total;
+	}
 }

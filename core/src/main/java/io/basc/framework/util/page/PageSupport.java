@@ -61,18 +61,26 @@ public class PageSupport {
 	}
 
 	public static <K, T> Pageable<K, T> emptyPageable(K cursorId, long count) {
-		return new EmptyPageable<K, T>(cursorId, count);
+		return new SharedPageable<K, T>(cursorId, count);
 	}
 
 	public static <T> Page<T> emptyPage(long pageNumber, long count) {
-		return new EmptyPage<T>(getStart(pageNumber, count), count);
+		SharedPage<T> sharedPage = new SharedPage<>(count);
+		sharedPage.setCursorId(getStart(pageNumber, count));
+		return sharedPage;
 	}
 
 	public static <K, T> Pageables<K, T> emptyPageables(K cursorId, long count) {
-		return new EmptyPageables<K, T>(cursorId, count);
+		EmptyPageables<K, T> emptyPageables = new EmptyPageables<>();
+		emptyPageables.setCursorId(cursorId);
+		emptyPageables.setCount(count);
+		return emptyPageables;
 	}
 
 	public static <T> Pages<T> emptyPages(long pageNumber, long count) {
-		return new EmptyPages<T>(getStart(pageNumber, count), count);
+		EmptyPages<T> emptyPages = new EmptyPages<>();
+		emptyPages.setCursorId(getStart(pageNumber, count));
+		emptyPages.setCount(count);
+		return emptyPages;
 	}
 }
