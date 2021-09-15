@@ -23,8 +23,8 @@ import io.basc.framework.util.placeholder.PropertyResolver;
 import io.basc.framework.value.PropertyFactory;
 
 public interface Environment extends ResourcePatternResolver, PropertyFactory, PropertyResolver {
-	public static final String CHARSET_PROPERTY = "charset.name";
-	public static final String WORK_PATH_PROPERTY = "work.path";
+	public static final String CHARSET_PROPERTY = "io.basc.framework.charset.name";
+	public static final String WORK_PATH_PROPERTY = "io.basc.framework.work.path";
 
 	default String getWorkPath() {
 		return getString(WORK_PATH_PROPERTY);

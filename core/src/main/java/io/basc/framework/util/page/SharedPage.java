@@ -24,25 +24,25 @@ public class SharedPage<T> extends SharedPageable<Long, T> implements Page<T> {
 
 	/**
 	 * @param cursorId
-	 * @param list
+	 * @param rows
 	 * @param count 每页的数量
 	 * @param total
 	 */
-	public SharedPage(long cursorId, List<T> list, long count, long total) {
-		this(cursorId, list, PageSupport.getNextStart(cursorId, count), count, total,
+	public SharedPage(long cursorId, List<T> rows, long count, long total) {
+		this(cursorId, rows, PageSupport.getNextStart(cursorId, count), count, total,
 				PageSupport.hasMore(total, count, cursorId));
 	}
 
 	/**
 	 * @param cursorId
-	 * @param list
+	 * @param rows
 	 * @param nextCursorId
 	 * @param count 每页的数量
 	 * @param total
 	 * @param hasMore
 	 */
-	public SharedPage(long cursorId, List<T> list, long nextCursorId, long count, long total, boolean hasMore) {
-		super(cursorId, list, nextCursorId, count, hasMore);
+	public SharedPage(long cursorId, List<T> rows, long nextCursorId, long count, long total, boolean hasMore) {
+		super(cursorId, rows, nextCursorId, count, hasMore);
 		this.total = total;
 	}
 

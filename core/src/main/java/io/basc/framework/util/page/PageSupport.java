@@ -9,7 +9,7 @@ public class PageSupport {
 	}
 
 	public static long getStart(long pageNumber, long limit) {
-		Assert.isTrue(pageNumber >= 0, "required pageNumber >= 0");
+		Assert.isTrue(pageNumber > 0, "required pageNumber > 0");
 		Assert.isTrue(limit > 0, "required limit > 0");
 		return Math.max(0, (pageNumber - 1)) * limit;
 	}
