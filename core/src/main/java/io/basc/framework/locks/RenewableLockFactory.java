@@ -3,8 +3,9 @@ package io.basc.framework.locks;
 import java.util.concurrent.TimeUnit;
 
 public abstract class RenewableLockFactory implements LockFactory{
-	private TimeUnit timeUnit = TimeUnit.MINUTES;
-	private long timeout = 5;
+	private TimeUnit timeUnit = TimeUnit.SECONDS;
+	//默认10秒
+	private long timeout = 10;
 	
 	public TimeUnit getTimeUnit() {
 		return timeUnit;
