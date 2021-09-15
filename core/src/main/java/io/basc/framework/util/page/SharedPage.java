@@ -66,6 +66,12 @@ public class SharedPage<T> extends SharedPageable<Long, T> implements Page<T> {
 	}
 
 	@Override
+	public Long getNextCursorId() {
+		Long next = super.getNextCursorId();
+		return next == null ? Page.super.getNextCursorId() : next;
+	}
+
+	@Override
 	public long getPageNumber() {
 		return PageSupport.getPageNumber(getCount(), getCursorId());
 	}
