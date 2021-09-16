@@ -15,19 +15,19 @@ public class TimeUtils {
 	/**
 	 * 一天的毫秒数
 	 */
-	public static final long ONE_DAY = 86400000L;
+	public static final int ONE_DAY = 86400000;
 	/**
 	 * 一小时的毫秒数
 	 */
-	public static final long ONE_HOUR = 3600000L;
+	public static final int ONE_HOUR = 3600000;
 	/**
 	 * 一分钟的毫秒数
 	 */
-	public static final long ONE_MINUTE = 60000L;
+	public static final int ONE_MINUTE = 60000;
 	/**
 	 * 一秒的毫秒数
 	 */
-	public static final long ONE_SECOND = 1000L;
+	public static final int ONE_SECOND = 1000;
 
 	/**
 	 * 日期格式yyyy-MM-dd
@@ -116,17 +116,6 @@ public class TimeUtils {
 
 		Assert.requiredArgument(StringUtils.hasText(pattern), "pattern");
 		return new SimpleDateFormat(pattern).format(date);
-	}
-
-	/**
-	 * 获取日期
-	 * 
-	 * @see #DATE_PATTERN
-	 * @param date
-	 * @return
-	 */
-	public static Date getDate(String date) {
-		return parse(date, DATE_PATTERN);
 	}
 
 	/**
