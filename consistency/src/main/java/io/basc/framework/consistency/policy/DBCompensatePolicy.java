@@ -1,5 +1,10 @@
 package io.basc.framework.consistency.policy;
 
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+
 import io.basc.framework.codec.support.Base64;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
@@ -11,12 +16,7 @@ import io.basc.framework.orm.sql.annotation.Table;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.XTime;
-
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.concurrent.locks.Lock;
+import io.basc.framework.util.TimeUtils;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class DBCompensatePolicy extends StorageCompensatePolicy{
@@ -39,7 +39,7 @@ public class DBCompensatePolicy extends StorageCompensatePolicy{
 	
 	@Override
 	public Enumeration<String> getUnfinishedGroups() {
-		Sql sql = new SimpleSql("select `group` from " + TABLE_NAME + " where cts<? group by `group` order by cts desc", (System.currentTimeMillis() - XTime.ONE_MINUTE * getCompenstBeforeMinute()));
+		Sql sql = new SimpleSql("select `group` from " + TABLE_NAME + " where cts<? group by `group` order by cts desc", (System.currentTimeMillis() - TimeUtils.ONE_MINUTE * getCompenstBeforeMinute()));
 		List<String> groups = db.query(String.class, sql).shared();
 		if(CollectionUtils.isEmpty(groups)){
 			return Collections.emptyEnumeration();

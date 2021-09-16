@@ -1,9 +1,9 @@
 package io.basc.framework.event;
 
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.util.XTime;
-
 import java.io.Serializable;
+
+import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.TimeUtils;
 
 public class BasicEvent implements Event, Serializable{
 	private static final long serialVersionUID = 1L;
@@ -26,6 +26,6 @@ public class BasicEvent implements Event, Serializable{
 	}
 
 	public String toString() {
-		return XTime.format(createTime, "yyyy-MM-dd HH:mm:ss") + " <" + MapperUtils.getFieldFactory().getFields(getClass()).getValueMap(this).toString() + ">";
+		return TimeUtils.format(createTime, "yyyy-MM-dd HH:mm:ss") + " <" + MapperUtils.getFieldFactory().getFields(getClass()).getValueMap(this).toString() + ">";
 	};
 }

@@ -1,15 +1,13 @@
 package io.basc.framework.freemarker.model;
 
-import io.basc.framework.freemarker.annotation.SharedVariable;
-import io.basc.framework.util.FormatUtils;
-import io.basc.framework.util.XTime;
-
 import java.util.List;
 
 import freemarker.template.SimpleDate;
 import freemarker.template.SimpleNumber;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
+import io.basc.framework.freemarker.annotation.SharedVariable;
+import io.basc.framework.util.TimeUtils;
 
 @SharedVariable
 public class DateFormat implements TemplateMethodModelEx{
@@ -27,11 +25,11 @@ public class DateFormat implements TemplateMethodModelEx{
 		}
 		
 		if(SimpleNumber.class.isAssignableFrom(obj.getClass())){
-			return XTime.format(((SimpleNumber)obj).getAsNumber().longValue(), format);
+			return TimeUtils.format(((SimpleNumber)obj).getAsNumber().longValue(), format);
 		}else if(SimpleDate.class.isAssignableFrom(obj.getClass())){
-			return FormatUtils.format(((SimpleDate)obj).getAsDate(), format);
+			return TimeUtils.format(((SimpleDate)obj).getAsDate(), format);
 		}else{
-			return XTime.parse(obj.toString(), format);
+			return TimeUtils.parse(obj.toString(), format);
 		}
 	}
 }

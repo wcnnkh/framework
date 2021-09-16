@@ -3,13 +3,9 @@ package io.basc.framework.util;
 import java.io.IOException;
 import java.nio.CharBuffer;
 import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import io.basc.framework.lang.FormatterException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.placeholder.PropertyResolver;
 
@@ -29,8 +25,8 @@ public final class FormatUtils {
 		return sb.toString();
 	}
 
-	public static void formatPlaceholder(Appendable appendable, Object format, @Nullable String placeholder, Object... args)
-			throws IOException {
+	public static void formatPlaceholder(Appendable appendable, Object format, @Nullable String placeholder,
+			Object... args) throws IOException {
 		String text = format == null ? null : format.toString();
 		if (StringUtils.isEmpty(text) || ArrayUtils.isEmpty(args)) {
 			appendable.append(text);
@@ -70,8 +66,7 @@ public final class FormatUtils {
 	 * 保留小数点精度
 	 * 
 	 * @param number
-	 * @param len
-	 *            保留多少位
+	 * @param len    保留多少位
 	 * @return
 	 */
 	public static String formatNumberPrecision(double number, int len) {
@@ -101,27 +96,6 @@ public final class FormatUtils {
 		return new DecimalFormat(new String(charBuffer.array())).format(number);
 	}
 
-	public static Date parse(String date, String formatter) throws FormatterException {
-		Assert.requiredArgument(StringUtils.hasText(formatter), "formatter");
-		if(StringUtils.isEmpty(date)) {
-			return null;
-		}
-		
-		try {
-			return new SimpleDateFormat(formatter).parse(date);
-		} catch (ParseException e) {
-			throw new FormatterException("date=" + date + ", formatter=" + formatter, e);
-		}
-	}
-
-	public static String format(Date date, String formatter) {
-		Assert.requiredArgument(StringUtils.hasText(formatter), "formatter");
-		if(date == null) {
-			return null;
-		}
-		return new SimpleDateFormat(formatter).format(date);
-	}
-	
 	public static Properties format(Properties properties, PropertyResolver propertyResolver) {
 		if (properties == null || properties.isEmpty()) {
 			return properties;

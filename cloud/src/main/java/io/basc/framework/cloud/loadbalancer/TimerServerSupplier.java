@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.XTime;
+import io.basc.framework.util.TimeUtils;
 
 public class TimerServerSupplier<T> extends TimerTask implements
 		ServerSupplier<T> {
@@ -23,7 +23,7 @@ public class TimerServerSupplier<T> extends TimerTask implements
 	private AtomicBoolean timerTag = new AtomicBoolean(false);
 
 	public TimerServerSupplier(ServerSupplier<T> serverSupplier) {
-		this(serverSupplier, XTime.ONE_MINUTE);
+		this(serverSupplier, TimeUtils.ONE_MINUTE);
 	}
 
 	public TimerServerSupplier(ServerSupplier<T> serverSupplier, long period) {

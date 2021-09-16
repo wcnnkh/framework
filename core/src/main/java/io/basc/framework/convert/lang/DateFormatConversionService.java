@@ -1,15 +1,15 @@
 package io.basc.framework.convert.lang;
 
+import java.util.Date;
+
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.annotation.DateFormat;
-import io.basc.framework.util.FormatUtils;
+import io.basc.framework.util.TimeUtils;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.value.AnyValue;
-
-import java.util.Date;
 
 public class DateFormatConversionService implements ConversionService {
 	private boolean canConvert(Class<?> type) {
@@ -80,9 +80,9 @@ public class DateFormatConversionService implements ConversionService {
 			TypeDescriptor targetType) {
 		DateFormat dateFormat = sourceType.getAnnotation(DateFormat.class);
 		if (dateFormat == null) {
-			return FormatUtils.parse(source, "");
+			return TimeUtils.parse(source);
 		} else {
-			return FormatUtils.parse(source, dateFormat.value());
+			return TimeUtils.parse(source, dateFormat.value());
 		}
 	}
 
@@ -99,7 +99,7 @@ public class DateFormatConversionService implements ConversionService {
 		if (dateFormat == null) {
 			return String.valueOf(source);
 		} else {
-			return FormatUtils.format(source, dateFormat.value());
+			return TimeUtils.format(source, dateFormat.value());
 		}
 	}
 
@@ -120,7 +120,7 @@ public class DateFormatConversionService implements ConversionService {
 		if (dateFormat == null) {
 			return String.valueOf(date);
 		} else {
-			return FormatUtils.format(date, dateFormat.value());
+			return TimeUtils.format(date, dateFormat.value());
 		}
 	}
 }

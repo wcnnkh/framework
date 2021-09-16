@@ -1,15 +1,14 @@
 package io.basc.framework.logger;
 
-import io.basc.framework.util.FormatUtils;
-import io.basc.framework.util.XTime;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
+import io.basc.framework.util.FormatUtils;
+import io.basc.framework.util.TimeUtils;
+
 public class CustomFormatter extends Formatter {
-	private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss,SSS";
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	@Override
@@ -27,7 +26,7 @@ public class CustomFormatter extends Formatter {
         }
         
         StringBuilder sb = new StringBuilder();
-        sb.append(XTime.format(record.getMillis(), TIME_FORMAT));
+        sb.append(TimeUtils.format(record.getMillis(), TimeUtils.TIME_MILLIS_PATTERN));
         sb.append(" ");
         sb.append(record.getLevel().getName());
         String name = record.getLoggerName();

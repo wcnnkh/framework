@@ -1,19 +1,19 @@
 package io.basc.framework.upload.kind;
 
-import io.basc.framework.io.FileUtils;
-import io.basc.framework.net.message.multipart.MultipartMessage;
-import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XTime;
-import io.basc.framework.util.comparator.FileComparator;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import io.basc.framework.io.FileUtils;
+import io.basc.framework.net.message.multipart.MultipartMessage;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.TimeUtils;
+import io.basc.framework.util.comparator.FileComparator;
 
 public class DefaultKindEditor extends AbstractKindUpload {
 	private final String rootPath;
@@ -81,7 +81,7 @@ public class DefaultKindEditor extends AbstractKindUpload {
 			sb.append(group).append("/");
 		}
 		sb.append(dir).append("/");
-		sb.append(XTime.format(System.currentTimeMillis(), "yyyy/MM/dd"));
+		sb.append(TimeUtils.format(System.currentTimeMillis(), "yyyy/MM/dd"));
 		sb.append("/");
 		sb.append(item.getOriginalFilename());
 		String path = sb.toString();
