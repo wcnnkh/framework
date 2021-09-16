@@ -1,5 +1,10 @@
 package io.basc.framework.io.event;
 
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
@@ -9,12 +14,7 @@ import io.basc.framework.io.AbstractResource;
 import io.basc.framework.io.Resource;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.XTime;
-
-import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicBoolean;
+import io.basc.framework.util.TimeUtils;
 
 public class SimpleResourceEventDispatcher extends SimpleEventDispatcher<ChangeEvent<Resource>> {
 	private static Logger logger = LoggerFactory.getLogger(SimpleResourceEventDispatcher.class);
@@ -38,7 +38,7 @@ public class SimpleResourceEventDispatcher extends SimpleEventDispatcher<ChangeE
 	public SimpleResourceEventDispatcher(AbstractResource resource, long period) {
 		super(true);
 		this.resource = resource;
-		this.period = period < XTime.ONE_SECOND ? LISTENER_PERIOD : period;
+		this.period = period < TimeUtils.ONE_SECOND ? LISTENER_PERIOD : period;
 	}
 	
 	private volatile TimerTask timerTask;

@@ -1,5 +1,14 @@
 package io.basc.framework.upload;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import io.basc.framework.beans.annotation.Value;
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.context.annotation.Provider;
@@ -24,7 +33,7 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.DefaultStatus;
 import io.basc.framework.util.Status;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XTime;
+import io.basc.framework.util.TimeUtils;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.MultiPartServerHttpRequest;
 import io.basc.framework.web.ServerHttpRequest;
@@ -32,15 +41,6 @@ import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.cors.Cors;
 import io.basc.framework.web.pattern.ServerHttpRequestAccept;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * 上传器
@@ -143,7 +143,10 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 
 	public Status<String> checkSign(String key, String expiration, String sign) {
 		long time = Long.parseLong(expiration);
-		System.out.println(XTime.format(time, "yyyy-MM-dd HH:mm:ss"));
+		if(logger.isDebugEnabled()) {
+			logger.debug("Check sign key={} expiration={} sign={}", key, TimeUtils.format(time, "yyyy-MM-dd HH:mm:ss"), sign);
+		}
+		
 		if (System.currentTimeMillis() > time) {
 			return new DefaultStatus<>(false, "签名已过期");
 		}

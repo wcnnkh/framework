@@ -1,18 +1,5 @@
 package io.basc.framework.consistency.policy;
 
-import io.basc.framework.codec.support.URLCodec;
-import io.basc.framework.io.FileUtils;
-import io.basc.framework.io.SerializerException;
-import io.basc.framework.locks.FileLockFactory;
-import io.basc.framework.locks.LockFactory;
-import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Pair;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XTime;
-import io.basc.framework.util.comparator.CompareUtils;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -23,6 +10,19 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.concurrent.locks.Lock;
+
+import io.basc.framework.codec.support.URLCodec;
+import io.basc.framework.io.FileUtils;
+import io.basc.framework.io.SerializerException;
+import io.basc.framework.locks.FileLockFactory;
+import io.basc.framework.locks.LockFactory;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Pair;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.TimeUtils;
+import io.basc.framework.util.comparator.CompareUtils;
 
 public class FileCompensatePolicy extends StorageCompensatePolicy {
 	private static final String SUFFIX = ".compenstor";
@@ -56,7 +56,7 @@ public class FileCompensatePolicy extends StorageCompensatePolicy {
 
 			@Override
 			public boolean accept(File pathname) {
-				return pathname.isFile() && pathname.getName().endsWith(SUFFIX) && pathname.lastModified() < (t - XTime.ONE_MINUTE * getCompenstBeforeMinute());
+				return pathname.isFile() && pathname.getName().endsWith(SUFFIX) && pathname.lastModified() < (t - TimeUtils.ONE_MINUTE * getCompenstBeforeMinute());
 			}
 		});
 

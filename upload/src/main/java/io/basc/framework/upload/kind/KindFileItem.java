@@ -1,11 +1,11 @@
 package io.basc.framework.upload.kind;
 
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.util.XTime;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
+import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.TimeUtils;
 
 public class KindFileItem implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -81,7 +81,7 @@ public class KindFileItem implements Serializable {
 		map.put("is_photo", isPhoto());
 		map.put("filetype", getExt());
 		map.put("filename", getName());
-		map.put("datetime", XTime.format(getDateTime(), "yyyy-MM-dd HH:mm:ss"));
+		map.put("datetime", TimeUtils.format(getDateTime(), "yyyy-MM-dd HH:mm:ss"));
 		return map;
 	}
 

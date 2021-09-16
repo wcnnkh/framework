@@ -1,18 +1,18 @@
 package io.basc.framework.amqp;
 
-import io.basc.framework.math.NumberHolder;
-import io.basc.framework.script.MathScriptEngine;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XTime;
-import io.basc.framework.value.AnyValue;
-import io.basc.framework.value.Value;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import io.basc.framework.math.NumberHolder;
+import io.basc.framework.script.MathScriptEngine;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.TimeUtils;
+import io.basc.framework.value.AnyValue;
+import io.basc.framework.value.Value;
 
 public class MessageProperties implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
@@ -334,7 +334,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	 */
 	public long getTransactionMessageConfirmDelay(){
 		Value value = getHeaderValue(TRANSACTION_MESSAGE_CONFIRM_DELAY_KEY);
-		return (value == null || value.isEmpty())? (XTime.ONE_MINUTE * 10):value.getAsLongValue();
+		return (value == null || value.isEmpty())? (TimeUtils.ONE_MINUTE * 10):value.getAsLongValue();
 	}
 	
 	/**

@@ -1,9 +1,9 @@
 package io.basc.framework.event;
 
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.util.XTime;
-
 import java.util.EventObject;
+
+import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.TimeUtils;
 
 /**
  * 这和jdk自身提供的区别是source字段可以被序列化
@@ -35,7 +35,7 @@ public class ObjectEvent<T> extends BasicEvent {
 
 	@Override
 	public String toString() {
-		return XTime.format(getCreateTime(), "yyyy-MM-dd HH:mm:ss") + " <"
-				+ MapperUtils.getFields(getClass()).all().getValueMap(this).toString() + ">";
+		return TimeUtils.format(getCreateTime(), "yyyy-MM-dd HH:mm:ss") + " <"
+				+ MapperUtils.toString(this) + ">";
 	}
 }
