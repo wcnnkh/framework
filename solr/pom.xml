@@ -23,6 +23,12 @@
 			<version>${solr.version}</version>
 		</dependency>
 		
+		<!-- 测试引用 -->
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>testing</artifactId>
+		</dependency>
+		
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>log4j</artifactId>

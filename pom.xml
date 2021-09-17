@@ -52,7 +52,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<junit.version>4.13.2</junit.version>
 		<!-- https://mvnrepository.com/artifact/io.swagger.core.v3 -->
 		<swagger.version>2.1.10</swagger.version>
 		<!-- tomcat7只支持jdk1.6及以上的版本 -->
@@ -62,14 +61,6 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<!-- https://mvnrepository.com/artifact/junit/junit -->
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${junit.version}</version>
-				<scope>test</scope>
-			</dependency>
-
 			<!-- https://mvnrepository.com/artifact/org.ow2.asm/asm -->
 			<dependency>
 				<groupId>org.ow2.asm</groupId>
@@ -561,6 +552,15 @@
 				<artifactId>validation</artifactId>
 				<version>1.8.0</version>
 			</dependency>
+			
+			<!-- 测试 -->
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>testing</artifactId>
+				<version>1.8.0</version>
+				<scope>test</scope>
+			</dependency>
+			<!-- 测试 -->
 		</dependencies>
 	</dependencyManagement>
 
@@ -576,30 +576,6 @@
 			<groupId>javax.websocket</groupId>
 			<artifactId>javax.websocket-api</artifactId>
 			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>cglib</groupId>
-			<artifactId>cglib</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -808,5 +784,6 @@
 		<module>oracle</module>
 		<module>sqlserver</module>
 		<module>xml</module>
+		<module>testing</module>
 	</modules>
 </project>
