@@ -162,7 +162,7 @@ public class Copy {
 		return this;
 	}
 
-	protected <T> T cloneArray(Class<T> targetClass, Object sourceArray, Field sourceParentField) {
+	protected <T> T cloneArray(Object sourceArray, Field sourceParentField, Class<T> targetClass) {
 		int size = Array.getLength(sourceArray);
 		Object newArr = Array.newInstance(targetClass.getComponentType(), size);
 		for (int i = 0; i < size; i++) {
@@ -193,15 +193,14 @@ public class Copy {
 
 	/**
 	 * 拷贝
-	 * 
 	 * @param <T>
 	 * @param <S>
-	 * @param targetFields 目标字段
-	 * @param target       目标对象
-	 * @param sourceFields 来源字段
-	 * @param source       来源
+	 * @param sourceFields
+	 * @param source
+	 * @param targetFields
+	 * @param target
 	 */
-	public <T, S> void copy(Fields targetFields, T target, Fields sourceFields, S source) {
+	public <T, S> void copy(Fields sourceFields, S source, Fields targetFields, T target) {
 		if (source == null) {
 			return;
 		}
@@ -229,14 +228,12 @@ public class Copy {
 				});
 	}
 
-	public <T, S> void copy(Class<? extends T> targetClass, T target, @Nullable Field targetParentField,
-			Class<? extends S> sourceClass, S source, @Nullable Field sourceParentField) {
+	public <T, S> void copy(Class<? extends S> sourceClass, S source, @Nullable Field sourceParentField, Class<? extends T> targetClass, T target, @Nullable Field targetParentField) {
 		if (source == null) {
 			return;
 		}
 
-		copy(getFieldFactory().getFields(targetClass, targetParentField).all(), target,
-				getFieldFactory().getFields(sourceClass, sourceParentField).all(), source);
+		copy(getFieldFactory().getFields(sourceClass, sourceParentField).all(), source, getFieldFactory().getFields(targetClass, targetParentField).all(), target);
 	}
 
 	private Object copyValue(Field field, Object value) {
@@ -253,14 +250,13 @@ public class Copy {
 		return valueToUse;
 	}
 
-	public <T, S> T copy(Class<? extends T> targetClass, @Nullable Field targetParentField,
-			Class<? extends S> sourceClass, S source, @Nullable Field sourceParentField) {
+	public <T, S> T copy(Class<? extends S> sourceClass, S source, @Nullable Field sourceParentField, Class<? extends T> targetClass, @Nullable Field targetParentField) {
 		if (source == null) {
 			return null;
 		}
 
 		if (targetClass.isArray() && sourceClass.isArray()) {
-			return cloneArray(targetClass, source, sourceParentField);
+			return cloneArray(source, sourceParentField, targetClass);
 		}
 
 		if (!getInstanceFactory().isInstance(targetClass)) {
@@ -272,7 +268,7 @@ public class Copy {
 		}
 
 		T target = getInstanceFactory().getInstance(targetClass);
-		copy(targetClass, target, targetParentField, sourceClass, source, sourceParentField);
+		copy(sourceClass, source, sourceParentField, targetClass, target, targetParentField);
 		return target;
 	}
 
@@ -294,7 +290,7 @@ public class Copy {
 		}
 
 		if (sourceClass.isArray()) {
-			return (T) cloneArray(sourceClass, source, parentField);
+			return (T) cloneArray(source, parentField, sourceClass);
 		}
 
 		if (isInvokeCloneableMethod() && source instanceof Cloneable) {
@@ -353,21 +349,23 @@ public class Copy {
 	 * @param source
 	 * @return
 	 */
-	public static <T> T copy(Class<? extends T> targetClass, Object source) {
+	public static <T> T copy(Object source, Class<? extends T> targetClass) {
 		Assert.requiredArgument(targetClass != null, "targetClass");
 		Assert.requiredArgument(source != null, "source");
-		return DEFAULT_COPY.copy(targetClass, null, source.getClass(), source, null);
+		return DEFAULT_COPY.copy(source.getClass(), source, null, targetClass, null);
 	}
 
 	/**
 	 * 浅拷贝
-	 * 
-	 * @param target
+	 * @param <T>
 	 * @param source
+	 * @param target
+	 * @return
 	 */
-	public static void copy(Object target, Object source) {
+	public static <T> T copy(Object source, T target) {
 		Assert.requiredArgument(target != null, "target");
 		Assert.requiredArgument(source != null, "source");
-		DEFAULT_COPY.copy(target.getClass(), target, null, source.getClass(), source, null);
+		DEFAULT_COPY.copy(source.getClass(), source, null, target.getClass(), target, null);
+		return target;
 	}
 }

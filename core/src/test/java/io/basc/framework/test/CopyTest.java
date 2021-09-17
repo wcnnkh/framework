@@ -19,7 +19,7 @@ public class CopyTest {
 		Source source = new Source();
 		source.setList(list);
 		System.out.println(source);
-		Copy.copy(target, source);
+		Copy.copy(source, target);
 		System.out.println(target);
 	}
 
