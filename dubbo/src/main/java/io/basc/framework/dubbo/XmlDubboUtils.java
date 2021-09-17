@@ -121,7 +121,7 @@ public final class XmlDubboUtils {
 								}
 
 								Object refInstance = refInstanceFactory.getInstance(clazz);
-								ServiceConfig<Object> scanService = Copy.copy(ServiceConfig.class, config);
+								ServiceConfig<Object> scanService = Copy.copy(config, ServiceConfig.class);
 								scanService.setInterface(clazz);
 								scanService.setRef(refInstance);
 								if (scanService.isValid()) {
@@ -194,7 +194,7 @@ public final class XmlDubboUtils {
 									continue;
 								}
 
-								ReferenceConfig<?> referenceConfig = Copy.copy(ReferenceConfig.class, config);
+								ReferenceConfig<?> referenceConfig = Copy.copy(config, ReferenceConfig.class);
 								referenceConfig.setInterface(clazz);
 								if (referenceConfig.isValid()) {
 									list.add(referenceConfig);
@@ -276,7 +276,7 @@ public final class XmlDubboUtils {
 				}
 
 				T config = defaultConfig == null ? Sys.env.getInstance(type)
-						: Copy.copy(type, defaultConfig);
+						: Copy.copy(defaultConfig, type);
 				loader(config, environment, node);
 
 				if (filter != null && !filter.doFilter(list, node, config)) {

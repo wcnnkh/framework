@@ -26,7 +26,7 @@ public class FieldSetterListenMethodInterceptor extends FieldSetterListenImpl im
 
 	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
 		if (ProxyUtils.isWriteReplaceMethod(invoker, false)) {
-			return Copy.copy(invoker.getDeclaringClass(), invoker.getInstance());
+			return Copy.copy(invoker.getInstance(), invoker.getDeclaringClass());
 		}
 
 		if (args.length == 0) {

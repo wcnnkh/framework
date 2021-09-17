@@ -7,7 +7,7 @@
 	<!-- 批量修改模块系统中的版本号 http://www.mojohaus.org/versions-maven-plugin/set-mojo.html -->
 	<!-- generateBackupPoms 是否备份旧的pom.xml -->
 	<!-- newVersion 新的版本号 -->
-	<!-- mvn versions:set -DnewVersion=2.0 -DgenerateBackupPoms=false -->
+	<!-- mvn versions:set -DnewVersion=1.8.0 -DgenerateBackupPoms=false -->
 	<version>1.8.0</version>
 	<packaging>pom</packaging>
 	<name>framework</name>
