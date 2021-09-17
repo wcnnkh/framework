@@ -25,5 +25,12 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.7.30</version>
 		</dependency>
+		
+		<!-- 测试 -->
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>testing</artifactId>
+		</dependency>
+		<!-- 测试 -->
 	</dependencies>
 </project>

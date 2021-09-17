@@ -6,29 +6,32 @@
 		<artifactId>framework</artifactId>
 		<version>1.8.0</version>
 	</parent>
-	<artifactId>hessian</artifactId>
+	<artifactId>testing</artifactId>
+	
 	<properties>
-		<hessian.version>4.0.65</hessian.version>
+		<junit.version>4.13.2</junit.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>core</artifactId>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm</artifactId>
 		</dependency>
 
-		<!-- 默认使用此序列化方式 -->
-		<!-- https://mvnrepository.com/artifact/com.caucho/hessian -->
 		<dependency>
-			<groupId>com.caucho</groupId>
-			<artifactId>hessian</artifactId>
-			<version>${hessian.version}</version>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
 		</dependency>
-		
-		<!-- 测试 -->
+
 		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>testing</artifactId>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
 		</dependency>
-		<!-- 测试 -->
 	</dependencies>
 </project>
