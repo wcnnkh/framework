@@ -61,12 +61,12 @@ public final class Sys extends DefaultEnvironment implements ServiceLoaderFactor
 		 * 加载配置文件
 		 */
 		loadProperties("system.properties");
-		loadProperties(getValue("system.properties.location", String.class,
+		loadProperties(getValue("io.basc.framework.properties", String.class,
 				"/private.properties"));
 
 		// 初始化日志管理器
 		Observable<Properties> observable = getProperties(getValue(
-				"io.basc.framework.logger.level.config", String.class,
+				"io.basc.framework.logger.level.properties", String.class,
 				"/logger-level.properties"));
 		LoggerFactory.getLevelManager().combine(observable);
 
