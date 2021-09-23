@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -19,7 +20,7 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>web</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>netflix-eureka-client</artifactId>
@@ -42,8 +43,8 @@
 					<artifactId>httpclient</artifactId>
 				</exclusion>
 				<exclusion>
-					<artifactId>blitz4j</artifactId>
-					<groupId>com.netflix.blitz4j</groupId>
+					<groupId>javax.servlet</groupId>
+					<artifactId>servlet-api</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -88,6 +89,29 @@
 			<groupId>com.thoughtworks.xstream</groupId>
 			<artifactId>xstream</artifactId>
 			<version>${xstream.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>testing</artifactId>
+		</dependency>
+		
+		<!-- <dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>slf4j</artifactId>
+			<scope>test</scope>
+		</dependency>
+ -->
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>tomcat</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>yaml</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>
