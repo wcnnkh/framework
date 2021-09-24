@@ -16,24 +16,25 @@
 
 package io.basc.framework.netflix.eureka;
 
-import io.basc.framework.aop.ProxyInstanceTarget;
-import io.basc.framework.boot.Application;
-import io.basc.framework.cloud.DefaultServiceInstance;
-import io.basc.framework.cloud.ServiceInstance;
-import io.basc.framework.util.Assert;
-
 import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import javax.servlet.Registration;
 
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.HealthCheckHandler;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
+
+import io.basc.framework.aop.ProxyInstanceTarget;
+import io.basc.framework.boot.Application;
+import io.basc.framework.cloud.DefaultServiceInstance;
+import io.basc.framework.cloud.ServiceInstance;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Assert;
 
 /**
  * Eureka-specific implementation of service instance {@link Registration}.
@@ -42,8 +43,7 @@ import com.netflix.discovery.EurekaClientConfig;
  * @author Tim Ysewyn
  */
 public class EurekaRegistration implements ServiceInstance {
-
-	private static final Log log = LogFactory.getLog(EurekaRegistration.class);
+	private static final Logger log = LoggerFactory.getLogger(EurekaRegistration.class);
 
 	private final EurekaClient eurekaClient;
 

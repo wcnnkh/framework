@@ -65,16 +65,10 @@ public class EurekaServerBootstrap {
 		this.serverContext = serverContext;
 	}
 
-	public void contextInitialized(ServletContext context) {
-		try {
-			initEurekaEnvironment();
-			initEurekaServerContext();
-
-			context.setAttribute(EurekaServerContext.class.getName(), this.serverContext);
-		} catch (Throwable e) {
-			log.error(e, "Cannot bootstrap eureka server :");
-			throw new RuntimeException("Cannot bootstrap eureka server :", e);
-		}
+	public void contextInitialized(ServletContext context) throws Exception {
+		initEurekaEnvironment();
+		initEurekaServerContext();
+		context.setAttribute(EurekaServerContext.class.getName(), this.serverContext);
 	}
 
 	public void contextDestroyed(ServletContext context) {
@@ -122,10 +116,9 @@ public class EurekaServerBootstrap {
 	/**
 	 * Server context shutdown hook. Override for custom logic
 	 * 
-	 * @throws Exception
-	 *             - calling {@link AwsBinder#shutdown()} or
-	 *             {@link EurekaServerContext#shutdown()} may result in an
-	 *             exception
+	 * @throws Exception - calling {@link AwsBinder#shutdown()} or
+	 *                   {@link EurekaServerContext#shutdown()} may result in an
+	 *                   exception
 	 */
 	protected void destroyEurekaServerContext() throws Exception {
 		EurekaMonitors.shutdown();
@@ -140,8 +133,7 @@ public class EurekaServerBootstrap {
 	/**
 	 * Users can override to clean up the environment themselves.
 	 * 
-	 * @throws Exception
-	 *             - shutting down Eureka servers may result in an exception
+	 * @throws Exception - shutting down Eureka servers may result in an exception
 	 */
 	protected void destroyEurekaEnvironment() throws Exception {
 	}

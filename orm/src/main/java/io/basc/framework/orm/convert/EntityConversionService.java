@@ -159,9 +159,14 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		if (logger.isTraceEnabled()) {
 			logger.trace(field + " - " + names);
 		}
+
 		for (String name : names) {
 			if (!checkKeyExists || containsKey(source, name)) {
-				return getProperty(source, name);
+				Object value = getProperty(source, name);
+				if (value == null) {
+					continue;
+				}
+				return value;
 			}
 		}
 
