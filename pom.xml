@@ -57,10 +57,137 @@
 		<!-- tomcat7只支持jdk1.6及以上的版本 -->
 		<!-- tomcat8只支持jdk1.7及以上的版本 -->
 		<tomcat.version>9.0.52</tomcat.version>
+
+		<eureka.version>1.10.16</eureka.version>
+		<xstream.version>1.4.18</xstream.version>
+		<jersey.version>1.19.4</jersey.version>
+		<jackson.version>2.12.5</jackson.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-xml</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.netflix.eureka</groupId>
+				<artifactId>eureka-client</artifactId>
+				<version>${eureka.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>javax.servlet</groupId>
+						<artifactId>servlet-api</artifactId>
+					</exclusion>
+				
+					<exclusion>
+						<groupId>com.netflix.archaius</groupId>
+						<artifactId>archaius-core</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.github.vlsi.compactmap</groupId>
+						<artifactId>compactmap</artifactId>
+					</exclusion>
+					
+					<exclusion>
+						<groupId>com.google.code.findbugs</groupId>
+						<artifactId>jsr305</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.google.code.findbugs</groupId>
+						<artifactId>annotations</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>com.netflix.eureka</groupId>
+				<artifactId>eureka-core</artifactId>
+				<version>${eureka.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>javax.servlet</groupId>
+						<artifactId>servlet-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.netflix.archaius</groupId>
+						<artifactId>archaius-core</artifactId>
+					</exclusion>
+					<exclusion>
+						<artifactId>log4j</artifactId>
+						<groupId>log4j</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>com.netflix.blitz4j</artifactId>
+						<groupId>blitz4j</groupId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.google.code.findbugs</groupId>
+						<artifactId>annotations</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.google.code.findbugs</groupId>
+						<artifactId>jsr305</artifactId>
+					</exclusion>
+					<exclusion>
+						<artifactId>jackson-dataformat-xml</artifactId>
+						<groupId>com.fasterxml.jackson.dataformat</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>*</artifactId>
+						<groupId>com.amazonaws</groupId>
+					</exclusion>
+					<!-- TODO: Move back to Eureka dependency when 1.10.17 released -->
+					<exclusion>
+						<groupId>com.thoughtworks.xstream</groupId>
+						<artifactId>xstream</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+
+			<!-- TODO: Move back to Eureka dependency when 1.10.17 released -->
+			<dependency>
+				<groupId>com.thoughtworks.xstream</groupId>
+				<artifactId>xstream</artifactId>
+				<version>${xstream.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.sun.jersey</groupId>
+				<artifactId>jersey-core</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.jersey</groupId>
+				<artifactId>jersey-client</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.jersey.contribs</groupId>
+				<artifactId>jersey-apache-client4</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.sun.jersey</groupId>
+				<artifactId>jersey-servlet</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.jersey</groupId>
+				<artifactId>jersey-server</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+
 			<!-- https://mvnrepository.com/artifact/org.ow2.asm/asm -->
 			<dependency>
 				<groupId>org.ow2.asm</groupId>
@@ -101,7 +228,7 @@
 				<artifactId>javax.ws.rs-api</artifactId>
 				<version>2.1.1</version>
 			</dependency>
-			
+
 			<!-- tomcat -->
 			<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-el -->
 			<dependency>
@@ -142,7 +269,7 @@
 			<dependency>
 				<groupId>javax.servlet</groupId>
 				<artifactId>javax.servlet-api</artifactId>
-				<version>3.0.1</version>
+				<version>3.1.0</version>
 			</dependency>
 
 			<dependency>
@@ -528,7 +655,7 @@
 				<artifactId>dom</artifactId>
 				<version>1.8.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>xml</artifactId>
@@ -552,7 +679,7 @@
 				<artifactId>validation</artifactId>
 				<version>1.8.0</version>
 			</dependency>
-			
+
 			<!-- 测试 -->
 			<dependency>
 				<groupId>io.basc.framework</groupId>

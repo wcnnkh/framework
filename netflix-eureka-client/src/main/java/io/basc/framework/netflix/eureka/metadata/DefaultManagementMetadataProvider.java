@@ -16,14 +16,13 @@
 
 package io.basc.framework.netflix.eureka.metadata;
 
-import io.basc.framework.netflix.eureka.EurekaInstanceConfigBean;
-import io.basc.framework.util.StringUtils;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.netflix.eureka.EurekaInstanceConfigBean;
+import io.basc.framework.util.StringUtils;
 
 /**
  * Default implementation of {@link DefaultManagementMetadataProvider}.
@@ -34,7 +33,7 @@ public class DefaultManagementMetadataProvider implements ManagementMetadataProv
 
 	private static final int RANDOM_PORT = 0;
 
-	private static final Log log = LogFactory.getLog(DefaultManagementMetadataProvider.class);
+	private static final Logger log = LoggerFactory.getLogger(DefaultManagementMetadataProvider.class);
 
 	@Override
 	public ManagementMetadata get(EurekaInstanceConfigBean instance, int serverPort, String serverContextPath,

@@ -5,6 +5,8 @@ import io.basc.framework.boot.Application;
 import io.basc.framework.boot.servlet.ServletContextInitialization;
 import io.basc.framework.context.Destroy;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 
 import javax.servlet.ServletContext;
 
@@ -16,14 +18,24 @@ import javax.servlet.ServletContext;
  */
 @Provider
 public class EurekaServerInitializer implements ServletContextInitialization, Destroy {
+	private static Logger logger = LoggerFactory.getLogger(EurekaServerInitializer.class);
+	
 	@Autowired
 	private EurekaServerBootstrap eurekaServerBootstrap;
 	private ServletContext servletContext;
 
 	@Override
 	public void init(Application application, ServletContext servletContext) {
-		eurekaServerBootstrap.contextInitialized(servletContext);
 		this.servletContext = servletContext;
+		Thread thread = new Thread(() -> {
+			try {
+				eurekaServerBootstrap.contextInitialized(servletContext);
+			} catch (Throwable e) {
+				logger.error(e, "Cannot bootstrap eureka server :");
+			}
+		});
+		thread.setName(EurekaServerInitializer.class.getSimpleName());
+		thread.start();
 	}
 
 	@Override
@@ -31,7 +43,6 @@ public class EurekaServerInitializer implements ServletContextInitialization, De
 		if (servletContext == null) {
 			return;
 		}
-
 		eurekaServerBootstrap.contextDestroyed(servletContext);
 	}
 }

@@ -83,16 +83,25 @@ public class AnnotationObjectRelationalMapping implements ObjectRelationalMappin
 			//如果没有设置过别名
 			String defaultName = fieldDescriptor.getName();
 			names.add(defaultName);
-			String humpName = StringUtils.humpNamingReplacement(defaultName, "_");
-			if(!humpName.equals(defaultName)) {
-				names.add(humpName);
-			}
+			appendDefaultAliasNames(names, defaultName);
 		}
 		
 		if (isEntity(fieldDescriptor)) {
 			names.addAll(getAliasNames(fieldDescriptor.getType()));
 		}
 		return names;
+	}
+	
+	private void appendDefaultAliasNames(Collection<String> names, String name) {
+		String humpName = StringUtils.humpNamingReplacement(name, "_");
+		if(!humpName.equals(name)) {
+			names.add(humpName);
+		}
+		
+		String humpName2 = StringUtils.humpNamingReplacement(name, "-");
+		if(!humpName2.equals(name)) {
+			names.add(humpName2);
+		}
 	}
 
 	@Override
@@ -164,10 +173,7 @@ public class AnnotationObjectRelationalMapping implements ObjectRelationalMappin
 			//如果没有使用过别名，那就设置默认名称
 			String simpleName = ProxyUtils.getFactory().getUserClass(entityClass).getSimpleName();
 			list.add(simpleName);
-			String humpName = StringUtils.humpNamingReplacement(simpleName, "_");
-			if(!simpleName.endsWith(humpName)) {
-				list.add(humpName);
-			}
+			appendDefaultAliasNames(list, simpleName);
 		}
 		return list;
 	}

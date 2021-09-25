@@ -1,0 +1,17 @@
+server:
+  #应用端口
+  port: 8761
+eureka:
+  client:
+    #是否注册自身 默认true 注册 false 不注册
+    register-with-eureka: false
+    # 要不要去注册中心获取其他服务的地址，因为当前为非集群版eureka，所以不需要同步其他节点数据  默认true 检查 false不检查
+    fetch-registry: false
+  instance:
+    hostname: 'localhost'
+  server:
+    #是否开启自我保护 默认true 开启  false 不开启
+    enable-self-preservation: true
+    #服务失效扫描时间   清理间隔   5秒将客户端剔除的服务在服务注册列表中剔除#
+    eviction-interval-timer-in-ms: 5000
+

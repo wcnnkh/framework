@@ -20,6 +20,7 @@ import io.basc.framework.beans.annotation.Autowired;
 import io.basc.framework.beans.annotation.ConfigurationProperties;
 import io.basc.framework.env.Environment;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.TimeUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,8 +44,6 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 	 */
 	public static final String PREFIX = "eureka.server";
 
-	private static final int MINUTES = 60 * 1000;
-
 	@Autowired(required = false)
 	private Environment environment;
 
@@ -54,23 +53,23 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 
 	private int eIPBindRebindRetries = 3;
 
-	private int eIPBindingRetryIntervalMs = 5 * MINUTES;
+	private int eIPBindingRetryIntervalMs = 5 * TimeUtils.ONE_MINUTE;
 
-	private int eIPBindingRetryIntervalMsWhenUnbound = 1 * MINUTES;
+	private int eIPBindingRetryIntervalMsWhenUnbound = 1 * TimeUtils.ONE_MINUTE;
 
 	private boolean enableSelfPreservation = true;
 
 	private double renewalPercentThreshold = 0.85;
 
-	private int renewalThresholdUpdateIntervalMs = 15 * MINUTES;
+	private int renewalThresholdUpdateIntervalMs = 15 * TimeUtils.ONE_MINUTE;
 
-	private int peerEurekaNodesUpdateIntervalMs = 10 * MINUTES;
+	private int peerEurekaNodesUpdateIntervalMs = 10 * TimeUtils.ONE_MINUTE;
 
 	private int numberOfReplicationRetries = 5;
 
 	private int peerEurekaStatusRefreshTimeIntervalMs = 30 * 1000;
 
-	private int waitTimeInMsWhenSyncEmpty = 5 * MINUTES;
+	private int waitTimeInMsWhenSyncEmpty = 5 * TimeUtils.ONE_MINUTE;
 
 	private int peerNodeConnectTimeoutMs = 200;
 
@@ -82,7 +81,7 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 
 	private int peerNodeConnectionIdleTimeoutSeconds = 30;
 
-	private long retentionTimeInMSInDeltaQueue = 3 * MINUTES;
+	private long retentionTimeInMSInDeltaQueue = 3 * TimeUtils.ONE_MINUTE;
 
 	private long deltaRetentionTimerIntervalInMs = 30 * 1000;
 
@@ -90,9 +89,9 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 
 	private int aSGQueryTimeoutMs = 300;
 
-	private long aSGUpdateIntervalMs = 5 * MINUTES;
+	private long aSGUpdateIntervalMs = 5 * TimeUtils.ONE_MINUTE;
 
-	private long aSGCacheExpiryTimeoutMs = 10 * MINUTES; // defaults to longer
+	private long aSGCacheExpiryTimeoutMs = 10 * TimeUtils.ONE_MINUTE; // defaults to longer
 															// than the
 
 	// asg update interval
@@ -187,7 +186,7 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 
 	private int route53BindRebindRetries = 3;
 
-	private int route53BindingRetryIntervalMs = 5 * MINUTES;
+	private int route53BindingRetryIntervalMs = 5 * TimeUtils.ONE_MINUTE;
 
 	private long route53DomainTTL = 30;
 

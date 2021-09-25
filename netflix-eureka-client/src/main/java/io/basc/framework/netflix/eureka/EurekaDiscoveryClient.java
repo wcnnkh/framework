@@ -19,6 +19,8 @@ package io.basc.framework.netflix.eureka;
 import io.basc.framework.cloud.DiscoveryClient;
 import io.basc.framework.cloud.ServiceInstance;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.core.Ordered;
+import io.basc.framework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +37,7 @@ import com.netflix.discovery.shared.Applications;
  * @author Spencer Gibb
  * @author Tim Ysewyn
  */
-@Provider
+@Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class EurekaDiscoveryClient implements DiscoveryClient {
 
 	private final EurekaClient eurekaClient;
@@ -63,7 +65,8 @@ public class EurekaDiscoveryClient implements DiscoveryClient {
 		List<Application> registered = applications.getRegisteredApplications();
 		List<String> names = new ArrayList<>();
 		for (Application app : registered) {
-			if (app.getInstances().isEmpty()) {
+			List<InstanceInfo> instanceInfos = app.getInstances();
+			if(CollectionUtils.isEmpty(instanceInfos)) {
 				continue;
 			}
 			names.add(app.getName().toLowerCase());

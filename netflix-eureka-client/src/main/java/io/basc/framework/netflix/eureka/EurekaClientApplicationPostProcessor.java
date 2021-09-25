@@ -1,0 +1,35 @@
+package io.basc.framework.netflix.eureka;
+
+import io.basc.framework.boot.ApplicationPostProcessor;
+import io.basc.framework.boot.ConfigurableApplication;
+import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.core.Ordered;
+
+@Provider(order = Ordered.LOWEST_PRECEDENCE)
+public class EurekaClientApplicationPostProcessor implements ApplicationPostProcessor{
+	private static final String AUTO_REGISTRATION = "io.basc.framework.eureka.client.auto.register";
+
+	@Override
+	public void postProcessApplication(ConfigurableApplication application) throws Throwable {
+		if(enableEurekaClient(application) && application.getBeanFactory().isInstance(EurekaAutoServiceRegistration.class)) {
+			//auto register
+			application.getBeanFactory().getInstance(EurekaAutoServiceRegistration.class);
+		}
+	}
+
+	private boolean enableEurekaClient(ConfigurableApplication application){
+		Boolean enable = application.getEnvironment().getBoolean(AUTO_REGISTRATION);
+		if(enable != null){
+			return enable;
+		}
+		
+		for(Class<?> clazz : application.getSourceClasses()){
+			EnableEurekaClient enableEurekaClient = clazz.getAnnotation(EnableEurekaClient.class);
+			if(enableEurekaClient == null){
+				continue;
+			}
+			return enableEurekaClient.value();
+		}
+		return false;
+	}
+}
