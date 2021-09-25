@@ -147,7 +147,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 					continue;
 				}
 
-				valueMap.put(StringUtils.isEmpty(prefix) ? key : key.substring(prefix.length() + connector.length()),
+				valueMap.put(StringUtils.isEmpty(prefix) ? key : key.substring(prefix.length() + (prefix.endsWith(connector)? 0:connector.length())),
 						value);
 			}
 		}

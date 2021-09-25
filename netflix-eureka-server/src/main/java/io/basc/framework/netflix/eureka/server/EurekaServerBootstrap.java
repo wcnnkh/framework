@@ -16,9 +16,6 @@
 
 package io.basc.framework.netflix.eureka.server;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-
 import javax.servlet.ServletContext;
 
 import com.netflix.appinfo.ApplicationInfoManager;
@@ -37,6 +34,9 @@ import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.util.EurekaMonitors;
 import com.thoughtworks.xstream.XStream;
 
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+
 /**
  * @author Spencer Gibb
  */
@@ -54,7 +54,7 @@ public class EurekaServerBootstrap {
 	protected volatile EurekaServerContext serverContext;
 
 	protected volatile AwsBinder awsBinder;
-
+	
 	public EurekaServerBootstrap(ApplicationInfoManager applicationInfoManager, EurekaClientConfig eurekaClientConfig,
 			EurekaServerConfig eurekaServerConfig, PeerAwareInstanceRegistry registry,
 			EurekaServerContext serverContext) {
@@ -108,9 +108,9 @@ public class EurekaServerBootstrap {
 		// Copy registry from neighboring eureka node
 		int registryCount = this.registry.syncUp();
 		this.registry.openForTraffic(this.applicationInfoManager, registryCount);
-
+		
 		// Register all monitoring statistics.
-		EurekaMonitors.registerAllStats();
+		//EurekaMonitors.registerAllStats();
 	}
 
 	/**

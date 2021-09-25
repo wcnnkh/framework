@@ -32,6 +32,7 @@ import io.basc.framework.aop.ProxyInstanceTarget;
 import io.basc.framework.boot.Application;
 import io.basc.framework.cloud.DefaultServiceInstance;
 import io.basc.framework.cloud.ServiceInstance;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
@@ -56,7 +57,7 @@ public class EurekaRegistration implements ServiceInstance {
 	private HealthCheckHandler healthCheckHandler;
 
 	private EurekaRegistration(CloudEurekaInstanceConfig instanceConfig, EurekaClient eurekaClient,
-			ApplicationInfoManager applicationInfoManager, HealthCheckHandler healthCheckHandler) {
+			ApplicationInfoManager applicationInfoManager, @Nullable HealthCheckHandler healthCheckHandler) {
 		this.eurekaClient = eurekaClient;
 		this.instanceConfig = instanceConfig;
 		this.applicationInfoManager = applicationInfoManager;

@@ -86,6 +86,11 @@
 				<version>${eureka.version}</version>
 				<exclusions>
 					<exclusion>
+						<groupId>javax.servlet</groupId>
+						<artifactId>servlet-api</artifactId>
+					</exclusion>
+				
+					<exclusion>
 						<groupId>com.netflix.archaius</groupId>
 						<artifactId>archaius-core</artifactId>
 					</exclusion>
@@ -93,10 +98,7 @@
 						<groupId>com.github.vlsi.compactmap</groupId>
 						<artifactId>compactmap</artifactId>
 					</exclusion>
-					<exclusion>
-						<groupId>javax.servlet</groupId>
-						<artifactId>servlet-api</artifactId>
-					</exclusion>
+					
 					<exclusion>
 						<groupId>com.google.code.findbugs</groupId>
 						<artifactId>jsr305</artifactId>
@@ -113,12 +115,12 @@
 				<version>${eureka.version}</version>
 				<exclusions>
 					<exclusion>
-						<groupId>com.netflix.archaius</groupId>
-						<artifactId>archaius-core</artifactId>
-					</exclusion>
-					<exclusion>
 						<groupId>javax.servlet</groupId>
 						<artifactId>servlet-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.netflix.archaius</groupId>
+						<artifactId>archaius-core</artifactId>
 					</exclusion>
 					<exclusion>
 						<artifactId>log4j</artifactId>

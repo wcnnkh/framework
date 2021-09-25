@@ -13,11 +13,30 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>cloud</artifactId>
 		</dependency>
+		
+		<!-- TODO 是否应该让整个框架都默认使用jackson -->
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>jackson</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>com.netflix.eureka</groupId>
 			<artifactId>eureka-client</artifactId>
-			<exclusions>
+			 <exclusions>
+			 	<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-annotations</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-databind</artifactId>
+				</exclusion>
+			 
 				<exclusion>
 					<groupId>com.sun.jersey</groupId>
 					<artifactId>jersey-client</artifactId>
@@ -30,33 +49,9 @@
 					<groupId>com.sun.jersey.contribs</groupId>
 					<artifactId>jersey-apache-client4</artifactId>
 				</exclusion>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>jackson-annotations</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>jackson-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>jackson-databind</artifactId>
-				</exclusion>
 			</exclusions>
 		</dependency>
 
-		<!-- TODO 是否应该让整个框架都默认使用jackson -->
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>jackson</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>*</artifactId>
-					<groupId>org.glassfish.jersey</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		
 		<dependency>
 			<groupId>com.sun.jersey.contribs</groupId>
 			<artifactId>jersey-apache-client4</artifactId>

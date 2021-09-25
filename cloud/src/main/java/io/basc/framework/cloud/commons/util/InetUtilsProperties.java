@@ -20,11 +20,14 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.basc.framework.beans.annotation.ConfigurationProperties;
+
 /**
  * Properties for {@link InetUtils}.
  *
  * @author Spencer Gibb
  */
+@ConfigurationProperties(prefix = InetUtilsProperties.PREFIX)
 public class InetUtilsProperties {
 
 	/**
