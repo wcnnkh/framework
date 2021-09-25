@@ -1,3 +1,5 @@
+application:
+   name: 'eureka-test-client'
 eureka:
   client:
     enabled: true
@@ -13,4 +15,3 @@ eureka:
     #表示eureka client发送心跳给server端的频率
     lease-renewal-interval-in-seconds: 5
     prefer-ip-address: true
-    appname: 'client-test'

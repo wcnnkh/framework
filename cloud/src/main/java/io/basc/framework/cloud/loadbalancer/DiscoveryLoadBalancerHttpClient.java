@@ -1,20 +1,24 @@
 package io.basc.framework.cloud.loadbalancer;
 
 import io.basc.framework.cloud.ServiceInstance;
+import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.core.Ordered;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.http.client.ClientHttpRequestCallback;
 import io.basc.framework.http.client.ClientHttpRequestFactory;
 import io.basc.framework.http.client.ClientHttpResponseExtractor;
 import io.basc.framework.http.client.DefaultHttpClient;
+import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.http.client.exception.HttpClientException;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.HashSet;
 
+@Provider(order = Ordered.LOWEST_PRECEDENCE, value= HttpClient.class)
 public class DiscoveryLoadBalancerHttpClient extends DefaultHttpClient{
-	private DiscoveryLoadBalancer loadbalancer;
+	private final DiscoveryLoadBalancer loadbalancer;
 	
 	public DiscoveryLoadBalancerHttpClient(DiscoveryLoadBalancer loadbalancer) {
 		this.loadbalancer = loadbalancer;
@@ -37,7 +41,11 @@ public class DiscoveryLoadBalancerHttpClient extends DefaultHttpClient{
 		while(server != null){
 			UriComponentsBuilder builder = UriComponentsBuilder.fromUri(url);
 			builder = builder.host(server.getService().getHost());
-			builder = builder.port(server.getService().getPort());
+			int port = builder.build().getPort();
+			if(port == -1){
+				builder = builder.port(server.getService().getPort());
+			}
+			
 			try {
 				return super.execute(builder.build().toUri(), method, requestFactory, requestCallback,
 						responseExtractor);

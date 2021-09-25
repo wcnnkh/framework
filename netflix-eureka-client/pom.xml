@@ -61,6 +61,12 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>testing</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>tomcat</artifactId>
+			<scope>test</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>io.basc.framework</groupId>
