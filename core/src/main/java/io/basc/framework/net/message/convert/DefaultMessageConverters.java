@@ -1,18 +1,18 @@
 package io.basc.framework.net.message.convert;
 
-import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
+import io.basc.framework.convert.lang.ConversionServices;
+import io.basc.framework.convert.support.DefaultConversionServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.message.multipart.MultipartMessageConverter;
 
 public class DefaultMessageConverters extends MessageConverters {
-	private final ConversionService conversionService;
+	private final ConversionServices conversionServices = new DefaultConversionServices();
 
-	public DefaultMessageConverters(ConversionService conversionService) {
-		this.conversionService = conversionService;
+	public DefaultMessageConverters() {
 		addService(new JsonMessageConverter());
-		addService(new StringMessageConverter(conversionService));
+		addService(new StringMessageConverter(conversionServices));
 		addService(new ByteArrayMessageConverter());
 		addService(new HttpFormMessageConveter());
 		addService(new MultipartMessageConverter(InetUtils.getMultipartMessageResolver()));
@@ -21,17 +21,18 @@ public class DefaultMessageConverters extends MessageConverters {
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		conversionServices.configure(serviceLoaderFactory);
 		super.configure(serviceLoaderFactory);
 	}
 
-	public ConversionService getConversionService() {
-		return conversionService;
+	public ConversionServices getConversionServices() {
+		return conversionServices;
 	}
 
 	@Override
 	protected void aware(MessageConverter messageConverter) {
 		if (messageConverter instanceof ConversionServiceAware) {
-			((ConversionServiceAware) messageConverter).setConversionService(conversionService);
+			((ConversionServiceAware) messageConverter).setConversionService(conversionServices);
 		}
 		super.aware(messageConverter);
 	}

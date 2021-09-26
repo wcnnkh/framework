@@ -1,9 +1,5 @@
 package io.basc.framework.http.client;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.factory.Configurable;
@@ -27,6 +23,10 @@ import io.basc.framework.net.message.convert.MessageConverters;
 import io.basc.framework.net.uri.UriTemplateHandler;
 import io.basc.framework.util.Assert;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+
 public class DefaultHttpClient extends AbstractHttpConnectionFactory implements HttpClient, Configurable {
 	private static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = Sys.env.getServiceLoader(
 			ClientHttpRequestFactory.class, "io.basc.framework.http.client.SimpleClientHttpRequestFactory").first();
@@ -48,13 +48,6 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 			ClientHttpRequestInterceptor.class);
 	private ClientHttpRequestFactory clientHttpRequestFactory;
 	private UriTemplateHandler uriTemplateHandler;
-
-	/**
-	 * spi初始化
-	 */
-	public DefaultHttpClient() {
-		configure(Sys.env);
-	}
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {

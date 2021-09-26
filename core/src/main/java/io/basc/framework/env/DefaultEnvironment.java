@@ -1,12 +1,6 @@
 package io.basc.framework.env;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-
-import io.basc.framework.convert.ConfigurableConversionService;
+import io.basc.framework.convert.lang.ConversionServices;
 import io.basc.framework.convert.resolve.ResourceResolvers;
 import io.basc.framework.convert.support.DefaultConversionServices;
 import io.basc.framework.env.ObservablePropertiesPropertyFactory.ValueCreator;
@@ -36,6 +30,12 @@ import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 import io.basc.framework.value.support.DefaultPropertyFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 
 public class DefaultEnvironment extends DefaultPropertyFactory implements ConfigurableEnvironment, Configurable {
 	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
@@ -239,7 +239,7 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	}
 
 	@Override
-	public ConfigurableConversionService getConversionService() {
+	public ConversionServices getConversionService() {
 		return conversionServices;
 	}
 

@@ -1,7 +1,5 @@
 package io.basc.framework.rpc.http.annotation;
 
-import javax.ws.rs.Path;
-
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanDefinitionLoader;
 import io.basc.framework.beans.BeanDefinitionLoaderChain;
@@ -11,6 +9,8 @@ import io.basc.framework.core.Ordered;
 import io.basc.framework.http.client.DefaultHttpClient;
 import io.basc.framework.rpc.CallableFactory;
 import io.basc.framework.rpc.support.RemoteCallableBeanDefinition;
+
+import javax.ws.rs.Path;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class HttpConnectionCallableBeanDefinitionLoader implements BeanDefinitionLoader {
@@ -23,8 +23,7 @@ public class HttpConnectionCallableBeanDefinitionLoader implements BeanDefinitio
 			return loaderChain.load(beanFactory, sourceClass);
 		}
 		
-		DefaultHttpClient httpConnectionFactory = new DefaultHttpClient(
-				beanFactory.getEnvironment().getConversionService());
+		DefaultHttpClient httpConnectionFactory = new DefaultHttpClient();
 		httpConnectionFactory.configure(beanFactory);
 		
 		CallableFactory callableFactory;

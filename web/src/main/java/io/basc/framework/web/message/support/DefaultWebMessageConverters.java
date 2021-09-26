@@ -12,13 +12,10 @@ import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessageConverters;
 
 public class DefaultWebMessageConverters extends WebMessageConverters {
-	private final MessageConverters messageConverters;
-	private final ConversionService conversionService;
+	private final DefaultMessageConverters messageConverters = new DefaultMessageConverters();
 
 	public DefaultWebMessageConverters(ConversionService conversionService, ParameterFactory defaultValueFactory) {
-		this.conversionService = conversionService;
-		this.messageConverters = new DefaultMessageConverters(conversionService);
-		setParentMessageConverter(new ConversionMessageConverter(conversionService, defaultValueFactory));
+		setAfterService(new ConversionMessageConverter(conversionService, defaultValueFactory));
 		addService(new EntityMessageConverter(this.messageConverters));
 		addService(new InputMessageConverter());
 		addService(new ResourceMessageConverter());
@@ -29,10 +26,6 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 		addService(new Jaxrs2ParamMessageConverter(conversionService, defaultValueFactory));
 		addService(new Jaxrs2HeaderParamMessageConverter(conversionService, defaultValueFactory));
 		addService(new Jaxrs2HeaderParamMessageConverter(conversionService, defaultValueFactory));
-	}
-
-	public ConversionService getConversionService() {
-		return conversionService;
 	}
 
 	public MessageConverters getMessageConverters() {
@@ -48,7 +41,7 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 	@Override
 	protected void aware(WebMessageConverter converter) {
 		if (converter instanceof ConversionServiceAware) {
-			((ConversionServiceAware) converter).setConversionService(conversionService);
+			((ConversionServiceAware) converter).setConversionService(messageConverters.getConversionServices());
 		}
 		super.aware(converter);
 	}

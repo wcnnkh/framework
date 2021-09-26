@@ -10,7 +10,7 @@ public class RequestParameterFactory implements ParameterFactory {
 
 	public RequestParameterFactory(ServerHttpRequest request, WebMessageConverter messageConverter) {
 		this.request = request;
-		messageConverters.setParentMessageConverter(messageConverter);
+		messageConverters.setAfterService(messageConverter);
 	}
 
 	public ServerHttpRequest getRequest() {

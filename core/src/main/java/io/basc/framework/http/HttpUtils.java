@@ -1,6 +1,7 @@
 package io.basc.framework.http;
 
 import io.basc.framework.env.Sys;
+import io.basc.framework.http.client.DefaultHttpClient;
 import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.net.FileMimeTypeUitls;
@@ -19,8 +20,12 @@ public final class HttpUtils {
 	private HttpUtils() {
 	};
 
-	private static final HttpClient HTTP_CLIENT = Sys.env
-			.getServiceLoader(HttpClient.class, "io.basc.framework.http.client.DefaultHttpClient").first();
+	private static final HttpClient HTTP_CLIENT = Sys.env.getServiceLoader(
+			HttpClient.class).first(() -> {
+		DefaultHttpClient client = new DefaultHttpClient();
+		client.configure(Sys.env);
+		return client;
+	});
 
 	/**
 	 * 获取默认的HttpClient(获取spi机制加载)
@@ -31,7 +36,8 @@ public final class HttpUtils {
 		return HTTP_CLIENT;
 	}
 
-	public static boolean isValidOrigin(HttpRequest request, Collection<String> allowedOrigins) {
+	public static boolean isValidOrigin(HttpRequest request,
+			Collection<String> allowedOrigins) {
 		Assert.notNull(request, "Request must not be null");
 		Assert.notNull(allowedOrigins, "Allowed origins must not be null");
 
@@ -58,7 +64,8 @@ public final class HttpUtils {
 			return true;
 		}
 
-		return isSameOrigin(request.getURI(), UriComponentsBuilder.fromOriginHeader(origin).build().toUri());
+		return isSameOrigin(request.getURI(), UriComponentsBuilder
+				.fromOriginHeader(origin).build().toUri());
 	}
 
 	/**
@@ -101,8 +108,9 @@ public final class HttpUtils {
 		}
 
 		return (ObjectUtils.nullSafeEquals(uri1.getScheme(), uri2.getScheme())
-				&& ObjectUtils.nullSafeEquals(uri1.getHost(), uri2.getHost())
-				&& getPort(uri1.getScheme(), uri1.getPort()) == getPort(uri2.getScheme(), uri2.getPort()));
+				&& ObjectUtils.nullSafeEquals(uri1.getHost(), uri2.getHost()) && getPort(
+					uri1.getScheme(), uri1.getPort()) == getPort(
+				uri2.getScheme(), uri2.getPort()));
 	}
 
 	private static int getPort(String scheme, int port) {
@@ -122,13 +130,15 @@ public final class HttpUtils {
 	 * @param outputMessage
 	 * @param fileName
 	 */
-	public static void writeFileMessageHeaders(HttpOutputMessage outputMessage, String fileName) {
+	public static void writeFileMessageHeaders(HttpOutputMessage outputMessage,
+			String fileName) {
 		MimeType mimeType = FileMimeTypeUitls.getMimeType(fileName);
 		if (mimeType != null) {
 			outputMessage.setContentType(mimeType);
 		}
-		ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
-				.filename(fileName, Constants.UTF_8).build();
+		ContentDisposition contentDisposition = ContentDisposition
+				.builder("attachment").filename(fileName, Constants.UTF_8)
+				.build();
 		outputMessage.getHeaders().setContentDisposition(contentDisposition);
 	}
 }

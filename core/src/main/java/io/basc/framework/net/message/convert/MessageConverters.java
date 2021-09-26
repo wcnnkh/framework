@@ -15,18 +15,9 @@ import io.basc.framework.net.message.OutputMessage;
 
 public class MessageConverters extends ConfigurableServices<MessageConverter> implements MessageConverter {
 	private static Logger logger = LoggerFactory.getLogger(MessageConverters.class);
-	private MessageConverter parentMessageConverter;
 
 	public MessageConverters() {
 		super(MessageConverter.class, null, () -> new TreeSet<MessageConverter>(new ComparatorMessageConverter()));
-	}
-
-	public MessageConverter getParentMessageConverter() {
-		return parentMessageConverter;
-	}
-
-	public void setParentMessageConverter(MessageConverter parentMessageConverter) {
-		this.parentMessageConverter = parentMessageConverter;
 	}
 
 	private static class ComparatorMessageConverter implements Comparator<MessageConverter> {
@@ -53,10 +44,6 @@ public class MessageConverters extends ConfigurableServices<MessageConverter> im
 			}
 		}
 
-		if (parentMessageConverter != null && parentMessageConverter.canRead(type, inputMessage.getContentType())) {
-			return parentMessageConverter.read(type, inputMessage);
-		}
-
 		if (logger.isDebugEnabled()) {
 			logger.debug("not support read type={}, contentType={}", type, inputMessage.getContentType());
 		}
@@ -75,11 +62,6 @@ public class MessageConverters extends ConfigurableServices<MessageConverter> im
 			}
 		}
 
-		if (parentMessageConverter != null && parentMessageConverter.canWrite(type, body, contentType)) {
-			parentMessageConverter.write(type, body, contentType, outputMessage);
-			return;
-		}
-
 		if (logger.isDebugEnabled()) {
 			logger.debug("not support wirte body={}, contentType={}", body, contentType);
 		}
@@ -91,7 +73,7 @@ public class MessageConverters extends ConfigurableServices<MessageConverter> im
 				return true;
 			}
 		}
-		return (parentMessageConverter != null && parentMessageConverter.canRead(type, mimeType));
+		return false;
 	}
 
 	public boolean canWrite(TypeDescriptor type, Object body, MimeType contentType) {
@@ -100,7 +82,7 @@ public class MessageConverters extends ConfigurableServices<MessageConverter> im
 				return true;
 			}
 		}
-		return (parentMessageConverter != null && parentMessageConverter.canWrite(type, body, contentType));
+		return false;
 	}
 
 	public MimeTypes getSupportMimeTypes() {
@@ -108,11 +90,6 @@ public class MessageConverters extends ConfigurableServices<MessageConverter> im
 		for (MessageConverter converter : this) {
 			mimeTypes.getMimeTypes().addAll(converter.getSupportMimeTypes().getMimeTypes());
 		}
-
-		if (parentMessageConverter != null) {
-			mimeTypes.getMimeTypes().addAll(parentMessageConverter.getSupportMimeTypes().getMimeTypes());
-		}
-
 		return mimeTypes.readyOnly();
 	}
 }

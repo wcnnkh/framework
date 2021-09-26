@@ -38,39 +38,39 @@ public class DefaultConversionServices extends ConversionServices {
 	}
 
 	protected void afterProperties() {
-		addConversionService(new ArrayToArrayConversionService(this));
-		addConversionService(new ArrayToCollectionConversionService(this));
+		addService(new ArrayToArrayConversionService(this));
+		addService(new ArrayToCollectionConversionService(this));
 
-		addConversionService(new ByteBufferConversionService(this));
+		addService(new ByteBufferConversionService(this));
 
-		addConversionService(new CollectionToArrayConversionService(this));
-		addConversionService(new CollectionToCollectionConversionService(this));
-		addConversionService(new CollectionToObjectConversionService(this));
+		addService(new CollectionToArrayConversionService(this));
+		addService(new CollectionToCollectionConversionService(this));
+		addService(new CollectionToObjectConversionService(this));
 
-		addConversionService(new DateFormatConversionService());
+		addService(new DateFormatConversionService());
 
-		addConversionService(new MapToMapConversionService(this));
+		addService(new MapToMapConversionService(this));
 
-		addConversionService(new ValueConversionService(this));
-		addConversionService(new JsonConversionService());
-		addConversionService(new JsonToObjectConversionService());
+		addService(new ValueConversionService(this));
+		addService(new JsonConversionService());
+		addService(new JsonToObjectConversionService());
 
-		addConversionService(
+		addService(
 				new ConverterConversionService(String.class, Charset.class, new StringToCharsetConverter()));
-		addConversionService(new ConverterConversionService(String.class, Locale.class, new StringToLocaleConverter()));
-		addConversionService(
+		addService(new ConverterConversionService(String.class, Locale.class, new StringToLocaleConverter()));
+		addService(
 				new ConverterConversionService(String.class, TimeZone.class, new StringToTimeZoneConverter()));
-		addConversionService(
+		addService(
 				new ConverterConversionService(String.class, Currency.class, new StringToCurrencyConverter()));
-		addConversionService(new ConverterConversionService(Reader.class, String.class, new ReaderToStringConverter()));
+		addService(new ConverterConversionService(Reader.class, String.class, new ReaderToStringConverter()));
 
-		addConversionService(new ObjectToArrayConversionService(this));
-		addConversionService(new ObjectToCollectionConversionService(this));
-		addConversionService(new ObjectToStringConverter());
+		addService(new ObjectToArrayConversionService(this));
+		addService(new ObjectToCollectionConversionService(this));
+		addService(new ObjectToStringConverter());
 
-		addConversionService(new ConverterConversionService(Resource.class, Properties.class,
+		addService(new ConverterConversionService(Resource.class, Properties.class,
 				new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers())));
-		addConversionService(new ResourceResolverConversionService(resourceResolvers));
+		addService(new ResourceResolverConversionService(resourceResolvers));
 	}
 
 	public ResourceResolvers getResourceResolvers() {

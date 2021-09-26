@@ -1,8 +1,6 @@
 package io.basc.framework.env;
 
-import java.util.Properties;
-
-import io.basc.framework.convert.ConfigurableConversionService;
+import io.basc.framework.convert.lang.ConversionServices;
 import io.basc.framework.convert.resolve.ResourceResolvers;
 import io.basc.framework.event.Observable;
 import io.basc.framework.io.ConfigurableResourceLoader;
@@ -14,6 +12,8 @@ import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
 import io.basc.framework.value.ConfigurablePropertyFactory;
 import io.basc.framework.value.PropertyFactory;
+
+import java.util.Properties;
 
 public interface ConfigurableEnvironment extends Environment, ConfigurablePropertyFactory, ConfigurableResourceLoader {
 
@@ -54,7 +54,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 
 	PropertiesResolvers getPropertiesResolver();
 
-	ConfigurableConversionService getConversionService();
+	ConversionServices getConversionService();
 
 	ResourceResolvers getResourceResolver();
 

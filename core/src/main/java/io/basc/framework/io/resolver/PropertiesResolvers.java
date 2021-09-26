@@ -1,33 +1,18 @@
 package io.basc.framework.io.resolver;
 
-import java.nio.charset.Charset;
-import java.util.Properties;
-
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.WritableResource;
 import io.basc.framework.lang.NotSupportedException;
-import io.basc.framework.util.Assert;
+
+import java.nio.charset.Charset;
+import java.util.Properties;
 
 public class PropertiesResolvers extends ConfigurableServices<PropertiesResolver> implements PropertiesResolver {
-	private PropertiesResolver parentPropertiesResolver = DefaultPropertiesResolver.INSTANCE;
 
 	public PropertiesResolvers() {
 		super(PropertiesResolver.class);
-	}
-
-	public PropertiesResolvers(PropertiesResolver parentPropertiesResolver) {
-		this();
-		this.parentPropertiesResolver = parentPropertiesResolver;
-	}
-
-	public final PropertiesResolver getParentPropertiesResolver() {
-		return parentPropertiesResolver;
-	}
-
-	public void setParentPropertiesResolver(PropertiesResolver parentPropertiesResolver) {
-		Assert.requiredArgument(parentPropertiesResolver != null, "parentPropertiesResolver");
-		this.parentPropertiesResolver = parentPropertiesResolver;
+		setAfterService(DefaultPropertiesResolver.INSTANCE);
 	}
 
 	public boolean canResolveProperties(Resource resource) {
@@ -36,8 +21,7 @@ public class PropertiesResolvers extends ConfigurableServices<PropertiesResolver
 				return true;
 			}
 		}
-
-		return parentPropertiesResolver.canResolveProperties(resource);
+		return false;
 	}
 
 	public void resolveProperties(Properties properties, Resource resource, Charset charset) {
@@ -50,11 +34,6 @@ public class PropertiesResolvers extends ConfigurableServices<PropertiesResolver
 				resolver.resolveProperties(properties, resource, charset);
 				return;
 			}
-		}
-
-		if (parentPropertiesResolver.canResolveProperties(resource)) {
-			parentPropertiesResolver.resolveProperties(properties, resource, charset);
-			return;
 		}
 		throw new NotSupportedException(resource.getDescription());
 	}
@@ -70,11 +49,6 @@ public class PropertiesResolvers extends ConfigurableServices<PropertiesResolver
 				resolver.persistenceProperties(properties, resource, charset);
 				return;
 			}
-		}
-
-		if (parentPropertiesResolver.canResolveProperties(resource)) {
-			parentPropertiesResolver.persistenceProperties(properties, resource, charset);
-			return;
 		}
 		throw new NotSupportedException(resource.getDescription());
 	}

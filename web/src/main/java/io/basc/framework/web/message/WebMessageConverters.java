@@ -10,33 +10,17 @@ import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 
 public class WebMessageConverters extends ConfigurableServices<WebMessageConverter>
-		implements WebMessageConverter, WebMessageConverterAware {
+		implements WebMessageConverter {
 	private static final LinkedThreadLocal<WebMessageConverter> NESTED = new LinkedThreadLocal<WebMessageConverter>(
 			WebMessageConverters.class.getName());
-
-	private WebMessageConverter parentMessageConverter;
-	private WebMessageConverter awareMessageConverter = this;
 
 	public WebMessageConverters() {
 		super(WebMessageConverter.class);
 	}
 
-	public final WebMessageConverter getParentMessageConverter() {
-		return parentMessageConverter;
-	}
-
-	public void setParentMessageConverter(WebMessageConverter parentMessageConverter) {
-		this.parentMessageConverter = parentMessageConverter;
-	}
-
-	@Override
-	public void setWebMessageConverter(WebMessageConverter messageConverter) {
-		this.awareMessageConverter = messageConverter;
-	}
-
 	protected void aware(WebMessageConverter converter) {
 		if (converter instanceof WebMessageConverterAware) {
-			((WebMessageConverterAware) converter).setWebMessageConverter(awareMessageConverter);
+			((WebMessageConverterAware) converter).setWebMessageConverter(this);
 		}
 		super.aware(converter);
 	}
@@ -57,7 +41,7 @@ public class WebMessageConverters extends ConfigurableServices<WebMessageConvert
 				NESTED.remove(converter);
 			}
 		}
-		return (parentMessageConverter != null && parentMessageConverter.canRead(parameterDescriptor, request));
+		return false;
 	}
 
 	@Override
@@ -77,11 +61,6 @@ public class WebMessageConverters extends ConfigurableServices<WebMessageConvert
 				NESTED.remove(converter);
 			}
 		}
-
-		if (parentMessageConverter != null && parentMessageConverter.canRead(parameterDescriptor, request)) {
-			return parentMessageConverter.read(parameterDescriptor, request);
-		}
-
 		throw new WebMessagelConverterException(parameterDescriptor, request, null);
 	}
 
@@ -105,7 +84,7 @@ public class WebMessageConverters extends ConfigurableServices<WebMessageConvert
 				NESTED.remove(converter);
 			}
 		}
-		return (parentMessageConverter != null && parentMessageConverter.canWrite(type, body, request, response));
+		return false;
 	}
 
 	@Override
@@ -131,12 +110,6 @@ public class WebMessageConverters extends ConfigurableServices<WebMessageConvert
 				NESTED.remove(converter);
 			}
 		}
-
-		if (parentMessageConverter != null && parentMessageConverter.canWrite(type, body, request, response)) {
-			parentMessageConverter.write(type, body, request, response);
-			return;
-		}
-
 		throw new WebMessagelConverterException(type, body, request, null);
 	}
 

@@ -1,59 +1,31 @@
 package io.basc.framework.convert.lang;
 
-import io.basc.framework.convert.ConfigurableConversionService;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
-import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.lang.LinkedThreadLocal;
 import io.basc.framework.value.EmptyValue;
 
-import java.util.Iterator;
 import java.util.TreeSet;
 
-public class ConversionServices extends ConversionComparator<Object>
-		implements ConfigurableConversionService, Comparable<Object>, ConversionServiceAware,
+public class ConversionServices extends ConfigurableServices<ConversionService>
+		implements ConversionService, Comparable<Object>,
 		Iterable<ConversionService>, Configurable {
 	private static final LinkedThreadLocal<ConversionService> NESTED = new LinkedThreadLocal<ConversionService>(
 			ConversionServices.class.getName());
-	private ConfigurableServices<ConversionService> conversionServices = new ConfigurableServices<>(
-			ConversionService.class, (s) -> aware(s), () -> new TreeSet<>(this));
-	private ConversionService awareConversionService = this;
-	private ConversionService parentConversionService;
 
 	public ConversionServices() {
-	}
-
-	public ConversionServices(ConversionService parentConversionServices) {
-		this.parentConversionService = parentConversionServices;
-	}
-
-	@Override
-	public void setConversionService(ConversionService conversionService) {
-		this.awareConversionService = conversionService;
+		super(ConversionService.class, null, () -> new TreeSet<>(ConversionComparator.INSTANCE));
 	}
 
 	protected void aware(ConversionService conversionService) {
 		if (conversionService instanceof ConversionServiceAware) {
-			((ConversionServiceAware) conversionService).setConversionService(awareConversionService);
+			((ConversionServiceAware) conversionService).setConversionService(this);
 		}
-	}
-
-	public void addConversionService(ConversionService conversionService) {
-		conversionServices.addService(conversionService);
-	}
-
-	@Override
-	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		conversionServices.configure(serviceLoaderFactory);
-	}
-
-	@Override
-	public Iterator<ConversionService> iterator() {
-		return conversionServices.iterator();
+		super.aware(conversionService);
 	}
 
 	public final boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
@@ -71,11 +43,6 @@ public class ConversionServices extends ConversionComparator<Object>
 				NESTED.remove(service);
 			}
 		}
-
-		if (parentConversionService != null && parentConversionService.canConvert(sourceType, targetType)) {
-			return true;
-		}
-
 		return canDirectlyConvert(sourceType, targetType);
 	}
 
@@ -99,11 +66,7 @@ public class ConversionServices extends ConversionComparator<Object>
 				NESTED.remove(service);
 			}
 		}
-
-		if (parentConversionService != null && parentConversionService.canConvert(sourceTypeToUse, targetType)) {
-			return parentConversionService.convert(source, sourceTypeToUse, targetType);
-		}
-
+		
 		if (canDirectlyConvert(sourceTypeToUse, targetType)) {
 			return source;
 		}
@@ -118,15 +81,10 @@ public class ConversionServices extends ConversionComparator<Object>
 
 	public int compareTo(Object o) {
 		for (ConversionService service : this) {
-			if (compare(service, o) == -1) {
+			if (ConversionComparator.INSTANCE.compare(service, o) == -1) {
 				return -1;
 			}
 		}
 		return 1;
-	}
-	
-	@Override
-	public String toString() {
-		return conversionServices.toString();
 	}
 }
