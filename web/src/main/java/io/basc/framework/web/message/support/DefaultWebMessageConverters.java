@@ -2,6 +2,7 @@ package io.basc.framework.web.message.support;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
+import io.basc.framework.convert.lang.ConversionServices;
 import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.net.message.convert.DefaultMessageConverters;
@@ -16,21 +17,25 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 
 	public DefaultWebMessageConverters(ConversionService conversionService, ParameterFactory defaultValueFactory) {
 		this.messageConverters = new DefaultMessageConverters(conversionService);
-		setAfterService(new ConversionMessageConverter(messageConverters.getConversionServices(), defaultValueFactory));
-		addService(new EntityMessageConverter(this.messageConverters));
+		setAfterService(new ConversionMessageConverter(getConversionServices(), defaultValueFactory));
+		addService(new EntityMessageConverter(getMessageConverters()));
 		addService(new InputMessageConverter());
 		addService(new ResourceMessageConverter());
 		addService(new AnnotationMessageConverter(defaultValueFactory));
 		addService(new RequestBodyMessageConverter());
 
 		// jaxrs2
-		addService(new Jaxrs2ParamMessageConverter(conversionService, defaultValueFactory));
-		addService(new Jaxrs2HeaderParamMessageConverter(conversionService, defaultValueFactory));
-		addService(new Jaxrs2HeaderParamMessageConverter(conversionService, defaultValueFactory));
+		addService(new Jaxrs2ParamMessageConverter(getConversionServices(), defaultValueFactory));
+		addService(new Jaxrs2HeaderParamMessageConverter(getConversionServices(), defaultValueFactory));
+		addService(new Jaxrs2HeaderParamMessageConverter(getConversionServices(), defaultValueFactory));
 	}
 
 	public MessageConverters getMessageConverters() {
 		return messageConverters;
+	}
+	
+	public ConversionServices getConversionServices(){
+		return messageConverters.getConversionServices();
 	}
 
 	@Override
@@ -42,7 +47,7 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 	@Override
 	protected void aware(WebMessageConverter converter) {
 		if (converter instanceof ConversionServiceAware) {
-			((ConversionServiceAware) converter).setConversionService(messageConverters.getConversionServices());
+			((ConversionServiceAware) converter).setConversionService(getConversionServices());
 		}
 		super.aware(converter);
 	}

@@ -16,7 +16,7 @@ import javax.ws.rs.Path;
 @EnableEurekaClient
 public class EurekaClientStart {
 	public static void main(String[] args) throws InterruptedException, ExecutionException {
-		Application application = MainApplication.run(EurekaClientStart.class, new String[] {"-p", "8100"}).get();
+		Application application = MainApplication.run(EurekaClientStart.class, args).get();
 		EurekaDiscoveryClient client = application.getBeanFactory().getInstance(EurekaDiscoveryClient.class);
 		while(true) {
 			System.out.println(client.getServices());
