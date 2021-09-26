@@ -9,7 +9,6 @@ import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.http.client.DefaultHttpClient;
-import io.basc.framework.http.client.HttpConnectionFactory;
 import io.basc.framework.rpc.CallableFactory;
 import io.basc.framework.rpc.support.RemoteCallableBeanDefinition;
 
@@ -24,8 +23,10 @@ public class HttpConnectionCallableBeanDefinitionLoader implements BeanDefinitio
 			return loaderChain.load(beanFactory, sourceClass);
 		}
 
-		HttpConnectionFactory httpConnectionFactory = new DefaultHttpClient(
-				beanFactory.getEnvironment().getConversionService(), beanFactory);
+		DefaultHttpClient httpConnectionFactory = new DefaultHttpClient(
+				beanFactory.getEnvironment().getConversionService());
+		httpConnectionFactory.configure(beanFactory);
+		
 		CallableFactory callableFactory;
 		if (remote != null) {
 			callableFactory = new AnnotationHttpCallableFactory(httpConnectionFactory, remote,

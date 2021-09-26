@@ -1,6 +1,11 @@
 package io.basc.framework.net.message.convert;
 
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.TreeSet;
+
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.MimeType;
@@ -8,31 +13,20 @@ import io.basc.framework.net.MimeTypes;
 import io.basc.framework.net.message.InputMessage;
 import io.basc.framework.net.message.OutputMessage;
 
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.TreeSet;
-
-public class MessageConverters implements MessageConverter {
+public class MessageConverters extends ConfigurableServices<MessageConverter> implements MessageConverter {
 	private static Logger logger = LoggerFactory.getLogger(MessageConverters.class);
-	private final TreeSet<MessageConverter> messageConverters = new TreeSet<MessageConverter>(
-			new ComparatorMessageConverter());
 	private MessageConverter parentMessageConverter;
 
 	public MessageConverters() {
+		super(MessageConverter.class, null, () -> new TreeSet<MessageConverter>(new ComparatorMessageConverter()));
 	}
 
-	public MessageConverters(MessageConverter parentMessageConverter) {
+	public MessageConverter getParentMessageConverter() {
+		return parentMessageConverter;
+	}
+
+	public void setParentMessageConverter(MessageConverter parentMessageConverter) {
 		this.parentMessageConverter = parentMessageConverter;
-	}
-
-	protected void aware(MessageConverter messageConverter) {
-	}
-
-	public void addMessageConverter(MessageConverter messageConverter) {
-		synchronized (messageConverter) {
-			aware(messageConverter);
-			messageConverters.add(messageConverter);
-		}
 	}
 
 	private static class ComparatorMessageConverter implements Comparator<MessageConverter> {
@@ -50,7 +44,7 @@ public class MessageConverters implements MessageConverter {
 	}
 
 	public Object read(TypeDescriptor type, InputMessage inputMessage) throws IOException, MessageConvertException {
-		for (MessageConverter converter : messageConverters) {
+		for (MessageConverter converter : this) {
 			if (converter.canRead(type, inputMessage.getContentType())) {
 				if (logger.isTraceEnabled()) {
 					logger.trace("{} read type={}, contentType={}", converter, type, inputMessage.getContentType());
@@ -71,7 +65,7 @@ public class MessageConverters implements MessageConverter {
 
 	public void write(TypeDescriptor type, Object body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException {
-		for (MessageConverter converter : messageConverters) {
+		for (MessageConverter converter : this) {
 			if (converter.canWrite(type, body, contentType)) {
 				if (logger.isTraceEnabled()) {
 					logger.trace("{} write body={}, contentType={}", converter, body, contentType);
@@ -92,7 +86,7 @@ public class MessageConverters implements MessageConverter {
 	}
 
 	public boolean canRead(TypeDescriptor type, MimeType mimeType) {
-		for (MessageConverter converter : messageConverters) {
+		for (MessageConverter converter : this) {
 			if (converter.canRead(type, mimeType)) {
 				return true;
 			}
@@ -101,7 +95,7 @@ public class MessageConverters implements MessageConverter {
 	}
 
 	public boolean canWrite(TypeDescriptor type, Object body, MimeType contentType) {
-		for (MessageConverter converter : messageConverters) {
+		for (MessageConverter converter : this) {
 			if (converter.canWrite(type, body, contentType)) {
 				return true;
 			}
@@ -111,7 +105,7 @@ public class MessageConverters implements MessageConverter {
 
 	public MimeTypes getSupportMimeTypes() {
 		MimeTypes mimeTypes = new MimeTypes();
-		for (MessageConverter converter : messageConverters) {
+		for (MessageConverter converter : this) {
 			mimeTypes.getMimeTypes().addAll(converter.getSupportMimeTypes().getMimeTypes());
 		}
 

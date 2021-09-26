@@ -1,8 +1,14 @@
 package io.basc.framework.http.client;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
+import io.basc.framework.factory.Configurable;
+import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpRequestEntity;
@@ -22,64 +28,76 @@ import io.basc.framework.net.message.convert.MessageConverters;
 import io.basc.framework.net.uri.UriTemplateHandler;
 import io.basc.framework.util.Assert;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.LinkedList;
-import java.util.List;
-
-public class DefaultHttpClient extends AbstractHttpConnectionFactory implements HttpClient {
-	private static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = Sys.env.getServiceLoader(ClientHttpRequestFactory.class, "io.basc.framework.http.client.SimpleClientHttpRequestFactory").first();
-	private static final UriTemplateHandler URI_TEMPLATE_HANDLER = Sys.env.getServiceLoader(UriTemplateHandler.class,
-			"io.basc.framework.net.uri.DefaultUriTemplateHandler").first();
-	static final ClientHttpResponseErrorHandler CLIENT_HTTP_RESPONSE_ERROR_HANDLER = Sys.env.getServiceLoader(ClientHttpResponseErrorHandler.class, DefaultClientHttpResponseErrorHandler.class).first();
-	static final HttpClientCookieManager COOKIE_MANAGER = Sys.env.getServiceLoader(HttpClientCookieManager.class).first();
-	static final List<ClientHttpRequestInterceptor> ROOT_INTERCEPTORS = Sys.
-			env.getServiceLoader(ClientHttpRequestInterceptor.class).toList();
+public class DefaultHttpClient extends AbstractHttpConnectionFactory implements HttpClient, Configurable {
+	private static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = Sys.env.getServiceLoader(
+			ClientHttpRequestFactory.class, "io.basc.framework.http.client.SimpleClientHttpRequestFactory").first();
+	private static final UriTemplateHandler URI_TEMPLATE_HANDLER = Sys.env
+			.getServiceLoader(UriTemplateHandler.class, "io.basc.framework.net.uri.DefaultUriTemplateHandler").first();
+	static final ClientHttpResponseErrorHandler CLIENT_HTTP_RESPONSE_ERROR_HANDLER = Sys.env
+			.getServiceLoader(ClientHttpResponseErrorHandler.class, DefaultClientHttpResponseErrorHandler.class)
+			.first();
+	static final HttpClientCookieManager COOKIE_MANAGER = Sys.env.getServiceLoader(HttpClientCookieManager.class)
+			.first();
+	static final List<ClientHttpRequestInterceptor> ROOT_INTERCEPTORS = Sys.env
+			.getServiceLoader(ClientHttpRequestInterceptor.class).toList();
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultHttpClient.class);
 	private HttpClientCookieManager cookieManager = COOKIE_MANAGER;
 	private ClientHttpResponseErrorHandler clientHttpResponseErrorHandler = CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
-	protected final MessageConverters messageConverter;
-	private final LinkedList<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
+	protected final MessageConverters messageConverters;
+	private final ConfigurableServices<ClientHttpRequestInterceptor> interceptors = new ConfigurableServices<>(
+			ClientHttpRequestInterceptor.class);
 	private ClientHttpRequestFactory clientHttpRequestFactory;
 	private UriTemplateHandler uriTemplateHandler;
 
+	/**
+	 * spi初始化
+	 */
 	public DefaultHttpClient() {
 		this(Sys.env.getConversionService());
+		configure(Sys.env);
 	}
 
+	/**
+	 * 自定义初始化
+	 * @param conversionService
+	 */
 	public DefaultHttpClient(ConversionService conversionService) {
-		this.messageConverter = new DefaultMessageConverters(conversionService);
+		this.messageConverters = new DefaultMessageConverters(conversionService);
 	}
 
-	public DefaultHttpClient(ConversionService conversionService, ServiceLoaderFactory serviceLoaderFactory) {
-		this.messageConverter = new DefaultMessageConverters(conversionService, serviceLoaderFactory);
-		interceptors.addAll(serviceLoaderFactory.getServiceLoader(ClientHttpRequestInterceptor.class).toList());
+	@Override
+	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		interceptors.configure(serviceLoaderFactory);
+		messageConverters.configure(serviceLoaderFactory);
 
 		if (serviceLoaderFactory.isInstance(UriTemplateHandler.class)) {
-			this.uriTemplateHandler = serviceLoaderFactory.getInstance(UriTemplateHandler.class);
+			setUriTemplateHandler(serviceLoaderFactory.getInstance(UriTemplateHandler.class));
 		}
 
 		if (serviceLoaderFactory.isInstance(ClientHttpResponseErrorHandler.class)) {
-			this.clientHttpResponseErrorHandler = serviceLoaderFactory
-					.getInstance(ClientHttpResponseErrorHandler.class);
+			setClientHttpResponseErrorHandler(serviceLoaderFactory.getInstance(ClientHttpResponseErrorHandler.class));
 		}
 
 		if (serviceLoaderFactory.isInstance(HttpClientCookieManager.class)) {
-			this.cookieManager = serviceLoaderFactory.getInstance(HttpClientCookieManager.class);
+			setCookieManager(serviceLoaderFactory.getInstance(HttpClientCookieManager.class));
 		}
 
 		if (serviceLoaderFactory.isInstance(ClientHttpRequestFactory.class)) {
-			this.clientHttpRequestFactory = serviceLoaderFactory.getInstance(ClientHttpRequestFactory.class);
+			setClientHttpRequestFactory(serviceLoaderFactory.getInstance(ClientHttpRequestFactory.class));
 		}
 	}
 
-	public LinkedList<ClientHttpRequestInterceptor> getInterceptors() {
+	public ConfigurableServices<ClientHttpRequestInterceptor> getInterceptors() {
 		return interceptors;
 	}
 
-	public MessageConverters getMessageConverter() {
-		return messageConverter;
+	public void setClientHttpResponseErrorHandler(ClientHttpResponseErrorHandler clientHttpResponseErrorHandler) {
+		this.clientHttpResponseErrorHandler = clientHttpResponseErrorHandler;
+	}
+
+	public MessageConverters getMessageConverters() {
+		return messageConverters;
 	}
 
 	public ClientHttpRequestFactory getClientHttpRequestFactory() {
@@ -257,7 +275,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 		final boolean needWriteBody = requestEntity != null && requestEntity.hasBody()
 				&& requestEntity.getMethod() != HttpMethod.GET;
 		if (needWriteBody) {
-			if (!getMessageConverter().canWrite(requestEntity.getTypeDescriptor(), requestEntity.getBody(),
+			if (!getMessageConverters().canWrite(requestEntity.getTypeDescriptor(), requestEntity.getBody(),
 					requestEntity == null ? null : requestEntity.getContentType())) {
 				throw new NotSupportedException("not supported write " + requestEntity);
 			}
@@ -271,7 +289,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 				}
 
 				if (needWriteBody) {
-					getMessageConverter().write(requestEntity.getTypeDescriptor(), requestEntity.getBody(),
+					getMessageConverters().write(requestEntity.getTypeDescriptor(), requestEntity.getBody(),
 							requestEntity == null ? null : requestEntity.getContentType(), clientRequest);
 				}
 			}
@@ -291,11 +309,11 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 					return null;
 				}
 
-				if (!getMessageConverter().canRead(responseType, response.getContentType())) {
+				if (!getMessageConverters().canRead(responseType, response.getContentType())) {
 					throw new NotSupportedException("not supported read responseType=" + responseType);
 				}
 
-				return (T) getMessageConverter().read(responseType, response);
+				return (T) getMessageConverters().read(responseType, response);
 			}
 		};
 	}

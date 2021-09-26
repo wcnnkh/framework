@@ -1,34 +1,30 @@
 package io.basc.framework.web.message;
 
+import java.io.IOException;
+
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.OrderComparator;
 import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.lang.LinkedThreadLocal;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-public class WebMessageConverters implements WebMessageConverter, WebMessageConverterAware,
-		Iterable<WebMessageConverter>, ConversionServiceAware {
+public class WebMessageConverters extends ConfigurableServices<WebMessageConverter>  implements WebMessageConverter, WebMessageConverterAware, ConversionServiceAware {
 	private static final LinkedThreadLocal<WebMessageConverter> NESTED = new LinkedThreadLocal<WebMessageConverter>(
 			WebMessageConverters.class.getName());
-
-	private volatile List<WebMessageConverter> converters;
+	
 	private WebMessageConverter parentMessageConverter;
 	private ConversionService conversionService;
 	private WebMessageConverter awareMessageConverter = this;
 
 	public WebMessageConverters() {
+		super(WebMessageConverter.class);
 	}
 
 	public WebMessageConverters(WebMessageConverter parentMessageConverter) {
+		this();
 		this.parentMessageConverter = parentMessageConverter;
 		if (parentMessageConverter instanceof WebMessageConverters) {
 			this.conversionService = ((WebMessageConverters) parentMessageConverter).conversionService;
@@ -57,28 +53,7 @@ public class WebMessageConverters implements WebMessageConverter, WebMessageConv
 		if (converter instanceof ConversionServiceAware) {
 			((ConversionServiceAware) converter).setConversionService(conversionService);
 		}
-	}
-
-	public void addMessageConverter(WebMessageConverter converter) {
-		synchronized (this) {
-			if (converters == null) {
-				converters = new ArrayList<WebMessageConverter>(8);
-			}
-
-			aware(converter);
-
-			converters.add(converter);
-			Collections.sort(converters, OrderComparator.INSTANCE.reversed());
-		}
-	}
-
-	@Override
-	public Iterator<WebMessageConverter> iterator() {
-		if (converters == null) {
-			return Collections.emptyIterator();
-		}
-
-		return converters.iterator();
+		super.aware(converter);
 	}
 
 	@Override

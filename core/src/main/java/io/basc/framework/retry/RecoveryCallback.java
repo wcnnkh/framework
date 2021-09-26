@@ -8,6 +8,7 @@ package io.basc.framework.retry;
  *
  * @param <T>
  */
+@FunctionalInterface
 public interface RecoveryCallback<T, E extends Throwable> {
 	/**
 	 * @param context the current retry context

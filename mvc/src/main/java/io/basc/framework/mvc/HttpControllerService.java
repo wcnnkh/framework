@@ -1,9 +1,14 @@
 package io.basc.framework.mvc;
 
+import java.io.IOException;
+
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.AnnotationUtils;
+import io.basc.framework.factory.Configurable;
+import io.basc.framework.factory.ConfigurableServices;
+import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.json.JSONSupport;
 import io.basc.framework.json.JSONUtils;
 import io.basc.framework.lang.NotSupportedException;
@@ -28,14 +33,11 @@ import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.jsonp.JsonpUtils;
 import io.basc.framework.web.pattern.ServerHttpRequestAccept;
 
-import java.io.IOException;
-import java.util.LinkedList;
-
 @Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpService.class)
-public class HttpControllerService implements HttpService, ServerHttpRequestAccept {
+public class HttpControllerService implements HttpService, ServerHttpRequestAccept, Configurable {
 	private static Logger logger = LoggerFactory.getLogger(HttpControllerService.class);
-	
-	protected final LinkedList<ActionInterceptor> actionInterceptor = new LinkedList<ActionInterceptor>();
+	private final ConfigurableServices<ActionInterceptor> actionInterceptors = new ConfigurableServices<>(
+			ActionInterceptor.class);
 	private JSONSupport jsonSupport;
 	private final MessageConverters messageConverters;
 	private final ExceptionHandler exceptionHandler;
@@ -45,6 +47,7 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 
 	public HttpControllerService(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
+		messageConverters = new DefaultMessageConverters(beanFactory.getEnvironment().getConversionService());
 		if (beanFactory.isInstance(HttpChannelFactory.class)) {
 			httpChannelFactory = beanFactory.getInstance(HttpChannelFactory.class);
 		} else {
@@ -55,13 +58,16 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 		this.exceptionHandler = beanFactory.isInstance(ExceptionHandler.class)
 				? beanFactory.getInstance(ExceptionHandler.class)
 				: null;
+	}
 
-		for (ActionInterceptor actionInterceptor : beanFactory.getServiceLoader(ActionInterceptor.class)) {
-			this.actionInterceptor.add(actionInterceptor);
-		}
+	@Override
+	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		messageConverters.configure(serviceLoaderFactory);
+		actionInterceptors.configure(serviceLoaderFactory);
+	}
 
-		messageConverters = new DefaultMessageConverters(beanFactory.getEnvironment().getConversionService(),
-				beanFactory);
+	public ConfigurableServices<ActionInterceptor> getActionInterceptors() {
+		return actionInterceptors;
 	}
 
 	public MessageConverters getMessageConverters() {
@@ -97,16 +103,16 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 			throw new NotSupportedException(request.toString());
 		}
 		String requestLogId = MVCUtils.getRequestLogId(request);
-		if(requestLogId == null) {
+		if (requestLogId == null) {
 			requestLogId = XUtils.getUUID();
 			MVCUtils.setRequestLogId(request, requestLogId);
 		}
-		
+
 		Levels level = MVCUtils.getActionLoggerLevel(action);
-		if(logger.isLoggable(level.getValue())) {
+		if (logger.isLoggable(level.getValue())) {
 			logger.log(level.getValue(), "[{}] request: {}", requestLogId, request);
 		}
-		
+
 		ServerHttpRequest requestToUse = request;
 		ServerHttpResponse responseToUse = response;
 
@@ -118,7 +124,7 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 
 		HttpChannel httpChannel = httpChannelFactory.create(requestToUse, responseToUse);
 		HttpChannelDestroy httpChannelDestroy = new HttpChannelDestroy(httpChannel);
-		MultiIterable<ActionInterceptor> filters = new MultiIterable<ActionInterceptor>(actionInterceptor,
+		MultiIterable<ActionInterceptor> filters = new MultiIterable<ActionInterceptor>(actionInterceptors,
 				action.getActionInterceptors());
 		try {
 			ActionParameters parameters = new ActionParameters();
@@ -133,8 +139,9 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 			try {
 				httpChannel.write(action.getReturnType(), message);
 			} finally {
-				if(logger.isLoggable(level.getValue())) {
-					logger.log(level.getValue(), "Execution {}ms of [{}] response: {}", System.currentTimeMillis() - httpChannel.getCreateTime(), requestLogId, message);
+				if (logger.isLoggable(level.getValue())) {
+					logger.log(level.getValue(), "Execution {}ms of [{}] response: {}",
+							System.currentTimeMillis() - httpChannel.getCreateTime(), requestLogId, message);
 				}
 			}
 		} finally {
