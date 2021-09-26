@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
-import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.factory.Configurable;
@@ -44,7 +43,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 	private static Logger logger = LoggerFactory.getLogger(DefaultHttpClient.class);
 	private HttpClientCookieManager cookieManager = COOKIE_MANAGER;
 	private ClientHttpResponseErrorHandler clientHttpResponseErrorHandler = CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
-	protected final MessageConverters messageConverters;
+	protected final MessageConverters messageConverters = new DefaultMessageConverters();
 	private final ConfigurableServices<ClientHttpRequestInterceptor> interceptors = new ConfigurableServices<>(
 			ClientHttpRequestInterceptor.class);
 	private ClientHttpRequestFactory clientHttpRequestFactory;
@@ -54,16 +53,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 	 * spi初始化
 	 */
 	public DefaultHttpClient() {
-		this(Sys.env.getConversionService());
 		configure(Sys.env);
-	}
-
-	/**
-	 * 自定义初始化
-	 * @param conversionService
-	 */
-	public DefaultHttpClient(ConversionService conversionService) {
-		this.messageConverters = new DefaultMessageConverters(conversionService);
 	}
 
 	@Override

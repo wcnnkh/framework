@@ -2,8 +2,6 @@ package io.basc.framework.web.message;
 
 import java.io.IOException;
 
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.factory.ConfigurableServices;
@@ -11,33 +9,24 @@ import io.basc.framework.lang.LinkedThreadLocal;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 
-public class WebMessageConverters extends ConfigurableServices<WebMessageConverter>  implements WebMessageConverter, WebMessageConverterAware, ConversionServiceAware {
+public class WebMessageConverters extends ConfigurableServices<WebMessageConverter>
+		implements WebMessageConverter, WebMessageConverterAware {
 	private static final LinkedThreadLocal<WebMessageConverter> NESTED = new LinkedThreadLocal<WebMessageConverter>(
 			WebMessageConverters.class.getName());
-	
+
 	private WebMessageConverter parentMessageConverter;
-	private ConversionService conversionService;
 	private WebMessageConverter awareMessageConverter = this;
 
 	public WebMessageConverters() {
 		super(WebMessageConverter.class);
 	}
 
-	public WebMessageConverters(WebMessageConverter parentMessageConverter) {
-		this();
+	public final WebMessageConverter getParentMessageConverter() {
+		return parentMessageConverter;
+	}
+
+	public void setParentMessageConverter(WebMessageConverter parentMessageConverter) {
 		this.parentMessageConverter = parentMessageConverter;
-		if (parentMessageConverter instanceof WebMessageConverters) {
-			this.conversionService = ((WebMessageConverters) parentMessageConverter).conversionService;
-		}
-	}
-
-	public ConversionService getConversionService() {
-		return conversionService;
-	}
-
-	@Override
-	public void setConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
 	}
 
 	@Override
@@ -48,10 +37,6 @@ public class WebMessageConverters extends ConfigurableServices<WebMessageConvert
 	protected void aware(WebMessageConverter converter) {
 		if (converter instanceof WebMessageConverterAware) {
 			((WebMessageConverterAware) converter).setWebMessageConverter(awareMessageConverter);
-		}
-
-		if (converter instanceof ConversionServiceAware) {
-			((ConversionServiceAware) converter).setConversionService(conversionService);
 		}
 		super.aware(converter);
 	}

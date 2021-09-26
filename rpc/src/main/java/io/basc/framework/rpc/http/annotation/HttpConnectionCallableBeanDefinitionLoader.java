@@ -22,7 +22,7 @@ public class HttpConnectionCallableBeanDefinitionLoader implements BeanDefinitio
 		if (remote == null && path == null) {
 			return loaderChain.load(beanFactory, sourceClass);
 		}
-
+		
 		DefaultHttpClient httpConnectionFactory = new DefaultHttpClient(
 				beanFactory.getEnvironment().getConversionService());
 		httpConnectionFactory.configure(beanFactory);

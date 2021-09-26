@@ -6,7 +6,6 @@ import java.util.Currency;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.TimeZone;
-import java.util.function.Supplier;
 
 import io.basc.framework.convert.lang.ConversionServices;
 import io.basc.framework.convert.lang.ConverterConversionService;
@@ -20,14 +19,25 @@ import io.basc.framework.convert.lang.StringToCharsetConverter;
 import io.basc.framework.convert.lang.StringToCurrencyConverter;
 import io.basc.framework.convert.lang.StringToLocaleConverter;
 import io.basc.framework.convert.lang.StringToTimeZoneConverter;
-import io.basc.framework.factory.Configurable;
+import io.basc.framework.convert.resolve.ResourceResolverConversionService;
+import io.basc.framework.convert.resolve.ResourceResolvers;
+import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.io.Resource;
-import io.basc.framework.io.resolver.PropertiesResolver;
-import io.basc.framework.lang.Nullable;
 
-public class DefaultConversionService extends ConversionServices implements Configurable {
+public class DefaultConversionServices extends ConversionServices {
+	private final ResourceResolvers resourceResolvers;
 
-	public DefaultConversionService() {
+	public DefaultConversionServices() {
+		this.resourceResolvers = new ResourceResolvers(this);
+		afterProperties();
+	}
+
+	public DefaultConversionServices(ResourceResolvers resourceResolvers) {
+		this.resourceResolvers = resourceResolvers;
+		afterProperties();
+	}
+
+	protected void afterProperties() {
 		addConversionService(new ArrayToArrayConversionService(this));
 		addConversionService(new ArrayToCollectionConversionService(this));
 
@@ -57,11 +67,19 @@ public class DefaultConversionService extends ConversionServices implements Conf
 		addConversionService(new ObjectToArrayConversionService(this));
 		addConversionService(new ObjectToCollectionConversionService(this));
 		addConversionService(new ObjectToStringConverter());
+
+		addConversionService(new ConverterConversionService(Resource.class, Properties.class,
+				new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers())));
+		addConversionService(new ResourceResolverConversionService(resourceResolvers));
 	}
 
-	public DefaultConversionService(PropertiesResolver propertiesResolver, @Nullable Supplier<Charset> charset) {
-		this();
-		addConversionService(new ConverterConversionService(Resource.class, Properties.class,
-				new ResourceToPropertiesConverter(propertiesResolver, charset)));
+	public ResourceResolvers getResourceResolvers() {
+		return resourceResolvers;
+	}
+
+	@Override
+	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		resourceResolvers.configure(serviceLoaderFactory);
+		super.configure(serviceLoaderFactory);
 	}
 }

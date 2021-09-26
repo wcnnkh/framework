@@ -13,23 +13,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>beans</artifactId>
-			<scope>provided</scope>
+			<artifactId>cloud</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>web</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>jsr311-api</artifactId>
-			<version>${jsr311.version}</version>
 		</dependency>
 	</dependencies>
 </project>

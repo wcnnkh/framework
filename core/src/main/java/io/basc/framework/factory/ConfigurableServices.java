@@ -1,11 +1,5 @@
 package io.basc.framework.factory;
 
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.Supplier;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,7 +7,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ConfigurableServices<T> implements Configurable, Iterable<T> {
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.Supplier;
+
+public class ConfigurableServices<T> implements Configurable, Iterable<T>{
 	private static Logger LOGGER = LoggerFactory.getLogger(ConfigurableServices.class);
 	private final Class<T> serviceClass;
 	private volatile ServiceLoaderFactory serviceLoaderFactory;
@@ -63,9 +63,9 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 
 	private volatile Collection<T> services;
 
-	public void addService(T service) {
+	public boolean addService(T service) {
 		if (service == null) {
-			return;
+			return false;
 		}
 
 		aware(service);
@@ -81,6 +81,7 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 			} else {
 				logger.warn("Add [{}] service {} fail", serviceClass, service);
 			}
+			return success;
 		}
 	}
 

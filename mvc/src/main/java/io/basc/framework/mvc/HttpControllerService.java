@@ -46,8 +46,8 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 	private ActionManager actionManager;
 
 	public HttpControllerService(BeanFactory beanFactory) {
+		this.messageConverters=new DefaultMessageConverters(beanFactory.getEnvironment().getConversionService());
 		this.beanFactory = beanFactory;
-		messageConverters = new DefaultMessageConverters(beanFactory.getEnvironment().getConversionService());
 		if (beanFactory.isInstance(HttpChannelFactory.class)) {
 			httpChannelFactory = beanFactory.getInstance(HttpChannelFactory.class);
 		} else {
@@ -58,6 +58,7 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 		this.exceptionHandler = beanFactory.isInstance(ExceptionHandler.class)
 				? beanFactory.getInstance(ExceptionHandler.class)
 				: null;
+		configure(beanFactory);
 	}
 
 	@Override
