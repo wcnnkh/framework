@@ -12,10 +12,11 @@ import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessageConverters;
 
 public class DefaultWebMessageConverters extends WebMessageConverters {
-	private final DefaultMessageConverters messageConverters = new DefaultMessageConverters();
+	private final DefaultMessageConverters messageConverters;
 
 	public DefaultWebMessageConverters(ConversionService conversionService, ParameterFactory defaultValueFactory) {
-		setAfterService(new ConversionMessageConverter(conversionService, defaultValueFactory));
+		this.messageConverters = new DefaultMessageConverters(conversionService);
+		setAfterService(new ConversionMessageConverter(messageConverters.getConversionServices(), defaultValueFactory));
 		addService(new EntityMessageConverter(this.messageConverters));
 		addService(new InputMessageConverter());
 		addService(new ResourceMessageConverter());

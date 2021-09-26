@@ -34,7 +34,7 @@ public class FeignBeanDefinition extends DefaultBeanDefinition {
 	}
 
 	private MessageConverter getMessageConverter() {
-		DefaultMessageConverters messageConverters = new DefaultMessageConverters();
+		DefaultMessageConverters messageConverters = new DefaultMessageConverters(beanFactory.getEnvironment().getConversionService());
 		messageConverters.configure(beanFactory);
 		return messageConverters;
 	}

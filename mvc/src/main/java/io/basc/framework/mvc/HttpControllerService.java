@@ -39,7 +39,7 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 	private final ConfigurableServices<ActionInterceptor> actionInterceptors = new ConfigurableServices<>(
 			ActionInterceptor.class);
 	private JSONSupport jsonSupport;
-	private final MessageConverters messageConverters = new DefaultMessageConverters();
+	private final MessageConverters messageConverters;
 	private final ExceptionHandler exceptionHandler;
 	private final HttpChannelFactory httpChannelFactory;
 	protected final BeanFactory beanFactory;
@@ -47,6 +47,7 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 
 	public HttpControllerService(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
+		this.messageConverters = new DefaultMessageConverters(beanFactory.getEnvironment().getConversionService());
 		if (beanFactory.isInstance(HttpChannelFactory.class)) {
 			httpChannelFactory = beanFactory.getInstance(HttpChannelFactory.class);
 		} else {

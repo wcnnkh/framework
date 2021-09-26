@@ -18,7 +18,7 @@ import io.basc.framework.context.Destroy;
 import io.basc.framework.context.Init;
 import io.basc.framework.context.support.AbstractConfigurableContext;
 import io.basc.framework.core.parameter.ExecutableParameterDescriptorsIterator;
-import io.basc.framework.core.parameter.ConfigurableDefaultValueFactory;
+import io.basc.framework.core.parameter.ParameterFactories;
 import io.basc.framework.core.parameter.ParameterDescriptors;
 import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.env.Environment;
@@ -57,7 +57,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 	private ClassLoaderProvider classLoaderProvider;
 	private volatile boolean initialized;
 	private List<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<BeanFactoryPostProcessor>(8);
-	private final ConfigurableDefaultValueFactory defaultValueFactory = new ConfigurableDefaultValueFactory();
+	private final ParameterFactories defaultValueFactories = new ParameterFactories();
 	
 	public DefaultBeanFactory() {
 		super(true);
@@ -70,12 +70,12 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 
 		registerSingleton(Environment.class.getName(), getEnvironment());
 		
-		registerSingleton(ParameterFactory.class.getName(), defaultValueFactory);
+		registerSingleton(ParameterFactory.class.getName(), defaultValueFactories);
 	}
 	
 	@Override
-	public ConfigurableDefaultValueFactory getDefaultValueFactory() {
-		return defaultValueFactory;
+	public ParameterFactories getDefaultValueFactory() {
+		return defaultValueFactories;
 	}
 
 	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
@@ -324,7 +324,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 	
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		defaultValueFactory.configure(serviceLoaderFactory);
+		defaultValueFactories.configure(serviceLoaderFactory);
 		aop.configure(serviceLoaderFactory);
 		super.configure(serviceLoaderFactory);
 	}
