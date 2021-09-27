@@ -19,6 +19,10 @@ public class ActionParameters implements Serializable {
 		this.parameters = parameters;
 	}
 
+	/**
+	 * 如果未初始化过参数会返回空
+	 * @return
+	 */
 	public Object[] getParameters() {
 		return parameters;
 	}

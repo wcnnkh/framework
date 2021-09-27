@@ -17,13 +17,13 @@ public abstract class ModelAndViewMessageConverter implements WebMessageConverte
 
 	@Override
 	public boolean canRead(ParameterDescriptor parameterDescriptor, ServerHttpRequest request) {
-		return false;
+		return parameterDescriptor.getType() == ModelAndView.class;
 	}
 
 	@Override
 	public Object read(ParameterDescriptor parameterDescriptor, ServerHttpRequest request)
 			throws IOException, WebMessagelConverterException {
-		return null;
+		return new ModelAndView(request.getContextPath());
 	}
 
 	@Override

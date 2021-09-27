@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.AnnotationUtils;
 import io.basc.framework.factory.Configurable;
@@ -31,11 +32,13 @@ import io.basc.framework.web.ServerHttpAsyncControl;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.jsonp.JsonpUtils;
+import io.basc.framework.web.model.ModelAndView;
 import io.basc.framework.web.pattern.ServerHttpRequestAccept;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpService.class)
 public class HttpControllerService implements HttpService, ServerHttpRequestAccept, Configurable {
 	private static Logger logger = LoggerFactory.getLogger(HttpControllerService.class);
+	
 	private final ConfigurableServices<ActionInterceptor> actionInterceptors = new ConfigurableServices<>(
 			ActionInterceptor.class);
 	private JSONSupport jsonSupport;
@@ -136,9 +139,27 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 				logger.error(e, httpChannel.toString());
 				message = doError(httpChannel, action, e, httpChannelDestroy);
 			}
+			
+			/**
+			 * @see ModelAndView
+			 * @see MOdelAndViewMessageConverter
+			 */
+			TypeDescriptor returnType = action.getReturnType();
+			if(returnType.getType() == Void.class && message == null) {
+				Object[] args = parameters.getParameters();
+				if(args != null) {
+					for(Object arg : args) {
+						if(arg instanceof ModelAndView) {
+							message = arg;
+							returnType = ModelAndView.TYPE_DESCRIPTOR;
+							break;
+						}
+					}
+				}
+			}
 
 			try {
-				httpChannel.write(action.getReturnType(), message);
+				httpChannel.write(returnType, message);
 			} finally {
 				if (logger.isLoggable(level.getValue())) {
 					logger.log(level.getValue(), "Execution {}ms of [{}] response: {}",
