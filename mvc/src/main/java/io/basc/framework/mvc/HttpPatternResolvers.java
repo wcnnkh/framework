@@ -12,8 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-public class HttpPatternResolvers extends AnnotationHttpPatternResolver
-		implements HttpPatternResolver {
+public class HttpPatternResolvers extends AnnotationHttpPatternResolver {
 	private List<HttpPatternResolver> resolvers = new ArrayList<HttpPatternResolver>(
 			8);
 
