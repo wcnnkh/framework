@@ -48,12 +48,15 @@ public class AnnotationHttpPatternResolver implements HttpPatternResolver, Prope
 		if (propertyResolver != null) {
 			controller = propertyResolver.resolvePlaceholders(controller);
 		}
+		controller = StringUtils.cleanPath(controller);
 
 		String methodControllerValue = methodController.value();
 		if (propertyResolver != null) {
 			methodControllerValue = propertyResolver
 					.resolvePlaceholders(methodControllerValue);
 		}
+		methodControllerValue = StringUtils.cleanPath(methodControllerValue);
+		
 		httpPatterns.addAll(createHttpControllerDescriptors(
 				StringUtils.mergePath("/", controller, methodControllerValue),
 				getControllerHttpMethods(clazz, method)));

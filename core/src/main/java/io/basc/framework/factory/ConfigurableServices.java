@@ -78,27 +78,45 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 	public Class<T> getServiceClass() {
 		return serviceClass;
 	}
-
+	
 	protected void aware(T service) {
 		if (consumer != null) {
 			consumer.accept(service);
 		}
+	}
 
-		if (serviceLoaderFactory != null) {
-			if (service instanceof Configurable) {
-				((Configurable) service).configure(serviceLoaderFactory);
+	protected void aware(T service, boolean reaware) {
+		aware(service);
+		
+		if(!reaware) {
+			if (serviceLoaderFactory != null) {
+				if (service instanceof Configurable) {
+					((Configurable) service).configure(serviceLoaderFactory);
+				}
 			}
 		}
 	}
 
 	private volatile Collection<T> services;
+	
+	public void aware() {
+		synchronized (this) {
+			if(services == null) {
+				return ;
+			}
+			
+			for(T service : services) {
+				aware(service, true);
+			}
+		}
+	}
 
 	public boolean addService(T service) {
 		if (service == null) {
 			return false;
 		}
 
-		aware(service);
+		aware(service, false);
 		synchronized (this) {
 			if (services == null) {
 				services = supplier.get();
@@ -152,7 +170,7 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 
 			this.defaultServices = serviceLoaderFactory.getServiceLoader(
 					serviceClass).toList();
-			defaultServices.stream().forEach((service) -> aware(service));
+			defaultServices.stream().forEach((service) -> aware(service, false));
 			if (logger.isDebugEnabled()) {
 				logger.debug("Configure [{}] services {}", serviceClass,
 						defaultServices);

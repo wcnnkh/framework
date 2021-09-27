@@ -2,6 +2,7 @@ package io.basc.framework.util;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.ParameterException;
+import io.basc.framework.util.placeholder.PropertyResolver;
 
 import java.io.File;
 import java.nio.CharBuffer;
@@ -16,11 +17,15 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Spliterators;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.TreeSet;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public final class StringUtils {
 	private static final String FOLDER_SEPARATOR = "/";
@@ -533,12 +538,31 @@ public final class StringUtils {
 
 	/**
 	 * 合并多个路径<br/>
-	 * 注意：该方法使用原始的字符串拼接方式(a + b)，不推荐被动态的多次调用，否则可能成为性能瓶颈
 	 * 
 	 * @param paths
 	 * @return
 	 */
-	public static String mergePath(String... paths) {
+	public static String mergePaths(Enumeration<String> paths, @Nullable PropertyResolver propertyResolver) {	
+		StringBuilder sb = new StringBuilder();
+		while(paths.hasMoreElements()) {
+			String path = paths.nextElement();
+			if(path == null) {
+				continue;
+			}
+			
+			if(propertyResolver != null) {
+				path = propertyResolver.resolvePlaceholders(path);
+			}
+			
+			sb.append(path).append(FOLDER_SEPARATOR);
+		}
+		
+		String path = cleanPath(sb.toString());
+		split(str, filters)
+		if(path.endsWith(FOLDER_SEPARATOR)) {
+			
+		}
+		
 		if (ArrayUtils.isEmpty(paths)) {
 			return null;
 		}
@@ -1598,32 +1622,16 @@ public final class StringUtils {
 		return decimalFormat.format(number);
 	}
 
-	public static String[] split(String str, char... filters) {
-		if (isEmpty(str)) {
-			return new String[0];
+	public static List<CharSequence> split(CharSequence charSequence, char... filters) {
+		if (isEmpty(charSequence)) {
+			return Collections.emptyList();
 		}
 
-		return split(str, true, filters);
-	}
-
-	public static String[] split(String str, String... filters) {
-		if (isEmpty(str)) {
-			return new String[0];
-		}
-
-		return split(str, true, filters);
-	}
-
-	public static String[] split(String str, boolean ignoreNull, char... filters) {
-		if (isEmpty(str)) {
-			return new String[0];
-		}
-
-		List<String> list = new ArrayList<String>();
+		List<CharSequence> list = new ArrayList<CharSequence>();
 		int begin = 0;
-		int size = str.length();
+		int size = charSequence.length();
 		for (int i = 0; i < size; i++) {
-			char c = str.charAt(i);
+			char c = charSequence.charAt(i);
 			boolean find = false;
 			for (char s : filters) {
 				if (c == s) {
@@ -1633,34 +1641,35 @@ public final class StringUtils {
 			}
 
 			if (find) {
-				if (ignoreNull && i == begin) {
+				if (i == begin) {
 					begin++;
 					continue;
 				}
-
-				list.add(str.substring(begin, i));
+				
+				list.add(charSequence.subSequence(begin, i));
 				begin = i + 1;
 			} else if (i == size - 1) {
 				if (begin == 0) {
-					list.add(str);
+					list.add(charSequence);
 				} else {
-					list.add(str.substring(begin));
+					list.add(charSequence.subSequence(begin, size));
 				}
 			}
 		}
-		return list.toArray(new String[list.size()]);
+		return list;
 	}
 
-	public static String[] split(String str, boolean ignoreNull, String... filters) {
-		if (isEmpty(str)) {
-			return new String[0];
+	public static List<CharSequence> split(CharSequence charSequence, String... filters) {
+		if (isEmpty(charSequence)) {
+			return Collections.emptyList();
 		}
 
 		int begin = 0;
 		int index = -1;
 		String v = null;
+		int size = charSequence.length();
 		for (String f : filters) {
-			index = str.indexOf(f, begin);
+			index = indexOf(charSequence, f, begin, size);
 			if (index != -1) {
 				v = f;
 				break;
@@ -1668,15 +1677,15 @@ public final class StringUtils {
 		}
 
 		if (index == -1) {
-			return new String[] { str };
+			return Arrays.asList(charSequence);
 		}
 
-		List<String> list = new ArrayList<String>();
+		List<CharSequence> list = new ArrayList<CharSequence>();
 		while (index != -1 && v != null) {
-			if (ignoreNull && begin == index) {
+			if (begin == index) {
 				begin++;
 				for (String f : filters) {
-					index = str.indexOf(f, begin);
+					index = indexOf(charSequence, f, begin, size);
 					if (index != -1) {
 						v = f;
 						break;
@@ -1684,12 +1693,12 @@ public final class StringUtils {
 				}
 				continue;
 			}
-
-			list.add(str.substring(begin, index));
+			
+			list.add(charSequence.subSequence(begin, index));
 			begin = index + v.length();
 
 			for (String f : filters) {
-				index = str.indexOf(f, begin);
+				index = indexOf(charSequence, f, begin, size);
 				if (index != -1) {
 					v = f;
 					break;
@@ -1697,11 +1706,10 @@ public final class StringUtils {
 			}
 		}
 
-		if (begin < str.length()) {
-			list.add(str.substring(begin));
+		if (begin < size) {
+			list.add(charSequence.subSequence(begin, size));
 		}
-
-		return list.toArray(new String[list.size()]);
+		return list;
 	}
 
 	/**
@@ -2262,6 +2270,53 @@ public final class StringUtils {
 		int index = indexOf(source, fromIndex, endIndex - fromIndex, target, 0, target.length, 0);
 		return index == -1 ? -1 : index + fromIndex;
 	}
+	
+	public static int indexOf(CharSequence source, CharSequence target) {
+		return indexOf(source, target, 0, source.length());
+	}
+	
+	public static int indexOf(CharSequence source, CharSequence target, int fromIndex, int endIndex) {
+		int index = indexOf(source, fromIndex, endIndex - fromIndex, target, 0, target.length(), 0);
+		return index == -1 ? -1 : index + fromIndex;
+	}
+	
+	public static int indexOf(CharSequence source, int sourceOffset, int sourceCount, CharSequence target, int targetOffset,
+			int targetCount, int fromIndex) {
+		if (fromIndex >= sourceCount) {
+			return (targetCount == 0 ? sourceCount : -1);
+		}
+		if (fromIndex < 0) {
+			fromIndex = 0;
+		}
+		if (targetCount == 0) {
+			return fromIndex;
+		}
+
+		char first = target.charAt(targetOffset);
+		int max = sourceOffset + (sourceCount - targetCount);
+
+		for (int i = sourceOffset + fromIndex; i <= max; i++) {
+			/* Look for first character. */
+			if (source.charAt(i) != first) {
+				while (++i <= max && source.charAt(i) != first)
+					;
+			}
+
+			/* Found first character, now look at the rest of v2 */
+			if (i <= max) {
+				int j = i + 1;
+				int end = j + targetCount - 1;
+				for (int k = targetOffset + 1; j < end && source.charAt(j) == target.charAt(k); j++, k++)
+					;
+
+				if (j == end) {
+					/* Found whole string. */
+					return i - sourceOffset;
+				}
+			}
+		}
+		return -1;
+	}
 
 	/**
 	 * Code shared by String and StringBuffer to do searches. The source is the
@@ -2446,5 +2501,131 @@ public final class StringUtils {
 			return start - sourceOffset + 1;
 		}
 	}
+	
+	public static int lastIndexOf(CharSequence source, CharSequence target) {
+		return lastIndexOf(source, target, 0, source.length());
+	}
+	
+	public static int lastIndexOf(CharSequence source, CharSequence target, int fromIndex, int endIndex) {
+		int sourceCount = Math.min(fromIndex, source.length()) - endIndex;
+		int index = lastIndexOf(source, endIndex, sourceCount, target, 0, target.length(), sourceCount);
+		return index == -1 ? -1 : index + endIndex;
+	}
 
+	public static int lastIndexOf(CharSequence source, int sourceOffset, int sourceCount, CharSequence target, int targetOffset,
+			int targetCount, int fromIndex) {
+		/*
+		 * Check arguments; return immediately where possible. For consistency, don't
+		 * check for null str.
+		 */
+		int rightIndex = sourceCount - targetCount;
+		if (fromIndex < 0) {
+			return -1;
+		}
+		if (fromIndex > rightIndex) {
+			fromIndex = rightIndex;
+		}
+		/* Empty string always matches. */
+		if (targetCount == 0) {
+			return fromIndex;
+		}
+
+		int strLastIndex = targetOffset + targetCount - 1;
+		char strLastChar = target.charAt(strLastIndex);
+		int min = sourceOffset + targetCount - 1;
+		int i = min + fromIndex;
+
+		startSearchForLastChar: while (true) {
+			while (i >= min && source.charAt(i) != strLastChar) {
+				i--;
+			}
+			if (i < min) {
+				return -1;
+			}
+			int j = i - 1;
+			int start = j - (targetCount - 1);
+			int k = strLastIndex - 1;
+
+			while (j > start) {
+				if (source.charAt(j--) != target.charAt(k--)) {
+					i--;
+					continue startSearchForLastChar;
+				}
+			}
+			return start - sourceOffset + 1;
+		}
+	}
+	
+	public static Stream<CharSequence> split(CharSequence charSequence, CharSequence... filters){
+		return split(charSequence, 0, charSequence.length(), Arrays.asList(filters));
+	}
+	
+	public static Stream<CharSequence> split(CharSequence charSequence, Collection<CharSequence> filters){
+		return split(charSequence, 0, charSequence.length(), filters);
+	}
+	
+	public static Stream<CharSequence> split(CharSequence charSequence, int beginIndex, int endIndex, Collection<CharSequence> filters){
+		Iterator<CharSequence> iterator = new CharSequenceSplitIterator(charSequence, filters, beginIndex, endIndex);
+		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false);
+	}
+	
+	private static class CharSequenceSplitIterator extends AbstractIterator<CharSequence>{
+		private final CharSequence charSequence;
+		private final Collection<CharSequence> filters;
+		private final int beginIndex;
+		private final int endIndex;
+		private int index;
+		private Supplier<Pair<Integer, CharSequence>> current;
+		
+		CharSequenceSplitIterator(CharSequence charSequence, Collection<CharSequence> filters, int beginIndex, int endIndex) {
+			this.charSequence = charSequence;
+			this.filters = filters;
+			this.beginIndex = beginIndex;
+			this.endIndex = endIndex;
+			this.index = beginIndex;
+		}
+		
+		@Override
+		public boolean hasNext() {
+			if(index > endIndex) {
+				return false;
+			}
+			
+			if(current == null) {
+				for(CharSequence filter : filters) {
+					if(filter == null) {
+						continue;
+					}
+					
+					index = StringUtils.indexOf(charSequence, filter, index, endIndex);
+					if(index != -1) {
+						current = new StaticSupplier<Pair<Integer,CharSequence>>(new Pair<Integer, CharSequence>(index, filter));
+						break;
+					}
+				}
+				
+				if(current == null) {
+					current = new StaticSupplier<Pair<Integer,CharSequence>>(null);
+				}
+			}
+			
+			if(current == null) {
+				return false;
+			}
+			
+			return current.get() != null;
+		}
+
+		@Override
+		public CharSequence next() {
+			if(!hasNext()) {
+				throw new NoSuchElementException();
+			}
+			CharSequence value = charSequence.subSequence(index, current.get().getKey());
+			index = current.get().getKey() + current.get().getValue().length();
+			current = null;
+			return value;
+		}
+
+	}
 }

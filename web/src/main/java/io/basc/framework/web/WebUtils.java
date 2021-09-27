@@ -2,6 +2,7 @@ package io.basc.framework.web;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,7 @@ import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
 import io.basc.framework.lang.NamedThreadLocal;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.MimeType;
@@ -28,6 +30,7 @@ import io.basc.framework.net.message.multipart.MultipartMessageResolver;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.placeholder.PropertyResolver;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.EmptyValue;
 import io.basc.framework.value.StringValue;
@@ -356,5 +359,21 @@ public final class WebUtils {
 		} else {
 			return WebUtils.getParameterMap(request, null);
 		}
+	}
+	
+	public static String mergePath(Collection<String> paths, @Nullable PropertyResolver propertyResolver) {
+		if(CollectionUtils.isEmpty(paths)) {
+			return "/";
+		}
+		
+		if(propertyResolver == null) {
+			return StringUtils.mergePath(paths.toArray(new String[0]));
+		}
+		
+		List<String> list = new ArrayList<String>(paths.size());
+		for(String path : paths) {
+			list.add(propertyResolver.resolvePlaceholders(path));
+		}
+		return StringUtils.mergePath(list.toArray(new String[0]));
 	}
 }
