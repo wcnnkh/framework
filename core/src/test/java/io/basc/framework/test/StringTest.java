@@ -24,4 +24,13 @@ public class StringTest {
 		String text = "a,b, c;d e";
 		assertTrue(Arrays.equals(text.split(","), StringUtils.splitToArray(text, false, false, ",")));
 	}
+	
+	@Test
+	public void test() {
+		assertTrue("/".equals(StringUtils.cleanPath("//")));
+		String path = "/a";
+		assertTrue(path.equals(StringUtils.cleanPath(path)));
+		assertTrue("/../a/b".equals(StringUtils.mergePaths("/", "/" , "/", "../a", "/b")));
+		assertTrue("/a/b/".equals(StringUtils.mergePaths("/", "/" , "/", "/a", "b/")));
+	}
 }

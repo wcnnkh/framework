@@ -40,9 +40,9 @@ public class EurekaController {
 		this.applicationInfoManager = applicationInfoManager;
 	}
 
-	@Path("")
 	@GET
-	public String status(HttpServletRequest request, Map<String, Object> model) {
+	public Object status(HttpServletRequest request) {
+		Map<String, Object> model = new HashMap<>();
 		populateBase(request, model);
 		populateApps(model);
 		StatusInfo statusInfo;
@@ -55,12 +55,13 @@ public class EurekaController {
 		model.put("statusInfo", statusInfo);
 		populateInstanceInfo(model, statusInfo);
 		filterReplicas(model, statusInfo);
-		return "eureka/status";
+		return model;
 	}
 
 	@Path("/lastn")
 	@GET
-	public String lastn(HttpServletRequest request, Map<String, Object> model) {
+	public Object lastn(HttpServletRequest request) {
+		Map<String, Object> model = new HashMap<>();
 		populateBase(request, model);
 		PeerAwareInstanceRegistryImpl registry = (PeerAwareInstanceRegistryImpl) getRegistry();
 		ArrayList<Map<String, Object>> lastNCanceled = new ArrayList<>();
@@ -75,7 +76,7 @@ public class EurekaController {
 			lastNRegistered.add(registeredInstance(entry.second(), entry.first()));
 		}
 		model.put("lastNRegistered", lastNRegistered);
-		return "eureka/lastn";
+		return model;
 	}
 
 	private Map<String, Object> registeredInstance(String id, long date) {

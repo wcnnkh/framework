@@ -48,7 +48,7 @@ public class Jaxrs2HttpPatternResolver implements HttpPatternResolver, PropertyR
 		Path clazzPath = AnnotatedElementUtils.getMergedAnnotation(clazz, Path.class);
 		Path methodPath = AnnotatedElementUtils.getMergedAnnotation(method, Path.class);
 		String path = StringUtils.mergePaths(Arrays.asList("/", clazzPath == null ? "/" : clazzPath.value(),
-				methodPath == null ? "" : methodPath.value()), propertyResolver);
+				methodPath == null ? "/" : methodPath.value()), propertyResolver);
 		MimeTypes mimeTypes = null;
 		Consumes clazzConsumes = clazz.getAnnotation(Consumes.class);
 		Consumes methodConsumes = method.getAnnotation(Consumes.class);

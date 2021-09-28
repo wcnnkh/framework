@@ -110,7 +110,7 @@ public class EurekaServerBootstrap {
 		this.registry.openForTraffic(this.applicationInfoManager, registryCount);
 		
 		// Register all monitoring statistics.
-		//EurekaMonitors.registerAllStats();
+		EurekaMonitors.registerAllStats();
 	}
 
 	/**

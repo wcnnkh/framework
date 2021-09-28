@@ -590,28 +590,14 @@ public final class StringUtils {
 			if (propertyResolver != null) {
 				path = propertyResolver.resolvePlaceholders(path);
 			}
-
-			sb.append(path).append(FOLDER_SEPARATOR);
-		}
-
-		String path = cleanPath(sb.toString());
-		List<CharSequence> cleanPaths = split(path, false, true, FOLDER_SEPARATOR).collect(Collectors.toList());
-		boolean startWithSeparato = path.startsWith(FOLDER_SEPARATOR);
-		boolean endwithSeparator = path.endsWith(FOLDER_SEPARATOR);
-		path = collectionToDelimitedString(cleanPaths, FOLDER_SEPARATOR);
-		if (startWithSeparato) {
-			if (endwithSeparator) {
-				return FOLDER_SEPARATOR + path + FOLDER_SEPARATOR;
-			} else {
-				return FOLDER_SEPARATOR + path;
+			
+			path = StringUtils.cleanPath(path);
+			if(sb.length() != 0 && !path.startsWith(FOLDER_SEPARATOR)) {
+				sb.append(FOLDER_SEPARATOR);
 			}
-		} else {
-			if (endwithSeparator) {
-				return path + FOLDER_SEPARATOR;
-			} else {
-				return path;
-			}
+			sb.append(path);
 		}
+		return cleanPath(sb.toString());
 	}
 
 	/**
@@ -717,6 +703,7 @@ public final class StringUtils {
 		// strip the first "core" directory while keeping the "file:" prefix.
 		int prefixIndex = pathToUse.indexOf(":");
 		String prefix = "";
+		String suffix = "";
 		if (prefixIndex != -1) {
 			prefix = pathToUse.substring(0, prefixIndex + 1);
 			pathToUse = pathToUse.substring(prefixIndex + 1);
@@ -725,7 +712,10 @@ public final class StringUtils {
 			prefix = prefix + FOLDER_SEPARATOR;
 			pathToUse = pathToUse.substring(1);
 		}
-
+		if(pathToUse.endsWith(FOLDER_SEPARATOR)) {
+			suffix = suffix + FOLDER_SEPARATOR;
+		}
+		
 		String[] pathArray = splitToArray(pathToUse, false, true, FOLDER_SEPARATOR);
 		List<String> pathElements = new LinkedList<String>();
 		int tops = 0;
@@ -753,8 +743,15 @@ public final class StringUtils {
 		for (int i = 0; i < tops; i++) {
 			pathElements.add(0, TOP_PATH);
 		}
+		
+		if(pathElements.isEmpty()) {
+			if(prefix.endsWith(suffix)) {
+				return prefix;
+			}
+			return prefix + suffix;
+		}
 
-		return prefix + collectionToDelimitedString(pathElements, FOLDER_SEPARATOR);
+		return prefix + collectionToDelimitedString(pathElements, FOLDER_SEPARATOR) + suffix;
 	}
 
 	/**
@@ -1882,10 +1879,10 @@ public final class StringUtils {
 
 	public static Pair<Integer, Integer> indexOf(CharSequence source, CharSequence prefix, CharSequence suffix,
 			int fromIndex, int endIndex) {
-		if(source == null || prefix == null || suffix == null) {
+		if (source == null || prefix == null || suffix == null) {
 			return null;
 		}
-		
+
 		int begin = indexOf(source, prefix, 0, endIndex);
 		if (begin == -1) {
 			return null;
@@ -1938,10 +1935,10 @@ public final class StringUtils {
 	 */
 	public static Pair<Integer, Integer> indexOf(char[] source, char[] prefix, char[] suffix, int fromIndex,
 			int endIndex) {
-		if(source == null || prefix == null || suffix == null) {
+		if (source == null || prefix == null || suffix == null) {
 			return null;
 		}
-		
+
 		int begin = indexOf(source, prefix, 0, endIndex);
 		if (begin == -1) {
 			return null;

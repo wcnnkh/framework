@@ -6,7 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import org.w3c.dom.Document;
 
@@ -359,28 +358,6 @@ public final class WebUtils {
 			return document;
 		} else {
 			return WebUtils.getParameterMap(request, null);
-		}
-	}
-
-	public static String cleanPath(String path) {
-		String pathToUse = cleanPath(path);
-		List<CharSequence> cleanPaths = StringUtils.split(pathToUse, false, true, PATH_SEPARATOR)
-				.collect(Collectors.toList());
-		boolean startWithSeparato = pathToUse.startsWith(PATH_SEPARATOR);
-		boolean endwithSeparator = pathToUse.endsWith(PATH_SEPARATOR);
-		pathToUse = StringUtils.collectionToDelimitedString(cleanPaths, PATH_SEPARATOR);
-		if (startWithSeparato) {
-			if (endwithSeparator) {
-				return PATH_SEPARATOR + pathToUse + PATH_SEPARATOR;
-			} else {
-				return PATH_SEPARATOR + pathToUse;
-			}
-		} else {
-			if (endwithSeparator) {
-				return pathToUse + PATH_SEPARATOR;
-			} else {
-				return pathToUse;
-			}
 		}
 	}
 }
