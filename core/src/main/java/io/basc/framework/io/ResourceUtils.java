@@ -102,7 +102,7 @@ public final class ResourceUtils {
 	static{
 		String prefixs = System.getProperty("io.basc.framework.resource.prefixs");
 		String[] resourcePrefixs = new String[]{"resources/"};
-		if(StringUtils.isEmpty(prefixs)){
+		if(StringUtils.isNotEmpty(prefixs)){
 			String[] array = StringUtils.splitToArray(prefixs);
 			if(array != null && array.length != 0){
 				resourcePrefixs = ArrayUtils.merge(array, resourcePrefixs);

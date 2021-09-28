@@ -1752,16 +1752,26 @@ public final class StringUtils {
 	}
 
 	public static int indexOf(CharSequence source, CharSequence target, int fromIndex) {
+		if (source == null) {
+			return -1;
+		}
 		return indexOf(source, target, fromIndex, source.length());
 	}
 
 	public static int indexOf(CharSequence source, CharSequence target, int fromIndex, int endIndex) {
+		if (source == null || target == null) {
+			return -1;
+		}
 		int index = indexOf(source, fromIndex, endIndex - fromIndex, target, 0, target.length(), 0);
 		return index == -1 ? -1 : index + fromIndex;
 	}
 
 	public static int indexOf(CharSequence source, int sourceOffset, int sourceCount, CharSequence target,
 			int targetOffset, int targetCount, int fromIndex) {
+		if (source == null || target == null) {
+			return -1;
+		}
+
 		if (fromIndex >= sourceCount) {
 			return (targetCount == 0 ? sourceCount : -1);
 		}
@@ -1857,12 +1867,63 @@ public final class StringUtils {
 	 * @param suffix
 	 * @return
 	 */
-	public static Pair<Integer, Integer> indexOf(String text, String prefix, String suffix) {
+	public static Pair<Integer, Integer> indexOf(CharSequence text, CharSequence prefix, CharSequence suffix) {
 		return indexOf(text, prefix, suffix, 0);
 	}
 
-	public static Pair<Integer, Integer> indexOf(String text, String prefix, String suffix, int fromIndex) {
-		return indexOf(text.toCharArray(), prefix.toCharArray(), suffix.toCharArray(), fromIndex, text.length());
+	public static Pair<Integer, Integer> indexOf(CharSequence source, CharSequence prefix, CharSequence suffix,
+			int fromIndex) {
+		if (source == null) {
+			return null;
+		}
+
+		return indexOf(source, prefix, suffix, fromIndex, source.length());
+	}
+
+	public static Pair<Integer, Integer> indexOf(CharSequence source, CharSequence prefix, CharSequence suffix,
+			int fromIndex, int endIndex) {
+		if(source == null || prefix == null || suffix == null) {
+			return null;
+		}
+		
+		int begin = indexOf(source, prefix, 0, endIndex);
+		if (begin == -1) {
+			return null;
+		}
+
+		int prefixLength = prefix.length();
+		int end = indexOf(source, suffix, begin + prefixLength, endIndex);
+		if (end == -1) {
+			return null;
+		}
+
+		int suffixLength = suffix.length();
+		int tempBegin = begin;
+		int tempEnd = end;
+		while (true) {// 重复查找是否存在嵌套,直到找到最外层的{suffix}
+			int nestingLevel = 0;// 嵌套了多少层
+			while (true) {
+				int index = indexOf(source, prefix, tempBegin + prefixLength, tempEnd);
+				if (index == -1) {
+					break;
+				}
+				nestingLevel++;
+				tempBegin = index;
+			}
+
+			if (nestingLevel == 0) {
+				break;
+			}
+
+			// prefix嵌套了多少层就将suffix向外移多少层
+			for (int i = 0; i < nestingLevel; i++) {
+				tempEnd = indexOf(source, suffix, tempEnd + suffixLength, endIndex);
+				if (tempEnd == -1) {// 两边的符号嵌套层级不一至
+					return null;
+				}
+			}
+		}
+		return new Pair<Integer, Integer>(begin, tempEnd);
 	}
 
 	/**
@@ -1877,6 +1938,10 @@ public final class StringUtils {
 	 */
 	public static Pair<Integer, Integer> indexOf(char[] source, char[] prefix, char[] suffix, int fromIndex,
 			int endIndex) {
+		if(source == null || prefix == null || suffix == null) {
+			return null;
+		}
+		
 		int begin = indexOf(source, prefix, 0, endIndex);
 		if (begin == -1) {
 			return null;
@@ -1916,6 +1981,10 @@ public final class StringUtils {
 	}
 
 	public static int lastIndexOf(char[] source, char[] target) {
+		if (source == null) {
+			return -1;
+		}
+
 		return lastIndexOf(source, target, source.length);
 	}
 
@@ -1924,6 +1993,10 @@ public final class StringUtils {
 	}
 
 	public static int lastIndexOf(char[] source, char[] target, int fromIndex, int endIndex) {
+		if (source == null || target == null) {
+			return -1;
+		}
+
 		int sourceCount = Math.min(fromIndex, source.length) - endIndex;
 		int index = lastIndexOf(source, endIndex, sourceCount, target, 0, target.length, sourceCount);
 		return index == -1 ? -1 : index + endIndex;
@@ -1944,7 +2017,7 @@ public final class StringUtils {
 	 */
 	public static int lastIndexOf(char[] source, int sourceOffset, int sourceCount, char[] target, int targetOffset,
 			int targetCount, int fromIndex) {
-		if (ArrayUtils.isEmpty(source) || ArrayUtils.isEmpty(target)) {
+		if (source == null || target == null) {
 			return -1;
 		}
 
@@ -1991,6 +2064,10 @@ public final class StringUtils {
 	}
 
 	public static int lastIndexOf(CharSequence source, CharSequence target) {
+		if (source == null || target == null) {
+			return -1;
+		}
+
 		return lastIndexOf(source, target, source.length());
 	}
 
@@ -1999,6 +2076,10 @@ public final class StringUtils {
 	}
 
 	public static int lastIndexOf(CharSequence source, CharSequence target, int fromIndex, int endIndex) {
+		if (source == null || target == null) {
+			return -1;
+		}
+
 		int sourceCount = Math.min(fromIndex, source.length()) - endIndex;
 		int index = lastIndexOf(source, endIndex, sourceCount, target, 0, target.length(), sourceCount);
 		return index == -1 ? -1 : index + endIndex;
@@ -2006,7 +2087,7 @@ public final class StringUtils {
 
 	public static int lastIndexOf(CharSequence source, int sourceOffset, int sourceCount, CharSequence target,
 			int targetOffset, int targetCount, int fromIndex) {
-		if (isEmpty(source, target)) {
+		if (source == null || target == null) {
 			return -1;
 		}
 
@@ -2082,10 +2163,16 @@ public final class StringUtils {
 	}
 
 	public static Stream<CharSequence> split(CharSequence charSequence, CharSequence... filters) {
+		if (charSequence == null) {
+			return StreamProcessorSupport.emptyStream();
+		}
 		return split(charSequence, 0, charSequence.length(), Arrays.asList(filters));
 	}
 
 	public static Stream<CharSequence> split(CharSequence charSequence, Collection<? extends CharSequence> filters) {
+		if (charSequence == null) {
+			return StreamProcessorSupport.emptyStream();
+		}
 		return split(charSequence, 0, charSequence.length(), filters);
 	}
 

@@ -26,7 +26,7 @@ public class CharSequenceSplitIterator extends AbstractIterator<CharSequence> {
 
 	@Override
 	public boolean hasNext() {
-		if (index > endIndex) {
+		if (index >= endIndex) {
 			return false;
 		}
 
@@ -36,24 +36,19 @@ public class CharSequenceSplitIterator extends AbstractIterator<CharSequence> {
 					continue;
 				}
 
-				index = StringUtils.indexOf(charSequence, filter, index, endIndex);
+				int index = StringUtils.indexOf(charSequence, filter, this.index, endIndex);
 				if (index != -1) {
 					current = new StaticSupplier<Pair<Integer, CharSequence>>(
 							new Pair<Integer, CharSequence>(index, filter));
 					break;
 				}
 			}
-
-			if (current == null) {
-				current = new StaticSupplier<Pair<Integer, CharSequence>>(null);
-			}
 		}
 
 		if (current == null) {
-			return false;
+			return index < endIndex;
 		}
-
-		return current.get() != null;
+		return true;
 	}
 
 	@Override
@@ -61,6 +56,14 @@ public class CharSequenceSplitIterator extends AbstractIterator<CharSequence> {
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
+
+		if (current == null) {
+			// 最后一次了
+			CharSequence value = index == 0 ? charSequence : charSequence.subSequence(index, endIndex);
+			index = endIndex;
+			return value;
+		}
+
 		CharSequence value = charSequence.subSequence(index, current.get().getKey());
 		index = current.get().getKey() + current.get().getValue().length();
 		current = null;
