@@ -44,7 +44,7 @@ public class DefaultIPVerification implements IPVerification {
 			return false;
 		}
 
-		String[] arr = StringUtils.commonSplit(ip);
+		String[] arr = StringUtils.splitToArray(ip);
 		if (ArrayUtils.isEmpty(arr)) {
 			return false;
 		}

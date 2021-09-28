@@ -64,7 +64,7 @@ public class DefaultClassesLoaderFactory implements ClassesLoaderFactory, TypeFi
 	}
 
 	public ClassesLoader getClassesLoader(final String packageName) {
-		String[] packageNames = StringUtils.commonSplit(packageName);
+		String[] packageNames = StringUtils.splitToArray(packageName);
 		DefaultClassesLoader editableClassesLoader = new DefaultClassesLoader();
 		for (String name : packageNames) {
 			editableClassesLoader.add((ClassesLoader) getClassesLoaderInternal(name));

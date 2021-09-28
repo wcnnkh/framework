@@ -11,6 +11,7 @@ import io.basc.framework.util.placeholder.PropertyResolverAware;
 import io.basc.framework.web.pattern.HttpPattern;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -20,8 +21,7 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.Path;
 
 @Provider
-public class Jaxrs2HttpPatternResolver implements HttpPatternResolver,
-		PropertyResolverAware {
+public class Jaxrs2HttpPatternResolver implements HttpPatternResolver, PropertyResolverAware {
 	private PropertyResolver propertyResolver;
 
 	public PropertyResolver getPropertyResolver() {
@@ -44,20 +44,11 @@ public class Jaxrs2HttpPatternResolver implements HttpPatternResolver,
 	}
 
 	@Override
-	public Collection<HttpPattern> resolveHttpPattern(Class<?> clazz,
-			Method method) {
-		Path clazzPath = AnnotatedElementUtils.getMergedAnnotation(clazz,
-				Path.class);
-		
-		Path methodPath = AnnotatedElementUtils.getMergedAnnotation(method,
-				Path.class);
-		String path = StringUtils.mergePath("/", clazzPath == null? "/":clazzPath.value(),
-				methodPath == null? "": methodPath.value());
-		if (propertyResolver != null) {
-			path = propertyResolver.resolvePlaceholders(path);
-		}
-		path = StringUtils.cleanPath(path);
-		
+	public Collection<HttpPattern> resolveHttpPattern(Class<?> clazz, Method method) {
+		Path clazzPath = AnnotatedElementUtils.getMergedAnnotation(clazz, Path.class);
+		Path methodPath = AnnotatedElementUtils.getMergedAnnotation(method, Path.class);
+		String path = StringUtils.mergePaths(Arrays.asList("/", clazzPath == null ? "/" : clazzPath.value(),
+				methodPath == null ? "" : methodPath.value()), propertyResolver);
 		MimeTypes mimeTypes = null;
 		Consumes clazzConsumes = clazz.getAnnotation(Consumes.class);
 		Consumes methodConsumes = method.getAnnotation(Consumes.class);
@@ -76,14 +67,13 @@ public class Jaxrs2HttpPatternResolver implements HttpPatternResolver,
 			}
 		}
 
-		Set<HttpMethod> httpMethods = AnnotatedElementUtils
-				.getAllMergedAnnotations(method, HttpMethod.class);
+		Set<HttpMethod> httpMethods = AnnotatedElementUtils.getAllMergedAnnotations(method, HttpMethod.class);
 		Set<HttpPattern> httpPatterns = new LinkedHashSet<HttpPattern>();
 		for (HttpMethod httpMethod : httpMethods) {
 			httpPatterns.add(new HttpPattern(path, httpMethod.value(), null));
 		}
-		
-		if(httpMethods.isEmpty()) {
+
+		if (httpMethods.isEmpty()) {
 			httpPatterns.add(new HttpPattern(path, io.basc.framework.http.HttpMethod.GET.name()));
 		}
 		return httpPatterns;

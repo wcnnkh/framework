@@ -166,7 +166,7 @@ public class TomcatStart implements Main, Destroy {
 		addServletMapping(context, "/", servletName);
 		String sourceMapping = TomcatUtils.getDefaultServletMapping(application.getBeanFactory().getEnvironment());
 		if (!StringUtils.isEmpty(sourceMapping)) {
-			String[] patternArr = StringUtils.commonSplit(sourceMapping);
+			String[] patternArr = StringUtils.splitToArray(sourceMapping);
 			if (!ArrayUtils.isEmpty(patternArr)) {
 				String tempServletName = "default";
 				Wrapper tempWrapper = Tomcat.addServlet(context, tempServletName,

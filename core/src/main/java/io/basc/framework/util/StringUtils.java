@@ -1,12 +1,6 @@
 package io.basc.framework.util;
 
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.lang.ParameterException;
-import io.basc.framework.util.placeholder.PropertyResolver;
-
-import java.io.File;
 import java.nio.CharBuffer;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,16 +10,18 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
-import java.util.NoSuchElementException;
-import java.util.Properties;
 import java.util.Set;
 import java.util.Spliterators;
 import java.util.StringTokenizer;
-import java.util.TimeZone;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.lang.ParameterException;
+import io.basc.framework.util.placeholder.PropertyResolver;
+import io.basc.framework.util.stream.StreamProcessorSupport;
 
 public final class StringUtils {
 	private static final String FOLDER_SEPARATOR = "/";
@@ -52,7 +48,10 @@ public final class StringUtils {
 		BOOLEANS.add("successful");
 	}
 
-	public static final char[] DEFAULT_SPLIT_CHARS = new char[] { ' ', ',', ';', '、' };
+	/**
+	 * 默认的分割符 [" ", ",", ";", "、"]
+	 */
+	private static final String[] DEFAULT_SEPARATOR = new String[] { " ", ",", ";", "、" };
 
 	public static final String[] EMPTY_ARRAY = new String[0];
 
@@ -95,7 +94,8 @@ public final class StringUtils {
 
 	/**
 	 * @param value
-	 * @return false {@link #isEmpty(CharSequence)} or not string type {@link String#equals(Object)}
+	 * @return false {@link #isEmpty(CharSequence)} or not string type
+	 *         {@link String#equals(Object)}
 	 */
 	public static boolean isEmpty(Object value) {
 		return value == null || "".equals(value);
@@ -215,36 +215,31 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Check whether the given String contains any whitespace characters.
-	 * 
-	 * @param str the String to check (may be {@code null})
-	 * @return {@code true} if the String is not empty and contains at least 1
-	 *         whitespace character
-	 * @see #containsWhitespace(CharSequence)
-	 */
-	public static boolean containsWhitespace(String str) {
-		return containsWhitespace((CharSequence) str);
-	}
-
-	/**
 	 * Trim leading and trailing whitespace from the given String.
 	 * 
-	 * @param str the String to check
-	 * @return the trimmed String
+	 * @param charSequence the String to check
+	 * @return the trimmed {@link CharSequence}
 	 * @see java.lang.Character#isWhitespace
 	 */
-	public static String trimWhitespace(String str) {
-		if (isEmpty(str)) {
-			return str;
+	public static CharSequence trimWhitespace(CharSequence charSequence) {
+		if (isEmpty(charSequence)) {
+			return charSequence;
 		}
-		StringBuilder sb = new StringBuilder(str);
+		StringBuilder sb = new StringBuilder(charSequence);
 		while (sb.length() > 0 && Character.isWhitespace(sb.charAt(0))) {
 			sb.deleteCharAt(0);
 		}
 		while (sb.length() > 0 && Character.isWhitespace(sb.charAt(sb.length() - 1))) {
 			sb.deleteCharAt(sb.length() - 1);
 		}
-		return sb.toString();
+		return sb;
+	}
+
+	public static String trimWhitespace(String charSequence) {
+		if (charSequence == null) {
+			return charSequence;
+		}
+		return trimWhitespace((CharSequence) charSequence).toString();
 	}
 
 	/**
@@ -255,11 +250,11 @@ public final class StringUtils {
 	 * @return the trimmed String
 	 * @see java.lang.Character#isWhitespace
 	 */
-	public static String trimAllWhitespace(String str) {
-		if (isEmpty(str)) {
-			return str;
+	public static CharSequence trimAllWhitespace(CharSequence charSequence) {
+		if (isEmpty(charSequence)) {
+			return charSequence;
 		}
-		StringBuilder sb = new StringBuilder(str);
+		StringBuilder sb = new StringBuilder(charSequence);
 		int index = 0;
 		while (sb.length() > index) {
 			if (Character.isWhitespace(sb.charAt(index))) {
@@ -268,7 +263,15 @@ public final class StringUtils {
 				index++;
 			}
 		}
-		return sb.toString();
+		return sb;
+	}
+
+	public static String trimAllWhitespace(String charSequence) {
+		if (charSequence == null) {
+			return charSequence;
+		}
+
+		return trimAllWhitespace((CharSequence) charSequence).toString();
 	}
 
 	/**
@@ -278,15 +281,23 @@ public final class StringUtils {
 	 * @return the trimmed String
 	 * @see java.lang.Character#isWhitespace
 	 */
-	public static String trimLeadingWhitespace(String str) {
-		if (isEmpty(str)) {
-			return str;
+	public static CharSequence trimLeadingWhitespace(CharSequence charSequence) {
+		if (isEmpty(charSequence)) {
+			return charSequence;
 		}
-		StringBuilder sb = new StringBuilder(str);
+		StringBuilder sb = new StringBuilder(charSequence);
 		while (sb.length() > 0 && Character.isWhitespace(sb.charAt(0))) {
 			sb.deleteCharAt(0);
 		}
-		return sb.toString();
+		return sb;
+	}
+
+	public static String trimLeadingWhitespace(String charSequence) {
+		if (charSequence == null) {
+			return charSequence;
+		}
+
+		return trimLeadingWhitespace((CharSequence) charSequence).toString();
 	}
 
 	/**
@@ -296,15 +307,23 @@ public final class StringUtils {
 	 * @return the trimmed String
 	 * @see java.lang.Character#isWhitespace
 	 */
-	public static String trimTrailingWhitespace(String str) {
-		if (isEmpty(str)) {
-			return str;
+	public static CharSequence trimTrailingWhitespace(CharSequence charSequence) {
+		if (isEmpty(charSequence)) {
+			return charSequence;
 		}
-		StringBuilder sb = new StringBuilder(str);
+		StringBuilder sb = new StringBuilder(charSequence);
 		while (sb.length() > 0 && Character.isWhitespace(sb.charAt(sb.length() - 1))) {
 			sb.deleteCharAt(sb.length() - 1);
 		}
-		return sb.toString();
+		return sb;
+	}
+
+	public static String trimTrailingWhitespace(String charSequence) {
+		if (charSequence == null) {
+			return charSequence;
+		}
+
+		return trimTrailingWhitespace((CharSequence) charSequence).toString();
 	}
 
 	/**
@@ -314,15 +333,23 @@ public final class StringUtils {
 	 * @param leadingCharacter the leading character to be trimmed
 	 * @return the trimmed String
 	 */
-	public static String trimLeadingCharacter(String str, char leadingCharacter) {
-		if (isEmpty(str)) {
-			return str;
+	public static CharSequence trimLeadingCharacter(CharSequence charSequence, char leadingCharacter) {
+		if (isEmpty(charSequence)) {
+			return charSequence;
 		}
-		StringBuilder sb = new StringBuilder(str);
+		StringBuilder sb = new StringBuilder(charSequence);
 		while (sb.length() > 0 && sb.charAt(0) == leadingCharacter) {
 			sb.deleteCharAt(0);
 		}
-		return sb.toString();
+		return sb;
+	}
+
+	public static String trimLeadingCharacter(String charSequence, char leadingCharacter) {
+		if (charSequence == null) {
+			return charSequence;
+		}
+
+		return trimLeadingCharacter((CharSequence) charSequence, leadingCharacter).toString();
 	}
 
 	/**
@@ -332,15 +359,22 @@ public final class StringUtils {
 	 * @param trailingCharacter the trailing character to be trimmed
 	 * @return the trimmed String
 	 */
-	public static String trimTrailingCharacter(String str, char trailingCharacter) {
-		if (isEmpty(str)) {
-			return str;
+	public static CharSequence trimTrailingCharacter(CharSequence charSequence, char trailingCharacter) {
+		if (isEmpty(charSequence)) {
+			return charSequence;
 		}
-		StringBuilder sb = new StringBuilder(str);
+		StringBuilder sb = new StringBuilder(charSequence);
 		while (sb.length() > 0 && sb.charAt(sb.length() - 1) == trailingCharacter) {
 			sb.deleteCharAt(sb.length() - 1);
 		}
-		return sb.toString();
+		return sb;
+	}
+
+	public static String trimTrailingCharacter(String charSequence, char trailingCharacter) {
+		if (charSequence == null) {
+			return charSequence;
+		}
+		return trimTrailingCharacter((CharSequence) charSequence, trailingCharacter).toString();
 	}
 
 	/**
@@ -536,69 +570,48 @@ public final class StringUtils {
 		return qualifiedName.substring(qualifiedName.lastIndexOf(separator) + 1);
 	}
 
+	public static String mergePaths(String... paths) {
+		return mergePaths(Arrays.asList(paths), null);
+	}
+
 	/**
 	 * 合并多个路径<br/>
 	 * 
 	 * @param paths
 	 * @return
 	 */
-	public static String mergePaths(Enumeration<String> paths, @Nullable PropertyResolver propertyResolver) {	
+	public static String mergePaths(Collection<String> paths, @Nullable PropertyResolver propertyResolver) {
 		StringBuilder sb = new StringBuilder();
-		while(paths.hasMoreElements()) {
-			String path = paths.nextElement();
-			if(path == null) {
+		for (String path : paths) {
+			if (StringUtils.isEmpty(path)) {
 				continue;
 			}
-			
-			if(propertyResolver != null) {
+
+			if (propertyResolver != null) {
 				path = propertyResolver.resolvePlaceholders(path);
 			}
-			
+
 			sb.append(path).append(FOLDER_SEPARATOR);
 		}
-		
+
 		String path = cleanPath(sb.toString());
-		split(str, filters)
-		if(path.endsWith(FOLDER_SEPARATOR)) {
-			
-		}
-		
-		if (ArrayUtils.isEmpty(paths)) {
-			return null;
-		}
-
-		if (paths.length == 1) {
-			String path = paths[0];
-			return path == null ? null : replacePath(path);
-		}
-
-		String p = addPath(paths[0], paths[1]);
-		for (int i = 2; i < paths.length; i++) {
-			p = addPath(p, paths[i]);
-		}
-		return p;
-	}
-
-	private static String replacePath(String path) {
-		return path.replaceAll("\\\\", FOLDER_SEPARATOR);
-	}
-
-	private static String addPath(String path1, String path2) {
-		String p1 = path1 == null ? "" : path1;
-		String p2 = path2 == null ? "" : path2;
-		p1 = replacePath(p1);
-		p2 = replacePath(p2);
-
-		if (!StringUtils.isEmpty(p2)) {
-			if (!p1.endsWith(FOLDER_SEPARATOR)) {
-				p1 = p1 + FOLDER_SEPARATOR;
+		List<CharSequence> cleanPaths = split(path, false, true, FOLDER_SEPARATOR).collect(Collectors.toList());
+		boolean startWithSeparato = path.startsWith(FOLDER_SEPARATOR);
+		boolean endwithSeparator = path.endsWith(FOLDER_SEPARATOR);
+		path = collectionToDelimitedString(cleanPaths, FOLDER_SEPARATOR);
+		if (startWithSeparato) {
+			if (endwithSeparator) {
+				return FOLDER_SEPARATOR + path + FOLDER_SEPARATOR;
+			} else {
+				return FOLDER_SEPARATOR + path;
 			}
-
-			if (p2.startsWith(FOLDER_SEPARATOR)) {
-				p2 = p2.substring(1);
+		} else {
+			if (endwithSeparator) {
+				return path + FOLDER_SEPARATOR;
+			} else {
+				return path;
 			}
 		}
-		return p1 + p2;
 	}
 
 	/**
@@ -713,7 +726,7 @@ public final class StringUtils {
 			pathToUse = pathToUse.substring(1);
 		}
 
-		String[] pathArray = delimitedListToStringArray(pathToUse, FOLDER_SEPARATOR);
+		String[] pathArray = splitToArray(pathToUse, false, true, FOLDER_SEPARATOR);
 		List<String> pathElements = new LinkedList<String>();
 		int tops = 0;
 
@@ -836,7 +849,7 @@ public final class StringUtils {
 	 */
 	public static String[] sortStringArray(String[] array) {
 		if (ObjectUtils.isEmpty(array)) {
-			return new String[0];
+			return EMPTY_ARRAY;
 		}
 		Arrays.sort(array);
 		return array;
@@ -910,58 +923,31 @@ public final class StringUtils {
 		return toStringArray(set);
 	}
 
-	/**
-	 * Take an array Strings and split each element based on the given delimiter. A
-	 * {@code Properties} instance is then generated, with the left of the delimiter
-	 * providing the key, and the right of the delimiter providing the value.
-	 * <p>
-	 * Will trim both the key and value before adding them to the {@code Properties}
-	 * instance.
-	 * 
-	 * @param array     the array to process
-	 * @param delimiter to split each element using (typically the equals symbol)
-	 * @return a {@code Properties} instance representing the array contents, or
-	 *         {@code null} if the array to process was null or empty
-	 */
-	public static Properties splitArrayElementsIntoProperties(String[] array, String delimiter) {
-		return splitArrayElementsIntoProperties(array, delimiter, null);
+	public static Stream<String> tokenize(String text, String delimiters) {
+		if (StringUtils.isEmpty(text)) {
+			return StreamProcessorSupport.emptyStream();
+		}
+
+		return tokenize(new StringTokenizer(text, delimiters));
 	}
 
-	/**
-	 * Take an array Strings and split each element based on the given delimiter. A
-	 * {@code Properties} instance is then generated, with the left of the delimiter
-	 * providing the key, and the right of the delimiter providing the value.
-	 * <p>
-	 * Will trim both the key and value before adding them to the {@code Properties}
-	 * instance.
-	 * 
-	 * @param array         the array to process
-	 * @param delimiter     to split each element using (typically the equals
-	 *                      symbol)
-	 * @param charsToDelete one or more characters to remove from each element prior
-	 *                      to attempting the split operation (typically the
-	 *                      quotation mark symbol), or {@code null} if no removal
-	 *                      should occur
-	 * @return a {@code Properties} instance representing the array contents, or
-	 *         {@code null} if the array to process was {@code null} or empty
-	 */
-	public static Properties splitArrayElementsIntoProperties(String[] array, String delimiter, String charsToDelete) {
+	public static Stream<String> tokenize(StringTokenizer tokenizer) {
+		if (tokenizer == null) {
+			return StreamProcessorSupport.emptyStream();
+		}
 
-		if (ObjectUtils.isEmpty(array)) {
-			return null;
-		}
-		Properties result = new Properties();
-		for (String element : array) {
-			if (charsToDelete != null) {
-				element = deleteAny(element, charsToDelete);
+		Iterator<String> iterator = new AbstractIterator<String>() {
+			@Override
+			public boolean hasNext() {
+				return tokenizer.hasMoreTokens();
 			}
-			String[] splittedElement = split(element, delimiter);
-			if (splittedElement == null) {
-				continue;
+
+			@Override
+			public String next() {
+				return tokenizer.nextToken();
 			}
-			result.setProperty(splittedElement[0].trim(), splittedElement[1].trim());
-		}
-		return result;
+		};
+		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false);
 	}
 
 	/**
@@ -971,7 +957,7 @@ public final class StringUtils {
 	 * The given delimiters string is supposed to consist of any number of delimiter
 	 * characters. Each of those characters can be used to separate tokens. A
 	 * delimiter is always a single character; for multi-character delimiters,
-	 * consider using {@code delimitedListToStringArray}
+	 * consider using {@code splitToArray}
 	 * 
 	 * @param str        the String to tokenize
 	 * @param delimiters the delimiter characters, assembled as String (each of
@@ -979,10 +965,10 @@ public final class StringUtils {
 	 * @return an array of the tokens
 	 * @see java.util.StringTokenizer
 	 * @see String#trim()
-	 * @see #delimitedListToStringArray
+	 * @see #splitToArray
 	 */
-	public static String[] tokenizeToStringArray(String str, String delimiters) {
-		return tokenizeToStringArray(str, delimiters, true, true);
+	public static String[] tokenizeToArray(String str, String delimiters) {
+		return tokenizeToArray(str, delimiters, true, true);
 	}
 
 	/**
@@ -991,7 +977,7 @@ public final class StringUtils {
 	 * The given delimiters string is supposed to consist of any number of delimiter
 	 * characters. Each of those characters can be used to separate tokens. A
 	 * delimiter is always a single character; for multi-character delimiters,
-	 * consider using {@code delimitedListToStringArray}
+	 * consider using {@code splitToArray}
 	 * 
 	 * @param str               the String to tokenize
 	 * @param delimiters        the delimiter characters, assembled as String (each
@@ -1006,113 +992,18 @@ public final class StringUtils {
 	 *         {@code null})
 	 * @see java.util.StringTokenizer
 	 * @see String#trim()
-	 * @see #delimitedListToStringArray
+	 * @see #splitToArray
 	 */
-	public static String[] tokenizeToStringArray(String str, String delimiters, boolean trimTokens,
+	public static String[] tokenizeToArray(String str, String delimiters, boolean trimTokens,
 			boolean ignoreEmptyTokens) {
-
-		if (str == null) {
-			return null;
-		}
-		StringTokenizer st = new StringTokenizer(str, delimiters);
-		List<String> tokens = new ArrayList<String>();
-		while (st.hasMoreTokens()) {
-			String token = st.nextToken();
-			if (trimTokens) {
-				token = token.trim();
-			}
-			if (!ignoreEmptyTokens || token.length() > 0) {
-				tokens.add(token);
-			}
-		}
-		return toStringArray(tokens);
+		return tokenize(str, delimiters, trimTokens, ignoreEmptyTokens).collect(Collectors.toList())
+				.toArray(new String[0]);
 	}
 
-	/**
-	 * Take a String which is a delimited list and convert it to a String array.
-	 * <p>
-	 * A single delimiter can consists of more than one character: It will still be
-	 * considered as single delimiter string, rather than as bunch of potential
-	 * delimiter characters - in contrast to {@code tokenizeToStringArray}.
-	 * 
-	 * @param str       the input String
-	 * @param delimiter the delimiter between elements (this is a single delimiter,
-	 *                  rather than a bunch individual delimiter characters)
-	 * @return an array of the tokens in the list
-	 * @see #tokenizeToStringArray
-	 */
-	public static String[] delimitedListToStringArray(String str, String delimiter) {
-		return delimitedListToStringArray(str, delimiter, null);
-	}
-
-	/**
-	 * Take a String which is a delimited list and convert it to a String array.
-	 * <p>
-	 * A single delimiter can consists of more than one character: It will still be
-	 * considered as single delimiter string, rather than as bunch of potential
-	 * delimiter characters - in contrast to {@code tokenizeToStringArray}.
-	 * 
-	 * @param str           the input String
-	 * @param delimiter     the delimiter between elements (this is a single
-	 *                      delimiter, rather than a bunch individual delimiter
-	 *                      characters)
-	 * @param charsToDelete a set of characters to delete. Useful for deleting
-	 *                      unwanted line breaks: e.g. "\r\n\f" will delete all new
-	 *                      lines and line feeds in a String.
-	 * @return an array of the tokens in the list
-	 * @see #tokenizeToStringArray
-	 */
-	public static String[] delimitedListToStringArray(String str, String delimiter, String charsToDelete) {
-		if (str == null) {
-			return new String[0];
-		}
-		if (delimiter == null) {
-			return new String[] { str };
-		}
-		List<String> result = new ArrayList<String>();
-		if ("".equals(delimiter)) {
-			for (int i = 0; i < str.length(); i++) {
-				result.add(deleteAny(str.substring(i, i + 1), charsToDelete));
-			}
-		} else {
-			int pos = 0;
-			int delPos;
-			while ((delPos = str.indexOf(delimiter, pos)) != -1) {
-				result.add(deleteAny(str.substring(pos, delPos), charsToDelete));
-				pos = delPos + delimiter.length();
-			}
-			if (str.length() > 0 && pos <= str.length()) {
-				// Add rest of String, but not in case of empty input.
-				result.add(deleteAny(str.substring(pos), charsToDelete));
-			}
-		}
-		return toStringArray(result);
-	}
-
-	/**
-	 * Convert a CSV list into an array of Strings.
-	 * 
-	 * @param str the input String
-	 * @return an array of Strings, or the empty array in case of empty input
-	 */
-	public static String[] commaDelimitedListToStringArray(String str) {
-		return delimitedListToStringArray(str, ",");
-	}
-
-	/**
-	 * Convenience method to convert a CSV string list to a set. Note that this will
-	 * suppress duplicates.
-	 * 
-	 * @param str the input String
-	 * @return a Set of String entries in the list
-	 */
-	public static Set<String> commaDelimitedListToSet(String str) {
-		Set<String> set = new TreeSet<String>();
-		String[] tokens = commaDelimitedListToStringArray(str);
-		for (String token : tokens) {
-			set.add(token);
-		}
-		return set;
+	public static Stream<String> tokenize(String str, String delimiters, boolean trimTokens,
+			boolean ignoreEmptyTokens) {
+		return tokenize(str, delimiters).map((s) -> trimTokens ? (s == null ? s : s.trim()) : s)
+				.filter((s) -> (ignoreEmptyTokens ? StringUtils.isNotEmpty(s) : true));
 	}
 
 	/**
@@ -1215,164 +1106,6 @@ public final class StringUtils {
 		return equals(a, b, false);
 	}
 
-	public static String[] commonSplit(String str) {
-		return split(str, DEFAULT_SPLIT_CHARS);
-	}
-
-	public static <T> List<T> splitList(Class<T> type, String strs, String filter) {
-		return splitList(type, strs, filter, true);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> List<T> splitList(Class<T> type, String strs, String filter, boolean isTrim) {
-		Assert.notNull(type);
-		Assert.notNull(filter);
-
-		if (strs == null) {
-			return Collections.EMPTY_LIST;
-		}
-
-		String[] arr = split(strs, isTrim, filter);
-		if (ArrayUtils.isEmpty(arr)) {
-			return Collections.EMPTY_LIST;
-		}
-
-		List<T> list = new ArrayList<T>(arr.length);
-		if (String.class.isAssignableFrom(type)) {
-			for (String str : arr) {
-				if (str.length() == 0) {
-					continue;
-				}
-
-				if (isTrim) {
-					str = str.trim();
-					if (str.length() == 0) {
-						continue;
-					}
-				}
-
-				T t = (T) str;
-				list.add(t);
-			}
-		} else if (Integer.class.isAssignableFrom(type)) {
-			for (String str : arr) {
-				if (str.length() == 0) {
-					continue;
-				}
-
-				if (isTrim) {
-					str = str.trim();
-					if (str.length() == 0) {
-						continue;
-					}
-				}
-
-				T t = (T) Integer.valueOf(str);
-				list.add(t);
-			}
-		} else if (Short.class.isAssignableFrom(type)) {
-			for (String str : arr) {
-				if (str.length() == 0) {
-					continue;
-				}
-
-				if (isTrim) {
-					str = str.trim();
-					if (str.length() == 0) {
-						continue;
-					}
-				}
-
-				T t = (T) Short.valueOf(str);
-				list.add(t);
-			}
-		} else if (Long.class.isAssignableFrom(type)) {
-			for (String str : arr) {
-				if (str.length() == 0) {
-					continue;
-				}
-
-				if (isTrim) {
-					str = str.trim();
-					if (str.length() == 0) {
-						continue;
-					}
-				}
-
-				T t = (T) Long.valueOf(str);
-				list.add(t);
-			}
-		} else if (Float.class.isAssignableFrom(type)) {
-			for (String str : arr) {
-				if (str.length() == 0) {
-					continue;
-				}
-
-				if (isTrim) {
-					str = str.trim();
-					if (str.length() == 0) {
-						continue;
-					}
-				}
-
-				T t = (T) Float.valueOf(str);
-				list.add(t);
-			}
-		} else if (Double.class.isAssignableFrom(type)) {
-			for (String str : arr) {
-				if (str.length() == 0) {
-					continue;
-				}
-
-				if (isTrim) {
-					str = str.trim();
-					if (str.length() == 0) {
-						continue;
-					}
-				}
-
-				T t = (T) Double.valueOf(str);
-				list.add(t);
-			}
-		}
-		return (List<T>) list;
-	}
-
-	/**
-	 * 1M = 1024K
-	 * 
-	 * @param size
-	 * @param toSuffix
-	 * @return
-	 */
-	public static double parseDiskSize(String size, String toSuffix) {
-		int len = size.length();
-		double oldSize;
-		if (size.endsWith("GB") || size.endsWith("G")) {
-			oldSize = Double.parseDouble(size.substring(0, len - 2)) * 1024 * 1024 * 1024;
-		} else if (size.endsWith("MB") || size.endsWith("M")) {
-			oldSize = Double.parseDouble(size.substring(0, len - 2)) * 1024 * 1024;
-		} else if (size.endsWith("KB") || size.endsWith("K")) {
-			oldSize = Double.parseDouble(size.substring(0, len - 2)) * 1024;
-		} else if (size.endsWith("B")) {
-			oldSize = Double.parseDouble(size.substring(0, len - 1));
-		} else {
-			oldSize = Double.parseDouble(size);
-		}
-
-		if ("GB".equals(toSuffix) || "G".equals(toSuffix)) {
-			return oldSize / (1024 * 1024 * 1024);
-		} else if ("MB".equals(toSuffix) || "M".equals(toSuffix)) {
-			return oldSize / (1024 * 1024);
-		} else if ("KB".equals(toSuffix) || "K".equals(toSuffix)) {
-			return oldSize / (1024);
-		} else if ("B".equals(toSuffix)) {
-			return oldSize;
-		} else {
-			return oldSize;
-		}
-	}
-
 	/**
 	 * 判断是否数字(小数和负数也数字)
 	 * 
@@ -1430,24 +1163,6 @@ public final class StringUtils {
 			chars[i] = Character.toLowerCase(chars[i]);
 		}
 		return new String(chars);
-	}
-
-	/**
-	 * 将文件分割符换成与当前操作系统一致
-	 * 
-	 * @param path
-	 * @return
-	 */
-	public static String replaceSeparator(String path) {
-		if (path == null) {
-			return path;
-		}
-
-		if (File.separator.equals(FOLDER_SEPARATOR)) {
-			return path.replaceAll("\\\\", FOLDER_SEPARATOR);
-		} else {
-			return path.replaceAll(FOLDER_SEPARATOR, "\\\\");
-		}
 	}
 
 	/**
@@ -1585,131 +1300,6 @@ public final class StringUtils {
 		char[] chars = str.toCharArray();
 		chars[0] = updatedChar;
 		return new String(chars, 0, chars.length);
-	}
-
-	/**
-	 * 保留小数点精度
-	 * 
-	 * @param number
-	 * @param len    保留多少位
-	 * @return
-	 */
-	public static String formatNumberPrecision(double number, int len) {
-		if (len < 0) {
-			throw new IllegalStateException("len < 0");
-		}
-
-		if (len == 0) {
-			return ((long) number) + "";
-		}
-
-		if (number == 0) {
-			CharBuffer charBuffer = CharBuffer.allocate(len + 2);
-			charBuffer.put('0');
-			charBuffer.put('.');
-			for (int i = 0; i < len; i++) {
-				charBuffer.put('0');
-			}
-			return new String(charBuffer.array());
-		}
-
-		CharBuffer charBuffer = CharBuffer.allocate(len + 3);
-		charBuffer.put("#0.");
-		for (int i = 0; i < len; i++) {
-			charBuffer.put("0");
-		}
-		DecimalFormat decimalFormat = new DecimalFormat(new String(charBuffer.array()));
-		return decimalFormat.format(number);
-	}
-
-	public static List<CharSequence> split(CharSequence charSequence, char... filters) {
-		if (isEmpty(charSequence)) {
-			return Collections.emptyList();
-		}
-
-		List<CharSequence> list = new ArrayList<CharSequence>();
-		int begin = 0;
-		int size = charSequence.length();
-		for (int i = 0; i < size; i++) {
-			char c = charSequence.charAt(i);
-			boolean find = false;
-			for (char s : filters) {
-				if (c == s) {
-					find = true;
-					break;
-				}
-			}
-
-			if (find) {
-				if (i == begin) {
-					begin++;
-					continue;
-				}
-				
-				list.add(charSequence.subSequence(begin, i));
-				begin = i + 1;
-			} else if (i == size - 1) {
-				if (begin == 0) {
-					list.add(charSequence);
-				} else {
-					list.add(charSequence.subSequence(begin, size));
-				}
-			}
-		}
-		return list;
-	}
-
-	public static List<CharSequence> split(CharSequence charSequence, String... filters) {
-		if (isEmpty(charSequence)) {
-			return Collections.emptyList();
-		}
-
-		int begin = 0;
-		int index = -1;
-		String v = null;
-		int size = charSequence.length();
-		for (String f : filters) {
-			index = indexOf(charSequence, f, begin, size);
-			if (index != -1) {
-				v = f;
-				break;
-			}
-		}
-
-		if (index == -1) {
-			return Arrays.asList(charSequence);
-		}
-
-		List<CharSequence> list = new ArrayList<CharSequence>();
-		while (index != -1 && v != null) {
-			if (begin == index) {
-				begin++;
-				for (String f : filters) {
-					index = indexOf(charSequence, f, begin, size);
-					if (index != -1) {
-						v = f;
-						break;
-					}
-				}
-				continue;
-			}
-			
-			list.add(charSequence.subSequence(begin, index));
-			begin = index + v.length();
-
-			for (String f : filters) {
-				index = indexOf(charSequence, f, begin, size);
-				if (index != -1) {
-					v = f;
-					break;
-				}
-			}
-		}
-
-		if (begin < size) {
-			list.add(charSequence.subSequence(begin, size));
-		}
-		return list;
 	}
 
 	/**
@@ -2125,124 +1715,6 @@ public final class StringUtils {
 		return sb.toString();
 	}
 
-	/**
-	 * Parse the given {@code String} value into a {@link Locale}, accepting the
-	 * {@link Locale#toString} format as well as BCP 47 language tags.
-	 * 
-	 * @param localeValue the locale value: following either {@code Locale's}
-	 *                    {@code toString()} format ("en", "en_UK", etc), also
-	 *                    accepting spaces as separators (as an alternative to
-	 *                    underscores), or BCP 47 (e.g. "en-UK") as specified by
-	 *                    {@link Locale#forLanguageTag} on Java 7+
-	 * @return a corresponding {@code Locale} instance, or {@code null} if none
-	 * @throws IllegalArgumentException in case of an invalid locale specification
-	 * @since 5.0.4
-	 * @see #parseLocaleString
-	 * @see Locale#forLanguageTag
-	 */
-	@Nullable
-	public static Locale parseLocale(String localeValue) {
-		String[] tokens = tokenizeLocaleSource(localeValue);
-		if (tokens.length == 1) {
-			validateLocalePart(localeValue);
-			Locale resolved = Locale.forLanguageTag(localeValue);
-			if (resolved.getLanguage().length() > 0) {
-				return resolved;
-			}
-		}
-		return parseLocaleTokens(localeValue, tokens);
-	}
-
-	/**
-	 * Parse the given {@code String} representation into a {@link Locale}.
-	 * <p>
-	 * <b>Note: This delegate does not accept the BCP 47 language tag format. Please
-	 * use {@link #parseLocale} for lenient parsing of both formats.</b>
-	 * 
-	 * @param localeString the locale {@code String}: following {@code Locale's}
-	 *                     {@code toString()} format ("en", "en_UK", etc), also
-	 *                     accepting spaces as separators (as an alternative to
-	 *                     underscores)
-	 * @return a corresponding {@code Locale} instance, or {@code null} if none
-	 * @throws IllegalArgumentException in case of an invalid locale specification
-	 */
-	@Nullable
-	public static Locale parseLocaleString(String localeString) {
-		return parseLocaleTokens(localeString, tokenizeLocaleSource(localeString));
-	}
-
-	private static String[] tokenizeLocaleSource(String localeSource) {
-		return tokenizeToStringArray(localeSource, "_ ", false, false);
-	}
-
-	@Nullable
-	private static Locale parseLocaleTokens(String localeString, String[] tokens) {
-		String language = (tokens.length > 0 ? tokens[0] : "");
-		String country = (tokens.length > 1 ? tokens[1] : "");
-		validateLocalePart(language);
-		validateLocalePart(country);
-
-		String variant = "";
-		if (tokens.length > 2) {
-			// There is definitely a variant, and it is everything after the country
-			// code sans the separator between the country code and the variant.
-			int endIndexOfCountryCode = localeString.indexOf(country, language.length()) + country.length();
-			// Strip off any leading '_' and whitespace, what's left is the variant.
-			variant = trimLeadingWhitespace(localeString.substring(endIndexOfCountryCode));
-			if (variant.startsWith("_")) {
-				variant = trimLeadingCharacter(variant, '_');
-			}
-		}
-
-		if (variant.isEmpty() && country.startsWith("#")) {
-			variant = country;
-			country = "";
-		}
-
-		return (language.length() > 0 ? new Locale(language, country, variant) : null);
-	}
-
-	private static void validateLocalePart(String localePart) {
-		for (int i = 0; i < localePart.length(); i++) {
-			char ch = localePart.charAt(i);
-			if (ch != ' ' && ch != '_' && ch != '-' && ch != '#' && !Character.isLetterOrDigit(ch)) {
-				throw new IllegalArgumentException("Locale part \"" + localePart + "\" contains invalid characters");
-			}
-		}
-	}
-
-	/**
-	 * Determine the RFC 3066 compliant language tag, as used for the HTTP
-	 * "Accept-Language" header.
-	 * 
-	 * @param locale the Locale to transform to a language tag
-	 * @return the RFC 3066 compliant language tag as {@code String}
-	 * @see Locale#toLanguageTag()
-	 */
-	public static String toLanguageTag(Locale locale) {
-		return locale.getLanguage() + (hasText(locale.getCountry()) ? "-" + locale.getCountry() : "");
-	}
-
-	/**
-	 * Parse the given {@code timeZoneString} value into a {@link TimeZone}.
-	 * 
-	 * @param timeZoneString the time zone {@code String}, following
-	 *                       {@link TimeZone#getTimeZone(String)} but throwing
-	 *                       {@link IllegalArgumentException} in case of an invalid
-	 *                       time zone specification
-	 * @return a corresponding {@link TimeZone} instance
-	 * @throws IllegalArgumentException in case of an invalid time zone
-	 *                                  specification
-	 */
-	public static TimeZone parseTimeZoneString(String timeZoneString) {
-		TimeZone timeZone = TimeZone.getTimeZone(timeZoneString);
-		if ("GMT".equals(timeZone.getID()) && !timeZoneString.startsWith("GMT")) {
-			// We don't want that GMT fallback...
-			throw new IllegalArgumentException("Invalid time zone specification '" + timeZoneString + "'");
-		}
-		return timeZone;
-	}
-
 	public static String removeChar(String text, char remove) {
 		int len = text.length();
 		if (len == 0) {
@@ -2262,26 +1734,34 @@ public final class StringUtils {
 		return new String(cs, 0, index);
 	}
 
-	public static int indexOf(String text, String index, int fromIndex, int endIndex) {
-		return indexOf(text.toCharArray(), index.toCharArray(), fromIndex, endIndex);
+	public static int indexOf(char[] source, char[] target) {
+		return indexOf(source, target, 0);
+	}
+
+	public static int indexOf(char[] source, char[] target, int fromIndex) {
+		return indexOf(source, target, fromIndex, source.length);
 	}
 
 	public static int indexOf(char[] source, char[] target, int fromIndex, int endIndex) {
 		int index = indexOf(source, fromIndex, endIndex - fromIndex, target, 0, target.length, 0);
 		return index == -1 ? -1 : index + fromIndex;
 	}
-	
+
 	public static int indexOf(CharSequence source, CharSequence target) {
-		return indexOf(source, target, 0, source.length());
+		return indexOf(source, target, 0);
 	}
-	
+
+	public static int indexOf(CharSequence source, CharSequence target, int fromIndex) {
+		return indexOf(source, target, fromIndex, source.length());
+	}
+
 	public static int indexOf(CharSequence source, CharSequence target, int fromIndex, int endIndex) {
 		int index = indexOf(source, fromIndex, endIndex - fromIndex, target, 0, target.length(), 0);
 		return index == -1 ? -1 : index + fromIndex;
 	}
-	
-	public static int indexOf(CharSequence source, int sourceOffset, int sourceCount, CharSequence target, int targetOffset,
-			int targetCount, int fromIndex) {
+
+	public static int indexOf(CharSequence source, int sourceOffset, int sourceCount, CharSequence target,
+			int targetOffset, int targetCount, int fromIndex) {
 		if (fromIndex >= sourceCount) {
 			return (targetCount == 0 ? sourceCount : -1);
 		}
@@ -2435,8 +1915,12 @@ public final class StringUtils {
 		return new Pair<Integer, Integer>(begin, tempEnd);
 	}
 
-	public static int lastIndexOf(String text, String index, int beginIndex, int endIndex) {
-		return lastIndexOf(text.toCharArray(), index.toCharArray(), beginIndex, endIndex);
+	public static int lastIndexOf(char[] source, char[] target) {
+		return lastIndexOf(source, target, source.length);
+	}
+
+	public static int lastIndexOf(char[] source, char[] target, int fromIndex) {
+		return lastIndexOf(source, target, fromIndex, 0);
 	}
 
 	public static int lastIndexOf(char[] source, char[] target, int fromIndex, int endIndex) {
@@ -2460,6 +1944,10 @@ public final class StringUtils {
 	 */
 	public static int lastIndexOf(char[] source, int sourceOffset, int sourceCount, char[] target, int targetOffset,
 			int targetCount, int fromIndex) {
+		if (ArrayUtils.isEmpty(source) || ArrayUtils.isEmpty(target)) {
+			return -1;
+		}
+
 		/*
 		 * Check arguments; return immediately where possible. For consistency, don't
 		 * check for null str.
@@ -2501,19 +1989,27 @@ public final class StringUtils {
 			return start - sourceOffset + 1;
 		}
 	}
-	
+
 	public static int lastIndexOf(CharSequence source, CharSequence target) {
-		return lastIndexOf(source, target, 0, source.length());
+		return lastIndexOf(source, target, source.length());
 	}
-	
+
+	public static int lastIndexOf(CharSequence source, CharSequence target, int fromIndex) {
+		return lastIndexOf(source, target, fromIndex, 0);
+	}
+
 	public static int lastIndexOf(CharSequence source, CharSequence target, int fromIndex, int endIndex) {
 		int sourceCount = Math.min(fromIndex, source.length()) - endIndex;
 		int index = lastIndexOf(source, endIndex, sourceCount, target, 0, target.length(), sourceCount);
 		return index == -1 ? -1 : index + endIndex;
 	}
 
-	public static int lastIndexOf(CharSequence source, int sourceOffset, int sourceCount, CharSequence target, int targetOffset,
-			int targetCount, int fromIndex) {
+	public static int lastIndexOf(CharSequence source, int sourceOffset, int sourceCount, CharSequence target,
+			int targetOffset, int targetCount, int fromIndex) {
+		if (isEmpty(source, target)) {
+			return -1;
+		}
+
 		/*
 		 * Check arguments; return immediately where possible. For consistency, don't
 		 * check for null str.
@@ -2555,77 +2051,63 @@ public final class StringUtils {
 			return start - sourceOffset + 1;
 		}
 	}
-	
-	public static Stream<CharSequence> split(CharSequence charSequence, CharSequence... filters){
+
+	public static String[] splitToArray(CharSequence charSequence) {
+		return splitToArray(charSequence, DEFAULT_SEPARATOR);
+	}
+
+	public static String[] splitToArray(CharSequence charSequence, CharSequence... filters) {
+		return splitToArray(charSequence, true, true, filters);
+	}
+
+	public static String[] splitToArray(CharSequence charSequence, boolean trimTokens, boolean ignoreEmptyTokens,
+			CharSequence... filters) {
+		return split(charSequence, trimTokens, ignoreEmptyTokens, filters).map((s) -> s == null ? null : s.toString())
+				.collect(Collectors.toList()).toArray(new String[0]);
+	}
+
+	public static Stream<CharSequence> split(CharSequence charSequence, boolean trimTokens, boolean ignoreEmptyTokens,
+			CharSequence... filters) {
+		return split(charSequence, filters).map((s) -> trimTokens ? (s == null ? s : trimWhitespace(s)) : s)
+				.filter((s) -> (ignoreEmptyTokens ? StringUtils.isNotEmpty(s) : true));
+	}
+
+	/**
+	 * @see StringUtils#DEFAULT_SEPARATOR
+	 * @param charSequence
+	 * @return
+	 */
+	public static Stream<CharSequence> split(CharSequence charSequence) {
+		return split(charSequence, DEFAULT_SEPARATOR);
+	}
+
+	public static Stream<CharSequence> split(CharSequence charSequence, CharSequence... filters) {
 		return split(charSequence, 0, charSequence.length(), Arrays.asList(filters));
 	}
-	
-	public static Stream<CharSequence> split(CharSequence charSequence, Collection<CharSequence> filters){
+
+	public static Stream<CharSequence> split(CharSequence charSequence, Collection<? extends CharSequence> filters) {
 		return split(charSequence, 0, charSequence.length(), filters);
 	}
-	
-	public static Stream<CharSequence> split(CharSequence charSequence, int beginIndex, int endIndex, Collection<CharSequence> filters){
+
+	public static Stream<CharSequence> split(CharSequence charSequence, int beginIndex, int endIndex,
+			Collection<? extends CharSequence> filters) {
+		if (StringUtils.isEmpty(charSequence)) {
+			return StreamProcessorSupport.emptyStream();
+		}
+
+		boolean find = false;
+		for (CharSequence filter : filters) {
+			if (indexOf(charSequence, filter, beginIndex, endIndex) != -1) {
+				find = true;
+				break;
+			}
+		}
+
+		if (!find) {
+			return Arrays.asList(charSequence).stream();
+		}
+
 		Iterator<CharSequence> iterator = new CharSequenceSplitIterator(charSequence, filters, beginIndex, endIndex);
 		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false);
-	}
-	
-	private static class CharSequenceSplitIterator extends AbstractIterator<CharSequence>{
-		private final CharSequence charSequence;
-		private final Collection<CharSequence> filters;
-		private final int beginIndex;
-		private final int endIndex;
-		private int index;
-		private Supplier<Pair<Integer, CharSequence>> current;
-		
-		CharSequenceSplitIterator(CharSequence charSequence, Collection<CharSequence> filters, int beginIndex, int endIndex) {
-			this.charSequence = charSequence;
-			this.filters = filters;
-			this.beginIndex = beginIndex;
-			this.endIndex = endIndex;
-			this.index = beginIndex;
-		}
-		
-		@Override
-		public boolean hasNext() {
-			if(index > endIndex) {
-				return false;
-			}
-			
-			if(current == null) {
-				for(CharSequence filter : filters) {
-					if(filter == null) {
-						continue;
-					}
-					
-					index = StringUtils.indexOf(charSequence, filter, index, endIndex);
-					if(index != -1) {
-						current = new StaticSupplier<Pair<Integer,CharSequence>>(new Pair<Integer, CharSequence>(index, filter));
-						break;
-					}
-				}
-				
-				if(current == null) {
-					current = new StaticSupplier<Pair<Integer,CharSequence>>(null);
-				}
-			}
-			
-			if(current == null) {
-				return false;
-			}
-			
-			return current.get() != null;
-		}
-
-		@Override
-		public CharSequence next() {
-			if(!hasNext()) {
-				throw new NoSuchElementException();
-			}
-			CharSequence value = charSequence.subSequence(index, current.get().getKey());
-			index = current.get().getKey() + current.get().getValue().length();
-			current = null;
-			return value;
-		}
-
 	}
 }

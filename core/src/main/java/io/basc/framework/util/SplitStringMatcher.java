@@ -18,7 +18,7 @@ public class SplitStringMatcher implements StringMatcher {
 	}
 
 	public String[] splitText(String text) {
-		return StringUtils.split(text, split);
+		return StringUtils.splitToArray(text, split);
 	}
 
 	@Override

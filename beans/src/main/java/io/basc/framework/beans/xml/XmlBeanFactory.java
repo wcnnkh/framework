@@ -147,7 +147,7 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 
 			if ("mapping".equalsIgnoreCase(node.getNodeName())) {
 				Collection<String> names = Arrays.asList(
-						StringUtils.commonSplit(DomUtils.getRequireNodeAttributeValue(getEnvironment(), node, "name")));
+						StringUtils.splitToArray(DomUtils.getRequireNodeAttributeValue(getEnvironment(), node, "name")));
 				String id = DomUtils.getRequireNodeAttributeValueOrNodeContent(getEnvironment(), node, "id");
 				for (String name : names) {
 					registerAlias(id, name);

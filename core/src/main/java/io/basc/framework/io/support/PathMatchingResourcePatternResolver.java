@@ -481,7 +481,7 @@ public class PathMatchingResourcePatternResolver implements
 			String javaClassPathProperty = System
 					.getProperty("java.class.path");
 			for (String path : StringUtils
-					.delimitedListToStringArray(javaClassPathProperty,
+					.splitToArray(javaClassPathProperty, false, true,
 							System.getProperty("path.separator"))) {
 				try {
 					String filePath = new File(path).getAbsolutePath();

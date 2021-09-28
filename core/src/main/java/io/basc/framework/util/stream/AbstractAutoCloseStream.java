@@ -40,7 +40,7 @@ public abstract class AbstractAutoCloseStream<T, S extends Stream<T>>
 	public List<T> shared() {
 		return collect(Collectors.toList());
 	}
-
+	
 	@Nullable
 	public T first() {
 		return findFirst().orElse(null);

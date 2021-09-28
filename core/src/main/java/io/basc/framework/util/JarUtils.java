@@ -63,7 +63,7 @@ public abstract class JarUtils {
 
 	public static String[] getgetManifestClassPaths(JarFile jarFile) {
 		String classPath = getManifestClassPath(jarFile);
-		return StringUtils.isEmpty(classPath) ? new String[0] : StringUtils.split(classPath, ' ');
+		return StringUtils.isEmpty(classPath) ? new String[0] : StringUtils.splitToArray(classPath, " ");
 	}
 
 	public static String findEntryName(JarFile jarFile, String searchName) {

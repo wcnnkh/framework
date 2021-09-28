@@ -63,7 +63,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 			return Collections.EMPTY_LIST;
 		}
 
-		return Arrays.asList(StringUtils.commonSplit(filters));
+		return Arrays.asList(StringUtils.splitToArray(filters));
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 
 	protected String[] getNames(Node node) {
 		String name = DomUtils.getNodeAttributeValue(node, "name");
-		return StringUtils.isEmpty(name) ? new String[0] : StringUtils.commonSplit(name);
+		return StringUtils.isEmpty(name) ? new String[0] : StringUtils.splitToArray(name);
 	}
 
 	private final AtomicBoolean error = new AtomicBoolean();

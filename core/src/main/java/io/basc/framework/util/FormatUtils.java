@@ -116,4 +116,39 @@ public final class FormatUtils {
 		}
 		return props;
 	}
+	
+	/**
+	 * 1M = 1024K
+	 * 
+	 * @param size
+	 * @param toSuffix
+	 * @return
+	 */
+	public static double parseDiskSize(String size, String toSuffix) {
+		int len = size.length();
+		double oldSize;
+		if (size.endsWith("GB") || size.endsWith("G")) {
+			oldSize = Double.parseDouble(size.substring(0, len - 2)) * 1024 * 1024 * 1024;
+		} else if (size.endsWith("MB") || size.endsWith("M")) {
+			oldSize = Double.parseDouble(size.substring(0, len - 2)) * 1024 * 1024;
+		} else if (size.endsWith("KB") || size.endsWith("K")) {
+			oldSize = Double.parseDouble(size.substring(0, len - 2)) * 1024;
+		} else if (size.endsWith("B")) {
+			oldSize = Double.parseDouble(size.substring(0, len - 1));
+		} else {
+			oldSize = Double.parseDouble(size);
+		}
+
+		if ("GB".equals(toSuffix) || "G".equals(toSuffix)) {
+			return oldSize / (1024 * 1024 * 1024);
+		} else if ("MB".equals(toSuffix) || "M".equals(toSuffix)) {
+			return oldSize / (1024 * 1024);
+		} else if ("KB".equals(toSuffix) || "K".equals(toSuffix)) {
+			return oldSize / (1024);
+		} else if ("B".equals(toSuffix)) {
+			return oldSize;
+		} else {
+			return oldSize;
+		}
+	}
 }

@@ -1,45 +1,69 @@
 package io.basc.framework.util;
 
+import java.util.Collection;
 import java.util.NoSuchElementException;
 
 /**
  * 迭代分割字符串
+ * 
  * @author shuchaowen
  *
  */
-public class CharSequenceSplitIterator extends AbstractIterator<CharSequence>{
+public class CharSequenceSplitIterator extends AbstractIterator<CharSequence> {
 	private final CharSequence charSequence;
-	private final CharSequence indexCharSequence;
-	private int beginIndex;
-	private int endIndex;
-	private int index = beginIndex;
-	private Supplier<Integer> current;
-	
-	public CharSequenceSplitIterator(CharSequence charSequence, CharSequence indexCharSequence, int beginIndex, int endIndex) {
+	private final Collection<? extends CharSequence> filters;
+	private final int endIndex;
+	private int index;
+	private Supplier<Pair<Integer, CharSequence>> current;
+
+	CharSequenceSplitIterator(CharSequence charSequence, Collection<? extends CharSequence> filters, int beginIndex,
+			int endIndex) {
 		this.charSequence = charSequence;
-		this.indexCharSequence = indexCharSequence;
-		this.beginIndex = beginIndex;
+		this.filters = filters;
+		this.index = beginIndex;
 		this.endIndex = endIndex;
 	}
-	
+
 	@Override
 	public boolean hasNext() {
-		if(current == null) {
-			current = new StaticSupplier<Integer>(StringUtils.indexOf(charSequence, indexCharSequence, index, endIndex));
+		if (index > endIndex) {
+			return false;
 		}
-		return current.get().intValue() != -1;
+
+		if (current == null) {
+			for (CharSequence filter : filters) {
+				if (filter == null) {
+					continue;
+				}
+
+				index = StringUtils.indexOf(charSequence, filter, index, endIndex);
+				if (index != -1) {
+					current = new StaticSupplier<Pair<Integer, CharSequence>>(
+							new Pair<Integer, CharSequence>(index, filter));
+					break;
+				}
+			}
+
+			if (current == null) {
+				current = new StaticSupplier<Pair<Integer, CharSequence>>(null);
+			}
+		}
+
+		if (current == null) {
+			return false;
+		}
+
+		return current.get() != null;
 	}
 
 	@Override
 	public CharSequence next() {
-		if(!hasNext()) {
+		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
-		
-		CharSequence value = charSequence.subSequence(index, current.get());
+		CharSequence value = charSequence.subSequence(index, current.get().getKey());
+		index = current.get().getKey() + current.get().getValue().length();
 		current = null;
-		index = current.get() + indexCharSequence.length();
 		return value;
 	}
-
 }

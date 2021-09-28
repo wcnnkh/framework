@@ -638,7 +638,7 @@ public class UriComponentsBuilder implements Cloneable {
 		try {
 			String forwardedHeader = headers.getFirst("Forwarded");
 			if (StringUtils.hasText(forwardedHeader)) {
-				String forwardedToUse = StringUtils.tokenizeToStringArray(forwardedHeader, ",")[0];
+				String forwardedToUse = StringUtils.tokenizeToArray(forwardedHeader, ",")[0];
 				Matcher matcher = FORWARDED_PROTO_PATTERN.matcher(forwardedToUse);
 				if (matcher.find()) {
 					scheme(matcher.group(1).trim());
@@ -652,18 +652,18 @@ public class UriComponentsBuilder implements Cloneable {
 			else {
 				String protocolHeader = headers.getFirst("X-Forwarded-Proto");
 				if (StringUtils.hasText(protocolHeader)) {
-					scheme(StringUtils.tokenizeToStringArray(protocolHeader, ",")[0]);
+					scheme(StringUtils.tokenizeToArray(protocolHeader, ",")[0]);
 					port(null);
 				}
 
 				String hostHeader = headers.getFirst("X-Forwarded-Host");
 				if (StringUtils.hasText(hostHeader)) {
-					adaptForwardedHost(StringUtils.tokenizeToStringArray(hostHeader, ",")[0]);
+					adaptForwardedHost(StringUtils.tokenizeToArray(hostHeader, ",")[0]);
 				}
 
 				String portHeader = headers.getFirst("X-Forwarded-Port");
 				if (StringUtils.hasText(portHeader)) {
-					port(Integer.parseInt(StringUtils.tokenizeToStringArray(portHeader, ",")[0]));
+					port(Integer.parseInt(StringUtils.tokenizeToArray(portHeader, ",")[0]));
 				}
 			}
 		}

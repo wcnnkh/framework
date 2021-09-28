@@ -93,7 +93,7 @@ public abstract class AbstractKindUpload implements KindEditor {
 
 		String pathToUse = sb.toString();
 		String currentDirPath = path == null ? "" : path;
-		String currentUrl = StringUtils.mergePath(getRootUrl(dir), pathToUse);
+		String currentUrl = StringUtils.mergePaths(getRootUrl(dir), pathToUse, null);
 		String moveupDirPath = "";
 		if (StringUtils.isNotEmpty(path)) {
 			String str = currentDirPath.substring(0, currentDirPath.length() - 1);

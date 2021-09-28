@@ -23,7 +23,7 @@ public class FileMimeTypeUitls {
 			if (line.isEmpty() || line.charAt(0) == '#') {
 				continue;
 			}
-			String[] tokens = StringUtils.tokenizeToStringArray(line, " \t\n\r\f");
+			String[] tokens = StringUtils.tokenizeToArray(line, " \t\n\r\f");
 			MimeType mimeType = MimeTypeUtils.parseMimeType(tokens[0]);
 			for (int i = 1; i < tokens.length; i++) {
 				String fileExtension = tokens[i].toLowerCase(Locale.ENGLISH);

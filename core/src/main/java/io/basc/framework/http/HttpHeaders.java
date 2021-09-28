@@ -525,7 +525,7 @@ public class HttpHeaders extends Headers {
 					continue;
 				}
 				
-				String[] values = StringUtils.commonSplit(String.valueOf(value));
+				String[] values = StringUtils.splitToArray(String.valueOf(value));
 				if(ArrayUtils.isEmpty(values)){
 					continue;
 				}
@@ -623,7 +623,7 @@ public class HttpHeaders extends Headers {
 		List<HttpMethod> result = new ArrayList<HttpMethod>();
 		String value = getFirst(ACCESS_CONTROL_ALLOW_METHODS);
 		if (value != null) {
-			String[] tokens = StringUtils.tokenizeToStringArray(value, ",");
+			String[] tokens = StringUtils.tokenizeToArray(value, ",");
 			for (String token : tokens) {
 				HttpMethod resolved = HttpMethod.resolve(token);
 				if (resolved != null) {
@@ -739,7 +739,7 @@ public class HttpHeaders extends Headers {
 	public List<Charset> getAcceptCharset() {
 		String value = getFirst(ACCEPT_CHARSET);
 		if (value != null) {
-			String[] tokens = StringUtils.tokenizeToStringArray(value, ",");
+			String[] tokens = StringUtils.tokenizeToArray(value, ",");
 			List<Charset> result = new ArrayList<Charset>(tokens.length);
 			for (String token : tokens) {
 				int paramIdx = token.indexOf(';');
@@ -776,7 +776,7 @@ public class HttpHeaders extends Headers {
 	public Set<HttpMethod> getAllow() {
 		String value = getFirst(ALLOW);
 		if (!StringUtils.isEmpty(value)) {
-			String[] tokens = StringUtils.tokenizeToStringArray(value, ",");
+			String[] tokens = StringUtils.tokenizeToArray(value, ",");
 			List<HttpMethod> result = new ArrayList<HttpMethod>(tokens.length);
 			for (String token : tokens) {
 				HttpMethod resolved = HttpMethod.resolve(token);
@@ -1496,7 +1496,7 @@ public class HttpHeaders extends Headers {
 				continue;
 			}
 
-			String[] ips = StringUtils.split(value, ",");
+			String[] ips = StringUtils.splitToArray(value, ",");
 			for (String ip : ips) {
 				if (StringUtils.isEmpty(ip) || "unKnown".equals(ip) || InetUtils.isInnerIP(ip)) {
 					continue;
