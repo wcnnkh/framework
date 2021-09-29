@@ -11,31 +11,31 @@ public class Version implements Serializable, Comparable<Version>, Comparator<Va
 	/**
 	 * 默认的版本分割符
 	 */
-	public static final char DIVIDEERS = '.';
+	public static final String DIVIDEERS = ".";
 
 	private final Value[] fragments;
-	private final char dividers;
+	private final String dividers;
 
 	public Version(String version) {
 		this(version, DIVIDEERS);
 	}
 
-	public Version(String version, char dividers) {
+	public Version(String version, String dividers) {
 		Assert.requiredArgument(version != null, "version");
 		this.dividers = dividers;
-		String[] arr = StringUtils.split(version, dividers);
+		String[] arr = StringUtils.splitToArray(version, dividers);
 		fragments = new Value[arr.length];
 		for (int i = 0; i < arr.length; i++) {
 			this.fragments[i] = new StringValue(arr[i]);
 		}
 	}
 
-	public Version(Value[] fragments, char dividers) {
+	public Version(Value[] fragments, String dividers) {
 		this.fragments = fragments;
 		this.dividers = dividers;
 	}
 
-	public char getDividers() {
+	public String getDividers() {
 		return dividers;
 	}
 

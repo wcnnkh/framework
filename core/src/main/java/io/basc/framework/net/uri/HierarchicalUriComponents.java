@@ -639,7 +639,7 @@ public class HierarchicalUriComponents extends UriComponents {
 		}
 
 		public List<String> getPathSegments() {
-			String[] segments = StringUtils.tokenizeToStringArray(getPath(), PATH_DELIMITER_STRING);
+			String[] segments = StringUtils.tokenizeToArray(getPath(), PATH_DELIMITER_STRING);
 			if (segments == null) {
 				return Collections.emptyList();
 			}

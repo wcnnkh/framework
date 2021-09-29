@@ -23,7 +23,8 @@ public class DefaultHttpChannelFactory implements HttpChannelFactory {
 	public DefaultHttpChannelFactory(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
 		webMessageConverters = new DefaultWebMessageConverters(beanFactory.getEnvironment().getConversionService(),
-				beanFactory, beanFactory.getDefaultValueFactory());
+				beanFactory.getDefaultValueFactory());
+		webMessageConverters.configure(beanFactory);
 	}
 
 	public MultipartMessageResolver getMultipartMessageResolver() {

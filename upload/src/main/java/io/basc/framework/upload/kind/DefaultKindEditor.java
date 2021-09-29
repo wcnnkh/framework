@@ -31,7 +31,7 @@ public class DefaultKindEditor extends AbstractKindUpload {
 
 	@Override
 	protected List<KindFileItem> managerInternal(String group, KindDirType dir, String path, KindOrderType orderType) {
-		String filePath = StringUtils.mergePath(rootPath, path);
+		String filePath = StringUtils.mergePaths(rootPath, path);
 		filePath = Assert.securePath(filePath);
 		return list(new File(filePath), orderType);
 	}

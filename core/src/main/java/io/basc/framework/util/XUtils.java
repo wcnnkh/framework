@@ -176,7 +176,7 @@ public final class XUtils {
 			return null;
 		}
 
-		return StringUtils.split(classPath, getPathSeparator());
+		return StringUtils.splitToArray(classPath, getPathSeparator());
 	}
 
 	public static String getOSName() {

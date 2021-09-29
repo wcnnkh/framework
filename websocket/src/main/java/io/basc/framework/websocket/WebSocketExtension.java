@@ -105,7 +105,7 @@ public class WebSocketExtension {
 	 */
 	public static List<WebSocketExtension> parseExtensions(String extensions) {
 		if (StringUtils.hasText(extensions)) {
-			String[] tokens = StringUtils.tokenizeToStringArray(extensions, ",");
+			String[] tokens = StringUtils.tokenizeToArray(extensions, ",");
 			List<WebSocketExtension> result = new ArrayList<WebSocketExtension>(tokens.length);
 			for (String token : tokens) {
 				result.add(parseExtension(token));
@@ -120,7 +120,7 @@ public class WebSocketExtension {
 		if (extension.contains(",")) {
 			throw new IllegalArgumentException("Expected single extension value: [" + extension + "]");
 		}
-		String[] parts = StringUtils.tokenizeToStringArray(extension, ";");
+		String[] parts = StringUtils.tokenizeToArray(extension, ";");
 		String name = parts[0].trim();
 
 		Map<String, String> parameters = null;

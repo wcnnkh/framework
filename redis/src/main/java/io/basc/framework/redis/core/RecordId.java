@@ -151,7 +151,7 @@ public class RecordId {
 	}
 
 	private Long value(int index) {
-		return NumberUtils.parseNumber(StringUtils.split(raw, DELIMITER)[index], Long.class);
+		return NumberUtils.parseNumber(StringUtils.splitToArray(raw, DELIMITER)[index], Long.class);
 	}
 
 	@Override

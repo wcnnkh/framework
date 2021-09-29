@@ -89,7 +89,7 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 			List<String> result = new ArrayList<String>();
 			for (String value : values) {
 				if (value != null) {
-					String[] tokens = StringUtils.tokenizeToStringArray(value,
+					String[] tokens = StringUtils.tokenizeToArray(value,
 							tokenize);
 					for (String token : tokens) {
 						result.add(token);

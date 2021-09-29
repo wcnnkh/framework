@@ -301,7 +301,7 @@ public final class MimeTypeUtils {
 		if (StringUtils.isEmpty(mimeTypes)) {
 			return Collections.emptyList();
 		}
-		String[] tokens = StringUtils.tokenizeToStringArray(mimeTypes, ",");
+		String[] tokens = StringUtils.tokenizeToArray(mimeTypes, ",");
 		List<MimeType> result = new ArrayList<MimeType>(tokens.length);
 		for (String token : tokens) {
 			result.add(parseMimeType(token));

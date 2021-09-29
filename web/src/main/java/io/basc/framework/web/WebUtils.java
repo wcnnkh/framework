@@ -40,6 +40,7 @@ public final class WebUtils {
 	private static ThreadLocal<ServerHttpRequest> SERVER_HTTP_REQUEST_LOCAL = new NamedThreadLocal<ServerHttpRequest>(
 			WebUtils.class.getSimpleName() + "-ServerHttpRequest");
 	private static final String RESTFUL_PARAMETER_MAP = "io.basc.framework.web.restful.parameters";
+	public static final String PATH_SEPARATOR = "/";
 
 	/**
 	 * 缓存是否过期,如果未过期那么返回304，如果已过期则setLastModified
@@ -189,6 +190,7 @@ public final class WebUtils {
 
 	/**
 	 * 此方法不一定返回 io.basc.framework.web.JsonServerHttpRequest
+	 * 
 	 * @param request
 	 * @return
 	 */
@@ -212,6 +214,7 @@ public final class WebUtils {
 
 	/**
 	 * 此方法不一定返回 io.basc.framework.web.MultiPartServerHttpRequest
+	 * 
 	 * @param request
 	 * @param multipartMessageResolver
 	 * @return

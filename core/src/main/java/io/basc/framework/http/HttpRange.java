@@ -126,7 +126,7 @@ public abstract class HttpRange {
 		}
 		ranges = ranges.substring(BYTE_RANGE_PREFIX.length());
 
-		String[] tokens = StringUtils.tokenizeToStringArray(ranges, ",");
+		String[] tokens = StringUtils.tokenizeToArray(ranges, ",");
 		if (tokens.length > MAX_RANGES) {
 			throw new IllegalArgumentException("Too many ranges: " + tokens.length);
 		}

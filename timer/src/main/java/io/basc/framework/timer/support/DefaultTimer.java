@@ -255,11 +255,11 @@ public final class DefaultTimer implements io.basc.framework.timer.Timer, Destro
 
 		public CrontabTaskContext(CrontabTaskConfig crontabTaskConfig, Task task) {
 			this.crontabTaskConfig = crontabTaskConfig;
-			this.dayOfWeek = StringUtils.commonSplit(crontabTaskConfig.getDayOfWeek());
-			this.month = StringUtils.commonSplit(crontabTaskConfig.getMonth());
-			this.dayOfMonth = StringUtils.commonSplit(crontabTaskConfig.getDayOfMonth());
-			this.hour = StringUtils.commonSplit(crontabTaskConfig.getHour());
-			this.minute = StringUtils.commonSplit(crontabTaskConfig.getMinute());
+			this.dayOfWeek = StringUtils.splitToArray(crontabTaskConfig.getDayOfWeek());
+			this.month = StringUtils.splitToArray(crontabTaskConfig.getMonth());
+			this.dayOfMonth = StringUtils.splitToArray(crontabTaskConfig.getDayOfMonth());
+			this.hour = StringUtils.splitToArray(crontabTaskConfig.getHour());
+			this.minute = StringUtils.splitToArray(crontabTaskConfig.getMinute());
 			this.task = task;
 		}
 

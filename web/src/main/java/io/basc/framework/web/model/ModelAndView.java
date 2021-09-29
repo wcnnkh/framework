@@ -1,5 +1,6 @@
 package io.basc.framework.web.model;
 
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpStatus;
 
@@ -8,6 +9,9 @@ import java.util.Map;
 
 public class ModelAndView extends LinkedHashMap<String, Object> implements Cloneable {
 	private static final long serialVersionUID = 1L;
+	
+	public static final TypeDescriptor TYPE_DESCRIPTOR = TypeDescriptor.valueOf(ModelAndView.class);
+	
 	private final String name;
 	private final HttpHeaders headers = new HttpHeaders();
 	private HttpStatus httpStatus;

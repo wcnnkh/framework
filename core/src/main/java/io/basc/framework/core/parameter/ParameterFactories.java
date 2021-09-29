@@ -8,10 +8,10 @@ import io.basc.framework.factory.ConfigurableServices;
  * @author shuchaowen
  *
  */
-public class ConfigurableDefaultValueFactory extends ConfigurableServices<ParameterFactory>
+public class ParameterFactories extends ConfigurableServices<ParameterFactory>
 		implements ParameterFactory {
 
-	public ConfigurableDefaultValueFactory() {
+	public ParameterFactories() {
 		super(ParameterFactory.class);
 	}
 

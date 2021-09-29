@@ -35,7 +35,7 @@ public final class ZooKeeperUtils {
 			return PATH_PREFIX;
 		}
 		
-		String[] pathsToUse = StringUtils.split(sb.toString(), PATH_PREFIX);
+		String[] pathsToUse = StringUtils.splitToArray(sb.toString(), PATH_PREFIX);
 		sb = new StringBuilder();
 		for(String path : pathsToUse){
 			if(StringUtils.isEmpty(path)){

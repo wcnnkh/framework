@@ -52,7 +52,7 @@ public final class InetUtils {
 
 	public static List<InetSocketAddress> parseInetSocketAddressList(String address) {
 		List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
-		String[] arr = StringUtils.commonSplit(address);
+		String[] arr = StringUtils.splitToArray(address);
 		for (String a : arr) {
 			String[] vs = a.split(":");
 			String h = vs[0];

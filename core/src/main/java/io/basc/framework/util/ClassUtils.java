@@ -1430,7 +1430,7 @@ public final class ClassUtils {
 			return new String[0];
 		}
 
-		String[] packageNameArray = StringUtils.split(packageName, '.');
+		String[] packageNameArray = StringUtils.splitToArray(packageName, ".");
 		String[] array = new String[packageNameArray.length - 1];
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0, len = packageNameArray.length; i < len; i++) {

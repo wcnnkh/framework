@@ -26,7 +26,7 @@ public class JavaVersion extends Version {
 		INSTANCE = new JavaVersion(version.getFragments(), version.getDividers());
 	}
 
-	JavaVersion(Value[] fragments, char dividers) {
+	JavaVersion(Value[] fragments, String dividers) {
 		super(fragments, dividers);
 	}
 

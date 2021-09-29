@@ -1,16 +1,8 @@
 package io.basc.framework.env;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-
-import io.basc.framework.convert.ConfigurableConversionService;
-import io.basc.framework.convert.resolve.ConfigurableResourceResolver;
-import io.basc.framework.convert.resolve.ResourceResolverConversionService;
-import io.basc.framework.convert.resolve.support.DefaultResourceResolver;
-import io.basc.framework.convert.support.DefaultConversionService;
+import io.basc.framework.convert.lang.ConversionServices;
+import io.basc.framework.convert.resolve.ResourceResolvers;
+import io.basc.framework.convert.support.DefaultConversionServices;
 import io.basc.framework.env.ObservablePropertiesPropertyFactory.ValueCreator;
 import io.basc.framework.event.Observable;
 import io.basc.framework.factory.Configurable;
@@ -21,8 +13,7 @@ import io.basc.framework.io.ProtocolResolver;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.io.ResourceUtils;
-import io.basc.framework.io.resolver.ConfigurablePropertiesResolver;
-import io.basc.framework.io.resolver.support.PropertiesResolvers;
+import io.basc.framework.io.resolver.PropertiesResolvers;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -40,6 +31,12 @@ import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 import io.basc.framework.value.support.DefaultPropertyFactory;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
 public class DefaultEnvironment extends DefaultPropertyFactory implements ConfigurableEnvironment, Configurable {
 	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
 
@@ -50,11 +47,7 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 		};
 	};
 
-	private final PropertiesResolvers configurablePropertiesResolver = new PropertiesResolvers();
-	private final DefaultConversionService configurableConversionService = new DefaultConversionService(
-			configurablePropertiesResolver, getObservableCharset());
-	private final DefaultResourceResolver configurableResourceResolver = new DefaultResourceResolver(
-			configurableConversionService, configurablePropertiesResolver, getObservableCharset());
+	private final DefaultConversionServices conversionServices = new DefaultConversionServices();
 	private final DefaultPlaceholderReplacer placeholderReplacer = new DefaultPlaceholderReplacer();
 	private volatile ProfilesResolver profilesResolver = new DefaultProfilesResolver();
 
@@ -68,8 +61,6 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 		super(true);
 		this.classLoaderProvider = classLoaderProvider;
 		configurableResourceLoader.setClassLoaderProvider(this);
-		configurableConversionService
-				.addConversionService(new ResourceResolverConversionService(configurableResourceResolver));
 	}
 
 	public ProfilesResolver getProfilesResolver() {
@@ -232,9 +223,7 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 			setProfilesResolver(serviceLoaderFactory.getInstance(ProfilesResolver.class));
 		}
 
-		configurablePropertiesResolver.configure(serviceLoaderFactory);
-		configurableResourceResolver.configure(serviceLoaderFactory);
-		configurableConversionService.configure(serviceLoaderFactory);
+		conversionServices.configure(serviceLoaderFactory);
 		propertyFactorys.configure(serviceLoaderFactory);
 		placeholderReplacer.configure(serviceLoaderFactory);
 	}
@@ -245,17 +234,17 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	}
 
 	@Override
-	public ConfigurablePropertiesResolver getPropertiesResolver() {
-		return configurablePropertiesResolver;
+	public PropertiesResolvers getPropertiesResolver() {
+		return conversionServices.getResourceResolvers().getPropertiesResolvers();
 	}
 
 	@Override
-	public ConfigurableConversionService getConversionService() {
-		return configurableConversionService;
+	public ConversionServices getConversionService() {
+		return conversionServices;
 	}
 
 	@Override
-	public ConfigurableResourceResolver getResourceResolver() {
-		return configurableResourceResolver;
+	public ResourceResolvers getResourceResolver() {
+		return conversionServices.getResourceResolvers();
 	}
 }

@@ -1,36 +1,42 @@
 package io.basc.framework.factory;
 
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.Supplier;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.MultiIterator;
+import io.basc.framework.util.Supplier;
+
 public class ConfigurableServices<T> implements Configurable, Iterable<T> {
-	private static Logger LOGGER = LoggerFactory.getLogger(ConfigurableServices.class);
+	private static Logger LOGGER = LoggerFactory
+			.getLogger(ConfigurableServices.class);
 	private final Class<T> serviceClass;
 	private volatile ServiceLoaderFactory serviceLoaderFactory;
 	private final Consumer<T> consumer;
 	private final Supplier<Collection<T>> supplier;
 	private Logger logger = LOGGER;
+	private T beforeService;
+	private T afterService;
 
 	public ConfigurableServices(Class<T> serviceClass) {
 		this(serviceClass, null);
 	}
 
-	public ConfigurableServices(Class<T> serviceClass, @Nullable Consumer<T> consumer) {
+	public ConfigurableServices(Class<T> serviceClass,
+			@Nullable Consumer<T> consumer) {
 		this(serviceClass, consumer, () -> new ArrayList<>(8));
 	}
 
-	public ConfigurableServices(Class<T> serviceClass, @Nullable Consumer<T> consumer,
-			Supplier<Collection<T>> supplier) {
+	public ConfigurableServices(Class<T> serviceClass,
+			@Nullable Consumer<T> consumer, Supplier<Collection<T>> supplier) {
 		this.serviceClass = serviceClass;
 		this.consumer = consumer;
 		this.supplier = supplier;
@@ -45,30 +51,72 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 		this.logger = logger;
 	}
 
+	public T getBeforeService() {
+		return beforeService;
+	}
+
+	/**
+	 * 设置前置服务
+	 * @param beforeService
+	 */
+	public void setBeforeService(T beforeService) {
+		this.beforeService = beforeService;
+	}
+
+	public T getAfterService() {
+		return afterService;
+	}
+
+	/**
+	 * 设置后置服务
+	 * @param afterService
+	 */
+	public void setAfterService(T afterService) {
+		this.afterService = afterService;
+	}
+
 	public Class<T> getServiceClass() {
 		return serviceClass;
 	}
-
+	
 	protected void aware(T service) {
 		if (consumer != null) {
 			consumer.accept(service);
 		}
+	}
 
-		if (serviceLoaderFactory != null) {
-			if (service instanceof Configurable) {
-				((Configurable) service).configure(serviceLoaderFactory);
+	protected void aware(T service, boolean reaware) {
+		aware(service);
+		
+		if(!reaware) {
+			if (serviceLoaderFactory != null) {
+				if (service instanceof Configurable) {
+					((Configurable) service).configure(serviceLoaderFactory);
+				}
 			}
 		}
 	}
 
 	private volatile Collection<T> services;
+	
+	public void aware() {
+		synchronized (this) {
+			if(services == null) {
+				return ;
+			}
+			
+			for(T service : services) {
+				aware(service, true);
+			}
+		}
+	}
 
-	public void addService(T service) {
+	public boolean addService(T service) {
 		if (service == null) {
-			return;
+			return false;
 		}
 
-		aware(service);
+		aware(service, false);
 		synchronized (this) {
 			if (services == null) {
 				services = supplier.get();
@@ -81,6 +129,7 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 			} else {
 				logger.warn("Add [{}] service {} fail", serviceClass, service);
 			}
+			return success;
 		}
 	}
 
@@ -94,10 +143,15 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		if (services == null) {
-			return Collections.emptyIterator();
-		}
-		return services.iterator();
+		T before = getBeforeService();
+		T after = getAfterService();
+		return new MultiIterator<T>(
+				before == null ? Collections.emptyIterator() : Arrays.asList(
+						before).iterator(),
+				services == null ? Collections.emptyIterator() : services
+						.iterator(),
+				after == null ? Collections.emptyIterator() : Arrays.asList(
+						after).iterator());
 	}
 
 	private volatile List<T> defaultServices;
@@ -114,18 +168,21 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 				newServices.removeAll(defaultServices);
 			}
 
-			this.defaultServices = serviceLoaderFactory.getServiceLoader(serviceClass).toList();
-			defaultServices.stream().forEach((service) -> aware(service));
+			this.defaultServices = serviceLoaderFactory.getServiceLoader(
+					serviceClass).toList();
+			defaultServices.stream().forEach((service) -> aware(service, false));
 			if (logger.isDebugEnabled()) {
-				logger.debug("Configure [{}] services {}", serviceClass, defaultServices);
+				logger.debug("Configure [{}] services {}", serviceClass,
+						defaultServices);
 			}
 			newServices.addAll(defaultServices);
 			this.services = newServices;
 		}
 	}
-	
+
 	@Override
 	public String toString() {
-		return "[" + serviceClass.getName() + "] services " + services == null? "[]":services.toString();
+		return "[" + serviceClass.getName() + "] services " + services == null ? "[]"
+				: services.toString();
 	}
 }

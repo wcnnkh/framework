@@ -1,5 +1,6 @@
 package io.basc.framework.retry;
 
+@FunctionalInterface
 public interface RetryCallback<T, E extends Throwable> {
 	/**
 	 * Execute an operation with retry semantics. Operations should generally be

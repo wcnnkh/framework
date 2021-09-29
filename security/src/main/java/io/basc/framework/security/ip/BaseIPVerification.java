@@ -36,7 +36,7 @@ public class BaseIPVerification extends HashSet<String> implements IPVerificatio
 						continue;
 					}
 
-					String[] arr = StringUtils.commonSplit(content);
+					String[] arr = StringUtils.splitToArray(content);
 					if (ArrayUtils.isEmpty(arr)) {
 						continue;
 					}

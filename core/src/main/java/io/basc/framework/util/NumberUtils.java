@@ -184,7 +184,7 @@ public abstract class NumberUtils {
 			Class<T> targetClass) {
 		Assert.notNull(text, "Text must not be null");
 		Assert.notNull(targetClass, "Target class must not be null");
-		String trimmed = StringUtils.trimAllWhitespace(text);
+		String trimmed = text.trim();
 
 		if (targetClass.equals(Byte.class)) {
 			return (T) (isHexNumber(trimmed) ? Byte.decode(trimmed) : Byte
@@ -256,8 +256,7 @@ public abstract class NumberUtils {
 				}
 			}
 			try {
-				Number number = numberFormat.parse(StringUtils
-						.trimAllWhitespace(text));
+				Number number = numberFormat.parse(text.trim());
 				return convertNumberToTargetClass(number, targetClass);
 			} catch (ParseException ex) {
 				throw new IllegalArgumentException("Could not parse number: "

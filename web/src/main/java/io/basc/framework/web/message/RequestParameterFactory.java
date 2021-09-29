@@ -6,11 +6,11 @@ import io.basc.framework.web.ServerHttpRequest;
 
 public class RequestParameterFactory implements ParameterFactory {
 	private final ServerHttpRequest request;
-	private final WebMessageConverters messageConverters;
+	private final WebMessageConverters messageConverters = new WebMessageConverters();
 
 	public RequestParameterFactory(ServerHttpRequest request, WebMessageConverter messageConverter) {
 		this.request = request;
-		this.messageConverters = new WebMessageConverters(messageConverter);
+		messageConverters.setAfterService(messageConverter);
 	}
 
 	public ServerHttpRequest getRequest() {

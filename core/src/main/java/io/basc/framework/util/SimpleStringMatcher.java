@@ -29,7 +29,7 @@ public class SimpleStringMatcher implements StringMatcher {
 			}
 		}
 
-		String[] arr = StringUtils.split(match, false, '*');
+		String[] arr = StringUtils.splitToArray(match, false, false, "*");
 		if (!match.startsWith("*")) {
 			if (!text.startsWith(arr[0])) {
 				return false;

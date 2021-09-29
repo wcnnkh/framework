@@ -1,13 +1,13 @@
 package io.basc.framework.env;
 
-import io.basc.framework.convert.ConfigurableConversionService;
-import io.basc.framework.convert.resolve.ConfigurableResourceResolver;
+import io.basc.framework.convert.lang.ConversionServices;
+import io.basc.framework.convert.resolve.ResourceResolvers;
 import io.basc.framework.event.Observable;
 import io.basc.framework.io.ConfigurableResourceLoader;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.event.ObservableResource;
-import io.basc.framework.io.resolver.ConfigurablePropertiesResolver;
+import io.basc.framework.io.resolver.PropertiesResolvers;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
 import io.basc.framework.value.ConfigurablePropertyFactory;
@@ -52,11 +52,11 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 
 	ConfigurablePlaceholderReplacer getPlaceholderReplacer();
 
-	ConfigurablePropertiesResolver getPropertiesResolver();
+	PropertiesResolvers getPropertiesResolver();
 
-	ConfigurableConversionService getConversionService();
+	ConversionServices getConversionService();
 
-	ConfigurableResourceResolver getResourceResolver();
+	ResourceResolvers getResourceResolver();
 
 	void addFactory(PropertyFactory propertyFactory);
 }

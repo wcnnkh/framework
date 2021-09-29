@@ -36,7 +36,7 @@ public class StringValue extends AbstractValue implements Serializable {
 	}
 
 	public String[] split(String value) {
-		return StringUtils.commonSplit(value);
+		return StringUtils.splitToArray(value);
 	}
 
 	protected Value parseValue(String text) {
