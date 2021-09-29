@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
@@ -25,8 +26,10 @@ import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.registry.PeerAwareInstanceRegistryImpl;
 import com.netflix.eureka.resources.StatusResource;
 import com.netflix.eureka.util.StatusInfo;
+import com.netflix.eureka.util.StatusInfo.Builder;
 
 import io.basc.framework.beans.annotation.Value;
+import io.basc.framework.util.CollectionUtils;
 
 @Path("${eureka.dashboard.path:/}")
 public class EurekaController {
@@ -45,6 +48,7 @@ public class EurekaController {
 		Map<String, Object> model = new HashMap<>();
 		populateBase(request, model);
 		populateApps(model);
+		
 		StatusInfo statusInfo;
 		try {
 			statusInfo = new StatusResource().getStatusInfo();
@@ -52,6 +56,22 @@ public class EurekaController {
 		catch (Exception e) {
 			statusInfo = StatusInfo.Builder.newBuilder().isHealthy(false).build();
 		}
+
+		//TODO 重新构造一次 https://github.com/Netflix/eureka/issues/1427
+		Builder builder = StatusInfo.Builder.newBuilder().withInstanceInfo(statusInfo.getInstanceInfo());
+		Map<String, String> statusMap = statusInfo.getApplicationStats();
+		if(!CollectionUtils.isEmpty(statusMap)) {
+			for(Entry<String, String> entry : statusMap.entrySet()) {
+				builder = builder.add(entry.getKey(), entry.getValue());
+			}
+		}
+		try {
+			builder = builder.isHealthy(statusInfo.isHealthy());
+		} catch (NullPointerException e) {
+			builder = builder.isHealthy(false);
+		}
+		statusInfo = builder.build();
+		
 		model.put("statusInfo", statusInfo);
 		populateInstanceInfo(model, statusInfo);
 		filterReplicas(model, statusInfo);
