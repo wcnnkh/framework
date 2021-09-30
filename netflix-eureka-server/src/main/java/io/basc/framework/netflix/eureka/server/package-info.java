@@ -1,5 +1,5 @@
 /**
- * 基本来源于spring-websocket源码
+ * 参考Spring
  * @author shuchaowen
  *
  */
