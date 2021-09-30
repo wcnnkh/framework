@@ -182,4 +182,8 @@ public final class XUtils {
 	public static String getOSName() {
 		return System.getProperty("os.name");
 	}
+
+	public static <T> Status<T> status(boolean active, T value) {
+		return new DefaultStatus<T>(active, value);
+	}
 }
