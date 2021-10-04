@@ -1,5 +1,5 @@
 /**
- * 基本来源于spring源码
+ * 参考spring
  * @author shuchaowen
  *
  */

@@ -4,9 +4,17 @@ public class DataResult<T> extends Result {
 	private static final long serialVersionUID = 1L;
 	private T data;
 
-	public DataResult(boolean success, long code) {
-		super(success, code);
-	};
+	public DataResult() {
+	}
+	
+	public DataResult(Result result) {
+		super(result);
+	}
+
+	public DataResult(DataResult<T> result) {
+		super(result);
+		this.data = result.data;
+	}
 
 	public T getData() {
 		return data;

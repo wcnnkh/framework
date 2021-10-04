@@ -8,14 +8,12 @@ import java.io.Serializable;
 
 public class Result implements Status<Long>, ResultMsgCode, RollbackOnlyResult, Serializable {
 	private static final long serialVersionUID = 1L;
-	private final long code;
+	private long code = 0;
 	private Boolean rollbackOnlyResult;
 	private String msg;
-	private boolean success;
+	private boolean success = true;
 
-	public Result(boolean success, long code) {
-		this.success = success;
-		this.code = code;
+	public Result() {
 	}
 
 	public Result(Result result) {
@@ -31,6 +29,14 @@ public class Result implements Status<Long>, ResultMsgCode, RollbackOnlyResult, 
 
 	public final long getCode() {
 		return code;
+	}
+
+	public void setCode(long code) {
+		this.code = code;
+	}
+
+	public void setSuccess(boolean success) {
+		this.success = success;
 	}
 
 	public boolean isSuccess() {
@@ -69,8 +75,7 @@ public class Result implements Status<Long>, ResultMsgCode, RollbackOnlyResult, 
 	}
 
 	public <T> DataResult<T> dataResult(T data) {
-		DataResult<T> dataResult = new DataResult<T>(isSuccess(), code);
-		dataResult.setMsg(getMsg()).setRollbackOnlyResult(getRollbackOnlyResult());
+		DataResult<T> dataResult = new DataResult<T>(this);
 		if (data != null) {
 			dataResult.setData(data);
 		}
@@ -86,9 +91,24 @@ public class Result implements Status<Long>, ResultMsgCode, RollbackOnlyResult, 
 	public final boolean isActive() {
 		return isSuccess();
 	}
-	
+
 	@Override
 	public String toString() {
 		return MapperUtils.toString(this);
+	}
+
+	public static Result success(long code) {
+		Result result = new Result();
+		result.setCode(code);
+		result.setSuccess(true);
+		return result;
+	}
+
+	public static Result error(long code, String message) {
+		Result result = new Result();
+		result.setCode(code);
+		result.setMsg(message);
+		result.setSuccess(false);
+		return result;
 	}
 }

@@ -75,7 +75,9 @@ public class ResultFactory {
 
 	public <T> DataResult<T> success(T data) {
 		long code = getSuccessCode();
-		DataResult<T> dataResult = new DataResult<T>(true, code);
+		DataResult<T> dataResult = new DataResult<T>();
+		dataResult.setSuccess(true);
+		dataResult.setCode(code);
 		dataResult.setData(data);
 		dataResult.setMsg(getMsg(code));
 		return dataResult;
@@ -90,7 +92,9 @@ public class ResultFactory {
 	}
 
 	public <T> DataResult<T> error(long code, String msg, Object data) {
-		DataResult<T> dataResult = new DataResult<T>(false, code);
+		DataResult<T> dataResult = new DataResult<T>();
+		dataResult.setSuccess(false);
+		dataResult.setCode(code);
 		dataResult.setMsg(msg);
 		dataResult.setData(data);
 		return dataResult;

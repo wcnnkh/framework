@@ -18,8 +18,6 @@ package io.basc.framework.netflix.eureka;
 
 /**
  * Class containing Eureka-specific constants.
- *
- * @author Spencer Gibb
  */
 public final class EurekaConstants {
 
