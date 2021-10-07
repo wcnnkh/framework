@@ -1,4 +1,4 @@
-package io.basc.framework.microsoft.support;
+package io.basc.framework.sql;
 
 import io.basc.framework.sql.SqlUtils;
 import io.basc.framework.util.stream.Processor;

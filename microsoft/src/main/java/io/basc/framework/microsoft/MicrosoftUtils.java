@@ -1,14 +1,11 @@
 package io.basc.framework.microsoft;
 
 import io.basc.framework.env.Sys;
-import io.basc.framework.http.HttpOutputMessage;
-import io.basc.framework.http.HttpUtils;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.ArrayUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -84,35 +81,5 @@ public final class MicrosoftUtils {
 			}
 		});
 		return list;
-	}
-
-	public static void exportExcel(HttpOutputMessage outputMessage, String fileName, String[] titles, List<String[]> list)
-			throws IOException, ExcelException {
-		ExcelExport excelExport = null;
-		try {
-			excelExport = createExcelExport(outputMessage, fileName);
-			if (!ArrayUtils.isEmpty(titles)) {
-				excelExport.append(titles);
-			}
-
-			for (String[] contents : list) {
-				excelExport.append(contents);
-			}
-			excelExport.flush();
-		} finally {
-			if (excelExport != null) {
-				excelExport.close();
-			}
-		}
-	}
-
-	public static ExcelExport createExcelExport(HttpOutputMessage outputMessage, String fileName)
-			throws IOException, ExcelException {
-		HttpUtils.writeFileMessageHeaders(outputMessage, fileName);
-		ExcelVersion excelVersion = ExcelVersion.forFileName(fileName);
-		if (excelVersion == null) {
-			excelVersion = ExcelVersion.XLS;
-		}
-		return getExcelOperations().createExcelExport(outputMessage.getOutputStream(), excelVersion);
 	}
 }
