@@ -1,19 +1,25 @@
 package io.basc.framework.security.session;
 
+import java.util.HashSet;
+
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.annotation.Order;
 import io.basc.framework.data.TemporaryStorage;
 import io.basc.framework.data.memory.MemoryDataOperations;
+import io.basc.framework.env.Sys;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-
-import java.util.HashSet;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
 
 @Provider
-public final class DefaultUserSessionFactory<T> implements UserSessionFactory<T> {
+public final class DefaultUserSessionFactory implements UserSessionFactory {
+	private static final String USER_SESSION_PREFIX = Sys.env.getValue(UserSessionFactory.class.getPackage().getName() + ".prefix", String.class, StringUtils.replace(UserSessionFactory.class.getPackage().getName(), '.', ':') + ":user:");
+	
 	private static Logger logger = LoggerFactory.getLogger(DefaultUserSessionFactory.class);
 	private final TemporaryStorage temporaryCache;
 	private final SessionFactory sessionFactory;
+	private String prefix = USER_SESSION_PREFIX;
 	
 	public DefaultUserSessionFactory(){
 		this(new MemoryDataOperations());
@@ -36,6 +42,15 @@ public final class DefaultUserSessionFactory<T> implements UserSessionFactory<T>
 		this.temporaryCache = temporaryCache;
 	}
 	
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public void setPrefix(String prefix) {
+		Assert.requiredArgument(prefix != null, "prefix");
+		this.prefix = prefix;
+	}
+
 	public TemporaryStorage getTemporaryCache() {
 		return temporaryCache;
 	}
@@ -44,7 +59,7 @@ public final class DefaultUserSessionFactory<T> implements UserSessionFactory<T>
 		return sessionFactory;
 	}
 	
-	public UserSessions<T> getUserSessions(T uid) {
+	public <T> UserSessions<T> getUserSessions(T uid) {
 		DefaultUserSessions<T> userSessions = new DefaultUserSessions<T>(uid);
 		SessionIds<T> sessionIds = getSessionIds(uid, false);
 		if(sessionIds != null){
@@ -60,11 +75,11 @@ public final class DefaultUserSessionFactory<T> implements UserSessionFactory<T>
 		return userSessions;
 	}
 	
-	private String getUidToSessionIdsKey(T uid){
-		return "user-session-ids:" + uid;
+	private <T> String getUidToSessionIdsKey(T uid){
+		return prefix + uid;
 	}
 	
-	public SessionIds<T> getSessionIds(T uid, boolean create){
+	public <T> SessionIds<T> getSessionIds(T uid, boolean create){
 		String key = getUidToSessionIdsKey(uid);
 		SessionIds<T> ids = temporaryCache.getAndTouch(key, sessionFactory.getMaxInactiveInterval());
 		if(ids == null){
@@ -85,12 +100,12 @@ public final class DefaultUserSessionFactory<T> implements UserSessionFactory<T>
 		return ids;
 	}
 	
-	public void updateSessionIds(T uid, SessionIds<T> sessionIds){
+	public <T> void updateSessionIds(T uid, SessionIds<T> sessionIds){
 		String key = getUidToSessionIdsKey(uid);
 		temporaryCache.set(key, sessionIds.getMaxInactiveInterval(), sessionIds);
 	}
 	
-	protected void createUserSession(T uid, String sessionId){
+	protected <T> void createUserSession(T uid, String sessionId){
 		String key = getUidToSessionIdsKey(uid);
 		SessionIds<T> ids = temporaryCache.get(key);
 		if(ids == null){
@@ -105,11 +120,7 @@ public final class DefaultUserSessionFactory<T> implements UserSessionFactory<T>
 		}
 	}
 	
-	public UserSession<T> getUserSession(T uid, String sessionId) {
-		return getUserSession(uid, sessionId, false);
-	}
-	
-	public UserSession<T> getUserSession(T uid, String sessionId, boolean create) {
+	public <T> UserSession<T> getUserSession(T uid, String sessionId, boolean create) {
 		Session session = sessionFactory.getSession(uid + ":" + sessionId, create);
 		if(session == null){
 			return null;
@@ -120,7 +131,7 @@ public final class DefaultUserSessionFactory<T> implements UserSessionFactory<T>
 			sessionIds.add(sessionId);
 			updateSessionIds(uid, sessionIds);
 		}
-		return new InternalUserSession(uid, sessionId, session);
+		return new InternalUserSession<T>(uid, sessionId, session);
 	}
 	
 	private static final class SessionIds<T> extends HashSet<String>{
@@ -139,7 +150,7 @@ public final class DefaultUserSessionFactory<T> implements UserSessionFactory<T>
 		}
 	}
 	
-	private final class InternalUserSession extends SessionWrapper implements UserSession<T>{
+	private final class InternalUserSession<T> extends SessionWrapper implements UserSession<T>{
 		private final String dispalySessionId;
 		private final T uid;
 		

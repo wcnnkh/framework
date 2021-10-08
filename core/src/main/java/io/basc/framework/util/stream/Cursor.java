@@ -1,9 +1,9 @@
 package io.basc.framework.util.stream;
 
 import java.util.Iterator;
-import java.util.Spliterators;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+
+import io.basc.framework.util.XUtils;
 
 /**
  * 游标
@@ -51,7 +51,6 @@ public final class Cursor<T> extends AbstractAutoCloseStream<T, Cursor<T>> imple
 	}
 
 	private static <E> Stream<E> stream(Iterator<E> iterator, CursorPosition cursorPosition) {
-		return StreamSupport
-				.stream(Spliterators.spliteratorUnknownSize(new CursorIterator<E>(iterator, cursorPosition), 0), false);
+		return XUtils.stream(new CursorIterator<E>(iterator, cursorPosition));
 	}
 }

@@ -2,6 +2,7 @@ package io.basc.framework.util;
 
 import java.io.IOException;
 
-public interface StringAppend{
+@FunctionalInterface
+public interface AppendTo {
 	void appendTo(Appendable appendable) throws IOException;
 }

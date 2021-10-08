@@ -46,8 +46,8 @@ public final class FormatUtils {
 			if (v == null) {
 				appendable.append("null");
 			} else {
-				if (v instanceof StringAppend) {
-					((StringAppend) v).appendTo(appendable);
+				if (v instanceof AppendTo) {
+					((AppendTo) v).appendTo(appendable);
 				} else {
 					appendable.append(v.toString());
 				}
@@ -116,7 +116,7 @@ public final class FormatUtils {
 		}
 		return props;
 	}
-	
+
 	/**
 	 * 1M = 1024K
 	 * 

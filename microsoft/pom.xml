@@ -34,6 +34,8 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>${poi.version}</version>
 		</dependency>
+		
+		<!-- Support -->
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>sql</artifactId>
@@ -41,13 +43,9 @@
 		</dependency>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>db</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.basc.framework</groupId>
 			<artifactId>mvc</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<!-- Support -->
 	</dependencies>
 </project>

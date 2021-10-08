@@ -6,6 +6,9 @@ public class UserToken<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String token;
 	private T uid;
+	
+	public UserToken(){
+	}
 
 	public UserToken(String token, T uid) {
 		this.token = token;
@@ -18,5 +21,13 @@ public class UserToken<T> implements Serializable {
 
 	public String getToken() {
 		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public void setUid(T uid) {
+		this.uid = uid;
 	}
 }

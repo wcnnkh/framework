@@ -1,10 +1,9 @@
-package io.basc.framework.microsoft.support;
-
-import io.basc.framework.sql.SqlUtils;
-import io.basc.framework.util.stream.Processor;
+package io.basc.framework.sql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import io.basc.framework.util.stream.Processor;
 
 public class SimpleSqlExportRowMapping implements Processor<ResultSet, String[], SQLException> {
 	private int colCount;

@@ -2,9 +2,9 @@ package io.basc.framework.util.page;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Spliterators;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+
+import io.basc.framework.util.XUtils;
 
 public interface Pageables<K, T> extends Pageable<K, T>{
 	Pageables<K, T> jumpTo(K cursorId);
@@ -19,7 +19,7 @@ public interface Pageables<K, T> extends Pageable<K, T>{
 
 	default Stream<Pageables<K, T>> pageables(){
 		Iterator<Pageables<K, T>> iterator = new PageablesIterator<>(this);
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false);
+		return XUtils.stream(iterator);
 	}
 
 	/**
@@ -30,7 +30,7 @@ public interface Pageables<K, T> extends Pageable<K, T>{
 	default Stream<T> streamAll() {
 		if(hasNext()) {
 			Iterator<T> iterator = new IteratorAll<>(this);
-			return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false);
+			return XUtils.stream(iterator);
 		}
 		return stream();
 	}

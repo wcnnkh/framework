@@ -8,7 +8,12 @@ import io.basc.framework.lang.Nullable;
 import java.io.File;
 import java.net.URL;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.UUID;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public final class XUtils {
 	private XUtils() {
@@ -185,5 +190,16 @@ public final class XUtils {
 
 	public static <T> Status<T> status(boolean active, T value) {
 		return new DefaultStatus<T>(active, value);
+	}
+
+	/**
+	 * 将一次迭代变为操作流
+	 * @param <T>
+	 * @param iterator
+	 * @return
+	 */
+	public static <T> Stream<T> stream(Iterator<T> iterator) {
+		Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
+		return StreamSupport.stream(spliterator, false);
 	}
 }

@@ -3,6 +3,7 @@ package io.basc.framework.mvc;
 import java.io.IOException;
 
 import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.mvc.security.UserSessionManager;
 import io.basc.framework.net.message.multipart.MultipartMessageResolver;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
@@ -19,12 +20,16 @@ public class DefaultHttpChannelFactory implements HttpChannelFactory {
 	private final HttpPatterns<Boolean> jsonSupportWrapperConfig = new HttpPatterns<Boolean>();
 	private final HttpPatterns<Boolean> multipartFormSupportWrapperConfig = new HttpPatterns<Boolean>();
 	private final WebMessageConverters webMessageConverters;
+	private final UserSessionManager userSessionManager;
 
 	public DefaultHttpChannelFactory(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
 		webMessageConverters = new DefaultWebMessageConverters(beanFactory.getEnvironment().getConversionService(),
 				beanFactory.getDefaultValueFactory());
 		webMessageConverters.configure(beanFactory);
+		this.userSessionManager = beanFactory.isInstance(UserSessionManager.class)
+				? beanFactory.getInstance(UserSessionManager.class)
+				: null;
 	}
 
 	public MultipartMessageResolver getMultipartMessageResolver() {
@@ -77,6 +82,7 @@ public class DefaultHttpChannelFactory implements HttpChannelFactory {
 		if (isSupportJsonp(requestToUse)) {
 			responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse);
 		}
-		return new DefaultHttpChannel(beanFactory, requestToUse, responseToUse, webMessageConverters);
+		return new DefaultHttpChannel(beanFactory, requestToUse, responseToUse, webMessageConverters,
+				userSessionManager);
 	}
 }

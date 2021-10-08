@@ -1,16 +1,5 @@
 package io.basc.framework.sql;
 
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.LinkedMultiValueMap;
-import io.basc.framework.util.MultiValueMap;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.Callback;
-import io.basc.framework.util.stream.Cursor;
-import io.basc.framework.util.stream.Processor;
-import io.basc.framework.util.stream.StreamProcessor;
-import io.basc.framework.util.stream.StreamProcessorSupport;
-
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.sql.Array;
@@ -28,11 +17,20 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.LinkedMultiValueMap;
+import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.XUtils;
+import io.basc.framework.util.stream.Callback;
+import io.basc.framework.util.stream.Cursor;
+import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.stream.StreamProcessor;
+import io.basc.framework.util.stream.StreamProcessorSupport;
 
 public final class SqlUtils {
 
@@ -224,8 +222,7 @@ public final class SqlUtils {
 			@Nullable Supplier<String> desc) throws SQLException {
 		ResultSet resultSet = query.process(source);
 		ResultSetIterator iterator = new ResultSetIterator(resultSet);
-		Spliterator<ResultSet> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
-		Stream<ResultSet> stream = StreamSupport.stream(spliterator, false);
+		Stream<ResultSet> stream = XUtils.stream(iterator);
 		return stream.onClose(() -> {
 			try {
 				if (!resultSet.isClosed()) {

@@ -1,6 +1,6 @@
 package io.basc.framework.rpc.remote;
 
-import io.basc.framework.util.attribute.Attributes;
+import io.basc.framework.util.attribute.EditableAttributes;
 
 import java.io.Serializable;
 
@@ -9,5 +9,5 @@ import java.io.Serializable;
  * @author shuchaowen
  *
  */
-public interface RemoteMessageHeaders extends Attributes<String, Object>, Serializable{
+public interface RemoteMessageHeaders extends EditableAttributes<String, Object>, Serializable{
 }

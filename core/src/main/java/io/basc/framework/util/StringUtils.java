@@ -11,12 +11,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.Spliterators;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.ParameterException;
@@ -944,7 +942,7 @@ public final class StringUtils {
 				return tokenizer.nextToken();
 			}
 		};
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false);
+		return XUtils.stream(iterator);
 	}
 
 	/**
@@ -2192,6 +2190,6 @@ public final class StringUtils {
 		}
 
 		Iterator<CharSequence> iterator = new CharSequenceSplitIterator(charSequence, filters, beginIndex, endIndex);
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false);
+		return XUtils.stream(iterator);
 	}
 }

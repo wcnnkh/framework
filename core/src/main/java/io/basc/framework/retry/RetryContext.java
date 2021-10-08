@@ -1,9 +1,9 @@
 package io.basc.framework.retry;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.attribute.Attributes;
+import io.basc.framework.util.attribute.EditableAttributes;
 
-public interface RetryContext extends Attributes<String, Object>{
+public interface RetryContext extends EditableAttributes<String, Object>{
 	/**
 	 * Accessor for the parent context if retry blocks are nested.
 	 * @return the parent or null if there is none.

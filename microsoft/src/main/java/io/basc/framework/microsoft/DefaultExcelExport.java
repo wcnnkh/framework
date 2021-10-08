@@ -1,11 +1,9 @@
 package io.basc.framework.microsoft;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-
-import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
+
+import java.io.IOException;
+import java.util.Collection;
 
 /**
  * excel导出
@@ -99,12 +97,5 @@ public final class DefaultExcelExport extends WritableExcelWrapper implements Ex
 			this.rowIndex = 0;
 			sheetIndex++;
 		}
-	}
-
-	public void append(String... contents) throws IOException {
-		if (ArrayUtils.isEmpty(contents)) {
-			return;
-		}
-		append(Arrays.asList(contents));
 	}
 }

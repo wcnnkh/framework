@@ -1,26 +1,22 @@
 package io.basc.framework.security.session;
 
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
-public class DefaultUserSessions<T> extends ArrayList<Session> implements UserSessions<T>{
+public class DefaultUserSessions<T> extends ArrayList<Session> implements UserSessions<T> {
 	private static final long serialVersionUID = 1L;
 	private final T uid;
-	
-	public DefaultUserSessions(T uid){
+
+	public DefaultUserSessions(T uid) {
 		this.uid = uid;
 	}
-	
+
 	public T getUid() {
 		return uid;
 	}
 
-	public Session getSession(String sessionId) {
-		for(Session session : this){
-			if(sessionId.equals(session.getId())){
-				return session;
-			}
-		}
-		return null;
+	@Override
+	public Stream<Session> stream() {
+		return super.stream();
 	}
-
 }
