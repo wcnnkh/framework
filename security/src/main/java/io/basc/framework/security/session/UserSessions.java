@@ -1,9 +1,24 @@
 package io.basc.framework.security.session;
 
-public interface UserSessions<T> extends Iterable<Session>{
+import java.util.stream.Stream;
+
+import io.basc.framework.util.XUtils;
+
+public interface UserSessions<T> extends Iterable<Session> {
 	T getUid();
-	
-	Session getSession(String sessionId);
-	
+
 	int size();
+	
+	default Session getSession(String sessionId) {
+		for (Session session : this) {
+			if (sessionId.equals(session.getId())) {
+				return session;
+			}
+		}
+		return null;
+	}
+	
+	default Stream<Session> stream(){
+		return XUtils.stream(iterator());
+	}
 }

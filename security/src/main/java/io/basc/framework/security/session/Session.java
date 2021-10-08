@@ -1,8 +1,8 @@
 package io.basc.framework.security.session;
 
-import io.basc.framework.util.attribute.Attributes;
+import io.basc.framework.util.attribute.EditableAttributes;
 
-public interface Session extends Attributes<String, Object>{
+public interface Session extends EditableAttributes<String, Object>{
 
 	/**
 	 * 创建时间

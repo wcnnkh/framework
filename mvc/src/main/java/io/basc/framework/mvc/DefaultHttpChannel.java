@@ -1,5 +1,7 @@
 package io.basc.framework.mvc;
 
+import java.io.IOException;
+
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.context.Destroy;
 import io.basc.framework.convert.TypeDescriptor;
@@ -8,13 +10,11 @@ import io.basc.framework.core.parameter.DefaultParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.mvc.security.UserSessionFactoryAdapter;
-import io.basc.framework.mvc.security.UserSessionResolver;
+import io.basc.framework.mvc.security.UserSessionManager;
 import io.basc.framework.mvc.view.View;
+import io.basc.framework.security.login.UserToken;
 import io.basc.framework.security.session.UserSession;
-import io.basc.framework.security.session.UserSessionFactory;
 import io.basc.framework.util.Decorator;
-import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.value.Value;
 import io.basc.framework.web.ServerHttpRequest;
@@ -23,21 +23,19 @@ import io.basc.framework.web.message.RequestBeanFactory;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessagelConverterException;
 
-import java.io.IOException;
-
 public class DefaultHttpChannel extends RequestBeanFactory implements HttpChannel, Destroy, Decorator {
 	private static Logger logger = LoggerFactory.getLogger(DefaultHttpChannel.class);
 	private final long createTime;
 	private boolean completed = false;
 	private final ServerHttpResponse response;
-	private final BeanFactory beanFactory;
+	private final UserSessionManager userSessionManager;
 
 	public DefaultHttpChannel(BeanFactory beanFactory, ServerHttpRequest request, ServerHttpResponse response,
-			WebMessageConverter messageConverter) {
+			WebMessageConverter messageConverter, UserSessionManager userSessionManager) {
 		super(request, messageConverter, beanFactory);
 		this.createTime = System.currentTimeMillis();
-		this.beanFactory = beanFactory;
 		this.response = response;
+		this.userSessionManager = userSessionManager;
 	}
 
 	public void write(TypeDescriptor type, Object body) throws WebMessagelConverterException, IOException {
@@ -105,6 +103,11 @@ public class DefaultHttpChannel extends RequestBeanFactory implements HttpChanne
 		if (parameterDescriptor.getType().isInstance(this)) {
 			return this;
 		}
+		
+		if(UserToken.class == parameterDescriptor.getType()) {
+			ResolvableType resolvableType = ResolvableType.forType(parameterDescriptor.getGenericType());
+			return getUserToken(resolvableType.getGeneric(0).getRawClass());
+		}
 
 		if (UserSession.class == parameterDescriptor.getType()) {
 			ResolvableType resolvableType = ResolvableType.forType(parameterDescriptor.getGenericType());
@@ -135,135 +138,18 @@ public class DefaultHttpChannel extends RequestBeanFactory implements HttpChanne
 		return getRequest().toString();
 	}
 
-	public UserSessionResolver getUserSessionResolver() {
-		return getService(UserSessionResolver.class);
+	@Override
+	public <T> UserToken<T> getUserToken(Class<T> type) {
+		return userSessionManager.read(this, type);
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T getUid(Class<T> type) {
-		T uid = (T) getRequest().getAttribute(UID_ATTRIBUTE);
-		if (uid != null) {
-			return uid;
-		}
-
-		UserSessionResolver userSessionResolver = getUserSessionResolver();
-		if (userSessionResolver == null) {
-			return null;
-		}
-
-		uid = userSessionResolver.getUid(this, type);
-		if (uid != null) {
-			getRequest().setAttribute(UID_ATTRIBUTE, uid);
-		}
-		return uid;
-	}
-
-	public String getSessionId() {
-		String sessionId = (String) getRequest().getAttribute(SESSIONID_ATTRIBUTE);
-		if (sessionId != null) {
-			return sessionId;
-		}
-
-		UserSessionResolver userSessionResolver = getUserSessionResolver();
-		if (userSessionResolver == null) {
-			return null;
-		}
-
-		sessionId = userSessionResolver.getSessionId(this);
-		if (sessionId != null) {
-			getRequest().setAttribute(SESSIONID_ATTRIBUTE, sessionId);
-		}
-		return sessionId;
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> T getService(Class<T> type) {
-		T service = (T) getRequest().getAttribute(type.getName());
-		if (service != null) {
-			return service;
-		}
-
-		if (beanFactory.isInstance(type)) {
-			service = beanFactory.getInstance(type);
-		}
-
-		if (service != null) {
-			getRequest().setAttribute(type.getName(), service);
-		}
-		return service;
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> UserSessionFactory<T> getUserSessionFactory(Class<T> type) {
-		UserSessionFactory<T> userSessionFactory = (UserSessionFactory<T>) getRequest()
-				.getAttribute(UserSessionFactory.class.getName());
-		if (userSessionFactory != null) {
-			return userSessionFactory;
-		}
-
-		UserSessionFactoryAdapter userSessionFactoryAdapter = getService(UserSessionFactoryAdapter.class);
-		if (userSessionFactoryAdapter != null) {
-			userSessionFactory = userSessionFactoryAdapter.getUserSessionFactory(type);
-			if (userSessionFactory != null) {
-				getRequest().setAttribute(UserSessionFactory.class.getName(), userSessionFactory);
-			}
-		}
-
-		if (userSessionFactory == null) {
-			userSessionFactory = getService(UserSessionFactory.class);
-		}
-
-		if (userSessionFactory == null) {
-			logger.error("Not support user session factory: {}", this.toString());
-		}
-		return userSessionFactory;
-	}
-
-	@SuppressWarnings("unchecked")
+	@Override
 	public <T> UserSession<T> getUserSession(Class<T> type) {
-		UserSession<T> userSession = (UserSession<T>) getRequest().getAttribute(UserSession.class.getName());
-		if (userSession != null) {
-			return userSession;
-		}
-
-		T uid = getUid(type);
-		if (uid == null) {
-			return null;
-		}
-
-		String sessionId = getSessionId();
-		if (StringUtils.isEmpty(sessionId)) {
-			return null;
-		}
-
-		UserSessionFactory<T> userSessionFactory = getUserSessionFactory(type);
-		if (userSessionFactory == null) {
-			return null;
-		}
-
-		userSession = userSessionFactory.getUserSession(uid, sessionId);
-		if (userSession != null) {
-			getRequest().setAttribute(UserSession.class.getName(), userSession);
-		}
-		return userSession;
+		return userSessionManager.getUserSession(this, type);
 	}
 
-	public <T> UserSession<T> createUserSession(Class<T> type, T uid, String sessionId) {
-		if (uid == null || type == null || StringUtils.isEmpty(sessionId)) {
-			throw new IllegalArgumentException();
-		}
-
-		UserSessionFactory<T> userSessionFactory = getUserSessionFactory(type);
-		if (userSessionFactory == null) {
-			return null;
-		}
-
-		UserSession<T> userSession = userSessionFactory.getUserSession(uid, sessionId, true);
-		if (userSession != null) {
-			getRequest().setAttribute(UID_ATTRIBUTE, uid);
-			getRequest().setAttribute(SESSIONID_ATTRIBUTE, sessionId);
-			getRequest().setAttribute(UserSession.class.getName(), userSession);
-		}
-		return userSession;
+	@Override
+	public <T> UserSession<T> createUserSession(T uid) {
+		return userSessionManager.createUserSession(this, uid);
 	}
 }

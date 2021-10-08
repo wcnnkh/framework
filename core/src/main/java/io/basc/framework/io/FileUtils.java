@@ -22,9 +22,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Spliterators;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 import java.util.zip.Checksum;
@@ -36,9 +34,10 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Accept;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.IteratorCallback;
-import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.IteratorCallback.All;
 import io.basc.framework.util.IteratorCallback.First;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.XUtils;
 
 public final class FileUtils {
 
@@ -2336,7 +2335,7 @@ public final class FileUtils {
 	public static Stream<IterationFile<File>> stream(File directory, int maxDepth, @Nullable FileFilter filter) {
 		Assert.isTrue(directory.isDirectory(), directory + " is not a directory");
 		ListFileIterator iterator = new ListFileIterator(directory, filter, maxDepth);
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false);
+		return XUtils.stream(iterator);
 	}
 
 	/**
@@ -2350,7 +2349,7 @@ public final class FileUtils {
 	public static Stream<IterationFile<String>> stream(File directory, int maxDepth, @Nullable FilenameFilter filter) {
 		Assert.isTrue(directory.isDirectory(), directory + " is not a directory");
 		ListFilenameIterator iterator = new ListFilenameIterator(directory, filter, maxDepth);
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false);
+		return XUtils.stream(iterator);
 	}
 
 	/**

@@ -1,16 +1,14 @@
 package io.basc.framework.sql;
 
-import io.basc.framework.microsoft.ExcelException;
-import io.basc.framework.microsoft.ExcelExport;
-import io.basc.framework.sql.Sql;
-import io.basc.framework.sql.SqlOperations;
-import io.basc.framework.util.stream.Processor;
-
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+
+import io.basc.framework.microsoft.ExcelException;
+import io.basc.framework.microsoft.ExcelExport;
+import io.basc.framework.util.stream.Processor;
 
 public class SqlExcelExport implements ExcelExport {
 	private final ExcelExport excelExport;

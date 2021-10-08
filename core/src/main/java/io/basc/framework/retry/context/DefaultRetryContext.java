@@ -2,7 +2,7 @@ package io.basc.framework.retry.context;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.retry.RetryContext;
-import io.basc.framework.util.attribute.support.SimpleAttributes;
+import io.basc.framework.util.attribute.SimpleAttributes;
 
 public class DefaultRetryContext extends SimpleAttributes<String, Object> implements RetryContext {
 	private RetryContext parent;

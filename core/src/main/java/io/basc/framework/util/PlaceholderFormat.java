@@ -1,11 +1,11 @@
 package io.basc.framework.util;
 
-import io.basc.framework.lang.Nullable;
-
 import java.io.IOException;
 import java.io.Serializable;
 
-public final class PlaceholderFormat implements StringAppend, Serializable{
+import io.basc.framework.lang.Nullable;
+
+public final class PlaceholderFormat implements AppendTo, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final Object msg;
 	private final Object[] args;

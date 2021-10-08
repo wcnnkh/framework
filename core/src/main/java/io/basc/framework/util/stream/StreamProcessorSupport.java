@@ -1,17 +1,15 @@
 package io.basc.framework.util.stream;
 
-import io.basc.framework.lang.NotSupportedException;
-
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+
+import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.util.XUtils;
 
 public final class StreamProcessorSupport {
 	private StreamProcessorSupport() {
@@ -103,9 +101,7 @@ public final class StreamProcessorSupport {
 	 * @return
 	 */
 	public static <T> Stream<T> stream(Iterator<T> iterator) {
-		Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
-		Stream<T> stream = StreamSupport.stream(spliterator, false);
-		return autoClose(stream);
+		return autoClose(XUtils.stream(iterator));
 	}
 
 	/**

@@ -1,9 +1,9 @@
 package io.basc.framework.util.page;
 
 import java.util.Iterator;
-import java.util.Spliterators;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+
+import io.basc.framework.util.XUtils;
 
 public interface Pages<T> extends Page<T>, Pageables<Long, T> {
 
@@ -24,6 +24,6 @@ public interface Pages<T> extends Page<T>, Pageables<Long, T> {
 	
 	default Stream<Pages<T>> pages(){
 		Iterator<Pages<T>> iterator = new PagesIterator<>(this);
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false);
+		return XUtils.stream(iterator);
 	}
 }
