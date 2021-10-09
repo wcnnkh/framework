@@ -11,8 +11,8 @@ import io.basc.framework.util.StringUtils;
 import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 
-public abstract class AbstractValueProcesser implements ValueProcesser {
-	final Logger logger = LoggerFactory.getLogger(AbstractValueProcesser.class);
+public abstract class AbstractValueProcessor implements ValueProcessor {
+	final Logger logger = LoggerFactory.getLogger(AbstractValueProcessor.class);
 
 	public void process(BeanDefinition beanDefinition, BeanFactory beanFactory,
 			Object bean, Field field, Value value) {

@@ -440,26 +440,6 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Count the occurrences of the substring in string s.
-	 * 
-	 * @param str string to search in. Return 0 if this is null.
-	 * @param sub string to search for. Return 0 if this is null.
-	 */
-	public static int countOccurrencesOf(String str, String sub) {
-		if (str == null || sub == null || str.length() == 0 || sub.length() == 0) {
-			return 0;
-		}
-		int count = 0;
-		int pos = 0;
-		int idx;
-		while ((idx = str.indexOf(sub, pos)) != -1) {
-			++count;
-			pos = idx + sub.length();
-		}
-		return count;
-	}
-
-	/**
 	 * Replace all occurences of a substring within a string with another string.
 	 * 
 	 * @param inString   String to examine
@@ -588,9 +568,9 @@ public final class StringUtils {
 			if (propertyResolver != null) {
 				path = propertyResolver.resolvePlaceholders(path);
 			}
-			
+
 			path = StringUtils.cleanPath(path);
-			if(sb.length() != 0 && !path.startsWith(FOLDER_SEPARATOR)) {
+			if (sb.length() != 0 && !path.startsWith(FOLDER_SEPARATOR)) {
 				sb.append(FOLDER_SEPARATOR);
 			}
 			sb.append(path);
@@ -710,10 +690,10 @@ public final class StringUtils {
 			prefix = prefix + FOLDER_SEPARATOR;
 			pathToUse = pathToUse.substring(1);
 		}
-		if(pathToUse.endsWith(FOLDER_SEPARATOR)) {
+		if (pathToUse.endsWith(FOLDER_SEPARATOR)) {
 			suffix = suffix + FOLDER_SEPARATOR;
 		}
-		
+
 		String[] pathArray = splitToArray(pathToUse, false, true, FOLDER_SEPARATOR);
 		List<String> pathElements = new LinkedList<String>();
 		int tops = 0;
@@ -741,9 +721,9 @@ public final class StringUtils {
 		for (int i = 0; i < tops; i++) {
 			pathElements.add(0, TOP_PATH);
 		}
-		
-		if(pathElements.isEmpty()) {
-			if(prefix.endsWith(suffix)) {
+
+		if (pathElements.isEmpty()) {
+			if (prefix.endsWith(suffix)) {
 				return prefix;
 			}
 			return prefix + suffix;
@@ -2191,5 +2171,31 @@ public final class StringUtils {
 
 		Iterator<CharSequence> iterator = new CharSequenceSplitIterator(charSequence, filters, beginIndex, endIndex);
 		return XUtils.stream(iterator);
+	}
+
+	public static int count(CharSequence charSequence, CharSequence target) {
+		return count(charSequence, 0, target);
+	}
+
+	public static int count(CharSequence charSequence, int beginIndex, CharSequence target) {
+		if (charSequence == null) {
+			return 0;
+		}
+
+		return count(charSequence, beginIndex, charSequence.length(), target);
+	}
+
+	public static int count(CharSequence charSequence, int beginIndex, int endIndex, CharSequence target) {
+		if (charSequence == null || target == null) {
+			return 0;
+		}
+
+		int count = 0;
+		int index = indexOf(charSequence, target, beginIndex, endIndex);
+		while (index != -1) {
+			count++;
+			index = indexOf(charSequence, target, index + target.length(), endIndex);
+		}
+		return count;
 	}
 }

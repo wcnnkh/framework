@@ -18,7 +18,7 @@ import java.nio.charset.Charset;
  * @author shuchaowen
  *
  */
-public final class JsonFileValueProcesser extends AbstractObservableResourceValueProcesser {
+public final class JsonFileValueProcessor extends AbstractObservableResourceValueProcessor {
 
 	@Override
 	protected Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory,

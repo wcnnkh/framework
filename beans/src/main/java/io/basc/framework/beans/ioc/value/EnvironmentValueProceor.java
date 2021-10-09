@@ -14,7 +14,11 @@ import io.basc.framework.util.placeholder.PlaceholderReplacer;
 
 import java.nio.charset.Charset;
 
-public class EnvironmentValueProcess extends AbstractValueProcesser {
+public class EnvironmentValueProceor extends AbstractValueProcessor {
+	
+	public static boolean isEnvironment(String name) {
+		return name.startsWith(PlaceholderReplacer.PLACEHOLDER_PREFIX) && name.endsWith(PlaceholderReplacer.PLACEHOLDER_SUFFIX);
+	}
 
 	@Override
 	protected void processInteranl(BeanDefinition beanDefinition, final BeanFactory beanFactory, final Object bean, final Field field, Value value, final String name,
@@ -28,7 +32,7 @@ public class EnvironmentValueProcess extends AbstractValueProcesser {
 			return ;
 		}
 		
-		if(name.startsWith(PlaceholderReplacer.PLACEHOLDER_PREFIX) && name.endsWith(PlaceholderReplacer.PLACEHOLDER_SUFFIX)){
+		if(isEnvironment(name)){
 			String v = beanFactory.getEnvironment().resolvePlaceholders(name);
 			set(beanFactory.getEnvironment().getConversionService(), bean, field, name, v);
 			return ;

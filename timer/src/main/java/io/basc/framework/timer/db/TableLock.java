@@ -1,10 +1,10 @@
 package io.basc.framework.timer.db;
 
+import java.util.concurrent.TimeUnit;
+
 import io.basc.framework.db.DB;
 import io.basc.framework.locks.RenewableLock;
 import io.basc.framework.sql.Sql;
-
-import java.util.concurrent.TimeUnit;
 
 class TableLock extends RenewableLock {
 	private DB db;

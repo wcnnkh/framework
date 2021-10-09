@@ -1,13 +1,13 @@
 package io.basc.framework.timer.db;
 
+import java.util.concurrent.locks.Lock;
+
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.db.DB;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.timer.TaskConfig;
 import io.basc.framework.timer.TaskLockFactory;
-
-import java.util.concurrent.locks.Lock;
 
 @Provider
 public class DBTaskLockFactory implements TaskLockFactory {
@@ -23,6 +23,7 @@ public class DBTaskLockFactory implements TaskLockFactory {
 	}
 
 	protected Sql createLockSql(TaskConfig taskConfig, long executionTime) {
+		
 		return new SimpleSql(
 				"insert into task_lock_table (taskId, lastTime) value (?, ?) on duplicate key update lastTime=if(lastTime<?, ?, lastTime)",
 				taskConfig.getTaskId(), executionTime, executionTime, executionTime);

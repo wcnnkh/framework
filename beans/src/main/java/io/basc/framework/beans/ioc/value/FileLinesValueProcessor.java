@@ -17,7 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-public final class FileLinesValueProcesser extends AbstractObservableResourceValueProcesser {
+public final class FileLinesValueProcessor extends AbstractObservableResourceValueProcessor {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override

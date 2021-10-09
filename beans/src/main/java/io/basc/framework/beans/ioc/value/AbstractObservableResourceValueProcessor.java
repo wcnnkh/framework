@@ -11,7 +11,7 @@ import io.basc.framework.mapper.Field;
 
 import java.nio.charset.Charset;
 
-public abstract class AbstractObservableResourceValueProcesser extends AbstractObservableValueProcesser<Resource> {
+public abstract class AbstractObservableResourceValueProcessor extends AbstractObservableValueProcessor<Resource> {
 
 	@Override
 	protected Observable<Resource> getObservableResource(BeanDefinition beanDefinition, BeanFactory beanFactory, Object bean, Field field, Value value, String name, Charset charset) {

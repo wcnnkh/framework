@@ -7,36 +7,31 @@ import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.annotation.DateFormat;
-import io.basc.framework.util.TimeUtils;
 import io.basc.framework.util.NumberUtils;
+import io.basc.framework.util.TimeUtils;
 import io.basc.framework.value.AnyValue;
 
 public class DateFormatConversionService implements ConversionService {
+
 	private boolean canConvert(Class<?> type) {
-		return type == String.class || type == Date.class
-				|| NumberUtils.isNumber(type);
+		return type == String.class || Date.class.isAssignableFrom(type) || NumberUtils.isNumber(type);
 	}
 
 	@Override
-	public boolean canConvert(TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
-		if(sourceType == null || targetType == null) {
+	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (sourceType == null || targetType == null) {
 			return false;
 		}
-		
-		return canConvert(sourceType.getType())
+
+		return targetType.isAnnotationPresent(DateFormat.class) && canConvert(sourceType.getType())
 				&& canConvert(targetType.getType());
 	}
 
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) throws ConversionException {
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+			throws ConversionException {
 		if (source == null || sourceType == null) {
 			return null;
-		}
-
-		if (canDirectlyConvert(sourceType, targetType)) {
-			return source;
 		}
 
 		if (sourceType.getType() == String.class) {
@@ -60,24 +55,23 @@ public class DateFormatConversionService implements ConversionService {
 		}
 
 		if (NumberUtils.isNumber(sourceType.getType())) {
-			if(targetType.getType() == String.class){
+			if (targetType.getType() == String.class) {
 				return numberToString(source, sourceType, targetType);
 			}
-			
-			if(targetType.getType() == Date.class){
+
+			if (targetType.getType() == Date.class) {
 				return numberToString(source, sourceType, targetType);
 			}
-			
-			if(NumberUtils.isNumber(targetType.getType())){
+
+			if (NumberUtils.isNumber(targetType.getType())) {
 				return new AnyValue(source).getAsObject(targetType);
 			}
 		}
-		
+
 		throw new ConversionFailedException(sourceType, targetType, source, null);
 	}
 
-	private Date stringToDate(String source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+	private Date stringToDate(String source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		DateFormat dateFormat = sourceType.getAnnotation(DateFormat.class);
 		if (dateFormat == null) {
 			return TimeUtils.parse(source);
@@ -86,15 +80,12 @@ public class DateFormatConversionService implements ConversionService {
 		}
 	}
 
-	private Object stringToNumber(String source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
-		Date date = stringToDate(source, sourceType,
-				targetType.narrow(Date.class));
+	private Object stringToNumber(String source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		Date date = stringToDate(source, sourceType, targetType.narrow(Date.class));
 		return dateToNumber(date, sourceType.narrow(date), targetType);
 	}
 
-	private String dateToString(Date source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+	private String dateToString(Date source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		DateFormat dateFormat = targetType.getAnnotation(DateFormat.class);
 		if (dateFormat == null) {
 			return String.valueOf(source);
@@ -103,18 +94,17 @@ public class DateFormatConversionService implements ConversionService {
 		}
 	}
 
-	private Object dateToNumber(Date source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+	private Object dateToNumber(Date source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return new AnyValue(source.getTime()).getAsObject(targetType);
 	}
-	
-	private Date numberToDate(Object source, TypeDescriptor sourceType, TypeDescriptor targetType){
+
+	private Date numberToDate(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		AnyValue anyValue = new AnyValue(source);
 		long time = anyValue.getAsLongValue();
 		return new Date(time);
 	}
-	
-	private String numberToString(Object source, TypeDescriptor sourceType, TypeDescriptor targetType){
+
+	private String numberToString(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		Date date = numberToDate(source, sourceType, targetType);
 		DateFormat dateFormat = targetType.getAnnotation(DateFormat.class);
 		if (dateFormat == null) {

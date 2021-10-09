@@ -1,13 +1,14 @@
 package io.basc.framework.beans.test;
 
-import io.basc.framework.beans.annotation.Value;
-import io.basc.framework.beans.ioc.value.ResourceValueProcesser;
-import io.basc.framework.beans.support.DefaultBeanFactory;
-import io.basc.framework.orm.annotation.PrimaryKey;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
 import org.junit.Test;
+
+import io.basc.framework.beans.annotation.Value;
+import io.basc.framework.beans.support.DefaultBeanFactory;
+import io.basc.framework.orm.annotation.PrimaryKey;
 
 public class IocTest {
 	private static DefaultBeanFactory beanFactory = new DefaultBeanFactory();
@@ -20,13 +21,13 @@ public class IocTest {
 		}
 	}
 
-	@Value(value = "test.xml", processer = ResourceValueProcesser.class)
+	@Value(value = "test.xml")
 	private Map<String, TestBean> map;
 
 	@Test
 	public void test() {
 		IocTest iocTest = beanFactory.getInstance(IocTest.class);
-		System.err.println(iocTest.map);
+		assertTrue(iocTest.map.size() == 3);
 	}
 
 	public static class TestBean {

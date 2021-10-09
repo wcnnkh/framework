@@ -16,7 +16,7 @@ public class ValueIocProcessor extends AbstractFieldIocProcessor {
 	protected void processInternal(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws BeansException {
 		Value value = getField().getSetter().getAnnotation(Value.class);
 		if (value != null) {
-			beanFactory.getInstance(value.processer()).process(beanDefinition, beanFactory, bean,
+			beanFactory.getInstance(value.processor()).process(beanDefinition, beanFactory, bean,
 					getField(), value);
 		}
 	}
