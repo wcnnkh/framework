@@ -1,5 +1,16 @@
 package io.basc.framework.orm.sql;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import io.basc.framework.aop.support.ProxyUtils;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
@@ -22,17 +33,6 @@ import io.basc.framework.util.page.Pages;
 import io.basc.framework.util.page.SharedPage;
 import io.basc.framework.util.stream.Cursor;
 import io.basc.framework.util.stream.Processor;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 public class DefaultSqlTemplate extends DefaultSqlOperations implements
 		SqlTemplate {
@@ -138,7 +138,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements
 			T entity) {
 		Class<?> clazz = getUserEntityClass(entity.getClass());
 		Sql sql = sqlDialect.delete(getTableName(tableName, clazz, entity),
-				clazz, entity);
+				clazz, entity, null);
 		return prepare(sql).update() > 0;
 	}
 
@@ -156,7 +156,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements
 			T entity) {
 		Class<?> clazz = getUserEntityClass(entity.getClass());
 		Sql sql = sqlDialect.update(getTableName(tableName, clazz, entity),
-				clazz, entity);
+				clazz, entity, null);
 		return prepare(sql).update() > 0;
 	}
 
@@ -306,13 +306,13 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements
 
 	@Override
 	public <T> int delete(TableStructure tableStructure, T entity) {
-		Sql sql = sqlDialect.delete(tableStructure, entity);
+		Sql sql = sqlDialect.delete(tableStructure, entity, null);
 		return prepare(sql).update();
 	}
 
 	@Override
 	public <T> int update(TableStructure tableStructure, T entity) {
-		Sql sql = sqlDialect.update(tableStructure, entity);
+		Sql sql = sqlDialect.update(tableStructure, entity, null);
 		return prepare(sql).update();
 	}
 

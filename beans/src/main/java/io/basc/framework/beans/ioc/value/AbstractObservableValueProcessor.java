@@ -10,7 +10,7 @@ import io.basc.framework.mapper.Field;
 
 import java.nio.charset.Charset;
 
-public abstract class AbstractObservableValueProcesser<R> extends AbstractValueProcesser {
+public abstract class AbstractObservableValueProcessor<R> extends AbstractValueProcessor {
 
 	@Override
 	protected void processInteranl(final BeanDefinition beanDefinition, final BeanFactory beanFactory, final Object bean, final Field field, final Value value,

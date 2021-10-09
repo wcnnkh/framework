@@ -1,5 +1,14 @@
 package io.basc.framework.orm.sql;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import io.basc.framework.aop.support.FieldSetterListen;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
@@ -16,15 +25,6 @@ import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.AnyValue;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 标准的sql方言
@@ -194,7 +194,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		}
 		return new SimpleSql(sb.toString(), params);
 	}
-
+	
 	@Override
 	public <T> Sql save(TableStructure tableStructure, T entity) throws SqlDialectException {
 		StringBuilder cols = new StringBuilder();
@@ -226,9 +226,42 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		sql.append(")");
 		return new SimpleSql(sql.toString(), params.toArray());
 	}
+	
+	protected void appendCondition(StringBuilder sb, Collection<Object> params, TableStructure tableStructure, Object condition) {
+		if(condition == null) {
+			return ;
+		}
+		
+		boolean first = true;
+		Iterator<Column> iterator = tableStructure.iterator();
+		while (iterator.hasNext()) {
+			Column column = iterator.next();
+			Object value = getDataBaseValue(column, column.getField());
+			if(value == null && !column.isNullable()) {
+				continue;
+			}
+			
+			if(first) {
+				//TODO 这样写是否不利于复用
+				int index = sb.indexOf(WHERE);
+				if(index == -1) {
+					sb.append(WHERE);
+				}else {
+					sb.append(AND);
+				}
+				first = false;
+			}else {
+				sb.append(AND);
+			}
+			
+			keywordProcessing(sb, column.getName());
+			sb.append("=?");
+			params.add(value);
+		}
+	}
 
 	@Override
-	public <T> Sql delete(TableStructure tableStructure, T entity) throws SqlDialectException {
+	public <T> Sql delete(TableStructure tableStructure, T entity, T condition) throws SqlDialectException {
 		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
@@ -260,6 +293,8 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 				params.add(getDataBaseValue(entity, column.getField()));
 			}
 		});
+		
+		appendCondition(sql, params, tableStructure, condition);
 		return new SimpleSql(sql.toString(), params.toArray());
 	}
 
@@ -381,7 +416,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 	}
 
 	@Override
-	public <T> Sql update(TableStructure tableStructure, T entity) throws SqlDialectException {
+	public <T> Sql update(TableStructure tableStructure, T entity, T condition) throws SqlDialectException {
 		List<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
 		if (primaryKeyColumns.size() == 0) {
 			throw new SqlDialectException(tableStructure.getName() + " not found primary key");
@@ -454,6 +489,8 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 						: toDataBaseValue(oldVersion.getAsLongValue()));
 			}
 		});
+		
+		appendCondition(sb, params, tableStructure, condition);
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
 
@@ -522,4 +559,6 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		and(sb, params, entity, tableStructure.stream().filter((col) -> !tableStructure.indexExists(col)).iterator());
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
+	
+	
 }

@@ -1,5 +1,15 @@
 package io.basc.framework.sqlite;
 
+import java.sql.Blob;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import io.basc.framework.orm.sql.Column;
 import io.basc.framework.orm.sql.ColumnDescriptor;
 import io.basc.framework.orm.sql.PaginationSql;
@@ -10,22 +20,13 @@ import io.basc.framework.orm.sql.StandardSqlDialect;
 import io.basc.framework.orm.sql.TableStructure;
 import io.basc.framework.orm.sql.TableStructureMapping;
 import io.basc.framework.orm.sql.annotation.Counter;
+import io.basc.framework.sql.EditableSql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.AnyValue;
-
-import java.sql.Blob;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 public class SQLiteDialect extends StandardSqlDialect {
 
@@ -115,7 +116,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 	public Sql toLastInsertIdSql(String tableName) throws SqlDialectException {
 		return new SimpleSql("SELECT last_insert_rowid()");
 	}
-	
+
 	@Override
 	public <T> Sql toSaveOrUpdateSql(TableStructure tableStructure, T entity) throws SqlDialectException {
 		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
@@ -123,7 +124,6 @@ public class SQLiteDialect extends StandardSqlDialect {
 			throw new NullPointerException("not found primary key");
 		}
 
-		
 		Map<String, Object> changeMap = getChangeMap(entity);
 		StringBuilder sb = new StringBuilder(512);
 		StringBuilder cols = new StringBuilder();
@@ -133,7 +133,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			Object value = column.getField().getGetter().get(entity);
-			if(column.isAutoIncrement()) {
+			if (column.isAutoIncrement()) {
 				AnyValue anyValue = new AnyValue(value);
 				if (value == null || anyValue.isEmpty() || (anyValue.isNumber() && anyValue.getAsInteger() == 0)) {
 					continue;
@@ -141,7 +141,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 			}
 
 			keywordProcessing(cols, column.getName());
-			if(column.isPrimaryKey()) {
+			if (column.isPrimaryKey()) {
 				values.append("?");
 				params.add(value);
 			} else {
@@ -232,5 +232,32 @@ public class SQLiteDialect extends StandardSqlDialect {
 		sb.append(" like ");
 		keywordProcessing(sb, oldTableName);
 		return new SimpleSql(sb.toString());
+	}
+
+	@Override
+	public Sql condition(Sql condition, Sql left, Sql right) {
+		EditableSql sql = new EditableSql();
+		sql.append("CASE WHEN ");
+		sql.append(condition);
+		sql.append(" THEN ");
+		sql.append(left);
+		sql.append(" ELSE ");
+		sql.append(right);
+		sql.append(")");
+		return sql;
+	}
+
+	@Override
+	public Sql saveOrUpdate(Sql saveSql, Sql updateSql) {
+		/**
+		 * 保存语句 insert into tableName (columns) values (v1, v2, ...) <br/>
+		 * 更新语句 update tableName set a=b where c=d <br/>
+		 * 保存或更新语句 replace into tableName (columns) values (v1, v2, ...) <br/>
+		 */
+
+		EditableSql sql = new EditableSql();
+		sql.append("replace into ");
+		// TODO 比较复杂，我想想
+		return sql;
 	}
 }

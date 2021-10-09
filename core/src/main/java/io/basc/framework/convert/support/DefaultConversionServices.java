@@ -15,6 +15,7 @@ import io.basc.framework.convert.lang.JsonToObjectConversionService;
 import io.basc.framework.convert.lang.ObjectToStringConverter;
 import io.basc.framework.convert.lang.ReaderToStringConverter;
 import io.basc.framework.convert.lang.ResourceToPropertiesConverter;
+import io.basc.framework.convert.lang.ResourceToStringConversionService;
 import io.basc.framework.convert.lang.StringToCharsetConverter;
 import io.basc.framework.convert.lang.StringToCurrencyConverter;
 import io.basc.framework.convert.lang.StringToLocaleConverter;
@@ -71,6 +72,7 @@ public class DefaultConversionServices extends ConversionServices {
 		addService(new ConverterConversionService(Resource.class, Properties.class,
 				new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers())));
 		addService(new ResourceResolverConversionService(resourceResolvers));
+		addService(new ResourceToStringConversionService());
 	}
 
 	public ResourceResolvers getResourceResolvers() {

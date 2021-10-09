@@ -331,8 +331,8 @@ public final class SqlUtils {
 			throws SqlException {
 		return prepare(connectionFactory, sql, statementProcessor).query().stream(processor);
 	}
-	
-	public static MultiValueMap<String, Object> getRowValueMap(ResultSet rs) throws SQLException{
+
+	public static MultiValueMap<String, Object> getRowValueMap(ResultSet rs) throws SQLException {
 		ResultSetMetaData metaData = rs.getMetaData();
 		int cols = metaData.getColumnCount();
 		MultiValueMap<String, Object> values = new LinkedMultiValueMap<String, Object>();
@@ -342,5 +342,43 @@ public final class SqlUtils {
 			values.add(name, value);
 		}
 		return values;
+	}
+
+	public static Stream<Sql> split(Sql sql, CharSequence... filters) {
+		return split(sql, 0, filters);
+	}
+
+	public static Stream<Sql> split(Sql sql, int start, CharSequence... filters) {
+		return split(sql, start, sql.getSql().length(), filters);
+	}
+
+	public static Stream<Sql> split(Sql sql, int start, int end, CharSequence... filters) {
+		return XUtils.stream(new SqlSplitIterator(sql, Arrays.asList(filters), start, end));
+	}
+
+	/**
+	 * 截取sql
+	 * 
+	 * @param sql
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public static Sql sub(Sql sql, int start, int end) {
+		String sourceSql = sql.getSql();
+		String targetSql = sourceSql.substring(start, end);
+		Object[] sourceParams = sql.getParams();
+		Object[] targetParams;
+		if (sourceParams.length == 0) {
+			targetParams = new Object[0];
+		} else {
+			int startIndex = StringUtils.count(sourceSql, start, end, "?");
+			int endIndex = sourceParams.length - StringUtils.count(sourceSql, end, "?");
+			targetParams = new Object[endIndex - startIndex];
+			for (int i = startIndex, index = 0; i < endIndex; i++, index++) {
+				targetParams[index] = sourceParams[i];
+			}
+		}
+		return new SimpleSql(sql.isStoredProcedure(), targetSql, targetParams);
 	}
 }
