@@ -17,13 +17,24 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Accept;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.LinkedMultiValueMap;
 import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.stream.Callback;
@@ -33,6 +44,21 @@ import io.basc.framework.util.stream.StreamProcessor;
 import io.basc.framework.util.stream.StreamProcessorSupport;
 
 public final class SqlUtils {
+	private static final String PATTERN = "(|_([a-zA-Z0-9]_?)*$)|(^[a-zA-Z](_?[a-zA-Z0-9])*_?$)";
+	/**
+	 * 参数占位符
+	 */
+	private static final String PARAMETER_PLACEHOLDER = "?";
+	private static final String SET = " set ";
+	private static final String WHERE = " where ";
+	private static final String INSERT_VALUES = " values ";
+
+	public static String toString(Sql sql) {
+		if (sql.isStoredProcedure()) {
+			return "Stored procedure " + toString(sql.getSql(), sql.getParams());
+		}
+		return toString(sql.getSql(), sql.getParams());
+	}
 
 	public static String toString(String sql, Object... args) {
 		if (args == null || args.length == 0) {
@@ -46,6 +72,10 @@ public final class SqlUtils {
 			sb.append(Arrays.toString(args));
 			return sb.toString();
 		}
+	}
+	
+	public static int getParameterPlaceholderCount(String sql) {
+		return StringUtils.count(sql, PARAMETER_PLACEHOLDER);
 	}
 
 	public static void setSqlParams(PreparedStatement preparedStatement, Object[] args) throws SQLException {
@@ -344,16 +374,35 @@ public final class SqlUtils {
 		return values;
 	}
 
-	public static Stream<Sql> split(Sql sql, CharSequence... filters) {
+	public static Stream<SqlSplitSegment> split(Sql sql, CharSequence... filters) {
 		return split(sql, 0, filters);
 	}
 
-	public static Stream<Sql> split(Sql sql, int start, CharSequence... filters) {
+	public static Stream<SqlSplitSegment> split(Sql sql, int start, CharSequence... filters) {
 		return split(sql, start, sql.getSql().length(), filters);
 	}
 
-	public static Stream<Sql> split(Sql sql, int start, int end, CharSequence... filters) {
-		return XUtils.stream(new SqlSplitIterator(sql, Arrays.asList(filters), start, end));
+	public static Stream<SqlSplitSegment> split(Sql sql, int start, int end, CharSequence... filters) {
+		return split(sql, start, end, Arrays.asList(filters));
+	}
+
+	public static Stream<SqlSplitSegment> split(Sql sql, Collection<? extends CharSequence> filters) {
+		return split(sql, 0, filters);
+	}
+
+	public static Stream<SqlSplitSegment> split(Sql sql, int start, Collection<? extends CharSequence> filters) {
+		return split(sql, start, sql.getSql().length(), filters);
+	}
+
+	public static Stream<SqlSplitSegment> split(Sql sql, int start, int end,
+			Collection<? extends CharSequence> filters) {
+		return XUtils.stream(new SqlSplitIterator(sql, filters, start, end));
+	}
+
+	public static Sql sub(Sql sql, int start) {
+		Assert.requiredArgument(sql != null, "sql");
+		String sourceSql = sql.getSql();
+		return sub(sourceSql, sql.getParams(), sql.isStoredProcedure(), start, sourceSql.length());
 	}
 
 	/**
@@ -365,20 +414,205 @@ public final class SqlUtils {
 	 * @return
 	 */
 	public static Sql sub(Sql sql, int start, int end) {
-		String sourceSql = sql.getSql();
+		Assert.requiredArgument(sql != null, "sql");
+		return sub(sql.getSql(), sql.getParams(), sql.isStoredProcedure(), start, end);
+	}
+
+	public static Sql sub(String sourceSql, Object[] sourceParams, boolean storedProcedure, int start, int end) {
+		Assert.requiredArgument(sourceSql != null, "sourceSql");
+		Assert.requiredArgument(sourceParams != null, "sourceParams");
+		
+		if(sourceParams.length != getParameterPlaceholderCount(sourceSql)) {
+			//参数占位符数量和参数数量不一致
+			throw new SqlException("The number of parameter placeholders is inconsistent with the number of parameters <" + toString(sourceSql, sourceParams) + ">");
+		}
+		
 		String targetSql = sourceSql.substring(start, end);
-		Object[] sourceParams = sql.getParams();
 		Object[] targetParams;
 		if (sourceParams.length == 0) {
 			targetParams = new Object[0];
 		} else {
-			int startIndex = StringUtils.count(sourceSql, start, end, "?");
-			int endIndex = sourceParams.length - StringUtils.count(sourceSql, end, "?");
-			targetParams = new Object[endIndex - startIndex];
-			for (int i = startIndex, index = 0; i < endIndex; i++, index++) {
+			int len = StringUtils.count(sourceSql, start, end, PARAMETER_PLACEHOLDER);
+			int startIndex = StringUtils.count(sourceSql, 0, start, PARAMETER_PLACEHOLDER);
+			targetParams = new Object[len];
+			for (int i = startIndex, index = 0; i < startIndex + len; i++, index++) {
 				targetParams[index] = sourceParams[i];
 			}
 		}
-		return new SimpleSql(sql.isStoredProcedure(), targetSql, targetParams);
+		return new SimpleSql(storedProcedure, targetSql, targetParams);
+	}
+
+	/**
+	 * a=b 解析为 name -> a, left -> a , operator -> =, right -> b
+	 * 
+	 * @see SqlExpression
+	 * @param sql
+	 * @param filters
+	 * @return
+	 */
+	@Nullable
+	public static SqlExpression resolveExpression(Sql sql, Collection<? extends CharSequence> filters) {
+		String sourceSql = sql.getSql();
+		for (CharSequence filter : filters) {
+			int index = StringUtils.indexOf(sourceSql, filter);
+			if (index == -1) {
+				continue;
+			}
+
+			String name = sourceSql.substring(0, index);
+			name = name.trim();
+			name = StringUtils.trimLeadingCharacter(name, '`');
+			name = StringUtils.trimTrailingCharacter(name, '`');
+			if (!Pattern.matches(PATTERN, name)) {
+				// 不合法的字段名
+				continue;
+			}
+
+			return new SqlExpression(name, sub(sql, 0, index), filter, sub(sql, index + filter.length()));
+		}
+		return null;
+	}
+
+	public static List<SqlSplitSegment> resolveSegments(Sql sql, Collection<? extends CharSequence> separators,
+			Accept<Sql> accept) {
+		LinkedList<SqlSplitSegment> list = new LinkedList<SqlSplitSegment>();
+		Iterator<SqlSplitSegment> iterator = split(sql, separators).iterator();
+		while (iterator.hasNext()) {
+			SqlSplitSegment segment = iterator.next();
+			if (accept.accept(segment)) {
+				// 合法的片段
+				list.add(segment);
+			} else {
+				SqlSplitSegment last = list.removeLast();
+				EditableSql item = new EditableSql();
+				item.append(last);
+				item.append(last.getSeparator());
+				item.append(segment);
+				list.addLast(new SqlSplitSegment(item, segment.getSeparator()));
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * 解析例如 a=b, b=c的情况
+	 * @param sql
+	 * @param separators
+	 * @param filters
+	 * @return {@link LinkedHashMap}}
+	 */
+	public static Map<String, SqlExpression> resolveExpressionMap(Sql sql, Collection<? extends CharSequence> separators,
+			Collection<? extends CharSequence> filters) {
+		Map<String, SqlExpression> map = new LinkedHashMap<String, SqlExpression>(8);
+		resolveSegments(sql, separators, (s) -> (resolveExpression(s, filters) != null)).forEach((s) -> {
+			SqlExpression expression = resolveExpression(s, filters);
+			map.put(expression.getName(), expression);
+		});
+		return map;
+	}
+	
+	/**
+	 * 解析update语句的set内容
+	 * @param sql
+	 * @return
+	 */
+	public static Map<String, SqlExpression> resolveUpdateSetMap(Sql sql){
+		String update = sql.getSql();
+		// 全部转小写
+		update = update.toLowerCase();
+		int setIndex = update.indexOf(SET);
+		int whereIndex = update.indexOf(WHERE, setIndex == -1? 0:setIndex);
+		if(setIndex == -1) {
+			//TODO 如果不存在set那么当作这只是update语句的一部分来处理
+			setIndex = 0;
+		}else {
+			setIndex += SET.length();
+		}
+		Sql set;
+		if (whereIndex == -1) {
+			set = SqlUtils.sub(sql, setIndex);
+		} else {
+			set = SqlUtils.sub(sql, setIndex, whereIndex);
+		}
+		return resolveExpressionMap(set, Arrays.asList(","), Arrays.asList("=")); 
+	}
+	
+	/**
+	 * 获取where语句后面的内容
+	 * @param sql
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	@Nullable
+	public static Sql resolveWhereSql(Sql sql, int start, int end) {
+		String sourceSql = sql.getSql();
+		sourceSql = sourceSql.toLowerCase();
+		int index = StringUtils.indexOf(sourceSql, WHERE, start, end);
+		if(index == -1) {
+			return null;
+		}
+		return sub(sql, index + WHERE.length(), end);
+	}
+	
+	/**
+	 * 获取update语句的where部分
+	 * @param sql
+	 * @return
+	 */
+	@Nullable
+	public static Sql resolveUpdateWhereSql(Sql sql) {
+		String sourceSql = sql.getSql();
+		// 全部转小写
+		sourceSql = sourceSql.toLowerCase();
+		int setIndex = sourceSql.indexOf(SET);
+		if(setIndex == -1) {
+			// 不应该出现这种情况，一个update语句不能没有set
+			throw new SqlException("An update statement cannot have no set: <" + toString(sql) + ">");
+		}
+		return resolveWhereSql(sql, setIndex + SET.length(), sourceSql.length());
+	}
+	
+	/**
+	 * 解析insert语句的values内容
+	 * @param sql
+	 * @return
+	 */
+	public static List<Sql> resolveInsertValues(Sql sql){
+		String sourceSql = sql.getSql();
+		sourceSql = sourceSql.toLowerCase();
+		int valuesIndex = sourceSql.indexOf(INSERT_VALUES);
+		if(valuesIndex == -1) {
+			throw new SqlException("The inser statement must have values keyword: <" + toString(sql) + ">");
+		}
+		
+		Pair<Integer, Integer> pairIndex = StringUtils.indexOf(sourceSql, "(", ")", valuesIndex + INSERT_VALUES.length(), sourceSql.length());
+		if(pairIndex == null) {
+			throw new SqlException("The inser statement must have values: <" + toString(sql) + ">");
+		}
+		
+		return split(sql, pairIndex.getKey() + 1, pairIndex.getValue(), ",").collect(Collectors.toList());
+	}
+	
+	/**
+	 * 解析insert语句的columns
+	 * @param sql
+	 * @return 如果返回内容长度为0说明是插入全表字段的语句
+	 */
+	public static List<String> resolveInsertColumns(Sql sql){
+		String sourceSql = sql.getSql();
+		sourceSql = sourceSql.toLowerCase();
+		int valuesIndex = sourceSql.indexOf(INSERT_VALUES);
+		if(valuesIndex == -1) {
+			throw new SqlException("The inser statement must have values keyword: <" + toString(sql) + ">");
+		}
+		
+		Pair<Integer, Integer> pairIndex = StringUtils.indexOf(sourceSql, "(", ")", 0, valuesIndex);
+		if(pairIndex == null) {
+			//没有显示声明columns,说明是插入全表字段的语句
+			return Collections.emptyList();
+		}
+		
+		return split(sql, pairIndex.getKey() + 1, pairIndex.getValue(), ",").map((s) -> s.getSql().trim()).collect(Collectors.toList());
 	}
 }

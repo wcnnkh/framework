@@ -37,7 +37,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 	protected static final String DELETE_PREFIX = "delete from ";
 	protected static final String SELECT_ALL_PREFIX = "select * from ";
 	protected static final String INSERT_INTO_PREFIX = "insert into ";
-	protected static final String VALUES = ") values(";
+	protected static final String VALUES = " values ";
 
 	protected static final String SET = " set ";
 	protected static final String WHERE = " where ";
@@ -221,7 +221,9 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		keywordProcessing(sql, tableStructure.getName());
 		sql.append("(");
 		sql.append(cols);
+		sql.append(")");
 		sql.append(VALUES);
+		sql.append("(");
 		sql.append(values);
 		sql.append(")");
 		return new SimpleSql(sql.toString(), params.toArray());

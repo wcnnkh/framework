@@ -2122,9 +2122,9 @@ public final class StringUtils {
 				.collect(Collectors.toList()).toArray(new String[0]);
 	}
 
-	public static Stream<CharSequence> split(CharSequence charSequence, boolean trimTokens, boolean ignoreEmptyTokens,
+	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence, boolean trimTokens, boolean ignoreEmptyTokens,
 			CharSequence... filters) {
-		return split(charSequence, filters).map((s) -> trimTokens ? (s == null ? s : trimWhitespace(s)) : s)
+		return split(charSequence, filters).map((s) -> trimTokens ? (s == null ? s : s.trim()) : s)
 				.filter((s) -> (ignoreEmptyTokens ? StringUtils.isNotEmpty(s) : true));
 	}
 
@@ -2133,25 +2133,25 @@ public final class StringUtils {
 	 * @param charSequence
 	 * @return
 	 */
-	public static Stream<CharSequence> split(CharSequence charSequence) {
+	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence) {
 		return split(charSequence, DEFAULT_SEPARATOR);
 	}
 
-	public static Stream<CharSequence> split(CharSequence charSequence, CharSequence... filters) {
+	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence, CharSequence... filters) {
 		if (charSequence == null) {
 			return StreamProcessorSupport.emptyStream();
 		}
 		return split(charSequence, 0, charSequence.length(), Arrays.asList(filters));
 	}
 
-	public static Stream<CharSequence> split(CharSequence charSequence, Collection<? extends CharSequence> filters) {
+	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence, Collection<? extends CharSequence> filters) {
 		if (charSequence == null) {
 			return StreamProcessorSupport.emptyStream();
 		}
 		return split(charSequence, 0, charSequence.length(), filters);
 	}
 
-	public static Stream<CharSequence> split(CharSequence charSequence, int beginIndex, int endIndex,
+	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence, int beginIndex, int endIndex,
 			Collection<? extends CharSequence> filters) {
 		if (StringUtils.isEmpty(charSequence)) {
 			return StreamProcessorSupport.emptyStream();
@@ -2166,11 +2166,9 @@ public final class StringUtils {
 		}
 
 		if (!find) {
-			return Arrays.asList(charSequence).stream();
+			return Arrays.asList(new CharSequenceSplitSegment(charSequence)).stream();
 		}
-
-		Iterator<CharSequence> iterator = new CharSequenceSplitIterator(charSequence, filters, beginIndex, endIndex);
-		return XUtils.stream(iterator);
+		return XUtils.stream(new CharSequenceSplitIterator(charSequence, filters, beginIndex, endIndex));
 	}
 
 	public static int count(CharSequence charSequence, CharSequence target) {

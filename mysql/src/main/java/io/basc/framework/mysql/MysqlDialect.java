@@ -30,6 +30,8 @@ import io.basc.framework.orm.sql.annotation.Table;
 import io.basc.framework.sql.EditableSql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
+import io.basc.framework.sql.SqlExpression;
+import io.basc.framework.sql.SqlUtils;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.AnyValue;
@@ -104,7 +106,9 @@ public class MysqlDialect extends StandardSqlDialect {
 		keywordProcessing(sb, tableStructure.getName());
 		sb.append("(");
 		sb.append(cols);
+		sb.append(")");
 		sb.append(VALUES);
+		sb.append("(");
 		sb.append(values);
 		sb.append(")");
 		sb.append(DUPLICATE_KEY);
@@ -338,15 +342,27 @@ public class MysqlDialect extends StandardSqlDialect {
 			throw new SqlDialectException("An update statement cannot have no set");
 		}
 
-		String updateSet = updateSql.getSql().substring(setIndex + SET.length());
 		int whereIndex = update.indexOf(WHERE, setIndex);
 		if (whereIndex == -1) {
 			// 如果update不存在where语句，这种情况简单
-			sql.append(updateSet);
+			sql.append(SqlUtils.sub(updateSql, setIndex + SET.length()));
 		} else {
 			// 这情况比较复杂
 			// 例如：set a=b where c=d 转换为 a=IF(c=d, b, a)
-			// TODO 如果嵌套解析
+			Sql updateSet = SqlUtils.sub(updateSql, setIndex + SET.length(), whereIndex);
+			Sql updateWhere = SqlUtils.sub(updateSql, whereIndex + WHERE.length());
+			Map<String, SqlExpression> expressionMap = SqlUtils.resolveUpdateSetMap(updateSet);
+			Iterator<SqlExpression> iterator = expressionMap.values().iterator();
+			while (iterator.hasNext()) {
+				SqlExpression expression = iterator.next();
+				Sql set = condition(updateWhere, expression.getLeft(), expression.getRight());
+				sql.append(expression.getLeft());
+				sql.append("=");
+				sql.append(set);
+				if (iterator.hasNext()) {
+					sql.append(",");
+				}
+			}
 		}
 		return sql;
 	}

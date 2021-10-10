@@ -15,7 +15,7 @@ import io.basc.framework.util.StringUtils;
  * @author shuchaowen
  *
  */
-public class SqlSplitIterator extends AbstractIterator<Sql> {
+public class SqlSplitIterator extends AbstractIterator<SqlSplitSegment> {
 	private final Sql sql;
 	private final Collection<? extends CharSequence> filters;
 	private final int endIndex;
@@ -57,7 +57,7 @@ public class SqlSplitIterator extends AbstractIterator<Sql> {
 	}
 
 	@Override
-	public Sql next() {
+	public SqlSplitSegment next() {
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
@@ -71,12 +71,13 @@ public class SqlSplitIterator extends AbstractIterator<Sql> {
 				value = SqlUtils.sub(sql, index, endIndex);
 			}
 			index = endIndex;
-			return value;
+			return new SqlSplitSegment(value);
 		}
 
 		Sql value = SqlUtils.sub(sql, index, current.get().getKey());
 		index = current.get().getKey() + current.get().getValue().length();
+		SqlSplitSegment segment = new SqlSplitSegment(value, current.get().getValue());
 		current = null;
-		return value;
+		return segment;
 	}
 }

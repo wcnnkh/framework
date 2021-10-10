@@ -1,10 +1,10 @@
-package io.basc.framework.mysql.test;
+package io.basc.framework.sqlite.test.orm;
 
 import org.junit.Test;
 
-import io.basc.framework.mysql.MysqlDialect;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
+import io.basc.framework.sqlite.SQLiteDialect;
 import io.basc.framework.util.XUtils;
 
 public class SqlResolveTest {
@@ -15,8 +15,8 @@ public class SqlResolveTest {
 	
 	@Test
 	public void saveOrUpdate() {
-		MysqlDialect mysqlDialect = new MysqlDialect();
-		Sql sql = mysqlDialect.saveOrUpdate(saveSql, updateSql);
+		SQLiteDialect sqlDialect = new SQLiteDialect();
+		Sql sql = sqlDialect.saveOrUpdate(saveSql, updateSql);
 		System.out.println(sql);
 	}
 }

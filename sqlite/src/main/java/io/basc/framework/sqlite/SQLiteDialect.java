@@ -9,7 +9,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.orm.sql.Column;
 import io.basc.framework.orm.sql.ColumnDescriptor;
 import io.basc.framework.orm.sql.PaginationSql;
@@ -23,6 +25,9 @@ import io.basc.framework.orm.sql.annotation.Counter;
 import io.basc.framework.sql.EditableSql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
+import io.basc.framework.sql.SqlException;
+import io.basc.framework.sql.SqlExpression;
+import io.basc.framework.sql.SqlUtils;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.StringUtils;
@@ -158,7 +163,9 @@ public class SQLiteDialect extends StandardSqlDialect {
 		keywordProcessing(sb, tableStructure.getName());
 		sb.append("(");
 		sb.append(cols);
+		sb.append(")");
 		sb.append(VALUES);
+		sb.append("(");
 		sb.append(values);
 		sb.append(")");
 		return new SimpleSql(sb.toString(), params.toArray());
@@ -254,10 +261,68 @@ public class SQLiteDialect extends StandardSqlDialect {
 		 * 更新语句 update tableName set a=b where c=d <br/>
 		 * 保存或更新语句 replace into tableName (columns) values (v1, v2, ...) <br/>
 		 */
+		List<String> insertColumns = SqlUtils.resolveInsertColumns(saveSql);
+		if (insertColumns.isEmpty()) {
+			throw new NotSupportedException("Declaration insertion field to display");
+		}
+
+		List<Sql> insertValues = SqlUtils.resolveInsertValues(saveSql);
+		if (insertColumns.size() != insertValues.size()) {
+			// 列数量和值数量不一致
+			throw new SqlException("Declaration insertion field to display");
+		}
+
+		String insertSql = saveSql.getSql();
+		insertSql = insertSql.toLowerCase();
+		int prefixEndIndex = insertSql.indexOf("(");
+		if (prefixEndIndex == -1) {
+			throw new IllegalArgumentException(SqlUtils.toString(insertSql));
+		}
 
 		EditableSql sql = new EditableSql();
-		sql.append("replace into ");
-		// TODO 比较复杂，我想想
+		sql.append("replace");
+		sql.append(SqlUtils.sub(saveSql, "insert".length(), prefixEndIndex));
+
+		sql.append("(");
+		Iterator<String> columnsIterator = insertColumns.iterator();
+		while (columnsIterator.hasNext()) {
+			sql.append(columnsIterator.next());
+			if (columnsIterator.hasNext()) {
+				sql.append(",");
+			}
+		}
+
+		Map<String, SqlExpression> setMap = SqlUtils.resolveUpdateSetMap(updateSql);
+		// 过滤掉insert columns中已经存在的字段
+		List<SqlExpression> sets = setMap.values().stream().filter((s) -> !insertColumns.contains(s.getName()))
+				.collect(Collectors.toList());
+		for (SqlExpression expression : sets) {
+			sql.append(",");
+			sql.append(expression.getLeft());
+		}
+		sql.append(")");
+
+		columnsIterator = insertColumns.iterator();
+		Iterator<Sql> valuesIterator = insertValues.iterator();
+		Sql updateWhereSql = SqlUtils.resolveUpdateWhereSql(updateSql);
+		sql.append(VALUES);
+		sql.append("(");
+		while (columnsIterator.hasNext() && valuesIterator.hasNext()) {
+			String columnName = columnsIterator.next();
+			Sql value = valuesIterator.next();
+			Sql condition = condition(updateWhereSql, value, new SimpleSql(columnName));
+			sql.append(condition);
+			if (columnsIterator.hasNext() && valuesIterator.hasNext()) {
+				sql.append(",");
+			}
+		}
+
+		for (SqlExpression expression : sets) {
+			sql.append(",");
+			Sql condition = condition(updateWhereSql, expression.getRight(), expression.getRight());
+			sql.append(condition);
+		}
+		sql.append(")");
 		return sql;
 	}
 }

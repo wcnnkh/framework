@@ -9,7 +9,7 @@ import java.util.NoSuchElementException;
  * @author shuchaowen
  *
  */
-public class CharSequenceSplitIterator extends AbstractIterator<CharSequence> {
+public class CharSequenceSplitIterator extends AbstractIterator<CharSequenceSplitSegment> {
 	private final CharSequence charSequence;
 	private final Collection<? extends CharSequence> filters;
 	private final int endIndex;
@@ -52,7 +52,7 @@ public class CharSequenceSplitIterator extends AbstractIterator<CharSequence> {
 	}
 
 	@Override
-	public CharSequence next() {
+	public CharSequenceSplitSegment next() {
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
@@ -61,12 +61,13 @@ public class CharSequenceSplitIterator extends AbstractIterator<CharSequence> {
 			// 最后一次了
 			CharSequence value = index == 0 ? charSequence : charSequence.subSequence(index, endIndex);
 			index = endIndex;
-			return value;
+			return new CharSequenceSplitSegment(value);
 		}
 
 		CharSequence value = charSequence.subSequence(index, current.get().getKey());
 		index = current.get().getKey() + current.get().getValue().length();
+		CharSequenceSplitSegment pair = new CharSequenceSplitSegment(value, current.get().getValue());
 		current = null;
-		return value;
+		return pair;
 	}
 }
