@@ -1,24 +1,29 @@
-package io.basc.framework.util;
+package io.basc.framework.sql;
 
 import java.util.Collection;
 import java.util.NoSuchElementException;
+import java.util.function.Supplier;
+
+import io.basc.framework.util.AbstractIterator;
+import io.basc.framework.util.Pair;
+import io.basc.framework.util.StaticSupplier;
+import io.basc.framework.util.StringUtils;
 
 /**
- * 迭代分割字符串
+ * 迭代分割sql
  * 
  * @author shuchaowen
  *
  */
-public class CharSequenceSplitIterator extends AbstractIterator<CharSequenceSplitSegment> {
-	private final CharSequence charSequence;
+public class SqlSplitIterator extends AbstractIterator<SqlSplitSegment> {
+	private final Sql sql;
 	private final Collection<? extends CharSequence> filters;
 	private final int endIndex;
 	private int index;
 	private Supplier<Pair<Integer, CharSequence>> current;
 
-	public CharSequenceSplitIterator(CharSequence charSequence, Collection<? extends CharSequence> filters, int beginIndex,
-			int endIndex) {
-		this.charSequence = charSequence;
+	public SqlSplitIterator(Sql sql, Collection<? extends CharSequence> filters, int beginIndex, int endIndex) {
+		this.sql = sql;
 		this.filters = filters;
 		this.index = beginIndex;
 		this.endIndex = endIndex;
@@ -36,7 +41,7 @@ public class CharSequenceSplitIterator extends AbstractIterator<CharSequenceSpli
 					continue;
 				}
 
-				int index = StringUtils.indexOf(charSequence, filter, this.index, endIndex);
+				int index = StringUtils.indexOf(sql.getSql(), filter, this.index, endIndex);
 				if (index != -1) {
 					current = new StaticSupplier<Pair<Integer, CharSequence>>(
 							new Pair<Integer, CharSequence>(index, filter));
@@ -52,22 +57,27 @@ public class CharSequenceSplitIterator extends AbstractIterator<CharSequenceSpli
 	}
 
 	@Override
-	public CharSequenceSplitSegment next() {
+	public SqlSplitSegment next() {
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
 
 		if (current == null) {
 			// 最后一次了
-			CharSequence value = index == 0 ? charSequence : charSequence.subSequence(index, endIndex);
+			Sql value;
+			if (index == 0) {
+				value = this.sql;
+			} else {
+				value = SqlUtils.sub(sql, index, endIndex);
+			}
 			index = endIndex;
-			return new CharSequenceSplitSegment(value);
+			return new SqlSplitSegment(value);
 		}
 
-		CharSequence value = charSequence.subSequence(index, current.get().getKey());
+		Sql value = SqlUtils.sub(sql, index, current.get().getKey());
 		index = current.get().getKey() + current.get().getValue().length();
-		CharSequenceSplitSegment pair = new CharSequenceSplitSegment(value, current.get().getValue());
+		SqlSplitSegment segment = new SqlSplitSegment(value, current.get().getValue());
 		current = null;
-		return pair;
+		return segment;
 	}
 }

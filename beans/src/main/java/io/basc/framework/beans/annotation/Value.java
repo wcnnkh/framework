@@ -1,13 +1,13 @@
 package io.basc.framework.beans.annotation;
 
-import io.basc.framework.beans.ioc.value.EnvironmentValueProcess;
-import io.basc.framework.beans.ioc.value.ValueProcesser;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import io.basc.framework.beans.ioc.value.SmartValueProcessor;
+import io.basc.framework.beans.ioc.value.ValueProcessor;
 
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 public @interface Value {
 	String value();
 
-	Class<? extends ValueProcesser> processer() default EnvironmentValueProcess.class;
+	Class<? extends ValueProcessor> processor() default SmartValueProcessor.class;
 
 	String charsetName() default "";
 	

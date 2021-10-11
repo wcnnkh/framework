@@ -15,7 +15,7 @@ import io.basc.framework.value.StringValue;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
-public final class PropertiesFileValueProcesser extends AbstractObservableValueProcesser<Properties> {
+public final class PropertiesFileValueProcessor extends AbstractObservableValueProcessor<Properties> {
 
 	@Override
 	protected Observable<Properties> getObservableResource(BeanDefinition beanDefinition,

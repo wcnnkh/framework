@@ -22,5 +22,11 @@
 			<version>${mysql.version}</version>
 			<scope>runtime</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>testing</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

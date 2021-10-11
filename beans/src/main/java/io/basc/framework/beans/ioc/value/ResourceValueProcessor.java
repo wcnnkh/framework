@@ -14,7 +14,7 @@ import java.nio.charset.Charset;
  * @author shuchaowen
  *
  */
-public class ResourceValueProcesser extends AbstractObservableResourceValueProcesser {
+public class ResourceValueProcessor extends AbstractObservableResourceValueProcessor {
 
 	@Override
 	protected Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory,

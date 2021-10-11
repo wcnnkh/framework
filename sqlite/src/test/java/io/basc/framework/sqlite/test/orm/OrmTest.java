@@ -1,17 +1,19 @@
 package io.basc.framework.sqlite.test.orm;
 
+import org.junit.Test;
+
 import io.basc.framework.db.DB;
 import io.basc.framework.env.Sys;
 import io.basc.framework.json.JSONUtils;
+import io.basc.framework.logger.Levels;
+import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.sqlite.SQLiteDB;
 import io.basc.framework.util.XUtils;
-
-import org.junit.Test;
 
 public class OrmTest {
 	private static DB db = new SQLiteDB(Sys.env.getWorkPath() + "/orm_test.db");
 
-	static{
+	static {
 		db.createTable(TestTable1.class);
 	}
 
@@ -30,6 +32,7 @@ public class OrmTest {
 	}
 
 	private static void saveOrUpdate() {
+		LoggerFactory.getLevelManager().getCustomLevelRegistry().put("io.basc.framework.sql", Levels.DEBUG.getValue());
 		for (int i = 0; i < 5; i++) {
 			TestTable1 table1 = new TestTable1();
 			table1.setId(i);
@@ -39,16 +42,16 @@ public class OrmTest {
 			System.out.println("saveOrUpdate数据" + (b ? "成功" : "失败"));
 		}
 	}
-	
+
 	public static void query() {
-		for(int i=0; i<100; i++) {
+		for (int i = 0; i < 100; i++) {
 			int v = i;
-			new Thread(()->{
+			new Thread(() -> {
 				System.out.println(JSONUtils.getJsonSupport().toJSONString(db.getByIdList(TestTable1.class, v)));
-			}) .start();
+			}).start();
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		query();
 	}

@@ -6,6 +6,9 @@ public class Pair<K, V> implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private K key;
 	private V value;
+	
+	public Pair() {
+	}
 
 	public Pair(Pair<K, V> pair) {
 		this(pair.key, pair.value);

@@ -1,10 +1,7 @@
 package io.basc.framework.websocket.adapter.standard;
 
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.Assert;
-
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -13,6 +10,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import javax.websocket.Session;
+
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.stream.Callback;
 
 /**
  * 一个标准的session管理器
@@ -240,6 +244,14 @@ public class StandardSessionManager<T> {
 		}
 		return sessions;
 	}
+	
+	public void remove(T group, Callback<Session, IOException> processor) {
+		remove(group).stream().filter((s) -> s.isOpen()).forEach((session) -> process(group, session, processor));
+	}
+	
+	public void remove(T group, Processor<T> processor) {
+		remove(group).stream().filter((s) -> s.isOpen()).forEach((session) -> process(group, session, processor));
+	}
 
 	public int getGroupSize() {
 		return groupMap.size();
@@ -251,5 +263,97 @@ public class StandardSessionManager<T> {
 			size += entry.getValue().values().stream().filter((session) -> session.isOpen()).count();
 		}
 		return size;
+	}
+	
+	public void process(T group, Session session, Callback<Session, IOException> processor) {	
+		if(processor == null) {
+			return ;
+		}
+		
+		if(!session.isOpen()) {
+			return ;
+		}
+		
+		try {
+			processor.call(session);
+		} catch (IOException e) {
+			logger.error(e, "Process group[{}] session[{}] info[{}]", group, session.getId(), session);
+		}
+	}
+	
+	public void process(T group, Session session, Processor<T> processor) {
+		if(processor == null) {
+			return ;
+		}
+		
+		if(!session.isOpen()) {
+			return ;
+		}
+		
+		try {
+			processor.process(group, session);
+		} catch (IOException e) {
+			logger.error(e, "Process group[{}] session[{}] info[{}]", group, session.getId(), session);
+		}
+	}
+	
+	public void forEach(T group, Callback<Session, IOException> processor) {
+		getSessions(group).stream().filter((s) -> s.isOpen()).forEach((s) -> process(group, s, processor));
+	}
+	
+	public void forEach(T group, Processor<T> processor) {
+		getSessions(group).stream().filter((s) -> s.isOpen()).forEach((s) -> process(group, s, processor));
+	}
+	
+	public void forEach(Callback<Session, IOException> processor) {
+		getGroups().forEach((group) -> forEach(group, processor));
+	}
+	
+	public void forEach(Processor<T> processor) {
+		getGroups().forEach((group) -> forEach(group, processor));
+	}
+	
+	public void clear(Callback<Session, IOException> processor) {
+		getGroups().forEach((group) -> remove(group, processor));
+	}
+	
+	public void clear(Processor<T> processor) {
+		getGroups().forEach((group) -> remove(group, processor));
+	}
+	
+	@FunctionalInterface
+	public static interface Processor<T>{
+		void process(T group, Session session) throws IOException;
+	}
+	
+	/**
+	 * 向指定的session发送
+	 * @see Session#getBasicRemote()
+	 * @param session
+	 * @param text
+	 * @throws IOException
+	 */
+	public void sendText(Session session, String text) throws IOException {
+		session.getBasicRemote().sendText(text);
+	}
+	
+	public void sendText(String text) {
+		if(text == null) {
+			return ;
+		}
+		
+		forEach((s) -> sendText(s, text));
+	}
+	
+	public void sendText(String text, Collection<? extends T> groups) {
+		if(CollectionUtils.isEmpty(groups) || text == null) {
+			return ;
+		}
+		
+		groups.forEach((group) -> forEach(group, (s) -> sendText(s, text)));
+	}
+	
+	public void sendText(String text, T group) {
+		sendText(text, Arrays.asList(group));
 	}
 }

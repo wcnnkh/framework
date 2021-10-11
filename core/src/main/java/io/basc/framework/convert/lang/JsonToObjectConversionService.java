@@ -1,13 +1,10 @@
 package io.basc.framework.convert.lang;
 
 import io.basc.framework.convert.ConversionException;
-import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.annotation.JSON;
-import io.basc.framework.json.JSONSupportAccessor;
-import io.basc.framework.json.JsonElement;
 
-public class JsonToObjectConversionService extends JSONSupportAccessor implements ConversionService {
+public class JsonToObjectConversionService extends AbstractConversionService {
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
@@ -21,11 +18,11 @@ public class JsonToObjectConversionService extends JSONSupportAccessor implement
 	@Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
-		JsonElement jsonElement = getJsonSupport().parseJson(source);
-		if (jsonElement == null) {
+		String content = (String) getConversionService().convert(source, sourceType, TypeDescriptor.valueOf(String.class));
+		if(content == null) {
 			return null;
 		}
-
-		return jsonElement.getAsObject(targetType);
+		
+		return getJsonSupport().parseJson(content).getAsObject(targetType);
 	}
 }

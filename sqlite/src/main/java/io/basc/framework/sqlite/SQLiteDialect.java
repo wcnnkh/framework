@@ -1,5 +1,15 @@
 package io.basc.framework.sqlite;
 
+import java.sql.Blob;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import io.basc.framework.orm.sql.Column;
 import io.basc.framework.orm.sql.ColumnDescriptor;
 import io.basc.framework.orm.sql.PaginationSql;
@@ -10,22 +20,15 @@ import io.basc.framework.orm.sql.StandardSqlDialect;
 import io.basc.framework.orm.sql.TableStructure;
 import io.basc.framework.orm.sql.TableStructureMapping;
 import io.basc.framework.orm.sql.annotation.Counter;
+import io.basc.framework.sql.EditableSql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
+import io.basc.framework.sql.SqlExpression;
+import io.basc.framework.sql.SqlUtils;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.AnyValue;
-
-import java.sql.Blob;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 public class SQLiteDialect extends StandardSqlDialect {
 
@@ -115,54 +118,6 @@ public class SQLiteDialect extends StandardSqlDialect {
 	public Sql toLastInsertIdSql(String tableName) throws SqlDialectException {
 		return new SimpleSql("SELECT last_insert_rowid()");
 	}
-	
-	@Override
-	public <T> Sql toSaveOrUpdateSql(TableStructure tableStructure, T entity) throws SqlDialectException {
-		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
-		if (primaryKeys.size() == 0) {
-			throw new NullPointerException("not found primary key");
-		}
-
-		
-		Map<String, Object> changeMap = getChangeMap(entity);
-		StringBuilder sb = new StringBuilder(512);
-		StringBuilder cols = new StringBuilder();
-		StringBuilder values = new StringBuilder();
-		List<Object> params = new ArrayList<Object>();
-		Iterator<Column> iterator = tableStructure.iterator();
-		while (iterator.hasNext()) {
-			Column column = iterator.next();
-			Object value = column.getField().getGetter().get(entity);
-			if(column.isAutoIncrement()) {
-				AnyValue anyValue = new AnyValue(value);
-				if (value == null || anyValue.isEmpty() || (anyValue.isNumber() && anyValue.getAsInteger() == 0)) {
-					continue;
-				}
-			}
-
-			keywordProcessing(cols, column.getName());
-			if(column.isPrimaryKey()) {
-				values.append("?");
-				params.add(value);
-			} else {
-				appendUpdateValue(values, params, entity, column, changeMap);
-			}
-
-			if (iterator.hasNext()) {
-				cols.append(",");
-				values.append(",");
-			}
-		}
-
-		sb.append("replace into ");
-		keywordProcessing(sb, tableStructure.getName());
-		sb.append("(");
-		sb.append(cols);
-		sb.append(VALUES);
-		sb.append(values);
-		sb.append(")");
-		return new SimpleSql(sb.toString(), params.toArray());
-	}
 
 	@Override
 	protected void appendCounterValue(StringBuilder sb, List<Object> params, Object entity, Column column,
@@ -232,5 +187,78 @@ public class SQLiteDialect extends StandardSqlDialect {
 		sb.append(" like ");
 		keywordProcessing(sb, oldTableName);
 		return new SimpleSql(sb.toString());
+	}
+
+	@Override
+	public Sql condition(Sql condition, Sql left, Sql right) {
+		EditableSql sql = new EditableSql();
+		sql.append("CASE WHEN ");
+		sql.append(condition);
+		sql.append(" THEN ");
+		sql.append(left);
+		sql.append(" ELSE ");
+		sql.append(right);
+		return sql;
+	}
+
+	@Override
+	public Sql saveOrUpdate(Sql saveSql, Sql updateSql) {
+		/**
+		 * 保存语句 insert into tableName (columns) values (v1, v2, ...) <br/>
+		 * 更新语句 update tableName set a=b where c=d <br/>
+		 * 
+		 * INSERT OR REPLACE into `test_table1`(`id`,`key`,`value`) select 10,2,11 from
+		 * `test_table1` where id=10
+		 */
+		
+		/**
+		 * {@link https://stackoverflow.com/questions/418898/sqlite-upsert-not-insert-or-replace/4330694#4330694}
+		 * {@link https://stackoverflow.com/questions/2717590/sqlite-insert-on-duplicate-key-update-upsert}
+		 */
+
+		List<Sql> insertColumns = SqlUtils.resolveInsertColumns(saveSql);
+		if (insertColumns.isEmpty()) {
+			// 未显示声明插入字段
+			throw new SqlDialectException("Columns to be inserted in the declaration need to be displayed: <"
+					+ SqlUtils.toString(saveSql) + ">");
+		}
+
+		Set<String> insertColumnSets = insertColumns.stream().map((s) -> SqlUtils.display(s).trim())
+				.collect(Collectors.toSet());
+		// 过滤insert columns后剩下的字段
+		List<SqlExpression> updateColumns = SqlUtils.resolveUpdateSetMap(updateSql).values().stream()
+				.filter((s) -> !insertColumnSets.contains(SqlUtils.display(s.getLeft()).trim()))
+				.collect(Collectors.toList());
+
+		EditableSql sql = new EditableSql();
+		sql.append("INSERT OR REPLACE INTO ");
+		sql.append(SqlUtils.resolveInsertTables(saveSql));
+		sql.append(" (");
+		Iterator<Sql> iterator = insertColumns.iterator();
+		while (iterator.hasNext()) {
+			sql.append(iterator.next());
+			if (iterator.hasNext()) {
+				sql.append(", ");
+			}
+		}
+
+		for (SqlExpression expression : updateColumns) {
+			sql.append(", ");
+			sql.append(expression.getLeft());
+		}
+		sql.append(") select ");
+
+		sql.append(SqlUtils.resolveInsertValuesSql(saveSql));
+
+		for (SqlExpression expression : updateColumns) {
+			sql.append(",");
+			sql.append(expression.getRight());
+		}
+
+		sql.append(" from ");
+		sql.append(SqlUtils.resolveUpdateTables(updateSql));
+		sql.append(WHERE);
+		sql.append(SqlUtils.resolveUpdateWhereSql(updateSql));
+		return sql;
 	}
 }
