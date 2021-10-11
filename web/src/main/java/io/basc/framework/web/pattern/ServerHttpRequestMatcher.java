@@ -16,22 +16,23 @@ import java.util.Map;
  * @param <T>
  */
 public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
-	private Map<String, Map<String, HttpPatternServices<T>>> matcherMap = new HashMap<>();
+	private Map<String, Map<String, HttpPatternServices<ServerHttpRequestAcceptWrapper<T>>>> matcherMap = new HashMap<>();
 	private HttpPatternServices<ServerHttpRequestAcceptWrapper<T>> matchers = new HttpPatternServices<>();
 
 	public Holder<T> add(String path, T service) throws AlreadyExistsException {
 		return add(new HttpPattern(path), service);
 	}
 
-	public Holder<T> add(String path, String method, T service) throws AlreadyExistsException {
+	private Holder<T> add(String path, String method, ServerHttpRequestAcceptWrapper<T> service)
+			throws AlreadyExistsException {
 		synchronized (matcherMap) {
-			Map<String, HttpPatternServices<T>> map = matcherMap.get(path);
+			Map<String, HttpPatternServices<ServerHttpRequestAcceptWrapper<T>>> map = matcherMap.get(path);
 			if (map == null) {
 				map = new HashMap<>();
 				matcherMap.put(path, map);
 			}
 
-			HttpPatternServices<T> httpPatterns = map.get(method);
+			HttpPatternServices<ServerHttpRequestAcceptWrapper<T>> httpPatterns = map.get(method);
 			if (httpPatterns == null) {
 				httpPatterns = new HttpPatternServices<>();
 				map.put(method, httpPatterns);
@@ -42,17 +43,17 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 			}
 		}
 
-		return new AbstractHolder<T>(() -> service) {
+		return new AbstractHolder<T>(() -> service.getService()) {
 
 			@Override
 			protected boolean releeaseInternal() {
 				synchronized (matcherMap) {
-					Map<String, HttpPatternServices<T>> map = matcherMap.get(path);
+					Map<String, HttpPatternServices<ServerHttpRequestAcceptWrapper<T>>> map = matcherMap.get(path);
 					if (map == null) {
 						return false;
 					}
 
-					HttpPatternServices<T> httpPatterns = map.get(method);
+					HttpPatternServices<ServerHttpRequestAcceptWrapper<T>> httpPatterns = map.get(method);
 					if (httpPatterns == null) {
 						return false;
 					}
@@ -61,6 +62,10 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 				}
 			}
 		};
+	}
+
+	public Holder<T> add(String path, String method, T service) throws AlreadyExistsException {
+		return add(new HttpPattern(path, method), service);
 	}
 
 	public Holder<T> add(T service) throws AlreadyExistsException {
@@ -89,7 +94,8 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 		if (httpPattern.isPattern()) {
 			return add(new ServerHttpRequestAcceptWrapper<T>(httpPattern, service));
 		} else {
-			return add(httpPattern.getPath(), httpPattern.getMethod(), service);
+			return add(httpPattern.getPath(), httpPattern.getMethod(),
+					new ServerHttpRequestAcceptWrapper<T>(httpPattern, service));
 		}
 	}
 
@@ -99,17 +105,18 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 	}
 
 	private T getMappingService(ServerHttpRequest request) {
-		Map<String, HttpPatternServices<T>> map = matcherMap.get(request.getPath());
+		Map<String, HttpPatternServices<ServerHttpRequestAcceptWrapper<T>>> map = matcherMap.get(request.getPath());
 		if (map == null) {
 			return null;
 		}
 
-		HttpPatternServices<T> services = map.get(request.getRawMethod());
+		HttpPatternServices<ServerHttpRequestAcceptWrapper<T>> services = map.get(request.getRawMethod());
 		if (services == null) {
 			return null;
 		}
 
-		return services.get(request);
+		ServerHttpRequestAcceptWrapper<T> service = services.get(request);
+		return service == null ? null : service.getService();
 	}
 
 	public T get(ServerHttpRequest request) {

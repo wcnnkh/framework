@@ -3,6 +3,7 @@ package io.basc.framework.web.pattern;
 import io.basc.framework.core.OrderComparator;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.web.ServerHttpRequest;
 
 import java.util.Comparator;
@@ -18,6 +19,10 @@ class HttpPatternServices<T> implements Comparator<T>, ServerHttpRequestAccept {
 	 */
 	@Override
 	public int compare(T o1, T o2) {
+		if (ObjectUtils.nullSafeEquals(o1, o2)) {
+			return 0;
+		}
+
 		if (o1 instanceof ServerHttpRequestAccept && o1 instanceof ServerHttpRequestAccept) {
 			int v = OrderComparator.INSTANCE.compare(o1, o2);
 			return v == 0 ? 1 : v;
@@ -72,5 +77,34 @@ class HttpPatternServices<T> implements Comparator<T>, ServerHttpRequestAccept {
 	@Override
 	public boolean accept(ServerHttpRequest request) {
 		return get(request) != null;
+	}
+
+	@Override
+	public int hashCode() {
+		return services.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof HttpPatternServices) {
+			for (Object v : services) {
+				for (Object v2 : ((HttpPatternServices<?>) obj).services) {
+					if (!ObjectUtils.nullSafeEquals(v, v2)) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return services.toString();
 	}
 }

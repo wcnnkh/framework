@@ -1,5 +1,10 @@
 package io.basc.framework.mvc.action;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.AnnotatedElementWrapper;
@@ -8,12 +13,8 @@ import io.basc.framework.core.annotation.MultiAnnotatedElement;
 import io.basc.framework.core.parameter.ExecutableParameterDescriptors;
 import io.basc.framework.core.parameter.ParameterDescriptors;
 import io.basc.framework.mvc.HttpPatternResolver;
+import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.web.pattern.HttpPattern;
-
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
 
 public abstract class AbstractAction extends AnnotatedElementWrapper<AnnotatedElement> implements Action {
 	private Collection<HttpPattern> httpPatterns;
@@ -61,7 +62,11 @@ public abstract class AbstractAction extends AnnotatedElementWrapper<AnnotatedEl
 
 	@Override
 	public final int hashCode() {
-		return method.hashCode();
+		int code = 0;
+		for (HttpPattern pattern : httpPatterns) {
+			code += pattern.hashCode();
+		}
+		return code;
 	}
 
 	@Override
@@ -75,7 +80,7 @@ public abstract class AbstractAction extends AnnotatedElementWrapper<AnnotatedEl
 		}
 
 		if (obj instanceof Action) {
-			return getMethod().equals(((Action) obj).getMethod());
+			return ObjectUtils.nullSafeEquals(this.httpPatterns, ((Action) obj).getPatternts());
 		}
 		return false;
 	}

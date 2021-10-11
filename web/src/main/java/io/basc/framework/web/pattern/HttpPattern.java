@@ -58,6 +58,10 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 	public MimeTypes getMimeTypes() {
 		return mimeTypes;
 	}
+	
+	public boolean hasMimeTypes() {
+		return mimeTypes != null && !mimeTypes.isEmpty();
+	}
 
 	public boolean isPattern() {
 		if (path == null || method == null) {
@@ -165,6 +169,9 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 		}
 
 		if (mimeTypes != null) {
+			if (sb.length() > 0) {
+				sb.append(" ");
+			}
 			sb.append(mimeTypes);
 		}
 		return sb.toString();
