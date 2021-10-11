@@ -52,6 +52,8 @@ public final class SqlUtils {
 	private static final String SET = " set ";
 	private static final String WHERE = " where ";
 	private static final String INSERT_VALUES = " values ";
+	private static final String UPDATE_PREFIX = "update ";
+	private static final String INSERT_PREFIX = "insert into ";
 
 	public static String toString(Sql sql) {
 		if (sql.isStoredProcedure()) {
@@ -73,7 +75,7 @@ public final class SqlUtils {
 			return sb.toString();
 		}
 	}
-	
+
 	public static int getParameterPlaceholderCount(String sql) {
 		return StringUtils.count(sql, PARAMETER_PLACEHOLDER);
 	}
@@ -421,12 +423,14 @@ public final class SqlUtils {
 	public static Sql sub(String sourceSql, Object[] sourceParams, boolean storedProcedure, int start, int end) {
 		Assert.requiredArgument(sourceSql != null, "sourceSql");
 		Assert.requiredArgument(sourceParams != null, "sourceParams");
-		
-		if(sourceParams.length != getParameterPlaceholderCount(sourceSql)) {
-			//参数占位符数量和参数数量不一致
-			throw new SqlException("The number of parameter placeholders is inconsistent with the number of parameters <" + toString(sourceSql, sourceParams) + ">");
+
+		if (sourceParams.length != getParameterPlaceholderCount(sourceSql)) {
+			// 参数占位符数量和参数数量不一致
+			throw new IllegalSqlException(
+					"The number of parameter placeholders is inconsistent with the number of parameters <"
+							+ toString(sourceSql, sourceParams) + ">");
 		}
-		
+
 		String targetSql = sourceSql.substring(start, end);
 		Object[] targetParams;
 		if (sourceParams.length == 0) {
@@ -496,13 +500,14 @@ public final class SqlUtils {
 
 	/**
 	 * 解析例如 a=b, b=c的情况
+	 * 
 	 * @param sql
 	 * @param separators
 	 * @param filters
 	 * @return {@link LinkedHashMap}}
 	 */
-	public static Map<String, SqlExpression> resolveExpressionMap(Sql sql, Collection<? extends CharSequence> separators,
-			Collection<? extends CharSequence> filters) {
+	public static Map<String, SqlExpression> resolveExpressionMap(Sql sql,
+			Collection<? extends CharSequence> separators, Collection<? extends CharSequence> filters) {
 		Map<String, SqlExpression> map = new LinkedHashMap<String, SqlExpression>(8);
 		resolveSegments(sql, separators, (s) -> (resolveExpression(s, filters) != null)).forEach((s) -> {
 			SqlExpression expression = resolveExpression(s, filters);
@@ -510,22 +515,23 @@ public final class SqlUtils {
 		});
 		return map;
 	}
-	
+
 	/**
 	 * 解析update语句的set内容
+	 * 
 	 * @param sql
 	 * @return
 	 */
-	public static Map<String, SqlExpression> resolveUpdateSetMap(Sql sql){
+	public static Map<String, SqlExpression> resolveUpdateSetMap(Sql sql) {
 		String update = sql.getSql();
 		// 全部转小写
 		update = update.toLowerCase();
 		int setIndex = update.indexOf(SET);
-		int whereIndex = update.indexOf(WHERE, setIndex == -1? 0:setIndex);
-		if(setIndex == -1) {
-			//TODO 如果不存在set那么当作这只是update语句的一部分来处理
+		int whereIndex = update.indexOf(WHERE, setIndex == -1 ? 0 : setIndex);
+		if (setIndex == -1) {
+			// TODO 如果不存在set那么当作这只是update语句的一部分来处理
 			setIndex = 0;
-		}else {
+		} else {
 			setIndex += SET.length();
 		}
 		Sql set;
@@ -534,11 +540,12 @@ public final class SqlUtils {
 		} else {
 			set = SqlUtils.sub(sql, setIndex, whereIndex);
 		}
-		return resolveExpressionMap(set, Arrays.asList(","), Arrays.asList("=")); 
+		return resolveExpressionMap(set, Arrays.asList(","), Arrays.asList("="));
 	}
-	
+
 	/**
 	 * 获取where语句后面的内容
+	 * 
 	 * @param sql
 	 * @param start
 	 * @param end
@@ -549,14 +556,15 @@ public final class SqlUtils {
 		String sourceSql = sql.getSql();
 		sourceSql = sourceSql.toLowerCase();
 		int index = StringUtils.indexOf(sourceSql, WHERE, start, end);
-		if(index == -1) {
+		if (index == -1) {
 			return null;
 		}
 		return sub(sql, index + WHERE.length(), end);
 	}
-	
+
 	/**
 	 * 获取update语句的where部分
+	 * 
 	 * @param sql
 	 * @return
 	 */
@@ -566,53 +574,158 @@ public final class SqlUtils {
 		// 全部转小写
 		sourceSql = sourceSql.toLowerCase();
 		int setIndex = sourceSql.indexOf(SET);
-		if(setIndex == -1) {
+		if (setIndex == -1) {
 			// 不应该出现这种情况，一个update语句不能没有set
 			throw new SqlException("An update statement cannot have no set: <" + toString(sql) + ">");
 		}
 		return resolveWhereSql(sql, setIndex + SET.length(), sourceSql.length());
 	}
-	
+
 	/**
 	 * 解析insert语句的values内容
+	 * 
 	 * @param sql
 	 * @return
 	 */
-	public static List<Sql> resolveInsertValues(Sql sql){
+	public static List<Sql> resolveInsertValues(Sql sql) {
+		return split(resolveInsertValuesSql(sql), ",").collect(Collectors.toList());
+	}
+
+	/**
+	 * 解析insert语句的values部分
+	 * 
+	 * @param sql
+	 * @return
+	 */
+	public static Sql resolveInsertValuesSql(Sql sql) {
 		String sourceSql = sql.getSql();
 		sourceSql = sourceSql.toLowerCase();
 		int valuesIndex = sourceSql.indexOf(INSERT_VALUES);
-		if(valuesIndex == -1) {
+		if (valuesIndex == -1) {
 			throw new SqlException("The inser statement must have values keyword: <" + toString(sql) + ">");
 		}
-		
-		Pair<Integer, Integer> pairIndex = StringUtils.indexOf(sourceSql, "(", ")", valuesIndex + INSERT_VALUES.length(), sourceSql.length());
-		if(pairIndex == null) {
+
+		Pair<Integer, Integer> pairIndex = StringUtils.indexOf(sourceSql, "(", ")",
+				valuesIndex + INSERT_VALUES.length(), sourceSql.length());
+		if (pairIndex == null) {
 			throw new SqlException("The inser statement must have values: <" + toString(sql) + ">");
 		}
-		
-		return split(sql, pairIndex.getKey() + 1, pairIndex.getValue(), ",").collect(Collectors.toList());
+		return sub(sql, pairIndex.getKey() + 1, pairIndex.getValue());
 	}
-	
+
 	/**
 	 * 解析insert语句的columns
+	 * 
 	 * @param sql
 	 * @return 如果返回内容长度为0说明是插入全表字段的语句
 	 */
-	public static List<String> resolveInsertColumns(Sql sql){
+	public static List<Sql> resolveInsertColumns(Sql sql) {
+		Sql columns = resolveInsertColumnsSql(sql);
+		if (columns == null) {
+			// 没有显示声明columns,说明是插入全表字段的语句
+			return Collections.emptyList();
+		}
+
+		return split(columns, ",").collect(Collectors.toList());
+	}
+
+	/**
+	 * 获取插入语句的columns部分
+	 * 
+	 * @param sql
+	 * @return 如果返回空说明是未显示声明insert columns
+	 */
+	@Nullable
+	public static Sql resolveInsertColumnsSql(Sql sql) {
 		String sourceSql = sql.getSql();
 		sourceSql = sourceSql.toLowerCase();
 		int valuesIndex = sourceSql.indexOf(INSERT_VALUES);
-		if(valuesIndex == -1) {
+		if (valuesIndex == -1) {
 			throw new SqlException("The inser statement must have values keyword: <" + toString(sql) + ">");
 		}
-		
+
 		Pair<Integer, Integer> pairIndex = StringUtils.indexOf(sourceSql, "(", ")", 0, valuesIndex);
-		if(pairIndex == null) {
-			//没有显示声明columns,说明是插入全表字段的语句
-			return Collections.emptyList();
+		if (pairIndex == null) {
+			// 没有显示声明columns,说明是插入全表字段的语句
+			return null;
 		}
-		
-		return split(sql, pairIndex.getKey() + 1, pairIndex.getValue(), ",").map((s) -> s.getSql().trim()).collect(Collectors.toList());
+
+		return sub(sql, pairIndex.getKey() + 1, pairIndex.getValue());
+	}
+
+	/**
+	 * 获取update语句处理的表
+	 * 
+	 * @param sql
+	 * @return
+	 */
+	public static Sql resolveUpdateTables(Sql sql) {
+		String sourceSql = sql.getSql();
+		sourceSql = sourceSql.toLowerCase();
+		if (!sourceSql.startsWith(UPDATE_PREFIX)) {
+			throw new SqlException("This is not an update statement: <" + toString(sql) + ">");
+		}
+
+		int endIndex = sourceSql.indexOf(SET, UPDATE_PREFIX.length());
+		if (endIndex == -1) {
+			throw new SqlException("An update statement cannot have no set: <" + toString(sql) + ">");
+		}
+
+		return sub(sql, UPDATE_PREFIX.length(), endIndex);
+	}
+
+	/**
+	 * 获取insert语句处理的表
+	 * 
+	 * @param sql
+	 * @return
+	 */
+	public static Sql resolveInsertTables(Sql sql) {
+		String sourceSql = sql.getSql();
+		sourceSql = sourceSql.toLowerCase();
+		if (!sourceSql.startsWith(INSERT_PREFIX)) {
+			throw new SqlException("This is not an insert statement: <" + toString(sql) + ">");
+		}
+
+		// TODO 也许不严格吧
+		int endIndex = sourceSql.indexOf("(", INSERT_PREFIX.length());
+		if (endIndex == -1) {
+			throw new IllegalSqlException(toString(sql));
+		}
+
+		return sub(sql, INSERT_PREFIX.length(), endIndex);
+	}
+
+	public static String display(Sql sql) {
+		StringBuilder sb = new StringBuilder();
+		Object[] args = sql.getParams();
+		String sourceSql = sql.getSql();
+		int lastFind = 0;
+		for (int i = 0; i < args.length; i++) {
+			int index = sourceSql.indexOf(PARAMETER_PLACEHOLDER, lastFind);
+			if (index == -1) {
+				break;
+			}
+
+			sb.append(sourceSql.substring(lastFind, index));
+			Object v = args[i];
+			if (v == null) {
+				sb.append("null");
+			} else {
+				if (v instanceof String) {
+					sb.append("'").append(StringUtils.transferredMeaning((String) v, '\'')).append("'");
+				} else {
+					sb.append(v);
+				}
+			}
+			lastFind = index + 1;
+		}
+
+		if (lastFind == 0) {
+			sb.append(sourceSql);
+		} else {
+			sb.append(sourceSql.substring(lastFind));
+		}
+		return sb.toString();
 	}
 }

@@ -29,4 +29,8 @@ public interface Sql {
 	default boolean isStoredProcedure() {
 		return false;
 	}
+
+	default Sql trim() {
+		return new SimpleSql(isStoredProcedure(), getSql().trim(), getParams());
+	}
 }

@@ -1861,7 +1861,7 @@ public final class StringUtils {
 			return null;
 		}
 
-		int begin = indexOf(source, prefix, 0, endIndex);
+		int begin = indexOf(source, prefix, fromIndex, endIndex);
 		if (begin == -1) {
 			return null;
 		}

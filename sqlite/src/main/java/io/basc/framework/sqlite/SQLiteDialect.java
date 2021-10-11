@@ -3,15 +3,13 @@ package io.basc.framework.sqlite;
 import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.orm.sql.Column;
 import io.basc.framework.orm.sql.ColumnDescriptor;
 import io.basc.framework.orm.sql.PaginationSql;
@@ -25,7 +23,6 @@ import io.basc.framework.orm.sql.annotation.Counter;
 import io.basc.framework.sql.EditableSql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
-import io.basc.framework.sql.SqlException;
 import io.basc.framework.sql.SqlExpression;
 import io.basc.framework.sql.SqlUtils;
 import io.basc.framework.util.ClassUtils;
@@ -123,55 +120,6 @@ public class SQLiteDialect extends StandardSqlDialect {
 	}
 
 	@Override
-	public <T> Sql toSaveOrUpdateSql(TableStructure tableStructure, T entity) throws SqlDialectException {
-		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
-		if (primaryKeys.size() == 0) {
-			throw new NullPointerException("not found primary key");
-		}
-
-		Map<String, Object> changeMap = getChangeMap(entity);
-		StringBuilder sb = new StringBuilder(512);
-		StringBuilder cols = new StringBuilder();
-		StringBuilder values = new StringBuilder();
-		List<Object> params = new ArrayList<Object>();
-		Iterator<Column> iterator = tableStructure.iterator();
-		while (iterator.hasNext()) {
-			Column column = iterator.next();
-			Object value = column.getField().getGetter().get(entity);
-			if (column.isAutoIncrement()) {
-				AnyValue anyValue = new AnyValue(value);
-				if (value == null || anyValue.isEmpty() || (anyValue.isNumber() && anyValue.getAsInteger() == 0)) {
-					continue;
-				}
-			}
-
-			keywordProcessing(cols, column.getName());
-			if (column.isPrimaryKey()) {
-				values.append("?");
-				params.add(value);
-			} else {
-				appendUpdateValue(values, params, entity, column, changeMap);
-			}
-
-			if (iterator.hasNext()) {
-				cols.append(",");
-				values.append(",");
-			}
-		}
-
-		sb.append("replace into ");
-		keywordProcessing(sb, tableStructure.getName());
-		sb.append("(");
-		sb.append(cols);
-		sb.append(")");
-		sb.append(VALUES);
-		sb.append("(");
-		sb.append(values);
-		sb.append(")");
-		return new SimpleSql(sb.toString(), params.toArray());
-	}
-
-	@Override
 	protected void appendCounterValue(StringBuilder sb, List<Object> params, Object entity, Column column,
 			AnyValue oldValue, AnyValue newValue, Counter counter) {
 		double change = newValue.getAsDoubleValue() - oldValue.getAsDoubleValue();
@@ -250,7 +198,6 @@ public class SQLiteDialect extends StandardSqlDialect {
 		sql.append(left);
 		sql.append(" ELSE ");
 		sql.append(right);
-		sql.append(")");
 		return sql;
 	}
 
@@ -259,70 +206,59 @@ public class SQLiteDialect extends StandardSqlDialect {
 		/**
 		 * 保存语句 insert into tableName (columns) values (v1, v2, ...) <br/>
 		 * 更新语句 update tableName set a=b where c=d <br/>
-		 * 保存或更新语句 replace into tableName (columns) values (v1, v2, ...) <br/>
+		 * 
+		 * INSERT OR REPLACE into `test_table1`(`id`,`key`,`value`) select 10,2,11 from
+		 * `test_table1` where id=10
 		 */
-		List<String> insertColumns = SqlUtils.resolveInsertColumns(saveSql);
+		
+		/**
+		 * {@link https://stackoverflow.com/questions/418898/sqlite-upsert-not-insert-or-replace/4330694#4330694}
+		 * {@link https://stackoverflow.com/questions/2717590/sqlite-insert-on-duplicate-key-update-upsert}
+		 */
+
+		List<Sql> insertColumns = SqlUtils.resolveInsertColumns(saveSql);
 		if (insertColumns.isEmpty()) {
-			throw new NotSupportedException("Declaration insertion field to display");
+			// 未显示声明插入字段
+			throw new SqlDialectException("Columns to be inserted in the declaration need to be displayed: <"
+					+ SqlUtils.toString(saveSql) + ">");
 		}
 
-		List<Sql> insertValues = SqlUtils.resolveInsertValues(saveSql);
-		if (insertColumns.size() != insertValues.size()) {
-			// 列数量和值数量不一致
-			throw new SqlException("Declaration insertion field to display");
-		}
-
-		String insertSql = saveSql.getSql();
-		insertSql = insertSql.toLowerCase();
-		int prefixEndIndex = insertSql.indexOf("(");
-		if (prefixEndIndex == -1) {
-			throw new IllegalArgumentException(SqlUtils.toString(insertSql));
-		}
+		Set<String> insertColumnSets = insertColumns.stream().map((s) -> SqlUtils.display(s).trim())
+				.collect(Collectors.toSet());
+		// 过滤insert columns后剩下的字段
+		List<SqlExpression> updateColumns = SqlUtils.resolveUpdateSetMap(updateSql).values().stream()
+				.filter((s) -> !insertColumnSets.contains(SqlUtils.display(s.getLeft()).trim()))
+				.collect(Collectors.toList());
 
 		EditableSql sql = new EditableSql();
-		sql.append("replace");
-		sql.append(SqlUtils.sub(saveSql, "insert".length(), prefixEndIndex));
-
-		sql.append("(");
-		Iterator<String> columnsIterator = insertColumns.iterator();
-		while (columnsIterator.hasNext()) {
-			sql.append(columnsIterator.next());
-			if (columnsIterator.hasNext()) {
-				sql.append(",");
+		sql.append("INSERT OR REPLACE INTO ");
+		sql.append(SqlUtils.resolveInsertTables(saveSql));
+		sql.append(" (");
+		Iterator<Sql> iterator = insertColumns.iterator();
+		while (iterator.hasNext()) {
+			sql.append(iterator.next());
+			if (iterator.hasNext()) {
+				sql.append(", ");
 			}
 		}
 
-		Map<String, SqlExpression> setMap = SqlUtils.resolveUpdateSetMap(updateSql);
-		// 过滤掉insert columns中已经存在的字段
-		List<SqlExpression> sets = setMap.values().stream().filter((s) -> !insertColumns.contains(s.getName()))
-				.collect(Collectors.toList());
-		for (SqlExpression expression : sets) {
-			sql.append(",");
+		for (SqlExpression expression : updateColumns) {
+			sql.append(", ");
 			sql.append(expression.getLeft());
 		}
-		sql.append(")");
+		sql.append(") select ");
 
-		columnsIterator = insertColumns.iterator();
-		Iterator<Sql> valuesIterator = insertValues.iterator();
-		Sql updateWhereSql = SqlUtils.resolveUpdateWhereSql(updateSql);
-		sql.append(VALUES);
-		sql.append("(");
-		while (columnsIterator.hasNext() && valuesIterator.hasNext()) {
-			String columnName = columnsIterator.next();
-			Sql value = valuesIterator.next();
-			Sql condition = condition(updateWhereSql, value, new SimpleSql(columnName));
-			sql.append(condition);
-			if (columnsIterator.hasNext() && valuesIterator.hasNext()) {
-				sql.append(",");
-			}
-		}
+		sql.append(SqlUtils.resolveInsertValuesSql(saveSql));
 
-		for (SqlExpression expression : sets) {
+		for (SqlExpression expression : updateColumns) {
 			sql.append(",");
-			Sql condition = condition(updateWhereSql, expression.getRight(), expression.getRight());
-			sql.append(condition);
+			sql.append(expression.getRight());
 		}
-		sql.append(")");
+
+		sql.append(" from ");
+		sql.append(SqlUtils.resolveUpdateTables(updateSql));
+		sql.append(WHERE);
+		sql.append(SqlUtils.resolveUpdateWhereSql(updateSql));
 		return sql;
 	}
 }

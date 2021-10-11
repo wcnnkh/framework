@@ -554,6 +554,11 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		}
 	}
 	
+	@Override
+	public <T> Sql toSaveOrUpdateSql(TableStructure tableStructure, T entity) throws SqlDialectException {
+		return saveOrUpdate(save(tableStructure, entity), update(tableStructure, entity, null));
+	}
+	
 	private Sql getConditionalStatement(TableStructure tableStructure, Object entity){
 		StringBuilder sb = new StringBuilder();
 		List<Object> params = new ArrayList<Object>(8);

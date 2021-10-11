@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
+import io.basc.framework.sql.SqlUtils;
 import io.basc.framework.sqlite.SQLiteDialect;
 import io.basc.framework.util.XUtils;
 
@@ -18,5 +19,6 @@ public class SqlResolveTest {
 		SQLiteDialect sqlDialect = new SQLiteDialect();
 		Sql sql = sqlDialect.saveOrUpdate(saveSql, updateSql);
 		System.out.println(sql);
+		System.out.println(SqlUtils.display(sql));
 	}
 }
