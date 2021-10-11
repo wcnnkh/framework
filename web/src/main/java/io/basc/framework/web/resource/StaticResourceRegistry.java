@@ -11,6 +11,7 @@ import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.placeholder.support.SmartPlaceholderReplacer;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
@@ -55,7 +56,8 @@ public class StaticResourceRegistry extends HttpPatterns<String>
 		if (location == null) {
 			return null;
 		}
-
+		
+		location = SmartPlaceholderReplacer.NON_STRICT_REPLACER.replacePlaceholders(location, (name) -> WebUtils.getRestfulParameterMap(request).get(name));
 		String path = request.getPath();
 		if (path.lastIndexOf(".") == -1) {
 			path = path + getDefaultFileName();
