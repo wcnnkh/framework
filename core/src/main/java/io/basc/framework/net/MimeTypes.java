@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.CollectionUtils;
 
 public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comparable<MimeTypes>, Cloneable {
 	public static final MimeTypes EMPTY = new MimeTypes(Collections.emptySortedSet());
@@ -108,14 +108,7 @@ public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comp
 		}
 		
 		if(obj instanceof MimeTypes) {
-			for(MimeType mimeType : mimeTypes) {
-				for(MimeType mimeType2 : ((MimeTypes)obj).mimeTypes) {
-					if(!ObjectUtils.nullSafeEquals(mimeType, mimeType2)) {
-						return false;
-					}
-				}
-			}
-			return true;
+			return CollectionUtils.equals(mimeTypes, ((MimeTypes)obj).mimeTypes);
 		}
 		return false;
 	}

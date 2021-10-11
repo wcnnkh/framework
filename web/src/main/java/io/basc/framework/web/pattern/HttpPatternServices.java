@@ -3,6 +3,7 @@ package io.basc.framework.web.pattern;
 import io.basc.framework.core.OrderComparator;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.web.ServerHttpRequest;
 
@@ -91,14 +92,7 @@ class HttpPatternServices<T> implements Comparator<T>, ServerHttpRequestAccept {
 		}
 
 		if (obj instanceof HttpPatternServices) {
-			for (Object v : services) {
-				for (Object v2 : ((HttpPatternServices<?>) obj).services) {
-					if (!ObjectUtils.nullSafeEquals(v, v2)) {
-						return false;
-					}
-				}
-			}
-			return true;
+			return CollectionUtils.equals(services, ((HttpPatternServices<?>) obj).services);
 		}
 		return false;
 	}
