@@ -10,11 +10,8 @@ import io.basc.framework.core.annotation.AnnotationUtils;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
-import io.basc.framework.json.JSONSupport;
-import io.basc.framework.json.JSONUtils;
 import io.basc.framework.lang.NotSupportedException;
-import io.basc.framework.logger.Levels;
-import io.basc.framework.logger.Logger;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mvc.action.Action;
 import io.basc.framework.mvc.action.ActionInterceptor;
@@ -23,34 +20,30 @@ import io.basc.framework.mvc.action.ActionManager;
 import io.basc.framework.mvc.action.ActionParameters;
 import io.basc.framework.mvc.annotation.Jsonp;
 import io.basc.framework.mvc.exception.ExceptionHandler;
-import io.basc.framework.net.message.convert.DefaultMessageConverters;
-import io.basc.framework.net.message.convert.MessageConverters;
+import io.basc.framework.mvc.model.ModelAndView;
+import io.basc.framework.mvc.model.ModelAndViewRegistry;
 import io.basc.framework.util.MultiIterable;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.stream.Processor;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.ServerHttpAsyncControl;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.jsonp.JsonpUtils;
-import io.basc.framework.web.model.ModelAndView;
 import io.basc.framework.web.pattern.ServerHttpRequestAccept;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpService.class)
 public class HttpControllerService implements HttpService, ServerHttpRequestAccept, Configurable {
-	private static Logger logger = LoggerFactory.getLogger(HttpControllerService.class);
-	
 	private final ConfigurableServices<ActionInterceptor> actionInterceptors = new ConfigurableServices<>(
 			ActionInterceptor.class);
-	private JSONSupport jsonSupport;
-	private final MessageConverters messageConverters;
 	private final ExceptionHandler exceptionHandler;
 	private final HttpChannelFactory httpChannelFactory;
 	protected final BeanFactory beanFactory;
 	private ActionManager actionManager;
+	private ModelAndViewRegistry modelAndViewRegistry;
 
 	public HttpControllerService(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
-		this.messageConverters = new DefaultMessageConverters(beanFactory.getEnvironment().getConversionService());
 		if (beanFactory.isInstance(HttpChannelFactory.class)) {
 			httpChannelFactory = beanFactory.getInstance(HttpChannelFactory.class);
 		} else {
@@ -61,12 +54,15 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 		this.exceptionHandler = beanFactory.isInstance(ExceptionHandler.class)
 				? beanFactory.getInstance(ExceptionHandler.class)
 				: null;
+
+		if (beanFactory.isInstance(ModelAndViewRegistry.class)) {
+			this.modelAndViewRegistry = beanFactory.getInstance(ModelAndViewRegistry.class);
+		}
 		configure(beanFactory);
 	}
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		messageConverters.configure(serviceLoaderFactory);
 		actionInterceptors.configure(serviceLoaderFactory);
 	}
 
@@ -74,20 +70,121 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 		return actionInterceptors;
 	}
 
-	public MessageConverters getMessageConverters() {
-		return messageConverters;
+	public ModelAndViewRegistry getModelAndViewRegistry() {
+		return modelAndViewRegistry;
 	}
 
-	public JSONSupport getJsonSupport() {
-		return jsonSupport == null ? JSONUtils.getJsonSupport() : jsonSupport;
+	public void setModelAndViewRegistry(ModelAndViewRegistry modelAndViewRegistry) {
+		this.modelAndViewRegistry = modelAndViewRegistry;
 	}
 
-	public void setJsonSupport(JSONSupport jsonSupport) {
-		this.jsonSupport = jsonSupport;
+	protected void service(HttpChannel httpChannel, TypeDescriptor returnType,
+			Processor<HttpChannel, Object, IOException> processor) throws IOException {
+		HttpChannelDestroy httpChannelDestroy = new HttpChannelDestroy(httpChannel);
+		try {
+			Object message = processor.process(httpChannel);
+			if (message != null) {
+				try {
+					TypeDescriptor returnTypeToUse = returnType;
+					if (returnTypeToUse == null || returnTypeToUse.getType() == null) {
+						returnTypeToUse = TypeDescriptor.forObject(message);
+					} else if (returnTypeToUse.getType() == Object.class || returnTypeToUse.getType() == Void.class) {
+						returnTypeToUse = returnTypeToUse.narrow(message);
+					}
+					httpChannel.write(returnTypeToUse, message);
+				} finally {
+					if (httpChannel.getLogger().isDebugEnabled()) {
+						httpChannel.getLogger().debug("Execution {}ms of [{}] response: {}",
+								System.currentTimeMillis() - httpChannel.getCreateTime(),
+								MVCUtils.getRequestLogId(httpChannel.getRequest()), message);
+					}
+				}
+
+			}
+		} finally {
+			if (!httpChannel.isCompleted()) {
+				if (httpChannel.getRequest().isSupportAsyncControl()) {
+					ServerHttpAsyncControl asyncControl = httpChannel.getRequest()
+							.getAsyncControl(httpChannel.getResponse());
+					if (asyncControl.isStarted()) {
+						asyncControl.addListener(httpChannelDestroy);
+						return;
+					}
+				}
+
+				httpChannelDestroy.destroy();
+			}
+			httpChannel.getResponse().close();
+		}
+	}
+
+	private HttpChannel createHttpChannel(ServerHttpRequest request, ServerHttpResponse response,
+			@Nullable Action action) throws IOException {
+		ServerHttpRequest requestToUse = request;
+		ServerHttpResponse responseToUse = response;
+
+		if (action != null) {
+			// jsonp支持
+			Jsonp jsonp = AnnotationUtils.getAnnotation(Jsonp.class, action.getDeclaringClass(), action);
+			if (jsonp != null && jsonp.value()) {
+				responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse);
+			}
+		}
+
+		HttpChannel httpChannel = httpChannelFactory.create(requestToUse, responseToUse);
+		if (action != null) {
+			httpChannel.setLogger(LoggerFactory.getLogger(action.getDeclaringClass().getName()));
+		}
+
+		if (httpChannel.getLogger().isDebugEnabled()) {
+			httpChannel.getLogger().debug("[{}] request: {}", MVCUtils.getRequestLogId(requestToUse), request);
+		}
+		return httpChannel;
+	}
+
+	private void doAction(HttpChannel channel, Action action) throws IOException {
+		service(channel, action.getReturnType(), (httpChannel) -> {
+			MultiIterable<ActionInterceptor> filters = new MultiIterable<ActionInterceptor>(actionInterceptors,
+					action.getActionInterceptors());
+			ActionParameters parameters = new ActionParameters();
+			Object message;
+			try {
+				message = new ActionInterceptorChain(filters.iterator()).intercept(httpChannel, action, parameters);
+			} catch (Throwable e) {
+				httpChannel.getLogger().error(e, httpChannel.toString());
+				message = doError(httpChannel, action, e);
+			}
+
+			/**
+			 * @see ModelAndView
+			 * @see MOdelAndViewMessageConverter
+			 */
+			if (action.getReturnType().getType() == Void.class && message == null) {
+				Object[] args = parameters.getParameters();
+				if (args != null) {
+					for (Object arg : args) {
+						if (arg instanceof ModelAndView) {
+							message = arg;
+							break;
+						}
+					}
+				}
+			}
+			return message;
+		});
 	}
 
 	public boolean accept(ServerHttpRequest request) {
-		return getAction(request) != null;
+		if (getAction(request) != null) {
+			return true;
+		}
+
+		String view = getModelAndViewRegistry().process(request);
+		if (view != null) {
+			MVCUtils.setModelAndView(request, view);
+			return true;
+		}
+		return false;
 	}
 
 	private Action getAction(ServerHttpRequest request) {
@@ -101,89 +198,30 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 
 	@Override
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		Action action = getAction(request);
-		if (action == null) {
-			// 不应该到这里的，因为accept里面已经判断过了
-			throw new NotSupportedException(request.toString());
-		}
 		String requestLogId = MVCUtils.getRequestLogId(request);
 		if (requestLogId == null) {
 			requestLogId = XUtils.getUUID();
 			MVCUtils.setRequestLogId(request, requestLogId);
 		}
 
-		Levels level = MVCUtils.getActionLoggerLevel(action);
-		if (logger.isLoggable(level.getValue())) {
-			logger.log(level.getValue(), "[{}] request: {}", requestLogId, request);
+		Action action = getAction(request);
+		HttpChannel httpChannel = createHttpChannel(request, response, action);
+		if (action != null) {
+			doAction(httpChannel, action);
+			return;
 		}
 
-		ServerHttpRequest requestToUse = request;
-		ServerHttpResponse responseToUse = response;
-
-		// jsonp支持
-		Jsonp jsonp = AnnotationUtils.getAnnotation(Jsonp.class, action.getDeclaringClass(), action);
-		if (jsonp != null && jsonp.value()) {
-			responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse);
+		String path = MVCUtils.getModelAndView(request);
+		if (path == null) {
+			service(httpChannel, ModelAndView.TYPE_DESCRIPTOR, (channel) -> new ModelAndView(path));
+			return;
 		}
 
-		HttpChannel httpChannel = httpChannelFactory.create(requestToUse, responseToUse);
-		HttpChannelDestroy httpChannelDestroy = new HttpChannelDestroy(httpChannel);
-		MultiIterable<ActionInterceptor> filters = new MultiIterable<ActionInterceptor>(actionInterceptors,
-				action.getActionInterceptors());
-		try {
-			ActionParameters parameters = new ActionParameters();
-			Object message;
-			try {
-				message = new ActionInterceptorChain(filters.iterator()).intercept(httpChannel, action, parameters);
-			} catch (Throwable e) {
-				logger.error(e, httpChannel.toString());
-				message = doError(httpChannel, action, e, httpChannelDestroy);
-			}
-			
-			/**
-			 * @see ModelAndView
-			 * @see MOdelAndViewMessageConverter
-			 */
-			TypeDescriptor returnType = action.getReturnType();
-			if(returnType.getType() == Void.class && message == null) {
-				Object[] args = parameters.getParameters();
-				if(args != null) {
-					for(Object arg : args) {
-						if(arg instanceof ModelAndView) {
-							message = arg;
-							returnType = ModelAndView.TYPE_DESCRIPTOR;
-							break;
-						}
-					}
-				}
-			}
-
-			try {
-				httpChannel.write(returnType, message);
-			} finally {
-				if (logger.isLoggable(level.getValue())) {
-					logger.log(level.getValue(), "Execution {}ms of [{}] response: {}",
-							System.currentTimeMillis() - httpChannel.getCreateTime(), requestLogId, message);
-				}
-			}
-		} finally {
-			if (!httpChannel.isCompleted()) {
-				if (requestToUse.isSupportAsyncControl()) {
-					ServerHttpAsyncControl asyncControl = requestToUse.getAsyncControl(responseToUse);
-					if (asyncControl.isStarted()) {
-						asyncControl.addListener(httpChannelDestroy);
-						return;
-					}
-				}
-
-				httpChannelDestroy.destroy();
-			}
-			responseToUse.close();
-		}
+		// 不应该到这里的，因为accept里面已经判断过了
+		throw new NotSupportedException(request.toString());
 	}
 
-	protected Object doError(HttpChannel httpChannel, Action action, Throwable error,
-			HttpChannelDestroy httpChannelDestroy) throws IOException {
+	protected Object doError(HttpChannel httpChannel, Action action, Throwable error) throws IOException {
 		if (exceptionHandler != null) {
 			return exceptionHandler.doHandle(httpChannel, action, error);
 		}

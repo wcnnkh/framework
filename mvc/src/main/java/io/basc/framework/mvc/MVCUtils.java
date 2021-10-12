@@ -1,18 +1,16 @@
 package io.basc.framework.mvc;
 
-import io.basc.framework.core.annotation.AnnotationUtils;
-import io.basc.framework.logger.Levels;
-import io.basc.framework.mvc.action.Action;
-import io.basc.framework.mvc.annotation.LoggerEnable;
-import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.MultiValueMap;
-import io.basc.framework.web.ServerHttpRequest;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import io.basc.framework.mvc.action.Action;
+import io.basc.framework.mvc.model.ModelAndView;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.web.ServerHttpRequest;
 
 public final class MVCUtils {
 	private static final boolean SUPPORT_SERVLET = ClassUtils.isPresent("javax.servlet.Servlet", null);
@@ -76,18 +74,6 @@ public final class MVCUtils {
 		return SUPPORT_SERVLET;
 	}
 
-	/**
-	 * 通过注解获取action可用的debug级别
-	 * 
-	 * @param action
-	 * @return 如果不存在注解则返回空
-	 */
-	public static Levels getActionLoggerLevel(Action action) {
-		LoggerEnable loggerEnable = AnnotationUtils.getAnnotation(LoggerEnable.class, action.getDeclaringClass(),
-				action);
-		return loggerEnable == null ? Levels.DEBUG : loggerEnable.value();
-	}
-
 	public static void setAction(ServerHttpRequest request, Action action) {
 		request.setAttribute(Action.class.getName(), action);
 	}
@@ -102,5 +88,13 @@ public final class MVCUtils {
 	
 	public static String getRequestLogId(ServerHttpRequest request) {
 		return (String) request.getAttribute(REQUEST_LOG_ID);
+	}
+	
+	public static String getModelAndView(ServerHttpRequest request) {
+		return (String) request.getAttribute(ModelAndView.class.getName());
+	}
+	
+	public static void setModelAndView(ServerHttpRequest request, String view) {
+		request.setAttribute(ModelAndView.class.getName(), view);
 	}
 }

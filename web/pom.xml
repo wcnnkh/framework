@@ -14,12 +14,6 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>security</artifactId>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
-		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>javax.ws.rs-api</artifactId>
-		</dependency>
 		
 		<dependency>
 			<groupId>io.basc.framework</groupId>
