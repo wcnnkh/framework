@@ -218,7 +218,7 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 		}
 
 		String path = MVCUtils.getModelAndView(request);
-		if (path == null) {
+		if (path != null) {
 			service(httpChannel, ModelAndView.TYPE_DESCRIPTOR, (channel) -> new ModelAndView(path));
 			return;
 		}
