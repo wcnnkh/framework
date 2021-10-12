@@ -13,7 +13,7 @@ import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.pattern.ServerHttpRequestAccept;
 
-public class StaticResourceHttpService extends LinkedList<StaticResourceResolver>
+public class StaticResourceHttpService extends LinkedList<StaticResourceLoader>
 		implements HttpService, ServerHttpRequestAccept {
 	private static final long serialVersionUID = 1L;
 
@@ -21,7 +21,7 @@ public class StaticResourceHttpService extends LinkedList<StaticResourceResolver
 	}
 
 	public StaticResourceHttpService(ServiceLoaderFactory serviceLoaderFactory) {
-		addAll(serviceLoaderFactory.getServiceLoader(StaticResourceResolver.class).toList());
+		addAll(serviceLoaderFactory.getServiceLoader(StaticResourceLoader.class).toList());
 	}
 
 	public boolean accept(ServerHttpRequest request) {
@@ -29,7 +29,7 @@ public class StaticResourceHttpService extends LinkedList<StaticResourceResolver
 			return false;
 		}
 
-		for (StaticResourceResolver resolver : this) {
+		for (StaticResourceLoader resolver : this) {
 			Resource resource = resolver.getResource(request);
 			if (resource != null && resource.exists()) {
 				return true;
@@ -40,7 +40,7 @@ public class StaticResourceHttpService extends LinkedList<StaticResourceResolver
 
 	@Override
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		for (StaticResourceResolver resolver : this) {
+		for (StaticResourceLoader resolver : this) {
 			Resource resource = resolver.getResource(request);
 			if (resource != null && resource.exists()) {
 				MimeType mimeType = resolver.getMimeType(resource);

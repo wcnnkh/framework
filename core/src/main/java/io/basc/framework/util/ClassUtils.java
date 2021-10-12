@@ -1032,39 +1032,6 @@ public final class ClassUtils {
 		return false;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static boolean isAssignable(Collection<? extends Class> lhsTypes, Class<?> rhsType) {
-		if (CollectionUtils.isEmpty(lhsTypes)) {
-			return false;
-		}
-
-		for (Class<?> lhsType : lhsTypes) {
-			if (isAssignable(lhsType, rhsType)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static boolean isAssignable(Class<?> lhsType, Collection<? extends Class> rhsTypes) {
-		if (CollectionUtils.isEmpty(rhsTypes)) {
-			return false;
-		}
-
-		for (Class<?> rhsType : rhsTypes) {
-			if (isAssignable(lhsType, rhsType)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static boolean isAssignable(Class<?> lhsType, Class... rhsTypes) {
-		return isAssignable(lhsType, Arrays.asList(rhsTypes));
-	}
-
 	public static boolean isAssignable(Collection<Class<?>> lhsTypes, Collection<Class<?>> rhsTypes) {
 		if (CollectionUtils.isEmpty(lhsTypes)) {
 			return CollectionUtils.isEmpty(rhsTypes);
@@ -1096,25 +1063,6 @@ public final class ClassUtils {
 	public static boolean isAssignableValue(Class<?> type, Object value) {
 		Assert.notNull(type, "Type must not be null");
 		return (value != null ? isAssignable(type, value.getClass()) : !type.isPrimitive());
-	}
-
-	public static boolean isAssignableValue(Collection<Class<?>> types, Collection<Object> values) {
-		if (CollectionUtils.isEmpty(types)) {
-			return CollectionUtils.isEmpty(values);
-		}
-
-		if (types.size() != (CollectionUtils.isEmpty(values) ? 0 : values.size())) {
-			return false;
-		}
-
-		Iterator<Class<?>> typeIterator = types.iterator();
-		Iterator<Object> valueIterator = values.iterator();
-		while (typeIterator.hasNext() && valueIterator.hasNext()) {
-			if (!isAssignableValue(typeIterator.next(), valueIterator.next())) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	/**

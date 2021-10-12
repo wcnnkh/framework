@@ -19,17 +19,17 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 	private Map<String, Map<String, HttpPatternServices<ServerHttpRequestAcceptWrapper<T>>>> matcherMap = new HashMap<>();
 	private HttpPatternServices<ServerHttpRequestAcceptWrapper<T>> matchers = new HttpPatternServices<>();
 
-	public Holder<T> add(String path, T service) throws AlreadyExistsException {
-		return add(new HttpPattern(path), service);
+	public Holder<T> add(String pattern, T service) throws AlreadyExistsException {
+		return add(new HttpPattern(pattern), service);
 	}
 
-	private Holder<T> add(String path, String method, ServerHttpRequestAcceptWrapper<T> service)
+	private Holder<T> add(String pattern, String method, ServerHttpRequestAcceptWrapper<T> service)
 			throws AlreadyExistsException {
 		synchronized (matcherMap) {
-			Map<String, HttpPatternServices<ServerHttpRequestAcceptWrapper<T>>> map = matcherMap.get(path);
+			Map<String, HttpPatternServices<ServerHttpRequestAcceptWrapper<T>>> map = matcherMap.get(pattern);
 			if (map == null) {
 				map = new HashMap<>();
-				matcherMap.put(path, map);
+				matcherMap.put(pattern, map);
 			}
 
 			HttpPatternServices<ServerHttpRequestAcceptWrapper<T>> httpPatterns = map.get(method);
@@ -48,7 +48,7 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 			@Override
 			protected boolean releeaseInternal() {
 				synchronized (matcherMap) {
-					Map<String, HttpPatternServices<ServerHttpRequestAcceptWrapper<T>>> map = matcherMap.get(path);
+					Map<String, HttpPatternServices<ServerHttpRequestAcceptWrapper<T>>> map = matcherMap.get(pattern);
 					if (map == null) {
 						return false;
 					}
@@ -64,8 +64,8 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 		};
 	}
 
-	public Holder<T> add(String path, String method, T service) throws AlreadyExistsException {
-		return add(new HttpPattern(path, method), service);
+	public Holder<T> add(String pattern, String method, T service) throws AlreadyExistsException {
+		return add(new HttpPattern(pattern, method), service);
 	}
 
 	public Holder<T> add(T service) throws AlreadyExistsException {

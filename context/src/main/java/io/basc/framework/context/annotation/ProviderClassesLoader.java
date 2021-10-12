@@ -1,11 +1,5 @@
 package io.basc.framework.context.annotation;
 
-import io.basc.framework.context.ClassesLoader;
-import io.basc.framework.core.OrderComparator;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.ClassUtils;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,6 +9,12 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import io.basc.framework.context.ClassesLoader;
+import io.basc.framework.core.OrderComparator;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.ClassUtils;
 
 public class ProviderClassesLoader implements ClassesLoader,
 		Comparator<Class<?>> {
@@ -53,7 +53,7 @@ public class ProviderClassesLoader implements ClassesLoader,
 			if (provider.value().length != 0) {
 				Collection<Class<?>> values = Arrays.asList(provider.value());
 				if (provider.assignableValue()) {
-					if (!ClassUtils.isAssignable(values, serviceClass)) {
+					if(!isAssignable(values)) {
 						continue;
 					}
 				} else {
@@ -86,6 +86,36 @@ public class ProviderClassesLoader implements ClassesLoader,
 			logger.debug("[{}] providers is {}", serviceClass, classes);
 		}
 		return new LinkedHashSet<Class<?>>(classes);
+	}
+	
+	private boolean isAssignable(Class<?> clazz) {
+		if(clazz == null || clazz == Object.class) {
+			return false;
+		}
+		
+		Class<?>[] interfaceClasses = clazz.getInterfaces();
+		if(interfaceClasses != null) {
+			for(Class<?> interfaceClass : interfaceClasses) {
+				if(ClassUtils.isAssignable(serviceClass, interfaceClass)) {
+					return true;
+				}
+			}
+		}
+		
+		if(clazz == serviceClass) {
+			return true;
+		}
+		
+		return isAssignable(clazz.getSuperclass());
+	}
+	
+	public boolean isAssignable(Collection<Class<?>> services) {
+		for(Class<?> clazz : services) {
+			if(isAssignable(clazz)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public int compare(Class<?> o1, Class<?> o2) {
