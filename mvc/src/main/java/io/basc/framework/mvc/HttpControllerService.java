@@ -24,7 +24,6 @@ import io.basc.framework.mvc.model.ModelAndView;
 import io.basc.framework.mvc.model.ModelAndViewRegistry;
 import io.basc.framework.util.MultiIterable;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.stream.Processor;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.ServerHttpAsyncControl;
 import io.basc.framework.web.ServerHttpRequest;
@@ -34,6 +33,8 @@ import io.basc.framework.web.pattern.ServerHttpRequestAccept;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpService.class)
 public class HttpControllerService implements HttpService, ServerHttpRequestAccept, Configurable {
+	private final ConfigurableServices<HttpChannelInterceptor> httpChannelInterceptors = new ConfigurableServices<HttpChannelInterceptor>(
+			HttpChannelInterceptor.class);
 	private final ConfigurableServices<ActionInterceptor> actionInterceptors = new ConfigurableServices<>(
 			ActionInterceptor.class);
 	private final ExceptionHandler exceptionHandler;
@@ -63,11 +64,16 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		httpChannelInterceptors.configure(serviceLoaderFactory);
 		actionInterceptors.configure(serviceLoaderFactory);
 	}
 
 	public ConfigurableServices<ActionInterceptor> getActionInterceptors() {
 		return actionInterceptors;
+	}
+
+	public ConfigurableServices<HttpChannelInterceptor> getHttpChannelInterceptors() {
+		return httpChannelInterceptors;
 	}
 
 	public ModelAndViewRegistry getModelAndViewRegistry() {
@@ -78,30 +84,30 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 		this.modelAndViewRegistry = modelAndViewRegistry;
 	}
 
-	protected void service(HttpChannel httpChannel, TypeDescriptor returnType,
-			Processor<HttpChannel, Object, IOException> processor) throws IOException {
+	protected void service(HttpChannel httpChannel, TypeDescriptor returnType, HttpChannelService service)
+			throws IOException {
 		HttpChannelDestroy httpChannelDestroy = new HttpChannelDestroy(httpChannel);
+		Object message = null;
 		try {
-			Object message = processor.process(httpChannel);
+			HttpChannelInterceptorChain httpChannelInterceptorChain = new HttpChannelInterceptorChain(
+					getHttpChannelInterceptors().iterator(), service);
+			message = httpChannelInterceptorChain.service(httpChannel);
 			if (message != null) {
-				try {
-					TypeDescriptor returnTypeToUse = returnType;
-					if (returnTypeToUse == null || returnTypeToUse.getType() == null) {
-						returnTypeToUse = TypeDescriptor.forObject(message);
-					} else if (returnTypeToUse.getType() == Object.class || returnTypeToUse.getType() == Void.class) {
-						returnTypeToUse = returnTypeToUse.narrow(message);
-					}
-					httpChannel.write(returnTypeToUse, message);
-				} finally {
-					if (httpChannel.getLogger().isDebugEnabled()) {
-						httpChannel.getLogger().debug("Execution {}ms of [{}] response: {}",
-								System.currentTimeMillis() - httpChannel.getCreateTime(),
-								MVCUtils.getRequestLogId(httpChannel.getRequest()), message);
-					}
+				TypeDescriptor returnTypeToUse = returnType;
+				if (returnTypeToUse == null || returnTypeToUse.getType() == null) {
+					returnTypeToUse = TypeDescriptor.forObject(message);
+				} else if (returnTypeToUse.getType() == Object.class || returnTypeToUse.getType() == Void.class) {
+					returnTypeToUse = returnTypeToUse.narrow(message);
 				}
-
+				httpChannel.write(returnTypeToUse, message);
 			}
 		} finally {
+			if (httpChannel.getLogger().isDebugEnabled()) {
+				httpChannel.getLogger().debug("Execution {}ms of [{}] response: {}",
+						System.currentTimeMillis() - httpChannel.getCreateTime(),
+						MVCUtils.getRequestLogId(httpChannel.getRequest()), message);
+			}
+
 			if (!httpChannel.isCompleted()) {
 				if (httpChannel.getRequest().isSupportAsyncControl()) {
 					ServerHttpAsyncControl asyncControl = httpChannel.getRequest()
