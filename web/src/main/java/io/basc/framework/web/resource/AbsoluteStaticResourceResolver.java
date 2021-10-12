@@ -1,23 +1,19 @@
 package io.basc.framework.web.resource;
 
-import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.placeholder.support.SmartPlaceholderReplacer;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebUtils;
 
-public class LocalStaticResourceResolver implements StaticResourceResolver {
+public class AbsoluteStaticResourceResolver implements StaticResourceResolver {
 	private final String location;
 
-	public LocalStaticResourceResolver() {
-		this(null);
-	}
-
-	public LocalStaticResourceResolver(@Nullable String location) {
+	public AbsoluteStaticResourceResolver(String location) {
+		Assert.requiredArgument(location != null, "location");
 		this.location = location;
 	}
 
-	@Nullable
 	public final String getLocation() {
 		return location;
 	}
@@ -38,7 +34,7 @@ public class LocalStaticResourceResolver implements StaticResourceResolver {
 
 	@Override
 	public int hashCode() {
-		return location == null ? 0 : location.hashCode();
+		return location.hashCode();
 	}
 
 	@Override
@@ -47,8 +43,8 @@ public class LocalStaticResourceResolver implements StaticResourceResolver {
 			return false;
 		}
 
-		if (obj instanceof LocalStaticResourceResolver) {
-			return ObjectUtils.nullSafeEquals(obj, ((LocalStaticResourceResolver) obj).location);
+		if (obj instanceof AbsoluteStaticResourceResolver) {
+			return ObjectUtils.nullSafeEquals(obj, ((AbsoluteStaticResourceResolver) obj).location);
 		}
 		return false;
 	}

@@ -38,7 +38,7 @@ public class StaticResourceRegistry extends HttpPatterns<StaticResourceResolver>
 	}
 
 	public void add(String pattern, String location) {
-		add(pattern, new LocalStaticResourceResolver(location));
+		add(pattern, new AbsoluteStaticResourceResolver(location));
 	}
 
 	@Override
