@@ -238,7 +238,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			Object value = getDataBaseValue(column, column.getField());
+			Object value = getDataBaseValue(condition, column.getField());
 			if(value == null && !column.isNullable()) {
 				continue;
 			}
