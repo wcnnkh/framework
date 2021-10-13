@@ -1,5 +1,7 @@
 package io.basc.framework.sqlite.test.orm;
 
+import static org.junit.Assert.assertFalse;
+
 import org.junit.Test;
 
 import io.basc.framework.db.DB;
@@ -23,8 +25,8 @@ public class OrmTest {
 			table1.setId(i);
 			table1.setKey(XUtils.getUUID());
 			table1.setValue(i);
-			boolean b = db.saveIfAbsent(table1);
-			System.out.println("添加数据" + (b ? "成功" : "失败"));
+			db.save(table1);
+			assertFalse(db.saveIfAbsent(table1));
 		}
 	}
 

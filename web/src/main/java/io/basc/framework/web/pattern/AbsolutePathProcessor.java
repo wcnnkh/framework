@@ -24,7 +24,6 @@ public class AbsolutePathProcessor implements Processor<ServerHttpRequest, Strin
 	public String process(ServerHttpRequest request) throws WebException {
 		StringBuilder sb = new StringBuilder();
 		if (location != null) {
-			sb.append("/");
 			sb.append(SmartPlaceholderReplacer.NON_STRICT_REPLACER.replacePlaceholders(location,
 					(name) -> WebUtils.getRestfulParameterMap(request).get(name)));
 		}
