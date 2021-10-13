@@ -712,10 +712,10 @@ public final class SqlUtils {
 			if (v == null) {
 				sb.append("null");
 			} else {
-				if (v instanceof String) {
-					sb.append("'").append(StringUtils.transferredMeaning((String) v, '\'')).append("'");
-				} else {
+				if(ClassUtils.isPrimitiveOrWrapper(v.getClass()) && !ClassUtils.isChar(v.getClass())){
 					sb.append(v);
+				}else {
+					sb.append("'").append(StringUtils.transferredMeaning(String.valueOf(v), '\'')).append("'");
 				}
 			}
 			lastFind = index + 1;

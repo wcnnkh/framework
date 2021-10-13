@@ -12,9 +12,12 @@ import io.basc.framework.orm.EntityOperations;
 import io.basc.framework.orm.MaxValueFactory;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.SqlOperations;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.page.Page;
+import io.basc.framework.util.page.PageSupport;
 import io.basc.framework.util.page.Pages;
+import io.basc.framework.util.page.StreamPages;
 import io.basc.framework.util.stream.Cursor;
 import io.basc.framework.util.stream.Processor;
 
@@ -31,39 +34,57 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	default boolean createTable(@Nullable String tableName, Class<?> entityClass) {
 		TableStructure tableStructure = getSqlDialect().resolve(entityClass);
-		if(StringUtils.isNotEmpty(tableName)) {
+		if (StringUtils.isNotEmpty(tableName)) {
 			tableStructure = tableStructure.rename(tableName);
 		}
 		return createTable(tableStructure);
 	}
-	
+
 	boolean createTable(TableStructure tableStructure);
 
 	@Override
-	default <T> boolean save(Class<? extends T> entityClass, T entity) {
+	default <T> void save(Class<? extends T> entityClass, T entity) {
+		Assert.requiredArgument(entityClass != null, "entityClass");
+		Assert.requiredArgument(entity != null, "entity");
+		save(null, entityClass, entity);
+	}
+
+	<T> int save(@Nullable String tableName, Class<? extends T> entityClass, T entity);
+
+	<T> int save(TableStructure tableStructure, T entity);
+
+	default <T> boolean saveIfAbsent(T entity) {
+		if (entity == null) {
+			return false;
+		}
+
+		return saveIfAbsent(getUserClass(entity.getClass()), entity);
+	}
+
+	default <T> boolean saveIfAbsent(Class<? extends T> entityClass, T entity) {
 		if (entityClass == null || entity == null) {
 			return false;
 		}
 
-		return save(null, entityClass, entity);
+		return saveIfAbsent(null, entityClass, entity);
 	}
 
-	<T> boolean save(@Nullable String tableName, Class<? extends T> entityClass, T entity);
-	
-	<T> int save(TableStructure tableStructure, T entity);
-	
+	<T> boolean saveIfAbsent(@Nullable String tableName, Class<? extends T> entityClass, T entity);
+
+	<T> boolean saveIfAbsent(TableStructure tableStructure, T entity);
+
 	@Override
 	default <T> boolean delete(Class<? extends T> entityClass, T entity) {
 		if (entityClass == null || entity == null) {
 			return false;
 		}
 
-		return delete(null, entityClass, entity);
+		return delete(null, entityClass, entity) > 0;
 	}
-	
+
 	<T> int delete(TableStructure tableStructure, T entity);
 
-	<T> boolean delete(@Nullable String tableName, Class<? extends T> entityClass, T entity);
+	<T> int delete(@Nullable String tableName, Class<? extends T> entityClass, T entity);
 
 	@Override
 	default boolean deleteById(Class<?> entityClass, Object... ids) {
@@ -73,7 +94,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 		return deleteById(null, entityClass, ids);
 	}
-	
+
 	boolean deleteById(@Nullable String tableName, Class<?> entityClass, Object... ids);
 
 	@Override
@@ -82,32 +103,35 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 			return false;
 		}
 
-		return update(null, entityClass, entity);
+		return update(null, entityClass, entity) > 0;
 	}
-	
+
 	<T> int update(TableStructure tableStructure, T entity);
 
-	<T> boolean update(@Nullable String tableName, Class<? extends T> entityClass, T entity);
+	<T> int update(@Nullable String tableName, Class<? extends T> entityClass, T entity);
 
+	/**
+	 * jdbc的url需要加一个参数useAffectedRows=true，mysql默认是false，也就是说默认返回的是查找到的行数，而不是最终变化的行数。
+	 */
 	@Override
 	default <T> boolean saveOrUpdate(Class<? extends T> entityClass, T entity) {
 		if (entityClass == null || entity == null) {
 			return false;
 		}
 
-		return saveOrUpdate(null, entityClass, entity);
+		return saveOrUpdate(null, entityClass, entity) > 0;
 	}
-	
+
 	<T> int saveOrUpdate(TableStructure tableStructure, T entity);
 
-	<T> boolean saveOrUpdate(@Nullable String tableName, Class<? extends T> entityClass, T entity);
+	<T> int saveOrUpdate(@Nullable String tableName, Class<? extends T> entityClass, T entity);
 
 	@Nullable
 	@Override
 	default <T> T getById(Class<? extends T> entityClass, Object... ids) {
 		return getById(null, entityClass, ids);
 	}
-	
+
 	@Nullable
 	<T> T getById(@Nullable String tableName, Class<? extends T> entityClass, Object... ids);
 
@@ -124,23 +148,32 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	<K, V> Map<K, V> getInIds(String tableName, Class<? extends V> entityClass, Collection<? extends K> inPrimaryKeys,
 			Object... primaryKeys);
-	
-	default <T> Page<T> getPage(TypeDescriptor resultType, Sql sql, long pageNumber, long limit){
+
+	default <T> Page<T> getPage(TypeDescriptor resultType, Sql sql, long pageNumber, long limit) {
 		Pages<T> pages = getPages(resultType, sql, pageNumber, limit);
 		return pages.shared();
 	}
-	
+
 	default <T> Page<T> getPage(Class<? extends T> resultType, Sql sql, long pageNumber, long limit) {
 		return getPage(TypeDescriptor.valueOf(resultType), sql, pageNumber, limit);
 	}
-	
-	default <T> Pages<T> getPages(TypeDescriptor resultType, Sql sql, long pageNumber, long limit){
+
+	default <T> Pages<T> getPages(TypeDescriptor resultType, Sql sql, long pageNumber, long limit) {
 		return getPages(sql, pageNumber, limit, getMapProcessor(resultType));
 	}
-	
-	<T> Pages<T> getPages(Sql sql, long pageNumber, long limit, Processor<ResultSet, T, ? extends Throwable> mapProcessor);
 
-	default <T> Pages<T> getPages(Class<? extends T> resultType, Sql sql, long pageNumber, int limit){
+	default <T> Pages<T> getPages(Sql sql, long pageNumber, long limit,
+			Processor<ResultSet, T, ? extends Throwable> mapProcessor) {
+		long start = PageSupport.getStart(pageNumber, limit);
+		long total = count(sql);
+		if (total == 0) {
+			return PageSupport.emptyPages(pageNumber, limit);
+		}
+
+		return new StreamPages<>(total, start, limit, (begin, count) -> limit(sql, begin, count, mapProcessor));
+	}
+
+	default <T> Pages<T> getPages(Class<? extends T> resultType, Sql sql, long pageNumber, int limit) {
 		return getPages(TypeDescriptor.valueOf(resultType), sql, pageNumber, limit);
 	}
 
@@ -188,22 +221,47 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	 */
 	@Nullable
 	<T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, @Nullable String tableName, Field field);
-	
-	default <T> Cursor<T> query(TableStructure tableStructure, T query){
-		Sql sql = getSqlDialect().query(tableStructure, query);
+
+	default <T> Cursor<T> query(TableStructure tableStructure, Sql sql) {
 		return query(sql, new TableStructureMapProcessor<T>(tableStructure));
 	}
-	
-	default <T> Cursor<T> query(Class<? extends T> queryClass, T query){
+
+	default <T> Cursor<T> query(TableStructure tableStructure, T query) {
+		Sql sql = getSqlDialect().query(tableStructure, query);
+		return query(tableStructure, sql);
+	}
+
+	default <T> Cursor<T> query(Class<? extends T> queryClass, T query) {
 		return query(getSqlDialect().resolve(queryClass), query);
 	}
-	
-	default <T> Pages<T> getPages(TableStructure tableStructure, T query, long getNumber, long limit){
+
+	default long count(Sql sql) {
+		Sql countSql = getSqlDialect().toCountSql(sql);
+		return query(long.class, countSql).first();
+	}
+
+	default <T> Cursor<T> limit(TableStructure structure, Sql sql, long start, long limit) {
+		Sql limitSql = getSqlDialect().toLimitSql(sql, start, limit);
+		return query(structure, limitSql);
+	}
+
+	default <T> Cursor<T> limit(Class<? extends T> type, Sql sql, long start, long limit) {
+		Sql limitSql = getSqlDialect().toLimitSql(sql, start, limit);
+		return query(type, limitSql);
+	}
+
+	default <T> Cursor<T> limit(Sql sql, long start, long limit,
+			Processor<ResultSet, ? extends T, ? extends Throwable> processor) {
+		Sql limitSql = getSqlDialect().toLimitSql(sql, start, limit);
+		return prepare(limitSql).query().stream(processor);
+	}
+
+	default <T> Pages<T> getPages(TableStructure tableStructure, T query, long getNumber, long limit) {
 		Sql sql = getSqlDialect().query(tableStructure, query);
 		return getPages(sql, getNumber, limit, new TableStructureMapProcessor<T>(tableStructure));
 	}
-	
-	default <T> Pages<T> getPages(Class<? extends T> queryClass, T query, long getNumber, long limit){
+
+	default <T> Pages<T> getPages(Class<? extends T> queryClass, T query, long getNumber, long limit) {
 		return getPages(getSqlDialect().resolve(queryClass), query, getNumber, limit);
 	}
 }

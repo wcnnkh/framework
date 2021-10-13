@@ -3,7 +3,6 @@ package io.basc.framework.mysql;
 import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.Clob;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -12,13 +11,13 @@ import java.time.Year;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import io.basc.framework.orm.sql.Column;
-import io.basc.framework.orm.sql.PaginationSql;
 import io.basc.framework.orm.sql.SqlDialectException;
 import io.basc.framework.orm.sql.SqlType;
 import io.basc.framework.orm.sql.StandardColumnDescriptor;
@@ -59,11 +58,12 @@ public class MysqlDialect extends StandardSqlDialect {
 		} else if (ClassUtils.isDouble(type)) {
 			return MysqlTypes.DOUBLE;
 		} else if (Date.class.isAssignableFrom(type)) {
+			if (Timestamp.class.isAssignableFrom(type)) {
+				return MysqlTypes.TIMESTAMP;
+			} else if (Time.class.isAssignableFrom(type)) {
+				return MysqlTypes.TIME;
+			}
 			return MysqlTypes.DATE;
-		} else if (Timestamp.class.isAssignableFrom(type)) {
-			return MysqlTypes.TIMESTAMP;
-		} else if (Time.class.isAssignableFrom(type)) {
-			return MysqlTypes.TIME;
 		} else if (Year.class.isAssignableFrom(type)) {
 			return MysqlTypes.YEAR;
 		} else if (Blob.class.isAssignableFrom(type)) {
@@ -256,25 +256,10 @@ public class MysqlDialect extends StandardSqlDialect {
 	}
 
 	@Override
-	public PaginationSql toPaginationSql(Sql sql, long start, long limit) throws SqlDialectException {
-		String str = sql.getSql();
-		int fromIndex = str.toLowerCase().indexOf(" from ");// ignore select
-		if (fromIndex == -1) {
-			throw new IndexOutOfBoundsException(str);
-		}
-
-		String whereSql;
-		int orderIndex = str.toLowerCase().lastIndexOf(" order by ");
-		if (orderIndex == -1) {// 不存在 order by 子语句
-			whereSql = str.substring(fromIndex);
-		} else {
-			whereSql = str.substring(fromIndex, orderIndex);
-		}
-
-		Sql countSql = new SimpleSql("select count(*)" + whereSql, sql.getParams());
-		StringBuilder sb = new StringBuilder(str);
+	public Sql toLimitSql(Sql sql, long start, long limit) throws SqlDialectException {
+		StringBuilder sb = new StringBuilder(sql.getSql());
 		sb.append(" limit ").append(start).append(",").append(limit);
-		return new PaginationSql(countSql, new SimpleSql(sb.toString(), sql.getParams()));
+		return new SimpleSql(sb.toString(), sql.getParams());
 	}
 
 	@Override
@@ -365,5 +350,39 @@ public class MysqlDialect extends StandardSqlDialect {
 			}
 		}
 		return sql;
+	}
+
+	@Override
+	public <T> Sql toSaveIfAbsentSql(TableStructure tableStructure, T entity) throws SqlDialectException {
+		StringBuilder cols = new StringBuilder();
+		StringBuilder values = new StringBuilder();
+		StringBuilder sql = new StringBuilder();
+		List<Object> params = new ArrayList<Object>();
+		Iterator<Column> iterator = tableStructure.iterator();
+		while (iterator.hasNext()) {
+			Column column = iterator.next();
+			if (column.isAutoIncrement()) {
+				continue;
+			}
+
+			if (cols.length() > 0) {
+				cols.append(",");
+				values.append(",");
+			}
+
+			keywordProcessing(cols, column.getName());
+			values.append("?");
+			params.add(getDataBaseValue(entity, column.getField()));
+		}
+		sql.append("insert ignore into ");
+		keywordProcessing(sql, tableStructure.getName());
+		sql.append("(");
+		sql.append(cols);
+		sql.append(")");
+		sql.append(VALUES);
+		sql.append("(");
+		sql.append(values);
+		sql.append(")");
+		return new SimpleSql(sql.toString(), params.toArray());
 	}
 }

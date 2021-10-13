@@ -65,8 +65,10 @@ public interface SqlDialect extends ObjectKeyFormat, TableResolver {
 	}
 
 	Sql toLastInsertIdSql(String tableName) throws SqlDialectException;
-
-	PaginationSql toPaginationSql(Sql sql, long start, long limit) throws SqlDialectException;
+	
+	Sql toCountSql(Sql sql) throws SqlDialectException;
+	
+	Sql toLimitSql(Sql sql, long start, long limit) throws SqlDialectException;
 
 	Sql getInIds(TableStructure tableStructure, Object[] primaryKeys, Collection<?> inPrimaryKeys)
 			throws SqlDialectException;
@@ -119,4 +121,11 @@ public interface SqlDialect extends ObjectKeyFormat, TableResolver {
 	 * @return
 	 */
 	Sql saveOrUpdate(Sql saveSql, Sql updateSql);
+	
+	<T> Sql toSaveIfAbsentSql(TableStructure tableStructure, T entity) throws SqlDialectException;
+
+	default <T> Sql toSaveIfAbsentSql(String tableName, Class<? extends T> entityClass, T entity)
+			throws SqlDialectException {
+		return toSaveIfAbsentSql(resolve(entityClass).rename(tableName), entity);
+	}
 }

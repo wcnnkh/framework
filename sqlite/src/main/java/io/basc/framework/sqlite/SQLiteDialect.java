@@ -3,6 +3,7 @@ package io.basc.framework.sqlite;
 import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -12,7 +13,6 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.orm.sql.Column;
 import io.basc.framework.orm.sql.ColumnDescriptor;
-import io.basc.framework.orm.sql.PaginationSql;
 import io.basc.framework.orm.sql.SqlDialectException;
 import io.basc.framework.orm.sql.SqlType;
 import io.basc.framework.orm.sql.StandardColumnDescriptor;
@@ -156,28 +156,6 @@ public class SQLiteDialect extends StandardSqlDialect {
 	}
 
 	@Override
-	public PaginationSql toPaginationSql(Sql sql, long start, long limit) throws SqlDialectException {
-		String str = sql.getSql();
-		int fromIndex = str.toLowerCase().indexOf(" from ");// ignore select
-		if (fromIndex == -1) {
-			throw new IndexOutOfBoundsException(str);
-		}
-
-		String whereSql;
-		int orderIndex = str.toLowerCase().lastIndexOf(" order by ");
-		if (orderIndex == -1) {// 不存在 order by 子语句
-			whereSql = str.substring(fromIndex);
-		} else {
-			whereSql = str.substring(fromIndex, orderIndex);
-		}
-
-		Sql countSql = new SimpleSql("select count(*)" + whereSql, sql.getParams());
-		StringBuilder sb = new StringBuilder(str);
-		sb.append(" limit ").append(start).append(",").append(limit);
-		return new PaginationSql(countSql, new SimpleSql(sb.toString(), sql.getParams()));
-	}
-
-	@Override
 	public Sql toCopyTableStructureSql(Class<?> entityClass, String newTableName, String oldTableName)
 			throws SqlDialectException {
 		StringBuilder sb = new StringBuilder();
@@ -210,7 +188,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 		 * INSERT OR REPLACE into `test_table1`(`id`,`key`,`value`) select 10,2,11 from
 		 * `test_table1` where id=10
 		 */
-		
+
 		/**
 		 * {@link https://stackoverflow.com/questions/418898/sqlite-upsert-not-insert-or-replace/4330694#4330694}
 		 * {@link https://stackoverflow.com/questions/2717590/sqlite-insert-on-duplicate-key-update-upsert}
@@ -260,5 +238,46 @@ public class SQLiteDialect extends StandardSqlDialect {
 		sql.append(WHERE);
 		sql.append(SqlUtils.resolveUpdateWhereSql(updateSql));
 		return sql;
+	}
+
+	@Override
+	public <T> Sql toSaveIfAbsentSql(TableStructure tableStructure, T entity) throws SqlDialectException {
+		StringBuilder cols = new StringBuilder();
+		StringBuilder values = new StringBuilder();
+		StringBuilder sql = new StringBuilder();
+		List<Object> params = new ArrayList<Object>();
+		Iterator<Column> iterator = tableStructure.iterator();
+		while (iterator.hasNext()) {
+			Column column = iterator.next();
+			if (column.isAutoIncrement()) {
+				continue;
+			}
+
+			if (cols.length() > 0) {
+				cols.append(",");
+				values.append(",");
+			}
+
+			keywordProcessing(cols, column.getName());
+			values.append("?");
+			params.add(getDataBaseValue(entity, column.getField()));
+		}
+		sql.append("insert or ignore into ");
+		keywordProcessing(sql, tableStructure.getName());
+		sql.append("(");
+		sql.append(cols);
+		sql.append(")");
+		sql.append(VALUES);
+		sql.append("(");
+		sql.append(values);
+		sql.append(")");
+		return new SimpleSql(sql.toString(), params.toArray());
+	}
+
+	@Override
+	public Sql toLimitSql(Sql sql, long start, long limit) throws SqlDialectException {
+		StringBuilder sb = new StringBuilder(sql.getSql());
+		sb.append(" limit ").append(start).append(",").append(limit);
+		return new SimpleSql(sb.toString(), sql.getParams());
 	}
 }
