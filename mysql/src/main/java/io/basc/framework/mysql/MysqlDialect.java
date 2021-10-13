@@ -3,7 +3,6 @@ package io.basc.framework.mysql;
 import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.Clob;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
@@ -12,6 +11,7 @@ import java.time.Year;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -59,11 +59,12 @@ public class MysqlDialect extends StandardSqlDialect {
 		} else if (ClassUtils.isDouble(type)) {
 			return MysqlTypes.DOUBLE;
 		} else if (Date.class.isAssignableFrom(type)) {
+			if (Timestamp.class.isAssignableFrom(type)) {
+				return MysqlTypes.TIMESTAMP;
+			} else if (Time.class.isAssignableFrom(type)) {
+				return MysqlTypes.TIME;
+			}
 			return MysqlTypes.DATE;
-		} else if (Timestamp.class.isAssignableFrom(type)) {
-			return MysqlTypes.TIMESTAMP;
-		} else if (Time.class.isAssignableFrom(type)) {
-			return MysqlTypes.TIME;
 		} else if (Year.class.isAssignableFrom(type)) {
 			return MysqlTypes.YEAR;
 		} else if (Blob.class.isAssignableFrom(type)) {
