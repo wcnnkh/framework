@@ -14,4 +14,12 @@ public interface Holder<T> extends Status<T> {
 	 * @return
 	 */
 	boolean release();
+
+	/**
+	 * 这个持有者是否是活跃的
+	 * 
+	 * @see AbstractHolder#isActive()
+	 */
+	@Override
+	boolean isActive();
 }

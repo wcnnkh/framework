@@ -42,17 +42,13 @@ public class DefaultEntityOperations implements EntityOperations{
 	}
 
 	@Override
-	public <T> boolean save(Class<? extends T> entityClass, T entity) {
+	public <T> void save(Class<? extends T> entityClass, T entity) {
 		generatorProcessor.process(entityClass, entity);
 		CacheManager cacheManager = getCacheManager();
 		if (cacheManager != null) {
-			if (!cacheManager.save(entityClass, entity)) {
-				logger.error("save [{}] to cache error: {}", entityClass,
-						JSONUtils.getJsonSupport().toJSONString(entity));
-				return false;
-			}
+			cacheManager.save(entityClass, entity);
 		}
-		return entityOperations.save(entityClass, entity);
+		entityOperations.save(entityClass, entity);
 	}
 
 	@Override

@@ -6,22 +6,22 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class StreamPageable<K, T> implements Pageable<K, T> {
-	private final Supplier<Stream<T>> stream;
+	private final Supplier<Stream<T>> suppler;
 	private final K cursorId;
 	private final K nextCursorId;
 	private final long count;
 
-	public StreamPageable(K cursorId, Supplier<Stream<T>> stream, K nextCursorId,
+	public StreamPageable(K cursorId, Supplier<Stream<T>> suppler, K nextCursorId,
 			long count) {
 		this.cursorId = cursorId;
 		this.nextCursorId = nextCursorId;
-		this.stream = stream;
+		this.suppler = suppler;
 		this.count = count;
 	}
 
 	@Override
 	public List<T> rows() {
-		return stream.get().collect(Collectors.toList());
+		return stream().collect(Collectors.toList());
 	}
 
 	@Override
@@ -39,8 +39,16 @@ public class StreamPageable<K, T> implements Pageable<K, T> {
 		return nextCursorId;
 	}
 
+	private volatile Stream<T> stream;
 	@Override
 	public Stream<T> stream() {
-		return stream.get();
+		if(stream == null) {
+			synchronized (this) {
+				if(stream == null) {
+					stream = suppler.get();
+				}
+			}
+		}
+		return stream;
 	}
 }

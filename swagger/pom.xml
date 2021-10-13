@@ -15,7 +15,7 @@
 
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>web</artifactId>
+			<artifactId>mvc</artifactId>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-jaxrs2 -->

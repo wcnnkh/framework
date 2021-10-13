@@ -1,13 +1,15 @@
 package io.basc.framework.web.pattern;
 
 import io.basc.framework.core.OrderComparator.OrderSourceProvider;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.web.ServerHttpRequest;
 
 class ServerHttpRequestAcceptWrapper<T> implements ServerHttpRequestAccept, OrderSourceProvider {
 	private final T service;
 	private final HttpPattern pattern;
 
-	public ServerHttpRequestAcceptWrapper(HttpPattern pattern, T service) {
+	public ServerHttpRequestAcceptWrapper(@Nullable HttpPattern pattern, T service) {
 		this.pattern = pattern;
 		this.service = service;
 	}
@@ -35,6 +37,34 @@ class ServerHttpRequestAcceptWrapper<T> implements ServerHttpRequestAccept, Orde
 
 	@Override
 	public String toString() {
-		return service.toString();
+		if(pattern == null) {
+			return service.toString();
+		}
+		return pattern.toString() + " -> " + service.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		if (pattern == null) {
+			return service.hashCode();
+		}
+
+		return pattern.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof ServerHttpRequestAcceptWrapper) {
+			if (pattern == null) {
+				return ObjectUtils.nullSafeEquals(this.service, ((ServerHttpRequestAcceptWrapper<?>) obj).service);
+			} else {
+				return ObjectUtils.nullSafeEquals(this.pattern, ((ServerHttpRequestAcceptWrapper<?>) obj).pattern);
+			}
+		}
+		return false;
 	}
 }

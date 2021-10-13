@@ -2,25 +2,18 @@ package io.basc.framework.web.resource;
 
 import java.io.IOException;
 
-import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.Ordered;
 import io.basc.framework.env.Sys;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.WebUtils;
-import io.basc.framework.web.pattern.HttpPatterns;
-import io.basc.framework.web.pattern.ServerHttpRequestAccept;
+import io.basc.framework.web.pattern.PathRegistry;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE)
-public class StaticResourceRegistry extends HttpPatterns<String>
-		implements HttpService, ServerHttpRequestAccept, StaticResourceResolver {
+public class StaticResourceRegistry extends PathRegistry implements HttpService {
 	private String defaultFileName = "index.html";
 	private ResourceLoader resourceLoader;
 
@@ -51,19 +44,15 @@ public class StaticResourceRegistry extends HttpPatterns<String>
 	}
 
 	public Resource getResource(ServerHttpRequest request) {
-		String location = get(request);
-		if (location == null) {
+		String path = process(request);
+		if (path == null) {
 			return null;
 		}
 
-		String path = request.getPath();
-		if (path.lastIndexOf(".") == -1) {
-			path = path + getDefaultFileName();
+		if (path.endsWith("/")) {
+			path += getDefaultFileName();
 		}
-
-		String realPath = StringUtils.cleanPath(location + path);
-		Assert.securePath(realPath);
-		return getResourceLoader().getResource(realPath);
+		return getResourceLoader().getResource(path);
 	}
 
 	public MimeType getMimeType(Resource resource) {

@@ -12,7 +12,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>web</artifactId>
+			<artifactId>mvc</artifactId>
 		</dependency>
 	</dependencies>
 </project>

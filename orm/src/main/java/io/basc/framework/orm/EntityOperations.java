@@ -2,21 +2,19 @@ package io.basc.framework.orm;
 
 import io.basc.framework.aop.support.ProxyUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
 
 public interface EntityOperations {
 	default Class<?> getUserClass(Class<?> entityClass) {
 		return ProxyUtils.getFactory().getUserClass(entityClass);
 	}
 	
-	default boolean save(Object entity) {
-		if (entity == null) {
-			return false;
-		}
-
-		return save(getUserClass(entity.getClass()), entity);
+	default void save(Object entity) {
+		Assert.requiredArgument(entity != null, "entity");
+		save(getUserClass(entity.getClass()), entity);
 	}
 
-	<T> boolean save(Class<? extends T> entityClass, T entity);
+	<T> void save(Class<? extends T> entityClass, T entity);
 
 	default boolean delete(Object entity) {
 		if (entity == null) {

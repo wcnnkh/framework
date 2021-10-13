@@ -89,7 +89,7 @@
 						<groupId>javax.servlet</groupId>
 						<artifactId>servlet-api</artifactId>
 					</exclusion>
-				
+
 					<exclusion>
 						<groupId>com.netflix.archaius</groupId>
 						<artifactId>archaius-core</artifactId>
@@ -98,7 +98,7 @@
 						<groupId>com.github.vlsi.compactmap</groupId>
 						<artifactId>compactmap</artifactId>
 					</exclusion>
-					
+
 					<exclusion>
 						<groupId>com.google.code.findbugs</groupId>
 						<artifactId>jsr305</artifactId>
@@ -679,6 +679,12 @@
 				<artifactId>validation</artifactId>
 				<version>1.8.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>jstl</artifactId>
+				<version>1.8.0</version>
+			</dependency>
 
 			<!-- 测试 -->
 			<dependency>
@@ -912,5 +918,6 @@
 		<module>sqlserver</module>
 		<module>xml</module>
 		<module>testing</module>
+		<module>jstl</module>
 	</modules>
 </project>

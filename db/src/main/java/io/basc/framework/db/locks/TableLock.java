@@ -31,11 +31,7 @@ class TableLock extends RenewableLock {
 					+ getTimeout(TimeUnit.MILLISECONDS));
 			lockTable.setName(name);
 			lockTable.setValue(value);
-			try {
-				return db.save(lockTable);
-			} catch (Exception e) {
-				return false;
-			}
+			return db.saveIfAbsent(lockTable);
 		} else if (cts > lockTable.getExpirationTime()) {
 			// 到期了
 			Sql sql = new SimpleSql("update " + TABLE_NAME

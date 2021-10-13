@@ -34,9 +34,9 @@ public final class ServletUtils {
 		return asyncSupport;
 	}
 
-	public static void jsp(ServletRequest request, ServletResponse response, String page)
+	public static void forward(ServletRequest request, ServletResponse response, String path)
 			throws ServletException, IOException {
-		RequestDispatcher dispatcher = request.getRequestDispatcher(page);
+		RequestDispatcher dispatcher = request.getRequestDispatcher(path);
 		dispatcher.forward(request, response);
 	}
 

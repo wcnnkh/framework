@@ -10,6 +10,9 @@ import io.basc.framework.core.parameter.DefaultParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.mvc.message.RequestBeanFactory;
+import io.basc.framework.mvc.message.WebMessageConverter;
+import io.basc.framework.mvc.message.WebMessagelConverterException;
 import io.basc.framework.mvc.security.UserSessionManager;
 import io.basc.framework.mvc.view.View;
 import io.basc.framework.security.login.UserToken;
@@ -19,16 +22,14 @@ import io.basc.framework.util.XUtils;
 import io.basc.framework.value.Value;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
-import io.basc.framework.web.message.RequestBeanFactory;
-import io.basc.framework.web.message.WebMessageConverter;
-import io.basc.framework.web.message.WebMessagelConverterException;
 
 public class DefaultHttpChannel extends RequestBeanFactory implements HttpChannel, Destroy, Decorator {
-	private static Logger logger = LoggerFactory.getLogger(DefaultHttpChannel.class);
+	private static Logger defaultLogger = LoggerFactory.getLogger(DefaultHttpChannel.class);
 	private final long createTime;
 	private boolean completed = false;
 	private final ServerHttpResponse response;
 	private final UserSessionManager userSessionManager;
+	private Logger logger;
 
 	public DefaultHttpChannel(BeanFactory beanFactory, ServerHttpRequest request, ServerHttpResponse response,
 			WebMessageConverter messageConverter, UserSessionManager userSessionManager) {
@@ -36,6 +37,14 @@ public class DefaultHttpChannel extends RequestBeanFactory implements HttpChanne
 		this.createTime = System.currentTimeMillis();
 		this.response = response;
 		this.userSessionManager = userSessionManager;
+	}
+
+	public Logger getLogger() {
+		return logger == null ? defaultLogger : logger;
+	}
+
+	public void setLogger(Logger logger) {
+		this.logger = logger;
 	}
 
 	public void write(TypeDescriptor type, Object body) throws WebMessagelConverterException, IOException {
@@ -61,8 +70,8 @@ public class DefaultHttpChannel extends RequestBeanFactory implements HttpChanne
 		}
 
 		completed = true;
-		if (logger.isTraceEnabled()) {
-			logger.trace("destroy channel: {}", toString());
+		if (getLogger().isTraceEnabled()) {
+			getLogger().trace("destroy channel: {}", toString());
 		}
 
 		super.destroy();
@@ -103,8 +112,8 @@ public class DefaultHttpChannel extends RequestBeanFactory implements HttpChanne
 		if (parameterDescriptor.getType().isInstance(this)) {
 			return this;
 		}
-		
-		if(UserToken.class == parameterDescriptor.getType()) {
+
+		if (UserToken.class == parameterDescriptor.getType()) {
 			ResolvableType resolvableType = ResolvableType.forType(parameterDescriptor.getGenericType());
 			return getUserToken(resolvableType.getGeneric(0).getRawClass());
 		}

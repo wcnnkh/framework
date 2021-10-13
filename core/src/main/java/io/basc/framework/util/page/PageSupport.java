@@ -54,10 +54,10 @@ public class PageSupport {
 			List<T> list) {
 		return new SharedPage<>(getStart(pageNumber, limit), list, limit, total);
 	}
-
+	
 	public static <T> Pages<T> getPages(Page<T> page,
 			CursorProcessor<Long, T> processor) {
-		return new DefaultPages<>(page, processor);
+		return new StreamPages<>(page, processor);
 	}
 
 	public static <K, T> Pageable<K, T> emptyPageable(K cursorId, long count) {

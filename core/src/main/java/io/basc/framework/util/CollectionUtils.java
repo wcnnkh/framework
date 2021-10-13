@@ -619,4 +619,50 @@ public abstract class CollectionUtils {
 		}
 		return 0;
 	}
+
+	/**
+	 * 判断两个集合内容是否相同，不用关心内容的顺序
+	 * 
+	 * @param left
+	 * @param right
+	 * @return
+	 */
+	public static boolean equals(Collection<?> left, Collection<?> right) {
+		return equals(left, right, (o1, o2) -> ObjectUtils.nullSafeEquals(o1, o2) ? 0 : 1);
+	}
+
+	/**
+	 * 判断两个集合内容是否相同，不用关心内容的顺序
+	 * 
+	 * @param left
+	 * @param right
+	 * @param comparator 返回0就认为相等，忽略其他值
+	 * @return
+	 */
+	public static boolean equals(Collection<?> left, Collection<?> right, Comparator<Object> comparator) {
+		if (isEmpty(left) ^ isEmpty(right)) {
+			return false;
+		}
+
+		if (left.size() != right.size()) {
+			return false;
+		}
+
+		List<?> leftValues = new ArrayList<>(left);
+		List<?> rightValues = new ArrayList<>(right);
+		Iterator<?> leftIterator = leftValues.iterator();
+		while (leftIterator.hasNext()) {
+			Object leftValue = leftIterator.next();
+			Iterator<?> rightIterator = rightValues.iterator();
+			while (rightIterator.hasNext()) {
+				Object rightValue = rightIterator.next();
+				if (comparator.compare(leftValue, rightValue) == 0) {
+					leftIterator.remove();
+					rightIterator.remove();
+					break;
+				}
+			}
+		}
+		return leftValues.isEmpty() && rightValues.isEmpty();
+	}
 }

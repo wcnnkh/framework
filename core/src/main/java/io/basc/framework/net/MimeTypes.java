@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import io.basc.framework.util.CollectionUtils;
+
 public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comparable<MimeTypes>, Cloneable {
 	public static final MimeTypes EMPTY = new MimeTypes(Collections.emptySortedSet());
 	private final SortedSet<MimeType> mimeTypes;
@@ -18,7 +20,7 @@ public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comp
 	public MimeTypes(SortedSet<MimeType> mimeTypes) {
 		this(mimeTypes, false);
 	}
-	
+
 	protected MimeTypes(SortedSet<MimeType> mimeTypes, boolean readyOnly) {
 		this.mimeTypes = new TreeSet<MimeType>(mimeTypes);
 		this.readyOnly = readyOnly;
@@ -30,6 +32,10 @@ public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comp
 
 	public final SortedSet<MimeType> getMimeTypes() {
 		return readyOnly ? Collections.unmodifiableSortedSet(mimeTypes) : mimeTypes;
+	}
+	
+	public boolean isEmpty() {
+		return mimeTypes.isEmpty();
 	}
 
 	public final MimeTypes add(MimeType... mimeTypes) {
@@ -44,40 +50,66 @@ public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comp
 	}
 
 	public final MimeTypes readyOnly() {
-		if(readyOnly){
+		if (readyOnly) {
 			return this;
 		}
-		
+
 		return new MimeTypes(mimeTypes, true);
 	}
 
 	public int compare(MimeType o1, MimeType o2) {
 		return MimeTypeUtils.SPECIFICITY_COMPARATOR.compare(o1, o2);
 	}
-	
+
 	@Override
 	public int compareTo(MimeTypes o) {
+		if(this.equals(o)) {
+			return 0;
+		}
+		
 		for (MimeType mimeType1 : mimeTypes) {
 			for (MimeType mimeType2 : o.mimeTypes) {
-				if(mimeType1.compareTo(mimeType2) > 0){
+				if (mimeType1.compareTo(mimeType2) > 0) {
 					return 1;
 				}
 			}
 		}
 		return -1;
 	}
-	
-	public boolean isCompatibleWith(MimeType mimeType){
-		for(MimeType mime : mimeTypes){
-			if(mime.isCompatibleWith(mimeType)){
+
+	public boolean isCompatibleWith(MimeType mimeType) {
+		for (MimeType mime : mimeTypes) {
+			if (mime.isCompatibleWith(mimeType)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	@Override
 	public MimeTypes clone() {
 		return new MimeTypes(mimeTypes, readyOnly);
+	}
+
+	@Override
+	public int hashCode() {
+		return mimeTypes.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return mimeTypes.toString();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null) {
+			return false;
+		}
+		
+		if(obj instanceof MimeTypes) {
+			return CollectionUtils.equals(mimeTypes, ((MimeTypes)obj).mimeTypes);
+		}
+		return false;
 	}
 }

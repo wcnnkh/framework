@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class SwaggerRequestBodyMessageConverter
-		extends io.basc.framework.web.message.support.RequestBodyMessageConverter {
+		extends io.basc.framework.mvc.message.support.RequestBodyMessageConverter {
 
 	@Override
 	public boolean canRead(ParameterDescriptor parameterDescriptor, ServerHttpRequest request) {
