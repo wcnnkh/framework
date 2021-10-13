@@ -3,13 +3,17 @@ package io.basc.framework.util.page;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class DefaultPages<T> implements Pages<T> {
+public class StreamPages<T> implements Pages<T> {
 	private final Page<T> page;
 	private final CursorProcessor<Long, T> cursorProcessor;
 
-	public DefaultPages(Page<T> page, CursorProcessor<Long, T> cursorProcessor) {
+	public StreamPages(Page<T> page, CursorProcessor<Long, T> cursorProcessor) {
 		this.page = page;
 		this.cursorProcessor = cursorProcessor;
+	}
+
+	public StreamPages(long total, long cursorId, long count, CursorProcessor<Long, T> cursorProcessor) {
+		this(new StreamPage<>(cursorId, () -> cursorProcessor.process(cursorId, count), count, total), cursorProcessor);
 	}
 
 	@Override
@@ -44,9 +48,7 @@ public class DefaultPages<T> implements Pages<T> {
 
 	@Override
 	public Pages<T> jumpTo(Long cursorId) {
-		Page<T> page = new StreamPage<>(cursorId, () -> cursorProcessor.process(cursorId, this.page.getCount()), this.page.getCount(),
-				this.page.getTotal());
-		return new DefaultPages<>(page, cursorProcessor);
+		return new StreamPages<>(getTotal(), cursorId, getCount(), cursorProcessor);
 	}
 
 	@Override

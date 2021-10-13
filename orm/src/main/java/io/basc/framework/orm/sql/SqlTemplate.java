@@ -15,7 +15,9 @@ import io.basc.framework.sql.SqlOperations;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.page.Page;
+import io.basc.framework.util.page.PageSupport;
 import io.basc.framework.util.page.Pages;
+import io.basc.framework.util.page.StreamPages;
 import io.basc.framework.util.stream.Cursor;
 import io.basc.framework.util.stream.Processor;
 
@@ -160,8 +162,16 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return getPages(sql, pageNumber, limit, getMapProcessor(resultType));
 	}
 
-	<T> Pages<T> getPages(Sql sql, long pageNumber, long limit,
-			Processor<ResultSet, T, ? extends Throwable> mapProcessor);
+	default <T> Pages<T> getPages(Sql sql, long pageNumber, long limit,
+			Processor<ResultSet, T, ? extends Throwable> mapProcessor) {
+		long start = PageSupport.getStart(pageNumber, limit);
+		long total = count(sql);
+		if (total == 0) {
+			return PageSupport.emptyPages(pageNumber, limit);
+		}
+
+		return new StreamPages<>(total, start, limit, (begin, count) -> limit(sql, begin, count, mapProcessor));
+	}
 
 	default <T> Pages<T> getPages(Class<? extends T> resultType, Sql sql, long pageNumber, int limit) {
 		return getPages(TypeDescriptor.valueOf(resultType), sql, pageNumber, limit);
@@ -212,13 +222,38 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	@Nullable
 	<T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, @Nullable String tableName, Field field);
 
+	default <T> Cursor<T> query(TableStructure tableStructure, Sql sql) {
+		return query(sql, new TableStructureMapProcessor<T>(tableStructure));
+	}
+
 	default <T> Cursor<T> query(TableStructure tableStructure, T query) {
 		Sql sql = getSqlDialect().query(tableStructure, query);
-		return query(sql, new TableStructureMapProcessor<T>(tableStructure));
+		return query(tableStructure, sql);
 	}
 
 	default <T> Cursor<T> query(Class<? extends T> queryClass, T query) {
 		return query(getSqlDialect().resolve(queryClass), query);
+	}
+
+	default long count(Sql sql) {
+		Sql countSql = getSqlDialect().toCountSql(sql);
+		return query(long.class, countSql).first();
+	}
+
+	default <T> Cursor<T> limit(TableStructure structure, Sql sql, long start, long limit) {
+		Sql limitSql = getSqlDialect().toLimitSql(sql, start, limit);
+		return query(structure, limitSql);
+	}
+
+	default <T> Cursor<T> limit(Class<? extends T> type, Sql sql, long start, long limit) {
+		Sql limitSql = getSqlDialect().toLimitSql(sql, start, limit);
+		return query(type, limitSql);
+	}
+
+	default <T> Cursor<T> limit(Sql sql, long start, long limit,
+			Processor<ResultSet, ? extends T, ? extends Throwable> processor) {
+		Sql limitSql = getSqlDialect().toLimitSql(sql, start, limit);
+		return prepare(limitSql).query().stream(processor);
 	}
 
 	default <T> Pages<T> getPages(TableStructure tableStructure, T query, long getNumber, long limit) {

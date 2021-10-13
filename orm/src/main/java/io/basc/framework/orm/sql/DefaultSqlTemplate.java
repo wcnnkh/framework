@@ -27,10 +27,6 @@ import io.basc.framework.sql.DefaultSqlOperations;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.SqlException;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.page.Page;
-import io.basc.framework.util.page.PageSupport;
-import io.basc.framework.util.page.Pages;
-import io.basc.framework.util.page.SharedPage;
 import io.basc.framework.util.stream.Cursor;
 import io.basc.framework.util.stream.Processor;
 
@@ -150,29 +146,6 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	public <T> Processor<ResultSet, T, Throwable> getMapProcessor(TypeDescriptor type) {
 		return new MapProcessDecorator<>(getMapper(), new SmartMapProcessor<>(sqlDialect, type),
 				(Class<T>) type.getType());
-	}
-
-	@Override
-	public <T> Pages<T> getPages(Sql sql, long pageNumber, long limit,
-			Processor<ResultSet, T, ? extends Throwable> mapProcessor) {
-		if (limit <= 0 || pageNumber <= 0) {
-			throw new RuntimeException("page=" + pageNumber + ", limit=" + limit);
-		}
-
-		long start = PageSupport.getStart(pageNumber, limit);
-		PaginationSql paginationSql = sqlDialect.toPaginationSql(sql, start, limit);
-		Long total = query(Long.class, paginationSql.getCountSql()).first();
-		if (total == null || total == 0) {
-			return PageSupport.emptyPages(pageNumber, limit);
-		}
-
-		Cursor<T> cursor = query(paginationSql.getResultSql(), mapProcessor);
-		Page<T> page = new SharedPage<T>(start, cursor.shared(), limit, total);
-		return PageSupport.getPages(page, (startIndex, count) -> {
-			Cursor<T> rows = query(sqlDialect.toPaginationSql(sql, startIndex, count).getResultSql(), mapProcessor);
-			// 因为是分页，每一页的内部没必要使用流，所在这里调用了shared
-			return rows.shared().stream();
-		});
 	}
 
 	public TableChanges getTableChanges(Class<?> tableClass, String tableName) {

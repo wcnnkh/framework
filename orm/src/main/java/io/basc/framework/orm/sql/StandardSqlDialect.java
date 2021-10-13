@@ -19,11 +19,14 @@ import io.basc.framework.mapper.Field;
 import io.basc.framework.orm.annotation.Version;
 import io.basc.framework.orm.sql.annotation.AnnotationTableResolver;
 import io.basc.framework.orm.sql.annotation.Counter;
+import io.basc.framework.sql.EditableSql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
+import io.basc.framework.sql.SqlUtils;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.XUtils;
 import io.basc.framework.value.AnyValue;
 
 /**
@@ -567,5 +570,33 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
 	
-	
+	@Override
+	public Sql toCountSql(Sql sql) throws SqlDialectException {
+		String str = sql.getSql();
+		str = str.toLowerCase();
+		if(str.lastIndexOf(" group by ") != -1) {
+			//如果存在group by语句
+			EditableSql countSql = new EditableSql();
+			countSql.append("select count(*) from (");
+			countSql.append(sql);
+			countSql.append(") as basc_" + XUtils.getUUID());
+			return countSql;
+		}
+		
+		int fromIndex = str.indexOf(" from ");// ignore select
+		if (fromIndex == -1) {
+			throw new IndexOutOfBoundsException(str);
+		}
+		
+		EditableSql countSql = new EditableSql();
+		countSql.append("select count(*)");
+		int orderIndex = str.lastIndexOf(" order by ");
+		if(orderIndex != -1 && str.indexOf(")", orderIndex) == -1) {
+			countSql.append(SqlUtils.sub(sql, fromIndex, orderIndex));
+		}else {
+			// 不存在 order by 子语句
+			countSql.append(SqlUtils.sub(sql, fromIndex));
+		}
+		return countSql;
+	}
 }

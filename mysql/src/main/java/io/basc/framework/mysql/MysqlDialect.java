@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import io.basc.framework.orm.sql.Column;
-import io.basc.framework.orm.sql.PaginationSql;
 import io.basc.framework.orm.sql.SqlDialectException;
 import io.basc.framework.orm.sql.SqlType;
 import io.basc.framework.orm.sql.StandardColumnDescriptor;
@@ -257,25 +256,10 @@ public class MysqlDialect extends StandardSqlDialect {
 	}
 
 	@Override
-	public PaginationSql toPaginationSql(Sql sql, long start, long limit) throws SqlDialectException {
-		String str = sql.getSql();
-		int fromIndex = str.toLowerCase().indexOf(" from ");// ignore select
-		if (fromIndex == -1) {
-			throw new IndexOutOfBoundsException(str);
-		}
-
-		String whereSql;
-		int orderIndex = str.toLowerCase().lastIndexOf(" order by ");
-		if (orderIndex == -1) {// 不存在 order by 子语句
-			whereSql = str.substring(fromIndex);
-		} else {
-			whereSql = str.substring(fromIndex, orderIndex);
-		}
-
-		Sql countSql = new SimpleSql("select count(*)" + whereSql, sql.getParams());
-		StringBuilder sb = new StringBuilder(str);
+	public Sql toLimitSql(Sql sql, long start, long limit) throws SqlDialectException {
+		StringBuilder sb = new StringBuilder(sql.getSql());
 		sb.append(" limit ").append(start).append(",").append(limit);
-		return new PaginationSql(countSql, new SimpleSql(sb.toString(), sql.getParams()));
+		return new SimpleSql(sb.toString(), sql.getParams());
 	}
 
 	@Override
