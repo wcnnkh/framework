@@ -3,6 +3,7 @@ package io.basc.framework.sqlite;
 import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -260,5 +261,39 @@ public class SQLiteDialect extends StandardSqlDialect {
 		sql.append(WHERE);
 		sql.append(SqlUtils.resolveUpdateWhereSql(updateSql));
 		return sql;
+	}
+
+	@Override
+	public <T> Sql toSaveIfAbsentSql(TableStructure tableStructure, T entity) throws SqlDialectException {
+		StringBuilder cols = new StringBuilder();
+		StringBuilder values = new StringBuilder();
+		StringBuilder sql = new StringBuilder();
+		List<Object> params = new ArrayList<Object>();
+		Iterator<Column> iterator = tableStructure.iterator();
+		while (iterator.hasNext()) {
+			Column column = iterator.next();
+			if (column.isAutoIncrement()) {
+				continue;
+			}
+
+			if (cols.length() > 0) {
+				cols.append(",");
+				values.append(",");
+			}
+
+			keywordProcessing(cols, column.getName());
+			values.append("?");
+			params.add(getDataBaseValue(entity, column.getField()));
+		}
+		sql.append("insert or ignore into ");
+		keywordProcessing(sql, tableStructure.getName());
+		sql.append("(");
+		sql.append(cols);
+		sql.append(")");
+		sql.append(VALUES);
+		sql.append("(");
+		sql.append(values);
+		sql.append(")");
+		return new SimpleSql(sql.toString(), params.toArray());
 	}
 }

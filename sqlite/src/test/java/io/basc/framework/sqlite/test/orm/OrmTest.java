@@ -19,15 +19,12 @@ public class OrmTest {
 
 	private static void initData() {
 		for (int i = 0; i < 5; i++) {
-			TestTable1 table1 = db.getById(TestTable1.class, i);
-			if (table1 == null) {
-				table1 = new TestTable1();
-				table1.setId(i);
-				table1.setKey(XUtils.getUUID());
-				table1.setValue(i);
-				boolean b = db.save(table1);
-				System.out.println("添加数据" + (b ? "成功" : "失败"));
-			}
+			TestTable1 table1 = new TestTable1();
+			table1.setId(i);
+			table1.setKey(XUtils.getUUID());
+			table1.setValue(i);
+			boolean b = db.saveIfAbsent(table1);
+			System.out.println("添加数据" + (b ? "成功" : "失败"));
 		}
 	}
 

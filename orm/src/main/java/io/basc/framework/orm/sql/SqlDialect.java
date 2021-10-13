@@ -119,4 +119,11 @@ public interface SqlDialect extends ObjectKeyFormat, TableResolver {
 	 * @return
 	 */
 	Sql saveOrUpdate(Sql saveSql, Sql updateSql);
+	
+	<T> Sql toSaveIfAbsentSql(TableStructure tableStructure, T entity) throws SqlDialectException;
+
+	default <T> Sql toSaveIfAbsentSql(String tableName, Class<? extends T> entityClass, T entity)
+			throws SqlDialectException {
+		return toSaveIfAbsentSql(resolve(entityClass).rename(tableName), entity);
+	}
 }

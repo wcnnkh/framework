@@ -367,4 +367,38 @@ public class MysqlDialect extends StandardSqlDialect {
 		}
 		return sql;
 	}
+
+	@Override
+	public <T> Sql toSaveIfAbsentSql(TableStructure tableStructure, T entity) throws SqlDialectException {
+		StringBuilder cols = new StringBuilder();
+		StringBuilder values = new StringBuilder();
+		StringBuilder sql = new StringBuilder();
+		List<Object> params = new ArrayList<Object>();
+		Iterator<Column> iterator = tableStructure.iterator();
+		while (iterator.hasNext()) {
+			Column column = iterator.next();
+			if (column.isAutoIncrement()) {
+				continue;
+			}
+
+			if (cols.length() > 0) {
+				cols.append(",");
+				values.append(",");
+			}
+
+			keywordProcessing(cols, column.getName());
+			values.append("?");
+			params.add(getDataBaseValue(entity, column.getField()));
+		}
+		sql.append("insert ignore into ");
+		keywordProcessing(sql, tableStructure.getName());
+		sql.append("(");
+		sql.append(cols);
+		sql.append(")");
+		sql.append(VALUES);
+		sql.append("(");
+		sql.append(values);
+		sql.append(")");
+		return new SimpleSql(sql.toString(), params.toArray());
+	}
 }

@@ -67,7 +67,8 @@ public class DBCompensatePolicy extends StorageCompensatePolicy{
 		compensatTable.setId(id);
 		compensatTable.setCts(System.currentTimeMillis());
 		compensatTable.setContent(content);
-		return db.save(compensatTable);
+		db.save(compensatTable);
+		return true;
 	}
 	
 	@Override
