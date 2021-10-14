@@ -24,16 +24,18 @@ public interface SqlDialect extends ObjectKeyFormat, TableResolver, ConversionSe
 	Collection<Sql> createTable(TableStructure tableStructure) throws SqlDialectException;
 
 	Sql toSelectByIdsSql(TableStructure tableStructure, Object... ids) throws SqlDialectException;
+	
+	Sql toSaveSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
 
-	<T> Sql save(TableStructure tableStructure, T entity) throws SqlDialectException;
+	<T> Sql toSaveIfAbsentSql(TableStructure tableStructure, T entity) throws SqlDialectException;
+	
+	Sql toInsertSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
 
-	<T> Sql delete(TableStructure tableStructure, T entity, @Nullable T condition) throws SqlDialectException;
+	<T> Sql toDeleteSql(TableStructure tableStructure, T entity, @Nullable T condition) throws SqlDialectException;
 
-	Sql deleteById(TableStructure tableStructure, Object... ids) throws SqlDialectException;
+	Sql toDeleteByIdSql(TableStructure tableStructure, Object... ids) throws SqlDialectException;
 
-	<T> Sql update(TableStructure tableStructure, T entity, @Nullable T condition) throws SqlDialectException;
-
-	<T> Sql toSaveOrUpdateSql(TableStructure tableStructure, T entity) throws SqlDialectException;
+	<T> Sql toUpdateSql(TableStructure tableStructure, T entity, @Nullable T condition) throws SqlDialectException;
 
 	Sql toLastInsertIdSql(TableStructure tableStructure) throws SqlDialectException;
 
@@ -71,6 +73,4 @@ public interface SqlDialect extends ObjectKeyFormat, TableResolver, ConversionSe
 	 * @return
 	 */
 	Sql condition(Sql condition, Sql left, Sql right);
-
-	<T> Sql toSaveIfAbsentSql(TableStructure tableStructure, T entity) throws SqlDialectException;
 }

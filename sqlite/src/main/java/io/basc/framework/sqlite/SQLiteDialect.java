@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.orm.sql.Column;
 import io.basc.framework.orm.sql.ColumnDescriptor;
 import io.basc.framework.orm.sql.SqlDialectException;
@@ -184,7 +185,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement()) {
+			if(column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
 				continue;
 			}
 
@@ -217,7 +218,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 	}
 
 	@Override
-	public <T> Sql toSaveOrUpdateSql(TableStructure tableStructure, T entity) throws SqlDialectException {
+	public Sql toSaveSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		StringBuilder sql = new StringBuilder();
@@ -225,7 +226,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement()) {
+			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
 				continue;
 			}
 

@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
+import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.orm.sql.Column;
 import io.basc.framework.orm.sql.SqlDialectException;
 import io.basc.framework.orm.sql.SqlType;
@@ -75,7 +76,7 @@ public class MysqlDialect extends StandardSqlDialect {
 	};
 
 	@Override
-	public <T> Sql toSaveOrUpdateSql(TableStructure tableStructure, T entity) throws SqlDialectException {
+	public Sql toSaveSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
 		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
@@ -88,6 +89,10 @@ public class MysqlDialect extends StandardSqlDialect {
 		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
+			if(column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
+				continue;
+			}
+			
 			keywordProcessing(cols, column.getName());
 			values.append("?");
 			params.add(getDataBaseValue(entity, column.getField()));
@@ -112,6 +117,10 @@ public class MysqlDialect extends StandardSqlDialect {
 		iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
+			if(column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
+				continue;
+			}
+			
 			keywordProcessing(sb, column.getName());
 			sb.append("=?");
 			params.add(getDataBaseValue(entity, column.getField()));
@@ -310,7 +319,7 @@ public class MysqlDialect extends StandardSqlDialect {
 		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement()) {
+			if(column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
 				continue;
 			}
 

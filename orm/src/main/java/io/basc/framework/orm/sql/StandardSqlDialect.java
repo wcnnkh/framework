@@ -16,6 +16,7 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.ParameterException;
 import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.orm.annotation.Version;
 import io.basc.framework.orm.sql.annotation.AnnotationTableResolver;
 import io.basc.framework.orm.sql.annotation.Counter;
@@ -199,7 +200,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 	}
 	
 	@Override
-	public <T> Sql save(TableStructure tableStructure, T entity) throws SqlDialectException {
+	public Sql toInsertSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		StringBuilder sql = new StringBuilder();
@@ -207,7 +208,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement()) {
+			if(column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
 				continue;
 			}
 
@@ -266,7 +267,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 	}
 
 	@Override
-	public <T> Sql delete(TableStructure tableStructure, T entity, T condition) throws SqlDialectException {
+	public <T> Sql toDeleteSql(TableStructure tableStructure, T entity, T condition) throws SqlDialectException {
 		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
@@ -304,7 +305,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 	}
 
 	@Override
-	public Sql deleteById(TableStructure tableStructure, Object... ids) throws SqlDialectException {
+	public Sql toDeleteByIdSql(TableStructure tableStructure, Object... ids) throws SqlDialectException {
 		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
@@ -421,7 +422,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 	}
 
 	@Override
-	public <T> Sql update(TableStructure tableStructure, T entity, T condition) throws SqlDialectException {
+	public <T> Sql toUpdateSql(TableStructure tableStructure, T entity, T condition) throws SqlDialectException {
 		List<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
 		if (primaryKeyColumns.size() == 0) {
 			throw new SqlDialectException(tableStructure.getName() + " not found primary key");
@@ -502,14 +503,13 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 	protected final void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Column column,
 			Map<String, Object> changeMap) {
 		AnyValue newValue = new AnyValue(getDataBaseValue(entity, column.getField()));
-		AnyValue oldValue = new AnyValue(
-				changeMap == null ? null : changeMap.get(column.getField().getSetter().getName()));
+		AnyValue oldValue = changeMap == null? null: new AnyValue(changeMap.get(column.getField().getSetter().getName()));
 		appendUpdateValue(sb, params, entity, column, oldValue, newValue);
 	}
 
 	protected void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Column column,
-			AnyValue oldValue, AnyValue newValue) {
-		if (column.getField().isAnnotationPresent(Version.class)) {
+			@Nullable AnyValue oldValue, AnyValue newValue) {
+		if (column.getField().isAnnotationPresent(Counter.class) && oldValue != null) {
 			keywordProcessing(sb, column.getName());
 			sb.append("+");
 			sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());

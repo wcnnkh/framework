@@ -102,7 +102,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> int save(TableStructure tableStructure, T entity) {
-		Sql sql = getSqlDialect().save(tableStructure, entity);
+		Sql sql = getSqlDialect().toSaveSql(tableStructure, entity);
 		return prepare(sql).process((ps) -> {
 			int updateCount = ps.executeUpdate();
 			setAutoIncrementLastId(ps.getConnection(), tableStructure, entity, updateCount);
@@ -110,33 +110,25 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		});
 	}
 
-	default <T> boolean saveIfAbsent(T entity) {
-		if (entity == null) {
-			return false;
-		}
-
-		return saveIfAbsent(getUserClass(entity.getClass()), entity);
-	}
-
 	default <T> boolean saveIfAbsent(Class<? extends T> entityClass, T entity) {
 		if (entityClass == null || entity == null) {
 			return false;
 		}
 
-		return saveIfAbsent(entityClass, entity, null);
+		return saveIfAbsent(entityClass, entity, null) > 0;
 	}
 
-	default <T> boolean saveIfAbsent(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
+	default <T> int saveIfAbsent(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
 		return saveIfAbsent(resolve(entityClass, entity, tableName), entity);
 	}
 
-	default <T> boolean saveIfAbsent(TableStructure tableStructure, T entity) {
+	default <T> int saveIfAbsent(TableStructure tableStructure, T entity) {
 		Sql sql = getSqlDialect().toSaveIfAbsentSql(tableStructure, entity);
 		return prepare(sql).process((ps) -> {
 			int updateCount = ps.executeUpdate();
 			setAutoIncrementLastId(ps.getConnection(), tableStructure, entity, updateCount);
 			return updateCount;
-		}) > 0;
+		});
 	}
 
 	@Override
@@ -153,7 +145,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> int delete(TableStructure tableStructure, T entity) {
-		Sql sql = getSqlDialect().delete(tableStructure, entity, null);
+		Sql sql = getSqlDialect().toDeleteSql(tableStructure, entity, null);
 		return update(sql);
 	}
 
@@ -170,7 +162,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default int deleteById(TableStructure tableStructure, Object... ids) {
-		Sql sql = getSqlDialect().deleteById(tableStructure, ids);
+		Sql sql = getSqlDialect().toDeleteByIdSql(tableStructure, ids);
 		return update(sql);
 	}
 
@@ -192,13 +184,13 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 			return 0;
 		}
 
-		Sql sql = getSqlDialect().update(tableStructure, entity, null);
+		Sql sql = getSqlDialect().toUpdateSql(tableStructure, entity, null);
 		return update(sql);
 	}
 
 	@Override
-	default <T> void saveOrUpdate(Class<? extends T> entityClass, T entity) {
-		saveOrUpdate(entityClass, entity, null);
+	default <T> boolean saveOrUpdate(Class<? extends T> entityClass, T entity) {
+		return saveOrUpdate(entityClass, entity, null) > 0;
 	}
 
 	/**
@@ -225,12 +217,12 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	 * @return
 	 */
 	default <T> int saveOrUpdate(TableStructure tableStructure, T entity) {
-		Sql sql = getSqlDialect().toSaveOrUpdateSql(tableStructure, entity);
-		return prepare(sql).process((ps) -> {
-			int updateCount = ps.executeUpdate();
-			setAutoIncrementLastId(ps.getConnection(), tableStructure, entity, updateCount);
-			return updateCount;
-		});
+		int count = saveIfAbsent(tableStructure, entity);
+		if(count > 0) {
+			return count;
+		}
+		
+		return update(tableStructure, entity);
 	}
 
 	@Nullable

@@ -49,6 +49,19 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 			cacheManager.save(entityClass, entity);
 		}
 	}
+	
+	@Override
+	public <T> boolean saveIfAbsent(Class<? extends T> entityClass, T entity) {
+		generatorProcessor.process(entityClass, entity);
+		if(SqlTemplate.super.saveIfAbsent(entityClass, entity)) {
+			CacheManager cacheManager = getCacheManager();
+			if (cacheManager != null) {
+				cacheManager.saveIfAbsent(entityClass, entity);
+			}
+			return true;
+		}
+		return false;
+	}
 
 	@Override
 	public <T> boolean delete(Class<? extends T> entityClass, T entity) {
@@ -81,13 +94,16 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	}
 
 	@Override
-	public <T> void saveOrUpdate(Class<? extends T> entityClass, T entity) {
+	public <T> boolean saveOrUpdate(Class<? extends T> entityClass, T entity) {
 		generatorProcessor.process(entityClass, entity);
-		SqlTemplate.super.saveOrUpdate(entityClass, entity);
-		CacheManager cacheManager = getCacheManager();
-		if (cacheManager != null) {
-			cacheManager.saveOrUpdate(entity);
+		if(SqlTemplate.super.saveOrUpdate(entityClass, entity)) {
+			CacheManager cacheManager = getCacheManager();
+			if (cacheManager != null) {
+				cacheManager.saveOrUpdate(entity);
+			}
+			return true;
 		}
+		return false;
 	}
 
 	@Override
@@ -105,15 +121,5 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 			}
 		}
 		return value;
-	}
-
-	@Override
-	public <T> boolean saveIfAbsent(Class<? extends T> entityClass, T entity) {
-		generatorProcessor.process(entityClass, entity);
-		if (SqlTemplate.super.saveIfAbsent(entityClass, entity)) {
-			cacheManager.save(entity);
-			return true;
-		}
-		return false;
 	}
 }
