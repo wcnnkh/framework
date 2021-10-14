@@ -36,7 +36,7 @@ public abstract class AbstractHttpService implements HttpService {
 		CorsRegistry corsRegistry = getCorsRegistry();
 		if (corsRegistry != null) {
 			if (CorsUtils.isCorsRequest(request)) {
-				Cors cors = corsRegistry.get(request);
+				Cors cors = corsRegistry.process(request);
 				if (cors != null) {
 					cors.write(request, response.getHeaders());
 				}

@@ -5,7 +5,6 @@ import java.util.Collection;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.orm.ObjectKeyFormat;
 import io.basc.framework.sql.Sql;
@@ -27,15 +26,17 @@ public interface SqlDialect extends ObjectKeyFormat, TableResolver, ConversionSe
 	
 	Sql toSaveSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
 
-	<T> Sql toSaveIfAbsentSql(TableStructure tableStructure, T entity) throws SqlDialectException;
+	Sql toSaveIfAbsentSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
 	
 	Sql toInsertSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
 
-	<T> Sql toDeleteSql(TableStructure tableStructure, T entity, @Nullable T condition) throws SqlDialectException;
+	Sql toDeleteSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
 
 	Sql toDeleteByIdSql(TableStructure tableStructure, Object... ids) throws SqlDialectException;
 
-	<T> Sql toUpdateSql(TableStructure tableStructure, T entity, @Nullable T condition) throws SqlDialectException;
+	Sql toUpdateSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
+	
+	//<T> Sql toUpdatePartSql(TableStructure tableStructure, T entity) throws SqlDialectException;
 
 	Sql toLastInsertIdSql(TableStructure tableStructure) throws SqlDialectException;
 

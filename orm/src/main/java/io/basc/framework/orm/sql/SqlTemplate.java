@@ -145,7 +145,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> int delete(TableStructure tableStructure, T entity) {
-		Sql sql = getSqlDialect().toDeleteSql(tableStructure, entity, null);
+		Sql sql = getSqlDialect().toDeleteSql(tableStructure, entity);
 		return update(sql);
 	}
 
@@ -184,7 +184,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 			return 0;
 		}
 
-		Sql sql = getSqlDialect().toUpdateSql(tableStructure, entity, null);
+		Sql sql = getSqlDialect().toUpdateSql(tableStructure, entity);
 		return update(sql);
 	}
 

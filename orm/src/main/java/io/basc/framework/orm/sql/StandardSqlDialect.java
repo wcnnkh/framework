@@ -267,7 +267,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 	}
 
 	@Override
-	public <T> Sql toDeleteSql(TableStructure tableStructure, T entity, T condition) throws SqlDialectException {
+	public Sql toDeleteSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
 		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
@@ -298,9 +298,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 				sql.append("=?");
 				params.add(getDataBaseValue(entity, column.getField()));
 			}
-		});
-		
-		appendCondition(sql, params, tableStructure, condition);
+		});		
 		return new SimpleSql(sql.toString(), params.toArray());
 	}
 
@@ -422,7 +420,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 	}
 
 	@Override
-	public <T> Sql toUpdateSql(TableStructure tableStructure, T entity, T condition) throws SqlDialectException {
+	public Sql toUpdateSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
 		List<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
 		if (primaryKeyColumns.size() == 0) {
 			throw new SqlDialectException(tableStructure.getName() + " not found primary key");
@@ -495,8 +493,6 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 						: toDataBaseValue(oldVersion.getAsLongValue()));
 			}
 		});
-		
-		appendCondition(sb, params, tableStructure, condition);
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
 

@@ -177,7 +177,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 	}
 
 	@Override
-	public <T> Sql toSaveIfAbsentSql(TableStructure tableStructure, T entity) throws SqlDialectException {
+	public Sql toSaveIfAbsentSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		StringBuilder sql = new StringBuilder();
