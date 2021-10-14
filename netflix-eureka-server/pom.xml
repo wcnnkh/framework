@@ -20,12 +20,12 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>netflix-eureka-client</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-servlet</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.netflix.eureka</groupId>
 			<artifactId>eureka-core</artifactId>
@@ -35,22 +35,28 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>testing</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>slf4j</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>tomcat</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>yaml</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
