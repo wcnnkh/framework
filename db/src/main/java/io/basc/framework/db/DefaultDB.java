@@ -1,5 +1,9 @@
 package io.basc.framework.db;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import io.basc.framework.context.ClassesLoaderFactory;
 import io.basc.framework.context.support.DefaultClassesLoaderFactory;
 import io.basc.framework.core.type.scanner.DefaultClassScanner;
@@ -13,10 +17,6 @@ import io.basc.framework.orm.sql.annotation.Table;
 import io.basc.framework.sql.ConnectionFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
-
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 public class DefaultDB extends DefaultSqlTemplate implements DB {
 	private static Logger logger = LoggerFactory.getLogger(DefaultDB.class);
@@ -45,27 +45,26 @@ public class DefaultDB extends DefaultSqlTemplate implements DB {
 		this.checkTableChange = checkTableChange;
 	}
 
-	public boolean createTable(Class<?> tableClass, boolean registerManager) {
-		return createTable(tableClass, null, registerManager);
+	public void createTable(Class<?> tableClass, boolean registerManager) {
+		createTable(tableClass, null, registerManager);
 	}
 
 	@Override
-	public boolean createTable(String tableName, Class<?> entityClass) {
+	public void createTable(Class<?> entityClass, String tableName) {
 		DBManager.register(entityClass, this);
-		return super.createTable(tableName, entityClass);
+		super.createTable(entityClass, tableName);
 	}
 
-	public boolean createTable(Class<?> tableClass, String tableName, boolean registerManager) {
+	public void createTable(Class<?> tableClass, String tableName, boolean registerManager) {
 		if (registerManager) {
 			DBManager.register(tableClass, this);
 		}
 
-		boolean b = super.createTable(tableName, tableClass);
+		super.createTable(tableClass, tableName);
 		// 检查表变更
 		if (isCheckTableChange()) {
 			checkTableChange(tableClass);
 		}
-		return b;
 	}
 
 	public void createTables(String packageName, boolean registerManager) {

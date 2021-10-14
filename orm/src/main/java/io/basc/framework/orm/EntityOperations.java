@@ -38,15 +38,12 @@ public interface EntityOperations {
 
 	<T> boolean update(Class<? extends T> entityClass, T entity);
 
-	default boolean saveOrUpdate(Object entity) {
-		if (entity == null) {
-			return false;
-		}
-
-		return saveOrUpdate(getUserClass(entity.getClass()), entity);
+	default void saveOrUpdate(Object entity) {
+		Assert.requiredArgument(entity != null, "entity");
+		saveOrUpdate(getUserClass(entity.getClass()), entity);
 	}
 
-	<T> boolean saveOrUpdate(Class<? extends T> entityClass, T entity);
+	<T> void saveOrUpdate(Class<? extends T> entityClass, T entity);
 
 	@Nullable
 	<T> T getById(Class<? extends T> entityClass, Object... ids);

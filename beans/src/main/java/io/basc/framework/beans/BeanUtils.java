@@ -7,6 +7,7 @@ import io.basc.framework.beans.annotation.IgnoreConfigurationProperty;
 import io.basc.framework.beans.annotation.Service;
 import io.basc.framework.beans.annotation.Singleton;
 import io.basc.framework.context.ContextAware;
+import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.env.Environment;
@@ -81,6 +82,10 @@ public final class BeanUtils {
 
 		if (instance instanceof ContextAware) {
 			((ContextAware) instance).setContext(beanFactory);
+		}
+		
+		if(instance instanceof ConversionServiceAware) {
+			((ConversionServiceAware) instance).setConversionService(beanFactory.getEnvironment().getConversionService());
 		}
 	}
 

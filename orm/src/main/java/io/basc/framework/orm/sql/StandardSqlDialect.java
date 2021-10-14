@@ -509,10 +509,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 
 	protected void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Column column,
 			AnyValue oldValue, AnyValue newValue) {
-		Counter counter = getCounter(column.getField());
-		if (counter != null) {
-			appendCounterValue(sb, params, entity, column, oldValue, newValue, counter);
-		} else if (column.getField().isAnnotationPresent(Version.class)) {
+		if (column.getField().isAnnotationPresent(Version.class)) {
 			keywordProcessing(sb, column.getName());
 			sb.append("+");
 			sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
@@ -555,11 +552,6 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 			sb.append(" = ?");
 			params.add(value);
 		}
-	}
-	
-	@Override
-	public <T> Sql toSaveOrUpdateSql(TableStructure tableStructure, T entity) throws SqlDialectException {
-		return saveOrUpdate(save(tableStructure, entity), update(tableStructure, entity, null));
 	}
 	
 	private Sql getConditionalStatement(TableStructure tableStructure, Object entity){

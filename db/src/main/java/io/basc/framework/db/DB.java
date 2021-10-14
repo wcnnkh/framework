@@ -10,7 +10,7 @@ public interface DB extends SqlTemplate {
 	 * @param registerManager 是否注册到{@see DBManager}
 	 * @return
 	 */
-	boolean createTable(Class<?> tableClass, boolean registerManager);
+	void createTable(Class<?> tableClass, boolean registerManager);
 
 	/**
 	 * 创建表
@@ -20,7 +20,7 @@ public interface DB extends SqlTemplate {
 	 * @param registerManager 是否注册到{@see DBManager}
 	 * @return
 	 */
-	boolean createTable(Class<?> tableClass, String tableName, boolean registerManager);
+	void createTable(Class<?> tableClass, String tableName, boolean registerManager);
 
 	default void createTables(String packageName) {
 		createTables(packageName, true);

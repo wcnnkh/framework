@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import io.basc.framework.orm.sql.Column;
@@ -29,8 +28,6 @@ import io.basc.framework.orm.sql.annotation.Table;
 import io.basc.framework.sql.EditableSql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
-import io.basc.framework.sql.SqlExpression;
-import io.basc.framework.sql.SqlUtils;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.AnyValue;
@@ -84,7 +81,6 @@ public class MysqlDialect extends StandardSqlDialect {
 			throw new NullPointerException("not found primary key");
 		}
 
-		Map<String, Object> changeMap = getChangeMap(entity);
 		StringBuilder sb = new StringBuilder(512);
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
@@ -117,8 +113,8 @@ public class MysqlDialect extends StandardSqlDialect {
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			keywordProcessing(sb, column.getName());
-			sb.append("=");
-			appendUpdateValue(sb, params, entity, column, changeMap);
+			sb.append("=?");
+			params.add(getDataBaseValue(entity, column.getField()));
 			if (iterator.hasNext()) {
 				sb.append(",");
 			}
@@ -251,7 +247,7 @@ public class MysqlDialect extends StandardSqlDialect {
 	}
 
 	@Override
-	public Sql toLastInsertIdSql(String tableName) throws SqlDialectException {
+	public Sql toLastInsertIdSql(TableStructure tableStructure) throws SqlDialectException {
 		return new SimpleSql(LAST_INSERT_ID_SQL);
 	}
 
@@ -275,13 +271,13 @@ public class MysqlDialect extends StandardSqlDialect {
 	}
 
 	@Override
-	public TableStructureMapping getTableStructureMapping(Class<?> clazz, String tableName) {
+	public TableStructureMapping getTableStructureMapping(TableStructure tableStructure) {
 		return new TableStructureMapping() {
 
 			public Sql getSql() {
 				return new SimpleSql(
 						"select * from INFORMATION_SCHEMA.COLUMNS where table_schema=database() and table_name=?",
-						tableName);
+						tableStructure.getName());
 			}
 
 			public StandardColumnDescriptor getName(ResultSet resultSet) throws SQLException {
@@ -302,53 +298,6 @@ public class MysqlDialect extends StandardSqlDialect {
 		sql.append(",");
 		sql.append(right);
 		sql.append(")");
-		return sql;
-	}
-
-	@Override
-	public Sql saveOrUpdate(Sql saveSql, Sql updateSql) {
-		/**
-		 * 保存语句 insert into tableName (columns) values (v1, v2, ...) <br/>
-		 * 更新语句 update tableName set a=b where c=d <br/>
-		 * 保存或更新语句 insert into tableName (columns) values (v1, v2, ...) ON DUPLICATE KEY
-		 * UPDATE a=b and c=d <br/>
-		 */
-
-		EditableSql sql = new EditableSql();
-		sql.append(saveSql);
-		sql.append(DUPLICATE_KEY);
-
-		String update = updateSql.getSql();
-		// 全部转小写
-		update = update.toLowerCase();
-		int setIndex = update.indexOf(SET);
-		if (setIndex == -1) {
-			// 不应该出现这种情况，一个update语句不能没有set
-			throw new SqlDialectException("An update statement cannot have no set");
-		}
-
-		int whereIndex = update.indexOf(WHERE, setIndex);
-		if (whereIndex == -1) {
-			// 如果update不存在where语句，这种情况简单
-			sql.append(SqlUtils.sub(updateSql, setIndex + SET.length()));
-		} else {
-			// 这情况比较复杂
-			// 例如：set a=b where c=d 转换为 a=IF(c=d, b, a)
-			Sql updateSet = SqlUtils.sub(updateSql, setIndex + SET.length(), whereIndex);
-			Sql updateWhere = SqlUtils.sub(updateSql, whereIndex + WHERE.length());
-			Map<String, SqlExpression> expressionMap = SqlUtils.resolveUpdateSetMap(updateSet);
-			Iterator<SqlExpression> iterator = expressionMap.values().iterator();
-			while (iterator.hasNext()) {
-				SqlExpression expression = iterator.next();
-				Sql set = condition(updateWhere, expression.getLeft(), expression.getRight());
-				sql.append(expression.getLeft());
-				sql.append("=");
-				sql.append(set);
-				if (iterator.hasNext()) {
-					sql.append(",");
-				}
-			}
-		}
 		return sql;
 	}
 
