@@ -53,7 +53,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- https://mvnrepository.com/artifact/io.swagger.core.v3 -->
-		<swagger.version>2.1.10</swagger.version>
+		<swagger.version>2.1.11</swagger.version>
 		<!-- tomcat7只支持jdk1.6及以上的版本 -->
 		<!-- tomcat8只支持jdk1.7及以上的版本 -->
 		<tomcat.version>9.0.52</tomcat.version>
@@ -232,9 +232,9 @@
 
 			<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-jaxrs2 -->
 			<dependency>
-				<groupId>io.swagger.core.v3</groupId>
-				<artifactId>swagger-jaxrs2</artifactId>
-				<version>${swagger.version}</version>
+			    <groupId>io.swagger.core.v3</groupId>
+			    <artifactId>swagger-jaxrs2</artifactId>
+			    <version>${swagger.version}</version>
 			</dependency>
 
 			<!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->

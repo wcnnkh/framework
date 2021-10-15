@@ -7,6 +7,8 @@ import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.swagger.WebOpenApiContextBuilder;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
 import io.swagger.v3.oas.integration.OpenApiConfigurationException;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
 import io.swagger.v3.oas.integration.api.OpenApiContext;
@@ -20,15 +22,19 @@ public class OpenApiContextDefinition extends DefaultBeanDefinition {
 
 	@Override
 	public boolean isInstance() {
-		return true;
+		return beanFactory.isInstance(SwaggerConfiguration.class);
 	}
 
 	@Override
 	public Object create() throws InstanceException {
-		Set<String> classNames = beanFactory.getContextClasses().stream().map((c) -> c.getName())
-				.collect(Collectors.toSet());
-		SwaggerConfiguration configuration = new SwaggerConfiguration();
-		configuration = configuration.resourceClasses(classNames);
+		SwaggerConfiguration configuration = beanFactory.getInstance(SwaggerConfiguration.class);
+		if (CollectionUtils.isEmpty(configuration.getResourceClasses())
+				&& StringUtils.isEmpty(configuration.getScannerClass())
+				&& StringUtils.isEmpty(configuration.getReaderClass())) {
+			Set<String> classNames = beanFactory.getContextClasses().stream().map((c) -> c.getName())
+					.collect(Collectors.toSet());
+			configuration.setResourceClasses(classNames);
+		}
 		OpenApiContextBuilder builder = new WebOpenApiContextBuilder().openApiConfiguration(configuration);
 		try {
 			return builder.buildContext(true);
