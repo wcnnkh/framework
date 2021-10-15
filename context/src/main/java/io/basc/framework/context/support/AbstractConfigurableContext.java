@@ -1,5 +1,10 @@
 package io.basc.framework.context.support;
 
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import io.basc.framework.context.ClassesLoader;
 import io.basc.framework.context.ClassesLoaderFactory;
 import io.basc.framework.context.ConfigurableClassesLoader;
@@ -7,8 +12,11 @@ import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.annotation.AbstractProviderServiceLoaderFactory;
 import io.basc.framework.context.annotation.ComponentScan;
 import io.basc.framework.context.annotation.ComponentScans;
+import io.basc.framework.context.annotation.EnableConditionUtils;
 import io.basc.framework.context.locks.LockMethodInterceptor;
 import io.basc.framework.context.transaction.TransactionMethodInterceptor;
+import io.basc.framework.core.type.classreading.MetadataReader;
+import io.basc.framework.core.type.classreading.MetadataReaderFactory;
 import io.basc.framework.core.type.scanner.ConfigurableClassScanner;
 import io.basc.framework.core.type.scanner.DefaultClassScanner;
 import io.basc.framework.env.ConfigurableEnvironment;
@@ -18,27 +26,32 @@ import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.value.ValueFactory;
 
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 public abstract class AbstractConfigurableContext extends AbstractProviderServiceLoaderFactory
 		implements ConfigurableContext, Configurable {
 	private final DefaultClassScanner classScanner = new DefaultClassScanner();
 	private final DefaultClassesLoaderFactory classesLoaderFactory;
 	private final Set<Class<?>> sourceClasses = new LinkedHashSet<Class<?>>(8);
-	private final DefaultClassesLoader contextClassesLoader = new DefaultClassesLoader();
 	private final DefaultEnvironment environment = new DefaultEnvironment(this);
+	private final DefaultClassesLoader contextClassesLoader = new DefaultClassesLoader();
 
 	public AbstractConfigurableContext(boolean cache) {
 		super(cache);
-		this.classesLoaderFactory = new DefaultClassesLoaderFactory(classScanner, cache, environment);
+		this.classesLoaderFactory = new DefaultClassesLoaderFactory(classScanner, cache, environment) {
+			@Override
+			public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+					throws IOException {
+				if(!EnableConditionUtils.enable(metadataReader, environment)) {
+					return false;
+				}
+				return super.match(metadataReader, metadataReaderFactory);
+			}
+		};
 		// 添加默认的类
 		contextClassesLoader.add(TransactionMethodInterceptor.class);
 		contextClassesLoader.add(LockMethodInterceptor.class);
 		componentScan(Constants.SYSTEM_PACKAGE_NAME);
 	}
-	
+
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		environment.configure(serviceLoaderFactory);
@@ -78,11 +91,11 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 	@Override
 	public ClassesLoader getSourceClasses() {
 		return new ClassesLoader() {
-			
+
 			@Override
 			public void reload() {
 			}
-			
+
 			@Override
 			public Iterator<Class<?>> iterator() {
 				return sourceClasses.iterator();

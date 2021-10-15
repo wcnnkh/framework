@@ -6,6 +6,7 @@ import io.basc.framework.beans.BeanlifeCycleEvent;
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.BeanlifeCycleEvent.Step;
+import io.basc.framework.context.annotation.EnableConditionUtils;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.event.EventListener;
@@ -51,6 +52,10 @@ public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, Eve
 			}
 			
 			for (Method method : clz.getDeclaredMethods()) {
+				if(!EnableConditionUtils.enable(method, beanFactory.getEnvironment())) {
+					continue;
+				}
+				
 				if (!patternResolver.canResolveHttpPattern(clz, method)) {
 					continue;
 				}

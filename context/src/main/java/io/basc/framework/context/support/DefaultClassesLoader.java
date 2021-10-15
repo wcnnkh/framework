@@ -1,5 +1,11 @@
 package io.basc.framework.context.support;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 import io.basc.framework.context.ClassesLoader;
 import io.basc.framework.context.ConfigurableClassesLoader;
 import io.basc.framework.factory.Configurable;
@@ -10,27 +16,18 @@ import io.basc.framework.util.Accept;
 import io.basc.framework.util.DuplicateRemovalIterator;
 import io.basc.framework.util.MultiIterator;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 public class DefaultClassesLoader implements ConfigurableClassesLoader, Configurable {
-	private final List<ClassesLoader> loaders = new LinkedList<ClassesLoader>();
 	private final Set<Class<?>> defaultClasses = new LinkedHashSet<Class<?>>();
-	private final Accept<Class<?>> accept;
+	private Accept<Class<?>> accept;
 	private final ConfigurableServices<ClassesLoader> serviceList = new ConfigurableServices<>(ClassesLoader.class);
 
 	public DefaultClassesLoader() {
-		this(null);
 	}
 
 	public DefaultClassesLoader(@Nullable Accept<Class<?>> accept) {
 		this.accept = accept;
 	}
-
+	
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		serviceList.configure(serviceLoaderFactory);
@@ -44,7 +41,7 @@ public class DefaultClassesLoader implements ConfigurableClassesLoader, Configur
 	}
 
 	public void add(ClassesLoader classesLoader) {
-		loaders.add(accept == null ? classesLoader : new AcceptClassesLoader(classesLoader, accept, false));
+		serviceList.addService(accept == null ? classesLoader : new AcceptClassesLoader(classesLoader, accept, false));
 	}
 
 	public Set<Class<?>> getDefaultClasses() {
@@ -52,21 +49,14 @@ public class DefaultClassesLoader implements ConfigurableClassesLoader, Configur
 	}
 
 	public void reload() {
-		for (ClassesLoader classesLoader : loaders) {
-			classesLoader.reload();
-		}
-
 		for (ClassesLoader classesLoader : serviceList) {
 			classesLoader.reload();
 		}
 	}
 
 	public Iterator<Class<?>> iterator() {
-		List<Iterator<Class<?>>> iterators = new ArrayList<Iterator<Class<?>>>(loaders.size() + 1);
+		List<Iterator<Class<?>>> iterators = new ArrayList<Iterator<Class<?>>>(serviceList.size() + 1);
 		iterators.add(defaultClasses.iterator());
-		for (ClassesLoader classesLoader : loaders) {
-			iterators.add(classesLoader.iterator());
-		}
 
 		for (ClassesLoader classesLoader : serviceList) {
 			iterators.add(classesLoader.iterator());
