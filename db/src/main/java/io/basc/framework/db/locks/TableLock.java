@@ -1,11 +1,11 @@
 package io.basc.framework.db.locks;
 
+import java.util.concurrent.TimeUnit;
+
 import io.basc.framework.db.DB;
 import io.basc.framework.locks.RenewableLock;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
-
-import java.util.concurrent.TimeUnit;
 
 class TableLock extends RenewableLock {
 	public static final String TABLE_NAME = "lock_table";
@@ -14,8 +14,7 @@ class TableLock extends RenewableLock {
 	private final String name;
 	private final String value;
 
-	public TableLock(DB db, String name, String value, TimeUnit timeUnit,
-			long timeout) {
+	public TableLock(DB db, String name, String value, TimeUnit timeUnit, long timeout) {
 		super(timeUnit, timeout);
 		this.db = db;
 		this.name = name;
@@ -23,20 +22,19 @@ class TableLock extends RenewableLock {
 	}
 
 	private boolean tryLock(long cts) {
-		LockTable lockTable = db.getById(LockTable.class, name);
-		if (lockTable == null) {
-			lockTable = new LockTable();
-			lockTable.setCreateTime(cts);
-			lockTable.setExpirationTime(lockTable.getCreateTime()
-					+ getTimeout(TimeUnit.MILLISECONDS));
-			lockTable.setName(name);
-			lockTable.setValue(value);
-			return db.saveIfAbsent(lockTable);
-		} else if (cts > lockTable.getExpirationTime()) {
+		LockTable lockTable = new LockTable();
+		lockTable.setCreateTime(cts);
+		lockTable.setExpirationTime(lockTable.getCreateTime() + getTimeout(TimeUnit.MILLISECONDS));
+		lockTable.setName(name);
+		lockTable.setValue(value);
+		if (db.saveIfAbsent(lockTable)) {
+			return true;
+		}
+
+		if (cts > lockTable.getExpirationTime()) {
 			// 到期了
-			Sql sql = new SimpleSql("update " + TABLE_NAME
-					+ " set value=? where name=? and expirationTime < ?",
-					value, name, cts);
+			Sql sql = new SimpleSql("update " + TABLE_NAME + " set value=? where name=? and expirationTime < ?", value,
+					name, cts);
 			return db.update(sql) > 0;
 		}
 		return false;
@@ -52,17 +50,14 @@ class TableLock extends RenewableLock {
 
 	public void unlock() {
 		cancelAutoRenewal();
-		Sql sql = new SimpleSql("delete from " + TABLE_NAME
-				+ " where name=? and value=?", name, value);
+		Sql sql = new SimpleSql("delete from " + TABLE_NAME + " where name=? and value=?", name, value);
 		db.update(sql);
 	}
 
 	@Override
 	public boolean renewal(long time, TimeUnit unit) {
 		Sql sql = new SimpleSql(
-				"update "
-						+ TABLE_NAME
-						+ " set expirationTime=expirationTime+? where name=? and value = ?",
+				"update " + TABLE_NAME + " set expirationTime=expirationTime+? where name=? and value = ?",
 				unit.toMillis(time), name, value);
 		return db.update(sql) > 0;
 	}

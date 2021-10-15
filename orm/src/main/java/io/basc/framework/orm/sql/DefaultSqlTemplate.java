@@ -1,42 +1,21 @@
 package io.basc.framework.orm.sql;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import io.basc.framework.aop.support.ProxyUtils;
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.Fields;
-import io.basc.framework.mapper.MapProcessDecorator;
-import io.basc.framework.orm.sql.convert.SmartMapProcessor;
+import io.basc.framework.orm.cache.CacheManager;
+import io.basc.framework.orm.generator.DefaultGeneratorProcessor;
+import io.basc.framework.orm.generator.GeneratorProcessor;
 import io.basc.framework.sql.ConnectionFactory;
 import io.basc.framework.sql.DefaultSqlOperations;
-import io.basc.framework.sql.Sql;
-import io.basc.framework.sql.SqlException;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.Cursor;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.Assert;
 
 public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTemplate {
-	private static Logger logger = LoggerFactory.getLogger(DefaultSqlTemplate.class);
 	private final SqlDialect sqlDialect;
-	private ConversionService conversionService;
+	private GeneratorProcessor generatorProcessor;
+	private CacheManager cacheManager;
 
 	public DefaultSqlTemplate(ConnectionFactory connectionFactory, SqlDialect sqlDialect) {
 		super(connectionFactory);
+		this.generatorProcessor = new DefaultGeneratorProcessor(sqlDialect, this);
 		this.sqlDialect = sqlDialect;
 	}
 
@@ -44,240 +23,117 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 		return sqlDialect;
 	}
 
-	public ConversionService getConversionService() {
-		return conversionService == null ? Sys.env.getConversionService() : conversionService;
+	@Nullable
+	public CacheManager getCacheManager() {
+		return cacheManager;
 	}
 
-	public void setConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
+	public void setCacheManager(CacheManager cacheManager) {
+		this.cacheManager = cacheManager;
 	}
 
-	protected Class<?> getUserEntityClass(Class<?> entityClass) {
-		return ProxyUtils.getFactory().getUserClass(entityClass);
+	public GeneratorProcessor getGeneratorProcessor() {
+		return generatorProcessor;
 	}
 
-	protected <T> String getTableName(@Nullable String tableName, Class<? extends T> entityClass, @Nullable T entity) {
-		if (StringUtils.isNotEmpty(tableName)) {
-			return tableName;
+	public void setGeneratorProcessor(GeneratorProcessor generatorProcessor) {
+		Assert.requiredArgument(generatorProcessor != null, "generatorProcessor");
+		this.generatorProcessor = generatorProcessor;
+	}
+
+	@Override
+	public <T> void save(Class<? extends T> entityClass, T entity) {
+		generatorProcessor.process(entityClass, entity);
+		// 为什么先执行，因为可能是数据库自增，这样可以将自增值也保存在缓存中
+		SqlTemplate.super.save(entityClass, entity);
+		CacheManager cacheManager = getCacheManager();
+		if (cacheManager != null) {
+			cacheManager.save(entityClass, entity);
+		}
+	}
+
+	@Override
+	public <T> boolean saveIfAbsent(Class<? extends T> entityClass, T entity) {
+		generatorProcessor.process(entityClass, entity);
+		if (SqlTemplate.super.saveIfAbsent(entityClass, entity)) {
+			CacheManager cacheManager = getCacheManager();
+			if (cacheManager != null) {
+				cacheManager.saveIfAbsent(entityClass, entity);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public <T> boolean delete(Class<? extends T> entityClass, T entity) {
+		CacheManager cacheManager = getCacheManager();
+		if (cacheManager != null) {
+			cacheManager.delete(entity);
+		}
+		return SqlTemplate.super.delete(entityClass, entity);
+	}
+
+	@Override
+	public boolean deleteById(Class<?> entityClass, Object... ids) {
+		CacheManager cacheManager = getCacheManager();
+		if (cacheManager != null) {
+			cacheManager.deleteById(entityClass, ids);
+		}
+		return SqlTemplate.super.deleteById(entityClass, ids);
+	}
+
+	@Override
+	public <T> boolean update(Class<? extends T> entityClass, T entity) {
+		if (SqlTemplate.super.update(entityClass, entity)) {
+			CacheManager cacheManager = getCacheManager();
+			if (cacheManager != null) {
+				cacheManager.update(entityClass, entity);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public <T> boolean saveOrUpdate(Class<? extends T> entityClass, T entity) {
+		generatorProcessor.process(entityClass, entity);
+		if (SqlTemplate.super.saveOrUpdate(entityClass, entity)) {
+			CacheManager cacheManager = getCacheManager();
+			if (cacheManager != null) {
+				cacheManager.saveOrUpdate(entity);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public <T> T getById(Class<? extends T> entityClass, Object... ids) {
+		CacheManager cacheManager = getCacheManager();
+		T value = null;
+		if (cacheManager != null) {
+			value = cacheManager.getById(entityClass, ids);
 		}
 
-		String entityName = null;
-		if (entity != null && entity instanceof TableName) {
-			entityName = ((TableName) entity).getTableName();
-		}
-
-		if (StringUtils.isEmpty(entityName)) {
-			entityName = sqlDialect.getName(entityClass);
-		}
-		return entityName;
-	}
-
-	private Object getAutoIncrementLastId(Connection connection, String tableName) throws SQLException {
-		Sql sql = sqlDialect.toLastInsertIdSql(tableName);
-		return query(connection, sql, (rs) -> rs.getObject(1)).first();
-	}
-
-	private void setAutoIncrementLastId(int updateCount, Sql sql, Connection connection, String tableName,
-			Class<?> entityClass, Object entity) throws SQLException {
-		for (Column column : sqlDialect.resolve(entityClass)) {
-			if (column.isAutoIncrement() && column.getField() != null) {
-				if (updateCount == 0) {
-					logger.error("Number of rows affected is 0, execute: {}", sql);
-				} else if (updateCount == 1) {
-					Object lastId = getAutoIncrementLastId(connection, tableName);
-					column.getField().getSetter().set(entity, lastId, getConversionService());
-				}
+		if (cacheManager == null || (value == null && cacheManager.isKeepLooking(entityClass, ids))) {
+			value = SqlTemplate.super.getById(entityClass, ids);
+			if (value != null && cacheManager != null) {
+				cacheManager.save(value);
 			}
 		}
+		return value;
 	}
 
 	@Override
-	public <T> int save(String tableName, Class<? extends T> entityClass, T entity) {
-		String tName = getTableName(tableName, entityClass, entity);
-		Sql sql = sqlDialect.save(tName, entityClass, entity);
-		return prepare(sql).process((ps) -> {
-			int updateCount = ps.executeUpdate();
-			setAutoIncrementLastId(updateCount, sql, ps.getConnection(), tName, entityClass, entity);
-			return updateCount;
-		});
-	}
-
-	@Override
-	public <T> int saveOrUpdate(String tableName, Class<? extends T> entityClass, T entity) {
-		String tName = getTableName(tableName, entityClass, entity);
-		Sql sql = sqlDialect.toSaveOrUpdateSql(tName, entityClass, entity);
-		return prepare(sql).process((ps) -> {
-			int updateCount = ps.executeUpdate();
-			setAutoIncrementLastId(updateCount, sql, ps.getConnection(), tName, entityClass, entity);
-			return updateCount;
-		});
-	}
-
-	@Override
-	public <T> int delete(String tableName, Class<? extends T> entityClass, T entity) {
-		Class<?> clazz = getUserEntityClass(entity.getClass());
-		Sql sql = sqlDialect.delete(getTableName(tableName, clazz, entity), clazz, entity, null);
-		return prepare(sql).update();
-	}
-
-	@Override
-	public boolean deleteById(String tableName, Class<?> entityClass, Object... ids) {
-		Class<?> clazz = getUserEntityClass(entityClass);
-		Sql sql = sqlDialect.deleteById(getTableName(tableName, clazz, null), clazz, ids);
-		return prepare(sql).update() > 0;
-	}
-
-	@Override
-	public <T> int update(String tableName, Class<? extends T> entityClass, T entity) {
-		Class<?> clazz = getUserEntityClass(entity.getClass());
-		Sql sql = sqlDialect.update(getTableName(tableName, clazz, entity), clazz, entity, null);
-		return prepare(sql).update();
-	}
-
-	@Override
-	public <T> T getById(String tableName, Class<? extends T> entityClass, Object... ids) {
-		Class<?> clazz = getUserEntityClass(entityClass);
-		Sql sql = sqlDialect.toSelectByIdsSql(getTableName(tableName, clazz, null), clazz, ids);
-		return query(entityClass, sql).first();
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> Processor<ResultSet, T, Throwable> getMapProcessor(TypeDescriptor type) {
-		return new MapProcessDecorator<>(getMapper(), new SmartMapProcessor<>(sqlDialect, type),
-				(Class<T>) type.getType());
-	}
-
-	public TableChanges getTableChanges(Class<?> tableClass, String tableName) {
-		String tName = getTableName(tableName, tableClass, null);
-		TableStructureMapping tableStructureMapping = sqlDialect.getTableStructureMapping(tableClass, tName);
-		List<ColumnDescriptor> list = prepare(tableStructureMapping.getSql()).query().process((rs, rowNum) -> {
-			return tableStructureMapping.getName(rs);
-		});
-		HashSet<String> hashSet = new HashSet<String>();
-		List<String> deleteList = new ArrayList<String>();
-		Fields fields = sqlDialect.getFields(tableClass);
-		for (ColumnDescriptor columnDescriptor : list) {
-			hashSet.add(columnDescriptor.getName());
-			Field column = fields.find(columnDescriptor.getName(), null);
-			if (column == null) {// 在现在的表结构中不存在，应该删除
-				deleteList.add(columnDescriptor.getName());
+	public <T> boolean updatePart(Class<? extends T> entityClass, T entity) {
+		if (SqlTemplate.super.updatePart(entityClass, entity)) {
+			CacheManager cacheManager = getCacheManager();
+			if (cacheManager != null) {
+				cacheManager.delete(entityClass, entity);
 			}
+			return true;
 		}
-
-		List<Field> addList = new ArrayList<Field>();
-		for (Field column : sqlDialect.getFields(tableClass)) {
-			String name = sqlDialect.getName(column.getGetter());
-			if (!hashSet.contains(name)) {// 在已有的数据库中不存在，应该添加
-				addList.add(column);
-			}
-		}
-		return new TableChanges(deleteList, addList);
-	}
-
-	@Override
-	public <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, String tableName, Field field) {
-		String tName = getTableName(tableName, tableClass, null);
-		Sql sql = sqlDialect.toMaxIdSql(tableClass, tName, field);
-		return query(type, sql).first();
-	}
-
-	@Override
-	public <T> List<T> getByIdList(String tableName, Class<? extends T> entityClass, Object... ids) {
-		String tName = getTableName(tableName, entityClass, null);
-		Sql sql = sqlDialect.toSelectByIdsSql(tName, entityClass, ids);
-		Cursor<T> cursor = query(entityClass, sql);
-		return cursor.shared();
-	}
-
-	@Override
-	public <K, V> Map<K, V> getInIds(String tableName, Class<? extends V> entityClass,
-			Collection<? extends K> inPrimaryKeys, Object... primaryKeys) {
-		String tName = getTableName(tableName, entityClass, null);
-		Sql sql = sqlDialect.getInIds(tName, entityClass, primaryKeys, inPrimaryKeys);
-		Cursor<V> cursor = query(entityClass, sql);
-		List<V> list = cursor.shared();
-		if (list == null || list.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<String, K> keyMap = sqlDialect.getInIdsKeyMap(entityClass, inPrimaryKeys, primaryKeys);
-		Map<K, V> map = new LinkedHashMap<K, V>();
-		for (V v : list) {
-			String key = sqlDialect.getObjectKey(entityClass, v);
-			map.put(keyMap.get(key), v);
-		}
-		return map;
-	}
-
-	@Override
-	public boolean createTable(TableStructure tableStructure) {
-		Collection<Sql> sqls = sqlDialect.createTable(tableStructure);
-		try {
-			process((conn) -> {
-				for (Sql sql : sqls) {
-					prepare(conn, sql).execute();
-				}
-			});
-		} catch (SQLException e) {
-			throw new SqlException(tableStructure.getEntityClass().getName(), e);
-		}
-		return true;
-	}
-
-	@Override
-	public <T> int save(TableStructure tableStructure, T entity) {
-		Sql sql = sqlDialect.save(tableStructure, entity);
-		return prepare(sql).process((ps) -> {
-			int updateCount = ps.executeUpdate();
-			setAutoIncrementLastId(updateCount, sql, ps.getConnection(), tableStructure.getName(),
-					tableStructure.getEntityClass(), entity);
-			return updateCount;
-		});
-	}
-
-	@Override
-	public <T> int delete(TableStructure tableStructure, T entity) {
-		Sql sql = sqlDialect.delete(tableStructure, entity, null);
-		return prepare(sql).update();
-	}
-
-	@Override
-	public <T> int update(TableStructure tableStructure, T entity) {
-		Sql sql = sqlDialect.update(tableStructure, entity, null);
-		return prepare(sql).update();
-	}
-
-	@Override
-	public <T> int saveOrUpdate(TableStructure tableStructure, T entity) {
-		Sql sql = sqlDialect.toSaveOrUpdateSql(tableStructure, entity);
-		return prepare(sql).process((ps) -> {
-			int updateCount = ps.executeUpdate();
-			setAutoIncrementLastId(updateCount, sql, ps.getConnection(), tableStructure.getName(),
-					tableStructure.getEntityClass(), entity);
-			return updateCount;
-		});
-	}
-
-	@Override
-	public <T> boolean saveIfAbsent(String tableName, Class<? extends T> entityClass, T entity) {
-		String tName = getTableName(tableName, entityClass, entity);
-		Sql sql = sqlDialect.toSaveIfAbsentSql(tName, entityClass, entity);
-		return prepare(sql).process((ps) -> {
-			int updateCount = ps.executeUpdate();
-			setAutoIncrementLastId(updateCount, sql, ps.getConnection(), tName, entityClass, entity);
-			return updateCount;
-		}) > 0;
-	}
-
-	@Override
-	public <T> boolean saveIfAbsent(TableStructure tableStructure, T entity) {
-		Sql sql = sqlDialect.toSaveIfAbsentSql(tableStructure, entity);
-		return prepare(sql).process((ps) -> {
-			int updateCount = ps.executeUpdate();
-			setAutoIncrementLastId(updateCount, sql, ps.getConnection(), tableStructure.getName(),
-					tableStructure.getEntityClass(), entity);
-			return updateCount;
-		}) > 0;
+		return false;
 	}
 }

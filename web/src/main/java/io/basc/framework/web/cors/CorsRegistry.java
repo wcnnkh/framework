@@ -1,8 +1,7 @@
 package io.basc.framework.web.cors;
 
-import io.basc.framework.util.Holder;
-import io.basc.framework.web.pattern.HttpPattern;
-import io.basc.framework.web.pattern.HttpPatterns;
+import io.basc.framework.web.WebException;
+import io.basc.framework.web.pattern.ProcessorRegistry;
 
 /**
  * 跨域路径注册
@@ -10,11 +9,9 @@ import io.basc.framework.web.pattern.HttpPatterns;
  * @author shuchaowen
  *
  */
-public class CorsRegistry extends HttpPatterns<Cors> {
-
-	public Holder<Cors> addMapping(String pattern, Cors cors) {
-		HttpPattern httpPattern = new HttpPattern(pattern);
-		Cors corsToUse = cors.isReadyOnly() ? cors : cors.clone().readyOnly();
-		return add(httpPattern, corsToUse);
+public class CorsRegistry extends ProcessorRegistry<Cors, WebException> {
+	
+	public void add(String pattern, Cors cors) {
+		add(pattern, (request) -> Cors.DEFAULT);
 	}
 }

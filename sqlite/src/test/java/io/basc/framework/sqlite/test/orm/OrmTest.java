@@ -1,6 +1,7 @@
 package io.basc.framework.sqlite.test.orm;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -37,8 +38,9 @@ public class OrmTest {
 			table1.setId(i);
 			table1.setKey(XUtils.getUUID());
 			table1.setValue(i);
-			boolean b = db.saveOrUpdate(table1);
-			System.out.println("saveOrUpdate数据" + (b ? "成功" : "失败"));
+			db.saveOrUpdate(table1);
+			TestTable1 query = db.getById(TestTable1.class, i);
+			assertTrue(query.getKey().equals(table1.getKey()));
 		}
 	}
 
@@ -58,8 +60,6 @@ public class OrmTest {
 	@Test
 	public void test() {
 		initData();
-		System.out.println(JSONUtils.getJsonSupport().toJSONString(db.getByIdList(TestTable1.class, 1)));
 		saveOrUpdate();
-		System.out.println(JSONUtils.getJsonSupport().toJSONString(db.getByIdList(TestTable1.class, 1)));
 	}
 }

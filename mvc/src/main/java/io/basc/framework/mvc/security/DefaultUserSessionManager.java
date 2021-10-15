@@ -3,7 +3,10 @@ package io.basc.framework.mvc.security;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.env.Sys;
 import io.basc.framework.http.HttpCookie;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mvc.HttpChannel;
+import io.basc.framework.mvc.MVCUtils;
 import io.basc.framework.security.login.UserToken;
 import io.basc.framework.security.session.UserSession;
 import io.basc.framework.security.session.UserSessionFactory;
@@ -23,6 +26,8 @@ public class DefaultUserSessionManager implements UserSessionManager {
 	private static final String TOKEN_NAME = Sys.env.getValue(SESSIONID_ATTRIBUTE, String.class, "token");
 	private static final String UID_NAME = Sys.env.getValue(UID_ATTRIBUTE, String.class, "uid");
 	private static final boolean SINGLE_SESSION = Sys.env.getBooleanValue(SINGLE_ATTRIBUTE);
+	
+	private static Logger logger = LoggerFactory.getLogger(DefaultUserSessionManager.class);
 
 	private final UserSessionFactory userSessionFactory;
 	private String uidName = UID_NAME;
@@ -100,7 +105,14 @@ public class DefaultUserSessionManager implements UserSessionManager {
 		if (uid == null || uid.isEmpty() || token == null || token.isEmpty()) {
 			return null;
 		}
-		return new UserToken<T>(token.getAsString(), uid.getAsObject(type));
+		
+		try {
+			return new UserToken<T>(token.getAsString(), uid.getAsObject(type));
+		} catch (Throwable e) {
+			logger.error(e, "[{}] channel[{}] token[{}] uid[{}]", MVCUtils.getRequestLogId(httpChannel.getRequest()), httpChannel, token.getAsString(), uid.getAsString());
+			return null;
+		}
+		
 	}
 
 	@Override
