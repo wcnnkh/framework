@@ -36,7 +36,14 @@ public interface SqlDialect extends ObjectKeyFormat, TableResolver, ConversionSe
 
 	Sql toUpdateSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
 	
-	//<T> Sql toUpdatePartSql(TableStructure tableStructure, T entity) throws SqlDialectException;
+	/**
+	 * 转为更新语句，忽略不能为空但实体中为空的字段
+	 * @param tableStructure
+	 * @param entity
+	 * @return
+	 * @throws SqlDialectException
+	 */
+	Sql toUpdatePartSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
 
 	Sql toLastInsertIdSql(TableStructure tableStructure) throws SqlDialectException;
 

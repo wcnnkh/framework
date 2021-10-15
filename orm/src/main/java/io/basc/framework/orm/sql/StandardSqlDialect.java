@@ -198,7 +198,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		}
 		return new SimpleSql(sb.toString(), params);
 	}
-	
+
 	@Override
 	public Sql toInsertSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
 		StringBuilder cols = new StringBuilder();
@@ -208,7 +208,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if(column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
+			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
 				continue;
 			}
 
@@ -231,39 +231,6 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		sql.append(values);
 		sql.append(")");
 		return new SimpleSql(sql.toString(), params.toArray());
-	}
-	
-	protected void appendCondition(StringBuilder sb, Collection<Object> params, TableStructure tableStructure, Object condition) {
-		if(condition == null) {
-			return ;
-		}
-		
-		boolean first = true;
-		Iterator<Column> iterator = tableStructure.iterator();
-		while (iterator.hasNext()) {
-			Column column = iterator.next();
-			Object value = getDataBaseValue(condition, column.getField());
-			if(value == null && !column.isNullable()) {
-				continue;
-			}
-			
-			if(first) {
-				//TODO 这样写是否不利于复用
-				int index = sb.indexOf(WHERE);
-				if(index == -1) {
-					sb.append(WHERE);
-				}else {
-					sb.append(AND);
-				}
-				first = false;
-			}else {
-				sb.append(AND);
-			}
-			
-			keywordProcessing(sb, column.getName());
-			sb.append("=?");
-			params.add(value);
-		}
 	}
 
 	@Override
@@ -298,7 +265,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 				sql.append("=?");
 				params.add(getDataBaseValue(entity, column.getField()));
 			}
-		});		
+		});
 		return new SimpleSql(sql.toString(), params.toArray());
 	}
 
@@ -420,6 +387,88 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 	}
 
 	@Override
+	public Sql toUpdatePartSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
+		List<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
+		if (primaryKeyColumns.size() == 0) {
+			throw new SqlDialectException(tableStructure.getName() + " not found primary key");
+		}
+
+		Map<String, Object> changeMap = getChangeMap(entity);
+		List<Column> notPrimaryKeys = tableStructure.getNotPrimaryKeys();
+		StringBuilder sb = new StringBuilder(512);
+		sb.append(UPDATE_PREFIX);
+		keywordProcessing(sb, tableStructure.getName());
+		sb.append(SET);
+		List<Object> params = new ArrayList<Object>();
+		Iterator<Column> iterator = notPrimaryKeys.iterator();
+		while (iterator.hasNext()) {
+			Column column = iterator.next();
+			if (changeMap != null && !changeMap.containsKey(column.getField().getSetter().getName())) {
+				// 忽略没有变化的字段
+				continue;
+			}
+
+			// 如果字段不能为空，且实体字段没有值就忽略
+			if (!column.isNullable() && !MapperUtils.isExistDefaultValue(column.getField(), entity)) {
+				continue;
+			}
+
+			keywordProcessing(sb, column.getName());
+			sb.append("=");
+			appendUpdateValue(sb, params, entity, column, changeMap);
+			if (iterator.hasNext()) {
+				sb.append(",");
+			}
+		}
+
+		sb.append(WHERE);
+		iterator = primaryKeyColumns.iterator();
+		while (iterator.hasNext()) {
+			Column column = iterator.next();
+			keywordProcessing(sb, column.getName());
+			sb.append("=?");
+			params.add(getDataBaseValue(entity, column.getField()));
+			if (iterator.hasNext()) {
+				sb.append(AND);
+			}
+		}
+
+		// 添加版本号字段变更条件
+		notPrimaryKeys.forEach((column) -> {
+			Counter counter = getCounter(column.getField());
+			if (counter != null) {
+				sb.append(AND);
+				keywordProcessing(sb, column.getName());
+				sb.append(">=").append(counter.min());
+				sb.append(AND);
+				keywordProcessing(sb, column.getName());
+				sb.append("<=").append(counter.max());
+			}
+
+			if (column.getField().isAnnotationPresent(Version.class)) {
+				AnyValue oldVersion = null;
+				if (changeMap != null && changeMap.containsKey(column.getField().getSetter().getName())) {
+					oldVersion = new AnyValue(changeMap.get(column.getField().getSetter().getName()));
+					if (oldVersion.getAsDoubleValue() == 0) {
+						// 如果存在变更但版本号为0就忽略此条件
+						return;
+					}
+				}
+
+				// 因为一定存在主键，所有一定有where条件，此处直接and
+				sb.append(AND);
+				keywordProcessing(sb, column.getName());
+				sb.append("=?");
+
+				// 如果存在旧值就使用旧值
+				params.add(oldVersion == null ? getDataBaseValue(entity, column.getField())
+						: toDataBaseValue(oldVersion.getAsLongValue()));
+			}
+		});
+		return new SimpleSql(sb.toString(), params.toArray());
+	}
+
+	@Override
 	public Sql toUpdateSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
 		List<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
 		if (primaryKeyColumns.size() == 0) {
@@ -499,7 +548,8 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 	protected final void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Column column,
 			Map<String, Object> changeMap) {
 		AnyValue newValue = new AnyValue(getDataBaseValue(entity, column.getField()));
-		AnyValue oldValue = changeMap == null? null: new AnyValue(changeMap.get(column.getField().getSetter().getName()));
+		AnyValue oldValue = changeMap == null ? null
+				: new AnyValue(changeMap.get(column.getField().getSetter().getName()));
 		appendUpdateValue(sb, params, entity, column, oldValue, newValue);
 	}
 
@@ -514,17 +564,17 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 			params.add(newValue.getValue());
 		}
 	}
-	
+
 	@Override
 	public Sql query(TableStructure tableStructure, Object query) {
 		StringBuilder sb = new StringBuilder(SELECT_ALL_PREFIX);
 		keywordProcessing(sb, tableStructure.getName());
-		
+
 		Sql where = getConditionalStatement(tableStructure, query);
-		if(StringUtils.isEmpty(where.getSql())){
+		if (StringUtils.isEmpty(where.getSql())) {
 			return new SimpleSql(sb.toString());
 		}
-		
+
 		return new SimpleSql(sb.append(" where ").append(where.getSql()).toString(), where.getParams());
 	}
 
@@ -532,16 +582,16 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 			AnyValue oldValue, AnyValue newValue, Counter counter) {
 		throw new SqlDialectException("This counter field cannot be processed: " + column);
 	}
-	
-	private void and(StringBuilder sb, List<Object> params, Object entity, Iterator<Column> columns){
-		while(columns.hasNext()){
+
+	private void and(StringBuilder sb, List<Object> params, Object entity, Iterator<Column> columns) {
+		while (columns.hasNext()) {
 			Column column = columns.next();
 			Object value = column.getField().get(entity);
-			if(value == null){
+			if (value == null) {
 				continue;
 			}
-			
-			if(sb.length() != 0){
+
+			if (sb.length() != 0) {
 				sb.append(" and ");
 			}
 			keywordProcessing(sb, column.getName());
@@ -549,39 +599,39 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 			params.add(value);
 		}
 	}
-	
-	private Sql getConditionalStatement(TableStructure tableStructure, Object entity){
+
+	private Sql getConditionalStatement(TableStructure tableStructure, Object entity) {
 		StringBuilder sb = new StringBuilder();
 		List<Object> params = new ArrayList<Object>(8);
 		and(sb, params, entity, tableStructure.stream().filter((col) -> tableStructure.indexExists(col)).iterator());
 		and(sb, params, entity, tableStructure.stream().filter((col) -> !tableStructure.indexExists(col)).iterator());
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
-	
+
 	@Override
 	public Sql toCountSql(Sql sql) throws SqlDialectException {
 		String str = sql.getSql();
 		str = str.toLowerCase();
-		if(str.lastIndexOf(" group by ") != -1) {
-			//如果存在group by语句
+		if (str.lastIndexOf(" group by ") != -1) {
+			// 如果存在group by语句
 			EditableSql countSql = new EditableSql();
 			countSql.append("select count(*) from (");
 			countSql.append(sql);
 			countSql.append(") as basc_" + XUtils.getUUID());
 			return countSql;
 		}
-		
+
 		int fromIndex = str.indexOf(" from ");// ignore select
 		if (fromIndex == -1) {
 			throw new IndexOutOfBoundsException(str);
 		}
-		
+
 		EditableSql countSql = new EditableSql();
 		countSql.append("select count(*)");
 		int orderIndex = str.lastIndexOf(" order by ");
-		if(orderIndex != -1 && str.indexOf(")", orderIndex) == -1) {
+		if (orderIndex != -1 && str.indexOf(")", orderIndex) == -1) {
 			countSql.append(SqlUtils.sub(sql, fromIndex, orderIndex));
-		}else {
+		} else {
 			// 不存在 order by 子语句
 			countSql.append(SqlUtils.sub(sql, fromIndex));
 		}

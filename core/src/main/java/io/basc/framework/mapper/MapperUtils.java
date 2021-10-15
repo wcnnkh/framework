@@ -76,8 +76,8 @@ public class MapperUtils {
 		return Setter.DEFAULT_SETTER_METHOD_PREFIX + StringUtils.toUpperCase(name, 0, 1);
 	}
 
-	public static void setValue(ConversionService conversionService, Object instance, io.basc.framework.mapper.Field field,
-			Object value) {
+	public static void setValue(ConversionService conversionService, Object instance,
+			io.basc.framework.mapper.Field field, Object value) {
 		if (!field.isSupportSetter()) {
 			throw new NotSupportedException(field.toString());
 		}
@@ -93,35 +93,77 @@ public class MapperUtils {
 	}
 
 	/**
-	 * 是否存在值
-	 * 
 	 * @param field
 	 * @param instance
-	 * @return
+	 * @return 如果字段类型是基本数据类型，那么0也会是认为是没有值
 	 */
 	public static boolean isExistValue(io.basc.framework.mapper.Field field, Object instance) {
 		if (!field.isSupportGetter()) {
 			return false;
 		}
 
-		if (field.getGetter().getType().isPrimitive()) {// 如果是值类型，那么是不可能为空的
-			Object value = field.getGetter().get(instance);
+		return isExistValue(field.getGetter(), instance);
+	}
+
+	/**
+	 * @param field
+	 * @param instance
+	 * @return value != null
+	 */
+	public static boolean isExistDefaultValue(io.basc.framework.mapper.Field field, Object instance) {
+		if (!field.isSupportGetter()) {
+			return false;
+		}
+
+		return isExistDefaultValue(field.getGetter(), instance);
+	}
+
+	/**
+	 * @param getter
+	 * @param instance
+	 * @return value != null
+	 */
+	public static boolean isExistDefaultValue(Getter getter, Object instance) {
+		if (getter == null) {
+			return false;
+		}
+
+		if (getter.getType().isPrimitive()) {
+			return true;
+		}
+
+		return getter.get(instance) != null;
+	}
+
+	/**
+	 * @param getter
+	 * @param instance
+	 * @return 如果字段类型是基本数据类型，那么0也会是认为是没有值
+	 */
+	public static boolean isExistValue(Getter getter, Object instance) {
+		if (getter == null) {
+			return false;
+		}
+
+		if (getter.getType().isPrimitive()) {
+			Object value = getter.get(instance);
 			if (value != null && value instanceof Number) {
 				return ((Number) value).doubleValue() != 0;
 			}
 			return false;
-		} else {
-			return field.getGetter().get(instance) != null;
 		}
+
+		return getter.get(instance) != null;
 	}
 
-	public static final <T> T mapping(FieldFactory fieldFactory, Class<T> entityClass, io.basc.framework.mapper.Field parentField,
-			Mapping mapping) {
+	public static final <T> T mapping(FieldFactory fieldFactory, Class<T> entityClass,
+			io.basc.framework.mapper.Field parentField, Mapping mapping) {
 		return mapping.mapping(entityClass, fieldFactory.getFields(entityClass, parentField).all()
 				.accept(FieldFeature.SUPPORT_SETTER).accept(mapping), fieldFactory);
 	}
 
-	public static final <T> T mapping(Class<T> entityClass, io.basc.framework.mapper.Field parentField, Mapping mapping) {
+	public static final <T> T mapping(Class<T> entityClass, io.basc.framework.mapper.Field parentField,
+			Mapping mapping) {
 		return mapping(FIELD_FACTORY, entityClass, parentField, mapping);
 	}
 

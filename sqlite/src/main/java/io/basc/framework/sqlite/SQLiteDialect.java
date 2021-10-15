@@ -185,7 +185,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if(column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
+			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
 				continue;
 			}
 

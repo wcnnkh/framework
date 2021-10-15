@@ -35,6 +35,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	SqlDialect getSqlDialect();
 
 	default <T> TableStructure resolve(Class<? extends T> entityClass, @Nullable T entity, @Nullable String tableName) {
+		Assert.requiredArgument(entityClass != null, "entityClass");
 		if (StringUtils.isNotEmpty(tableName)) {
 			return getSqlDialect().resolve(entityClass).rename(tableName);
 		}
@@ -92,16 +93,18 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	@Override
 	default <T> void save(Class<? extends T> entityClass, T entity) {
-		Assert.requiredArgument(entityClass != null, "entityClass");
-		Assert.requiredArgument(entity != null, "entity");
 		save(entityClass, entity, null);
 	}
 
 	default <T> int save(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
+		Assert.requiredArgument(entityClass != null, "entityClass");
 		return save(resolve(entityClass, entity, tableName), entity);
 	}
 
 	default <T> int save(TableStructure tableStructure, T entity) {
+		Assert.requiredArgument(tableStructure != null, "tableStructure");
+		Assert.requiredArgument(entity != null, "entity");
+		
 		Sql sql = getSqlDialect().toSaveSql(tableStructure, entity);
 		return prepare(sql).process((ps) -> {
 			int updateCount = ps.executeUpdate();
@@ -111,10 +114,6 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> boolean saveIfAbsent(Class<? extends T> entityClass, T entity) {
-		if (entityClass == null || entity == null) {
-			return false;
-		}
-
 		return saveIfAbsent(entityClass, entity, null) > 0;
 	}
 
@@ -123,6 +122,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> int saveIfAbsent(TableStructure tableStructure, T entity) {
+		Assert.requiredArgument(tableStructure != null, "tableStructure");
+		Assert.requiredArgument(entity != null, "entity");
 		Sql sql = getSqlDialect().toSaveIfAbsentSql(tableStructure, entity);
 		return prepare(sql).process((ps) -> {
 			int updateCount = ps.executeUpdate();
@@ -133,10 +134,6 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	@Override
 	default <T> boolean delete(Class<? extends T> entityClass, T entity) {
-		if (entityClass == null || entity == null) {
-			return false;
-		}
-
 		return delete(entityClass, entity, null) > 0;
 	}
 
@@ -145,6 +142,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> int delete(TableStructure tableStructure, T entity) {
+		Assert.requiredArgument(tableStructure != null, "tableStructure");
+		Assert.requiredArgument(entity != null, "entity");
 		Sql sql = getSqlDialect().toDeleteSql(tableStructure, entity);
 		return update(sql);
 	}
@@ -162,28 +161,43 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default int deleteById(TableStructure tableStructure, Object... ids) {
+		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Sql sql = getSqlDialect().toDeleteByIdSql(tableStructure, ids);
 		return update(sql);
 	}
 
+	default boolean updatePart(Object entity) {
+		Assert.requiredArgument(entity != null, "entity");
+		return updatePart(entity.getClass(), entity);
+	}
+
+	default <T> boolean updatePart(Class<? extends T> entityClass, T entity) {
+		return updatePart(entityClass, entity, null) > 0;
+	}
+
+	default <T> int updatePart(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
+		return updatePart(resolve(entityClass, entity, tableName), entity);
+	}
+
+	default int updatePart(TableStructure tableStructure, Object entity) {
+		Assert.requiredArgument(tableStructure != null, "tableStructure");
+		Assert.requiredArgument(entity != null, "entity");
+		Sql sql = getSqlDialect().toUpdatePartSql(tableStructure, entity);
+		return update(sql);
+	}
+	
 	@Override
 	default <T> boolean update(Class<? extends T> entityClass, T entity) {
 		return update(entityClass, entity, null) > 0;
 	}
 
 	default <T> int update(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
-		if (entityClass == null) {
-			return 0;
-		}
-
 		return update(resolve(entityClass, entity, tableName), entity);
 	}
 
 	default <T> int update(TableStructure tableStructure, T entity) {
-		if (tableStructure == null || entity == null) {
-			return 0;
-		}
-
+		Assert.requiredArgument(tableStructure != null, "tableStructure");
+		Assert.requiredArgument(entity != null, "entity");
 		Sql sql = getSqlDialect().toUpdateSql(tableStructure, entity);
 		return update(sql);
 	}
@@ -202,9 +216,6 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	 * @return
 	 */
 	default <T> int saveOrUpdate(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
-		if (entityClass == null || entity == null) {
-			return 0;
-		}
 		return saveOrUpdate(resolve(entityClass, entity, tableName), entity);
 	}
 
@@ -218,10 +229,10 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	 */
 	default <T> int saveOrUpdate(TableStructure tableStructure, T entity) {
 		int count = saveIfAbsent(tableStructure, entity);
-		if(count > 0) {
+		if (count > 0) {
 			return count;
 		}
-		
+
 		return update(tableStructure, entity);
 	}
 

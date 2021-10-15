@@ -1,5 +1,6 @@
 package io.basc.framework.orm.sql;
 
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.orm.cache.CacheManager;
 import io.basc.framework.orm.generator.DefaultGeneratorProcessor;
 import io.basc.framework.orm.generator.GeneratorProcessor;
@@ -22,6 +23,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 		return sqlDialect;
 	}
 
+	@Nullable
 	public CacheManager getCacheManager() {
 		return cacheManager;
 	}
@@ -49,11 +51,11 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 			cacheManager.save(entityClass, entity);
 		}
 	}
-	
+
 	@Override
 	public <T> boolean saveIfAbsent(Class<? extends T> entityClass, T entity) {
 		generatorProcessor.process(entityClass, entity);
-		if(SqlTemplate.super.saveIfAbsent(entityClass, entity)) {
+		if (SqlTemplate.super.saveIfAbsent(entityClass, entity)) {
 			CacheManager cacheManager = getCacheManager();
 			if (cacheManager != null) {
 				cacheManager.saveIfAbsent(entityClass, entity);
@@ -96,7 +98,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	@Override
 	public <T> boolean saveOrUpdate(Class<? extends T> entityClass, T entity) {
 		generatorProcessor.process(entityClass, entity);
-		if(SqlTemplate.super.saveOrUpdate(entityClass, entity)) {
+		if (SqlTemplate.super.saveOrUpdate(entityClass, entity)) {
 			CacheManager cacheManager = getCacheManager();
 			if (cacheManager != null) {
 				cacheManager.saveOrUpdate(entity);
@@ -121,5 +123,17 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 			}
 		}
 		return value;
+	}
+
+	@Override
+	public <T> boolean updatePart(Class<? extends T> entityClass, T entity) {
+		if (SqlTemplate.super.updatePart(entityClass, entity)) {
+			CacheManager cacheManager = getCacheManager();
+			if (cacheManager != null) {
+				cacheManager.delete(entityClass, entity);
+			}
+			return true;
+		}
+		return false;
 	}
 }
