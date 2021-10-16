@@ -806,7 +806,6 @@ public class ResolvableType implements Serializable {
 		return null;
 	}
 
-
 	@Override
 	public boolean equals(Object other) {
 		if (this == other) {

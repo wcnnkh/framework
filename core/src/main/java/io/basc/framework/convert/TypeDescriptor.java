@@ -206,6 +206,15 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	public boolean isPrimitive() {
 		return getType().isPrimitive();
 	}
+	
+	/**
+	 * 是否是泛型
+	 * @see ResolvableType#hasGenerics();
+	 * @return
+	 */
+	public boolean isGeneric(){
+		return getResolvableType().hasGenerics();
+	}
 
 	/**
 	 * Return the annotations associated with this type descriptor, if any.

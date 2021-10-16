@@ -1,5 +1,26 @@
 package io.basc.framework.orm.sql;
 
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Fields;
+import io.basc.framework.orm.EntityOperations;
+import io.basc.framework.orm.MaxValueFactory;
+import io.basc.framework.orm.StructureRegistry;
+import io.basc.framework.orm.sql.convert.SmartMapProcessor;
+import io.basc.framework.sql.Sql;
+import io.basc.framework.sql.SqlException;
+import io.basc.framework.sql.SqlOperations;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.page.Page;
+import io.basc.framework.util.page.PageSupport;
+import io.basc.framework.util.page.Pages;
+import io.basc.framework.util.page.StreamPage;
+import io.basc.framework.util.page.StreamPages;
+import io.basc.framework.util.stream.Cursor;
+import io.basc.framework.util.stream.Processor;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,44 +32,33 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.Fields;
-import io.basc.framework.mapper.MapProcessDecorator;
-import io.basc.framework.orm.EntityOperations;
-import io.basc.framework.orm.MaxValueFactory;
-import io.basc.framework.orm.sql.convert.SmartMapProcessor;
-import io.basc.framework.sql.Sql;
-import io.basc.framework.sql.SqlException;
-import io.basc.framework.sql.SqlOperations;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.page.Page;
-import io.basc.framework.util.page.PageSupport;
-import io.basc.framework.util.page.Pages;
-import io.basc.framework.util.page.StreamPages;
-import io.basc.framework.util.stream.Cursor;
-import io.basc.framework.util.stream.Processor;
-
 public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFactory {
 	SqlDialect getSqlDialect();
+	
+	StructureRegistry<TableStructure> getStructureRegistry();
+	
+	default TableStructure getTableStructure(Class<?> entityClass){
+		StructureRegistry<TableStructure> registry = getStructureRegistry();
+		if(registry.isRegistry(entityClass)){
+			return registry.getStructure(entityClass);
+		}
+		return getSqlDialect().resolve(entityClass);
+	}
 
 	default <T> TableStructure resolve(Class<? extends T> entityClass, @Nullable T entity, @Nullable String tableName) {
 		Assert.requiredArgument(entityClass != null, "entityClass");
 		if (StringUtils.isNotEmpty(tableName)) {
-			return getSqlDialect().resolve(entityClass).rename(tableName);
+			return getTableStructure(entityClass).rename(tableName);
 		}
 
-		String entityName = null;
+		TableStructure tableStructure = getTableStructure(entityClass);
 		if (entity != null && entity instanceof TableName) {
-			entityName = ((TableName) entity).getTableName();
+			String entityName = ((TableName) entity).getTableName();
+			if(StringUtils.isNotEmpty(entityName)){
+				tableStructure = tableStructure.rename(entityName);
+			}
 		}
-
-		if (StringUtils.isEmpty(entityName)) {
-			entityName = getSqlDialect().getName(entityClass);
-		}
-		return getSqlDialect().resolve(entityClass).rename(entityName);
+		return tableStructure;
 	}
 
 	default void createTable(Class<?> entityClass) {
@@ -285,11 +295,11 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 			return Collections.emptyMap();
 		}
 
-		Map<String, K> keyMap = getSqlDialect().getInIdsKeyMap(tableStructure.getEntityClass(), inPrimaryKeys,
+		Map<String, K> keyMap = getSqlDialect().getInIdsKeyMap(tableStructure, inPrimaryKeys,
 				primaryKeys);
 		Map<K, V> map = new LinkedHashMap<K, V>();
 		for (V v : list) {
-			String key = getSqlDialect().getObjectKey(tableStructure.getEntityClass(), v);
+			String key = getSqlDialect().getObjectKey(tableStructure, v);
 			map.put(keyMap.get(key), v);
 		}
 		return map;
@@ -299,20 +309,41 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		Pages<T> pages = getPages(resultType, sql, pageNumber, limit);
 		return pages.shared();
 	}
+	
+	@Override
+	public default <T> Processor<ResultSet, T, ? extends Throwable> getMapProcessor(
+			Class<? extends T> type) {
+		if(getStructureRegistry().isRegistry(type)){
+			return new EntityStructureMapProcessor<T>(getStructureRegistry().getStructure(type), getSqlDialect().getConversionService());
+		}
+		return SqlOperations.super.getMapProcessor(type);
+	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	default <T> Processor<ResultSet, T, Throwable> getMapProcessor(TypeDescriptor type) {
-		return new MapProcessDecorator<>(getMapper(), new SmartMapProcessor<>(getSqlDialect(), type),
-				(Class<T>) type.getType());
+		SmartMapProcessor<T> processor = new SmartMapProcessor<T>(getSqlDialect(), getSqlDialect().getConversionService(), type);
+		processor.setMapper(getMapper());
+		processor.setStructureRegistry(getStructureRegistry());
+		return processor;
 	}
 
 	default <T> Page<T> getPage(Class<? extends T> resultType, Sql sql, long pageNumber, long limit) {
-		return getPage(TypeDescriptor.valueOf(resultType), sql, pageNumber, limit);
+		return getPages(sql, pageNumber, limit, getMapProcessor(resultType));
 	}
 
 	default <T> Pages<T> getPages(TypeDescriptor resultType, Sql sql, long pageNumber, long limit) {
 		return getPages(sql, pageNumber, limit, getMapProcessor(resultType));
+	}
+	
+	default <T> Page<T> getPage(Sql sql, long pageNumber, long limit,
+			Processor<ResultSet, T, ? extends Throwable> mapProcessor){
+		long start = PageSupport.getStart(pageNumber, limit);
+		long total = count(sql);
+		if (total == 0) {
+			return PageSupport.emptyPage(pageNumber, limit);
+		}
+		
+		return new StreamPage<T>(start, () -> limit(sql, start, limit, mapProcessor), limit, total);
 	}
 
 	default <T> Pages<T> getPages(Sql sql, long pageNumber, long limit,
@@ -326,8 +357,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return new StreamPages<>(total, start, limit, (begin, count) -> limit(sql, begin, count, mapProcessor));
 	}
 
-	default <T> Pages<T> getPages(Class<? extends T> resultType, Sql sql, long pageNumber, int limit) {
-		return getPages(TypeDescriptor.valueOf(resultType), sql, pageNumber, limit);
+	default <T> Pages<T> getPages(Class<T> resultType, Sql sql, long pageNumber, int limit) {
+		return getPages(sql, pageNumber, limit, getMapProcessor(resultType));
 	}
 
 	/**
@@ -433,7 +464,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> Cursor<T> query(TableStructure tableStructure, Sql sql) {
-		return query(sql, new TableStructureMapProcessor<T>(tableStructure));
+		return query(sql, new EntityStructureMapProcessor<T>(tableStructure, getSqlDialect().getConversionService()));
 	}
 
 	default <T> Cursor<T> query(TableStructure tableStructure, T query) {
@@ -442,7 +473,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> Cursor<T> query(Class<? extends T> queryClass, T query) {
-		return query(getSqlDialect().resolve(queryClass), query);
+		return query(resolve(queryClass, query, null), query);
 	}
 
 	default long count(Sql sql) {
@@ -468,10 +499,10 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	default <T> Pages<T> getPages(TableStructure tableStructure, T query, long getNumber, long limit) {
 		Sql sql = getSqlDialect().query(tableStructure, query);
-		return getPages(sql, getNumber, limit, new TableStructureMapProcessor<T>(tableStructure));
+		return getPages(sql, getNumber, limit, new EntityStructureMapProcessor<T>(tableStructure, getSqlDialect().getConversionService()));
 	}
 
 	default <T> Pages<T> getPages(Class<? extends T> queryClass, T query, long getNumber, long limit) {
-		return getPages(getSqlDialect().resolve(queryClass), query, getNumber, limit);
+		return getPages(resolve(queryClass, query, null), query, getNumber, limit);
 	}
 }

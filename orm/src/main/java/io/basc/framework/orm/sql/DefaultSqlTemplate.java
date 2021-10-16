@@ -1,6 +1,7 @@
 package io.basc.framework.orm.sql;
 
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.orm.SimpleStructureRegistry;
 import io.basc.framework.orm.cache.CacheManager;
 import io.basc.framework.orm.generator.DefaultGeneratorProcessor;
 import io.basc.framework.orm.generator.GeneratorProcessor;
@@ -8,15 +9,23 @@ import io.basc.framework.sql.ConnectionFactory;
 import io.basc.framework.sql.DefaultSqlOperations;
 import io.basc.framework.util.Assert;
 
-public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTemplate {
+public class DefaultSqlTemplate extends DefaultSqlOperations implements
+		SqlTemplate {
 	private final SqlDialect sqlDialect;
 	private GeneratorProcessor generatorProcessor;
 	private CacheManager cacheManager;
+	private final SimpleStructureRegistry<TableStructure> structureRegistry = new SimpleStructureRegistry<TableStructure>();
 
-	public DefaultSqlTemplate(ConnectionFactory connectionFactory, SqlDialect sqlDialect) {
+	public DefaultSqlTemplate(ConnectionFactory connectionFactory,
+			SqlDialect sqlDialect) {
 		super(connectionFactory);
-		this.generatorProcessor = new DefaultGeneratorProcessor(sqlDialect, this);
+		this.generatorProcessor = new DefaultGeneratorProcessor(sqlDialect,
+				this);
 		this.sqlDialect = sqlDialect;
+	}
+	
+	public SimpleStructureRegistry<TableStructure> getStructureRegistry() {
+		return structureRegistry;
 	}
 
 	public SqlDialect getSqlDialect() {
@@ -37,7 +46,8 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	}
 
 	public void setGeneratorProcessor(GeneratorProcessor generatorProcessor) {
-		Assert.requiredArgument(generatorProcessor != null, "generatorProcessor");
+		Assert.requiredArgument(generatorProcessor != null,
+				"generatorProcessor");
 		this.generatorProcessor = generatorProcessor;
 	}
 
@@ -116,7 +126,9 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 			value = cacheManager.getById(entityClass, ids);
 		}
 
-		if (cacheManager == null || (value == null && cacheManager.isKeepLooking(entityClass, ids))) {
+		if (cacheManager == null
+				|| (value == null && cacheManager.isKeepLooking(entityClass,
+						ids))) {
 			value = SqlTemplate.super.getById(entityClass, ids);
 			if (value != null && cacheManager != null) {
 				cacheManager.save(value);

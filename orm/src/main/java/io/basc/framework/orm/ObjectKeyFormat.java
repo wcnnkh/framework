@@ -11,9 +11,9 @@ public interface ObjectKeyFormat {
 	 */
 	static final String OBJECT_KEY_CONNECTOR = Sys.env.getValue("object.key.connector.character", String.class, ":");
 
-	String getObjectKeyByIds(Class<?> clazz, Collection<Object> ids);
+	String getObjectKeyByIds(EntityStructure<?> structure, Collection<Object> ids);
 
-	<T> String getObjectKey(Class<? extends T> clazz, T bean);
+	<T> String getObjectKey(EntityStructure<?> structure, T bean);
 
-	<K> Map<String, K> getInIdsKeyMap(Class<?> clazz, Collection<? extends K> lastPrimaryKeys, Object[] primaryKeys);
+	<K> Map<String, K> getInIdsKeyMap(EntityStructure<?> structure, Collection<? extends K> lastPrimaryKeys, Object[] primaryKeys);
 }
