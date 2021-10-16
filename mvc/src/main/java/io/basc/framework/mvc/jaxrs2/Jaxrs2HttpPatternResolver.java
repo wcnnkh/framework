@@ -5,6 +5,7 @@ import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.mvc.HttpPatternResolver;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.net.MimeTypes;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.placeholder.PropertyResolver;
 import io.basc.framework.util.placeholder.PropertyResolverAware;
@@ -39,8 +40,7 @@ public class Jaxrs2HttpPatternResolver implements HttpPatternResolver, PropertyR
 
 	@Override
 	public boolean canResolveHttpPattern(Class<?> clazz, Method method) {
-		return AnnotatedElementUtils.isAnnotated(method, Path.class)
-				|| AnnotatedElementUtils.isAnnotated(method, HttpMethod.class);
+		return AnnotatedElementUtils.isAnnotated(method, Path.class);
 	}
 
 	@Override
@@ -69,8 +69,10 @@ public class Jaxrs2HttpPatternResolver implements HttpPatternResolver, PropertyR
 
 		Set<HttpMethod> httpMethods = AnnotatedElementUtils.getAllMergedAnnotations(method, HttpMethod.class);
 		Set<HttpPattern> httpPatterns = new LinkedHashSet<HttpPattern>();
-		for (HttpMethod httpMethod : httpMethods) {
-			httpPatterns.add(new HttpPattern(path, httpMethod.value(), null));
+		if(!CollectionUtils.isEmpty(httpMethods)){
+			for (HttpMethod httpMethod : httpMethods) {
+				httpPatterns.add(new HttpPattern(path, httpMethod.value(), null));
+			}
 		}
 
 		if (httpMethods.isEmpty()) {

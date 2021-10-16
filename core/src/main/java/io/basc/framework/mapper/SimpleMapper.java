@@ -16,7 +16,7 @@ public class SimpleMapper<S, E extends Throwable> implements Mapper<S, E> {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> Processor<S, T, E> getProcessor(Class<T> type) {
+	public <T> Processor<S, T, E> getProcessor(Class<? extends T> type) {
 		return (Processor<S, T, E>) map.get(type);
 	}
 

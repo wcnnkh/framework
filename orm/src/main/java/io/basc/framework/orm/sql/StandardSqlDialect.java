@@ -17,6 +17,8 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.ParameterException;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.orm.EntityStructure;
+import io.basc.framework.orm.Property;
 import io.basc.framework.orm.annotation.Version;
 import io.basc.framework.orm.sql.annotation.AnnotationTableResolver;
 import io.basc.framework.orm.sql.annotation.Counter;
@@ -83,9 +85,9 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		return getConversionService().convert(value, sourceType, TypeDescriptor.valueOf(sqlType.getType()));
 	}
 
-	private void appendObjectKeyByValue(StringBuilder appendable, Field field, Object value) {
+	private void appendObjectKeyByValue(StringBuilder appendable, Property property, Object value) {
 		appendable.append(OBJECT_KEY_CONNECTOR);
-		appendable.append(field.getGetter().getName());
+		appendable.append(property.getName());
 		appendable.append(OBJECT_KEY_CONNECTOR);
 		String str = String.valueOf(value);
 		str = str.replaceAll(OBJECT_KEY_CONNECTOR, "\\" + OBJECT_KEY_CONNECTOR);
@@ -93,10 +95,10 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 	}
 
 	@Override
-	public String getObjectKeyByIds(Class<?> clazz, Collection<Object> ids) {
+	public String getObjectKeyByIds(EntityStructure<?> structure, Collection<Object> ids) {
 		StringBuilder sb = new StringBuilder(128);
-		sb.append(clazz.getName());
-		Iterator<Field> primaryKeys = getPrimaryKeys(clazz).iterator();
+		sb.append(structure.getName());
+		Iterator<? extends Property> primaryKeys = structure.getPrimaryKeys().iterator();
 		Iterator<Object> valueIterator = ids.iterator();
 		while (primaryKeys.hasNext() && valueIterator.hasNext()) {
 			appendObjectKeyByValue(sb, primaryKeys.next(), toDataBaseValue(valueIterator.next()));
@@ -104,17 +106,17 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 		return sb.toString();
 	}
 
-	public final <T> String getObjectKey(Class<? extends T> clazz, final T bean) {
+	public final <T> String getObjectKey(EntityStructure<?> structure, final T bean) {
 		final StringBuilder sb = new StringBuilder(128);
-		sb.append(clazz.getName());
-		for (Field column : getPrimaryKeys(clazz)) {
-			appendObjectKeyByValue(sb, column, getDataBaseValue(bean, column));
+		sb.append(structure.getName());
+		for (Property column : structure.getPrimaryKeys()) {
+			appendObjectKeyByValue(sb, column, getDataBaseValue(bean, column.getField()));
 		}
 		return sb.toString();
 	}
 
 	@Override
-	public <K> Map<String, K> getInIdsKeyMap(Class<?> clazz, Collection<? extends K> lastPrimaryKeys,
+	public <K> Map<String, K> getInIdsKeyMap(EntityStructure<?> structure, Collection<? extends K> lastPrimaryKeys,
 			Object[] primaryKeys) {
 		if (CollectionUtils.isEmpty(lastPrimaryKeys)) {
 			return Collections.emptyMap();
@@ -133,7 +135,7 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 				System.arraycopy(primaryKeys, 0, ids, 0, primaryKeys.length);
 				ids[ids.length - 1] = k;
 			}
-			keyMap.put(getObjectKeyByIds(clazz, Arrays.asList(ids)), k);
+			keyMap.put(getObjectKeyByIds(structure, Arrays.asList(ids)), k);
 		}
 		return keyMap;
 	}

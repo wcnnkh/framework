@@ -94,7 +94,16 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor,
 		}
 	}
 	
-	Mapper<ResultSet, Throwable> getMapper();
+	Mapper<ResultSet, ? extends Throwable> getMapper();
+	
+	@Override
+	public default <T> Processor<ResultSet, T, ? extends Throwable> getMapProcessor(
+			Class<? extends T> type) {
+		if(getMapper().isRegistred(type)){
+			return getMapper().getProcessor(type);
+		}
+		return MapProcessorFactory.super.getMapProcessor(type);
+	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -122,18 +131,18 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor,
 
 	default <T> Cursor<T> query(Connection connection, Class<? extends T> resultType, Sql sql,
 			SqlStatementProcessor statementProcessor) {
-		return query(connection, TypeDescriptor.valueOf(resultType), sql, statementProcessor);
+		return query(connection, sql, statementProcessor, getMapProcessor(resultType));
 	}
 
 	default <T> Cursor<T> query(Connection connection, Class<? extends T> resultType, Sql sql) {
-		return query(connection, TypeDescriptor.valueOf(resultType), sql);
+		return query(connection, sql, getMapProcessor(resultType));
 	}
 
 	default <T> Cursor<T> query(Class<? extends T> resultType, Sql sql, SqlStatementProcessor statementProcessor) {
-		return query(TypeDescriptor.valueOf(resultType), sql, statementProcessor);
+		return query(sql, statementProcessor, getMapProcessor(resultType));
 	}
 
 	default <T> Cursor<T> query(Class<? extends T> resultType, Sql sql) {
-		return query(TypeDescriptor.valueOf(resultType), sql);
+		return query(sql, getMapProcessor(resultType));
 	}
 }

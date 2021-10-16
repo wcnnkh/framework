@@ -20,19 +20,6 @@ public class ResultSetMapProcessor<T> implements Processor<ResultSet, T, Throwab
 	private final TypeDescriptor typeDescriptor;
 	private final FieldFactory fieldFactory;
 
-	public ResultSetMapProcessor(Class<T> type) {
-		this(MapperUtils.getFieldFactory(), TypeDescriptor.valueOf(type));
-	}
-
-	public ResultSetMapProcessor(FieldFactory fieldFactory, Class<T> type) {
-		this(fieldFactory, TypeDescriptor.valueOf(type));
-	}
-
-	public ResultSetMapProcessor(ConversionService conversionService,
-			FieldFactory fieldFactory, Class<T> type) {
-		this(conversionService, fieldFactory, TypeDescriptor.valueOf(type));
-	}
-
 	public ResultSetMapProcessor(TypeDescriptor typeDescriptor) {
 		this(Sys.env.getConversionService(), MapperUtils.getFieldFactory(),
 				typeDescriptor);

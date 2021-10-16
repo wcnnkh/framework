@@ -6,7 +6,7 @@ import io.basc.framework.util.stream.Processor;
 public interface Mapper<S, E extends Throwable> {
 	boolean isRegistred(Class<?> type);
 
-	<T> Processor<S, T, E> getProcessor(Class<T> type);
+	<T> Processor<S, T, E> getProcessor(Class<? extends T> type);
 
 	<T> void register(Class<T> type, Processor<S, ? extends T, ? extends E> processor);
 

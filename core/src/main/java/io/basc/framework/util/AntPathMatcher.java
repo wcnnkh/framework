@@ -137,7 +137,24 @@ public class AntPathMatcher implements PathMatcher {
 
 
 	public boolean isPattern(String path) {
-		return (path.indexOf('*') != -1 || path.indexOf('?') != -1);
+		if (path == null) {
+			return false;
+		}
+		boolean uriVar = false;
+		for (int i = 0; i < path.length(); i++) {
+			char c = path.charAt(i);
+			if (c == '*' || c == '?') {
+				return true;
+			}
+			if (c == '{') {
+				uriVar = true;
+				continue;
+			}
+			if (c == '}' && uriVar) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean match(String pattern, String path) {
