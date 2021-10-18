@@ -32,20 +32,22 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFactory {
+public interface SqlTemplate extends EntityOperations, SqlOperations,
+		MaxValueFactory {
 	SqlDialect getSqlDialect();
-	
+
 	StructureRegistry<TableStructure> getStructureRegistry();
-	
-	default TableStructure getTableStructure(Class<?> entityClass){
+
+	default TableStructure getTableStructure(Class<?> entityClass) {
 		StructureRegistry<TableStructure> registry = getStructureRegistry();
-		if(registry.isRegistry(entityClass)){
+		if (registry.isRegistry(entityClass)) {
 			return registry.getStructure(entityClass);
 		}
 		return getSqlDialect().resolve(entityClass);
 	}
 
-	default <T> TableStructure resolve(Class<? extends T> entityClass, @Nullable T entity, @Nullable String tableName) {
+	default <T> TableStructure resolve(Class<? extends T> entityClass,
+			@Nullable T entity, @Nullable String tableName) {
 		Assert.requiredArgument(entityClass != null, "entityClass");
 		if (StringUtils.isNotEmpty(tableName)) {
 			return getTableStructure(entityClass).rename(tableName);
@@ -54,7 +56,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		TableStructure tableStructure = getTableStructure(entityClass);
 		if (entity != null && entity instanceof TableName) {
 			String entityName = ((TableName) entity).getTableName();
-			if(StringUtils.isNotEmpty(entityName)){
+			if (StringUtils.isNotEmpty(entityName)) {
 				tableStructure = tableStructure.rename(entityName);
 			}
 		}
@@ -82,21 +84,26 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		}
 	}
 
-	default Object getAutoIncrementLastId(Connection connection, TableStructure tableStructure) {
+	default Object getAutoIncrementLastId(Connection connection,
+			TableStructure tableStructure) {
 		Sql sql = getSqlDialect().toLastInsertIdSql(tableStructure);
 		return query(connection, Object.class, sql).first();
 	}
 
-	default void setAutoIncrementLastId(Connection connection, TableStructure tableStructure, Object entity,
-			int updateCount) {
+	default void setAutoIncrementLastId(Connection connection,
+			TableStructure tableStructure, Object entity, int updateCount) {
 		if (updateCount != 1) {
 			return;
 		}
 
 		for (Column column : tableStructure.getRows()) {
 			if (column.isAutoIncrement() && column.getField() != null) {
-				Object lastId = getAutoIncrementLastId(connection, tableStructure);
-				column.getField().getSetter().set(entity, lastId, getSqlDialect().getConversionService());
+				Object lastId = getAutoIncrementLastId(connection,
+						tableStructure);
+				column.getField()
+						.getSetter()
+						.set(entity, lastId,
+								getSqlDialect().getConversionService());
 			}
 		}
 	}
@@ -106,7 +113,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		save(entityClass, entity, null);
 	}
 
-	default <T> int save(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
+	default <T> int save(Class<? extends T> entityClass, T entity,
+			@Nullable String tableName) {
 		Assert.requiredArgument(entityClass != null, "entityClass");
 		return save(resolve(entityClass, entity, tableName), entity);
 	}
@@ -114,20 +122,23 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	default <T> int save(TableStructure tableStructure, T entity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
-		
+
 		Sql sql = getSqlDialect().toSaveSql(tableStructure, entity);
-		return prepare(sql).process((ps) -> {
-			int updateCount = ps.executeUpdate();
-			setAutoIncrementLastId(ps.getConnection(), tableStructure, entity, updateCount);
-			return updateCount;
-		});
+		return prepare(sql).process(
+				(ps) -> {
+					int updateCount = ps.executeUpdate();
+					setAutoIncrementLastId(ps.getConnection(), tableStructure,
+							entity, updateCount);
+					return updateCount;
+				});
 	}
 
 	default <T> boolean saveIfAbsent(Class<? extends T> entityClass, T entity) {
 		return saveIfAbsent(entityClass, entity, null) > 0;
 	}
 
-	default <T> int saveIfAbsent(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
+	default <T> int saveIfAbsent(Class<? extends T> entityClass, T entity,
+			@Nullable String tableName) {
 		return saveIfAbsent(resolve(entityClass, entity, tableName), entity);
 	}
 
@@ -135,11 +146,13 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
 		Sql sql = getSqlDialect().toSaveIfAbsentSql(tableStructure, entity);
-		return prepare(sql).process((ps) -> {
-			int updateCount = ps.executeUpdate();
-			setAutoIncrementLastId(ps.getConnection(), tableStructure, entity, updateCount);
-			return updateCount;
-		});
+		return prepare(sql).process(
+				(ps) -> {
+					int updateCount = ps.executeUpdate();
+					setAutoIncrementLastId(ps.getConnection(), tableStructure,
+							entity, updateCount);
+					return updateCount;
+				});
 	}
 
 	@Override
@@ -147,7 +160,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return delete(entityClass, entity, null) > 0;
 	}
 
-	default <T> int delete(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
+	default <T> int delete(Class<? extends T> entityClass, T entity,
+			@Nullable String tableName) {
 		return delete(resolve(entityClass, entity, tableName), entity);
 	}
 
@@ -163,7 +177,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return deleteById(null, entityClass, ids) > 0;
 	}
 
-	default int deleteById(@Nullable String tableName, Class<?> entityClass, Object... ids) {
+	default int deleteById(@Nullable String tableName, Class<?> entityClass,
+			Object... ids) {
 		if (entityClass == null) {
 			return 0;
 		}
@@ -185,7 +200,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return updatePart(entityClass, entity, null) > 0;
 	}
 
-	default <T> int updatePart(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
+	default <T> int updatePart(Class<? extends T> entityClass, T entity,
+			@Nullable String tableName) {
 		return updatePart(resolve(entityClass, entity, tableName), entity);
 	}
 
@@ -195,16 +211,25 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		Sql sql = getSqlDialect().toUpdatePartSql(tableStructure, entity);
 		return update(sql);
 	}
-	
+
 	@Override
 	default <T> boolean update(Class<? extends T> entityClass, T entity) {
 		return update(entityClass, entity, null) > 0;
 	}
 
-	default <T> int update(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
+	default <T> int update(Class<? extends T> entityClass, T entity,
+			@Nullable String tableName) {
 		return update(resolve(entityClass, entity, tableName), entity);
 	}
 
+	/**
+	 * jdbc的url需要加一个参数useAffectedRows=true，mysql默认是false，也就是说默认返回的是查找到的行数，
+	 * 而不是最终变化的行数。
+	 * 
+	 * @param tableStructure
+	 * @param entity
+	 * @return
+	 */
 	default <T> int update(TableStructure tableStructure, T entity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
@@ -225,18 +250,11 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	 * @param tableName
 	 * @return
 	 */
-	default <T> int saveOrUpdate(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
+	default <T> int saveOrUpdate(Class<? extends T> entityClass, T entity,
+			@Nullable String tableName) {
 		return saveOrUpdate(resolve(entityClass, entity, tableName), entity);
 	}
 
-	/**
-	 * jdbc的url需要加一个参数useAffectedRows=true，mysql默认是false，也就是说默认返回的是查找到的行数，而不是最终变化的行数。
-	 * 
-	 * @param <T>
-	 * @param tableStructure
-	 * @param entity
-	 * @return
-	 */
 	default <T> int saveOrUpdate(TableStructure tableStructure, T entity) {
 		int count = saveIfAbsent(tableStructure, entity);
 		if (count > 0) {
@@ -253,7 +271,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	@Nullable
-	default <T> T getById(@Nullable String tableName, Class<? extends T> entityClass, Object... ids) {
+	default <T> T getById(@Nullable String tableName,
+			Class<? extends T> entityClass, Object... ids) {
 		return getById(resolve(entityClass, null, tableName), ids);
 	}
 
@@ -263,40 +282,46 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return queryFirst(tableStructure, sql);
 	}
 
-	default <T> List<T> getByIdList(Class<? extends T> entityClass, Object... ids) {
+	default <T> List<T> getByIdList(Class<? extends T> entityClass,
+			Object... ids) {
 		return getByIdList(null, entityClass, ids);
 	}
 
-	default <T> List<T> getByIdList(@Nullable String tableName, Class<? extends T> entityClass, Object... ids) {
+	default <T> List<T> getByIdList(@Nullable String tableName,
+			Class<? extends T> entityClass, Object... ids) {
 		return getByIdList(resolve(entityClass, null, tableName), ids);
 	}
 
-	default <T> List<T> getByIdList(TableStructure tableStructure, Object... ids) {
+	default <T> List<T> getByIdList(TableStructure tableStructure,
+			Object... ids) {
 		Sql sql = getSqlDialect().toSelectByIdsSql(tableStructure, ids);
 		return queryAll(tableStructure, sql);
 	}
 
-	default <K, V> Map<K, V> getInIds(Class<? extends V> type, Collection<? extends K> inPrimaryKeys,
-			Object... primaryKeys) {
+	default <K, V> Map<K, V> getInIds(Class<? extends V> type,
+			Collection<? extends K> inPrimaryKeys, Object... primaryKeys) {
 		return getInIds(null, type, inPrimaryKeys, primaryKeys);
 	}
 
-	default <K, V> Map<K, V> getInIds(@Nullable String tableName, Class<? extends V> entityClass,
+	default <K, V> Map<K, V> getInIds(@Nullable String tableName,
+			Class<? extends V> entityClass,
 			Collection<? extends K> inPrimaryKeys, Object... primaryKeys) {
-		return getInIds(resolve(entityClass, null, tableName), inPrimaryKeys, primaryKeys);
+		return getInIds(resolve(entityClass, null, tableName), inPrimaryKeys,
+				primaryKeys);
 	}
 
-	default <K, V> Map<K, V> getInIds(TableStructure tableStructure, Collection<? extends K> inPrimaryKeys,
-			Object... primaryKeys) {
-		Sql sql = getSqlDialect().getInIds(tableStructure, primaryKeys, inPrimaryKeys);
+	default <K, V> Map<K, V> getInIds(TableStructure tableStructure,
+			Collection<? extends K> inPrimaryKeys, Object... primaryKeys) {
+		Sql sql = getSqlDialect().getInIds(tableStructure, primaryKeys,
+				inPrimaryKeys);
 		Cursor<V> cursor = query(tableStructure, sql);
 		List<V> list = cursor.shared();
 		if (list == null || list.isEmpty()) {
 			return Collections.emptyMap();
 		}
 
-		Map<String, K> keyMap = getSqlDialect().getInIdsKeyMap(tableStructure, inPrimaryKeys,
-				primaryKeys);
+		Map<String, K> keyMap = getSqlDialect().getInIdsKeyMap(tableStructure,
+				inPrimaryKeys, primaryKeys);
 		Map<K, V> map = new LinkedHashMap<K, V>();
 		for (V v : list) {
 			String key = getSqlDialect().getObjectKey(tableStructure, v);
@@ -305,60 +330,29 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return map;
 	}
 
-	default <T> Page<T> getPage(TypeDescriptor resultType, Sql sql, long pageNumber, long limit) {
-		Pages<T> pages = getPages(resultType, sql, pageNumber, limit);
-		return pages.shared();
-	}
-	
 	@Override
 	public default <T> Processor<ResultSet, T, ? extends Throwable> getMapProcessor(
 			Class<? extends T> type) {
-		if(getStructureRegistry().isRegistry(type)){
-			return new EntityStructureMapProcessor<T>(getStructureRegistry().getStructure(type), getSqlDialect().getConversionService());
+		if (getStructureRegistry().isRegistry(type)) {
+			return getMapProcessor(getStructureRegistry().getStructure(type));
 		}
 		return SqlOperations.super.getMapProcessor(type);
 	}
 
 	@Override
-	default <T> Processor<ResultSet, T, Throwable> getMapProcessor(TypeDescriptor type) {
-		SmartMapProcessor<T> processor = new SmartMapProcessor<T>(getSqlDialect(), getSqlDialect().getConversionService(), type);
+	default <T> Processor<ResultSet, T, Throwable> getMapProcessor(
+			TypeDescriptor type) {
+		SmartMapProcessor<T> processor = new SmartMapProcessor<T>(
+				getSqlDialect(), getSqlDialect().getConversionService(), type);
 		processor.setMapper(getMapper());
 		processor.setStructureRegistry(getStructureRegistry());
 		return processor;
 	}
 
-	default <T> Page<T> getPage(Class<? extends T> resultType, Sql sql, long pageNumber, long limit) {
-		return getPages(sql, pageNumber, limit, getMapProcessor(resultType));
-	}
-
-	default <T> Pages<T> getPages(TypeDescriptor resultType, Sql sql, long pageNumber, long limit) {
-		return getPages(sql, pageNumber, limit, getMapProcessor(resultType));
-	}
-	
-	default <T> Page<T> getPage(Sql sql, long pageNumber, long limit,
-			Processor<ResultSet, T, ? extends Throwable> mapProcessor){
-		long start = PageSupport.getStart(pageNumber, limit);
-		long total = count(sql);
-		if (total == 0) {
-			return PageSupport.emptyPage(pageNumber, limit);
-		}
-		
-		return new StreamPage<T>(start, () -> limit(sql, start, limit, mapProcessor), limit, total);
-	}
-
-	default <T> Pages<T> getPages(Sql sql, long pageNumber, long limit,
-			Processor<ResultSet, T, ? extends Throwable> mapProcessor) {
-		long start = PageSupport.getStart(pageNumber, limit);
-		long total = count(sql);
-		if (total == 0) {
-			return PageSupport.emptyPages(pageNumber, limit);
-		}
-
-		return new StreamPages<>(total, start, limit, (begin, count) -> limit(sql, begin, count, mapProcessor));
-	}
-
-	default <T> Pages<T> getPages(Class<T> resultType, Sql sql, long pageNumber, int limit) {
-		return getPages(sql, pageNumber, limit, getMapProcessor(resultType));
+	default <T> Processor<ResultSet, T, ? extends Throwable> getMapProcessor(
+			TableStructure structure) {
+		return new EntityStructureMapProcessor<T>(structure, getSqlDialect()
+				.getConversionService());
 	}
 
 	/**
@@ -378,18 +372,22 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	 * @param tableName
 	 * @return
 	 */
-	default TableChanges getTableChanges(Class<?> tableClass, @Nullable String tableName) {
+	default TableChanges getTableChanges(Class<?> tableClass,
+			@Nullable String tableName) {
 		return getTableChanges(resolve(tableClass, null, tableName));
 	}
 
 	default TableChanges getTableChanges(TableStructure tableStructure) {
-		TableStructureMapping tableStructureMapping = getSqlDialect().getTableStructureMapping(tableStructure);
-		List<ColumnDescriptor> list = prepare(tableStructureMapping.getSql()).query().process((rs, rowNum) -> {
-			return tableStructureMapping.getName(rs);
-		});
+		TableStructureMapping tableStructureMapping = getSqlDialect()
+				.getTableStructureMapping(tableStructure);
+		List<ColumnDescriptor> list = prepare(tableStructureMapping.getSql())
+				.query().process((rs, rowNum) -> {
+					return tableStructureMapping.getName(rs);
+				});
 		HashSet<String> hashSet = new HashSet<String>();
 		List<String> deleteList = new ArrayList<String>();
-		Fields fields = getSqlDialect().getFields(tableStructure.getEntityClass());
+		Fields fields = getSqlDialect().getFields(
+				tableStructure.getEntityClass());
 		for (ColumnDescriptor columnDescriptor : list) {
 			hashSet.add(columnDescriptor.getName());
 			Field column = fields.find(columnDescriptor.getName(), null);
@@ -399,7 +397,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		}
 
 		List<Field> addList = new ArrayList<Field>();
-		for (Field column : getSqlDialect().getFields(tableStructure.getEntityClass())) {
+		for (Field column : getSqlDialect().getFields(
+				tableStructure.getEntityClass())) {
 			String name = getSqlDialect().getName(column.getGetter());
 			if (!hashSet.contains(name)) {// 在已有的数据库中不存在，应该添加
 				addList.add(column);
@@ -418,7 +417,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	 * @return
 	 */
 	@Nullable
-	default <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, Field field) {
+	default <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass,
+			Field field) {
 		return getMaxValue(type, tableClass, null, field);
 	}
 
@@ -432,11 +432,13 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	 * @return
 	 */
 	@Nullable
-	default <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, @Nullable String tableName, Field field) {
+	default <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass,
+			@Nullable String tableName, Field field) {
 		return getMaxValue(resolve(tableClass, null, tableName), type, field);
 	}
 
-	default <T> T getMaxValue(TableStructure tableStructure, Class<? extends T> type, Field field) {
+	default <T> T getMaxValue(TableStructure tableStructure,
+			Class<? extends T> type, Field field) {
 		Sql sql = getSqlDialect().toMaxIdSql(tableStructure, field);
 		return queryFirst(type, sql);
 	}
@@ -464,7 +466,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> Cursor<T> query(TableStructure tableStructure, Sql sql) {
-		return query(sql, new EntityStructureMapProcessor<T>(tableStructure, getSqlDialect().getConversionService()));
+		return query(sql, getMapProcessor(tableStructure));
 	}
 
 	default <T> Cursor<T> query(TableStructure tableStructure, T query) {
@@ -481,14 +483,14 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return queryFirst(long.class, countSql);
 	}
 
-	default <T> Cursor<T> limit(TableStructure structure, Sql sql, long start, long limit) {
-		Sql limitSql = getSqlDialect().toLimitSql(sql, start, limit);
-		return query(structure, limitSql);
+	default <T> Cursor<T> limit(TableStructure structure, Sql sql, long start,
+			long limit) {
+		return limit(sql, start, limit, getMapProcessor(structure));
 	}
 
-	default <T> Cursor<T> limit(Class<? extends T> type, Sql sql, long start, long limit) {
-		Sql limitSql = getSqlDialect().toLimitSql(sql, start, limit);
-		return query(type, limitSql);
+	default <T> Cursor<T> limit(Class<? extends T> type, Sql sql, long start,
+			long limit) {
+		return limit(sql, start, limit, getMapProcessor(type));
 	}
 
 	default <T> Cursor<T> limit(Sql sql, long start, long limit,
@@ -497,12 +499,64 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return prepare(limitSql).query().stream(processor);
 	}
 
-	default <T> Pages<T> getPages(TableStructure tableStructure, T query, long getNumber, long limit) {
-		Sql sql = getSqlDialect().query(tableStructure, query);
-		return getPages(sql, getNumber, limit, new EntityStructureMapProcessor<T>(tableStructure, getSqlDialect().getConversionService()));
+	default <T> Page<T> getPage(TableStructure tableStructure, Sql sql,
+			long pageNumber, long limit) {
+		return getPage(sql, pageNumber, limit, getMapProcessor(tableStructure));
 	}
 
-	default <T> Pages<T> getPages(Class<? extends T> queryClass, T query, long getNumber, long limit) {
-		return getPages(resolve(queryClass, query, null), query, getNumber, limit);
+	default <T> Page<T> getPage(TypeDescriptor resultType, Sql sql,
+			long pageNumber, long limit) {
+		return getPage(sql, pageNumber, limit, getMapProcessor(resultType));
+	}
+
+	default <T> Page<T> getPage(Class<? extends T> resultType, Sql sql,
+			long pageNumber, long limit) {
+		return getPage(sql, pageNumber, limit, getMapProcessor(resultType));
+	}
+
+	default <T> Page<T> getPage(Sql sql, long pageNumber, long limit,
+			Processor<ResultSet, T, ? extends Throwable> mapProcessor) {
+		long start = PageSupport.getStart(pageNumber, limit);
+		long total = count(sql);
+		if (total == 0) {
+			return PageSupport.emptyPage(pageNumber, limit);
+		}
+
+		return new StreamPage<T>(start, () -> limit(sql, start, limit,
+				mapProcessor), limit, total);
+	}
+
+	default <T> Pages<T> getPages(TypeDescriptor resultType, Sql sql,
+			long pageNumber, long limit) {
+		return getPages(sql, pageNumber, limit, getMapProcessor(resultType));
+	}
+
+	default <T> Pages<T> getPages(Sql sql, long pageNumber, long limit,
+			Processor<ResultSet, T, ? extends Throwable> mapProcessor) {
+		long start = PageSupport.getStart(pageNumber, limit);
+		long total = count(sql);
+		if (total == 0) {
+			return PageSupport.emptyPages(pageNumber, limit);
+		}
+
+		return new StreamPages<>(total, start, limit, (begin, count) -> limit(
+				sql, begin, count, mapProcessor));
+	}
+
+	default <T> Pages<T> getPages(Class<T> resultType, Sql sql,
+			long pageNumber, int limit) {
+		return getPages(sql, pageNumber, limit, getMapProcessor(resultType));
+	}
+
+	default <T> Pages<T> getPages(TableStructure tableStructure, T query,
+			long getNumber, long limit) {
+		Sql sql = getSqlDialect().query(tableStructure, query);
+		return getPages(sql, getNumber, limit, getMapProcessor(tableStructure));
+	}
+
+	default <T> Pages<T> getPages(Class<? extends T> queryClass, T query,
+			long getNumber, long limit) {
+		return getPages(resolve(queryClass, query, null), query, getNumber,
+				limit);
 	}
 }
