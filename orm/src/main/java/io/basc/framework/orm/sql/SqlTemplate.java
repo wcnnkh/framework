@@ -543,7 +543,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 				sql, begin, count, mapProcessor));
 	}
 
-	default <T> Pages<T> getPages(Class<T> resultType, Sql sql,
+	default <T> Pages<T> getPages(Class<? extends T> resultType, Sql sql,
 			long pageNumber, int limit) {
 		return getPages(sql, pageNumber, limit, getMapProcessor(resultType));
 	}
