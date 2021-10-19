@@ -137,15 +137,21 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 			if (!ObjectUtils.nullSafeEquals(mimeTypes, httpPattern.mimeTypes)) {
 				return false;
 			}
-
-			if (StringUtils.isEmpty(path) && StringUtils.isEmpty(((HttpPattern) obj).path)) {
-				return true;
+			
+			if(StringUtils.isNotEmpty(path) && StringUtils.isNotEmpty(((HttpPattern) obj).path)){
+				if(getPathMatcher().match(path, ((HttpPattern) obj).path) && getPathMatcher().match(((HttpPattern) obj).path, path)){
+					return true;
+				}
+				
+				if(((HttpPattern) obj).getPathMatcher().match(path, ((HttpPattern) obj).path) && ((HttpPattern) obj).getPathMatcher().match(((HttpPattern) obj).path, path)){
+					return true;
+				}
 			}
 
-			if (StringUtils.isNotEmpty(path) && StringUtils.isNotEmpty(((HttpPattern) obj).path)) {
-				return getPathMatcher().match(path, ((HttpPattern) obj).path)
-						|| getPathMatcher().match(((HttpPattern) obj).path, path);
+			if (!StringUtils.isEmpty(path) && StringUtils.isEmpty(((HttpPattern) obj).path)) {
+				return false;
 			}
+			return true;
 		}
 		return false;
 	}
@@ -184,6 +190,10 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 
 	@Override
 	public int compareTo(HttpPattern o) {
+		if(this.equals(o)){
+			return 0;
+		}
+
 		if (o.mimeTypes != null && this.mimeTypes != null) {
 			return this.mimeTypes.compareTo(o.mimeTypes);
 		}
