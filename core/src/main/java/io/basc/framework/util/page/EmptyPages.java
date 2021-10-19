@@ -11,7 +11,7 @@ public class EmptyPages<T> extends SharedPage<T> implements Pages<T> {
 	}
 
 	@Override
-	public Pages<T> jumpTo(Long cursorId) {
-		throw new NoSuchElementException("jumpTo");
+	public Pages<T> jumpTo(Long cursorId, long count) {
+		throw new NoSuchElementException("jumpTo cursorId[" + cursorId + "] count[" + count + "]");
 	}
 }
