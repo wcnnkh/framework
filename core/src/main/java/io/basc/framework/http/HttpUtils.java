@@ -1,9 +1,14 @@
 package io.basc.framework.http;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.util.Collection;
+
 import io.basc.framework.env.Sys;
 import io.basc.framework.http.client.DefaultHttpClient;
 import io.basc.framework.http.client.HttpClient;
-import io.basc.framework.lang.Constants;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.uri.UriComponentsBuilder;
@@ -12,16 +17,11 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Collection;
-
 public final class HttpUtils {
 	private HttpUtils() {
 	};
 
-	private static final HttpClient HTTP_CLIENT = Sys.env.getServiceLoader(
-			HttpClient.class).first(() -> {
+	private static final HttpClient HTTP_CLIENT = Sys.env.getServiceLoader(HttpClient.class).first(() -> {
 		DefaultHttpClient client = new DefaultHttpClient();
 		client.configure(Sys.env);
 		return client;
@@ -36,8 +36,7 @@ public final class HttpUtils {
 		return HTTP_CLIENT;
 	}
 
-	public static boolean isValidOrigin(HttpRequest request,
-			Collection<String> allowedOrigins) {
+	public static boolean isValidOrigin(HttpRequest request, Collection<String> allowedOrigins) {
 		Assert.notNull(request, "Request must not be null");
 		Assert.notNull(allowedOrigins, "Allowed origins must not be null");
 
@@ -64,8 +63,7 @@ public final class HttpUtils {
 			return true;
 		}
 
-		return isSameOrigin(request.getURI(), UriComponentsBuilder
-				.fromOriginHeader(origin).build().toUri());
+		return isSameOrigin(request.getURI(), UriComponentsBuilder.fromOriginHeader(origin).build().toUri());
 	}
 
 	/**
@@ -108,9 +106,8 @@ public final class HttpUtils {
 		}
 
 		return (ObjectUtils.nullSafeEquals(uri1.getScheme(), uri2.getScheme())
-				&& ObjectUtils.nullSafeEquals(uri1.getHost(), uri2.getHost()) && getPort(
-					uri1.getScheme(), uri1.getPort()) == getPort(
-				uri2.getScheme(), uri2.getPort()));
+				&& ObjectUtils.nullSafeEquals(uri1.getHost(), uri2.getHost())
+				&& getPort(uri1.getScheme(), uri1.getPort()) == getPort(uri2.getScheme(), uri2.getPort()));
 	}
 
 	private static int getPort(String scheme, int port) {
@@ -126,18 +123,16 @@ public final class HttpUtils {
 
 	/**
 	 * 将文件信息写入ContentDisposition
-	 * 
 	 * @param outputMessage
 	 * @param fileName
+	 * @param charset
 	 */
-	public static void writeFileMessageHeaders(HttpOutputMessage outputMessage,
-			String fileName) {
+	public static void writeFileMessageHeaders(HttpOutputMessage outputMessage, String fileName, @Nullable Charset charset) {
 		MimeType mimeType = FileMimeTypeUitls.getMimeType(fileName);
 		if (mimeType != null) {
 			outputMessage.setContentType(mimeType);
 		}
-		ContentDisposition contentDisposition = ContentDisposition
-				.builder("attachment").filename(fileName, Constants.UTF_8)
+		ContentDisposition contentDisposition = ContentDisposition.builder("attachment").filename(fileName, charset)
 				.build();
 		outputMessage.getHeaders().setContentDisposition(contentDisposition);
 	}

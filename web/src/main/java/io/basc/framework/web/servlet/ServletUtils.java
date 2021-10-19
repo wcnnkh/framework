@@ -11,12 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.http.ContentDisposition;
 import io.basc.framework.http.HttpCookie;
-import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.lang.Constants;
-import io.basc.framework.net.FileMimeTypeUitls;
-import io.basc.framework.net.MimeType;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.web.ServerHttpRequest;
@@ -67,21 +62,5 @@ public final class ServletUtils {
 			return beanFactory.getInstance(ServletService.class);
 		}
 		return new DefaultHttpServletService(beanFactory);
-	}
-
-	/**
-	 * 将文件信息写入ContentDisposition
-	 * 
-	 * @param outputMessage
-	 * @param fileName
-	 */
-	public static void writeFileMessageHeaders(HttpServletResponse response, String fileName) {
-		MimeType mimeType = FileMimeTypeUitls.getMimeType(fileName);
-		if (mimeType != null) {
-			response.setContentType(mimeType.toString());
-		}
-		ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
-				.filename(fileName, Constants.UTF_8).build();
-		response.setHeader(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString());
 	}
 }
