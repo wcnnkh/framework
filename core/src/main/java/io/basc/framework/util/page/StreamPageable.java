@@ -5,6 +5,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.basc.framework.util.stream.StreamProcessorSupport;
+
 public class StreamPageable<K, T> implements Pageable<K, T> {
 	private final Supplier<Stream<T>> suppler;
 	private final K cursorId;
@@ -39,16 +41,12 @@ public class StreamPageable<K, T> implements Pageable<K, T> {
 		return nextCursorId;
 	}
 
-	private volatile Stream<T> stream;
 	@Override
 	public Stream<T> stream() {
+		Stream<T> stream = suppler.get();
 		if(stream == null) {
-			synchronized (this) {
-				if(stream == null) {
-					stream = suppler.get();
-				}
-			}
+			return StreamProcessorSupport.emptyStream();
 		}
-		return stream;
+		return StreamProcessorSupport.autoClose(stream);
 	}
 }
