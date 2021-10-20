@@ -61,9 +61,9 @@ import io.basc.framework.web.ServerHttpRequest;
 
 		if (obj instanceof HttpPatternService) {
 			int order = OrderComparator.INSTANCE.compare(service, ((HttpPatternService<?>) obj).service);
-			if (pattern == null) {
+			if(pattern == null && ((HttpPatternService<?>) obj).pattern == null) {
 				return order == 0;
-			} else {
+			}else {
 				return ObjectUtils.nullSafeEquals(this.pattern, ((HttpPatternService<?>) obj).pattern) && order == 0;
 			}
 		}
