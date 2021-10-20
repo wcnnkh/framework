@@ -13,17 +13,17 @@ import io.basc.framework.web.ServerHttpRequest;
 class HttpPatternServices<T> implements Comparator<HttpPatternService<T>>, ServerHttpRequestAccept {
 	private static Logger logger = LoggerFactory.getLogger(HttpPatternServices.class);
 	private Set<HttpPatternService<T>> services = new TreeSet<HttpPatternService<T>>(this);
-	
+
 	@Override
 	public int compare(HttpPatternService<T> o1, HttpPatternService<T> o2) {
-		//如果为0在TreeSet中会插入失败
-		if(ObjectUtils.nullSafeEquals(o1, o2)) {
+		// 如果为0在TreeSet中会插入失败
+		if (ObjectUtils.nullSafeEquals(o1, o2)) {
 			return 0;
 		}
-		
+
 		return o1.compareTo(o2);
 	}
-	
+
 	public boolean remove(HttpPatternService<T> pattern) {
 		return services.remove(pattern);
 	}
@@ -32,7 +32,7 @@ class HttpPatternServices<T> implements Comparator<HttpPatternService<T>>, Serve
 		if (services.add(service)) {
 			return true;
 		}
-		
+
 		HttpPatternService<T> exists = services.stream().filter((s) -> compare(s, service) == 0).findFirst().get();
 		logger.error("add service [{}] exists [{}]", service, exists);
 		return false;
@@ -48,14 +48,9 @@ class HttpPatternServices<T> implements Comparator<HttpPatternService<T>>, Serve
 
 	public T get(ServerHttpRequest request) {
 		for (HttpPatternService<T> service : services) {
-			if(service.accept(request)) {
+			if (service.accept(request)) {
 				return service.getService();
 			}
-			/*
-			 * if (service instanceof ServerHttpRequestAccept) { if
-			 * (((ServerHttpRequestAccept) service).accept(request)) { return service; } }
-			 * else { // 因为services已经进行过排序了，ServerHttpRequestAccept一定在前面 return service; }
-			 */
 		}
 		return null;
 	}
@@ -81,7 +76,7 @@ class HttpPatternServices<T> implements Comparator<HttpPatternService<T>>, Serve
 		}
 		return false;
 	}
-	
+
 	@Override
 	public String toString() {
 		return services.toString();

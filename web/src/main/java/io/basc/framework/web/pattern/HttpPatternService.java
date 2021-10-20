@@ -6,11 +6,18 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.web.ServerHttpRequest;
 
- class HttpPatternService<T> implements ServerHttpRequestAccept, OrderSourceProvider, Comparable<HttpPatternService<T>> {
+class HttpPatternService<T> implements ServerHttpRequestAccept, OrderSourceProvider, Comparable<HttpPatternService<T>> {
 	private final T service;
-	private final HttpPattern pattern;
+	private HttpPattern pattern;
 
-	public HttpPatternService(@Nullable HttpPattern pattern, T service) {
+	public HttpPatternService(T service) {
+		this.service = service;
+		if (service instanceof HttpPattern) {
+			this.pattern = (HttpPattern) service;
+		}
+	}
+
+	public HttpPatternService(T service, @Nullable HttpPattern pattern) {
 		this.pattern = pattern;
 		this.service = service;
 	}
@@ -38,7 +45,7 @@ import io.basc.framework.web.ServerHttpRequest;
 
 	@Override
 	public String toString() {
-		if(pattern == null) {
+		if (pattern == null) {
 			return service.toString();
 		}
 		return pattern.toString() + " -> " + service.toString();
@@ -60,11 +67,10 @@ import io.basc.framework.web.ServerHttpRequest;
 		}
 
 		if (obj instanceof HttpPatternService) {
-			int order = OrderComparator.INSTANCE.compare(service, ((HttpPatternService<?>) obj).service);
-			if(pattern == null && ((HttpPatternService<?>) obj).pattern == null) {
-				return order == 0;
-			}else {
-				return ObjectUtils.nullSafeEquals(this.pattern, ((HttpPatternService<?>) obj).pattern) && order == 0;
+			if (pattern == null) {
+				return ObjectUtils.nullSafeEquals(service, ((HttpPatternService<?>) obj).service);
+			} else {
+				return ObjectUtils.nullSafeEquals(this.pattern, ((HttpPatternService<?>) obj).pattern);
 			}
 		}
 		return false;
@@ -72,31 +78,34 @@ import io.basc.framework.web.ServerHttpRequest;
 
 	@Override
 	public int compareTo(HttpPatternService<T> o) {
-		if(pattern == null && o.pattern == null) {
-			if(service instanceof ServerHttpRequestAccept && o.service instanceof ServerHttpRequestAccept) {
-				return OrderComparator.INSTANCE.compare(service, o.service);
+		if (pattern == null && o.pattern == null) {
+			if (service instanceof ServerHttpRequestAccept && o.service instanceof ServerHttpRequestAccept) {
+				int v = OrderComparator.INSTANCE.compare(service, o.service);
+				//如果order相同那么就按添加顺序来
+				return v == 0 ? 1 : v;
 			}
-			
-			if(service instanceof ServerHttpRequestAccept) {
+
+			if (service instanceof ServerHttpRequestAccept) {
 				return -1;
 			}
-			
-			if(o.service instanceof ServerHttpRequestAccept) {
+
+			if (o.service instanceof ServerHttpRequestAccept) {
 				return 1;
 			}
-			
-			//无法比较，返回0
-			return 0;
+
+			//如果order相同那么就按添加顺序来
+			int v = OrderComparator.INSTANCE.compare(service, o.service);
+			return v == 0 ? 1 : v;
 		}
-		
-		if(pattern == null) {
+
+		if (pattern == null) {
 			return 1;
 		}
-		
-		if(o.pattern == null) {
+
+		if (o.pattern == null) {
 			return -1;
 		}
-		
+
 		return pattern.compareTo(o.pattern);
 	}
 }

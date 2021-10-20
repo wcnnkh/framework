@@ -29,7 +29,7 @@ public class HttpPatternServicesTest {
 			}
 		});
 		
-		corsRegistry.add(new TestProcessor("test12", 2));
+		corsRegistry.add(new TestProcessor("test12", 1));
 		corsRegistry.add(new TestProcessor("test22", 1));
 		System.out.println(corsRegistry);
 	}

@@ -16,7 +16,7 @@ import io.basc.framework.web.pattern.ServerHttpRequestAccept;
 public class StaticResourceHttpService extends LinkedList<StaticResourceLoader>
 		implements HttpService, ServerHttpRequestAccept {
 	private static final long serialVersionUID = 1L;
-
+	
 	public StaticResourceHttpService() {
 	}
 

@@ -68,7 +68,7 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 	}
 
 	public Holder<T> add(T service) throws AlreadyExistsException {
-		return add(new HttpPatternService<T>(null, service));
+		return add(new HttpPatternService<T>(service));
 	}
 
 	private Holder<T> add(HttpPatternService<T> pattern) throws AlreadyExistsException {
@@ -91,9 +91,9 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 
 	public Holder<T> add(HttpPattern httpPattern, T service) throws AlreadyExistsException {
 		if (httpPattern.isPattern()) {
-			return add(new HttpPatternService<T>(httpPattern, service));
+			return add(new HttpPatternService<T>(service, httpPattern));
 		} else {
-			return add(httpPattern.getPath(), httpPattern.getMethod(), new HttpPatternService<T>(httpPattern, service));
+			return add(httpPattern.getPath(), httpPattern.getMethod(), new HttpPatternService<T>(service, httpPattern));
 		}
 	}
 
