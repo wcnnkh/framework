@@ -1,59 +1,44 @@
 package io.basc.framework.web.pattern;
 
-import io.basc.framework.core.OrderComparator;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
+
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.web.ServerHttpRequest;
 
-import java.util.Comparator;
-import java.util.Set;
-import java.util.TreeSet;
-
-class HttpPatternServices<T> implements Comparator<T>, ServerHttpRequestAccept {
+class HttpPatternServices<T> implements Comparator<HttpPatternService<T>>, ServerHttpRequestAccept {
 	private static Logger logger = LoggerFactory.getLogger(HttpPatternServices.class);
-	private Set<T> services = new TreeSet<T>(this);
-
-	/**
-	 * 如果为0在TreeSet中会插入失败
-	 */
+	private Set<HttpPatternService<T>> services = new TreeSet<HttpPatternService<T>>(this);
+	
 	@Override
-	public int compare(T o1, T o2) {
-		if (ObjectUtils.nullSafeEquals(o1, o2)) {
+	public int compare(HttpPatternService<T> o1, HttpPatternService<T> o2) {
+		//如果为0在TreeSet中会插入失败
+		if(ObjectUtils.nullSafeEquals(o1, o2)) {
 			return 0;
 		}
-
-		if (o1 instanceof ServerHttpRequestAccept && o1 instanceof ServerHttpRequestAccept) {
-			int v = OrderComparator.INSTANCE.compare(o1, o2);
-			return v == 0 ? 1 : v;
-		}
-
-		if (o1 instanceof ServerHttpRequestAccept) {
-			return 1;
-		}
-
-		if (o2 instanceof ServerHttpRequestAccept) {
-			return -1;
-		}
-
-		int v = OrderComparator.INSTANCE.compare(o1, o2);
-		return v == 0 ? 1 : v;
+		
+		return o1.compareTo(o2);
 	}
-
-	public boolean remove(T pattern) {
+	
+	public boolean remove(HttpPatternService<T> pattern) {
 		return services.remove(pattern);
 	}
 
-	public boolean add(T service) {
+	public boolean add(HttpPatternService<T> service) {
 		if (services.add(service)) {
 			return true;
 		}
-		logger.error("add handler error: {}", service);
+		
+		HttpPatternService<T> exists = services.stream().filter((s) -> compare(s, service) == 0).findFirst().get();
+		logger.error("add service [{}] exists [{}]", service, exists);
 		return false;
 	}
 
-	public boolean contains(T pattern) {
+	public boolean contains(HttpPatternService<T> pattern) {
 		return services.contains(pattern);
 	}
 
@@ -62,15 +47,15 @@ class HttpPatternServices<T> implements Comparator<T>, ServerHttpRequestAccept {
 	}
 
 	public T get(ServerHttpRequest request) {
-		for (T service : services) {
-			if (service instanceof ServerHttpRequestAccept) {
-				if (((ServerHttpRequestAccept) service).accept(request)) {
-					return service;
-				}
-			} else {
-				// 因为services已经进行过排序了，ServerHttpRequestAccept一定在前面
-				return service;
+		for (HttpPatternService<T> service : services) {
+			if(service.accept(request)) {
+				return service.getService();
 			}
+			/*
+			 * if (service instanceof ServerHttpRequestAccept) { if
+			 * (((ServerHttpRequestAccept) service).accept(request)) { return service; } }
+			 * else { // 因为services已经进行过排序了，ServerHttpRequestAccept一定在前面 return service; }
+			 */
 		}
 		return null;
 	}

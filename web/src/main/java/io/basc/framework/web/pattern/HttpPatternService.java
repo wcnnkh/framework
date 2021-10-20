@@ -1,15 +1,16 @@
 package io.basc.framework.web.pattern;
 
+import io.basc.framework.core.OrderComparator;
 import io.basc.framework.core.OrderComparator.OrderSourceProvider;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.web.ServerHttpRequest;
 
-class ServerHttpRequestAcceptWrapper<T> implements ServerHttpRequestAccept, OrderSourceProvider {
+ class HttpPatternService<T> implements ServerHttpRequestAccept, OrderSourceProvider, Comparable<HttpPatternService<T>> {
 	private final T service;
 	private final HttpPattern pattern;
 
-	public ServerHttpRequestAcceptWrapper(@Nullable HttpPattern pattern, T service) {
+	public HttpPatternService(@Nullable HttpPattern pattern, T service) {
 		this.pattern = pattern;
 		this.service = service;
 	}
@@ -49,7 +50,7 @@ class ServerHttpRequestAcceptWrapper<T> implements ServerHttpRequestAccept, Orde
 			return service.hashCode();
 		}
 
-		return pattern.hashCode();
+		return pattern.hashCode() + service.hashCode();
 	}
 
 	@Override
@@ -58,13 +59,44 @@ class ServerHttpRequestAcceptWrapper<T> implements ServerHttpRequestAccept, Orde
 			return false;
 		}
 
-		if (obj instanceof ServerHttpRequestAcceptWrapper) {
+		if (obj instanceof HttpPatternService) {
+			int order = OrderComparator.INSTANCE.compare(service, ((HttpPatternService<?>) obj).service);
 			if (pattern == null) {
-				return ObjectUtils.nullSafeEquals(this.service, ((ServerHttpRequestAcceptWrapper<?>) obj).service);
+				return order == 0;
 			} else {
-				return ObjectUtils.nullSafeEquals(this.pattern, ((ServerHttpRequestAcceptWrapper<?>) obj).pattern);
+				return ObjectUtils.nullSafeEquals(this.pattern, ((HttpPatternService<?>) obj).pattern) && order == 0;
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public int compareTo(HttpPatternService<T> o) {
+		if(pattern == null && o.pattern == null) {
+			if(service instanceof ServerHttpRequestAccept && o.service instanceof ServerHttpRequestAccept) {
+				return OrderComparator.INSTANCE.compare(service, o.service);
+			}
+			
+			if(service instanceof ServerHttpRequestAccept) {
+				return -1;
+			}
+			
+			if(o.service instanceof ServerHttpRequestAccept) {
+				return 1;
+			}
+			
+			//无法比较，返回0
+			return 0;
+		}
+		
+		if(pattern == null) {
+			return 1;
+		}
+		
+		if(o.pattern == null) {
+			return -1;
+		}
+		
+		return pattern.compareTo(o.pattern);
 	}
 }

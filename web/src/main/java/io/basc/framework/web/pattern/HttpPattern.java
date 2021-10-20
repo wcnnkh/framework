@@ -147,11 +147,7 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 					return true;
 				}
 			}
-
-			if (!StringUtils.isEmpty(path) && StringUtils.isEmpty(((HttpPattern) obj).path)) {
-				return false;
-			}
-			return true;
+			return ObjectUtils.nullSafeEquals(path, ((HttpPattern) obj).path);
 		}
 		return false;
 	}
@@ -193,11 +189,33 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 		if(this.equals(o)){
 			return 0;
 		}
+		
+		if(path != null && o.path != null) {
+			if(getPathMatcher().match(o.path, path) || o.getPathMatcher().match(o.path, path)) {
+				return -1;
+			}
+			
+			if(getPathMatcher().match(path, o.path) || o.getPathMatcher().match(path, o.path)) {
+				return 1;
+			}
+		}
 
 		if (o.mimeTypes != null && this.mimeTypes != null) {
 			return this.mimeTypes.compareTo(o.mimeTypes);
 		}
-		return this.equals(o) ? 0 : 1;
+		
+		if(path == null && o.path == null){
+			return 0;
+		}
+		
+		if(path == null) {
+			return -1;
+		}
+		
+		if(o.path == null) {
+			return 1;
+		}
+		return path.compareTo(o.path);
 	}
 
 	public HttpPattern setPathMatcher(PathMatcher pathMatcher) {

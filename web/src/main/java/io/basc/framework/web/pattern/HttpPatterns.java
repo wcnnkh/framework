@@ -38,4 +38,9 @@ public class HttpPatterns<T> extends ServerHttpRequestMatcher<T> {
 
 		return super.get(request);
 	}
+	
+	@Override
+	public String toString() {
+		return "excludeMatcher{" + excludeMatcher + "} matcher{" + super.toString() + "}";
+	}
 }
