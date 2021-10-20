@@ -175,7 +175,7 @@ public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderP
 					if (loader == null)
 						configs = ResourceUtils.getSystemResources(ClassUtils.getDefaultClassLoader(), fullName);
 					else
-						configs = ResourceUtils.getResources(loader, fullName);
+						configs = ResourceUtils.getSystemResources(loader, fullName);
 				} catch (IOException x) {
 					fail(service, "Error locating configuration files", x);
 				}
