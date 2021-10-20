@@ -1,11 +1,5 @@
 package io.basc.framework.factory.support;
 
-import io.basc.framework.factory.NoArgsInstanceFactory;
-import io.basc.framework.factory.ServiceLoader;
-import io.basc.framework.io.ResourceUtils;
-import io.basc.framework.util.ClassLoaderProvider;
-import io.basc.framework.util.ClassUtils;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +18,12 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.ServiceConfigurationError;
-import java.util.stream.Collectors;
+
+import io.basc.framework.factory.NoArgsInstanceFactory;
+import io.basc.framework.factory.ServiceLoader;
+import io.basc.framework.io.ResourceUtils;
+import io.basc.framework.util.ClassLoaderProvider;
+import io.basc.framework.util.ClassUtils;
 
 public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderProvider {
 
@@ -309,14 +308,9 @@ public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderP
 	 */
 	public Iterator<S> iterator() {
 		return new Iterator<S>() {
-
-			Iterator<Map.Entry<String, S>> knownProviders;
-			if(providers == null) {
-				knownProviders = Collections.emptyIterator();
-			}else {
-				knownProviders = providers.entrySet().iterator();
-			}
-
+			
+			Iterator<Map.Entry<String, S>> knownProviders = providers == null? Collections.emptyIterator():providers.entrySet().iterator();
+			
 			public boolean hasNext() {
 				if (knownProviders.hasNext())
 					return true;
