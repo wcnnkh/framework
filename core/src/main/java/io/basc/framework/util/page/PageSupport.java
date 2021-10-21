@@ -17,17 +17,17 @@ public class PageSupport {
 	/**
 	 * 获取当前所在页码
 	 * 
-	 * @param limit
 	 * @param start
+	 * @param limit
 	 * @return
 	 */
-	public static long getPageNumber(long limit, long start) {
+	public static long getPageNumber(long start, long limit) {
 		Assert.isTrue(limit > 0, "required limit > 0");
 		Assert.isTrue(start >= 0, "required start >= 0");
 		return (start / limit) + 1;
 	}
 
-	public static boolean hasMore(long total, long limit, long start) {
+	public static boolean hasMore(long total, long start, long limit) {
 		Assert.isTrue(total >= 0, "required total >= 0");
 		Assert.isTrue(limit > 0, "required limit > 0");
 		Assert.isTrue(start >= 0, "required start >= 0");

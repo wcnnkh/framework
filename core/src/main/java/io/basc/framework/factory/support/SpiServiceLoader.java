@@ -1,11 +1,5 @@
 package io.basc.framework.factory.support;
 
-import io.basc.framework.factory.NoArgsInstanceFactory;
-import io.basc.framework.factory.ServiceLoader;
-import io.basc.framework.io.ResourceUtils;
-import io.basc.framework.util.ClassLoaderProvider;
-import io.basc.framework.util.ClassUtils;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +9,7 @@ import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -23,6 +18,12 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.ServiceConfigurationError;
+
+import io.basc.framework.factory.NoArgsInstanceFactory;
+import io.basc.framework.factory.ServiceLoader;
+import io.basc.framework.io.ResourceUtils;
+import io.basc.framework.util.ClassLoaderProvider;
+import io.basc.framework.util.ClassUtils;
 
 public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderProvider {
 
@@ -38,7 +39,7 @@ public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderP
 	private final AccessControlContext acc;
 
 	// Cached providers, in instantiation order
-	private LinkedHashMap<String, S> providers = new LinkedHashMap<String, S>();
+	private LinkedHashMap<String, S> providers;
 
 	// The current lazy-lookup iterator
 	private LazyIterator lookupIterator;
@@ -99,7 +100,7 @@ public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderP
 				if (!Character.isJavaIdentifierPart(cp) && (cp != '.'))
 					fail(service, u, lc, "Illegal provider-class name: " + ln);
 			}
-			if (!providers.containsKey(ln) && !names.contains(ln)
+			if ((providers == null || !providers.containsKey(ln)) && !names.contains(ln)
 					&& (instanceFactory == null || instanceFactory.isInstance(ln)))
 				names.add(ln);
 		}
@@ -174,7 +175,7 @@ public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderP
 					if (loader == null)
 						configs = ResourceUtils.getSystemResources(ClassUtils.getDefaultClassLoader(), fullName);
 					else
-						configs = ResourceUtils.getResources(loader, fullName);
+						configs = ResourceUtils.getSystemResources(loader, fullName);
 				} catch (IOException x) {
 					fail(service, "Error locating configuration files", x);
 				}
@@ -211,7 +212,14 @@ public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderP
 			try {
 				Object instance = instanceFactory == null ? ClassUtils.newInstance(c) : instanceFactory.getInstance(c);
 				S p = service.cast(instance);
-				providers.put(cn, p);
+				if(providers == null) {
+					synchronized (this) {
+						if(providers == null) {
+							providers = new LinkedHashMap<>(8);
+							providers.put(cn, p);
+						}
+					}
+				}
 				return p;
 			} catch (Throwable x) {
 				fail(service, "Provider " + cn + " could not be instantiated", x);
@@ -300,9 +308,9 @@ public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderP
 	 */
 	public Iterator<S> iterator() {
 		return new Iterator<S>() {
-
-			Iterator<Map.Entry<String, S>> knownProviders = providers.entrySet().iterator();
-
+			
+			Iterator<Map.Entry<String, S>> knownProviders = providers == null? Collections.emptyIterator():providers.entrySet().iterator();
+			
 			public boolean hasNext() {
 				if (knownProviders.hasNext())
 					return true;
@@ -356,7 +364,13 @@ public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderP
 	 * installed into a running Java virtual machine.
 	 */
 	public void reload() {
-		providers.clear();
+		if(providers != null) {
+			synchronized (this) {
+				if(providers != null) {
+					providers.clear();
+				}
+			}
+		}
 		lookupIterator = new LazyIterator(service, getClassLoader());
 	}
 }

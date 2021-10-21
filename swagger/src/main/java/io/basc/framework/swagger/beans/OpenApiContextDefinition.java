@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.factory.InstanceException;
+import io.basc.framework.swagger.OpenAPIExtensionsReload;
 import io.basc.framework.swagger.WebOpenApiContextBuilder;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
@@ -27,6 +28,9 @@ public class OpenApiContextDefinition extends DefaultBeanDefinition {
 
 	@Override
 	public Object create() throws InstanceException {
+		//重新加载扩展
+		OpenAPIExtensionsReload.reload(beanFactory);
+		
 		SwaggerConfiguration configuration = beanFactory.getInstance(SwaggerConfiguration.class);
 		if (CollectionUtils.isEmpty(configuration.getResourceClasses())
 				&& StringUtils.isEmpty(configuration.getScannerClass())

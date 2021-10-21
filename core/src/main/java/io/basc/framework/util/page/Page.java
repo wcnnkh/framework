@@ -15,7 +15,7 @@ public interface Page<T> extends Pageable<Long, T> {
 	 * @return
 	 */
 	default long getPageNumber() {
-		return PageSupport.getPageNumber(getCount(), getCursorId());
+		return PageSupport.getPageNumber(getCursorId(), getCount());
 	}
 
 	/**

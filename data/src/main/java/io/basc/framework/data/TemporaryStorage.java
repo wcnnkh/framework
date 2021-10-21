@@ -9,7 +9,7 @@ package io.basc.framework.data;
  */
 public interface TemporaryStorage extends Storage{
 	
-	default <T> T getAndTouch(String key, int exp) {
+	default <T> T getAndTouch(String key, long exp) {
 		T value = get(key);
 		if(value != null) {
 			touch(key, exp);
@@ -17,7 +17,7 @@ public interface TemporaryStorage extends Storage{
 		return value;
 	}
 
-	boolean touch(String key, int exp);
+	boolean touch(String key, long exp);
 
 	/**
 	 * 如果数据不存在就添加
@@ -26,12 +26,12 @@ public interface TemporaryStorage extends Storage{
 	 * @param value
 	 * @return
 	 */
-	boolean add(String key, int exp, Object value);
+	boolean add(String key, long exp, Object value);
 
 	/**
 	 * @param key
 	 * @param exp 过期时间(秒)
 	 * @param value
 	 */
-	void set(String key, int exp, Object value);
+	void set(String key, long exp, Object value);
 }

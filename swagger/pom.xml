@@ -23,7 +23,12 @@
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-jaxrs2</artifactId>
 		</dependency>
-
+		
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>testing</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>tomcat</artifactId>

@@ -16,19 +16,19 @@ public class TimeUtils {
 	/**
 	 * 一天的毫秒数
 	 */
-	public static final int ONE_DAY = 86400000;
+	public static final long ONE_DAY = 86400000;
 	/**
 	 * 一小时的毫秒数
 	 */
-	public static final int ONE_HOUR = 3600000;
+	public static final long ONE_HOUR = 3600000;
 	/**
 	 * 一分钟的毫秒数
 	 */
-	public static final int ONE_MINUTE = 60000;
+	public static final long ONE_MINUTE = 60000;
 	/**
 	 * 一秒的毫秒数
 	 */
-	public static final int ONE_SECOND = 1000;
+	public static final long ONE_SECOND = 1000;
 
 	/**
 	 * 日期格式yyyy-MM-dd

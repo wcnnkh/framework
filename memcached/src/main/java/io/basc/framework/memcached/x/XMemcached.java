@@ -4,6 +4,7 @@ import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.data.cas.CAS;
 import io.basc.framework.data.cas.CASOperations;
 import io.basc.framework.memcached.Memcached;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 
 import java.util.Collection;
@@ -54,10 +55,15 @@ public final class XMemcached implements Memcached {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	private void checkExp(long exp) {
+		Assert.requiredArgument(exp > Integer.MAX_VALUE, "exp should be less than or equal to " + Integer.MAX_VALUE);
+	}
 
-	public void set(String key, int exp, Object data) {
+	public void set(String key, long exp, Object data) {
+		checkExp(exp);
 		try {
-			memcachedClient.set(key, exp, data);
+			memcachedClient.set(key, (int)exp, data);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -75,13 +81,14 @@ public final class XMemcached implements Memcached {
 		}
 	}
 
-	public boolean add(String key, int exp, Object data) {
+	public boolean add(String key, long exp, Object data) {
 		if (data == null) {
 			return false;
 		}
 
+		checkExp(exp);
 		try {
-			return memcachedClient.add(key, exp, data);
+			return memcachedClient.add(key, (int)exp, data);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -112,8 +119,9 @@ public final class XMemcached implements Memcached {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> T privateGetAndTouch(String key, int newExp) {
+	private <T> T privateGetAndTouch(String key, long newExp) {
 		Object v;
+		checkExp(newExp);
 		try {
 			v = memcachedClient.get(key);
 			if (v == null) {
@@ -121,7 +129,7 @@ public final class XMemcached implements Memcached {
 			}
 
 			if (v != null) {
-				memcachedClient.set(key, newExp, v);
+				memcachedClient.set(key, (int)newExp, v);
 			}
 
 			return (T) v;
@@ -130,10 +138,11 @@ public final class XMemcached implements Memcached {
 		}
 	}
 
-	public <T> T getAndTouch(String key, int newExp) {
+	public <T> T getAndTouch(String key, long newExp) {
+		checkExp(newExp);
 		if (isSupportTouch) {
 			try {
-				return memcachedClient.getAndTouch(key, newExp);
+				return memcachedClient.getAndTouch(key, (int)newExp);
 			} catch (net.rubyeye.xmemcached.exception.MemcachedException e) {// 不支持touch协议
 				isSupportTouch = false;
 				return privateGetAndTouch(key, newExp);
@@ -145,10 +154,11 @@ public final class XMemcached implements Memcached {
 		}
 	}
 
-	public boolean touch(String key, int exp) {
+	public boolean touch(String key, long exp) {
+		checkExp(exp);
 		if (isSupportTouch) {
 			try {
-				return memcachedClient.touch(key, exp);
+				return memcachedClient.touch(key, (int)exp);
 			} catch (net.rubyeye.xmemcached.exception.MemcachedException e) {// 不支持touch协议
 				isSupportTouch = false;
 				getAndTouch(key, exp);
@@ -245,19 +255,21 @@ public final class XMemcached implements Memcached {
 		return casOperations;
 	}
 
-	public long incr(String key, long delta, long initValue, int exp) {
+	public long incr(String key, long delta, long initValue, long exp) {
+		checkExp(exp);
 		try {
 			return memcachedClient.incr(key, delta, initValue,
-					memcachedClient.getOpTimeout(), exp);
+					memcachedClient.getOpTimeout(), (int)exp);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-
-	public long decr(String key, long delta, long initValue, int exp) {
+	
+	public long decr(String key, long delta, long initValue, long exp) {
+		checkExp(exp);
 		try {
 			return memcachedClient.decr(key, delta, initValue,
-					memcachedClient.getOpTimeout(), exp);
+					memcachedClient.getOpTimeout(), (int)exp);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

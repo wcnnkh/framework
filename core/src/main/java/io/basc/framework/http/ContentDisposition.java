@@ -379,7 +379,7 @@ public final class ContentDisposition {
 		 * Section 4.2</a> and also RFC 5987 itself mentions it does not apply
 		 * to multipart requests.
 		 */
-		Builder filename(String filename, Charset charset);
+		Builder filename(String filename, @Nullable Charset charset);
 
 		/**
 		 * 其他属性 <a href="https://tools.ietf.org/html/rfc6266#appendix-B">RFC

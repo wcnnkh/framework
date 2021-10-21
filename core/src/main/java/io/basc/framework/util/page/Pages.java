@@ -12,10 +12,18 @@ public interface Pages<T> extends Page<T>, Pageables<Long, T> {
 		return jumpTo(getNextCursorId());
 	}
 
-	Pages<T> jumpTo(Long cursorId);
-
+	default Pages<T> jumpTo(Long cursorId){
+		return jumpTo(cursorId, getCount());
+	}
+	
+	Pages<T> jumpTo(Long cursorId, long count);
+	
 	default Pages<T> jumpToPage(long pageNumber) {
-		return jumpTo(PageSupport.getStart(pageNumber, getCount()));
+		return jumpToPage(pageNumber, getCount());
+	}
+	
+	default Pages<T> jumpToPage(long pageNumber, long count) {
+		return jumpTo(PageSupport.getStart(pageNumber, count), count);
 	}
 
 	default Pages<T> previous() {
@@ -25,5 +33,9 @@ public interface Pages<T> extends Page<T>, Pageables<Long, T> {
 	default Stream<Pages<T>> pages(){
 		Iterator<Pages<T>> iterator = new PagesIterator<>(this);
 		return XUtils.stream(iterator);
+	}
+	
+	default Pages<T> limit(long maxPageNumber){
+		return new StreamPages<>(Math.min(getTotal(), PageSupport.getStart(maxPageNumber, getCount())), getCursorId(), getCount(), (start, limit) -> jumpTo(start).stream());
 	}
 }

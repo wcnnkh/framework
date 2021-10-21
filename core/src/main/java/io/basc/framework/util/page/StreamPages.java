@@ -47,13 +47,13 @@ public class StreamPages<T> implements Pages<T> {
 	}
 
 	@Override
-	public Pages<T> jumpTo(Long cursorId) {
-		return new StreamPages<>(getTotal(), cursorId, getCount(), cursorProcessor);
+	public Stream<T> stream() {
+		return page.stream();
 	}
 
 	@Override
-	public Stream<T> stream() {
-		return page.stream();
+	public Pages<T> jumpTo(Long cursorId, long count) {
+		return new StreamPages<>(getTotal(), cursorId, count, cursorProcessor);
 	}
 
 }

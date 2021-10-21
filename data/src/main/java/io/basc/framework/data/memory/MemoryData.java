@@ -11,7 +11,7 @@ public interface MemoryData {
 
 	long decr(long delta, long initialValue);
 
-	void setExpire(int exp);
+	void setExpire(long exp);
 	
 	boolean set(CAS<? extends Object> value);
 

@@ -33,8 +33,11 @@ public class StreamPageables<K, T> implements Pageables<K, T> {
 
 	@Override
 	public Pageables<K, T> jumpTo(K cursorId) {
-		Pageable<K, T> jumpTo = pageableProcessor.process(cursorId, getCount());
-		return new StreamPageables<>(jumpTo, pageableProcessor);
+		return jumpTo(cursorId, getCount());
 	}
 
+	public Pageables<K, T> jumpTo(K cursorId, long count) {
+		Pageable<K, T> jumpTo = pageableProcessor.process(cursorId, count);
+		return new StreamPageables<>(jumpTo, pageableProcessor);
+	}
 }

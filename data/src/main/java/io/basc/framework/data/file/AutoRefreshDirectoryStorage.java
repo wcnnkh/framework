@@ -13,7 +13,7 @@ public class AutoRefreshDirectoryStorage extends DirectoryStorage {
 	 * @param period 单位:秒
 	 * @param converter
 	 */
-	protected AutoRefreshDirectoryStorage(int period, Converter<String, ?> converter) {
+	protected AutoRefreshDirectoryStorage(long period, Converter<String, ?> converter) {
 		super(period);
 		this.converter = converter;
 	}
@@ -23,7 +23,7 @@ public class AutoRefreshDirectoryStorage extends DirectoryStorage {
 	 * @param cacheDirectory
 	 * @param converter
 	 */
-	public AutoRefreshDirectoryStorage(int period, String cacheDirectory, Converter<String, ?> converter) {
+	public AutoRefreshDirectoryStorage(long period, String cacheDirectory, Converter<String, ?> converter) {
 		this(period, SerializerUtils.getSerializer(), cacheDirectory, converter);
 	}
 
@@ -34,7 +34,7 @@ public class AutoRefreshDirectoryStorage extends DirectoryStorage {
 	 * @param cacheDirectory
 	 * @param converter
 	 */
-	public AutoRefreshDirectoryStorage(int period, Serializer serializer,
+	public AutoRefreshDirectoryStorage(long period, Serializer serializer,
 			String cacheDirectory, Converter<String, ?> converter) {
 		super(period, serializer, cacheDirectory);
 		this.converter = converter;
