@@ -1,16 +1,5 @@
 package io.basc.framework.swagger;
 
-import io.swagger.v3.jaxrs2.Reader;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.models.ExternalDocumentation;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.parameters.Parameter;
-import io.swagger.v3.oas.models.parameters.RequestBody;
-import io.swagger.v3.oas.models.responses.ApiResponses;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.servers.Server;
-
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +10,17 @@ import javax.ws.rs.Produces;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
+
+import io.swagger.v3.jaxrs2.Reader;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.models.ExternalDocumentation;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.servers.Server;
 
 public class CustomReader extends Reader {
 	
@@ -52,12 +52,6 @@ public class CustomReader extends Reader {
 				classServers, isSubresource, parentRequestBody,
 				parentResponses, jsonViewAnnotation, classResponses,
 				annotatedMethod);
-		List<Parameter> parameters = operation.getParameters();
-		if (parameters != null) {
-			for (Parameter parameter : parameters) {
-				System.out.println(parameter);
-			}
-		}
 		return operation;
 	}
 }
