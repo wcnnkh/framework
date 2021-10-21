@@ -21,12 +21,12 @@ public class RedisDataOperations implements DataOperations {
 	}
 
 	@Override
-	public boolean touch(String key, int exp) {
+	public boolean touch(String key, long exp) {
 		return redisTemplete.touch(key) == 1;
 	}
 
 	@Override
-	public boolean add(String key, int exp, Object value) {
+	public boolean add(String key, long exp, Object value) {
 		if (exp > 0) {
 			Boolean b = redisTemplete.getObjectCommands().set(key, value, ExpireOption.EX, exp, SetOption.NX);
 			return b == null ? false : b;
@@ -37,7 +37,7 @@ public class RedisDataOperations implements DataOperations {
 	}
 
 	@Override
-	public void set(String key, int exp, Object value) {
+	public void set(String key, long exp, Object value) {
 		if (exp > 0) {
 			redisTemplete.getObjectCommands().setex(key, exp, value);
 		} else {
@@ -95,12 +95,12 @@ public class RedisDataOperations implements DataOperations {
 	}
 
 	@Override
-	public long incr(String key, long delta, long initialValue, int exp) {
+	public long incr(String key, long delta, long initialValue, long exp) {
 		return redisTemplete.incr(key, delta, initialValue, exp);
 	}
 
 	@Override
-	public long decr(String key, long delta, long initialValue, int exp) {
+	public long decr(String key, long delta, long initialValue, long exp) {
 		return redisTemplete.decr(key, delta, initialValue, exp);
 	}
 

@@ -51,7 +51,7 @@ public final class MemoryDataOperations implements DataOperations {
 		memoryData.set(value);
 	}
 
-	public void set(String key, int exp, Object value) {
+	public void set(String key, long exp, Object value) {
 		MemoryData memoryData = memoryDataManager.createDefaultMemoryCache(key);
 		memoryData.set(value);
 		memoryData.setExpire(exp);
@@ -62,7 +62,7 @@ public final class MemoryDataOperations implements DataOperations {
 		return memoryData.setIfAbsent(value);
 	}
 
-	public boolean add(String key, int exp, Object value) {
+	public boolean add(String key, long exp, Object value) {
 		MemoryData memoryData = memoryDataManager.createDefaultMemoryCache(key);
 		if (!memoryData.setIfAbsent(value)) {
 			return false;
@@ -71,7 +71,7 @@ public final class MemoryDataOperations implements DataOperations {
 		return true;
 	}
 
-	public boolean touch(String key, int exp) {
+	public boolean touch(String key, long exp) {
 		MemoryData memoryData = memoryDataManager.getMemoryCache(key);
 		if (memoryData == null) {
 			return false;
@@ -110,7 +110,7 @@ public final class MemoryDataOperations implements DataOperations {
 		return incr(key, delta, initialValue, 0);
 	}
 
-	public long incr(String key, long delta, long initialValue, int exp) {
+	public long incr(String key, long delta, long initialValue, long exp) {
 		MemoryData memoryData = memoryDataManager.createCounterMemoryCache(key);
 		long v = memoryData.incr(delta, initialValue);
 		memoryData.setExpire(exp);
@@ -125,7 +125,7 @@ public final class MemoryDataOperations implements DataOperations {
 		return decr(key, delta, initialValue, 0);
 	}
 
-	public long decr(String key, long delta, long initialValue, int exp) {
+	public long decr(String key, long delta, long initialValue, long exp) {
 		MemoryData memoryData = memoryDataManager.createCounterMemoryCache(key);
 		long v = memoryData.decr(-delta, initialValue);
 		memoryData.setExpire(exp);

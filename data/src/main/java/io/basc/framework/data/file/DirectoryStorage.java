@@ -25,14 +25,14 @@ public class DirectoryStorage extends TimerTask implements Storage {
 	private static Logger logger = LoggerFactory.getLogger(DirectoryStorage.class);
 	// 守望线程，自动退出
 	private static final Timer TIMER = new Timer(DirectoryStorage.class.getSimpleName(), true);
-	private final int exp;// 0表示不过期
+	private final long exp;// 0表示不过期
 	private final Serializer serializer;
 	private final File directory;
 
 	/**
 	 * @param exp 单位:秒
 	 */
-	protected DirectoryStorage(int exp) {
+	protected DirectoryStorage(long exp) {
 		this(exp, SerializerUtils.getSerializer(),
 				FileUtils.getTempDirectory() + File.separator + "file_cache_" + exp);
 	}
@@ -41,11 +41,11 @@ public class DirectoryStorage extends TimerTask implements Storage {
 	 * @param exp            单位:秒
 	 * @param cacheDirectory
 	 */
-	public DirectoryStorage(int exp, String cacheDirectory) {
+	public DirectoryStorage(long exp, String cacheDirectory) {
 		this(exp, SerializerUtils.getSerializer(), cacheDirectory);
 	}
 
-	public DirectoryStorage(int exp, Serializer serializer, String directory) {
+	public DirectoryStorage(long exp, Serializer serializer, String directory) {
 		this(exp, SerializerUtils.getSerializer(), new File(Assert.securePathArgument(directory, "directory")));
 	}
 
@@ -55,7 +55,7 @@ public class DirectoryStorage extends TimerTask implements Storage {
 	 * @param charsetName
 	 * @param directory
 	 */
-	public DirectoryStorage(int exp, Serializer serializer, File directory) {
+	public DirectoryStorage(long exp, Serializer serializer, File directory) {
 		Assert.requiredArgument(serializer != null, "serializer");
 		Assert.requiredArgument(directory != null, "directory");
 		this.exp = exp;
@@ -277,7 +277,7 @@ public class DirectoryStorage extends TimerTask implements Storage {
 		}
 	}
 
-	public int getMaxExpirationDate() {
+	public long getMaxExpirationDate() {
 		return exp;
 	}
 

@@ -33,23 +33,23 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 
 	private int eIPBindRebindRetries = 3;
 
-	private int eIPBindingRetryIntervalMs = 5 * TimeUtils.ONE_MINUTE;
+	private int eIPBindingRetryIntervalMs = (int)(5 * TimeUtils.ONE_MINUTE);
 
-	private int eIPBindingRetryIntervalMsWhenUnbound = 1 * TimeUtils.ONE_MINUTE;
+	private int eIPBindingRetryIntervalMsWhenUnbound = (int) (1 * TimeUtils.ONE_MINUTE);
 
 	private boolean enableSelfPreservation = true;
 
 	private double renewalPercentThreshold = 0.85;
 
-	private int renewalThresholdUpdateIntervalMs = 15 * TimeUtils.ONE_MINUTE;
+	private int renewalThresholdUpdateIntervalMs = (int) (15 * TimeUtils.ONE_MINUTE);
 
-	private int peerEurekaNodesUpdateIntervalMs = 10 * TimeUtils.ONE_MINUTE;
+	private int peerEurekaNodesUpdateIntervalMs = (int) (10 * TimeUtils.ONE_MINUTE);
 
 	private int numberOfReplicationRetries = 5;
 
 	private int peerEurekaStatusRefreshTimeIntervalMs = 30 * 1000;
 
-	private int waitTimeInMsWhenSyncEmpty = 5 * TimeUtils.ONE_MINUTE;
+	private int waitTimeInMsWhenSyncEmpty = (int) (5 * TimeUtils.ONE_MINUTE);
 
 	private int peerNodeConnectTimeoutMs = 200;
 
@@ -166,7 +166,7 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 
 	private int route53BindRebindRetries = 3;
 
-	private int route53BindingRetryIntervalMs = 5 * TimeUtils.ONE_MINUTE;
+	private int route53BindingRetryIntervalMs = (int) (5 * TimeUtils.ONE_MINUTE);
 
 	private long route53DomainTTL = 30;
 

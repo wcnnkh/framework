@@ -7,14 +7,14 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public abstract class AbstractMemoryData implements MemoryData {
 	private volatile long lastTouch;
-	private volatile int exp;
+	private volatile long exp;
 	protected AtomicLong cas = new AtomicLong();
 
 	public AbstractMemoryData() {
 		this.lastTouch = System.currentTimeMillis();
 	}
 
-	public void setExpire(int exp) {
+	public void setExpire(long exp) {
 		this.exp = exp;
 	}
 

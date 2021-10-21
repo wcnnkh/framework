@@ -84,13 +84,13 @@ public class Redis implements RedisConnectionFactory<String, String> {
 		this.valueCodec = valueCodec;
 	}
 
-	public Long incr(String key, long delta, long initialValue, int exp) {
+	public Long incr(String key, long delta, long initialValue, long exp) {
 		Object value = eval(INCR_AND_INIT_SCRIPT, Arrays.asList(key),
 				Arrays.asList(String.valueOf(delta), String.valueOf(initialValue), String.valueOf(exp)));
 		return new AnyValue(value).getAsLong();
 	}
 
-	public Long decr(String key, long delta, long initialValue, int exp) {
+	public Long decr(String key, long delta, long initialValue, long exp) {
 		Object value = eval(DECR_AND_INIT_SCRIPT, Arrays.asList(key),
 				Arrays.asList(String.valueOf(delta), String.valueOf(initialValue), String.valueOf(exp)));
 		return new AnyValue(value).getAsLong();
