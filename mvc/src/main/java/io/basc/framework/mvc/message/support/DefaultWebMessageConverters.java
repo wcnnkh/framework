@@ -23,6 +23,7 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 		addService(new ResourceMessageConverter());
 		addService(new AnnotationMessageConverter(defaultValueFactory));
 		addService(new RequestBodyMessageConverter());
+		addService(new QueryParamsMessageConverter());
 
 		// jaxrs2
 		addService(new Jaxrs2ParamMessageConverter(getConversionServices(), defaultValueFactory));
