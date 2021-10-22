@@ -1,10 +1,5 @@
 package io.basc.framework.gson;
 
-import io.basc.framework.aop.support.ProxyUtils;
-import io.basc.framework.json.JSONAware;
-import io.basc.framework.value.AnyValue;
-import io.basc.framework.value.Value;
-
 import java.io.IOException;
 
 import com.google.gson.Gson;
@@ -13,6 +8,10 @@ import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+
+import io.basc.framework.aop.support.ProxyUtils;
+import io.basc.framework.json.JSONAware;
+import io.basc.framework.value.Value;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class ExtendGsonTypeAdapter extends TypeAdapter<Object> {
@@ -55,25 +54,14 @@ public class ExtendGsonTypeAdapter extends TypeAdapter<Object> {
 		}
 		
 		if(value instanceof Value){
-			if(value instanceof AnyValue){
-				Object valueToUse = ((AnyValue) value).getValue();
-				if(valueToUse == null){
-					out.nullValue();
-					return ;
-				}
-				
-				TypeAdapter<Object> typeAdapter = (TypeAdapter<Object>) getTypeAdapter(valueToUse.getClass());
-				typeAdapter.write(out, valueToUse);
-				return ;
-			}
-			
-			String valueToUse = ((Value)value).getAsString();
-			if(valueToUse == null){
+			Object valueToUse = ((Value) value).getSourceValue();
+			if(valueToUse == null) {
 				out.nullValue();
 				return ;
 			}
 			
-			out.jsonValue(valueToUse);
+			TypeAdapter<Object> typeAdapter = (TypeAdapter<Object>) getTypeAdapter(valueToUse.getClass());
+			typeAdapter.write(out, valueToUse);
 			return ;
 		}
 

@@ -26,6 +26,11 @@ public class StringValue extends AbstractValue implements Serializable {
 	public void setJsonSupport(JSONSupport jsonSupport) {
 		this.jsonSupport = jsonSupport;
 	}
+	
+	@Override
+	public Object getSourceValue() {
+		return value;
+	}
 
 	public String getAsString() {
 		return value;

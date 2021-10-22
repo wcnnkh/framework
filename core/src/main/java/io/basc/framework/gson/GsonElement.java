@@ -16,6 +16,11 @@ public final class GsonElement extends AbstractJsonElement {
 		this.gsonJsonElement = gsonJsonElement;
 		this.gson = gson;
 	}
+	
+	@Override
+	public Object getSourceValue() {
+		return gsonJsonElement;
+	}
 
 	public String getAsString() {
 		if (gsonJsonElement.isJsonArray() || gsonJsonElement.isJsonObject()) {

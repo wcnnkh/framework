@@ -1,17 +1,17 @@
 package io.basc.framework.value;
 
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.env.Sys;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.ObjectUtils;
-
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Map;
+
+import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.env.Sys;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ObjectUtils;
 
 public class AnyValue extends AbstractValue implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -29,13 +29,6 @@ public class AnyValue extends AbstractValue implements Serializable {
 
 	public ConversionService getConversionService() {
 		return conversionService == null ? Sys.env.getConversionService() : conversionService;
-	}
-
-	public Object getValue() {
-		if (value instanceof AnyValue) {
-			return ((AnyValue) value).getValue();
-		}
-		return value;
 	}
 
 	public String getAsString() {
@@ -526,5 +519,17 @@ public class AnyValue extends AbstractValue implements Serializable {
 			return ((Value) value).isNumber();
 		}
 		return super.isNumber();
+	}
+
+	@Override
+	public Object getSourceValue() {
+		if(value == null) {
+			return null;
+		}
+		
+		if(value instanceof Value) {
+			return ((Value) value).getSourceValue();
+		}
+		return value;
 	}
 }

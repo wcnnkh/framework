@@ -1,15 +1,22 @@
 package io.basc.framework.value;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.ClassUtils;
-
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ClassUtils;
+
 public interface Value {
 	final Value[] EMPTY_ARRAY = new Value[0];
+	
+	/**
+	 * 获取来源值
+	 * @return
+	 */
+	@Nullable
+	Object getSourceValue();
 
 	@Nullable
 	<T> T getAsObject(Class<T> type);
@@ -71,10 +78,15 @@ public interface Value {
 
 	@Nullable
 	Number getAsNumber();
+	
+	/**
+	 * 是否可以转换为number,此方法不代表数据的原始类型是number
+	 * @see #getAsNumber()
+	 * @return
+	 */
+	boolean isNumber();
 
 	boolean isEmpty();
-
-	boolean isNumber();
 
 	@Nullable
 	Class<?> getAsClass();
