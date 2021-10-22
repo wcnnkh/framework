@@ -29,6 +29,11 @@ public class JacksonJsonElement extends AbstractJsonElement implements
 		this.mapper = mapper;
 		this.jsonNode = jsonNode;
 	}
+	
+	@Override
+	public Object getSourceValue() {
+		return jsonNode;
+	}
 
 	@Override
 	public JsonArray getAsJsonArray() {

@@ -19,4 +19,8 @@ public class EmptyValue extends AbstractValue implements Value, Serializable {
 		return null;
 	}
 	
+	@Override
+	public Object getSourceValue() {
+		return null;
+	}
 }

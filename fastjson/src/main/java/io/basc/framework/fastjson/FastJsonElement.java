@@ -34,6 +34,11 @@ public final class FastJsonElement extends AbstractJsonElement implements JSONAw
 	public JsonObject getAsJsonObject() {
 		return new FastJsonObject(com.alibaba.fastjson.JSONObject.parseObject(text));
 	}
+	
+	@Override
+	public Object getSourceValue() {
+		return text;
+	}
 
 	public String getAsString() {
 		return text;

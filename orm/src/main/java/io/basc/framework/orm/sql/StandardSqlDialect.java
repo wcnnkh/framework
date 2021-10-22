@@ -31,6 +31,7 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.value.AnyValue;
+import io.basc.framework.value.Value;
 
 /**
  * 标准的sql方言
@@ -556,14 +557,14 @@ public abstract class StandardSqlDialect extends AnnotationTableResolver impleme
 	}
 
 	protected void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Column column,
-			@Nullable AnyValue oldValue, AnyValue newValue) {
+			@Nullable Value oldValue, Value newValue) {
 		if (column.getField().isAnnotationPresent(Counter.class) && oldValue != null) {
 			keywordProcessing(sb, column.getName());
 			sb.append("+");
 			sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
 		} else {
 			sb.append("?");
-			params.add(newValue.getValue());
+			params.add(newValue.getSourceValue());
 		}
 	}
 
