@@ -5,10 +5,14 @@ import java.io.Flushable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import io.basc.framework.util.page.Page;
 import io.basc.framework.util.page.Pages;
+import io.basc.framework.util.stream.ConsumerProcessor;
 import io.basc.framework.util.stream.Processor;
 
 public interface ExcelExport extends Flushable, Closeable {
@@ -32,12 +36,28 @@ public interface ExcelExport extends Flushable, Closeable {
 		}
 		flush();
 	}
-
-	default <T, E extends Throwable> void appendAll(Pages<T> pages, Processor<T, Collection<?>, E> processor)
-			throws IOException, E {
-		appendAll(pages.rows(), processor);
-		while (pages.hasNext()) {
-			appendAll(pages.next().rows(), processor);
+	
+	/**
+	 * @param <T>
+	 * @param <E>
+	 * @param pages
+	 * @param rowsProcessor
+	 * @param afterProcess  写入成功后执行
+	 * @throws IOException
+	 * @throws E
+	 */
+	default <T, E extends Throwable> void appendAll(Pages<T> pages, Processor<T, Collection<?>, E> rowsProcessor,
+			ConsumerProcessor<Page<T>, E> afterProcess) throws IOException, E {
+		Stream<? extends Pages<T>> stream = pages.pages();
+		try {
+			Iterator<? extends Pages<T>> iterator = stream.iterator();
+			while (iterator.hasNext()) {
+				Pages<T> page = iterator.next();
+				appendAll(page.rows(), rowsProcessor);
+				afterProcess.process(page);
+			}
+		} finally {
+			stream.close();
 		}
 	}
 }

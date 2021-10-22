@@ -37,7 +37,7 @@ import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.stream.Callback;
+import io.basc.framework.util.stream.ConsumerProcessor;
 import io.basc.framework.util.stream.Cursor;
 import io.basc.framework.util.stream.Processor;
 import io.basc.framework.util.stream.StreamProcessor;
@@ -178,11 +178,11 @@ public final class SqlUtils {
 
 	public static <S, P extends Statement> void process(S source,
 			Processor<S, ? extends P, ? extends SQLException> statementCreator,
-			Callback<P, ? extends SQLException> callback) throws SQLException {
+			ConsumerProcessor<P, ? extends SQLException> processor) throws SQLException {
 		P statement = null;
 		try {
 			statement = statementCreator.process(source);
-			callback.call(statement);
+			processor.process(statement);
 		} finally {
 			if (statement != null && !statement.isClosed()) {
 				statement.close();

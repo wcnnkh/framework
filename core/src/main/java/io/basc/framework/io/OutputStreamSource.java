@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
-import io.basc.framework.util.stream.Callback;
+import io.basc.framework.util.stream.ConsumerProcessor;
 import io.basc.framework.util.stream.Processor;
 
 public interface OutputStreamSource {
@@ -46,12 +46,12 @@ public interface OutputStreamSource {
 	/**
 	 * 一般不需要重写此方法，默认调用的是{@see OutputStreamSource#write(IoProcessor)}
 	 * 
-	 * @param callback
+	 * @param processor
 	 * @throws IOException
 	 */
-	default <E extends Throwable> void write(Callback<OutputStream, E> callback) throws IOException, E {
+	default <E extends Throwable> void write(ConsumerProcessor<OutputStream, E> processor) throws IOException, E {
 		write((is) -> {
-			callback.call(is);
+			processor.process(is);
 			return null;
 		});
 	}

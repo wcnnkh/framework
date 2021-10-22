@@ -16,7 +16,7 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.stream.Callback;
+import io.basc.framework.util.stream.ConsumerProcessor;
 
 /**
  * 一个标准的session管理器
@@ -245,7 +245,7 @@ public class StandardSessionManager<T> {
 		return sessions;
 	}
 	
-	public void remove(T group, Callback<Session, IOException> processor) {
+	public void remove(T group, ConsumerProcessor<Session, IOException> processor) {
 		remove(group).stream().filter((s) -> s.isOpen()).forEach((session) -> process(group, session, processor));
 	}
 	
@@ -265,7 +265,7 @@ public class StandardSessionManager<T> {
 		return size;
 	}
 	
-	public void process(T group, Session session, Callback<Session, IOException> processor) {	
+	public void process(T group, Session session, ConsumerProcessor<Session, IOException> processor) {	
 		if(processor == null) {
 			return ;
 		}
@@ -275,7 +275,7 @@ public class StandardSessionManager<T> {
 		}
 		
 		try {
-			processor.call(session);
+			processor.process(session);
 		} catch (IOException e) {
 			logger.error(e, "Process group[{}] session[{}] info[{}]", group, session.getId(), session);
 		}
@@ -297,7 +297,7 @@ public class StandardSessionManager<T> {
 		}
 	}
 	
-	public void forEach(T group, Callback<Session, IOException> processor) {
+	public void forEach(T group, ConsumerProcessor<Session, IOException> processor) {
 		getSessions(group).stream().filter((s) -> s.isOpen()).forEach((s) -> process(group, s, processor));
 	}
 	
@@ -305,7 +305,7 @@ public class StandardSessionManager<T> {
 		getSessions(group).stream().filter((s) -> s.isOpen()).forEach((s) -> process(group, s, processor));
 	}
 	
-	public void forEach(Callback<Session, IOException> processor) {
+	public void forEach(ConsumerProcessor<Session, IOException> processor) {
 		getGroups().forEach((group) -> forEach(group, processor));
 	}
 	
@@ -313,7 +313,7 @@ public class StandardSessionManager<T> {
 		getGroups().forEach((group) -> forEach(group, processor));
 	}
 	
-	public void clear(Callback<Session, IOException> processor) {
+	public void clear(ConsumerProcessor<Session, IOException> processor) {
 		getGroups().forEach((group) -> remove(group, processor));
 	}
 	

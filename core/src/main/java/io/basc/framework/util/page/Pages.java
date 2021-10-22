@@ -30,7 +30,7 @@ public interface Pages<T> extends Page<T>, Pageables<Long, T> {
 		return jumpToPage(getPageNumber() - 1);
 	}
 	
-	default Stream<Pages<T>> pages(){
+	default Stream<? extends Pages<T>> pages(){
 		Iterator<Pages<T>> iterator = new PagesIterator<>(this);
 		return XUtils.stream(iterator);
 	}

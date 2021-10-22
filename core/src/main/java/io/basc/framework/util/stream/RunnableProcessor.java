@@ -1,16 +1,22 @@
 package io.basc.framework.util.stream;
 
-public interface CallbackProcessor<E extends Throwable> {
+/**
+ * @see Runnable
+ * @author shuchaowen
+ *
+ * @param <E>
+ */
+public interface RunnableProcessor<E extends Throwable> {
 	void process() throws E;
 
-	default CallbackProcessor<E> beforeProcess(
-			CallbackProcessor<? extends E> processor) {
+	default RunnableProcessor<E> beforeProcess(
+			RunnableProcessor<? extends E> processor) {
 		if (processor == null) {
 			return this;
 		}
 
-		final CallbackProcessor<E> self = this;
-		return new CallbackProcessor<E>() {
+		final RunnableProcessor<E> self = this;
+		return new RunnableProcessor<E>() {
 
 			@Override
 			public void process() throws E {
@@ -28,14 +34,14 @@ public interface CallbackProcessor<E extends Throwable> {
 	 * @param processor
 	 * @return
 	 */
-	default CallbackProcessor<E> afterProcess(
-			CallbackProcessor<? extends E> processor) {
+	default RunnableProcessor<E> afterProcess(
+			RunnableProcessor<? extends E> processor) {
 		if (processor == null) {
 			return this;
 		}
 
-		final CallbackProcessor<E> self = this;
-		return new CallbackProcessor<E>() {
+		final RunnableProcessor<E> self = this;
+		return new RunnableProcessor<E>() {
 
 			@Override
 			public void process() throws E {

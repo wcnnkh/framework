@@ -8,7 +8,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import io.basc.framework.util.stream.Callback;
+import io.basc.framework.util.stream.ConsumerProcessor;
 import io.basc.framework.util.stream.Processor;
 
 /**
@@ -62,12 +62,12 @@ public interface InputStreamSource {
 	/**
 	 * 一般不需要重写此方法，默认调用的是{@see InputStreamSource#read(IoProcessor)}
 	 * 
-	 * @param callback
+	 * @param processor
 	 * @throws IOException
 	 */
-	default <E extends Throwable> void read(Callback<InputStream, E> callback) throws IOException, E {
+	default <E extends Throwable> void read(ConsumerProcessor<InputStream, E> processor) throws IOException, E {
 		read((is) -> {
-			callback.call(is);
+			processor.process(is);
 			return null;
 		});
 	}

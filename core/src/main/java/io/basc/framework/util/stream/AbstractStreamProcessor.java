@@ -1,10 +1,10 @@
 package io.basc.framework.util.stream;
 
 public abstract class AbstractStreamProcessor<T, E extends Throwable> implements StreamProcessor<T, E> {
-	private CallbackProcessor<E> closeProcessor;
+	private RunnableProcessor<E> closeProcessor;
 
 	@Override
-	public StreamProcessor<T, E> onClose(CallbackProcessor<E> closeProcessor) {
+	public StreamProcessor<T, E> onClose(RunnableProcessor<E> closeProcessor) {
 		if (this.closeProcessor == null) {
 			this.closeProcessor = closeProcessor;
 		} else {

@@ -23,7 +23,7 @@ public interface AutoCloseStreamProcessor<T, E extends Throwable> extends Stream
 
 	<S> AutoCloseStreamProcessor<S, E> map(Processor<T, ? extends S, ? extends E> processor);
 
-	AutoCloseStreamProcessor<T, E> onClose(CallbackProcessor<E> closeProcessor);
+	AutoCloseStreamProcessor<T, E> onClose(RunnableProcessor<E> closeProcessor);
 
 	boolean isClosed();
 	
@@ -39,7 +39,7 @@ public interface AutoCloseStreamProcessor<T, E extends Throwable> extends Stream
 	}
 
 	@Override
-	default void process(Callback<T, ? extends E> callback) throws E {
+	default void process(ConsumerProcessor<T, ? extends E> callback) throws E {
 		try {
 			StreamProcessor.super.process(callback);
 		} finally {

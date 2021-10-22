@@ -25,7 +25,7 @@ public interface Processor<S, T, E extends Throwable> {
 	 * @return
 	 */
 	default <B> Processor<B, T, E> beforeProcess(Processor<B, ? extends S, ? extends E> processor,
-			@Nullable Callback<S, ? extends E> closeProcessor) {
+			@Nullable ConsumerProcessor<S, ? extends E> closeProcessor) {
 		return new NestingProcessor<B, S, T, E>(processor, this, closeProcessor);
 	}
 
@@ -38,7 +38,7 @@ public interface Processor<S, T, E extends Throwable> {
 	 * @return
 	 */
 	default <A> Processor<S, A, E> afterProcess(Processor<T, ? extends A, ? extends E> processor,
-			@Nullable Callback<T, ? extends E> closeProcessor) {
+			@Nullable ConsumerProcessor<T, ? extends E> closeProcessor) {
 		return new NestingProcessor<S, T, A, E>(this, processor, closeProcessor);
 	}
 

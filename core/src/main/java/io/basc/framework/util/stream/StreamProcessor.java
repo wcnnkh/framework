@@ -25,7 +25,7 @@ public interface StreamProcessor<T, E extends Throwable> extends CallableProcess
 
 	<S> StreamProcessor<S, E> map(Processor<T, ? extends S, ? extends E> processor);
 
-	StreamProcessor<T, E> onClose(CallbackProcessor<E> closeProcessor);
+	StreamProcessor<T, E> onClose(RunnableProcessor<E> closeProcessor);
 
 	void close() throws E;
 

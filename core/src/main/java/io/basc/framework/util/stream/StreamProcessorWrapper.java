@@ -24,7 +24,7 @@ public class StreamProcessorWrapper<W extends StreamProcessor<T, E>, T, E extend
 	}
 
 	@Override
-	public StreamProcessor<T, E> onClose(CallbackProcessor<E> closeProcessor) {
+	public StreamProcessor<T, E> onClose(RunnableProcessor<E> closeProcessor) {
 		return wrappedTarget.onClose(closeProcessor);
 	}
 
@@ -39,7 +39,7 @@ public class StreamProcessorWrapper<W extends StreamProcessor<T, E>, T, E extend
 	}
 
 	@Override
-	public void process(Callback<T, ? extends E> callback) throws E {
+	public void process(ConsumerProcessor<T, ? extends E> callback) throws E {
 		wrappedTarget.process(callback);
 	}
 

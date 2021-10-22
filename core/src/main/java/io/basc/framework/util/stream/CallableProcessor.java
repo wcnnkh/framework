@@ -1,5 +1,15 @@
 package io.basc.framework.util.stream;
 
+import java.util.concurrent.Callable;
+
+/**
+ * @see Callable
+ * @author shuchaowen
+ *
+ * @param <T>
+ * @param <E>
+ */
+@FunctionalInterface
 public interface CallableProcessor<T, E extends Throwable> {
 	T process() throws E;
 	
@@ -7,7 +17,7 @@ public interface CallableProcessor<T, E extends Throwable> {
 		return processor.process(process());
 	}
 
-	default void process(Callback<T, ? extends E> callback) throws E {
-		callback.call(process());
+	default void process(ConsumerProcessor<T, ? extends E> callback) throws E {
+		callback.process(process());
 	}
 }

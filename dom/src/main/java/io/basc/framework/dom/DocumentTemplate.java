@@ -24,7 +24,7 @@ import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.Callback;
+import io.basc.framework.util.stream.ConsumerProcessor;
 import io.basc.framework.util.stream.Processor;
 
 public class DocumentTemplate implements Configurable, DocumentParser, DocumentWriter, DocumentTransformer {
@@ -120,9 +120,9 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 		throw new NotSupportedException(resource.getDescription());
 	}
 
-	public <E extends Throwable> void read(Resource resource, Callback<Document, E> callback) throws DomException {
+	public <E extends Throwable> void read(Resource resource, ConsumerProcessor<Document, E> processor) throws DomException {
 		parse(resource, (document) -> {
-			callback.call(document);
+			processor.process(document);
 			return null;
 		});
 	}

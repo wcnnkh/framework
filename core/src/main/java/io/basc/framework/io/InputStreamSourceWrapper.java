@@ -7,7 +7,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 
 import io.basc.framework.util.Wrapper;
-import io.basc.framework.util.stream.Callback;
+import io.basc.framework.util.stream.ConsumerProcessor;
 import io.basc.framework.util.stream.Processor;
 
 public class InputStreamSourceWrapper<I extends InputStreamSource> extends Wrapper<I>
@@ -28,7 +28,7 @@ public class InputStreamSourceWrapper<I extends InputStreamSource> extends Wrapp
 	}
 	
 	@Override
-	public <E extends Throwable> void read(Callback<InputStream, E> callback) throws IOException, E {
+	public <E extends Throwable> void read(ConsumerProcessor<InputStream, E> callback) throws IOException, E {
 		wrappedTarget.read(callback);
 	}
 	
