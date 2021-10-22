@@ -22,7 +22,7 @@ public interface ConsumerProcessor<S, E extends Throwable> {
 
 			@Override
 			public Void process(S source) throws E {
-				process(source);
+				ConsumerProcessor.this.process(source);
 				return null;
 			}
 		};
