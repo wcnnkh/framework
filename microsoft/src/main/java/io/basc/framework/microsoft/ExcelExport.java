@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.page.Page;
 import io.basc.framework.util.page.Pages;
 import io.basc.framework.util.stream.ConsumerProcessor;
@@ -37,6 +38,10 @@ public interface ExcelExport extends Flushable, Closeable {
 		flush();
 	}
 	
+	default <T, E extends Throwable> void appendAll(Pages<T> pages, Processor<T, Collection<?>, E> rowsProcessor) throws IOException, E{
+		appendAll(pages, rowsProcessor, null);
+	}
+	
 	/**
 	 * @param <T>
 	 * @param <E>
@@ -47,14 +52,16 @@ public interface ExcelExport extends Flushable, Closeable {
 	 * @throws E
 	 */
 	default <T, E extends Throwable> void appendAll(Pages<T> pages, Processor<T, Collection<?>, E> rowsProcessor,
-			ConsumerProcessor<Page<T>, E> afterProcess) throws IOException, E {
+			@Nullable ConsumerProcessor<Page<T>, E> afterProcess) throws IOException, E {
 		Stream<? extends Pages<T>> stream = pages.pages();
 		try {
 			Iterator<? extends Pages<T>> iterator = stream.iterator();
 			while (iterator.hasNext()) {
 				Pages<T> page = iterator.next();
 				appendAll(page.rows(), rowsProcessor);
-				afterProcess.process(page);
+				if(afterProcess != null) {
+					afterProcess.process(page);
+				}
 			}
 		} finally {
 			stream.close();
