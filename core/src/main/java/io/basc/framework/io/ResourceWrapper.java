@@ -13,7 +13,7 @@ import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
 import io.basc.framework.event.Observable;
-import io.basc.framework.util.stream.Callback;
+import io.basc.framework.util.stream.ConsumerProcessor;
 import io.basc.framework.util.stream.Processor;
 
 public abstract class ResourceWrapper implements Resource, Observable<Resource> {
@@ -87,7 +87,7 @@ public abstract class ResourceWrapper implements Resource, Observable<Resource> 
 	}
 
 	@Override
-	public <E extends Throwable> void read(Callback<InputStream, E> callback) throws IOException, E {
+	public <E extends Throwable> void read(ConsumerProcessor<InputStream, E> callback) throws IOException, E {
 		get().read(callback);
 	}
 	

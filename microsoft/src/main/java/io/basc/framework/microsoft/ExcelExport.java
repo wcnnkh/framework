@@ -8,7 +8,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.basc.framework.util.page.Page;
 import io.basc.framework.util.page.Pages;
+import io.basc.framework.util.stream.ConsumerProcessor;
 import io.basc.framework.util.stream.Processor;
 
 public interface ExcelExport extends Flushable, Closeable {
@@ -33,11 +35,23 @@ public interface ExcelExport extends Flushable, Closeable {
 		flush();
 	}
 
-	default <T, E extends Throwable> void appendAll(Pages<T> pages, Processor<T, Collection<?>, E> processor)
+	/**
+	 * @param <T>
+	 * @param <E>
+	 * @param pages
+	 * @param rowsProcessor
+	 * @param afterProcess 写入成功后执行
+	 * @throws IOException
+	 * @throws E
+	 */
+	default <T, E extends Throwable> void appendAll(Pages<T> pages, Processor<T, Collection<?>, E> rowsProcessor, ConsumerProcessor<Page<T>, E> afterProcess)
 			throws IOException, E {
-		appendAll(pages.rows(), processor);
+		appendAll(pages.rows(), rowsProcessor);
+		afterProcess.process(pages);
 		while (pages.hasNext()) {
-			appendAll(pages.next().rows(), processor);
+			Page<T> page = pages.next();
+			appendAll(page.rows(), rowsProcessor);
+			afterProcess.process(page);
 		}
 	}
 }

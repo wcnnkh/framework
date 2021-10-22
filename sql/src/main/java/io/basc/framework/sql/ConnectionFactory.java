@@ -1,10 +1,10 @@
 package io.basc.framework.sql;
 
-import io.basc.framework.util.stream.Callback;
-import io.basc.framework.util.stream.Processor;
-
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import io.basc.framework.util.stream.ConsumerProcessor;
+import io.basc.framework.util.stream.Processor;
 
 @FunctionalInterface
 public interface ConnectionFactory {
@@ -25,17 +25,10 @@ public interface ConnectionFactory {
 
 	/**
 	 * @see #process(SqlProcessor)
-	 * @param callback
+	 * @param processor
 	 * @throws SQLException
 	 */
-	default <E extends Throwable> void process(Callback<Connection, ? extends E> callback) throws SQLException, E {
-		process(new Processor<Connection, Void, E>() {
-
-			@Override
-			public Void process(Connection connection) throws E {
-				callback.call(connection);
-				return null;
-			}
-		});
+	default <E extends Throwable> void process(ConsumerProcessor<Connection, ? extends E> processor) throws SQLException, E {
+		process(processor.toProcessor());
 	}
 }

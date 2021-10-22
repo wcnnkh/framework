@@ -28,7 +28,7 @@ public class ExceptionConvertStreamProcessor<SE extends Throwable, T, E extends 
 	}
 
 	@Override
-	public StreamProcessor<T, E> onClose(CallbackProcessor<E> closeProcessor) {
+	public StreamProcessor<T, E> onClose(RunnableProcessor<E> closeProcessor) {
 		return new ExceptionConvertStreamProcessor<>(streamProcessor, excpetionConverter).onClose(() -> {
 			closeProcessor.process();
 		});

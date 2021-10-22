@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
 
 import io.basc.framework.util.Wrapper;
-import io.basc.framework.util.stream.Callback;
+import io.basc.framework.util.stream.ConsumerProcessor;
 import io.basc.framework.util.stream.Processor;
 
 public class OutputStreamSourceWrapper<W extends OutputStreamSource> extends Wrapper<W>
@@ -26,7 +26,7 @@ public class OutputStreamSourceWrapper<W extends OutputStreamSource> extends Wra
 	}
 	
 	@Override
-	public <E extends Throwable> void write(Callback<OutputStream, E> callback) throws IOException, E {
+	public <E extends Throwable> void write(ConsumerProcessor<OutputStream, E> callback) throws IOException, E {
 		wrappedTarget.write(callback);
 	}
 	

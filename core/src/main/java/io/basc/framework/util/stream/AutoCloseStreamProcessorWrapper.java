@@ -24,9 +24,9 @@ public class AutoCloseStreamProcessorWrapper<T, E extends Throwable> extends Wra
 	}
 
 	@Override
-	public void process(Callback<T, ? extends E> callback) throws E {
+	public void process(ConsumerProcessor<T, ? extends E> processor) throws E {
 		try {
-			callback.call(wrappedTarget.process());
+			processor.process(wrappedTarget.process());
 		} finally {
 			close();
 		}
@@ -81,7 +81,7 @@ public class AutoCloseStreamProcessorWrapper<T, E extends Throwable> extends Wra
 	}
 
 	@Override
-	public AutoCloseStreamProcessor<T, E> onClose(CallbackProcessor<E> closeProcessor) {
+	public AutoCloseStreamProcessor<T, E> onClose(RunnableProcessor<E> closeProcessor) {
 		StreamProcessor<T, E> streamProcessor = this.wrappedTarget.onClose(closeProcessor);
 		if (streamProcessor instanceof AutoCloseStreamProcessor) {
 			return (AutoCloseStreamProcessor<T, E>) streamProcessor;

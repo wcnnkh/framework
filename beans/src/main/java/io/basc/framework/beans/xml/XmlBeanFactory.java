@@ -9,7 +9,7 @@ import io.basc.framework.io.Resource;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.Callback;
+import io.basc.framework.util.stream.ConsumerProcessor;
 import io.basc.framework.xml.XmlUtils;
 
 import java.util.Arrays;
@@ -24,7 +24,7 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 	private static final String TAG_NAME = "bean";
 	private Resource configurationFile;
 
-	public void readConfigurationFile(Callback<NodeList, Throwable> callback){
+	public void readConfigurationFile(ConsumerProcessor<NodeList, Throwable> processor){
 		XmlUtils.getTemplate().read(getConfigurationFile(), (document) -> {
 			Node node = document.getDocumentElement();
 			if (!"beans".equals(node.getNodeName())) {
@@ -32,7 +32,7 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 			}
 			
 			NodeList nodeList = DomUtils.getTemplate().getChildNodes(node, getEnvironment());
-			callback.call(nodeList);
+			processor.process(nodeList);
 		});
 	}
 

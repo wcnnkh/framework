@@ -6,11 +6,11 @@ public class NestingProcessor<P, S, T, E extends Throwable> implements
 		Processor<P, T, E> {
 	private final Processor<P, ? extends S, ? extends E> processor;
 	private final Processor<S, ? extends T, ? extends E> nextProcessor;
-	private final Callback<S, ? extends E> closeProcessor;
+	private final ConsumerProcessor<S, ? extends E> closeProcessor;
 
 	public NestingProcessor(Processor<P, ? extends S, ? extends E> processor,
 			Processor<S, ? extends T, ? extends E> nextProcessor,
-			@Nullable Callback<S, ? extends E> closeProcessor) {
+			@Nullable ConsumerProcessor<S, ? extends E> closeProcessor) {
 		this.processor = processor;
 		this.nextProcessor = nextProcessor;
 		this.closeProcessor = closeProcessor;
@@ -23,7 +23,7 @@ public class NestingProcessor<P, S, T, E extends Throwable> implements
 			return nextProcessor.process(s);
 		} finally {
 			if(closeProcessor != null){
-				closeProcessor.call(s);
+				closeProcessor.process(s);
 			}
 		}
 	}
