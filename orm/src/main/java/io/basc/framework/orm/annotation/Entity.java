@@ -15,4 +15,6 @@ public @interface Entity {
 	
 	@AliasFor("value")
 	String name() default "";
+	
+	String[] primaryKeys() default {};
 }
