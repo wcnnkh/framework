@@ -10,18 +10,18 @@ import java.util.Iterator;
 import java.util.List;
 
 import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.orm.sql.Column;
-import io.basc.framework.orm.sql.ColumnDescriptor;
-import io.basc.framework.orm.sql.SqlDialectException;
-import io.basc.framework.orm.sql.SqlType;
-import io.basc.framework.orm.sql.StandardColumnDescriptor;
-import io.basc.framework.orm.sql.StandardSqlDialect;
-import io.basc.framework.orm.sql.TableStructure;
-import io.basc.framework.orm.sql.TableStructureMapping;
-import io.basc.framework.orm.sql.annotation.Counter;
 import io.basc.framework.sql.EditableSql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
+import io.basc.framework.sql.orm.Column;
+import io.basc.framework.sql.orm.ColumnDescriptor;
+import io.basc.framework.sql.orm.SqlDialectException;
+import io.basc.framework.sql.orm.SqlType;
+import io.basc.framework.sql.orm.StandardColumnDescriptor;
+import io.basc.framework.sql.orm.StandardSqlDialect;
+import io.basc.framework.sql.orm.TableStructure;
+import io.basc.framework.sql.orm.TableStructureMapping;
+import io.basc.framework.sql.orm.annotation.Counter;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.StringUtils;
@@ -58,7 +58,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 			Column col = iterator.next();
 			keywordProcessing(sb, col.getName());
 			sb.append(" ");
-			io.basc.framework.orm.sql.SqlType sqlType = getSqlType(col.getField().getGetter().getType());
+			io.basc.framework.sql.orm.SqlType sqlType = getSqlType(col.getField().getGetter().getType());
 			sb.append(sqlType.getName());
 			if (sqlType.getLength() > 0) {
 				sb.append("(" + sqlType.getLength() + ")");

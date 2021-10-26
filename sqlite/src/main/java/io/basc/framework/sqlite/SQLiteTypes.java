@@ -1,6 +1,6 @@
 package io.basc.framework.sqlite;
 
-import io.basc.framework.orm.sql.SqlType;
+import io.basc.framework.sql.orm.SqlType;
 
 import java.sql.Blob;
 

@@ -10,7 +10,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>core</artifactId>
+			<artifactId>orm</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.basc.framework</groupId>

@@ -1,7 +1,7 @@
 package io.basc.framework.db.locks;
 
 import io.basc.framework.orm.annotation.PrimaryKey;
-import io.basc.framework.orm.sql.annotation.Table;
+import io.basc.framework.sql.orm.annotation.Table;
 
 import java.io.Serializable;
 

@@ -16,10 +16,6 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>xml</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>sql</artifactId>
-		</dependency>
 
 		<!-- 测试 -->
 		<dependency>

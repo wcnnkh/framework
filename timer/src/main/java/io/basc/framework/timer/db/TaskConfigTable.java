@@ -1,6 +1,6 @@
 package io.basc.framework.timer.db;
 
-import io.basc.framework.orm.sql.annotation.Table;
+import io.basc.framework.sql.orm.annotation.Table;
 
 import java.io.Serializable;
 
