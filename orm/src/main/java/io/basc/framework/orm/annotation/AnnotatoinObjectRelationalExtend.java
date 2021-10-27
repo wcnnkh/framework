@@ -136,14 +136,18 @@ public class AnnotatoinObjectRelationalExtend implements ObjectRelationalExtend 
 			return true;
 		}
 
-		Entity entity = AnnotatedElementUtils.getMergedAnnotation(entityClass,
-				Entity.class);
-		if (entity != null) {
-			for (String name : entity.primaryKeys()) {
-				if (fieldDescriptor.getName().equals(name)) {
-					return true;
+		Class<?> clazz = entityClass;
+		while(clazz != null && clazz != Object.class) {
+			Entity entity = AnnotatedElementUtils.getMergedAnnotation(clazz,
+					Entity.class);
+			if (entity != null) {
+				for (String name : entity.primaryKeys()) {
+					if (fieldDescriptor.getName().equals(name)) {
+						return true;
+					}
 				}
 			}
+			clazz = clazz.getSuperclass();
 		}
 		return chain.isPrimaryKey(entityClass, fieldDescriptor);
 	}

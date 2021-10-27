@@ -64,7 +64,8 @@ public class CollectionToMapConversionService extends ConditionalConversionServi
 
 			Object value = getConversionService().convert(item, sourceType.narrow(item), itemType);
 			Fields primaryKeyFields = MapperUtils.getFields(itemType.getType()).all()
-					.accept(FieldFeature.SUPPORT_GETTER).accept(getObjectRelationalMapping().getPrimaryKeyAccept())
+					.accept(FieldFeature.SUPPORT_GETTER)
+					.accept((field) -> getObjectRelationalMapping().isPrimaryKey(itemType.getType(), field.getGetter()))
 					.shared();
 			Iterator<Field> primaryKeyIterator = primaryKeyFields.iterator();
 			Map nestMap = map;

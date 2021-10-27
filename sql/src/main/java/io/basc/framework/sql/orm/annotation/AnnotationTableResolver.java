@@ -6,6 +6,7 @@ import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.Fields;
+import io.basc.framework.orm.DefaultObjectRelationalResolver;
 import io.basc.framework.orm.annotation.AnnotationObjectRelationalMapping;
 import io.basc.framework.sql.orm.Column;
 import io.basc.framework.sql.orm.TableResolver;
@@ -17,7 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AnnotationTableResolver extends AnnotationObjectRelationalMapping implements TableResolver {
+public class AnnotationTableResolver extends DefaultObjectRelationalResolver implements TableResolver {
 
 	@Override
 	public Fields getFields(Class<?> clazz, Field parentField) {

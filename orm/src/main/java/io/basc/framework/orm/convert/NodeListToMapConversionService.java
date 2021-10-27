@@ -37,7 +37,7 @@ class NodeListToMapConversionService extends ConditionalConversionService {
 	 */
 	protected boolean isExistPrimary(TypeDescriptor descriptor) {
 		return getObjectRelationalMapping().getFields(descriptor.getType()).streamAll()
-				.filter((field) -> getObjectRelationalMapping().isPrimaryKey(field)).findAny().isPresent();
+				.filter((field) -> getObjectRelationalMapping().isPrimaryKey(descriptor.getType(), field.getGetter())).findAny().isPresent();
 	}
 
 	@Override

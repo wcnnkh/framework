@@ -65,7 +65,7 @@ public class StandardEntityStructure<T extends Property> implements EntityStruct
 	
 	public static EntityStructure<Property> resolve(Class<?> entityClass, Accept<Field> entityAccept){
 		StandardEntityStructure<Property> standardEntityStructure = new StandardEntityStructure<Property>();
-		standardEntityStructure.setRows(StandardProperty.resolve(MapperUtils.getFields(entityClass), entityAccept));
+		standardEntityStructure.setRows(StandardProperty.resolve(entityClass, MapperUtils.getFields(entityClass), entityAccept));
 		standardEntityStructure.setEntityClass(entityClass);
 		standardEntityStructure.setName(StringUtils.toLowerCase(entityClass.getSimpleName(), 0, 1));
 		return standardEntityStructure;

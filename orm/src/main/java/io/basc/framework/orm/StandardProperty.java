@@ -10,20 +10,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class StandardProperty extends StandardPropertyDescriptor implements
-		Property {
+public class StandardProperty extends StandardPropertyDescriptor implements Property {
+	private Class<?> entityClass;
 	private Field field;
 
 	public StandardProperty() {
 	}
-	
-	public StandardProperty(Field field){
-		this(OrmUtils.getMapping().getName(field.getGetter()), field);
+
+	public StandardProperty(Class<?> entityClass, Field field) {
+		this(entityClass, OrmUtils.getMapping().getName(entityClass, field.getGetter()), field);
 	}
-	
-	public StandardProperty(String name, Field field){
-		this(name, OrmUtils
-				.getMapping().isPrimaryKey(field), field);
+
+	public StandardProperty(Class<?> entityClass, String name, Field field) {
+		this(name, OrmUtils.getMapping().isPrimaryKey(entityClass, field.getGetter()), field);
+		this.entityClass = entityClass;
 	}
 
 	public StandardProperty(String name, boolean primaryKey, Field field) {
@@ -38,32 +38,36 @@ public class StandardProperty extends StandardPropertyDescriptor implements
 	public void setField(Field field) {
 		this.field = field;
 	}
-	
-	public static List<Property> resolve(Fields fields,
-			Accept<Field> entityAccept) {
+
+	public Class<?> getEntityClass() {
+		return entityClass;
+	}
+
+	public void setEntityClass(Class<?> entityClass) {
+		this.entityClass = entityClass;
+	}
+
+	public static List<Property> resolve(Class<?> entityClass, Fields fields, Accept<Field> entityAccept) {
 		List<Property> list = new ArrayList<>();
 		for (Field field : fields.entity().all()) {
 			if (entityAccept.accept(field)) {
-				list.addAll(resolve(MapperUtils.getFields(field.getGetter()
-						.getType(), field), entityAccept));
+				list.addAll(
+						resolve(entityClass, MapperUtils.getFields(field.getGetter().getType(), field), entityAccept));
 			} else {
-				list.add(new StandardProperty(getName(field), OrmUtils
-						.getMapping().isPrimaryKey(field), field));
+				list.add(new StandardProperty(getName(entityClass, field),
+						OrmUtils.getMapping().isPrimaryKey(entityClass, field.getGetter()), field));
 			}
 		}
 		return list;
 	}
-	
-	private static String getName(Field field) {
+
+	private static String getName(Class<?> entityClass, Field field) {
 		StringBuilder sb = new StringBuilder();
-		CollectionUtils.reversal(field.parents().collect(Collectors.toList()))
-				.forEach(
-						(parent) -> {
-							sb.append(OrmUtils.getMapping().getName(
-									parent.getGetter()));
-							sb.append("_");
-						});
-		sb.append(OrmUtils.getMapping().getName(field.getGetter()));
+		CollectionUtils.reversal(field.parents().collect(Collectors.toList())).forEach((parent) -> {
+			sb.append(OrmUtils.getMapping().getName(entityClass, parent.getGetter()));
+			sb.append("_");
+		});
+		sb.append(OrmUtils.getMapping().getName(entityClass, field.getGetter()));
 		return sb.toString();
 	}
 }
