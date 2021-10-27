@@ -2,6 +2,7 @@ package io.basc.framework.orm.annotation;
 
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.annotation.AnnotationAttributes;
+import io.basc.framework.data.domain.Range;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.orm.ObjectRelationalExtend;
@@ -183,6 +184,17 @@ public class AnnotatoinObjectRelationalExtend implements ObjectRelationalExtend 
 			return true;
 		}
 		return null;
+	}
+
+	@Override
+	public Range<Double> getNumberRange(Class<?> entityClass,
+			FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain) {
+		NumberRange range = AnnotatedElementUtils.getMergedAnnotation(fieldDescriptor, NumberRange.class);
+		if(range == null){
+			return null;
+		}
+		
+		return Range.closed(range.min(), range.max());
 	}
 
 }

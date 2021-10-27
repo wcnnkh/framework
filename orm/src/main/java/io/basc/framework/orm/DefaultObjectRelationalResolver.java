@@ -1,6 +1,7 @@
 package io.basc.framework.orm;
 
 import io.basc.framework.aop.support.ProxyUtils;
+import io.basc.framework.data.domain.Range;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.util.CollectionUtils;
@@ -32,7 +33,7 @@ public class DefaultObjectRelationalResolver extends
 
 	@Override
 	public Boolean ignore(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		Boolean v = ObjectRelationalMappingChain.build(iterator()).ignore(
+		Boolean v = ObjectRelationalResolverChain.build(iterator()).ignore(
 				entityClass, fieldDescriptor);
 		return v == null ? false : true;
 	}
@@ -44,7 +45,7 @@ public class DefaultObjectRelationalResolver extends
 
 	@Override
 	public String getName(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		String name = ObjectRelationalMappingChain.build(iterator()).getName(
+		String name = ObjectRelationalResolverChain.build(iterator()).getName(
 				entityClass, fieldDescriptor);
 		return StringUtils.isEmpty(name) ? getDefaultName(fieldDescriptor)
 				: name;
@@ -65,7 +66,7 @@ public class DefaultObjectRelationalResolver extends
 	@Override
 	public Collection<String> getAliasNames(Class<?> entityClass,
 			FieldDescriptor fieldDescriptor) {
-		Collection<String> names = ObjectRelationalMappingChain.build(
+		Collection<String> names = ObjectRelationalResolverChain.build(
 				iterator()).getAliasNames(entityClass, fieldDescriptor);
 		if (CollectionUtils.isEmpty(names)) {
 			names = new LinkedHashSet<String>();
@@ -88,7 +89,7 @@ public class DefaultObjectRelationalResolver extends
 
 	@Override
 	public String getName(Class<?> entityClass) {
-		String name = ObjectRelationalMappingChain.build(iterator()).getName(
+		String name = ObjectRelationalResolverChain.build(iterator()).getName(
 				entityClass);
 		if (StringUtils.isEmpty(name)) {
 			name = getDefaultEntityName(entityClass);
@@ -98,7 +99,7 @@ public class DefaultObjectRelationalResolver extends
 
 	@Override
 	public Collection<String> getAliasNames(Class<?> entityClass) {
-		Collection<String> names = ObjectRelationalMappingChain.build(
+		Collection<String> names = ObjectRelationalResolverChain.build(
 				iterator()).getAliasNames(entityClass);
 		if (CollectionUtils.isEmpty(names)) {
 			names = new LinkedHashSet<String>(8);
@@ -113,7 +114,7 @@ public class DefaultObjectRelationalResolver extends
 	@Override
 	public Boolean isPrimaryKey(Class<?> entityClass,
 			FieldDescriptor fieldDescriptor) {
-		Boolean v = ObjectRelationalMappingChain.build(iterator())
+		Boolean v = ObjectRelationalResolverChain.build(iterator())
 				.isPrimaryKey(entityClass, fieldDescriptor);
 		return v == null ? false : v;
 	}
@@ -121,7 +122,7 @@ public class DefaultObjectRelationalResolver extends
 	@Override
 	public Boolean isNullable(Class<?> entityClass,
 			FieldDescriptor fieldDescriptor) {
-		Boolean v = ObjectRelationalMappingChain.build(iterator()).isNullable(
+		Boolean v = ObjectRelationalResolverChain.build(iterator()).isNullable(
 				entityClass, fieldDescriptor);
 		return v == null ? !isPrimaryKey(entityClass, fieldDescriptor) : v;
 	}
@@ -129,14 +130,14 @@ public class DefaultObjectRelationalResolver extends
 	@Override
 	public Boolean isEntity(Class<?> entityClass,
 			FieldDescriptor fieldDescriptor) {
-		Boolean v = ObjectRelationalMappingChain.build(iterator()).isEntity(
+		Boolean v = ObjectRelationalResolverChain.build(iterator()).isEntity(
 				entityClass, fieldDescriptor);
 		return v == null ? isEntity(fieldDescriptor.getType()) : v;
 	}
 
 	@Override
 	public Boolean isEntity(Class<?> entityClass) {
-		Boolean v = ObjectRelationalMappingChain.build(iterator()).isEntity(
+		Boolean v = ObjectRelationalResolverChain.build(iterator()).isEntity(
 				entityClass);
 		return v == null ? false : v;
 	}
@@ -144,8 +145,14 @@ public class DefaultObjectRelationalResolver extends
 	@Override
 	public Boolean isVersionField(Class<?> entityClass,
 			FieldDescriptor fieldDescriptor) {
-		Boolean v = ObjectRelationalMappingChain.build(iterator())
+		Boolean v = ObjectRelationalResolverChain.build(iterator())
 				.isVersionField(entityClass, fieldDescriptor);
 		return v == null ? false : v;
+	}
+
+	@Override
+	public Range<Double> getNumberRange(Class<?> entityClass,
+			FieldDescriptor fieldDescriptor) {
+		return ObjectRelationalResolverChain.build(iterator()).getNumberRange(entityClass, fieldDescriptor);
 	}
 }
