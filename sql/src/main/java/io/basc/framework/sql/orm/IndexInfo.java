@@ -1,11 +1,10 @@
 package io.basc.framework.sql.orm;
 
-import io.basc.framework.mapper.Field;
+import java.io.Serializable;
+
 import io.basc.framework.sql.orm.annotation.IndexMethod;
 import io.basc.framework.sql.orm.annotation.IndexOrder;
 import io.basc.framework.sql.orm.annotation.IndexType;
-
-import java.io.Serializable;
 
 /**
  * 索引名和索引方法相同被视为同一组索引
@@ -15,24 +14,18 @@ import java.io.Serializable;
  */
 public class IndexInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private final Field column;
 	private final String name;
 	private final IndexType type;
 	private final int length;
 	private final IndexMethod method;
 	private IndexOrder order;
 
-	public IndexInfo(Field column, String name, IndexType type, int length, IndexMethod method, IndexOrder order) {
-		this.column = column;
+	public IndexInfo(String name, IndexType type, int length, IndexMethod method, IndexOrder order) {
 		this.name = name;
 		this.method = method;
 		this.type = type;
 		this.length = length;
 		this.order = order;
-	}
-
-	public Field getColumn() {
-		return column;
 	}
 
 	public String getName() {

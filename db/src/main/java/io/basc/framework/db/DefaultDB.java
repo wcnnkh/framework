@@ -11,10 +11,10 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.sql.ConnectionFactory;
-import io.basc.framework.sql.orm.DefaultSqlTemplate;
 import io.basc.framework.sql.orm.SqlDialect;
 import io.basc.framework.sql.orm.TableChanges;
 import io.basc.framework.sql.orm.annotation.Table;
+import io.basc.framework.sql.orm.support.DefaultSqlTemplate;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 

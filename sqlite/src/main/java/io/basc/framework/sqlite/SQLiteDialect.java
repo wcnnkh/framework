@@ -14,18 +14,16 @@ import io.basc.framework.sql.EditableSql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.orm.Column;
-import io.basc.framework.sql.orm.ColumnDescriptor;
+import io.basc.framework.sql.orm.ColumnMetadata;
 import io.basc.framework.sql.orm.SqlDialectException;
 import io.basc.framework.sql.orm.SqlType;
-import io.basc.framework.sql.orm.StandardColumnDescriptor;
-import io.basc.framework.sql.orm.StandardSqlDialect;
 import io.basc.framework.sql.orm.TableStructure;
 import io.basc.framework.sql.orm.TableStructureMapping;
-import io.basc.framework.sql.orm.annotation.Counter;
+import io.basc.framework.sql.orm.support.StandardColumnMetdata;
+import io.basc.framework.sql.orm.support.StandardSqlDialect;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.AnyValue;
 
 public class SQLiteDialect extends StandardSqlDialect {
 
@@ -117,26 +115,6 @@ public class SQLiteDialect extends StandardSqlDialect {
 	}
 
 	@Override
-	protected void appendCounterValue(StringBuilder sb, List<Object> params, Object entity, Column column,
-			AnyValue oldValue, AnyValue newValue, Counter counter) {
-		double change = newValue.getAsDoubleValue() - oldValue.getAsDoubleValue();
-		sb.append("CASE WHEN ");
-		keywordProcessing(sb, column.getName());
-		sb.append("+").append(change);
-		sb.append(">=").append(counter.min());
-		sb.append(AND);
-		keywordProcessing(sb, column.getName());
-		sb.append("+").append(change);
-		sb.append("<=").append(counter.max());
-		sb.append(" THEN ");
-		keywordProcessing(sb, column.getName());
-		sb.append("+").append(change);
-		sb.append(" ELSE ");
-		keywordProcessing(sb, column.getName());
-		sb.append(")");
-	}
-
-	@Override
 	public TableStructureMapping getTableStructureMapping(TableStructure tableStructure) {
 		return new TableStructureMapping() {
 
@@ -144,8 +122,8 @@ public class SQLiteDialect extends StandardSqlDialect {
 				return new SimpleSql("pragma table_info(" + tableStructure.getName() + ")");
 			}
 
-			public ColumnDescriptor getName(ResultSet resultSet) throws SQLException {
-				StandardColumnDescriptor descriptor = new StandardColumnDescriptor();
+			public ColumnMetadata getName(ResultSet resultSet) throws SQLException {
+				StandardColumnMetdata descriptor = new StandardColumnMetdata();
 				descriptor.setName(resultSet.getString("name"));
 				return descriptor;
 			}

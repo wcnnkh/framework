@@ -17,4 +17,6 @@ public @interface Entity {
 	String name() default "";
 	
 	String[] primaryKeys() default {};
+	
+	String comment() default "";
 }

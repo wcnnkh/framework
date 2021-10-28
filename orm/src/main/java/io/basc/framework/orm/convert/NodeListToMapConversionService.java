@@ -14,7 +14,7 @@ import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.orm.ObjectRelationalMapping;
-import io.basc.framework.orm.OrmUtils;
+import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionFactory;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })

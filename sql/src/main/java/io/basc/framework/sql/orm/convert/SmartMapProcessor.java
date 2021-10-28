@@ -5,11 +5,10 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.mapper.Mapper;
 import io.basc.framework.orm.ObjectRelationalMapping;
-import io.basc.framework.orm.OrmUtils;
 import io.basc.framework.orm.StructureRegistry;
 import io.basc.framework.orm.convert.PropertyFactoryToEntityConversionService;
+import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.sql.ResultSetMapProcessor;
-import io.basc.framework.sql.orm.EntityStructureMapProcessor;
 import io.basc.framework.sql.orm.TableStructure;
 
 import java.sql.ResultSet;

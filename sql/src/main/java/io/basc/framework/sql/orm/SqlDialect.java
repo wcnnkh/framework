@@ -6,10 +6,9 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.orm.ObjectKeyFormat;
 import io.basc.framework.sql.Sql;
 
-public interface SqlDialect extends ObjectKeyFormat, TableResolver, ConversionServiceAware {
+public interface SqlDialect extends TableMapping, ConversionServiceAware {
 	SqlType getSqlType(Class<?> javaType);
 
 	ConversionService getConversionService();
@@ -23,11 +22,11 @@ public interface SqlDialect extends ObjectKeyFormat, TableResolver, ConversionSe
 	Collection<Sql> createTable(TableStructure tableStructure) throws SqlDialectException;
 
 	Sql toSelectByIdsSql(TableStructure tableStructure, Object... ids) throws SqlDialectException;
-	
+
 	Sql toSaveSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
 
 	Sql toSaveIfAbsentSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
-	
+
 	Sql toInsertSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
 
 	Sql toDeleteSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
@@ -35,9 +34,10 @@ public interface SqlDialect extends ObjectKeyFormat, TableResolver, ConversionSe
 	Sql toDeleteByIdSql(TableStructure tableStructure, Object... ids) throws SqlDialectException;
 
 	Sql toUpdateSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
-	
+
 	/**
 	 * 转为更新语句，忽略不能为空但实体中为空的字段
+	 * 
 	 * @param tableStructure
 	 * @param entity
 	 * @return

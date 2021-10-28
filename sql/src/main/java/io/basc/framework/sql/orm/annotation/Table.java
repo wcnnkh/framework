@@ -22,7 +22,7 @@ public @interface Table {
 
 	public String charset() default "";
 
-	public String row_format() default "";
+	public String rowFormat() default "";
 
 	/**
 	 * 是否自动创建

@@ -21,7 +21,7 @@ import io.basc.framework.mapper.FieldFactory;
 import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.Fields;
 import io.basc.framework.orm.ObjectRelationalMapping;
-import io.basc.framework.orm.OrmUtils;
+import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConfigurableAccept;
 import io.basc.framework.util.StringUtils;
