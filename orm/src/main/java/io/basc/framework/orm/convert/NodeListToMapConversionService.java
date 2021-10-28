@@ -1,5 +1,15 @@
 package io.basc.framework.orm.convert;
 
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.ConditionalConversionService;
+import io.basc.framework.convert.lang.ConvertiblePair;
+import io.basc.framework.dom.DomUtils;
+import io.basc.framework.mapper.FieldFeature;
+import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.orm.ObjectRelationalMapping;
+import io.basc.framework.orm.support.OrmUtils;
+import io.basc.framework.util.CollectionFactory;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -8,14 +18,6 @@ import java.util.Set;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.ConditionalConversionService;
-import io.basc.framework.convert.lang.ConvertiblePair;
-import io.basc.framework.dom.DomUtils;
-import io.basc.framework.orm.ObjectRelationalMapping;
-import io.basc.framework.orm.support.OrmUtils;
-import io.basc.framework.util.CollectionFactory;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 class NodeListToMapConversionService extends ConditionalConversionService {
@@ -29,15 +31,10 @@ class NodeListToMapConversionService extends ConditionalConversionService {
 	public void setObjectRelationalMapping(ObjectRelationalMapping objectRelationalMapping) {
 		this.objectRelationalMapping = objectRelationalMapping;
 	}
-
-	/**
-	 * @see CollectionToMapConversionService
-	 * @param descriptor
-	 * @return
-	 */
-	protected boolean isExistPrimary(TypeDescriptor descriptor) {
-		return getObjectRelationalMapping().getFields(descriptor.getType()).streamAll()
-				.filter((field) -> getObjectRelationalMapping().isPrimaryKey(descriptor.getType(), field.getGetter())).findAny().isPresent();
+	
+	public boolean hasPrimaryKeys(Class<?> entityClass){
+		return MapperUtils.getFields(entityClass).accept(FieldFeature.SUPPORT_GETTER)
+		.streamAll().filter((field) -> getObjectRelationalMapping().isPrimaryKey(entityClass, field.getGetter())).findAny().isPresent();
 	}
 
 	@Override
@@ -56,7 +53,7 @@ class NodeListToMapConversionService extends ConditionalConversionService {
 
 		TypeDescriptor lastValueType = CollectionToMapConversionService.getValueType(targetType);
 		TypeDescriptor collectionType = TypeDescriptor.collection(Collection.class, lastValueType);
-		if (isExistPrimary(lastValueType) && getConversionService().canConvert(sourceType, collectionType)) {
+		if (hasPrimaryKeys(lastValueType.getType()) && getConversionService().canConvert(sourceType, collectionType)) {
 			// 如果是存在主键的，应该进行类解析
 			Collection<?> list = (Collection<?>) getConversionService().convert(source, sourceType, collectionType);
 			return getConversionService().convert(list, collectionType, targetType);

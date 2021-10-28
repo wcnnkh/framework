@@ -33,10 +33,10 @@ public interface ObjectRelationalMapping extends ObjectRelationalResolver, Objec
 	}
 
 	default EntityStructure<? extends Property> getStructure(Class<?> entityClass) {
-		return getStructure(entityClass, getFields(entityClass));
+		return getStructure(entityClass, getFields(entityClass).all());
 	}
 
 	default EntityStructure<? extends Property> getStructure(Class<?> entityClass, Field parentField) {
-		return getStructure(entityClass, getFields(entityClass, parentField));
+		return getStructure(entityClass, getFields(entityClass, parentField).all());
 	}
 }

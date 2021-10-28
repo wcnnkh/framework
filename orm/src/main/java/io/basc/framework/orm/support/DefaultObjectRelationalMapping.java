@@ -25,6 +25,6 @@ public class DefaultObjectRelationalMapping extends DefaultObjectRelationalResol
 	@Override
 	public Fields getFields(Class<?> entityClass, Field parentField) {
 		return MapperUtils.getFields(entityClass, parentField).entity()
-				.accept((field) -> isIgnore(entityClass, field.getGetter()));
+				.accept((field) -> !isIgnore(entityClass, field.getGetter()));
 	}
 }

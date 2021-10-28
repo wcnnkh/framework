@@ -34,7 +34,7 @@ public class DefaultObjectRelationalResolver extends ConfigurableServices<Object
 	@Override
 	public Boolean isIgnore(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
 		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isIgnore(entityClass, fieldDescriptor);
-		return v == null ? false : true;
+		return v == null ? false : v;
 	}
 
 	private String getDefaultName(FieldDescriptor fieldDescriptor) {
