@@ -157,4 +157,17 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 		}
 		return false;
 	}
+	
+	@Override
+	public <T> boolean update(Class<? extends T> entityClass, T entity,
+			T condition) {
+		if(SqlTemplate.super.update(entityClass, entity, condition)){
+			CacheManager cacheManager = getCacheManager();
+			if (cacheManager != null) {
+				cacheManager.delete(entityClass, entity);
+			}
+			return true;
+		}
+		return false;
+	}
 }
