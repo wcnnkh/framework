@@ -1,13 +1,8 @@
 package io.basc.framework.util.stream;
 
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Wrapper;
-
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Spliterator;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
@@ -26,13 +21,15 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-public abstract class AbstractStreamWrapper<T, M extends Stream<T>, S extends Stream<T>> extends Wrapper<M>
+import io.basc.framework.lang.Nullable;
+
+public abstract class AbstractStreamWrapper<T, S extends Stream<T>> extends BaseStreamWrapper<T, Stream<T>>
 		implements Stream<T> {
 
-	public AbstractStreamWrapper(M stream) {
+	public AbstractStreamWrapper(Stream<T> stream) {
 		super(stream);
 	}
-	
+
 	public List<T> shared() {
 		return collect(Collectors.toList());
 	}
@@ -42,56 +39,36 @@ public abstract class AbstractStreamWrapper<T, M extends Stream<T>, S extends St
 		return findFirst().orElse(null);
 	}
 
-	protected abstract S wrapper(Stream<T> stream);
-
-	@Override
-	public Iterator<T> iterator() {
-		return wrappedTarget.iterator();
-	}
-
-	@Override
-	public Spliterator<T> spliterator() {
-		return wrappedTarget.spliterator();
-	}
-
-	@Override
-	public boolean isParallel() {
-		return wrappedTarget.isParallel();
-	}
+	protected abstract S wrap(Stream<T> stream);
 
 	@Override
 	public S sequential() {
 		Stream<T> stream = this.wrappedTarget.sequential();
-		return wrapper(stream);
+		return wrap(stream);
 	}
 
 	@Override
 	public S parallel() {
 		Stream<T> stream = this.wrappedTarget.parallel();
-		return wrapper(stream);
+		return wrap(stream);
 	}
 
 	@Override
 	public S unordered() {
 		Stream<T> stream = this.wrappedTarget.unordered();
-		return wrapper(stream);
+		return wrap(stream);
 	}
 
 	@Override
 	public S onClose(Runnable closeHandler) {
 		Stream<T> stream = this.wrappedTarget.onClose(closeHandler);
-		return wrapper(stream);
-	}
-
-	@Override
-	public void close() {
-		wrappedTarget.close();
+		return wrap(stream);
 	}
 
 	@Override
 	public S filter(Predicate<? super T> predicate) {
 		Stream<T> stream = this.wrappedTarget.filter(predicate);
-		return wrapper(stream);
+		return wrap(stream);
 	}
 
 	@Override
@@ -137,121 +114,206 @@ public abstract class AbstractStreamWrapper<T, M extends Stream<T>, S extends St
 	@Override
 	public S distinct() {
 		Stream<T> stream = this.wrappedTarget.distinct();
-		return wrapper(stream);
+		return wrap(stream);
 	}
 
 	@Override
 	public S sorted() {
 		Stream<T> stream = this.wrappedTarget.sorted();
-		return wrapper(stream);
+		return wrap(stream);
 	}
 
 	@Override
 	public S sorted(Comparator<? super T> comparator) {
 		Stream<T> stream = this.wrappedTarget.sorted();
-		return wrapper(stream);
+		return wrap(stream);
 	}
 
 	@Override
 	public S peek(Consumer<? super T> action) {
 		Stream<T> stream = this.wrappedTarget.peek(action);
-		return wrapper(stream);
+		return wrap(stream);
 	}
 
 	@Override
 	public S limit(long maxSize) {
 		Stream<T> stream = this.wrappedTarget.limit(maxSize);
-		return wrapper(stream);
+		return wrap(stream);
 	}
 
 	@Override
 	public S skip(long n) {
 		Stream<T> stream = this.wrappedTarget.skip(n);
-		return wrapper(stream);
+		return wrap(stream);
 	}
 
 	@Override
 	public void forEach(Consumer<? super T> action) {
-		this.wrappedTarget.forEach(action);
+		try {
+			beforeExecution();
+			this.wrappedTarget.forEach(action);
+		} finally {
+			afterExecution();
+		}
 	}
 
 	@Override
 	public void forEachOrdered(Consumer<? super T> action) {
-		this.wrappedTarget.forEachOrdered(action);
+		try {
+			beforeExecution();
+			this.wrappedTarget.forEachOrdered(action);
+		} finally {
+			afterExecution();
+		}
 	}
 
 	@Override
 	public Object[] toArray() {
-		return this.wrappedTarget.toArray();
+		try {
+			beforeExecution();
+			return this.wrappedTarget.toArray();
+		} finally {
+			afterExecution();
+		}
 	}
 
 	@Override
 	public <A> A[] toArray(IntFunction<A[]> generator) {
-		return this.wrappedTarget.toArray(generator);
+		try {
+			beforeExecution();
+			return this.wrappedTarget.toArray(generator);
+		} finally {
+			afterExecution();
+		}
 	}
 
 	@Override
 	public T reduce(T identity, BinaryOperator<T> accumulator) {
-		return this.wrappedTarget.reduce(identity, accumulator);
+		try {
+			beforeExecution();
+			return this.wrappedTarget.reduce(identity, accumulator);
+		} finally {
+			afterExecution();
+		}
 	}
 
 	@Override
 	public Optional<T> reduce(BinaryOperator<T> accumulator) {
-		return this.wrappedTarget.reduce(accumulator);
+		try {
+			beforeExecution();
+			return this.wrappedTarget.reduce(accumulator);
+		} finally {
+			afterExecution();
+		}
 	}
 
 	@Override
 	public <U> U reduce(U identity, BiFunction<U, ? super T, U> accumulator, BinaryOperator<U> combiner) {
-		return this.wrappedTarget.reduce(identity, accumulator, combiner);
+		try {
+			beforeExecution();
+			return this.wrappedTarget.reduce(identity, accumulator, combiner);
+		} finally {
+			afterExecution();
+		}
 	}
 
 	@Override
 	public <R> R collect(Supplier<R> supplier, BiConsumer<R, ? super T> accumulator, BiConsumer<R, R> combiner) {
-		return this.wrappedTarget.collect(supplier, accumulator, combiner);
+		try {
+			beforeExecution();
+			return this.wrappedTarget.collect(supplier, accumulator, combiner);
+		} finally {
+			afterExecution();
+		}
 	}
 
 	@Override
 	public <R, A> R collect(Collector<? super T, A, R> collector) {
-		return this.wrappedTarget.collect(collector);
+		try {
+			beforeExecution();
+			return this.wrappedTarget.collect(collector);
+		} finally {
+			afterExecution();
+		}
 	}
 
 	@Override
 	public Optional<T> min(Comparator<? super T> comparator) {
-		return this.wrappedTarget.min(comparator);
+		try {
+			beforeExecution();
+			return this.wrappedTarget.min(comparator);
+		} finally {
+			afterExecution();
+		}
 	}
 
 	@Override
 	public Optional<T> max(Comparator<? super T> comparator) {
-		return this.wrappedTarget.max(comparator);
+		try {
+			beforeExecution();
+			return this.wrappedTarget.max(comparator);
+		} finally {
+			afterExecution();
+		}
 	}
 
 	@Override
 	public long count() {
-		return this.wrappedTarget.count();
+		try {
+			beforeExecution();
+			return this.wrappedTarget.count();
+		} finally {
+			afterExecution();
+		}
 	}
 
 	@Override
 	public boolean anyMatch(Predicate<? super T> predicate) {
-		return this.wrappedTarget.anyMatch(predicate);
+		try {
+			beforeExecution();
+			return this.wrappedTarget.anyMatch(predicate);
+		} finally {
+			afterExecution();
+		}
 	}
 
 	@Override
 	public boolean allMatch(Predicate<? super T> predicate) {
-		return this.wrappedTarget.allMatch(predicate);
+		try {
+			beforeExecution();
+			return this.wrappedTarget.allMatch(predicate);
+		} finally {
+			afterExecution();
+		}
 	}
 
 	@Override
 	public boolean noneMatch(Predicate<? super T> predicate) {
-		return this.wrappedTarget.noneMatch(predicate);
+		try {
+			beforeExecution();
+			return this.wrappedTarget.noneMatch(predicate);
+		} finally {
+			afterExecution();
+		}
 	}
 
 	@Override
 	public Optional<T> findFirst() {
-		return this.wrappedTarget.findFirst();
+		try {
+			beforeExecution();
+			return this.wrappedTarget.findFirst();
+		} finally {
+			afterExecution();
+		}
 	}
 
 	@Override
 	public Optional<T> findAny() {
-		return this.wrappedTarget.findAny();
+		try {
+			beforeExecution();
+			return this.wrappedTarget.findAny();
+		} finally {
+			afterExecution();
+		}
 	}
 }

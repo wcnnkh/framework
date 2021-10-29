@@ -1,7 +1,5 @@
 package io.basc.framework.util.stream;
 
-import io.basc.framework.util.Wrapper;
-
 import java.util.IntSummaryStatistics;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -21,313 +19,325 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-public class AutoCloseIntStream extends Wrapper<IntStream> implements IntStream {
-	
-	public AutoCloseIntStream(IntStream stream) {
+public class IntStreamWrapper extends BaseStreamWrapper<Integer, IntStream> implements IntStream {
+
+	public IntStreamWrapper(IntStream stream) {
 		super(stream);
 	}
-	
-	@Override
-	public void close() {
-		wrappedTarget.close();
-	}
 
 	@Override
-	public AutoCloseIntStream filter(IntPredicate predicate) {
+	public IntStreamWrapper filter(IntPredicate predicate) {
 		IntStream stream = this.wrappedTarget.filter(predicate);
-		if (stream instanceof AutoCloseIntStream) {
-			return (AutoCloseIntStream) stream;
+		if (stream instanceof IntStreamWrapper) {
+			return (IntStreamWrapper) stream;
 		}
-		return new AutoCloseIntStream(stream);
+		return new IntStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseIntStream map(IntUnaryOperator mapper) {
+	public IntStreamWrapper map(IntUnaryOperator mapper) {
 		IntStream stream = this.wrappedTarget.map(mapper);
-		if (stream instanceof AutoCloseIntStream) {
-			return (AutoCloseIntStream) stream;
+		if (stream instanceof IntStreamWrapper) {
+			return (IntStreamWrapper) stream;
 		}
-		return new AutoCloseIntStream(stream);
+		return new IntStreamWrapper(stream);
 	}
 
 	@Override
-	public <U> AutoCloseStream<U> mapToObj(IntFunction<? extends U> mapper) {
+	public <U> StreamWrapper<U> mapToObj(IntFunction<? extends U> mapper) {
 		Stream<U> stream = this.wrappedTarget.mapToObj(mapper);
-		if (stream instanceof AutoCloseStream) {
-			return (AutoCloseStream<U>) stream;
+		if (stream instanceof StreamWrapper) {
+			return (StreamWrapper<U>) stream;
 		}
-		return new AutoCloseStream<>(stream);
+		return new StreamWrapper<>(stream);
 	}
 
 	@Override
-	public AutoCloseLongStream mapToLong(IntToLongFunction mapper) {
+	public LongStreamWrapper mapToLong(IntToLongFunction mapper) {
 		LongStream stream = this.wrappedTarget.mapToLong(mapper);
-		if (stream instanceof AutoCloseLongStream) {
-			return (AutoCloseLongStream) stream;
+		if (stream instanceof LongStreamWrapper) {
+			return (LongStreamWrapper) stream;
 		}
-		return new AutoCloseLongStream(stream);
+		return new LongStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseDoubleStream mapToDouble(IntToDoubleFunction mapper) {
+	public DoubleStreamWrapper mapToDouble(IntToDoubleFunction mapper) {
 		DoubleStream stream = this.wrappedTarget.mapToDouble(mapper);
-		if (stream instanceof AutoCloseDoubleStream) {
-			return (AutoCloseDoubleStream) stream;
+		if (stream instanceof DoubleStreamWrapper) {
+			return (DoubleStreamWrapper) stream;
 		}
-		return new AutoCloseDoubleStream(stream);
+		return new DoubleStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseIntStream flatMap(IntFunction<? extends IntStream> mapper) {
+	public IntStreamWrapper flatMap(IntFunction<? extends IntStream> mapper) {
 		IntStream stream = this.wrappedTarget.flatMap(mapper);
-		if (stream instanceof AutoCloseIntStream) {
-			return (AutoCloseIntStream) stream;
+		if (stream instanceof IntStreamWrapper) {
+			return (IntStreamWrapper) stream;
 		}
-		return new AutoCloseIntStream(stream);
+		return new IntStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseIntStream distinct() {
+	public IntStreamWrapper distinct() {
 		IntStream stream = this.wrappedTarget.distinct();
-		if (stream instanceof AutoCloseIntStream) {
-			return (AutoCloseIntStream) stream;
+		if (stream instanceof IntStreamWrapper) {
+			return (IntStreamWrapper) stream;
 		}
-		return new AutoCloseIntStream(stream);
+		return new IntStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseIntStream sorted() {
+	public IntStreamWrapper sorted() {
 		IntStream stream = this.wrappedTarget.sorted();
-		if (stream instanceof AutoCloseIntStream) {
-			return (AutoCloseIntStream) stream;
+		if (stream instanceof IntStreamWrapper) {
+			return (IntStreamWrapper) stream;
 		}
-		return new AutoCloseIntStream(stream);
+		return new IntStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseIntStream peek(IntConsumer action) {
+	public IntStreamWrapper peek(IntConsumer action) {
 		IntStream stream = this.wrappedTarget.peek(action);
-		if (stream instanceof AutoCloseIntStream) {
-			return (AutoCloseIntStream) stream;
+		if (stream instanceof IntStreamWrapper) {
+			return (IntStreamWrapper) stream;
 		}
-		return new AutoCloseIntStream(stream);
+		return new IntStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseIntStream limit(long maxSize) {
+	public IntStreamWrapper limit(long maxSize) {
 		IntStream stream = this.wrappedTarget.limit(maxSize);
-		if (stream instanceof AutoCloseIntStream) {
-			return (AutoCloseIntStream) stream;
+		if (stream instanceof IntStreamWrapper) {
+			return (IntStreamWrapper) stream;
 		}
-		return new AutoCloseIntStream(stream);
+		return new IntStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseIntStream skip(long n) {
+	public IntStreamWrapper skip(long n) {
 		IntStream stream = this.wrappedTarget.skip(n);
-		if (stream instanceof AutoCloseIntStream) {
-			return (AutoCloseIntStream) stream;
+		if (stream instanceof IntStreamWrapper) {
+			return (IntStreamWrapper) stream;
 		}
-		return new AutoCloseIntStream(stream);
+		return new IntStreamWrapper(stream);
 	}
 
 	@Override
 	public void forEach(IntConsumer action) {
 		try {
+			beforeExecution();
 			this.wrappedTarget.forEach(action);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public void forEachOrdered(IntConsumer action) {
 		try {
+			beforeExecution();
 			this.wrappedTarget.forEachOrdered(action);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public int[] toArray() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.toArray();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public int reduce(int identity, IntBinaryOperator op) {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.reduce(identity, op);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalInt reduce(IntBinaryOperator op) {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.reduce(op);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public <R> R collect(Supplier<R> supplier, ObjIntConsumer<R> accumulator, BiConsumer<R, R> combiner) {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.collect(supplier, accumulator, combiner);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public int sum() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.sum();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalInt min() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.min();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalInt max() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.max();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public long count() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.count();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalDouble average() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.average();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public IntSummaryStatistics summaryStatistics() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.summaryStatistics();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public boolean anyMatch(IntPredicate predicate) {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.anyMatch(predicate);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public boolean allMatch(IntPredicate predicate) {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.allMatch(predicate);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public boolean noneMatch(IntPredicate predicate) {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.noneMatch(predicate);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalInt findFirst() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.findFirst();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalInt findAny() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.findAny();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public LongStream asLongStream() {
 		LongStream stream = this.wrappedTarget.asLongStream();
-		if (stream instanceof AutoCloseLongStream) {
+		if (stream instanceof LongStreamWrapper) {
 			return stream;
 		}
-		return new AutoCloseLongStream(stream);
+		return new LongStreamWrapper(stream);
 	}
 
 	@Override
 	public DoubleStream asDoubleStream() {
 		DoubleStream stream = this.wrappedTarget.asDoubleStream();
-		if (stream instanceof AutoCloseDoubleStream) {
+		if (stream instanceof DoubleStreamWrapper) {
 			return stream;
 		}
 
-		return new AutoCloseDoubleStream(stream);
+		return new DoubleStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseStream<Integer> boxed() {
+	public StreamWrapper<Integer> boxed() {
 		Stream<Integer> stream = this.wrappedTarget.boxed();
-		if (stream instanceof AutoCloseStream) {
-			return (AutoCloseStream<Integer>) stream;
+		if (stream instanceof StreamWrapper) {
+			return (StreamWrapper<Integer>) stream;
 		}
-		return new AutoCloseStream<>(stream);
+		return new StreamWrapper<>(stream);
 	}
 
 	@Override
-	public AutoCloseIntStream sequential() {
+	public IntStreamWrapper sequential() {
 		IntStream stream = this.wrappedTarget.sequential();
-		if (stream instanceof AutoCloseIntStream) {
-			return (AutoCloseIntStream) stream;
+		if (stream instanceof IntStreamWrapper) {
+			return (IntStreamWrapper) stream;
 		}
-		return new AutoCloseIntStream(stream);
+		return new IntStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseIntStream parallel() {
+	public IntStreamWrapper parallel() {
 		IntStream stream = this.wrappedTarget.parallel();
-		if (stream instanceof AutoCloseIntStream) {
-			return (AutoCloseIntStream) stream;
+		if (stream instanceof IntStreamWrapper) {
+			return (IntStreamWrapper) stream;
 		}
-		return new AutoCloseIntStream(stream);
+		return new IntStreamWrapper(stream);
 	}
 
 	@Override
@@ -346,20 +356,20 @@ public class AutoCloseIntStream extends Wrapper<IntStream> implements IntStream 
 	}
 
 	@Override
-	public AutoCloseIntStream unordered() {
+	public IntStreamWrapper unordered() {
 		IntStream stream = this.wrappedTarget.unordered();
-		if (stream instanceof AutoCloseIntStream) {
-			return (AutoCloseIntStream) stream;
+		if (stream instanceof IntStreamWrapper) {
+			return (IntStreamWrapper) stream;
 		}
-		return new AutoCloseIntStream(stream);
+		return new IntStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseIntStream onClose(Runnable closeHandler) {
+	public IntStreamWrapper onClose(Runnable closeHandler) {
 		IntStream stream = this.wrappedTarget.onClose(closeHandler);
-		if (stream instanceof AutoCloseIntStream) {
-			return (AutoCloseIntStream) stream;
+		if (stream instanceof IntStreamWrapper) {
+			return (IntStreamWrapper) stream;
 		}
-		return new AutoCloseIntStream(stream);
+		return new IntStreamWrapper(stream);
 	}
 }

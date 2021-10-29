@@ -1,7 +1,5 @@
 package io.basc.framework.util.stream;
 
-import io.basc.framework.util.Wrapper;
-
 import java.util.LongSummaryStatistics;
 import java.util.OptionalDouble;
 import java.util.OptionalLong;
@@ -21,298 +19,315 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-public class AutoCloseLongStream extends Wrapper<LongStream> implements LongStream {
+public class LongStreamWrapper extends BaseStreamWrapper<Long, LongStream> implements LongStream {
 
-	public AutoCloseLongStream(LongStream stream) {
+	public LongStreamWrapper(LongStream stream) {
 		super(stream);
 	}
 
 	@Override
-	public AutoCloseLongStream filter(LongPredicate predicate) {
+	public LongStreamWrapper filter(LongPredicate predicate) {
 		LongStream stream = this.wrappedTarget.filter(predicate);
-		if (stream instanceof AutoCloseLongStream) {
-			return (AutoCloseLongStream) stream;
+		if (stream instanceof LongStreamWrapper) {
+			return (LongStreamWrapper) stream;
 		}
-		return new AutoCloseLongStream(stream);
+		return new LongStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseLongStream map(LongUnaryOperator mapper) {
+	public LongStreamWrapper map(LongUnaryOperator mapper) {
 		LongStream stream = this.wrappedTarget.map(mapper);
-		if (stream instanceof AutoCloseLongStream) {
-			return (AutoCloseLongStream) stream;
+		if (stream instanceof LongStreamWrapper) {
+			return (LongStreamWrapper) stream;
 		}
-		return new AutoCloseLongStream(stream);
+		return new LongStreamWrapper(stream);
 	}
 
 	@Override
-	public <U> AutoCloseStream<U> mapToObj(LongFunction<? extends U> mapper) {
+	public <U> StreamWrapper<U> mapToObj(LongFunction<? extends U> mapper) {
 		Stream<U> stream = this.wrappedTarget.mapToObj(mapper);
-		if (stream instanceof AutoCloseStream) {
-			return (AutoCloseStream<U>) stream;
+		if (stream instanceof StreamWrapper) {
+			return (StreamWrapper<U>) stream;
 		}
-		return new AutoCloseStream<>(stream);
+		return new StreamWrapper<>(stream);
 	}
 
 	@Override
-	public AutoCloseIntStream mapToInt(LongToIntFunction mapper) {
+	public IntStreamWrapper mapToInt(LongToIntFunction mapper) {
 		IntStream stream = this.wrappedTarget.mapToInt(mapper);
-		if (stream instanceof AutoCloseIntStream) {
-			return (AutoCloseIntStream) stream;
+		if (stream instanceof IntStreamWrapper) {
+			return (IntStreamWrapper) stream;
 		}
-		return new AutoCloseIntStream(stream);
+		return new IntStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseDoubleStream mapToDouble(LongToDoubleFunction mapper) {
+	public DoubleStreamWrapper mapToDouble(LongToDoubleFunction mapper) {
 		DoubleStream stream = this.wrappedTarget.mapToDouble(mapper);
-		if (stream instanceof AutoCloseDoubleStream) {
-			return (AutoCloseDoubleStream) stream;
+		if (stream instanceof DoubleStreamWrapper) {
+			return (DoubleStreamWrapper) stream;
 		}
-		return new AutoCloseDoubleStream(stream);
+		return new DoubleStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseLongStream flatMap(LongFunction<? extends LongStream> mapper) {
+	public LongStreamWrapper flatMap(LongFunction<? extends LongStream> mapper) {
 		LongStream stream = this.wrappedTarget.flatMap(mapper);
-		if (stream instanceof AutoCloseLongStream) {
-			return (AutoCloseLongStream) stream;
+		if (stream instanceof LongStreamWrapper) {
+			return (LongStreamWrapper) stream;
 		}
-		return new AutoCloseLongStream(stream);
+		return new LongStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseLongStream distinct() {
+	public LongStreamWrapper distinct() {
 		LongStream stream = this.wrappedTarget.distinct();
-		if (stream instanceof AutoCloseLongStream) {
-			return (AutoCloseLongStream) stream;
+		if (stream instanceof LongStreamWrapper) {
+			return (LongStreamWrapper) stream;
 		}
-		return new AutoCloseLongStream(stream);
+		return new LongStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseLongStream sorted() {
+	public LongStreamWrapper sorted() {
 		LongStream stream = this.wrappedTarget.sorted();
-		if (stream instanceof AutoCloseLongStream) {
-			return (AutoCloseLongStream) stream;
+		if (stream instanceof LongStreamWrapper) {
+			return (LongStreamWrapper) stream;
 		}
-		return new AutoCloseLongStream(stream);
+		return new LongStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseLongStream peek(LongConsumer action) {
+	public LongStreamWrapper peek(LongConsumer action) {
 		LongStream stream = this.wrappedTarget.peek(action);
-		if (stream instanceof AutoCloseLongStream) {
-			return (AutoCloseLongStream) stream;
+		if (stream instanceof LongStreamWrapper) {
+			return (LongStreamWrapper) stream;
 		}
-		return new AutoCloseLongStream(stream);
+		return new LongStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseLongStream limit(long maxSize) {
+	public LongStreamWrapper limit(long maxSize) {
 		LongStream stream = this.wrappedTarget.limit(maxSize);
-		if (stream instanceof AutoCloseLongStream) {
-			return (AutoCloseLongStream) stream;
+		if (stream instanceof LongStreamWrapper) {
+			return (LongStreamWrapper) stream;
 		}
-		return new AutoCloseLongStream(stream);
+		return new LongStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseLongStream skip(long n) {
+	public LongStreamWrapper skip(long n) {
 		LongStream stream = this.wrappedTarget.skip(n);
-		if (stream instanceof AutoCloseLongStream) {
-			return (AutoCloseLongStream) stream;
+		if (stream instanceof LongStreamWrapper) {
+			return (LongStreamWrapper) stream;
 		}
-		return new AutoCloseLongStream(stream);
+		return new LongStreamWrapper(stream);
 	}
 
 	@Override
 	public void forEach(LongConsumer action) {
 		try {
+			beforeExecution();
 			this.wrappedTarget.forEach(action);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public void forEachOrdered(LongConsumer action) {
 		try {
+			beforeExecution();
 			this.wrappedTarget.forEachOrdered(action);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public long[] toArray() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.toArray();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public long reduce(long identity, LongBinaryOperator op) {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.reduce(identity, op);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalLong reduce(LongBinaryOperator op) {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.reduce(op);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public <R> R collect(Supplier<R> supplier, ObjLongConsumer<R> accumulator, BiConsumer<R, R> combiner) {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.collect(supplier, accumulator, combiner);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public long sum() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.sum();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalLong min() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.min();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalLong max() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.max();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public long count() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.count();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalDouble average() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.average();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public LongSummaryStatistics summaryStatistics() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.summaryStatistics();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public boolean anyMatch(LongPredicate predicate) {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.anyMatch(predicate);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public boolean allMatch(LongPredicate predicate) {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.allMatch(predicate);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public boolean noneMatch(LongPredicate predicate) {
 		try {
+			beforeExecution();
 			return this.noneMatch(predicate);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalLong findFirst() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.findFirst();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalLong findAny() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.findAny();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public DoubleStream asDoubleStream() {
 		DoubleStream stream = this.wrappedTarget.asDoubleStream();
-		if (stream instanceof AutoCloseDoubleStream) {
+		if (stream instanceof DoubleStreamWrapper) {
 			return stream;
 		}
-		return new AutoCloseDoubleStream(stream);
+		return new DoubleStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseStream<Long> boxed() {
+	public StreamWrapper<Long> boxed() {
 		Stream<Long> stream = this.wrappedTarget.boxed();
-		if (stream instanceof AutoCloseStream) {
-			return (AutoCloseStream<Long>) stream;
+		if (stream instanceof StreamWrapper) {
+			return (StreamWrapper<Long>) stream;
 		}
-		return new AutoCloseStream<>(stream);
+		return new StreamWrapper<>(stream);
 	}
 
 	@Override
-	public AutoCloseLongStream sequential() {
+	public LongStreamWrapper sequential() {
 		LongStream stream = this.wrappedTarget.sequential();
-		if (stream instanceof AutoCloseLongStream) {
-			return (AutoCloseLongStream) stream;
+		if (stream instanceof LongStreamWrapper) {
+			return (LongStreamWrapper) stream;
 		}
-		return new AutoCloseLongStream(stream);
+		return new LongStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseLongStream parallel() {
+	public LongStreamWrapper parallel() {
 		LongStream stream = this.wrappedTarget.parallel();
-		if (stream instanceof AutoCloseLongStream) {
-			return (AutoCloseLongStream) stream;
+		if (stream instanceof LongStreamWrapper) {
+			return (LongStreamWrapper) stream;
 		}
-		return new AutoCloseLongStream(stream);
+		return new LongStreamWrapper(stream);
 	}
 
 	@Override
@@ -331,21 +346,21 @@ public class AutoCloseLongStream extends Wrapper<LongStream> implements LongStre
 	}
 
 	@Override
-	public AutoCloseLongStream unordered() {
+	public LongStreamWrapper unordered() {
 		LongStream stream = this.wrappedTarget.unordered();
-		if (stream instanceof AutoCloseLongStream) {
-			return (AutoCloseLongStream) stream;
+		if (stream instanceof LongStreamWrapper) {
+			return (LongStreamWrapper) stream;
 		}
-		return new AutoCloseLongStream(stream);
+		return new LongStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseLongStream onClose(Runnable closeHandler) {
+	public LongStreamWrapper onClose(Runnable closeHandler) {
 		LongStream stream = this.wrappedTarget.onClose(closeHandler);
-		if (stream instanceof AutoCloseLongStream) {
-			return (AutoCloseLongStream) stream;
+		if (stream instanceof LongStreamWrapper) {
+			return (LongStreamWrapper) stream;
 		}
-		return new AutoCloseLongStream(stream);
+		return new LongStreamWrapper(stream);
 	}
 
 	@Override

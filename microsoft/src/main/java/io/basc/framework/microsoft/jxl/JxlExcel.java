@@ -1,10 +1,9 @@
 package io.basc.framework.microsoft.jxl;
 
-import io.basc.framework.microsoft.Excel;
-import io.basc.framework.microsoft.Sheet;
-
 import java.io.IOException;
 
+import io.basc.framework.microsoft.Excel;
+import io.basc.framework.microsoft.Sheet;
 import jxl.Workbook;
 
 public class JxlExcel implements Excel {
@@ -16,14 +15,6 @@ public class JxlExcel implements Excel {
 
 	public void close() throws IOException {
 		workbook.close();
-	}
-
-	public Sheet getSheet(String sheetName) {
-		jxl.Sheet sheet = workbook.getSheet(sheetName);
-		if (sheet == null) {
-			return null;
-		}
-		return new JxlSheet(sheet);
 	}
 
 	public Sheet[] getSheets() {

@@ -1,18 +1,22 @@
 package io.basc.framework.io;
 
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.AutoCloseStream;
+import io.basc.framework.util.stream.StreamWrapper;
 import io.basc.framework.util.stream.StreamProcessorSupport;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.CharArrayWriter;
 import java.io.Closeable;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilterInputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,6 +27,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -77,6 +82,8 @@ public final class IOUtils {
 	private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
 	private static final int DEFAULT_READ_BUFFER_SIZE = 256;
+	
+	private static final byte[] EMPTY_CONTENT = new byte[0];
 
 	/**
 	 * The default buffer size to use for the skip() methods.
@@ -744,7 +751,7 @@ public final class IOUtils {
 	/**
 	 * @param reader 使用过后会自动 关闭
 	 * @return
-	 * @see AutoCloseStream
+	 * @see StreamWrapper
 	 */
 	public static Stream<String> stream(Reader reader) {
 		LineIterator iterator = new LineIterator(reader);
@@ -1865,5 +1872,192 @@ public final class IOUtils {
 
 	public static String readContent(InputStream inputStream, String charsetName) throws IOException {
 		return readContent(inputStream, DEFAULT_READ_BUFFER_SIZE, charsetName);
+	}
+
+	/**
+	 * Copy the contents of the given InputStream into a new byte array.
+	 * Leaves the stream open when done.
+	 * @param in the stream to copy from (may be {@code null} or empty)
+	 * @return the new byte array that has been copied to (possibly empty)
+	 * @throws IOException in case of I/O errors
+	 */
+	public static byte[] copyToByteArray(InputStream in) throws IOException {
+		if (in == null) {
+			return new byte[0];
+		}
+
+		ByteArrayOutputStream out = new ByteArrayOutputStream(DEFAULT_BUFFER_SIZE);
+		copy(in, out);
+		return out.toByteArray();
+	}
+
+	/**
+	 * Copy the contents of the given InputStream into a String.
+	 * Leaves the stream open when done.
+	 * @param in the InputStream to copy from (may be {@code null} or empty)
+	 * @return the String that has been copied to (possibly empty)
+	 * @throws IOException in case of I/O errors
+	 */
+	public static String copyToString(InputStream in, Charset charset) throws IOException {
+		if (in == null) {
+			return "";
+		}
+
+		StringBuilder out = new StringBuilder();
+		InputStreamReader reader = new InputStreamReader(in, charset);
+		char[] buffer = new char[DEFAULT_BUFFER_SIZE];
+		int bytesRead = -1;
+		while ((bytesRead = reader.read(buffer)) != -1) {
+			out.append(buffer, 0, bytesRead);
+		}
+		return out.toString();
+	}
+
+	/**
+	 * Copy the contents of the given byte array to the given OutputStream.
+	 * Leaves the stream open when done.
+	 * @param in the byte array to copy from
+	 * @param out the OutputStream to copy to
+	 * @throws IOException in case of I/O errors
+	 */
+	public static void copy(byte[] in, OutputStream out) throws IOException {
+		Assert.notNull(in, "No input byte array specified");
+		Assert.notNull(out, "No OutputStream specified");
+
+		out.write(in);
+	}
+
+	/**
+	 * Copy the contents of the given String to the given output OutputStream.
+	 * Leaves the stream open when done.
+	 * @param in the String to copy from
+	 * @param charset the Charset
+	 * @param out the OutputStream to copy to
+	 * @throws IOException in case of I/O errors
+	 */
+	public static void copy(String in, Charset charset, OutputStream out) throws IOException {
+		Assert.notNull(in, "No input String specified");
+		Assert.notNull(charset, "No charset specified");
+		Assert.notNull(out, "No OutputStream specified");
+
+		Writer writer = new OutputStreamWriter(out, charset);
+		writer.write(in);
+		writer.flush();
+	}
+
+	/**
+	 * Copy a range of content of the given InputStream to the given OutputStream.
+	 * <p>If the specified range exceeds the length of the InputStream, this copies
+	 * up to the end of the stream and returns the actual number of copied bytes.
+	 * <p>Leaves both streams open when done.
+	 * @param in the InputStream to copy from
+	 * @param out the OutputStream to copy to
+	 * @param start the position to start copying from
+	 * @param end the position to end copying
+	 * @return the number of bytes copied
+	 * @throws IOException in case of I/O errors
+	 */
+	public static long copyRange(InputStream in, OutputStream out, long start, long end) throws IOException {
+		Assert.notNull(in, "No InputStream specified");
+		Assert.notNull(out, "No OutputStream specified");
+
+		long skipped = in.skip(start);
+		if (skipped < start) {
+			throw new IOException("Skipped only " + skipped + " bytes out of " + start + " required");
+		}
+
+		long bytesToCopy = end - start + 1;
+		byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+		while (bytesToCopy > 0) {
+			int bytesRead = in.read(buffer);
+			if (bytesRead == -1) {
+				break;
+			}
+			else if (bytesRead <= bytesToCopy) {
+				out.write(buffer, 0, bytesRead);
+				bytesToCopy -= bytesRead;
+			}
+			else {
+				out.write(buffer, 0, (int) bytesToCopy);
+				bytesToCopy = 0;
+			}
+		}
+		return (end - start + 1 - bytesToCopy);
+	}
+
+	/**
+	 * Drain the remaining content of the given InputStream.
+	 * Leaves the InputStream open when done.
+	 * @param in the InputStream to drain
+	 * @return the number of bytes read
+	 * @throws IOException in case of I/O errors
+	 */
+	public static long drain(InputStream in) throws IOException {
+		Assert.notNull(in, "No InputStream specified");
+		byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+		int bytesRead = -1;
+		long byteCount = 0;
+		while ((bytesRead = in.read(buffer)) != -1) {
+			byteCount += bytesRead;
+		}
+		return byteCount;
+	}
+
+	/**
+	 * Return an efficient empty {@link InputStream}.
+	 * @return a {@link ByteArrayInputStream} based on an empty byte array
+	 */
+	public static InputStream emptyInput() {
+		return new ByteArrayInputStream(EMPTY_CONTENT);
+	}
+
+	/**
+	 * 包装成一个忽略close方法的流
+	 * @param out
+	 * @return
+	 */
+	public static InputStream nonClosing(InputStream in) {
+		Assert.notNull(in, "No InputStream specified");
+		return new NonClosingInputStream(in);
+	}
+
+	/**
+	 * 包装成一个忽略close方法的流
+	 * @param out
+	 * @return
+	 */
+	public static OutputStream nonClosing(OutputStream out) {
+		Assert.notNull(out, "No OutputStream specified");
+		return new NonClosingOutputStream(out);
+	}
+
+
+	private static class NonClosingInputStream extends FilterInputStream {
+
+		public NonClosingInputStream(InputStream in) {
+			super(in);
+		}
+
+		@Override
+		public void close() throws IOException {
+		}
+	}
+
+
+	private static class NonClosingOutputStream extends FilterOutputStream {
+
+		public NonClosingOutputStream(OutputStream out) {
+			super(out);
+		}
+
+		@Override
+		public void write(byte[] b, int off, int let) throws IOException {
+			// It is critical that we override this method for performance
+			out.write(b, off, let);
+		}
+
+		@Override
+		public void close() throws IOException {
+		}
 	}
 }

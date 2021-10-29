@@ -12,7 +12,7 @@ import io.basc.framework.util.XUtils;
  *
  * @param <T>
  */
-public final class Cursor<T> extends AbstractAutoCloseStream<T, Cursor<T>> implements StreamPosition {
+public final class Cursor<T> extends StreamMapWrapper<T, Cursor<T>> implements StreamPosition {
 	private final CursorPosition cursorPosition;
 
 	public Cursor(Iterator<T> iterator) {
@@ -46,7 +46,7 @@ public final class Cursor<T> extends AbstractAutoCloseStream<T, Cursor<T>> imple
 	}
 
 	@Override
-	protected Cursor<T> wrapper(Stream<T> stream) {
+	protected Cursor<T> wrap(Stream<T> stream) {
 		return new Cursor<>(stream);
 	}
 

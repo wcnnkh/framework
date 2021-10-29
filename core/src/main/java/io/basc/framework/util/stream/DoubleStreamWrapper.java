@@ -1,7 +1,5 @@
 package io.basc.framework.util.stream;
 
-import io.basc.framework.util.Wrapper;
-
 import java.util.DoubleSummaryStatistics;
 import java.util.OptionalDouble;
 import java.util.PrimitiveIterator.OfDouble;
@@ -20,294 +18,306 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-public class AutoCloseDoubleStream extends Wrapper<DoubleStream> implements DoubleStream {
+public class DoubleStreamWrapper extends BaseStreamWrapper<Double, DoubleStream> implements DoubleStream {
 
-	public AutoCloseDoubleStream(DoubleStream stream) {
+	public DoubleStreamWrapper(DoubleStream stream) {
 		super(stream);
 	}
 
 	@Override
-	public void close() {
-		wrappedTarget.close();
-	}
-
-	@Override
-	public AutoCloseDoubleStream filter(DoublePredicate predicate) {
+	public DoubleStreamWrapper filter(DoublePredicate predicate) {
 		DoubleStream stream = this.wrappedTarget.filter(predicate);
-		if (stream instanceof AutoCloseDoubleStream) {
-			return (AutoCloseDoubleStream) stream;
+		if (stream instanceof DoubleStreamWrapper) {
+			return (DoubleStreamWrapper) stream;
 		}
-		return new AutoCloseDoubleStream(stream);
+		return new DoubleStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseDoubleStream map(DoubleUnaryOperator mapper) {
+	public DoubleStreamWrapper map(DoubleUnaryOperator mapper) {
 		DoubleStream stream = this.wrappedTarget.map(mapper);
-		if (stream instanceof AutoCloseDoubleStream) {
-			return (AutoCloseDoubleStream) stream;
+		if (stream instanceof DoubleStreamWrapper) {
+			return (DoubleStreamWrapper) stream;
 		}
-		return new AutoCloseDoubleStream(stream);
+		return new DoubleStreamWrapper(stream);
 	}
 
 	@Override
-	public <U> AutoCloseStream<U> mapToObj(DoubleFunction<? extends U> mapper) {
+	public <U> StreamWrapper<U> mapToObj(DoubleFunction<? extends U> mapper) {
 		Stream<U> stream = this.wrappedTarget.mapToObj(mapper);
-		if (stream instanceof AutoCloseStream) {
-			return (AutoCloseStream<U>) stream;
+		if (stream instanceof StreamWrapper) {
+			return (StreamWrapper<U>) stream;
 		}
-		return new AutoCloseStream<>(stream);
+		return new StreamWrapper<>(stream);
 	}
 
 	@Override
-	public AutoCloseIntStream mapToInt(DoubleToIntFunction mapper) {
+	public IntStreamWrapper mapToInt(DoubleToIntFunction mapper) {
 		IntStream stream = this.wrappedTarget.mapToInt(mapper);
-		if (stream instanceof AutoCloseIntStream) {
-			return (AutoCloseIntStream) stream;
+		if (stream instanceof IntStreamWrapper) {
+			return (IntStreamWrapper) stream;
 		}
-		return new AutoCloseIntStream(stream);
+		return new IntStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseLongStream mapToLong(DoubleToLongFunction mapper) {
+	public LongStreamWrapper mapToLong(DoubleToLongFunction mapper) {
 		LongStream stream = this.wrappedTarget.mapToLong(mapper);
-		if (stream instanceof AutoCloseLongStream) {
-			return (AutoCloseLongStream) stream;
+		if (stream instanceof LongStreamWrapper) {
+			return (LongStreamWrapper) stream;
 		}
-		return new AutoCloseLongStream(stream);
+		return new LongStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseDoubleStream flatMap(DoubleFunction<? extends DoubleStream> mapper) {
+	public DoubleStreamWrapper flatMap(DoubleFunction<? extends DoubleStream> mapper) {
 		DoubleStream stream = this.wrappedTarget.flatMap(mapper);
-		if (stream instanceof AutoCloseDoubleStream) {
-			return (AutoCloseDoubleStream) stream;
+		if (stream instanceof DoubleStreamWrapper) {
+			return (DoubleStreamWrapper) stream;
 		}
-		return new AutoCloseDoubleStream(stream);
+		return new DoubleStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseDoubleStream distinct() {
+	public DoubleStreamWrapper distinct() {
 		DoubleStream stream = this.wrappedTarget.distinct();
-		if (stream instanceof AutoCloseDoubleStream) {
-			return (AutoCloseDoubleStream) stream;
+		if (stream instanceof DoubleStreamWrapper) {
+			return (DoubleStreamWrapper) stream;
 		}
-		return new AutoCloseDoubleStream(stream);
+		return new DoubleStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseDoubleStream sorted() {
+	public DoubleStreamWrapper sorted() {
 		DoubleStream stream = this.wrappedTarget.sorted();
-		if (stream instanceof AutoCloseDoubleStream) {
-			return (AutoCloseDoubleStream) stream;
+		if (stream instanceof DoubleStreamWrapper) {
+			return (DoubleStreamWrapper) stream;
 		}
-		return new AutoCloseDoubleStream(stream);
+		return new DoubleStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseDoubleStream peek(DoubleConsumer action) {
+	public DoubleStreamWrapper peek(DoubleConsumer action) {
 		DoubleStream stream = this.wrappedTarget.peek(action);
-		if (stream instanceof AutoCloseDoubleStream) {
-			return (AutoCloseDoubleStream) stream;
+		if (stream instanceof DoubleStreamWrapper) {
+			return (DoubleStreamWrapper) stream;
 		}
-		return new AutoCloseDoubleStream(stream);
+		return new DoubleStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseDoubleStream limit(long maxSize) {
+	public DoubleStreamWrapper limit(long maxSize) {
 		DoubleStream stream = this.wrappedTarget.limit(maxSize);
-		if (stream instanceof AutoCloseDoubleStream) {
-			return (AutoCloseDoubleStream) stream;
+		if (stream instanceof DoubleStreamWrapper) {
+			return (DoubleStreamWrapper) stream;
 		}
-		return new AutoCloseDoubleStream(stream);
+		return new DoubleStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseDoubleStream skip(long n) {
+	public DoubleStreamWrapper skip(long n) {
 		DoubleStream stream = this.wrappedTarget.skip(n);
-		if (stream instanceof AutoCloseDoubleStream) {
-			return (AutoCloseDoubleStream) stream;
+		if (stream instanceof DoubleStreamWrapper) {
+			return (DoubleStreamWrapper) stream;
 		}
-		return new AutoCloseDoubleStream(stream);
+		return new DoubleStreamWrapper(stream);
 	}
 
 	@Override
 	public void forEach(DoubleConsumer action) {
 		try {
+			beforeExecution();
 			this.wrappedTarget.forEach(action);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public void forEachOrdered(DoubleConsumer action) {
 		try {
+			beforeExecution();
 			this.wrappedTarget.forEachOrdered(action);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public double[] toArray() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.toArray();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public double reduce(double identity, DoubleBinaryOperator op) {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.reduce(identity, op);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalDouble reduce(DoubleBinaryOperator op) {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.reduce(op);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public <R> R collect(Supplier<R> supplier, ObjDoubleConsumer<R> accumulator, BiConsumer<R, R> combiner) {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.collect(supplier, accumulator, combiner);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public double sum() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.sum();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalDouble min() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.min();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalDouble max() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.max();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public long count() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.count();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalDouble average() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.average();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public DoubleSummaryStatistics summaryStatistics() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.summaryStatistics();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public boolean anyMatch(DoublePredicate predicate) {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.anyMatch(predicate);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public boolean allMatch(DoublePredicate predicate) {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.allMatch(predicate);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public boolean noneMatch(DoublePredicate predicate) {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.noneMatch(predicate);
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalDouble findFirst() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.findFirst();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
 	public OptionalDouble findAny() {
 		try {
+			beforeExecution();
 			return this.wrappedTarget.findAny();
 		} finally {
-			close();
+			afterExecution();
 		}
 	}
 
 	@Override
-	public AutoCloseStream<Double> boxed() {
+	public StreamWrapper<Double> boxed() {
 		Stream<Double> stream = this.wrappedTarget.boxed();
-		if (stream instanceof AutoCloseStream) {
-			return (AutoCloseStream<Double>) stream;
+		if (stream instanceof StreamWrapper) {
+			return (StreamWrapper<Double>) stream;
 		}
-		return new AutoCloseStream<>(stream);
+		return new StreamWrapper<>(stream);
 	}
 
 	@Override
-	public AutoCloseDoubleStream sequential() {
+	public DoubleStreamWrapper sequential() {
 		DoubleStream stream = this.wrappedTarget.sequential();
-		if (stream instanceof AutoCloseDoubleStream) {
-			return (AutoCloseDoubleStream) stream;
+		if (stream instanceof DoubleStreamWrapper) {
+			return (DoubleStreamWrapper) stream;
 		}
-		return new AutoCloseDoubleStream(stream);
+		return new DoubleStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseDoubleStream parallel() {
+	public DoubleStreamWrapper parallel() {
 		DoubleStream stream = this.wrappedTarget.parallel();
-		if (stream instanceof AutoCloseDoubleStream) {
-			return (AutoCloseDoubleStream) stream;
+		if (stream instanceof DoubleStreamWrapper) {
+			return (DoubleStreamWrapper) stream;
 		}
-		return new AutoCloseDoubleStream(stream);
+		return new DoubleStreamWrapper(stream);
 	}
 
 	@Override
@@ -321,25 +331,20 @@ public class AutoCloseDoubleStream extends Wrapper<DoubleStream> implements Doub
 	}
 
 	@Override
-	public boolean isParallel() {
-		return this.wrappedTarget.isParallel();
-	}
-
-	@Override
-	public AutoCloseDoubleStream unordered() {
+	public DoubleStreamWrapper unordered() {
 		DoubleStream stream = this.wrappedTarget.unordered();
-		if (stream instanceof AutoCloseDoubleStream) {
-			return (AutoCloseDoubleStream) stream;
+		if (stream instanceof DoubleStreamWrapper) {
+			return (DoubleStreamWrapper) stream;
 		}
-		return new AutoCloseDoubleStream(stream);
+		return new DoubleStreamWrapper(stream);
 	}
 
 	@Override
-	public AutoCloseDoubleStream onClose(Runnable closeHandler) {
+	public DoubleStreamWrapper onClose(Runnable closeHandler) {
 		DoubleStream stream = this.wrappedTarget.onClose(closeHandler);
-		if (stream instanceof AutoCloseDoubleStream) {
-			return (AutoCloseDoubleStream) stream;
+		if (stream instanceof DoubleStreamWrapper) {
+			return (DoubleStreamWrapper) stream;
 		}
-		return new AutoCloseDoubleStream(stream);
+		return new DoubleStreamWrapper(stream);
 	}
 }
