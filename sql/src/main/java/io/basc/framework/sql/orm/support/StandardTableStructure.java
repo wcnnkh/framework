@@ -45,7 +45,7 @@ public class StandardTableStructure extends StandardEntityStructure<Column>
 	private static void append(TableMapping tableMapping,
 			StandardTableStructure tableStructure, Class<?> entityClass,
 			Field parentField) {
-		for (Field field : tableMapping.getFields(entityClass, parentField)) {
+		for (Field field : tableMapping.getFields(entityClass, parentField).all()) {
 			if (!field.isSupportGetter()) {
 				continue;
 			}

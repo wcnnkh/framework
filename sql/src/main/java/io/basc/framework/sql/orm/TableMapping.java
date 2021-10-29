@@ -24,12 +24,12 @@ public interface TableMapping extends TableStructureProcessor, ObjectRelationalM
 
 	@Override
 	default TableStructure getStructure(Class<?> entityClass) {
-		return getStructure(entityClass, getFields(entityClass));
+		return getStructure(entityClass, getFields(entityClass).all());
 	}
 
 	@Override
 	default TableStructure getStructure(Class<?> entityClass, Field parentField) {
-		return getStructure(entityClass, getFields(entityClass, parentField));
+		return getStructure(entityClass, getFields(entityClass, parentField).all());
 	}
 
 	@Override
