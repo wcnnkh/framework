@@ -3,6 +3,7 @@ package io.basc.framework.sql.orm.support;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import io.basc.framework.sql.orm.SqlDialect;
 import io.basc.framework.sql.orm.SqlDialectException;
 import io.basc.framework.sql.orm.SqlType;
 import io.basc.framework.sql.orm.TableStructure;
+import io.basc.framework.util.Accept;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
@@ -333,15 +335,13 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		}
 		return changeMap;
 	}
-
-	@Override
-	public Sql toUpdatePartSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
+	
+	protected Sql toUpdateSql(TableStructure tableStructure, Object entity, Map<String, Object> changeMap, Accept<Column> accept) throws SqlDialectException{
 		List<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
 		if (primaryKeyColumns.size() == 0) {
 			throw new SqlDialectException(tableStructure.getName() + " not found primary key");
 		}
 
-		Map<String, Object> changeMap = getChangeMap(entity);
 		List<Column> notPrimaryKeys = tableStructure.getNotPrimaryKeys();
 		StringBuilder sb = new StringBuilder(512);
 		sb.append(UPDATE_PREFIX);
@@ -355,9 +355,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 				// 忽略没有变化的字段
 				continue;
 			}
-
-			// 如果字段不能为空，且实体字段没有值就忽略
-			if (!column.isNullable() && !MapperUtils.isExistDefaultValue(column.getField(), entity)) {
+			
+			if(!accept.accept(column)){
 				continue;
 			}
 
@@ -380,143 +379,118 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 				sb.append(AND);
 			}
 		}
-
+		
 		// 添加版本号字段变更条件
 		notPrimaryKeys.forEach((column) -> {
-			Collection<Range<Double>> numberRanges = column.getNumberRanges();
-			if(!CollectionUtils.isEmpty(numberRanges)) {
-				for(Range<Double> range : numberRanges) {
-					if(range.getLowerBound().getValue().isPresent()) {
-						sb.append(AND);
-						sb.append(">");
-						if(range.getLowerBound().isInclusive()) {
-							sb.append("=");
-						}
-						sb.append(range.getLowerBound().getValue());
-					}
-					
-					if(range.getUpperBound().getValue().isPresent()) {
-						sb.append(AND);
-						sb.append("<");
-						if(range.getUpperBound().isInclusive()) {
-							sb.append("=");
-						}
-						sb.append(range.getUpperBound().getValue());
-					}
-				}
+			if(!accept.accept(column)){
+				return ;
 			}
 			
-			if(column.isVersion()) {
-				AnyValue oldVersion = null;
-				if (changeMap != null && changeMap.containsKey(column.getField().getSetter().getName())) {
-					oldVersion = new AnyValue(changeMap.get(column.getField().getSetter().getName()));
-					if (oldVersion.getAsDoubleValue() == 0) {
-						// 如果存在变更但版本号为0就忽略此条件
-						return;
-					}
-				}
-
-				// 因为一定存在主键，所有一定有where条件，此处直接and
-				sb.append(AND);
-				keywordProcessing(sb, column.getName());
-				sb.append("=?");
-
-				// 如果存在旧值就使用旧值
-				params.add(oldVersion == null ? getDataBaseValue(entity, column.getField())
-						: toDataBaseValue(oldVersion.getAsLongValue()));
-			}
+			appendExtendWhere(column, sb, params, changeMap, entity);
 		});
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
 
-	@Override
-	public Sql toUpdateSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
-		List<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
-		if (primaryKeyColumns.size() == 0) {
-			throw new SqlDialectException(tableStructure.getName() + " not found primary key");
+	protected void appendExtendWhere(Column column, StringBuilder sb, Collection<Object> params, Map<String, Object> changeMap, Object entity){
+		Collection<Range<Double>> numberRanges = column.getNumberRanges();
+		if(!CollectionUtils.isEmpty(numberRanges)) {
+			for(Range<Double> range : numberRanges) {
+				if(range.getLowerBound().getValue().isPresent()) {
+					sb.append(AND);
+					keywordProcessing(sb, column.getName());
+					if(column.isIncrement()){
+						AnyValue newValue = new AnyValue(getDataBaseValue(entity, column.getField()));
+						AnyValue oldValue = changeMap == null ? null
+								: new AnyValue(changeMap.get(column.getField().getSetter().getName()));
+						if(oldValue != null) {
+							sb.append("+");
+							sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
+						}
+					}
+					sb.append(">");
+					if(range.getLowerBound().isInclusive()) {
+						sb.append("=");
+					}
+					sb.append(range.getLowerBound().getValue());
+				}
+				
+				if(range.getUpperBound().getValue().isPresent()) {
+					sb.append(AND);
+					keywordProcessing(sb, column.getName());
+					if(column.isIncrement()){
+						AnyValue newValue = new AnyValue(getDataBaseValue(entity, column.getField()));
+						AnyValue oldValue = changeMap == null ? null
+								: new AnyValue(changeMap.get(column.getField().getSetter().getName()));
+						if(oldValue != null) {
+							sb.append("+");
+							sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
+						}
+					}
+					sb.append("<");
+					if(range.getUpperBound().isInclusive()) {
+						sb.append("=");
+					}
+					sb.append(range.getUpperBound().getValue());
+				}
+			}
 		}
-
-		Map<String, Object> changeMap = getChangeMap(entity);
-		List<Column> notPrimaryKeys = tableStructure.getNotPrimaryKeys();
-		StringBuilder sb = new StringBuilder(512);
-		sb.append(UPDATE_PREFIX);
-		keywordProcessing(sb, tableStructure.getName());
-		sb.append(SET);
-		List<Object> params = new ArrayList<Object>();
-		Iterator<Column> iterator = notPrimaryKeys.iterator();
-		while (iterator.hasNext()) {
-			Column column = iterator.next();
-			if (changeMap != null && !changeMap.containsKey(column.getField().getSetter().getName())) {
-				// 忽略没有变化的字段
-				continue;
+		
+		if(column.isVersion()) {
+			AnyValue oldVersion = null;
+			if (changeMap != null && changeMap.containsKey(column.getField().getSetter().getName())) {
+				oldVersion = new AnyValue(changeMap.get(column.getField().getSetter().getName()));
+				if (oldVersion.getAsDoubleValue() == 0) {
+					// 如果存在变更但版本号为0就忽略此条件
+					return;
+				}
 			}
 
-			keywordProcessing(sb, column.getName());
-			sb.append("=");
-			appendUpdateValue(sb, params, entity, column, changeMap);
-			if (iterator.hasNext()) {
-				sb.append(",");
-			}
-		}
-
-		sb.append(WHERE);
-		iterator = primaryKeyColumns.iterator();
-		while (iterator.hasNext()) {
-			Column column = iterator.next();
+			// 因为一定存在主键，所有一定有where条件，此处直接and
+			sb.append(AND);
 			keywordProcessing(sb, column.getName());
 			sb.append("=?");
-			params.add(getDataBaseValue(entity, column.getField()));
-			if (iterator.hasNext()) {
-				sb.append(AND);
-			}
-		}
 
-		// 添加版本号字段变更条件
-		notPrimaryKeys.forEach((column) -> {
-			Collection<Range<Double>> numberRanges = column.getNumberRanges();
-			if(!CollectionUtils.isEmpty(numberRanges)) {
-				for(Range<Double> range : numberRanges) {
-					if(range.getLowerBound().getValue().isPresent()) {
-						sb.append(AND);
-						sb.append(">");
-						if(range.getLowerBound().isInclusive()) {
-							sb.append("=");
-						}
-						sb.append(range.getLowerBound().getValue());
-					}
-					
-					if(range.getUpperBound().getValue().isPresent()) {
-						sb.append(AND);
-						sb.append("<");
-						if(range.getUpperBound().isInclusive()) {
-							sb.append("=");
-						}
-						sb.append(range.getUpperBound().getValue());
-					}
-				}
+			// 如果存在旧值就使用旧值
+			params.add(oldVersion == null ? getDataBaseValue(entity, column.getField())
+					: toDataBaseValue(oldVersion.getAsLongValue()));
+		}
+	}
+	
+	@Override
+	public Sql toUpdatePartSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
+		Map<String, Object> changeMap = getChangeMap(entity);
+		return toUpdateSql(tableStructure, entity, changeMap, (column) -> {
+			if (changeMap != null && !changeMap.containsKey(column.getField().getSetter().getName())) {
+				return false;
+			}
+
+			// 如果字段不能为空，且实体字段没有值就忽略
+			if (!column.isNullable() && !MapperUtils.isExistDefaultValue(column.getField(), entity)) {
+				return false;
+			}
+			return true;
+		});
+	}
+	
+	@Override
+	public Sql toUpdateSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
+		Map<String, Object> changeMap = getChangeMap(entity);
+		return toUpdateSql(tableStructure, entity, changeMap, (column) -> true);
+	}
+	
+	@Override
+	public <T> Sql toUpdateSql(TableStructure tableStructure, T entity,
+			T condition) throws SqlDialectException {
+		Map<String, Object> changeMap = new HashMap<String, Object>();
+		for(Column column : tableStructure.getColumns()){
+			Object value = column.getField().get(condition);
+			if(value == null && column.isNullable()){
+				continue;
 			}
 			
-			if(column.isVersion()) {
-				AnyValue oldVersion = null;
-				if (changeMap != null && changeMap.containsKey(column.getField().getSetter().getName())) {
-					oldVersion = new AnyValue(changeMap.get(column.getField().getSetter().getName()));
-					if (oldVersion.getAsDoubleValue() == 0) {
-						// 如果存在变更但版本号为0就忽略此条件
-						return;
-					}
-				}
-
-				// 因为一定存在主键，所有一定有where条件，此处直接and
-				sb.append(AND);
-				keywordProcessing(sb, column.getName());
-				sb.append("=?");
-
-				// 如果存在旧值就使用旧值
-				params.add(oldVersion == null ? getDataBaseValue(entity, column.getField())
-						: toDataBaseValue(oldVersion.getAsLongValue()));
-			}
-		});
-		return new SimpleSql(sb.toString(), params.toArray());
+			changeMap.put(column.getField().getSetter().getName(), value);
+		}
+		return toUpdateSql(tableStructure, entity, changeMap, (col) -> true);
 	}
 
 	protected final void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Column column,

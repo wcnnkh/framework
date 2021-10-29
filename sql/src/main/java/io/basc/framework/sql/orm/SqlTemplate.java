@@ -223,6 +223,22 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		Sql sql = getSqlDialect().toUpdateSql(tableStructure, entity);
 		return update(sql);
 	}
+	
+	default <T> boolean update(Class<? extends T> entityClass, T entity, T condition) {
+		return update(entityClass, entity, condition, null) > 0;
+	}
+
+	default <T> int update(Class<? extends T> entityClass, T entity, T condition, @Nullable String tableName) {
+		return update(resolve(entityClass, entity, tableName), entity);
+	}
+	
+	default <T> int update(TableStructure tableStructure, T entity, T condition) {
+		Assert.requiredArgument(tableStructure != null, "tableStructure");
+		Assert.requiredArgument(entity != null, "entity");
+		Assert.requiredArgument(condition != null, "condition");
+		Sql sql = getSqlDialect().toUpdateSql(tableStructure, entity, condition);
+		return update(sql);
+	}
 
 	@Override
 	default <T> boolean saveOrUpdate(Class<? extends T> entityClass, T entity) {

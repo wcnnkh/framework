@@ -34,6 +34,8 @@ public interface SqlDialect extends TableMapping, ConversionServiceAware {
 	Sql toDeleteByIdSql(TableStructure tableStructure, Object... ids) throws SqlDialectException;
 
 	Sql toUpdateSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
+	
+	<T> Sql toUpdateSql(TableStructure tableStructure, T entity, T condition) throws SqlDialectException;
 
 	/**
 	 * 转为更新语句，忽略不能为空但实体中为空的字段
