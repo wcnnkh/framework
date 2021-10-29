@@ -7,21 +7,29 @@ import java.util.LinkedHashSet;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.orm.Property;
+import io.basc.framework.orm.PropertyMetadata;
 
 public class StandardProperty extends StandardPropertyMetadata implements Property {
-	private Class<?> entityClass;
 	private Collection<String> aliasNames;
 	private Collection<Range<Double>> numberRanges;
 	private boolean version;
 	private boolean increment;
 	private Field field;
 
-	public Class<?> getEntityClass() {
-		return entityClass;
+	public StandardProperty() {
 	}
 
-	public void setEntityClass(Class<?> entityClass) {
-		this.entityClass = entityClass;
+	public StandardProperty(PropertyMetadata propertyMetadata) {
+		super(propertyMetadata);
+	}
+
+	public StandardProperty(Property property) {
+		super(property);
+		this.aliasNames = property.getAliasNames();
+		this.numberRanges = property.getNumberRanges();
+		this.version = property.isVersion();
+		this.increment = property.isIncrement();
+		this.field = property.getField();
 	}
 
 	public Collection<String> getAliasNames() {

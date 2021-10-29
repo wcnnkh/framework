@@ -5,7 +5,9 @@ import java.util.LinkedHashSet;
 
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
+import io.basc.framework.mapper.Fields;
 import io.basc.framework.orm.support.DefaultObjectRelationalMapping;
 import io.basc.framework.sql.orm.IndexInfo;
 import io.basc.framework.sql.orm.TableMapping;
@@ -47,5 +49,11 @@ public class DefaultTableMapping extends DefaultObjectRelationalMapping implemen
 	@Override
 	public String getRowFormat(Class<?> entityClass) {
 		return TableResolverExtendChain.build(tableResolverExtends.iterator()).getRowFormat(entityClass);
+	}
+
+	@Override
+	public Fields getFields(Class<?> entityClass, Field parentField) {
+		return getFieldFactory().getFields(entityClass, parentField).entity()
+				.accept((field) -> !isIgnore(entityClass, field.getGetter()));
 	}
 }

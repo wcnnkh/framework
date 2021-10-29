@@ -2,6 +2,7 @@ package io.basc.framework.orm.support;
 
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFactory;
+import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.Fields;
 import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.orm.ObjectRelationalMapping;
@@ -24,7 +25,7 @@ public class DefaultObjectRelationalMapping extends DefaultObjectRelationalResol
 
 	@Override
 	public Fields getFields(Class<?> entityClass, Field parentField) {
-		return MapperUtils.getFields(entityClass, parentField).entity()
-				.accept((field) -> !isIgnore(entityClass, field.getGetter()));
+		return getFieldFactory().getFields(entityClass, parentField).accept(FieldFeature.IGNORE_STATIC)
+				.accept(FieldFeature.SUPPORT_GETTER).accept((field) -> !isIgnore(entityClass, field.getGetter()));
 	}
 }

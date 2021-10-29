@@ -11,6 +11,19 @@ public class StandardPropertyMetadata implements PropertyMetadata {
 	private String comment;
 	private boolean unique;
 
+	public StandardPropertyMetadata() {
+	}
+
+	public StandardPropertyMetadata(PropertyMetadata propertyMetadata) {
+		this.name = propertyMetadata.getName();
+		this.autoIncrement = propertyMetadata.isAutoIncrement();
+		this.primaryKey = propertyMetadata.isPrimaryKey();
+		this.nullable = propertyMetadata.isNullable();
+		this.charsetName = propertyMetadata.getCharsetName();
+		this.comment = propertyMetadata.getComment();
+		this.unique = propertyMetadata.isNullable();
+	}
+
 	public String getName() {
 		return name;
 	}

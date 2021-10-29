@@ -7,6 +7,15 @@ public class StandardEntityMetadata implements EntityMetadata {
 	private String charsetName;
 	private String comment;
 
+	public StandardEntityMetadata() {
+	}
+
+	public StandardEntityMetadata(EntityMetadata entityMetadata) {
+		this.name = entityMetadata.getName();
+		this.charsetName = entityMetadata.getCharsetName();
+		this.comment = entityMetadata.getComment();
+	}
+
 	public String getName() {
 		return name;
 	}

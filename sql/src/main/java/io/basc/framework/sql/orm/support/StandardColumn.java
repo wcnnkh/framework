@@ -10,6 +10,11 @@ import io.basc.framework.sql.orm.IndexInfo;
 public class StandardColumn extends StandardProperty implements Column {
 	private Collection<IndexInfo> indexs;
 
+	public StandardColumn(Column column) {
+		super(column);
+		this.indexs = column.getIndexs();
+	}
+
 	public Collection<IndexInfo> getIndexs() {
 		if (indexs == null) {
 			indexs = new ArrayList<>(4);
