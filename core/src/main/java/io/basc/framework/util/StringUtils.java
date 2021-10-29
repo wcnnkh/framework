@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.lang.ParameterException;
 import io.basc.framework.util.placeholder.PropertyResolver;
 import io.basc.framework.util.stream.StreamProcessorSupport;
 
@@ -1143,24 +1142,22 @@ public final class StringUtils {
 	/**
 	 * 把不足的地方用指定字符填充
 	 * 
-	 * @param str
+	 * @param text
 	 * @param complemented
 	 * @param length
 	 * @return
 	 */
-	public static String complemented(String str, char complemented, int length) {
-		if (length < str.length()) {
-			throw new ParameterException("length error [" + str + "]");
-		}
-
-		if (length == str.length()) {
-			return str;
+	public static String complemented(String text, char complemented, int length) {
+		Assert.isTrue(length >= text.length(),
+				"The length of text[" + text + "] exceeds the target length[" + length + "]");
+		if (length == text.length()) {
+			return text;
 		} else {
 			CharBuffer charBuffer = CharBuffer.allocate(length);
-			for (int i = 0; i < length - str.length(); i++) {
+			for (int i = 0; i < length - text.length(); i++) {
 				charBuffer.put(complemented);
 			}
-			charBuffer.put(str);
+			charBuffer.put(text);
 			return new String(charBuffer.array());
 		}
 	}
@@ -2122,8 +2119,8 @@ public final class StringUtils {
 				.collect(Collectors.toList()).toArray(new String[0]);
 	}
 
-	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence, boolean trimTokens, boolean ignoreEmptyTokens,
-			CharSequence... filters) {
+	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence, boolean trimTokens,
+			boolean ignoreEmptyTokens, CharSequence... filters) {
 		return split(charSequence, filters).map((s) -> trimTokens ? (s == null ? s : s.trim()) : s)
 				.filter((s) -> (ignoreEmptyTokens ? StringUtils.isNotEmpty(s) : true));
 	}
@@ -2144,7 +2141,8 @@ public final class StringUtils {
 		return split(charSequence, 0, charSequence.length(), Arrays.asList(filters));
 	}
 
-	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence, Collection<? extends CharSequence> filters) {
+	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence,
+			Collection<? extends CharSequence> filters) {
 		if (charSequence == null) {
 			return StreamProcessorSupport.emptyStream();
 		}
