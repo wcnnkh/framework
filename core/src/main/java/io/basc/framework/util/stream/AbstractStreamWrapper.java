@@ -1,5 +1,7 @@
 package io.basc.framework.util.stream;
 
+import io.basc.framework.lang.Nullable;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -21,8 +23,6 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-import io.basc.framework.lang.Nullable;
-
 public abstract class AbstractStreamWrapper<T, S extends Stream<T>> extends BaseStreamWrapper<T, Stream<T>>
 		implements Stream<T> {
 
@@ -40,7 +40,7 @@ public abstract class AbstractStreamWrapper<T, S extends Stream<T>> extends Base
 	}
 
 	protected abstract S wrap(Stream<T> stream);
-
+	
 	@Override
 	public S sequential() {
 		Stream<T> stream = this.wrappedTarget.sequential();
@@ -64,7 +64,7 @@ public abstract class AbstractStreamWrapper<T, S extends Stream<T>> extends Base
 		Stream<T> stream = this.wrappedTarget.onClose(closeHandler);
 		return wrap(stream);
 	}
-
+	
 	@Override
 	public S filter(Predicate<? super T> predicate) {
 		Stream<T> stream = this.wrappedTarget.filter(predicate);

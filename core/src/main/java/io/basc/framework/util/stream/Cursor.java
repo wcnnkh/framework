@@ -1,9 +1,10 @@
 package io.basc.framework.util.stream;
 
-import java.util.Iterator;
-import java.util.stream.Stream;
-
 import io.basc.framework.util.XUtils;
+
+import java.util.Iterator;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * 游标
@@ -38,7 +39,14 @@ public final class Cursor<T> extends StreamMapWrapper<T, Cursor<T>> implements S
 
 	private Cursor(Stream<T> stream, CursorPosition cursorPosition) {
 		super(stream(stream.iterator(), cursorPosition).onClose(() -> stream.close()));
+		initWrap(stream);
 		this.cursorPosition = cursorPosition;
+	}
+	
+	@Override
+	public <R> Cursor<R> map(Function<? super T, ? extends R> mapper) {
+		Stream<R> stream = super.map(mapper);
+		return new Cursor<R>(stream, cursorPosition);
 	}
 
 	public long getPosition() {
@@ -47,9 +55,12 @@ public final class Cursor<T> extends StreamMapWrapper<T, Cursor<T>> implements S
 
 	@Override
 	protected Cursor<T> wrap(Stream<T> stream) {
+		if(stream instanceof Cursor){
+			return (Cursor<T>) stream;
+		}
 		return new Cursor<>(stream);
 	}
-
+	
 	private static <E> Stream<E> stream(Iterator<E> iterator, CursorPosition cursorPosition) {
 		return XUtils.stream(new CursorIterator<E>(iterator, cursorPosition));
 	}

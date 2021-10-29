@@ -16,8 +16,11 @@ public abstract class StreamMapWrapper<T, S extends Stream<T>> extends AbstractS
 		super(stream);
 	}
 
+	/**
+	 * 尽可能重写此方法以达到重复使用的目的
+	 */
 	@Override
-	public <R> StreamWrapper<R> map(Function<? super T, ? extends R> mapper) {
+	public <R> Stream<R> map(Function<? super T, ? extends R> mapper) {
 		Stream<R> stream = super.map(mapper);
 		if (stream instanceof StreamWrapper) {
 			return (StreamWrapper<R>) stream;

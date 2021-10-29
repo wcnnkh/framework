@@ -1,10 +1,10 @@
 package io.basc.framework.util.stream;
 
+import io.basc.framework.util.Wrapper;
+
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.stream.BaseStream;
-
-import io.basc.framework.util.Wrapper;
 
 public abstract class BaseStreamWrapper<T, W extends BaseStream<T, W>> extends Wrapper<W> implements BaseStream<T, W> {
 	/**
@@ -15,6 +15,15 @@ public abstract class BaseStreamWrapper<T, W extends BaseStream<T, W>> extends W
 
 	public BaseStreamWrapper(W wrappedTarget) {
 		super(wrappedTarget);
+		initWrap(wrappedTarget);
+	}
+	
+	/**
+	 * 初始化解析(注意可能会执行多次)
+	 * @see Cursor
+	 * @param wrap
+	 */
+	protected void initWrap(W wrap){
 		if (wrappedTarget instanceof BaseStreamWrapper) {
 			this.autoClose = ((BaseStreamWrapper<?, ?>) wrappedTarget).autoClose;
 		}

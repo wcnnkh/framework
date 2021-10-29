@@ -5,14 +5,13 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.stream.StreamProcessorSupport;
 import io.basc.framework.value.EmptyValue;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 public final class Field extends FieldMetadata {
 	private final Field parentField;
@@ -41,12 +40,15 @@ public final class Field extends FieldMetadata {
 
 	/**
 	 * 获取所有的父级
-	 * 
 	 * @return
 	 */
-	public Stream<Field> parents() {
+	public List<Field> getParents() {
 		Iterator<Field> iterator = new ParentFieldIterator(this);
-		return StreamProcessorSupport.stream(iterator);
+		return CollectionUtils.reversal(Collections.list(CollectionUtils.toEnumeration(iterator)));
+	}
+	
+	public boolean hasParent(){
+		return parentField != null;
 	}
 
 	public Object get(Object instance) {
@@ -55,8 +57,7 @@ public final class Field extends FieldMetadata {
 		}
 
 		Object parentValue = instance;
-		for (Field parentField : CollectionUtils.reversal(parents().collect(
-				Collectors.toList()))) {
+		for (Field parentField : getParents()) {
 			if (!parentField.isSupportGetter()) {
 				return EmptyValue.INSTANCE.getAsObject(getGetter().getType());
 			}
@@ -89,8 +90,7 @@ public final class Field extends FieldMetadata {
 		}
 
 		Object parentValue = instance;
-		for (Field parentField : CollectionUtils.reversal(parents().collect(
-				Collectors.toList()))) {
+		for (Field parentField : getParents()) {
 			boolean isStatic = Modifier.isStatic(parentField.getGetter()
 					.getModifiers());
 			if (isStatic) {

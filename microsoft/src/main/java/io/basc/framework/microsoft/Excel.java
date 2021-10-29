@@ -1,14 +1,13 @@
 package io.basc.framework.microsoft;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.Iterator;
-
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.AbstractIterator;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.stream.Cursor;
+
+import java.io.Closeable;
+import java.util.Iterator;
 
 public interface Excel extends Closeable {
 	static final Logger logger = LoggerFactory.getLogger(Excel.class);
@@ -47,7 +46,6 @@ public interface Excel extends Closeable {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("resource")
 	default Cursor<? extends Sheet> stream() {
 		Iterator<Sheet> iterator = new AbstractIterator<Sheet>() {
 			private int index = 0;
@@ -63,14 +61,6 @@ public interface Excel extends Closeable {
 				return getSheet(index++);
 			}
 		};
-		Cursor<Sheet> cursor = new Cursor<>(iterator);
-		cursor.setAutoClose(false);
-		return cursor.onClose(() -> {
-			try {
-				close();
-			} catch (IOException e) {
-				logger.error(e, "close excel[{}] error", Excel.this.toString());
-			}
-		});
+		return new Cursor<>(iterator);
 	}
 }

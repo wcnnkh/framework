@@ -7,7 +7,8 @@ import io.basc.framework.sql.orm.TableMapping;
 import io.basc.framework.sql.orm.TableMetadata;
 import io.basc.framework.sql.orm.TableStructure;
 
-public class StandardTableStructure extends StandardEntityStructure<Column> implements TableStructure {
+public class StandardTableStructure extends StandardEntityStructure<Column>
+		implements TableStructure {
 	private String engine;
 	private String rowFormat;
 
@@ -35,12 +36,14 @@ public class StandardTableStructure extends StandardEntityStructure<Column> impl
 		this.rowFormat = rowFormat;
 	}
 
-	public static StandardTableStructure init(TableMapping tableMapping, Class<?> entityClass) {
+	public static StandardTableStructure init(TableMapping tableMapping,
+			Class<?> entityClass) {
 		TableMetadata tableMetadata = tableMapping.resolveMetadata(entityClass);
 		return new StandardTableStructure(tableMetadata);
 	}
 
-	private static void append(TableMapping tableMapping, StandardTableStructure tableStructure, Class<?> entityClass,
+	private static void append(TableMapping tableMapping,
+			StandardTableStructure tableStructure, Class<?> entityClass,
 			Field parentField) {
 		for (Field field : tableMapping.getFields(entityClass, parentField)) {
 			if (!field.isSupportGetter()) {
@@ -48,15 +51,30 @@ public class StandardTableStructure extends StandardEntityStructure<Column> impl
 			}
 
 			if (tableMapping.isEntity(entityClass, field.getGetter())) {
-				append(tableMapping, tableStructure, field.getGetter().getType(), field);
+				append(tableMapping, tableStructure, field.getGetter()
+						.getType(), field);
 			} else {
-				tableStructure.getProperties().add(tableMapping.resolve(entityClass, field));
+				Column column = tableMapping.resolve(entityClass, field);
+				StandardColumn standardColumn = new StandardColumn(column);
+				if (standardColumn.getField().hasParent()) {
+					StringBuilder sb = new StringBuilder();
+					for (Field parent : standardColumn.getField().getParents()) {
+						sb.append(tableMapping.getName(entityClass,
+								parent.getGetter()));
+						sb.append("_");
+					}
+					sb.append(standardColumn.getName());
+					standardColumn.setName(sb.toString());
+				}
+				tableStructure.getProperties().add(standardColumn);
 			}
 		}
 	}
 
-	public static StandardTableStructure resolveAll(TableMapping tableMapping, Class<?> entityClass) {
-		StandardTableStructure standardTableStructure = init(tableMapping, entityClass);
+	public static StandardTableStructure resolveAll(TableMapping tableMapping,
+			Class<?> entityClass) {
+		StandardTableStructure standardTableStructure = init(tableMapping,
+				entityClass);
 		append(tableMapping, standardTableStructure, entityClass, null);
 		return standardTableStructure;
 	}
