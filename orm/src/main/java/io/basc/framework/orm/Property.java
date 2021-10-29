@@ -20,4 +20,6 @@ public interface Property extends PropertyMetadata {
 	boolean isVersion();
 
 	boolean isIncrement();
+	
+	boolean isEntity();
 }

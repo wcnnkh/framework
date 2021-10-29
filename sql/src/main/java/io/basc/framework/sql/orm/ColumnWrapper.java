@@ -35,4 +35,9 @@ public class ColumnWrapper<T extends Column> extends ColumnMetadataWrapper<T> im
 	public boolean isIncrement() {
 		return wrappedTarget.isIncrement();
 	}
+
+	@Override
+	public boolean isEntity() {
+		return wrappedTarget.isEntity();
+	}
 }

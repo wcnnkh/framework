@@ -14,6 +14,7 @@ public class StandardProperty extends StandardPropertyMetadata implements Proper
 	private Collection<Range<Double>> numberRanges;
 	private boolean version;
 	private boolean increment;
+	private boolean entity;
 	private Field field;
 
 	public StandardProperty() {
@@ -76,5 +77,14 @@ public class StandardProperty extends StandardPropertyMetadata implements Proper
 
 	public void setField(Field field) {
 		this.field = field;
+	}
+
+	@Override
+	public boolean isEntity() {
+		return entity;
+	}
+
+	public void setEntity(boolean entity) {
+		this.entity = entity;
 	}
 }

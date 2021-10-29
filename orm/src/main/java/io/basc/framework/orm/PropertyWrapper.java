@@ -35,4 +35,9 @@ public class PropertyWrapper<W extends Property> extends PropertyMetadataWrapper
 	public boolean isIncrement() {
 		return wrappedTarget.isIncrement();
 	}
+
+	@Override
+	public boolean isEntity() {
+		return wrappedTarget.isEntity();
+	}
 }

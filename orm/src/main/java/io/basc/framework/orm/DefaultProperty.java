@@ -37,4 +37,9 @@ public class DefaultProperty extends DefaultPropertyMetadata implements Property
 	public boolean isIncrement() {
 		return getObjectRelationalResolver().isIncrement(getEntityClass(), getFieldDescriptor());
 	}
+
+	@Override
+	public boolean isEntity() {
+		return getObjectRelationalResolver().isEntity(getEntityClass(), getFieldDescriptor());
+	}
 }

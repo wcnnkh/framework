@@ -1,7 +1,5 @@
 package io.basc.framework.microsoft;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.AbstractIterator;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.stream.Cursor;
@@ -10,8 +8,6 @@ import java.io.Closeable;
 import java.util.Iterator;
 
 public interface Excel extends Closeable {
-	static final Logger logger = LoggerFactory.getLogger(Excel.class);
-
 	/**
 	 * 获取指定索引的sheet
 	 * 
@@ -28,17 +24,7 @@ public interface Excel extends Closeable {
 	int getNumberOfSheets();
 
 	default Sheet getSheet(String sheetName) {
-		for (int i = 0; i < getNumberOfSheets(); i++) {
-			Sheet sheet = getSheet(i);
-			if (sheet == null) {
-				continue;
-			}
-
-			if (StringUtils.equals(sheetName, sheet.getName())) {
-				return sheet;
-			}
-		}
-		return null;
+		return stream().filter((s) -> s != null && StringUtils.equals(sheetName, s.getName())).first();
 	}
 
 	/**
