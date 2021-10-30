@@ -83,7 +83,7 @@ public class MysqlDialect extends StandardSqlDialect {
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
-		Iterator<Column> iterator = tableStructure.iterator();
+		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
@@ -111,7 +111,7 @@ public class MysqlDialect extends StandardSqlDialect {
 		sb.append(")");
 		sb.append(DUPLICATE_KEY);
 
-		iterator = tableStructure.iterator();
+		iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {

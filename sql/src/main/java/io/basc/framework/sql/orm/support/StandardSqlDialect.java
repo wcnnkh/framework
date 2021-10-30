@@ -17,7 +17,6 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.ParameterException;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.orm.annotation.Version;
 import io.basc.framework.sql.EditableSql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
@@ -155,7 +154,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		StringBuilder values = new StringBuilder();
 		StringBuilder sql = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
-		Iterator<Column> iterator = tableStructure.iterator();
+		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
@@ -195,7 +194,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		sql.append(DELETE_PREFIX);
 		keywordProcessing(sql, tableStructure.getName());
 		sql.append(WHERE);
-		Iterator<Column> iterator = tableStructure.iterator();
+		Iterator<Column> iterator = tableStructure.getPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			keywordProcessing(sql, column.getName());
@@ -208,7 +207,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 
 		// 添加版本号字段变更条件
 		tableStructure.getNotPrimaryKeys().forEach((column) -> {
-			if (column.getField().isAnnotationPresent(Version.class)) {
+			if (column.isVersion()) {
 				// 因为一定存在主键，所有一定有where条件，此处直接and
 				sql.append(AND);
 				keywordProcessing(sql, column.getName());
@@ -482,14 +481,14 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	public <T> Sql toUpdateSql(TableStructure tableStructure, T entity,
 			T condition) throws SqlDialectException {
 		Map<String, Object> changeMap = new HashMap<String, Object>();
-		for(Column column : tableStructure.getColumns()){
+		tableStructure.columns().forEach((column) -> {
 			Object value = column.getField().get(condition);
 			if(value == null && column.isNullable()){
-				continue;
+				return ;
 			}
 			
 			changeMap.put(column.getField().getSetter().getName(), value);
-		}
+		});
 		return toUpdateSql(tableStructure, entity, changeMap, (col) -> true);
 	}
 
@@ -546,8 +545,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	private Sql getConditionalStatement(TableStructure tableStructure, Object entity) {
 		StringBuilder sb = new StringBuilder();
 		List<Object> params = new ArrayList<Object>(8);
-		and(sb, params, entity, tableStructure.stream().filter((col) -> col.hasIndex()).iterator());
-		and(sb, params, entity, tableStructure.stream().filter((col) -> col.hasIndex()).iterator());
+		and(sb, params, entity, tableStructure.columns().filter((col) -> col.hasIndex()).iterator());
+		and(sb, params, entity, tableStructure.columns().filter((col) -> col.hasIndex()).iterator());
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
 
