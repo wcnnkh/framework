@@ -17,7 +17,6 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.ParameterException;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.orm.annotation.Version;
 import io.basc.framework.sql.EditableSql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
@@ -195,7 +194,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		sql.append(DELETE_PREFIX);
 		keywordProcessing(sql, tableStructure.getName());
 		sql.append(WHERE);
-		Iterator<Column> iterator = tableStructure.iterator();
+		Iterator<Column> iterator = tableStructure.getPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			keywordProcessing(sql, column.getName());
@@ -208,7 +207,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 
 		// 添加版本号字段变更条件
 		tableStructure.getNotPrimaryKeys().forEach((column) -> {
-			if (column.getField().isAnnotationPresent(Version.class)) {
+			if (column.isVersion()) {
 				// 因为一定存在主键，所有一定有where条件，此处直接and
 				sql.append(AND);
 				keywordProcessing(sql, column.getName());
