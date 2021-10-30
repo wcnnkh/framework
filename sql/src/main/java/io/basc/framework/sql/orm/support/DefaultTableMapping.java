@@ -18,7 +18,9 @@ public class DefaultTableMapping extends DefaultObjectRelationalMapping implemen
 			TableResolverExtend.class);
 
 	public DefaultTableMapping() {
-		tableResolverExtends.addService(new AnnotationTableResolverExtend());
+		AnnotationTableResolverExtend tableResolverExtend = new AnnotationTableResolverExtend();
+		addService(tableResolverExtend);
+		tableResolverExtends.addService(tableResolverExtend);
 	}
 
 	public ConfigurableServices<TableResolverExtend> getTableResolverExtends() {

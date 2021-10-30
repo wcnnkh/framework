@@ -53,14 +53,13 @@ public class EntityStructureMapProcessor<T> implements Processor<ResultSet, T, T
 		MultiValueMap<String, Object> valueMap = SqlUtils.getRowValueMap(rs);
 		Object instance = Sys.env.getInstance(structure.getEntityClass());
 		for (Property column : structure) {
-			Object value = getValue(valueMap, column);
-			if (value == null) {
+			List<Object> values = getValue(valueMap, column);
+			if (values == null) {
 				continue;
 			}
 
 			Field field = column.getField();
-			List<Object> columnValues = valueMap.get(column.getName());
-			Object columnValue = columnValues.size() == 1 ? columnValues.get(0) : columnValues;
+			Object columnValue = values.size() == 1 ? values.get(0) : values;
 			field.set(instance, columnValue, conversionService);
 		}
 		return (T) instance;

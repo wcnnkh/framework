@@ -39,7 +39,9 @@ public class StandardTableStructure extends StandardEntityStructure<Column>
 	public static StandardTableStructure init(TableMapping tableMapping,
 			Class<?> entityClass) {
 		TableMetadata tableMetadata = tableMapping.resolveMetadata(entityClass);
-		return new StandardTableStructure(tableMetadata);
+		StandardTableStructure standardTableStructure = new StandardTableStructure(tableMetadata);
+		standardTableStructure.setEntityClass(entityClass);
+		return standardTableStructure;
 	}
 
 	private static void append(TableMapping tableMapping,

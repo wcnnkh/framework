@@ -1,5 +1,6 @@
 package io.basc.framework.orm.support;
 
+import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.orm.EntityMetadata;
 
 public class StandardEntityMetadata implements EntityMetadata {
@@ -38,5 +39,10 @@ public class StandardEntityMetadata implements EntityMetadata {
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+	
+	@Override
+	public String toString() {
+		return MapperUtils.toString(this);
 	}
 }
