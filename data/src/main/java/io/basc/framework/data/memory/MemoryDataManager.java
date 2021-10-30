@@ -1,22 +1,21 @@
 package io.basc.framework.data.memory;
 
-import io.basc.framework.context.Destroy;
-import io.basc.framework.data.cas.CAS;
-import io.basc.framework.env.Sys;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class MemoryDataManager implements Destroy {
+import io.basc.framework.data.cas.CAS;
+import io.basc.framework.env.Sys;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+
+public final class MemoryDataManager implements AutoCloseable {
 	// 单位：秒
-	private static final int DEFAULT_CLEAR_PERIOD = Sys.env
-			.getValue("memory.temporary.cache.clear.period", int.class, 60);
-	//守护线程，自动退出
+	private static final int DEFAULT_CLEAR_PERIOD = Sys.env.getValue("memory.temporary.cache.clear.period", int.class,
+			60);
+	// 守护线程，自动退出
 	private static final Timer TIMER = new Timer(MemoryDataManager.class.getSimpleName(), true);
 
 	private static Logger logger = LoggerFactory.getLogger(MemoryDataManager.class);
@@ -29,8 +28,7 @@ public final class MemoryDataManager implements Destroy {
 	}
 
 	/**
-	 * @param clearPeriodSecond
-	 *            单位：秒
+	 * @param clearPeriodSecond 单位：秒
 	 */
 	public MemoryDataManager(int clearPeriodSecond) {
 		this.timerTask = new ClearExpireKeyTask();
@@ -79,7 +77,8 @@ public final class MemoryDataManager implements Destroy {
 		return false;
 	}
 
-	public void destroy() {
+	public void close() {
+		cacheMap.clear();
 		if (timerTask != null) {
 			timerTask.cancel();
 		}

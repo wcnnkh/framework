@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import io.basc.framework.orm.annotation.PrimaryKey;
 import io.basc.framework.orm.annotation.Version;
-import io.basc.framework.orm.sql.annotation.Table;
+import io.basc.framework.sql.orm.annotation.Table;
 
 @Table
 public class TaskLockTable implements Serializable {

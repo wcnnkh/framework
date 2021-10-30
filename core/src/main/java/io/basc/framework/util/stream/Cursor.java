@@ -1,9 +1,10 @@
 package io.basc.framework.util.stream;
 
-import java.util.Iterator;
-import java.util.stream.Stream;
-
 import io.basc.framework.util.XUtils;
+
+import java.util.Iterator;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * 游标
@@ -12,7 +13,7 @@ import io.basc.framework.util.XUtils;
  *
  * @param <T>
  */
-public final class Cursor<T> extends AbstractAutoCloseStream<T, Cursor<T>> implements StreamPosition {
+public final class Cursor<T> extends StreamMapWrapper<T, Cursor<T>> implements StreamPosition {
 	private final CursorPosition cursorPosition;
 
 	public Cursor(Iterator<T> iterator) {
@@ -38,7 +39,14 @@ public final class Cursor<T> extends AbstractAutoCloseStream<T, Cursor<T>> imple
 
 	private Cursor(Stream<T> stream, CursorPosition cursorPosition) {
 		super(stream(stream.iterator(), cursorPosition).onClose(() -> stream.close()));
+		initWrap(stream);
 		this.cursorPosition = cursorPosition;
+	}
+	
+	@Override
+	public <R> Cursor<R> map(Function<? super T, ? extends R> mapper) {
+		Stream<R> stream = super.map(mapper);
+		return new Cursor<R>(stream, cursorPosition);
 	}
 
 	public long getPosition() {
@@ -46,10 +54,13 @@ public final class Cursor<T> extends AbstractAutoCloseStream<T, Cursor<T>> imple
 	}
 
 	@Override
-	protected Cursor<T> wrapper(Stream<T> stream) {
+	protected Cursor<T> wrap(Stream<T> stream) {
+		if(stream instanceof Cursor){
+			return (Cursor<T>) stream;
+		}
 		return new Cursor<>(stream);
 	}
-
+	
 	private static <E> Stream<E> stream(Iterator<E> iterator, CursorPosition cursorPosition) {
 		return XUtils.stream(new CursorIterator<E>(iterator, cursorPosition));
 	}

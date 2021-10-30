@@ -16,15 +16,15 @@
 
 package io.basc.framework.http.client;
 
-import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.http.HttpMethod;
-import io.basc.framework.io.StreamUtils;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import io.basc.framework.http.HttpHeaders;
+import io.basc.framework.http.HttpMethod;
+import io.basc.framework.io.IOUtils;
 
 final class SimpleStreamingClientHttpRequest extends AbstractClientHttpRequest {
 
@@ -73,7 +73,7 @@ final class SimpleStreamingClientHttpRequest extends AbstractClientHttpRequest {
 			this.connection.connect();
 			this.body = this.connection.getOutputStream();
 		}
-		return StreamUtils.nonClosing(this.body);
+		return IOUtils.nonClosing(this.body);
 	}
 
 	@Override

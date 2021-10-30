@@ -22,7 +22,7 @@ public abstract class AbstractStorageWrapper<C extends Storage> implements Stora
 	public String toString() {
 		return getTargetStorage().toString();
 	}
-	
+
 	public <T> T get(String key) {
 		return getTargetStorage().get(formatKey(key));
 	}

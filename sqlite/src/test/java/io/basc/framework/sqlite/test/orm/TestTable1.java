@@ -1,7 +1,7 @@
 package io.basc.framework.sqlite.test.orm;
 
 import io.basc.framework.orm.annotation.PrimaryKey;
-import io.basc.framework.orm.sql.annotation.Table;
+import io.basc.framework.sql.orm.annotation.Table;
 
 @Table
 public class TestTable1{

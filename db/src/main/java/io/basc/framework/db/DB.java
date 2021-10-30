@@ -1,6 +1,6 @@
 package io.basc.framework.db;
 
-import io.basc.framework.orm.sql.SqlTemplate;
+import io.basc.framework.sql.orm.SqlTemplate;
 
 public interface DB extends SqlTemplate {
 	/**

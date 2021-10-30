@@ -17,6 +17,8 @@ import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -1036,17 +1038,24 @@ public final class FileUtils {
 	 * @throws IOException if an IO error occurs during copying
 	 */
 	public static void copyInputStreamToFile(InputStream source, File destination) throws IOException {
+		FileOutputStream output = openOutputStream(destination);
 		try {
-			FileOutputStream output = openOutputStream(destination);
-			try {
-				IOUtils.copy(source, output);
-				output.close(); // don't swallow close Exception if copy
-								// completes normally
-			} finally {
-				IOUtils.closeQuietly(output);
-			}
+			IOUtils.copy(source, output);
+			output.close(); // don't swallow close Exception if copy
+							// completes normally
 		} finally {
-			IOUtils.closeQuietly(source);
+			IOUtils.closeQuietly(output);
+		}
+	}
+
+	public static void copyInputStreamToPath(InputStream source, Path destination) throws IOException {
+		OutputStream output = Files.newOutputStream(destination);
+		try {
+			IOUtils.copy(source, output);
+			output.close(); // don't swallow close Exception if copy
+							// completes normally
+		} finally {
+			IOUtils.closeQuietly(output);
 		}
 	}
 
@@ -2273,7 +2282,7 @@ public final class FileUtils {
 					InputStream is = zipFile.getInputStream(zipEntry);
 					try {
 						copyInputStreamToFile(is, f);
-					} finally{
+					} finally {
 						IOUtils.close(is);
 					}
 				}
@@ -2306,6 +2315,7 @@ public final class FileUtils {
 
 	/**
 	 * 迭代目录
+	 * 
 	 * @param directory
 	 * @param filter
 	 * @return
@@ -2316,6 +2326,7 @@ public final class FileUtils {
 
 	/**
 	 * 迭代目录
+	 * 
 	 * @param directory
 	 * @param filter
 	 * @return

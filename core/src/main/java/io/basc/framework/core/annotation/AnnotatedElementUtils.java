@@ -1,15 +1,5 @@
 package io.basc.framework.core.annotation;
 
-import io.basc.framework.core.BridgeMethodResolver;
-import io.basc.framework.core.parameter.DefaultValue;
-import io.basc.framework.lang.Description;
-import io.basc.framework.lang.Ignore;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.LinkedMultiValueMap;
-import io.basc.framework.util.MultiValueMap;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
@@ -22,6 +12,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+
+import io.basc.framework.core.BridgeMethodResolver;
+import io.basc.framework.core.parameter.DefaultValue;
+import io.basc.framework.lang.Ignore;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.LinkedMultiValueMap;
+import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.StringUtils;
 
 public class AnnotatedElementUtils {
 
@@ -834,7 +834,11 @@ public class AnnotatedElementUtils {
 
 	public static String getCharsetName(AnnotatedElement annotatedElement, Supplier<String> defaultValue) {
 		CharsetName charsetName = getMergedAnnotation(annotatedElement, CharsetName.class);
-		return charsetName == null ? (defaultValue == null ? null : defaultValue.get()) : charsetName.value();
+		if (charsetName != null && StringUtils.hasText(charsetName.value())) {
+			return charsetName.value();
+		}
+
+		return defaultValue == null ? null : defaultValue.get();
 	}
 
 	public static Boolean isIgnore(AnnotatedElement annotatedElement) {
@@ -844,11 +848,6 @@ public class AnnotatedElementUtils {
 	public static Boolean isIgnore(AnnotatedElement annotatedElement, Supplier<Boolean> defaultValue) {
 		Ignore ignore = getMergedAnnotation(annotatedElement, Ignore.class);
 		return ignore == null ? defaultValue.get() : ignore.value();
-	}
-
-	public static String getDescription(AnnotatedElement annotatedElement) {
-		Description description = getMergedAnnotation(annotatedElement, Description.class);
-		return description == null ? null : description.value();
 	}
 
 	public static String getDefaultValue(AnnotatedElement annotatedElement) {

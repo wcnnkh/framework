@@ -2,8 +2,8 @@ package io.basc.framework.lucene;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.orm.EntityStructure;
-import io.basc.framework.orm.EntityStructureMapProcessor;
 import io.basc.framework.orm.Property;
+import io.basc.framework.orm.support.EntityStructureMapProcessor;
 
 import org.apache.lucene.document.Document;
 

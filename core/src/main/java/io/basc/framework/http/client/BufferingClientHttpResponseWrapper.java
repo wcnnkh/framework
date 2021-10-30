@@ -1,12 +1,12 @@
 package io.basc.framework.http.client;
 
-import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.http.HttpStatus;
-import io.basc.framework.io.StreamUtils;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import io.basc.framework.http.HttpHeaders;
+import io.basc.framework.http.HttpStatus;
+import io.basc.framework.io.IOUtils;
 
 final class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
 
@@ -36,7 +36,7 @@ final class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
 
 	public InputStream getInputStream() throws IOException {
 		if (this.body == null) {
-			this.body = StreamUtils.copyToByteArray(this.response.getInputStream());
+			this.body = IOUtils.copyToByteArray(this.response.getInputStream());
 		}
 		return new ByteArrayInputStream(this.body);
 	}

@@ -1,15 +1,15 @@
 package io.basc.framework.http.client;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.exception.HttpClientErrorException;
 import io.basc.framework.http.client.exception.HttpServerErrorException;
 import io.basc.framework.http.client.exception.UnknownHttpStatusCodeException;
-import io.basc.framework.io.FileCopyUtils;
-
-import java.io.IOException;
-import java.nio.charset.Charset;
+import io.basc.framework.io.IOUtils;
 
 public class DefaultClientHttpResponseErrorHandler implements
 		ClientHttpResponseErrorHandler {
@@ -133,7 +133,7 @@ public class DefaultClientHttpResponseErrorHandler implements
 	 */
 	protected byte[] getResponseBody(ClientHttpResponse response) {
 		try {
-			return FileCopyUtils.copyToByteArray(response.getInputStream());
+			return IOUtils.copyToByteArray(response.getInputStream());
 		} catch (IOException ex) {
 			// ignore
 		}

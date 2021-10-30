@@ -17,25 +17,22 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.orm.sql.Column;
-import io.basc.framework.orm.sql.SqlDialectException;
-import io.basc.framework.orm.sql.SqlType;
-import io.basc.framework.orm.sql.StandardColumnDescriptor;
-import io.basc.framework.orm.sql.StandardSqlDialect;
-import io.basc.framework.orm.sql.TableStructure;
-import io.basc.framework.orm.sql.TableStructureMapping;
-import io.basc.framework.orm.sql.annotation.Counter;
-import io.basc.framework.orm.sql.annotation.Table;
 import io.basc.framework.sql.EditableSql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
+import io.basc.framework.sql.orm.Column;
+import io.basc.framework.sql.orm.IndexInfo;
+import io.basc.framework.sql.orm.SqlDialectException;
+import io.basc.framework.sql.orm.SqlType;
+import io.basc.framework.sql.orm.TableStructure;
+import io.basc.framework.sql.orm.TableStructureMapping;
+import io.basc.framework.sql.orm.support.StandardColumnMetdata;
+import io.basc.framework.sql.orm.support.StandardSqlDialect;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.AnyValue;
 
 public class MysqlDialect extends StandardSqlDialect {
 	private static final String DUPLICATE_KEY = " ON DUPLICATE KEY UPDATE ";
-	private static final String IF = "IF(";
 	private static final String LAST_INSERT_ID_SQL = "select last_insert_id()";
 
 	public SqlType getSqlType(java.lang.Class<?> type) {
@@ -89,10 +86,10 @@ public class MysqlDialect extends StandardSqlDialect {
 		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if(column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
+			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
 				continue;
 			}
-			
+
 			keywordProcessing(cols, column.getName());
 			values.append("?");
 			params.add(getDataBaseValue(entity, column.getField()));
@@ -117,10 +114,10 @@ public class MysqlDialect extends StandardSqlDialect {
 		iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if(column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
+			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
 				continue;
 			}
-			
+
 			keywordProcessing(sb, column.getName());
 			sb.append("=?");
 			params.add(getDataBaseValue(entity, column.getField()));
@@ -129,26 +126,6 @@ public class MysqlDialect extends StandardSqlDialect {
 			}
 		}
 		return new SimpleSql(sb.toString(), params.toArray());
-	}
-
-	@Override
-	protected void appendCounterValue(StringBuilder sb, List<Object> params, Object entity, Column column,
-			AnyValue oldValue, AnyValue newValue, Counter counter) {
-		double change = newValue.getAsDoubleValue() - oldValue.getAsDoubleValue();
-		sb.append(IF);
-		keywordProcessing(sb, column.getName());
-		sb.append("+").append(change);
-		sb.append(">=").append(counter.min());
-		sb.append(AND);
-		keywordProcessing(sb, column.getName());
-		sb.append("+").append(change);
-		sb.append("<=").append(counter.max());
-		sb.append(",");
-		keywordProcessing(sb, column.getName());
-		sb.append("+").append(change);
-		sb.append(",");
-		keywordProcessing(sb, column.getName());
-		sb.append(")");
 	}
 
 	@Override
@@ -200,11 +177,11 @@ public class MysqlDialect extends StandardSqlDialect {
 			}
 		}
 
-		for (Entry<String, List<Column>> entry : tableStructure.getIndexGroup().entrySet()) {
+		for (Entry<IndexInfo, List<Column>> entry : tableStructure.getIndexGroups().entrySet()) {
 			sb.append(",");
 			sb.append(" INDEX");
 			sb.append(" ");
-			keywordProcessing(sb, entry.getKey());
+			keywordProcessing(sb, entry.getKey().getName());
 			sb.append(" (");
 			Iterator<Column> indexIterator = entry.getValue().iterator();
 			while (indexIterator.hasNext()) {
@@ -233,23 +210,20 @@ public class MysqlDialect extends StandardSqlDialect {
 		}
 		sb.append(")");
 
-		Table table = tableStructure.getEntityClass().getAnnotation(Table.class);
-		if (table != null) {
-			if (StringUtils.isNotEmpty(table.engine())) {
-				sb.append(" ENGINE=").append(table.engine());
-			}
-
-			if (StringUtils.isNotEmpty(table.charset())) {
-				sb.append(" CHARSET=").append(table.charset());
-			}
-
-			if (StringUtils.isNotEmpty(table.row_format())) {
-				sb.append(" ROW_FORMAT=").append(table.row_format());
-			}
+		if (StringUtils.hasText(tableStructure.getEngine())) {
+			sb.append(" ENGINE=").append(tableStructure.getEngine());
 		}
 
-		if (table != null && !StringUtils.isEmpty(table.comment())) {
-			sb.append(" comment=\'").append(table.comment()).append("\'");
+		if (StringUtils.hasText(tableStructure.getCharsetName())) {
+			sb.append(" CHARSET=").append(tableStructure.getCharsetName());
+		}
+
+		if (StringUtils.hasText(tableStructure.getRowFormat())) {
+			sb.append(" ROW_FORMAT=").append(tableStructure.getRowFormat());
+		}
+
+		if (StringUtils.hasText(tableStructure.getComment())) {
+			sb.append(" comment=\'").append(tableStructure.getComment()).append("\'");
 		}
 
 		return Arrays.asList(new SimpleSql(sb.toString()));
@@ -289,8 +263,8 @@ public class MysqlDialect extends StandardSqlDialect {
 						tableStructure.getName());
 			}
 
-			public StandardColumnDescriptor getName(ResultSet resultSet) throws SQLException {
-				StandardColumnDescriptor descriptor = new StandardColumnDescriptor();
+			public StandardColumnMetdata getName(ResultSet resultSet) throws SQLException {
+				StandardColumnMetdata descriptor = new StandardColumnMetdata();
 				descriptor.setName(resultSet.getString("COLUMN_NAME"));
 				return descriptor;
 			}
@@ -319,7 +293,7 @@ public class MysqlDialect extends StandardSqlDialect {
 		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if(column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
+			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
 				continue;
 			}
 

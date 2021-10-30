@@ -12,12 +12,10 @@ public abstract class AbstractTemporaryStorageWrapper<C extends TemporaryStorage
 	}
 
 	public boolean add(String key, long exp, Object value) {
-		transactionDelete(key);
 		return getTargetStorage().add(formatKey(key), exp, value);
 	}
 
 	public void set(String key, long exp, Object value) {
-		transactionDelete(key);
 		getTargetStorage().set(formatKey(key), exp, value);
 	}
 

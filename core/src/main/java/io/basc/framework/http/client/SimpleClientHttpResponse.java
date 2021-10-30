@@ -16,13 +16,13 @@
 
 package io.basc.framework.http.client;
 
-import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.io.StreamUtils;
-import io.basc.framework.util.StringUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+
+import io.basc.framework.http.HttpHeaders;
+import io.basc.framework.io.IOUtils;
+import io.basc.framework.util.StringUtils;
 
 final class SimpleClientHttpResponse implements ClientHttpResponse {
 
@@ -75,7 +75,7 @@ final class SimpleClientHttpResponse implements ClientHttpResponse {
 	public void close() {
 		if (this.responseStream != null) {
 			try {
-				StreamUtils.drain(this.responseStream);
+				IOUtils.drain(this.responseStream);
 				this.responseStream.close();
 			} catch (Exception ex) {
 				// ignore

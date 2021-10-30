@@ -14,7 +14,7 @@ public class JxlSheet implements io.basc.framework.microsoft.Sheet {
 	public String getName() {
 		return sheet.getName();
 	}
-
+	
 	public jxl.Sheet getSheet() {
 		return sheet;
 	}
