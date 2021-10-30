@@ -43,10 +43,10 @@ public final class StreamProcessorSupport {
 	 * @return
 	 */
 	public static IntStream autoClose(IntStream stream) {
-		if (stream instanceof AutoCloseIntStream) {
-			return (AutoCloseIntStream) stream;
+		if (stream instanceof IntStreamWrapper) {
+			return (IntStreamWrapper) stream;
 		}
-		return new AutoCloseIntStream(stream);
+		return new IntStreamWrapper(stream);
 	}
 
 	/**
@@ -57,10 +57,10 @@ public final class StreamProcessorSupport {
 	 * @return
 	 */
 	public static LongStream autoClose(LongStream stream) {
-		if (stream instanceof AutoCloseLongStream) {
-			return (AutoCloseLongStream) stream;
+		if (stream instanceof LongStreamWrapper) {
+			return (LongStreamWrapper) stream;
 		}
-		return new AutoCloseLongStream(stream);
+		return new LongStreamWrapper(stream);
 	}
 
 	/**
@@ -71,10 +71,10 @@ public final class StreamProcessorSupport {
 	 * @return
 	 */
 	public static DoubleStream autoClose(DoubleStream stream) {
-		if (stream instanceof AutoCloseDoubleStream) {
-			return (AutoCloseDoubleStream) stream;
+		if (stream instanceof DoubleStreamWrapper) {
+			return (DoubleStreamWrapper) stream;
 		}
-		return new AutoCloseDoubleStream(stream);
+		return new DoubleStreamWrapper(stream);
 	}
 
 	/**
@@ -86,10 +86,10 @@ public final class StreamProcessorSupport {
 	 * @return
 	 */
 	public static <T> Stream<T> autoClose(Stream<T> stream) {
-		if (stream instanceof AutoCloseStream) {
-			return (AutoCloseStream<T>) stream;
+		if (stream instanceof StreamWrapper) {
+			return (StreamWrapper<T>) stream;
 		}
-		return new AutoCloseStream<>(stream);
+		return new StreamWrapper<>(stream);
 	}
 
 	/**
@@ -126,7 +126,7 @@ public final class StreamProcessorSupport {
 		return list.stream();
 	}
 
-	public static <T> AutoCloseStream<T> emptyAutoCloseStream() {
-		return new AutoCloseStream<>(emptyStream());
+	public static <T> StreamWrapper<T> emptyAutoCloseStream() {
+		return new StreamWrapper<>(emptyStream());
 	}
 }

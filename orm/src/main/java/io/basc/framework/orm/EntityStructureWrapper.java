@@ -1,56 +1,33 @@
 package io.basc.framework.orm;
 
+import java.util.Collection;
+
 import io.basc.framework.mapper.Field;
-import io.basc.framework.util.Wrapper;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Stream;
+public class EntityStructureWrapper<W extends EntityStructure<T>, T extends Property>
+		extends EntityDescriptorWrapper<W, T> implements EntityStructure<T> {
 
-public class EntityStructureWrapper<M extends EntityStructure<T>, T extends Property> extends
-		Wrapper<M> implements EntityStructure<T> {
-
-	public EntityStructureWrapper(M wrappedTarget) {
+	public EntityStructureWrapper(W wrappedTarget) {
 		super(wrappedTarget);
-	}
-	
-	@Override
-	public String getName() {
-		return wrappedTarget.getName();
 	}
 
 	@Override
 	public Class<?> getEntityClass() {
 		return wrappedTarget.getEntityClass();
 	}
-	
+
 	@Override
 	public T find(Field field) {
 		return wrappedTarget.find(field);
 	}
 
 	@Override
-	public List<T> getRows() {
-		return wrappedTarget.getRows();
+	public EntityStructure<T> rename(String name) {
+		return wrappedTarget.rename(name);
 	}
 
 	@Override
-	public List<T> getNotPrimaryKeys() {
-		return wrappedTarget.getNotPrimaryKeys();
-	}
-
-	@Override
-	public List<T> getPrimaryKeys() {
-		return wrappedTarget.getPrimaryKeys();
-	}
-
-	@Override
-	public Stream<T> stream() {
-		return wrappedTarget.stream();
-	}
-
-	@Override
-	public Iterator<T> iterator() {
-		return wrappedTarget.iterator();
+	public Collection<String> getAliasNames() {
+		return wrappedTarget.getAliasNames();
 	}
 }

@@ -21,7 +21,7 @@ import io.basc.framework.mapper.FieldFactory;
 import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.Fields;
 import io.basc.framework.orm.ObjectRelationalMapping;
-import io.basc.framework.orm.OrmUtils;
+import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConfigurableAccept;
 import io.basc.framework.util.StringUtils;
@@ -155,7 +155,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 
 	@Nullable
 	private Object getProperty(Object source, Field field) {
-		Collection<String> names = getSetterNames(field);
+		Collection<String> names = getSetterNames(source.getClass(), field);
 		if (logger.isTraceEnabled()) {
 			logger.trace(field + " - " + names);
 		}
@@ -213,9 +213,9 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		configurationProperties(source, TypeDescriptor.forObject(source), target, TypeDescriptor.forObject(target));
 	}
 
-	private Collection<String> getUseSetterNames(AliasRegistry aliasRegistry, Field field) {
+	private Collection<String> getUseSetterNames(AliasRegistry aliasRegistry, Class<?> entityClass,  Field field) {
 		List<String> useNames = new ArrayList<String>(8);
-		Collection<String> names = getObjectRelationalMapping().getAliasNames(field.getSetter());
+		Collection<String> names = getObjectRelationalMapping().getAliasNames(entityClass, field.getSetter());
 		for (String name : names) {
 			useNames.add(name);
 			if (aliasRegistry != null) {
@@ -245,12 +245,12 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		return nameAppend.toString();
 	}
 
-	private void appendNames(@Nullable AliasRegistry aliasRegistry, List<String> names, String parentName,
+	private void appendNames(Class<?> entityClass, @Nullable AliasRegistry aliasRegistry, List<String> names, String parentName,
 			Field field) {
 		Field parent = field.getParentField();
 		if (parent == null) {
 			// 最顶层的字段
-			Collection<String> aliasNames = getObjectRelationalMapping().getAliasNames(field.getSetter());
+			Collection<String> aliasNames = getObjectRelationalMapping().getAliasNames(entityClass, field.getSetter());
 			for (String name : aliasNames) {
 				names.add(toUseName(parentName, name));
 				if (aliasRegistry != null) {
@@ -273,17 +273,17 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 				}
 			}
 		} else {
-			for (String name : getUseSetterNames(aliasRegistry, parent)) {
-				appendNames(aliasRegistry, names,
+			for (String name : getUseSetterNames(aliasRegistry, entityClass, parent)) {
+				appendNames(entityClass, aliasRegistry, names,
 						parentName == null ? (name + connector) : (name + connector + parentName),
 						field.getParentField());
 			}
 		}
 	}
 
-	private Collection<String> getSetterNames(Field field) {
+	private Collection<String> getSetterNames(Class<?> entityClass, Field field) {
 		List<String> names = new ArrayList<String>(8);
-		appendNames(getAliasRegistry(), names, null, field);
+		appendNames(entityClass, getAliasRegistry(), names, null, field);
 		return names;
 	}
 
@@ -299,18 +299,18 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		if (isStrict()) {
 			strictConfiguration(targetFields, source, sourceType, target);
 		} else {
-			noStrictConfiguration(targetFields, source, sourceType, target);
+			noStrictConfiguration(source.getClass(), targetFields, source, sourceType, target);
 		}
 	}
 
-	private void noStrictConfiguration(Fields fields, Object source, TypeDescriptor sourceType, Object target) {
+	private void noStrictConfiguration(Class<?> clazz, Fields fields, Object source, TypeDescriptor sourceType, Object target) {
 		for (Field field : fields) {
 			Object value = null;
-			if (getObjectRelationalMapping().isEntity(field.getSetter())) {
+			if (getObjectRelationalMapping().isEntity(clazz, field.getSetter())) {
 				// 如果是一个实体
 				Class<?> entityClass = field.getSetter().getType();
 				value = getInstanceFactory().getInstance(entityClass);
-				noStrictConfiguration(getFields(entityClass, field), source, sourceType, value);
+				noStrictConfiguration(entityClass, getFields(entityClass, field), source, sourceType, value);
 			} else {
 				value = getProperty(source, field);
 			}

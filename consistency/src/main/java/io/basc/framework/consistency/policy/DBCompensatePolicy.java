@@ -12,9 +12,9 @@ import io.basc.framework.db.DB;
 import io.basc.framework.db.locks.TableLockFactory;
 import io.basc.framework.io.SerializerException;
 import io.basc.framework.orm.annotation.PrimaryKey;
-import io.basc.framework.orm.sql.annotation.Table;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
+import io.basc.framework.sql.orm.annotation.Table;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.TimeUtils;
 

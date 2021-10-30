@@ -1,19 +1,40 @@
 package io.basc.framework.orm;
 
-import io.basc.framework.env.Sys;
-
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-public interface ObjectKeyFormat {
-	/**
-	 * 默认对象主键的连接符
-	 */
-	static final String OBJECT_KEY_CONNECTOR = Sys.env.getValue("object.key.connector.character", String.class, ":");
+import io.basc.framework.util.CollectionUtils;
 
+public interface ObjectKeyFormat {
 	String getObjectKeyByIds(EntityStructure<?> structure, Collection<Object> ids);
 
 	<T> String getObjectKey(EntityStructure<?> structure, T bean);
 
-	<K> Map<String, K> getInIdsKeyMap(EntityStructure<?> structure, Collection<? extends K> lastPrimaryKeys, Object[] primaryKeys);
+	default <K> Map<String, K> getInIdsKeyMap(EntityStructure<?> structure, Collection<? extends K> lastPrimaryKeys,
+			Object[] primaryKeys) {
+		if (CollectionUtils.isEmpty(lastPrimaryKeys)) {
+			return Collections.emptyMap();
+		}
+
+		Map<String, K> keyMap = new LinkedHashMap<String, K>();
+		Iterator<? extends K> valueIterator = lastPrimaryKeys.iterator();
+
+		while (valueIterator.hasNext()) {
+			K k = valueIterator.next();
+			Object[] ids;
+			if (primaryKeys == null || primaryKeys.length == 0) {
+				ids = new Object[] { k };
+			} else {
+				ids = new Object[primaryKeys.length];
+				System.arraycopy(primaryKeys, 0, ids, 0, primaryKeys.length);
+				ids[ids.length - 1] = k;
+			}
+			keyMap.put(getObjectKeyByIds(structure, Arrays.asList(ids)), k);
+		}
+		return keyMap;
+	}
 }

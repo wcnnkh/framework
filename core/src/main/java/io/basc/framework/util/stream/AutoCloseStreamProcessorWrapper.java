@@ -42,7 +42,7 @@ public class AutoCloseStreamProcessorWrapper<T, E extends Throwable> extends Wra
 	}
 
 	@Override
-	public <V> AutoCloseStream<V> stream(Processor<T, Spliterator<V>, E> processor) throws E {
+	public <V> StreamWrapper<V> stream(Processor<T, Spliterator<V>, E> processor) throws E {
 		if (wrappedTarget instanceof AutoCloseStreamProcessor) {
 			return ((AutoCloseStreamProcessor<T, E>) wrappedTarget).stream(processor).onClose(() -> {
 				try {
@@ -68,7 +68,7 @@ public class AutoCloseStreamProcessorWrapper<T, E extends Throwable> extends Wra
 				throw new StreamException(e);
 			}
 		});
-		return new AutoCloseStream<>(stream);
+		return new StreamWrapper<>(stream);
 	}
 
 	@Override

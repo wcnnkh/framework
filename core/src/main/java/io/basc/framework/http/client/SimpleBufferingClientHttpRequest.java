@@ -16,17 +16,17 @@
 
 package io.basc.framework.http.client;
 
-import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.http.HttpMethod;
-import io.basc.framework.io.FileCopyUtils;
-import io.basc.framework.util.StringUtils;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+
+import io.basc.framework.http.HttpHeaders;
+import io.basc.framework.http.HttpMethod;
+import io.basc.framework.io.IOUtils;
+import io.basc.framework.util.StringUtils;
 
 final class SimpleBufferingClientHttpRequest extends AbstractBufferingClientHttpRequest {
 	
@@ -66,7 +66,7 @@ final class SimpleBufferingClientHttpRequest extends AbstractBufferingClientHttp
 		}
 		this.connection.connect();
 		if (this.connection.getDoOutput()) {
-			FileCopyUtils.copy(bufferedOutput, this.connection.getOutputStream());
+			IOUtils.copy(bufferedOutput, this.connection.getOutputStream());
 		}
 		else {
 			// Immediately trigger the request in a no-output scenario as well

@@ -15,6 +15,7 @@ public interface Setter extends FieldDescriptor {
 		}
 		
 		Object targetValue = conversionService.convert(value, TypeDescriptor.forObject(value), new TypeDescriptor(this));
+		//此处不对插入值做非空验证，因为允许插入空值
 		set(instance, targetValue);
 	}
 }

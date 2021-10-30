@@ -9,7 +9,7 @@ import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.orm.OrmUtils;
+import io.basc.framework.orm.support.OrmUtils;
 
 class EntityToMapConversionService extends ConditionalConversionService {
 

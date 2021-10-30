@@ -16,12 +16,12 @@
 
 package io.basc.framework.http.client;
 
-import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.http.HttpMethod;
-import io.basc.framework.io.StreamUtils;
-
 import java.io.IOException;
 import java.net.URI;
+
+import io.basc.framework.http.HttpHeaders;
+import io.basc.framework.http.HttpMethod;
+import io.basc.framework.io.IOUtils;
 
 /**
  * Simple implementation of {@link ClientHttpRequest} that wraps another
@@ -47,7 +47,7 @@ final class BufferingClientHttpRequestWrapper extends AbstractBufferingClientHtt
 	@Override
 	protected ClientHttpResponse executeInternal(HttpHeaders headers, byte[] bufferedOutput) throws IOException {
 		this.request.getHeaders().putAll(headers);
-		StreamUtils.copy(bufferedOutput, this.request.getOutputStream());
+		IOUtils.copy(bufferedOutput, this.request.getOutputStream());
 		ClientHttpResponse response = this.request.execute();
 		return new BufferingClientHttpResponseWrapper(response);
 	}

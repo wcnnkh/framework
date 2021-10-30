@@ -1,7 +1,7 @@
 package io.basc.framework.sqlite.test.orm;
 
+import io.basc.framework.orm.annotation.AutoIncrement;
 import io.basc.framework.orm.annotation.PrimaryKey;
-import io.basc.framework.orm.sql.annotation.AutoIncrement;
 
 public class AutoIncrementTestBean {
 	@AutoIncrement

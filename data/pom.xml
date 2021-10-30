@@ -10,7 +10,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>context</artifactId>
+			<artifactId>transaction</artifactId>
 		</dependency>
 	</dependencies>
 </project>

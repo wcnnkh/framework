@@ -34,8 +34,8 @@ public interface AutoCloseStreamProcessor<T, E extends Throwable> extends Stream
 	}
 
 	@Override
-	default <V> AutoCloseStream<V> stream(Processor<T, Spliterator<V>, E> processor) throws E {
-		return new AutoCloseStream<V>(StreamProcessor.super.stream(processor));
+	default <V> StreamWrapper<V> stream(Processor<T, Spliterator<V>, E> processor) throws E {
+		return new StreamWrapper<V>(StreamProcessor.super.stream(processor));
 	}
 
 	@Override
