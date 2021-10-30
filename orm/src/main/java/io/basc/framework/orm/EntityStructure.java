@@ -1,8 +1,9 @@
 package io.basc.framework.orm;
 
-import java.util.Collection;
-
 import io.basc.framework.mapper.Field;
+
+import java.util.Collection;
+import java.util.stream.Stream;
 
 /**
  * 实体结构
@@ -28,5 +29,13 @@ public interface EntityStructure<T extends Property> extends EntityDescriptor<T>
 
 	default T find(Field field) {
 		return stream().filter((column) -> field.equals(column.getField())).findFirst().orElse(null);
+	}
+	
+	/**
+	 * 获取所有的列(排除实体字段)
+	 * @return
+	 */
+	default Stream<T> columns(){
+		return stream().filter((c) -> !c.isEntity());
 	}
 }

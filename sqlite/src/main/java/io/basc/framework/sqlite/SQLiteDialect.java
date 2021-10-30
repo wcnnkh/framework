@@ -51,7 +51,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 		keywordProcessing(sb, tableStructure.getName());
 		sb.append(" (");
 
-		Iterator<Column> iterator = tableStructure.iterator();
+		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column col = iterator.next();
 			keywordProcessing(sb, col.getName());
@@ -160,7 +160,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 		StringBuilder values = new StringBuilder();
 		StringBuilder sql = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
-		Iterator<Column> iterator = tableStructure.iterator();
+		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
@@ -201,7 +201,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 		StringBuilder values = new StringBuilder();
 		StringBuilder sql = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
-		Iterator<Column> iterator = tableStructure.iterator();
+		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {

@@ -11,17 +11,36 @@ public interface EntityDescriptor<T extends PropertyMetadata> extends EntityMeta
 	default Stream<T> stream() {
 		return getProperties().stream();
 	}
+	
+	/**
+	 * 获取所有的列, 属性不一定是列
+	 * @see #stream()
+	 * @return
+	 */
+	default Stream<T> columns(){
+		return stream();
+	}
 
 	@Override
 	default Iterator<T> iterator() {
 		return stream().iterator();
 	}
-
+	
+	/**
+	 * 获取主键列
+	 * @see #columns()
+	 * @return
+	 */
 	default List<T> getPrimaryKeys() {
-		return stream().filter((column) -> column.isPrimaryKey()).collect(Collectors.toList());
+		return columns().filter((column) -> column.isPrimaryKey()).collect(Collectors.toList());
 	}
 
+	/**
+	 * 获取非主键列
+	 * @see #columns()
+	 * @return
+	 */
 	default List<T> getNotPrimaryKeys() {
-		return stream().filter((column) -> !column.isPrimaryKey()).collect(Collectors.toList());
+		return columns().filter((column) -> !column.isPrimaryKey()).collect(Collectors.toList());
 	}
 }

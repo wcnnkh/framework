@@ -154,7 +154,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		StringBuilder values = new StringBuilder();
 		StringBuilder sql = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
-		Iterator<Column> iterator = tableStructure.iterator();
+		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
@@ -481,14 +481,14 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	public <T> Sql toUpdateSql(TableStructure tableStructure, T entity,
 			T condition) throws SqlDialectException {
 		Map<String, Object> changeMap = new HashMap<String, Object>();
-		for(Column column : tableStructure.getColumns()){
+		tableStructure.columns().forEach((column) -> {
 			Object value = column.getField().get(condition);
 			if(value == null && column.isNullable()){
-				continue;
+				return ;
 			}
 			
 			changeMap.put(column.getField().getSetter().getName(), value);
-		}
+		});
 		return toUpdateSql(tableStructure, entity, changeMap, (col) -> true);
 	}
 
@@ -545,8 +545,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	private Sql getConditionalStatement(TableStructure tableStructure, Object entity) {
 		StringBuilder sb = new StringBuilder();
 		List<Object> params = new ArrayList<Object>(8);
-		and(sb, params, entity, tableStructure.stream().filter((col) -> col.hasIndex()).iterator());
-		and(sb, params, entity, tableStructure.stream().filter((col) -> col.hasIndex()).iterator());
+		and(sb, params, entity, tableStructure.columns().filter((col) -> col.hasIndex()).iterator());
+		and(sb, params, entity, tableStructure.columns().filter((col) -> col.hasIndex()).iterator());
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
 
