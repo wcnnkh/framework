@@ -9,13 +9,11 @@ public class DefaultStreamProcessor<T, E extends Throwable> extends AbstractStre
 
 	@Override
 	public T process() throws E {
-		return processor.process();
-	}
-
-	@Override
-	public <S> StreamProcessor<S, E> map(Processor<T, ? extends S, ? extends E> processor) {
-		return new MapStreamProcessor<T, S, E>(this.processor, (t) -> {
-			return processor.process(t);
-		}).onClose(() -> close());
+		try {
+			beforeProcess();
+			return processor.process();
+		} finally {
+			afterProcess();
+		}
 	}
 }

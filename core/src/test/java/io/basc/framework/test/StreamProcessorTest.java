@@ -1,6 +1,7 @@
 package io.basc.framework.test;
 
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.stream.Cursor;
 import io.basc.framework.util.stream.StreamProcessor;
 import io.basc.framework.util.stream.StreamProcessorSupport;
 
@@ -49,5 +50,13 @@ public class StreamProcessorTest {
 			System.out.println("关闭s2");
 		});
 		System.out.println(stream.filter((e) -> true).findFirst().get());
+		
+		Cursor<String> cursor = new Cursor<>(list.iterator());
+		cursor = cursor.onClose(() -> {
+			System.out.println("关闭游标");
+		}).onClose(() -> {
+			System.out.println("关闭游标2");
+		});
+		cursor.forEach((s) -> System.out.println(s));
 	}
 }

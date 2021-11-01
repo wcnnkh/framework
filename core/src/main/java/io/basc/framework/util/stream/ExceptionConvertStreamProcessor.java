@@ -42,4 +42,19 @@ public class ExceptionConvertStreamProcessor<SE extends Throwable, T, E extends 
 			throw excpetionConverter.convert(e);
 		}
 	}
+
+	@Override
+	public boolean isAutoClose() {
+		return streamProcessor.isAutoClose();
+	}
+
+	@Override
+	public void setAutoClose(boolean autoClose) {
+		streamProcessor.setAutoClose(autoClose);
+	}
+	
+	@Override
+	public boolean isClosed() {
+		return streamProcessor.isClosed();
+	}
 }

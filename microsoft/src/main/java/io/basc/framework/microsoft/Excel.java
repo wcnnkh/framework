@@ -1,11 +1,14 @@
 package io.basc.framework.microsoft;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.Iterator;
+
+import io.basc.framework.lang.NestedRuntimeException;
 import io.basc.framework.util.AbstractIterator;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.XUtils;
 import io.basc.framework.util.stream.Cursor;
-
-import java.io.Closeable;
-import java.util.Iterator;
 
 public interface Excel extends Closeable {
 	/**
@@ -47,6 +50,15 @@ public interface Excel extends Closeable {
 				return getSheet(index++);
 			}
 		};
-		return new Cursor<>(iterator);
+
+		Cursor<? extends Sheet> cursor = new Cursor<>(XUtils.stream(iterator).onClose(() -> {
+			try {
+				close();
+			} catch (IOException e) {
+				throw new NestedRuntimeException(Excel.this.toString(), e);
+			}
+		}));
+		cursor.setAutoClose(false);
+		return cursor;
 	}
 }

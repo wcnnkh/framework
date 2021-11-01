@@ -9,9 +9,14 @@ import java.util.stream.BaseStream;
 public abstract class BaseStreamWrapper<T, W extends BaseStream<T, W>> extends Wrapper<W> implements BaseStream<T, W> {
 	/**
 	 * 默认是自动关闭的
+	 */
+	static final boolean AUTO_CLOSE = true;
+	
+	/**
+	 * 默认是自动关闭的
 	 * @see #afterExecution()
 	 */
-	private boolean autoClose = true;
+	private boolean autoClose = AUTO_CLOSE;
 
 	public BaseStreamWrapper(W wrappedTarget) {
 		super(wrappedTarget);

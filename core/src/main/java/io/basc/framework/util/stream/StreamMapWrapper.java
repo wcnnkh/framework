@@ -18,6 +18,7 @@ public abstract class StreamMapWrapper<T, S extends Stream<T>> extends AbstractS
 
 	/**
 	 * 尽可能重写此方法以达到重复使用的目的
+	 * @see Cursor#map(Function)
 	 */
 	@Override
 	public <R> Stream<R> map(Function<? super T, ? extends R> mapper) {
