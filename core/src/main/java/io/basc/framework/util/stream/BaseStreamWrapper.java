@@ -9,13 +9,23 @@ import java.util.stream.BaseStream;
 public abstract class BaseStreamWrapper<T, W extends BaseStream<T, W>> extends Wrapper<W> implements BaseStream<T, W> {
 	/**
 	 * 默认是自动关闭的
+	 */
+	static final boolean AUTO_CLOSE = true;
+	
+	/**
+	 * 默认是自动关闭的
 	 * @see #afterExecution()
 	 */
-	private boolean autoClose = true;
+	private boolean autoClose = AUTO_CLOSE;
+	private boolean closed;
 
 	public BaseStreamWrapper(W wrappedTarget) {
 		super(wrappedTarget);
 		initWrap(wrappedTarget);
+	}
+	
+	public boolean isClosed() {
+		return closed;
 	}
 	
 	/**
@@ -66,6 +76,10 @@ public abstract class BaseStreamWrapper<T, W extends BaseStream<T, W>> extends W
 
 	@Override
 	public void close() {
+		if(closed) {
+			return ;
+		}
+		closed = true;
 		wrappedTarget.close();
 	}
 

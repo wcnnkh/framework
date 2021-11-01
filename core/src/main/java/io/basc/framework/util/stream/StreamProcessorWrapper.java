@@ -3,9 +3,6 @@ package io.basc.framework.util.stream;
 import io.basc.framework.convert.Converter;
 import io.basc.framework.util.Wrapper;
 
-import java.util.Spliterator;
-import java.util.stream.Stream;
-
 public class StreamProcessorWrapper<W extends StreamProcessor<T, E>, T, E extends Throwable> extends Wrapper<W>
 		implements StreamProcessor<T, E> {
 
@@ -49,7 +46,17 @@ public class StreamProcessorWrapper<W extends StreamProcessor<T, E>, T, E extend
 	}
 
 	@Override
-	public <V> Stream<V> stream(Processor<T, Spliterator<V>, E> processor) throws E {
-		return wrappedTarget.stream(processor);
+	public boolean isAutoClose() {
+		return wrappedTarget.isAutoClose();
+	}
+
+	@Override
+	public void setAutoClose(boolean autoClose) {
+		wrappedTarget.setAutoClose(autoClose);
+	}
+
+	@Override
+	public boolean isClosed() {
+		return wrappedTarget.isClosed();
 	}
 }

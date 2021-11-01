@@ -56,6 +56,6 @@ public interface Sheet {
 				}
 			}
 		};
-		return new Cursor<>(iterator);
+		return new Cursor<>(iterator, false);
 	}
 }

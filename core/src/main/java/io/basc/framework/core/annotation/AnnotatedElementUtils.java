@@ -827,12 +827,30 @@ public class AnnotatedElementUtils {
 		return postProcessAndSynthesizeAggregatedResults(element, annotationType, processor.getAggregatedResults());
 	}
 
-	public static Boolean isNullable(AnnotatedElement annotatedElement, Supplier<Boolean> defaultValue) {
+	/**
+	 * 是否可以为空
+	 * 
+	 * @param annotatedElement
+	 * @return 默认为false
+	 */
+	public static boolean isNullable(AnnotatedElement annotatedElement) {
 		Nullable nullable = getMergedAnnotation(annotatedElement, Nullable.class);
-		return nullable == null ? defaultValue.get() : nullable.value();
+		if (nullable != null) {
+			return nullable.value();
+		}
+		return false;
 	}
 
-	public static String getCharsetName(AnnotatedElement annotatedElement, Supplier<String> defaultValue) {
+	public static Boolean isNullable(AnnotatedElement annotatedElement, @Nullable Supplier<Boolean> defaultValue) {
+		Nullable nullable = getMergedAnnotation(annotatedElement, Nullable.class);
+		if (nullable != null) {
+			return nullable.value();
+		}
+
+		return defaultValue == null ? null : defaultValue.get();
+	}
+
+	public static String getCharsetName(AnnotatedElement annotatedElement, @Nullable Supplier<String> defaultValue) {
 		CharsetName charsetName = getMergedAnnotation(annotatedElement, CharsetName.class);
 		if (charsetName != null && StringUtils.hasText(charsetName.value())) {
 			return charsetName.value();
@@ -841,18 +859,39 @@ public class AnnotatedElementUtils {
 		return defaultValue == null ? null : defaultValue.get();
 	}
 
-	public static Boolean isIgnore(AnnotatedElement annotatedElement) {
-		return isIgnore(annotatedElement, () -> false);
+	/**
+	 * 是否应该忽略
+	 * 
+	 * @param annotatedElement
+	 * @return 默认返回false
+	 */
+	public static boolean isIgnore(AnnotatedElement annotatedElement) {
+		Ignore ignore = getMergedAnnotation(annotatedElement, Ignore.class);
+		if (ignore != null) {
+			return ignore.value();
+		}
+		return false;
 	}
 
-	public static Boolean isIgnore(AnnotatedElement annotatedElement, Supplier<Boolean> defaultValue) {
+	public static Boolean isIgnore(AnnotatedElement annotatedElement, @Nullable Supplier<Boolean> defaultValue) {
 		Ignore ignore = getMergedAnnotation(annotatedElement, Ignore.class);
-		return ignore == null ? defaultValue.get() : ignore.value();
+		if (ignore != null) {
+			return ignore.value();
+		}
+
+		return defaultValue == null ? null : defaultValue.get();
 	}
 
 	public static String getDefaultValue(AnnotatedElement annotatedElement) {
-		DefaultValue defaultValue = getMergedAnnotation(annotatedElement, DefaultValue.class);
-		return defaultValue == null ? null : defaultValue.value();
+		return getDefaultValue(annotatedElement, null);
+	}
+
+	public static String getDefaultValue(AnnotatedElement annotationType, @Nullable Supplier<String> defaultValue) {
+		DefaultValue value = getMergedAnnotation(annotationType, DefaultValue.class);
+		if (value != null && StringUtils.isNotEmpty(value.value())) {
+			return value.value();
+		}
+		return defaultValue == null ? null : defaultValue.get();
 	}
 
 	/**

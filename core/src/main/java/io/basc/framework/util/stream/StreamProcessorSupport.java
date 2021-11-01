@@ -26,15 +26,6 @@ public final class StreamProcessorSupport {
 		});
 	}
 
-	public static <T, E extends Throwable> AutoCloseStreamProcessor<T, E> autoClose(
-			StreamProcessor<T, E> streamProcessor) {
-		if (streamProcessor instanceof AutoCloseStreamProcessor) {
-			return (AutoCloseStreamProcessor<T, E>) streamProcessor;
-		}
-
-		return new AutoCloseStreamProcessorWrapper<>(streamProcessor);
-	}
-
 	/**
 	 * 使用静态代理而不动态代理的原因是考虑性能
 	 * 虽然可以自动关闭，并并非所有情况都适用，例如调用iterator/spliterator方法或获取到此对象后未调用任何方法
@@ -102,6 +93,10 @@ public final class StreamProcessorSupport {
 	 */
 	public static <T> Stream<T> stream(Iterator<T> iterator) {
 		return autoClose(XUtils.stream(iterator));
+	}
+
+	public static <T> Cursor<T> cursor(Iterator<T> iterator) {
+		return new Cursor<>(iterator);
 	}
 
 	/**

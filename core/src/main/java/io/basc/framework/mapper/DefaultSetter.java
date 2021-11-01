@@ -29,10 +29,10 @@ public class DefaultSetter extends AbstractFieldDescriptor implements Setter {
 		}
 
 		if (setterParameterDescriptor == null) {
-			this.nullable = AnnotatedElementUtils.isNullable(this, () -> false);
+			this.nullable = AnnotatedElementUtils.isNullable(this);
 		} else {
 			this.nullable = AnnotatedElementUtils.isNullable(setterParameterDescriptor,
-					() -> AnnotatedElementUtils.isNullable(DefaultSetter.this, () -> false));
+					() -> AnnotatedElementUtils.isNullable(DefaultSetter.this));
 		}
 	}
 
