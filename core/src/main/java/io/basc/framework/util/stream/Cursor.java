@@ -3,6 +3,7 @@ package io.basc.framework.util.stream;
 import java.util.Iterator;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import io.basc.framework.util.XUtils;
 
@@ -32,13 +33,8 @@ public class Cursor<T> extends StreamMapWrapper<T, Cursor<T>> implements StreamP
 	}
 
 	public Cursor(Iterator<T> iterator, long position, boolean autoClose) {
-		this(iterator, new SimpleCursorPosition(position), autoClose);
-	}
-
-	public Cursor(Iterator<T> iterator, CursorPosition cursorPosition, boolean autoClose) {
-		super(stream(iterator, cursorPosition));
+		this(XUtils.stream(iterator), position);
 		setAutoClose(autoClose);
-		this.cursorPosition = cursorPosition;
 	}
 
 	public Cursor(Stream<T> stream) {
@@ -46,13 +42,18 @@ public class Cursor<T> extends StreamMapWrapper<T, Cursor<T>> implements StreamP
 	}
 
 	public Cursor(Stream<T> stream, long position) {
-		this(stream, new SimpleCursorPosition(position));
+		this(stream, new ParallelCursorPosition(position));
 	}
 
-	public Cursor(Stream<T> stream, CursorPosition cursorPosition) {
-		super(stream(stream.iterator(), cursorPosition).onClose(() -> stream.close()));
+	private Cursor(Stream<T> stream, CursorPosition cursorPosition) {
+		super(convert(stream, cursorPosition));
 		initWrap(stream);
 		this.cursorPosition = cursorPosition;
+	}
+
+	private static <E> Stream<E> convert(Stream<E> stream, CursorPosition cursorPosition) {
+		CursorSpliterator<E> cursorSpliterator = new CursorSpliterator<>(stream.spliterator(), cursorPosition);
+		return StreamSupport.stream(cursorSpliterator, stream.isParallel()).onClose(() -> stream.close());
 	}
 
 	@Override
@@ -71,9 +72,5 @@ public class Cursor<T> extends StreamMapWrapper<T, Cursor<T>> implements StreamP
 			return (Cursor<T>) stream;
 		}
 		return new Cursor<>(stream);
-	}
-
-	private static <E> Stream<E> stream(Iterator<E> iterator, CursorPosition cursorPosition) {
-		return XUtils.stream(new CursorIterator<E>(iterator, cursorPosition));
 	}
 }

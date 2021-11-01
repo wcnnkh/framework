@@ -4,8 +4,8 @@ import io.basc.framework.convert.Converter;
 import io.basc.framework.lang.Nullable;
 
 /**
- * 流式处理器
- * 
+ * 流式处理器<br/>
+ * 默认不会自动关闭 {@link AbstractStreamProcessor#isAutoClose()}
  * @author shuchaowen
  * @param <T>
  * @param <E>
