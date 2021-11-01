@@ -56,7 +56,7 @@ public class DefaultParameterDescriptor extends
 	}
 
 	public boolean isNullable() {
-		return AnnotatedElementUtils.isNullable(wrappedTarget, () -> false);
+		return AnnotatedElementUtils.isNullable(wrappedTarget);
 	}
 
 	@Override
