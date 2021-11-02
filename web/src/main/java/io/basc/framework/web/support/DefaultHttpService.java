@@ -3,7 +3,7 @@ package io.basc.framework.web.support;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.HttpServiceInterceptor;
 import io.basc.framework.web.HttpServiceRegistry;
@@ -14,26 +14,26 @@ import io.basc.framework.web.resource.StaticResourceRegistry;
 public class DefaultHttpService extends AbstractHttpService {
 	private final List<HttpServiceInterceptor> interceptors = new ArrayList<HttpServiceInterceptor>();
 
-	public DefaultHttpService(BeanFactory beanFactory) {
-		super(beanFactory.getInstance(HttpServiceRegistry.class));
-		if (beanFactory.isInstance(CorsRegistry.class)) {
-			setCorsRegistry(beanFactory.getInstance(CorsRegistry.class));
+	public DefaultHttpService(ServiceLoaderFactory factory) {
+		super(factory.getInstance(HttpServiceRegistry.class));
+		if (factory.isInstance(CorsRegistry.class)) {
+			setCorsRegistry(factory.getInstance(CorsRegistry.class));
 		}
 
-		if (beanFactory.isInstance(NotFoundServiceRegistry.class)) {
-			setNotFoundServiceRegistry(beanFactory.getInstance(NotFoundServiceRegistry.class));
+		if (factory.isInstance(NotFoundServiceRegistry.class)) {
+			setNotFoundServiceRegistry(factory.getInstance(NotFoundServiceRegistry.class));
 		}
 
-		getServiceRegistry().add(new StaticResourceHttpService(beanFactory));
-		if (beanFactory.isInstance(StaticResourceRegistry.class)) {
-			getServiceRegistry().add(beanFactory.getInstance(StaticResourceRegistry.class));
+		getServiceRegistry().add(new StaticResourceHttpService(factory));
+		if (factory.isInstance(StaticResourceRegistry.class)) {
+			getServiceRegistry().add(factory.getInstance(StaticResourceRegistry.class));
 		}
 
-		for (HttpServiceInterceptor interceptor : beanFactory.getServiceLoader(HttpServiceInterceptor.class)) {
+		for (HttpServiceInterceptor interceptor : factory.getServiceLoader(HttpServiceInterceptor.class)) {
 			interceptors.add(interceptor);
 		}
 
-		for (HttpService handler : beanFactory.getServiceLoader(HttpService.class)) {
+		for (HttpService handler : factory.getServiceLoader(HttpService.class)) {
 			getServiceRegistry().add(handler);
 		}
 	}

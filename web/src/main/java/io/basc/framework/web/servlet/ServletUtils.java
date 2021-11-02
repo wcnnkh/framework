@@ -10,7 +10,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.env.Environment;
+import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.http.HttpCookie;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.XUtils;
@@ -57,10 +58,10 @@ public final class ServletUtils {
 		return XUtils.getDelegate(response, HttpServletResponse.class);
 	}
 
-	public static ServletService createServletService(BeanFactory beanFactory) {
-		if (beanFactory.isInstance(ServletService.class)) {
-			return beanFactory.getInstance(ServletService.class);
+	public static ServletService createServletService(ServiceLoaderFactory factory, Environment environment) {
+		if (factory.isInstance(ServletService.class)) {
+			return factory.getInstance(ServletService.class);
 		}
-		return new DefaultHttpServletService(beanFactory);
+		return new DefaultHttpServletService(factory, environment);
 	}
 }
