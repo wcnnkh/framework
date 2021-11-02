@@ -3,6 +3,9 @@ package io.basc.framework.mvc.message;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.web.ServerHttpRequest;
+import io.basc.framework.web.message.WebMessageConverter;
+import io.basc.framework.web.message.WebMessageConverters;
+import io.basc.framework.web.message.WebMessagelConverterException;
 
 public class RequestParameterFactory implements ParameterFactory {
 	private final ServerHttpRequest request;
@@ -23,13 +26,13 @@ public class RequestParameterFactory implements ParameterFactory {
 
 	@Override
 	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
-		return messageConverters.canRead(parameterDescriptor, request);
+		return messageConverters.isAccept(parameterDescriptor);
 	}
 
 	@Override
 	public Object getParameter(ParameterDescriptor parameterDescriptor) {
 		try {
-			return messageConverters.read(parameterDescriptor, request);
+			return messageConverters.read(request, parameterDescriptor);
 		} catch (Exception e) {
 			throw new WebMessagelConverterException(parameterDescriptor, request, e);
 		}

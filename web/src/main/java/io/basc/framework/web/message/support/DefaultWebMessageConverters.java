@@ -1,16 +1,14 @@
-package io.basc.framework.mvc.message.support;
+package io.basc.framework.web.message.support;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.lang.ConversionServices;
 import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.factory.ServiceLoaderFactory;
-import io.basc.framework.mvc.jaxrs2.Jaxrs2HeaderParamMessageConverter;
-import io.basc.framework.mvc.jaxrs2.Jaxrs2ParamMessageConverter;
-import io.basc.framework.mvc.message.WebMessageConverter;
-import io.basc.framework.mvc.message.WebMessageConverters;
 import io.basc.framework.net.message.convert.DefaultMessageConverters;
 import io.basc.framework.net.message.convert.MessageConverters;
+import io.basc.framework.web.message.WebMessageConverter;
+import io.basc.framework.web.message.WebMessageConverters;
 
 public class DefaultWebMessageConverters extends WebMessageConverters {
 	private final DefaultMessageConverters messageConverters;
@@ -26,16 +24,21 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 		addService(new QueryParamsMessageConverter());
 
 		// jaxrs2
-		addService(new Jaxrs2ParamMessageConverter(getConversionServices(), defaultValueFactory));
-		addService(new Jaxrs2HeaderParamMessageConverter(getConversionServices(), defaultValueFactory));
-		addService(new Jaxrs2HeaderParamMessageConverter(getConversionServices(), defaultValueFactory));
+		/*
+		 * addService(new Jaxrs2ParamMessageConverter(getConversionServices(),
+		 * defaultValueFactory)); addService(new
+		 * Jaxrs2HeaderParamMessageConverter(getConversionServices(),
+		 * defaultValueFactory)); addService(new
+		 * Jaxrs2HeaderParamMessageConverter(getConversionServices(),
+		 * defaultValueFactory));
+		 */
 	}
 
 	public MessageConverters getMessageConverters() {
 		return messageConverters;
 	}
-	
-	public ConversionServices getConversionServices(){
+
+	public ConversionServices getConversionServices() {
 		return messageConverters.getConversionServices();
 	}
 

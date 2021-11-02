@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.mvc.message.WebMessageConverters;
-import io.basc.framework.mvc.message.support.DefaultWebMessageConverters;
+import io.basc.framework.mvc.message.support.MvcMessageConverters;
 import io.basc.framework.mvc.security.UserSessionManager;
 import io.basc.framework.net.message.multipart.MultipartMessageResolver;
 import io.basc.framework.web.ServerHttpRequest;
@@ -24,7 +24,7 @@ public class DefaultHttpChannelFactory implements HttpChannelFactory {
 
 	public DefaultHttpChannelFactory(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
-		webMessageConverters = new DefaultWebMessageConverters(beanFactory.getEnvironment().getConversionService(),
+		webMessageConverters = new MvcMessageConverters(beanFactory.getEnvironment().getConversionService(),
 				beanFactory.getDefaultValueFactory());
 		webMessageConverters.configure(beanFactory);
 		this.userSessionManager = beanFactory.isInstance(UserSessionManager.class)

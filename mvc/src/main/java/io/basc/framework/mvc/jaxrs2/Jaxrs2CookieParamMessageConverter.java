@@ -9,10 +9,9 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterFactory;
-import io.basc.framework.mvc.message.WebMessagelConverterException;
-import io.basc.framework.mvc.message.support.ConversionMessageConverter;
 import io.basc.framework.web.ServerHttpRequest;
-import io.basc.framework.web.ServerHttpResponse;
+import io.basc.framework.web.message.WebMessagelConverterException;
+import io.basc.framework.web.message.support.ConversionMessageConverter;
 
 public class Jaxrs2CookieParamMessageConverter extends ConversionMessageConverter {
 
@@ -22,9 +21,8 @@ public class Jaxrs2CookieParamMessageConverter extends ConversionMessageConverte
 	}
 
 	@Override
-	public boolean canRead(ParameterDescriptor parameterDescriptor, ServerHttpRequest request) {
-		return parameterDescriptor.isAnnotationPresent(HeaderParam.class)
-				&& super.canRead(parameterDescriptor, request);
+	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
+		return parameterDescriptor.isAnnotationPresent(HeaderParam.class) && super.isAccept(parameterDescriptor);
 	}
 
 	@Override
@@ -46,7 +44,7 @@ public class Jaxrs2CookieParamMessageConverter extends ConversionMessageConverte
 	}
 
 	@Override
-	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response) {
+	public boolean isAccept(TypeDescriptor typeDescriptor) {
 		return false;
 	}
 }

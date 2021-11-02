@@ -17,10 +17,10 @@ import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
-import io.basc.framework.mvc.message.WebMessageConverter;
-import io.basc.framework.mvc.message.WebMessagelConverterException;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
+import io.basc.framework.web.message.WebMessageConverter;
+import io.basc.framework.web.message.WebMessagelConverterException;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
@@ -43,9 +43,9 @@ public class Jaxrs2WebMessageConverter implements WebMessageConverter, Configura
 		messageBodyReaders.configure(serviceLoaderFactory);
 		messageBodyWriters.configure(serviceLoaderFactory);
 	}
-
+	
 	@Override
-	public boolean canRead(ParameterDescriptor parameterDescriptor, ServerHttpRequest request) {
+	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
 		MediaType mediaType = Jaxrs2Utils.convertMediaType(request.getContentType());
 		Annotation[] annotations = parameterDescriptor.getAnnotations();
 		for (MessageBodyReader messageBodyReader : messageBodyReaders) {
@@ -55,6 +55,11 @@ public class Jaxrs2WebMessageConverter implements WebMessageConverter, Configura
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public boolean canRead(ParameterDescriptor parameterDescriptor, ServerHttpRequest request) {
+		
 	}
 
 	@Override
