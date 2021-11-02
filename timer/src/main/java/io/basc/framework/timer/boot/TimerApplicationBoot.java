@@ -4,6 +4,7 @@ import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.AnnotationUtils;
 import io.basc.framework.core.reflect.Invoker;
 import io.basc.framework.core.reflect.MethodInvoker;
@@ -23,11 +24,10 @@ import java.lang.reflect.Method;
 import java.util.Calendar;
 import java.util.Date;
 
-@Provider
+@Provider(order = Ordered.LOWEST_PRECEDENCE)
 public final class TimerApplicationBoot implements ApplicationPostProcessor {
-	
-	public void postProcessApplication(ConfigurableApplication application)
-			throws Throwable {
+
+	public void postProcessApplication(ConfigurableApplication application) throws Throwable {
 		Timer timer = application.getBeanFactory().getInstance(Timer.class);
 		for (Class<?> clz : application.getContextClasses()) {
 			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, Schedule.class)) {
@@ -41,10 +41,11 @@ public final class TimerApplicationBoot implements ApplicationPostProcessor {
 			}
 		}
 	}
-	
+
 	private Task getTask(BeanFactory beanFactory, Class<?> clz, Method method) {
 		Class<?> parameterType = ArrayUtils.isEmpty(method.getParameterTypes()) ? null : method.getParameterTypes()[0];
-		MethodInvoker invoker = beanFactory.getAop().getProxyMethod(clz, new NameInstanceSupplier<Object>(beanFactory, clz.getName()), method);
+		MethodInvoker invoker = beanFactory.getAop().getProxyMethod(clz,
+				new NameInstanceSupplier<Object>(beanFactory, clz.getName()), method);
 		return new CrontabRunnable(invoker, parameterType);
 	}
 
