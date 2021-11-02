@@ -1,4 +1,4 @@
-package io.basc.framework.timer.boot.annotation;
+package io.basc.framework.timer.boot;
 
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.boot.ApplicationPostProcessor;
@@ -13,6 +13,8 @@ import io.basc.framework.timer.ScheduleTaskConfig;
 import io.basc.framework.timer.Task;
 import io.basc.framework.timer.TaskListener;
 import io.basc.framework.timer.Timer;
+import io.basc.framework.timer.boot.annotation.Crontab;
+import io.basc.framework.timer.boot.annotation.Schedule;
 import io.basc.framework.timer.support.SimpleCrontabConfig;
 import io.basc.framework.timer.support.SimpleTimerTaskConfig;
 import io.basc.framework.util.ArrayUtils;
@@ -22,7 +24,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 @Provider
-public final class TimerAnnotationScan implements ApplicationPostProcessor {
+public final class TimerApplicationBoot implements ApplicationPostProcessor {
 	
 	public void postProcessApplication(ConfigurableApplication application)
 			throws Throwable {
