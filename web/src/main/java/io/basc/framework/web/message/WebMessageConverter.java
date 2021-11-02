@@ -1,16 +1,18 @@
 package io.basc.framework.web.message;
 
-import java.io.IOException;
-import java.net.URI;
-
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.http.HttpMessage;
+import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpRequestWrapper;
 import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
+
+import java.io.IOException;
+import java.net.URI;
 
 public interface WebMessageConverter {
 	/**
@@ -22,7 +24,26 @@ public interface WebMessageConverter {
 	 * @return 是否可以处理
 	 */
 	boolean isAccept(ParameterDescriptor parameterDescriptor);
+	
+	/**
+	 * 控制着以下行为{@link #read(ServerHttpRequest, ParameterDescriptor)} and {@link #write(ClientHttpRequest, ParameterDescriptor, Object)}
+	 * @param request
+	 * @param parameterDescriptor
+	 * @return
+	 */
+	default boolean isAccept(HttpRequest request, ParameterDescriptor parameterDescriptor){
+		return isAccept(parameterDescriptor);
+	}
 
+	/**
+	 * 读取内容
+	 * @param request
+	 * @param parameterDescriptor
+	 * @return
+	 * @throws IOException
+	 * @throws WebMessagelConverterException
+	 * @see #isAccept(HttpRequest, ParameterDescriptor)
+	 */
 	Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException;
 
@@ -34,31 +55,50 @@ public interface WebMessageConverter {
 	 * @param parameterDescriptor
 	 * @param parameter
 	 * @return
+	 * @see #isAccept(HttpRequest, ParameterDescriptor)
 	 */
-	ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
-			throws IOException, WebMessagelConverterException;
+	default ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
+			throws IOException, WebMessagelConverterException{
+		return request;
+	}
 
 	/**
+	 * 根据参数构造uri
 	 * @param uri
 	 * @param parameterDescriptor
 	 * @param parameter
 	 * @return
+	 * @see #isAccept(ParameterDescriptor)
 	 */
-	UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
-			Object parameter) throws WebMessagelConverterException;
+	default UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
+			Object parameter) throws WebMessagelConverterException{
+		return builder;
+	}
 
 	/**
 	 * 控制着以下行为{@link #read(ClientHttpResponse, TypeDescriptor)} and
 	 * {@link #write(ServerHttpRequest, ServerHttpResponse, TypeDescriptor, Object)}
 	 * 
+	 * @param message
 	 * @param typeDescriptor
 	 * @return 是否可以处理
 	 */
-	boolean isAccept(TypeDescriptor typeDescriptor);
+	boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor);
 
 	Object read(ClientHttpResponse response, TypeDescriptor typeDescriptor)
 			throws IOException, WebMessagelConverterException;
-
+	
+	/**
+	 * 控制着以下行为{@link #write(ServerHttpRequest, ServerHttpResponse, TypeDescriptor, Object)}}
+	 * @param request
+	 * @param typeDescriptor
+	 * @param body
+	 * @return
+	 */
+	default boolean isAccept(ServerHttpRequest request, TypeDescriptor typeDescriptor, Object body){
+		return isAccept(request, typeDescriptor);
+	}
+	
 	void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor, Object body)
 			throws IOException, WebMessagelConverterException;
 }
