@@ -24,6 +24,7 @@ public @interface Provider {
 	public Class<?>[] excludes() default {};
 
 	/**
+	 * 从小到大
 	 * @see Ordered#DEFAULT_PRECEDENCE
 	 * @return
 	 */

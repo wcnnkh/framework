@@ -1,11 +1,14 @@
 package io.basc.framework.security.login;
 
+import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.core.Ordered;
 import io.basc.framework.data.TemporaryStorage;
 import io.basc.framework.data.memory.MemoryDataOperations;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.StringUtils;
 
+@Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class DefaultLoginService<T> extends AbstractLoginService<T> {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	private static final String DEFAULT_PREFIX = "login:";

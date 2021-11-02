@@ -1,8 +1,5 @@
 package io.basc.framework.security.login;
 
-import io.basc.framework.beans.annotation.AutoImpl;
-
-@AutoImpl(DefaultLoginService.class)
 public interface LoginService<T> {
 	UserToken<T> getUserToken(String token);
 

@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
 import io.basc.framework.context.Destroy;
+import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.core.Ordered;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -31,6 +33,7 @@ import io.basc.framework.util.TimeUtils;
  * @author shuchaowen
  *
  */
+@Provider(order = Ordered.LOWEST_PRECEDENCE)
 public final class DefaultTimer implements io.basc.framework.timer.Timer, Destroy {
 	private static Logger logger = LoggerFactory.getLogger(DefaultTimer.class);
 	private final ConcurrentHashMap<String, TaskContext> contextMap = new ConcurrentHashMap<String, TaskContext>();
@@ -39,8 +42,8 @@ public final class DefaultTimer implements io.basc.framework.timer.Timer, Destro
 	private final ExecutorService executorService;
 	private final TaskFactory taskFactory;
 	private StringMatcher matcher = StringMatchers.SIMPLE;
-	
-	public DefaultTimer(ExecutorService executorService, TaskFactory taskFactory){
+
+	public DefaultTimer(ExecutorService executorService, TaskFactory taskFactory) {
 		this(new EmptyTaskLockFactory(), executorService, taskFactory);
 	}
 

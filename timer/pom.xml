@@ -18,7 +18,6 @@
 			<artifactId>memcached</artifactId>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>redis</artifactId>

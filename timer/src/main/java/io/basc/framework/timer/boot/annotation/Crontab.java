@@ -1,4 +1,4 @@
-package io.basc.framework.timer.annotation;
+package io.basc.framework.timer.boot.annotation;
 
 import io.basc.framework.timer.TaskListener;
 
