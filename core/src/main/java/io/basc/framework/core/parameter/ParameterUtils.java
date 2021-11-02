@@ -1,19 +1,16 @@
 package io.basc.framework.core.parameter;
 
-import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.core.annotation.MultiAnnotatedElement;
-import io.basc.framework.lang.NestedExceptionUtils;
-import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.ClassUtils;
-
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+
+import io.basc.framework.lang.NestedExceptionUtils;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.ClassUtils;
 
 public final class ParameterUtils {
 	private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new Jdk8ParameterNameDiscoverer();
@@ -50,10 +47,8 @@ public final class ParameterUtils {
 		Class<?>[] parameterTypes = executable.getParameterTypes();
 		ParameterDescriptor[] parameterDefinitions = new ParameterDescriptor[names.length];
 		for (int i = 0; i < names.length; i++) {
-			AnnotatedElement annotatedElement = MultiAnnotatedElement
-					.forAnnotatedElements(AnnotatedElementUtils.forAnnotations(parameterAnnoatations[i]), executable);
-			parameterDefinitions[i] = new DefaultParameterDescriptor(names[i], annotatedElement, parameterTypes[i],
-					parameterGenericTypes[i]);
+			parameterDefinitions[i] = new DefaultParameterDescriptor(names[i], parameterAnnoatations[i],
+					parameterTypes[i], parameterGenericTypes[i]);
 		}
 		return parameterDefinitions;
 	}

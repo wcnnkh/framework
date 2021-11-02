@@ -12,8 +12,6 @@ import java.lang.reflect.Type;
 public interface ParameterDescriptor extends AnnotatedElement, Named {
 	public static final ParameterDescriptor[] EMPTY_ARRAY = new ParameterDescriptor[0];
 
-	String getName();
-
 	Class<?> getType();
 
 	Type getGenericType();
