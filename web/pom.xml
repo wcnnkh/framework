@@ -14,7 +14,7 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>security</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>testing</artifactId>

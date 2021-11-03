@@ -1,19 +1,21 @@
 package io.basc.framework.mvc.message.support;
 
+import java.io.IOException;
+
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.context.result.Result;
 import io.basc.framework.context.result.ResultFactory;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.http.HttpMessage;
+import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.mvc.message.WebMessageConverter;
 import io.basc.framework.mvc.message.WebMessageConverterAware;
 import io.basc.framework.mvc.message.WebMessagelConverterException;
 import io.basc.framework.mvc.message.annotation.FactoryResult;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
-
-import java.io.IOException;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class FactoryResultMessageConverter implements WebMessageConverter, WebMessageConverterAware {
@@ -25,35 +27,38 @@ public class FactoryResultMessageConverter implements WebMessageConverter, WebMe
 	}
 
 	@Override
-	public boolean canRead(ParameterDescriptor parameterDescriptor, ServerHttpRequest request) {
+	public void setWebMessageConverter(WebMessageConverter messageConverter) {
+		this.messageConverter = messageConverter;
+	}
+	
+	@Override
+	public boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor) {
+		FactoryResult factoryResult = typeDescriptor.getAnnotation(FactoryResult.class);
+		return !(Result.class.isAssignableFrom(typeDescriptor.getType())) && factoryResult != null
+				&& factoryResult.value();
+	}
+
+	@Override
+	public void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor,
+			Object body) throws IOException, WebMessagelConverterException {
+		Result result = resultFactory.success(body);
+		messageConverter.write(request, response, typeDescriptor.narrow(result), result);
+	}
+
+	@Override
+	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
 		return false;
 	}
 
 	@Override
-	public Object read(ParameterDescriptor parameterDescriptor, ServerHttpRequest request)
+	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
 		return null;
 	}
 
 	@Override
-	public void setWebMessageConverter(WebMessageConverter messageConverter) {
-		this.messageConverter = messageConverter;
-	}
-
-	@Override
-	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response) {
-		if (body == null) {
-			return false;
-		}
-
-		FactoryResult factoryResult = type.getAnnotation(FactoryResult.class);
-		return !(body instanceof Result) && factoryResult != null && factoryResult.value();
-	}
-
-	@Override
-	public void write(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response)
+	public Object read(ClientHttpResponse response, TypeDescriptor typeDescriptor)
 			throws IOException, WebMessagelConverterException {
-		Result result = resultFactory.success(body);
-		messageConverter.write(type.narrow(result), result, request, response);
+		return null;
 	}
 }

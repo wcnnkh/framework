@@ -31,7 +31,7 @@ public abstract class AbstractAction extends AnnotatedElementWrapper<AnnotatedEl
 		this.sourceClass = sourceClass;
 		this.method = method;
 		this.parameterDescriptors = new ExecutableParameterDescriptors(sourceClass, method);
-		this.httpPatterns = httpPatternResolver.resolveHttpPattern(sourceClass, method);
+		this.httpPatterns = httpPatternResolver.resolve(sourceClass, method);
 	}
 
 	@Override

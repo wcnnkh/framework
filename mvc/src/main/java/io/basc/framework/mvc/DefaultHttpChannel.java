@@ -57,7 +57,7 @@ public class DefaultHttpChannel extends RequestBeanFactory implements HttpChanne
 			return;
 		}
 
-		getMessageConverters().write(type, body, getRequest(), response);
+		getMessageConverters().write(getRequest(), response, type, body);
 	}
 
 	public boolean isCompleted() {
@@ -84,7 +84,7 @@ public class DefaultHttpChannel extends RequestBeanFactory implements HttpChanne
 	public final Value getValue(String name) {
 		ParameterDescriptor parameterDescriptor = new DefaultParameterDescriptor(name, Value.class);
 		try {
-			return (Value) getMessageConverters().read(parameterDescriptor, getRequest());
+			return (Value) getMessageConverters().read(getRequest(), parameterDescriptor);
 		} catch (IOException e) {
 			throw new WebMessagelConverterException(name, e);
 		}

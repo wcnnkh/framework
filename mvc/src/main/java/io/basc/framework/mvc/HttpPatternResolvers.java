@@ -6,70 +6,67 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import io.basc.framework.factory.ConfigurableServices;
-import io.basc.framework.mvc.annotation.AnnotationHttpPatternResolver;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.placeholder.PropertyResolver;
 import io.basc.framework.util.placeholder.PropertyResolverAware;
 import io.basc.framework.web.pattern.HttpPattern;
 
-public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolver> implements HttpPatternResolver, PropertyResolverAware {
-	private final AnnotationHttpPatternResolver annotationHttpPatternResolver = new AnnotationHttpPatternResolver();
+public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolver>
+		implements HttpPatternResolver, PropertyResolverAware {
 	private PropertyResolver propertyResolver;
-	
+
 	public HttpPatternResolvers() {
 		super(HttpPatternResolver.class);
 	}
-	
+
 	public PropertyResolver getPropertyResolver() {
 		return propertyResolver;
 	}
 
 	public void setPropertyResolver(PropertyResolver propertyResolver) {
 		this.propertyResolver = propertyResolver;
-		annotationHttpPatternResolver.setPropertyResolver(propertyResolver);
 	}
-	
+
 	@Override
 	protected void aware(HttpPatternResolver service) {
-		if(service instanceof PropertyResolverAware) {
+		if (service instanceof PropertyResolverAware) {
 			((PropertyResolverAware) service).setPropertyResolver(propertyResolver);
 		}
 		super.aware(service);
 	}
-	
+
 	@Override
-	public boolean canResolveHttpPattern(Class<?> clazz) {
+	public boolean canResolve(Class<?> clazz) {
 		for (HttpPatternResolver resolver : this) {
-			if (resolver.canResolveHttpPattern(clazz)) {
+			if (resolver.canResolve(clazz)) {
 				return true;
 			}
 		}
-		return annotationHttpPatternResolver.canResolveHttpPattern(clazz);
+		return false;
 	}
 
 	@Override
-	public boolean canResolveHttpPattern(Class<?> clazz, Method method) {
+	public boolean canResolve(Class<?> clazz, Method method) {
 		for (HttpPatternResolver resolver : this) {
-			if (resolver.canResolveHttpPattern(clazz, method)) {
+			if (resolver.canResolve(clazz, method)) {
 				return true;
 			}
 		}
-		return annotationHttpPatternResolver.canResolveHttpPattern(clazz, method);
+		return false;
 	}
-	
+
 	@Override
-	public Collection<HttpPattern> resolveHttpPattern(Class<?> clazz,
-			Method method) {
+	public Collection<HttpPattern> resolve(Class<?> clazz, Method method) {
 		Set<HttpPattern> patterns = new LinkedHashSet<HttpPattern>();
 		for (HttpPatternResolver resolver : this) {
-			if (resolver.canResolveHttpPattern(clazz, method)) {
-				patterns.addAll(resolver.resolveHttpPattern(clazz, method));
+			if (resolver.canResolve(clazz, method)) {
+				Collection<HttpPattern> ps = resolver.resolve(clazz, method);
+				if (CollectionUtils.isEmpty(ps)) {
+					continue;
+				}
+				patterns.addAll(ps);
 			}
-		}
-
-		if (annotationHttpPatternResolver.canResolveHttpPattern(clazz, method)) {
-			patterns.addAll(annotationHttpPatternResolver.resolveHttpPattern(clazz, method));
 		}
 		return patterns;
 	}
-
 }

@@ -1,9 +1,9 @@
 package io.basc.framework.mvc.action;
 
+import java.lang.reflect.AnnotatedElement;
+
 import io.basc.framework.beans.AopEnableSpi;
 import io.basc.framework.mvc.annotation.Controller;
-
-import java.lang.reflect.AnnotatedElement;
 
 public class ControllerAopEnableSpi implements AopEnableSpi {
 
