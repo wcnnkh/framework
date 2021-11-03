@@ -14,13 +14,15 @@ import io.basc.framework.net.message.convert.MessageConverters;
 public class DefaultWebMessageConverters extends WebMessageConverters {
 	private final DefaultMessageConverters messageConverters;
 	private final ParameterFactory defaultValueFactory;
+	private final WebMessageConverters afters = new WebMessageConverters();
 
 	public DefaultWebMessageConverters(ConversionService conversionService, ParameterFactory defaultValueFactory) {
+		super.setAfterService(afters);
 		this.messageConverters = new DefaultMessageConverters(conversionService);
 		this.defaultValueFactory = defaultValueFactory;
 		LastWebMessageConverter lastWebMessageConverter = new LastWebMessageConverter();
 		aware(lastWebMessageConverter);
-		setAfterService(lastWebMessageConverter);
+		afters.setAfterService(lastWebMessageConverter);
 		addService(new EntityMessageConverter(getMessageConverters()));
 		addService(new InputMessageConverter());
 		addService(new ResourceMessageConverter());
@@ -28,29 +30,11 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 		addService(new RequestBodyMessageConverter());
 		addService(new QueryParamsMessageConverter());
 		addService(new ByteArrayMessageConverter());
-
-		// jaxrs2
-		/*
-		 * addService(new Jaxrs2ParamMessageConverter(getConversionServices(),
-		 * defaultValueFactory)); addService(new
-		 * Jaxrs2HeaderParamMessageConverter(getConversionServices(),
-		 * defaultValueFactory)); addService(new
-		 * Jaxrs2HeaderParamMessageConverter(getConversionServices(),
-		 * defaultValueFactory));
-		 */
 	}
 	
 	@Override
 	public void setAfterService(WebMessageConverter afterService) {
-		if(getAfterService() == null) {
-			super.setAfterService(afterService);
-			return ;
-		}
-
-		WebMessageConverters webMessageConverters = new WebMessageConverters();
-		webMessageConverters.addService(afterService);
-		webMessageConverters.setAfterService(getAfterService());
-		super.setAfterService(webMessageConverters);
+		afters.addService(afterService);
 	}
 
 	public MessageConverters getMessageConverters() {
