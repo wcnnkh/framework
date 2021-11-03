@@ -1,5 +1,8 @@
 package io.basc.framework.mvc.message;
 
+import java.io.IOException;
+import java.util.Map;
+
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.BeanUtils;
@@ -21,9 +24,6 @@ import io.basc.framework.util.Status;
 import io.basc.framework.value.support.MapPropertyFactory;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebUtils;
-
-import java.io.IOException;
-import java.util.Map;
 
 public class RequestBeanFactory extends RequestParameterFactory
 		implements NoArgsInstanceFactory, Destroy, ParameterFactory {

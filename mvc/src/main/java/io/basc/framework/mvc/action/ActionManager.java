@@ -1,12 +1,12 @@
 package io.basc.framework.mvc.action;
 
+import java.lang.reflect.Method;
+
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
 import io.basc.framework.event.EventRegistry;
 import io.basc.framework.event.ObjectEvent;
 import io.basc.framework.web.ServerHttpRequest;
-
-import java.lang.reflect.Method;
 
 public interface ActionManager extends EventRegistry<ObjectEvent<Action>>, Iterable<Action> {
 	Action getAction(Method method);

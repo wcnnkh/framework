@@ -1,5 +1,9 @@
 package io.basc.framework.mvc.action;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.core.reflect.MethodInvoker;
@@ -12,10 +16,6 @@ import io.basc.framework.mvc.HttpPatternResolver;
 import io.basc.framework.mvc.annotation.ActionInterceptors;
 import io.basc.framework.mvc.annotation.Controller;
 import io.basc.framework.util.Supplier;
-
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 
 public class BeanAction extends AbstractAction {
 	private static Logger logger = LoggerFactory.getLogger(BeanAction.class);

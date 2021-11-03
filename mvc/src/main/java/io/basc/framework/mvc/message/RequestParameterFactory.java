@@ -23,13 +23,13 @@ public class RequestParameterFactory implements ParameterFactory {
 
 	@Override
 	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
-		return messageConverters.canRead(parameterDescriptor, request);
+		return messageConverters.isAccept(parameterDescriptor);
 	}
 
 	@Override
 	public Object getParameter(ParameterDescriptor parameterDescriptor) {
 		try {
-			return messageConverters.read(parameterDescriptor, request);
+			return messageConverters.read(request, parameterDescriptor);
 		} catch (Exception e) {
 			throw new WebMessagelConverterException(parameterDescriptor, request, e);
 		}

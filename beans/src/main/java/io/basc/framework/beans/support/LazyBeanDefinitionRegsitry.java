@@ -1,11 +1,16 @@
 package io.basc.framework.beans.support;
 
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.support.UnmodifiableMethodInterceptors;
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanDefinitionLoader;
 import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.annotation.AutoImpl;
 import io.basc.framework.beans.annotation.Proxy;
 import io.basc.framework.context.annotation.ProviderClassesLoader;
 import io.basc.framework.factory.ServiceLoader;
@@ -13,16 +18,7 @@ import io.basc.framework.factory.support.InstanceIterable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
-
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 public class LazyBeanDefinitionRegsitry extends DefaultBeanDefinitionRegistry {
 	private static Logger logger = LoggerFactory.getLogger(LazyBeanDefinitionRegsitry.class);
@@ -58,24 +54,6 @@ public class LazyBeanDefinitionRegsitry extends DefaultBeanDefinitionRegistry {
 			if (targetClass != null && sourceClass.isAssignableFrom(targetClass)
 					&& beanFactory.isInstance(targetClass)) {
 				return beanFactory.getDefinition(targetClass.getName());
-			}
-		}
-		return null;
-	}
-
-	private BeanDefinition autoImpl(Class<?> sourceClass) {
-		AutoImpl autoImpl = sourceClass.getAnnotation(AutoImpl.class);
-		Collection<Class<?>> autoImpls = autoImpl == null ? null : getAutoImplClass(autoImpl, sourceClass);
-		if (!CollectionUtils.isEmpty(autoImpls)) {
-			for (Class<?> impl : autoImpls) {
-				BeanDefinition definition = super.getDefinition(impl);
-				if (definition == null) {
-					definition = new DefaultBeanDefinition(beanFactory, impl);
-				}
-				if (definition != null && definition.isInstance()) {
-					logger.info("Auto {} impl {}", sourceClass, impl);
-					return definition;
-				}
 			}
 		}
 		return null;
@@ -122,7 +100,7 @@ public class LazyBeanDefinitionRegsitry extends DefaultBeanDefinitionRegistry {
 			return null;
 		}
 
-		BeanDefinition definition = autoImpl(clazz);
+		BeanDefinition definition = null;
 		if (definition == null) {
 			definition = provider(clazz);
 		}
@@ -175,41 +153,6 @@ public class LazyBeanDefinitionRegsitry extends DefaultBeanDefinitionRegistry {
 			}
 		}
 		return definition;
-	}
-
-	private Collection<Class<?>> getAutoImplClass(AutoImpl autoConfig, Class<?> sourceClass) {
-		List<Class<?>> list = new ArrayList<Class<?>>();
-		for (String name : autoConfig.names()) {
-			if (StringUtils.isEmpty(name)) {
-				continue;
-			}
-
-			name = beanFactory.getEnvironment().resolvePlaceholders(name);
-			Class<?> clz = ClassUtils.getClass(name, beanFactory.getClassLoader());
-			if (clz == null) {
-				continue;
-			}
-
-			if (!XUtils.isAvailable(clz)) {
-				logger.debug("{} not present", clz);
-				continue;
-			}
-
-			if (sourceClass.isAssignableFrom(clz)) {
-				list.add(clz);
-			} else {
-				logger.warn("{} not is assignable from name {}", sourceClass, clz);
-			}
-		}
-
-		for (Class<?> clz : autoConfig.value()) {
-			if (sourceClass.isAssignableFrom(clz)) {
-				list.add(clz);
-			} else {
-				logger.warn("{} not is assignable from {}", sourceClass, clz);
-			}
-		}
-		return list;
 	}
 
 	private static List<String> getProxyNames(Proxy proxy) {

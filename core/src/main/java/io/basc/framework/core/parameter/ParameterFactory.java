@@ -44,6 +44,10 @@ public interface ParameterFactory extends ParametersFactory {
 		return true;
 	}
 
+	/**
+	 * 
+	 * @return 不可以返回空
+	 */
 	default Object[] getParameters(ParameterDescriptors parameterDescriptors) {
 		Object[] args = new Object[parameterDescriptors.size()];
 		int index = 0;

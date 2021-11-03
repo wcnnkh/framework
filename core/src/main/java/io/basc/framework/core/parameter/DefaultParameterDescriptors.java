@@ -1,6 +1,7 @@
 package io.basc.framework.core.parameter;
 
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
+import io.basc.framework.core.annotation.AnnotatedElementWrapper;
 import io.basc.framework.core.annotation.MultiAnnotatedElement;
 import io.basc.framework.util.AbstractIterator;
 
@@ -9,12 +10,15 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 
-public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
+public class DefaultParameterDescriptors<T> extends AnnotatedElementWrapper<AnnotatedElement>
+		implements ParameterDescriptors {
 	private final T source;
 	private final Class<?> declaringClass;
 	private final ParameterDescriptor[] parameterDescriptors;
 
-	public DefaultParameterDescriptors(T source, Class<?> declaringClass, ParameterDescriptor[] parameterDescriptors) {
+	public DefaultParameterDescriptors(T source, Class<?> declaringClass, AnnotatedElement annotatedElement,
+			ParameterDescriptor[] parameterDescriptors) {
+		super(annotatedElement);
 		this.source = source;
 		this.declaringClass = declaringClass;
 		this.parameterDescriptors = parameterDescriptors;
@@ -22,6 +26,7 @@ public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 
 	public DefaultParameterDescriptors(Class<?> declaringClass, T source, String[] names, Annotation[][] annotations,
 			AnnotatedElement commonAnnotations, Type[] genericTypes, Class<?>[] types) {
+		super(commonAnnotations);
 		this.source = source;
 		this.declaringClass = declaringClass;
 		parameterDescriptors = new ParameterDescriptor[names.length];

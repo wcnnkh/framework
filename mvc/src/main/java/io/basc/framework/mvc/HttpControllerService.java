@@ -166,7 +166,7 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 			 * @see MOdelAndViewMessageConverter
 			 */
 			if (action.getReturnType().getType() == Void.class && message == null) {
-				Object[] args = parameters.getParameters();
+				Object[] args = parameters.getParameters(httpChannel, action);
 				if (args != null) {
 					for (Object arg : args) {
 						if (arg instanceof ModelAndView) {

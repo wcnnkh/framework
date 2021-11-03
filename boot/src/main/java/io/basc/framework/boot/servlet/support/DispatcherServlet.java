@@ -28,7 +28,7 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 	public void setApplication(Application application) {
 		reference = true;
 		this.application = application;
-		setServletService(ServletUtils.createServletService(application.getBeanFactory()));
+		setServletService(ServletUtils.createServletService(application.getBeanFactory(), application.getEnvironment()));
 	}
 
 	public Application getApplication() {
@@ -75,7 +75,7 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 				}
 
 				if (servletService == null && application != null) {
-					this.servletService = ServletUtils.createServletService(application.getBeanFactory());
+					this.servletService = ServletUtils.createServletService(application.getBeanFactory(), application.getEnvironment());
 				}
 			} catch (Throwable e) {
 				ServletContextUtils.startLogger(logger, servletConfig.getServletContext(), e, false);

@@ -10,11 +10,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>data</artifactId>
+			<artifactId>orm</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>beans</artifactId>
+			<artifactId>context</artifactId>
 		</dependency>
 	</dependencies>
 </project>

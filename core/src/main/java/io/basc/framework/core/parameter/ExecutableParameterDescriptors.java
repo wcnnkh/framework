@@ -10,6 +10,6 @@ public class ExecutableParameterDescriptors extends DefaultParameterDescriptors<
 
 	public ExecutableParameterDescriptors(ParameterNameDiscoverer parameterNameDiscoverer, Class<?> targetClass,
 			Executable executable) {
-		super(executable, targetClass, ParameterUtils.getParameters(parameterNameDiscoverer, executable));
+		super(executable, targetClass, executable, ParameterUtils.getParameters(parameterNameDiscoverer, executable));
 	}
 }

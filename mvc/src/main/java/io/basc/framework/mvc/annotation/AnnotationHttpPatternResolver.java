@@ -1,13 +1,5 @@
 package io.basc.framework.mvc.annotation;
 
-import io.basc.framework.http.HttpMethod;
-import io.basc.framework.mvc.HttpPatternResolver;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.placeholder.PropertyResolver;
-import io.basc.framework.util.placeholder.PropertyResolverAware;
-import io.basc.framework.web.pattern.HttpPattern;
-
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,6 +8,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.core.Ordered;
+import io.basc.framework.http.HttpMethod;
+import io.basc.framework.mvc.HttpPatternResolver;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.placeholder.PropertyResolver;
+import io.basc.framework.util.placeholder.PropertyResolverAware;
+import io.basc.framework.web.pattern.HttpPattern;
+
+@Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class AnnotationHttpPatternResolver implements HttpPatternResolver, PropertyResolverAware {
 	private PropertyResolver propertyResolver;
 
@@ -27,17 +30,17 @@ public class AnnotationHttpPatternResolver implements HttpPatternResolver, Prope
 		this.propertyResolver = propertyResolver;
 	}
 
-	public boolean canResolveHttpPattern(Class<?> clazz) {
+	public boolean canResolve(Class<?> clazz) {
 		return clazz.isAnnotationPresent(Controller.class);
 	}
 
 	@Override
-	public boolean canResolveHttpPattern(Class<?> clazz, Method method) {
+	public boolean canResolve(Class<?> clazz, Method method) {
 		return clazz.isAnnotationPresent(Controller.class) && method.isAnnotationPresent(Controller.class);
 	}
 
 	@Override
-	public Collection<HttpPattern> resolveHttpPattern(Class<?> clazz, Method method) {
+	public Collection<HttpPattern> resolve(Class<?> clazz, Method method) {
 		Collection<HttpPattern> httpPatterns = new HashSet<HttpPattern>(8);
 		Controller classController = clazz.getAnnotation(Controller.class);
 		Controller methodController = method.getAnnotation(Controller.class);

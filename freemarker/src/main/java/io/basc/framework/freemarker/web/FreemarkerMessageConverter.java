@@ -1,5 +1,11 @@
 package io.basc.framework.freemarker.web;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
@@ -19,15 +25,9 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
-public class FreemarkerMessageConverter extends ModelAndViewMessageConverter implements WebMessageConverter, MessageConverter {
+public class FreemarkerMessageConverter extends ModelAndViewMessageConverter
+		implements WebMessageConverter, MessageConverter {
 	private final Configuration configuration;
 
 	public FreemarkerMessageConverter(Configuration configuration) {
@@ -78,8 +78,8 @@ public class FreemarkerMessageConverter extends ModelAndViewMessageConverter imp
 	}
 
 	@Override
-	protected void writePage(TypeDescriptor type, ModelAndView page, ServerHttpRequest request, ServerHttpResponse response)
-			throws IOException, WebMessagelConverterException {
+	protected void writePage(TypeDescriptor type, ModelAndView page, ServerHttpRequest request,
+			ServerHttpResponse response) throws IOException, WebMessagelConverterException {
 		Template template = configuration.getTemplate(page.getName(), response.getCharacterEncoding());
 		try {
 			template.process(page, response.getWriter());

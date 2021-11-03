@@ -1,30 +1,24 @@
-package io.basc.framework.mvc.jaxrs2;
+package io.basc.framework.mvc.jaxrs;
 
 import java.io.IOException;
 import java.util.Collection;
 
 import javax.ws.rs.HeaderParam;
 
-import io.basc.framework.convert.ConversionService;
+import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterFactory;
+import io.basc.framework.http.HttpMessage;
 import io.basc.framework.mvc.message.WebMessagelConverterException;
-import io.basc.framework.mvc.message.support.ConversionMessageConverter;
+import io.basc.framework.mvc.message.support.AbstractWebMessageConverter;
 import io.basc.framework.web.ServerHttpRequest;
-import io.basc.framework.web.ServerHttpResponse;
 
-public class Jaxrs2CookieParamMessageConverter extends ConversionMessageConverter {
-
-	public Jaxrs2CookieParamMessageConverter(ConversionService conversionService,
-			ParameterFactory defaultValueFactory) {
-		super(conversionService, defaultValueFactory);
-	}
+@Provider
+public class Jaxrs2CookieParamMessageConverter extends AbstractWebMessageConverter {
 
 	@Override
-	public boolean canRead(ParameterDescriptor parameterDescriptor, ServerHttpRequest request) {
-		return parameterDescriptor.isAnnotationPresent(HeaderParam.class)
-				&& super.canRead(parameterDescriptor, request);
+	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
+		return parameterDescriptor.isAnnotationPresent(HeaderParam.class) && super.isAccept(parameterDescriptor);
 	}
 
 	@Override
@@ -46,7 +40,7 @@ public class Jaxrs2CookieParamMessageConverter extends ConversionMessageConverte
 	}
 
 	@Override
-	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response) {
+	public boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor) {
 		return false;
 	}
 }

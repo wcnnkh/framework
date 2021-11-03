@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.List;
 
 import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterFactory;
+import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.json.JSONUtils;
 import io.basc.framework.mvc.message.WebMessageConverter;
 import io.basc.framework.mvc.message.WebMessagelConverterException;
@@ -18,13 +20,24 @@ import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.WebUtils;
 
-public class ConversionMessageConverter implements WebMessageConverter {
-	private final ConversionService conversionService;
-	private final ParameterFactory defaultValueFactory;
+/**
+ * 应该排在最后一个
+ * 
+ * @author shuchaowen
+ *
+ */
+public abstract class AbstractWebMessageConverter
+		implements WebMessageConverter, ConversionServiceAware, DefaultValueFactoryAware {
+	private ConversionService conversionService;
+	private ParameterFactory defaultValueFactory;
 
-	public ConversionMessageConverter(ConversionService conversionService,
-			ParameterFactory defaultValueFactory) {
+	@Override
+	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
+	}
+
+	@Override
+	public void setDefaultValueFactory(ParameterFactory defaultValueFactory) {
 		this.defaultValueFactory = defaultValueFactory;
 	}
 
@@ -37,7 +50,7 @@ public class ConversionMessageConverter implements WebMessageConverter {
 	}
 
 	@Override
-	public boolean canRead(ParameterDescriptor parameterDescriptor, ServerHttpRequest request) {
+	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
 		return conversionService.canConvert(TypeDescriptor.valueOf(String.class),
 				new TypeDescriptor(parameterDescriptor))
 				|| conversionService.canConvert(TypeDescriptor.collection(List.class, String.class),
@@ -66,7 +79,7 @@ public class ConversionMessageConverter implements WebMessageConverter {
 	}
 
 	@Override
-	public Object read(ParameterDescriptor parameterDescriptor, ServerHttpRequest request)
+	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
 		Object source = readValue(parameterDescriptor, request);
 		return conversionService.convert(source, TypeDescriptor.forObject(source),
@@ -74,13 +87,8 @@ public class ConversionMessageConverter implements WebMessageConverter {
 	}
 
 	@Override
-	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response) {
-		return body != null;
-	}
-
-	@Override
-	public void write(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response)
-			throws IOException, WebMessagelConverterException {
+	public void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor,
+			Object body) throws IOException, WebMessagelConverterException {
 		if ((body instanceof String) || (ClassUtils.isPrimitiveOrWrapper(body.getClass()))) {
 			response.setContentType(MimeTypeUtils.TEXT_HTML);
 		} else {
@@ -89,6 +97,12 @@ public class ConversionMessageConverter implements WebMessageConverter {
 
 		String content = JSONUtils.getJsonSupport().toJSONString(body);
 		response.getWriter().write(content);
+	}
+
+	@Override
+	public Object read(ClientHttpResponse response, TypeDescriptor typeDescriptor)
+			throws IOException, WebMessagelConverterException {
+		return null;
 	}
 
 }

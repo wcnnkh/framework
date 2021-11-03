@@ -1,5 +1,7 @@
 package io.basc.framework.netflix.hystrix;
 
+import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.core.Ordered;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.netflix.hystrix.annotation.Hystrix;
@@ -11,6 +13,7 @@ import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
 
+@Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class DefaultHystrixCommandFactory implements HystrixCommandFactory {
 	private NoArgsInstanceFactory instanceFactory;
 
@@ -18,8 +21,7 @@ public class DefaultHystrixCommandFactory implements HystrixCommandFactory {
 		this.instanceFactory = instanceFactory;
 	}
 
-	public HystrixCommand<?> getHystrixCommandFactory(MethodInvoker invoker, Object[] args)
-			throws Exception {
+	public HystrixCommand<?> getHystrixCommandFactory(MethodInvoker invoker, Object[] args) throws Exception {
 		Hystrix hystrix = invoker.getDeclaringClass().getAnnotation(Hystrix.class);
 		if (hystrix == null) {
 			return null;
@@ -29,7 +31,8 @@ public class DefaultHystrixCommandFactory implements HystrixCommandFactory {
 				.andCommandKey(HystrixCommandKey.Factory.asKey(invoker.getMethod().toString()));
 		afterSetter(setter);
 		Object fallback = invoker.getDeclaringClass().isAssignableFrom(hystrix.fallback())
-				? instanceFactory.getInstance(hystrix.fallback()) : null;
+				? instanceFactory.getInstance(hystrix.fallback())
+				: null;
 		return new HystrixFilterCommand(setter, fallback, invoker, args);
 	}
 

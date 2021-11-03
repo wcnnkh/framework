@@ -6,6 +6,8 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.http.HttpMessage;
+import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.mvc.message.WebMessageConverter;
 import io.basc.framework.mvc.message.WebMessagelConverterException;
 import io.basc.framework.mvc.message.annotation.QueryParams;
@@ -15,19 +17,19 @@ import io.basc.framework.web.WebUtils;
 
 public class QueryParamsMessageConverter implements WebMessageConverter, ConversionServiceAware {
 	private ConversionService conversionService;
-	
+
 	@Override
 	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 
 	@Override
-	public boolean canRead(ParameterDescriptor parameterDescriptor, ServerHttpRequest request) {
+	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
 		return parameterDescriptor.isAnnotationPresent(QueryParams.class);
 	}
 
 	@Override
-	public Object read(ParameterDescriptor parameterDescriptor, ServerHttpRequest request)
+	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
 		Object body = WebUtils.getParameterMap(request, null);
 		if (body == null) {
@@ -37,13 +39,18 @@ public class QueryParamsMessageConverter implements WebMessageConverter, Convers
 	}
 
 	@Override
-	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response) {
+	public boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor) {
 		return false;
 	}
 
 	@Override
-	public void write(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response)
+	public Object read(ClientHttpResponse response, TypeDescriptor typeDescriptor)
 			throws IOException, WebMessagelConverterException {
+		return null;
 	}
 
+	@Override
+	public void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor,
+			Object body) throws IOException, WebMessagelConverterException {
+	}
 }

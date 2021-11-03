@@ -1,10 +1,9 @@
-package io.basc.framework.timer.db;
+package io.basc.framework.timer.extend;
 
 import io.basc.framework.sql.orm.annotation.Table;
 
 import java.io.Serializable;
 
-//TODO 未完成
 @Table
 public class TaskConfigTable implements Serializable {
 	private static final long serialVersionUID = 1L;

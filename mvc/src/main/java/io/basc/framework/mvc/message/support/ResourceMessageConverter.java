@@ -1,7 +1,11 @@
 package io.basc.framework.mvc.message.support;
 
+import java.io.IOException;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.http.HttpMessage;
+import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.io.Resource;
 import io.basc.framework.mvc.message.WebMessageConverter;
 import io.basc.framework.mvc.message.WebMessagelConverterException;
@@ -11,32 +15,36 @@ import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.WebUtils;
 
-import java.io.IOException;
-
 public class ResourceMessageConverter implements WebMessageConverter {
 
 	@Override
-	public boolean canRead(ParameterDescriptor parameterDescriptor, ServerHttpRequest request) {
+	public boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor) {
+		return Resource.class.isAssignableFrom(typeDescriptor.getType());
+	}
+
+	@Override
+	public void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor,
+			Object body) throws IOException, WebMessagelConverterException {
+		Resource resource = (Resource) body;
+		MimeType mimeType = FileMimeTypeUitls.getMimeType(resource);
+		WebUtils.writeStaticResource(request, response, resource, mimeType);
+	}
+
+	@Override
+	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
 		return false;
 	}
 
 	@Override
-	public Object read(ParameterDescriptor parameterDescriptor, ServerHttpRequest request)
+	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
 		return null;
 	}
 
 	@Override
-	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response) {
-		return body != null && body instanceof Resource;
-	}
-
-	@Override
-	public void write(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response)
+	public Object read(ClientHttpResponse response, TypeDescriptor typeDescriptor)
 			throws IOException, WebMessagelConverterException {
-		Resource resource = (Resource) body;
-		MimeType mimeType = FileMimeTypeUitls.getMimeType(resource);
-		WebUtils.writeStaticResource(request, response, resource, mimeType);
+		return null;
 	}
 
 }
