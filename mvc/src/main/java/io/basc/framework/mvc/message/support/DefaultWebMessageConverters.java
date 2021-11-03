@@ -18,7 +18,9 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 	public DefaultWebMessageConverters(ConversionService conversionService, ParameterFactory defaultValueFactory) {
 		this.messageConverters = new DefaultMessageConverters(conversionService);
 		this.defaultValueFactory = defaultValueFactory;
-		addService(new LastWebMessageConverter());
+		LastWebMessageConverter lastWebMessageConverter = new LastWebMessageConverter();
+		aware(lastWebMessageConverter);
+		setAfterService(lastWebMessageConverter);
 		addService(new EntityMessageConverter(getMessageConverters()));
 		addService(new InputMessageConverter());
 		addService(new ResourceMessageConverter());
@@ -36,6 +38,19 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 		 * Jaxrs2HeaderParamMessageConverter(getConversionServices(),
 		 * defaultValueFactory));
 		 */
+	}
+	
+	@Override
+	public void setAfterService(WebMessageConverter afterService) {
+		if(getAfterService() == null) {
+			super.setAfterService(afterService);
+			return ;
+		}
+
+		WebMessageConverters webMessageConverters = new WebMessageConverters();
+		webMessageConverters.addService(afterService);
+		webMessageConverters.setAfterService(getAfterService());
+		super.setAfterService(webMessageConverters);
 	}
 
 	public MessageConverters getMessageConverters() {

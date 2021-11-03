@@ -10,7 +10,7 @@ import io.basc.framework.http.HttpMessage;
  * @author shuchaowen
  *
  */
-public class LastWebMessageConverter extends AbstractWebMessageConverter implements Ordered {
+class LastWebMessageConverter extends AbstractWebMessageConverter implements Ordered {
 
 	@Override
 	public boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor) {
