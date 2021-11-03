@@ -8,9 +8,8 @@ import io.basc.framework.context.result.ResultFactory;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.http.client.ClientHttpRequest;
+import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpResponse;
-import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessageConverter;
@@ -31,9 +30,9 @@ public class FactoryResultMessageConverter implements WebMessageConverter, WebMe
 	public void setWebMessageConverter(WebMessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
 	}
-
+	
 	@Override
-	public boolean isAccept(TypeDescriptor typeDescriptor) {
+	public boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor) {
 		FactoryResult factoryResult = typeDescriptor.getAnnotation(FactoryResult.class);
 		return !(Result.class.isAssignableFrom(typeDescriptor.getType())) && factoryResult != null
 				&& factoryResult.value();
@@ -55,18 +54,6 @@ public class FactoryResultMessageConverter implements WebMessageConverter, WebMe
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
 		return null;
-	}
-
-	@Override
-	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
-			throws IOException, WebMessagelConverterException {
-		return request;
-	}
-
-	@Override
-	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
-			Object parameter) throws WebMessagelConverterException {
-		return builder;
 	}
 
 	@Override

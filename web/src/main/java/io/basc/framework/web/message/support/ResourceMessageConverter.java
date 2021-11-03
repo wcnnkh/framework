@@ -4,12 +4,11 @@ import java.io.IOException;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.http.client.ClientHttpRequest;
+import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.io.Resource;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
-import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.WebUtils;
@@ -19,7 +18,7 @@ import io.basc.framework.web.message.WebMessagelConverterException;
 public class ResourceMessageConverter implements WebMessageConverter {
 
 	@Override
-	public boolean isAccept(TypeDescriptor typeDescriptor) {
+	public boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor) {
 		return Resource.class.isAssignableFrom(typeDescriptor.getType());
 	}
 
@@ -40,18 +39,6 @@ public class ResourceMessageConverter implements WebMessageConverter {
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
 		return null;
-	}
-
-	@Override
-	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
-			throws IOException, WebMessagelConverterException {
-		return request;
-	}
-
-	@Override
-	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
-			Object parameter) throws WebMessagelConverterException {
-		return builder;
 	}
 
 	@Override

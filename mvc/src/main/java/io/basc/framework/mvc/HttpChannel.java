@@ -7,14 +7,14 @@ import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
-import io.basc.framework.mvc.message.WebMessageConverter;
-import io.basc.framework.mvc.message.WebMessageConverters;
 import io.basc.framework.mvc.security.UserSessionManager;
 import io.basc.framework.security.login.UserToken;
 import io.basc.framework.security.session.UserSession;
 import io.basc.framework.value.ValueFactory;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
+import io.basc.framework.web.message.WebMessageConverter;
+import io.basc.framework.web.message.WebMessageConverters;
 import io.basc.framework.web.message.WebMessagelConverterException;
 
 public interface HttpChannel extends ParameterFactory, ValueFactory<String>, NoArgsInstanceFactory {

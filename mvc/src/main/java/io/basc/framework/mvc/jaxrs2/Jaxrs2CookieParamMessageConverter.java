@@ -9,6 +9,7 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterFactory;
+import io.basc.framework.http.HttpMessage;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.message.WebMessagelConverterException;
 import io.basc.framework.web.message.support.ConversionMessageConverter;
@@ -42,9 +43,9 @@ public class Jaxrs2CookieParamMessageConverter extends ConversionMessageConverte
 		}
 		return value;
 	}
-
+	
 	@Override
-	public boolean isAccept(TypeDescriptor typeDescriptor) {
+	public boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor) {
 		return false;
 	}
 }

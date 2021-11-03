@@ -14,9 +14,7 @@ import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 
-public class WebMessageConverters extends
-		ConfigurableServices<WebMessageConverter> implements
-		WebMessageConverter {
+public class WebMessageConverters extends ConfigurableServices<WebMessageConverter> implements WebMessageConverter {
 	private static final LinkedThreadLocal<WebMessageConverter> NESTED = new LinkedThreadLocal<WebMessageConverter>(
 			WebMessageConverters.class.getName());
 
@@ -51,8 +49,7 @@ public class WebMessageConverters extends
 	}
 
 	@Override
-	public boolean isAccept(HttpRequest request,
-			ParameterDescriptor parameterDescriptor) {
+	public boolean isAccept(HttpRequest request, ParameterDescriptor parameterDescriptor) {
 		for (WebMessageConverter converter : this) {
 			if (NESTED.exists(converter)) {
 				continue;
@@ -71,9 +68,8 @@ public class WebMessageConverters extends
 	}
 
 	@Override
-	public Object read(ServerHttpRequest request,
-			ParameterDescriptor parameterDescriptor) throws IOException,
-			WebMessagelConverterException {
+	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
+			throws IOException, WebMessagelConverterException {
 		for (WebMessageConverter converter : this) {
 			if (NESTED.exists(converter)) {
 				continue;
@@ -88,15 +84,12 @@ public class WebMessageConverters extends
 				NESTED.remove(converter);
 			}
 		}
-		throw new WebMessagelConverterException(parameterDescriptor, request,
-				null);
+		throw new WebMessagelConverterException(parameterDescriptor, request, null);
 	}
 
 	@Override
-	public ClientHttpRequest write(ClientHttpRequest request,
-			ParameterDescriptor parameterDescriptor, Object parameter)
+	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
 			throws IOException, WebMessagelConverterException {
-		ClientHttpRequest requestToUse = request;
 		for (WebMessageConverter converter : this) {
 			if (NESTED.exists(converter)) {
 				continue;
@@ -105,21 +98,18 @@ public class WebMessageConverters extends
 			NESTED.set(converter);
 			try {
 				if (converter.isAccept(parameterDescriptor)) {
-					requestToUse = converter.write(requestToUse,
-							parameterDescriptor, parameter);
+					return converter.write(request, parameterDescriptor, parameter);
 				}
 			} finally {
 				NESTED.remove(converter);
 			}
 		}
-		return requestToUse;
+		return request;
 	}
 
 	@Override
-	public UriComponentsBuilder write(UriComponentsBuilder builder,
-			ParameterDescriptor parameterDescriptor, Object parameter)
-			throws WebMessagelConverterException {
-		UriComponentsBuilder uriComponentsBuilder = builder;
+	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
+			Object parameter) throws WebMessagelConverterException {
 		for (WebMessageConverter converter : this) {
 			if (NESTED.exists(converter)) {
 				continue;
@@ -128,15 +118,13 @@ public class WebMessageConverters extends
 			NESTED.set(converter);
 			try {
 				if (converter.isAccept(parameterDescriptor)) {
-					uriComponentsBuilder = converter.write(
-							uriComponentsBuilder, parameterDescriptor,
-							parameter);
+					return converter.write(builder, parameterDescriptor, parameter);
 				}
 			} finally {
 				NESTED.remove(converter);
 			}
 		}
-		return uriComponentsBuilder;
+		return builder;
 	}
 
 	@Override
@@ -159,8 +147,7 @@ public class WebMessageConverters extends
 	}
 
 	@Override
-	public boolean isAccept(ServerHttpRequest request,
-			TypeDescriptor typeDescriptor, Object body) {
+	public boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor, Object body) {
 		for (WebMessageConverter converter : this) {
 			if (NESTED.exists(converter)) {
 				continue;
@@ -168,7 +155,7 @@ public class WebMessageConverters extends
 
 			NESTED.set(converter);
 			try {
-				if (converter.isAccept(request, typeDescriptor, body)) {
+				if (converter.isAccept(message, typeDescriptor, body)) {
 					return true;
 				}
 			} finally {
@@ -179,9 +166,8 @@ public class WebMessageConverters extends
 	}
 
 	@Override
-	public Object read(ClientHttpResponse response,
-			TypeDescriptor typeDescriptor) throws IOException,
-			WebMessagelConverterException {
+	public Object read(ClientHttpResponse response, TypeDescriptor typeDescriptor)
+			throws IOException, WebMessagelConverterException {
 		for (WebMessageConverter converter : this) {
 			if (NESTED.exists(converter)) {
 				continue;
@@ -200,9 +186,8 @@ public class WebMessageConverters extends
 	}
 
 	@Override
-	public void write(ServerHttpRequest request, ServerHttpResponse response,
-			TypeDescriptor typeDescriptor, Object body) throws IOException,
-			WebMessagelConverterException {
+	public void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor,
+			Object body) throws IOException, WebMessagelConverterException {
 		for (WebMessageConverter converter : this) {
 			if (NESTED.exists(converter)) {
 				continue;
@@ -210,7 +195,7 @@ public class WebMessageConverters extends
 
 			NESTED.set(converter);
 			try {
-				if (converter.isAccept(request, typeDescriptor, body)) {
+				if (converter.isAccept(response, typeDescriptor, body)) {
 					converter.write(request, response, typeDescriptor, body);
 					return;
 				}
@@ -218,8 +203,6 @@ public class WebMessageConverters extends
 				NESTED.remove(converter);
 			}
 		}
-		throw new WebMessagelConverterException(typeDescriptor, body, request,
-				null);
+		throw new WebMessagelConverterException(typeDescriptor, body, request, null);
 	}
-
 }

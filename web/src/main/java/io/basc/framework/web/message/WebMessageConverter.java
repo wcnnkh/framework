@@ -24,19 +24,22 @@ public interface WebMessageConverter {
 	 * @return 是否可以处理
 	 */
 	boolean isAccept(ParameterDescriptor parameterDescriptor);
-	
+
 	/**
-	 * 控制着以下行为{@link #read(ServerHttpRequest, ParameterDescriptor)} and {@link #write(ClientHttpRequest, ParameterDescriptor, Object)}
+	 * 控制着以下行为{@link #read(ServerHttpRequest, ParameterDescriptor)} and
+	 * {@link #write(ClientHttpRequest, ParameterDescriptor, Object)}
+	 * 
 	 * @param request
 	 * @param parameterDescriptor
 	 * @return
 	 */
-	default boolean isAccept(HttpRequest request, ParameterDescriptor parameterDescriptor){
+	default boolean isAccept(HttpRequest request, ParameterDescriptor parameterDescriptor) {
 		return isAccept(parameterDescriptor);
 	}
 
 	/**
 	 * 读取内容
+	 * 
 	 * @param request
 	 * @param parameterDescriptor
 	 * @return
@@ -57,13 +60,14 @@ public interface WebMessageConverter {
 	 * @return
 	 * @see #isAccept(HttpRequest, ParameterDescriptor)
 	 */
-	default ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
-			throws IOException, WebMessagelConverterException{
+	default ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor,
+			Object parameter) throws IOException, WebMessagelConverterException {
 		return request;
 	}
 
 	/**
 	 * 根据参数构造uri
+	 * 
 	 * @param uri
 	 * @param parameterDescriptor
 	 * @param parameter
@@ -71,7 +75,7 @@ public interface WebMessageConverter {
 	 * @see #isAccept(ParameterDescriptor)
 	 */
 	default UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
-			Object parameter) throws WebMessagelConverterException{
+			Object parameter) throws WebMessagelConverterException {
 		return builder;
 	}
 
@@ -79,7 +83,8 @@ public interface WebMessageConverter {
 	 * 控制着以下行为{@link #read(ClientHttpResponse, TypeDescriptor)} and
 	 * {@link #write(ServerHttpRequest, ServerHttpResponse, TypeDescriptor, Object)}
 	 * 
-	 * @param message
+	 * @param message        可能是{@link ClientHttpResponse} or
+	 *                       {@link ServerHttpRequest}
 	 * @param typeDescriptor
 	 * @return 是否可以处理
 	 */
@@ -87,18 +92,30 @@ public interface WebMessageConverter {
 
 	Object read(ClientHttpResponse response, TypeDescriptor typeDescriptor)
 			throws IOException, WebMessagelConverterException;
-	
+
 	/**
 	 * 控制着以下行为{@link #write(ServerHttpRequest, ServerHttpResponse, TypeDescriptor, Object)}}
+	 * 
 	 * @param request
 	 * @param typeDescriptor
 	 * @param body
 	 * @return
 	 */
-	default boolean isAccept(ServerHttpRequest request, TypeDescriptor typeDescriptor, Object body){
-		return isAccept(request, typeDescriptor);
+	default boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor, Object body) {
+		return isAccept(message, typeDescriptor);
 	}
-	
+
+	/**
+	 * 写入
+	 * 
+	 * @param request
+	 * @param response
+	 * @param typeDescriptor
+	 * @param body
+	 * @throws IOException
+	 * @throws WebMessagelConverterException
+	 * @see #isAccept(HttpMessage, TypeDescriptor, Object)
+	 */
 	void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor, Object body)
 			throws IOException, WebMessagelConverterException;
 }

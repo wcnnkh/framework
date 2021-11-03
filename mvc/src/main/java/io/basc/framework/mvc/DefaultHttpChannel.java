@@ -11,7 +11,6 @@ import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mvc.message.RequestBeanFactory;
-import io.basc.framework.mvc.message.WebMessageConverter;
 import io.basc.framework.mvc.security.UserSessionManager;
 import io.basc.framework.mvc.view.View;
 import io.basc.framework.security.login.UserToken;
@@ -21,6 +20,7 @@ import io.basc.framework.util.XUtils;
 import io.basc.framework.value.Value;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
+import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessagelConverterException;
 
 public class DefaultHttpChannel extends RequestBeanFactory implements HttpChannel, Destroy, Decorator {
@@ -57,7 +57,7 @@ public class DefaultHttpChannel extends RequestBeanFactory implements HttpChanne
 			return;
 		}
 
-		getMessageConverters().write(type, body, getRequest(), response);
+		getMessageConverters().write(getRequest(), response, type, body);
 	}
 
 	public boolean isCompleted() {
@@ -84,7 +84,7 @@ public class DefaultHttpChannel extends RequestBeanFactory implements HttpChanne
 	public final Value getValue(String name) {
 		ParameterDescriptor parameterDescriptor = new DefaultParameterDescriptor(name, Value.class);
 		try {
-			return (Value) getMessageConverters().read(parameterDescriptor, getRequest());
+			return (Value) getMessageConverters().read(getRequest(), parameterDescriptor);
 		} catch (IOException e) {
 			throw new WebMessagelConverterException(name, e);
 		}

@@ -7,11 +7,10 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterFactory;
-import io.basc.framework.http.client.ClientHttpRequest;
+import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.json.JSONUtils;
 import io.basc.framework.net.MimeTypeUtils;
-import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.value.Value;
@@ -82,7 +81,7 @@ public class ConversionMessageConverter implements WebMessageConverter {
 	}
 
 	@Override
-	public boolean isAccept(TypeDescriptor typeDescriptor) {
+	public boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor) {
 		return true;
 	}
 
@@ -97,18 +96,6 @@ public class ConversionMessageConverter implements WebMessageConverter {
 
 		String content = JSONUtils.getJsonSupport().toJSONString(body);
 		response.getWriter().write(content);
-	}
-
-	@Override
-	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
-			throws IOException, WebMessagelConverterException {
-		return request;
-	}
-
-	@Override
-	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
-			Object parameter) throws WebMessagelConverterException {
-		return builder;
 	}
 
 	@Override

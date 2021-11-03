@@ -3,9 +3,8 @@ package io.basc.framework.web.message.support;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterFactory;
-import io.basc.framework.http.client.ClientHttpRequest;
+import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpResponse;
-import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
@@ -42,26 +41,15 @@ public class AnnotationMessageConverter implements WebMessageConverter {
 		}
 		return null;
 	}
-
+	
 	@Override
-	public boolean isAccept(TypeDescriptor typeDescriptor) {
+	public boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor) {
 		return false;
 	}
 
 	@Override
 	public void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor,
 			Object body) {
-	}
-
-	@Override
-	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor,
-			Object parameter) {
-		return request;
-	}
-
-	@Override
-	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor, Object parameter) {
-		return builder;
 	}
 
 	@Override
