@@ -24,6 +24,7 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 		addService(new AnnotationMessageConverter());
 		addService(new RequestBodyMessageConverter());
 		addService(new QueryParamsMessageConverter());
+		addService(new ByteArrayMessageConverter());
 
 		// jaxrs2
 		/*
