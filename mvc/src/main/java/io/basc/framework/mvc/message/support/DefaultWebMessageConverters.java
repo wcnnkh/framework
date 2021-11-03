@@ -18,7 +18,7 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 	public DefaultWebMessageConverters(ConversionService conversionService, ParameterFactory defaultValueFactory) {
 		this.messageConverters = new DefaultMessageConverters(conversionService);
 		this.defaultValueFactory = defaultValueFactory;
-		setAfterService(new ConversionWebMessageConverter());
+		addService(new LastWebMessageConverter());
 		addService(new EntityMessageConverter(getMessageConverters()));
 		addService(new InputMessageConverter());
 		addService(new ResourceMessageConverter());
@@ -65,8 +65,8 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 		if (converter instanceof DefaultValueFactoryAware) {
 			((DefaultValueFactoryAware) converter).setDefaultValueFactory(getDefaultValueFactory());
 		}
-		
-		if(converter instanceof MessageConverterAware) {
+
+		if (converter instanceof MessageConverterAware) {
 			((MessageConverterAware) converter).setMessageConverter(getMessageConverters());
 		}
 		super.aware(converter);

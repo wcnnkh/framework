@@ -1,6 +1,7 @@
 package io.basc.framework.mvc.message.support;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.Ordered;
 import io.basc.framework.http.HttpMessage;
 
 /**
@@ -9,11 +10,15 @@ import io.basc.framework.http.HttpMessage;
  * @author shuchaowen
  *
  */
-public class ConversionWebMessageConverter extends AbstractWebMessageConverter {
+public class LastWebMessageConverter extends AbstractWebMessageConverter implements Ordered {
 
 	@Override
 	public boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor) {
 		return true;
 	}
 
+	@Override
+	public int getOrder() {
+		return Ordered.LOWEST_PRECEDENCE;
+	}
 }

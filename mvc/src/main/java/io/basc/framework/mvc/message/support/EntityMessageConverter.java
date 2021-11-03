@@ -25,7 +25,7 @@ public class EntityMessageConverter implements WebMessageConverter {
 	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
 		return false;
 	}
-	
+
 	@Override
 	public boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor) {
 		return Entity.class.isAssignableFrom(typeDescriptor.getType());
