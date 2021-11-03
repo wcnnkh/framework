@@ -12,15 +12,16 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>beans</artifactId>
+			<artifactId>web</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>web</artifactId>
+			<artifactId>beans</artifactId>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
+		<!-- 如果不想支持jax-rs也可以排队该依赖 -->
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>javax.ws.rs-api</artifactId>
