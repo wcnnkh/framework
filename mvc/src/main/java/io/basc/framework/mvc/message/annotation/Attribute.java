@@ -1,4 +1,4 @@
-package io.basc.framework.web.message.annotation;
+package io.basc.framework.mvc.message.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

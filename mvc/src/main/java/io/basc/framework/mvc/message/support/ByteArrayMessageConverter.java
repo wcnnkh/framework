@@ -1,4 +1,4 @@
-package io.basc.framework.web.message.support;
+package io.basc.framework.mvc.message.support;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,10 +9,10 @@ import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.io.IOUtils;
+import io.basc.framework.mvc.message.WebMessageConverter;
+import io.basc.framework.mvc.message.WebMessagelConverterException;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
-import io.basc.framework.web.message.WebMessageConverter;
-import io.basc.framework.web.message.WebMessagelConverterException;
 
 public class ByteArrayMessageConverter implements WebMessageConverter {
 

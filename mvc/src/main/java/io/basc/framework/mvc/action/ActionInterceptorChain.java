@@ -1,8 +1,8 @@
 package io.basc.framework.mvc.action;
 
-import io.basc.framework.mvc.HttpChannel;
-
 import java.util.Iterator;
+
+import io.basc.framework.mvc.HttpChannel;
 
 public final class ActionInterceptorChain {
 	private Iterator<? extends ActionInterceptor> iterator;

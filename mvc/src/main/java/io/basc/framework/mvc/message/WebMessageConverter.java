@@ -1,4 +1,4 @@
-package io.basc.framework.web.message;
+package io.basc.framework.mvc.message;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;

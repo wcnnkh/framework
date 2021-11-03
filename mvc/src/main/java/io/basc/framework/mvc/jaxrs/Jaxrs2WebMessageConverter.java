@@ -1,4 +1,4 @@
-package io.basc.framework.mvc.jaxrs2;
+package io.basc.framework.mvc.jaxrs;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -20,10 +20,10 @@ import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.client.ClientHttpResponse;
+import io.basc.framework.mvc.message.WebMessageConverter;
+import io.basc.framework.mvc.message.WebMessagelConverterException;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
-import io.basc.framework.web.message.WebMessageConverter;
-import io.basc.framework.web.message.WebMessagelConverterException;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @Provider(order = Ordered.LOWEST_PRECEDENCE)

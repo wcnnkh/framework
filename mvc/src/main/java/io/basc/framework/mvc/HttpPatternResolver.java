@@ -1,14 +1,16 @@
 package io.basc.framework.mvc;
 
-import io.basc.framework.web.pattern.HttpPattern;
-
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-public interface HttpPatternResolver {
-	boolean canResolveHttpPattern(Class<?> clazz);
-	
-	boolean canResolveHttpPattern(Class<?> clazz, Method method);
+import io.basc.framework.web.pattern.HttpPattern;
 
-	Collection<HttpPattern> resolveHttpPattern(Class<?> clazz, Method method);
+public interface HttpPatternResolver {
+	boolean canResolve(Class<?> clazz);
+
+	default boolean canResolve(Class<?> clazz, Method method) {
+		return canResolve(clazz);
+	}
+
+	Collection<HttpPattern> resolve(Class<?> clazz, Method method);
 }

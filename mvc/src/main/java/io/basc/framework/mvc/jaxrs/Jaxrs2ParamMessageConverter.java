@@ -1,4 +1,4 @@
-package io.basc.framework.mvc.jaxrs2;
+package io.basc.framework.mvc.jaxrs;
 
 import java.io.IOException;
 
@@ -7,15 +7,14 @@ import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
-import io.basc.framework.convert.ConversionService;
+import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.http.HttpMessage;
+import io.basc.framework.mvc.message.WebMessagelConverterException;
+import io.basc.framework.mvc.message.support.AbstractWebMessageConverter;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.ServerHttpRequest;
-import io.basc.framework.web.message.WebMessagelConverterException;
-import io.basc.framework.web.message.support.ConversionMessageConverter;
 
 /**
  * 这是一个变种的实现，对于无论是PathParam,还是FormParam都会尝试从Path Form Body中获取值
@@ -23,11 +22,8 @@ import io.basc.framework.web.message.support.ConversionMessageConverter;
  * @author shuchaowen
  *
  */
-public class Jaxrs2ParamMessageConverter extends ConversionMessageConverter {
-
-	public Jaxrs2ParamMessageConverter(ConversionService conversionService, ParameterFactory defaultValueFactory) {
-		super(conversionService, defaultValueFactory);
-	}
+@Provider
+public class Jaxrs2ParamMessageConverter extends AbstractWebMessageConverter {
 
 	@Override
 	public boolean isAccept(ParameterDescriptor parameterDescriptor) {

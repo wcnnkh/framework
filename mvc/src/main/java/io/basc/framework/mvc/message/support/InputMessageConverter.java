@@ -1,4 +1,4 @@
-package io.basc.framework.web.message.support;
+package io.basc.framework.mvc.message.support;
 
 import java.io.IOException;
 
@@ -6,28 +6,27 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpResponse;
-import io.basc.framework.io.Resource;
-import io.basc.framework.net.FileMimeTypeUitls;
-import io.basc.framework.net.MimeType;
+import io.basc.framework.io.IOUtils;
+import io.basc.framework.mvc.message.WebMessageConverter;
+import io.basc.framework.mvc.message.WebMessagelConverterException;
+import io.basc.framework.net.InetUtils;
+import io.basc.framework.net.message.InputMessage;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
-import io.basc.framework.web.WebUtils;
-import io.basc.framework.web.message.WebMessageConverter;
-import io.basc.framework.web.message.WebMessagelConverterException;
 
-public class ResourceMessageConverter implements WebMessageConverter {
+public class InputMessageConverter implements WebMessageConverter {
 
 	@Override
 	public boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor) {
-		return Resource.class.isAssignableFrom(typeDescriptor.getType());
+		return InputMessage.class.isAssignableFrom(typeDescriptor.getType());
 	}
-
+	
 	@Override
 	public void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor,
 			Object body) throws IOException, WebMessagelConverterException {
-		Resource resource = (Resource) body;
-		MimeType mimeType = FileMimeTypeUitls.getMimeType(resource);
-		WebUtils.writeStaticResource(request, response, resource, mimeType);
+		InputMessage inputMessage = (InputMessage) body;
+		InetUtils.writeHeader(inputMessage, response);
+		IOUtils.write(inputMessage.getInputStream(), response.getOutputStream());
 	}
 
 	@Override
@@ -44,7 +43,7 @@ public class ResourceMessageConverter implements WebMessageConverter {
 	@Override
 	public Object read(ClientHttpResponse response, TypeDescriptor typeDescriptor)
 			throws IOException, WebMessagelConverterException {
-		return null;
+		return response;
 	}
 
 }

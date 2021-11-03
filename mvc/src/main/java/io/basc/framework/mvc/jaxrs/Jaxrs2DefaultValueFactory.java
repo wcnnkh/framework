@@ -1,4 +1,4 @@
-package io.basc.framework.mvc.jaxrs2;
+package io.basc.framework.mvc.jaxrs;
 
 import javax.ws.rs.DefaultValue;
 

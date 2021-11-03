@@ -1,11 +1,14 @@
 package io.basc.framework.mvc.action;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.BeanFactoryPostProcessor;
 import io.basc.framework.beans.BeanlifeCycleEvent;
+import io.basc.framework.beans.BeanlifeCycleEvent.Step;
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.BeanlifeCycleEvent.Step;
 import io.basc.framework.context.annotation.EnableConditionUtils;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
@@ -15,9 +18,6 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mvc.HttpPatternResolvers;
 import io.basc.framework.mvc.security.HttpActionAuthorityManager;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, EventListener<BeanlifeCycleEvent> {
@@ -47,7 +47,7 @@ public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, Eve
 		patternResolver.setPropertyResolver(beanFactory.getEnvironment());
 		patternResolver.configure(beanFactory);
 		for (Class<?> clz : beanFactory.getContextClasses()) {
-			if (!patternResolver.canResolveHttpPattern(clz)) {
+			if (!patternResolver.canResolve(clz)) {
 				continue;
 			}
 			
@@ -56,7 +56,7 @@ public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, Eve
 					continue;
 				}
 				
-				if (!patternResolver.canResolveHttpPattern(clz, method)) {
+				if (!patternResolver.canResolve(clz, method)) {
 					continue;
 				}
 				

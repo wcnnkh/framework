@@ -1,15 +1,17 @@
-package io.basc.framework.web.message.support;
+package io.basc.framework.mvc.message.support;
 
 import java.io.IOException;
 import java.util.List;
 
 import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterFactory;
-import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.json.JSONUtils;
+import io.basc.framework.mvc.message.WebMessageConverter;
+import io.basc.framework.mvc.message.WebMessagelConverterException;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.ClassUtils;
@@ -17,8 +19,6 @@ import io.basc.framework.value.Value;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.WebUtils;
-import io.basc.framework.web.message.WebMessageConverter;
-import io.basc.framework.web.message.WebMessagelConverterException;
 
 /**
  * 应该排在最后一个
@@ -26,12 +26,18 @@ import io.basc.framework.web.message.WebMessagelConverterException;
  * @author shuchaowen
  *
  */
-public class ConversionMessageConverter implements WebMessageConverter {
-	private final ConversionService conversionService;
-	private final ParameterFactory defaultValueFactory;
+public abstract class AbstractWebMessageConverter
+		implements WebMessageConverter, ConversionServiceAware, DefaultValueFactoryAware {
+	private ConversionService conversionService;
+	private ParameterFactory defaultValueFactory;
 
-	public ConversionMessageConverter(ConversionService conversionService, ParameterFactory defaultValueFactory) {
+	@Override
+	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
+	}
+
+	@Override
+	public void setDefaultValueFactory(ParameterFactory defaultValueFactory) {
 		this.defaultValueFactory = defaultValueFactory;
 	}
 
@@ -78,11 +84,6 @@ public class ConversionMessageConverter implements WebMessageConverter {
 		Object source = readValue(parameterDescriptor, request);
 		return conversionService.convert(source, TypeDescriptor.forObject(source),
 				new TypeDescriptor(parameterDescriptor));
-	}
-
-	@Override
-	public boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor) {
-		return true;
 	}
 
 	@Override
