@@ -8,6 +8,7 @@ import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.mvc.message.WebMessageConverter;
 import io.basc.framework.mvc.message.WebMessageConverters;
 import io.basc.framework.net.message.convert.DefaultMessageConverters;
+import io.basc.framework.net.message.convert.MessageConverterAware;
 import io.basc.framework.net.message.convert.MessageConverters;
 
 public class DefaultWebMessageConverters extends WebMessageConverters {
@@ -63,6 +64,10 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 
 		if (converter instanceof DefaultValueFactoryAware) {
 			((DefaultValueFactoryAware) converter).setDefaultValueFactory(getDefaultValueFactory());
+		}
+		
+		if(converter instanceof MessageConverterAware) {
+			((MessageConverterAware) converter).setMessageConverter(getMessageConverters());
 		}
 		super.aware(converter);
 	}
