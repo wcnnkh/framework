@@ -640,8 +640,12 @@ public abstract class CollectionUtils {
 	 * @return
 	 */
 	public static boolean equals(Collection<?> left, Collection<?> right, Comparator<Object> comparator) {
-		if (isEmpty(left) ^ isEmpty(right)) {
-			return false;
+		if(isEmpty(left)) {
+			return isEmpty(right);
+		}
+		
+		if(isEmpty(right)) {
+			return isEmpty(left);
 		}
 
 		if (left.size() != right.size()) {
