@@ -60,4 +60,13 @@ public enum StringMatchers implements StringMatcher {
 			return StringUtils.equals(pattern, text);
 		}
 	}
+
+	public static boolean matchAny(String pattern, String text) {
+		for (StringMatchers matchers : values()) {
+			if (matchers.match(pattern, text)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

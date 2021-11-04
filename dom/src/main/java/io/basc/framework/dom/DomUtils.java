@@ -20,11 +20,7 @@ import io.basc.framework.util.placeholder.PropertyResolver;
 import io.basc.framework.value.StringValue;
 
 public final class DomUtils {
-	private static final DocumentTemplate TEMPLATE = Sys.env.getServiceLoader(DocumentTemplate.class).first(() -> {
-		DocumentTemplate template = new DocumentTemplate();
-		template.configure(Sys.env);
-		return template;
-	});
+	private static final DocumentTemplate TEMPLATE = Sys.env.getServiceLoader(DocumentTemplate.class, DocumentTemplate.class).first();
 
 	public static DocumentTemplate getTemplate() {
 		return TEMPLATE;

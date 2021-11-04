@@ -51,6 +51,21 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 		contextClassesLoader.add(LockMethodInterceptor.class);
 		componentScan(Constants.SYSTEM_PACKAGE_NAME);
 	}
+	
+	@Override
+	protected boolean useSpi(Class<?> serviceClass) {
+		for(Class<?> sourceClass : sourceClasses) {
+			Package pg = sourceClass.getPackage();
+			if(pg == null) {
+				continue;
+			}
+			
+			if(serviceClass.getName().startsWith(pg.getName())) {
+				return true;
+			}
+		}
+		return super.useSpi(serviceClass);
+	}
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
@@ -109,7 +124,10 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 			throw new IllegalArgumentException("Already source " + sourceClass);
 		}
 
-		componentScan(sourceClass.getPackage().getName());
+		if(sourceClass.getPackage() != null) {
+			componentScan(sourceClass.getPackage().getName());
+		}
+		
 		ComponentScan componentScan = sourceClass.getAnnotation(ComponentScan.class);
 		if (componentScan != null) {
 			componentScan(componentScan);

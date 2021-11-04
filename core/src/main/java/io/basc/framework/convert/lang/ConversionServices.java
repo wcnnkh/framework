@@ -1,19 +1,18 @@
 package io.basc.framework.convert.lang;
 
+import java.util.TreeSet;
+
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.lang.LinkedThreadLocal;
 import io.basc.framework.value.EmptyValue;
 
-import java.util.TreeSet;
-
 public class ConversionServices extends ConfigurableServices<ConversionService>
 		implements ConversionService, Comparable<Object>,
-		Iterable<ConversionService>, Configurable {
+		Iterable<ConversionService> {
 	private static final LinkedThreadLocal<ConversionService> NESTED = new LinkedThreadLocal<ConversionService>(
 			ConversionServices.class.getName());
 
