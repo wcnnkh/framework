@@ -17,6 +17,7 @@ import io.basc.framework.beans.ioc.Ioc;
 import io.basc.framework.context.Destroy;
 import io.basc.framework.context.Init;
 import io.basc.framework.context.support.AbstractConfigurableContext;
+import io.basc.framework.core.parameter.DefaultParameterDefaultValueFactories;
 import io.basc.framework.core.parameter.ExecutableParameterDescriptorsIterator;
 import io.basc.framework.core.parameter.ParameterFactories;
 import io.basc.framework.core.parameter.ParameterDescriptors;
@@ -57,7 +58,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 	private ClassLoaderProvider classLoaderProvider;
 	private volatile boolean initialized;
 	private List<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<BeanFactoryPostProcessor>(8);
-	private final ParameterFactories defaultValueFactories = new ParameterFactories();
+	private final ParameterFactories defaultValueFactories = new DefaultParameterDefaultValueFactories();
 	
 	public DefaultBeanFactory() {
 		super(true);

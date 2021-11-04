@@ -18,7 +18,7 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 	private final WebMessageConverters afters = new WebMessageConverters();
 
 	/**
-	 * 会自动调用{@link #configure(ServiceLoaderFactory)}方法
+	 * 直接构造，不通过实例工厂创建， 会自动调用{@link #configure(ServiceLoaderFactory)}方法
 	 * 
 	 * @param beanFactory
 	 */

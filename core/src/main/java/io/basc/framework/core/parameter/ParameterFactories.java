@@ -2,14 +2,7 @@ package io.basc.framework.core.parameter;
 
 import io.basc.framework.factory.ConfigurableServices;
 
-/**
- * 获取默认值
- * 
- * @author shuchaowen
- *
- */
-public class ParameterFactories extends ConfigurableServices<ParameterFactory>
-		implements ParameterFactory {
+public class ParameterFactories extends ConfigurableServices<ParameterFactory> implements ParameterFactory {
 
 	public ParameterFactories() {
 		super(ParameterFactory.class);
@@ -32,7 +25,7 @@ public class ParameterFactories extends ConfigurableServices<ParameterFactory>
 				return factory.getParameter(parameterDescriptor);
 			}
 		}
-		return parameterDescriptor.getDefaultValue();
+		return null;
 	}
 
 }
