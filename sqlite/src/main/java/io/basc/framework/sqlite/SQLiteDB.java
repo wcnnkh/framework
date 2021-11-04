@@ -3,11 +3,13 @@ package io.basc.framework.sqlite;
 import io.basc.framework.db.DefaultDB;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
+import io.basc.framework.factory.Configurable;
+import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.sql.DataSourceConnectionFactory;
 
 import org.sqlite.SQLiteDataSource;
 
-public class SQLiteDB extends DefaultDB {
+public class SQLiteDB extends DefaultDB implements Configurable {
 
 	public SQLiteDB(SQLiteDataSource dataSource) {
 		super(new DataSourceConnectionFactory(dataSource), new SQLiteDialect());
@@ -17,6 +19,11 @@ public class SQLiteDB extends DefaultDB {
 	public SQLiteDB(String databasePath) {
 		super(new SQLiteConnectionFactory(databasePath), new SQLiteDialect());
 		setCheckTableChange(false);
+	}
+
+	@Override
+	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		((Configurable) getSqlDialect()).configure(serviceLoaderFactory);
 	}
 
 	/**

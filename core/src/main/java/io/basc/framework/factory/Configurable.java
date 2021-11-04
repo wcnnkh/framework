@@ -8,7 +8,7 @@ package io.basc.framework.factory;
  */
 public interface Configurable {
 	/**
-	 * 通过实例工厂调用时会自动调用此方法
+	 * 通过工厂模式实体化的会自动调用此方法
 	 * 
 	 * @param serviceLoaderFactory
 	 */
