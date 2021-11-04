@@ -1,5 +1,6 @@
 package io.basc.framework.mvc.message.support;
 
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.lang.ConversionServices;
@@ -16,6 +17,16 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 	private final ParameterFactory defaultValueFactory;
 	private final WebMessageConverters afters = new WebMessageConverters();
 
+	/**
+	 * 会自动调用{@link #configure(ServiceLoaderFactory)}方法
+	 * 
+	 * @param beanFactory
+	 */
+	public DefaultWebMessageConverters(BeanFactory beanFactory) {
+		this(beanFactory.getEnvironment().getConversionService(), beanFactory.getDefaultValueFactory());
+		configure(beanFactory);
+	}
+
 	public DefaultWebMessageConverters(ConversionService conversionService, ParameterFactory defaultValueFactory) {
 		super.setAfterService(afters);
 		this.messageConverters = new DefaultMessageConverters(conversionService);
@@ -31,7 +42,7 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 		addService(new QueryParamsMessageConverter());
 		addService(new ByteArrayMessageConverter());
 	}
-	
+
 	@Override
 	public void setAfterService(WebMessageConverter afterService) {
 		afters.addService(afterService);

@@ -57,7 +57,7 @@ public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolv
 
 	@Override
 	public Collection<HttpPattern> resolve(Class<?> clazz, Method method) {
-		Set<HttpPattern> patterns = new LinkedHashSet<HttpPattern>();
+		Set<HttpPattern> patterns = new LinkedHashSet<HttpPattern>(8);
 		for (HttpPatternResolver resolver : this) {
 			if (resolver.canResolve(clazz, method)) {
 				Collection<HttpPattern> ps = resolver.resolve(clazz, method);

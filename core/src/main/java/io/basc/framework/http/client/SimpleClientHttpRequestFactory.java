@@ -1,16 +1,5 @@
 package io.basc.framework.http.client;
 
-import io.basc.framework.env.Sys;
-import io.basc.framework.http.HttpMethod;
-import io.basc.framework.http.client.accessor.HttpClientConfigAccessor;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.ResourceUtils;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.net.ssl.SSLContexts;
-import io.basc.framework.net.ssl.TrustAllManager;
-import io.basc.framework.util.StringUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -23,6 +12,16 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
+
+import io.basc.framework.env.Sys;
+import io.basc.framework.http.client.accessor.HttpClientConfigAccessor;
+import io.basc.framework.io.Resource;
+import io.basc.framework.io.ResourceUtils;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.net.ssl.SSLContexts;
+import io.basc.framework.net.ssl.TrustAllManager;
+import io.basc.framework.util.StringUtils;
 
 public class SimpleClientHttpRequestFactory extends HttpClientConfigAccessor implements ClientHttpRequestFactory {
 	private static Logger logger = LoggerFactory.getLogger(SimpleClientHttpRequestFactory.class);
@@ -144,9 +143,9 @@ public class SimpleClientHttpRequestFactory extends HttpClientConfigAccessor imp
 		this.outputStreaming = outputStreaming;
 	}
 
-	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
+	public ClientHttpRequest createRequest(URI uri, String httpMethod) throws IOException {
 		HttpURLConnection connection = openConnection(uri.toURL(), this.proxy);
-		prepareConnection(connection, httpMethod.name());
+		prepareConnection(connection, httpMethod);
 
 		if (this.bufferRequestBody) {
 			return new SimpleBufferingClientHttpRequest(connection, this.outputStreaming);
