@@ -21,11 +21,7 @@ public final class HttpUtils {
 	private HttpUtils() {
 	};
 
-	private static final HttpClient HTTP_CLIENT = Sys.env.getServiceLoader(HttpClient.class).first(() -> {
-		DefaultHttpClient client = new DefaultHttpClient();
-		client.configure(Sys.env);
-		return client;
-	});
+	private static final HttpClient HTTP_CLIENT = Sys.env.getServiceLoader(HttpClient.class, DefaultHttpClient.class).first();
 
 	/**
 	 * 获取默认的HttpClient(获取spi机制加载)

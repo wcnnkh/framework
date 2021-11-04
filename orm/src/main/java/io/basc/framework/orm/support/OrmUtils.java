@@ -11,12 +11,8 @@ public final class OrmUtils {
 		throw new NotSupportedException(getClass().getName());
 	}
 
-	private static final ObjectRelationalMapping ORM = Sys.env.getServiceLoader(ObjectRelationalMapping.class)
-			.first(() -> {
-				DefaultObjectRelationalMapping objectRelationalMapping = new DefaultObjectRelationalMapping();
-				objectRelationalMapping.configure(Sys.env);
-				return objectRelationalMapping;
-			});
+	private static final ObjectRelationalMapping ORM = Sys.env
+			.getServiceLoader(ObjectRelationalMapping.class, DefaultObjectRelationalMapping.class).first();
 
 	public static ObjectRelationalMapping getMapping() {
 		return ORM;

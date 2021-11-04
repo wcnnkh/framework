@@ -1,5 +1,11 @@
 package io.basc.framework.beans;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Modifier;
+import java.util.List;
+import java.util.Map;
+
 import io.basc.framework.aop.support.ProxyUtils;
 import io.basc.framework.beans.annotation.AopEnable;
 import io.basc.framework.beans.annotation.ConfigurationProperties;
@@ -7,12 +13,12 @@ import io.basc.framework.beans.annotation.IgnoreConfigurationProperty;
 import io.basc.framework.beans.annotation.Service;
 import io.basc.framework.beans.annotation.Singleton;
 import io.basc.framework.context.ContextAware;
-import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.env.Sys;
+import io.basc.framework.factory.Configurable;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.mapper.Field;
@@ -24,16 +30,10 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Modifier;
-import java.util.List;
-import java.util.Map;
-
 public final class BeanUtils {
 	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = Sys.env.getServiceLoader(AopEnableSpi.class).toList();
 	private static final String IGNORE_PACKAGE_NAME_PREFIX = BeanUtils.class.getPackage().getName() + ".";
-	
+
 	private BeanUtils() {
 	};
 
@@ -83,9 +83,9 @@ public final class BeanUtils {
 		if (instance instanceof ContextAware) {
 			((ContextAware) instance).setContext(beanFactory);
 		}
-		
-		if(instance instanceof ConversionServiceAware) {
-			((ConversionServiceAware) instance).setConversionService(beanFactory.getEnvironment().getConversionService());
+
+		if (instance instanceof Configurable) {
+			((Configurable) instance).configure(beanFactory);
 		}
 	}
 

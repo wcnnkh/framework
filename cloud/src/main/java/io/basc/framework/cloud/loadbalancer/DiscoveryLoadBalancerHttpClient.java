@@ -1,7 +1,8 @@
 package io.basc.framework.cloud.loadbalancer;
 
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.beans.BeanFactoryAware;
+import java.net.URI;
+import java.util.HashSet;
+
 import io.basc.framework.cloud.ServiceInstance;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
@@ -19,11 +20,8 @@ import io.basc.framework.retry.RetryOperations;
 import io.basc.framework.retry.support.RetryTemplate;
 import io.basc.framework.util.Assert;
 
-import java.net.URI;
-import java.util.HashSet;
-
 @Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpClient.class)
-public class DiscoveryLoadBalancerHttpClient extends DefaultHttpClient implements BeanFactoryAware {
+public class DiscoveryLoadBalancerHttpClient extends DefaultHttpClient {
 	private final DiscoveryLoadBalancer loadbalancer;
 	private RetryOperations retryOperations = Sys.env.getServiceLoader(RetryOperations.class)
 			.first(() -> new RetryTemplate());
@@ -41,11 +39,6 @@ public class DiscoveryLoadBalancerHttpClient extends DefaultHttpClient implement
 		this.retryOperations = retryOperations;
 	}
 	
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) {
-		configure(beanFactory);
-	}
-
 	@Override
 	public <T> HttpResponseEntity<T> execute(URI url, HttpMethod method, ClientHttpRequestFactory requestFactory,
 			ClientHttpRequestCallback requestCallback, ClientHttpResponseExtractor<T> responseExtractor)

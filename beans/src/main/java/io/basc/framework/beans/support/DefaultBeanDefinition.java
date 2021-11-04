@@ -62,6 +62,16 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 		}
 		beanFactory.getLifecycleDispatcher().publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.AFTER_DEPENDENCE));
 	}
+	
+	/**
+	 * @see DefaultBeanDefinition#dependence(Object)
+	 * @see BeanUtils#aware(Object, io.basc.framework.beans.BeanFactory, BeanDefinition)
+	 * @param instance
+	 */
+	@Override
+	protected final void configurable(Object instance) {
+		//不处理
+	}
 
 	protected void configurationProperties(Object instance) {
 		BeanUtils.configurationProperties(instance, getAnnotatedElement(), getEnvironment());

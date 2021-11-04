@@ -2,17 +2,17 @@ package io.basc.framework.sql.orm;
 
 import java.util.Collection;
 
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.env.Environment;
+import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.sql.Sql;
 
-public interface SqlDialect extends TableMapping, ConversionServiceAware {
+public interface SqlDialect extends TableMapping, EnvironmentAware {
 	SqlType getSqlType(Class<?> javaType);
 
-	ConversionService getConversionService();
-
+	Environment getEnvironment();
+	
 	default Object toDataBaseValue(Object value) {
 		return toDataBaseValue(value, TypeDescriptor.forObject(value));
 	}

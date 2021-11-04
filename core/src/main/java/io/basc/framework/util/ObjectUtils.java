@@ -279,12 +279,11 @@ public abstract class ObjectUtils {
 	 * @see java.util.Arrays#equals
 	 */
 	public static boolean nullSafeEquals(Object o1, Object o2) {
-		if(o1 == null) {
-			return o2 == null;
+		if (o1 == o2) {
+			return true;
 		}
-		
-		if(o2 == null) {
-			return o1 == null;
+		if (o1 == null || o2 == null) {
+			return false;
 		}
 		
 		if (o1.equals(o2)) {

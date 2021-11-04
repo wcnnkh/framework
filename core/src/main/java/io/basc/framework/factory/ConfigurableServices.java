@@ -1,5 +1,13 @@
 package io.basc.framework.factory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Consumer;
+
 import io.basc.framework.core.OrderComparator;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
@@ -9,19 +17,10 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.MultiIterator;
 import io.basc.framework.util.Supplier;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Consumer;
-
 public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 	private static Logger LOGGER = LoggerFactory
 			.getLogger(ConfigurableServices.class);
 	private final Class<T> serviceClass;
-	private volatile ServiceLoaderFactory serviceLoaderFactory;
 	private final Consumer<T> consumer;
 	private final Supplier<Collection<T>> supplier;
 	private Logger logger = LOGGER;
@@ -89,18 +88,6 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 		}
 	}
 
-	protected void aware(T service, boolean reaware) {
-		aware(service);
-
-		if (!reaware) {
-			if (serviceLoaderFactory != null) {
-				if (service instanceof Configurable) {
-					((Configurable) service).configure(serviceLoaderFactory);
-				}
-			}
-		}
-	}
-
 	private volatile Collection<T> services;
 
 	public void aware() {
@@ -110,7 +97,7 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 			}
 
 			for (T service : services) {
-				aware(service, true);
+				aware(service);
 			}
 		}
 	}
@@ -127,7 +114,7 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 			return false;
 		}
 
-		aware(service, false);
+		aware(service);
 		synchronized (this) {
 			if (services == null) {
 				services = supplier.get();
@@ -170,7 +157,7 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 					this.services = supplier.get();
 				}
 
-				aware(service, false);
+				aware(service);
 				boolean success = this.services.add(service);
 				if (success) {
 					if (logger.isDebugEnabled()) {
@@ -228,7 +215,6 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		synchronized (this) {
-			this.serviceLoaderFactory = serviceLoaderFactory;
 			Collection<T> newServices = supplier.get();
 			if (this.services != null) {
 				newServices.addAll(this.services);
@@ -240,7 +226,7 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 			this.defaultServices = serviceLoaderFactory.getServiceLoader(
 					serviceClass).toList();
 			defaultServices.stream()
-					.forEach((service) -> aware(service, false));
+					.forEach((service) -> aware(service));
 			if (logger.isDebugEnabled()) {
 				logger.debug("Configure [{}] services {}", serviceClass,
 						defaultServices);

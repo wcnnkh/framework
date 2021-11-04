@@ -10,6 +10,8 @@ import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Environment;
+import io.basc.framework.env.EnvironmentAware;
+import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.InstanceDefinition;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.NoArgsInstanceFactory;
@@ -35,12 +37,24 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 	public Class<?> getTargetClass() {
 		return targetClass;
 	}
+	
+	protected void configurable(Object instance) {
+		if(instance instanceof EnvironmentAware) {
+			((EnvironmentAware) instance).setEnvironment(getEnvironment());
+		}
+		
+		if(instance instanceof Configurable) {
+			((Configurable) instance).configure(serviceLoaderFactory);
+		}
+	}
 
 	protected Object createInternal(Class<?> targetClass, ParameterDescriptors parameterDescriptors, Object[] params) {
 		Constructor<?> constructor = ReflectionUtils.findConstructor(targetClass, false,
 				parameterDescriptors.getTypes());
 		try {
-			return constructor.newInstance(params == null ? new Object[0] : params);
+			Object instance = constructor.newInstance(params == null ? new Object[0] : params);
+			configurable(instance);
+			return instance;
 		} catch (Exception e) {
 			ReflectionUtils.handleReflectionException(e);
 		}
