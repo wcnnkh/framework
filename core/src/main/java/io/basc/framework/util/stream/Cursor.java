@@ -3,7 +3,6 @@ package io.basc.framework.util.stream;
 import java.util.Iterator;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import io.basc.framework.util.XUtils;
 
@@ -52,8 +51,7 @@ public class Cursor<T> extends StreamMapWrapper<T, Cursor<T>> implements StreamP
 	}
 
 	private static <E> Stream<E> convert(Stream<E> stream, CursorPosition cursorPosition) {
-		CursorSpliterator<E> cursorSpliterator = new CursorSpliterator<>(stream.spliterator(), cursorPosition);
-		return StreamSupport.stream(cursorSpliterator, stream.isParallel()).onClose(() -> stream.close());
+		return XUtils.stream(new CursorIterator<>(stream.iterator(), cursorPosition)).onClose(() -> stream.close());
 	}
 
 	@Override

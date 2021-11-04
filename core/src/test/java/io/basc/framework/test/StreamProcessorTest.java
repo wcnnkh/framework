@@ -57,13 +57,17 @@ public class StreamProcessorTest {
 		});
 		System.out.println(stream.filter((e) -> true).findFirst().get());
 
-		Cursor<String> cursor = new Cursor<>(XUtils.stream(list.iterator()).onClose(() -> {
+		Cursor<String> cursor = new Cursor<>(list.stream().onClose(() -> {
 			System.out.println("关闭游标");
 		}).onClose(() -> {
 			System.out.println("关闭游标2");
 		}));
-		assertTrue(cursor.isAutoClose());
-		cursor.forEach((s) -> System.out.println("pos:" + cursor.getPosition() + ":" + s + "," + cursor.isClosed()));
-		assertTrue(cursor.isClosed());
+		try {
+			assertTrue(cursor.isAutoClose());
+			cursor.forEach((s) -> System.out.println("pos:" + cursor.getPosition() + ":" + s + "," + cursor.isClosed()));
+			assertTrue(cursor.isClosed());
+		} finally {
+			cursor.close();
+		}
 	}
 }
