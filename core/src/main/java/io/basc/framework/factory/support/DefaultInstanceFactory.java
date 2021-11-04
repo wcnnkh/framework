@@ -42,6 +42,10 @@ public class DefaultInstanceFactory extends AbstractServiceLoaderFactory impleme
 		setClassLoaderProvider(new DefaultClassLoaderProvider(classLoader));
 	}
 
+	public ParameterFactories getDefaultValueFactory() {
+		return defaultValueFactory;
+	}
+
 	@Override
 	public ClassLoader getClassLoader() {
 		if (classLoaderProvider == null) {
