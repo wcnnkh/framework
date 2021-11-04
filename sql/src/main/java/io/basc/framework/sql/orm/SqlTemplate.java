@@ -100,7 +100,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		for (Column column : tableStructure) {
 			if (column.isAutoIncrement() && column.getField() != null) {
 				Object lastId = getAutoIncrementLastId(connection, tableStructure);
-				column.getField().getSetter().set(entity, lastId, getSqlDialect().getConversionService());
+				column.getField().getSetter().set(entity, lastId, getSqlDialect().getEnvironment().getConversionService());
 			}
 		}
 	}
@@ -335,14 +335,14 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	@Override
 	default <T> Processor<ResultSet, T, Throwable> getMapProcessor(TypeDescriptor type) {
 		SmartMapProcessor<T> processor = new SmartMapProcessor<T>(getSqlDialect(),
-				getSqlDialect().getConversionService(), type);
+				getSqlDialect().getEnvironment().getConversionService(), type);
 		processor.setMapper(getMapper());
 		processor.setStructureRegistry(getStructureRegistry());
 		return processor;
 	}
 
 	default <T> Processor<ResultSet, T, ? extends Throwable> getMapProcessor(TableStructure structure) {
-		return new EntityStructureMapProcessor<T>(structure, getSqlDialect().getConversionService());
+		return new EntityStructureMapProcessor<T>(structure, getSqlDialect().getEnvironment().getConversionService());
 	}
 
 	/**

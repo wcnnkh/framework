@@ -10,6 +10,7 @@ import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Environment;
+import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.InstanceDefinition;
 import io.basc.framework.factory.InstanceException;
@@ -38,6 +39,10 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 	}
 	
 	protected void configurable(Object instance) {
+		if(instance instanceof EnvironmentAware) {
+			((EnvironmentAware) instance).setEnvironment(getEnvironment());
+		}
+		
 		if(instance instanceof Configurable) {
 			((Configurable) instance).configure(serviceLoaderFactory);
 		}

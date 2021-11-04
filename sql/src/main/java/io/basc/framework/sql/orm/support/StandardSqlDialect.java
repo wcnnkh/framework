@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 import io.basc.framework.aop.support.FieldSetterListen;
-import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.Range;
+import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.ParameterException;
@@ -56,14 +56,16 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	private static final char POINT = '.';
 
 	private String escapeCharacter = "`";
-	private ConversionService conversionService;
+	private Environment environment;
 
-	public ConversionService getConversionService() {
-		return conversionService == null ? Sys.env.getConversionService() : conversionService;
+	@Override
+	public Environment getEnvironment() {
+		return environment == null ? Sys.env : environment;
 	}
 
-	public void setConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
+	@Override
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 
 	public Object getDataBaseValue(Object entity, Field field) {
@@ -84,7 +86,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 			return value;
 		}
 
-		return getConversionService().convert(value, sourceType, TypeDescriptor.valueOf(sqlType.getType()));
+		return getEnvironment().getConversionService().convert(value, sourceType,
+				TypeDescriptor.valueOf(sqlType.getType()));
 	}
 
 	public String getEscapeCharacter() {
@@ -334,8 +337,9 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		}
 		return changeMap;
 	}
-	
-	protected Sql toUpdateSql(TableStructure tableStructure, Object entity, Map<String, Object> changeMap, Accept<Column> accept) throws SqlDialectException{
+
+	protected Sql toUpdateSql(TableStructure tableStructure, Object entity, Map<String, Object> changeMap,
+			Accept<Column> accept) throws SqlDialectException {
 		List<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
 		if (primaryKeyColumns.size() == 0) {
 			throw new SqlDialectException(tableStructure.getName() + " not found primary key");
@@ -354,8 +358,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 				// 忽略没有变化的字段
 				continue;
 			}
-			
-			if(!accept.accept(column)){
+
+			if (!accept.accept(column)) {
 				continue;
 			}
 
@@ -378,63 +382,64 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 				sb.append(AND);
 			}
 		}
-		
+
 		// 添加版本号字段变更条件
 		notPrimaryKeys.forEach((column) -> {
-			if(!accept.accept(column)){
-				return ;
+			if (!accept.accept(column)) {
+				return;
 			}
-			
+
 			appendExtendWhere(column, sb, params, changeMap, entity);
 		});
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
 
-	protected void appendExtendWhere(Column column, StringBuilder sb, Collection<Object> params, Map<String, Object> changeMap, Object entity){
+	protected void appendExtendWhere(Column column, StringBuilder sb, Collection<Object> params,
+			Map<String, Object> changeMap, Object entity) {
 		Collection<Range<Double>> numberRanges = column.getNumberRanges();
-		if(!CollectionUtils.isEmpty(numberRanges)) {
-			for(Range<Double> range : numberRanges) {
-				if(range.getLowerBound().getValue().isPresent()) {
+		if (!CollectionUtils.isEmpty(numberRanges)) {
+			for (Range<Double> range : numberRanges) {
+				if (range.getLowerBound().getValue().isPresent()) {
 					sb.append(AND);
 					keywordProcessing(sb, column.getName());
-					if(column.isIncrement()){
+					if (column.isIncrement()) {
 						AnyValue newValue = new AnyValue(getDataBaseValue(entity, column.getField()));
 						AnyValue oldValue = changeMap == null ? null
 								: new AnyValue(changeMap.get(column.getField().getSetter().getName()));
-						if(oldValue != null) {
+						if (oldValue != null) {
 							sb.append("+");
 							sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
 						}
 					}
 					sb.append(">");
-					if(range.getLowerBound().isInclusive()) {
+					if (range.getLowerBound().isInclusive()) {
 						sb.append("=");
 					}
 					sb.append(range.getLowerBound().getValue());
 				}
-				
-				if(range.getUpperBound().getValue().isPresent()) {
+
+				if (range.getUpperBound().getValue().isPresent()) {
 					sb.append(AND);
 					keywordProcessing(sb, column.getName());
-					if(column.isIncrement()){
+					if (column.isIncrement()) {
 						AnyValue newValue = new AnyValue(getDataBaseValue(entity, column.getField()));
 						AnyValue oldValue = changeMap == null ? null
 								: new AnyValue(changeMap.get(column.getField().getSetter().getName()));
-						if(oldValue != null) {
+						if (oldValue != null) {
 							sb.append("+");
 							sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
 						}
 					}
 					sb.append("<");
-					if(range.getUpperBound().isInclusive()) {
+					if (range.getUpperBound().isInclusive()) {
 						sb.append("=");
 					}
 					sb.append(range.getUpperBound().getValue());
 				}
 			}
 		}
-		
-		if(column.isVersion()) {
+
+		if (column.isVersion()) {
 			AnyValue oldVersion = null;
 			if (changeMap != null && changeMap.containsKey(column.getField().getSetter().getName())) {
 				oldVersion = new AnyValue(changeMap.get(column.getField().getSetter().getName()));
@@ -454,7 +459,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 					: toDataBaseValue(oldVersion.getAsLongValue()));
 		}
 	}
-	
+
 	@Override
 	public Sql toUpdatePartSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
 		Map<String, Object> changeMap = getChangeMap(entity);
@@ -470,23 +475,22 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 			return true;
 		});
 	}
-	
+
 	@Override
 	public Sql toUpdateSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
 		Map<String, Object> changeMap = getChangeMap(entity);
 		return toUpdateSql(tableStructure, entity, changeMap, (column) -> true);
 	}
-	
+
 	@Override
-	public <T> Sql toUpdateSql(TableStructure tableStructure, T entity,
-			T condition) throws SqlDialectException {
+	public <T> Sql toUpdateSql(TableStructure tableStructure, T entity, T condition) throws SqlDialectException {
 		Map<String, Object> changeMap = new HashMap<String, Object>();
 		tableStructure.columns().forEach((column) -> {
 			Object value = column.getField().get(condition);
-			if(value == null && column.isNullable()){
-				return ;
+			if (value == null && column.isNullable()) {
+				return;
 			}
-			
+
 			changeMap.put(column.getField().getSetter().getName(), value);
 		});
 		return toUpdateSql(tableStructure, entity, changeMap, (col) -> true);
@@ -502,7 +506,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 
 	protected void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Column column,
 			@Nullable Value oldValue, Value newValue) {
-		if(column.isIncrement() && oldValue != null) {
+		if (column.isIncrement() && oldValue != null) {
 			keywordProcessing(sb, column.getName());
 			sb.append("+");
 			sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
