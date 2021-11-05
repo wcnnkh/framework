@@ -1,5 +1,7 @@
 package io.basc.framework.microsoft.poi;
 
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.Sheet;
 import io.basc.framework.microsoft.WritableSheet;
@@ -11,6 +13,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
 public class PoiSheet implements Sheet, WritableSheet {
+	private static Logger logger = LoggerFactory.getLogger(PoiSheet.class);
 	private final org.apache.poi.ss.usermodel.Sheet sheet;
 
 	public PoiSheet(org.apache.poi.ss.usermodel.Sheet sheet) {
@@ -38,7 +41,24 @@ public class PoiSheet implements Sheet, WritableSheet {
 				continue;
 			}
 
-			values[index] = cell.getStringCellValue();
+			Object value = null;
+			switch (cell.getCellType()) {
+			case BLANK:
+				value = "";
+			case BOOLEAN:
+				value = cell.getBooleanCellValue();
+				break;
+			case NUMERIC:
+				value = cell.getNumericCellValue();
+				break;
+			case STRING:
+				value = cell.getStringCellValue();
+				break;
+			default:
+				logger.warn("Unable to read this cell rowIndex[{}] colIndex[{}] cellType[{}]", rowIndex, i, cell.getCellType());
+				break;
+			}
+			values[index] = value == null ? null : value.toString();
 		}
 		return values;
 	}
