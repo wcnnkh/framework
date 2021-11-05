@@ -23,7 +23,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.http.HttpMethod;
 import io.basc.framework.io.IOUtils;
 
 final class SimpleStreamingClientHttpRequest extends AbstractClientHttpRequest {
@@ -36,23 +35,21 @@ final class SimpleStreamingClientHttpRequest extends AbstractClientHttpRequest {
 
 	private final boolean outputStreaming;
 
-
 	SimpleStreamingClientHttpRequest(HttpURLConnection connection, int chunkSize, boolean outputStreaming) {
 		this.connection = connection;
 		this.chunkSize = chunkSize;
 		this.outputStreaming = outputStreaming;
 	}
 
-
-	public HttpMethod getMethod() {
-		return HttpMethod.resolve(this.connection.getRequestMethod());
+	@Override
+	public String getRawMethod() {
+		return this.connection.getRequestMethod();
 	}
 
 	public URI getURI() {
 		try {
 			return this.connection.getURL().toURI();
-		}
-		catch (URISyntaxException ex) {
+		} catch (URISyntaxException ex) {
 			throw new IllegalStateException("Could not get HttpURLConnection URI: " + ex.getMessage(), ex);
 		}
 	}
@@ -64,8 +61,7 @@ final class SimpleStreamingClientHttpRequest extends AbstractClientHttpRequest {
 				int contentLength = (int) headers.getContentLength();
 				if (contentLength >= 0) {
 					this.connection.setFixedLengthStreamingMode(contentLength);
-				}
-				else {
+				} else {
 					this.connection.setChunkedStreamingMode(this.chunkSize);
 				}
 			}
@@ -81,15 +77,13 @@ final class SimpleStreamingClientHttpRequest extends AbstractClientHttpRequest {
 		try {
 			if (this.body != null) {
 				this.body.close();
-			}
-			else {
+			} else {
 				SimpleBufferingClientHttpRequest.addHeaders(this.connection, headers);
 				this.connection.connect();
 				// Immediately trigger the request in a no-output scenario as well
 				this.connection.getResponseCode();
 			}
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			// ignore
 		}
 		return new SimpleClientHttpResponse(this.connection);

@@ -29,27 +29,25 @@ import io.basc.framework.io.IOUtils;
 import io.basc.framework.util.StringUtils;
 
 final class SimpleBufferingClientHttpRequest extends AbstractBufferingClientHttpRequest {
-	
+
 	private final HttpURLConnection connection;
 
 	private final boolean outputStreaming;
-
 
 	SimpleBufferingClientHttpRequest(HttpURLConnection connection, boolean outputStreaming) {
 		this.connection = connection;
 		this.outputStreaming = outputStreaming;
 	}
 
-
-	public HttpMethod getMethod() {
-		return HttpMethod.resolve(this.connection.getRequestMethod());
+	@Override
+	public String getRawMethod() {
+		return this.connection.getRequestMethod();
 	}
 
 	public URI getURI() {
 		try {
 			return this.connection.getURL().toURI();
-		}
-		catch (URISyntaxException ex) {
+		} catch (URISyntaxException ex) {
 			throw new IllegalStateException("Could not get HttpURLConnection URI: " + ex.getMessage(), ex);
 		}
 	}
@@ -67,23 +65,20 @@ final class SimpleBufferingClientHttpRequest extends AbstractBufferingClientHttp
 		this.connection.connect();
 		if (this.connection.getDoOutput()) {
 			IOUtils.copy(bufferedOutput, this.connection.getOutputStream());
-		}
-		else {
+		} else {
 			// Immediately trigger the request in a no-output scenario as well
 			this.connection.getResponseCode();
 		}
 		return new SimpleClientHttpResponse(this.connection);
 	}
 
-
 	static void addHeaders(HttpURLConnection connection, HttpHeaders headers) {
 		for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
 			String headerName = entry.getKey();
-			if (HttpHeaders.COOKIE.equalsIgnoreCase(headerName)) {  // RFC 6265
+			if (HttpHeaders.COOKIE.equalsIgnoreCase(headerName)) { // RFC 6265
 				String headerValue = StringUtils.collectionToDelimitedString(entry.getValue(), "; ");
 				connection.setRequestProperty(headerName, headerValue);
-			}
-			else {
+			} else {
 				for (String headerValue : entry.getValue()) {
 					String actualHeaderValue = headerValue != null ? headerValue : "";
 					connection.addRequestProperty(headerName, actualHeaderValue);
