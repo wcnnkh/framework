@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import io.basc.framework.convert.Converter;
+
 public abstract class CollectionUtils {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static final MultiValueMap EMPTY_MULTI_VALUE_MAP = new MultiValueMapWrapper(Collections.emptyMap());
@@ -640,11 +642,11 @@ public abstract class CollectionUtils {
 	 * @return
 	 */
 	public static boolean equals(Collection<?> left, Collection<?> right, Comparator<Object> comparator) {
-		if(isEmpty(left)) {
+		if (isEmpty(left)) {
 			return isEmpty(right);
 		}
-		
-		if(isEmpty(right)) {
+
+		if (isEmpty(right)) {
 			return isEmpty(left);
 		}
 
@@ -668,5 +670,14 @@ public abstract class CollectionUtils {
 			}
 		}
 		return leftValues.isEmpty() && rightValues.isEmpty();
+	}
+
+	public static <S, T> Iterator<T> iterator(Iterator<? extends S> iterator,
+			Converter<S, ? extends Iterator<? extends T>> converter) {
+		Assert.requiredArgument(converter != null, "converter");
+		if (iterator == null) {
+			return Collections.emptyIterator();
+		}
+		return new IterationIterator<>(iterator, converter);
 	}
 }
