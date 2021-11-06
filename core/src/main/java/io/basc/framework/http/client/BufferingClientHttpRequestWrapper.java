@@ -29,7 +29,7 @@ import io.basc.framework.io.IOUtils;
  *
  */
 final class BufferingClientHttpRequestWrapper extends AbstractBufferingClientHttpRequest {
- 
+
 	private final ClientHttpRequest request;
 
 	BufferingClientHttpRequestWrapper(ClientHttpRequest request) {
@@ -38,6 +38,11 @@ final class BufferingClientHttpRequestWrapper extends AbstractBufferingClientHtt
 
 	public HttpMethod getMethod() {
 		return this.request.getMethod();
+	}
+
+	@Override
+	public String getRawMethod() {
+		return this.request.getRawMethod();
 	}
 
 	public URI getURI() {

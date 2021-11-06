@@ -49,6 +49,7 @@ public class DefaultConversionServices extends ConversionServices {
 		addService(new CollectionToObjectConversionService(this));
 
 		addService(new DateFormatConversionService());
+		addService(new LocalDateTimeConversion());
 
 		addService(new MapToMapConversionService(this));
 

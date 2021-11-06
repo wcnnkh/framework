@@ -5,7 +5,11 @@ import java.net.URI;
 public interface HttpRequest extends HttpMessage {
 	HttpHeaders getHeaders();
 
-	HttpMethod getMethod();
+	default HttpMethod getMethod() {
+		return HttpMethod.resolve(getRawMethod());
+	}
+	
+	String getRawMethod();
 	
 	URI getURI();
 }

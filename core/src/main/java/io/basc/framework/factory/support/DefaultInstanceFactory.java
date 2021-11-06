@@ -3,6 +3,7 @@ package io.basc.framework.factory.support;
 import java.util.concurrent.ConcurrentMap;
 
 import io.basc.framework.convert.ConversionService;
+import io.basc.framework.core.parameter.DefaultParameterDefaultValueFactories;
 import io.basc.framework.core.parameter.ParameterFactories;
 import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.env.Environment;
@@ -23,7 +24,7 @@ public class DefaultInstanceFactory extends AbstractServiceLoaderFactory impleme
 	private ConcurrentMap<Class<?>, InstanceDefinition> cacheMap;
 	private final Environment environment;
 	private ClassLoaderProvider classLoaderProvider;
-	private final ParameterFactories defaultValueFactory = new ParameterFactories();
+	private final ParameterFactories defaultValueFactory = new DefaultParameterDefaultValueFactories();
 
 	public DefaultInstanceFactory(Environment environment, boolean cache) {
 		this.environment = environment;
@@ -39,6 +40,10 @@ public class DefaultInstanceFactory extends AbstractServiceLoaderFactory impleme
 
 	public void setClassLoader(ClassLoader classLoader) {
 		setClassLoaderProvider(new DefaultClassLoaderProvider(classLoader));
+	}
+
+	public ParameterFactories getDefaultValueFactory() {
+		return defaultValueFactory;
 	}
 
 	@Override

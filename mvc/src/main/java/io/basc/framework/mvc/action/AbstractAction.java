@@ -26,8 +26,7 @@ public abstract class AbstractAction extends AnnotatedElementWrapper<AnnotatedEl
 	public AbstractAction(Class<?> sourceClass, Method method, HttpPatternResolver httpPatternResolver) {
 		super(new AnnotationArrayAnnotatedElement(method));
 		this.returnType = new TypeDescriptor(ResolvableType.forMethodReturnType(method), method.getReturnType(),
-				MultiAnnotatedElement.forAnnotatedElements(method.getAnnotatedReturnType(), this, sourceClass)
-						.getAnnotations());
+				MultiAnnotatedElement.forAnnotatedElements(method.getAnnotatedReturnType(), this, sourceClass));
 		this.sourceClass = sourceClass;
 		this.method = method;
 		this.parameterDescriptors = new ExecutableParameterDescriptors(sourceClass, method);

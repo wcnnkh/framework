@@ -3,6 +3,9 @@ package io.basc.framework.util;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -284,7 +287,7 @@ public class TimeUtils {
 		Date date = parse(time, pattern);
 		return date == null ? 0L : date.getTime();
 	}
-	
+
 	/**
 	 * Parse the given {@code timeZoneString} value into a {@link TimeZone}.
 	 * 
@@ -303,5 +306,18 @@ public class TimeUtils {
 			throw new IllegalArgumentException("Invalid time zone specification '" + timeZoneString + "'");
 		}
 		return timeZone;
+	}
+
+	/**
+	 * 转换为默认的Instant
+	 * 
+	 * @see LocalDateTime#toInstant(java.time.ZoneOffset)
+	 * @see OffsetDateTime#getOffset()
+	 * @param localDateTime
+	 * @return
+	 */
+	public static Instant toInstant(LocalDateTime localDateTime) {
+		Assert.requiredArgument(localDateTime != null, "localDateTime");
+		return localDateTime.toInstant(OffsetDateTime.now().getOffset());
 	}
 }

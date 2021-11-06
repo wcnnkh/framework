@@ -21,7 +21,7 @@ public class HttpConnectionCallable implements Callable<Object> {
 		TypeDescriptor typeDescriptor = responseType;
 		if(responseType.getType() == HttpResponseEntity.class){
 			ResolvableType resolvableType = typeDescriptor.getResolvableType().getGeneric(0);
-			typeDescriptor = new TypeDescriptor(resolvableType, resolvableType.getRawClass(), typeDescriptor.getAnnotations());
+			typeDescriptor = typeDescriptor.convert(resolvableType);
 		}
 		
 		HttpResponseEntity<Object> responseEntity = httpConnection.execute(typeDescriptor);

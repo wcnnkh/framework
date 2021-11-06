@@ -14,6 +14,11 @@ public class ClientHttpRequestWrapper<W extends ClientHttpRequest> extends HttpO
 	}
 
 	@Override
+	public String getRawMethod() {
+		return wrappedTarget.getRawMethod();
+	}
+
+	@Override
 	public HttpMethod getMethod() {
 		return wrappedTarget.getMethod();
 	}

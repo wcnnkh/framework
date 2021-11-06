@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.zip.CRC32;
@@ -33,11 +34,7 @@ import java.util.zip.ZipFile;
 
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Accept;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.IteratorCallback;
-import io.basc.framework.util.IteratorCallback.All;
-import io.basc.framework.util.IteratorCallback.First;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 
@@ -2363,113 +2360,91 @@ public final class FileUtils {
 		return XUtils.stream(iterator);
 	}
 
-	/**
-	 * 迭代指定深度的文件
-	 * 
-	 * @param file
-	 * @param callback
-	 * @param targetDepth 如果是负数就是向上迭代
-	 * @return
-	 */
-	public static boolean iterator(File file, IteratorCallback<File> callback, int targetDepth) {
-		return iterator(file, callback, targetDepth, 0);
-	}
-
-	private static boolean iterator(File file, IteratorCallback<File> callback, int targetDepth, int currentDepth) {
-		if (targetDepth < 0) {
-			if (currentDepth < targetDepth) {
-				return true;
-			}
-		} else {
-			if (currentDepth > targetDepth) {
-				return true;
-			}
-		}
-
-		if (currentDepth == targetDepth) {
-			return callback.iteratorCallback(file);
-		}
-
-		if (targetDepth >= 0 && currentDepth > targetDepth) {
-			return true;
-		}
-
-		if (targetDepth < 0) {
-			File parent = file.getParentFile();
-			if (parent == null) {
-				return true;
-			}
-
-			File[] files = parent.listFiles();
-			if (files == null || file.length() == 0) {
-				return true;
-			}
-
-			for (File f : files) {
-				if (!iterator(f, callback, targetDepth, currentDepth - 1)) {
-					return false;
-				}
-			}
-		} else {
-			if (file.isDirectory()) {
-				File[] files = file.listFiles();
-				if (files == null || files.length == 0) {
-					return true;
-				}
-
-				for (File f : files) {
-					if (!iterator(f, callback, targetDepth, currentDepth + 1)) {
-						return false;
-					}
-				}
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * 搜索匹配的一个文件<br/>
-	 * parent /a/ find /a/b/c/d a->d 就是3层深度<br/>
-	 * 
-	 * @param file
-	 * @param accept   条件
-	 * @param maxDepth 搜索的最大深度
-	 * @return
-	 */
-	public static File search(File parentFile, Accept<File> accept, int maxDepth) {
-		First<File> first = new First<File>(accept);
-		for (int i = 0; i <= maxDepth; i++) {
-			if (!iterator(parentFile, first, i)) {
-				break;
-			}
-		}
-		return first.getValue();
-	}
-
-	/**
-	 * 搜索所有匹配的文件<br/>
-	 * parent /a/ find /a/b/c/d a->d 就是3层深度<br/>
-	 * 
-	 * @param file
-	 * @param accept   条件
-	 * @param maxDepth 搜索的最大深度
-	 * @return
-	 */
-	public static final File[] searchAll(File parentFile, Accept<File> accept, int maxDepth) {
-		All<File> all = new All<File>(accept);
-		for (int i = 0; i <= maxDepth; i++) {
-			if (!iterator(parentFile, all, i)) {
-				break;
-			}
-		}
-		return all.getValues().toArray(new File[0]);
-	}
-
 	public static String getFileSuffix(String filePath) {
 		int sufIndex = filePath.lastIndexOf(".");
 		if (sufIndex != -1) {
 			return filePath.substring(sufIndex + 1);
 		}
 		return null;
+	}
+
+	public static long write(Iterator<? extends byte[]> sourceIterator, File target) throws IOException {
+		return write(sourceIterator, target, null, null);
+	}
+
+	public static long write(Collection<? extends byte[]> sources, File target) throws IOException {
+		return write(sources, target, null, null);
+	}
+
+	public static long write(Collection<? extends byte[]> sources, File target,
+			@Nullable IteratorWriterCallback<byte[], FileOutputStream> beforeCallback,
+			@Nullable IteratorWriterCallback<byte[], FileOutputStream> afterCallback) throws IOException {
+		Assert.requiredArgument(sources != null, "sources");
+		return write(sources.iterator(), target, beforeCallback, afterCallback);
+	}
+
+	public static long write(Iterator<? extends byte[]> sourceIterator, File target,
+			@Nullable IteratorWriterCallback<byte[], FileOutputStream> beforeCallback,
+			@Nullable IteratorWriterCallback<byte[], FileOutputStream> afterCallback) throws IOException {
+		Assert.requiredArgument(sourceIterator != null, "sourceIterator");
+		Assert.requiredArgument(target != null, "target");
+		FileOutputStream fos = new FileOutputStream(target, true);
+		long size = 0;
+		try {
+			while (sourceIterator.hasNext()) {
+				byte[] source = sourceIterator.next();
+				if (beforeCallback == null || beforeCallback.call(source, fos, sourceIterator.hasNext())) {
+					fos.write(source);
+					size += source.length;
+					fos.flush();
+					if (afterCallback != null && !afterCallback.call(source, fos, sourceIterator.hasNext())) {
+						break;
+					}
+				}
+			}
+			return size;
+		} finally {
+			fos.close();
+		}
+	}
+
+	public static long merge(Collection<? extends File> sources, File target) throws IOException {
+		Assert.requiredArgument(sources != null, "sources");
+		return merge(sources, target);
+	}
+
+	public static void merge(Iterator<? extends File> sourceIterator, File target) throws IOException {
+		merge(sourceIterator, target, null, null);
+	}
+
+	public static long merge(Collection<? extends File> sources, File target,
+			@Nullable IteratorWriterCallback<File, FileOutputStream> beforeCallback,
+			@Nullable IteratorWriterCallback<File, FileOutputStream> afterCallback) throws IOException {
+		Assert.requiredArgument(sources != null, "sources");
+		return merge(sources.iterator(), target, beforeCallback, afterCallback);
+	}
+
+	public static long merge(Iterator<? extends File> sourceIterator, File target,
+			@Nullable IteratorWriterCallback<File, FileOutputStream> beforeCallback,
+			@Nullable IteratorWriterCallback<File, FileOutputStream> afterCallback) throws IOException {
+		Assert.requiredArgument(sourceIterator != null, "sourceIterator");
+		Assert.requiredArgument(target != null, "target");
+		FileOutputStream fos = new FileOutputStream(target, true);
+		long size = 0;
+		while (sourceIterator.hasNext()) {
+			File file = sourceIterator.next();
+			if (beforeCallback == null || beforeCallback.call(file, fos, sourceIterator.hasNext())) {
+				size += copyFile(file, fos);
+				if (afterCallback != null && !afterCallback.call(file, fos, sourceIterator.hasNext())) {
+					break;
+				}
+			}
+		}
+		return size;
+	}
+
+	@FunctionalInterface
+	public static interface IteratorWriterCallback<S, T> {
+		boolean call(S source, T target, boolean hasNext) throws IOException;
 	}
 }

@@ -17,8 +17,6 @@ public interface ServerHttpRequest extends HttpInputMessage, HttpRequest, Editab
 	
 	String getContextPath();
 
-	String getRawMethod();
-   
 	HttpCookie[] getCookies();
 
 	Session getSession();

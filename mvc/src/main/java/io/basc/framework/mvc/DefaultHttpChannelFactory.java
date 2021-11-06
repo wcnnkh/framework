@@ -24,9 +24,7 @@ public class DefaultHttpChannelFactory implements HttpChannelFactory {
 
 	public DefaultHttpChannelFactory(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
-		webMessageConverters = new DefaultWebMessageConverters(beanFactory.getEnvironment().getConversionService(),
-				beanFactory.getDefaultValueFactory());
-		webMessageConverters.configure(beanFactory);
+		webMessageConverters = new DefaultWebMessageConverters(beanFactory);
 		this.userSessionManager = beanFactory.isInstance(UserSessionManager.class)
 				? beanFactory.getInstance(UserSessionManager.class)
 				: null;

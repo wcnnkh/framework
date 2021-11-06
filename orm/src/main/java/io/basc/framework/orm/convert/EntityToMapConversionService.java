@@ -17,7 +17,7 @@ class EntityToMapConversionService extends ConditionalConversionService {
 		Map<String, Object> valueMap = MapperUtils.getFields(sourceType.getType()).all().getValueMap(source);
 		return getConversionService().convert(valueMap,
 				new TypeDescriptor(ResolvableType.forClassWithGenerics(Map.class, String.class, Object.class),
-						Map.class, sourceType.getAnnotations()),
+						Map.class, sourceType),
 				targetType);
 	}
 	

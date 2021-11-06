@@ -1,6 +1,6 @@
 package io.basc.framework.timer;
 
-import io.basc.framework.util.IteratorCallback;
+import io.basc.framework.util.Accept;
 
 public interface TaskFactory {
 	/**
@@ -30,7 +30,7 @@ public interface TaskFactory {
 	/**
 	 * 扫描可用于注册的新任务
 	 * 
-	 * @param iteratorCallback
+	 * @param action
 	 */
-	void iteratorRegisteredTaskConfig(IteratorCallback<TaskConfig> iteratorCallback);
+	void iteratorRegisteredTaskConfig(Accept<TaskConfig> action);
 }

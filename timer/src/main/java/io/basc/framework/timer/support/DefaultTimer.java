@@ -21,7 +21,6 @@ import io.basc.framework.timer.TaskConfig;
 import io.basc.framework.timer.TaskContext;
 import io.basc.framework.timer.TaskFactory;
 import io.basc.framework.timer.TaskLockFactory;
-import io.basc.framework.util.IteratorCallback;
 import io.basc.framework.util.StringMatcher;
 import io.basc.framework.util.StringMatchers;
 import io.basc.framework.util.StringUtils;
@@ -230,18 +229,15 @@ public final class DefaultTimer implements io.basc.framework.timer.Timer, Destro
 
 		@Override
 		public void run() {
-			taskFactory.iteratorRegisteredTaskConfig(new IteratorCallback<TaskConfig>() {
-
-				public boolean iteratorCallback(TaskConfig config) {
-					TaskContext cacheContext = contextMap.get(config.getTaskId());
-					if (cacheContext == null) {
-						TaskContext taskContext = register(config, false);
-						if (taskContext != null) {
-							logger.debug("动态添加任务：" + config.getTaskId());
-						}
+			taskFactory.iteratorRegisteredTaskConfig((config) -> {
+				TaskContext cacheContext = contextMap.get(config.getTaskId());
+				if (cacheContext == null) {
+					TaskContext taskContext = register(config, false);
+					if (taskContext != null) {
+						logger.debug("动态添加任务：" + config.getTaskId());
 					}
-					return true;
 				}
+				return true;
 			});
 		}
 

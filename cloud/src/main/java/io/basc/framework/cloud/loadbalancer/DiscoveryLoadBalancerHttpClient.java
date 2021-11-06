@@ -13,14 +13,13 @@ import io.basc.framework.http.client.ClientHttpRequestCallback;
 import io.basc.framework.http.client.ClientHttpRequestFactory;
 import io.basc.framework.http.client.ClientHttpResponseExtractor;
 import io.basc.framework.http.client.DefaultHttpClient;
-import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.http.client.exception.HttpClientException;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.retry.RetryOperations;
 import io.basc.framework.retry.support.RetryTemplate;
 import io.basc.framework.util.Assert;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpClient.class)
+@Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class DiscoveryLoadBalancerHttpClient extends DefaultHttpClient {
 	private final DiscoveryLoadBalancer loadbalancer;
 	private RetryOperations retryOperations = Sys.env.getServiceLoader(RetryOperations.class)

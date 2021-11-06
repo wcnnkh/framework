@@ -7,6 +7,7 @@ import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpRequestWrapper;
 import io.basc.framework.http.client.ClientHttpResponse;
+import io.basc.framework.mvc.message.support.DefaultWebMessageConverters;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
@@ -14,6 +15,11 @@ import io.basc.framework.web.ServerHttpResponse;
 import java.io.IOException;
 import java.net.URI;
 
+/**
+ * @see DefaultWebMessageConverters
+ * @author shuchaowen
+ *
+ */
 public interface WebMessageConverter {
 	/**
 	 * 控制着以下行为{@link #read(ServerHttpRequest, ParameterDescriptor)} and
