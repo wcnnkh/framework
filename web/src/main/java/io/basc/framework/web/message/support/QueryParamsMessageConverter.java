@@ -1,4 +1,4 @@
-package io.basc.framework.mvc.message.support;
+package io.basc.framework.web.message.support;
 
 import java.io.IOException;
 
@@ -8,14 +8,14 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpResponse;
-import io.basc.framework.mvc.message.WebMessageConverter;
-import io.basc.framework.mvc.message.WebMessagelConverterException;
-import io.basc.framework.mvc.message.annotation.RequestBody;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.WebUtils;
+import io.basc.framework.web.message.WebMessageConverter;
+import io.basc.framework.web.message.WebMessagelConverterException;
+import io.basc.framework.web.message.annotation.QueryParams;
 
-public class RequestBodyMessageConverter implements WebMessageConverter, ConversionServiceAware {
+public class QueryParamsMessageConverter implements WebMessageConverter, ConversionServiceAware {
 	private ConversionService conversionService;
 
 	@Override
@@ -25,13 +25,13 @@ public class RequestBodyMessageConverter implements WebMessageConverter, Convers
 
 	@Override
 	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
-		return parameterDescriptor.isAnnotationPresent(RequestBody.class);
+		return parameterDescriptor.isAnnotationPresent(QueryParams.class);
 	}
 
 	@Override
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
-		Object body = WebUtils.getRequestBody(request);
+		Object body = WebUtils.getParameterMap(request, null);
 		if (body == null) {
 			return null;
 		}

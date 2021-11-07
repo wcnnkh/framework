@@ -12,7 +12,6 @@ import javax.ws.rs.Path;
 
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.mvc.HttpPatternResolver;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.util.CollectionUtils;
@@ -20,6 +19,7 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.placeholder.PropertyResolver;
 import io.basc.framework.util.placeholder.PropertyResolverAware;
 import io.basc.framework.web.pattern.HttpPattern;
+import io.basc.framework.web.pattern.HttpPatternResolver;
 
 @Provider
 public class Jaxrs2HttpPatternResolver implements HttpPatternResolver, PropertyResolverAware {

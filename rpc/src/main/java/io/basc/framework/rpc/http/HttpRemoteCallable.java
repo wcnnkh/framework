@@ -8,8 +8,8 @@ import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpRequestFactory;
 import io.basc.framework.http.client.ClientHttpResponse;
-import io.basc.framework.mvc.message.WebMessageConverter;
 import io.basc.framework.net.uri.UriComponentsBuilder;
+import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.pattern.HttpPattern;
 
 public class HttpRemoteCallable implements Callable<Object> {

@@ -14,6 +14,10 @@ abstract class AbstractBufferingClientHttpRequest extends AbstractClientHttpRequ
 		return this.bufferedOutput;
 	}
 
+	public ByteArrayOutputStream getBufferedOutput() {
+		return bufferedOutput;
+	}
+
 	@Override
 	protected ClientHttpResponse executeInternal(HttpHeaders headers) throws IOException {
 		byte[] bytes = this.bufferedOutput.toByteArray();

@@ -1,31 +1,20 @@
-package io.basc.framework.mvc.message.support;
+package io.basc.framework.web.message.support;
 
-import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.lang.ConversionServices;
 import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.factory.ServiceLoaderFactory;
-import io.basc.framework.mvc.message.WebMessageConverter;
-import io.basc.framework.mvc.message.WebMessageConverters;
 import io.basc.framework.net.message.convert.DefaultMessageConverters;
 import io.basc.framework.net.message.convert.MessageConverterAware;
 import io.basc.framework.net.message.convert.MessageConverters;
+import io.basc.framework.web.message.WebMessageConverter;
+import io.basc.framework.web.message.WebMessageConverters;
 
 public class DefaultWebMessageConverters extends WebMessageConverters {
 	private final DefaultMessageConverters messageConverters;
 	private final ParameterFactory defaultValueFactory;
 	private final WebMessageConverters afters = new WebMessageConverters();
-
-	/**
-	 * 直接构造，不通过实例工厂创建， 会自动调用{@link #configure(ServiceLoaderFactory)}方法
-	 * 
-	 * @param beanFactory
-	 */
-	public DefaultWebMessageConverters(BeanFactory beanFactory) {
-		this(beanFactory.getEnvironment().getConversionService(), beanFactory.getDefaultValueFactory());
-		configure(beanFactory);
-	}
 
 	public DefaultWebMessageConverters(ConversionService conversionService, ParameterFactory defaultValueFactory) {
 		super.setAfterService(afters);

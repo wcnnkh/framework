@@ -1,4 +1,4 @@
-package io.basc.framework.mvc.message;
+package io.basc.framework.web.message;
 
 import java.io.IOException;
 

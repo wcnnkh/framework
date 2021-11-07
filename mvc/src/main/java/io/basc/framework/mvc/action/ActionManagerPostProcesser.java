@@ -16,8 +16,8 @@ import io.basc.framework.event.EventListener;
 import io.basc.framework.event.ObjectEvent;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.mvc.HttpPatternResolvers;
 import io.basc.framework.mvc.security.HttpActionAuthorityManager;
+import io.basc.framework.web.pattern.HttpPatternResolvers;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, EventListener<BeanlifeCycleEvent> {

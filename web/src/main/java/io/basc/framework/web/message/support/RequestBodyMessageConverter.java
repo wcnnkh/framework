@@ -1,4 +1,4 @@
-package io.basc.framework.mvc.message.support;
+package io.basc.framework.web.message.support;
 
 import java.io.IOException;
 
@@ -7,16 +7,21 @@ import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
+import io.basc.framework.http.MediaType;
+import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpResponse;
-import io.basc.framework.mvc.message.WebMessageConverter;
-import io.basc.framework.mvc.message.WebMessagelConverterException;
-import io.basc.framework.mvc.message.annotation.QueryParams;
+import io.basc.framework.net.message.convert.MessageConverter;
+import io.basc.framework.net.message.convert.MessageConverterAware;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.WebUtils;
+import io.basc.framework.web.message.WebMessageConverter;
+import io.basc.framework.web.message.WebMessagelConverterException;
+import io.basc.framework.web.message.annotation.RequestBody;
 
-public class QueryParamsMessageConverter implements WebMessageConverter, ConversionServiceAware {
+public class RequestBodyMessageConverter implements WebMessageConverter, ConversionServiceAware, MessageConverterAware {
 	private ConversionService conversionService;
+	private MessageConverter messageConverter;
 
 	@Override
 	public void setConversionService(ConversionService conversionService) {
@@ -25,13 +30,13 @@ public class QueryParamsMessageConverter implements WebMessageConverter, Convers
 
 	@Override
 	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
-		return parameterDescriptor.isAnnotationPresent(QueryParams.class);
+		return parameterDescriptor.isAnnotationPresent(RequestBody.class);
 	}
 
 	@Override
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
-		Object body = WebUtils.getParameterMap(request, null);
+		Object body = WebUtils.getRequestBody(request);
 		if (body == null) {
 			return null;
 		}
@@ -52,5 +57,21 @@ public class QueryParamsMessageConverter implements WebMessageConverter, Convers
 	@Override
 	public void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor,
 			Object body) throws IOException, WebMessagelConverterException {
+	}
+	
+	@Override
+	public ClientHttpRequest write(ClientHttpRequest request,
+			ParameterDescriptor parameterDescriptor, Object parameter)
+			throws IOException, WebMessagelConverterException {
+		if(request.getContentType() == null){
+			request.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		}
+		messageConverter.write(new TypeDescriptor(parameterDescriptor), parameter, request.getContentType(), request);
+		return request;
+	}
+
+	@Override
+	public void setMessageConverter(MessageConverter messageConverter) {
+		this.messageConverter = messageConverter;
 	}
 }

@@ -1,4 +1,4 @@
-package io.basc.framework.mvc.message.support;
+package io.basc.framework.web.message.support;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;

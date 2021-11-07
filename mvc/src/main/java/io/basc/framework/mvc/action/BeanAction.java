@@ -12,10 +12,10 @@ import io.basc.framework.factory.supplier.SimpleInstanceSupplier;
 import io.basc.framework.factory.support.InstanceIterable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.mvc.HttpPatternResolver;
 import io.basc.framework.mvc.annotation.ActionInterceptors;
 import io.basc.framework.mvc.annotation.Controller;
 import io.basc.framework.util.Supplier;
+import io.basc.framework.web.pattern.HttpPatternResolver;
 
 public class BeanAction extends AbstractAction {
 	private static Logger logger = LoggerFactory.getLogger(BeanAction.class);

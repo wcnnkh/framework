@@ -11,12 +11,13 @@ import java.util.Set;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.http.HttpMethod;
-import io.basc.framework.mvc.HttpPatternResolver;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.placeholder.PropertyResolver;
 import io.basc.framework.util.placeholder.PropertyResolverAware;
 import io.basc.framework.web.pattern.HttpPattern;
+import io.basc.framework.web.pattern.HttpPatternResolver;
+import io.basc.framework.web.pattern.annotation.Methods;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class AnnotationHttpPatternResolver implements HttpPatternResolver, PropertyResolverAware {

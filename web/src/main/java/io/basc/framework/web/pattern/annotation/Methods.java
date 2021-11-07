@@ -1,4 +1,4 @@
-package io.basc.framework.mvc.annotation;
+package io.basc.framework.web.pattern.annotation;
 
 import io.basc.framework.http.HttpMethod;
 

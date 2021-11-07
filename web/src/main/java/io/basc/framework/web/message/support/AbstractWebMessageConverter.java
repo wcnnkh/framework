@@ -1,7 +1,4 @@
-package io.basc.framework.mvc.message.support;
-
-import java.io.IOException;
-import java.util.List;
+package io.basc.framework.web.message.support;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
@@ -10,15 +7,20 @@ import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.json.JSONUtils;
-import io.basc.framework.mvc.message.WebMessageConverter;
-import io.basc.framework.mvc.message.WebMessagelConverterException;
 import io.basc.framework.net.MimeTypeUtils;
+import io.basc.framework.net.message.convert.MessageConverter;
+import io.basc.framework.net.message.convert.MessageConverterAware;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.value.Value;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.WebUtils;
+import io.basc.framework.web.message.WebMessageConverter;
+import io.basc.framework.web.message.WebMessagelConverterException;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * 应该排在最后一个
@@ -27,9 +29,10 @@ import io.basc.framework.web.WebUtils;
  *
  */
 public abstract class AbstractWebMessageConverter
-		implements WebMessageConverter, ConversionServiceAware, DefaultValueFactoryAware {
+		implements WebMessageConverter, ConversionServiceAware, DefaultValueFactoryAware, MessageConverterAware {
 	private ConversionService conversionService;
 	private ParameterFactory defaultValueFactory;
+	private MessageConverter messageConverter;
 
 	@Override
 	public void setConversionService(ConversionService conversionService) {
@@ -39,6 +42,11 @@ public abstract class AbstractWebMessageConverter
 	@Override
 	public void setDefaultValueFactory(ParameterFactory defaultValueFactory) {
 		this.defaultValueFactory = defaultValueFactory;
+	}
+	
+	@Override
+	public void setMessageConverter(MessageConverter messageConverter) {
+		this.messageConverter = messageConverter;
 	}
 
 	public ConversionService getConversionService() {
@@ -102,7 +110,6 @@ public abstract class AbstractWebMessageConverter
 	@Override
 	public Object read(ClientHttpResponse response, TypeDescriptor typeDescriptor)
 			throws IOException, WebMessagelConverterException {
-		return null;
+		return messageConverter.read(typeDescriptor, response);
 	}
-
 }

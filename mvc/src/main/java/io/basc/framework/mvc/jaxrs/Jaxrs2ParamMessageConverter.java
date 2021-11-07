@@ -11,10 +11,10 @@ import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
-import io.basc.framework.mvc.message.WebMessagelConverterException;
-import io.basc.framework.mvc.message.support.AbstractWebMessageConverter;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.ServerHttpRequest;
+import io.basc.framework.web.message.WebMessagelConverterException;
+import io.basc.framework.web.message.support.AbstractWebMessageConverter;
 
 /**
  * 这是一个变种的实现，对于无论是PathParam,还是FormParam都会尝试从Path Form Body中获取值

@@ -1,4 +1,4 @@
-package io.basc.framework.mvc;
+package io.basc.framework.web.pattern;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -9,7 +9,6 @@ import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.placeholder.PropertyResolver;
 import io.basc.framework.util.placeholder.PropertyResolverAware;
-import io.basc.framework.web.pattern.HttpPattern;
 
 public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolver>
 		implements HttpPatternResolver, PropertyResolverAware {

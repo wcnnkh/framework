@@ -1,9 +1,7 @@
-package io.basc.framework.mvc;
+package io.basc.framework.web.pattern;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
-
-import io.basc.framework.web.pattern.HttpPattern;
 
 public interface HttpPatternResolver {
 	boolean canResolve(Class<?> clazz);

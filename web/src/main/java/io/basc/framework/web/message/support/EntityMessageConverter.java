@@ -1,4 +1,4 @@
-package io.basc.framework.mvc.message.support;
+package io.basc.framework.web.message.support;
 
 import java.io.IOException;
 
@@ -6,13 +6,13 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpResponse;
-import io.basc.framework.mvc.message.WebMessageConverter;
-import io.basc.framework.mvc.message.WebMessagelConverterException;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.message.Entity;
 import io.basc.framework.net.message.convert.MessageConverter;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
+import io.basc.framework.web.message.WebMessageConverter;
+import io.basc.framework.web.message.WebMessagelConverterException;
 
 public class EntityMessageConverter implements WebMessageConverter {
 	private final MessageConverter messageConverter;
