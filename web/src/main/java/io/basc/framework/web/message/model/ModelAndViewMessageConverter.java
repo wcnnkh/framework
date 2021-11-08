@@ -1,8 +1,5 @@
 package io.basc.framework.web.message.model;
 
-import java.io.IOException;
-import java.util.Enumeration;
-
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
@@ -14,41 +11,45 @@ import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessagelConverterException;
 
-public abstract class ModelAndViewMessageConverter implements WebMessageConverter {
+import java.io.IOException;
+import java.util.Enumeration;
+
+public abstract class ModelAndViewMessageConverter implements
+		WebMessageConverter {
 	static final String REQUEST = "_request";
 
 	@Override
-	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
-		return parameterDescriptor.getType() == ModelAndView.class;
+	public boolean canRead(HttpMessage message, TypeDescriptor descriptor) {
+		return ModelAndView.class.isAssignableFrom(descriptor.getType());
 	}
 
 	@Override
-	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
-			throws IOException, WebMessagelConverterException {
+	public Object read(ServerHttpRequest request,
+			ParameterDescriptor parameterDescriptor) throws IOException,
+			WebMessagelConverterException {
 		return new ModelAndView(request.getPath());
 	}
 
 	@Override
-	public boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor) {
-		return false;
-	}
-
-	@Override
-	public Object read(ClientHttpResponse response, TypeDescriptor typeDescriptor)
-			throws IOException, WebMessagelConverterException {
+	public Object read(ClientHttpResponse response,
+			TypeDescriptor typeDescriptor) throws IOException,
+			WebMessagelConverterException {
 		return null;
 	}
 
 	@Override
-	public boolean isAccept(HttpMessage message, TypeDescriptor typeDescriptor, Object body) {
-		return body != null && body instanceof ModelAndView && canWrite((ModelAndView) body);
+	public boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor,
+			Object value) {
+		return value != null && value instanceof ModelAndView
+				&& canWrite((ModelAndView) value);
 	}
 
 	protected abstract boolean canWrite(ModelAndView page);
 
 	@Override
-	public void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor,
-			Object body) throws IOException, WebMessagelConverterException {
+	public void write(ServerHttpRequest request, ServerHttpResponse response,
+			TypeDescriptor typeDescriptor, Object body) throws IOException,
+			WebMessagelConverterException {
 		ModelAndView page = ((ModelAndView) body).clone();
 		if (!page.containsKey(REQUEST)) {
 			page.put(REQUEST, request);
@@ -79,6 +80,7 @@ public abstract class ModelAndViewMessageConverter implements WebMessageConverte
 		}
 	}
 
-	protected abstract void writePage(TypeDescriptor type, ModelAndView page, ServerHttpRequest request,
-			ServerHttpResponse response) throws IOException, WebMessagelConverterException;
+	protected abstract void writePage(TypeDescriptor type, ModelAndView page,
+			ServerHttpRequest request, ServerHttpResponse response)
+			throws IOException, WebMessagelConverterException;
 }

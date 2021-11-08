@@ -4,31 +4,31 @@ import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
-import io.basc.framework.http.client.ClientHttpRequest;
+import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.message.WebMessagelConverterException;
-import io.basc.framework.web.message.support.AbstractHeaderWebMessageConverter;
+import io.basc.framework.web.message.support.AbstractPathParamWebMessageConverter;
 
 import java.io.IOException;
 
-import javax.ws.rs.HeaderParam;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.PathParam;
 
 @Provider
-public class Jaxrs2HeaderParamMessageConverter extends
-		AbstractHeaderWebMessageConverter {
+public class JaxrsPathParamWebMessageConverter extends
+		AbstractPathParamWebMessageConverter {
 
 	@Override
 	public boolean canRead(HttpMessage message, TypeDescriptor descriptor) {
-		return descriptor.isAnnotationPresent(HeaderParam.class);
+		return descriptor.isAnnotationPresent(FormParam.class);
 	}
 
 	@Override
 	public Object read(ServerHttpRequest request,
 			ParameterDescriptor parameterDescriptor) throws IOException,
 			WebMessagelConverterException {
-		HeaderParam param = parameterDescriptor
-				.getAnnotation(HeaderParam.class);
+		PathParam param = parameterDescriptor.getAnnotation(PathParam.class);
 		if (param == null || StringUtils.isEmpty(param.value())) {
 			return super.read(request, parameterDescriptor);
 		}
@@ -36,21 +36,20 @@ public class Jaxrs2HeaderParamMessageConverter extends
 	}
 
 	@Override
-	public boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor,
-			Object value) {
-		return typeDescriptor.isAnnotationPresent(HeaderParam.class);
+	public UriComponentsBuilder write(UriComponentsBuilder builder,
+			ParameterDescriptor parameterDescriptor, Object parameter)
+			throws WebMessagelConverterException {
+		PathParam param = parameterDescriptor.getAnnotation(PathParam.class);
+		if (param == null || StringUtils.isEmpty(param.value())) {
+			return super.write(builder, parameterDescriptor, parameter);
+		}
+		return super.write(builder, parameterDescriptor.rename(param.value()),
+				parameter);
 	}
 
 	@Override
-	public ClientHttpRequest write(ClientHttpRequest request,
-			ParameterDescriptor parameterDescriptor, Object parameter)
-			throws IOException, WebMessagelConverterException {
-		HeaderParam param = parameterDescriptor
-				.getAnnotation(HeaderParam.class);
-		if (param == null || StringUtils.isEmpty(param.value())) {
-			return super.write(request, parameterDescriptor, parameter);
-		}
-		return super.write(request, parameterDescriptor.rename(param.value()),
-				parameter);
+	public boolean canWrite(TypeDescriptor typeDescriptor, Object parameter) {
+		return typeDescriptor.isAnnotationPresent(PathParam.class);
 	}
+
 }

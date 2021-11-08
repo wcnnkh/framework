@@ -19,19 +19,55 @@ import io.basc.framework.web.message.support.DefaultWebMessageConverters;
  *
  */
 public interface WebMessageConverter {
+	/**
+	 * 控制着{@link #read(ClientHttpResponse, TypeDescriptor)} 和
+	 * {@link #read(ServerHttpRequest, ParameterDescriptor)}
+	 * 
+	 * @param message
+	 * @param descriptor
+	 * @return
+	 */
 	boolean canRead(HttpMessage message, TypeDescriptor descriptor);
 
-	Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
-			throws IOException, WebMessagelConverterException;
+	/**
+	 * @see #canRead(HttpMessage, TypeDescriptor)
+	 * @param request
+	 * @param parameterDescriptor
+	 * @return
+	 * @throws IOException
+	 * @throws WebMessagelConverterException
+	 */
+	Object read(ServerHttpRequest request,
+			ParameterDescriptor parameterDescriptor) throws IOException,
+			WebMessagelConverterException;
 
+	/**
+	 * @see #canRead(HttpMessage, TypeDescriptor)
+	 * @param response
+	 * @param typeDescriptor
+	 * @return
+	 * @throws IOException
+	 * @throws WebMessagelConverterException
+	 */
 	Object read(ClientHttpResponse response, TypeDescriptor typeDescriptor)
 			throws IOException, WebMessagelConverterException;
 
-	boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor, Object value);
+	/**
+	 * 控制着 {@link #write(ClientHttpRequest, ParameterDescriptor, Object)} 和
+	 * {@link #write(ServerHttpRequest, ServerHttpResponse, TypeDescriptor, Object)}
+	 * 
+	 * @param message
+	 * @param typeDescriptor
+	 * @param value
+	 * @return
+	 */
+	boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor,
+			Object value);
 
 	/**
 	 * 写入
 	 * 
+	 * @see #canWrite(HttpMessage, TypeDescriptor, Object)
 	 * @param request
 	 * @param response
 	 * @param typeDescriptor
@@ -39,22 +75,32 @@ public interface WebMessageConverter {
 	 * @throws IOException
 	 * @throws WebMessagelConverterException
 	 */
-	void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor, Object body)
-			throws IOException, WebMessagelConverterException;
+	void write(ServerHttpRequest request, ServerHttpResponse response,
+			TypeDescriptor typeDescriptor, Object body) throws IOException,
+			WebMessagelConverterException;
 
 	/**
 	 * 写入并返回request(可能是一个新的)
 	 * 
+	 * @see #canWrite(HttpMessage, TypeDescriptor, Object)
 	 * @see ClientHttpRequestWrapper
 	 * @param request
 	 * @param parameterDescriptor
 	 * @param parameter
 	 * @return
 	 */
-	ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
+	ClientHttpRequest write(ClientHttpRequest request,
+			ParameterDescriptor parameterDescriptor, Object parameter)
 			throws IOException, WebMessagelConverterException;
 
-	default boolean canBuildUri(TypeDescriptor typeDescriptor, Object parameter) {
+	/**
+	 * 控制着{@link #write(UriComponentsBuilder, ParameterDescriptor, Object)}
+	 * 
+	 * @param typeDescriptor
+	 * @param parameter
+	 * @return
+	 */
+	default boolean canWrite(TypeDescriptor typeDescriptor, Object parameter) {
 		return false;
 	}
 
@@ -65,9 +111,11 @@ public interface WebMessageConverter {
 	 * @param parameterDescriptor
 	 * @param parameter
 	 * @return
+	 * @see #canWrite(TypeDescriptor, Object)
 	 */
-	default UriComponentsBuilder buildUri(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
-			Object parameter) throws WebMessagelConverterException {
+	default UriComponentsBuilder write(UriComponentsBuilder builder,
+			ParameterDescriptor parameterDescriptor, Object parameter)
+			throws WebMessagelConverterException {
 		return builder;
 	}
 }

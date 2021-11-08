@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
+import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.web.ServerHttpRequest;
@@ -26,18 +28,29 @@ public class JspMessageConverter extends ModelAndViewMessageConverter {
 	}
 
 	@Override
-	protected void writePage(TypeDescriptor type, ModelAndView page, ServerHttpRequest request, ServerHttpResponse response)
+	protected void writePage(TypeDescriptor type, ModelAndView page,
+			ServerHttpRequest request, ServerHttpResponse response)
 			throws IOException, WebMessagelConverterException {
-		HttpServletRequest servletRequest = XUtils.getDelegate(request, HttpServletRequest.class);
-		HttpServletResponse servletResponse = XUtils.getDelegate(response, HttpServletResponse.class);
+		HttpServletRequest servletRequest = XUtils.getDelegate(request,
+				HttpServletRequest.class);
+		HttpServletResponse servletResponse = XUtils.getDelegate(response,
+				HttpServletResponse.class);
 		if (servletRequest == null || servletResponse == null) {
 			throw new WebMessagelConverterException(type, page, request, null);
 		}
 
 		try {
-			ServletUtils.forward(servletRequest, servletResponse, page.getName());
+			ServletUtils.forward(servletRequest, servletResponse,
+					page.getName());
 		} catch (ServletException e) {
 			throw new WebMessagelConverterException(type, page, request, e);
 		}
+	}
+
+	@Override
+	public ClientHttpRequest write(ClientHttpRequest request,
+			ParameterDescriptor parameterDescriptor, Object parameter)
+			throws IOException, WebMessagelConverterException {
+		return request;
 	}
 }

@@ -10,6 +10,9 @@ import io.basc.framework.net.message.convert.MessageConverterAware;
 import io.basc.framework.net.message.convert.MessageConverters;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessageConverters;
+import io.basc.framework.web.message.annotation.AttributeWebMessageConverter;
+import io.basc.framework.web.message.annotation.IpAddressWebMessageConverter;
+import io.basc.framework.web.message.annotation.QueryParamsWebMessageConverter;
 import io.basc.framework.web.message.annotation.RequestBodyMessageConverter;
 
 public class DefaultWebMessageConverters extends WebMessageConverters {
@@ -17,7 +20,8 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 	private final ParameterFactory defaultValueFactory;
 	private final WebMessageConverters afters = new WebMessageConverters();
 
-	public DefaultWebMessageConverters(ConversionService conversionService, ParameterFactory defaultValueFactory) {
+	public DefaultWebMessageConverters(ConversionService conversionService,
+			ParameterFactory defaultValueFactory) {
 		super.setAfterService(afters);
 		this.messageConverters = new DefaultMessageConverters(conversionService);
 		this.defaultValueFactory = defaultValueFactory;
@@ -28,7 +32,9 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 		addService(new InputMessageConverter());
 		addService(new ResourceMessageConverter());
 		addService(new RequestBodyMessageConverter());
-		addService(new QueryParamsMessageConverter());
+		addService(new QueryParamsWebMessageConverter());
+		addService(new IpAddressWebMessageConverter());
+		addService(new AttributeWebMessageConverter());
 	}
 
 	@Override
@@ -57,15 +63,18 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 	@Override
 	protected void aware(WebMessageConverter converter) {
 		if (converter instanceof ConversionServiceAware) {
-			((ConversionServiceAware) converter).setConversionService(getConversionServices());
+			((ConversionServiceAware) converter)
+					.setConversionService(getConversionServices());
 		}
 
 		if (converter instanceof DefaultValueFactoryAware) {
-			((DefaultValueFactoryAware) converter).setDefaultValueFactory(getDefaultValueFactory());
+			((DefaultValueFactoryAware) converter)
+					.setDefaultValueFactory(getDefaultValueFactory());
 		}
 
 		if (converter instanceof MessageConverterAware) {
-			((MessageConverterAware) converter).setMessageConverter(getMessageConverters());
+			((MessageConverterAware) converter)
+					.setMessageConverter(getMessageConverters());
 		}
 		super.aware(converter);
 	}
