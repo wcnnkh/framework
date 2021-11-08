@@ -7,6 +7,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
 
 public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comparable<MimeTypes>, Cloneable {
 	public static final MimeTypes EMPTY = new MimeTypes(Collections.emptySortedSet());
@@ -21,8 +22,21 @@ public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comp
 		this(mimeTypes, false);
 	}
 
+	public MimeTypes(String... mimeTypes) {
+		this.mimeTypes = new TreeSet<>(this);
+		if(mimeTypes != null) {
+			for (String mimeType : mimeTypes) {
+				if (StringUtils.isEmpty(mimeType)) {
+					continue;
+				}
+
+				this.mimeTypes.add(MimeTypeUtils.parseMimeType(mimeType));
+			}
+		}
+	}
+
 	protected MimeTypes(SortedSet<MimeType> mimeTypes, boolean readyOnly) {
-		this.mimeTypes = new TreeSet<MimeType>(mimeTypes);
+		this.mimeTypes = readyOnly ? Collections.unmodifiableSortedSet(mimeTypes) : new TreeSet<>(mimeTypes);
 		this.readyOnly = readyOnly;
 	}
 
@@ -33,14 +47,21 @@ public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comp
 	public final SortedSet<MimeType> getMimeTypes() {
 		return readyOnly ? Collections.unmodifiableSortedSet(mimeTypes) : mimeTypes;
 	}
-	
+
 	public boolean isEmpty() {
 		return mimeTypes.isEmpty();
 	}
 
 	public final MimeTypes add(MimeType... mimeTypes) {
 		for (MimeType mimeType : mimeTypes) {
-			getMimeTypes().add(mimeType);
+			this.mimeTypes.add(mimeType);
+		}
+		return this;
+	}
+
+	public final MimeTypes addAll(Iterable<? extends MimeType> mimeTypes) {
+		for (MimeType mimeType : mimeTypes) {
+			this.mimeTypes.add(mimeType);
 		}
 		return this;
 	}
@@ -63,10 +84,10 @@ public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comp
 
 	@Override
 	public int compareTo(MimeTypes o) {
-		if(this.equals(o)) {
+		if (this.equals(o)) {
 			return 0;
 		}
-		
+
 		for (MimeType mimeType1 : mimeTypes) {
 			for (MimeType mimeType2 : o.mimeTypes) {
 				if (mimeType1.compareTo(mimeType2) > 0) {
@@ -98,17 +119,17 @@ public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comp
 
 	@Override
 	public String toString() {
-		return mimeTypes.toString();
+		return MimeTypeUtils.toString(mimeTypes);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if(obj == null) {
+		if (obj == null) {
 			return false;
 		}
-		
-		if(obj instanceof MimeTypes) {
-			return CollectionUtils.equals(mimeTypes, ((MimeTypes)obj).mimeTypes);
+
+		if (obj instanceof MimeTypes) {
+			return CollectionUtils.equals(mimeTypes, ((MimeTypes) obj).mimeTypes);
 		}
 		return false;
 	}

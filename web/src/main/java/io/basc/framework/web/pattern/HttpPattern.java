@@ -1,5 +1,8 @@
 package io.basc.framework.web.pattern;
 
+import java.util.Collections;
+import java.util.Map;
+
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.util.AntPathMatcher;
@@ -9,16 +12,13 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebUtils;
 
-import java.util.Collections;
-import java.util.Map;
-
 public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparable<HttpPattern> {
 	private static final PathMatcher DEFAULT_PATH_MATCHER = new AntPathMatcher();
-
+	private PathMatcher pathMatcher;
 	private final String path;
 	private final String method;
-	private PathMatcher pathMatcher;
-	private final MimeTypes mimeTypes;
+	private final MimeTypes consumes;
+	private final MimeTypes produces;
 
 	public HttpPattern(String path) {
 		this(path, null, null);
@@ -28,16 +28,23 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 		this(path, method, null);
 	}
 
-	public HttpPattern(String path, @Nullable String method, @Nullable MimeTypes mimeTypes) {
+	public HttpPattern(String path, @Nullable String method, @Nullable MimeTypes consumes) {
+		this(path, method, consumes, null);
+	}
+
+	public HttpPattern(String path, @Nullable String method, @Nullable MimeTypes consumes,
+			@Nullable MimeTypes produces) {
 		this.path = path;
 		this.method = method;
-		this.mimeTypes = mimeTypes == null ? null : mimeTypes.readyOnly();
+		this.consumes = consumes == null ? null : consumes.readyOnly();
+		this.produces = produces == null ? null : produces.readyOnly();
 	}
 
 	protected HttpPattern(HttpPattern httpPattern) {
 		this.path = httpPattern == null ? null : httpPattern.path;
 		this.method = httpPattern == null ? null : httpPattern.method;
-		this.mimeTypes = httpPattern == null ? null : httpPattern.mimeTypes.readyOnly();
+		this.consumes = httpPattern == null ? null : httpPattern.consumes;
+		this.produces = httpPattern == null ? null : httpPattern.produces;
 		if (httpPattern != null) {
 			this.pathMatcher = httpPattern.pathMatcher;
 		}
@@ -51,16 +58,36 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 		return path;
 	}
 
+	@Nullable
 	public String getMethod() {
 		return method;
 	}
 
-	public MimeTypes getMimeTypes() {
-		return mimeTypes;
+	@Nullable
+	public MimeTypes getConsumes() {
+		return consumes;
 	}
-	
-	public boolean hasMimeTypes() {
-		return mimeTypes != null && !mimeTypes.isEmpty();
+
+	public boolean hasConsumes() {
+		return consumes != null && !consumes.isEmpty();
+	}
+
+	/**
+	 * 不参与以下方法
+	 * 
+	 * @see #accept(ServerHttpRequest)
+	 * @see #compareTo(HttpPattern)
+	 * @see #equals(Object)
+	 * @see #hashCode()
+	 * @return
+	 */
+	@Nullable
+	public MimeTypes getProduces() {
+		return produces;
+	}
+
+	public boolean hasProduces() {
+		return produces != null && !produces.isEmpty();
 	}
 
 	public boolean isPattern() {
@@ -77,13 +104,14 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 			return false;
 		}
 
-		if (mimeTypes != null && !mimeTypes.isCompatibleWith(request.getContentType())) {
+		if (consumes != null && !consumes.isCompatibleWith(request.getContentType())) {
 			return false;
 		}
 
 		if (path != null) {
 			if (isPattern()) {
 				if (getPathMatcher().match(path, request.getPath())) {
+					WebUtils.setHttpPattern(request, this);
 					WebUtils.setRestfulParameterMap(request, extractUriTemplateVariables(request.getPath()));
 					return true;
 				}
@@ -94,6 +122,7 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 				}
 			}
 		}
+		WebUtils.setHttpPattern(request, this);
 		return true;
 	}
 
@@ -116,8 +145,8 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 			code += method.hashCode();
 		}
 
-		if (mimeTypes != null) {
-			code += mimeTypes.hashCode();
+		if (consumes != null) {
+			code += consumes.hashCode();
 		}
 		return code;
 	}
@@ -134,16 +163,18 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 				return false;
 			}
 
-			if (!ObjectUtils.nullSafeEquals(mimeTypes, httpPattern.mimeTypes)) {
+			if (!ObjectUtils.nullSafeEquals(consumes, httpPattern.consumes)) {
 				return false;
 			}
-			
-			if(StringUtils.isNotEmpty(path) && StringUtils.isNotEmpty(((HttpPattern) obj).path)){
-				if(getPathMatcher().match(path, ((HttpPattern) obj).path) && getPathMatcher().match(((HttpPattern) obj).path, path)){
+
+			if (StringUtils.isNotEmpty(path) && StringUtils.isNotEmpty(((HttpPattern) obj).path)) {
+				if (getPathMatcher().match(path, ((HttpPattern) obj).path)
+						&& getPathMatcher().match(((HttpPattern) obj).path, path)) {
 					return true;
 				}
-				
-				if(((HttpPattern) obj).getPathMatcher().match(path, ((HttpPattern) obj).path) && ((HttpPattern) obj).getPathMatcher().match(((HttpPattern) obj).path, path)){
+
+				if (((HttpPattern) obj).getPathMatcher().match(path, ((HttpPattern) obj).path)
+						&& ((HttpPattern) obj).getPathMatcher().match(((HttpPattern) obj).path, path)) {
 					return true;
 				}
 			}
@@ -154,7 +185,7 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 
 	@Override
 	public String toString() {
-		if (method == null && path == null && mimeTypes == null) {
+		if (method == null && path == null && consumes == null) {
 			return "[ANY]";
 		}
 
@@ -170,11 +201,11 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 			sb.append(path);
 		}
 
-		if (mimeTypes != null) {
+		if (consumes != null) {
 			if (sb.length() > 0) {
 				sb.append(" ");
 			}
-			sb.append(mimeTypes);
+			sb.append(consumes);
 		}
 		return sb.toString();
 	}
@@ -186,33 +217,33 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 
 	@Override
 	public int compareTo(HttpPattern o) {
-		if(this.equals(o)){
+		if (this.equals(o)) {
 			return 0;
 		}
-		
-		if(path != null && o.path != null) {
-			if(getPathMatcher().match(o.path, path) || o.getPathMatcher().match(o.path, path)) {
+
+		if (path != null && o.path != null) {
+			if (getPathMatcher().match(o.path, path) || o.getPathMatcher().match(o.path, path)) {
 				return -1;
 			}
-			
-			if(getPathMatcher().match(path, o.path) || o.getPathMatcher().match(path, o.path)) {
+
+			if (getPathMatcher().match(path, o.path) || o.getPathMatcher().match(path, o.path)) {
 				return 1;
 			}
 		}
 
-		if (o.mimeTypes != null && this.mimeTypes != null) {
-			return this.mimeTypes.compareTo(o.mimeTypes);
+		if (o.consumes != null && this.consumes != null) {
+			return this.consumes.compareTo(o.consumes);
 		}
-		
-		if(path == null && o.path == null){
+
+		if (path == null && o.path == null) {
 			return 0;
 		}
-		
-		if(path == null) {
+
+		if (path == null) {
 			return -1;
 		}
-		
-		if(o.path == null) {
+
+		if (o.path == null) {
 			return 1;
 		}
 		return path.compareTo(o.path);

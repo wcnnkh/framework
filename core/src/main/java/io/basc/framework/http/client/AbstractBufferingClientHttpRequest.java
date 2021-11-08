@@ -6,7 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-abstract class AbstractBufferingClientHttpRequest extends AbstractClientHttpRequest {
+public abstract class AbstractBufferingClientHttpRequest extends AbstractClientHttpRequest {
 	private ByteArrayOutputStream bufferedOutput = new ByteArrayOutputStream(1024);
 
 	@Override

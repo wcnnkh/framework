@@ -20,8 +20,6 @@ import io.basc.framework.mvc.action.ActionManager;
 import io.basc.framework.mvc.action.ActionParameters;
 import io.basc.framework.mvc.annotation.Jsonp;
 import io.basc.framework.mvc.exception.ExceptionHandler;
-import io.basc.framework.mvc.model.ModelAndView;
-import io.basc.framework.mvc.model.ModelAndViewRegistry;
 import io.basc.framework.util.MultiIterable;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.web.HttpService;
@@ -29,6 +27,8 @@ import io.basc.framework.web.ServerHttpAsyncControl;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.jsonp.JsonpUtils;
+import io.basc.framework.web.message.model.ModelAndView;
+import io.basc.framework.web.message.model.ModelAndViewRegistry;
 import io.basc.framework.web.pattern.ServerHttpRequestAccept;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpService.class)

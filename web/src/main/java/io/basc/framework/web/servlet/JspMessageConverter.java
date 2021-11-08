@@ -1,22 +1,21 @@
-package io.basc.framework.mvc.servlet;
-
-import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.Ordered;
-import io.basc.framework.mvc.model.ModelAndView;
-import io.basc.framework.mvc.model.ModelAndViewMessageConverter;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
-import io.basc.framework.web.ServerHttpRequest;
-import io.basc.framework.web.ServerHttpResponse;
-import io.basc.framework.web.message.WebMessagelConverterException;
-import io.basc.framework.web.servlet.ServletUtils;
+package io.basc.framework.web.servlet;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.Ordered;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.XUtils;
+import io.basc.framework.web.ServerHttpRequest;
+import io.basc.framework.web.ServerHttpResponse;
+import io.basc.framework.web.message.WebMessagelConverterException;
+import io.basc.framework.web.message.model.ModelAndView;
+import io.basc.framework.web.message.model.ModelAndViewMessageConverter;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class JspMessageConverter extends ModelAndViewMessageConverter {

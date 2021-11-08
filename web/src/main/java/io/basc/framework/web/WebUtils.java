@@ -20,6 +20,7 @@ import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
 import io.basc.framework.lang.NamedThreadLocal;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.MimeType;
@@ -32,6 +33,7 @@ import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.EmptyValue;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
+import io.basc.framework.web.pattern.HttpPattern;
 import io.basc.framework.web.support.DefaultHttpService;
 import io.basc.framework.xml.XmlUtils;
 
@@ -305,6 +307,25 @@ public final class WebUtils {
 	@SuppressWarnings("unchecked")
 	public static Map<String, String> getRestfulParameterMap(ServerHttpRequest request) {
 		return (Map<String, String>) request.getAttribute(RESTFUL_PARAMETER_MAP);
+	}
+
+	/**
+	 * @see HttpPattern#accept(ServerHttpRequest)
+	 * @param request
+	 * @param httpPattern
+	 */
+	public static void setHttpPattern(ServerHttpRequest request, HttpPattern httpPattern) {
+		request.setAttribute(HttpPattern.class.getName(), httpPattern);
+	}
+
+	/**
+	 * @see HttpPattern#accept(ServerHttpRequest)
+	 * @param request
+	 * @return
+	 */
+	@Nullable
+	public static HttpPattern getHttpPattern(ServerHttpRequest request) {
+		return (HttpPattern) request.getAttribute(HttpPattern.class.getName());
 	}
 
 	public static String decodeGETParameter(ServerHttpRequest request, String value) {

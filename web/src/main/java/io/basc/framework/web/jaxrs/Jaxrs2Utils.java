@@ -1,6 +1,4 @@
-package io.basc.framework.mvc.jaxrs;
-
-import io.basc.framework.http.HttpHeaders;
+package io.basc.framework.web.jaxrs;
 
 import java.util.List;
 import java.util.Map.Entry;
@@ -8,6 +6,8 @@ import java.util.Map.Entry;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+
+import io.basc.framework.http.HttpHeaders;
 
 public class Jaxrs2Utils {
 	private Jaxrs2Utils() {

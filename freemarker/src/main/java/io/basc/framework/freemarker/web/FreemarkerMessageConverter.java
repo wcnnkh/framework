@@ -10,8 +10,6 @@ import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.mvc.model.ModelAndView;
-import io.basc.framework.mvc.model.ModelAndViewMessageConverter;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.net.MimeTypes;
@@ -24,6 +22,8 @@ import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessagelConverterException;
+import io.basc.framework.web.message.model.ModelAndView;
+import io.basc.framework.web.message.model.ModelAndViewMessageConverter;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class FreemarkerMessageConverter extends ModelAndViewMessageConverter

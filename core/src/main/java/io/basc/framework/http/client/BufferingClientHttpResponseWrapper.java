@@ -8,7 +8,7 @@ import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.io.IOUtils;
 
-final class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
+public final class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
 
 	private final ClientHttpResponse response;
 

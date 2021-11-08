@@ -3,7 +3,6 @@ package io.basc.framework.web.message.support;
 import java.io.IOException;
 
 import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
@@ -11,11 +10,10 @@ import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.WebUtils;
-import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessagelConverterException;
 import io.basc.framework.web.message.annotation.QueryParams;
 
-public class QueryParamsMessageConverter implements WebMessageConverter, ConversionServiceAware {
+public class QueryParamsMessageConverter extends AbstractWebMessageConverter {
 	private ConversionService conversionService;
 
 	@Override

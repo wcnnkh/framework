@@ -3,7 +3,7 @@ package io.basc.framework.web.pattern;
 import io.basc.framework.util.Holder;
 import io.basc.framework.web.ServerHttpRequest;
 
-public class HttpPatterns<T> extends ServerHttpRequestMatcher<T> {
+public class HttpPatternMatcher<T> extends ServerHttpRequestMatcher<T> {
 	private ServerHttpRequestMatcher<ServerHttpRequestAccept> excludeMatcher = new ServerHttpRequestMatcher<>();
 
 	public Holder<ServerHttpRequestAccept> exclude(HttpPattern pattern) {

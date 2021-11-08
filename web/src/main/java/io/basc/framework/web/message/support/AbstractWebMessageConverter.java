@@ -1,26 +1,19 @@
 package io.basc.framework.web.message.support;
 
+import java.io.IOException;
+
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.http.client.ClientHttpResponse;
-import io.basc.framework.json.JSONUtils;
-import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.net.message.convert.MessageConverter;
 import io.basc.framework.net.message.convert.MessageConverterAware;
-import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.ClassUtils;
-import io.basc.framework.value.Value;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
-import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessagelConverterException;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * 应该排在最后一个
@@ -34,6 +27,10 @@ public abstract class AbstractWebMessageConverter
 	private ParameterFactory defaultValueFactory;
 	private MessageConverter messageConverter;
 
+	public MessageConverter getMessageConverter() {
+		return messageConverter;
+	}
+
 	@Override
 	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
@@ -43,7 +40,7 @@ public abstract class AbstractWebMessageConverter
 	public void setDefaultValueFactory(ParameterFactory defaultValueFactory) {
 		this.defaultValueFactory = defaultValueFactory;
 	}
-	
+
 	@Override
 	public void setMessageConverter(MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
@@ -57,59 +54,26 @@ public abstract class AbstractWebMessageConverter
 		return defaultValueFactory;
 	}
 
-	@Override
-	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
-		return conversionService.canConvert(TypeDescriptor.valueOf(String.class),
-				new TypeDescriptor(parameterDescriptor))
-				|| conversionService.canConvert(TypeDescriptor.collection(List.class, String.class),
-						new TypeDescriptor(parameterDescriptor));
-	}
-
-	protected Object readValue(ParameterDescriptor parameterDescriptor, ServerHttpRequest request)
-			throws IOException, WebMessagelConverterException {
-		Object source;
-		if (parameterDescriptor.getClass().isArray()) {
-			Value[] values = WebUtils.getParameterValues(request, parameterDescriptor.getName());
-			if (ArrayUtils.isEmpty(values)) {
-				source = defaultValueFactory.getParameter(parameterDescriptor);
-			} else {
-				source = values;
-			}
+	public Object getDefaultValue(ParameterDescriptor parameterDescriptor) {
+		if (defaultValueFactory == null) {
+			return parameterDescriptor.getDefaultValue();
 		} else {
-			Value value = WebUtils.getParameter(request, parameterDescriptor.getName());
-			if (value == null || value.isEmpty()) {
-				source = defaultValueFactory.getParameter(parameterDescriptor);
-			} else {
-				source = value;
-			}
+			return defaultValueFactory.getParameter(parameterDescriptor);
 		}
-		return source;
-	}
-
-	@Override
-	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
-			throws IOException, WebMessagelConverterException {
-		Object source = readValue(parameterDescriptor, request);
-		return conversionService.convert(source, TypeDescriptor.forObject(source),
-				new TypeDescriptor(parameterDescriptor));
-	}
-
-	@Override
-	public void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor,
-			Object body) throws IOException, WebMessagelConverterException {
-		if ((body instanceof String) || (ClassUtils.isPrimitiveOrWrapper(body.getClass()))) {
-			response.setContentType(MimeTypeUtils.TEXT_HTML);
-		} else {
-			response.setContentType(MimeTypeUtils.APPLICATION_JSON);
-		}
-
-		String content = JSONUtils.getJsonSupport().toJSONString(body);
-		response.getWriter().write(content);
 	}
 
 	@Override
 	public Object read(ClientHttpResponse response, TypeDescriptor typeDescriptor)
 			throws IOException, WebMessagelConverterException {
-		return messageConverter.read(typeDescriptor, response);
+		return getMessageConverter().read(typeDescriptor, response);
+	}
+
+	@Override
+	public void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor,
+			Object body) throws IOException, WebMessagelConverterException {
+		if (response.getContentType() == null) {
+			return;
+		}
+		getMessageConverter().write(typeDescriptor, body, response.getContentType(), response);
 	}
 }

@@ -31,7 +31,6 @@ import io.basc.framework.core.MethodParameter;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.annotation.AnnotationArrayAnnotatedElement;
-import io.basc.framework.core.annotation.EmptyAnnotatedElement;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
@@ -120,9 +119,8 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 		this.resolvableType = resolvableType;
 		this.type = (type != null ? type : resolvableType.toClass());
 		this.annotatedElement = annotatedElement == null ? AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT
-				: (annotatedElement instanceof EmptyAnnotatedElement
-						|| annotatedElement instanceof AnnotationArrayAnnotatedElement ? annotatedElement
-								: new AnnotationArrayAnnotatedElement(annotatedElement));
+				: (annotatedElement instanceof Serializable ? annotatedElement
+						: new AnnotationArrayAnnotatedElement(annotatedElement));
 	}
 
 	/**
@@ -166,6 +164,14 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	 */
 	public Object getSource() {
 		return this.resolvableType.getSource();
+	}
+
+	public TypeDescriptor getNested(int nestingLevel) {
+		return new TypeDescriptor(resolvableType.getNested(nestingLevel), null, this.annotatedElement);
+	}
+
+	public TypeDescriptor getGeneric(int... indexes) {
+		return new TypeDescriptor(resolvableType.getGeneric(indexes), null, this.annotatedElement);
 	}
 
 	/**

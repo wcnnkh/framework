@@ -3,10 +3,9 @@ package io.basc.framework.web.pattern;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.Set;
 
+import io.basc.framework.env.Sys;
 import io.basc.framework.factory.ConfigurableServices;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.placeholder.PropertyResolver;
 import io.basc.framework.util.placeholder.PropertyResolverAware;
 
@@ -19,7 +18,7 @@ public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolv
 	}
 
 	public PropertyResolver getPropertyResolver() {
-		return propertyResolver;
+		return propertyResolver == null ? Sys.env : propertyResolver;
 	}
 
 	public void setPropertyResolver(PropertyResolver propertyResolver) {
@@ -45,6 +44,38 @@ public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolv
 	}
 
 	@Override
+	public Collection<HttpPattern> resolve(Class<?> clazz) {
+		Collection<HttpPattern> patterns = new LinkedHashSet<>(8);
+		for (HttpPatternResolver resolver : this) {
+			if (resolver.canResolve(clazz)) {
+				patterns.addAll(resolver.resolve(clazz));
+			}
+		}
+		return patterns;
+	}
+
+	@Override
+	public boolean canResolve(Method method) {
+		for (HttpPatternResolver resolver : this) {
+			if (resolver.canResolve(method)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public Collection<HttpPattern> resolve(Method method) {
+		Collection<HttpPattern> patterns = new LinkedHashSet<>(8);
+		for (HttpPatternResolver resolver : this) {
+			if (resolver.canResolve(method)) {
+				patterns.addAll(resolver.resolve(method));
+			}
+		}
+		return patterns;
+	}
+
+	@Override
 	public boolean canResolve(Class<?> clazz, Method method) {
 		for (HttpPatternResolver resolver : this) {
 			if (resolver.canResolve(clazz, method)) {
@@ -56,14 +87,10 @@ public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolv
 
 	@Override
 	public Collection<HttpPattern> resolve(Class<?> clazz, Method method) {
-		Set<HttpPattern> patterns = new LinkedHashSet<HttpPattern>(8);
+		Collection<HttpPattern> patterns = new LinkedHashSet<>(8);
 		for (HttpPatternResolver resolver : this) {
 			if (resolver.canResolve(clazz, method)) {
-				Collection<HttpPattern> ps = resolver.resolve(clazz, method);
-				if (CollectionUtils.isEmpty(ps)) {
-					continue;
-				}
-				patterns.addAll(ps);
+				patterns.addAll(resolver.resolve(clazz, method));
 			}
 		}
 		return patterns;

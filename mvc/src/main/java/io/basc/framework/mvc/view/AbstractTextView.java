@@ -1,9 +1,9 @@
 package io.basc.framework.mvc.view;
 
 import io.basc.framework.mvc.HttpChannel;
-import io.basc.framework.mvc.model.Text;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
+import io.basc.framework.web.message.model.Text;
 
 import java.io.IOException;
 

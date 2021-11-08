@@ -8,12 +8,12 @@ import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.web.pattern.HttpPattern;
-import io.basc.framework.web.pattern.HttpPatterns;
+import io.basc.framework.web.pattern.HttpPatternMatcher;
 
 public class HttpPattersTest {
 	@Test
 	public void already() {
-		HttpPatterns<String> httpPatterns = new HttpPatterns<>();
+		HttpPatternMatcher<String> httpPatterns = new HttpPatternMatcher<>();
 		httpPatterns.add("/a", XUtils.getUUID());
 		try {
 			httpPatterns.add("/a", XUtils.getUUID());
@@ -25,7 +25,7 @@ public class HttpPattersTest {
 	
 	@Test
 	public void add() {
-		HttpPatterns<String> httpPatterns = new HttpPatterns<String>();
+		HttpPatternMatcher<String> httpPatterns = new HttpPatternMatcher<String>();
 		MimeTypes types = new MimeTypes();
 		types.add(MimeType.valueOf(MimeTypeUtils.APPLICATION_JSON_VALUE));
 		httpPatterns.add(new HttpPattern("/a", "GET", types), XUtils.getUUID());

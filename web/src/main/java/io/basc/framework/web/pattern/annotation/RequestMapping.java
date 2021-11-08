@@ -12,10 +12,9 @@ import java.lang.annotation.Target;
 public @interface RequestMapping {
 	String value() default "";
 
-	/**
-	 * 请求方法类型
-	 * 
-	 * @return
-	 */
 	HttpMethod[] methods() default {};
+
+	String[] consumes() default {};
+
+	String[] produces() default {};
 }

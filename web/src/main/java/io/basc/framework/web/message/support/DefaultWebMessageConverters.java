@@ -10,6 +10,7 @@ import io.basc.framework.net.message.convert.MessageConverterAware;
 import io.basc.framework.net.message.convert.MessageConverters;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessageConverters;
+import io.basc.framework.web.message.annotation.RequestBodyMessageConverter;
 
 public class DefaultWebMessageConverters extends WebMessageConverters {
 	private final DefaultMessageConverters messageConverters;
@@ -23,13 +24,11 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 		LastWebMessageConverter lastWebMessageConverter = new LastWebMessageConverter();
 		aware(lastWebMessageConverter);
 		afters.setAfterService(lastWebMessageConverter);
-		addService(new EntityMessageConverter(getMessageConverters()));
+		addService(new EntityMessageConverter());
 		addService(new InputMessageConverter());
 		addService(new ResourceMessageConverter());
-		addService(new AnnotationMessageConverter());
 		addService(new RequestBodyMessageConverter());
 		addService(new QueryParamsMessageConverter());
-		addService(new ByteArrayMessageConverter());
 	}
 
 	@Override

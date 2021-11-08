@@ -11,14 +11,14 @@ import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.jsonp.JsonpUtils;
 import io.basc.framework.web.message.WebMessageConverters;
 import io.basc.framework.web.message.support.DefaultWebMessageConverters;
-import io.basc.framework.web.pattern.HttpPatterns;
+import io.basc.framework.web.pattern.HttpPatternMatcher;
 
 public class DefaultHttpChannelFactory implements HttpChannelFactory {
 	protected final BeanFactory beanFactory;
 	private MultipartMessageResolver multipartMessageResolver;
-	private final HttpPatterns<Boolean> jsonpSupportConfig = new HttpPatterns<Boolean>();
-	private final HttpPatterns<Boolean> jsonSupportWrapperConfig = new HttpPatterns<Boolean>();
-	private final HttpPatterns<Boolean> multipartFormSupportWrapperConfig = new HttpPatterns<Boolean>();
+	private final HttpPatternMatcher<Boolean> jsonpSupportConfig = new HttpPatternMatcher<Boolean>();
+	private final HttpPatternMatcher<Boolean> jsonSupportWrapperConfig = new HttpPatternMatcher<Boolean>();
+	private final HttpPatternMatcher<Boolean> multipartFormSupportWrapperConfig = new HttpPatternMatcher<Boolean>();
 	private final WebMessageConverters webMessageConverters;
 	private final UserSessionManager userSessionManager;
 
@@ -39,15 +39,15 @@ public class DefaultHttpChannelFactory implements HttpChannelFactory {
 		this.multipartMessageResolver = multipartMessageResolver;
 	}
 
-	public final HttpPatterns<Boolean> getJsonpSupportConfig() {
+	public final HttpPatternMatcher<Boolean> getJsonpSupportConfig() {
 		return jsonpSupportConfig;
 	}
 
-	public final HttpPatterns<Boolean> getJsonSupportWrapperConfig() {
+	public final HttpPatternMatcher<Boolean> getJsonSupportWrapperConfig() {
 		return jsonSupportWrapperConfig;
 	}
 
-	public final HttpPatterns<Boolean> getMultipartFormSupportWrapperConfig() {
+	public final HttpPatternMatcher<Boolean> getMultipartFormSupportWrapperConfig() {
 		return multipartFormSupportWrapperConfig;
 	}
 

@@ -1,6 +1,6 @@
 package io.basc.framework.web;
 
-import io.basc.framework.web.pattern.HttpPatterns;
+import io.basc.framework.web.pattern.HttpPatternMatcher;
 
-public class HttpServiceRegistry extends HttpPatterns<HttpService> {
+public class HttpServiceRegistry extends HttpPatternMatcher<HttpService> {
 }
