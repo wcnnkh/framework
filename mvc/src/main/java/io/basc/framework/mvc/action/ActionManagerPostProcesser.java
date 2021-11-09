@@ -17,6 +17,7 @@ import io.basc.framework.event.ObjectEvent;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mvc.security.HttpActionAuthorityManager;
+import io.basc.framework.web.pattern.DefaultHttpPatternResolvers;
 import io.basc.framework.web.pattern.HttpPatternResolvers;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
@@ -43,7 +44,7 @@ public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, Eve
 	}
 
 	private void actionManagerInit(BeanFactory beanFactory, ActionManager actionManager) {
-		HttpPatternResolvers patternResolver = new HttpPatternResolvers();
+		HttpPatternResolvers patternResolver = new DefaultHttpPatternResolvers();
 		patternResolver.setPropertyResolver(beanFactory.getEnvironment());
 		patternResolver.configure(beanFactory);
 		for (Class<?> clz : beanFactory.getContextClasses()) {
