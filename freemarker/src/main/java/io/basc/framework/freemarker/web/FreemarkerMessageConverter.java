@@ -1,6 +1,7 @@
 package io.basc.framework.freemarker.web;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 import freemarker.template.Configuration;
@@ -9,7 +10,11 @@ import freemarker.template.TemplateException;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
+import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.http.HttpHeaders;
+import io.basc.framework.http.MediaType;
+import io.basc.framework.http.client.ClientHttpRequest;
+import io.basc.framework.lang.Constants;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.net.MimeTypes;
@@ -20,14 +25,12 @@ import io.basc.framework.net.message.convert.MessageConverter;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
-import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessagelConverterException;
 import io.basc.framework.web.message.model.ModelAndView;
 import io.basc.framework.web.message.model.ModelAndViewMessageConverter;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
-public class FreemarkerMessageConverter extends ModelAndViewMessageConverter
-		implements WebMessageConverter, MessageConverter {
+public class FreemarkerMessageConverter extends ModelAndViewMessageConverter implements MessageConverter {
 	private final Configuration configuration;
 
 	public FreemarkerMessageConverter(Configuration configuration) {
@@ -91,5 +94,34 @@ public class FreemarkerMessageConverter extends ModelAndViewMessageConverter
 	@Override
 	public boolean canWrite(TypeDescriptor typeDescriptor, Object body, MimeType contentType) {
 		return body != null && body instanceof ModelAndView && canWrite((ModelAndView) body);
+	}
+
+	@Override
+	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
+			throws IOException, WebMessagelConverterException {
+		ModelAndView modelAndView = (ModelAndView) parameter;
+		String charset = request.getCharacterEncoding();
+		if (StringUtils.isEmpty(charset)) {
+			charset = Constants.UTF_8_NAME;
+		}
+		
+		if(request.getContentType() == null) {
+			request.setContentType(MediaType.TEXT_HTML);
+			request.setCharacterEncoding(charset);
+		}
+		
+		Template template = configuration.getTemplate(modelAndView.getName(), charset);
+		OutputStreamWriter writer = null;
+		try {
+			writer = new OutputStreamWriter(request.getOutputStream(), charset);
+			template.process(modelAndView, writer);
+		} catch (TemplateException e) {
+			throw new WebMessagelConverterException(modelAndView.getName(), e);
+		} finally {
+			if (writer != null) {
+				writer.close();
+			}
+		}
+		return request;
 	}
 }

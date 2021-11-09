@@ -32,13 +32,13 @@ public class Jaxrs2HttpPatternResolver extends AbstractHttpPatternResolver {
 		return AnnotatedElementUtils.isAnnotated(method, Path.class);
 	}
 
-	protected Collection<HttpPattern> resolve(AnnotatedElement annotatedElement) {
+	protected Collection<HttpPattern> resolveByAnnotation(AnnotatedElement annotatedElement) {
 		Path clazzPath = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, Path.class);
 		Set<HttpMethod> httpMethods = AnnotatedElementUtils.getAllMergedAnnotations(annotatedElement, HttpMethod.class);
 		Consumes consumes = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, Consumes.class);
 		Produces produces = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, Produces.class);
-		MimeTypes consumeTypes = new MimeTypes(consumes.value());
-		MimeTypes produceTypes = new MimeTypes(produces.value());
+		MimeTypes consumeTypes = consumes == null ? null : new MimeTypes(consumes.value());
+		MimeTypes produceTypes = produces == null ? null : new MimeTypes(produces.value());
 		String path = clazzPath.value();
 
 		if (CollectionUtils.isEmpty(httpMethods)) {
@@ -54,11 +54,11 @@ public class Jaxrs2HttpPatternResolver extends AbstractHttpPatternResolver {
 
 	@Override
 	protected Collection<HttpPattern> resolveInternal(Class<?> clazz) {
-		return resolve(clazz);
+		return resolveByAnnotation(clazz);
 	}
 
 	@Override
 	protected Collection<HttpPattern> resolveInternal(Method method) {
-		return resolve(method);
+		return resolveByAnnotation(method);
 	}
 }

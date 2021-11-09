@@ -1,8 +1,10 @@
 package io.basc.framework.net;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -46,6 +48,18 @@ public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comp
 
 	public final SortedSet<MimeType> getMimeTypes() {
 		return readyOnly ? Collections.unmodifiableSortedSet(mimeTypes) : mimeTypes;
+	}
+	
+	public final List<String> getRawMimeTypes(){
+		if(isEmpty()) {
+			return Collections.emptyList();
+		}
+		
+		List<String> list = new ArrayList<>(mimeTypes.size());
+		for(MimeType mimeType : mimeTypes) {
+			list.add(mimeType.toString());
+		}
+		return list;
 	}
 
 	public boolean isEmpty() {

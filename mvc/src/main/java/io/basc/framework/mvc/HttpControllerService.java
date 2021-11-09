@@ -10,6 +10,7 @@ import io.basc.framework.core.annotation.AnnotationUtils;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.LoggerFactory;
@@ -26,9 +27,11 @@ import io.basc.framework.web.HttpService;
 import io.basc.framework.web.ServerHttpAsyncControl;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
+import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.jsonp.JsonpUtils;
 import io.basc.framework.web.message.model.ModelAndView;
 import io.basc.framework.web.message.model.ModelAndViewRegistry;
+import io.basc.framework.web.pattern.HttpPattern;
 import io.basc.framework.web.pattern.ServerHttpRequestAccept;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpService.class)
@@ -213,6 +216,10 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 		Action action = getAction(request);
 		HttpChannel httpChannel = createHttpChannel(request, response, action);
 		if (action != null) {
+			HttpPattern httpPattern = WebUtils.getHttpPattern(request);
+			if (httpPattern != null && httpPattern.hasProduces()) {
+				response.getHeaders().put(HttpHeaders.CONTENT_TYPE, httpPattern.getProduces().getRawMimeTypes());
+			}
 			doAction(httpChannel, action);
 			return;
 		}

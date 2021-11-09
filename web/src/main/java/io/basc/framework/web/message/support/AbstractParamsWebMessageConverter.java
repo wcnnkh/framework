@@ -20,36 +20,30 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 
-public abstract class AbstractParamsWebMessageConverter extends
-		AbstractWebMessageConverter {
+public abstract class AbstractParamsWebMessageConverter extends AbstractWebMessageConverter {
 	private static ObjectRelationalMapping objectRelationalMapping;
 
 	public static ObjectRelationalMapping getObjectRelationalMapping() {
-		return objectRelationalMapping == null ? OrmUtils.getMapping()
-				: objectRelationalMapping;
+		return objectRelationalMapping == null ? OrmUtils.getMapping() : objectRelationalMapping;
 	}
 
-	public static void setObjectRelationalMapping(
-			ObjectRelationalMapping objectRelationalMapping) {
+	public static void setObjectRelationalMapping(ObjectRelationalMapping objectRelationalMapping) {
 		AbstractParamsWebMessageConverter.objectRelationalMapping = objectRelationalMapping;
 	}
 
 	@Override
-	public Object read(ServerHttpRequest request,
-			ParameterDescriptor parameterDescriptor) throws IOException,
-			WebMessagelConverterException {
+	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
+			throws IOException, WebMessagelConverterException {
 		Object body = WebUtils.getParameterMap(request, null);
 		if (body == null) {
 			return null;
 		}
-		return getConversionService().convert(body,
-				TypeDescriptor.forObject(body),
+		return getConversionService().convert(body, TypeDescriptor.forObject(body),
 				new TypeDescriptor(parameterDescriptor));
 	}
 
 	@Override
-	public ClientHttpRequest write(ClientHttpRequest request,
-			ParameterDescriptor parameterDescriptor, Object parameter)
+	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
 			throws IOException, WebMessagelConverterException {
 		MediaType mediaType = request.getContentType();
 		// 默认使用表单
@@ -63,7 +57,8 @@ public abstract class AbstractParamsWebMessageConverter extends
 			charset = Constants.UTF_8;
 		}
 
-		AbstractBufferingClientHttpRequest bufferingClientHttpRequest = request instanceof AbstractBufferingClientHttpRequest ? (AbstractBufferingClientHttpRequest) request
+		AbstractBufferingClientHttpRequest bufferingClientHttpRequest = request instanceof AbstractBufferingClientHttpRequest
+				? (AbstractBufferingClientHttpRequest) request
 				: new BufferingClientHttpRequestWrapper(request);
 		ObjectRelationalMapping mapping = getObjectRelationalMapping();
 		Fields fields = mapping.getFields(parameterDescriptor.getType()).all();
@@ -72,30 +67,24 @@ public abstract class AbstractParamsWebMessageConverter extends
 				continue;
 			}
 
-			String name = mapping.getName(parameterDescriptor.getType(),
-					field.getGetter());
+			String name = mapping.getName(parameterDescriptor.getType(), field.getGetter());
 			Object fieldValue = field.getGetter().get(parameter);
-			String value = (String) getConversionService().convert(fieldValue,
-					new TypeDescriptor(field.getGetter()),
+			String value = (String) getConversionService().convert(fieldValue, new TypeDescriptor(field.getGetter()),
 					TypeDescriptor.valueOf(String.class));
 			if (bufferingClientHttpRequest.getBufferedOutput().size() != 0) {
-				bufferingClientHttpRequest.getOutputStream().write(
-						"&".getBytes(charset));
+				bufferingClientHttpRequest.getOutputStream().write("&".getBytes(charset));
 			}
-			bufferingClientHttpRequest.getOutputStream().write(
-					name.getBytes(charset));
-			bufferingClientHttpRequest.getOutputStream().write(
-					"=".getBytes(charset));
-			bufferingClientHttpRequest.getOutputStream().write(
-					URLEncoder.encode(value, charset.name()).getBytes(charset));
+			bufferingClientHttpRequest.getOutputStream().write(name.getBytes(charset));
+			bufferingClientHttpRequest.getOutputStream().write("=".getBytes(charset));
+			bufferingClientHttpRequest.getOutputStream()
+					.write(URLEncoder.encode(value, charset.name()).getBytes(charset));
 		}
 		return bufferingClientHttpRequest;
 	}
 
 	@Override
-	public UriComponentsBuilder write(UriComponentsBuilder builder,
-			ParameterDescriptor parameterDescriptor, Object parameter)
-			throws WebMessagelConverterException {
+	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
+			Object parameter) throws WebMessagelConverterException {
 		ObjectRelationalMapping mapping = getObjectRelationalMapping();
 		Fields fields = mapping.getFields(parameterDescriptor.getType()).all();
 		for (Field field : fields) {
@@ -103,11 +92,9 @@ public abstract class AbstractParamsWebMessageConverter extends
 				continue;
 			}
 
-			String name = mapping.getName(parameterDescriptor.getType(),
-					field.getGetter());
+			String name = mapping.getName(parameterDescriptor.getType(), field.getGetter());
 			Object fieldValue = field.getGetter().get(parameter);
-			String value = (String) getConversionService().convert(fieldValue,
-					new TypeDescriptor(field.getGetter()),
+			String value = (String) getConversionService().convert(fieldValue, new TypeDescriptor(field.getGetter()),
 					TypeDescriptor.valueOf(String.class));
 			builder.queryParam(name, value);
 		}

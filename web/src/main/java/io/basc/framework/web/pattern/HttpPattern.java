@@ -63,9 +63,8 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 		return method;
 	}
 
-	@Nullable
 	public MimeTypes getConsumes() {
-		return consumes;
+		return consumes == null ? MimeTypes.EMPTY : consumes;
 	}
 
 	public boolean hasConsumes() {
@@ -81,9 +80,8 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 	 * @see #hashCode()
 	 * @return
 	 */
-	@Nullable
 	public MimeTypes getProduces() {
-		return produces;
+		return produces == null ? MimeTypes.EMPTY : produces;
 	}
 
 	public boolean hasProduces() {

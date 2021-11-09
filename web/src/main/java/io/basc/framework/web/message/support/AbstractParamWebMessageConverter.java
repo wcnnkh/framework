@@ -24,37 +24,31 @@ import java.util.List;
  * @author shuchaowen
  *
  */
-public abstract class AbstractParamWebMessageConverter extends
-		AbstractWebMessageConverter {
+public abstract class AbstractParamWebMessageConverter extends AbstractWebMessageConverter {
 
 	@Override
-	public Object read(ServerHttpRequest request,
-			ParameterDescriptor parameterDescriptor) throws IOException,
-			WebMessagelConverterException {
+	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
+			throws IOException, WebMessagelConverterException {
 		Object value;
 		if (XUtils.isMultipleValues(parameterDescriptor.getType())) {
-			List<String> values = request.getParameterMap().get(
-					parameterDescriptor.getName());
+			List<String> values = request.getParameterMap().get(parameterDescriptor.getName());
 			if (CollectionUtils.isEmpty(values)) {
 				value = getDefaultValue(parameterDescriptor);
 			} else {
 				value = values;
 			}
 		} else {
-			value = request.getParameterMap().getFirst(
-					parameterDescriptor.getName());
+			value = request.getParameterMap().getFirst(parameterDescriptor.getName());
 			if (value == null) {
 				value = getDefaultValue(parameterDescriptor);
 			}
 		}
-		return getConversionService().convert(value,
-				TypeDescriptor.forObject(value),
+		return getConversionService().convert(value, TypeDescriptor.forObject(value),
 				new TypeDescriptor(parameterDescriptor));
 	}
 
 	@Override
-	public ClientHttpRequest write(ClientHttpRequest request,
-			ParameterDescriptor parameterDescriptor, Object parameter)
+	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
 			throws IOException, WebMessagelConverterException {
 		MediaType mediaType = request.getContentType();
 		// 默认使用表单
@@ -68,40 +62,31 @@ public abstract class AbstractParamWebMessageConverter extends
 			charset = Constants.UTF_8;
 		}
 
-		AbstractBufferingClientHttpRequest bufferingClientHttpRequest = request instanceof AbstractBufferingClientHttpRequest ? (AbstractBufferingClientHttpRequest) request
+		AbstractBufferingClientHttpRequest bufferingClientHttpRequest = request instanceof AbstractBufferingClientHttpRequest
+				? (AbstractBufferingClientHttpRequest) request
 				: new BufferingClientHttpRequestWrapper(request);
 		if (bufferingClientHttpRequest.getBufferedOutput().size() != 0) {
-			bufferingClientHttpRequest.getOutputStream().write(
-					"&".getBytes(charset));
+			bufferingClientHttpRequest.getOutputStream().write("&".getBytes(charset));
 		}
 
-		String value = (String) getConversionService().convert(parameter,
-				new TypeDescriptor(parameterDescriptor),
+		String value = (String) getConversionService().convert(parameter, new TypeDescriptor(parameterDescriptor),
 				TypeDescriptor.valueOf(String.class));
-		bufferingClientHttpRequest.getOutputStream().write(
-				parameterDescriptor.getName().getBytes(charset));
-		bufferingClientHttpRequest.getOutputStream().write(
-				"=".getBytes(charset));
-		bufferingClientHttpRequest.getOutputStream().write(
-				URLEncoder.encode(value, charset.name()).getBytes(charset));
+		bufferingClientHttpRequest.getOutputStream().write(parameterDescriptor.getName().getBytes(charset));
+		bufferingClientHttpRequest.getOutputStream().write("=".getBytes(charset));
+		bufferingClientHttpRequest.getOutputStream().write(URLEncoder.encode(value, charset.name()).getBytes(charset));
 		return bufferingClientHttpRequest;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public UriComponentsBuilder write(UriComponentsBuilder builder,
-			ParameterDescriptor parameterDescriptor, Object parameter)
-			throws WebMessagelConverterException {
+	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
+			Object parameter) throws WebMessagelConverterException {
 		if (XUtils.isMultipleValues(parameterDescriptor.getType())) {
-			List<String> values = (List<String>) getConversionService()
-					.convert(parameter,
-							new TypeDescriptor(parameterDescriptor),
-							TypeDescriptor.collection(List.class, String.class));
-			return builder.queryParam(parameterDescriptor.getName(),
-					values.toArray());
+			List<String> values = (List<String>) getConversionService().convert(parameter,
+					new TypeDescriptor(parameterDescriptor), TypeDescriptor.collection(List.class, String.class));
+			return builder.queryParam(parameterDescriptor.getName(), values.toArray());
 		} else {
-			String value = (String) getConversionService().convert(parameter,
-					new TypeDescriptor(parameterDescriptor),
+			String value = (String) getConversionService().convert(parameter, new TypeDescriptor(parameterDescriptor),
 					TypeDescriptor.valueOf(String.class));
 			return builder.queryParam(parameterDescriptor.getName(), value);
 		}

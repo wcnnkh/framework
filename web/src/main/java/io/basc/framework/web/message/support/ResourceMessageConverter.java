@@ -14,22 +14,19 @@ import io.basc.framework.web.message.WebMessagelConverterException;
 
 import java.io.IOException;
 
-public class ResourceMessageConverter extends
-		AbstractWebMessageConverter {
+public class ResourceMessageConverter extends AbstractWebMessageConverter {
 
 	@Override
-	public void write(ServerHttpRequest request, ServerHttpResponse response,
-			TypeDescriptor typeDescriptor, Object body) throws IOException,
-			WebMessagelConverterException {
+	public void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor,
+			Object body) throws IOException, WebMessagelConverterException {
 		Resource resource = (Resource) body;
 		MimeType mimeType = FileMimeTypeUitls.getMimeType(resource);
 		WebUtils.writeStaticResource(request, response, resource, mimeType);
 	}
 
 	@Override
-	public Object read(ServerHttpRequest request,
-			ParameterDescriptor parameterDescriptor) throws IOException,
-			WebMessagelConverterException {
+	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
+			throws IOException, WebMessagelConverterException {
 		return null;
 	}
 
@@ -39,14 +36,12 @@ public class ResourceMessageConverter extends
 	}
 
 	@Override
-	public boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor,
-			Object value) {
+	public boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor, Object value) {
 		return Resource.class.isAssignableFrom(typeDescriptor.getType());
 	}
 
 	@Override
-	public ClientHttpRequest write(ClientHttpRequest request,
-			ParameterDescriptor parameterDescriptor, Object parameter)
+	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
 			throws IOException, WebMessagelConverterException {
 		return request;
 	}

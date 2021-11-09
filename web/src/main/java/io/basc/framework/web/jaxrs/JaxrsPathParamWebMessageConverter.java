@@ -16,8 +16,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.PathParam;
 
 @Provider
-public class JaxrsPathParamWebMessageConverter extends
-		AbstractPathParamWebMessageConverter {
+public class JaxrsPathParamWebMessageConverter extends AbstractPathParamWebMessageConverter {
 
 	@Override
 	public boolean canRead(HttpMessage message, TypeDescriptor descriptor) {
@@ -25,9 +24,8 @@ public class JaxrsPathParamWebMessageConverter extends
 	}
 
 	@Override
-	public Object read(ServerHttpRequest request,
-			ParameterDescriptor parameterDescriptor) throws IOException,
-			WebMessagelConverterException {
+	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
+			throws IOException, WebMessagelConverterException {
 		PathParam param = parameterDescriptor.getAnnotation(PathParam.class);
 		if (param == null || StringUtils.isEmpty(param.value())) {
 			return super.read(request, parameterDescriptor);
@@ -36,15 +34,13 @@ public class JaxrsPathParamWebMessageConverter extends
 	}
 
 	@Override
-	public UriComponentsBuilder write(UriComponentsBuilder builder,
-			ParameterDescriptor parameterDescriptor, Object parameter)
-			throws WebMessagelConverterException {
+	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
+			Object parameter) throws WebMessagelConverterException {
 		PathParam param = parameterDescriptor.getAnnotation(PathParam.class);
 		if (param == null || StringUtils.isEmpty(param.value())) {
 			return super.write(builder, parameterDescriptor, parameter);
 		}
-		return super.write(builder, parameterDescriptor.rename(param.value()),
-				parameter);
+		return super.write(builder, parameterDescriptor.rename(param.value()), parameter);
 	}
 
 	@Override

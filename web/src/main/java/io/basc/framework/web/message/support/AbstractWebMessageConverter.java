@@ -7,6 +7,7 @@ import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterFactory;
+import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.net.message.convert.MessageConverter;
 import io.basc.framework.net.message.convert.MessageConverterAware;
@@ -72,7 +73,8 @@ public abstract class AbstractWebMessageConverter
 	public void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor,
 			Object body) throws IOException, WebMessagelConverterException {
 		if (response.getContentType() == null) {
-			return;
+			// 如果不存在默认使用json返回
+			response.setContentType(MediaType.APPLICATION_JSON);
 		}
 		getMessageConverter().write(typeDescriptor, body, response.getContentType(), response);
 	}

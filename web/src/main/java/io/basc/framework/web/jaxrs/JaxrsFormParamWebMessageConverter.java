@@ -15,8 +15,7 @@ import java.io.IOException;
 import javax.ws.rs.FormParam;
 
 @Provider
-public class JaxrsFormParamWebMessageConverter extends
-		AbstractParamWebMessageConverter {
+public class JaxrsFormParamWebMessageConverter extends AbstractParamWebMessageConverter {
 
 	@Override
 	public boolean canRead(HttpMessage message, TypeDescriptor descriptor) {
@@ -24,9 +23,8 @@ public class JaxrsFormParamWebMessageConverter extends
 	}
 
 	@Override
-	public Object read(ServerHttpRequest request,
-			ParameterDescriptor parameterDescriptor) throws IOException,
-			WebMessagelConverterException {
+	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
+			throws IOException, WebMessagelConverterException {
 		FormParam param = parameterDescriptor.getAnnotation(FormParam.class);
 		if (param == null || StringUtils.isEmpty(param.value())) {
 			return super.read(request, parameterDescriptor);
@@ -35,20 +33,17 @@ public class JaxrsFormParamWebMessageConverter extends
 	}
 
 	@Override
-	public boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor,
-			Object value) {
+	public boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor, Object value) {
 		return typeDescriptor.isAnnotationPresent(FormParam.class);
 	}
 
 	@Override
-	public ClientHttpRequest write(ClientHttpRequest request,
-			ParameterDescriptor parameterDescriptor, Object parameter)
+	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
 			throws IOException, WebMessagelConverterException {
 		FormParam param = parameterDescriptor.getAnnotation(FormParam.class);
 		if (param == null || StringUtils.isEmpty(param.value())) {
 			return super.write(request, parameterDescriptor, parameter);
 		}
-		return super.write(request, parameterDescriptor.rename(param.value()),
-				parameter);
+		return super.write(request, parameterDescriptor.rename(param.value()), parameter);
 	}
 }

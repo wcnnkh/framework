@@ -37,9 +37,8 @@ public interface WebMessageConverter {
 	 * @throws IOException
 	 * @throws WebMessagelConverterException
 	 */
-	Object read(ServerHttpRequest request,
-			ParameterDescriptor parameterDescriptor) throws IOException,
-			WebMessagelConverterException;
+	Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
+			throws IOException, WebMessagelConverterException;
 
 	/**
 	 * @see #canRead(HttpMessage, TypeDescriptor)
@@ -61,8 +60,7 @@ public interface WebMessageConverter {
 	 * @param value
 	 * @return
 	 */
-	boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor,
-			Object value);
+	boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor, Object value);
 
 	/**
 	 * 写入
@@ -75,9 +73,8 @@ public interface WebMessageConverter {
 	 * @throws IOException
 	 * @throws WebMessagelConverterException
 	 */
-	void write(ServerHttpRequest request, ServerHttpResponse response,
-			TypeDescriptor typeDescriptor, Object body) throws IOException,
-			WebMessagelConverterException;
+	void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor, Object body)
+			throws IOException, WebMessagelConverterException;
 
 	/**
 	 * 写入并返回request(可能是一个新的)
@@ -89,8 +86,7 @@ public interface WebMessageConverter {
 	 * @param parameter
 	 * @return
 	 */
-	ClientHttpRequest write(ClientHttpRequest request,
-			ParameterDescriptor parameterDescriptor, Object parameter)
+	ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
 			throws IOException, WebMessagelConverterException;
 
 	/**
@@ -113,9 +109,8 @@ public interface WebMessageConverter {
 	 * @return
 	 * @see #canWrite(TypeDescriptor, Object)
 	 */
-	default UriComponentsBuilder write(UriComponentsBuilder builder,
-			ParameterDescriptor parameterDescriptor, Object parameter)
-			throws WebMessagelConverterException {
+	default UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
+			Object parameter) throws WebMessagelConverterException {
 		return builder;
 	}
 }

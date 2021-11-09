@@ -1,5 +1,6 @@
 package io.basc.framework.web.pattern.annotation;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,9 +27,9 @@ public class AnnotationHttpPatternResolver extends AbstractHttpPatternResolver {
 		return AnnotatedElementUtils.hasAnnotation(method, RequestMapping.class);
 	}
 
-	@Override
-	protected Collection<HttpPattern> resolveInternal(Method method) {
-		RequestMapping requestMapping = AnnotatedElementUtils.getMergedAnnotation(method, RequestMapping.class);
+	protected Collection<HttpPattern> resolveByAnnotation(AnnotatedElement annotatedElement) {
+		RequestMapping requestMapping = AnnotatedElementUtils.getMergedAnnotation(annotatedElement,
+				RequestMapping.class);
 		if (requestMapping == null) {
 			return Collections.emptyList();
 		}
@@ -49,25 +50,13 @@ public class AnnotationHttpPatternResolver extends AbstractHttpPatternResolver {
 	}
 
 	@Override
+	protected Collection<HttpPattern> resolveInternal(Method method) {
+		return resolveByAnnotation(method);
+	}
+
+	@Override
 	protected Collection<HttpPattern> resolveInternal(Class<?> clazz) {
-		RequestMapping requestMapping = AnnotatedElementUtils.getMergedAnnotation(clazz, RequestMapping.class);
-		if (requestMapping == null) {
-			return Collections.emptyList();
-		}
-
-		MimeTypes consumes = new MimeTypes(requestMapping.consumes());
-		MimeTypes produces = new MimeTypes(requestMapping.produces());
-		String path = requestMapping.value();
-		HttpMethod[] methods = requestMapping.methods();
-		if (ArrayUtils.isEmpty(methods)) {
-			return Arrays.asList(new HttpPattern(path, null, consumes, produces));
-		}
-
-		List<HttpPattern> patterns = new ArrayList<>(methods.length);
-		for (HttpMethod httpMethod : methods) {
-			patterns.add(new HttpPattern(path, httpMethod.name(), consumes, produces));
-		}
-		return patterns;
+		return resolveByAnnotation(clazz);
 	}
 
 }
