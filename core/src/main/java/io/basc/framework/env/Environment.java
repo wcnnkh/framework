@@ -135,6 +135,9 @@ public interface Environment extends ResourcePatternResolver, PropertyFactory, P
 		return properties;
 	}
 
+	/**
+	 * 解析并替换文本
+	 */
 	@Override
 	default String resolvePlaceholders(String text) {
 		return getPlaceholderReplacer().replacePlaceholders(text, this);

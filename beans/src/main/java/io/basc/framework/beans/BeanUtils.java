@@ -19,6 +19,7 @@ import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.env.Sys;
 import io.basc.framework.factory.Configurable;
+import io.basc.framework.factory.support.DefaultValueFactoryAware;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.mapper.Field;
@@ -86,6 +87,10 @@ public final class BeanUtils {
 
 		if (instance instanceof Configurable) {
 			((Configurable) instance).configure(beanFactory);
+		}
+
+		if (instance instanceof DefaultValueFactoryAware) {
+			((DefaultValueFactoryAware) instance).setDefaultValueFactory(beanFactory.getDefaultValueFactory());
 		}
 	}
 

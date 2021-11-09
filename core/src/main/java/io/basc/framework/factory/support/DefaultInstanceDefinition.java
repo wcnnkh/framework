@@ -46,6 +46,10 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 		if(instance instanceof Configurable) {
 			((Configurable) instance).configure(serviceLoaderFactory);
 		}
+		
+		if(instance instanceof DefaultValueFactoryAware) {
+			((DefaultValueFactoryAware) instance).setDefaultValueFactory(getDefaultValueFactory());
+		}
 	}
 
 	protected Object createInternal(Class<?> targetClass, ParameterDescriptors parameterDescriptors, Object[] params) {
