@@ -16,6 +16,7 @@ import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.pattern.AbstractHttpPatternResolver;
 import io.basc.framework.web.pattern.HttpPattern;
 
@@ -33,13 +34,13 @@ public class Jaxrs2HttpPatternResolver extends AbstractHttpPatternResolver {
 	}
 
 	protected Collection<HttpPattern> resolveByAnnotation(AnnotatedElement annotatedElement) {
-		Path clazzPath = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, Path.class);
+		Path pathAnnotation = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, Path.class);
 		Set<HttpMethod> httpMethods = AnnotatedElementUtils.getAllMergedAnnotations(annotatedElement, HttpMethod.class);
 		Consumes consumes = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, Consumes.class);
 		Produces produces = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, Produces.class);
 		MimeTypes consumeTypes = consumes == null ? null : new MimeTypes(consumes.value());
 		MimeTypes produceTypes = produces == null ? null : new MimeTypes(produces.value());
-		String path = clazzPath.value();
+		String path = StringUtils.mergePaths("/", pathAnnotation.value());
 
 		if (CollectionUtils.isEmpty(httpMethods)) {
 			return Arrays.asList(new HttpPattern(path, null, consumeTypes, produceTypes));

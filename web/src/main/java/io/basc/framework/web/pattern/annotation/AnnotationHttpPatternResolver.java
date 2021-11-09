@@ -12,6 +12,7 @@ import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.pattern.AbstractHttpPatternResolver;
 import io.basc.framework.web.pattern.HttpPattern;
 
@@ -36,7 +37,7 @@ public class AnnotationHttpPatternResolver extends AbstractHttpPatternResolver {
 
 		MimeTypes consumes = new MimeTypes(requestMapping.consumes());
 		MimeTypes produces = new MimeTypes(requestMapping.produces());
-		String path = requestMapping.value();
+		String path = StringUtils.mergePaths("/", requestMapping.value());
 		HttpMethod[] methods = requestMapping.methods();
 		if (ArrayUtils.isEmpty(methods)) {
 			return Arrays.asList(new HttpPattern(path, null, consumes, produces));
