@@ -4,7 +4,9 @@ import java.lang.reflect.Method;
 import java.net.URI;
 
 import io.basc.framework.cloud.loadbalancer.DiscoveryLoadBalancer;
+import io.basc.framework.convert.ConversionService;
 import io.basc.framework.core.annotation.AnnotationUtils;
+import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.http.client.ClientHttpRequestFactory;
@@ -15,8 +17,9 @@ public class AnnotationHttpRemoteCallableFactory extends AbstractHttpRemoteCalla
 	private Environment environment;
 
 	public AnnotationHttpRemoteCallableFactory(ClientHttpRequestFactory clientHttpRequestFactory,
+			ConversionService conversionService, ParameterFactory defaultValueFactory,
 			DiscoveryLoadBalancer discoveryLoadBalancer) {
-		super(clientHttpRequestFactory, discoveryLoadBalancer);
+		super(clientHttpRequestFactory, conversionService, defaultValueFactory, discoveryLoadBalancer);
 	}
 
 	@Override

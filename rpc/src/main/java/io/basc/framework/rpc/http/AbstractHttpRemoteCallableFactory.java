@@ -8,7 +8,9 @@ import java.util.concurrent.Callable;
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.BeanFactoryAware;
 import io.basc.framework.cloud.loadbalancer.DiscoveryLoadBalancer;
+import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ServiceLoaderFactory;
@@ -25,13 +27,15 @@ import io.basc.framework.web.pattern.HttpPatternResolvers;
 
 public abstract class AbstractHttpRemoteCallableFactory implements CallableFactory, Configurable, BeanFactoryAware {
 	private RetryOperations retryOperations = new RetryTemplate();
-	private final WebMessageConverters webMessageConverters = new WebMessageConverters();
+	private final WebMessageConverters webMessageConverters;
 	private final HttpPatternResolvers httpPatternResolvers = new DefaultHttpPatternResolvers();
 	private final ClientHttpRequestFactory clientHttpRequestFactory;
 	private final DiscoveryLoadBalancer discoveryLoadBalancer;
 
 	public AbstractHttpRemoteCallableFactory(ClientHttpRequestFactory clientHttpRequestFactory,
+			ConversionService conversionService, ParameterFactory defaultValueFactory,
 			@Nullable DiscoveryLoadBalancer discoveryLoadBalancer) {
+		this.webMessageConverters = new DefaultWebMessageConverters(conversionService, defaultValueFactory);
 		this.clientHttpRequestFactory = clientHttpRequestFactory;
 		this.discoveryLoadBalancer = discoveryLoadBalancer;
 	}
@@ -81,6 +85,7 @@ public abstract class AbstractHttpRemoteCallableFactory implements CallableFacto
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		httpPatternResolvers.configure(serviceLoaderFactory);
+		webMessageConverters.configure(serviceLoaderFactory);
 	}
 
 }
