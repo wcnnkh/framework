@@ -16,12 +16,6 @@
 			<artifactId>db</artifactId>
 		</dependency>
 		
-		<!-- 默认使用mysql -->
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>mysql</artifactId>
-		</dependency>
-		
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
