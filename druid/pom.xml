@@ -27,5 +27,11 @@
 			<artifactId>druid</artifactId>
 			<version>${druid.version}</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>boot</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 </project>
