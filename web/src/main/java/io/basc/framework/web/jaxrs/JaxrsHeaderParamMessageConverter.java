@@ -15,7 +15,7 @@ import java.io.IOException;
 import javax.ws.rs.HeaderParam;
 
 @Provider
-public class Jaxrs2HeaderParamMessageConverter extends AbstractHeaderWebMessageConverter {
+public class JaxrsHeaderParamMessageConverter extends AbstractHeaderWebMessageConverter {
 
 	@Override
 	public boolean canRead(HttpMessage message, TypeDescriptor descriptor) {

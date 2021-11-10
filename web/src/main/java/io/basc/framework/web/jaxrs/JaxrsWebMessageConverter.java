@@ -27,7 +27,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
-public class Jaxrs2WebMessageConverter implements WebMessageConverter, Configurable {
+public class JaxrsWebMessageConverter implements WebMessageConverter, Configurable {
 	private final ConfigurableServices<MessageBodyReader> messageBodyReaders = new ConfigurableServices<>(
 			MessageBodyReader.class);
 	private final ConfigurableServices<MessageBodyWriter> messageBodyWriters = new ConfigurableServices<>(
@@ -49,7 +49,7 @@ public class Jaxrs2WebMessageConverter implements WebMessageConverter, Configura
 
 	@Override
 	public boolean canRead(HttpMessage message, TypeDescriptor descriptor) {
-		MediaType mediaType = Jaxrs2Utils.convertMediaType(message.getContentType());
+		MediaType mediaType = JaxrsUtils.convertMediaType(message.getContentType());
 		Annotation[] annotations = descriptor.getAnnotations();
 		for (MessageBodyReader messageBodyReader : messageBodyReaders) {
 			if (messageBodyReader.isReadable(descriptor.getType(), descriptor.getResolvableType().getType(),
@@ -62,7 +62,7 @@ public class Jaxrs2WebMessageConverter implements WebMessageConverter, Configura
 
 	@Override
 	public boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor, Object value) {
-		MediaType mediaType = Jaxrs2Utils.convertMediaType(message.getContentType());
+		MediaType mediaType = JaxrsUtils.convertMediaType(message.getContentType());
 		Annotation[] annotations = typeDescriptor.getAnnotations();
 		for (MessageBodyWriter messageBodyWriter : messageBodyWriters) {
 			if (messageBodyWriter.isWriteable(typeDescriptor.getType(), typeDescriptor.getResolvableType().getType(),
@@ -76,9 +76,9 @@ public class Jaxrs2WebMessageConverter implements WebMessageConverter, Configura
 	@Override
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
-		MediaType mediaType = Jaxrs2Utils.convertMediaType(request.getContentType());
+		MediaType mediaType = JaxrsUtils.convertMediaType(request.getContentType());
 		Annotation[] annotations = parameterDescriptor.getAnnotations();
-		MultivaluedMap<String, String> headerMap = Jaxrs2Utils.convertHeaders(request.getHeaders());
+		MultivaluedMap<String, String> headerMap = JaxrsUtils.convertHeaders(request.getHeaders());
 		for (MessageBodyReader messageBodyReader : messageBodyReaders) {
 			if (messageBodyReader.isReadable(parameterDescriptor.getType(), parameterDescriptor.getGenericType(),
 					annotations, mediaType)) {
@@ -92,12 +92,12 @@ public class Jaxrs2WebMessageConverter implements WebMessageConverter, Configura
 	@Override
 	public void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor,
 			Object body) throws IOException, WebMessagelConverterException {
-		MediaType mediaType = Jaxrs2Utils.convertMediaType(response.getContentType());
+		MediaType mediaType = JaxrsUtils.convertMediaType(response.getContentType());
 		Annotation[] annotations = typeDescriptor.getAnnotations();
 		for (MessageBodyWriter messageBodyWriter : messageBodyWriters) {
 			if (messageBodyWriter.isWriteable(typeDescriptor.getType(), typeDescriptor.getResolvableType().getType(),
 					annotations, mediaType)) {
-				MultivaluedMap<String, String> headerMap = Jaxrs2Utils.convertHeaders(response.getHeaders());
+				MultivaluedMap<String, String> headerMap = JaxrsUtils.convertHeaders(response.getHeaders());
 				// 代理response output, 因为一些实现会在调用getOutputStream后无法再设置Headers
 				OutputStream proxyOutput = (OutputStream) ProxyUtils.getFactory()
 						.getProxy(OutputStream.class, null, (invoker, args) -> {
@@ -122,12 +122,12 @@ public class Jaxrs2WebMessageConverter implements WebMessageConverter, Configura
 	@Override
 	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
 			throws IOException, WebMessagelConverterException {
-		MediaType mediaType = Jaxrs2Utils.convertMediaType(request.getContentType());
+		MediaType mediaType = JaxrsUtils.convertMediaType(request.getContentType());
 		Annotation[] annotations = parameterDescriptor.getAnnotations();
 		for (MessageBodyWriter messageBodyWriter : messageBodyWriters) {
 			if (messageBodyWriter.isWriteable(parameterDescriptor.getType(), parameterDescriptor.getType(), annotations,
 					mediaType)) {
-				MultivaluedMap<String, String> headerMap = Jaxrs2Utils.convertHeaders(request.getHeaders());
+				MultivaluedMap<String, String> headerMap = JaxrsUtils.convertHeaders(request.getHeaders());
 				// 代理response output, 因为一些实现会在调用getOutputStream后无法再设置Headers
 				OutputStream proxyOutput = (OutputStream) ProxyUtils.getFactory()
 						.getProxy(OutputStream.class, null, (invoker, args) -> {

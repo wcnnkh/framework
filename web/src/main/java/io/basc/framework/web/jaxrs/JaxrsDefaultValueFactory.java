@@ -9,7 +9,7 @@ import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterFactory;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
-public class Jaxrs2DefaultValueFactory implements ParameterFactory {
+public class JaxrsDefaultValueFactory implements ParameterFactory {
 
 	@Override
 	public boolean isAccept(ParameterDescriptor parameterDescriptor) {

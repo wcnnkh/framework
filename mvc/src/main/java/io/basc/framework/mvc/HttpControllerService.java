@@ -22,7 +22,6 @@ import io.basc.framework.mvc.action.ActionParameters;
 import io.basc.framework.mvc.annotation.Jsonp;
 import io.basc.framework.mvc.exception.ExceptionHandler;
 import io.basc.framework.util.MultiIterable;
-import io.basc.framework.util.XUtils;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.ServerHttpAsyncControl;
 import io.basc.framework.web.ServerHttpRequest;
@@ -107,8 +106,7 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 		} finally {
 			if (httpChannel.getLogger().isDebugEnabled()) {
 				httpChannel.getLogger().debug("Execution {}ms of [{}] response: {}",
-						System.currentTimeMillis() - httpChannel.getCreateTime(),
-						MVCUtils.getRequestLogId(httpChannel.getRequest()), message);
+						System.currentTimeMillis() - httpChannel.getCreateTime(), WebUtils.getMessageId(httpChannel.getRequest(), httpChannel.getResponse()), message);
 			}
 
 			if (!httpChannel.isCompleted()) {
@@ -146,7 +144,7 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 		}
 
 		if (httpChannel.getLogger().isDebugEnabled()) {
-			httpChannel.getLogger().debug("[{}] request: {}", MVCUtils.getRequestLogId(requestToUse), request);
+			httpChannel.getLogger().debug("[{}] request: {}", WebUtils.getMessageId(requestToUse, responseToUse), request);
 		}
 		return httpChannel;
 	}
@@ -207,12 +205,6 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 
 	@Override
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		String requestLogId = MVCUtils.getRequestLogId(request);
-		if (requestLogId == null) {
-			requestLogId = XUtils.getUUID();
-			MVCUtils.setRequestLogId(request, requestLogId);
-		}
-
 		Action action = getAction(request);
 		HttpChannel httpChannel = createHttpChannel(request, response, action);
 		if (action != null) {

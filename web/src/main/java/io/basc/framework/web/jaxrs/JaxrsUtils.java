@@ -9,8 +9,8 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import io.basc.framework.http.HttpHeaders;
 
-public class Jaxrs2Utils {
-	private Jaxrs2Utils() {
+public class JaxrsUtils {
+	private JaxrsUtils() {
 	}
 
 	public static MediaType convertMediaType(io.basc.framework.http.MediaType mediaType) {

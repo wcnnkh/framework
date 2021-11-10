@@ -16,9 +16,9 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 	private static final PathMatcher DEFAULT_PATH_MATCHER = new AntPathMatcher();
 	private PathMatcher pathMatcher;
 	private final String path;
-	private final String method;
-	private final MimeTypes consumes;
-	private final MimeTypes produces;
+	private String method;
+	private MimeTypes consumes;
+	private MimeTypes produces;
 
 	public HttpPattern(String path) {
 		this(path, null, null);
@@ -48,6 +48,42 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 		if (httpPattern != null) {
 			this.pathMatcher = httpPattern.pathMatcher;
 		}
+	}
+
+	/**
+	 * 返回一个新的HttpPattern
+	 * 
+	 * @param method
+	 * @return
+	 */
+	public HttpPattern setMethod(String method) {
+		HttpPattern httpPattern = new HttpPattern(this);
+		httpPattern.method = method;
+		return httpPattern;
+	}
+
+	/**
+	 * 返回一个新的HttpPattern
+	 * 
+	 * @param consumes
+	 * @return
+	 */
+	public HttpPattern setConsumes(MimeTypes consumes) {
+		HttpPattern httpPattern = new HttpPattern(this);
+		httpPattern.consumes = consumes;
+		return httpPattern;
+	}
+
+	/**
+	 * 返回一个新的HttpPattern
+	 * 
+	 * @param produces
+	 * @return
+	 */
+	public HttpPattern setProduces(MimeTypes produces) {
+		HttpPattern httpPattern = new HttpPattern(this);
+		httpPattern.produces = produces;
+		return httpPattern;
 	}
 
 	public PathMatcher getPathMatcher() {
@@ -247,6 +283,12 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 		return path.compareTo(o.path);
 	}
 
+	/**
+	 * 返回一个新的HttpPattern
+	 * 
+	 * @param pathMatcher
+	 * @return
+	 */
 	public HttpPattern setPathMatcher(PathMatcher pathMatcher) {
 		HttpPattern httpPattern = new HttpPattern(this);
 		httpPattern.pathMatcher = pathMatcher;

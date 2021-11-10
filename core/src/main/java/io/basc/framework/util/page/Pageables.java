@@ -21,6 +21,11 @@ public interface Pageables<K, T> extends Pageable<K, T>{
 		Iterator<Pageables<K, T>> iterator = new PageablesIterator<>(this);
 		return XUtils.stream(iterator);
 	}
+	
+	@Override
+	default Pageables<K, T> shared() {
+		return new SharedPageables<>(this);
+	}
 
 	/**
 	 * 获取所有的数据

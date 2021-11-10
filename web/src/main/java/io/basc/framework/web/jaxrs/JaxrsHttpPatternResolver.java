@@ -21,7 +21,7 @@ import io.basc.framework.web.pattern.AbstractHttpPatternResolver;
 import io.basc.framework.web.pattern.HttpPattern;
 
 @Provider
-public class Jaxrs2HttpPatternResolver extends AbstractHttpPatternResolver {
+public class JaxrsHttpPatternResolver extends AbstractHttpPatternResolver {
 
 	@Override
 	public boolean canResolve(Class<?> clazz) {

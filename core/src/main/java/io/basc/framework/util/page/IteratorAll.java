@@ -3,7 +3,7 @@ package io.basc.framework.util.page;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class IteratorAll<K, T> implements Iterator<T> {
+final class IteratorAll<K, T> implements Iterator<T> {
 	private Pageables<K, T> pageables;
 	private Iterator<T> iterator;
 

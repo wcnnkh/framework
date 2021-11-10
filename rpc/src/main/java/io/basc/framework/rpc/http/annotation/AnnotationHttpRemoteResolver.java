@@ -7,9 +7,9 @@ import java.net.URI;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.net.uri.UriUtils;
-import io.basc.framework.rpc.http.HttpRemoteUriResolver;
+import io.basc.framework.rpc.http.HttpRemoteResolver;
 
-public class AnnotationHttpRemoteUriResolver implements HttpRemoteUriResolver,
+public class AnnotationHttpRemoteResolver implements HttpRemoteResolver,
 		EnvironmentAware {
 	private Environment environment;
 

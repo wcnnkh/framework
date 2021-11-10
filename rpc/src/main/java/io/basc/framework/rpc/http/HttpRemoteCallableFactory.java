@@ -1,17 +1,19 @@
 package io.basc.framework.rpc.http;
 
-import io.basc.framework.beans.BeanFactory;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.util.Collection;
+import java.util.concurrent.Callable;
+
 import io.basc.framework.cloud.loadbalancer.DiscoveryLoadBalancer;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.core.parameter.ParameterUtils;
-import io.basc.framework.env.Environment;
-import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.client.ClientHttpRequestFactory;
-import io.basc.framework.http.client.SimpleClientHttpRequestFactory;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.retry.RetryOperations;
 import io.basc.framework.retry.support.RetryTemplate;
@@ -22,39 +24,20 @@ import io.basc.framework.web.pattern.DefaultHttpPatternResolvers;
 import io.basc.framework.web.pattern.HttpPattern;
 import io.basc.framework.web.pattern.HttpPatternResolvers;
 
-import java.lang.reflect.Method;
-import java.net.URI;
-import java.util.Collection;
-import java.util.concurrent.Callable;
-
-public class HttpRemoteCallableFactory implements CallableFactory,
-		Configurable, EnvironmentAware {
+public class HttpRemoteCallableFactory implements CallableFactory, Configurable {
 	private RetryOperations retryOperations = new RetryTemplate();
 	private final WebMessageConverters webMessageConverters;
 	private final HttpPatternResolvers httpPatternResolvers = new DefaultHttpPatternResolvers();
-	private final HttpRemoteUriResolvers httpRemoteUriResolvers = new DefaultHttpRemoteUriResolvers();
+	private final HttpRemoteResolver httpRemoteUriResolver;
 	private final ClientHttpRequestFactory clientHttpRequestFactory;
 	private final DiscoveryLoadBalancer discoveryLoadBalancer;
 
-	public HttpRemoteCallableFactory(BeanFactory beanFactory) {
-		this(
-				beanFactory.isInstance(ClientHttpRequestFactory.class) ? beanFactory
-						.getInstance(ClientHttpRequestFactory.class)
-						: new SimpleClientHttpRequestFactory(), beanFactory
-						.getEnvironment().getConversionService(), beanFactory
-						.getDefaultValueFactory(), beanFactory
-						.isInstance(DiscoveryLoadBalancer.class) ? beanFactory
-						.getInstance(DiscoveryLoadBalancer.class) : null);
-	}
-
-	public HttpRemoteCallableFactory(
-			ClientHttpRequestFactory clientHttpRequestFactory,
-			ConversionService conversionService,
-			ParameterFactory defaultValueFactory,
-			@Nullable DiscoveryLoadBalancer discoveryLoadBalancer) {
-		this.webMessageConverters = new DefaultWebMessageConverters(
-				conversionService, defaultValueFactory);
+	public HttpRemoteCallableFactory(ClientHttpRequestFactory clientHttpRequestFactory,
+			ConversionService conversionService, ParameterFactory defaultValueFactory,
+			HttpRemoteResolver httpRemoteUriResolver, @Nullable DiscoveryLoadBalancer discoveryLoadBalancer) {
+		this.webMessageConverters = new DefaultWebMessageConverters(conversionService, defaultValueFactory);
 		this.clientHttpRequestFactory = clientHttpRequestFactory;
+		this.httpRemoteUriResolver = httpRemoteUriResolver;
 		this.discoveryLoadBalancer = discoveryLoadBalancer;
 	}
 
@@ -63,30 +46,35 @@ public class HttpRemoteCallableFactory implements CallableFactory,
 	}
 
 	protected HttpPattern getHttpPattern(Class<?> clazz, Method method) {
-		if (!httpPatternResolvers.canResolve(method)) {
-			return null;
+		Collection<HttpPattern> patterns = null;
+		if (httpPatternResolvers.canResolve(clazz, method)) {
+			patterns = httpPatternResolvers.resolve(clazz, method);
+		} else if (httpPatternResolvers.canResolve(method)) {
+			patterns = httpPatternResolvers.resolve(method);
 		}
 
-		Collection<HttpPattern> patterns = httpPatternResolvers.resolve(method);
 		if (patterns == null) {
 			return null;
 		}
 
-		return patterns.stream().sorted().findFirst().orElse(null);
+		HttpPattern httpPattern = patterns.stream().sorted().findFirst().orElse(null);
+		if (httpPattern == null) {
+			return null;
+		}
+
+		if (httpPattern.getMethod() == null) {
+			return httpPattern.setMethod(HttpMethod.GET.name());
+		}
+		return httpPattern;
 	}
 
 	public HttpPatternResolvers getHttpPatternResolvers() {
 		return httpPatternResolvers;
 	}
 
-	public HttpRemoteUriResolvers getHttpRemoteUriResolvers() {
-		return httpRemoteUriResolvers;
-	}
-
 	@Override
-	public Callable<Object> getCallable(Class<?> clazz, Method method,
-			Object[] args) {
-		URI host = getHttpRemoteUriResolvers().resolve(clazz, method);
+	public Callable<Object> getCallable(Class<?> clazz, Method method, Object[] args) {
+		URI host = httpRemoteUriResolver.resolve(clazz, method);
 		if (host == null) {
 			return null;
 		}
@@ -95,22 +83,14 @@ public class HttpRemoteCallableFactory implements CallableFactory,
 		if (httpPattern == null) {
 			return null;
 		}
-		return new HttpRemoteCallable(webMessageConverters,
-				clientHttpRequestFactory, host, httpPattern,
-				ParameterUtils.getParameters(method), args,
-				TypeDescriptor.forMethodReturnType(method), retryOperations,
+		return new HttpRemoteCallable(webMessageConverters, clientHttpRequestFactory, host, httpPattern,
+				ParameterUtils.getParameters(method), args, TypeDescriptor.forMethodReturnType(method), retryOperations,
 				discoveryLoadBalancer);
 	}
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		httpPatternResolvers.configure(serviceLoaderFactory);
-		httpRemoteUriResolvers.configure(serviceLoaderFactory);
 		webMessageConverters.configure(serviceLoaderFactory);
-	}
-
-	@Override
-	public void setEnvironment(Environment environment) {
-		httpRemoteUriResolvers.setEnvironment(environment);
 	}
 }

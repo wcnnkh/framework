@@ -7,13 +7,13 @@ import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.factory.ConfigurableServices;
 
-public class HttpRemoteUriResolvers extends
-		ConfigurableServices<HttpRemoteUriResolver> implements
-		HttpRemoteUriResolver, EnvironmentAware {
+public class HttpRemoteResolvers extends
+		ConfigurableServices<HttpRemoteResolver> implements
+		HttpRemoteResolver, EnvironmentAware {
 	private Environment environment;
 
-	public HttpRemoteUriResolvers() {
-		super(HttpRemoteUriResolver.class);
+	public HttpRemoteResolvers() {
+		super(HttpRemoteResolver.class);
 	}
 
 	public Environment getEnvironment() {
@@ -26,7 +26,7 @@ public class HttpRemoteUriResolvers extends
 	}
 
 	@Override
-	protected void aware(HttpRemoteUriResolver service) {
+	protected void aware(HttpRemoteResolver service) {
 		if (environment != null && service instanceof EnvironmentAware) {
 			((EnvironmentAware) service).setEnvironment(environment);
 		}
@@ -35,7 +35,7 @@ public class HttpRemoteUriResolvers extends
 
 	@Override
 	public boolean canResolve(Class<?> clazz) {
-		for (HttpRemoteUriResolver resolver : this) {
+		for (HttpRemoteResolver resolver : this) {
 			if (resolver.canResolve(clazz)) {
 				return true;
 			}
@@ -45,7 +45,7 @@ public class HttpRemoteUriResolvers extends
 
 	@Override
 	public URI resolve(Class<?> clazz) {
-		for (HttpRemoteUriResolver resolver : this) {
+		for (HttpRemoteResolver resolver : this) {
 			if (resolver.canResolve(clazz)) {
 				return resolver.resolve(clazz);
 			}
@@ -55,7 +55,7 @@ public class HttpRemoteUriResolvers extends
 
 	@Override
 	public boolean canResolve(Method method) {
-		for (HttpRemoteUriResolver resolver : this) {
+		for (HttpRemoteResolver resolver : this) {
 			if (resolver.canResolve(method)) {
 				return true;
 			}
@@ -65,7 +65,7 @@ public class HttpRemoteUriResolvers extends
 
 	@Override
 	public URI resolve(Method method) {
-		for (HttpRemoteUriResolver resolver : this) {
+		for (HttpRemoteResolver resolver : this) {
 			if (resolver.canResolve(method)) {
 				return resolver.resolve(method);
 			}
@@ -75,7 +75,7 @@ public class HttpRemoteUriResolvers extends
 
 	@Override
 	public boolean canResolve(Class<?> clazz, Method method) {
-		for (HttpRemoteUriResolver resolver : this) {
+		for (HttpRemoteResolver resolver : this) {
 			if (resolver.canResolve(clazz, method)) {
 				return true;
 			}
@@ -85,7 +85,7 @@ public class HttpRemoteUriResolvers extends
 
 	@Override
 	public URI resolve(Class<?> clazz, Method method) {
-		for (HttpRemoteUriResolver resolver : this) {
+		for (HttpRemoteResolver resolver : this) {
 			if (resolver.canResolve(clazz, method)) {
 				return resolver.resolve(clazz, method);
 			}

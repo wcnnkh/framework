@@ -14,7 +14,7 @@ import java.io.IOException;
 import javax.ws.rs.CookieParam;
 
 @Provider
-public class Jaxrs2CookieParamMessageConverter extends AbstractCookieWebMessageConverter {
+public class JaxrsCookieParamMessageConverter extends AbstractCookieWebMessageConverter {
 	@Override
 	public boolean canRead(HttpMessage message, TypeDescriptor descriptor) {
 		return descriptor.isAnnotationPresent(CookieParam.class);

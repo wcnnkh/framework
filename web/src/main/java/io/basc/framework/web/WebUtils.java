@@ -13,6 +13,7 @@ import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.http.HttpCookie;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpStatus;
+import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
 import io.basc.framework.json.JSONUtils;
@@ -23,7 +24,9 @@ import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.MimeType;
+import io.basc.framework.net.message.Message;
 import io.basc.framework.net.message.multipart.MultipartMessage;
 import io.basc.framework.net.message.multipart.MultipartMessageResolver;
 import io.basc.framework.util.CollectionUtils;
@@ -380,5 +383,22 @@ public final class WebUtils {
 		} else {
 			return WebUtils.getParameterMap(request, null);
 		}
+	}
+
+	public static String getMessageId(ServerHttpRequest request, @Nullable Message output) {
+		String messageId = (String) request.getAttribute(ServerHttpRequest.class.getName() + "#id");
+		if (messageId == null) {
+			messageId = InetUtils.getMessageId(request, output);
+			request.setAttribute(ServerHttpRequest.class.getName() + "#id", messageId);
+		}
+		return messageId;
+	}
+
+	public static String getMessageId(ClientHttpRequest clientHttpRequest) {
+		ServerHttpRequest request = getLocalServerHttpRequest();
+		if (request == null) {
+			return InetUtils.getMessageId(clientHttpRequest, clientHttpRequest);
+		}
+		return getMessageId(request, clientHttpRequest);
 	}
 }

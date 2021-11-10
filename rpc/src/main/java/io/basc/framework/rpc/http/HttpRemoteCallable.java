@@ -11,12 +11,16 @@ import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpRequestFactory;
 import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.retry.RetryOperations;
+import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.pattern.HttpPattern;
 
 final class HttpRemoteCallable implements Callable<Object> {
+	private static Logger logger = LoggerFactory.getLogger(HttpRemoteCallable.class);
 	private final WebMessageConverter webMessageConverter;
 	private final ClientHttpRequestFactory clientHttpRequestFactory;
 	private final HttpPattern httpPattern;
@@ -61,6 +65,7 @@ final class HttpRemoteCallable implements Callable<Object> {
 
 		URI uri = builder.build().toUri();
 		ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, httpPattern.getMethod());
+		String messageId = WebUtils.getMessageId(request);
 		if (httpPattern.hasConsumes()) {
 			request.getHeaders().put(HttpHeaders.CONTENT_TYPE, httpPattern.getConsumes().getRawMimeTypes());
 		}
@@ -68,13 +73,21 @@ final class HttpRemoteCallable implements Callable<Object> {
 		if (parameterDescriptors != null) {
 			int i = 0;
 			for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
-				request = webMessageConverter.write(request, parameterDescriptor, args[i]);
+				request = webMessageConverter.write(request, parameterDescriptor, args[i++]);
 			}
+		}
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("message[{}] request {} {}", messageId, request.getRawMethod(), uri);
 		}
 
 		ClientHttpResponse response = request.execute();
 		try {
-			return webMessageConverter.read(response, returnType);
+			Object value = webMessageConverter.read(response, returnType);
+			if (logger.isDebugEnabled()) {
+				logger.debug("message[{}] response: {}", messageId, value);
+			}
+			return value;
 		} finally {
 			response.close();
 		}

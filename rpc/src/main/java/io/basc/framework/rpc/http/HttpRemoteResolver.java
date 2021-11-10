@@ -3,7 +3,7 @@ package io.basc.framework.rpc.http;
 import java.lang.reflect.Method;
 import java.net.URI;
 
-public interface HttpRemoteUriResolver {
+public interface HttpRemoteResolver {
 	boolean canResolve(Class<?> clazz);
 
 	URI resolve(Class<?> clazz);

@@ -17,6 +17,7 @@ import io.basc.framework.netflix.eureka.EnableEurekaClient;
 import io.basc.framework.netflix.eureka.EurekaDiscoveryClient;
 
 @EnableEurekaClient
+@Path("/")
 public class EurekaClientStart {
 	private static Logger logger = LoggerFactory.getLogger(EurekaClientStart.class);
 	@Autowired
@@ -26,19 +27,26 @@ public class EurekaClientStart {
 		Application application = MainApplication.run(EurekaClientStart.class, args).get();
 		EurekaDiscoveryClient client = application.getBeanFactory().getInstance(EurekaDiscoveryClient.class);
 		HttpClient httpClient = application.getBeanFactory().getInstance(HttpClient.class);
+		EurekaTestClient eurekaTestClient = application.getBeanFactory().getInstance(EurekaTestClient.class);
 		while(true) {
 			try {
 				logger.info(client.getServices().toString());
 				Thread.sleep(1000);
+				if(client.getServices().isEmpty()) {
+					continue;
+				}
 				HttpResponseEntity<String> response = httpClient.get(String.class, "http://" + ApplicationUtils.getApplicatoinName(application.getEnvironment()) + "/port");
-				logger.info("测试请求返回：" + response);
+				logger.info("测试请求1返回：" + response);
+
+				String port = eurekaTestClient.port();
+				logger.info("测试请求2返回:" + port);
 			} catch (Exception e) {
 				logger.error(e, "测试请求异常");
 			}
 		}
 	}
 	
-	@Path("port")
+	@Path("/port")
 	@GET
 	public Object test(){
 		return ApplicationUtils.getApplicationPort(application);
