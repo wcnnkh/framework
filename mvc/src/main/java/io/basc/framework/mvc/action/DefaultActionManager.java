@@ -13,12 +13,12 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.pattern.HttpPattern;
-import io.basc.framework.web.pattern.HttpPatterns;
+import io.basc.framework.web.pattern.HttpPatternMatcher;
 
 @Provider
 public class DefaultActionManager extends SimpleEventDispatcher<ObjectEvent<Action>> implements ActionManager {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
-	private HttpPatterns<Action> registry = new HttpPatterns<Action>();
+	private HttpPatternMatcher<Action> registry = new HttpPatternMatcher<Action>();
 	private Map<Method, Action> actionMap = new HashMap<Method, Action>();
 
 	public DefaultActionManager() {

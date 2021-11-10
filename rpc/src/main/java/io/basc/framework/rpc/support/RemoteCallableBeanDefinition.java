@@ -1,5 +1,7 @@
 package io.basc.framework.rpc.support;
 
+import java.util.function.Supplier;
+
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.Proxy;
 import io.basc.framework.aop.support.ProxyUtils;
@@ -9,9 +11,9 @@ import io.basc.framework.factory.InstanceException;
 import io.basc.framework.rpc.CallableFactory;
 
 public class RemoteCallableBeanDefinition extends DefaultBeanDefinition{
-	private final CallableFactory callableFactory;
+	private final Supplier<CallableFactory> callableFactory;
 	
-	public RemoteCallableBeanDefinition(ConfigurableBeanFactory beanFactory, CallableFactory callableFactory, Class<?> sourceClass) {
+	public RemoteCallableBeanDefinition(ConfigurableBeanFactory beanFactory, Supplier<CallableFactory> callableFactory, Class<?> sourceClass) {
 		super(beanFactory, sourceClass);
 		this.callableFactory = callableFactory;
 	}
@@ -28,7 +30,7 @@ public class RemoteCallableBeanDefinition extends DefaultBeanDefinition{
 
 	@Override
 	public Object create() throws InstanceException {
-		MethodInterceptor interceptor = new RemoteMethodInterceptor(callableFactory);
+		MethodInterceptor interceptor = new RemoteMethodInterceptor(callableFactory.get());
 		Proxy proxy = ProxyUtils.getFactory().getProxy(getTargetClass(), null, interceptor);
 		Object reference = proxy.create();
 		return reference;

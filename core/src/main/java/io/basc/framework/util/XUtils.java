@@ -6,7 +6,9 @@ import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Spliterator;
@@ -194,6 +196,7 @@ public final class XUtils {
 
 	/**
 	 * 将一次迭代变为操作流
+	 * 
 	 * @param <T>
 	 * @param iterator
 	 * @return
@@ -201,5 +204,17 @@ public final class XUtils {
 	public static <T> Stream<T> stream(Iterator<T> iterator) {
 		Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
 		return StreamSupport.stream(spliterator, false);
+	}
+
+	/**
+	 * 是否是一个有多个值的类型
+	 * 
+	 * @see Collection
+	 * @see Array
+	 * @param type
+	 * @return
+	 */
+	public static boolean isMultipleValues(Class<?> type) {
+		return type != null && (type.isArray() || Collection.class.isAssignableFrom(type));
 	}
 }

@@ -1,16 +1,23 @@
 package io.basc.framework.swagger.convert;
 
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.mvc.message.support.RequestBodyMessageConverter;
+import io.basc.framework.http.HttpMessage;
+import io.basc.framework.web.message.support.AbstractRequestBodyWebMessageConverter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
-public class SwaggerRequestBodyMessageConverter extends RequestBodyMessageConverter {
+public class SwaggerRequestBodyMessageConverter extends AbstractRequestBodyWebMessageConverter {
 
 	@Override
-	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
-		return parameterDescriptor.isAnnotationPresent(RequestBody.class);
+	public boolean canRead(HttpMessage message, TypeDescriptor descriptor) {
+		return descriptor.isAnnotationPresent(RequestBody.class);
 	}
+
+	@Override
+	public boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor, Object value) {
+		return typeDescriptor.isAnnotationPresent(RequestBody.class);
+	}
+
 }

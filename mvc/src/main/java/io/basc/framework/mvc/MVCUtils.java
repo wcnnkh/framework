@@ -6,15 +6,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import io.basc.framework.mvc.action.Action;
-import io.basc.framework.mvc.model.ModelAndView;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.web.ServerHttpRequest;
+import io.basc.framework.web.message.model.ModelAndView;
 
 public final class MVCUtils {
 	private static final boolean SUPPORT_SERVLET = ClassUtils.isPresent("javax.servlet.Servlet", null);
-	private static final String REQUEST_LOG_ID = "io.basc.framework.mvc.request.log.id";
 
 	private MVCUtils() {
 	};
@@ -80,14 +79,6 @@ public final class MVCUtils {
 
 	public static Action getAction(ServerHttpRequest request) {
 		return (Action) request.getAttribute(Action.class.getName());
-	}
-	
-	public static void setRequestLogId(ServerHttpRequest request, String id) {
-		request.setAttribute(REQUEST_LOG_ID, id);
-	}
-	
-	public static String getRequestLogId(ServerHttpRequest request) {
-		return (String) request.getAttribute(REQUEST_LOG_ID);
 	}
 	
 	public static String getModelAndView(ServerHttpRequest request) {

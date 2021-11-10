@@ -4,7 +4,7 @@ import io.basc.framework.util.AbstractIterator;
 import io.basc.framework.util.StaticSupplier;
 import io.basc.framework.util.Supplier;
 
-public class PageablesIterator<K, T> extends AbstractIterator<Pageables<K, T>> {
+final class PageablesIterator<K, T> extends AbstractIterator<Pageables<K, T>> {
 	private Pageables<K, T> pageables;
 	private Supplier<Pageables<K, T>> current;
 

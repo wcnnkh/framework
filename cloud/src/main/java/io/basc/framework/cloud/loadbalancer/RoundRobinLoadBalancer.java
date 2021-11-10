@@ -43,6 +43,10 @@ public class RoundRobinLoadBalancer<T> extends AbstractLoadBalancer<T> {
 			total += weight == 0 ? 1 : server.getWeight();
 			list.add(server);
 		}
+		
+		if(total == 0) {
+			return null;
+		}
 
 		pos = pos % total;
 		return list.get(pos);

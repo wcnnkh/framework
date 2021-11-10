@@ -12,10 +12,9 @@ import io.basc.framework.factory.supplier.SimpleInstanceSupplier;
 import io.basc.framework.factory.support.InstanceIterable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.mvc.HttpPatternResolver;
 import io.basc.framework.mvc.annotation.ActionInterceptors;
-import io.basc.framework.mvc.annotation.Controller;
 import io.basc.framework.util.Supplier;
+import io.basc.framework.web.pattern.HttpPatternResolver;
 
 public class BeanAction extends AbstractAction {
 	private static Logger logger = LoggerFactory.getLogger(BeanAction.class);
@@ -75,39 +74,10 @@ public class BeanAction extends AbstractAction {
 			}
 		}
 
-		Controller controller = getDeclaringClass().getAnnotation(
-				Controller.class);
-		if (controller != null) {
-			for (Class<?> f : controller.interceptors()) {
-				BeanDefinition definition = getBeanFactory().getDefinition(f);
-				if(definition == null){
-					logger.warn("not support interceptor: {}", f);
-					continue;
-				}
-
-				sets.remove(definition.getId());
-				sets.add(definition.getId());
-			}
-		}
-
 		actionInterceptors = getMethod().getAnnotation(ActionInterceptors.class);
 		if (actionInterceptors != null) {
 			sets.clear();
 			for (Class<? extends ActionInterceptor> f : actionInterceptors.value()) {
-				BeanDefinition definition = getBeanFactory().getDefinition(f);
-				if(definition == null){
-					logger.warn("not support interceptor: {}", f);
-					continue;
-				}
-
-				sets.remove(definition.getId());
-				sets.add(definition.getId());
-			}
-		}
-
-		controller = getMethod().getAnnotation(Controller.class);
-		if (controller != null) {
-			for (Class<?> f : controller.interceptors()) {
 				BeanDefinition definition = getBeanFactory().getDefinition(f);
 				if(definition == null){
 					logger.warn("not support interceptor: {}", f);

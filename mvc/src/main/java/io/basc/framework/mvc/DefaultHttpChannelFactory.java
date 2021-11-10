@@ -3,28 +3,29 @@ package io.basc.framework.mvc;
 import java.io.IOException;
 
 import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.mvc.message.WebMessageConverters;
-import io.basc.framework.mvc.message.support.DefaultWebMessageConverters;
 import io.basc.framework.mvc.security.UserSessionManager;
 import io.basc.framework.net.message.multipart.MultipartMessageResolver;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.jsonp.JsonpUtils;
-import io.basc.framework.web.pattern.HttpPatterns;
+import io.basc.framework.web.message.WebMessageConverters;
+import io.basc.framework.web.message.support.DefaultWebMessageConverters;
+import io.basc.framework.web.pattern.HttpPatternMatcher;
 
 public class DefaultHttpChannelFactory implements HttpChannelFactory {
 	protected final BeanFactory beanFactory;
 	private MultipartMessageResolver multipartMessageResolver;
-	private final HttpPatterns<Boolean> jsonpSupportConfig = new HttpPatterns<Boolean>();
-	private final HttpPatterns<Boolean> jsonSupportWrapperConfig = new HttpPatterns<Boolean>();
-	private final HttpPatterns<Boolean> multipartFormSupportWrapperConfig = new HttpPatterns<Boolean>();
+	private final HttpPatternMatcher<Boolean> jsonpSupportConfig = new HttpPatternMatcher<Boolean>();
+	private final HttpPatternMatcher<Boolean> jsonSupportWrapperConfig = new HttpPatternMatcher<Boolean>();
+	private final HttpPatternMatcher<Boolean> multipartFormSupportWrapperConfig = new HttpPatternMatcher<Boolean>();
 	private final WebMessageConverters webMessageConverters;
 	private final UserSessionManager userSessionManager;
 
 	public DefaultHttpChannelFactory(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
-		webMessageConverters = new DefaultWebMessageConverters(beanFactory);
+		webMessageConverters = new DefaultWebMessageConverters(beanFactory.getEnvironment().getConversionService(), beanFactory.getDefaultValueFactory());
+		webMessageConverters.configure(beanFactory);
 		this.userSessionManager = beanFactory.isInstance(UserSessionManager.class)
 				? beanFactory.getInstance(UserSessionManager.class)
 				: null;
@@ -38,15 +39,15 @@ public class DefaultHttpChannelFactory implements HttpChannelFactory {
 		this.multipartMessageResolver = multipartMessageResolver;
 	}
 
-	public final HttpPatterns<Boolean> getJsonpSupportConfig() {
+	public final HttpPatternMatcher<Boolean> getJsonpSupportConfig() {
 		return jsonpSupportConfig;
 	}
 
-	public final HttpPatterns<Boolean> getJsonSupportWrapperConfig() {
+	public final HttpPatternMatcher<Boolean> getJsonSupportWrapperConfig() {
 		return jsonSupportWrapperConfig;
 	}
 
-	public final HttpPatterns<Boolean> getMultipartFormSupportWrapperConfig() {
+	public final HttpPatternMatcher<Boolean> getMultipartFormSupportWrapperConfig() {
 		return multipartFormSupportWrapperConfig;
 	}
 

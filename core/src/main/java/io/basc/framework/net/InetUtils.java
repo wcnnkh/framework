@@ -1,13 +1,16 @@
 package io.basc.framework.net;
 
 import io.basc.framework.env.Sys;
+import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.message.Headers;
 import io.basc.framework.net.message.Message;
 import io.basc.framework.net.message.OutputMessage;
 import io.basc.framework.net.message.multipart.MultipartMessageResolver;
 import io.basc.framework.util.Accept;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.XUtils;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -31,6 +34,9 @@ public final class InetUtils {
 	private InetUtils() {
 	};
 
+	private static final String MESSAGE_ID = "io-basc-framework-message-id";
+	private static ThreadLocal<String> MESSAGE_ID_LOCAL = new NamedThreadLocal<>(MESSAGE_ID);
+
 	/**
 	 * 本地ip
 	 */
@@ -43,8 +49,9 @@ public final class InetUtils {
 	private static final String INNER_IP_PATTERN = "((192\\.168|172\\.([1][6-9]|[2]\\d|3[01]))"
 			+ "(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){2}|"
 			+ "^(\\D)*10(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){3})";
-	private static final MultipartMessageResolver MULTIPART_MESSAGE_RESOLVER = Sys.env.getServiceLoader(MultipartMessageResolver.class).first();
-	
+	private static final MultipartMessageResolver MULTIPART_MESSAGE_RESOLVER = Sys.env
+			.getServiceLoader(MultipartMessageResolver.class).first();
+
 	@Nullable
 	public static MultipartMessageResolver getMultipartMessageResolver() {
 		return MULTIPART_MESSAGE_RESOLVER;
@@ -103,8 +110,7 @@ public final class InetUtils {
 	/**
 	 * Return whether input matches regex of ip address.
 	 *
-	 * @param input
-	 *            The input.
+	 * @param input The input.
 	 * @return {@code true}: yes<br>
 	 *         {@code false}: no
 	 */
@@ -180,9 +186,9 @@ public final class InetUtils {
 	};
 
 	public static Set<InetAddress> getLocalIpAddresses(boolean ipv4) {
-		return getLocalIpAddresses(ipv4? IPV4_INET_ADDRESS_ACCEPT : null);
+		return getLocalIpAddresses(ipv4 ? IPV4_INET_ADDRESS_ACCEPT : null);
 	}
-	
+
 	public static Set<InetAddress> getLocalIpAddresses(Accept<InetAddress> accept) {
 		return getLocalIpAddresses(LOCAL_IP_NETWORK_INTERFACE_ACCEPT, accept);
 	}
@@ -222,15 +228,41 @@ public final class InetUtils {
 	}
 
 	public static boolean isUrl(String url) {
-		if(StringUtils.isEmpty(url)){
+		if (StringUtils.isEmpty(url)) {
 			return false;
 		}
-		
+
 		try {
 			new URL(url);
 			return true;
 		} catch (MalformedURLException e) {
 			return false;
 		}
+	}
+
+	public static String getMessageId(Message input, @Nullable Message output) {
+		Assert.requiredArgument(input != null, "input");
+		String messageId = input.getHeaders().getFirst(MESSAGE_ID);
+		if (messageId != null) {
+			return messageId;
+		}
+
+		if (output != null && input != output) {
+			messageId = output.getHeaders().getFirst(MESSAGE_ID);
+			if (messageId != null) {
+				return messageId;
+			}
+		}
+
+		messageId = MESSAGE_ID_LOCAL.get();
+		if (messageId == null) {
+			messageId = XUtils.getUUID();
+			MESSAGE_ID_LOCAL.set(messageId);
+		}
+
+		if (output != null) {
+			output.getHeaders().set(MESSAGE_ID, messageId);
+		}
+		return messageId;
 	}
 }

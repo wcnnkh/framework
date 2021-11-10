@@ -28,7 +28,7 @@ import io.basc.framework.http.HttpMethod;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.util.StringUtils;
 
-final class SimpleBufferingClientHttpRequest extends AbstractBufferingClientHttpRequest {
+public final class SimpleBufferingClientHttpRequest extends AbstractBufferingClientHttpRequest {
 
 	private final HttpURLConnection connection;
 

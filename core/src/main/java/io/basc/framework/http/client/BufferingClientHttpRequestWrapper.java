@@ -28,11 +28,11 @@ import io.basc.framework.io.IOUtils;
  * request.
  *
  */
-final class BufferingClientHttpRequestWrapper extends AbstractBufferingClientHttpRequest {
+public final class BufferingClientHttpRequestWrapper extends AbstractBufferingClientHttpRequest {
 
 	private final ClientHttpRequest request;
 
-	BufferingClientHttpRequestWrapper(ClientHttpRequest request) {
+	public BufferingClientHttpRequestWrapper(ClientHttpRequest request) {
 		this.request = request;
 	}
 

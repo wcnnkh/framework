@@ -1,5 +1,10 @@
 package io.basc.framework.xml.convert;
 
+import java.io.IOException;
+import java.util.Collection;
+
+import org.w3c.dom.Document;
+
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
@@ -13,12 +18,6 @@ import io.basc.framework.util.ClassUtils;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 import io.basc.framework.xml.XmlUtils;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
-
-import org.w3c.dom.Document;
 
 public class XmlMessageConverter extends AbstractMessageConverter<Object> implements ConversionServiceAware {
 	private ConversionService conversionService;
@@ -56,19 +55,15 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> implem
 		return conversionService.convert(document, TypeDescriptor.valueOf(Document.class), type);
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	protected void writeInternal(TypeDescriptor type, Object body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException {
 		String writeBody;
-		if (ClassUtils.isPrimitiveOrWrapper(type.getType()) || String.class == type.getType()
-				|| Value.class.isAssignableFrom(type.getType())) {
+		if (ClassUtils.isPrimitiveOrWrapper(type.getType()) || String.class == type.getType()) {
 			writeBody = body.toString();
-		} else if (body instanceof Map) {
-			writeBody = XmlUtils.getTemplate().toString((Map) body);
 		} else {
-			Map map = getJsonSupport().parseObject(getJsonSupport().toJSONString(body), Map.class);
-			writeBody = XmlUtils.getTemplate().toString(map);
+			Document document = XmlUtils.getTemplate().parse(body, type);
+			writeBody = XmlUtils.getTemplate().toString(document);
 		}
 		writeTextBody(writeBody, contentType, outputMessage);
 	}

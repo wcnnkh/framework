@@ -4,11 +4,11 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Supplier;
 
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.Proxy;
 import io.basc.framework.aop.support.ConfigurableMethodInterceptor;
-import io.basc.framework.beans.AopEnableSpi;
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanUtils;
 import io.basc.framework.beans.BeanlifeCycleEvent;
@@ -30,8 +30,7 @@ import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.StringUtils;
 
-public class DefaultBeanDefinition extends DefaultInstanceDefinition
-		implements BeanDefinition, Cloneable, AopEnableSpi {
+public class DefaultBeanDefinition extends DefaultInstanceDefinition implements BeanDefinition, Cloneable {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	protected final ConfigurableBeanFactory beanFactory;
 	protected Ioc ioc = new Ioc();
@@ -48,7 +47,8 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 		if (runtimeBean != null && !runtimeBean._dependence()) {
 			return;
 		}
-		beanFactory.getLifecycleDispatcher().publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.BEFORE_DEPENDENCE));
+		beanFactory.getLifecycleDispatcher()
+				.publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.BEFORE_DEPENDENCE));
 		if (instance != null) {
 			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
 				ioc.getDependence().process(this, instance, beanFactory);
@@ -60,17 +60,19 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 
 			BeanUtils.aware(instance, beanFactory, this);
 		}
-		beanFactory.getLifecycleDispatcher().publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.AFTER_DEPENDENCE));
+		beanFactory.getLifecycleDispatcher()
+				.publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.AFTER_DEPENDENCE));
 	}
-	
+
 	/**
 	 * @see DefaultBeanDefinition#dependence(Object)
-	 * @see BeanUtils#aware(Object, io.basc.framework.beans.BeanFactory, BeanDefinition)
+	 * @see BeanUtils#aware(Object, io.basc.framework.beans.BeanFactory,
+	 *      BeanDefinition)
 	 * @param instance
 	 */
 	@Override
 	protected final void configurable(Object instance) {
-		//不处理
+		// 不处理
 	}
 
 	protected void configurationProperties(Object instance) {
@@ -82,7 +84,8 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 		if (runtimeBean != null && !runtimeBean._init()) {
 			return;
 		}
-		beanFactory.getLifecycleDispatcher().publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.BEFORE_INIT));
+		beanFactory.getLifecycleDispatcher()
+				.publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.BEFORE_INIT));
 		if (instance != null) {
 			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
 				ioc.getInit().process(this, instance, beanFactory);
@@ -94,7 +97,8 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 				throw new BeansException(e);
 			}
 		}
-		beanFactory.getLifecycleDispatcher().publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.AFTER_INIT));
+		beanFactory.getLifecycleDispatcher()
+				.publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.AFTER_INIT));
 	}
 
 	public void destroy(Object instance) throws BeansException {
@@ -103,20 +107,22 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 			return;
 		}
 
-		beanFactory.getLifecycleDispatcher().publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.BEFORE_DESTROY));
+		beanFactory.getLifecycleDispatcher()
+				.publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.BEFORE_DESTROY));
 		if (instance != null) {
 			try {
 				LifecycleAuxiliary.destroy(instance);
 			} catch (Throwable e) {
 				throw new BeansException(e);
 			}
-			
+
 			ioc.getDestroy().process(this, instance, beanFactory);
 			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
 				ioc.getDestroy().process(this, instance, beanFactory);
 			}
 		}
-		beanFactory.getLifecycleDispatcher().publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.AFTER_DESTROY));
+		beanFactory.getLifecycleDispatcher()
+				.publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.AFTER_DESTROY));
 	}
 
 	public String getId() {
@@ -245,8 +251,8 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 	}
 
 	protected String getStringDescribe() {
-		return MapperUtils.getFields(getClass()).all().accept(FieldFeature.EXISTING_GETTER_FIELD)
-				.getValueMap(this).toString();
+		return MapperUtils.getFields(getClass()).all().accept(FieldFeature.EXISTING_GETTER_FIELD).getValueMap(this)
+				.toString();
 	}
 
 	/**
@@ -255,5 +261,24 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 	@Override
 	public final String toString() {
 		return getClass().getName() + "[" + getStringDescribe() + "]";
+	}
+
+	/**
+	 * 创建一个简单的bean定义
+	 * 
+	 * @param <T>
+	 * @param beanFactory
+	 * @param clazz
+	 * @param supplier
+	 * @return
+	 */
+	public static <T> BeanDefinition create(ConfigurableBeanFactory beanFactory, Class<T> clazz,
+			Supplier<? extends T> supplier) {
+		return new DefaultBeanDefinition(beanFactory, clazz) {
+			@Override
+			public Object create() throws InstanceException {
+				return supplier.get();
+			}
+		};
 	}
 }

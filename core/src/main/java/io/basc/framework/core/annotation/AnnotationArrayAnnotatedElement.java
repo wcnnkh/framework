@@ -4,13 +4,16 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-public class AnnotationArrayAnnotatedElement implements AnnotatedElement, Serializable{
+public class AnnotationArrayAnnotatedElement implements AnnotatedElement, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final Annotation[] annotations;
 	private final Annotation[] declaredAnnotations;
 
 	public AnnotationArrayAnnotatedElement(AnnotatedElement annotatedElement) {
-		if (annotatedElement instanceof AnnotationArrayAnnotatedElement) {
+		if (annotatedElement == null || annotatedElement instanceof EmptyAnnotatedElement) {
+			this.annotations = AnnotationUtils.EMPTY_ANNOTATION_ARRAY;
+			this.declaredAnnotations = AnnotationUtils.EMPTY_ANNOTATION_ARRAY;
+		} else if (annotatedElement instanceof AnnotationArrayAnnotatedElement) {
 			this.annotations = ((AnnotationArrayAnnotatedElement) annotatedElement).annotations;
 			this.declaredAnnotations = ((AnnotationArrayAnnotatedElement) annotatedElement).declaredAnnotations;
 		} else {
@@ -38,17 +41,17 @@ public class AnnotationArrayAnnotatedElement implements AnnotatedElement, Serial
 		}
 		return null;
 	}
-	
+
 	@Override
 	public final <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
 		return AnnotatedElement.super.getAnnotationsByType(annotationClass);
 	}
-	
+
 	@Override
 	public final <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
 		return AnnotatedElement.super.getDeclaredAnnotation(annotationClass);
 	}
-	
+
 	@Override
 	public final <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
 		return AnnotatedElement.super.getDeclaredAnnotationsByType(annotationClass);

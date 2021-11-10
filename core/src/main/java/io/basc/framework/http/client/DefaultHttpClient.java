@@ -1,5 +1,9 @@
 package io.basc.framework.http.client;
 
+import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.factory.Configurable;
@@ -23,13 +27,12 @@ import io.basc.framework.net.message.convert.MessageConverters;
 import io.basc.framework.net.uri.UriTemplateHandler;
 import io.basc.framework.util.Assert;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.List;
-
 public class DefaultHttpClient extends AbstractHttpConnectionFactory implements HttpClient, Configurable {
-	private static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = Sys.env.getServiceLoader(
-			ClientHttpRequestFactory.class, "io.basc.framework.http.client.SimpleClientHttpRequestFactory").first();
+	/**
+	 * 默认的client http request factory
+	 */
+	public static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = Sys.env
+			.getServiceLoader(ClientHttpRequestFactory.class).first();
 	private static final UriTemplateHandler URI_TEMPLATE_HANDLER = Sys.env
 			.getServiceLoader(UriTemplateHandler.class, "io.basc.framework.net.uri.DefaultUriTemplateHandler").first();
 	static final ClientHttpResponseErrorHandler CLIENT_HTTP_RESPONSE_ERROR_HANDLER = Sys.env

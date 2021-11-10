@@ -17,7 +17,6 @@ import io.basc.framework.beans.ioc.Ioc;
 import io.basc.framework.context.Destroy;
 import io.basc.framework.context.Init;
 import io.basc.framework.context.support.AbstractConfigurableContext;
-import io.basc.framework.core.parameter.DefaultParameterDefaultValueFactories;
 import io.basc.framework.core.parameter.ExecutableParameterDescriptorsIterator;
 import io.basc.framework.core.parameter.ParameterFactories;
 import io.basc.framework.core.parameter.ParameterDescriptors;
@@ -30,6 +29,7 @@ import io.basc.framework.factory.Creator;
 import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.factory.support.DefaultParameterDefaultValueFactories;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -59,7 +59,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 	private volatile boolean initialized;
 	private List<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<BeanFactoryPostProcessor>(8);
 	private final ParameterFactories defaultValueFactories = new DefaultParameterDefaultValueFactories();
-	
+
 	public DefaultBeanFactory() {
 		super(true);
 		aop.addAopPolicy((instance) -> BeanUtils.getRuntimeBean(instance) != null);
@@ -70,10 +70,10 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 		registerAlias(BeanFactory.class.getName(), NoArgsInstanceFactory.class.getName());
 
 		registerSingleton(Environment.class.getName(), getEnvironment());
-		
+
 		registerSingleton(ParameterFactory.class.getName(), defaultValueFactories);
 	}
-	
+
 	@Override
 	public ParameterFactories getDefaultValueFactory() {
 		return defaultValueFactories;
@@ -322,7 +322,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 	public void postProcessBeanFactory(BeanFactoryPostProcessor beanFactoryPostProcessor) {
 		beanFactoryPostProcessor.postProcessBeanFactory(this);
 	}
-	
+
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		defaultValueFactories.configure(serviceLoaderFactory);
@@ -336,6 +336,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 				throwInitializedBeanException();
 			}
 
+			logger.debug("Start initializing bean factory!");
 			ContextLoader.bindBeanFactory(this);
 			postProcessBeanFactory(new MethodBeanFactoryPostProcessor());
 			postProcessBeanFactory(new ServiceBeanFactoryPostProcessor());
@@ -356,11 +357,11 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 				}
 				registerDefinition(definition.getId(), definition);
 			}
-			//在定义初始完成后就可以认为已经初始化了
+			// 在定义初始完成后就可以认为已经初始化了
 			initialized = true;
-			
+
 			configure(this);
-			
+
 			// TODO 初始化所有单例(原来是想全部懒加载，但是后来出现问题了)
 			for (String id : beanDefinitionRegistry.getDefinitionIds()) {
 				if (isSingleton(id) && isInstance(id)) {

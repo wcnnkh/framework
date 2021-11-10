@@ -10,6 +10,7 @@ import io.basc.framework.core.annotation.AnnotationUtils;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.LoggerFactory;
@@ -20,15 +21,16 @@ import io.basc.framework.mvc.action.ActionManager;
 import io.basc.framework.mvc.action.ActionParameters;
 import io.basc.framework.mvc.annotation.Jsonp;
 import io.basc.framework.mvc.exception.ExceptionHandler;
-import io.basc.framework.mvc.model.ModelAndView;
-import io.basc.framework.mvc.model.ModelAndViewRegistry;
 import io.basc.framework.util.MultiIterable;
-import io.basc.framework.util.XUtils;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.ServerHttpAsyncControl;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
+import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.jsonp.JsonpUtils;
+import io.basc.framework.web.message.model.ModelAndView;
+import io.basc.framework.web.message.model.ModelAndViewRegistry;
+import io.basc.framework.web.pattern.HttpPattern;
 import io.basc.framework.web.pattern.ServerHttpRequestAccept;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpService.class)
@@ -104,8 +106,7 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 		} finally {
 			if (httpChannel.getLogger().isDebugEnabled()) {
 				httpChannel.getLogger().debug("Execution {}ms of [{}] response: {}",
-						System.currentTimeMillis() - httpChannel.getCreateTime(),
-						MVCUtils.getRequestLogId(httpChannel.getRequest()), message);
+						System.currentTimeMillis() - httpChannel.getCreateTime(), WebUtils.getMessageId(httpChannel.getRequest(), httpChannel.getResponse()), message);
 			}
 
 			if (!httpChannel.isCompleted()) {
@@ -143,7 +144,7 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 		}
 
 		if (httpChannel.getLogger().isDebugEnabled()) {
-			httpChannel.getLogger().debug("[{}] request: {}", MVCUtils.getRequestLogId(requestToUse), request);
+			httpChannel.getLogger().debug("[{}] request: {}", WebUtils.getMessageId(requestToUse, responseToUse), request);
 		}
 		return httpChannel;
 	}
@@ -204,15 +205,13 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 
 	@Override
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		String requestLogId = MVCUtils.getRequestLogId(request);
-		if (requestLogId == null) {
-			requestLogId = XUtils.getUUID();
-			MVCUtils.setRequestLogId(request, requestLogId);
-		}
-
 		Action action = getAction(request);
 		HttpChannel httpChannel = createHttpChannel(request, response, action);
 		if (action != null) {
+			HttpPattern httpPattern = WebUtils.getHttpPattern(request);
+			if (httpPattern != null && httpPattern.hasProduces()) {
+				response.getHeaders().put(HttpHeaders.CONTENT_TYPE, httpPattern.getProduces().getRawMimeTypes());
+			}
 			doAction(httpChannel, action);
 			return;
 		}

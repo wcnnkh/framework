@@ -16,6 +16,11 @@ public interface Pages<T> extends Page<T>, Pageables<Long, T> {
 		return jumpTo(cursorId, getCount());
 	}
 	
+	@Override
+	default Pages<T> shared() {
+		return new SharedPages<>(this);
+	}
+	
 	Pages<T> jumpTo(Long cursorId, long count);
 	
 	default Pages<T> jumpToPage(long pageNumber) {

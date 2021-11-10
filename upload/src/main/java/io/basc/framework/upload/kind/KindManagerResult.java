@@ -3,9 +3,9 @@ package io.basc.framework.upload.kind;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.json.JSONUtils;
 import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.mvc.model.Text;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.web.message.model.Text;
 
 import java.io.Serializable;
 import java.util.ArrayList;

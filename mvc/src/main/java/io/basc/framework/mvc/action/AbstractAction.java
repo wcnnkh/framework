@@ -12,9 +12,9 @@ import io.basc.framework.core.annotation.AnnotationArrayAnnotatedElement;
 import io.basc.framework.core.annotation.MultiAnnotatedElement;
 import io.basc.framework.core.parameter.ExecutableParameterDescriptors;
 import io.basc.framework.core.parameter.ParameterDescriptors;
-import io.basc.framework.mvc.HttpPatternResolver;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.web.pattern.HttpPattern;
+import io.basc.framework.web.pattern.HttpPatternResolver;
 
 public abstract class AbstractAction extends AnnotatedElementWrapper<AnnotatedElement> implements Action {
 	private Collection<HttpPattern> httpPatterns;
