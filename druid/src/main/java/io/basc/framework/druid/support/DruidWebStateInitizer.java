@@ -23,11 +23,18 @@ public class DruidWebStateInitizer implements ServletContextInitialization {
 
 	@Override
 	public void init(Application application, ServletContext servletContext) {
+		String value = application.getEnvironment().getString("druid.filters");
+		if (value == null || !value.contains("stat")) {
+			return;
+		}
+
 		logger.info("Enable druid web stat!");
-		javax.servlet.ServletRegistration.Dynamic servletDynamic = servletContext.addServlet("DruidStatView", StatViewServlet.class);
+		javax.servlet.ServletRegistration.Dynamic servletDynamic = servletContext.addServlet("DruidStatView",
+				StatViewServlet.class);
 		servletDynamic.addMapping("/druid/*");
-		
-		Dynamic filterDynamic = servletContext.addFilter("DruidWebStatFilter", application.getInstance(WebStatFilter.class));
+
+		Dynamic filterDynamic = servletContext.addFilter("DruidWebStatFilter",
+				application.getInstance(WebStatFilter.class));
 		// 经常需要排除一些不必要的url，比如.js,/jslib/等等。配置在init-param中
 		filterDynamic.setInitParameter("exclusions", "/druid/*");
 		filterDynamic.setInitParameter("loginUsername", RandomUtils.getRandomStr(10));
@@ -35,7 +42,8 @@ public class DruidWebStateInitizer implements ServletContextInitialization {
 		application.getEnvironment().streamByPrefix("druid.web.stat.").forEach((e) -> {
 			filterDynamic.setInitParameter(e.getKey(), e.getValue().getAsString());
 		});
-		logger.info("Druid web state username[{}] password[{}]", filterDynamic.getInitParameter("loginUsername"), filterDynamic.getInitParameter("loginPassword"));
+		logger.info("Druid web state username[{}] password[{}]", filterDynamic.getInitParameter("loginUsername"),
+				filterDynamic.getInitParameter("loginPassword"));
 		filterDynamic.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/*");
 	}
 }

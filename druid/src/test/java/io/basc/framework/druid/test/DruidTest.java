@@ -1,7 +1,13 @@
 package io.basc.framework.druid.test;
 
-public class DruidTest {
-	public static void main(String[] args) {
+import java.util.concurrent.ExecutionException;
 
+import io.basc.framework.boot.Application;
+import io.basc.framework.boot.support.MainApplication;
+
+public class DruidTest {
+	public static void main(String[] args) throws InterruptedException, ExecutionException {
+		Application application = MainApplication.run(DruidTest.class, args).get();
+		System.out.println(application.getCreateTime());
 	}
 }

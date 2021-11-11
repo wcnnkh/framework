@@ -13,8 +13,8 @@ public class Configurable implements Serializable {
 	private String url;
 
 	// 连接池配置
-	private int minSize;
-	private int maxSize;
+	private Integer minSize;
+	private Integer maxSize;
 
 	/**
 	 * 自动创建那些表
@@ -67,19 +67,19 @@ public class Configurable implements Serializable {
 		this.url = url;
 	}
 
-	public int getMinSize() {
+	public Integer getMinSize() {
 		return minSize;
 	}
 
-	public void setMinSize(int minSize) {
+	public void setMinSize(Integer minSize) {
 		this.minSize = minSize;
 	}
 
-	public int getMaxSize() {
+	public Integer getMaxSize() {
 		return maxSize;
 	}
 
-	public void setMaxSize(int maxSize) {
+	public void setMaxSize(Integer maxSize) {
 		this.maxSize = maxSize;
 	}
 
