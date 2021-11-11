@@ -1,5 +1,6 @@
 package io.basc.framework.orm.convert;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -193,10 +194,31 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 
 	protected abstract Object getProperty(Object source, String key);
 
+	private boolean canSetType(TypeDescriptor type) {
+		if (type == null) {
+			return true;
+		}
+
+		if (type.isPrimitive()) {
+			return true;
+		}
+
+		if (type.isCollection() || type.isArray()) {
+			return canSetType(type.getElementTypeDescriptor());
+		} else if (type.isMap()) {
+			return canSetType(type.getMapKeyTypeDescriptor()) && canSetType(type.getMapValueTypeDescriptor());
+		}
+
+		if (type.getType().isInterface() || Modifier.isAbstract(type.getType().getModifiers())) {
+			return false;
+		}
+		return true;
+	}
+
 	public Fields getFields(Class<?> type, Field parentField) {
-		//排除接口
 		Fields fields = getObjectRelationalMapping().getFields(type, parentField).accept(FieldFeature.SUPPORT_SETTER)
-				.accept((f) -> !f.getSetter().getType().isInterface()).accept(getFieldAccept());
+				.accept((f) -> canSetType(TypeDescriptor.valueOf(f.getSetter().getGenericType())))
+				.accept(getFieldAccept());
 		if (isUseSuperClass()) {
 			fields = fields.all();
 		}

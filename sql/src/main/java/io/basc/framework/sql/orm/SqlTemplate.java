@@ -329,6 +329,16 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		if (getStructureRegistry().isRegistry(type)) {
 			return getMapProcessor(getStructureRegistry().getStructure(type));
 		}
+		
+		if(getMapper().isRegistred(type)) {
+			return getMapper().getProcessor(type);
+		}
+		
+		if(getSqlDialect().isEntity(type)) {
+			TableStructure tableStructure = resolve(type, null, null);
+			return getMapProcessor(tableStructure);
+		}
+		
 		return SqlOperations.super.getMapProcessor(type);
 	}
 
@@ -450,7 +460,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	default <T> Cursor<T> query(TableStructure tableStructure, Sql sql) {
 		return query(sql, getMapProcessor(tableStructure));
 	}
-
+	
 	default <T> Cursor<T> query(TableStructure tableStructure, T query) {
 		Sql sql = getSqlDialect().query(tableStructure, query);
 		return query(tableStructure, sql);

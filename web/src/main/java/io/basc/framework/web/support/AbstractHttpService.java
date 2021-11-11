@@ -79,9 +79,8 @@ public abstract class AbstractHttpService implements HttpService {
 					}
 				}
 				response.close();
-			} catch (Exception e) {
-				WebUtils.setLocalServerHttpRequest(null);
 			} finally {
+				WebUtils.setLocalServerHttpRequest(null);
 				if (logger.isDebugEnabled()) {
 					logger.debug("End of request[{}]", messageId);
 				}

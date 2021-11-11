@@ -1,17 +1,5 @@
 package io.basc.framework.net;
 
-import io.basc.framework.env.Sys;
-import io.basc.framework.lang.NamedThreadLocal;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.net.message.Headers;
-import io.basc.framework.net.message.Message;
-import io.basc.framework.net.message.OutputMessage;
-import io.basc.framework.net.message.multipart.MultipartMessageResolver;
-import io.basc.framework.util.Accept;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
-
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -30,12 +18,22 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.basc.framework.env.Sys;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.net.message.Headers;
+import io.basc.framework.net.message.Message;
+import io.basc.framework.net.message.OutputMessage;
+import io.basc.framework.net.message.multipart.MultipartMessageResolver;
+import io.basc.framework.util.Accept;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.XUtils;
+
 public final class InetUtils {
 	private InetUtils() {
 	};
 
 	private static final String MESSAGE_ID = "io-basc-framework-message-id";
-	private static ThreadLocal<String> MESSAGE_ID_LOCAL = new NamedThreadLocal<>(MESSAGE_ID);
 
 	/**
 	 * 本地ip
@@ -254,12 +252,7 @@ public final class InetUtils {
 			}
 		}
 
-		messageId = MESSAGE_ID_LOCAL.get();
-		if (messageId == null) {
-			messageId = XUtils.getUUID();
-			MESSAGE_ID_LOCAL.set(messageId);
-		}
-
+		messageId = XUtils.getUUID();
 		if (output != null) {
 			output.getHeaders().set(MESSAGE_ID, messageId);
 		}
