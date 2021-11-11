@@ -33,5 +33,7 @@ public class StringTest {
 		assertTrue("/../a/b".equals(StringUtils.mergePaths("/", "/" , "/", "../a", "/b")));
 		assertTrue("/a/b/".equals(StringUtils.mergePaths("/", "/" , "/", "/a", "b/")));
 		assertTrue("a/b".equals(StringUtils.cleanPath("a//b")));
+		assertTrue("".equals(StringUtils.mergePaths("", "")));
+		assertTrue("/a".equals(StringUtils.mergePaths("", "/a")));
 	}
 }

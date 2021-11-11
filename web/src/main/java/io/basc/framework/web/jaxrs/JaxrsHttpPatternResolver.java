@@ -40,8 +40,7 @@ public class JaxrsHttpPatternResolver extends AbstractHttpPatternResolver {
 		Produces produces = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, Produces.class);
 		MimeTypes consumeTypes = consumes == null ? null : new MimeTypes(consumes.value());
 		MimeTypes produceTypes = produces == null ? null : new MimeTypes(produces.value());
-		String path = StringUtils.mergePaths("/", pathAnnotation.value());
-
+		String path = StringUtils.cleanPath(pathAnnotation.value());
 		if (CollectionUtils.isEmpty(httpMethods)) {
 			return Arrays.asList(new HttpPattern(path, null, consumeTypes, produceTypes));
 		}

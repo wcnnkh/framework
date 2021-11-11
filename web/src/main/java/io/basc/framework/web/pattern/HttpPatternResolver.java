@@ -3,6 +3,7 @@ package io.basc.framework.web.pattern;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.stream.Collectors;
 
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.net.MimeTypes;
@@ -25,14 +26,16 @@ public interface HttpPatternResolver {
 	default Collection<HttpPattern> resolve(Class<?> clazz, Method method) {
 		Collection<HttpPattern> clazzPatterns = resolve(clazz);
 		Collection<HttpPattern> methodPatterns = resolve(method);
-		if(CollectionUtils.isEmpty(clazzPatterns)) {
-			return methodPatterns;
+		if (CollectionUtils.isEmpty(clazzPatterns)) {
+			return methodPatterns.stream().map((p) -> p.setPath(StringUtils.mergePaths("/", p.getPath())))
+					.map((p) -> StringUtils.isEmpty(p.getMethod()) ? p.setMethod(HttpMethod.GET.name()) : p)
+					.collect(Collectors.toList());
 		}
 
 		Collection<HttpPattern> patterns = new LinkedHashSet<>(clazzPatterns.size() + methodPatterns.size());
 		for (HttpPattern clazzPattern : clazzPatterns) {
 			for (HttpPattern methodPattern : methodPatterns) {
-				String path = StringUtils.cleanPath(clazzPattern.getPath() + methodPattern.getPath());
+				String path = StringUtils.mergePaths("/", clazzPattern.getPath(), methodPattern.getPath());
 				String httpMethod = methodPattern.getMethod();
 				if (!StringUtils.hasText(httpMethod)) {
 					httpMethod = clazzPattern.getMethod();
