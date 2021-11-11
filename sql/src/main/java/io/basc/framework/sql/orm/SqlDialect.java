@@ -69,8 +69,12 @@ public interface SqlDialect extends TableMapping, EnvironmentAware {
 	Sql toMaxIdSql(TableStructure tableStructure, Field field) throws SqlDialectException;
 
 	TableStructureMapping getTableStructureMapping(TableStructure tableStructure);
+	
+	Sql toQuerySqlByPrimaryKeys(TableStructure tableStructure, Object query);
 
-	Sql query(TableStructure tableStructure, Object query);
+	Sql toQuerySqlByIndexs(TableStructure tableStructure, Object query);
+	
+	Sql toQuerySql(TableStructure tableStructure, Object query);
 
 	/**
 	 * 条件<br/>
