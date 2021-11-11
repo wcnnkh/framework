@@ -37,7 +37,7 @@ public class AnnotationHttpPatternResolver extends AbstractHttpPatternResolver {
 
 		MimeTypes consumes = new MimeTypes(requestMapping.consumes());
 		MimeTypes produces = new MimeTypes(requestMapping.produces());
-		String path = StringUtils.mergePaths("/", requestMapping.value());
+		String path = StringUtils.cleanPath(requestMapping.value());
 		HttpMethod[] methods = requestMapping.methods();
 		if (ArrayUtils.isEmpty(methods)) {
 			return Arrays.asList(new HttpPattern(path, null, consumes, produces));

@@ -12,8 +12,13 @@ public class HikariUtils {
 		hikariConfig.setDriverClassName(configurable.getDriverClassName());
 		hikariConfig.setUsername(configurable.getUsername());
 		hikariConfig.setPassword(configurable.getPassword());
-		hikariConfig.setMinimumIdle(configurable.getMinSize());
-		hikariConfig.setMaximumPoolSize(configurable.getMaxSize());
+		if(configurable.getMinSize() != null) {
+			hikariConfig.setMinimumIdle(configurable.getMinSize());
+		}
+		
+		if(configurable.getMaxSize() != null) {
+			hikariConfig.setMaximumPoolSize(configurable.getMaxSize());
+		}
 	}
 
 	public static DataBase resolveDataBase(HikariConfig config, DataBaseResolver resolver) {

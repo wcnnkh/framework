@@ -19,4 +19,10 @@ public class SharedPageables<K, T> extends SharedPageable<K, T> implements Pagea
 	public Pageables<K, T> shared() {
 		return this;
 	}
+	
+	@Override
+	public Pageables<K, T> next() {
+		Pageables<K, T> pageables = this.pageables.next();
+		return new SharedPageables<>(pageables);
+	}
 }

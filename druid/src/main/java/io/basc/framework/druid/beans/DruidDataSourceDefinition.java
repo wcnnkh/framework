@@ -27,7 +27,7 @@ public class DruidDataSourceDefinition extends DefaultBeanDefinition {
 		Configurable configurable = beanFactory.getInstance(Configurable.class);
 		DruidDataSource dataSource = new DruidDataSource();
 		DruidUtils.config(dataSource, configurable);
-		BeanUtils.configurationProperties(dataSource, getEnvironment(), "db.druid", Levels.INFO);
+		BeanUtils.configurationProperties(dataSource, getEnvironment(), "druid", Levels.DEBUG);
 		return dataSource;
 	}
 

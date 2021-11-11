@@ -6,6 +6,7 @@ import java.util.Map;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.MimeTypes;
 import io.basc.framework.util.AntPathMatcher;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.PathMatcher;
 import io.basc.framework.util.StringUtils;
@@ -15,7 +16,7 @@ import io.basc.framework.web.WebUtils;
 public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparable<HttpPattern> {
 	private static final PathMatcher DEFAULT_PATH_MATCHER = new AntPathMatcher();
 	private PathMatcher pathMatcher;
-	private final String path;
+	private String path;
 	private String method;
 	private MimeTypes consumes;
 	private MimeTypes produces;
@@ -34,6 +35,7 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 
 	public HttpPattern(String path, @Nullable String method, @Nullable MimeTypes consumes,
 			@Nullable MimeTypes produces) {
+		Assert.requiredArgument(path != null, "path");
 		this.path = path;
 		this.method = method;
 		this.consumes = consumes == null ? null : consumes.readyOnly();
@@ -292,6 +294,13 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 	public HttpPattern setPathMatcher(PathMatcher pathMatcher) {
 		HttpPattern httpPattern = new HttpPattern(this);
 		httpPattern.pathMatcher = pathMatcher;
+		return httpPattern;
+	}
+	
+	public HttpPattern setPath(String path) {
+		Assert.requiredArgument(path != null, "path");
+		HttpPattern httpPattern = new HttpPattern(this);
+		httpPattern.path = path;
 		return httpPattern;
 	}
 }

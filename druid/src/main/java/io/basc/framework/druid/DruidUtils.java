@@ -15,9 +15,14 @@ public final class DruidUtils {
 		dataSource.setUrl(config.getUrl());
 		dataSource.setUsername(config.getUsername());
 		dataSource.setPassword(config.getPassword());
-		dataSource.setInitialSize(config.getMinSize());
-		dataSource.setMinIdle(config.getMinSize());
-		dataSource.setMaxActive(config.getMaxSize());
+		if(config.getMinSize() != null) {
+			dataSource.setInitialSize(config.getMinSize());
+			dataSource.setMinIdle(config.getMinSize());
+		}
+		
+		if(config.getMaxSize() != null) {
+			dataSource.setMaxActive(config.getMaxSize());
+		}
 	}
 	
 	public static DataBase resolve(DruidDataSource druidDataSource, DataBaseResolver dataBaseResolver){

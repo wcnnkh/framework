@@ -16,16 +16,32 @@
 			<artifactId>db</artifactId>
 		</dependency>
 		
-		<!-- 默认使用mysql -->
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>mysql</artifactId>
-		</dependency>
-
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid</artifactId>
 			<version>${druid.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>boot</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>testing</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>mysql</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>tomcat</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

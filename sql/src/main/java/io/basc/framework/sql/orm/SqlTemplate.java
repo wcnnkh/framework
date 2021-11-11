@@ -100,7 +100,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		for (Column column : tableStructure) {
 			if (column.isAutoIncrement() && column.getField() != null) {
 				Object lastId = getAutoIncrementLastId(connection, tableStructure);
-				column.getField().getSetter().set(entity, lastId, getSqlDialect().getEnvironment().getConversionService());
+				column.getField().getSetter().set(entity, lastId,
+						getSqlDialect().getEnvironment().getConversionService());
 			}
 		}
 	}
@@ -223,7 +224,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		Sql sql = getSqlDialect().toUpdateSql(tableStructure, entity);
 		return update(sql);
 	}
-	
+
 	default <T> boolean update(Class<? extends T> entityClass, T entity, T oldEntity) {
 		return update(entityClass, entity, oldEntity, null) > 0;
 	}
@@ -231,7 +232,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	default <T> int update(Class<? extends T> entityClass, T entity, T oldEntity, @Nullable String tableName) {
 		return update(resolve(entityClass, entity, tableName), entity, oldEntity);
 	}
-	
+
 	default <T> int update(TableStructure tableStructure, T entity, T oldEntity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
@@ -329,6 +330,16 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		if (getStructureRegistry().isRegistry(type)) {
 			return getMapProcessor(getStructureRegistry().getStructure(type));
 		}
+
+		if (getMapper().isRegistred(type)) {
+			return getMapper().getProcessor(type);
+		}
+
+		if (getSqlDialect().isEntity(type)) {
+			TableStructure tableStructure = resolve(type, null, null);
+			return getMapProcessor(tableStructure);
+		}
+
 		return SqlOperations.super.getMapProcessor(type);
 	}
 
@@ -451,8 +462,26 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return query(sql, getMapProcessor(tableStructure));
 	}
 
+	default <T> Cursor<T> queryByPrimaryKeys(TableStructure tableStructure, T query) {
+		Sql sql = getSqlDialect().toQuerySqlByPrimaryKeys(tableStructure, query);
+		return query(tableStructure, sql);
+	}
+
+	default <T> Cursor<T> queryByPrimaryKeys(Class<? extends T> queryClass, T query) {
+		return queryByPrimaryKeys(resolve(queryClass, query, null), query);
+	}
+
+	default <T> Cursor<T> queryByIndexs(TableStructure tableStructure, T query) {
+		Sql sql = getSqlDialect().toQuerySqlByIndexs(tableStructure, query);
+		return query(tableStructure, sql);
+	}
+
+	default <T> Cursor<T> queryByIndexs(Class<? extends T> queryClass, T query) {
+		return queryByIndexs(resolve(queryClass, query, null), query);
+	}
+
 	default <T> Cursor<T> query(TableStructure tableStructure, T query) {
-		Sql sql = getSqlDialect().query(tableStructure, query);
+		Sql sql = getSqlDialect().toQuerySql(tableStructure, query);
 		return query(tableStructure, sql);
 	}
 
@@ -522,7 +551,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> Pages<T> getPages(TableStructure tableStructure, T query, long getNumber, long limit) {
-		Sql sql = getSqlDialect().query(tableStructure, query);
+		Sql sql = getSqlDialect().toQuerySql(tableStructure, query);
 		return getPages(sql, getNumber, limit, getMapProcessor(tableStructure));
 	}
 

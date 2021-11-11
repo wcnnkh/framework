@@ -1,5 +1,6 @@
 package io.basc.framework.orm.convert;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -147,7 +148,10 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 					continue;
 				}
 
-				valueMap.put(StringUtils.isEmpty(prefix) ? key : key.substring(prefix.length() + (prefix.endsWith(connector)? 0:connector.length())),
+				valueMap.put(
+						StringUtils.isEmpty(prefix) ? key
+								: key.substring(
+										prefix.length() + (prefix.endsWith(connector) ? 0 : connector.length())),
 						value);
 			}
 		}
@@ -190,8 +194,30 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 
 	protected abstract Object getProperty(Object source, String key);
 
+	private boolean canSetType(TypeDescriptor type) {
+		if (type == null) {
+			return true;
+		}
+
+		if (type.isPrimitive()) {
+			return true;
+		}
+
+		if (type.isCollection() || type.isArray()) {
+			return canSetType(type.getElementTypeDescriptor());
+		} else if (type.isMap()) {
+			return canSetType(type.getMapKeyTypeDescriptor()) && canSetType(type.getMapValueTypeDescriptor());
+		}
+
+		if (type.getType().isInterface() || Modifier.isAbstract(type.getType().getModifiers())) {
+			return false;
+		}
+		return true;
+	}
+
 	public Fields getFields(Class<?> type, Field parentField) {
 		Fields fields = getObjectRelationalMapping().getFields(type, parentField).accept(FieldFeature.SUPPORT_SETTER)
+				.accept((f) -> canSetType(TypeDescriptor.valueOf(f.getSetter().getGenericType())))
 				.accept(getFieldAccept());
 		if (isUseSuperClass()) {
 			fields = fields.all();
@@ -213,7 +239,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		configurationProperties(source, TypeDescriptor.forObject(source), target, TypeDescriptor.forObject(target));
 	}
 
-	private Collection<String> getUseSetterNames(AliasRegistry aliasRegistry, Class<?> entityClass,  Field field) {
+	private Collection<String> getUseSetterNames(AliasRegistry aliasRegistry, Class<?> entityClass, Field field) {
 		List<String> useNames = new ArrayList<String>(8);
 		Collection<String> names = getObjectRelationalMapping().getAliasNames(entityClass, field.getSetter());
 		for (String name : names) {
@@ -245,8 +271,8 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		return nameAppend.toString();
 	}
 
-	private void appendNames(Class<?> entityClass, @Nullable AliasRegistry aliasRegistry, List<String> names, String parentName,
-			Field field) {
+	private void appendNames(Class<?> entityClass, @Nullable AliasRegistry aliasRegistry, List<String> names,
+			String parentName, Field field) {
 		Field parent = field.getParentField();
 		if (parent == null) {
 			// 最顶层的字段
@@ -303,7 +329,8 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		}
 	}
 
-	private void noStrictConfiguration(Class<?> clazz, Fields fields, Object source, TypeDescriptor sourceType, Object target) {
+	private void noStrictConfiguration(Class<?> clazz, Fields fields, Object source, TypeDescriptor sourceType,
+			Object target) {
 		for (Field field : fields) {
 			Object value = null;
 			if (getObjectRelationalMapping().isEntity(clazz, field.getSetter())) {

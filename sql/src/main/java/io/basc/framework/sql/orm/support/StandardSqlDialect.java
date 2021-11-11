@@ -517,23 +517,52 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	}
 
 	@Override
-	public Sql query(TableStructure tableStructure, Object query) {
+	public Sql toQuerySqlByPrimaryKeys(TableStructure tableStructure, Object query) {
 		StringBuilder sb = new StringBuilder(SELECT_ALL_PREFIX);
 		keywordProcessing(sb, tableStructure.getName());
-
-		Sql where = getConditionalStatement(tableStructure, query);
+		StringBuilder whereSql = new StringBuilder();
+		List<Object> whereParams = new ArrayList<Object>(8);
+		and(whereSql, whereParams, query, tableStructure.columns().filter((col) -> col.isPrimaryKey()).iterator());
+		Sql where = new SimpleSql(whereSql.toString(), whereParams.toArray());
 		if (StringUtils.isEmpty(where.getSql())) {
 			return new SimpleSql(sb.toString());
 		}
+		return new SimpleSql(sb.append(" where ").append(where.getSql()).toString(), where.getParams());
+	}
 
+	@Override
+	public Sql toQuerySqlByIndexs(TableStructure tableStructure, Object query) {
+		StringBuilder sb = new StringBuilder(SELECT_ALL_PREFIX);
+		keywordProcessing(sb, tableStructure.getName());
+		StringBuilder whereSql = new StringBuilder();
+		List<Object> whereParams = new ArrayList<Object>(8);
+		and(whereSql, whereParams, query, tableStructure.columns().filter((col) -> col.hasIndex()).iterator());
+		Sql where = new SimpleSql(whereSql.toString(), whereParams.toArray());
+		if (StringUtils.isEmpty(where.getSql())) {
+			return new SimpleSql(sb.toString());
+		}
+		return new SimpleSql(sb.append(" where ").append(where.getSql()).toString(), where.getParams());
+	}
+
+	@Override
+	public Sql toQuerySql(TableStructure tableStructure, Object query) {
+		StringBuilder sb = new StringBuilder(SELECT_ALL_PREFIX);
+		keywordProcessing(sb, tableStructure.getName());
+		StringBuilder whereSql = new StringBuilder();
+		List<Object> whereParams = new ArrayList<Object>(8);
+		and(whereSql, whereParams, query, tableStructure.columns().iterator());
+		if (StringUtils.isEmpty(whereSql)) {
+			return new SimpleSql(sb.toString());
+		}
+		Sql where = new SimpleSql(whereSql.toString(), whereParams.toArray());
 		return new SimpleSql(sb.append(" where ").append(where.getSql()).toString(), where.getParams());
 	}
 
 	private void and(StringBuilder sb, List<Object> params, Object entity, Iterator<Column> columns) {
 		while (columns.hasNext()) {
 			Column column = columns.next();
-			Object value = column.getField().get(entity);
-			if (value == null) {
+			Object value = getDataBaseValue(entity, column.getField());
+			if(StringUtils.isEmpty(value)) {
 				continue;
 			}
 
@@ -544,14 +573,6 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 			sb.append(" = ?");
 			params.add(value);
 		}
-	}
-
-	private Sql getConditionalStatement(TableStructure tableStructure, Object entity) {
-		StringBuilder sb = new StringBuilder();
-		List<Object> params = new ArrayList<Object>(8);
-		and(sb, params, entity, tableStructure.columns().filter((col) -> col.hasIndex()).iterator());
-		and(sb, params, entity, tableStructure.columns().filter((col) -> col.hasIndex()).iterator());
-		return new SimpleSql(sb.toString(), params.toArray());
 	}
 
 	@Override

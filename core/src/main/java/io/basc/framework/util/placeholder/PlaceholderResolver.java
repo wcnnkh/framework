@@ -5,6 +5,7 @@ package io.basc.framework.util.placeholder;
  * @author shuchaowen
  *
  */
+@FunctionalInterface
 public interface PlaceholderResolver {
 
 	/**

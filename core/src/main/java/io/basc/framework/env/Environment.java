@@ -140,12 +140,12 @@ public interface Environment extends ResourcePatternResolver, PropertyFactory, P
 	 */
 	@Override
 	default String resolvePlaceholders(String text) {
-		return getPlaceholderReplacer().replacePlaceholders(text, this);
+		return getPlaceholderReplacer().replacePlaceholders(text, (name) -> getString(name));
 	}
 
 	@Override
 	default String resolveRequiredPlaceholders(String text) throws IllegalArgumentException {
-		return getPlaceholderReplacer().replaceRequiredPlaceholders(text, this);
+		return getPlaceholderReplacer().replaceRequiredPlaceholders(text, (name) -> getString(name));
 	}
 
 	PlaceholderReplacer getPlaceholderReplacer();
