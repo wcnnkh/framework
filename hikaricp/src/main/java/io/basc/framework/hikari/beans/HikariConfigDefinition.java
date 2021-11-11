@@ -26,7 +26,7 @@ public class HikariConfigDefinition extends DefaultBeanDefinition {
 		Configurable configurable = beanFactory.getInstance(Configurable.class);
 		HikariConfig hikariConfig = new HikariConfig();
 		HikariUtils.config(hikariConfig, configurable);
-		BeanUtils.configurationProperties(hikariConfig, getEnvironment(), "db.hikari", Levels.INFO);
+		BeanUtils.configurationProperties(hikariConfig, getEnvironment(), "hikari", Levels.DEBUG);
 		return hikariConfig;
 	}
 }

@@ -8,14 +8,9 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringMatcher;
 import io.basc.framework.util.StringMatchers;
-import io.basc.framework.util.placeholder.PlaceholderResolver;
 
-public interface PropertyFactory extends ValueFactory<String>, Iterable<String>, PlaceholderResolver {
+public interface PropertyFactory extends ValueFactory<String>, Iterable<String> {
 	Iterator<String> iterator();
-
-	default String resolvePlaceholder(String placeholderName) {
-		return getString(placeholderName);
-	}
 
 	default Stream<String> stream() {
 		return StreamSupport.stream(spliterator(), false);
