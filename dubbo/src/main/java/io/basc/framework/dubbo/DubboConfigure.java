@@ -4,10 +4,13 @@ import java.util.List;
 
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ConfigCenterConfig;
+import org.apache.dubbo.config.ConsumerConfig;
 import org.apache.dubbo.config.MetadataReportConfig;
 import org.apache.dubbo.config.MetricsConfig;
 import org.apache.dubbo.config.ModuleConfig;
 import org.apache.dubbo.config.MonitorConfig;
+import org.apache.dubbo.config.ProtocolConfig;
+import org.apache.dubbo.config.ProviderConfig;
 import org.apache.dubbo.config.RegistryConfig;
 import org.apache.dubbo.config.SslConfig;
 
@@ -27,4 +30,10 @@ public interface DubboConfigure {
 	List<MonitorConfig> getMonitorConfigList();
 
 	List<ConfigCenterConfig> getConfigCenterConfigList();
+	
+	List<ConsumerConfig> getConsumerConfigList();
+	
+	List<ProtocolConfig> getProtocolConfigList();
+
+	List<ProviderConfig> getProviderConfigList();
 }

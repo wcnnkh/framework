@@ -1,15 +1,15 @@
-package io.basc.framework.dubbo;
+package io.basc.framework.dubbo.xml;
 
 import io.basc.framework.context.ClassesLoaderFactory;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.dom.DomUtils;
+import io.basc.framework.dubbo.DubboUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.mapper.Copy;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.Fields;
@@ -54,7 +54,7 @@ public final class XmlDubboUtils {
 	};
 
 	public static List<ApplicationConfig> parseApplicationConfigList(final Environment environment,
-			NodeList nodeList, ApplicationConfig defaultConfig) {
+			NodeList nodeList, @Nullable ApplicationConfig defaultConfig) {
 		return parseConfigList(ApplicationConfig.class, environment, nodeList, defaultConfig,
 				new ConfigFilter<ApplicationConfig>() {
 					@Override
@@ -123,7 +123,7 @@ public final class XmlDubboUtils {
 								}
 
 								Object refInstance = refInstanceFactory.getInstance(clazz);
-								ServiceConfig<Object> scanService = Copy.copy(config, ServiceConfig.class);
+								ServiceConfig<Object> scanService = DubboUtils.getCopy().copy(config, null, ServiceConfig.class, null);
 								scanService.setInterface(clazz);
 								scanService.setRef(refInstance);
 								if (scanService.isValid()) {
@@ -174,7 +174,7 @@ public final class XmlDubboUtils {
 	}
 
 	public static List<RegistryConfig> parseRegistryConfigList(Environment environment, NodeList nodeList,
-			RegistryConfig defaultConfig) {
+		 @Nullable RegistryConfig defaultConfig) {
 		return parseConfigList(RegistryConfig.class, environment, nodeList, defaultConfig);
 	}
 
@@ -196,7 +196,7 @@ public final class XmlDubboUtils {
 									continue;
 								}
 
-								ReferenceConfig<?> referenceConfig = Copy.copy(config, ReferenceConfig.class);
+								ReferenceConfig<?> referenceConfig = DubboUtils.getCopy().copy(config, null, ReferenceConfig.class, null);
 								referenceConfig.setInterface(clazz);
 								if (referenceConfig.isValid()) {
 									list.add(referenceConfig);
@@ -278,7 +278,7 @@ public final class XmlDubboUtils {
 				}
 
 				T config = defaultConfig == null ? Sys.env.getInstance(type)
-						: Copy.copy(defaultConfig, type);
+						: DubboUtils.getCopy().copy(defaultConfig, null, type, null);
 				loader(config, environment, node);
 
 				if (filter != null && !filter.doFilter(list, node, config)) {

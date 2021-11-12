@@ -1,4 +1,4 @@
-package io.basc.framework.dubbo;
+package io.basc.framework.dubbo.beans;
 
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;

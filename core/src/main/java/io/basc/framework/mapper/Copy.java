@@ -4,6 +4,7 @@ import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Sys;
 import io.basc.framework.factory.NoArgsInstanceFactory;
+import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Accept;
 import io.basc.framework.util.Assert;
@@ -57,6 +58,11 @@ public class Copy {
 	 * 是否校验字段的Modifiers
 	 */
 	private boolean checkModifiers = true;
+	
+	/**
+	 * 如果存在get/set方法，是否通过方法调用来get/set值
+	 */
+	private boolean invokerMethod = true;
 
 	public Comparator<FieldDescriptor> getFieldMatcher() {
 		return fieldMatcher == null ? COMPARATOR : fieldMatcher;
@@ -162,6 +168,22 @@ public class Copy {
 		return this;
 	}
 
+	/**
+	 * 如果存在get/set方法，是否通过方法调用来get/set值
+	 * @return
+	 */
+	public boolean isInvokerMethod() {
+		return invokerMethod;
+	}
+
+	/**
+	 * 如果存在get/set方法，是否通过方法调用来get/set值
+	 * @param invokerMethod
+	 */
+	public void setInvokerMethod(boolean invokerMethod) {
+		this.invokerMethod = invokerMethod;
+	}
+
 	protected <T> T cloneArray(Object sourceArray, Field sourceParentField, Class<T> targetClass) {
 		int size = Array.getLength(sourceArray);
 		Object newArr = Array.newInstance(targetClass.getComponentType(), size);
@@ -201,10 +223,12 @@ public class Copy {
 	 * @param target
 	 */
 	public <T, S> void copy(Fields sourceFields, S source, Fields targetFields, T target) {
-		if (source == null) {
+		if (source == null || target == null) {
 			return;
 		}
 
+		Assert.requiredArgument(sourceFields != null, "sourceFields");
+		Assert.requiredArgument(targetFields != null, "targetFields");
 		targetFields.accept(FieldFeature.SUPPORT_SETTER).accept(FieldFeature.EXISTING_SETTER_FIELD)
 				.accept((targetField) -> {
 					// 是否忽略静态字段
@@ -218,21 +242,35 @@ public class Copy {
 						return;
 					}
 
-					Object value = sourceField.getGetter().get(source);
+					Object value = getValue(source, sourceField.getGetter());
 					if (value == null) {
 						return;
 					}
 
 					value = copyValue(targetField, value);
-					setValue(sourceField, targetField, target, value);
+					setValue(sourceField.getGetter(), targetField.getSetter(), target, value);
 				});
+	}
+	
+	protected Object getValue(Object instance, Getter getter){
+		if(!isInvokerMethod() && getter.getField() != null){
+			try {
+				ReflectionUtils.makeAccessible(getter.getField());
+				return getter.getField().get(instance);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				throw new RuntimeException(getter + " instance [" + instance + "]",  NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
+			}
+		}
+		return getter.get(instance);
 	}
 
 	public <T, S> void copy(Class<? extends S> sourceClass, S source, @Nullable Field sourceParentField, Class<? extends T> targetClass, T target, @Nullable Field targetParentField) {
-		if (source == null) {
+		if (source == null || target == null) {
 			return;
 		}
 
+		Assert.requiredArgument(sourceClass != null, "sourceClass");
+		Assert.requiredArgument(targetClass != null, "targetClass");
 		copy(getFieldFactory().getFields(sourceClass, sourceParentField).all(), source, getFieldFactory().getFields(targetClass, targetParentField).all(), target);
 	}
 
@@ -254,7 +292,9 @@ public class Copy {
 		if (source == null) {
 			return null;
 		}
-
+		
+		Assert.requiredArgument(sourceClass != null, "sourceClass");
+		Assert.requiredArgument(targetClass != null, "targetClass");
 		if (targetClass.isArray() && sourceClass.isArray()) {
 			return cloneArray(source, sourceParentField, targetClass);
 		}
@@ -285,6 +325,7 @@ public class Copy {
 			return null;
 		}
 
+		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		if (sourceClass.isPrimitive() || sourceClass.isEnum() || !getInstanceFactory().isInstance(sourceClass)) {
 			return source;
 		}
@@ -309,19 +350,41 @@ public class Copy {
 				return;
 			}
 
-			Object value = field.getGetter().get(source);
+			Object value = getValue(source, field.getGetter());
 			if (value == null) {
 				return;
 			}
 
 			value = copyValue(field, value);
-			setValue(field, field, target, value);
+			setValue(field.getGetter(), field.getSetter(), target, value);
 		});
 		return (T) target;
 	}
 
-	protected void setValue(Field sourceField, Field targetField, Object target, Object value) {
-		targetField.getSetter().set(target, value);
+	protected void setValue(Getter sourceField, Setter targetField, Object target, Object value) {
+		if(!isInvokerMethod() && targetField.getField() != null){
+			try {
+				ReflectionUtils.makeAccessible(targetField.getField());
+				targetField.getField().set(target, value);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				throw new RuntimeException(targetField + " instance [" + target + "] value [" + value + "]", NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
+			}
+			return ;
+		}
+		targetField.set(target, value);
+	}
+	
+	public <T> T copy(Object source, @Nullable Field sourceParentField, Class<? extends T> targetClass, @Nullable Field targetParentField) {
+		Assert.requiredArgument(source != null, "source");
+		Assert.requiredArgument(targetClass != null, "targetClass");
+		return copy(source.getClass(), source, sourceParentField, targetClass, targetParentField);
+	}
+
+	public <T> T copy(Object source, @Nullable Field sourceParentField, T target, @Nullable Field targetParentField) {
+		Assert.requiredArgument(source != null, "source");
+		Assert.requiredArgument(target != null, "target");
+		copy(source.getClass(), source, sourceParentField, target.getClass(), target, targetParentField);
+		return target;
 	}
 
 	private static final Copy DEFAULT_COPY = new Copy();
@@ -350,9 +413,7 @@ public class Copy {
 	 * @return
 	 */
 	public static <T> T copy(Object source, Class<? extends T> targetClass) {
-		Assert.requiredArgument(targetClass != null, "targetClass");
-		Assert.requiredArgument(source != null, "source");
-		return DEFAULT_COPY.copy(source.getClass(), source, null, targetClass, null);
+		return DEFAULT_COPY.copy(source, null, targetClass, null);
 	}
 
 	/**
@@ -363,9 +424,7 @@ public class Copy {
 	 * @return
 	 */
 	public static <T> T copy(Object source, T target) {
-		Assert.requiredArgument(target != null, "target");
-		Assert.requiredArgument(source != null, "source");
-		DEFAULT_COPY.copy(source.getClass(), source, null, target.getClass(), target, null);
+		DEFAULT_COPY.copy(source, null, target, null);
 		return target;
 	}
 }

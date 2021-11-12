@@ -279,6 +279,11 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition implements 
 			public Object create() throws InstanceException {
 				return supplier.get();
 			}
+			
+			@Override
+			public boolean isInstance() {
+				return true;
+			}
 		};
 	}
 }

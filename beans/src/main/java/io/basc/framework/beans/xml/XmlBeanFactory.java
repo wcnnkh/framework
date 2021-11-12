@@ -1,7 +1,6 @@
 package io.basc.framework.beans.xml;
 
 import io.basc.framework.beans.BeanDefinition;
-import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.support.DefaultBeanFactory;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.http.HttpUtils;
@@ -10,7 +9,6 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.stream.ConsumerProcessor;
-import io.basc.framework.xml.XmlUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,17 +24,9 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 	private Resource configurationFile;
 
 	public void readConfigurationFile(ConsumerProcessor<NodeList, Throwable> processor){
-		XmlUtils.getTemplate().read(getConfigurationFile(), (document) -> {
-			Node node = document.getDocumentElement();
-			if (!"beans".equals(node.getNodeName())) {
-				throw new BeansException("root tag name error [" + node.getNodeName() + "]");
-			}
-			
-			NodeList nodeList = DomUtils.getTemplate().getChildNodes(node, getEnvironment());
-			processor.process(nodeList);
-		});
+		XmlBeanUtils.readResourceBeans(getEnvironment(), getConfigurationFile(), processor.toProcessor());
 	}
-
+	
 	public Resource getConfigurationFile() {
 		if(configurationFile == null) {
 			String config = getEnvironment().getString(XML_CONFIGURATION);

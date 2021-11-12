@@ -1,11 +1,16 @@
 package io.basc.framework.beans.xml;
 
+import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.ioc.IocProcessor;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.Environment;
+import io.basc.framework.io.Resource;
+import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.stream.Processor;
+import io.basc.framework.xml.XmlUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -175,5 +180,17 @@ public final class XmlBeanUtils {
 		}
 
 		return ClassUtils.forName(className, classLoader);
+	}
+	
+	public static <T> T readResourceBeans(ResourceLoader resourceLoader, Resource resource, Processor<NodeList, T, Throwable> processor){
+		return XmlUtils.getTemplate().parse(resource, (document) -> {
+			Node node = document.getDocumentElement();
+			if (!"beans".equals(node.getNodeName())) {
+				throw new BeansException("root tag name error [" + node.getNodeName() + "]");
+			}
+			
+			NodeList nodeList = DomUtils.getTemplate().getChildNodes(node, resourceLoader);
+			return processor.process(nodeList);
+		});
 	}
 }
