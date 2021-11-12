@@ -1,4 +1,4 @@
-package io.basc.framework.zookeeper;
+package io.basc.framework.zookeeper.server;
 
 import io.basc.framework.env.Sys;
 import io.basc.framework.json.JSONUtils;

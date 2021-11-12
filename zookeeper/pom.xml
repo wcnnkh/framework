@@ -16,7 +16,7 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>cloud</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.zookeeper</groupId>
 			<artifactId>zookeeper</artifactId>

@@ -1,4 +1,4 @@
-package io.basc.framework.dubbo;
+package io.basc.framework.dubbo.xml;
 
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.dom.DomAttributeMapping;

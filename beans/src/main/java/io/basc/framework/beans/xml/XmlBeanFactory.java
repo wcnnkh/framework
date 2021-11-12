@@ -1,7 +1,6 @@
 package io.basc.framework.beans.xml;
 
 import io.basc.framework.beans.BeanDefinition;
-import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.support.DefaultBeanFactory;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.http.HttpUtils;
@@ -10,7 +9,6 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.stream.ConsumerProcessor;
-import io.basc.framework.xml.XmlUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,25 +17,26 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class XmlBeanFactory extends DefaultBeanFactory {
+	private static final String XML_CONFIGURATION = "io.basc.framework.beans.xml";
 	private static final String DEFAULT_CONFIG = "beans.xml";
 	private static Logger logger = LoggerFactory.getLogger(XmlBeanFactory.class);
 	private static final String TAG_NAME = "bean";
 	private Resource configurationFile;
 
 	public void readConfigurationFile(ConsumerProcessor<NodeList, Throwable> processor){
-		XmlUtils.getTemplate().read(getConfigurationFile(), (document) -> {
-			Node node = document.getDocumentElement();
-			if (!"beans".equals(node.getNodeName())) {
-				throw new BeansException("root tag name error [" + node.getNodeName() + "]");
+		XmlBeanUtils.readResourceBeans(getEnvironment(), getConfigurationFile(), processor.toProcessor());
+	}
+	
+	public Resource getConfigurationFile() {
+		if(configurationFile == null) {
+			String config = getEnvironment().getString(XML_CONFIGURATION);
+			if(StringUtils.isNotEmpty(config)) {
+				return getEnvironment().getResource(config);
 			}
 			
-			NodeList nodeList = DomUtils.getTemplate().getChildNodes(node, getEnvironment());
-			processor.process(nodeList);
-		});
-	}
-
-	public Resource getConfigurationFile() {
-		return configurationFile == null? getEnvironment().getResource(DEFAULT_CONFIG):configurationFile;
+			return getEnvironment().getResource(DEFAULT_CONFIG);
+		}
+		return configurationFile;
 	}
 
 	public void setConfigurationFile(Resource configurationFile) {

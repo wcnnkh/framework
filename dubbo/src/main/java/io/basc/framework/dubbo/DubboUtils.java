@@ -3,6 +3,8 @@ package io.basc.framework.dubbo;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.mapper.Copy;
+import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.util.ClassUtils;
 
 import java.lang.reflect.Method;
@@ -12,6 +14,13 @@ public final class DubboUtils {
 
 	private DubboUtils() {
 	};
+	
+	private static final Copy COPY = new Copy();
+	
+	static{
+		COPY.setInvokerMethod(false);
+		COPY.getFilter().add(FieldFeature.EXISTING_FIELD);
+	}
 
 	public static boolean isSupport() {
 		return ClassUtils.isPresent("org.apache.dubbo.config.annotation.Service", null);
@@ -35,5 +44,9 @@ public final class DubboUtils {
 		} catch (Exception e) {
 			logger.error(e, "shutdown error");
 		}
+	}
+
+	public static Copy getCopy() {
+		return COPY;
 	}
 }

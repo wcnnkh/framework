@@ -24,6 +24,7 @@ import io.basc.framework.env.DefaultEnvironment;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.lang.Constants;
+import io.basc.framework.util.Accept;
 import io.basc.framework.value.ValueFactory;
 
 public abstract class AbstractConfigurableContext extends AbstractProviderServiceLoaderFactory
@@ -49,7 +50,9 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 		// 添加默认的类
 		contextClassesLoader.add(TransactionMethodInterceptor.class);
 		contextClassesLoader.add(LockMethodInterceptor.class);
-		componentScan(Constants.SYSTEM_PACKAGE_NAME);
+		
+		//扫描框架类，忽略(.test.)路径
+		componentScan(Constants.SYSTEM_PACKAGE_NAME, (clazz) -> !clazz.getName().contains(".test."));
 	}
 	
 	@Override
@@ -154,5 +157,10 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 	public void componentScan(String packageName) {
 		ClassesLoader classesLoader = getClassesLoaderFactory().getClassesLoader(packageName);
 		getContextClasses().add(classesLoader);
+	}
+	
+	public void componentScan(String packageName, Accept<Class<?>> accept) {
+		ClassesLoader classesLoader = getClassesLoaderFactory().getClassesLoader(packageName);
+		getContextClasses().add(new AcceptClassesLoader(classesLoader, accept, false));
 	}
 }

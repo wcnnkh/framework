@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+	<dubbo:application name="dubbo-hello" qosEnable="false"></dubbo:application>
+	<dubbo:registry address="zookeeper://localhost:2181"></dubbo:registry>
+	<dubbo:protocol name="dubbo" port="20880"></dubbo:protocol>
+	<dubbo:service package="io.basc.framework.dubbo.test.reference"></dubbo:service>
+</beans>
