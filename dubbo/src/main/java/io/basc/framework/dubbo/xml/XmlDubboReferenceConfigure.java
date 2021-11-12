@@ -46,7 +46,7 @@ public class XmlDubboReferenceConfigure implements DubboReferenceConfigure {
 		return read(
 				(nodeList) -> XmlDubboUtils.parseReferenceConfigList(
 						environment, nodeList, null, classesLoaderFactory))
-				.stream().map((r) -> r).collect(Collectors.toList());
+				.stream().map((r) -> (ReferenceConfig<?>)r).collect(Collectors.toList());
 	}
 
 }

@@ -54,7 +54,7 @@ public class XmlDubboServiceConfigure implements DubboServiceConfigure {
 		return read(
 				(nodeList) -> XmlDubboUtils.parseServiceConfigList(environment,
 						nodeList, null, refInstanceFactory,
-						classesLoaderFactory)).stream().map((s) -> s)
+						classesLoaderFactory)).stream().map((s) -> (ServiceConfig<?>)s)
 				.collect(Collectors.toList());
 	}
 
