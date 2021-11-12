@@ -6,6 +6,7 @@ import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
 import io.basc.framework.factory.NoArgsInstanceFactory;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Copy;
@@ -21,6 +22,7 @@ import java.util.List;
 import org.apache.dubbo.config.AbstractConfig;
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ArgumentConfig;
+import org.apache.dubbo.config.ConfigCenterConfig;
 import org.apache.dubbo.config.ConsumerConfig;
 import org.apache.dubbo.config.MetadataReportConfig;
 import org.apache.dubbo.config.MethodConfig;
@@ -90,7 +92,7 @@ public final class XmlDubboUtils {
 	}
 
 	public static List<MetadataReportConfig> parseMetadataReportConfigList(Environment environment,
-			NodeList nodeList, MetadataReportConfig defaultConfig) {
+			NodeList nodeList, @Nullable MetadataReportConfig defaultConfig) {
 		return parseConfigList(MetadataReportConfig.class, environment, nodeList, defaultConfig);
 	}
 
@@ -260,12 +262,12 @@ public final class XmlDubboUtils {
 	}
 
 	private static <T> List<T> parseConfigList(Class<? extends T> type, Environment environment,
-			NodeList nodeList, T defaultConfig) {
+			NodeList nodeList, @Nullable T defaultConfig) {
 		return parseConfigList(type, environment, nodeList, defaultConfig, null);
 	}
 
 	private static <T> List<T> parseConfigList(Class<? extends T> type, Environment environment,
-			NodeList nodeList, T defaultConfig, ConfigFilter<T> filter) {
+			NodeList nodeList, @Nullable T defaultConfig, ConfigFilter<T> filter) {
 		List<T> list = new ArrayList<T>(4);
 		if (nodeList != null) {
 			String tagName = TAG_NAME_PREFIX + AbstractConfig.getTagName(type);
@@ -318,5 +320,9 @@ public final class XmlDubboUtils {
 
 	public static List<MonitorConfig> parseMonitorConfigList(Environment environment, NodeList nodeList) {
 		return parseConfigList(MonitorConfig.class, environment, nodeList, null);
+	}
+	
+	public static List<ConfigCenterConfig> parseConfigCenterConfigs(Environment environment, NodeList nodeList){
+		return parseConfigList(ConfigCenterConfig.class, environment, nodeList, null);
 	}
 }

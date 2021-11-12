@@ -1,4 +1,4 @@
-package io.basc.framework.zookeeper;
+package io.basc.framework.zookeeper.server;
 
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;

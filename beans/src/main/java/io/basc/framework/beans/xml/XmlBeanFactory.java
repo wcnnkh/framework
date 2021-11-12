@@ -19,6 +19,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class XmlBeanFactory extends DefaultBeanFactory {
+	private static final String XML_CONFIGURATION = "io.basc.framework.beans.xml";
 	private static final String DEFAULT_CONFIG = "beans.xml";
 	private static Logger logger = LoggerFactory.getLogger(XmlBeanFactory.class);
 	private static final String TAG_NAME = "bean";
@@ -37,7 +38,15 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 	}
 
 	public Resource getConfigurationFile() {
-		return configurationFile == null? getEnvironment().getResource(DEFAULT_CONFIG):configurationFile;
+		if(configurationFile == null) {
+			String config = getEnvironment().getString(XML_CONFIGURATION);
+			if(StringUtils.isNotEmpty(config)) {
+				return getEnvironment().getResource(config);
+			}
+			
+			return getEnvironment().getResource(DEFAULT_CONFIG);
+		}
+		return configurationFile;
 	}
 
 	public void setConfigurationFile(Resource configurationFile) {
