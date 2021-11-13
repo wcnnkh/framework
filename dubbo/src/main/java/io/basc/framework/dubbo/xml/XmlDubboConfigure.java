@@ -6,6 +6,7 @@ import io.basc.framework.env.Environment;
 import io.basc.framework.io.Resource;
 import io.basc.framework.util.stream.Processor;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.dubbo.config.ApplicationConfig;
@@ -24,12 +25,12 @@ import org.w3c.dom.NodeList;
 public class XmlDubboConfigure implements DubboConfigure {
 	private final Resource resource;
 	private final Environment environment;
-	
+
 	public XmlDubboConfigure(Environment environment, Resource resource) {
 		this.environment = environment;
 		this.resource = resource;
 	}
-	
+
 	public Resource getResource() {
 		return resource;
 	}
@@ -38,63 +39,85 @@ public class XmlDubboConfigure implements DubboConfigure {
 		return environment;
 	}
 
-	public <T> T read(Processor<NodeList, T, Throwable> processor){
+	public <T> T read(Processor<NodeList, T, Throwable> processor) {
 		return XmlBeanUtils.readResourceBeans(environment, resource, processor);
 	}
 
 	@Override
 	public List<ApplicationConfig> getApplicationConfigList() {
-		return read((nodeList) -> XmlDubboUtils.parseApplicationConfigList(environment, nodeList, null));
+		List<ApplicationConfig> list = read((nodeList) -> XmlDubboUtils
+				.parseApplicationConfigList(environment, nodeList, null));
+		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<MetadataReportConfig> getMetadataReportConfigList() {
-		return read((nodeList) -> XmlDubboUtils.parseMetadataReportConfigList(environment, nodeList, null));
+		List<MetadataReportConfig> list = read((nodeList) -> XmlDubboUtils
+				.parseMetadataReportConfigList(environment, nodeList, null));
+		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<RegistryConfig> getRegistryConfigList() {
-		return read((nodeList) -> XmlDubboUtils.parseRegistryConfigList(environment, nodeList, null));
+		List<RegistryConfig> list = read((nodeList) -> XmlDubboUtils
+				.parseRegistryConfigList(environment, nodeList, null));
+		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<SslConfig> getSslConfigList() {
-		return read((nodeList) -> XmlDubboUtils.parseSslConfigList(environment, nodeList));
+		List<SslConfig> list = read((nodeList) -> XmlDubboUtils
+				.parseSslConfigList(environment, nodeList));
+		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<MetricsConfig> getMetricsConfigList() {
-		return read((nodeList) -> XmlDubboUtils.parseMetricsConfigList(environment, nodeList));
+		List<MetricsConfig> list = read((nodeList) -> XmlDubboUtils
+				.parseMetricsConfigList(environment, nodeList));
+		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<ModuleConfig> getModuleConfigList() {
-		return read((nodeList) -> XmlDubboUtils.parseModuleConfigList(environment, nodeList));
+		List<ModuleConfig> list = read((nodeList) -> XmlDubboUtils
+				.parseModuleConfigList(environment, nodeList));
+		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<MonitorConfig> getMonitorConfigList() {
-		return read((nodeList) -> XmlDubboUtils.parseMonitorConfigList(environment, nodeList));
+		List<MonitorConfig> list = read((nodeList) -> XmlDubboUtils
+				.parseMonitorConfigList(environment, nodeList));
+		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<ConfigCenterConfig> getConfigCenterConfigList() {
-		return read((nodeList) -> XmlDubboUtils.parseConfigCenterConfigs(environment, nodeList));
+		List<ConfigCenterConfig> list = read((nodeList) -> XmlDubboUtils
+				.parseConfigCenterConfigs(environment, nodeList));
+		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<ConsumerConfig> getConsumerConfigList() {
-		return read((nodeList) -> XmlDubboUtils.parseConsumerConfigList(environment, nodeList, null));
+		List<ConsumerConfig> list = read((nodeList) -> XmlDubboUtils
+				.parseConsumerConfigList(environment, nodeList, null));
+		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<ProtocolConfig> getProtocolConfigList() {
-		return read((nodeList) -> XmlDubboUtils.parseProtocolConfigList(environment, nodeList, null));
+		List<ProtocolConfig> list = read((nodeList) -> XmlDubboUtils
+				.parseProtocolConfigList(environment, nodeList, null));
+		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<ProviderConfig> getProviderConfigList() {
-		return read((nodeList) -> XmlDubboUtils.parseProviderConfigList(environment, nodeList, null));
+		List<ProviderConfig> list = read((nodeList) -> XmlDubboUtils
+				.parseProviderConfigList(environment, nodeList, null));
+		return list == null ? Collections.emptyList() : list;
 	}
 
 }
