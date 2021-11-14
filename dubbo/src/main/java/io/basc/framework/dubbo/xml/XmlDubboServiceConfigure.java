@@ -6,8 +6,10 @@ import io.basc.framework.dubbo.DubboServiceConfigure;
 import io.basc.framework.env.Environment;
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.io.Resource;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.stream.Processor;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,12 +51,16 @@ public class XmlDubboServiceConfigure implements DubboServiceConfigure {
 		return XmlBeanUtils.readResourceBeans(environment, resource, processor);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public List<ServiceConfig<?>> getServiceConfigList() {
-		return read(
-				(nodeList) -> XmlDubboUtils.parseServiceConfigList(environment,
-						nodeList, null, refInstanceFactory,
-						classesLoaderFactory)).stream().map((s) -> (ServiceConfig<?>)s)
+		List<ServiceConfig> list = read((nodeList) -> XmlDubboUtils
+				.parseServiceConfigList(environment, nodeList, null,
+						refInstanceFactory, classesLoaderFactory));
+		if (CollectionUtils.isEmpty(list)) {
+			return Collections.emptyList();
+		}
+		return list.stream().map((s) -> (ServiceConfig<?>) s)
 				.collect(Collectors.toList());
 	}
 

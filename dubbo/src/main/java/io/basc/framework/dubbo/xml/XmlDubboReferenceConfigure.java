@@ -5,8 +5,10 @@ import io.basc.framework.context.ClassesLoaderFactory;
 import io.basc.framework.dubbo.DubboReferenceConfigure;
 import io.basc.framework.env.Environment;
 import io.basc.framework.io.Resource;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.stream.Processor;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,12 +43,16 @@ public class XmlDubboReferenceConfigure implements DubboReferenceConfigure {
 		return XmlBeanUtils.readResourceBeans(environment, resource, processor);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public List<ReferenceConfig<?>> getReferenceConfigList() {
-		return read(
+		List<ReferenceConfig> list = read(
 				(nodeList) -> XmlDubboUtils.parseReferenceConfigList(
-						environment, nodeList, null, classesLoaderFactory))
-				.stream().map((r) -> (ReferenceConfig<?>)r).collect(Collectors.toList());
+						environment, nodeList, null, classesLoaderFactory));
+		if(CollectionUtils.isEmpty(list)){
+			return Collections.emptyList();
+		}
+		
+		return list.stream().map((r) -> (ReferenceConfig<?>)r).collect(Collectors.toList());
 	}
-
 }
