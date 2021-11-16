@@ -223,6 +223,6 @@ public class HttpCookie implements Serializable {
 
 	@Override
 	public String toString() {
-		return MapperUtils.getFieldFactory().getFields(HttpCookie.class).getValueMap(this).toString();
+		return MapperUtils.toString(this);
 	}
 }

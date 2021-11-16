@@ -25,7 +25,6 @@ import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.support.DefaultInstanceDefinition;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.StringUtils;
@@ -251,8 +250,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition implements 
 	}
 
 	protected String getStringDescribe() {
-		return MapperUtils.getFields(getClass()).all().accept(FieldFeature.EXISTING_GETTER_FIELD).getValueMap(this)
-				.toString();
+		return MapperUtils.toString(this);
 	}
 
 	/**

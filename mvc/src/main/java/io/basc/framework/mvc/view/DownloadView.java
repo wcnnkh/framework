@@ -1,5 +1,10 @@
 package io.basc.framework.mvc.view;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+
 import io.basc.framework.http.MediaType;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
@@ -8,11 +13,6 @@ import io.basc.framework.mvc.HttpChannel;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.web.ServerHttpResponse;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 
 public final class DownloadView implements View {
 	private String encoding;
@@ -52,6 +52,6 @@ public final class DownloadView implements View {
 	
 	@Override
 	public String toString() {
-		return MapperUtils.getFields(DownloadView.class).all().getValueMap(this).toString();
+		return MapperUtils.toString(this);
 	}
 }

@@ -50,7 +50,7 @@ public class PageSupport {
 		return start + limit;
 	}
 
-	public static <T> Page<T> toPage(long total, long pageNumber, long limit,
+	public static <T> SharedPage<T> toPage(long total, long pageNumber, long limit,
 			List<T> list) {
 		return new SharedPage<>(getStart(pageNumber, limit), list, limit, total);
 	}

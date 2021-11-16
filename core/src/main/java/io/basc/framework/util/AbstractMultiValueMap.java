@@ -3,7 +3,6 @@ package io.basc.framework.util;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,11 +13,7 @@ public abstract class AbstractMultiValueMap<K, V> implements MultiValueMap<K, V>
 	protected abstract Map<K, List<V>> getTargetMap();
 
 	protected List<V> createList() {
-		return new ArrayList<V>();
-	}
-
-	protected Map<K, V> createMap() {
-		return new LinkedHashMap<K, V>(size());
+		return new ArrayList<V>(8);
 	}
 
 	// MultiValueMap implementation
@@ -46,19 +41,6 @@ public abstract class AbstractMultiValueMap<K, V> implements MultiValueMap<K, V>
 		for (java.util.Map.Entry<K, V> entry : values.entrySet()) {
 			set(entry.getKey(), entry.getValue());
 		}
-	}
-
-	public Map<K, V> toSingleValueMap() {
-		Map<K, V> singleValueMap = createMap();
-		for (java.util.Map.Entry<K, List<V>> entry : getTargetMap().entrySet()) {
-			List<V> values = entry.getValue();
-			if (CollectionUtils.isEmpty(values)) {
-				continue;
-			}
-
-			singleValueMap.put(entry.getKey(), values.get(0));
-		}
-		return singleValueMap;
 	}
 
 	// Map implementation

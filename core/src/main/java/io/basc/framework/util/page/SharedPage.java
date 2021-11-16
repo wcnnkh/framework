@@ -76,6 +76,14 @@ public class SharedPage<T> extends SharedPageable<Long, T> implements Page<T> {
 	public void setPageNumber(long pageNumber) {
 		setCursorId(PageSupport.getStart(pageNumber, getCount()));
 	}
+	
+	@Override
+	public void setRows(List<T> rows) {
+		if(total == 0) {
+			total = rows.size();
+		}
+		super.setRows(rows);
+	}
 
 	public void setTotal(long total) {
 		this.total = total;

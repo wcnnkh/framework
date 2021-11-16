@@ -1,25 +1,29 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.factory.support.DefaultServiceLoaderFactory;
-import io.basc.framework.lang.NotSupportedException;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.Value;
-import io.basc.framework.value.support.SystemPropertyFactory;
-
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+
+import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.factory.support.DefaultServiceLoaderFactory;
+import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.value.Value;
+import io.basc.framework.value.support.SystemPropertyFactory;
 
 public class MapperUtils {
 	private static final FieldFactory FIELD_FACTORY = new DefaultServiceLoaderFactory(new SystemPropertyFactory())
@@ -207,8 +211,7 @@ public class MapperUtils {
 			throw new NotSupportedException(instance.getClass().getName());
 		}
 
-		Map<String, Object> valueMap = getFields(instance.getClass()).all().accept(FieldFeature.IGNORE_STATIC)
-				.getValueMap(instance);
+		Map<String, Object> valueMap = getFields(instance.getClass()).ignoreStatic().all().getValueMap(instance);
 		return recursion ? parseMap(valueMap) : valueMap;
 	}
 
@@ -261,8 +264,7 @@ public class MapperUtils {
 			}
 			return array;
 		} else {
-			Map<String, Object> valueMap = getFields(value.getClass()).all().accept(FieldFeature.IGNORE_STATIC)
-					.getValueMap(value);
+			Map<String, Object> valueMap = getFields(value.getClass()).ignoreStatic().all().getValueMap(value);
 			return parseMap(valueMap);
 		}
 	}
@@ -278,10 +280,48 @@ public class MapperUtils {
 		}
 	}
 
+	private static void toString(StringBuilder sb, Fields fields, Object instance) {
+		sb.append(fields.getCursorId().getSimpleName());
+		sb.append('(');
+		Iterator<Field> iterator = fields.stream().map((f) -> f.getGetter().getField()).iterator();
+		if (fields.hasNext()) {
+			sb.append("super=");
+			toString(sb, fields.next(), instance);
+			if (iterator.hasNext()) {
+				sb.append(',').append(' ');
+			}
+		}
+		while (iterator.hasNext()) {
+			Field field = iterator.next();
+			sb.append(field.getName());
+			sb.append('=');
+			Object value = ReflectionUtils.getField(field, instance);
+			sb.append(value == instance ? "(this)" : value);
+			if (iterator.hasNext()) {
+				sb.append(',').append(' ');
+			}
+		}
+		sb.append(')');
+	}
+
+	public static <T> String toString(Class<? extends T> clazz, T instance) {
+		Assert.requiredArgument(clazz != null, "clazz");
+		if (instance == null) {
+			return null;
+		}
+
+		StringBuilder sb = new StringBuilder();
+		Fields fields = getFields(clazz).accept(FieldFeature.SUPPORT_GETTER).accept(
+				(f) -> f.getGetter().getField() != null && !Modifier.isStatic(f.getGetter().getField().getModifiers()));
+		toString(sb, fields, instance);
+		return sb.toString();
+	}
+
 	public static String toString(Object instance) {
 		if (instance == null) {
 			return null;
 		}
-		return MapperUtils.getFields(instance.getClass()).entity().all().getValueMap(instance, true).toString();
+
+		return toString(instance.getClass(), instance);
 	}
 }

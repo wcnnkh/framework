@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import io.basc.framework.mapper.MapperUtils;
+
 public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -90,5 +92,10 @@ public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 
 	public void setCount(long count) {
 		this.count = count;
+	}
+	
+	@Override
+	public String toString() {
+		return MapperUtils.toString(this);
 	}
 }

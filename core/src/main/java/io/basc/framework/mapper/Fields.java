@@ -1,14 +1,15 @@
 package io.basc.framework.mapper;
 
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Map;
+
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Accept;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.LinkedMultiValueMap;
+import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.page.Pageables;
-
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public interface Fields extends Pageables<Class<?>, Field> {
 
@@ -100,15 +101,64 @@ public interface Fields extends Pageables<Class<?>, Field> {
 	}
 
 	/**
+	 * 支持getter的
+	 * 
+	 * @return
+	 */
+	default Fields getters() {
+		return accept(FieldFeature.SUPPORT_GETTER);
+	}
+
+	/**
+	 * 支持setter的
+	 * 
+	 * @return
+	 */
+	default Fields setters() {
+		return accept(FieldFeature.SUPPORT_SETTER);
+	}
+
+	/**
 	 * 获取实体类字段(抽象的字段，不一定存在{@link java.lang.reflect.Field})
 	 * 
-	 * @see FieldFeature#IGNORE_STATIC
-	 * @see FieldFeature#IGNORE_TRANSIENT
-	 * @see FieldFeature#STRICT
+	 * @see #ignoreStatic()
+	 * @see #ignoreTransient()
+	 * @see #strict()
 	 * @return
 	 */
 	default Fields entity() {
-		return accept(FieldFeature.IGNORE_STATIC).accept(FieldFeature.IGNORE_TRANSIENT).accept(FieldFeature.STRICT);
+		return ignoreStatic().ignoreTransient().strict();
+	}
+
+	/**
+	 * 忽略transient描述的字段
+	 * 
+	 * @return
+	 */
+	default Fields ignoreTransient() {
+		return accept(FieldFeature.IGNORE_TRANSIENT);
+	}
+
+	/**
+	 * 严格的，必须包含getter和setter
+	 * 
+	 * @return
+	 */
+	default Fields strict() {
+		return accept(FieldFeature.STRICT);
+	}
+
+	/**
+	 * 忽略常量
+	 * 
+	 * @return
+	 */
+	default Fields ignoreFinal() {
+		return accept(FieldFeature.IGNORE_FINAL);
+	}
+
+	default Fields ignoreStatic() {
+		return accept(FieldFeature.IGNORE_STATIC);
 	}
 
 	default Fields accept(Accept<Field> accept) {
@@ -149,29 +199,31 @@ public interface Fields extends Pageables<Class<?>, Field> {
 		});
 	}
 
-	default Map<String, Object> getValueMap(Object instance) {
-		return getValueMap(instance, false);
-	}
-
-	default Map<String, Object> getValueMap(Object instance, boolean nullable) {
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
+	/**
+	 * 获取字段的值
+	 * 
+	 * @param instance
+	 * @return 子类和父类可能存在相同的字段名
+	 */
+	default MultiValueMap<String, Object> getMultiValueMap(Object instance) {
+		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 		for (Field field : this) {
 			if (!field.isSupportGetter()) {
 				continue;
 			}
 
-			String name = field.getGetter().getName();
-			if (map.containsKey(name)) {
+			Object value = field.getValue(instance);
+			if (value == null) {
 				continue;
 			}
 
-			Object value = field.getValue(instance);
-			if (value == null && !nullable) {
-				continue;
-			}
-			map.put(name, value);
+			map.add(field.getGetter().getName(), value);
 		}
 		return map;
+	}
+
+	default Map<String, Object> getValueMap(Object instance) {
+		return getMultiValueMap(instance).toSingleValueMap();
 	}
 
 	@Override
