@@ -33,7 +33,7 @@ public enum FieldFeature implements Accept<Field> {
 	 * 忽略静态字段
 	 */
 	IGNORE_STATIC,
-	
+
 	/**
 	 * 严格的, 需要包含getter setter
 	 */
@@ -47,9 +47,9 @@ public enum FieldFeature implements Accept<Field> {
 	 * 对象公有的getter字段,忽略static字段
 	 */
 	GETTER,
-	
+
 	/**
-	 * 需要存在字段
+	 * 需要getter和setter都存在字段
 	 */
 	EXISTING_FIELD,
 
@@ -72,6 +72,11 @@ public enum FieldFeature implements Accept<Field> {
 	 * 忽略setter的final
 	 */
 	IGNORE_SETTER_FINAL,
+
+	/**
+	 * 忽略final
+	 */
+	IGNORE_FINAL,
 
 	/**
 	 * @see Ignore
@@ -129,6 +134,17 @@ public enum FieldFeature implements Accept<Field> {
 			}
 			return true;
 		case IGNORE_SETTER_FINAL:
+			if (field.isSupportSetter() && field.getSetter().getField() != null
+					&& Modifier.isFinal(field.getSetter().getField().getModifiers())) {
+				return false;
+			}
+			return true;
+		case IGNORE_FINAL:
+			if (field.isSupportGetter() && field.getGetter().getField() != null
+					&& Modifier.isFinal(field.getGetter().getField().getModifiers())) {
+				return false;
+			}
+
 			if (field.isSupportSetter() && field.getSetter().getField() != null
 					&& Modifier.isFinal(field.getSetter().getField().getModifiers())) {
 				return false;

@@ -1,5 +1,6 @@
 package io.basc.framework.factory.support;
 
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.util.ClassUtils;
 
@@ -34,7 +35,7 @@ public class SunNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 				if (constructor == null) {
 					constructor = (Constructor<?>) METHOD.invoke(
 							INVOKE_INSTANCE, type, CONSTRUCTOR);
-					constructor.setAccessible(true);
+					ReflectionUtils.makeAccessible(constructor);
 					constructorMap.put(type, constructor);
 				}
 			}

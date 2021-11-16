@@ -16,6 +16,8 @@
 
 package io.basc.framework.util;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +58,21 @@ public interface MultiValueMap<K, V> extends Map<K, List<V>> {
 	 * Returns the first values contained in this {@code MultiValueMap}.
 	 * @return a single value representation of this map
 	 */
-	Map<K, V> toSingleValueMap();
+	default Map<K, V> toSingleValueMap(){
+		if(isEmpty()) {
+			return Collections.emptyMap();
+		}
+		
+		Map<K, V> singleValueMap = new LinkedHashMap<K, V>(size());
+		for (java.util.Map.Entry<K, List<V>> entry : entrySet()) {
+			List<V> values = entry.getValue();
+			if (CollectionUtils.isEmpty(values)) {
+				continue;
+			}
+
+			singleValueMap.put(entry.getKey(), values.get(0));
+		}
+		return singleValueMap;
+	}
 
 }

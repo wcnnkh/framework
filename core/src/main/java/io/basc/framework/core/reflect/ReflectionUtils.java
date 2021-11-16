@@ -159,6 +159,7 @@ public abstract class ReflectionUtils {
 	 * @param value  the value to set; may be {@code null}
 	 */
 	public static void setField(Field field, Object target, Object value) {
+		makeAccessible(field);
 		try {
 			field.set(target, value);
 		} catch (IllegalAccessException ex) {
@@ -182,6 +183,7 @@ public abstract class ReflectionUtils {
 	 * @return the field's current value
 	 */
 	public static Object getField(Field field, Object target) {
+		makeAccessible(field);
 		try {
 			return field.get(target);
 		} catch (IllegalAccessException ex) {
@@ -530,6 +532,10 @@ public abstract class ReflectionUtils {
 	 * @see java.lang.reflect.Field#setAccessible
 	 */
 	public static void makeAccessible(Field field) {
+		if(field.isAccessible()) {
+			return ;
+		}
+		
 		if ((!Modifier.isPublic(field.getModifiers()) || !Modifier.isPublic(field.getDeclaringClass().getModifiers())
 				|| Modifier.isFinal(field.getModifiers()))) {
 			field.setAccessible(true);
@@ -546,6 +552,10 @@ public abstract class ReflectionUtils {
 	 * @see java.lang.reflect.Method#setAccessible
 	 */
 	public static void makeAccessible(Method method) {
+		if(method.isAccessible()) {
+			return ;
+		}
+		
 		if ((!Modifier.isPublic(method.getModifiers())
 				|| !Modifier.isPublic(method.getDeclaringClass().getModifiers()))) {
 			method.setAccessible(true);
@@ -562,6 +572,10 @@ public abstract class ReflectionUtils {
 	 * @see java.lang.reflect.Constructor#setAccessible
 	 */
 	public static void makeAccessible(Constructor<?> ctor) {
+		if(ctor.isAccessible()) {
+			return ;
+		}
+		
 		if ((!Modifier.isPublic(ctor.getModifiers()) || !Modifier.isPublic(ctor.getDeclaringClass().getModifiers()))) {
 			ctor.setAccessible(true);
 		}

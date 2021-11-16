@@ -19,7 +19,7 @@ public class UnsafeUtils {
 		try {
 			Class<?> clz = ClassUtils.forName(CLASS_NAME, null);
 			Field f = clz.getDeclaredField("theUnsafe");
-			f.setAccessible(true);
+			ReflectionUtils.makeAccessible(f);
 			return f.get(null);
 		} catch (Exception e) {
 			return null;

@@ -6,6 +6,7 @@ import io.basc.framework.beans.annotation.InitMethod;
 import io.basc.framework.beans.annotation.Value;
 import io.basc.framework.core.annotation.AnnotationUtils;
 import io.basc.framework.core.parameter.ParameterUtils;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
@@ -31,12 +32,12 @@ public final class Ioc {
 
 	private Ioc(Class<?> targetClass) {
 		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass, false, true, InitMethod.class)) {
-			method.setAccessible(true);
+			ReflectionUtils.makeAccessible(method);
 			init.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
 		}
 
 		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass, false, true, Destroy.class)) {
-			method.setAccessible(true);
+			ReflectionUtils.makeAccessible(method);
 			destroy.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
 		}
 

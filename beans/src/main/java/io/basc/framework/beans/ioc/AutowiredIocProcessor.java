@@ -56,7 +56,6 @@ public class AutowiredIocProcessor extends AbstractFieldIocProcessor {
 			return false;
 		}
 		
-		ReflectionUtils.makeAccessible(refField);
 		return ReflectionUtils.getField(refField, instance) != null;
 	}
 }

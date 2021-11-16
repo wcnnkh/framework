@@ -14,7 +14,7 @@ import io.basc.framework.orm.support.OrmUtils;
 class EntityToMapConversionService extends ConditionalConversionService {
 
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		Map<String, Object> valueMap = MapperUtils.getFields(sourceType.getType()).all().getValueMap(source);
+		Map<String, ?> valueMap = MapperUtils.getFields(sourceType.getType()).entity().all().getValueMap(source);
 		return getConversionService().convert(valueMap,
 				new TypeDescriptor(ResolvableType.forClassWithGenerics(Map.class, String.class, Object.class),
 						Map.class, sourceType),
