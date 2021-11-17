@@ -18,7 +18,6 @@ public final class DubboUtils {
 	private static final Copy COPY = new Copy();
 	
 	static{
-		COPY.setInvokerMethod(false);
 		COPY.getFilter().add(FieldFeature.EXISTING_FIELD);
 	}
 

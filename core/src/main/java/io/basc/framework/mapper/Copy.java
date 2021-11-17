@@ -62,7 +62,7 @@ public class Copy {
 	/**
 	 * 如果存在get/set方法，是否通过方法调用来get/set值
 	 */
-	private boolean invokerMethod = true;
+	private boolean invokerMethod = false;
 
 	public Comparator<FieldDescriptor> getFieldMatcher() {
 		return fieldMatcher == null ? COMPARATOR : fieldMatcher;

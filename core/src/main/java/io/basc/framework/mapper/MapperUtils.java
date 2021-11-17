@@ -19,6 +19,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.support.DefaultServiceLoaderFactory;
 import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
@@ -296,7 +297,13 @@ public class MapperUtils {
 			sb.append(field.getName());
 			sb.append('=');
 			Object value = ReflectionUtils.getField(field, instance);
-			sb.append(value == instance ? "(this)" : value);
+			if(value == instance) {
+				sb.append("(this)");
+			} else if(value != null && value.getClass().isArray()) {
+				sb.append(ArrayUtils.toString(value));
+			}else {
+				sb.append(value);
+			}
 			if (iterator.hasNext()) {
 				sb.append(',').append(' ');
 			}

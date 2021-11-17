@@ -187,4 +187,38 @@ public final class ArrayUtils {
 		}
 		return 0;
 	}
+
+	private static void toString(StringBuilder sb, Object value) {
+		if (value == null) {
+			sb.append(value);
+			return;
+		}
+
+		if (value.getClass().isArray()) {
+			int len = Array.getLength(value);
+			sb.append('[');
+			for (int i = 0; i < len; i++) {
+				if (i != 0) {
+					sb.append(", ");
+				}
+
+				Object item = Array.get(value, i);
+				toString(sb, item);
+			}
+			sb.append(']');
+			return ;
+		}
+		sb.append(value);
+	}
+
+	public static String toString(Object array) {
+		if (array == null) {
+			return null;
+		}
+
+		Assert.requiredArgument(array.getClass().isArray(), "Must be array type");
+		StringBuilder sb = new StringBuilder();
+		toString(sb, array);
+		return sb.toString();
+	}
 }
