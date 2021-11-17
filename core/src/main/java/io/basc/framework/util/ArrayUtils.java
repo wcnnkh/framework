@@ -188,7 +188,8 @@ public final class ArrayUtils {
 		return 0;
 	}
 
-	private static void toString(StringBuilder sb, Object value) {
+	public static void toString(StringBuilder sb, Object value) {
+		Assert.requiredArgument(sb != null, "sb");
 		if (value == null) {
 			sb.append(value);
 			return;

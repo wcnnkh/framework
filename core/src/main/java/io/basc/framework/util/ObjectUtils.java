@@ -964,4 +964,20 @@ public abstract class ObjectUtils {
 		sb.append(ARRAY_END);
 		return sb.toString();
 	}
+	
+	public static void toString(StringBuilder sb, Object value) {
+		if(value == null) {
+			sb.append(value);
+		}else if(value.getClass().isArray()) {
+			ArrayUtils.toString(sb, value);
+		}else {
+			sb.append(value);
+		}
+	}
+	
+	public static String toString(Object value) {
+		StringBuilder sb = new StringBuilder();
+		toString(sb, value);
+		return sb.toString();
+	}
 }
