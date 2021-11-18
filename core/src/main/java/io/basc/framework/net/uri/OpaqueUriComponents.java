@@ -129,17 +129,17 @@ final class OpaqueUriComponents  extends UriComponents {
 		}
 
 		OpaqueUriComponents other = (OpaqueUriComponents) obj;
-		return ObjectUtils.nullSafeEquals(getScheme(), other.getScheme()) &&
-				ObjectUtils.nullSafeEquals(this.ssp, other.ssp) &&
-				ObjectUtils.nullSafeEquals(getFragment(), other.getFragment());
+		return ObjectUtils.equals(getScheme(), other.getScheme()) &&
+				ObjectUtils.equals(this.ssp, other.ssp) &&
+				ObjectUtils.equals(getFragment(), other.getFragment());
 
 	}
 
 	@Override
 	public int hashCode() {
-		int result = ObjectUtils.nullSafeHashCode(getScheme());
-		result = 31 * result + ObjectUtils.nullSafeHashCode(this.ssp);
-		result = 31 * result + ObjectUtils.nullSafeHashCode(getFragment());
+		int result = ObjectUtils.hashCode(getScheme());
+		result = 31 * result + ObjectUtils.hashCode(this.ssp);
+		result = 31 * result + ObjectUtils.hashCode(getFragment());
 		return result;
 	}
 

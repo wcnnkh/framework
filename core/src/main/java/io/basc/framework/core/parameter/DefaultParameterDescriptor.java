@@ -92,11 +92,11 @@ public class DefaultParameterDescriptor extends
 
 		if (obj instanceof DefaultParameterDescriptor) {
 			return super.equals(obj)
-					&& ObjectUtils.nullSafeEquals(name,
+					&& ObjectUtils.equals(name,
 							((DefaultParameterDescriptor) obj).name)
-					&& ObjectUtils.nullSafeEquals(type,
+					&& ObjectUtils.equals(type,
 							((DefaultParameterDescriptor) obj).type)
-					&& ObjectUtils.nullSafeEquals(genericType,
+					&& ObjectUtils.equals(genericType,
 							((DefaultParameterDescriptor) obj).genericType);
 		}
 		return false;

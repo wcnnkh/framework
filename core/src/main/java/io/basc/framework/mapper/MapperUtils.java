@@ -281,29 +281,35 @@ public class MapperUtils {
 					entry.getValue() == null ? null : entry.getValue().toString());
 		}
 	}
-	
-	public static Stream<Field> getters(Fields fields){
-		return fields.accept((f) -> f.isSupportGetter() && f.getGetter().getField() != null && !Modifier.isStatic(f.getGetter().getField().getModifiers())).stream().map((f) -> f.getGetter().getField());
-	}
-	
-	public static Stream<Field> setters(Fields fields){
-		return fields.accept((f) -> f.isSupportSetter() && f.getSetter().getField() != null && !Modifier.isStatic(f.getSetter().getField().getModifiers())).stream().map((f) -> f.getSetter().getField());
+
+	public static Stream<Field> getters(Fields fields) {
+		return fields
+				.accept((f) -> f.isSupportGetter() && f.getGetter().getField() != null
+						&& !Modifier.isStatic(f.getGetter().getField().getModifiers()))
+				.stream().map((f) -> f.getGetter().getField());
 	}
 
-	public static void toString(StringBuilder sb, Fields fields, Object instance) {
+	public static Stream<Field> setters(Fields fields) {
+		return fields
+				.accept((f) -> f.isSupportSetter() && f.getSetter().getField() != null
+						&& !Modifier.isStatic(f.getSetter().getField().getModifiers()))
+				.stream().map((f) -> f.getSetter().getField());
+	}
+
+	private static void toString(StringBuilder sb, Fields fields, Object instance, boolean deep) {
 		Assert.requiredArgument(sb != null, "sb");
 		Assert.requiredArgument(fields != null, "fields");
-		
-		if(instance == null) {
-			return ;
+
+		if (instance == null) {
+			return;
 		}
-		
+
 		sb.append(fields.getCursorId().getSimpleName());
 		sb.append('(');
 		Iterator<Field> iterator = getters(fields).iterator();
 		if (fields.hasNext()) {
 			sb.append("super=");
-			toString(sb, fields.next(), instance);
+			toString(sb, fields.next(), instance, deep);
 			if (iterator.hasNext()) {
 				sb.append(',').append(' ');
 			}
@@ -316,7 +322,7 @@ public class MapperUtils {
 			if (value == instance) {
 				sb.append("(this)");
 			} else {
-				ObjectUtils.toString(value);
+				sb.append(ObjectUtils.toString(value, deep));
 			}
 			if (iterator.hasNext()) {
 				sb.append(',').append(' ');
@@ -325,105 +331,139 @@ public class MapperUtils {
 		sb.append(')');
 	}
 
-	public static String toString(Fields fields, Object instance) {
+	public static String toString(Fields fields, Object instance, boolean deep) {
 		Assert.requiredArgument(fields != null, "fields");
 		if (instance == null) {
 			return null;
 		}
 
 		StringBuilder sb = new StringBuilder();
-		toString(sb, fields, instance);
+		toString(sb, fields, instance, deep);
 		return sb.toString();
 	}
 
-	public static <T> String toString(Class<? extends T> clazz, T instance) {
-		Assert.requiredArgument(clazz != null, "clazz");
-		return toString(getFields(clazz), instance);
+	public static String toString(Fields fields, Object instance) {
+		return toString(fields, instance, true);
 	}
 
-	public static String toString(Object instance) {
+	public static <T> String toString(Class<? extends T> clazz, T instance, boolean deep) {
+		Assert.requiredArgument(clazz != null, "clazz");
+		return toString(getFields(clazz), instance, deep);
+	}
+
+	public static <T> String toString(Class<? extends T> clazz, T instance) {
+		return toString(getFields(clazz), instance, true);
+	}
+
+	public static String toString(Object instance, boolean deep) {
 		if (instance == null) {
 			return null;
 		}
 
-		return toString(instance.getClass(), instance);
+		return toString(instance.getClass(), instance, deep);
 	}
-	
-	public static <T> boolean equals(Fields fields, T left, T right) {
+
+	public static String toString(Object instance) {
+		return toString(instance, true);
+	}
+
+	public static <T> boolean equals(Fields fields, T left, T right, boolean deep) {
 		Assert.requiredArgument(fields != null, "fields");
-		if(left == right) {
+		if (left == right) {
 			return true;
 		}
-		
+
 		if (left == null || right == null) {
 			return false;
 		}
-		
+
 		Iterator<Field> iterator = getters(fields).iterator();
-		while(iterator.hasNext()) {
+		while (iterator.hasNext()) {
 			Field field = iterator.next();
-			if(!ObjectUtils.nullSafeEquals(ReflectionUtils.getField(field, left), ReflectionUtils.getField(field, right))) {
+			if (!ObjectUtils.equals(ReflectionUtils.getField(field, left), ReflectionUtils.getField(field, right),
+					deep)) {
 				return false;
 			}
 		}
-		
-		if(fields.hasNext() && !equals(fields.next(), left, right)) {
+
+		if (fields.hasNext() && !equals(fields.next(), left, right, deep)) {
 			return false;
 		}
 		return true;
 	}
-	
-	public static <T> boolean equals(Class<? extends T> clazz, T left, T right) {
-		Assert.requiredArgument(clazz != null, "clazz");
-		return equals(getFields(clazz), left, right);
+
+	public static <T> boolean equals(Fields fields, T left, T right) {
+		return equals(fields, left, right, true);
 	}
-	
-	public static <T> boolean equals(T left, T right) {
-		if(left == right) {
+
+	public static <T> boolean equals(Class<? extends T> clazz, T left, T right, boolean deep) {
+		Assert.requiredArgument(clazz != null, "clazz");
+		return equals(getFields(clazz), left, right, deep);
+	}
+
+	public static <T> boolean equals(Class<? extends T> clazz, T left, T right) {
+		return equals(getFields(clazz), left, right, true);
+	}
+
+	public static <T> boolean equals(T left, T right, boolean deep) {
+		if (left == right) {
 			return true;
 		}
-		
+
 		if (left == null || right == null) {
 			return false;
 		}
-		
-		if(left.getClass() != right.getClass()) {
-			return false;
-		}
-		
-		return equals(left.getClass(), left, right);
+
+		return equals(left.getClass(), left, right, deep);
 	}
-	
-	public static int hashCode(Fields fields, Object source) {
+
+	public static <T> boolean equals(T left, T right) {
+		return equals(left, right, true);
+	}
+
+	public static int hashCode(Fields fields, Object source, boolean deep) {
 		Assert.requiredArgument(fields != null, "fields");
-		if(source == null) {
+		if (source == null) {
 			return 0;
 		}
-		int hashCode = 0;
+
+		int hashCode = 1;
 		Iterator<Field> iterator = getters(fields).iterator();
-		while(iterator.hasNext()) {
+		while (iterator.hasNext()) {
 			Field field = iterator.next();
-			hashCode += ObjectUtils.nullSafeHashCode(ReflectionUtils.getField(field, source));
+			hashCode = 31 * hashCode + ObjectUtils.hashCode(ReflectionUtils.getField(field, source), deep);
 		}
-		
-		if(fields.hasNext()) {
-			hashCode += hashCode(fields.next(), source);
+
+		if (fields.hasNext()) {
+			hashCode = 31 * hashCode + hashCode(fields.next(), source, deep);
 		}
 		return hashCode;
 	}
-	
-	public static <T> int hashCode(Class<? extends T> clazz, T source) {
-		Assert.requiredArgument(clazz != null, "clazz");
-		if(source == null) {
-			return 0;
-		}
-		return hashCode(getFields(clazz), source);
+
+	public static int hashCode(Fields fields, Object source) {
+		return hashCode(fields, source, true);
 	}
-	
-	public static int hashCode(Object source) {
-		if(source == null) {
+
+	public static <T> int hashCode(Class<? extends T> clazz, T source, boolean deep) {
+		Assert.requiredArgument(clazz != null, "clazz");
+		if (source == null) {
 			return 0;
 		}
-		return hashCode(source.getClass(), source);
+		return hashCode(getFields(clazz), source, deep);
+	}
+
+	public static <T> int hashCode(Class<? extends T> clazz, T source) {
+		return hashCode(clazz, source, true);
+	}
+
+	public static int hashCode(Object source, boolean deep) {
+		if (source == null) {
+			return 0;
+		}
+		return hashCode(source.getClass(), source, deep);
+	}
+
+	public static int hashCode(Object source) {
+		return hashCode(source, true);
 	}
 }

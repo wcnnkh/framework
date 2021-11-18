@@ -206,7 +206,7 @@ public interface RedisSortedSetsCommands<K, V> {
 			}
 
 			if (o instanceof Tuple) {
-				return ObjectUtils.nullSafeEquals(value, ((Tuple) o).value)
+				return ObjectUtils.equals(value, ((Tuple) o).value)
 						&& Double.compare(this.score, ((Tuple) o).score) == 0;
 			}
 			return false;

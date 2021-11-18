@@ -29,12 +29,12 @@ public abstract class AbstractMessage<T> implements Message<T>{
 		}
 		
 		AbstractMessage<?> otherMessage = (AbstractMessage<?>) other;
-		return ObjectUtils.nullSafeEquals(this.payload, otherMessage.payload);
+		return ObjectUtils.equals(this.payload, otherMessage.payload);
 	}
 
 	@Override
 	public int hashCode() {
-		return ObjectUtils.nullSafeHashCode(this.payload);
+		return ObjectUtils.hashCode(this.payload);
 	}
 
 	@Override

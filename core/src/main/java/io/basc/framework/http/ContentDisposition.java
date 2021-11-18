@@ -43,8 +43,7 @@ public final class ContentDisposition {
 
 	/**
 	 * Return the disposition type, like for example {@literal inline},
-	 * {@literal attachment}, {@literal form-data}, or {@code null} if not
-	 * defined.
+	 * {@literal attachment}, {@literal form-data}, or {@code null} if not defined.
 	 */
 	public String getType() {
 		return this.type;
@@ -59,17 +58,17 @@ public final class ContentDisposition {
 	}
 
 	/**
-	 * Return the value of the {@literal filename} parameter (or the value of
-	 * the {@literal filename*} one decoded as defined in the RFC 5987), or
-	 * {@code null} if not defined.
+	 * Return the value of the {@literal filename} parameter (or the value of the
+	 * {@literal filename*} one decoded as defined in the RFC 5987), or {@code null}
+	 * if not defined.
 	 */
 	public String getFilename() {
 		return this.filename;
 	}
 
 	/**
-	 * Return the charset defined in {@literal filename*} parameter, or
-	 * {@code null} if not defined.
+	 * Return the charset defined in {@literal filename*} parameter, or {@code null}
+	 * if not defined.
 	 */
 	public Charset getCharset() {
 		return this.charset;
@@ -95,24 +94,22 @@ public final class ContentDisposition {
 			return false;
 		}
 		ContentDisposition otherCd = (ContentDisposition) other;
-		return (ObjectUtils.nullSafeEquals(this.type, otherCd.type)
-				&& ObjectUtils.nullSafeEquals(this.name, otherCd.name)
-				&& ObjectUtils.nullSafeEquals(this.filename, otherCd.filename)
-				&& ObjectUtils.nullSafeEquals(this.charset, otherCd.charset));
+		return (ObjectUtils.equals(this.type, otherCd.type) && ObjectUtils.equals(this.name, otherCd.name)
+				&& ObjectUtils.equals(this.filename, otherCd.filename)
+				&& ObjectUtils.equals(this.charset, otherCd.charset));
 	}
 
 	@Override
 	public int hashCode() {
-		int result = ObjectUtils.nullSafeHashCode(this.type);
-		result = 31 * result + ObjectUtils.nullSafeHashCode(this.name);
-		result = 31 * result + ObjectUtils.nullSafeHashCode(this.filename);
-		result = 31 * result + ObjectUtils.nullSafeHashCode(this.charset);
+		int result = ObjectUtils.hashCode(this.type);
+		result = 31 * result + ObjectUtils.hashCode(this.name);
+		result = 31 * result + ObjectUtils.hashCode(this.filename);
+		result = 31 * result + ObjectUtils.hashCode(this.charset);
 		return result;
 	}
 
 	/**
-	 * Return the header value for this content disposition as defined in RFC
-	 * 6266.
+	 * Return the header value for this content disposition as defined in RFC 6266.
 	 * 
 	 * @see #parse(String)
 	 */
@@ -152,9 +149,8 @@ public final class ContentDisposition {
 	/**
 	 * Return a builder for a {@code ContentDisposition}.
 	 * 
-	 * @param type
-	 *            the disposition type like for example {@literal inline},
-	 *            {@literal attachment}, or {@literal form-data}
+	 * @param type the disposition type like for example {@literal inline},
+	 *             {@literal attachment}, or {@literal form-data}
 	 * @return the builder
 	 */
 	public static Builder builder(String type) {
@@ -169,11 +165,9 @@ public final class ContentDisposition {
 	}
 
 	/**
-	 * Parse a {@literal Content-Disposition} header value as defined in RFC
-	 * 2183.
+	 * Parse a {@literal Content-Disposition} header value as defined in RFC 2183.
 	 * 
-	 * @param contentDisposition
-	 *            the {@literal Content-Disposition} header value
+	 * @param contentDisposition the {@literal Content-Disposition} header value
 	 * @return the parsed content disposition
 	 * @see #toString()
 	 */
@@ -257,10 +251,8 @@ public final class ContentDisposition {
 	 * <p>
 	 * Only the US-ASCII, UTF-8 and ISO-8859-1 charsets are supported.
 	 * 
-	 * @param filename
-	 *            the filename
-	 * @param charset
-	 *            the charset for the filename
+	 * @param filename the filename
+	 * @param charset  the charset for the filename
 	 * @return the encoded header field param
 	 * @see <a href="https://tools.ietf.org/html/rfc5987">RFC 5987</a>
 	 */
@@ -316,11 +308,9 @@ public final class ContentDisposition {
 	/**
 	 * Encode the given header field param as describe in RFC 5987.
 	 * 
-	 * @param input
-	 *            the header field param
-	 * @param charset
-	 *            the charset of the header field param string, only the
-	 *            US-ASCII, UTF-8 and ISO-8859-1 charsets are supported
+	 * @param input   the header field param
+	 * @param charset the charset of the header field param string, only the
+	 *                US-ASCII, UTF-8 and ISO-8859-1 charsets are supported
 	 * @return the encoded header field param
 	 * @see <a href="https://tools.ietf.org/html/rfc5987">RFC 5987</a>
 	 */
@@ -360,30 +350,26 @@ public final class ContentDisposition {
 		Builder name(String name);
 
 		/**
-		 * Set the value of the {@literal filename} parameter. The given
-		 * filename will be formatted as quoted-string, as defined in RFC 2616,
-		 * section 2.2, and any quote characters within the filename value will
-		 * be escaped with a backslash, e.g. {@code "foo\"bar.txt"} becomes
-		 * {@code "foo\\\"bar.txt"}.
+		 * Set the value of the {@literal filename} parameter. The given filename will
+		 * be formatted as quoted-string, as defined in RFC 2616, section 2.2, and any
+		 * quote characters within the filename value will be escaped with a backslash,
+		 * e.g. {@code "foo\"bar.txt"} becomes {@code "foo\\\"bar.txt"}.
 		 */
 		Builder filename(String filename);
 
 		/**
-		 * Set the value of the {@literal filename*} that will be encoded as
-		 * defined in the RFC 5987. Only the US-ASCII, UTF-8 and ISO-8859-1
-		 * charsets are supported.
+		 * Set the value of the {@literal filename*} that will be encoded as defined in
+		 * the RFC 5987. Only the US-ASCII, UTF-8 and ISO-8859-1 charsets are supported.
 		 * <p>
-		 * <strong>Note:</strong> Do not use this for a
-		 * {@code "multipart/form-data"} requests as per
-		 * <a link="https://tools.ietf.org/html/rfc7578#section-4.2">RFC 7578,
-		 * Section 4.2</a> and also RFC 5987 itself mentions it does not apply
-		 * to multipart requests.
+		 * <strong>Note:</strong> Do not use this for a {@code "multipart/form-data"}
+		 * requests as per <a link="https://tools.ietf.org/html/rfc7578#section-4.2">RFC
+		 * 7578, Section 4.2</a> and also RFC 5987 itself mentions it does not apply to
+		 * multipart requests.
 		 */
 		Builder filename(String filename, @Nullable Charset charset);
 
 		/**
-		 * 其他属性 <a href="https://tools.ietf.org/html/rfc6266#appendix-B">RFC
-		 * 6266
+		 * 其他属性 <a href="https://tools.ietf.org/html/rfc6266#appendix-B">RFC 6266
 		 * 
 		 * @param attributes
 		 * @return

@@ -66,7 +66,7 @@ public class SessionWrapper implements Session {
 		}
 		
 		if(obj instanceof SessionWrapper){
-			return ObjectUtils.nullSafeEquals(session, ((SessionWrapper) obj).session);
+			return ObjectUtils.equals(session, ((SessionWrapper) obj).session);
 		}
 		
 		return false;

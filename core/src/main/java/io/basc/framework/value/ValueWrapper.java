@@ -151,9 +151,9 @@ public class ValueWrapper<V extends Value> implements Value, Serializable {
 		}
 
 		if (obj instanceof ValueWrapper) {
-			return ObjectUtils.nullSafeEquals(((ValueWrapper) obj).targetValue,
+			return ObjectUtils.equals(((ValueWrapper) obj).targetValue,
 					targetValue);
 		}
-		return ObjectUtils.nullSafeEquals(obj, targetValue);
+		return ObjectUtils.equals(obj, targetValue);
 	}
 }

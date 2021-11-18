@@ -23,7 +23,7 @@ public class WebMessagelConverterException extends WebException {
 
 	public WebMessagelConverterException(TypeDescriptor type, Object body, ServerHttpRequest request, Throwable cause) {
 		super("Failed to convert from [" + request + "] to  [" + type + "] for value '"
-				+ ObjectUtils.nullSafeToString(body) + "'", cause);
+				+ ObjectUtils.toString(body) + "'", cause);
 	}
 
 	public WebMessagelConverterException(ParameterDescriptor parameterDescriptor, ServerHttpRequest request,

@@ -24,7 +24,7 @@ public class LinkedThreadLocal<E> {
 		}
 
 		E nesting = list.getLast();
-		if (!ObjectUtils.nullSafeEquals(element, nesting)) {
+		if (!ObjectUtils.equals(element, nesting)) {
 			throw new ConversionException("remove nesting [" + nesting + "] conversion service [" + element + "]");
 		}
 
@@ -46,6 +46,6 @@ public class LinkedThreadLocal<E> {
 	}
 
 	public boolean exists(E element) {
-		return ObjectUtils.nullSafeEquals(element, getCurrent());
+		return ObjectUtils.equals(element, getCurrent());
 	}
 }

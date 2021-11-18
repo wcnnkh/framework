@@ -32,7 +32,7 @@ public class NoArgsInstanceFactoryWrapper<I extends NoArgsInstanceFactory> exten
 		}
 
 		if (obj instanceof NoArgsInstanceFactoryWrapper) {
-			return ObjectUtils.nullSafeEquals(instanceFactory, ((NoArgsInstanceFactoryWrapper<?>) obj).instanceFactory);
+			return ObjectUtils.equals(instanceFactory, ((NoArgsInstanceFactoryWrapper<?>) obj).instanceFactory);
 		}
 		return false;
 	}

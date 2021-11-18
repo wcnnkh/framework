@@ -163,11 +163,11 @@ public class RecordId {
 
 		RecordId recordId = (RecordId) o;
 
-		return ObjectUtils.nullSafeEquals(raw, recordId.raw);
+		return ObjectUtils.equals(raw, recordId.raw);
 	}
 
 	@Override
 	public int hashCode() {
-		return ObjectUtils.nullSafeHashCode(raw);
+		return ObjectUtils.hashCode(raw);
 	}
 }

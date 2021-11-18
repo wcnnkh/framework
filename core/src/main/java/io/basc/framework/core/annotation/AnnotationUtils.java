@@ -1193,7 +1193,7 @@ public abstract class AnnotationUtils {
 			try {
 				Object attributeValue = method.invoke(annotation);
 				Object defaultValue = method.getDefaultValue();
-				if (defaultValue != null && ObjectUtils.nullSafeEquals(attributeValue, defaultValue)) {
+				if (defaultValue != null && ObjectUtils.equals(attributeValue, defaultValue)) {
 					attributeValue = new DefaultValueHolder(defaultValue);
 				}
 				attributes.put(method.getName(),
@@ -1381,7 +1381,7 @@ public abstract class AnnotationUtils {
 						if (valuePresent && aliasPresent) {
 							// Since annotation attributes can be arrays, we
 							// must use ObjectUtils.nullSafeEquals().
-							if (!ObjectUtils.nullSafeEquals(value, aliasedValue)) {
+							if (!ObjectUtils.equals(value, aliasedValue)) {
 								String elementAsString = (annotatedElement != null ? annotatedElement.toString()
 										: "unknown element");
 								throw new AnnotationConfigurationException(String.format(
@@ -1389,8 +1389,8 @@ public abstract class AnnotationUtils {
 												+ "attribute '%s' and its alias '%s' are declared with values of [%s] and [%s], "
 												+ "but only one is permitted.",
 										annotationType.getName(), elementAsString, attributeName, aliasedAttributeName,
-										ObjectUtils.nullSafeToString(value),
-										ObjectUtils.nullSafeToString(aliasedValue)));
+										ObjectUtils.toString(value),
+										ObjectUtils.toString(aliasedValue)));
 							}
 						} else if (aliasPresent) {
 							// Replace value with aliasedValue
@@ -2158,9 +2158,9 @@ public abstract class AnnotationUtils {
 							: element.getAnnotations());
 					for (Annotation ann : annotations) {
 						Class<? extends Annotation> currentAnnotationType = ann.annotationType();
-						if (ObjectUtils.nullSafeEquals(this.annotationType, currentAnnotationType)) {
+						if (ObjectUtils.equals(this.annotationType, currentAnnotationType)) {
 							this.result.add(synthesizeAnnotation((A) ann, element));
-						} else if (ObjectUtils.nullSafeEquals(this.containerAnnotationType, currentAnnotationType)) {
+						} else if (ObjectUtils.equals(this.containerAnnotationType, currentAnnotationType)) {
 							this.result.addAll(getValue(element, ann));
 						} else if (!isInJavaLangAnnotationPackage(currentAnnotationType)) {
 							process(currentAnnotationType);
@@ -2337,7 +2337,7 @@ public abstract class AnnotationUtils {
 				throw new AnnotationConfigurationException(msg);
 			}
 
-			if (!ObjectUtils.nullSafeEquals(defaultValue, aliasedDefaultValue)) {
+			if (!ObjectUtils.equals(defaultValue, aliasedDefaultValue)) {
 				String msg = String.format(
 						"Misconfigured aliases: attribute '%s' in annotation [%s] "
 								+ "and attribute '%s' in annotation [%s] must declare the same default value.",

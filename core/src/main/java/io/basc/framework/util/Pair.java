@@ -6,7 +6,7 @@ public class Pair<K, V> implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private K key;
 	private V value;
-	
+
 	public Pair() {
 	}
 
@@ -60,8 +60,8 @@ public class Pair<K, V> implements Serializable, Cloneable {
 		}
 
 		if (obj instanceof Pair) {
-			return ObjectUtils.nullSafeEquals(((Pair) obj).getKey(), getKey())
-					&& ObjectUtils.nullSafeEquals(((Pair) obj).getValue(), getValue());
+			return ObjectUtils.equals(((Pair) obj).getKey(), getKey())
+					&& ObjectUtils.equals(((Pair) obj).getValue(), getValue());
 		}
 		return false;
 	}

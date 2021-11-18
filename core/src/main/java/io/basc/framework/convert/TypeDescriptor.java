@@ -517,10 +517,10 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 			return false;
 		}
 		if (isCollection() || isArray()) {
-			return ObjectUtils.nullSafeEquals(getElementTypeDescriptor(), otherDesc.getElementTypeDescriptor());
+			return ObjectUtils.equals(getElementTypeDescriptor(), otherDesc.getElementTypeDescriptor());
 		} else if (isMap()) {
-			return (ObjectUtils.nullSafeEquals(getMapKeyTypeDescriptor(), otherDesc.getMapKeyTypeDescriptor())
-					&& ObjectUtils.nullSafeEquals(getMapValueTypeDescriptor(), otherDesc.getMapValueTypeDescriptor()));
+			return (ObjectUtils.equals(getMapKeyTypeDescriptor(), otherDesc.getMapKeyTypeDescriptor())
+					&& ObjectUtils.equals(getMapValueTypeDescriptor(), otherDesc.getMapValueTypeDescriptor()));
 		} else {
 			return true;
 		}

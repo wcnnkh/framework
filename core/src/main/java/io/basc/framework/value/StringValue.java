@@ -107,7 +107,7 @@ public class StringValue extends AbstractValue implements Serializable {
 		}
 
 		if (obj instanceof StringValue) {
-			return ObjectUtils.nullSafeEquals(value, ((StringValue) obj).value);
+			return ObjectUtils.equals(value, ((StringValue) obj).value);
 		}
 		return false;
 	}

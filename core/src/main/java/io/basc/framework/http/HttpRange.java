@@ -234,12 +234,12 @@ public abstract class HttpRange {
 			}
 			ByteRange otherRange = (ByteRange) other;
 			return (this.firstPos == otherRange.firstPos
-					&& ObjectUtils.nullSafeEquals(this.lastPos, otherRange.lastPos));
+					&& ObjectUtils.equals(this.lastPos, otherRange.lastPos));
 		}
 
 		@Override
 		public int hashCode() {
-			return (ObjectUtils.nullSafeHashCode(this.firstPos) * 31 + ObjectUtils.nullSafeHashCode(this.lastPos));
+			return (ObjectUtils.hashCode(this.firstPos) * 31 + ObjectUtils.hashCode(this.lastPos));
 		}
 
 		@Override

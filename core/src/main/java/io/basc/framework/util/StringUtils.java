@@ -1041,7 +1041,7 @@ public final class StringUtils {
 			return "";
 		}
 		if (arr.length == 1) {
-			return ObjectUtils.nullSafeToString(arr[0]);
+			return ObjectUtils.toString(arr[0]);
 		}
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < arr.length; i++) {

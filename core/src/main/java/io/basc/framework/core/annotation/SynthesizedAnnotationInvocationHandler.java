@@ -29,8 +29,7 @@ class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
 	 * Construct a new {@code SynthesizedAnnotationInvocationHandler} for the
 	 * supplied {@link AnnotationAttributeExtractor}.
 	 * 
-	 * @param attributeExtractor
-	 *            the extractor to delegate to
+	 * @param attributeExtractor the extractor to delegate to
 	 */
 	SynthesizedAnnotationInvocationHandler(AnnotationAttributeExtractor<?> attributeExtractor) {
 		Assert.notNull(attributeExtractor, "AnnotationAttributeExtractor must not be null");
@@ -95,11 +94,9 @@ class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
 	}
 
 	/**
-	 * Clone the provided array, ensuring that original component type is
-	 * retained.
+	 * Clone the provided array, ensuring that original component type is retained.
 	 * 
-	 * @param array
-	 *            the array to clone
+	 * @param array the array to clone
 	 */
 	private Object cloneArray(Object array) {
 		if (array instanceof boolean[]) {
@@ -135,8 +132,7 @@ class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
 	 * See {@link Annotation#equals(Object)} for a definition of the required
 	 * algorithm.
 	 * 
-	 * @param other
-	 *            the other object to compare against
+	 * @param other the other object to compare against
 	 */
 	private boolean annotationEquals(Object other) {
 		if (this == other) {
@@ -149,7 +145,7 @@ class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
 		for (Method attributeMethod : AnnotationUtils.getAttributeMethods(annotationType())) {
 			Object thisValue = getAttributeValue(attributeMethod);
 			Object otherValue = ReflectionUtils.invokeMethod(attributeMethod, other);
-			if (!ObjectUtils.nullSafeEquals(thisValue, otherValue)) {
+			if (!ObjectUtils.equals(thisValue, otherValue)) {
 				return false;
 			}
 		}
@@ -158,8 +154,7 @@ class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
 	}
 
 	/**
-	 * See {@link Annotation#hashCode()} for a definition of the required
-	 * algorithm.
+	 * See {@link Annotation#hashCode()} for a definition of the required algorithm.
 	 */
 	private int annotationHashCode() {
 		int result = 0;
@@ -179,8 +174,7 @@ class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
 	}
 
 	/**
-	 * @param array
-	 *            the array to compute the hash code for
+	 * @param array the array to compute the hash code for
 	 */
 	private int hashCodeForArray(Object array) {
 		if (array instanceof boolean[]) {
@@ -213,8 +207,7 @@ class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
 	}
 
 	/**
-	 * See {@link Annotation#toString()} for guidelines on the recommended
-	 * format.
+	 * See {@link Annotation#toString()} for guidelines on the recommended format.
 	 */
 	private String annotationToString() {
 		StringBuilder sb = new StringBuilder("@").append(annotationType().getName()).append("(");

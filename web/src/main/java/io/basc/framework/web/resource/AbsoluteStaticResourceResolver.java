@@ -44,7 +44,7 @@ public class AbsoluteStaticResourceResolver implements StaticResourceResolver {
 		}
 
 		if (obj instanceof AbsoluteStaticResourceResolver) {
-			return ObjectUtils.nullSafeEquals(obj, ((AbsoluteStaticResourceResolver) obj).location);
+			return ObjectUtils.equals(obj, ((AbsoluteStaticResourceResolver) obj).location);
 		}
 		return false;
 	}

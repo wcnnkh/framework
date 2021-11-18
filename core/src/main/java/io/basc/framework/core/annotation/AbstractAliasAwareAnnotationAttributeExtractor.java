@@ -28,16 +28,17 @@ abstract class AbstractAliasAwareAnnotationAttributeExtractor<S> implements Anno
 
 	private final Map<String, List<String>> attributeAliasMap;
 
-
 	/**
 	 * Construct a new {@code AbstractAliasAwareAnnotationAttributeExtractor}.
-	 * @param annotationType the annotation type to synthesize; never {@code null}
-	 * @param annotatedElement the element that is annotated with the annotation
-	 * of the supplied type; may be {@code null} if unknown
-	 * @param source the underlying source of annotation attributes; never {@code null}
+	 * 
+	 * @param annotationType   the annotation type to synthesize; never {@code null}
+	 * @param annotatedElement the element that is annotated with the annotation of
+	 *                         the supplied type; may be {@code null} if unknown
+	 * @param source           the underlying source of annotation attributes; never
+	 *                         {@code null}
 	 */
-	AbstractAliasAwareAnnotationAttributeExtractor(
-			Class<? extends Annotation> annotationType, Object annotatedElement, S source) {
+	AbstractAliasAwareAnnotationAttributeExtractor(Class<? extends Annotation> annotationType, Object annotatedElement,
+			S source) {
 
 		Assert.notNull(annotationType, "annotationType must not be null");
 		Assert.notNull(source, "source must not be null");
@@ -46,7 +47,6 @@ abstract class AbstractAliasAwareAnnotationAttributeExtractor<S> implements Anno
 		this.source = source;
 		this.attributeAliasMap = AnnotationUtils.getAttributeAliasMap(annotationType);
 	}
-
 
 	public final Class<? extends Annotation> getAnnotationType() {
 		return this.annotationType;
@@ -70,20 +70,20 @@ abstract class AbstractAliasAwareAnnotationAttributeExtractor<S> implements Anno
 			for (String aliasName : aliasNames) {
 				Object aliasValue = getRawAttributeValue(aliasName);
 
-				if (!ObjectUtils.nullSafeEquals(attributeValue, aliasValue) &&
-						!ObjectUtils.nullSafeEquals(attributeValue, defaultValue) &&
-						!ObjectUtils.nullSafeEquals(aliasValue, defaultValue)) {
-					String elementName = (this.annotatedElement != null ? this.annotatedElement.toString() : "unknown element");
+				if (!ObjectUtils.equals(attributeValue, aliasValue) && !ObjectUtils.equals(attributeValue, defaultValue)
+						&& !ObjectUtils.equals(aliasValue, defaultValue)) {
+					String elementName = (this.annotatedElement != null ? this.annotatedElement.toString()
+							: "unknown element");
 					throw new AnnotationConfigurationException(String.format(
-							"In annotation [%s] declared on %s and synthesized from [%s], attribute '%s' and its " +
-							"alias '%s' are present with values of [%s] and [%s], but only one is permitted.",
+							"In annotation [%s] declared on %s and synthesized from [%s], attribute '%s' and its "
+									+ "alias '%s' are present with values of [%s] and [%s], but only one is permitted.",
 							this.annotationType.getName(), elementName, this.source, attributeName, aliasName,
-							ObjectUtils.nullSafeToString(attributeValue), ObjectUtils.nullSafeToString(aliasValue)));
+							ObjectUtils.toString(attributeValue), ObjectUtils.toString(aliasValue)));
 				}
 
 				// If the user didn't declare the annotation with an explicit value,
 				// use the value of the alias instead.
-				if (ObjectUtils.nullSafeEquals(attributeValue, defaultValue)) {
+				if (ObjectUtils.equals(attributeValue, defaultValue)) {
 					attributeValue = aliasValue;
 				}
 			}
@@ -92,18 +92,17 @@ abstract class AbstractAliasAwareAnnotationAttributeExtractor<S> implements Anno
 		return attributeValue;
 	}
 
-
 	/**
 	 * Get the raw, unmodified attribute value from the underlying
-	 * {@linkplain #getSource source} that corresponds to the supplied
-	 * attribute method.
+	 * {@linkplain #getSource source} that corresponds to the supplied attribute
+	 * method.
 	 */
 	protected abstract Object getRawAttributeValue(Method attributeMethod);
 
 	/**
 	 * Get the raw, unmodified attribute value from the underlying
-	 * {@linkplain #getSource source} that corresponds to the supplied
-	 * attribute name.
+	 * {@linkplain #getSource source} that corresponds to the supplied attribute
+	 * name.
 	 */
 	protected abstract Object getRawAttributeValue(String attributeName);
 
