@@ -472,7 +472,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 		}
 
 		if (obj instanceof AnyValue) {
-			return ObjectUtils.nullSafeEquals(value, ((AnyValue) obj).value);
+			return ObjectUtils.equals(value, ((AnyValue) obj).value);
 		}
 
 		return false;

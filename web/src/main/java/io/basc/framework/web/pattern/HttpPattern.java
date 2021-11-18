@@ -136,7 +136,7 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 
 	@Override
 	public boolean accept(ServerHttpRequest request) {
-		if (method != null && !ObjectUtils.nullSafeEquals(method, request.getRawMethod())) {
+		if (method != null && !ObjectUtils.equals(method, request.getRawMethod())) {
 			return false;
 		}
 
@@ -195,11 +195,11 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 
 		if (obj instanceof HttpPattern) {
 			HttpPattern httpPattern = (HttpPattern) obj;
-			if (!ObjectUtils.nullSafeEquals(method, httpPattern.method)) {
+			if (!ObjectUtils.equals(method, httpPattern.method)) {
 				return false;
 			}
 
-			if (!ObjectUtils.nullSafeEquals(consumes, httpPattern.consumes)) {
+			if (!ObjectUtils.equals(consumes, httpPattern.consumes)) {
 				return false;
 			}
 
@@ -214,7 +214,7 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 					return true;
 				}
 			}
-			return ObjectUtils.nullSafeEquals(path, ((HttpPattern) obj).path);
+			return ObjectUtils.equals(path, ((HttpPattern) obj).path);
 		}
 		return false;
 	}
@@ -296,7 +296,7 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 		httpPattern.pathMatcher = pathMatcher;
 		return httpPattern;
 	}
-	
+
 	public HttpPattern setPath(String path) {
 		Assert.requiredArgument(path != null, "path");
 		HttpPattern httpPattern = new HttpPattern(this);

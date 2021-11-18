@@ -188,10 +188,10 @@ public class ValueFactoryWrapper<K, F extends ValueFactory<K>> implements ValueF
 		}
 
 		if (obj instanceof ValueFactoryWrapper) {
-			return ObjectUtils.nullSafeEquals(((ValueFactoryWrapper) obj).targetFactory, targetFactory);
+			return ObjectUtils.equals(((ValueFactoryWrapper) obj).targetFactory, targetFactory);
 		}
 
-		return ObjectUtils.nullSafeEquals(obj, targetFactory);
+		return ObjectUtils.equals(obj, targetFactory);
 	}
 	
 	@Override

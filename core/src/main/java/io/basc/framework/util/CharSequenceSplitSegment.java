@@ -76,7 +76,7 @@ public class CharSequenceSplitSegment implements CharSequence {
 		}
 
 		if (obj instanceof CharSequenceSplitSegment) {
-			return ObjectUtils.nullSafeEquals(source, ((CharSequenceSplitSegment) obj).source);
+			return ObjectUtils.equals(source, ((CharSequenceSplitSegment) obj).source);
 		}
 
 		return false;

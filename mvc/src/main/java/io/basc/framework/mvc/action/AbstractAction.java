@@ -79,7 +79,7 @@ public abstract class AbstractAction extends AnnotatedElementWrapper<AnnotatedEl
 		}
 
 		if (obj instanceof Action) {
-			return ObjectUtils.nullSafeEquals(this.httpPatterns, ((Action) obj).getPatternts());
+			return ObjectUtils.equals(this.httpPatterns, ((Action) obj).getPatternts());
 		}
 		return false;
 	}

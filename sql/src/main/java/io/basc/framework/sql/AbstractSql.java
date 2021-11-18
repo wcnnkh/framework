@@ -6,7 +6,7 @@ public abstract class AbstractSql implements Sql{
 	
 	@Override
 	public int hashCode() {
-		return ObjectUtils.nullSafeHashCode(getSql(), getParams());
+		return ObjectUtils.hash(getSql(), getParams());
 	}
 	
 	@Override
@@ -20,7 +20,7 @@ public abstract class AbstractSql implements Sql{
 		}
 		
 		if(obj instanceof Sql){
-			return ObjectUtils.nullSafeEquals(getSql(), ((Sql) obj).getSql()) && ObjectUtils.nullSafeEquals(getParams(), ((Sql) obj).getParams());
+			return ObjectUtils.equals(getSql(), ((Sql) obj).getSql()) && ObjectUtils.equals(getParams(), ((Sql) obj).getParams());
 		}
 		return false;
 	}

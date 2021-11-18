@@ -157,7 +157,7 @@ public class ServerHttpRequestWrapper extends InputMessageWrapper<ServerHttpRequ
 		}
 
 		if (obj instanceof ServerHttpRequestWrapper) {
-			return ObjectUtils.nullSafeEquals(wrappedTarget, ((ServerHttpRequestWrapper) obj).wrappedTarget);
+			return ObjectUtils.equals(wrappedTarget, ((ServerHttpRequestWrapper) obj).wrappedTarget);
 		}
 		return false;
 	}

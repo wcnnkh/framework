@@ -68,9 +68,9 @@ class HttpPatternService<T> implements ServerHttpRequestAccept, OrderSourceProvi
 
 		if (obj instanceof HttpPatternService) {
 			if (pattern == null) {
-				return ObjectUtils.nullSafeEquals(service, ((HttpPatternService<?>) obj).service);
+				return ObjectUtils.equals(service, ((HttpPatternService<?>) obj).service);
 			} else {
-				return ObjectUtils.nullSafeEquals(this.pattern, ((HttpPatternService<?>) obj).pattern);
+				return ObjectUtils.equals(this.pattern, ((HttpPatternService<?>) obj).pattern);
 			}
 		}
 		return false;
@@ -81,7 +81,7 @@ class HttpPatternService<T> implements ServerHttpRequestAccept, OrderSourceProvi
 		if (pattern == null && o.pattern == null) {
 			if (service instanceof ServerHttpRequestAccept && o.service instanceof ServerHttpRequestAccept) {
 				int v = OrderComparator.INSTANCE.compare(service, o.service);
-				//如果order相同那么就按添加顺序来
+				// 如果order相同那么就按添加顺序来
 				return v == 0 ? 1 : v;
 			}
 
@@ -93,7 +93,7 @@ class HttpPatternService<T> implements ServerHttpRequestAccept, OrderSourceProvi
 				return 1;
 			}
 
-			//如果order相同那么就按添加顺序来
+			// 如果order相同那么就按添加顺序来
 			int v = OrderComparator.INSTANCE.compare(service, o.service);
 			return v == 0 ? 1 : v;
 		}

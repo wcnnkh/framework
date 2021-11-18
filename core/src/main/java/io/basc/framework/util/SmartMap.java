@@ -102,7 +102,7 @@ public class SmartMap<K, V> implements Map<K, V>, Cloneable, Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
-		return ObjectUtils.nullSafeEquals(targetMap, obj);
+		return ObjectUtils.equals(targetMap, obj);
 	}
 
 	@Override

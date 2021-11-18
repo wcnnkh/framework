@@ -98,7 +98,7 @@ public class ServerHttpResponseWrapper extends OutputMessageWrapper<ServerHttpRe
 		}
 
 		if (obj instanceof ServerHttpResponseWrapper) {
-			return ObjectUtils.nullSafeEquals(wrappedTarget, ((ServerHttpResponseWrapper) obj).wrappedTarget);
+			return ObjectUtils.equals(wrappedTarget, ((ServerHttpResponseWrapper) obj).wrappedTarget);
 		}
 		return false;
 	}

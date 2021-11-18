@@ -101,8 +101,8 @@ public final class HttpUtils {
 			return true;
 		}
 
-		return (ObjectUtils.nullSafeEquals(uri1.getScheme(), uri2.getScheme())
-				&& ObjectUtils.nullSafeEquals(uri1.getHost(), uri2.getHost())
+		return (ObjectUtils.equals(uri1.getScheme(), uri2.getScheme())
+				&& ObjectUtils.equals(uri1.getHost(), uri2.getHost())
 				&& getPort(uri1.getScheme(), uri1.getPort()) == getPort(uri2.getScheme(), uri2.getPort()));
 	}
 

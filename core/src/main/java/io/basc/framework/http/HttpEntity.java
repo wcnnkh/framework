@@ -105,13 +105,13 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable{
 			return false;
 		}
 		HttpEntity<?> otherEntity = (HttpEntity<?>) other;
-		return (ObjectUtils.nullSafeEquals(this.headers, otherEntity.headers) &&
-				ObjectUtils.nullSafeEquals(this.body, otherEntity.body));
+		return (ObjectUtils.equals(this.headers, otherEntity.headers) &&
+				ObjectUtils.equals(this.body, otherEntity.body));
 	}
 
 	@Override
 	public int hashCode() {
-		return (ObjectUtils.nullSafeHashCode(this.headers) * 29 + ObjectUtils.nullSafeHashCode(this.body));
+		return (ObjectUtils.hashCode(this.headers) * 29 + ObjectUtils.hashCode(this.body));
 	}
 
 	@Override

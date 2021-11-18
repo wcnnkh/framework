@@ -65,7 +65,7 @@ public class SimpleAttributes<K, V> implements EditableAttributes<K, V> {
 		}
 
 		if (obj instanceof SimpleAttributes) {
-			return ObjectUtils.nullSafeEquals(attributeMap, ((SimpleAttributes) obj).attributeMap);
+			return ObjectUtils.equals(attributeMap, ((SimpleAttributes) obj).attributeMap);
 		}
 
 		return false;

@@ -45,7 +45,7 @@ public class AbsolutePathProcessor implements Processor<ServerHttpRequest, Strin
 		}
 
 		if (obj instanceof AbsolutePathProcessor) {
-			return ObjectUtils.nullSafeEquals(obj, ((AbsolutePathProcessor) obj).location);
+			return ObjectUtils.equals(obj, ((AbsolutePathProcessor) obj).location);
 		}
 		return false;
 	}

@@ -22,7 +22,7 @@ public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<
 	public void onEvent(ChangeEvent<LevelRegistry> event) {
 		Level oldLevel = getLevel();
 		Level newLevel = event.getSource().getLevel(getName());
-		if (!ObjectUtils.nullSafeEquals(oldLevel, newLevel)) {
+		if (!ObjectUtils.equals(oldLevel, newLevel)) {
 			info("Level [{}] change to [{}]", oldLevel, newLevel);
 		}
 		setLevel(newLevel);

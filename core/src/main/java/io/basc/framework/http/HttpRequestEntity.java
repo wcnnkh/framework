@@ -143,8 +143,8 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 
 		if (other instanceof HttpRequestEntity) {
 			HttpRequestEntity<?> otherEntity = (HttpRequestEntity<?>) other;
-			return (ObjectUtils.nullSafeEquals(getMethod(), otherEntity.getMethod())
-					&& ObjectUtils.nullSafeEquals(getURI(), otherEntity.getURI()));
+			return (ObjectUtils.equals(getMethod(), otherEntity.getMethod())
+					&& ObjectUtils.equals(getURI(), otherEntity.getURI()));
 		}
 		return false;
 	}
@@ -152,8 +152,8 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 	@Override
 	public int hashCode() {
 		int hashCode = super.hashCode();
-		hashCode = 29 * hashCode + ObjectUtils.nullSafeHashCode(this.method);
-		hashCode = 29 * hashCode + ObjectUtils.nullSafeHashCode(this.url);
+		hashCode = 29 * hashCode + ObjectUtils.hashCode(this.method);
+		hashCode = 29 * hashCode + ObjectUtils.hashCode(this.url);
 		return hashCode;
 	}
 

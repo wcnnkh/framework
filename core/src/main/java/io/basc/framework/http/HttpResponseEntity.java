@@ -116,12 +116,12 @@ public class HttpResponseEntity<T> extends HttpEntity<T> {
 			return false;
 		}
 		HttpResponseEntity<?> otherEntity = (HttpResponseEntity<?>) other;
-		return ObjectUtils.nullSafeEquals(this.status, otherEntity.status);
+		return ObjectUtils.equals(this.status, otherEntity.status);
 	}
 
 	@Override
 	public int hashCode() {
-		return (super.hashCode() * 29 + ObjectUtils.nullSafeHashCode(this.status));
+		return (super.hashCode() * 29 + ObjectUtils.hashCode(this.status));
 	}
 
 	@Override

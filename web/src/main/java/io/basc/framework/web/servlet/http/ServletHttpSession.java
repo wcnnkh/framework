@@ -74,7 +74,7 @@ public class ServletHttpSession implements Session {
 		}
 		
 		if(obj instanceof ServletHttpSession){
-			return ObjectUtils.nullSafeEquals(((ServletHttpSession) obj).httpSession, httpSession);
+			return ObjectUtils.equals(((ServletHttpSession) obj).httpSession, httpSession);
 		}
 		return false;
 	}

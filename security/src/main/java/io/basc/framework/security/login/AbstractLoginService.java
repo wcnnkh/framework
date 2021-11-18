@@ -106,6 +106,6 @@ public abstract class AbstractLoginService<T> implements LoginService<T> {
 			return false;
 		}
 
-		return ObjectUtils.nullSafeEquals(uid, userToken.getUid());
+		return ObjectUtils.equals(uid, userToken.getUid());
 	}
 }

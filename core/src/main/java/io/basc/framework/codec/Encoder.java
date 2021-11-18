@@ -100,7 +100,7 @@ public interface Encoder<D, E> {
 
 			@Override
 			public boolean verify(D source, E encode) {
-				return ObjectUtils.nullSafeEquals(this.encode(source), encode);
+				return ObjectUtils.equals(this.encode(source), encode);
 			}
 		};
 	}

@@ -53,7 +53,7 @@ public enum RedisValueEncodings implements RedisValueEncoding {
 	@Nullable
 	public static Optional<RedisValueEncoding> lookup(@Nullable String encoding) {
 		for (RedisValueEncoding valueEncoding : values()) {
-			if (ObjectUtils.nullSafeEquals(valueEncoding.raw(), encoding)) {
+			if (ObjectUtils.equals(valueEncoding.raw(), encoding)) {
 				return Optional.of(valueEncoding);
 			}
 		}

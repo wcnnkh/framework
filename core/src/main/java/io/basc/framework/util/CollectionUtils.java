@@ -158,7 +158,7 @@ public abstract class CollectionUtils {
 		if (iterator != null) {
 			while (iterator.hasNext()) {
 				Object candidate = iterator.next();
-				if (ObjectUtils.nullSafeEquals(candidate, element)) {
+				if (ObjectUtils.equals(candidate, element)) {
 					return true;
 				}
 			}
@@ -178,7 +178,7 @@ public abstract class CollectionUtils {
 		if (enumeration != null) {
 			while (enumeration.hasMoreElements()) {
 				Object candidate = enumeration.nextElement();
-				if (ObjectUtils.nullSafeEquals(candidate, element)) {
+				if (ObjectUtils.equals(candidate, element)) {
 					return true;
 				}
 			}
@@ -630,7 +630,7 @@ public abstract class CollectionUtils {
 	 * @return
 	 */
 	public static boolean equals(Collection<?> left, Collection<?> right) {
-		return equals(left, right, (o1, o2) -> ObjectUtils.nullSafeEquals(o1, o2) ? 0 : 1);
+		return equals(left, right, (o1, o2) -> ObjectUtils.equals(o1, o2) ? 0 : 1);
 	}
 
 	/**

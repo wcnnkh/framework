@@ -2,6 +2,7 @@ package io.basc.framework.util;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -186,5 +187,106 @@ public final class ArrayUtils {
 			}
 		}
 		return 0;
+	}
+
+	public static String toString(Object array, boolean deep) {
+		if (array == null) {
+			return null;
+		}
+
+		if (array instanceof Object[]) {
+			return deep ? Arrays.deepToString((Object[]) array) : Arrays.toString((Object[]) array);
+		} else if (array instanceof byte[]) {
+			return Arrays.toString((byte[]) array);
+		} else if (array instanceof short[]) {
+			return Arrays.toString((short[]) array);
+		} else if (array instanceof int[]) {
+			return Arrays.toString((int[]) array);
+		} else if (array instanceof long[]) {
+			return Arrays.toString((long[]) array);
+		} else if (array instanceof char[]) {
+			return Arrays.toString((char[]) array);
+		} else if (array instanceof float[]) {
+			return Arrays.toString((float[]) array);
+		} else if (array instanceof double[]) {
+			return Arrays.toString((double[]) array);
+		} else if (array instanceof boolean[]) {
+			return Arrays.toString((boolean[]) array);
+		}
+		throw new IllegalArgumentException("Must be array type");
+	}
+
+	public static String toString(Object array) {
+		return toString(array, true);
+	}
+
+	public static int hashCode(Object array, boolean deep) {
+		if (array == null) {
+			return 0;
+		}
+
+		if (array instanceof Object[]) {
+			return deep ? Arrays.deepHashCode((Object[]) array) : Arrays.hashCode((Object[]) array);
+		} else if (array instanceof byte[]) {
+			return Arrays.hashCode((byte[]) array);
+		} else if (array instanceof short[]) {
+			return Arrays.hashCode((short[]) array);
+		} else if (array instanceof int[]) {
+			return Arrays.hashCode((int[]) array);
+		} else if (array instanceof long[]) {
+			return Arrays.hashCode((long[]) array);
+		} else if (array instanceof char[]) {
+			return Arrays.hashCode((char[]) array);
+		} else if (array instanceof float[]) {
+			return Arrays.hashCode((float[]) array);
+		} else if (array instanceof double[]) {
+			return Arrays.hashCode((double[]) array);
+		} else if (array instanceof boolean[]) {
+			return Arrays.hashCode((boolean[]) array);
+		}
+		throw new IllegalArgumentException("Must be array type");
+	}
+
+	public static int hashCode(Object array) {
+		return hashCode(array, true);
+	}
+
+	public static boolean equals(Object left, Object right, boolean deep) {
+		if (left == right) {
+			return true;
+		}
+
+		if (left == null || right == null) {
+			return false;
+		}
+
+		/**
+		 * int[][] 是Object[]类型不是int[]类型, 同理其他类型也是
+		 */
+		if (left instanceof Object[] && right instanceof Object[]) {
+			return deep ? Arrays.deepEquals((Object[]) left, (Object[]) right)
+					: Arrays.equals((Object[]) left, (Object[]) right);
+		} else if (left instanceof byte[] && right instanceof byte[]) {
+			return Arrays.equals((byte[]) left, (byte[]) right);
+		} else if (left instanceof short[] && right instanceof short[]) {
+			return Arrays.equals((short[]) left, (short[]) right);
+		} else if (left instanceof int[] && right instanceof int[]) {
+			return Arrays.equals((int[]) left, (int[]) right);
+		} else if (left instanceof long[] && right instanceof long[]) {
+			return Arrays.equals((long[]) left, (long[]) right);
+		} else if (left instanceof char[] && right instanceof char[])
+			return Arrays.equals((char[]) left, (char[]) right);
+		else if (left instanceof float[] && right instanceof float[]) {
+			return Arrays.equals((float[]) left, (float[]) right);
+		} else if (left instanceof double[] && right instanceof double[]) {
+			return Arrays.equals((double[]) left, (double[]) right);
+		} else if (left instanceof boolean[] && right instanceof boolean[]) {
+			return Arrays.equals((boolean[]) left, (boolean[]) right);
+		}
+		return false;
+	}
+
+	public static boolean equals(Object left, Object right) {
+		return equals(left, right, true);
 	}
 }

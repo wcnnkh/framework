@@ -81,7 +81,7 @@ public class SerializableAttributes<K, V> implements EditableAttributes<K, V>, S
 		}
 
 		if (obj instanceof SerializableAttributes) {
-			return ObjectUtils.nullSafeEquals(this.attrbitues, ((SerializableAttributes<?, ?>) obj).attrbitues);
+			return ObjectUtils.equals(this.attrbitues, ((SerializableAttributes<?, ?>) obj).attrbitues);
 		}
 		return false;
 	}

@@ -159,8 +159,8 @@ public class EncodedResource implements InputStreamSource {
 		}
 		EncodedResource otherResource = (EncodedResource) other;
 		return (this.resource.equals(otherResource.resource) &&
-				ObjectUtils.nullSafeEquals(this.charset, otherResource.charset) &&
-				ObjectUtils.nullSafeEquals(this.encoding, otherResource.encoding));
+				ObjectUtils.equals(this.charset, otherResource.charset) &&
+				ObjectUtils.equals(this.encoding, otherResource.encoding));
 	}
 
 	@Override

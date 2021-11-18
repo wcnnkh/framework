@@ -17,7 +17,7 @@ class HttpPatternServices<T> implements Comparator<HttpPatternService<T>>, Serve
 	@Override
 	public int compare(HttpPatternService<T> o1, HttpPatternService<T> o2) {
 		// 如果为0在TreeSet中会插入失败
-		if (ObjectUtils.nullSafeEquals(o1, o2)) {
+		if (ObjectUtils.equals(o1, o2)) {
 			return 0;
 		}
 

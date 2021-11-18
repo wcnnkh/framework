@@ -17,7 +17,7 @@ public class FieldMetadata implements AnnotatedElement {
 	public static final FieldMetadata[] EMPTY_ARRAY = new FieldMetadata[0];
 	private final Getter getter;
 	private final Setter setter;
-	
+
 	public FieldMetadata(FieldMetadata metadata) {
 		this(metadata.getter, metadata.setter);
 	}
@@ -42,20 +42,20 @@ public class FieldMetadata implements AnnotatedElement {
 	public boolean isSupportSetter() {
 		return setter != null;
 	}
-	
+
 	@Override
 	public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
 		T annotation = null;
-		if(isSupportGetter()) {
+		if (isSupportGetter()) {
 			annotation = getGetter().getAnnotation(annotationClass);
 		}
-		
-		if(annotation == null && isSupportSetter()) {
+
+		if (annotation == null && isSupportSetter()) {
 			annotation = getSetter().getAnnotation(annotationClass);
 		}
 		return annotation;
 	}
-	
+
 	@Override
 	public Annotation[] getAnnotations() {
 		if (isSupportGetter() && isSupportSetter()) {
@@ -71,7 +71,7 @@ public class FieldMetadata implements AnnotatedElement {
 		}
 		return AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT.getAnnotations();
 	}
-	
+
 	@Override
 	public Annotation[] getDeclaredAnnotations() {
 		if (isSupportGetter() && isSupportSetter()) {
@@ -112,13 +112,13 @@ public class FieldMetadata implements AnnotatedElement {
 		}
 
 		if (obj instanceof FieldMetadata) {
-			return ObjectUtils.nullSafeEquals(getter, ((FieldMetadata) obj).getter)
-					&& ObjectUtils.nullSafeEquals(setter, ((FieldMetadata) obj).setter);
+			return ObjectUtils.equals(getter, ((FieldMetadata) obj).getter)
+					&& ObjectUtils.equals(setter, ((FieldMetadata) obj).setter);
 		}
 
 		return false;
 	}
-	
+
 	@Override
 	public String toString() {
 		if (isSupportGetter() && isSupportSetter()) {
@@ -134,29 +134,29 @@ public class FieldMetadata implements AnnotatedElement {
 		}
 		return super.toString();
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public <T> T getValue(Object instance){
-		if(!isSupportGetter()){
+	public <T> T getValue(Object instance) {
+		if (!isSupportGetter()) {
 			return null;
 		}
-		
+
 		if (instance == null && !Modifier.isStatic(getGetter().getModifiers())) {
-			//非静态字段的调用实例不应该为空
+			// 非静态字段的调用实例不应该为空
 			return null;
 		}
 		return (T) getGetter().get(instance);
 	}
-	
-	public <T> List<T> getValues(Collection<?> instances, boolean nullable){
-		if(CollectionUtils.isEmpty(instances)){
+
+	public <T> List<T> getValues(Collection<?> instances, boolean nullable) {
+		if (CollectionUtils.isEmpty(instances)) {
 			return Collections.emptyList();
 		}
-		
-		if(!isSupportGetter()){
+
+		if (!isSupportGetter()) {
 			return Collections.emptyList();
 		}
-		
+
 		List<T> list = new ArrayList<T>(instances.size());
 		for (Object entity : instances) {
 			T value = getValue(entity);
@@ -168,8 +168,8 @@ public class FieldMetadata implements AnnotatedElement {
 		}
 		return list;
 	}
-	
-	public <T> List<T> getValues(Collection<?> instances){
+
+	public <T> List<T> getValues(Collection<?> instances) {
 		return getValues(instances, false);
 	}
 }

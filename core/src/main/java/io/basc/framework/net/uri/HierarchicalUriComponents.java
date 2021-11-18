@@ -430,24 +430,24 @@ public class HierarchicalUriComponents extends UriComponents {
 			return false;
 		}
 		HierarchicalUriComponents other = (HierarchicalUriComponents) obj;
-		return ObjectUtils.nullSafeEquals(getScheme(), other.getScheme()) &&
-				ObjectUtils.nullSafeEquals(getUserInfo(), other.getUserInfo()) &&
-				ObjectUtils.nullSafeEquals(getHost(), other.getHost()) &&
+		return ObjectUtils.equals(getScheme(), other.getScheme()) &&
+				ObjectUtils.equals(getUserInfo(), other.getUserInfo()) &&
+				ObjectUtils.equals(getHost(), other.getHost()) &&
 				getPort() == other.getPort() &&
 				this.path.equals(other.path) &&
 				this.queryParams.equals(other.queryParams) &&
-				ObjectUtils.nullSafeEquals(getFragment(), other.getFragment());
+				ObjectUtils.equals(getFragment(), other.getFragment());
 	}
 
 	@Override
 	public int hashCode() {
-		int result = ObjectUtils.nullSafeHashCode(getScheme());
-		result = 31 * result + ObjectUtils.nullSafeHashCode(this.userInfo);
-		result = 31 * result + ObjectUtils.nullSafeHashCode(this.host);
-		result = 31 * result + ObjectUtils.nullSafeHashCode(this.port);
+		int result = ObjectUtils.hashCode(getScheme());
+		result = 31 * result + ObjectUtils.hashCode(this.userInfo);
+		result = 31 * result + ObjectUtils.hashCode(this.host);
+		result = 31 * result + ObjectUtils.hashCode(this.port);
 		result = 31 * result + this.path.hashCode();
 		result = 31 * result + this.queryParams.hashCode();
-		result = 31 * result + ObjectUtils.nullSafeHashCode(getFragment());
+		result = 31 * result + ObjectUtils.hashCode(getFragment());
 		return result;
 	}
 
@@ -666,12 +666,12 @@ public class HierarchicalUriComponents extends UriComponents {
 
 		public boolean equals(Object obj) {
 			return (this == obj || (obj instanceof FullPathComponent &&
-					ObjectUtils.nullSafeEquals(getPath(), ((FullPathComponent) obj).getPath())));
+					ObjectUtils.equals(getPath(), ((FullPathComponent) obj).getPath())));
 		}
 
 		@Override
 		public int hashCode() {
-			return ObjectUtils.nullSafeHashCode(getPath());
+			return ObjectUtils.hashCode(getPath());
 		}
 	}
 

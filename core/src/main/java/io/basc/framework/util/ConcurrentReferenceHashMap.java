@@ -48,8 +48,8 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 	private final ReferenceType referenceType;
 
 	/**
-	 * The shift value used to calculate the size of the segments array and an
-	 * index from the hash.
+	 * The shift value used to calculate the size of the segments array and an index
+	 * from the hash.
 	 */
 	private final int shift;
 
@@ -68,8 +68,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 	/**
 	 * Create a new {@code ConcurrentReferenceHashMap} instance.
 	 * 
-	 * @param initialCapacity
-	 *            the initial capacity of the map
+	 * @param initialCapacity the initial capacity of the map
 	 */
 	public ConcurrentReferenceHashMap(int initialCapacity) {
 		this(initialCapacity, DEFAULT_LOAD_FACTOR, DEFAULT_CONCURRENCY_LEVEL, DEFAULT_REFERENCE_TYPE);
@@ -78,11 +77,9 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 	/**
 	 * Create a new {@code ConcurrentReferenceHashMap} instance.
 	 * 
-	 * @param initialCapacity
-	 *            the initial capacity of the map
-	 * @param loadFactor
-	 *            the load factor. When the average number of references per
-	 *            table exceeds this value resize will be attempted
+	 * @param initialCapacity the initial capacity of the map
+	 * @param loadFactor      the load factor. When the average number of references
+	 *                        per table exceeds this value resize will be attempted
 	 */
 	public ConcurrentReferenceHashMap(int initialCapacity, float loadFactor) {
 		this(initialCapacity, loadFactor, DEFAULT_CONCURRENCY_LEVEL, DEFAULT_REFERENCE_TYPE);
@@ -91,11 +88,9 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 	/**
 	 * Create a new {@code ConcurrentReferenceHashMap} instance.
 	 * 
-	 * @param initialCapacity
-	 *            the initial capacity of the map
-	 * @param concurrencyLevel
-	 *            the expected number of threads that will concurrently write to
-	 *            the map
+	 * @param initialCapacity  the initial capacity of the map
+	 * @param concurrencyLevel the expected number of threads that will concurrently
+	 *                         write to the map
 	 */
 	public ConcurrentReferenceHashMap(int initialCapacity, int concurrencyLevel) {
 		this(initialCapacity, DEFAULT_LOAD_FACTOR, concurrencyLevel, DEFAULT_REFERENCE_TYPE);
@@ -104,10 +99,8 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 	/**
 	 * Create a new {@code ConcurrentReferenceHashMap} instance.
 	 * 
-	 * @param initialCapacity
-	 *            the initial capacity of the map
-	 * @param referenceType
-	 *            the reference type used for entries (soft or weak)
+	 * @param initialCapacity the initial capacity of the map
+	 * @param referenceType   the reference type used for entries (soft or weak)
 	 */
 	public ConcurrentReferenceHashMap(int initialCapacity, ReferenceType referenceType) {
 		this(initialCapacity, DEFAULT_LOAD_FACTOR, DEFAULT_CONCURRENCY_LEVEL, referenceType);
@@ -116,14 +109,12 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 	/**
 	 * Create a new {@code ConcurrentReferenceHashMap} instance.
 	 * 
-	 * @param initialCapacity
-	 *            the initial capacity of the map
-	 * @param loadFactor
-	 *            the load factor. When the average number of references per
-	 *            table exceeds this value, resize will be attempted.
-	 * @param concurrencyLevel
-	 *            the expected number of threads that will concurrently write to
-	 *            the map
+	 * @param initialCapacity  the initial capacity of the map
+	 * @param loadFactor       the load factor. When the average number of
+	 *                         references per table exceeds this value, resize will
+	 *                         be attempted.
+	 * @param concurrencyLevel the expected number of threads that will concurrently
+	 *                         write to the map
 	 */
 	public ConcurrentReferenceHashMap(int initialCapacity, float loadFactor, int concurrencyLevel) {
 		this(initialCapacity, loadFactor, concurrencyLevel, DEFAULT_REFERENCE_TYPE);
@@ -132,16 +123,13 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 	/**
 	 * Create a new {@code ConcurrentReferenceHashMap} instance.
 	 * 
-	 * @param initialCapacity
-	 *            the initial capacity of the map
-	 * @param loadFactor
-	 *            the load factor. When the average number of references per
-	 *            table exceeds this value, resize will be attempted.
-	 * @param concurrencyLevel
-	 *            the expected number of threads that will concurrently write to
-	 *            the map
-	 * @param referenceType
-	 *            the reference type used for entries (soft or weak)
+	 * @param initialCapacity  the initial capacity of the map
+	 * @param loadFactor       the load factor. When the average number of
+	 *                         references per table exceeds this value, resize will
+	 *                         be attempted.
+	 * @param concurrencyLevel the expected number of threads that will concurrently
+	 *                         write to the map
+	 * @param referenceType    the reference type used for entries (soft or weak)
 	 */
 	@SuppressWarnings("unchecked")
 	public ConcurrentReferenceHashMap(int initialCapacity, float loadFactor, int concurrencyLevel,
@@ -175,8 +163,8 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 	}
 
 	/**
-	 * Factory method that returns the {@link ReferenceManager}. This method
-	 * will be called once for each {@link Segment}.
+	 * Factory method that returns the {@link ReferenceManager}. This method will be
+	 * called once for each {@link Segment}.
 	 * 
 	 * @return a new reference manager
 	 */
@@ -185,13 +173,12 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 	}
 
 	/**
-	 * Get the hash for a given object, apply an additional hash function to
-	 * reduce collisions. This implementation uses the same Wang/Jenkins
-	 * algorithm as {@link ConcurrentHashMap}. Subclasses can override to
-	 * provide alternative hashing.
+	 * Get the hash for a given object, apply an additional hash function to reduce
+	 * collisions. This implementation uses the same Wang/Jenkins algorithm as
+	 * {@link ConcurrentHashMap}. Subclasses can override to provide alternative
+	 * hashing.
 	 * 
-	 * @param o
-	 *            the object to hash (may be null)
+	 * @param o the object to hash (may be null)
 	 * @return the resulting hash code
 	 */
 	protected int getHash(Object o) {
@@ -218,7 +205,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 	@Override
 	public boolean containsKey(Object key) {
 		Entry<K, V> entry = getEntryIfAvailable(key);
-		return (entry != null && ObjectUtils.nullSafeEquals(entry.getKey(), key));
+		return (entry != null && ObjectUtils.equals(entry.getKey(), key));
 	}
 
 	private Entry<K, V> getEntryIfAvailable(Object key) {
@@ -230,10 +217,8 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 	 * Return a {@link Reference} to the {@link Entry} for the specified
 	 * {@code key}, or {@code null} if not found.
 	 * 
-	 * @param key
-	 *            the key (can be {@code null})
-	 * @param restructure
-	 *            types of restructure allowed during this call
+	 * @param key         the key (can be {@code null})
+	 * @param restructure types of restructure allowed during this call
 	 * @return the reference, or {@code null} if not found
 	 */
 	protected final Reference<K, V> getReference(Object key, Restructure restructure) {
@@ -283,7 +268,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 		return doTask(key, new Task<Boolean>(TaskOption.RESTRUCTURE_AFTER, TaskOption.SKIP_IF_EMPTY) {
 			@Override
 			protected Boolean execute(Reference<K, V> ref, Entry<K, V> entry) {
-				if (entry != null && ObjectUtils.nullSafeEquals(entry.getValue(), value)) {
+				if (entry != null && ObjectUtils.equals(entry.getValue(), value)) {
 					ref.release();
 					return true;
 				}
@@ -296,7 +281,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 		return doTask(key, new Task<Boolean>(TaskOption.RESTRUCTURE_BEFORE, TaskOption.SKIP_IF_EMPTY) {
 			@Override
 			protected Boolean execute(Reference<K, V> ref, Entry<K, V> entry) {
-				if (entry != null && ObjectUtils.nullSafeEquals(entry.getValue(), oldValue)) {
+				if (entry != null && ObjectUtils.equals(entry.getValue(), oldValue)) {
 					entry.setValue(newValue);
 					return true;
 				}
@@ -378,10 +363,8 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 	 * Calculate a shift value that can be used to create a power-of-two value
 	 * between the specified maximum and minimum values.
 	 * 
-	 * @param minimumValue
-	 *            the minimum value
-	 * @param maximumValue
-	 *            the maximum value
+	 * @param minimumValue the minimum value
+	 * @param maximumValue the maximum value
 	 * @return the calculated shift (use {@code 1 << shift} to obtain a value)
 	 */
 	protected static int calculateShift(int minimumValue, int maximumValue) {
@@ -418,15 +401,15 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 		private final int initialSize;
 
 		/**
-		 * Array of references indexed using the low order bits from the hash.
-		 * This property should only be set along with {@code resizeThreshold}.
+		 * Array of references indexed using the low order bits from the hash. This
+		 * property should only be set along with {@code resizeThreshold}.
 		 */
 		private volatile Reference<K, V>[] references;
 
 		/**
-		 * The total number of references contained in this segment. This
-		 * includes chained references and references that have been garbage
-		 * collected but not purged.
+		 * The total number of references contained in this segment. This includes
+		 * chained references and references that have been garbage collected but not
+		 * purged.
 		 */
 		private volatile int count = 0;
 
@@ -457,15 +440,12 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 		}
 
 		/**
-		 * Apply an update operation to this segment. The segment will be locked
-		 * during the update.
+		 * Apply an update operation to this segment. The segment will be locked during
+		 * the update.
 		 * 
-		 * @param hash
-		 *            the hash of the key
-		 * @param key
-		 *            the key
-		 * @param task
-		 *            the update operation
+		 * @param hash the hash of the key
+		 * @param key  the key
+		 * @param task the update operation
 		 * @return the result of the operation
 		 */
 		public <T> T doTask(final int hash, final Object key, final Task<T> task) {
@@ -519,12 +499,11 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 		}
 
 		/**
-		 * Restructure the underlying data structure when it becomes necessary.
-		 * This method can increase the size of the references table as well as
-		 * purge any references that have been garbage collected.
+		 * Restructure the underlying data structure when it becomes necessary. This
+		 * method can increase the size of the references table as well as purge any
+		 * references that have been garbage collected.
 		 * 
-		 * @param allowResize
-		 *            if resizing is permitted
+		 * @param allowResize if resizing is permitted
 		 */
 		protected final void restructureIfNecessary(boolean allowResize) {
 			boolean needsResize = (this.count > 0 && this.count >= this.resizeThreshold);
@@ -592,7 +571,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 					Entry<K, V> entry = currRef.get();
 					if (entry != null) {
 						K entryKey = entry.getKey();
-						if (ObjectUtils.nullSafeEquals(entryKey, key)) {
+						if (ObjectUtils.equals(entryKey, key)) {
 							return currRef;
 						}
 					}
@@ -612,11 +591,9 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 		}
 
 		/**
-		 * Replace the references with a new value, recalculating the
-		 * resizeThreshold.
+		 * Replace the references with a new value, recalculating the resizeThreshold.
 		 * 
-		 * @param references
-		 *            the new references
+		 * @param references the new references
 		 */
 		private void setReferences(Reference<K, V>[] references) {
 			this.references = references;
@@ -646,8 +623,8 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 	protected interface Reference<K, V> {
 
 		/**
-		 * Return the referenced entry, or {@code null} if the entry is no
-		 * longer available.
+		 * Return the referenced entry, or {@code null} if the entry is no longer
+		 * available.
 		 */
 		Entry<K, V> get();
 
@@ -710,13 +687,13 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 				return false;
 			}
 			Map.Entry otherEntry = (Map.Entry) other;
-			return (ObjectUtils.nullSafeEquals(getKey(), otherEntry.getKey())
-					&& ObjectUtils.nullSafeEquals(getValue(), otherEntry.getValue()));
+			return (ObjectUtils.equals(getKey(), otherEntry.getKey())
+					&& ObjectUtils.equals(getValue(), otherEntry.getValue()));
 		}
 
 		@Override
 		public final int hashCode() {
-			return (ObjectUtils.nullSafeHashCode(this.key) ^ ObjectUtils.nullSafeHashCode(this.value));
+			return (ObjectUtils.hashCode(this.key) ^ ObjectUtils.hashCode(this.value));
 		}
 	}
 
@@ -738,12 +715,9 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 		/**
 		 * Execute the task.
 		 * 
-		 * @param ref
-		 *            the found reference (or {@code null})
-		 * @param entry
-		 *            the found entry (or {@code null})
-		 * @param entries
-		 *            access to the underlying entries
+		 * @param ref     the found reference (or {@code null})
+		 * @param entry   the found entry (or {@code null})
+		 * @param entries access to the underlying entries
 		 * @return the result of the task
 		 * @see #execute(Reference, Entry)
 		 */
@@ -752,13 +726,11 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 		}
 
 		/**
-		 * Convenience method that can be used for tasks that do not need access
-		 * to {@link Entries}.
+		 * Convenience method that can be used for tasks that do not need access to
+		 * {@link Entries}.
 		 * 
-		 * @param ref
-		 *            the found reference (or {@code null})
-		 * @param entry
-		 *            the found entry (or {@code null})
+		 * @param ref   the found reference (or {@code null})
+		 * @param entry the found entry (or {@code null})
 		 * @return the result of the task
 		 * @see #execute(Reference, Entry, Entries)
 		 */
@@ -783,8 +755,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 		/**
 		 * Add a new entry with the specified value.
 		 * 
-		 * @param value
-		 *            the value to add
+		 * @param value the value to add
 		 */
 		public abstract void add(V value);
 	}
@@ -806,7 +777,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 				Reference<K, V> ref = ConcurrentReferenceHashMap.this.getReference(entry.getKey(), Restructure.NEVER);
 				Entry<K, V> otherEntry = (ref != null ? ref.get() : null);
 				if (otherEntry != null) {
-					return ObjectUtils.nullSafeEquals(otherEntry.getValue(), otherEntry.getValue());
+					return ObjectUtils.equals(otherEntry.getValue(), otherEntry.getValue());
 				}
 			}
 			return false;
@@ -927,12 +898,9 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 		/**
 		 * Factory method used to create a new {@link Reference}.
 		 * 
-		 * @param entry
-		 *            the entry contained in the reference
-		 * @param hash
-		 *            the hash
-		 * @param next
-		 *            the next reference in the chain, or {@code null} if none
+		 * @param entry the entry contained in the reference
+		 * @param hash  the hash
+		 * @param next  the next reference in the chain, or {@code null} if none
 		 * @return a new {@link Reference}
 		 */
 		public Reference<K, V> createReference(Entry<K, V> entry, int hash, Reference<K, V> next) {
@@ -943,11 +911,10 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 		}
 
 		/**
-		 * Return any reference that has been garbage collected and can be
-		 * purged from the underlying structure or {@code null} if no references
-		 * need purging. This method must be thread safe and ideally should not
-		 * block when returning {@code null}. References should be returned once
-		 * and only once.
+		 * Return any reference that has been garbage collected and can be purged from
+		 * the underlying structure or {@code null} if no references need purging. This
+		 * method must be thread safe and ideally should not block when returning
+		 * {@code null}. References should be returned once and only once.
 		 * 
 		 * @return a reference to purge or {@code null}
 		 */
