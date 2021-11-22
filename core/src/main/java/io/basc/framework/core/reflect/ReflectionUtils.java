@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +28,9 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.comparator.CompareUtils;
+import io.basc.framework.util.page.Pageables;
+import io.basc.framework.util.page.SharedPageable;
+import io.basc.framework.util.page.StreamPageables;
 
 public abstract class ReflectionUtils {
 	private static final String SERIAL_VERSION_UID_FIELD_NAME = "serialVersionUID";
@@ -532,10 +536,10 @@ public abstract class ReflectionUtils {
 	 * @see java.lang.reflect.Field#setAccessible
 	 */
 	public static void makeAccessible(Field field) {
-		if(field.isAccessible()) {
-			return ;
+		if (field.isAccessible()) {
+			return;
 		}
-		
+
 		if ((!Modifier.isPublic(field.getModifiers()) || !Modifier.isPublic(field.getDeclaringClass().getModifiers())
 				|| Modifier.isFinal(field.getModifiers()))) {
 			field.setAccessible(true);
@@ -552,10 +556,10 @@ public abstract class ReflectionUtils {
 	 * @see java.lang.reflect.Method#setAccessible
 	 */
 	public static void makeAccessible(Method method) {
-		if(method.isAccessible()) {
-			return ;
+		if (method.isAccessible()) {
+			return;
 		}
-		
+
 		if ((!Modifier.isPublic(method.getModifiers())
 				|| !Modifier.isPublic(method.getDeclaringClass().getModifiers()))) {
 			method.setAccessible(true);
@@ -572,10 +576,10 @@ public abstract class ReflectionUtils {
 	 * @see java.lang.reflect.Constructor#setAccessible
 	 */
 	public static void makeAccessible(Constructor<?> ctor) {
-		if(ctor.isAccessible()) {
-			return ;
+		if (ctor.isAccessible()) {
+			return;
 		}
-		
+
 		if ((!Modifier.isPublic(ctor.getModifiers()) || !Modifier.isPublic(ctor.getDeclaringClass().getModifiers()))) {
 			ctor.setAccessible(true);
 		}
@@ -1029,24 +1033,70 @@ public abstract class ReflectionUtils {
 		return method.getDeclaringClass().getName() + "." + method.getName();
 	}
 
-	public static Field getField(Class<?> type, String name, boolean sup) {
-		Class<?> clz = type;
-		Field field;
-		while (clz != null && clz != Object.class) {
-			try {
-				field = clz.getDeclaredField(name);
-				field.setAccessible(true);
-				return field;
-			} catch (NoSuchFieldException e) {
-			}
+	public static Pageables<Class<?>, Field> getFields(Class<?> sourceClass) {
+		Assert.requiredArgument(sourceClass != null, "sourceClass");
+		return new StreamPageables<Class<?>, Field>(sourceClass, (c) -> {
+			Field[] fields = c.getFields();
+			List<Field> list = fields == null ? Collections.emptyList() : Arrays.asList(fields);
+			Class<?> superclass = c.getSuperclass();
+			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass,
+					list.size());
+		});
+	}
 
-			if (sup) {
-				clz = clz.getSuperclass();
-			} else {
-				break;
-			}
-		}
-		return null;
+	public static Pageables<Class<?>, Field> getDeclaredField(Class<?> sourceClass) {
+		Assert.requiredArgument(sourceClass != null, "sourceClass");
+		return new StreamPageables<Class<?>, Field>(sourceClass, (c) -> {
+			Field[] fields = c.getDeclaredFields();
+			List<Field> list = fields == null ? Collections.emptyList() : Arrays.asList(fields);
+			Class<?> superclass = c.getSuperclass();
+			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass,
+					list.size());
+		});
+	}
+
+	public static Pageables<Class<?>, Method> getMethods(Class<?> sourceClass) {
+		Assert.requiredArgument(sourceClass != null, "sourceClass");
+		return new StreamPageables<Class<?>, Method>(sourceClass, (c) -> {
+			Method[] methods = c.getMethods();
+			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
+			Class<?> superclass = c.getSuperclass();
+			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass,
+					list.size());
+		});
+	}
+
+	public static Pageables<Class<?>, Method> getDeclaredMethods(Class<?> sourceClass) {
+		Assert.requiredArgument(sourceClass != null, "sourceClass");
+		return new StreamPageables<Class<?>, Method>(sourceClass, (c) -> {
+			Method[] methods = c.getDeclaredMethods();
+			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
+			Class<?> superclass = c.getSuperclass();
+			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass,
+					list.size());
+		});
+	}
+
+	public static Pageables<Class<?>, Constructor<?>> getConstructors(Class<?> sourceClass) {
+		Assert.requiredArgument(sourceClass != null, "sourceClass");
+		return new StreamPageables<Class<?>, Constructor<?>>(sourceClass, (c) -> {
+			Constructor<?>[] constructors = c.getConstructors();
+			List<Constructor<?>> list = constructors == null ? Collections.emptyList() : Arrays.asList(constructors);
+			Class<?> superclass = c.getSuperclass();
+			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass,
+					list.size());
+		});
+	}
+
+	public static Pageables<Class<?>, Constructor<?>> getDeclaredConstructors(Class<?> sourceClass) {
+		Assert.requiredArgument(sourceClass != null, "sourceClass");
+		return new StreamPageables<Class<?>, Constructor<?>>(sourceClass, (c) -> {
+			Constructor<?>[] constructors = c.getDeclaredConstructors();
+			List<Constructor<?>> list = constructors == null ? Collections.emptyList() : Arrays.asList(constructors);
+			Class<?> superclass = c.getSuperclass();
+			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass,
+					list.size());
+		});
 	}
 
 	public static Method[] getMethods(Class<?> clazz, boolean declared) {

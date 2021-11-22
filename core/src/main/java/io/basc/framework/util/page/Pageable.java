@@ -17,7 +17,7 @@ public interface Pageable<K, T> extends Iterable<T> {
 	K getCursorId();
 
 	/**
-	 * 分页的限制数据(limit)
+	 * 数量/分页的限制数量
 	 * 
 	 * @return
 	 */
@@ -76,8 +76,8 @@ public interface Pageable<K, T> extends Iterable<T> {
 	default Iterator<T> iterator() {
 		return stream().iterator();
 	}
-	
-	default Pageable<K, T> shared(){
+
+	default Pageable<K, T> shared() {
 		return new SharedPageable<>(this);
 	}
 }

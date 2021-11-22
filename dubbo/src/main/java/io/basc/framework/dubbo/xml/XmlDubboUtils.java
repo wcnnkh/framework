@@ -1,21 +1,5 @@
 package io.basc.framework.dubbo.xml;
 
-import io.basc.framework.context.ClassesLoaderFactory;
-import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.dom.DomUtils;
-import io.basc.framework.dubbo.DubboUtils;
-import io.basc.framework.env.Environment;
-import io.basc.framework.env.Sys;
-import io.basc.framework.factory.NoArgsInstanceFactory;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.mapper.Fields;
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.util.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +23,22 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import io.basc.framework.context.ClassesLoaderFactory;
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
+import io.basc.framework.dom.DomUtils;
+import io.basc.framework.env.Environment;
+import io.basc.framework.env.Sys;
+import io.basc.framework.factory.NoArgsInstanceFactory;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.mapper.Copy;
+import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.FieldFeature;
+import io.basc.framework.mapper.Fields;
+import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.StringUtils;
+
 public final class XmlDubboUtils {
 	private static final String TAG_NAME_PREFIX = "dubbo:";
 
@@ -53,8 +53,8 @@ public final class XmlDubboUtils {
 	private XmlDubboUtils() {
 	};
 
-	public static List<ApplicationConfig> parseApplicationConfigList(final Environment environment,
-			NodeList nodeList, @Nullable ApplicationConfig defaultConfig) {
+	public static List<ApplicationConfig> parseApplicationConfigList(final Environment environment, NodeList nodeList,
+			@Nullable ApplicationConfig defaultConfig) {
 		return parseConfigList(ApplicationConfig.class, environment, nodeList, defaultConfig,
 				new ConfigFilter<ApplicationConfig>() {
 					@Override
@@ -75,8 +75,7 @@ public final class XmlDubboUtils {
 			@Override
 			public boolean doFilter(List<MethodConfig> list, Node node, MethodConfig config) {
 				if (config.isValid()) {
-					List<ArgumentConfig> argumentConfigs = parseArgumentConfigList(environment,
-							node.getChildNodes());
+					List<ArgumentConfig> argumentConfigs = parseArgumentConfigList(environment, node.getChildNodes());
 					if (!argumentConfigs.isEmpty()) {
 						config.setArguments(argumentConfigs);
 					}
@@ -91,14 +90,15 @@ public final class XmlDubboUtils {
 		return parseConfigList(ArgumentConfig.class, environment, nodeList, null);
 	}
 
-	public static List<MetadataReportConfig> parseMetadataReportConfigList(Environment environment,
-			NodeList nodeList, @Nullable MetadataReportConfig defaultConfig) {
+	public static List<MetadataReportConfig> parseMetadataReportConfigList(Environment environment, NodeList nodeList,
+			@Nullable MetadataReportConfig defaultConfig) {
 		return parseConfigList(MetadataReportConfig.class, environment, nodeList, defaultConfig);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public static List<ServiceConfig> parseServiceConfigList(final Environment environment, NodeList nodeList,
-			ServiceConfig<?> defaultConfig, final NoArgsInstanceFactory refInstanceFactory, final ClassesLoaderFactory classesLoaderFactory) {
+			ServiceConfig<?> defaultConfig, final NoArgsInstanceFactory refInstanceFactory,
+			final ClassesLoaderFactory classesLoaderFactory) {
 		return parseConfigList(ServiceConfig.class, environment, nodeList, defaultConfig,
 				new ConfigFilter<ServiceConfig>() {
 
@@ -113,17 +113,17 @@ public final class XmlDubboUtils {
 						String packageName = getPackageName(environment, node);
 						if (StringUtils.isNotEmpty(packageName)) {
 							for (Class<?> clazz : classesLoaderFactory.getClassesLoader(packageName)) {
-								if(!clazz.isInterface()){
+								if (!clazz.isInterface()) {
 									continue;
 								}
-								
-								if(!refInstanceFactory.isInstance(clazz)){
+
+								if (!refInstanceFactory.isInstance(clazz)) {
 									logger.warn("{} not supported get instance", clazz);
 									continue;
 								}
 
 								Object refInstance = refInstanceFactory.getInstance(clazz);
-								ServiceConfig<Object> scanService = DubboUtils.getCopy().copy(config, null, ServiceConfig.class, null);
+								ServiceConfig<Object> scanService = Copy.copy(config, ServiceConfig.class);
 								scanService.setInterface(clazz);
 								scanService.setRef(refInstance);
 								if (scanService.isValid()) {
@@ -146,8 +146,7 @@ public final class XmlDubboUtils {
 
 						if (config.isValid() && config.getRef() != null
 								&& StringUtils.isNotEmpty(config.getInterface())) {
-							List<MethodConfig> methodConfigs = parseMethodConfigList(environment,
-									node.getChildNodes());
+							List<MethodConfig> methodConfigs = parseMethodConfigList(environment, node.getChildNodes());
 							if (!methodConfigs.isEmpty()) {
 								config.setMethods(methodConfigs);
 							}
@@ -174,7 +173,7 @@ public final class XmlDubboUtils {
 	}
 
 	public static List<RegistryConfig> parseRegistryConfigList(Environment environment, NodeList nodeList,
-		 @Nullable RegistryConfig defaultConfig) {
+			@Nullable RegistryConfig defaultConfig) {
 		return parseConfigList(RegistryConfig.class, environment, nodeList, defaultConfig);
 	}
 
@@ -183,8 +182,8 @@ public final class XmlDubboUtils {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static List<ReferenceConfig> parseReferenceConfigList(final Environment environment,
-			NodeList nodeList, ReferenceConfig<?> defaultConfig, final ClassesLoaderFactory classesLoaderFactory) {
+	public static List<ReferenceConfig> parseReferenceConfigList(final Environment environment, NodeList nodeList,
+			ReferenceConfig<?> defaultConfig, final ClassesLoaderFactory classesLoaderFactory) {
 		return parseConfigList(ReferenceConfig.class, environment, nodeList, defaultConfig,
 				new ConfigFilter<ReferenceConfig>() {
 					@Override
@@ -196,7 +195,7 @@ public final class XmlDubboUtils {
 									continue;
 								}
 
-								ReferenceConfig<?> referenceConfig = DubboUtils.getCopy().copy(config, null, ReferenceConfig.class, null);
+								ReferenceConfig<?> referenceConfig = Copy.copy(config, ReferenceConfig.class);
 								referenceConfig.setInterface(clazz);
 								if (referenceConfig.isValid()) {
 									list.add(referenceConfig);
@@ -211,8 +210,7 @@ public final class XmlDubboUtils {
 						}
 
 						if (config.isValid() && config.getInterfaceClass() != null) {
-							List<MethodConfig> methodConfigs = parseMethodConfigList(environment,
-									node.getChildNodes());
+							List<MethodConfig> methodConfigs = parseMethodConfigList(environment, node.getChildNodes());
 							if (!methodConfigs.isEmpty()) {
 								config.setMethods(methodConfigs);
 							}
@@ -261,13 +259,13 @@ public final class XmlDubboUtils {
 		boolean doFilter(List<T> list, Node node, T config);
 	}
 
-	private static <T> List<T> parseConfigList(Class<? extends T> type, Environment environment,
-			NodeList nodeList, @Nullable T defaultConfig) {
+	private static <T> List<T> parseConfigList(Class<? extends T> type, Environment environment, NodeList nodeList,
+			@Nullable T defaultConfig) {
 		return parseConfigList(type, environment, nodeList, defaultConfig, null);
 	}
 
-	private static <T> List<T> parseConfigList(Class<? extends T> type, Environment environment,
-			NodeList nodeList, @Nullable T defaultConfig, ConfigFilter<T> filter) {
+	private static <T> List<T> parseConfigList(Class<? extends T> type, Environment environment, NodeList nodeList,
+			@Nullable T defaultConfig, ConfigFilter<T> filter) {
 		List<T> list = new ArrayList<T>(4);
 		if (nodeList != null) {
 			String tagName = TAG_NAME_PREFIX + AbstractConfig.getTagName(type);
@@ -277,8 +275,7 @@ public final class XmlDubboUtils {
 					continue;
 				}
 
-				T config = defaultConfig == null ? Sys.env.getInstance(type)
-						: DubboUtils.getCopy().copy(defaultConfig, null, type, null);
+				T config = defaultConfig == null ? Sys.env.getInstance(type) : Copy.copy(defaultConfig, type);
 				loader(config, environment, node);
 
 				if (filter != null && !filter.doFilter(list, node, config)) {
@@ -321,8 +318,8 @@ public final class XmlDubboUtils {
 	public static List<MonitorConfig> parseMonitorConfigList(Environment environment, NodeList nodeList) {
 		return parseConfigList(MonitorConfig.class, environment, nodeList, null);
 	}
-	
-	public static List<ConfigCenterConfig> parseConfigCenterConfigs(Environment environment, NodeList nodeList){
+
+	public static List<ConfigCenterConfig> parseConfigCenterConfigs(Environment environment, NodeList nodeList) {
 		return parseConfigList(ConfigCenterConfig.class, environment, nodeList, null);
 	}
 }
