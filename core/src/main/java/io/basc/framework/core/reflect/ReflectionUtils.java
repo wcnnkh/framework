@@ -585,224 +585,6 @@ public abstract class ReflectionUtils {
 		}
 	}
 
-	/**
-	 * Perform the given callback operation on all matching methods of the given
-	 * class and superclasses.
-	 * <p>
-	 * The same named method occurring on subclass and superclass will appear twice,
-	 * unless excluded by a {@link MethodFilter}.
-	 * 
-	 * @param clazz class to start looking at
-	 * @param mc    the callback to invoke for each method
-	 * @see #doWithMethods(Class, MethodCallback, MethodFilter)
-	 */
-	public static void doWithMethods(Class<?> clazz, MethodCallback mc) throws IllegalArgumentException {
-		doWithMethods(clazz, mc, null);
-	}
-
-	/**
-	 * Perform the given callback operation on all matching methods of the given
-	 * class and superclasses (or given interface and super-interfaces).
-	 * <p>
-	 * The same named method occurring on subclass and superclass will appear twice,
-	 * unless excluded by the specified {@link MethodFilter}.
-	 * 
-	 * @param clazz class to start looking at
-	 * @param mc    the callback to invoke for each method
-	 * @param mf    the filter that determines the methods to apply the callback to
-	 */
-	public static void doWithMethods(Class<?> clazz, MethodCallback mc, MethodFilter mf)
-			throws IllegalArgumentException {
-
-		// Keep backing up the inheritance hierarchy.
-		Method[] methods = clazz.getDeclaredMethods();
-		for (Method method : methods) {
-			if (mf != null && !mf.matches(method)) {
-				continue;
-			}
-			try {
-				mc.doWith(method);
-			} catch (IllegalAccessException ex) {
-				throw new IllegalStateException(
-						"Shouldn't be illegal to access method '" + method.getName() + "': " + ex);
-			}
-		}
-		if (clazz.getSuperclass() != null) {
-			doWithMethods(clazz.getSuperclass(), mc, mf);
-		} else if (clazz.isInterface()) {
-			for (Class<?> superIfc : clazz.getInterfaces()) {
-				doWithMethods(superIfc, mc, mf);
-			}
-		}
-	}
-
-	/**
-	 * Get all declared methods on the leaf class and all superclasses. Leaf class
-	 * methods are included first.
-	 */
-	public static Method[] getAllDeclaredMethods(Class<?> leafClass) throws IllegalArgumentException {
-		final List<Method> methods = new ArrayList<Method>(32);
-		doWithMethods(leafClass, new MethodCallback() {
-			public void doWith(Method method) {
-				methods.add(method);
-			}
-		});
-		return methods.toArray(new Method[methods.size()]);
-	}
-
-	/**
-	 * Invoke the given callback on all fields in the target class, going up the
-	 * class hierarchy to get all declared fields.
-	 * 
-	 * @param clazz the target class to analyze
-	 * @param fc    the callback to invoke for each field
-	 */
-	public static void doWithFields(Class<?> clazz, FieldCallback fc) throws IllegalArgumentException {
-		doWithFields(clazz, fc, null);
-	}
-
-	/**
-	 * Invoke the given callback on all fields in the target class, going up the
-	 * class hierarchy to get all declared fields.
-	 * 
-	 * @param clazz the target class to analyze
-	 * @param fc    the callback to invoke for each field
-	 * @param ff    the filter that determines the fields to apply the callback to
-	 */
-	public static void doWithFields(Class<?> clazz, FieldCallback fc, FieldFilter ff) throws IllegalArgumentException {
-
-		// Keep backing up the inheritance hierarchy.
-		Class<?> targetClass = clazz;
-		do {
-			Field[] fields = targetClass.getDeclaredFields();
-			for (Field field : fields) {
-				// Skip static and final fields.
-				if (ff != null && !ff.matches(field)) {
-					continue;
-				}
-				try {
-					fc.doWith(field);
-				} catch (IllegalAccessException ex) {
-					throw new IllegalStateException(
-							"Shouldn't be illegal to access field '" + field.getName() + "': " + ex);
-				}
-			}
-			targetClass = targetClass.getSuperclass();
-		} while (targetClass != null && targetClass != Object.class);
-	}
-
-	/**
-	 * Given the source object and the destination, which must be the same class or
-	 * a subclass, copy all fields, including inherited fields. Designed to work on
-	 * objects with public no-arg constructors.
-	 * 
-	 * @throws IllegalArgumentException if the arguments are incompatible
-	 */
-	public static void shallowCopyFieldState(final Object src, final Object dest) throws IllegalArgumentException {
-		if (src == null) {
-			throw new IllegalArgumentException("Source for field copy cannot be null");
-		}
-		if (dest == null) {
-			throw new IllegalArgumentException("Destination for field copy cannot be null");
-		}
-		if (!src.getClass().isAssignableFrom(dest.getClass())) {
-			throw new IllegalArgumentException("Destination class [" + dest.getClass().getName()
-					+ "] must be same or subclass as source class [" + src.getClass().getName() + "]");
-		}
-		doWithFields(src.getClass(), new FieldCallback() {
-			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
-				makeAccessible(field);
-				Object srcValue = field.get(src);
-				field.set(dest, srcValue);
-			}
-		}, COPYABLE_FIELDS);
-	}
-
-	/**
-	 * Action to take on each method.
-	 */
-	public interface MethodCallback {
-
-		/**
-		 * Perform an operation using the given method.
-		 * 
-		 * @param method the method to operate on
-		 */
-		void doWith(Method method) throws IllegalArgumentException, IllegalAccessException;
-	}
-
-	/**
-	 * Callback optionally used to filter methods to be operated on by a method
-	 * callback.
-	 */
-	public interface MethodFilter {
-
-		/**
-		 * Determine whether the given method matches.
-		 * 
-		 * @param method the method to check
-		 */
-		boolean matches(Method method);
-	}
-
-	/**
-	 * Callback interface invoked on each field in the hierarchy.
-	 */
-	public interface FieldCallback {
-
-		/**
-		 * Perform an operation using the given field.
-		 * 
-		 * @param field the field to operate on
-		 */
-		void doWith(Field field) throws IllegalArgumentException, IllegalAccessException;
-	}
-
-	/**
-	 * Callback optionally used to filter fields to be operated on by a field
-	 * callback.
-	 */
-	public interface FieldFilter {
-
-		/**
-		 * Determine whether the given field matches.
-		 * 
-		 * @param field the field to check
-		 */
-		boolean matches(Field field);
-	}
-
-	/**
-	 * Pre-built FieldFilter that matches all non-static, non-final fields.
-	 */
-	public static FieldFilter COPYABLE_FIELDS = new FieldFilter() {
-
-		public boolean matches(Field field) {
-			return !(Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers()));
-		}
-	};
-
-	/**
-	 * Pre-built MethodFilter that matches all non-bridge methods.
-	 */
-	public static MethodFilter NON_BRIDGED_METHODS = new MethodFilter() {
-
-		public boolean matches(Method method) {
-			return !method.isBridge();
-		}
-	};
-
-	/**
-	 * Pre-built MethodFilter that matches all non-bridge methods which are not
-	 * declared on {@code java.lang.Object}.
-	 */
-	public static MethodFilter USER_DECLARED_METHODS = new MethodFilter() {
-
-		public boolean matches(Method method) {
-			return (!method.isBridge() && method.getDeclaringClass() != Object.class);
-		}
-	};
-
 	@SuppressWarnings("unchecked")
 	public static <T> Constructor<T> findConstructor(Class<T> type, boolean isPublic, Class<?>... parameterTypes) {
 		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
@@ -912,57 +694,8 @@ public abstract class ReflectionUtils {
 			return null;
 		}
 
-		if (!Modifier.isPublic(clazz.getModifiers()) || !Modifier.isPublic(method.getModifiers())) {
-			method.setAccessible(true);
-		}
+		makeAccessible(method);
 		return method;
-	}
-
-	public static int getMethodCountForName(Class<?> clazz, String methodName) {
-		Assert.notNull(clazz, "Class must not be null");
-		Assert.notNull(methodName, "Method name must not be null");
-		int count = 0;
-		Method[] declaredMethods = clazz.getDeclaredMethods();
-		for (Method method : declaredMethods) {
-			if (methodName.equals(method.getName())) {
-				count++;
-			}
-		}
-		Class<?>[] ifcs = clazz.getInterfaces();
-		for (Class<?> ifc : ifcs) {
-			count += getMethodCountForName(ifc, methodName);
-		}
-		if (clazz.getSuperclass() != null) {
-			count += getMethodCountForName(clazz.getSuperclass(), methodName);
-		}
-		return count;
-	}
-
-	/**
-	 * Does the given class or one of its superclasses at least have one or more
-	 * methods with the supplied name (with any argument types)? Includes non-public
-	 * methods.
-	 * 
-	 * @param clazz      the clazz to check
-	 * @param methodName the name of the method
-	 * @return whether there is at least one method with the given name
-	 */
-	public static boolean hasAtLeastOneMethodWithName(Class<?> clazz, String methodName) {
-		Assert.notNull(clazz, "Class must not be null");
-		Assert.notNull(methodName, "Method name must not be null");
-		Method[] declaredMethods = clazz.getDeclaredMethods();
-		for (Method method : declaredMethods) {
-			if (method.getName().equals(methodName)) {
-				return true;
-			}
-		}
-		Class<?>[] ifcs = clazz.getInterfaces();
-		for (Class<?> ifc : ifcs) {
-			if (hasAtLeastOneMethodWithName(ifc, methodName)) {
-				return true;
-			}
-		}
-		return (clazz.getSuperclass() != null && hasAtLeastOneMethodWithName(clazz.getSuperclass(), methodName));
 	}
 
 	/**
@@ -1060,9 +793,7 @@ public abstract class ReflectionUtils {
 		return new StreamPageables<Class<?>, Method>(sourceClass, (c) -> {
 			Method[] methods = c.getMethods();
 			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
-			Class<?> superclass = c.getSuperclass();
-			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass,
-					list.size());
+			return new SharedPageable<>(c, list, c.getSuperclass(), list.size());
 		});
 	}
 
@@ -1071,9 +802,7 @@ public abstract class ReflectionUtils {
 		return new StreamPageables<Class<?>, Method>(sourceClass, (c) -> {
 			Method[] methods = c.getDeclaredMethods();
 			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
-			Class<?> superclass = c.getSuperclass();
-			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass,
-					list.size());
+			return new SharedPageable<>(c, list, c.getSuperclass(), list.size());
 		});
 	}
 
@@ -1097,14 +826,6 @@ public abstract class ReflectionUtils {
 			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass,
 					list.size());
 		});
-	}
-
-	public static Method[] getMethods(Class<?> clazz, boolean declared) {
-		Method[] methods = declared ? clazz.getDeclaredMethods() : clazz.getMethods();
-		if (methods == null) {
-			methods = new Method[0];
-		}
-		return methods;
 	}
 
 	public static Object invokeStaticMethod(Class<?> clazz, String name, Class<?>[] parameterTypes, Object... params)
