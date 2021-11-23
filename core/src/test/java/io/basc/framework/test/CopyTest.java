@@ -1,7 +1,10 @@
 package io.basc.framework.test;
 
+import io.basc.framework.core.ResolvableType;
 import io.basc.framework.mapper.Copy;
 import io.basc.framework.mapper.MapperUtils;
+
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +14,7 @@ import org.junit.Test;
 public class CopyTest {
 	@Test
 	public void copyTest() {
+		System.out.println(ResolvableType.forClass(List.class).isAssignableFrom(ResolvableType.forClassWithGenerics(List.class, String.class)));
 		System.out.println(Object.class.isAssignableFrom(String.class));
 		
 		List<String> list = new ArrayList<>();
@@ -21,16 +25,17 @@ public class CopyTest {
 		System.out.println(source);
 		Copy.copy(source, target);
 		System.out.println(target);
+		assertTrue(target.getList().size() == source.getList().size());
 	}
 
 	public static class Target {
-		private List<Object> list;
+		private List<?> list;
 
-		public List<Object> getList() {
+		public List<?> getList() {
 			return list;
 		}
 
-		public void setList(List<Object> list) {
+		public void setList(List<?> list) {
 			this.list = list;
 		}
 

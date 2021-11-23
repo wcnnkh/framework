@@ -182,10 +182,6 @@ public class Copy implements Cloneable {
 	}
 
 	protected void setValue(Getter getter, Setter setter, Object instance, Object value) {
-		if (value == null) {
-			return;
-		}
-
 		java.lang.reflect.Field field = setter.getField();
 		if (field != null) {
 			setValue(getter, setter, field, instance, value);
@@ -336,7 +332,7 @@ public class Copy implements Cloneable {
 		}
 		return (T) newArr;
 	}
-
+	
 	/**
 	 * 克隆一个实例
 	 * 
@@ -368,7 +364,7 @@ public class Copy implements Cloneable {
 			return null;
 		}
 
-		if (sourceClass.isPrimitive() || sourceClass.isEnum() || !getInstanceFactory().isInstance(sourceClass)) {
+		if (sourceClass.isPrimitive() || sourceClass.isEnum()) {
 			return source;
 		}
 
@@ -379,11 +375,17 @@ public class Copy implements Cloneable {
 		if (isInvokeCloneableMethod() && source instanceof Cloneable) {
 			return ReflectionUtils.clone((Cloneable) source);
 		}
+		
+		if(!getInstanceFactory().isInstance(sourceClass)) {
+			return source;
+		}
 
 		Object target = getInstanceFactory().getInstance(sourceClass);
 		copy(sourceClass, parentField, source, target);
 		return (T) target;
 	}
+	
+	
 
 	/**
 	 * 浅拷贝
@@ -432,7 +434,7 @@ public class Copy implements Cloneable {
 	public static <T> T copy(Object source, T target) {
 		Assert.requiredArgument(source != null, "source");
 		Assert.requiredArgument(target != null, "target");
-		SHALLOW.copy(source.getClass(), source, null, source.getClass(), target, null);
+		SHALLOW.copy(source.getClass(), source, null, target.getClass(), target, null);
 		return target;
 	}
 
