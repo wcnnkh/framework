@@ -2,7 +2,11 @@ package io.basc.framework.mapper;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Sys;
@@ -10,6 +14,7 @@ import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionFactory;
 
 @SuppressWarnings("unchecked")
 public class Copy implements Cloneable {
@@ -140,16 +145,8 @@ public class Copy implements Cloneable {
 		return leftName.equals(rightName);
 	}
 
-	protected boolean checkType(Getter source, Setter target) {
-		ResolvableType targetType = ResolvableType
-				.forType(target.getField() == null ? target.getGenericType() : target.getField().getGenericType());
-		ResolvableType sourceType = ResolvableType
-				.forType(source.getField() == null ? source.getGenericType() : source.getField().getGenericType());
-		return targetType.isAssignableFrom(sourceType);
-	}
-
 	protected boolean accept(Getter source, Setter target) {
-		return checkModifiers(source, target) && checkName(source, target) && checkType(source, target);
+		return checkModifiers(source, target) && checkName(source, target);
 	}
 
 	protected Object getValue(Getter getter, Object instance) {
@@ -201,6 +198,14 @@ public class Copy implements Cloneable {
 			return;
 		}
 
+		ResolvableType targetType = ResolvableType
+				.forType(setter.getField() == null ? setter.getGenericType() : setter.getField().getGenericType());
+		ResolvableType sourceType = ResolvableType
+				.forType(getter.getField() == null ? getter.getGenericType() : getter.getField().getGenericType());
+		if (!targetType.isAssignableFrom(sourceType)) {
+			return;
+		}
+
 		Object value = getValue(getter, source);
 		if (value == null && !isNullable()) {
 			return;
@@ -208,9 +213,8 @@ public class Copy implements Cloneable {
 
 		if (value != null && isDeepCopy()) {
 			// 深拷贝
-			value = clone(source, sourceField);
+			value = clone(new TypeDescriptor(sourceType, null, getter), value, sourceField);
 		}
-
 		setValue(getter, setter, target, value);
 	}
 
@@ -286,53 +290,103 @@ public class Copy implements Cloneable {
 	}
 
 	/**
-	 * 创建一上档类型的实体并复制到应用的属性
+	 * 创建实例并复制到对应的属性
 	 * 
 	 * @see #copy(Class, Object, Field, Class, Object, Field)
 	 * @param <T>
 	 * @param <S>
-	 * @param sourceClass
+	 * @param sourceType
 	 * @param source
 	 * @param sourceParentField
-	 * @param targetClass
+	 * @param targetType
 	 * @param targetParentField
 	 * @return
 	 */
-	public <T, S> T copy(Class<? extends S> sourceClass, S source, @Nullable Field sourceParentField,
-			Class<? extends T> targetClass, @Nullable Field targetParentField) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
-		Assert.requiredArgument(targetClass != null, "targetClass");
+	public <T, S> T copy(TypeDescriptor sourceType, S source, @Nullable Field sourceParentField,
+			TypeDescriptor targetType, @Nullable Field targetParentField) {
+		Assert.requiredArgument(sourceType != null, "sourceType");
+		Assert.requiredArgument(targetType != null, "targetType");
 
 		if (source == null) {
 			return null;
 		}
 
-		if (targetClass.isArray() && sourceClass.isArray()) {
-			return cloneArray(source, sourceParentField, targetClass);
+		if (targetType.isArray() && sourceType.isArray() && targetType.isAssignableTo(sourceType)) {
+			return cloneArray(source, sourceParentField, sourceType);
 		}
 
+		if (targetType.isCollection() && sourceType.isCollection() && targetType.isAssignableTo(sourceType)) {
+			return cloneCollection((Collection<?>) source, sourceParentField, targetType);
+		}
+
+		if (targetType.isMap() && sourceType.isMap() && targetType.isAssignableTo(sourceType)) {
+			return cloneMap((Map<?, ?>) source, sourceParentField, targetType);
+		}
+
+		Class<?> targetClass = targetType.getType();
 		if (!getInstanceFactory().isInstance(targetClass)) {
 			// 如果无法实例化
 			if (targetClass.isInstance(source)) {
-				return targetClass.cast(source);
+				return (T) targetClass.cast(source);
 			}
-			throw new IllegalStateException("Unable to copy " + sourceClass + " -> " + targetClass);
+			throw new IllegalStateException("Unable to copy " + sourceType + " -> " + targetType);
 		}
 
-		T target = getInstanceFactory().getInstance(targetClass);
-		copy(sourceClass, source, sourceParentField, targetClass, target, targetParentField);
+		T target = (T) getInstanceFactory().getInstance(targetClass);
+		copy(sourceType.getType(), source, sourceParentField, targetClass, target, targetParentField);
 		return target;
 	}
 
-	protected <T> T cloneArray(Object sourceArray, Field sourceParentField, Class<T> targetClass) {
+	private <T> T cloneArray(Object sourceArray, Field sourceParentField, TypeDescriptor targetType) {
 		int size = Array.getLength(sourceArray);
-		Object newArr = Array.newInstance(targetClass.getComponentType(), size);
+		TypeDescriptor elementType = targetType.getElementTypeDescriptor();
+		Object newArr = Array.newInstance(elementType.getType(), size);
 		for (int i = 0; i < size; i++) {
-			Array.set(newArr, i, clone(Array.get(sourceArray, i), sourceParentField));
+			Array.set(newArr, i, clone(elementType, Array.get(sourceArray, i), sourceParentField));
 		}
 		return (T) newArr;
 	}
-	
+
+	private <T> T cloneCollection(Collection<?> sources, Field sourceParentField, TypeDescriptor targetType) {
+		TypeDescriptor elementType = targetType.getElementTypeDescriptor();
+		Collection<Object> targets;
+		try {
+			targets = CollectionFactory.createCollection(targetType.getType(), elementType.getType(), sources.size());
+		} catch (IllegalArgumentException e) {
+			// 无法构造
+			if (sources instanceof Cloneable) {
+				return ReflectionUtils.clone((Cloneable) sources);
+			}
+			return (T) sources;
+		}
+
+		for (Object source : sources) {
+			targets.add(clone(elementType, source, sourceParentField));
+		}
+		return (T) targets;
+	}
+
+	private <T> T cloneMap(Map<?, ?> sourceMap, Field sourceParentField, TypeDescriptor targetType) {
+		TypeDescriptor keyType = targetType.getMapKeyTypeDescriptor();
+		TypeDescriptor valueType = targetType.getMapValueTypeDescriptor();
+		Map<Object, Object> targetMap;
+		try {
+			targetMap = CollectionFactory.createMap(keyType.getType(), valueType.getType(), sourceMap.size());
+		} catch (IllegalArgumentException e) {
+			// 无法构造
+			if (sourceMap instanceof Cloneable) {
+				return ReflectionUtils.clone((Cloneable) sourceMap);
+			}
+			return (T) sourceMap;
+		}
+
+		for (Entry<?, ?> entry : sourceMap.entrySet()) {
+			targetMap.put(clone(keyType, entry.getKey(), sourceParentField),
+					clone(valueType, entry.getValue(), sourceParentField));
+		}
+		return (T) targetMap;
+	}
+
 	/**
 	 * 克隆一个实例
 	 * 
@@ -346,37 +400,46 @@ public class Copy implements Cloneable {
 			return null;
 		}
 
-		return (T) clone(source.getClass(), source, parentField);
+		return (T) clone(TypeDescriptor.forObject(source), source, parentField);
 	}
 
 	/**
 	 * 克隆一个实体，
 	 * 
 	 * @param <T>
-	 * @param sourceClass
+	 * @param sourceType
 	 * @param source
 	 * @param parentField
 	 * @return
 	 */
-	public <T> T clone(Class<? extends T> sourceClass, T source, @Nullable Field parentField) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
+	public <T> T clone(TypeDescriptor sourceType, T source, @Nullable Field parentField) {
+		Assert.requiredArgument(sourceType != null, "sourceType");
 		if (source == null) {
 			return null;
 		}
 
-		if (sourceClass.isPrimitive() || sourceClass.isEnum()) {
+		if (sourceType.isPrimitive() || sourceType.isEnum()) {
 			return source;
 		}
 
-		if (sourceClass.isArray()) {
-			return (T) cloneArray(source, parentField, sourceClass);
+		if (sourceType.isArray()) {
+			return cloneArray(source, parentField, sourceType);
+		}
+
+		if (sourceType.isCollection()) {
+			return cloneCollection((Collection<?>) source, parentField, sourceType);
+		}
+
+		if (sourceType.isMap()) {
+			return cloneMap((Map<?, ?>) source, parentField, sourceType);
 		}
 
 		if (isInvokeCloneableMethod() && source instanceof Cloneable) {
 			return ReflectionUtils.clone((Cloneable) source);
 		}
-		
-		if(!getInstanceFactory().isInstance(sourceClass)) {
+
+		Class<?> sourceClass = sourceType.getType();
+		if (!getInstanceFactory().isInstance(sourceClass)) {
 			return source;
 		}
 
@@ -384,8 +447,6 @@ public class Copy implements Cloneable {
 		copy(sourceClass, parentField, source, target);
 		return (T) target;
 	}
-	
-	
 
 	/**
 	 * 浅拷贝
@@ -419,7 +480,7 @@ public class Copy implements Cloneable {
 	public static <T> T copy(Object source, Class<? extends T> targetClass) {
 		Assert.requiredArgument(source != null, "source");
 		Assert.requiredArgument(targetClass != null, "targetClass");
-		return SHALLOW.copy(source.getClass(), source, null, targetClass, null);
+		return SHALLOW.copy(TypeDescriptor.forObject(source), source, null, TypeDescriptor.valueOf(targetClass), null);
 	}
 
 	/**

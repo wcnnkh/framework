@@ -237,6 +237,10 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	public boolean isPrimitive() {
 		return getType().isPrimitive();
 	}
+	
+	public boolean isEnum() {
+		return getType().isEnum();
+	}
 
 	/**
 	 * 是否是泛型

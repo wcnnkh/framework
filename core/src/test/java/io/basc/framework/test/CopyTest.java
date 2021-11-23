@@ -1,9 +1,5 @@
 package io.basc.framework.test;
 
-import io.basc.framework.core.ResolvableType;
-import io.basc.framework.mapper.Copy;
-import io.basc.framework.mapper.MapperUtils;
-
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -11,12 +7,18 @@ import java.util.List;
 
 import org.junit.Test;
 
+import io.basc.framework.core.ResolvableType;
+import io.basc.framework.mapper.Copy;
+import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.StopWatch;
+
 public class CopyTest {
 	@Test
 	public void copyTest() {
-		System.out.println(ResolvableType.forClass(List.class).isAssignableFrom(ResolvableType.forClassWithGenerics(List.class, String.class)));
+		System.out.println(ResolvableType.forClass(List.class)
+				.isAssignableFrom(ResolvableType.forClassWithGenerics(List.class, String.class)));
 		System.out.println(Object.class.isAssignableFrom(String.class));
-		
+
 		List<String> list = new ArrayList<>();
 		list.add("a");
 		Target target = new Target();
@@ -26,6 +28,22 @@ public class CopyTest {
 		Copy.copy(source, target);
 		System.out.println(target);
 		assertTrue(target.getList().size() == source.getList().size());
+		target.getList().clear();
+		// 浅拷贝的会一起清空
+		assertTrue(source.getList().size() == 0);
+		StopWatch stopWatch = new StopWatch("深拷贝");
+		List<String> deepList = new ArrayList<>();
+		deepList.add("b");
+		source.setList(deepList);
+		stopWatch.start();
+		Copy.DEEP.copy(Source.class, source, null, Target.class, target, null);
+		stopWatch.stop();
+		System.out.println(target);
+		assertTrue(target.getList().size() == source.getList().size());
+		target.getList().clear();
+		System.out.println(source);
+		assertTrue(target.getList().size() != source.getList().size());
+		System.out.println(stopWatch.prettyPrint());
 	}
 
 	public static class Target {
@@ -55,7 +73,7 @@ public class CopyTest {
 		public void setList(List<String> list) {
 			this.list = list;
 		}
-		
+
 		@Override
 		public String toString() {
 			return MapperUtils.toString(this);
