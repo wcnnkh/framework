@@ -1,8 +1,13 @@
 package io.basc.framework.boot.support;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+
 import io.basc.framework.beans.BeanlifeCycleEvent;
-import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.BeanlifeCycleEvent.Step;
+import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.xml.XmlBeanFactory;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.ApplicationAware;
@@ -22,13 +27,9 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.SplitLine;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-
 public class DefaultApplication extends XmlBeanFactory
 		implements ConfigurableApplication, EventListener<BeanlifeCycleEvent> {
+	private static final String APPLICATION_PREFIX_CONFIGURATION = "io.basc.framework.application";
 	private static final String APPLICATION_PREFIX = "application";
 	private final EventDispatcher<ApplicationEvent> applicationEventDispathcer = new SimpleEventDispatcher<ApplicationEvent>(
 			true);
@@ -44,10 +45,10 @@ public class DefaultApplication extends XmlBeanFactory
 	}
 
 	public void addPostProcessor(ApplicationPostProcessor postProcessor) {
-		if(initialized) {
+		if (initialized) {
 			throwInitializedApplicationException();
 		}
-		
+
 		synchronized (postProcessors) {
 			postProcessors.add(postProcessor);
 			Collections.sort(postProcessors, OrderComparator.INSTANCE);
@@ -96,16 +97,19 @@ public class DefaultApplication extends XmlBeanFactory
 				throwInitializedApplicationException();
 			}
 
+			String applicationConfiguration = getEnvironment().getValue(APPLICATION_PREFIX_CONFIGURATION, String.class,
+					APPLICATION_PREFIX);
 			for (String suffix : new String[] { ".properties", ".yaml", ".yml" }) {
-				Resource resource = getEnvironment().getResource(APPLICATION_PREFIX + suffix);
+				Resource resource = getEnvironment().getResource(applicationConfiguration + suffix);
 				if (resource != null && resource.exists()) {
+					getLogger().info("Configure application resource: {}", resource);
 					Observable<Properties> properties = Sys.env.toObservableProperties(resource);
 					getEnvironment().loadProperties(properties);
 				}
 			}
-			
+
 			super.init();
-			
+
 			for (ApplicationPostProcessor initializer : getBeanFactory()
 					.getServiceLoader(ApplicationPostProcessor.class)) {
 				postProcessApplication(initializer);
