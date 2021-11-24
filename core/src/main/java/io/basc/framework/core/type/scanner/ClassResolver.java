@@ -1,7 +1,6 @@
 package io.basc.framework.core.type.scanner;
 
 import java.io.IOException;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,13 +15,13 @@ import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.lang.Ignore;
-import io.basc.framework.util.Accept;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.DefaultClassLoaderProvider;
+import io.basc.framework.util.JavaVersion;
 
-public class ClassResolver implements TypeFilter, Accept<Class<?>> {
+public class ClassResolver {
 	private MetadataReaderFactory metadataReaderFactory;
 
 	public void setMetadataReaderFactory(MetadataReaderFactory metadataReaderFactory) {
@@ -34,28 +33,6 @@ public class ClassResolver implements TypeFilter, Accept<Class<?>> {
 			return metadataReaderFactory;
 		}
 		return new SimpleMetadataReaderFactory(resourceLoader, new DefaultClassLoaderProvider(classLoader));
-	}
-
-	public boolean accept(Class<?> clazz) {
-		if (clazz.isPrimitive()) {
-			return false;
-		}
-
-		return Modifier.isPublic(clazz.getModifiers()) && ClassUtils.isAvailable(clazz);
-	}
-
-	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
-			throws IOException {
-		if (metadataReader.getClassMetadata().isAnnotation()) {
-			return false;
-		}
-
-		AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
-		if (annotationMetadata.hasAnnotation(Deprecated.class.getName())
-				|| annotationMetadata.hasAnnotation(Ignore.class.getName())) {
-			return false;
-		}
-		return true;
 	}
 
 	public final Set<Class<?>> resolve(Resource[] resources, ClassLoader classLoader,
@@ -116,7 +93,8 @@ public class ClassResolver implements TypeFilter, Accept<Class<?>> {
 			return null;
 		}
 
-		if (!match(reader, metadataReaderFactory)) {
+		AnnotationMetadata annotationMetadata = reader.getAnnotationMetadata();
+		if (annotationMetadata.hasAnnotation(Ignore.class.getName()) || !JavaVersion.isSupported(annotationMetadata)) {
 			return null;
 		}
 
@@ -127,10 +105,6 @@ public class ClassResolver implements TypeFilter, Accept<Class<?>> {
 		String name = reader.getClassMetadata().getClassName();
 		Class<?> clazz = ClassUtils.getClass(name, classLoader);
 		if (clazz == null) {
-			return null;
-		}
-
-		if (!accept(clazz)) {
 			return null;
 		}
 		return clazz;

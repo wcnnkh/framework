@@ -24,7 +24,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import io.basc.framework.context.ClassesLoaderFactory;
-import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
@@ -112,11 +111,7 @@ public final class XmlDubboUtils {
 
 						String packageName = getPackageName(environment, node);
 						if (StringUtils.isNotEmpty(packageName)) {
-							for (Class<?> clazz : classesLoaderFactory.getClassesLoader(packageName)) {
-								if (!clazz.isInterface()) {
-									continue;
-								}
-
+							for (Class<?> clazz : classesLoaderFactory.getClassesLoader(packageName, (e, m) -> e.getAnnotationMetadata().isInterface())) {
 								if (!refInstanceFactory.isInstance(clazz)) {
 									logger.warn("{} not supported get instance", clazz);
 									continue;
@@ -190,11 +185,7 @@ public final class XmlDubboUtils {
 					public boolean doFilter(List<ReferenceConfig> list, Node node, ReferenceConfig config) {
 						String packageName = getPackageName(environment, node);
 						if (StringUtils.isNotEmpty(packageName)) {
-							for (Class<?> clazz : classesLoaderFactory.getClassesLoader(packageName)) {
-								if (!clazz.isInterface() || AnnotatedElementUtils.isIgnore(clazz)) {
-									continue;
-								}
-
+							for (Class<?> clazz : classesLoaderFactory.getClassesLoader(packageName, (e, m) -> e.getClassMetadata().isInterface())) {
 								ReferenceConfig<?> referenceConfig = Copy.copy(config, ReferenceConfig.class);
 								referenceConfig.setInterface(clazz);
 								if (referenceConfig.isValid()) {

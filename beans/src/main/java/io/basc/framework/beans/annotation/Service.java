@@ -6,12 +6,15 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import io.basc.framework.context.annotation.Indexed;
+
 /**
  * @author shuchaowen
  */
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
+@Indexed
 public @interface Service {
 	/**
 	 * 别名， 默认使用第一个实现的接口做为别名

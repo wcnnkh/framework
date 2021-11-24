@@ -18,6 +18,7 @@ import io.basc.framework.value.PropertyFactory;
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
+@Indexed
 public @interface EnableCondition {
 	
 	/**

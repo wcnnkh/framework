@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import io.basc.framework.context.ClassesLoader;
 import io.basc.framework.context.ClassesLoaderFactory;
 import io.basc.framework.context.support.DefaultClassesLoaderFactory;
 import io.basc.framework.core.type.scanner.DefaultClassScanner;
@@ -21,8 +22,7 @@ import io.basc.framework.util.CollectionUtils;
 public class DefaultDB extends DefaultSqlTemplate implements DB {
 	private static Logger logger = LoggerFactory.getLogger(DefaultDB.class);
 	private boolean checkTableChange = true;
-	private ClassesLoaderFactory classesLoaderFactory = new DefaultClassesLoaderFactory(new DefaultClassScanner(),
-			false, null);
+	private ClassesLoaderFactory classesLoaderFactory = new DefaultClassesLoaderFactory(new DefaultClassScanner());
 
 	public DefaultDB(ConnectionFactory connectionFactory, SqlDialect sqlDialect) {
 		super(connectionFactory, sqlDialect);
@@ -68,7 +68,11 @@ public class DefaultDB extends DefaultSqlTemplate implements DB {
 	}
 
 	public void createTables(String packageName, boolean registerManager) {
-		for (Class<?> tableClass : getClassesLoaderFactory().getClassesLoader(packageName)) {
+		ClassesLoader classesLoader = getClassesLoaderFactory().getClassesLoader(packageName, (e, m) -> {
+			return e.getAnnotationMetadata().hasAnnotation(Table.class.getName());
+		});
+
+		for (Class<?> tableClass : classesLoader) {
 			Table table = tableClass.getAnnotation(Table.class);
 			if (table == null) {
 				continue;

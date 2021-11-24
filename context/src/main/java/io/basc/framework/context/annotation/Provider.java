@@ -15,16 +15,18 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Indexed
 public @interface Provider {
 	public Class<?>[] value() default {};
-	
+
 	public boolean assignableValue() default true;
-	
+
 	// 要排除的
 	public Class<?>[] excludes() default {};
 
 	/**
 	 * 从小到大
+	 * 
 	 * @see Ordered#DEFAULT_PRECEDENCE
 	 * @return
 	 */
