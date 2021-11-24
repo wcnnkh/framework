@@ -62,7 +62,8 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 		}
 
 		AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
-		if (annotationMetadata.getAnnotationTypes().isEmpty()
+		if ((annotationMetadata.getAnnotationTypes().isEmpty() || (annotationMetadata.getAnnotationTypes().size() == 1
+				&& annotationMetadata.hasAnnotation(FunctionalInterface.class.getName())))
 				&& !annotationMetadata.hasAnnotatedMethods(Indexed.class.getName())
 				&& !annotationMetadata.hasMetaAnnotation(Indexed.class.getName())) {
 			return false;

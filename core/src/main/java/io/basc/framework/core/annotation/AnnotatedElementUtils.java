@@ -15,7 +15,6 @@ import java.util.function.Supplier;
 
 import io.basc.framework.core.BridgeMethodResolver;
 import io.basc.framework.core.parameter.DefaultValue;
-import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
@@ -854,29 +853,6 @@ public class AnnotatedElementUtils {
 		CharsetName charsetName = getMergedAnnotation(annotatedElement, CharsetName.class);
 		if (charsetName != null && StringUtils.hasText(charsetName.value())) {
 			return charsetName.value();
-		}
-
-		return defaultValue == null ? null : defaultValue.get();
-	}
-
-	/**
-	 * 是否应该忽略
-	 * 
-	 * @param annotatedElement
-	 * @return 默认返回false
-	 */
-	public static boolean isIgnore(AnnotatedElement annotatedElement) {
-		Ignore ignore = getMergedAnnotation(annotatedElement, Ignore.class);
-		if (ignore != null) {
-			return ignore.value();
-		}
-		return false;
-	}
-
-	public static Boolean isIgnore(AnnotatedElement annotatedElement, @Nullable Supplier<Boolean> defaultValue) {
-		Ignore ignore = getMergedAnnotation(annotatedElement, Ignore.class);
-		if (ignore != null) {
-			return ignore.value();
 		}
 
 		return defaultValue == null ? null : defaultValue.get();

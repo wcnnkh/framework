@@ -14,18 +14,19 @@ import io.basc.framework.beans.annotation.Service;
 import io.basc.framework.beans.annotation.Singleton;
 import io.basc.framework.context.ContextAware;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.env.Sys;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.support.DefaultValueFactoryAware;
+import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.orm.convert.EntityConversionService;
 import io.basc.framework.orm.convert.PropertyFactoryToEntityConversionService;
 import io.basc.framework.util.Accept;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringMatchers;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.PropertyFactory;
@@ -54,18 +55,12 @@ public final class BeanUtils {
 	}
 
 	public static Class<?> getServiceInterface(Class<?> clazz) {
-		Class<?> classToUse = clazz;
-		while (classToUse != null && classToUse != Object.class) {
-			for (Class<?> i : classToUse.getInterfaces()) {
-				if (AnnotatedElementUtils.isIgnore(classToUse) || i.getMethods().length == 0) {
-					continue;
-				}
-
-				return i;
+		return ClassUtils.getInterfaces(clazz).streamAll().filter((i) -> {
+			if (i.isAnnotationPresent(Ignore.class) || i.getMethods().length == 0) {
+				return false;
 			}
-			classToUse = classToUse.getSuperclass();
-		}
-		return null;
+			return true;
+		}).findFirst().orElse(null);
 	}
 
 	public static void aware(Object instance, BeanFactory beanFactory, BeanDefinition beanDefinition) {

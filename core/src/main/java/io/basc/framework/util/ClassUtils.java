@@ -22,10 +22,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.page.Pageables;
+import io.basc.framework.util.page.SharedPageable;
+import io.basc.framework.util.page.StreamPageables;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -1519,11 +1521,15 @@ public final class ClassUtils {
 		if (clazz == null) {
 			return false;
 		}
-
-		if (AnnotatedElementUtils.hasAnnotation(clazz, Ignore.class)) {
-			return false;
-		}
-
 		return JavaVersion.isSupported(clazz);
+	}
+	
+	public static Pageables<Class<?>, Class<?>> getInterfaces(Class<?> sourceClass){
+		Assert.requiredArgument(sourceClass != null, "sourceClass");
+		return new StreamPageables<Class<?>, Class<?>>(sourceClass, (c) -> {
+			Class<?>[] interfaces = c.getInterfaces();
+			List<Class<?>> list = interfaces == null ? Collections.emptyList() : Arrays.asList(interfaces);
+			return new SharedPageable<>(c, list, c.getSuperclass(), list.size());
+		});
 	}
 }

@@ -11,12 +11,10 @@ import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
 import io.basc.framework.event.EventRegistry;
-import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.util.stream.Processor;
 
-@Ignore
 public interface Resource extends InputStreamSource, EventRegistry<ChangeEvent<Resource>> {
 	/**
 	 * 是否存在

@@ -24,16 +24,17 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>yaml</artifactId>
-			<scope>provided</scope>
-		</dependency>
 		
 		<!-- 测试 -->
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>testing</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>yaml</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<!-- 测试 -->
 	</dependencies>

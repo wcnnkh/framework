@@ -1,11 +1,5 @@
 package io.basc.framework.net;
 
-import io.basc.framework.lang.Ignore;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.LinkedCaseInsensitiveMap;
-import io.basc.framework.util.ObjectUtils;
-
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.BitSet;
@@ -18,7 +12,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
 
-@Ignore
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.LinkedCaseInsensitiveMap;
+import io.basc.framework.util.ObjectUtils;
+
 public class MimeType implements Comparable<MimeType>, Serializable {
 
 	private static final long serialVersionUID = 4085923477777865903L;
