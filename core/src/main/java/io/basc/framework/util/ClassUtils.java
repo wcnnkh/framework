@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
 
 public final class ClassUtils {
@@ -1412,6 +1413,7 @@ public final class ClassUtils {
 
 	/**
 	 * 是否存在public无参的构造方法
+	 * 
 	 * @param className
 	 * @param classLoader
 	 * @return
@@ -1427,6 +1429,7 @@ public final class ClassUtils {
 
 	/**
 	 * 是否存在public无参的构造方法
+	 * 
 	 * @param clazz
 	 * @return
 	 */
@@ -1501,5 +1504,25 @@ public final class ClassUtils {
 
 	public static boolean isByte(Type type) {
 		return type == byte.class || type == Byte.class;
+	}
+
+	/**
+	 * 此类是否可用
+	 * 
+	 * @see Ignore
+	 * @see JavaVersion#isSupported(Class)
+	 * @param clazz
+	 * @return
+	 */
+	public static boolean isAvailable(Class<?> clazz) {
+		if (clazz == null) {
+			return false;
+		}
+
+		if (clazz.isAnnotationPresent(Ignore.class)) {
+			return false;
+		}
+
+		return JavaVersion.isSupported(clazz);
 	}
 }

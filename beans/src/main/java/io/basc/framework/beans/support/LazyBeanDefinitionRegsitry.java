@@ -18,7 +18,6 @@ import io.basc.framework.factory.support.InstanceIterable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.XUtils;
 
 public class LazyBeanDefinitionRegsitry extends DefaultBeanDefinitionRegistry {
 	private static Logger logger = LoggerFactory.getLogger(LazyBeanDefinitionRegsitry.class);
@@ -60,8 +59,7 @@ public class LazyBeanDefinitionRegsitry extends DefaultBeanDefinitionRegistry {
 	}
 
 	private BeanDefinition provider(Class<?> sourceClass) {
-		ProviderClassesLoader classesLoader = new ProviderClassesLoader(beanFactory.getContextClasses(),
-				sourceClass);
+		ProviderClassesLoader classesLoader = new ProviderClassesLoader(beanFactory.getContextClasses(), sourceClass);
 		for (Class<?> impl : classesLoader) {
 			BeanDefinition definition = super.getDefinition(impl);
 			if (definition == null) {
@@ -96,7 +94,7 @@ public class LazyBeanDefinitionRegsitry extends DefaultBeanDefinitionRegistry {
 			return null;
 		}
 
-		if (!XUtils.isAvailable(clazz)) {
+		if (clazz.isPrimitive() || clazz.isEnum() || clazz.isArray() || !ClassUtils.isAvailable(clazz)) {
 			return null;
 		}
 

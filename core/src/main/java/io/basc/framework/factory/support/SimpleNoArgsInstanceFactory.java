@@ -1,10 +1,9 @@
 package io.basc.framework.factory.support;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.util.XUtils;
+import io.basc.framework.util.ClassUtils;
 
-
-public class SimpleNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory{
+public class SimpleNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 
 	@Override
 	public <T> T getInstance(Class<T> clazz) {
@@ -13,9 +12,10 @@ public class SimpleNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory{
 
 	@Override
 	public boolean isInstance(Class<?> clazz) {
-		if(!XUtils.isAvailable(clazz)){
+		if (clazz.isPrimitive() || !ClassUtils.isAvailable(clazz) || !ReflectionUtils.isAvailable(clazz)) {
 			return false;
 		}
+
 		return ReflectionUtils.isInstance(clazz);
 	}
 

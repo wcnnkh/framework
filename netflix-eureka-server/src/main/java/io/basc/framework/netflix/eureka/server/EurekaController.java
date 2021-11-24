@@ -35,7 +35,7 @@ import io.basc.framework.util.CollectionUtils;
 public class EurekaController {
 
 	@Value("${eureka.dashboard.path:/}")
-	private String dashboardPath = "";
+	private String dashboardPath;
 
 	private ApplicationInfoManager applicationInfoManager;
 

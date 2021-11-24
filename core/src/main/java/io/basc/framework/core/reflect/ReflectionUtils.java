@@ -46,12 +46,12 @@ public abstract class ReflectionUtils {
 	}).toArray(new Method[0]);
 
 	/**
-	 * 判断此类是否可以调用反射的一些方法
+	 * 判断此类是否可用(会静态初始化)
 	 * 
 	 * @param clazz
 	 * @return
 	 */
-	public static boolean isSupported(Class<?> clazz) {
+	public static boolean isAvailable(Class<?> clazz) {
 		try {
 			for (Method method : CLASS_PRESENT_METHODS) {
 				method.invoke(clazz);
