@@ -10,8 +10,9 @@ import io.basc.framework.context.annotation.AbstractProviderServiceLoaderFactory
 import io.basc.framework.context.annotation.ComponentScan;
 import io.basc.framework.context.annotation.ComponentScans;
 import io.basc.framework.context.annotation.EnableConditionUtils;
-import io.basc.framework.context.locks.LockMethodInterceptor;
-import io.basc.framework.context.transaction.TransactionMethodInterceptor;
+import io.basc.framework.context.annotation.Indexed;
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.ClassMetadata;
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.core.type.classreading.MetadataReaderFactory;
@@ -23,10 +24,15 @@ import io.basc.framework.env.DefaultEnvironment;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.lang.Constants;
+import io.basc.framework.lang.NestedExceptionUtils;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.value.ValueFactory;
 
 public abstract class AbstractConfigurableContext extends AbstractProviderServiceLoaderFactory
 		implements ConfigurableContext, Configurable, TypeFilter {
+	private static Logger logger = LoggerFactory.getLogger(AbstractConfigurableContext.class);
 	private final DefaultClassScanner classScanner = new DefaultClassScanner();
 	private final DefaultClassesLoaderFactory classesLoaderFactory;
 	private final LinkedHashSetClassesLoader sourceClasses = new LinkedHashSetClassesLoader();
@@ -37,8 +43,6 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 		super(cache);
 		this.classesLoaderFactory = new DefaultClassesLoaderFactory(classScanner, this);
 		// 添加默认的类
-		contextClassesLoader.add(TransactionMethodInterceptor.class);
-		contextClassesLoader.add(LockMethodInterceptor.class);
 		contextClassesLoader.add(sourceClasses);
 
 		// 扫描框架类，忽略(.test.)路径
@@ -57,7 +61,10 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 			return false;
 		}
 
-		if (metadataReader.getAnnotationMetadata().getAnnotationTypes().isEmpty()) {
+		AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
+		if (annotationMetadata.getAnnotationTypes().isEmpty()
+				&& !annotationMetadata.hasAnnotatedMethods(Indexed.class.getName())
+				&& !annotationMetadata.hasMetaAnnotation(Indexed.class.getName())) {
 			return false;
 		}
 
@@ -160,6 +167,16 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 	public void componentScan(String packageName, TypeFilter typeFilter) {
 		ClassesLoader classesLoader = getClassesLoaderFactory().getClassesLoader(packageName,
 				(e, m) -> match(e, m) && (typeFilter == null || typeFilter.match(e, m)));
-		getContextClasses().add(classesLoader);
+		getContextClasses().add(new AcceptClassesLoader(classesLoader, (c) -> {
+			return ClassUtils.isAvailable(c) && ReflectionUtils.isAvailable(c, (e) -> {
+				if (logger.isTraceEnabled()) {
+					logger.error(e, "This class[{}] cannot be included because:", c.getName());
+				} else if (logger.isDebugEnabled()) {
+					logger.debug("This class[{}] cannot be included because: {}", c.getName(),
+							NestedExceptionUtils.getNonEmptyMessage(e, false));
+				}
+				return false;
+			});
+		}, false));
 	}
 }

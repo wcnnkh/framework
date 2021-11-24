@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
@@ -1519,7 +1520,7 @@ public final class ClassUtils {
 			return false;
 		}
 
-		if (clazz.isAnnotationPresent(Ignore.class)) {
+		if (AnnotatedElementUtils.hasAnnotation(clazz, Ignore.class)) {
 			return false;
 		}
 

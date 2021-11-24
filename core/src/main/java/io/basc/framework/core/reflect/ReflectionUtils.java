@@ -49,17 +49,22 @@ public abstract class ReflectionUtils {
 	 * 判断此类是否可用(会静态初始化)
 	 * 
 	 * @param clazz
+	 * @param accept
 	 * @return
 	 */
-	public static boolean isAvailable(Class<?> clazz) {
+	public static boolean isAvailable(Class<?> clazz, @Nullable Accept<Throwable> accept) {
 		try {
 			for (Method method : CLASS_PRESENT_METHODS) {
 				method.invoke(clazz);
 			}
 		} catch (Throwable e) {
-			return false;
+			return accept == null ? false : accept.accept(e);
 		}
 		return true;
+	}
+	
+	public static boolean isAvailable(Class<?> clazz) {
+		return isAvailable(clazz, null);
 	}
 
 	@SuppressWarnings("unchecked")
