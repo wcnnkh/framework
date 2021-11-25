@@ -171,7 +171,7 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 		getContextClasses().add(new AcceptClassesLoader(classesLoader, (c) -> {
 			return ClassUtils.isAvailable(c) && ReflectionUtils.isAvailable(c, (e) -> {
 				if (logger.isTraceEnabled()) {
-					logger.error(e, "This class[{}] cannot be included because:", c.getName());
+					logger.trace(e, "This class[{}] cannot be included because:", c.getName());
 				} else if (logger.isDebugEnabled()) {
 					logger.debug("This class[{}] cannot be included because: {}", c.getName(),
 							NestedExceptionUtils.getNonEmptyMessage(e, false));

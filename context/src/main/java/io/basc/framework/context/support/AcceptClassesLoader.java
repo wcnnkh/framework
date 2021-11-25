@@ -53,7 +53,11 @@ public class AcceptClassesLoader implements ClassesLoader {
 			}
 			return cacheClasses.iterator();
 		} else {
-			return classesLoader.iterator();
+			if (accept == null) {
+				return classesLoader.iterator();
+			} else {
+				return classesLoader.stream().filter(accept).iterator();
+			}
 		}
 	}
 }
