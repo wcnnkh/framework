@@ -1,18 +1,22 @@
 package io.basc.framework.context.support;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import io.basc.framework.context.ClassesLoader;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Accept;
-
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 public class AcceptClassesLoader implements ClassesLoader {
 	private final ClassesLoader classesLoader;
 	private final Accept<Class<?>> accept;
 	private final boolean cache;
-	private volatile Set<Class<?>> cacheClasses;
+	private volatile List<Class<?>> cacheClasses;
+
+	public AcceptClassesLoader(ClassesLoader classesLoader, @Nullable Accept<Class<?>> accept) {
+		this(classesLoader, accept, false);
+	}
 
 	public AcceptClassesLoader(ClassesLoader classesLoader, @Nullable Accept<Class<?>> accept, boolean cache) {
 		this.classesLoader = classesLoader;
@@ -20,20 +24,21 @@ public class AcceptClassesLoader implements ClassesLoader {
 		this.cache = cache;
 	}
 
-	private Set<Class<?>> filter() {
-		Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
-		for (Class<?> clazz : classesLoader) {
-			if (accept == null || accept.accept(clazz)) {
-				classes.add(clazz);
-			}
+	private List<Class<?>> filter() {
+		if (accept == null) {
+			return classesLoader.toList();
+		} else {
+			return classesLoader.stream().filter(accept).collect(Collectors.toList());
 		}
-		return classes;
 	}
 
 	public void reload() {
-		classesLoader.reload();
 		if (cache) {
-			cacheClasses = filter();
+			synchronized (this) {
+				cacheClasses = filter();
+			}
+		} else {
+			classesLoader.reload();
 		}
 	}
 
@@ -47,7 +52,8 @@ public class AcceptClassesLoader implements ClassesLoader {
 				}
 			}
 			return cacheClasses.iterator();
+		} else {
+			return classesLoader.iterator();
 		}
-		return filter().iterator();
 	}
 }

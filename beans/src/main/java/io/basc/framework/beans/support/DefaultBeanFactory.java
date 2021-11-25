@@ -1,5 +1,12 @@
 package io.basc.framework.beans.support;
 
+import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import io.basc.framework.aop.ConfigurableAop;
 import io.basc.framework.aop.support.DefaultConfigurableAop;
 import io.basc.framework.aop.support.ProxyUtils;
@@ -18,8 +25,8 @@ import io.basc.framework.context.Destroy;
 import io.basc.framework.context.Init;
 import io.basc.framework.context.support.AbstractConfigurableContext;
 import io.basc.framework.core.parameter.ExecutableParameterDescriptorsIterator;
-import io.basc.framework.core.parameter.ParameterFactories;
 import io.basc.framework.core.parameter.ParameterDescriptors;
+import io.basc.framework.core.parameter.ParameterFactories;
 import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
@@ -38,13 +45,6 @@ import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.DefaultClassLoaderProvider;
 import io.basc.framework.util.DefaultStatus;
 import io.basc.framework.util.Status;
-
-import java.lang.reflect.AnnotatedElement;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class DefaultBeanFactory extends AbstractConfigurableContext
@@ -363,11 +363,10 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 			configure(this);
 
 			// TODO 初始化所有单例(原来是想全部懒加载，但是后来出现问题了)
-			/*for (String id : beanDefinitionRegistry.getDefinitionIds()) {
-				if (isSingleton(id) && isInstance(id)) {
-					getInstance(id);
-				}
-			}*/
+			/*
+			 * for (String id : beanDefinitionRegistry.getDefinitionIds()) { if
+			 * (isSingleton(id) && isInstance(id)) { getInstance(id); } }
+			 */
 
 			// 处理静态依赖
 			for (Class<?> clazz : getContextClasses()) {

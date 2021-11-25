@@ -178,6 +178,6 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 				}
 				return false;
 			});
-		}, false));
+		}));
 	}
 }
