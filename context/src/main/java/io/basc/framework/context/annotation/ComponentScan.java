@@ -13,6 +13,7 @@ import io.basc.framework.core.annotation.AliasFor;
 @Target(ElementType.TYPE)
 @Documented
 @Repeatable(ComponentScans.class)
+@Indexed
 public @interface ComponentScan {
 	/**
 	 * Alias for {@link #basePackages}.

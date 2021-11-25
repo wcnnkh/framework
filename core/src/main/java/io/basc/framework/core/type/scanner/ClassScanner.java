@@ -6,6 +6,5 @@ import io.basc.framework.lang.Nullable;
 import java.util.Set;
 
 public interface ClassScanner {
-	Set<Class<?>> getClasses(String packageName,
-			@Nullable ClassLoader classLoader, @Nullable TypeFilter typeFilter);
+	Set<Class<?>> getClasses(String packageName, @Nullable ClassLoader classLoader, @Nullable TypeFilter typeFilter);
 }

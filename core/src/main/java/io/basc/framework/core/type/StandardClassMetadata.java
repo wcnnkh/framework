@@ -7,16 +7,16 @@ import java.lang.reflect.Modifier;
 import java.util.LinkedHashSet;
 
 /**
- * {@link ClassMetadata} implementation that uses standard reflection
- * to introspect a given {@code Class}.
+ * {@link ClassMetadata} implementation that uses standard reflection to
+ * introspect a given {@code Class}.
  */
 public class StandardClassMetadata implements ClassMetadata {
 
 	private final Class<?> introspectedClass;
 
-
 	/**
 	 * Create a new StandardClassMetadata wrapper for the given Class.
+	 * 
 	 * @param introspectedClass the Class to introspect
 	 */
 	public StandardClassMetadata(Class<?> introspectedClass) {
@@ -30,7 +30,6 @@ public class StandardClassMetadata implements ClassMetadata {
 	public final Class<?> getIntrospectedClass() {
 		return this.introspectedClass;
 	}
-
 
 	public String getClassName() {
 		return this.introspectedClass.getName();
@@ -57,9 +56,8 @@ public class StandardClassMetadata implements ClassMetadata {
 	}
 
 	public boolean isIndependent() {
-		return (!hasEnclosingClass() ||
-				(this.introspectedClass.getDeclaringClass() != null &&
-						Modifier.isStatic(this.introspectedClass.getModifiers())));
+		return (!hasEnclosingClass() || (this.introspectedClass.getDeclaringClass() != null
+				&& Modifier.isStatic(this.introspectedClass.getModifiers())));
 	}
 
 	public boolean hasEnclosingClass() {
@@ -95,6 +93,16 @@ public class StandardClassMetadata implements ClassMetadata {
 			memberClassNames.add(nestedClass.getName());
 		}
 		return StringUtils.toStringArray(memberClassNames);
+	}
+
+	@Override
+	public boolean isEnum() {
+		return introspectedClass.isEnum();
+	}
+
+	@Override
+	public boolean isPublic() {
+		return Modifier.isPublic(introspectedClass.getModifiers());
 	}
 
 }

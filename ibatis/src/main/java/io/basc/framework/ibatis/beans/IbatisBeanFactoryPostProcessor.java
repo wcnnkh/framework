@@ -18,13 +18,13 @@ public class IbatisBeanFactoryPostProcessor implements BeanFactoryPostProcessor 
 		if (!beanFactory.containsDefinition(SqlSessionFactory.class.getName())) {
 			beanFactory.registerDefinition(new SqlSessionFactoryBeanDefinition(beanFactory));
 		}
-		
-		if(!beanFactory.containsDefinition(Configuration.class.getName())) {
+
+		if (!beanFactory.containsDefinition(Configuration.class.getName())) {
 			beanFactory.registerDefinition(new ConfigurationDefinition(beanFactory));
 		}
-		
-		for(Class<?> clazz : beanFactory.getContextClasses()) {
-			if(clazz.isAnnotationPresent(Mapper.class)) {
+
+		for (Class<?> clazz : beanFactory.getContextClasses()) {
+			if (clazz.isAnnotationPresent(Mapper.class)) {
 				ConfigurationUtils.registerMapperDefinition(beanFactory, clazz);
 			}
 		}
@@ -33,7 +33,8 @@ public class IbatisBeanFactoryPostProcessor implements BeanFactoryPostProcessor 
 			MapperScan mapperScan = clazz.getAnnotation(MapperScan.class);
 			if (mapperScan != null) {
 				for (String scan : mapperScan.value()) {
-					for (Class<?> mapperClass : beanFactory.getClassesLoaderFactory().getClassesLoader(scan)) {
+					for (Class<?> mapperClass : beanFactory.getClassesLoaderFactory().getClassesLoader(scan,
+							(e, m) -> e.getClassMetadata().isInterface())) {
 						ConfigurationUtils.registerMapperDefinition(beanFactory, mapperClass);
 					}
 				}

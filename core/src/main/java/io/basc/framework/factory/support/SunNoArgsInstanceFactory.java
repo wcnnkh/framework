@@ -20,8 +20,7 @@ public class SunNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 			Class<?> clz = ClassUtils.forName("sun.reflect.ReflectionFactory", null);
 			Method method = clz.getMethod("getReflectionFactory");
 			INVOKE_INSTANCE = method.invoke(null);
-			METHOD = clz.getMethod("newConstructorForSerialization",
-					Class.class, Constructor.class);
+			METHOD = clz.getMethod("newConstructorForSerialization", Class.class, Constructor.class);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -33,8 +32,7 @@ public class SunNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 			synchronized (constructorMap) {
 				constructor = constructorMap.get(type);
 				if (constructor == null) {
-					constructor = (Constructor<?>) METHOD.invoke(
-							INVOKE_INSTANCE, type, CONSTRUCTOR);
+					constructor = (Constructor<?>) METHOD.invoke(INVOKE_INSTANCE, type, CONSTRUCTOR);
 					ReflectionUtils.makeAccessible(constructor);
 					constructorMap.put(type, constructor);
 				}
@@ -48,8 +46,8 @@ public class SunNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 		if (type == null) {
 			return null;
 		}
-		
-		if(!isInstance(type)){
+
+		if (!isInstance(type)) {
 			return null;
 		}
 
@@ -70,8 +68,8 @@ public class SunNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 			throw new InstanceException(type.getName(), e);
 		}
 	}
-	
+
 	public boolean isInstance(Class<?> clazz) {
-		return isInstance(clazz);
+		return !clazz.isPrimitive() && ClassUtils.isAvailable(clazz) && ReflectionUtils.isAvailable(clazz);
 	}
 }

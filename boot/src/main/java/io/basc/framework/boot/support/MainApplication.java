@@ -32,29 +32,38 @@ public class MainApplication extends DefaultApplication implements Application, 
 	public MainArgs getMainArgs() {
 		return mainArgs;
 	}
-	
+
 	@Override
 	public void postProcessApplication(ConfigurableApplication application) throws Throwable {
 		if (isInstance(Main.class)) {
-			getInstance(Main.class).main(this, mainClass,
-					mainArgs);
+			getInstance(Main.class).main(this, mainClass, mainArgs);
 		}
 	}
 
-	public static ApplicationRunner<MainApplication> main(Class<?> mainClass, String[] args){
+	public static ApplicationRunner<MainApplication> main(Class<?> mainClass, String[] args) {
 		return new ApplicationRunner<MainApplication>(new MainApplication(mainClass, args), mainClass.getSimpleName());
 	}
 
-	public static ListenableFuture<MainApplication> run(Class<?> mainClass,
-			String[] args) {
-		ApplicationRunner<MainApplication> runner = new ApplicationRunner<MainApplication>(new MainApplication(mainClass, args), mainClass.getSimpleName());
-		return runner.start();
+	public static ListenableFuture<MainApplication> run(Class<?> mainClass, String[] args) {
+		return main(mainClass, args).start();
 	}
 
-	public static final ListenableFuture<MainApplication> run(Class<?> mainClass) {
-		return run(mainClass, null);
+	public static ListenableFuture<MainApplication> run(Class<?> mainClass, String[] args, Class<?>... sourceClasses) {
+		return main(mainClass, args).config((a) -> {
+			for (Class<?> source : sourceClasses) {
+				a.source(source);
+			}
+		}).start();
 	}
-	
+
+	public static ListenableFuture<MainApplication> run(Class<?> mainClass) {
+		return main(mainClass, null).start();
+	}
+
+	public static ListenableFuture<MainApplication> run(Class<?> mainClass, Class<?>... sourceClasses) {
+		return run(mainClass, null, sourceClasses);
+	}
+
 	@Override
 	public String toString() {
 		return mainClass.toString();

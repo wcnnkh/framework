@@ -1,9 +1,10 @@
 package io.basc.framework.factory.support;
 
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.UnsafeUtils;
-import io.basc.framework.util.XUtils;
 
 public class UnsafeNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 	static {
@@ -16,8 +17,8 @@ public class UnsafeNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 		if (type == null) {
 			return null;
 		}
-		
-		if(!XUtils.isAvailable(type)){
+
+		if (!isInstance(type)) {
 			return null;
 		}
 
@@ -29,6 +30,6 @@ public class UnsafeNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 	}
 
 	public boolean isInstance(Class<?> clazz) {
-		return XUtils.isAvailable(clazz);
+		return !clazz.isPrimitive() && ClassUtils.isAvailable(clazz) && ReflectionUtils.isAvailable(clazz);
 	}
 }

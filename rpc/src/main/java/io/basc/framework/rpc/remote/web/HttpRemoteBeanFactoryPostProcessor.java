@@ -10,7 +10,6 @@ import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.xml.XmlBeanFactory;
 import io.basc.framework.beans.xml.XmlBeanUtils;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.http.client.ClientHttpRequestFactory;
 import io.basc.framework.http.client.DefaultHttpClient;
@@ -45,11 +44,8 @@ public class HttpRemoteBeanFactoryPostProcessor implements BeanFactoryPostProces
 					CallableFactorySupplier supplier = new CallableFactorySupplier();
 					supplier.config(node, beanFactory);
 					if (!StringUtils.isEmpty(packageName)) {
-						for (Class<?> clz : beanFactory.getClassesLoaderFactory().getClassesLoader(packageName)) {
-							if (!clz.isInterface() || AnnotatedElementUtils.isIgnore(clz)) {
-								continue;
-							}
-
+						for (Class<?> clz : beanFactory.getClassesLoaderFactory().getClassesLoader(packageName,
+								(e, m) -> e.getClassMetadata().isInterface())) {
 							RemoteCallableBeanDefinition definition = new RemoteCallableBeanDefinition(beanFactory,
 									supplier, clz);
 							beanFactory.registerDefinition(definition);

@@ -21,7 +21,7 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 		if (ignore == null) {
 			return chain.isIgnore(entityClass);
 		}
-		return ignore.value();
+		return true;
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 		if (ignore == null) {
 			return chain.isIgnore(entityClass, fieldDescriptor);
 		}
-		return ignore.value();
+		return true;
 	}
 
 	private String getAnnotationFeldName(AnnotatedElement annotatedElement) {

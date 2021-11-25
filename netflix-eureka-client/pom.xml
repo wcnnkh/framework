@@ -27,10 +27,9 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<!-- TODO 是否应该让整个框架都默认使用jackson -->
 		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>jackson</artifactId>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-xml</artifactId>
 		</dependency>
 
 		<dependency>

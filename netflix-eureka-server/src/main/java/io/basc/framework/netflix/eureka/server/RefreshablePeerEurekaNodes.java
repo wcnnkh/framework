@@ -18,7 +18,7 @@ public class RefreshablePeerEurekaNodes extends PeerEurekaNodes implements Event
 	
 	private ReplicationClientAdditionalFilters replicationClientAdditionalFilters;
 
-	RefreshablePeerEurekaNodes(final PeerAwareInstanceRegistry registry, final EurekaServerConfig serverConfig,
+	public RefreshablePeerEurekaNodes(final PeerAwareInstanceRegistry registry, final EurekaServerConfig serverConfig,
 			final EurekaClientConfig clientConfig, final ServerCodecs serverCodecs,
 			final ApplicationInfoManager applicationInfoManager,
 			final ReplicationClientAdditionalFilters replicationClientAdditionalFilters, Environment environment) {

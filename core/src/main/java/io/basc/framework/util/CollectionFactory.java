@@ -1,10 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.env.Sys;
-import io.basc.framework.lang.Nullable;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +24,11 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+
+import io.basc.framework.convert.Converter;
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.env.Sys;
+import io.basc.framework.lang.Nullable;
 
 public final class CollectionFactory {
 	private static final Field KEY_TYPE_FIELD = ReflectionUtils.findField(EnumMap.class, "keyType");
@@ -165,14 +165,28 @@ public final class CollectionFactory {
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public static <E> Collection<E> createCollection(Class<?> collectionType, @Nullable Class<?> elementType,
-			int capacity) {
+			int capacity) throws IllegalArgumentException {
 		Assert.notNull(collectionType, "Collection type must not be null");
 		if (collectionType.isInterface()) {
 			if (Set.class == collectionType || Collection.class == collectionType) {
+				if (capacity == 0) {
+					return Collections.emptySet();
+				}
 				return new LinkedHashSet<E>(capacity);
 			} else if (List.class == collectionType) {
+				if (capacity == 0) {
+					return Collections.emptyList();
+				}
 				return new ArrayList<E>(capacity);
-			} else if (SortedSet.class == collectionType || NavigableSet.class == collectionType) {
+			} else if (SortedSet.class == collectionType) {
+				if (capacity == 0) {
+					return Collections.emptySortedSet();
+				}
+				return new TreeSet<E>();
+			} else if (NavigableSet.class == collectionType) {
+				if (capacity == 0) {
+					return Collections.emptyNavigableSet();
+				}
 				return new TreeSet<E>();
 			} else {
 				throw new IllegalArgumentException("Unsupported Collection interface: " + collectionType.getName());
@@ -283,11 +297,25 @@ public final class CollectionFactory {
 		Assert.notNull(mapType, "Map type must not be null");
 		if (mapType.isInterface()) {
 			if (Map.class == mapType) {
+				if (capacity == 0) {
+					return Collections.emptyMap();
+				}
 				return new LinkedHashMap<K, V>(capacity);
-			} else if (SortedMap.class == mapType || NavigableMap.class == mapType) {
+			} else if (SortedMap.class == mapType) {
+				if (capacity == 0) {
+					return Collections.emptySortedMap();
+				}
+				return new TreeMap<K, V>();
+			} else if (NavigableMap.class == mapType) {
+				if (capacity == 0) {
+					return Collections.emptyNavigableMap();
+				}
 				return new TreeMap<K, V>();
 			} else if (MultiValueMap.class == mapType) {
-				return new LinkedMultiValueMap();
+				if (capacity == 0) {
+					return (Map<K, V>) CollectionUtils.emptyMultiValueMap();
+				}
+				return new LinkedMultiValueMap(capacity);
 			} else {
 				throw new IllegalArgumentException("Unsupported Map interface: " + mapType.getName());
 			}

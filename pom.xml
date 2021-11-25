@@ -58,10 +58,10 @@
 		<!-- tomcat8只支持jdk1.7及以上的版本 -->
 		<tomcat.version>9.0.52</tomcat.version>
 
-		<eureka.version>1.10.16</eureka.version>
+		<eureka.version>1.10.17</eureka.version>
 		<xstream.version>1.4.18</xstream.version>
 		<jersey.version>1.19.4</jersey.version>
-		<jackson.version>2.12.5</jackson.version>
+		<jackson.version>2.13.0</jackson.version>
 		<slf4j.version>1.7.32</slf4j.version>
 	</properties>
 
@@ -89,6 +89,11 @@
 					<exclusion>
 						<groupId>javax.servlet</groupId>
 						<artifactId>servlet-api</artifactId>
+					</exclusion>
+
+					<exclusion>
+						<groupId>javax.ws.rs</groupId>
+						<artifactId>jsr311-api</artifactId>
 					</exclusion>
 
 					<exclusion>
@@ -147,19 +152,7 @@
 						<artifactId>*</artifactId>
 						<groupId>com.amazonaws</groupId>
 					</exclusion>
-					<!-- TODO: Move back to Eureka dependency when 1.10.17 released -->
-					<exclusion>
-						<groupId>com.thoughtworks.xstream</groupId>
-						<artifactId>xstream</artifactId>
-					</exclusion>
 				</exclusions>
-			</dependency>
-
-			<!-- TODO: Move back to Eureka dependency when 1.10.17 released -->
-			<dependency>
-				<groupId>com.thoughtworks.xstream</groupId>
-				<artifactId>xstream</artifactId>
-				<version>${xstream.version}</version>
 			</dependency>
 
 			<dependency>
@@ -232,9 +225,9 @@
 
 			<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-jaxrs2 -->
 			<dependency>
-			    <groupId>io.swagger.core.v3</groupId>
-			    <artifactId>swagger-jaxrs2</artifactId>
-			    <version>${swagger.version}</version>
+				<groupId>io.swagger.core.v3</groupId>
+				<artifactId>swagger-jaxrs2</artifactId>
+				<version>${swagger.version}</version>
 			</dependency>
 
 			<!-- https://mvnrepository.com/artifact/javax.ws.rs/javax.ws.rs-api -->
@@ -538,7 +531,7 @@
 				<artifactId>zookeeper</artifactId>
 				<version>1.8.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>zookeeper-server</artifactId>

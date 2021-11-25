@@ -23,7 +23,11 @@ import java.util.Map;
 import java.util.Set;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.page.Pageables;
+import io.basc.framework.util.page.SharedPageable;
+import io.basc.framework.util.page.StreamPageables;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -1412,6 +1416,7 @@ public final class ClassUtils {
 
 	/**
 	 * 是否存在public无参的构造方法
+	 * 
 	 * @param className
 	 * @param classLoader
 	 * @return
@@ -1427,6 +1432,7 @@ public final class ClassUtils {
 
 	/**
 	 * 是否存在public无参的构造方法
+	 * 
 	 * @param clazz
 	 * @return
 	 */
@@ -1501,5 +1507,29 @@ public final class ClassUtils {
 
 	public static boolean isByte(Type type) {
 		return type == byte.class || type == Byte.class;
+	}
+
+	/**
+	 * 此类是否可用
+	 * 
+	 * @see Ignore
+	 * @see JavaVersion#isSupported(Class)
+	 * @param clazz
+	 * @return
+	 */
+	public static boolean isAvailable(Class<?> clazz) {
+		if (clazz == null) {
+			return false;
+		}
+		return JavaVersion.isSupported(clazz);
+	}
+	
+	public static Pageables<Class<?>, Class<?>> getInterfaces(Class<?> sourceClass){
+		Assert.requiredArgument(sourceClass != null, "sourceClass");
+		return new StreamPageables<Class<?>, Class<?>>(sourceClass, (c) -> {
+			Class<?>[] interfaces = c.getInterfaces();
+			List<Class<?>> list = interfaces == null ? Collections.emptyList() : Arrays.asList(interfaces);
+			return new SharedPageable<>(c, list, c.getSuperclass(), list.size());
+		});
 	}
 }

@@ -2542,14 +2542,14 @@ public abstract class AnnotationUtils {
 
 	private static void appendAnnoationMethod(Map<String, Method> methodMap, Class<?> type,
 			Class<? extends Annotation> annotationClass) {
-		for (Method method : ReflectionUtils.getMethods(type, true)) {
+		ReflectionUtils.getDeclaredMethods(type).streamAll().forEach((method) -> {
 			if (isDeprecated(method)) {
-				continue;
+				return ;
 			}
 
 			Annotation annotation = method.getAnnotation(annotationClass);
 			if (annotation == null) {
-				continue;
+				return ;
 			}
 
 			StringBuilder sb = new StringBuilder();
@@ -2561,11 +2561,11 @@ public abstract class AnnotationUtils {
 
 			String key = sb.toString();
 			if (methodMap.containsKey(key)) {
-				continue;
+				return;
 			}
 
 			methodMap.put(key, method);
-		}
+		});
 	}
 
 	public static boolean isDeprecated(AccessibleObject accessibleObject) {

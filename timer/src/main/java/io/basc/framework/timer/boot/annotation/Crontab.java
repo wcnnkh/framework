@@ -1,5 +1,6 @@
 package io.basc.framework.timer.boot.annotation;
 
+import io.basc.framework.context.annotation.Indexed;
 import io.basc.framework.timer.TaskListener;
 
 import java.lang.annotation.ElementType;
@@ -9,6 +10,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
+@Indexed
 public @interface Crontab {
 	public String name();
 

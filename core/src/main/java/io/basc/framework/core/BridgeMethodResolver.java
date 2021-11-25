@@ -8,6 +8,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Helper for resolving synthetic {@link Method#isBridge bridge Methods} to the
@@ -42,16 +43,13 @@ public abstract class BridgeMethodResolver {
 
 		// Gather all methods with matching name and parameter size.
 		List<Method> candidateMethods = new ArrayList<Method>();
-		Method[] methods = ReflectionUtils.getAllDeclaredMethods(bridgeMethod.getDeclaringClass());
-		for (Method candidateMethod : methods) {
-			if (isBridgedCandidateFor(candidateMethod, bridgeMethod)) {
-				candidateMethods.add(candidateMethod);
-			}
-		}
-
-		// Now perform simple quick check.
-		if (candidateMethods.size() == 1) {
-			return candidateMethods.get(0);
+		
+		Optional<Method> method = ReflectionUtils.getDeclaredMethods(bridgeMethod.getDeclaringClass()).streamAll().filter((m) -> {
+			candidateMethods.add(m);
+			return isBridgedCandidateFor(m, bridgeMethod);
+		}).findFirst();
+		if(method.isPresent()) {
+			return method.get();
 		}
 
 		// Search for candidate match.

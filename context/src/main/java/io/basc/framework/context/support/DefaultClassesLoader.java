@@ -27,7 +27,7 @@ public class DefaultClassesLoader implements ConfigurableClassesLoader, Configur
 	public DefaultClassesLoader(@Nullable Accept<Class<?>> accept) {
 		this.accept = accept;
 	}
-	
+
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		serviceList.configure(serviceLoaderFactory);
@@ -41,7 +41,7 @@ public class DefaultClassesLoader implements ConfigurableClassesLoader, Configur
 	}
 
 	public void add(ClassesLoader classesLoader) {
-		serviceList.addService(accept == null ? classesLoader : new AcceptClassesLoader(classesLoader, accept, false));
+		serviceList.addService(accept == null ? classesLoader : new AcceptClassesLoader(classesLoader, accept));
 	}
 
 	public Set<Class<?>> getDefaultClasses() {

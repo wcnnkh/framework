@@ -5,6 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import io.basc.framework.context.annotation.Indexed;
+
 /**
  * 标识这是一个freemarker方法
  * @author shuchaowen
@@ -12,6 +14,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Indexed
 public @interface SharedVariable {
 	/**
 	 * 默认使用简写类名

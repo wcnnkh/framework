@@ -70,7 +70,7 @@ public class ConfigurationUtils {
 			MapperScan scan = clazz.getAnnotation(MapperScan.class);
 			if (scan != null) {
 				for (String packageName : scan.value()) {
-					for (Class<?> mapperClass : beanFactory.getClassesLoaderFactory().getClassesLoader(packageName)) {
+					for (Class<?> mapperClass : beanFactory.getClassesLoaderFactory().getClassesLoader(packageName, (e, m) -> e.getClassMetadata().isInterface())) {
 						registerMapper(configuration, mapperClass);
 					}
 				}

@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentMap;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.core.parameter.ParameterFactories;
 import io.basc.framework.core.parameter.ParameterFactory;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.factory.AbstractServiceLoaderFactory;
 import io.basc.framework.factory.InstanceDefinition;
@@ -15,7 +16,6 @@ import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.DefaultClassLoaderProvider;
-import io.basc.framework.util.XUtils;
 import io.basc.framework.value.ValueFactory;
 
 @SuppressWarnings("unchecked")
@@ -191,7 +191,8 @@ public class DefaultInstanceFactory extends AbstractServiceLoaderFactory impleme
 
 		InstanceDefinition instanceBuilder = cacheMap == null ? null : (InstanceDefinition) cacheMap.get(clazz);
 		if (instanceBuilder == null) {
-			if (!XUtils.isAvailable(clazz)) {
+			if (clazz.isPrimitive() || clazz.isArray() || clazz.isEnum() || !ClassUtils.isAvailable(clazz)
+					|| !ReflectionUtils.isAvailable(clazz)) {
 				return null;
 			}
 

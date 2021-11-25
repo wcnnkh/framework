@@ -1,10 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.io.FileUtils;
-import io.basc.framework.lang.Ignore;
-import io.basc.framework.lang.Nullable;
-
 import java.io.File;
 import java.lang.reflect.Array;
 import java.net.URL;
@@ -16,6 +11,9 @@ import java.util.Spliterators;
 import java.util.UUID;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import io.basc.framework.io.FileUtils;
+import io.basc.framework.lang.Nullable;
 
 public final class XUtils {
 	private XUtils() {
@@ -144,24 +142,6 @@ public final class XUtils {
 			 */
 		}
 		return path;
-	}
-
-	/**
-	 * 此类是否可用
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	public static boolean isAvailable(Class<?> clazz) {
-		if (clazz == null) {
-			return false;
-		}
-
-		if (ClassUtils.isPrimitiveOrWrapper(clazz) || clazz.isAnnotationPresent(Ignore.class)) {
-			return false;
-		}
-
-		return ReflectionUtils.isSupported(clazz) && JavaVersion.isSupported(clazz);
 	}
 
 	public static String getClassPath() {

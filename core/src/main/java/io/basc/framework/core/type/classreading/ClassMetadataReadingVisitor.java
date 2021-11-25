@@ -42,11 +42,12 @@ class ClassMetadataReadingVisitor extends ClassVisitor implements ClassMetadata 
 
 	private Set<String> memberClassNames = new LinkedHashSet<String>(4);
 
+	private boolean isEnum;
+	private boolean isPublic;
 
 	public ClassMetadataReadingVisitor() {
 		super(Constants.ASM_VERSION);
 	}
-
 
 	@Override
 	public void visit(int version, int access, String name, String signature, String supername, String[] interfaces) {
@@ -55,6 +56,8 @@ class ClassMetadataReadingVisitor extends ClassVisitor implements ClassMetadata 
 		this.isAnnotation = ((access & Opcodes.ACC_ANNOTATION) != 0);
 		this.isAbstract = ((access & Opcodes.ACC_ABSTRACT) != 0);
 		this.isFinal = ((access & Opcodes.ACC_FINAL) != 0);
+		this.isEnum = ((access & Opcodes.ACC_ENUM) != 0);
+		this.isPublic = ((access & Opcodes.ACC_PUBLIC) != 0);
 		if (supername != null && !this.isInterface) {
 			this.superClassName = ClassUtils.convertResourcePathToClassName(supername);
 		}
@@ -62,6 +65,14 @@ class ClassMetadataReadingVisitor extends ClassVisitor implements ClassMetadata 
 		for (int i = 0; i < interfaces.length; i++) {
 			this.interfaces[i] = ClassUtils.convertResourcePathToClassName(interfaces[i]);
 		}
+	}
+
+	public boolean isEnum() {
+		return isEnum;
+	}
+
+	public boolean isPublic() {
+		return isPublic;
 	}
 
 	@Override
@@ -77,8 +88,7 @@ class ClassMetadataReadingVisitor extends ClassVisitor implements ClassMetadata 
 			if (this.className.equals(fqName)) {
 				this.enclosingClassName = fqOuterName;
 				this.independentInnerClass = ((access & Opcodes.ACC_STATIC) != 0);
-			}
-			else if (this.className.equals(fqOuterName)) {
+			} else if (this.className.equals(fqOuterName)) {
 				this.memberClassNames.add(fqName);
 			}
 		}
@@ -116,7 +126,6 @@ class ClassMetadataReadingVisitor extends ClassVisitor implements ClassMetadata 
 	public void visitEnd() {
 		// no-op
 	}
-
 
 	public String getClassName() {
 		return this.className;
@@ -170,7 +179,6 @@ class ClassMetadataReadingVisitor extends ClassVisitor implements ClassMetadata 
 		return StringUtils.toStringArray(this.memberClassNames);
 	}
 
-
 	private static class EmptyAnnotationVisitor extends AnnotationVisitor {
 
 		public EmptyAnnotationVisitor() {
@@ -188,14 +196,12 @@ class ClassMetadataReadingVisitor extends ClassVisitor implements ClassMetadata 
 		}
 	}
 
-
 	private static class EmptyMethodVisitor extends MethodVisitor {
 
 		public EmptyMethodVisitor() {
 			super(Constants.ASM_VERSION);
 		}
 	}
-
 
 	private static class EmptyFieldVisitor extends FieldVisitor {
 

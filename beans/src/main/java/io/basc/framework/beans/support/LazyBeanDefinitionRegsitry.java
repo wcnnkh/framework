@@ -13,12 +13,13 @@ import io.basc.framework.beans.BeanDefinitionLoader;
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.annotation.Proxy;
 import io.basc.framework.context.annotation.ProviderClassesLoader;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.factory.support.InstanceIterable;
+import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.XUtils;
 
 public class LazyBeanDefinitionRegsitry extends DefaultBeanDefinitionRegistry {
 	private static Logger logger = LoggerFactory.getLogger(LazyBeanDefinitionRegsitry.class);
@@ -60,8 +61,7 @@ public class LazyBeanDefinitionRegsitry extends DefaultBeanDefinitionRegistry {
 	}
 
 	private BeanDefinition provider(Class<?> sourceClass) {
-		ProviderClassesLoader classesLoader = new ProviderClassesLoader(beanFactory.getContextClasses(),
-				sourceClass);
+		ProviderClassesLoader classesLoader = new ProviderClassesLoader(beanFactory.getContextClasses(), sourceClass);
 		for (Class<?> impl : classesLoader) {
 			BeanDefinition definition = super.getDefinition(impl);
 			if (definition == null) {
@@ -96,7 +96,19 @@ public class LazyBeanDefinitionRegsitry extends DefaultBeanDefinitionRegistry {
 			return null;
 		}
 
-		if (!XUtils.isAvailable(clazz)) {
+		if (clazz.isPrimitive() || clazz.isEnum() || clazz.isArray() || !ClassUtils.isAvailable(clazz)) {
+			return null;
+		}
+
+		if (!ReflectionUtils.isAvailable(clazz, (e) -> {
+			if (logger.isTraceEnabled()) {
+				logger.trace(e, "This class[{}] cannot be included because:", clazz.getName());
+			} else if (logger.isDebugEnabled()) {
+				logger.debug("This class[{}] cannot be included because: {}", clazz.getName(),
+						NestedExceptionUtils.getNonEmptyMessage(e, false));
+			}
+			return false;
+		})) {
 			return null;
 		}
 

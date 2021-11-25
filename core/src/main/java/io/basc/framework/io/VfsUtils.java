@@ -1,8 +1,5 @@
 package io.basc.framework.io;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.lang.Ignore;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +8,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
+
+import io.basc.framework.core.reflect.ReflectionUtils;
 
 /**
  * Utility for detecting and accessing JBoss VFS in the classpath.
@@ -22,7 +21,6 @@ import java.net.URL;
  * <p>Thanks go to Marius Bogoevici for the initial patch.
  * <b>Note:</b> This is an internal class and should not be used outside the framework.
  */
-@Ignore
 public abstract class VfsUtils {
 
 	private static final String VFS3_PKG = "org.jboss.vfs.";
