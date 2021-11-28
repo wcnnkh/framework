@@ -1,36 +1,31 @@
 package io.basc.framework.core.type.scanner;
 
+import java.util.Collection;
+import java.util.function.Predicate;
+
 import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.io.DefaultResourceLoader;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
 
-import java.util.Collections;
-import java.util.Set;
-
-public abstract class AbstractResourceClassScanner extends ClassResolver
-		implements ClassScanner {
-
+public abstract class AbstractResourceClassScanner extends ClassResolver implements ClassScanner {
 	protected ResourceLoader getResourceLoader(ClassLoader classLoader) {
 		return new DefaultResourceLoader(classLoader);
 	}
 
-	protected abstract Resource[] getResources(String packageName,
-			ResourceLoader resourceLoader, ClassLoader classLoader);
+	protected abstract Collection<Resource> getResources(String packageName, ResourceLoader resourceLoader,
+			ClassLoader classLoader);
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Set<Class<?>> getClasses(String packageName,
-			ClassLoader classLoader, TypeFilter typeFilter) {
+	@Override
+	public void scan(String packageName, ClassLoader classLoader, TypeFilter typeFilter,
+			Predicate<Class<?>> predicate) {
 		ResourceLoader resourceLoader = getResourceLoader(classLoader);
-		Resource[] resources = getResources(packageName, resourceLoader,
-				classLoader);
+		Collection<Resource> resources = getResources(packageName, resourceLoader, classLoader);
 		if (resources == null) {
-			return Collections.emptySet();
+			return;
 		}
 
-		Set classes = resolve(resources, classLoader, resourceLoader,
-				typeFilter);
-		return classes;
+		resolve(resources, resourceLoader, classLoader, typeFilter, predicate);
 	}
 
 }

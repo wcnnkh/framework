@@ -11,7 +11,6 @@ import io.basc.framework.context.annotation.ComponentScan;
 import io.basc.framework.context.annotation.ComponentScans;
 import io.basc.framework.context.annotation.EnableConditionUtils;
 import io.basc.framework.context.annotation.Indexed;
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.ClassMetadata;
 import io.basc.framework.core.type.classreading.MetadataReader;
@@ -24,15 +23,10 @@ import io.basc.framework.env.DefaultEnvironment;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.lang.Constants;
-import io.basc.framework.lang.NestedExceptionUtils;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.ClassUtils;
 import io.basc.framework.value.ValueFactory;
 
 public abstract class AbstractConfigurableContext extends AbstractProviderServiceLoaderFactory
 		implements ConfigurableContext, Configurable, TypeFilter {
-	private static Logger logger = LoggerFactory.getLogger(AbstractConfigurableContext.class);
 	private final DefaultClassScanner classScanner = new DefaultClassScanner();
 	private final DefaultClassesLoaderFactory classesLoaderFactory;
 	private final LinkedHashSetClassesLoader sourceClasses = new LinkedHashSetClassesLoader();
@@ -168,16 +162,6 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 	public void componentScan(String packageName, TypeFilter typeFilter) {
 		ClassesLoader classesLoader = getClassesLoaderFactory().getClassesLoader(packageName,
 				(e, m) -> match(e, m) && (typeFilter == null || typeFilter.match(e, m)));
-		getContextClasses().add(new AcceptClassesLoader(classesLoader, (c) -> {
-			return ClassUtils.isAvailable(c) && ReflectionUtils.isAvailable(c, (e) -> {
-				if (logger.isTraceEnabled()) {
-					logger.trace(e, "This class[{}] cannot be included because:", c.getName());
-				} else if (logger.isDebugEnabled()) {
-					logger.debug("This class[{}] cannot be included because: {}", c.getName(),
-							NestedExceptionUtils.getNonEmptyMessage(e, false));
-				}
-				return false;
-			});
-		}));
+		getContextClasses().add(classesLoader);
 	}
 }

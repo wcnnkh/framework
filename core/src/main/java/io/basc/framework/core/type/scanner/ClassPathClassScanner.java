@@ -1,18 +1,16 @@
 package io.basc.framework.core.type.scanner;
 
-import io.basc.framework.core.type.filter.TypeFilter;
-import io.basc.framework.io.ResourcePatternResolver;
+import java.util.Collection;
 
-import java.util.Set;
+import io.basc.framework.io.Resource;
+import io.basc.framework.io.ResourceLoader;
+import io.basc.framework.io.ResourcePatternResolver;
 
 public class ClassPathClassScanner extends ResourcePatternClassScanner {
 	public static ClassPathClassScanner INSTANCE = new ClassPathClassScanner();
-
+	
 	@Override
-	public Set<Class<?>> getClasses(String packageName,
-			ClassLoader classLoader, TypeFilter typeFilter) {
-		return super.getClasses(
-				ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + packageName,
-				classLoader, typeFilter);
+	protected Collection<Resource> getResources(String packageName, ResourceLoader resourceLoader, ClassLoader classLoader) {
+		return super.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + packageName, resourceLoader, classLoader);
 	}
 }

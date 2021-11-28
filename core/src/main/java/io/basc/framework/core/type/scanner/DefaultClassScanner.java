@@ -1,9 +1,8 @@
 package io.basc.framework.core.type.scanner;
 
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.function.Predicate;
 
 import io.basc.framework.core.type.filter.TypeFilter;
 
@@ -18,18 +17,12 @@ public class DefaultClassScanner implements ConfigurableClassScanner {
 		getScanners().add(classScanner);
 	}
 
-	public Set<Class<?>> getClasses(String packageName, ClassLoader classLoader, TypeFilter typeFilter) {
-		Set<Class<?>> all = new LinkedHashSet<Class<?>>();
+	@Override
+	public void scan(String packageName, ClassLoader classLoader, TypeFilter typeFilter,
+			Predicate<Class<?>> predicate) {
 		for (ClassScanner scanner : scanners) {
-			Set<Class<?>> classes = scanner.getClasses(packageName, classLoader, typeFilter);
-			if (classes != null) {
-				all.addAll(classes);
-			}
+			scanner.scan(packageName, classLoader, typeFilter, predicate);
 		}
-		Set<Class<?>> classes = ClassPathClassScanner.INSTANCE.getClasses(packageName, classLoader, typeFilter);
-		if (classes != null) {
-			all.addAll(classes);
-		}
-		return all;
+		ClassPathClassScanner.INSTANCE.scan(packageName, classLoader, typeFilter, predicate);
 	}
 }

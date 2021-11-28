@@ -1,11 +1,8 @@
 package io.basc.framework.core.type.scanner;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.function.Predicate;
 
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.classreading.MetadataReader;
@@ -15,7 +12,7 @@ import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.lang.Ignore;
-import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.DefaultClassLoaderProvider;
@@ -28,57 +25,59 @@ public class ClassResolver {
 		this.metadataReaderFactory = metadataReaderFactory;
 	}
 
-	protected MetadataReaderFactory getMetadataReaderFactory(ResourceLoader resourceLoader, ClassLoader classLoader) {
-		if (metadataReaderFactory != null) {
-			return metadataReaderFactory;
-		}
-		return new SimpleMetadataReaderFactory(resourceLoader, new DefaultClassLoaderProvider(classLoader));
+	public MetadataReaderFactory getMetadataReaderFactory() {
+		return metadataReaderFactory;
 	}
 
-	public final Set<Class<?>> resolve(Resource[] resources, ClassLoader classLoader,
-			MetadataReaderFactory metadataReaderFactory, TypeFilter typeFilter) {
-		if (ArrayUtils.isEmpty(resources)) {
-			return Collections.emptySet();
-		}
-
-		return resolve(Arrays.asList(resources), classLoader, metadataReaderFactory, typeFilter);
-	}
-
-	public final Set<Class<?>> resolve(Resource[] resources, ClassLoader classLoader, ResourceLoader resourceLoader,
-			TypeFilter typeFilter) {
-		if (ArrayUtils.isEmpty(resources)) {
-			return Collections.emptySet();
-		}
-
-		return resolve(resources, classLoader, getMetadataReaderFactory(resourceLoader, classLoader), typeFilter);
-	}
-
-	public final Set<Class<?>> resolve(Collection<Resource> resources, ClassLoader classLoader,
-			ResourceLoader resourceLoader, TypeFilter typeFilter) throws IOException {
+	public void resolve(Collection<Resource> resources, ResourceLoader resourceLoader, ClassLoader classLoader,
+			@Nullable TypeFilter typeFilter, Predicate<Class<?>> predicate) {
 		if (CollectionUtils.isEmpty(resources)) {
-			return Collections.emptySet();
+			return;
 		}
 
-		return resolve(resources, classLoader, getMetadataReaderFactory(resourceLoader, classLoader), typeFilter);
-	}
-
-	public final Set<Class<?>> resolve(Collection<Resource> resources, ClassLoader classLoader,
-			MetadataReaderFactory metadataReaderFactory, TypeFilter typeFilter) {
-		if (CollectionUtils.isEmpty(resources)) {
-			return Collections.emptySet();
+		MetadataReaderFactory metadataReaderFactory = this.metadataReaderFactory;
+		if (metadataReaderFactory == null) {
+			metadataReaderFactory = new SimpleMetadataReaderFactory(resourceLoader,
+					new DefaultClassLoaderProvider(classLoader));
 		}
 
-		Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
 		for (Resource resource : resources) {
 			try {
 				Class<?> clazz = resolve(resource, classLoader, metadataReaderFactory, typeFilter);
-				if (clazz != null) {
-					classes.add(clazz);
+				if (clazz == null) {
+					continue;
+				}
+
+				if (!predicate.test(clazz)) {
+					break;
 				}
 			} catch (IOException e) {
 			}
 		}
-		return classes;
+		return;
+	}
+
+	public void resolve(Collection<Resource> resources, ClassLoader classLoader,
+			MetadataReaderFactory metadataReaderFactory, @Nullable TypeFilter typeFilter,
+			Predicate<Class<?>> predicate) {
+		if (CollectionUtils.isEmpty(resources)) {
+			return;
+		}
+
+		for (Resource resource : resources) {
+			try {
+				Class<?> clazz = resolve(resource, classLoader, metadataReaderFactory, typeFilter);
+				if (clazz == null) {
+					continue;
+				}
+
+				if (!predicate.test(clazz)) {
+					break;
+				}
+			} catch (IOException e) {
+			}
+		}
+		return;
 	}
 
 	public Class<?> resolve(Resource resource, ClassLoader classLoader, MetadataReaderFactory metadataReaderFactory,
