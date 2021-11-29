@@ -15,8 +15,11 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import io.basc.framework.convert.Converter;
+import io.basc.framework.core.type.classreading.MetadataReaderFactory;
+import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.io.resolver.PropertiesResolver;
 import io.basc.framework.lang.NestedRuntimeException;
 import io.basc.framework.lang.Nullable;
@@ -81,13 +84,14 @@ public final class ResourceUtils {
 
 	/** Special separator between WAR URL and jar part on Tomcat. */
 	public static final String WAR_URL_SEPARATOR = "*/";
-	
+
 	public static final String META_INF_PREFIX = "META-INF/";
-	
+
 	public static final Resource NONEXISTENT_RESOURCE = new NonexistentResource();
 
 	/**
 	 * 因为eclipse默认打包为可执行jar会将资源打包在resources目录下，所以会尝试在此目录下查找资源
+	 * 
 	 * @see #getResource(Class, String)
 	 * @see #getResource(ClassLoader, String)
 	 * @see #getResourceAsStream(Class, String)
@@ -98,38 +102,37 @@ public final class ResourceUtils {
 	 * @see #getClassLoaderResourceAsStream(String)
 	 */
 	private static final String[] RESOURCE_PREFIXS;
-	
-	static{
+
+	static {
 		String prefixs = System.getProperty("io.basc.framework.resource.prefixs");
-		String[] resourcePrefixs = new String[]{"resources/"};
-		if(StringUtils.isNotEmpty(prefixs)){
+		String[] resourcePrefixs = new String[] { "resources/" };
+		if (StringUtils.isNotEmpty(prefixs)) {
 			String[] array = StringUtils.splitToArray(prefixs);
-			if(array != null && array.length != 0){
+			if (array != null && array.length != 0) {
 				resourcePrefixs = ArrayUtils.merge(array, resourcePrefixs);
 			}
 		}
-		
-		for(int i=0; i<resourcePrefixs.length; i++){
+
+		for (int i = 0; i < resourcePrefixs.length; i++) {
 			String prefix = resourcePrefixs[i];
-			while(prefix.endsWith("/")){
+			while (prefix.endsWith("/")) {
 				prefix = prefix.substring(0, prefix.length() - 2);
 			}
 
-			if(prefix.length() > 0){
+			if (prefix.length() > 0) {
 				prefix = prefix + "/";
 			}
-			
+
 			resourcePrefixs[i] = prefix;
 		}
 		RESOURCE_PREFIXS = resourcePrefixs;
 	}
-	
+
 	/**
 	 * Return whether the given resource location is a URL: either a special
 	 * "classpath" pseudo URL or a standard URL.
 	 * 
-	 * @param resourceLocation
-	 *            the location String to check
+	 * @param resourceLocation the location String to check
 	 * @return whether the location qualifies as a URL
 	 * @see #CLASSPATH_URL_PREFIX
 	 * @see java.net.URL
@@ -148,30 +151,24 @@ public final class ResourceUtils {
 	/**
 	 * Resolve the given resource location to a {@code java.net.URL}.
 	 * <p>
-	 * Does not check whether the URL actually exists; simply returns the URL
-	 * that the given location would correspond to.
+	 * Does not check whether the URL actually exists; simply returns the URL that
+	 * the given location would correspond to.
 	 * 
-	 * @param resourceLocation
-	 *            the resource location to resolve: either a "classpath:" pseudo
-	 *            URL, a "file:" URL, or a plain file path
+	 * @param resourceLocation the resource location to resolve: either a
+	 *                         "classpath:" pseudo URL, a "file:" URL, or a plain
+	 *                         file path
 	 * @return a corresponding URL object
-	 * @throws FileNotFoundException
-	 *             if the resource cannot be resolved to a URL
+	 * @throws FileNotFoundException if the resource cannot be resolved to a URL
 	 */
-	public static URL getURL(String resourceLocation)
-			throws FileNotFoundException {
+	public static URL getURL(String resourceLocation) throws FileNotFoundException {
 		Assert.notNull(resourceLocation, "Resource location must not be null");
 		if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
-			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX
-					.length());
+			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX.length());
 			ClassLoader cl = ClassUtils.getDefaultClassLoader();
-			URL url = (cl != null ? cl.getResource(path) : ClassLoader
-					.getSystemResource(path));
+			URL url = (cl != null ? cl.getResource(path) : ClassLoader.getSystemResource(path));
 			if (url == null) {
 				String description = "class path resource [" + path + "]";
-				throw new FileNotFoundException(
-						description
-								+ " cannot be resolved to URL because it does not exist");
+				throw new FileNotFoundException(description + " cannot be resolved to URL because it does not exist");
 			}
 			return url;
 		}
@@ -183,42 +180,36 @@ public final class ResourceUtils {
 			try {
 				return new File(resourceLocation).toURI().toURL();
 			} catch (MalformedURLException ex2) {
-				throw new FileNotFoundException("Resource location ["
-						+ resourceLocation
-						+ "] is neither a URL not a well-formed file path");
+				throw new FileNotFoundException(
+						"Resource location [" + resourceLocation + "] is neither a URL not a well-formed file path");
 			}
 		}
 	}
 
 	/**
-	 * Resolve the given resource location to a {@code java.io.File}, i.e. to a
-	 * file in the file system.
+	 * Resolve the given resource location to a {@code java.io.File}, i.e. to a file
+	 * in the file system.
 	 * <p>
-	 * Does not check whether the file actually exists; simply returns the File
-	 * that the given location would correspond to.
+	 * Does not check whether the file actually exists; simply returns the File that
+	 * the given location would correspond to.
 	 * 
-	 * @param resourceLocation
-	 *            the resource location to resolve: either a "classpath:" pseudo
-	 *            URL, a "file:" URL, or a plain file path
+	 * @param resourceLocation the resource location to resolve: either a
+	 *                         "classpath:" pseudo URL, a "file:" URL, or a plain
+	 *                         file path
 	 * @return a corresponding File object
-	 * @throws FileNotFoundException
-	 *             if the resource cannot be resolved to a file in the file
-	 *             system
+	 * @throws FileNotFoundException if the resource cannot be resolved to a file in
+	 *                               the file system
 	 */
-	public static File getFile(String resourceLocation)
-			throws FileNotFoundException {
+	public static File getFile(String resourceLocation) throws FileNotFoundException {
 		Assert.notNull(resourceLocation, "Resource location must not be null");
 		if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
-			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX
-					.length());
+			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX.length());
 			String description = "class path resource [" + path + "]";
 			ClassLoader cl = ClassUtils.getDefaultClassLoader();
-			URL url = (cl != null ? cl.getResource(path) : ClassLoader
-					.getSystemResource(path));
+			URL url = (cl != null ? cl.getResource(path) : ClassLoader.getSystemResource(path));
 			if (url == null) {
 				throw new FileNotFoundException(
-						description
-								+ " cannot be resolved to absolute file path because it does not exist");
+						description + " cannot be resolved to absolute file path because it does not exist");
 			}
 			return getFile(url, description);
 		}
@@ -232,40 +223,34 @@ public final class ResourceUtils {
 	}
 
 	/**
-	 * Resolve the given resource URL to a {@code java.io.File}, i.e. to a file
-	 * in the file system.
+	 * Resolve the given resource URL to a {@code java.io.File}, i.e. to a file in
+	 * the file system.
 	 * 
-	 * @param resourceUrl
-	 *            the resource URL to resolve
+	 * @param resourceUrl the resource URL to resolve
 	 * @return a corresponding File object
-	 * @throws FileNotFoundException
-	 *             if the URL cannot be resolved to a file in the file system
+	 * @throws FileNotFoundException if the URL cannot be resolved to a file in the
+	 *                               file system
 	 */
 	public static File getFile(URL resourceUrl) throws FileNotFoundException {
 		return getFile(resourceUrl, "URL");
 	}
 
 	/**
-	 * Resolve the given resource URL to a {@code java.io.File}, i.e. to a file
-	 * in the file system.
+	 * Resolve the given resource URL to a {@code java.io.File}, i.e. to a file in
+	 * the file system.
 	 * 
-	 * @param resourceUrl
-	 *            the resource URL to resolve
-	 * @param description
-	 *            a description of the original resource that the URL was
-	 *            created for (for example, a class path location)
+	 * @param resourceUrl the resource URL to resolve
+	 * @param description a description of the original resource that the URL was
+	 *                    created for (for example, a class path location)
 	 * @return a corresponding File object
-	 * @throws FileNotFoundException
-	 *             if the URL cannot be resolved to a file in the file system
+	 * @throws FileNotFoundException if the URL cannot be resolved to a file in the
+	 *                               file system
 	 */
-	public static File getFile(URL resourceUrl, String description)
-			throws FileNotFoundException {
+	public static File getFile(URL resourceUrl, String description) throws FileNotFoundException {
 		Assert.notNull(resourceUrl, "Resource URL must not be null");
 		if (!URL_PROTOCOL_FILE.equals(resourceUrl.getProtocol())) {
-			throw new FileNotFoundException(description
-					+ " cannot be resolved to absolute file path "
-					+ "because it does not reside in the file system: "
-					+ resourceUrl);
+			throw new FileNotFoundException(description + " cannot be resolved to absolute file path "
+					+ "because it does not reside in the file system: " + resourceUrl);
 		}
 		try {
 			return new File(toURI(resourceUrl).getSchemeSpecificPart());
@@ -277,101 +262,86 @@ public final class ResourceUtils {
 	}
 
 	/**
-	 * Resolve the given resource URI to a {@code java.io.File}, i.e. to a file
-	 * in the file system.
+	 * Resolve the given resource URI to a {@code java.io.File}, i.e. to a file in
+	 * the file system.
 	 * 
-	 * @param resourceUri
-	 *            the resource URI to resolve
+	 * @param resourceUri the resource URI to resolve
 	 * @return a corresponding File object
-	 * @throws FileNotFoundException
-	 *             if the URL cannot be resolved to a file in the file system
+	 * @throws FileNotFoundException if the URL cannot be resolved to a file in the
+	 *                               file system
 	 */
 	public static File getFile(URI resourceUri) throws FileNotFoundException {
 		return getFile(resourceUri, "URI");
 	}
 
 	/**
-	 * Resolve the given resource URI to a {@code java.io.File}, i.e. to a file
-	 * in the file system.
+	 * Resolve the given resource URI to a {@code java.io.File}, i.e. to a file in
+	 * the file system.
 	 * 
-	 * @param resourceUri
-	 *            the resource URI to resolve
-	 * @param description
-	 *            a description of the original resource that the URI was
-	 *            created for (for example, a class path location)
+	 * @param resourceUri the resource URI to resolve
+	 * @param description a description of the original resource that the URI was
+	 *                    created for (for example, a class path location)
 	 * @return a corresponding File object
-	 * @throws FileNotFoundException
-	 *             if the URL cannot be resolved to a file in the file system
+	 * @throws FileNotFoundException if the URL cannot be resolved to a file in the
+	 *                               file system
 	 */
-	public static File getFile(URI resourceUri, String description)
-			throws FileNotFoundException {
+	public static File getFile(URI resourceUri, String description) throws FileNotFoundException {
 		Assert.notNull(resourceUri, "Resource URI must not be null");
 		if (!URL_PROTOCOL_FILE.equals(resourceUri.getScheme())) {
-			throw new FileNotFoundException(description
-					+ " cannot be resolved to absolute file path "
-					+ "because it does not reside in the file system: "
-					+ resourceUri);
+			throw new FileNotFoundException(description + " cannot be resolved to absolute file path "
+					+ "because it does not reside in the file system: " + resourceUri);
 		}
 		return new File(resourceUri.getSchemeSpecificPart());
 	}
 
 	/**
-	 * Determine whether the given URL points to a resource in the file system,
-	 * i.e. has protocol "file", "vfsfile" or "vfs".
+	 * Determine whether the given URL points to a resource in the file system, i.e.
+	 * has protocol "file", "vfsfile" or "vfs".
 	 * 
-	 * @param url
-	 *            the URL to check
+	 * @param url the URL to check
 	 * @return whether the URL has been identified as a file system URL
 	 */
 	public static boolean isFileURL(URL url) {
 		String protocol = url.getProtocol();
-		return (URL_PROTOCOL_FILE.equals(protocol)
-				|| URL_PROTOCOL_VFSFILE.equals(protocol) || URL_PROTOCOL_VFS
-					.equals(protocol));
+		return (URL_PROTOCOL_FILE.equals(protocol) || URL_PROTOCOL_VFSFILE.equals(protocol)
+				|| URL_PROTOCOL_VFS.equals(protocol));
 	}
 
 	/**
-	 * Determine whether the given URL points to a resource in a jar file. i.e.
-	 * has protocol "jar", "war, ""zip", "vfszip" or "wsjar".
+	 * Determine whether the given URL points to a resource in a jar file. i.e. has
+	 * protocol "jar", "war, ""zip", "vfszip" or "wsjar".
 	 * 
-	 * @param url
-	 *            the URL to check
+	 * @param url the URL to check
 	 * @return whether the URL has been identified as a JAR URL
 	 */
 	public static boolean isJarURL(URL url) {
 		String protocol = url.getProtocol();
-		return (URL_PROTOCOL_JAR.equals(protocol)
-				|| URL_PROTOCOL_WAR.equals(protocol)
-				|| URL_PROTOCOL_ZIP.equals(protocol)
-				|| URL_PROTOCOL_VFSZIP.equals(protocol) || URL_PROTOCOL_WSJAR
-					.equals(protocol));
+		return (URL_PROTOCOL_JAR.equals(protocol) || URL_PROTOCOL_WAR.equals(protocol)
+				|| URL_PROTOCOL_ZIP.equals(protocol) || URL_PROTOCOL_VFSZIP.equals(protocol)
+				|| URL_PROTOCOL_WSJAR.equals(protocol));
 	}
 
 	/**
 	 * Determine whether the given URL points to a jar file itself, that is, has
 	 * protocol "file" and ends with the ".jar" extension.
 	 * 
-	 * @param url
-	 *            the URL to check
+	 * @param url the URL to check
 	 * @return whether the URL has been identified as a JAR file URL
 	 */
 	public static boolean isJarFileURL(URL url) {
-		return (URL_PROTOCOL_FILE.equals(url.getProtocol()) && url.getPath()
-				.toLowerCase().endsWith(JAR_FILE_EXTENSION));
+		return (URL_PROTOCOL_FILE.equals(url.getProtocol())
+				&& url.getPath().toLowerCase().endsWith(JAR_FILE_EXTENSION));
 	}
 
 	/**
-	 * Extract the URL for the actual jar file from the given URL (which may
-	 * point to a resource in a jar file or to a jar file itself).
+	 * Extract the URL for the actual jar file from the given URL (which may point
+	 * to a resource in a jar file or to a jar file itself).
 	 * 
-	 * @param jarUrl
-	 *            the original URL
+	 * @param jarUrl the original URL
 	 * @return the URL for the actual jar file
-	 * @throws MalformedURLException
-	 *             if no valid jar file URL could be extracted
+	 * @throws MalformedURLException if no valid jar file URL could be extracted
 	 */
-	public static URL extractJarFileURL(URL jarUrl)
-			throws MalformedURLException {
+	public static URL extractJarFileURL(URL jarUrl) throws MalformedURLException {
 		String urlFile = jarUrl.getFile();
 		int separatorIndex = urlFile.indexOf(JAR_URL_SEPARATOR);
 		if (separatorIndex != -1) {
@@ -394,21 +364,18 @@ public final class ResourceUtils {
 	}
 
 	/**
-	 * Extract the URL for the outermost archive from the given jar/war URL
-	 * (which may point to a resource in a jar file or to a jar file itself).
+	 * Extract the URL for the outermost archive from the given jar/war URL (which
+	 * may point to a resource in a jar file or to a jar file itself).
 	 * <p>
-	 * In the case of a jar file nested within a war file, this will return a
-	 * URL to the war file since that is the one resolvable in the file system.
+	 * In the case of a jar file nested within a war file, this will return a URL to
+	 * the war file since that is the one resolvable in the file system.
 	 * 
-	 * @param jarUrl
-	 *            the original URL
+	 * @param jarUrl the original URL
 	 * @return the URL for the actual jar file
-	 * @throws MalformedURLException
-	 *             if no valid jar file URL could be extracted
+	 * @throws MalformedURLException if no valid jar file URL could be extracted
 	 * @see #extractJarFileURL(URL)
 	 */
-	public static URL extractArchiveURL(URL jarUrl)
-			throws MalformedURLException {
+	public static URL extractArchiveURL(URL jarUrl) throws MalformedURLException {
 		String urlFile = jarUrl.getFile();
 
 		int endIndex = urlFile.indexOf(WAR_URL_SEPARATOR);
@@ -421,8 +388,7 @@ public final class ResourceUtils {
 			}
 			int startIndex = warFile.indexOf(WAR_URL_PREFIX);
 			if (startIndex != -1) {
-				return new URL(warFile.substring(startIndex
-						+ WAR_URL_PREFIX.length()));
+				return new URL(warFile.substring(startIndex + WAR_URL_PREFIX.length()));
 			}
 		}
 
@@ -434,11 +400,9 @@ public final class ResourceUtils {
 	 * Create a URI instance for the given URL, replacing spaces with "%20" URI
 	 * encoding first.
 	 * 
-	 * @param url
-	 *            the URL to convert into a URI instance
+	 * @param url the URL to convert into a URI instance
 	 * @return the URI instance
-	 * @throws URISyntaxException
-	 *             if the URL wasn't a valid URI
+	 * @throws URISyntaxException if the URL wasn't a valid URI
 	 * @see java.net.URL#toURI()
 	 */
 	public static URI toURI(URL url) throws URISyntaxException {
@@ -446,14 +410,12 @@ public final class ResourceUtils {
 	}
 
 	/**
-	 * Create a URI instance for the given location String, replacing spaces
-	 * with "%20" URI encoding first.
+	 * Create a URI instance for the given location String, replacing spaces with
+	 * "%20" URI encoding first.
 	 * 
-	 * @param location
-	 *            the location String to convert into a URI instance
+	 * @param location the location String to convert into a URI instance
 	 * @return the URI instance
-	 * @throws URISyntaxException
-	 *             if the location wasn't a valid URI
+	 * @throws URISyntaxException if the location wasn't a valid URI
 	 */
 	public static URI toURI(String location) throws URISyntaxException {
 		return new URI(StringUtils.replace(location, " ", "%20"));
@@ -461,11 +423,10 @@ public final class ResourceUtils {
 
 	/**
 	 * Set the {@link URLConnection#setUseCaches "useCaches"} flag on the given
-	 * connection, preferring {@code false} but leaving the flag at {@code true}
-	 * for JNLP based resources.
+	 * connection, preferring {@code false} but leaving the flag at {@code true} for
+	 * JNLP based resources.
 	 * 
-	 * @param con
-	 *            the URLConnection to set the flag on
+	 * @param con the URLConnection to set the flag on
 	 */
 	public static void useCachesIfNecessary(URLConnection con) {
 		con.setUseCaches(con.getClass().getSimpleName().startsWith("JNLP"));
@@ -483,90 +444,89 @@ public final class ResourceUtils {
 		String nameToUse = cleanClassLoaderResourceName(name);
 		URL url = classLoader.getResource(nameToUse);
 		if (url == null) {
-			for(String prefix : RESOURCE_PREFIXS){
-				if(nameToUse.startsWith(prefix)){
+			for (String prefix : RESOURCE_PREFIXS) {
+				if (nameToUse.startsWith(prefix)) {
 					continue;
 				}
-				
+
 				url = classLoader.getResource(prefix + nameToUse);
-				if(url != null){
+				if (url != null) {
 					break;
 				}
 			}
 		}
 		return url;
 	}
-	
-	public static URL getResource(Class<?> clazz, String name){
-		if(clazz == null || name == null){
+
+	public static URL getResource(Class<?> clazz, String name) {
+		if (clazz == null || name == null) {
 			return null;
 		}
-		
+
 		String nameToUse = cleanClassLoaderResourceName(name);
 		URL url = clazz.getResource(nameToUse);
-		if(url == null){
-			for(String prefix : RESOURCE_PREFIXS){
-				if(nameToUse.startsWith(prefix)){
+		if (url == null) {
+			for (String prefix : RESOURCE_PREFIXS) {
+				if (nameToUse.startsWith(prefix)) {
 					continue;
 				}
-				
+
 				url = clazz.getResource(prefix + nameToUse);
-				if(url != null){
+				if (url != null) {
 					break;
 				}
 			}
 		}
-		
-		if(url == null){
+
+		if (url == null) {
 			url = getResource(clazz.getClassLoader(), nameToUse);
 		}
 		return url;
 	}
 
-	public static InputStream getResourceAsStream(ClassLoader classLoader,
-			String name) {
-		if(classLoader == null || name == null){
+	public static InputStream getResourceAsStream(ClassLoader classLoader, String name) {
+		if (classLoader == null || name == null) {
 			return null;
 		}
-		
+
 		String nameToUse = cleanClassLoaderResourceName(name);
 		InputStream is = classLoader.getResourceAsStream(nameToUse);
 		if (is == null) {
-			for(String prefix : RESOURCE_PREFIXS){
-				if(nameToUse.startsWith(prefix)){
+			for (String prefix : RESOURCE_PREFIXS) {
+				if (nameToUse.startsWith(prefix)) {
 					continue;
 				}
-				
+
 				is = classLoader.getResourceAsStream(prefix + nameToUse);
-				if(is != null){
+				if (is != null) {
 					break;
 				}
 			}
 		}
 		return is;
 	}
-	
-	public static InputStream getResourceAsStream(Class<?> clazz, String name){
-		if(clazz == null || name == null){
+
+	public static InputStream getResourceAsStream(Class<?> clazz, String name) {
+		if (clazz == null || name == null) {
 			return null;
 		}
-		
+
 		String nameToUse = cleanClassLoaderResourceName(name);
 		InputStream is = clazz.getResourceAsStream(nameToUse);
-		if(is == null){
-			for(String prefix : RESOURCE_PREFIXS){
-				if(nameToUse.startsWith(prefix)){
+		if (is == null) {
+			for (String prefix : RESOURCE_PREFIXS) {
+				if (nameToUse.startsWith(prefix)) {
 					continue;
 				}
 
 				is = clazz.getResourceAsStream(prefix + nameToUse);
-				if(is != null){
+				if (is != null) {
 					break;
 				}
 			}
 		}
-		
-		if(is == null){
+
+		if (is == null) {
 			is = getResourceAsStream(clazz.getClassLoader(), nameToUse);
 		}
 		return is;
@@ -578,49 +538,49 @@ public final class ResourceUtils {
 	 * @see Enumeration#hasMoreElements()
 	 * @throws IOException
 	 */
-	public static Enumeration<URL> getResources(ClassLoader classLoader, String name) throws IOException{
-		if(classLoader == null || name == null){
+	public static Enumeration<URL> getResources(ClassLoader classLoader, String name) throws IOException {
+		if (classLoader == null || name == null) {
 			return Collections.emptyEnumeration();
 		}
-		
+
 		String nameToUse = cleanClassLoaderResourceName(name);
 		Enumeration<URL> urls = classLoader.getResources(nameToUse);
-		if(urls == null || !urls.hasMoreElements()){
-			for(String prefix : RESOURCE_PREFIXS){
-				if(nameToUse.startsWith(prefix)){
+		if (urls == null || !urls.hasMoreElements()) {
+			for (String prefix : RESOURCE_PREFIXS) {
+				if (nameToUse.startsWith(prefix)) {
 					continue;
 				}
-				
+
 				urls = classLoader.getResources(prefix + nameToUse);
-				if(urls != null && urls.hasMoreElements()){
+				if (urls != null && urls.hasMoreElements()) {
 					break;
 				}
 			}
 		}
-		
-		if(urls == null){
+
+		if (urls == null) {
 			return Collections.emptyEnumeration();
 		}
 		return urls;
 	}
-	
-	public static URL getSystemResource(@Nullable ClassLoader classLoader, String name){
-		if(name == null){
+
+	public static URL getSystemResource(@Nullable ClassLoader classLoader, String name) {
+		if (name == null) {
 			return null;
 		}
-		
+
 		URL url = getResource(classLoader, name);
-		if(url == null){
+		if (url == null) {
 			String nameToUse = cleanClassLoaderResourceName(name);
 			url = ClassLoader.getSystemResource(nameToUse);
-			if(url == null){
-				for(String prefix : RESOURCE_PREFIXS){
-					if(nameToUse.startsWith(prefix)){
+			if (url == null) {
+				for (String prefix : RESOURCE_PREFIXS) {
+					if (nameToUse.startsWith(prefix)) {
 						continue;
 					}
-					
+
 					url = ClassLoader.getSystemResource(prefix + nameToUse);
-					if(url != null){
+					if (url != null) {
 						break;
 					}
 				}
@@ -628,60 +588,61 @@ public final class ResourceUtils {
 		}
 		return url;
 	}
-	
+
 	/**
 	 * @param classLoader
 	 * @param name
 	 * @see Enumeration#hasMoreElements()
 	 * @throws IOException
 	 */
-	public static Enumeration<URL> getSystemResources(@Nullable ClassLoader classLoader, String name) throws IOException{
-		if(name == null){
+	public static Enumeration<URL> getSystemResources(@Nullable ClassLoader classLoader, String name)
+			throws IOException {
+		if (name == null) {
 			return Collections.emptyEnumeration();
 		}
-		
+
 		Enumeration<URL> urls = getResources(classLoader, name);
-		if(urls == null || !urls.hasMoreElements()){
+		if (urls == null || !urls.hasMoreElements()) {
 			String nameToUse = cleanClassLoaderResourceName(name);
 			urls = ClassLoader.getSystemResources(nameToUse);
-			if(urls == null || !urls.hasMoreElements()){
-				for(String prefix : RESOURCE_PREFIXS){
-					if(nameToUse.startsWith(prefix)){
+			if (urls == null || !urls.hasMoreElements()) {
+				for (String prefix : RESOURCE_PREFIXS) {
+					if (nameToUse.startsWith(prefix)) {
 						continue;
 					}
-					
+
 					urls = ClassLoader.getSystemResources(prefix + nameToUse);
-					if(urls != null && urls.hasMoreElements()){
+					if (urls != null && urls.hasMoreElements()) {
 						break;
 					}
 				}
 			}
 		}
-		
-		if(urls == null){
+
+		if (urls == null) {
 			return Collections.emptyEnumeration();
 		}
-		
+
 		return urls;
 	}
-	
-	public static InputStream getSystemResourceAsStream(@Nullable ClassLoader classLoader, String name){
-		if(name == null){
+
+	public static InputStream getSystemResourceAsStream(@Nullable ClassLoader classLoader, String name) {
+		if (name == null) {
 			return null;
 		}
-		
+
 		InputStream is = getResourceAsStream(classLoader, name);
-		if(is == null){
+		if (is == null) {
 			String nameToUse = cleanClassLoaderResourceName(name);
 			is = ClassLoader.getSystemResourceAsStream(nameToUse);
-			if(is == null){
-				for(String prefix : RESOURCE_PREFIXS){
-					if(nameToUse.startsWith(prefix)){
+			if (is == null) {
+				for (String prefix : RESOURCE_PREFIXS) {
+					if (nameToUse.startsWith(prefix)) {
 						continue;
 					}
-					
+
 					is = ClassLoader.getSystemResourceAsStream(prefix + nameToUse);
-					if(is != null){
+					if (is != null) {
 						break;
 					}
 				}
@@ -689,35 +650,35 @@ public final class ResourceUtils {
 		}
 		return is;
 	}
-	
-	public static Resource getSystemResource(String name){
+
+	public static Resource getSystemResource(String name) {
 		URL url = getSystemResource(ClassUtils.getDefaultClassLoader(), name);
-		return url == null? null:new UrlResource(url);
+		return url == null ? null : new UrlResource(url);
 	}
-	
-	public static Resource[] getSystemResources(String name) throws IOException{
+
+	public static Resource[] getSystemResources(String name) throws IOException {
 		Enumeration<URL> urls = getSystemResources(ClassUtils.getDefaultClassLoader(), name);
 		List<Resource> resources = toUrlResources(urls);
 		return resources.toArray(new Resource[0]);
 	}
-	
-	public static List<Resource> toUrlResources(Enumeration<URL> urls){
-		if(urls == null || !urls.hasMoreElements()){
+
+	public static List<Resource> toUrlResources(Enumeration<URL> urls) {
+		if (urls == null || !urls.hasMoreElements()) {
 			return Collections.emptyList();
 		}
-		
+
 		List<Resource> list = new ArrayList<Resource>(8);
-		while(urls.hasMoreElements()){
+		while (urls.hasMoreElements()) {
 			URL url = urls.nextElement();
-			if(url == null){
+			if (url == null) {
 				continue;
 			}
-			
+
 			list.add(new UrlResource(url));
 		}
 		return list;
 	}
-	
+
 	public static List<String> getLines(Resource resource, String charsetName) {
 		if (resource == null || !resource.exists()) {
 			return Collections.emptyList();
@@ -792,14 +753,15 @@ public final class ResourceUtils {
 
 		return new UnsafeByteArrayInputStream(data);
 	}
-	
-	public static Converter<Resource, Properties> toPropertiesConverter(PropertiesResolver propertiesResolver){
+
+	public static Converter<Resource, Properties> toPropertiesConverter(PropertiesResolver propertiesResolver) {
 		return toPropertiesConverter(propertiesResolver, null);
 	}
-	
-	public static Converter<Resource, Properties> toPropertiesConverter(PropertiesResolver propertiesResolver, Charset charset){
+
+	public static Converter<Resource, Properties> toPropertiesConverter(PropertiesResolver propertiesResolver,
+			Charset charset) {
 		return new Converter<Resource, Properties>() {
-			
+
 			@Override
 			public Properties convert(Resource o) {
 				Properties properties = new Properties();
@@ -807,5 +769,35 @@ public final class ResourceUtils {
 				return properties;
 			}
 		};
+	}
+
+	public static Stream<Class<?>> getClasses(ResourcePatternResolver resourcePatternResolver, String locationPattern,
+			@Nullable ClassLoader classLoader, @Nullable MetadataReaderFactory metadataReaderFactory,
+			@Nullable TypeFilter typeFilter) throws IOException {
+		Assert.requiredArgument(StringUtils.isNotEmpty(locationPattern), "locationPattern");
+		String pattern = locationPattern.endsWith(ClassUtils.CLASS_FILE_SUFFIX) ? locationPattern
+				: (locationPattern.endsWith("/") ? (locationPattern + "**/*" + ClassUtils.CLASS_FILE_SUFFIX)
+						: (locationPattern + "/**/*" + ClassUtils.CLASS_FILE_SUFFIX));
+		return ClassUtils.forResources(resourcePatternResolver, pattern, classLoader, metadataReaderFactory,
+				typeFilter);
+	}
+
+	public static Stream<Class<?>> getClassesByClassPath(ResourcePatternResolver resourcePatternResolver,
+			String locationPattern, @Nullable ClassLoader classLoader,
+			@Nullable MetadataReaderFactory metadataReaderFactory, @Nullable TypeFilter typeFilter) throws IOException {
+		Assert.requiredArgument(StringUtils.isNotEmpty(locationPattern), "locationPattern");
+		String pattern = (locationPattern.startsWith(CLASSPATH_URL_PREFIX)
+				|| locationPattern.startsWith(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX)) ? locationPattern
+						: (ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + locationPattern);
+		return getClasses(resourcePatternResolver, pattern, classLoader, metadataReaderFactory, typeFilter);
+	}
+
+	public static Stream<Class<?>> getClassesByPckageName(ResourcePatternResolver resourcePatternResolver,
+			String packageName, @Nullable ClassLoader classLoader,
+			@Nullable MetadataReaderFactory metadataReaderFactory, @Nullable TypeFilter typeFilter) throws IOException {
+		Assert.requiredArgument(StringUtils.isNotEmpty(packageName), "packageName");
+		String locationPattern = ClassUtils.convertClassNameToResourcePath(packageName);
+		return getClassesByClassPath(resourcePatternResolver, locationPattern, classLoader, metadataReaderFactory,
+				typeFilter);
 	}
 }

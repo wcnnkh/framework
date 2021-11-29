@@ -1,6 +1,7 @@
 package io.basc.framework.util;
 
 import java.beans.Introspector;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -21,13 +22,22 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.core.type.classreading.MetadataReader;
+import io.basc.framework.core.type.classreading.MetadataReaderFactory;
+import io.basc.framework.core.type.classreading.SimpleMetadataReaderFactory;
+import io.basc.framework.core.type.filter.TypeFilter;
+import io.basc.framework.io.Resource;
+import io.basc.framework.io.ResourceLoader;
+import io.basc.framework.io.ResourcePatternResolver;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.page.Pageables;
 import io.basc.framework.util.page.SharedPageable;
 import io.basc.framework.util.page.StreamPageables;
+import io.basc.framework.util.stream.StreamProcessorSupport;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -1523,13 +1533,96 @@ public final class ClassUtils {
 		}
 		return JavaVersion.isSupported(clazz);
 	}
-	
-	public static Pageables<Class<?>, Class<?>> getInterfaces(Class<?> sourceClass){
+
+	public static Pageables<Class<?>, Class<?>> getInterfaces(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new StreamPageables<Class<?>, Class<?>>(sourceClass, (c) -> {
 			Class<?>[] interfaces = c.getInterfaces();
 			List<Class<?>> list = interfaces == null ? Collections.emptyList() : Arrays.asList(interfaces);
 			return new SharedPageable<>(c, list, c.getSuperclass(), list.size());
 		});
+	}
+
+	@Nullable
+	public static Class<?> forResource(@Nullable Resource resource, @Nullable ClassLoader classLoader,
+			@Nullable MetadataReaderFactory metadataReaderFactory, @Nullable TypeFilter typeFilter) throws IOException {
+		if (resource == null) {
+			return null;
+		}
+
+		MetadataReaderFactory factory = metadataReaderFactory;
+		if (factory == null) {
+			factory = new SimpleMetadataReaderFactory(classLoader);
+		}
+
+		MetadataReader reader = factory.getMetadataReader(resource);
+		if (reader == null) {
+			return null;
+		}
+
+		if (typeFilter != null && !typeFilter.match(reader, factory)) {
+			return null;
+		}
+
+		return ClassUtils.getClass(reader.getClassMetadata().getClassName(), classLoader);
+	}
+
+	public static Stream<Class<?>> forResources(ResourceLoader resourceLoader, Stream<Resource> resources,
+			@Nullable ClassLoader classLoader, @Nullable MetadataReaderFactory metadataReaderFactory,
+			@Nullable TypeFilter typeFilter) {
+		Assert.requiredArgument(resourceLoader != null, "resourceLoader");
+		Assert.requiredArgument(resources != null, "resources");
+		MetadataReaderFactory factory = metadataReaderFactory == null
+				? new SimpleMetadataReaderFactory(resourceLoader, classLoader)
+				: metadataReaderFactory;
+		ClassLoader cl = classLoader == null ? resourceLoader.getClassLoader() : classLoader;
+		Stream<Class<?>> stream = resources.map((resource) -> {
+			try {
+				return forResource(resource, cl, factory, typeFilter);
+			} catch (IOException e) {
+				return null;
+			}
+		});
+		return stream.filter((e) -> e != null);
+	}
+
+	public static Stream<Class<?>> forResources(Stream<Resource> resources, @Nullable ClassLoader classLoader,
+			@Nullable MetadataReaderFactory metadataReaderFactory, @Nullable TypeFilter typeFilter) {
+		Assert.requiredArgument(resources != null, "resources");
+		MetadataReaderFactory factory = metadataReaderFactory;
+		if (factory == null) {
+			factory = new SimpleMetadataReaderFactory(classLoader);
+		}
+
+		Stream<Class<?>> stream = resources.map((resource) -> {
+			try {
+				return forResource(resource, classLoader, metadataReaderFactory, typeFilter);
+			} catch (IOException e) {
+				return null;
+			}
+		});
+		return stream.filter((e) -> e != null);
+	}
+
+	public static Stream<Class<?>> forResources(ResourcePatternResolver resourcePatternResolver, String locationPattern,
+			@Nullable ClassLoader classLoader, @Nullable MetadataReaderFactory metadataReaderFactory,
+			@Nullable TypeFilter typeFilter) throws IOException {
+		Assert.requiredArgument(resourcePatternResolver != null, "resourcePatternResolver");
+		Assert.requiredArgument(StringUtils.isNotEmpty(locationPattern), "locationPattern");
+		Resource[] resources = resourcePatternResolver.getResources(locationPattern);
+		if (resources == null || resources.length == 0) {
+			return StreamProcessorSupport.emptyStream();
+		}
+
+		MetadataReaderFactory factory = metadataReaderFactory;
+		if (factory == null) {
+			factory = new SimpleMetadataReaderFactory(resourcePatternResolver, classLoader);
+		}
+
+		ClassLoader cl = classLoader;
+		if (cl == null) {
+			cl = resourcePatternResolver.getClassLoader();
+		}
+		return forResources(Arrays.asList(resources).stream(), classLoader, factory, typeFilter);
 	}
 }

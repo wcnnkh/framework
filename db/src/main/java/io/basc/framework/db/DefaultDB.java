@@ -7,7 +7,6 @@ import java.util.List;
 import io.basc.framework.context.ClassesLoader;
 import io.basc.framework.context.ClassesLoaderFactory;
 import io.basc.framework.context.support.DefaultClassesLoaderFactory;
-import io.basc.framework.core.type.scanner.DefaultClassScanner;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
@@ -22,7 +21,7 @@ import io.basc.framework.util.CollectionUtils;
 public class DefaultDB extends DefaultSqlTemplate implements DB {
 	private static Logger logger = LoggerFactory.getLogger(DefaultDB.class);
 	private boolean checkTableChange = true;
-	private ClassesLoaderFactory classesLoaderFactory = new DefaultClassesLoaderFactory(new DefaultClassScanner());
+	private ClassesLoaderFactory classesLoaderFactory = new DefaultClassesLoaderFactory();
 
 	public DefaultDB(ConnectionFactory connectionFactory, SqlDialect sqlDialect) {
 		super(connectionFactory, sqlDialect);

@@ -2311,7 +2311,7 @@ public final class FileUtils {
 	}
 
 	/**
-	 * 迭代目录
+	 * 迭代目录下的文件
 	 * 
 	 * @param directory
 	 * @param filter
@@ -2322,7 +2322,7 @@ public final class FileUtils {
 	}
 
 	/**
-	 * 迭代目录
+	 * 迭代目录下的文件
 	 * 
 	 * @param directory
 	 * @param filter
@@ -2333,7 +2333,7 @@ public final class FileUtils {
 	}
 
 	/**
-	 * 迭代目录
+	 * 迭代目录下的文件
 	 * 
 	 * @param directory
 	 * @param maxDepth  迭代最大深度, -1不限制深度
@@ -2347,7 +2347,7 @@ public final class FileUtils {
 	}
 
 	/**
-	 * 迭代目录
+	 * 迭代目录下的文件
 	 * 
 	 * @param directory
 	 * @param maxDepth  迭代最大深度, -1不限制深度

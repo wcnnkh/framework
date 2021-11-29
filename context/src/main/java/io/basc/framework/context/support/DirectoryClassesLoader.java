@@ -1,48 +1,49 @@
 package io.basc.framework.context.support;
 
-import io.basc.framework.io.FileSystemResource;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.ResourceLoader;
-
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.stream.Stream;
 
-public class DirectoryClassesLoader extends AbstractResourceClassesLoader {
+import io.basc.framework.core.type.filter.TypeFilter;
+import io.basc.framework.env.Environment;
+import io.basc.framework.io.DefaultResourceLoader;
+import io.basc.framework.io.FileSystemResource;
+import io.basc.framework.io.FileSystemResourceLoader;
+import io.basc.framework.io.FileUtils;
+import io.basc.framework.io.Resource;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ClassUtils;
+
+public class DirectoryClassesLoader extends AbstractClassesLoader {
 	private final File directory;
+	private final TypeFilter typeFilter;
 
-	public DirectoryClassesLoader(String directory) {
-		this(new File(directory));
+	public DirectoryClassesLoader(String directory, @Nullable Environment environment) {
+		this(new File(directory), environment);
 	}
 
-	public DirectoryClassesLoader(File directory) {
+	public DirectoryClassesLoader(File directory, @Nullable Environment environment) {
+		ContextTypeFilter typeFilter = new ContextTypeFilter(environment);
 		this.directory = directory;
+		this.typeFilter = typeFilter;
 	}
 
-	private void appendResources(File item, Collection<Resource> resources) {
-		if (item.isDirectory()) {
-			File[] files = item.listFiles();
-			if (files == null) {
-				return;
-			}
+	public DirectoryClassesLoader(String directory, @Nullable TypeFilter typeFilter) {
+		this(new File(directory), typeFilter);
+	}
 
-			for (File file : files) {
-				appendResources(file, resources);
-			}
-		} else {
-			if (item.isFile() && item.getName().endsWith(SUFFIX)) {
-				resources.add(new FileSystemResource(item));
-			}
-		}
+	public DirectoryClassesLoader(File directory, @Nullable TypeFilter typeFilter) {
+		this.directory = directory;
+		this.typeFilter = typeFilter;
 	}
 
 	@Override
-	protected Collection<Resource> getResources(ResourceLoader resourceLoader,
-			ClassLoader classLoader) throws IOException {
-		List<Resource> list = new ArrayList<Resource>();
-		appendResources(directory, list);
-		return list;
-	}
+	protected Stream<Class<?>> load(ClassLoader classLoader) {
+		DefaultResourceLoader resourceLoader = new DefaultResourceLoader(classLoader);
+		resourceLoader.addResourceLoader(new FileSystemResourceLoader());
+
+		Stream<Resource> resources = FileUtils
+				.stream(directory, (f) -> f.getName().endsWith(ClassUtils.CLASS_FILE_SUFFIX))
+				.map((f) -> new FileSystemResource(f.getFile()));
+		return ClassUtils.forResources(resourceLoader, resources, classLoader, null, typeFilter);
+	};
 }
