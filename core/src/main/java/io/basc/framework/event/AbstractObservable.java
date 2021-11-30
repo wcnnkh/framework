@@ -2,16 +2,10 @@ package io.basc.framework.event;
 
 import io.basc.framework.event.support.SimpleEventDispatcher;
 import io.basc.framework.util.CacheableSupplier;
-import io.basc.framework.util.Supplier;
 
 public abstract class AbstractObservable<T> extends
 		SimpleEventDispatcher<ChangeEvent<T>> implements Observable<T> {
-	private final CacheableSupplier<T> valueSupplier = new CacheableSupplier<T>(
-			new Supplier<T>() {
-				public T get() {
-					return forceGet();
-				};
-			});
+	private final CacheableSupplier<T> valueSupplier = new CacheableSupplier<T>(() -> forceGet());
 
 	public AbstractObservable() {
 		super(true);

@@ -36,9 +36,9 @@ public class TccTest {
 
 	@Test
 	public void success() throws Throwable {
+		TestService testService = beanFactory.getInstance(TestService.class);
 		Transaction transaction = TransactionUtils.getManager().getTransaction(TransactionDefinition.DEFAULT);
 		try {
-			TestService testService = beanFactory.getInstance(TestService.class);
 			String value = testService.tryMethod("success");
 			System.out.println("success:" + value);
 			TransactionUtils.getManager().commit(transaction);
@@ -47,13 +47,14 @@ public class TccTest {
 			e.printStackTrace();
 		}
 		assertTrue("执行完后目录应该为空", ArrayUtils.isEmpty(file.list()));
+		assertTrue(testService.getStage() == 2);
 	}
 
 	@Test
 	public void fail() throws Throwable {
+		TestService testService = beanFactory.getInstance(TestService.class);
 		Transaction transaction = TransactionUtils.getManager().getTransaction(TransactionDefinition.DEFAULT);
 		try {
-			TestService testService = beanFactory.getInstance(TestService.class);
 			String value = testService.tryMethod("fail");
 			System.out.println("fail: " + value);
 		} finally {
@@ -61,6 +62,7 @@ public class TccTest {
 			TransactionUtils.getManager().rollback(transaction);
 		}
 		assertTrue("执行完后目录应该为空", ArrayUtils.isEmpty(file.list()));
+		assertTrue(testService.getStage() == 3);
 	}
 
 	public static interface TestService {
@@ -72,27 +74,38 @@ public class TccTest {
 
 		@TccStage
 		void cancel(@TryResult String tryResult, String group);
+		
+		int getStage();
 	}
 
 	@Service
 	public static class TestServiceImpl implements TestService {
-
+		private int stage = 0;
+		
 		@Tcc(confirm = "confirm", cancel = "cancel")
 		@Override
 		public String tryMethod(String group) {
+			stage = 1;
 			return XUtils.getUUID();
 		}
 
 		@TccStage
 		@Override
 		public void confirm(@TryResult String tryResult, String group) {
+			stage = 2;
 			System.out.println(group + " confirm:" + tryResult);
 		}
 
 		@TccStage
 		@Override
 		public void cancel(@TryResult String tryResult, String group) {
+			stage = 3;
 			System.out.println(group + " cancel:" + tryResult);
+		}
+
+		@Override
+		public int getStage() {
+			return stage;
 		}
 
 	}

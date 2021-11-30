@@ -1,9 +1,14 @@
 package io.basc.framework.env;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
 import io.basc.framework.convert.lang.ConversionServices;
 import io.basc.framework.convert.resolve.ResourceResolvers;
 import io.basc.framework.convert.support.DefaultConversionServices;
-import io.basc.framework.env.ObservablePropertiesPropertyFactory.ValueCreator;
 import io.basc.framework.event.Observable;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
@@ -31,13 +36,8 @@ import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 import io.basc.framework.value.support.DefaultPropertyFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-
-public class DefaultEnvironment extends DefaultPropertyFactory implements ConfigurableEnvironment, Configurable {
+public class DefaultEnvironment extends DefaultPropertyFactory
+		implements ConfigurableEnvironment, Configurable, PropertyWrapper {
 	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
 
 	private final ConcurrentReferenceHashMap<String, Resource> cacheMap = new ConcurrentReferenceHashMap<String, Resource>();
@@ -150,37 +150,18 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	public boolean put(String key, Object value) {
 		Assert.requiredArgument(key != null, "key");
 		Assert.requiredArgument(value != null, "value");
-		return put(key, toProperty(value));
-	}
-
-	public Value toProperty(Object value) {
-		Value v;
-		if (value instanceof Value) {
-			return (Value) value;
-		} else if (value instanceof String) {
-			v = new StringFormatValue((String) value);
-		} else {
-			v = new AnyFormatValue(value);
-		}
-		return v;
+		return put(key, wrap(key, value));
 	}
 
 	public boolean putIfAbsent(String key, Object value) {
 		Assert.requiredArgument(key != null, "key");
 		Assert.requiredArgument(value != null, "value");
-		return putIfAbsent(key, toProperty(value));
+		return putIfAbsent(key, wrap(key, value));
 	}
 
 	public void loadProperties(String keyPrefix, Observable<Properties> properties) {
-		ValueCreator valueCreator = new ValueCreator() {
-
-			public Value create(String key, Object value) {
-				return toProperty(value);
-			}
-		};
-
 		ObservablePropertiesPropertyFactory factory = new ObservablePropertiesPropertyFactory(properties, keyPrefix,
-				valueCreator);
+				this);
 		addFactory(factory);
 	}
 
@@ -246,5 +227,18 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	@Override
 	public ResourceResolvers getResourceResolver() {
 		return conversionServices.getResourceResolvers();
+	}
+
+	@Override
+	public Value wrap(String key, Object value) {
+		Value v;
+		if (value instanceof Value) {
+			return (Value) value;
+		} else if (value instanceof String) {
+			v = new StringFormatValue((String) value);
+		} else {
+			v = new AnyFormatValue(value);
+		}
+		return v;
 	}
 }
