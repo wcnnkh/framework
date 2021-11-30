@@ -92,19 +92,4 @@ public interface Codec<D, E> extends Encoder<D, E>, Decoder<E, D> {
 			}
 		}
 	}
-
-	static <D, E> Codec<D, E> build(Encoder<D, E> encoder, Decoder<E, D> decoder) {
-		return new Codec<D, E>() {
-
-			@Override
-			public E encode(D source) throws EncodeException {
-				return encoder.encode(source);
-			}
-
-			@Override
-			public D decode(E source) throws DecodeException {
-				return decoder.decode(source);
-			}
-		};
-	}
 }

@@ -1,13 +1,13 @@
 package io.basc.framework.value;
 
-import io.basc.framework.convert.TypeDescriptor;
-
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import io.basc.framework.convert.TypeDescriptor;
+
 public abstract class AbstractValue implements BaseValue {
-	
+
 	@SuppressWarnings("unchecked")
 	public final <T> T getAsObject(Class<T> type) {
 		Object v = null;
@@ -72,7 +72,7 @@ public abstract class AbstractValue implements BaseValue {
 
 	public final Object getAsObject(TypeDescriptor type) {
 		Class<?> rawClass = type.getType();
-		if (Value.isBaseType(rawClass)) {
+		if (ValueUtils.isBaseType(rawClass)) {
 			return getAsObject(rawClass);
 		}
 

@@ -25,6 +25,7 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.Value;
+import io.basc.framework.value.ValueUtils;
 import io.basc.framework.value.support.SystemPropertyFactory;
 
 public class MapperUtils {
@@ -209,7 +210,7 @@ public class MapperUtils {
 			return parseMap((Map) instance);
 		}
 
-		if (Value.isBaseType(instance.getClass())) {
+		if (ValueUtils.isBaseType(instance.getClass())) {
 			throw new NotSupportedException(instance.getClass().getName());
 		}
 
@@ -237,7 +238,7 @@ public class MapperUtils {
 			return value;
 		}
 
-		if (Value.isBaseType(value.getClass())) {
+		if (ValueUtils.isBaseType(value.getClass())) {
 			return value;
 		} else if (value instanceof ToMap) {
 			return parseMap(((ToMap) value).toMap());

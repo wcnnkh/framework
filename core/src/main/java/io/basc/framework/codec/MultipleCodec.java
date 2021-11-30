@@ -54,20 +54,4 @@ public interface MultipleCodec<T> extends Codec<T, T>, MultipleEncoder<T>, Multi
 			}
 		};
 	}
-	
-	static <T> MultipleCodec<T> build(Codec<T, T> codec){
-		return new MultipleCodec<T>() {
-
-			@Override
-			public T encode(T source) throws EncodeException {
-				return codec.encode(source);
-			}
-
-			@Override
-			public T decode(T source) throws DecodeException {
-				return codec.decode(source);
-			}
-		};
-	}
-	
 }

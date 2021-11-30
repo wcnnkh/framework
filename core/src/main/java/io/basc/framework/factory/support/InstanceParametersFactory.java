@@ -12,6 +12,7 @@ import io.basc.framework.env.Environment;
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
+import io.basc.framework.value.ValueUtils;
 
 public abstract class InstanceParametersFactory extends AbstractParametersFactory {
 	private final NoArgsInstanceFactory instanceFactory;
@@ -38,7 +39,7 @@ public abstract class InstanceParametersFactory extends AbstractParametersFactor
 
 	protected boolean isProerptyType(ParameterDescriptor parameterConfig) {
 		Class<?> type = parameterConfig.getType();
-		if (Value.isBaseType(type) || type.isArray() || Collection.class.isAssignableFrom(type)
+		if (ValueUtils.isBaseType(type) || type.isArray() || Collection.class.isAssignableFrom(type)
 				|| Map.class.isAssignableFrom(type)) {
 			return true;
 		}
