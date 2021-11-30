@@ -104,7 +104,8 @@ public class LazyBeanDefinitionRegsitry extends DefaultBeanDefinitionRegistry {
 			if (logger.isTraceEnabled()) {
 				logger.trace(e, "This class[{}] cannot be included because:", clazz.getName());
 			} else if (logger.isDebugEnabled()) {
-				logger.debug("This class[{}] cannot be included because: {}", clazz.getName(),
+				logger.debug("This class[{}] cannot be included because {}: {}", clazz.getName(),
+						NestedExceptionUtils.getRootCause(e).getClass(),
 						NestedExceptionUtils.getNonEmptyMessage(e, false));
 			}
 			return false;

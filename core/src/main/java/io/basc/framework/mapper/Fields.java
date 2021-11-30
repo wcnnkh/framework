@@ -15,14 +15,8 @@ public interface Fields extends Pageables<Class<?>, Field> {
 
 	default Fields find(String name) {
 		AcceptFieldDescriptor acceptFieldDescriptor = new AcceptFieldDescriptor(name, null);
-		return accept(new Accept<Field>() {
-
-			@Override
-			public boolean accept(Field e) {
-				return (e.isSupportGetter() && acceptFieldDescriptor.accept(e.getGetter()))
-						|| (e.isSupportSetter() && acceptFieldDescriptor.accept(e.getSetter()));
-			}
-		});
+		return accept((e) -> (e.isSupportGetter() && acceptFieldDescriptor.accept(e.getGetter()))
+				|| (e.isSupportSetter() && acceptFieldDescriptor.accept(e.getSetter())));
 	}
 
 	@Nullable
@@ -50,14 +44,8 @@ public interface Fields extends Pageables<Class<?>, Field> {
 
 	default Fields accept(String name, @Nullable Type type) {
 		AcceptFieldDescriptor acceptFieldDescriptor = new AcceptFieldDescriptor(name, type);
-		return accept(new Accept<Field>() {
-
-			@Override
-			public boolean accept(Field e) {
-				return (e.isSupportGetter() && acceptFieldDescriptor.accept(e.getGetter()))
-						|| (e.isSupportSetter() && acceptFieldDescriptor.accept(e.getSetter()));
-			}
-		});
+		return accept((e) -> (e.isSupportGetter() && acceptFieldDescriptor.accept(e.getGetter()))
+				|| (e.isSupportSetter() && acceptFieldDescriptor.accept(e.getSetter())));
 	}
 
 	default Fields acceptGetter(Accept<FieldDescriptor> accept) {
@@ -65,12 +53,7 @@ public interface Fields extends Pageables<Class<?>, Field> {
 			return this;
 		}
 
-		return accept(new Accept<Field>() {
-			@Override
-			public boolean accept(Field e) {
-				return e.isSupportGetter() && accept.accept(e.getGetter());
-			}
-		});
+		return accept((e) -> e.isSupportGetter() && accept.accept(e.getGetter()));
 	}
 
 	default Fields acceptSetter(Accept<FieldDescriptor> accept) {
@@ -78,13 +61,7 @@ public interface Fields extends Pageables<Class<?>, Field> {
 			return this;
 		}
 
-		return accept(new Accept<Field>() {
-
-			@Override
-			public boolean accept(Field e) {
-				return e.isSupportSetter() && accept.accept(e.getSetter());
-			}
-		});
+		return accept((e) -> e.isSupportSetter() && accept.accept(e.getSetter()));
 	}
 
 	public default Fields shared() {
@@ -190,13 +167,8 @@ public interface Fields extends Pageables<Class<?>, Field> {
 			return this;
 		}
 
-		return exclude(new Accept<Field>() {
-
-			public boolean accept(Field e) {
-				return (e.isSupportGetter() && names.contains(e.getGetter().getName()))
-						|| (e.isSupportSetter() && names.contains(e.getSetter().getName()));
-			}
-		});
+		return exclude((e) -> (e.isSupportGetter() && names.contains(e.getGetter().getName()))
+				|| (e.isSupportSetter() && names.contains(e.getSetter().getName())));
 	}
 
 	/**

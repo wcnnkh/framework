@@ -2,7 +2,6 @@ package io.basc.framework.io;
 
 import java.io.IOException;
 
-
 public interface ResourcePatternResolver extends ResourceLoader {
 
 	/**
@@ -12,9 +11,10 @@ public interface ResourcePatternResolver extends ResourceLoader {
 
 	/**
 	 * Resolve the given location pattern into Resource objects.
-	 * <p>Overlapping resource entries that point to the same physical
-	 * resource should be avoided, as far as possible. The result should
-	 * have set semantics.
+	 * <p>
+	 * Overlapping resource entries that point to the same physical resource should
+	 * be avoided, as far as possible. The result should have set semantics.
+	 * 
 	 * @param locationPattern the location pattern to resolve
 	 * @return the corresponding Resource objects
 	 * @throws IOException

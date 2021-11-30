@@ -1,16 +1,15 @@
 package io.basc.framework.codec;
 
-import io.basc.framework.io.IOUtils;
-import io.basc.framework.io.UnsafeByteArrayInputStream;
-import io.basc.framework.io.UnsafeByteArrayOutputStream;
-import io.basc.framework.util.Assert;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import io.basc.framework.io.IOUtils;
+import io.basc.framework.io.UnsafeByteArrayInputStream;
+import io.basc.framework.io.UnsafeByteArrayOutputStream;
 
 public interface StreamDecoder extends MultipleDecoder<byte[]> {
 	void decode(InputStream source, OutputStream target) throws IOException, DecodeException;
@@ -51,26 +50,5 @@ public interface StreamDecoder extends MultipleDecoder<byte[]> {
 			IOUtils.closeQuietly(input, target);
 		}
 		return target.toByteArray();
-	}
-
-	static class SimpleStreamDecoder implements StreamDecoder {
-		private final Decoder<byte[], byte[]> decoder;
-
-		public SimpleStreamDecoder(Decoder<byte[], byte[]> decoder) {
-			this.decoder = decoder;
-		}
-
-		@Override
-		public void decode(InputStream source, OutputStream target) throws IOException, DecodeException {
-			Assert.requiredArgument(source != null, "source");
-			Assert.requiredArgument(target != null, "target");
-			byte[] decode = IOUtils.toByteArray(source);
-			decode = decoder.decode(decode);
-			target.write(decode);
-		}
-	}
-
-	static StreamDecoder build(Decoder<byte[], byte[]> decoder) {
-		return new SimpleStreamDecoder(decoder);
 	}
 }

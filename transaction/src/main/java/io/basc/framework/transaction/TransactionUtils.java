@@ -11,12 +11,14 @@ public final class TransactionUtils {
 	/**
 	 * Global default transactions(全局默认使用的事务)
 	 */
-	private static final TransactionManager DEFAULT = Sys.env.getServiceLoader(TransactionManager.class, ThreadLocalTransactionManager.class).first();
+	private static final TransactionManager DEFAULT = Sys.env
+			.getServiceLoader(TransactionManager.class, ThreadLocalTransactionManager.class).first();
 	private static ThreadLocal<TransactionManager> LOCAL = new NamedThreadLocal<TransactionManager>(
-			TransactionUtils.class.getSimpleName());
+			TransactionManager.class.getSimpleName());
 
 	/**
 	 * 获取默认的管理器
+	 * 
 	 * @return
 	 */
 	public static TransactionManager getDefaultManager() {
@@ -25,23 +27,26 @@ public final class TransactionUtils {
 
 	/**
 	 * 获取当前使用的事务管理器
+	 * 
 	 * @return
 	 */
 	public static TransactionManager getManager() {
 		TransactionManager manager = LOCAL.get();
 		return manager == null ? DEFAULT : manager;
 	}
-	
+
 	/**
-	  * 当前是否存在事务管理器
+	 * 当前是否存在事务管理器
+	 * 
 	 * @return
 	 */
-	public static boolean hasManager(){
+	public static boolean hasManager() {
 		return LOCAL.get() != null;
 	}
 
 	/**
 	 * 设置事务管理器
+	 * 
 	 * @param manager
 	 * @return 返回旧的事务管理器
 	 */

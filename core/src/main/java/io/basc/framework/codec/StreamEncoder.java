@@ -1,16 +1,15 @@
 package io.basc.framework.codec;
 
-import io.basc.framework.io.IOUtils;
-import io.basc.framework.io.UnsafeByteArrayInputStream;
-import io.basc.framework.io.UnsafeByteArrayOutputStream;
-import io.basc.framework.util.Assert;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import io.basc.framework.io.IOUtils;
+import io.basc.framework.io.UnsafeByteArrayInputStream;
+import io.basc.framework.io.UnsafeByteArrayOutputStream;
 
 public interface StreamEncoder extends MultipleEncoder<byte[]> {
 	void encode(InputStream source, OutputStream target) throws IOException, EncodeException;
@@ -51,26 +50,5 @@ public interface StreamEncoder extends MultipleEncoder<byte[]> {
 			IOUtils.closeQuietly(input, target);
 		}
 		return target.toByteArray();
-	}
-
-	static class SimpleStreamEncoder implements StreamEncoder {
-		private final Encoder<byte[], byte[]> encoder;
-
-		public SimpleStreamEncoder(Encoder<byte[], byte[]> encoder) {
-			this.encoder = encoder;
-		}
-
-		@Override
-		public void encode(InputStream source, OutputStream target) throws IOException, EncodeException {
-			Assert.requiredArgument(source != null, "source");
-			Assert.requiredArgument(target != null, "target");
-			byte[] encode = IOUtils.toByteArray(source);
-			encode = encoder.encode(encode);
-			target.write(encode);
-		}
-	}
-
-	static StreamEncoder build(Encoder<byte[], byte[]> encoder) {
-		return new SimpleStreamEncoder(encoder);
 	}
 }

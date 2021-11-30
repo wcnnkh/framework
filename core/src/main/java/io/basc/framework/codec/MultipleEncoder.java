@@ -51,14 +51,4 @@ public interface MultipleEncoder<E> extends Encoder<E, E> {
 			}
 		};
 	}
-	
-	static <E> MultipleEncoder<E> build(Encoder<E, E> encoder){
-		return new MultipleEncoder<E>() {
-
-			@Override
-			public E encode(E source) throws EncodeException {
-				return encoder.encode(source);
-			}
-		};
-	}
 }

@@ -45,14 +45,4 @@ public interface MultipleDecoder<D> extends Decoder<D, D>{
 			}
 		};
 	}
-	
-	static <D> MultipleDecoder<D> build(Decoder<D, D> decoder){
-		return new MultipleDecoder<D>() {
-
-			@Override
-			public D decode(D source) throws DecodeException {
-				return decoder.decode(source);
-			}
-		};
-	}
 }

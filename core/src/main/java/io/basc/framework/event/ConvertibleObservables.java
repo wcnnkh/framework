@@ -27,13 +27,7 @@ public class ConvertibleObservables<S, T> extends AbstractObservable<T> implemen
 	public boolean combine(Observable<S> observable) {
 		if (this.observables.add(observable)) {
 			publishEvent(new ChangeEvent<T>(EventType.UPDATE, forceGet()));
-			EventRegistration registration = observable.registerListener(new EventListener<ChangeEvent<S>>() {
-
-				@Override
-				public void onEvent(ChangeEvent<S> event) {
-					publishEvent(new ChangeEvent<T>(event.getEventType(), forceGet()));
-				}
-			});
+			EventRegistration registration = observable.registerListener((event) -> publishEvent(new ChangeEvent<T>(event.getEventType(), forceGet())));
 			registrations.add(registration);
 			return true;
 		}

@@ -4,7 +4,7 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.util.stream.Processor;
-import io.basc.framework.value.Value;
+import io.basc.framework.value.ValueUtils;
 
 public abstract class AbstractMapProcessor<S, T, E extends Throwable> implements
 		Processor<S, T, E> {
@@ -48,7 +48,7 @@ public abstract class AbstractMapProcessor<S, T, E extends Throwable> implements
 	}
 
 	protected boolean isEntity(Class<?> type) {
-		return !Value.isBaseType(type);
+		return !ValueUtils.isBaseType(type);
 	}
 
 	protected <V> V mapEntity(S source, Class<V> targetType,

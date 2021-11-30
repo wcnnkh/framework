@@ -24,7 +24,7 @@ public abstract class AbstractProviderServiceLoaderFactory extends AbstractServi
 			synchronized (this) {
 				if (providerClassesLoader == null) {
 					providerClassesLoader = new AcceptClassesLoader(getScanClassesLoader(),
-							ProviderClassAccept.INSTANCE, true);
+							ProviderClassAccept.INSTANCE);
 				}
 			}
 		}

@@ -39,23 +39,4 @@ public interface StreamCodec extends StreamEncoder, StreamDecoder, MultipleCodec
 			}
 		}
 	}
-
-	static StreamCodec build(StreamEncoder encoder, StreamDecoder decoder) {
-		return new StreamCodec() {
-
-			@Override
-			public void decode(InputStream source, OutputStream target) throws IOException, DecodeException {
-				decoder.decode(source, target);
-			}
-
-			@Override
-			public void encode(InputStream source, OutputStream target) throws IOException, EncodeException {
-				encoder.encode(source, target);
-			}
-		};
-	}
-
-	static StreamCodec build(Codec<byte[], byte[]> codec) {
-		return build(StreamEncoder.build(codec), StreamDecoder.build(codec));
-	}
 }

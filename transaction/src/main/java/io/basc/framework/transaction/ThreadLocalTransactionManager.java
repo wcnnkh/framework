@@ -2,12 +2,13 @@ package io.basc.framework.transaction;
 
 import io.basc.framework.lang.NamedThreadLocal;
 
-
-public class ThreadLocalTransactionManager implements TransactionManager{
-	private final ThreadLocal<DefaultTransaction> local = new NamedThreadLocal<DefaultTransaction>(ThreadLocalTransactionManager.class.getSimpleName());
+public class ThreadLocalTransactionManager implements TransactionManager {
+	private final ThreadLocal<DefaultTransaction> local = new NamedThreadLocal<DefaultTransaction>(
+			Transaction.class.getSimpleName());
 
 	/**
 	 * 获取事务，会根据事务定义生成指定规则的事务
+	 * 
 	 * @param transactionDefinition
 	 * @return
 	 */
@@ -83,6 +84,7 @@ public class ThreadLocalTransactionManager implements TransactionManager{
 
 	/**
 	 * 提交事务
+	 * 
 	 * @param transaction
 	 * @throws Throwable
 	 */
@@ -99,7 +101,7 @@ public class ThreadLocalTransactionManager implements TransactionManager{
 		if (localTransaction.isRollbackOnly()) {// 直接回滚
 			rollback(transaction);
 		} else {
-			//这里不使用try-finally,所以外部使用出现异常时一定要调用rollback
+			// 这里不使用try-finally,所以外部使用出现异常时一定要调用rollback
 			localTransaction.commit();
 			try {
 				localTransaction.complete();
@@ -111,6 +113,7 @@ public class ThreadLocalTransactionManager implements TransactionManager{
 
 	/**
 	 * 回滚事务
+	 * 
 	 * @param transaction
 	 */
 	public void rollback(Transaction transaction) {

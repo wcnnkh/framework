@@ -1,5 +1,15 @@
 package io.basc.framework.lucene;
 
+import java.io.IOException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.IndexSearcher;
+
 import io.basc.framework.json.JSONUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lucene.annotation.AnnotationFieldResolver;
@@ -16,16 +26,7 @@ import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
-
-import java.io.IOException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.IndexSearcher;
+import io.basc.framework.value.ValueUtils;
 
 public abstract class AbstractLuceneTemplate extends MapperConfigurator<Document, LuceneException>
 		implements LuceneTemplate {
@@ -162,7 +163,7 @@ public abstract class AbstractLuceneTemplate extends MapperConfigurator<Document
 	@Override
 	public Document wrap(Document document, Object instance) {
 		return wrap(document, instance, getFields(instance.getClass()).accept((field) -> {
-			return field.isAnnotationPresent(LuceneField.class) || Value.isBaseType(field.getGetter().getType());
+			return field.isAnnotationPresent(LuceneField.class) || ValueUtils.isBaseType(field.getGetter().getType());
 		}).all());
 	}
 
@@ -175,7 +176,7 @@ public abstract class AbstractLuceneTemplate extends MapperConfigurator<Document
 			}
 
 			Value v;
-			if (Value.isBaseType(field.getGetter().getType())) {
+			if (ValueUtils.isBaseType(field.getGetter().getType())) {
 				v = new AnyValue(value, getConversionService());
 			} else {
 				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
@@ -195,7 +196,7 @@ public abstract class AbstractLuceneTemplate extends MapperConfigurator<Document
 			}
 
 			Value v;
-			if (Value.isBaseType(property.getField().getGetter().getType())) {
+			if (ValueUtils.isBaseType(property.getField().getGetter().getType())) {
 				v = new AnyValue(value, getConversionService());
 			} else {
 				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));

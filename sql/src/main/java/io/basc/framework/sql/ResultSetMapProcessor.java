@@ -1,5 +1,8 @@
 package io.basc.framework.sql;
 
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
@@ -10,10 +13,7 @@ import io.basc.framework.mapper.Fields;
 import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.stream.Processor;
-import io.basc.framework.value.Value;
-
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
+import io.basc.framework.value.ValueUtils;
 
 public class ResultSetMapProcessor<T> implements Processor<ResultSet, T, Throwable> {
 	private final ConversionService conversionService;
@@ -74,7 +74,7 @@ public class ResultSetMapProcessor<T> implements Processor<ResultSet, T, Throwab
 	}
 
 	protected boolean isEntity(TypeDescriptor typeDescriptor) {
-		return !Value.isBaseType(typeDescriptor.getType());
+		return !ValueUtils.isBaseType(typeDescriptor.getType());
 	}
 
 	protected Object mapEntity(ResultSet rs, TypeDescriptor typeDescriptor,

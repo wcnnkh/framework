@@ -17,7 +17,7 @@ import org.objectweb.asm.ClassReader;
  * <p>Package-visible in order to allow for repackaging the ASM library
  * without effect on users of the {@code core.type} package.
  */
-final class SimpleMetadataReader implements MetadataReader {
+public final class SimpleMetadataReader implements MetadataReader {
 
 	private final Resource resource;
 
@@ -26,7 +26,7 @@ final class SimpleMetadataReader implements MetadataReader {
 	private final AnnotationMetadata annotationMetadata;
 
 
-	SimpleMetadataReader(Resource resource, ClassLoader classLoader) throws IOException {
+	public SimpleMetadataReader(Resource resource, ClassLoader classLoader) throws IOException {
 		InputStream is = new BufferedInputStream(resource.getInputStream());
 		ClassReader classReader;
 		try {

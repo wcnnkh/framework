@@ -1,15 +1,5 @@
 package io.basc.framework.net.uri;
 
-import io.basc.framework.codec.Encoder;
-import io.basc.framework.lang.Constants;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.MultiValueMap;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.Value;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -20,6 +10,16 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import io.basc.framework.codec.Encoder;
+import io.basc.framework.lang.Constants;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.value.ValueUtils;
 
 public class UriUtils {
 	public static final String QUERY_CONNECTOR = "?";
@@ -236,7 +236,7 @@ public class UriUtils {
 			return null;
 		}
 
-		if (Value.isBaseType(body.getClass())) {
+		if (ValueUtils.isBaseType(body.getClass())) {
 			return body.toString();
 		}
 

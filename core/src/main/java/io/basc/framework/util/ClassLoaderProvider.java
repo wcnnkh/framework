@@ -1,5 +1,6 @@
 package io.basc.framework.util;
 
+@FunctionalInterface
 public interface ClassLoaderProvider {
 	/**
 	 * @see ClassUtils#getDefaultClassLoader()

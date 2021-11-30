@@ -541,9 +541,10 @@ public abstract class ReflectionUtils {
 	 * @see java.lang.reflect.Field#setAccessible
 	 */
 	public static void makeAccessible(Field field) {
-		if (field.isAccessible()) {
-			return;
-		}
+		// JDK 9 被弃用
+		/*
+		 * if (field.isAccessible()) { return; }
+		 */
 
 		if ((!Modifier.isPublic(field.getModifiers()) || !Modifier.isPublic(field.getDeclaringClass().getModifiers())
 				|| Modifier.isFinal(field.getModifiers()))) {
@@ -561,10 +562,10 @@ public abstract class ReflectionUtils {
 	 * @see java.lang.reflect.Method#setAccessible
 	 */
 	public static void makeAccessible(Method method) {
-		if (method.isAccessible()) {
-			return;
-		}
-
+		// JDK 9 被弃用
+		/*
+		 * if (method.isAccessible()) { return; }
+		 */
 		if ((!Modifier.isPublic(method.getModifiers())
 				|| !Modifier.isPublic(method.getDeclaringClass().getModifiers()))) {
 			method.setAccessible(true);
@@ -581,9 +582,10 @@ public abstract class ReflectionUtils {
 	 * @see java.lang.reflect.Constructor#setAccessible
 	 */
 	public static void makeAccessible(Constructor<?> ctor) {
-		if (ctor.isAccessible()) {
-			return;
-		}
+		// JDK 9 被弃用
+		/*
+		 * if (ctor.isAccessible()) { return; }
+		 */
 
 		if ((!Modifier.isPublic(ctor.getModifiers()) || !Modifier.isPublic(ctor.getDeclaringClass().getModifiers()))) {
 			ctor.setAccessible(true);
