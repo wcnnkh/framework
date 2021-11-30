@@ -67,7 +67,7 @@ public class PackageClassesLoader extends AbstractClassesLoader {
 		long t = System.currentTimeMillis();
 		Set<Class<?>> classes = super.getClasses(classLoader);
 		if (logger.isDebugEnabled()) {
-			logger.debug("scanner package {}[{}] use time {}ms", packageName.get(), classes.size(),
+			logger.debug("Scan package[{}] results[{}] use time {}ms", packageName.get(), classes.size(),
 					(System.currentTimeMillis() - t));
 		}
 		return classes;
