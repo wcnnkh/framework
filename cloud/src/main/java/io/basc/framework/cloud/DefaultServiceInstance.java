@@ -5,6 +5,8 @@ import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import io.basc.framework.mapper.MapperUtils;
+
 public class DefaultServiceInstance implements ServiceInstance, Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -134,7 +136,6 @@ public class DefaultServiceInstance implements ServiceInstance, Serializable {
 
 	@Override
 	public String toString() {
-		return "DefaultServiceInstance{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", host='" + host + '\''
-				+ ", port=" + port + ", secure=" + secure + ", metadata=" + metadata + '}';
+		return MapperUtils.toString(this);
 	}
 }
