@@ -34,8 +34,7 @@ public final class Sys extends DefaultEnvironment implements ServiceLoaderFactor
 
 	private static Logger logger = LoggerFactory.getLogger(Sys.class);
 	public static final Sys env = new Sys();
-	private static DefaultInstanceFactory instanceFactory = new DefaultInstanceFactory(
-			env, true);
+	private static DefaultInstanceFactory instanceFactory = new DefaultInstanceFactory(env, true);
 
 	private static Clock clock;
 
@@ -46,8 +45,7 @@ public final class Sys extends DefaultEnvironment implements ServiceLoaderFactor
 
 	static {
 		env.load();
-		unsafeInstanceFactory = instanceFactory.getServiceLoader(
-				NoArgsInstanceFactory.class,
+		unsafeInstanceFactory = instanceFactory.getServiceLoader(NoArgsInstanceFactory.class,
 				"io.basc.framework.instance.support.SunNoArgsInstanceFactory",
 				"io.basc.framework.instance.support.UnsafeNoArgsInstanceFactory").first();
 		clock = env.getServiceLoader(Clock.class).first();
@@ -61,13 +59,11 @@ public final class Sys extends DefaultEnvironment implements ServiceLoaderFactor
 		 * 加载配置文件
 		 */
 		loadProperties("system.properties");
-		loadProperties(getValue("io.basc.framework.properties", String.class,
-				"/private.properties"));
+		loadProperties(getValue("io.basc.framework.properties", String.class, "/private.properties"));
 
 		// 初始化日志管理器
-		Observable<Properties> observable = getProperties(getValue(
-				"io.basc.framework.logger.level.properties", String.class,
-				"/logger-level.properties"));
+		Observable<Properties> observable = getProperties(
+				getValue("io.basc.framework.logger.level.properties", String.class, "/logger-level.properties"));
 		LoggerFactory.getLevelManager().combine(observable);
 
 		/**
@@ -100,9 +96,9 @@ public final class Sys extends DefaultEnvironment implements ServiceLoaderFactor
 
 	public Iterator<String> iterator() {
 		return new MultiIterator<String>(super.iterator(),
-				CollectionUtils.toIterator(ConvertibleEnumeration
-						.convertToStringEnumeration(System.getProperties()
-								.keys())), System.getenv().keySet().iterator());
+				CollectionUtils
+						.toIterator(ConvertibleEnumeration.convertToStringEnumeration(System.getProperties().keys())),
+				System.getenv().keySet().iterator());
 	}
 
 	private Sys() {
@@ -164,12 +160,12 @@ public final class Sys extends DefaultEnvironment implements ServiceLoaderFactor
 	public boolean isInstance(Class<?> clazz) {
 		return instanceFactory.isInstance(clazz);
 	}
-	
+
 	@Override
 	public boolean isInstance(String name) {
 		return instanceFactory.isInstance(name);
 	}
-	
+
 	@Override
 	public <T> T getInstance(String name) {
 		return instanceFactory.getInstance(name);

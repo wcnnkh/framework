@@ -1,19 +1,20 @@
 package io.basc.framework.nacos.client;
 
 import io.basc.framework.cloud.ServiceInstance;
+import io.basc.framework.mapper.MapperUtils;
 
 import java.net.URI;
 import java.util.Map;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
 
-public class NacosServiceInstance implements ServiceInstance{
+public class NacosServiceInstance implements ServiceInstance {
 	private final Instance instance;
-	
-	public NacosServiceInstance(Instance instance){
+
+	public NacosServiceInstance(Instance instance) {
 		this.instance = instance;
 	}
-	
+
 	public Instance getInstance() {
 		return instance;
 	}
@@ -48,4 +49,8 @@ public class NacosServiceInstance implements ServiceInstance{
 		return instance.getMetadata();
 	}
 
+	@Override
+	public String toString() {
+		return MapperUtils.toString(this);
+	}
 }

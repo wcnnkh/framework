@@ -1,5 +1,6 @@
 package io.basc.framework.factory.support;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import io.basc.framework.convert.ConversionService;
@@ -14,7 +15,6 @@ import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.DefaultClassLoaderProvider;
 import io.basc.framework.value.ValueFactory;
 
@@ -28,7 +28,7 @@ public class DefaultInstanceFactory extends AbstractServiceLoaderFactory impleme
 	public DefaultInstanceFactory(Environment environment, boolean cache) {
 		this.environment = environment;
 		if (cache) {
-			cacheMap = new ConcurrentReferenceHashMap<Class<?>, InstanceDefinition>();
+			cacheMap = new ConcurrentHashMap<Class<?>, InstanceDefinition>();
 		}
 		defaultValueFactory.configure(this);
 	}

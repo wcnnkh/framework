@@ -88,10 +88,10 @@ public final class Ioc {
 	private static ConcurrentReferenceHashMap<Class<?>, Ioc> iocCache = new ConcurrentReferenceHashMap<Class<?>, Ioc>();
 
 	public static Iterable<Ioc> forClass(Class<?> clazz) {
-		if(clazz.getName().startsWith("java")){
+		if (clazz.getName().startsWith("java")) {
 			return Collections.emptyList();
 		}
-		
+
 		return new IocIterable(clazz);
 	}
 
@@ -133,6 +133,8 @@ public final class Ioc {
 				Ioc old = iocCache.putIfAbsent(clazz, ioc);
 				if (old != null) {
 					ioc = old;
+				} else {
+					iocCache.purgeUnreferencedEntries();
 				}
 			}
 

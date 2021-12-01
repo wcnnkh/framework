@@ -8,24 +8,33 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.TimeUtils;
 
-public class TimerServerSupplier<T> extends TimerTask implements
-		ServerSupplier<T> {
-	private static final Timer TIMER = new Timer(
-			TimerServerSupplier.class.getName(), true);
+public class TimerServerSupplier<T> extends TimerTask implements ServerSupplier<T> {
+	private static final Timer TIMER = new Timer(TimerServerSupplier.class.getName(), true);
+	private static Logger logger = LoggerFactory.getLogger(TimerServerSupplier.class);
 	private ServerSupplier<T> serverSupplier;
 	private volatile List<Server<T>> servers;
 	private long period;
-	private ConcurrentHashMap<String, Long> failMap = new ConcurrentHashMap<String, Long>(
-			8);
+	private ConcurrentHashMap<String, Long> failMap = new ConcurrentHashMap<String, Long>(8);
 	private AtomicBoolean timerTag = new AtomicBoolean(false);
 
+	/**
+	 * 默认1分钟刷新
+	 * 
+	 * @param serverSupplier
+	 */
 	public TimerServerSupplier(ServerSupplier<T> serverSupplier) {
-		this(serverSupplier, TimeUtils.ONE_MINUTE);
+		this(serverSupplier, 1 * TimeUtils.ONE_MINUTE);
 	}
 
+	/**
+	 * @param serverSupplier
+	 * @param period         定时刷新周期：毫秒
+	 */
 	public TimerServerSupplier(ServerSupplier<T> serverSupplier, long period) {
 		this.serverSupplier = serverSupplier;
 		this.period = period;
@@ -69,14 +78,19 @@ public class TimerServerSupplier<T> extends TimerTask implements
 
 	public List<Server<T>> getServers() {
 		if (servers == null) {
-			//不需要加锁
-			List<Server<T>> servers = serverSupplier.getServers();
-			if (CollectionUtils.isEmpty(servers)) {
-				return Collections.emptyList();
-			}
+			synchronized (this) {
+				// 加锁，防止大量调用同时获取原始列表
+				if (servers == null) {
+					List<Server<T>> servers = serverSupplier.getServers();
+					if (CollectionUtils.isEmpty(servers)) {
+						// 如果没有数据直接返回， 不缓存，这样下次调用还是从原始数据中获取
+						return Collections.emptyList();
+					}
 
-			this.servers = getBasicServers(servers);
-			start();
+					this.servers = getBasicServers(servers);
+					start();
+				}
+			}
 		}
 		return Collections.unmodifiableList(servers);
 	}
@@ -84,6 +98,9 @@ public class TimerServerSupplier<T> extends TimerTask implements
 	@Override
 	public void run() {
 		this.servers = getServers();
+		if (logger.isDebugEnabled()) {
+			logger.debug("Regularly refresh the service list: {}", servers);
+		}
 		for (String id : failMap.keySet()) {
 			if ((System.currentTimeMillis() - failMap.get(id)) > (period * 3)) {
 				failMap.remove(id);

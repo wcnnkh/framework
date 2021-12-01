@@ -1,16 +1,17 @@
 package io.basc.framework.cloud.loadbalancer;
 
 import io.basc.framework.cloud.ServiceInstance;
+import io.basc.framework.mapper.MapperUtils;
 
-public class ServiceInstanceServer implements Server<ServiceInstance>{
+public class ServiceInstanceServer implements Server<ServiceInstance> {
 	private final ServiceInstance serviceInstance;
 	private final int weight;
-	
-	public ServiceInstanceServer(ServiceInstance serviceInstance, int weight){
+
+	public ServiceInstanceServer(ServiceInstance serviceInstance, int weight) {
 		this.serviceInstance = serviceInstance;
 		this.weight = weight;
 	}
-	
+
 	public String getId() {
 		return serviceInstance.getName() + ":" + serviceInstance.getId();
 	}
@@ -23,4 +24,8 @@ public class ServiceInstanceServer implements Server<ServiceInstance>{
 		return serviceInstance;
 	}
 
+	@Override
+	public String toString() {
+		return MapperUtils.toString(this);
+	}
 }

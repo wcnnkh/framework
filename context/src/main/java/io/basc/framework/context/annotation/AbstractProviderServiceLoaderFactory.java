@@ -5,15 +5,15 @@ import io.basc.framework.context.support.AcceptClassesLoader;
 import io.basc.framework.factory.AbstractServiceLoaderFactory;
 import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.factory.support.ServiceLoaders;
-import io.basc.framework.util.SmartMap;
+import io.basc.framework.util.ConcurrentReferenceHashMap;
 
 public abstract class AbstractProviderServiceLoaderFactory extends AbstractServiceLoaderFactory {
-	private SmartMap<Class<?>, ServiceLoader<?>> cacheMap;
+	private ConcurrentReferenceHashMap<Class<?>, ServiceLoader<?>> cacheMap;
 	private volatile ClassesLoader providerClassesLoader;
 
 	public AbstractProviderServiceLoaderFactory(boolean cache) {
 		if (cache) {
-			this.cacheMap = new SmartMap<Class<?>, ServiceLoader<?>>(true);
+			this.cacheMap = new ConcurrentReferenceHashMap<Class<?>, ServiceLoader<?>>(64);
 		}
 	}
 
@@ -47,27 +47,20 @@ public abstract class AbstractProviderServiceLoaderFactory extends AbstractServi
 
 		ServiceLoader<?> serviceLoader = cacheMap.get(serviceClass);
 		if (serviceLoader == null) {
-			if (cacheMap.isConcurrent()) {
-				serviceLoader = cacheMap.get(serviceClass);
-				if (serviceLoader != null) {
-					return (ServiceLoader<S>) serviceLoader;
-				}
-
-				ServiceLoader<S> created = getInternalServiceLoader(serviceClass);
-				ServiceLoader<?> old = cacheMap.putIfAbsent(serviceClass, created);
-				if (old == null) {
-					old = created;
-				}
-				return (ServiceLoader<S>) old;
-			} else {
-				synchronized (cacheMap) {
-					serviceLoader = cacheMap.get(serviceClass);
-					if (serviceLoader == null) {
-						serviceLoader = getInternalServiceLoader(serviceClass);
-						cacheMap.put(serviceClass, serviceLoader);
-					}
-				}
+			serviceLoader = cacheMap.get(serviceClass);
+			if (serviceLoader != null) {
+				return (ServiceLoader<S>) serviceLoader;
 			}
+
+			ServiceLoader<S> created = getInternalServiceLoader(serviceClass);
+			ServiceLoader<?> old = cacheMap.putIfAbsent(serviceClass, created);
+			if (old == null) {
+				old = created;
+			} else {
+				// 出现新的时清理缓存
+				cacheMap.purgeUnreferencedEntries();
+			}
+			return (ServiceLoader<S>) old;
 		}
 		return (ServiceLoader<S>) serviceLoader;
 	}

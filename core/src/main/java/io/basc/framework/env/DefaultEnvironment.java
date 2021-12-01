@@ -95,17 +95,25 @@ public class DefaultEnvironment extends DefaultPropertyFactory
 		Resource resource = cacheMap.get(location);
 		if (resource == null) {
 			resource = configurableResourceLoader.getResource(location);
-			Resource cache = cacheMap.putIfAbsent(location, resource);
-			if (cache != null) {
-				resource = cache;
-			} else {
-				if (logger.isDebugEnabled()) {
-					logger.debug("Find resource {} result {}", location, resource);
-				}
-			}
 			if (resource == null) {
-				cacheMap.putIfAbsent(location, ResourceUtils.NONEXISTENT_RESOURCE);
+				return null;
 			}
+
+			// 不存在的资源不缓存
+			if (resource.exists()) {
+				Resource cache = cacheMap.putIfAbsent(location, resource);
+				if (cache != null) {
+					resource = cache;
+				} else {
+					// 出现一个新的资源时主动清理一下缓存
+					cacheMap.purgeUnreferencedEntries();
+					if (logger.isDebugEnabled()) {
+						logger.debug("Find resource {} result {}", location, resource);
+					}
+				}
+				return resource;
+			}
+			return ResourceUtils.NONEXISTENT_RESOURCE;
 		}
 		return resource;
 	}
@@ -207,6 +215,7 @@ public class DefaultEnvironment extends DefaultPropertyFactory
 		conversionServices.configure(serviceLoaderFactory);
 		propertyFactorys.configure(serviceLoaderFactory);
 		placeholderReplacer.configure(serviceLoaderFactory);
+		configurableResourceLoader.configure(serviceLoaderFactory);
 	}
 
 	@Override
