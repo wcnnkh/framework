@@ -11,6 +11,8 @@ import java.util.Map;
  *
  */
 public abstract class ObjectUtils {
+	public static final Object[] EMPTY_ARRAY = new Object[0];
+	
 	/**
 	 * Return whether the given throwable is a checked exception: that is, neither a
 	 * RuntimeException nor an Error.

@@ -14,7 +14,8 @@ import java.net.URL;
 
 public class DefaultResourceLoader implements ConfigurableResourceLoader, Configurable {
 	private ClassLoaderProvider classLoaderProvider;
-	private ConfigurableServices<ProtocolResolver> protocolResolvers = new ConfigurableServices<>(ProtocolResolver.class);
+	private ConfigurableServices<ProtocolResolver> protocolResolvers = new ConfigurableServices<>(
+			ProtocolResolver.class);
 	private ConfigurableServices<ResourceLoader> resourceLoaders = new ConfigurableServices<>(ResourceLoader.class);
 
 	public DefaultResourceLoader() {
@@ -42,7 +43,7 @@ public class DefaultResourceLoader implements ConfigurableResourceLoader, Config
 			protocolResolvers.addService(resolver);
 		}
 	}
-	
+
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		protocolResolvers.configure(serviceLoaderFactory);
@@ -84,14 +85,12 @@ public class DefaultResourceLoader implements ConfigurableResourceLoader, Config
 		if (location.startsWith("/")) {
 			return getResourceByPath(location);
 		} else if (location.startsWith(CLASSPATH_URL_PREFIX)) {
-			return new ClassPathResource(
-					location.substring(CLASSPATH_URL_PREFIX.length()),
-					getClassLoader());
+			return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX.length()), getClassLoader());
 		} else {
 			try {
 				// Try to parse the location as a URL...
 				URL url = new URL(location);
-				return new UrlResource(url);
+				return (ResourceUtils.isFileURL(url) ? new FileUrlResource(url) : new UrlResource(url));
 			} catch (MalformedURLException ex) {
 				// No URL -> resolve as resource path.
 				return getResourceByPath(location);
@@ -103,8 +102,7 @@ public class DefaultResourceLoader implements ConfigurableResourceLoader, Config
 		return new ClassPathContextResource(path, getClassLoader());
 	}
 
-	protected static class ClassPathContextResource extends ClassPathResource
-			implements ContextResource {
+	protected static class ClassPathContextResource extends ClassPathResource implements ContextResource {
 
 		public ClassPathContextResource(String path, ClassLoader classLoader) {
 			super(path, classLoader);
@@ -116,8 +114,7 @@ public class DefaultResourceLoader implements ConfigurableResourceLoader, Config
 
 		@Override
 		public Resource createRelative(String relativePath) {
-			String pathToUse = StringUtils.applyRelativePath(getPath(),
-					relativePath);
+			String pathToUse = StringUtils.applyRelativePath(getPath(), relativePath);
 			return new ClassPathContextResource(pathToUse, getClassLoader());
 		}
 	}

@@ -1,8 +1,5 @@
 package io.basc.framework.factory.support;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.core.parameter.ParameterFactories;
 import io.basc.framework.core.parameter.ParameterFactory;
@@ -15,21 +12,19 @@ import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.DefaultClassLoaderProvider;
 import io.basc.framework.value.ValueFactory;
 
 @SuppressWarnings("unchecked")
 public class DefaultInstanceFactory extends AbstractServiceLoaderFactory implements InstanceFactory {
-	private ConcurrentMap<Class<?>, InstanceDefinition> cacheMap;
+	private ConcurrentReferenceHashMap<Class<?>, InstanceDefinition> cacheMap = new ConcurrentReferenceHashMap<>(256);
 	private final Environment environment;
 	private ClassLoaderProvider classLoaderProvider;
 	private final ParameterFactories defaultValueFactory = new DefaultParameterDefaultValueFactories();
 
-	public DefaultInstanceFactory(Environment environment, boolean cache) {
+	public DefaultInstanceFactory(Environment environment) {
 		this.environment = environment;
-		if (cache) {
-			cacheMap = new ConcurrentHashMap<Class<?>, InstanceDefinition>();
-		}
 		defaultValueFactory.configure(this);
 	}
 
@@ -189,7 +184,7 @@ public class DefaultInstanceFactory extends AbstractServiceLoaderFactory impleme
 			return new InternalInstanceBuilder(clazz, clazz.cast(defaultValueFactory));
 		}
 
-		InstanceDefinition instanceBuilder = cacheMap == null ? null : (InstanceDefinition) cacheMap.get(clazz);
+		InstanceDefinition instanceBuilder = (InstanceDefinition) cacheMap.get(clazz);
 		if (instanceBuilder == null) {
 			if (clazz.isPrimitive() || clazz.isArray() || clazz.isEnum() || !ClassUtils.isAvailable(clazz)
 					|| !ReflectionUtils.isAvailable(clazz)) {
@@ -197,10 +192,11 @@ public class DefaultInstanceFactory extends AbstractServiceLoaderFactory impleme
 			}
 
 			instanceBuilder = new DefaultInstanceDefinition(this, environment, clazz, this, defaultValueFactory);
-			InstanceDefinition cache = cacheMap == null ? null
-					: (InstanceDefinition) cacheMap.putIfAbsent(clazz, instanceBuilder);
+			InstanceDefinition cache = (InstanceDefinition) cacheMap.putIfAbsent(clazz, instanceBuilder);
 			if (cache != null) {
 				instanceBuilder = cache;
+			} else {
+				cacheMap.purgeUnreferencedEntries();
 			}
 		}
 		return instanceBuilder;

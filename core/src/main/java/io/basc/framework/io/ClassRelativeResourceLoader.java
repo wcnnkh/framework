@@ -5,17 +5,17 @@ import io.basc.framework.util.DefaultClassLoaderProvider;
 import io.basc.framework.util.StringUtils;
 
 /**
- * {@link ResourceLoader} implementation that interprets plain resource paths
- * as relative to a given {@code java.lang.Class}.
+ * {@link ResourceLoader} implementation that interprets plain resource paths as
+ * relative to a given {@code java.lang.Class}.
  *
  */
 public class ClassRelativeResourceLoader extends DefaultResourceLoader {
 
 	private final Class<?> clazz;
 
-
 	/**
 	 * Create a new ClassRelativeResourceLoader for the given class.
+	 * 
 	 * @param clazz the class to load resources through
 	 */
 	public ClassRelativeResourceLoader(Class<?> clazz) {
@@ -29,10 +29,9 @@ public class ClassRelativeResourceLoader extends DefaultResourceLoader {
 		return new ClassRelativeContextResource(path, this.clazz);
 	}
 
-
 	/**
-	 * ClassPathResource that explicitly expresses a context-relative path
-	 * through implementing the ContextResource interface.
+	 * ClassPathResource that explicitly expresses a context-relative path through
+	 * implementing the ContextResource interface.
 	 */
 	private static class ClassRelativeContextResource extends ClassPathResource implements ContextResource {
 

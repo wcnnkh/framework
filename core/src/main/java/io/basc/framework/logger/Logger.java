@@ -2,17 +2,17 @@ package io.basc.framework.logger;
 
 import java.util.logging.Level;
 
-public interface Logger{
-	Object[] EMPTY_ARGS = new Object[0];
-	
+import io.basc.framework.util.ObjectUtils;
+
+public interface Logger {
 	String getName();
-	
+
 	default boolean isInfoEnabled() {
 		return isLoggable(CustomLevel.INFO);
 	}
 
 	default void info(String msg) {
-		info(msg, EMPTY_ARGS);
+		info(msg, ObjectUtils.EMPTY_ARRAY);
 	}
 
 	default void info(String msg, Object... args) {
@@ -20,7 +20,7 @@ public interface Logger{
 	}
 
 	default void info(Throwable e, String msg) {
-		info(e, msg, EMPTY_ARGS);
+		info(e, msg, ObjectUtils.EMPTY_ARRAY);
 	}
 
 	default void info(Throwable e, String msg, Object... args) {
@@ -32,7 +32,7 @@ public interface Logger{
 	}
 
 	default void trace(String msg) {
-		trace(msg, EMPTY_ARGS);
+		trace(msg, ObjectUtils.EMPTY_ARRAY);
 	}
 
 	default void trace(String msg, Object... args) {
@@ -40,7 +40,7 @@ public interface Logger{
 	}
 
 	default void trace(Throwable e, String msg) {
-		trace(e, msg, EMPTY_ARGS);
+		trace(e, msg, ObjectUtils.EMPTY_ARRAY);
 	}
 
 	default void trace(Throwable e, String msg, Object... args) {
@@ -52,7 +52,7 @@ public interface Logger{
 	}
 
 	default void warn(String msg) {
-		warn(msg, EMPTY_ARGS);
+		warn(msg, ObjectUtils.EMPTY_ARRAY);
 	}
 
 	default void warn(String msg, Object... args) {
@@ -60,7 +60,7 @@ public interface Logger{
 	}
 
 	default void warn(Throwable e, String msg) {
-		warn(e, msg, EMPTY_ARGS);
+		warn(e, msg, ObjectUtils.EMPTY_ARRAY);
 	}
 
 	default void warn(Throwable e, String msg, Object... args) {
@@ -72,7 +72,7 @@ public interface Logger{
 	}
 
 	default void error(String msg) {
-		error(msg, EMPTY_ARGS);
+		error(msg, ObjectUtils.EMPTY_ARRAY);
 	}
 
 	default void error(String msg, Object... args) {
@@ -80,7 +80,7 @@ public interface Logger{
 	}
 
 	default void error(Throwable e, String msg) {
-		error(e, msg, EMPTY_ARGS);
+		error(e, msg, ObjectUtils.EMPTY_ARRAY);
 	}
 
 	default void error(Throwable e, String msg, Object... args) {
@@ -92,7 +92,7 @@ public interface Logger{
 	}
 
 	default void debug(String msg) {
-		debug(msg, EMPTY_ARGS);
+		debug(msg, ObjectUtils.EMPTY_ARRAY);
 	}
 
 	default void debug(String msg, Object... args) {
@@ -100,7 +100,7 @@ public interface Logger{
 	}
 
 	default void debug(Throwable e, String msg) {
-		debug(e, msg, EMPTY_ARGS);
+		debug(e, msg, ObjectUtils.EMPTY_ARRAY);
 	}
 
 	default void debug(Throwable e, String msg, Object... args) {
@@ -110,16 +110,32 @@ public interface Logger{
 	boolean isLoggable(Level level);
 
 	default void log(Level level, String msg) {
-		log(level, msg, EMPTY_ARGS);
+		log(level, msg, ObjectUtils.EMPTY_ARRAY);
 	}
-	
+
 	default void log(Level level, String msg, Object... args) {
 		log(level, null, msg, args);
 	}
 
 	default void log(Level level, Throwable e, String msg) {
-		log(level, e, msg, EMPTY_ARGS);
+		log(level, e, msg, ObjectUtils.EMPTY_ARRAY);
 	}
-	
+
 	void log(Level level, Throwable e, String msg, Object... args);
+
+	default LogProcessor toInfoProcessor() {
+		return toProcessor(CustomLevel.INFO);
+	}
+
+	default LogProcessor toDebugProcessor() {
+		return toProcessor(CustomLevel.DEBUG);
+	}
+
+	default LogProcessor toTraceProcessor() {
+		return toProcessor(CustomLevel.TRACE);
+	}
+
+	default LogProcessor toProcessor(Level level) {
+		return new WrapLogProcessor(this, level);
+	}
 }

@@ -1,10 +1,5 @@
 package io.basc.framework.io;
 
-import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.http.HttpInputMessage;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.StringUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,16 +10,24 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
+
 /**
  * {@link Resource} implementation for {@code java.net.URL} locators. Supports
  * resolution as a {@code URL} and also as a {@code File} in case of the
  * {@code "file:"} protocol.
+ *
+ * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/io/UrlResource.java
+ * @see java.net.URL
  */
-public class UrlResource extends AbstractFileResolvingResource implements
-		HttpInputMessage {
+public class UrlResource extends AbstractFileResolvingResource {
+
 	/**
 	 * Original URI, if available; used for URI and File access.
 	 */
+	@Nullable
 	private final URI uri;
 
 	/**
@@ -35,34 +38,30 @@ public class UrlResource extends AbstractFileResolvingResource implements
 	/**
 	 * Cleaned URL (with normalized path), used for comparisons.
 	 */
-	private final URL cleanedUrl;
+	@Nullable
+	private volatile URL cleanedUrl;
 
 	/**
 	 * Create a new {@code UrlResource} based on the given URI object.
 	 * 
-	 * @param uri
-	 *            a URI
-	 * @throws MalformedURLException
-	 *             if the given URL path is not valid
+	 * @param uri a URI
+	 * @throws MalformedURLException if the given URL path is not valid
 	 */
 	public UrlResource(URI uri) throws MalformedURLException {
 		Assert.notNull(uri, "URI must not be null");
 		this.uri = uri;
 		this.url = uri.toURL();
-		this.cleanedUrl = getCleanedUrl(this.url, uri.toString());
 	}
 
 	/**
 	 * Create a new {@code UrlResource} based on the given URL object.
 	 * 
-	 * @param url
-	 *            a URL
+	 * @param url a URL
 	 */
 	public UrlResource(URL url) {
 		Assert.notNull(url, "URL must not be null");
-		this.url = url;
-		this.cleanedUrl = getCleanedUrl(this.url, url.toString());
 		this.uri = null;
+		this.url = url;
 	}
 
 	/**
@@ -70,10 +69,8 @@ public class UrlResource extends AbstractFileResolvingResource implements
 	 * <p>
 	 * Note: The given path needs to be pre-encoded if necessary.
 	 * 
-	 * @param path
-	 *            a URL path
-	 * @throws MalformedURLException
-	 *             if the given URL path is not valid
+	 * @param path a URL path
+	 * @throws MalformedURLException if the given URL path is not valid
 	 * @see java.net.URL#URL(String)
 	 */
 	public UrlResource(String path) throws MalformedURLException {
@@ -88,18 +85,14 @@ public class UrlResource extends AbstractFileResolvingResource implements
 	 * <p>
 	 * The given parts will automatically get encoded if necessary.
 	 * 
-	 * @param protocol
-	 *            the URL protocol to use (e.g. "jar" or "file" - without
-	 *            colon); also known as "scheme"
-	 * @param location
-	 *            the location (e.g. the file path within that protocol); also
-	 *            known as "scheme-specific part"
-	 * @throws MalformedURLException
-	 *             if the given URL specification is not valid
+	 * @param protocol the URL protocol to use (e.g. "jar" or "file" - without
+	 *                 colon); also known as "scheme"
+	 * @param location the location (e.g. the file path within that protocol); also
+	 *                 known as "scheme-specific part"
+	 * @throws MalformedURLException if the given URL specification is not valid
 	 * @see java.net.URI#URI(String, String, String)
 	 */
-	public UrlResource(String protocol, String location)
-			throws MalformedURLException {
+	public UrlResource(String protocol, String location) throws MalformedURLException {
 		this(protocol, location, null);
 	}
 
@@ -108,28 +101,21 @@ public class UrlResource extends AbstractFileResolvingResource implements
 	 * <p>
 	 * The given parts will automatically get encoded if necessary.
 	 * 
-	 * @param protocol
-	 *            the URL protocol to use (e.g. "jar" or "file" - without
-	 *            colon); also known as "scheme"
-	 * @param location
-	 *            the location (e.g. the file path within that protocol); also
-	 *            known as "scheme-specific part"
-	 * @param fragment
-	 *            the fragment within that location (e.g. anchor on an HTML
-	 *            page, as following after a "#" separator)
-	 * @throws MalformedURLException
-	 *             if the given URL specification is not valid
+	 * @param protocol the URL protocol to use (e.g. "jar" or "file" - without
+	 *                 colon); also known as "scheme"
+	 * @param location the location (e.g. the file path within that protocol); also
+	 *                 known as "scheme-specific part"
+	 * @param fragment the fragment within that location (e.g. anchor on an HTML
+	 *                 page, as following after a "#" separator)
+	 * @throws MalformedURLException if the given URL specification is not valid
 	 * @see java.net.URI#URI(String, String, String)
 	 */
-	public UrlResource(String protocol, String location, String fragment)
-			throws MalformedURLException {
+	public UrlResource(String protocol, String location, @Nullable String fragment) throws MalformedURLException {
 		try {
 			this.uri = new URI(protocol, location, fragment);
 			this.url = this.uri.toURL();
-			this.cleanedUrl = getCleanedUrl(this.url, this.uri.toString());
 		} catch (URISyntaxException ex) {
-			MalformedURLException exToThrow = new MalformedURLException(
-					ex.getMessage());
+			MalformedURLException exToThrow = new MalformedURLException(ex.getMessage());
 			exToThrow.initCause(ex);
 			throw exToThrow;
 		}
@@ -138,32 +124,49 @@ public class UrlResource extends AbstractFileResolvingResource implements
 	/**
 	 * Determine a cleaned URL for the given original URL.
 	 * 
-	 * @param originalUrl
-	 *            the original URL
-	 * @param originalPath
-	 *            the original URL path
-	 * @return the cleaned URL
+	 * @param originalUrl  the original URL
+	 * @param originalPath the original URL path
+	 * @return the cleaned URL (possibly the original URL as-is)
+	 * @see io.basc.framework.util.StringUtils#cleanPath
 	 */
-	private URL getCleanedUrl(URL originalUrl, String originalPath) {
-		try {
-			return new URL(StringUtils.cleanPath(originalPath));
-		} catch (MalformedURLException ex) {
-			// Cleaned URL path cannot be converted to URL
-			// -> take original URL.
-			return originalUrl;
+	private static URL getCleanedUrl(URL originalUrl, String originalPath) {
+		String cleanedPath = StringUtils.cleanPath(originalPath);
+		if (!cleanedPath.equals(originalPath)) {
+			try {
+				return new URL(cleanedPath);
+			} catch (MalformedURLException ex) {
+				// Cleaned URL path cannot be converted to URL -> take original URL.
+			}
 		}
+		return originalUrl;
+	}
+
+	/**
+	 * Lazily determine a cleaned URL for the given original URL.
+	 * 
+	 * @see #getCleanedUrl(URL, String)
+	 */
+	private URL getCleanedUrl() {
+		URL cleanedUrl = this.cleanedUrl;
+		if (cleanedUrl != null) {
+			return cleanedUrl;
+		}
+		cleanedUrl = getCleanedUrl(this.url, (this.uri != null ? this.uri : this.url).toString());
+		this.cleanedUrl = cleanedUrl;
+		return cleanedUrl;
 	}
 
 	/**
 	 * This implementation opens an InputStream for the given URL.
 	 * <p>
-	 * It sets the {@code useCaches} flag to {@code false}, mainly to avoid jar
-	 * file locking on Windows.
+	 * It sets the {@code useCaches} flag to {@code false}, mainly to avoid jar file
+	 * locking on Windows.
 	 * 
 	 * @see java.net.URL#openConnection()
 	 * @see java.net.URLConnection#setUseCaches(boolean)
 	 * @see java.net.URLConnection#getInputStream()
 	 */
+	@Override
 	public InputStream getInputStream() throws IOException {
 		URLConnection con = this.url.openConnection();
 		ResourceUtils.useCachesIfNecessary(con);
@@ -182,7 +185,7 @@ public class UrlResource extends AbstractFileResolvingResource implements
 	 * This implementation returns the underlying URL reference.
 	 */
 	@Override
-	public URL getURL() throws IOException {
+	public URL getURL() {
 		return this.url;
 	}
 
@@ -198,10 +201,20 @@ public class UrlResource extends AbstractFileResolvingResource implements
 		}
 	}
 
+	@Override
+	public boolean isFile() {
+		if (this.uri != null) {
+			return super.isFile(this.uri);
+		} else {
+			return super.isFile();
+		}
+	}
+
 	/**
 	 * This implementation returns a File reference for the underlying URL/URI,
 	 * provided that it refers to a file in the file system.
 	 * 
+	 * @see io.basc.framework.io.ResourceUtils#getFile(java.net.URL, String)
 	 */
 	@Override
 	public File getFile() throws IOException {
@@ -213,19 +226,32 @@ public class UrlResource extends AbstractFileResolvingResource implements
 	}
 
 	/**
-	 * This implementation creates a {@code UrlResource}, applying the given
-	 * path relative to the path of the underlying URL of this resource
-	 * descriptor.
+	 * This implementation creates a {@code UrlResource}, delegating to
+	 * {@link #createRelativeURL(String)} for adapting the relative path.
 	 * 
-	 * @see java.net.URL#URL(java.net.URL, String)
+	 * @see #createRelativeURL(String)
 	 */
 	@Override
-	public Resource createRelative(String relativePath)
-			throws MalformedURLException {
+	public Resource createRelative(String relativePath) throws MalformedURLException {
+		return new UrlResource(createRelativeURL(relativePath));
+	}
+
+	/**
+	 * This delegate creates a {@code java.net.URL}, applying the given path
+	 * relative to the path of the underlying URL of this resource descriptor. A
+	 * leading slash will get dropped; a "#" symbol will get encoded.
+	 * 
+	 * @see #createRelative(String)
+	 * @see java.net.URL#URL(java.net.URL, String)
+	 */
+	protected URL createRelativeURL(String relativePath) throws MalformedURLException {
 		if (relativePath.startsWith("/")) {
 			relativePath = relativePath.substring(1);
 		}
-		return new UrlResource(new URL(this.url, relativePath));
+		// # can appear in filenames, java.net.URL should not treat it as a fragment
+		relativePath = StringUtils.replace(relativePath, "#", "%23");
+		// Use the URL constructor for applying the relative path as a URL spec
+		return new URL(this.url, relativePath);
 	}
 
 	/**
@@ -235,12 +261,13 @@ public class UrlResource extends AbstractFileResolvingResource implements
 	 */
 	@Override
 	public String getName() {
-		return StringUtils.getFilename(this.cleanedUrl.getPath());
+		return StringUtils.getFilename(getCleanedUrl().getPath());
 	}
 
 	/**
 	 * This implementation returns a description that includes the URL.
 	 */
+	@Override
 	public String getDescription() {
 		return "URL [" + this.url + "]";
 	}
@@ -249,30 +276,17 @@ public class UrlResource extends AbstractFileResolvingResource implements
 	 * This implementation compares the underlying URL references.
 	 */
 	@Override
-	public boolean equals(Object obj) {
-		return (obj == this || (obj instanceof UrlResource && this.cleanedUrl
-				.equals(((UrlResource) obj).cleanedUrl)));
+	public boolean equals(@Nullable Object other) {
+		return (this == other
+				|| (other instanceof UrlResource && getCleanedUrl().equals(((UrlResource) other).getCleanedUrl())));
 	}
 
 	/**
-	 * This implementation returns the hash code of the underlying URL
-	 * reference.
+	 * This implementation returns the hash code of the underlying URL reference.
 	 */
 	@Override
 	public int hashCode() {
-		return this.cleanedUrl.hashCode();
+		return getCleanedUrl().hashCode();
 	}
 
-	@Override
-	public HttpHeaders getHeaders() {
-		// Try a URL connection last-modified header
-		URLConnection con;
-		try {
-			con = url.openConnection();
-			customizeConnection(con);
-			return new HttpHeaders(con.getHeaderFields());
-		} catch (IOException e) {
-			return HttpHeaders.EMPTY;
-		}
-	}
 }

@@ -1,7 +1,7 @@
 package io.basc.framework.util.page;
 
 
-public interface Page<T> extends Pageable<Long, T> {
+public interface Page<K, T> extends Pageable<Long, T> {
 	/**
 	 * 总数
 	 * 
@@ -45,7 +45,7 @@ public interface Page<T> extends Pageable<Long, T> {
 		return PageSupport.getNextStart(start, getCount());
 	}
 	
-	default Page<T> shared(){
+	default Page<K, T> shared(){
 		return new SharedPage<>(this);
 	}
 }

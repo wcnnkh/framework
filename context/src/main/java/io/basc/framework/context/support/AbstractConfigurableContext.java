@@ -34,7 +34,7 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 		contextClassesLoader.add(sourceClasses);
 
 		// 扫描框架类，忽略(.test.)路径
-		componentScan(Constants.SYSTEM_PACKAGE_NAME, (e, m) -> !e.getClassMetadata().getClassName().contains(".test."));
+		componentScan(Constants.SYSTEM_PACKAGE_NAME, null);
 	}
 
 	public ContextTypeFilter getContextTypeFilter() {
@@ -127,6 +127,11 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 	}
 
 	public void componentScan(String packageName) {
+		if (packageName.startsWith(Constants.SYSTEM_PACKAGE_NAME)) {
+			// 已经默认包含了
+			return;
+		}
+		
 		componentScan(packageName, null);
 	}
 

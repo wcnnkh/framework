@@ -40,7 +40,8 @@ public class DefaultEnvironment extends DefaultPropertyFactory
 		implements ConfigurableEnvironment, Configurable, PropertyWrapper {
 	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
 
-	private final ConcurrentReferenceHashMap<String, Resource> cacheMap = new ConcurrentReferenceHashMap<String, Resource>();
+	private final ConcurrentReferenceHashMap<String, Resource> cacheMap = new ConcurrentReferenceHashMap<String, Resource>(
+			256);
 	private final FileSystemResourceLoader configurableResourceLoader = new FileSystemResourceLoader() {
 		protected boolean ignoreClassPathResource(io.basc.framework.io.FileSystemResource resource) {
 			return super.ignoreClassPathResource(resource) || resource.getPath().startsWith(getWorkPath());

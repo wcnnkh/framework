@@ -17,7 +17,7 @@ public interface Pageable<K, T> extends Iterable<T> {
 	K getCursorId();
 
 	/**
-	 * 数量/分页的限制数量
+	 * 数量
 	 * 
 	 * @return
 	 */

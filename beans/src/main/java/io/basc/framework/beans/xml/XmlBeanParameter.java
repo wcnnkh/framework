@@ -18,7 +18,8 @@ import java.util.Date;
 
 import org.w3c.dom.Node;
 
-public final class XmlBeanParameter extends EmptyAnnotatedElement implements Cloneable, ParameterDescriptor, Serializable {
+public final class XmlBeanParameter extends EmptyAnnotatedElement
+		implements Cloneable, ParameterDescriptor, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final XmlParameterType parameterType;
 	private Class<?> type;
@@ -31,7 +32,7 @@ public final class XmlBeanParameter extends EmptyAnnotatedElement implements Clo
 		this.name = name;
 		this.xmlValue = new XmlValue(value, node);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "[parameterType=" + parameterType + ", type=" + type + ", name=" + name + ", xmlValue=" + xmlValue + "]";
@@ -67,15 +68,16 @@ public final class XmlBeanParameter extends EmptyAnnotatedElement implements Clo
 		return type;
 	}
 
-	public boolean isAccept(ParameterDescriptor parameterDescriptor, BeanFactory beanFactory){
+	public boolean isAccept(ParameterDescriptor parameterDescriptor, BeanFactory beanFactory) {
 		switch (parameterType) {
 		case ref:
 			BeanDefinition definition = beanFactory.getDefinition(xmlValue.formatValue(beanFactory.getEnvironment()));
-			if(definition == null){
+			if (definition == null) {
 				return false;
 			}
-			
-			return parameterDescriptor.getType().isAssignableFrom(definition.getTargetClass()) && definition.isInstance();
+
+			return parameterDescriptor.getType().isAssignableFrom(definition.getTargetClass())
+					&& definition.isInstance();
 		case property:
 			return beanFactory.getEnvironment().containsKey(xmlValue.getValue());
 		default:
@@ -134,11 +136,11 @@ public final class XmlBeanParameter extends EmptyAnnotatedElement implements Clo
 				}
 			}
 		}
-		
+
 		return value.getAsObject(parameterDescriptor.getGenericType());
 	}
 
 	public boolean isNullable() {
-		return type == null? true:!type.isPrimitive();
+		return type == null ? true : !type.isPrimitive();
 	}
 }

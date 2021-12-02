@@ -13,7 +13,7 @@ public abstract class AbstractProviderServiceLoaderFactory extends AbstractServi
 
 	public AbstractProviderServiceLoaderFactory(boolean cache) {
 		if (cache) {
-			this.cacheMap = new ConcurrentReferenceHashMap<Class<?>, ServiceLoader<?>>(64);
+			this.cacheMap = new ConcurrentReferenceHashMap<Class<?>, ServiceLoader<?>>(256);
 		}
 	}
 

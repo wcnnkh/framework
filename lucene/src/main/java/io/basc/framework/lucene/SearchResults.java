@@ -1,5 +1,6 @@
 package io.basc.framework.lucene;
 
+import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.page.Pageables;
 
 import java.util.Collections;
@@ -101,5 +102,10 @@ public class SearchResults<T> extends TopFieldDocs implements Pageables<ScoreDoc
 			throw new NoSuchElementException();
 		}
 		return jumpTo(getNextCursorId());
+	}
+	
+	@Override
+	public String toString() {
+		return MapperUtils.toString(this);
 	}
 }

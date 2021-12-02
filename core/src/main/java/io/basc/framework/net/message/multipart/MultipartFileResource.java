@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Adapt {@link MultipartFile} to {@link org.springframework.core.io.Resource},
+ * Adapt {@link MultipartFile} to {@link io.basc.framework.io.Resource},
  * exposing the content as {@code InputStream} and also overriding
  * {@link #contentLength()} as well as {@link #getFilename()}.
  */

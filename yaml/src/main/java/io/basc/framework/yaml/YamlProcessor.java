@@ -310,7 +310,6 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 	 * 
 	 * @param source the source map
 	 * @return a flattened map
-	 * @since 4.1.3
 	 */
 	protected final Map<String, Object> getFlattenedMap(Map<String, Object> source) {
 		Map<String, Object> result = new LinkedHashMap<String, Object>();
