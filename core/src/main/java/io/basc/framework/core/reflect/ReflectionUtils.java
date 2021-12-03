@@ -777,8 +777,7 @@ public abstract class ReflectionUtils {
 			Field[] fields = c.getFields();
 			List<Field> list = fields == null ? Collections.emptyList() : Arrays.asList(fields);
 			Class<?> superclass = c.getSuperclass();
-			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass,
-					list.size());
+			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass);
 		});
 	}
 
@@ -788,8 +787,7 @@ public abstract class ReflectionUtils {
 			Field[] fields = c.getDeclaredFields();
 			List<Field> list = fields == null ? Collections.emptyList() : Arrays.asList(fields);
 			Class<?> superclass = c.getSuperclass();
-			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass,
-					list.size());
+			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass);
 		});
 	}
 
@@ -798,7 +796,7 @@ public abstract class ReflectionUtils {
 		return new StreamPageables<Class<?>, Method>(sourceClass, (c) -> {
 			Method[] methods = c.getMethods();
 			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
-			return new SharedPageable<>(c, list, c.getSuperclass(), list.size());
+			return new SharedPageable<>(c, list, c.getSuperclass());
 		});
 	}
 
@@ -807,26 +805,24 @@ public abstract class ReflectionUtils {
 		return new StreamPageables<Class<?>, Method>(sourceClass, (c) -> {
 			Method[] methods = c.getDeclaredMethods();
 			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
-			
-			return new SharedPageable<>(c, list, c.getSuperclass(), list.size());
+			return new SharedPageable<>(c, list, c.getSuperclass());
 		});
 	}
-
+	
 	public static Pageables<Class<?>, Method> getMethodsOnInterfaces(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		Class<?>[] interfaceClasses = sourceClass.getInterfaces();
 		if (interfaceClasses == null || interfaceClasses.length == 0) {
-			return PageSupport.emptyPageables(null, 0);
+			return PageSupport.emptyPageables(null);
 		}
 
 		List<Pageable<Class<?>, Method>> pageables = Arrays.asList(interfaceClasses).stream().map((interfaceClass) -> {
-			Pageables<Class<?>, Method> p = getDeclaredMethods(sourceClass);
-			return p;
+			return getDeclaredMethods(sourceClass).all();
 		}).collect(Collectors.toList());
 		return new ListPageables<>(pageables);
 	}
 
-	public static Method[] getDeclaredMethods(Class<?> sourceClass, boolean ) {
+	public static Method[] getDeclaredMethods(Class<?> sourceClass, boolean v) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return sourceClass.getDeclaredMethods();
 	}
@@ -837,8 +833,7 @@ public abstract class ReflectionUtils {
 			Constructor<?>[] constructors = c.getConstructors();
 			List<Constructor<?>> list = constructors == null ? Collections.emptyList() : Arrays.asList(constructors);
 			Class<?> superclass = c.getSuperclass();
-			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass,
-					list.size());
+			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass);
 		});
 	}
 
@@ -848,8 +843,7 @@ public abstract class ReflectionUtils {
 			Constructor<?>[] constructors = c.getDeclaredConstructors();
 			List<Constructor<?>> list = constructors == null ? Collections.emptyList() : Arrays.asList(constructors);
 			Class<?> superclass = c.getSuperclass();
-			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass,
-					list.size());
+			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass);
 		});
 	}
 

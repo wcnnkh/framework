@@ -24,11 +24,6 @@ public class PageableWrapper<P extends Pageable<K, T>, K, T> extends Wrapper<P> 
 	}
 
 	@Override
-	public long getCount() {
-		return wrappedTarget.getCount();
-	}
-
-	@Override
 	public K getNextCursorId() {
 		return wrappedTarget.getNextCursorId();
 	}

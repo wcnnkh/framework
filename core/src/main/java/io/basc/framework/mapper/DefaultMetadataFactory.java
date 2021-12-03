@@ -167,11 +167,6 @@ public class DefaultMetadataFactory implements FieldMetadataFactory {
 		}
 
 		@Override
-		public long getCount() {
-			return rows.size();
-		}
-
-		@Override
 		public List<FieldMetadata> rows() {
 			return rows;
 		}

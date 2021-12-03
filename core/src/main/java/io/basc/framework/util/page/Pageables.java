@@ -12,7 +12,7 @@ public interface Pageables<K, T> extends Pageable<K, T> {
 	default Pageables<K, T> next() {
 		if (!hasNext()) {
 			throw new NoSuchElementException(
-					"cursorId=" + getCursorId() + ", nextCursorId=" + getNextCursorId() + ", count=" + getCount());
+					"cursorId=" + getCursorId() + ", nextCursorId=" + getNextCursorId());
 		}
 		return jumpTo(getNextCursorId());
 	}
@@ -41,6 +41,6 @@ public interface Pageables<K, T> extends Pageable<K, T> {
 	}
 	
 	default Pageable<K, T> all(){
-		return null;
+		return new StreamPageable<K, T>(getCursorId(), () -> streamAll(), null);
 	}
 }

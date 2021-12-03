@@ -28,11 +28,6 @@ public class DefaultFields implements Fields {
 	}
 
 	@Override
-	public long getCount() {
-		return fieldMetadatas.getCount();
-	}
-
-	@Override
 	public Class<?> getNextCursorId() {
 		return fieldMetadatas.getNextCursorId();
 	}

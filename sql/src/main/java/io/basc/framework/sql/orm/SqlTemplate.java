@@ -26,11 +26,11 @@ import io.basc.framework.sql.orm.convert.EntityStructureMapProcessor;
 import io.basc.framework.sql.orm.convert.SmartMapProcessor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.page.Page;
 import io.basc.framework.util.page.PageSupport;
-import io.basc.framework.util.page.Pages;
-import io.basc.framework.util.page.StreamPage;
-import io.basc.framework.util.page.StreamPages;
+import io.basc.framework.util.page.Pagination;
+import io.basc.framework.util.page.Paginations;
+import io.basc.framework.util.page.StreamPagination;
+import io.basc.framework.util.page.StreamPaginations;
 import io.basc.framework.util.stream.Cursor;
 import io.basc.framework.util.stream.Processor;
 
@@ -508,54 +508,54 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return prepare(limitSql).query().stream(processor);
 	}
 
-	default <T> Page<T> getPage(TableStructure tableStructure, Sql sql, long pageNumber, long limit) {
+	default <T> Pagination<T> getPage(TableStructure tableStructure, Sql sql, long pageNumber, long limit) {
 		return getPage(sql, pageNumber, limit, getMapProcessor(tableStructure));
 	}
 
-	default <T> Page<T> getPage(TypeDescriptor resultType, Sql sql, long pageNumber, long limit) {
+	default <T> Pagination<T> getPage(TypeDescriptor resultType, Sql sql, long pageNumber, long limit) {
 		return getPage(sql, pageNumber, limit, getMapProcessor(resultType));
 	}
 
-	default <T> Page<T> getPage(Class<? extends T> resultType, Sql sql, long pageNumber, long limit) {
+	default <T> Pagination<T> getPage(Class<? extends T> resultType, Sql sql, long pageNumber, long limit) {
 		return getPage(sql, pageNumber, limit, getMapProcessor(resultType));
 	}
 
-	default <T> Page<T> getPage(Sql sql, long pageNumber, long limit,
+	default <T> Pagination<T> getPage(Sql sql, long pageNumber, long limit,
 			Processor<ResultSet, T, ? extends Throwable> mapProcessor) {
 		long start = PageSupport.getStart(pageNumber, limit);
 		long total = count(sql);
 		if (total == 0) {
-			return PageSupport.emptyPage(pageNumber, limit);
+			return PageSupport.emptyPagination(start, limit);
 		}
-
-		return new StreamPage<T>(start, () -> limit(sql, start, limit, mapProcessor), limit, total);
+		
+		return new StreamPagination<T>(start, () -> limit(sql, start, limit, mapProcessor), limit, total);
 	}
 
-	default <T> Pages<T> getPages(TypeDescriptor resultType, Sql sql, long pageNumber, long limit) {
+	default <T> Paginations<T> getPages(TypeDescriptor resultType, Sql sql, long pageNumber, long limit) {
 		return getPages(sql, pageNumber, limit, getMapProcessor(resultType));
 	}
 
-	default <T> Pages<T> getPages(Sql sql, long pageNumber, long limit,
+	default <T> Paginations<T> getPages(Sql sql, long pageNumber, long limit,
 			Processor<ResultSet, T, ? extends Throwable> mapProcessor) {
 		long start = PageSupport.getStart(pageNumber, limit);
 		long total = count(sql);
 		if (total == 0) {
-			return PageSupport.emptyPages(pageNumber, limit);
+			return PageSupport.emptyPaginations(start, limit);
 		}
-
-		return new StreamPages<>(total, start, limit, (begin, count) -> limit(sql, begin, count, mapProcessor));
+		
+		return new StreamPaginations<T>(total, start, limit, (begin, count) -> limit(sql, begin, count, mapProcessor)); 
 	}
 
-	default <T> Pages<T> getPages(Class<? extends T> resultType, Sql sql, long pageNumber, int limit) {
+	default <T> Paginations<T> getPages(Class<? extends T> resultType, Sql sql, long pageNumber, int limit) {
 		return getPages(sql, pageNumber, limit, getMapProcessor(resultType));
 	}
 
-	default <T> Pages<T> getPages(TableStructure tableStructure, T query, long getNumber, long limit) {
+	default <T> Paginations<T> getPages(TableStructure tableStructure, T query, long getNumber, long limit) {
 		Sql sql = getSqlDialect().toQuerySql(tableStructure, query);
 		return getPages(sql, getNumber, limit, getMapProcessor(tableStructure));
 	}
 
-	default <T> Pages<T> getPages(Class<? extends T> queryClass, T query, long getNumber, long limit) {
+	default <T> Paginations<T> getPages(Class<? extends T> queryClass, T query, long getNumber, long limit) {
 		return getPages(resolve(queryClass, query, null), query, getNumber, limit);
 	}
 }

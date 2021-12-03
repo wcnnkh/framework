@@ -29,11 +29,6 @@ public class AcceptFields implements Fields, Serializable {
 	}
 	
 	@Override
-	public long getCount() {
-		return rows().size();
-	}
-	
-	@Override
 	public Stream<Field> stream() {
 		return fields.stream().filter(accept);
 	}

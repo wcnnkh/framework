@@ -17,13 +17,6 @@ public interface Pageable<K, T> extends Iterable<T> {
 	K getCursorId();
 
 	/**
-	 * 数量
-	 * 
-	 * @return
-	 */
-	long getCount();
-
-	/**
 	 * 获取下一页的开始游标id
 	 * 
 	 * @return

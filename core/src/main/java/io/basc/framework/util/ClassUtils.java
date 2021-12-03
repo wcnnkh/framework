@@ -1539,7 +1539,7 @@ public final class ClassUtils {
 		return new StreamPageables<Class<?>, Class<?>>(sourceClass, (c) -> {
 			Class<?>[] interfaces = c.getInterfaces();
 			List<Class<?>> list = interfaces == null ? Collections.emptyList() : Arrays.asList(interfaces);
-			return new SharedPageable<>(c, list, c.getSuperclass(), list.size());
+			return new SharedPageable<>(c, list, c.getSuperclass());
 		});
 	}
 

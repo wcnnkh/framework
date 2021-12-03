@@ -26,11 +26,6 @@ public class ListPageables<K, T> implements Pageables<K, T>, Serializable {
 	}
 
 	@Override
-	public long getCount() {
-		return pageables.get(index).getCount();
-	}
-
-	@Override
 	public K getNextCursorId() {
 		if (index + 1 >= pageables.size()) {
 			// 不存在
@@ -53,8 +48,7 @@ public class ListPageables<K, T> implements Pageables<K, T>, Serializable {
 	@Override
 	public Pageables<K, T> next() {
 		if (!hasNext()) {
-			throw new NoSuchElementException(
-					"cursorId=" + getCursorId() + ", nextCursorId=" + getNextCursorId() + ", count=" + getCount());
+			throw new NoSuchElementException("cursorId=" + getCursorId() + ", nextCursorId=" + getNextCursorId());
 		}
 		return new ListPageables<>(pageables, index + 1);
 	}

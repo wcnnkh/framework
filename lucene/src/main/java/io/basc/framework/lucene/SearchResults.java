@@ -1,8 +1,5 @@
 package io.basc.framework.lucene;
 
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.util.page.Pageables;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -15,7 +12,10 @@ import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.search.TotalHits;
 import org.apache.lucene.search.TotalHits.Relation;
 
-public class SearchResults<T> extends TopFieldDocs implements Pageables<ScoreDoc, T> {
+import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.page.Pages;
+
+public class SearchResults<T> extends TopFieldDocs implements Pages<ScoreDoc, T> {
 	private final SearchParameters parameters;
 	private final List<T> rows;
 	private Sort resultSort;
@@ -107,5 +107,10 @@ public class SearchResults<T> extends TopFieldDocs implements Pageables<ScoreDoc
 	@Override
 	public String toString() {
 		return MapperUtils.toString(this);
+	}
+
+	@Override
+	public Pages<ScoreDoc, T> jumpTo(ScoreDoc cursorId, long count) {
+		return luceneTemplete.searchAfter(cursorId, parameters.setTop((int)count), rowMapper);
 	}
 }

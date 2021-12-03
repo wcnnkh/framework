@@ -20,11 +20,6 @@ public class StreamFields extends AbstractFields implements Fields {
 	}
 
 	@Override
-	public long getCount() {
-		return stream.get().count();
-	}
-
-	@Override
 	public List<Field> rows() {
 		return stream.get().collect(Collectors.toList());
 	}

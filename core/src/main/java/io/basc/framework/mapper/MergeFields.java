@@ -29,11 +29,6 @@ public class MergeFields implements Fields {
 	}
 
 	@Override
-	public long getCount() {
-		return left.getCount() + right.getCount();
-	}
-
-	@Override
 	public List<Field> rows() {
 		return Stream.concat(left.rows().stream(), right.rows().stream()).collect(Collectors.toList());
 	}
