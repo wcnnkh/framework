@@ -41,7 +41,13 @@ public abstract class ReflectionUtils {
 
 	private static final Method CLONE_METOHD = ReflectionUtils.getMethod(Object.class, "clone");
 
-	private static final Method[] CLASS_PRESENT_METHODS=getMethods(Class.class,new Accept<Method>(){public boolean accept(Method method){return!Modifier.isStatic(method.getModifiers())&&!Modifier.isNative(method.getModifiers())&&Modifier.isPublic(method.getModifiers())&&method.getName().startsWith("get")&&method.getParameterTypes().length==0;}}).toArray(new Method[0]);
+	private static final Method[] CLASS_PRESENT_METHODS = getMethods(Class.class, new Accept<Method>() {
+		public boolean accept(Method method) {
+			return !Modifier.isStatic(method.getModifiers()) && !Modifier.isNative(method.getModifiers())
+					&& Modifier.isPublic(method.getModifiers()) && method.getName().startsWith("get")
+					&& method.getParameterTypes().length == 0;
+		}
+	}).toArray(new Method[0]);
 
 	/**
 	 * 判断此类是否可用(会静态初始化)
@@ -816,15 +822,9 @@ public abstract class ReflectionUtils {
 			return PageSupport.emptyPageables(null);
 		}
 
-		List<Pageable<Class<?>, Method>> pageables = Arrays.asList(interfaceClasses).stream().map((interfaceClass) -> {
-			return getDeclaredMethods(sourceClass).all();
-		}).collect(Collectors.toList());
+		List<Pageable<Class<?>, Method>> pageables = Arrays.asList(interfaceClasses).stream()
+				.map((interfaceClass) -> getMethods(interfaceClass)).collect(Collectors.toList());
 		return new ListPageables<>(pageables);
-	}
-
-	public static Method[] getDeclaredMethods(Class<?> sourceClass, boolean v) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
-		return sourceClass.getDeclaredMethods();
 	}
 
 	public static Pageables<Class<?>, Constructor<?>> getConstructors(Class<?> sourceClass) {
@@ -862,14 +862,29 @@ public abstract class ReflectionUtils {
 
 	private static final Comparator<Constructor<?>> CONSTRUCTOR_COMPARATOR = new Comparator<Constructor<?>>() {
 
-		public int compare(Constructor<?> o1,Constructor<?>o2){Deprecated d1=o1.getAnnotation(Deprecated.class);Deprecated d2=o2.getAnnotation(Deprecated.class);
+		public int compare(Constructor<?> o1, Constructor<?> o2) {
+			Deprecated d1 = o1.getAnnotation(Deprecated.class);
+			Deprecated d2 = o2.getAnnotation(Deprecated.class);
 
-	// 先比较作用域 public
-	int v1=o1.getModifiers();int v2=o2.getModifiers();if(!(d1!=null&&d2!=null)){if(d1!=null){v1=Integer.MAX_VALUE;}
+			// 先比较作用域 public
+			int v1 = o1.getModifiers();
+			int v2 = o2.getModifiers();
+			if (!(d1 != null && d2 != null)) {
+				if (d1 != null) {
+					v1 = Integer.MAX_VALUE;
+				}
 
-	if(d2!=null){v2=Integer.MAX_VALUE;}}
+				if (d2 != null) {
+					v2 = Integer.MAX_VALUE;
+				}
+			}
 
-	if(v1==v2){return CompareUtils.compare(o1.getParameterTypes().length,o2.getParameterTypes().length,true);}return CompareUtils.compare(v1,v2,false);}};
+			if (v1 == v2) {
+				return CompareUtils.compare(o1.getParameterTypes().length, o2.getParameterTypes().length, true);
+			}
+			return CompareUtils.compare(v1, v2, false);
+		}
+	};
 
 	public static <T> Collection<Constructor<?>> getConstructorOrderList(Class<?> clazz) {
 		LinkedList<Constructor<?>> autoList = new LinkedList<Constructor<?>>();
@@ -906,14 +921,29 @@ public abstract class ReflectionUtils {
 
 	private static final Comparator<Method> METHOD_COMPARATOR = new Comparator<Method>() {
 
-		public int compare(Method o1,Method o2){Deprecated d1=o1.getAnnotation(Deprecated.class);Deprecated d2=o2.getAnnotation(Deprecated.class);
+		public int compare(Method o1, Method o2) {
+			Deprecated d1 = o1.getAnnotation(Deprecated.class);
+			Deprecated d2 = o2.getAnnotation(Deprecated.class);
 
-	// 先比较作用域 public
-	int v1=o1.getModifiers();int v2=o2.getModifiers();if(!(d1!=null&&d2!=null)){if(d1!=null){v1=Integer.MAX_VALUE;}
+			// 先比较作用域 public
+			int v1 = o1.getModifiers();
+			int v2 = o2.getModifiers();
+			if (!(d1 != null && d2 != null)) {
+				if (d1 != null) {
+					v1 = Integer.MAX_VALUE;
+				}
 
-	if(d2!=null){v2=Integer.MAX_VALUE;}}
+				if (d2 != null) {
+					v2 = Integer.MAX_VALUE;
+				}
+			}
 
-	if(v1==v2){return CompareUtils.compare(o1.getParameterTypes().length,o2.getParameterTypes().length,true);}return CompareUtils.compare(v1,v2,false);}};
+			if (v1 == v2) {
+				return CompareUtils.compare(o1.getParameterTypes().length, o2.getParameterTypes().length, true);
+			}
+			return CompareUtils.compare(v1, v2, false);
+		}
+	};
 
 	public static List<Method> getMethodOrderList(Class<?> targetClass, Method referenceMethod) {
 		List<Method> autoList = new ArrayList<Method>();

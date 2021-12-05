@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import io.basc.framework.core.BridgeMethodResolver;
 import io.basc.framework.core.Ordered;
@@ -306,7 +307,9 @@ abstract class AnnotationsScanner {
 		Method[] methods = baseTypeMethodsCache.get(baseType);
 		if (methods == null) {
 			boolean isInterface = baseType.isInterface();
-			methods = isInterface ? baseType.getMethods() : ReflectionUtils.getDeclaredMethods(baseType).stream().toArray(Method[]::new);
+			methods = isInterface ? baseType.getMethods()
+					: Stream.concat(ReflectionUtils.getDeclaredMethods(baseType).stream(),
+							ReflectionUtils.getMethodsOnInterfaces(baseType).stream()).toArray(Method[]::new);
 			int cleared = 0;
 			for (int i = 0; i < methods.length; i++) {
 				if ((!isInterface && Modifier.isPrivate(methods[i].getModifiers()))

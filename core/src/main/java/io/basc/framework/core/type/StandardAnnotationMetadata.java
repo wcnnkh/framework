@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.annotation.AnnotationUtils;
@@ -101,12 +102,8 @@ public class StandardAnnotationMetadata extends StandardClassMetadata implements
 	public boolean hasAnnotatedMethods(String annotationName) {
 		if (AnnotationUtils.isCandidateClass(getIntrospectedClass(), annotationName)) {
 			try {
-				Method[] methods = ReflectionUtils.getDeclaredMethods(getIntrospectedClass(), false);
-				for (Method method : methods) {
-					if (isAnnotatedMethod(method, annotationName)) {
-						return true;
-					}
-				}
+				return ReflectionUtils.getDeclaredMethods(getIntrospectedClass()).stream()
+						.filter((method) -> isAnnotatedMethod(method, annotationName)).findAny().isPresent();
 			} catch (Throwable ex) {
 				throw new IllegalStateException("Failed to introspect annotated methods on " + getIntrospectedClass(),
 						ex);
@@ -117,24 +114,18 @@ public class StandardAnnotationMetadata extends StandardClassMetadata implements
 
 	@Override
 	public Set<MethodMetadata> getAnnotatedMethods(String annotationName) {
-		Set<MethodMetadata> annotatedMethods = null;
 		if (AnnotationUtils.isCandidateClass(getIntrospectedClass(), annotationName)) {
 			try {
-				Method[] methods = ReflectionUtils.getDeclaredMethods(getIntrospectedClass(), false);
-				for (Method method : methods) {
-					if (isAnnotatedMethod(method, annotationName)) {
-						if (annotatedMethods == null) {
-							annotatedMethods = new LinkedHashSet<>(4);
-						}
-						annotatedMethods.add(new StandardMethodMetadata(method, this.nestedAnnotationsAsMap));
-					}
-				}
+				return ReflectionUtils.getDeclaredMethods(getIntrospectedClass()).stream()
+						.filter((method) -> isAnnotatedMethod(method, annotationName))
+						.map((method) -> new StandardMethodMetadata(method, this.nestedAnnotationsAsMap))
+						.collect(Collectors.toCollection(() -> new LinkedHashSet<MethodMetadata>(4)));
 			} catch (Throwable ex) {
 				throw new IllegalStateException("Failed to introspect annotated methods on " + getIntrospectedClass(),
 						ex);
 			}
 		}
-		return annotatedMethods != null ? annotatedMethods : Collections.emptySet();
+		return Collections.emptySet();
 	}
 
 	private static boolean isAnnotatedMethod(Method method, String annotationName) {

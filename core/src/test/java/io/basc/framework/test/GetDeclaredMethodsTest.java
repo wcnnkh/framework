@@ -2,6 +2,7 @@ package io.basc.framework.test;
 
 import org.junit.Test;
 
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.ObjectUtils;
 
 public class GetDeclaredMethodsTest {
@@ -11,6 +12,7 @@ public class GetDeclaredMethodsTest {
 		System.out.println(ObjectUtils.toString(B.class.getDeclaredMethods()));
 		System.out.println(ObjectUtils.toString(B.class.getInterfaces()));
 		System.out.println(ObjectUtils.toString(E.class.getDeclaredMethods()));
+		ReflectionUtils.getMethodsOnInterfaces(E.class).forEach((e) -> System.out.println(e));
 	}
 	
 	static interface A{
