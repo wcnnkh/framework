@@ -17,7 +17,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import io.basc.framework.core.annotation.Order;
 import io.basc.framework.core.parameter.ParameterUtils;
@@ -29,9 +28,6 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.comparator.CompareUtils;
-import io.basc.framework.util.page.ListPageables;
-import io.basc.framework.util.page.PageSupport;
-import io.basc.framework.util.page.Pageable;
 import io.basc.framework.util.page.Pageables;
 import io.basc.framework.util.page.SharedPageable;
 import io.basc.framework.util.page.StreamPageables;
@@ -813,18 +809,6 @@ public abstract class ReflectionUtils {
 			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
 			return new SharedPageable<>(c, list, c.getSuperclass());
 		});
-	}
-	
-	public static Pageables<Class<?>, Method> getMethodsOnInterfaces(Class<?> sourceClass) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
-		Class<?>[] interfaceClasses = sourceClass.getInterfaces();
-		if (interfaceClasses == null || interfaceClasses.length == 0) {
-			return PageSupport.emptyPageables(null);
-		}
-
-		List<Pageable<Class<?>, Method>> pageables = Arrays.asList(interfaceClasses).stream()
-				.map((interfaceClass) -> getMethods(interfaceClass)).collect(Collectors.toList());
-		return new ListPageables<>(pageables);
 	}
 
 	public static Pageables<Class<?>, Constructor<?>> getConstructors(Class<?> sourceClass) {

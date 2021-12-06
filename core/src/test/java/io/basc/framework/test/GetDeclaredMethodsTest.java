@@ -2,17 +2,18 @@ package io.basc.framework.test;
 
 import org.junit.Test;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.core.reflect.Methods;
 import io.basc.framework.util.ObjectUtils;
 
 public class GetDeclaredMethodsTest {
 	@Test
 	public void test() {
 		System.out.println(ObjectUtils.toString(A.class.getDeclaredMethods()));
-		System.out.println(ObjectUtils.toString(B.class.getDeclaredMethods()));
+		System.out.println(ObjectUtils.toString(B.class.getSuperclass()));
 		System.out.println(ObjectUtils.toString(B.class.getInterfaces()));
 		System.out.println(ObjectUtils.toString(E.class.getDeclaredMethods()));
-		ReflectionUtils.getMethodsOnInterfaces(E.class).forEach((e) -> System.out.println(e));
+		System.out.println("-------");
+		Methods.forClass(E.class, false).withInterfaces(false).forEach((e) -> System.out.println(e));
 	}
 	
 	static interface A{
