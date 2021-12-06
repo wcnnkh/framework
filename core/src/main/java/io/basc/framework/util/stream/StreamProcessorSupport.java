@@ -125,29 +125,36 @@ public final class StreamProcessorSupport {
 	public static <T> StreamWrapper<T> emptyAutoCloseStream() {
 		return new StreamWrapper<>(emptyStream());
 	}
-	
-	public static <T> Stream<T> concat(Collection<? extends Stream<T>> streams){
-		if(streams == null) {
+
+	public static <T> Stream<T> concat(Collection<? extends Stream<T>> streams) {
+		if (streams == null) {
 			return emptyStream();
 		}
-		
-		Iterator<? extends Stream<T>> iterator = streams.iterator();
-		if(!iterator.hasNext()) {
+
+		return concat(streams.iterator());
+	}
+
+	public static <T> Stream<T> concat(Iterator<? extends Stream<T>> streams) {
+		if (streams == null) {
 			return emptyStream();
 		}
-		
-		Stream<T> stream = iterator.next();
-		if(!iterator.hasNext()) {
+
+		if (!streams.hasNext()) {
+			return emptyStream();
+		}
+
+		Stream<T> stream = streams.next();
+		if (!streams.hasNext()) {
 			return stream;
 		}
-		
-		stream = Stream.concat(stream, iterator.next());
-		if(!iterator.hasNext()) {
+
+		stream = Stream.concat(stream, streams.next());
+		if (!streams.hasNext()) {
 			return stream;
 		}
-		
-		while(iterator.hasNext()) {
-			stream = Stream.concat(stream, iterator.next());
+
+		while (streams.hasNext()) {
+			stream = Stream.concat(stream, streams.next());
 		}
 		return stream;
 	}

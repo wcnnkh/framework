@@ -1,6 +1,6 @@
 package io.basc.framework.util.page;
 
-public interface Pagination<T> extends Page<Long, T>{
+public interface Pagination<T> extends Page<Long, T> {
 	/**
 	 * 获取当前页码
 	 * 
@@ -15,25 +15,30 @@ public interface Pagination<T> extends Page<Long, T>{
 	 * 
 	 * @return
 	 */
-	default long getPages(){
+	default long getPages() {
 		return PageSupport.getPages(getTotal(), getCount());
 	}
-	
+
 	default boolean hasPrevious() {
 		return getPageNumber() > 1;
 	}
-	
+
 	@Override
 	default Long getNextCursorId() {
 		Long start = getCursorId();
-		if(start == null){
+		if (start == null) {
 			return null;
 		}
-		
-		if(!PageSupport.hasMore(getTotal(), start, getCount())) {
+
+		if (!PageSupport.hasMore(getTotal(), start, getCount())) {
 			return null;
 		}
-		
+
 		return PageSupport.getNextStart(start, getCount());
+	}
+
+	@Override
+	default Pagination<T> shared() {
+		return new SharedPagination<>(this);
 	}
 }

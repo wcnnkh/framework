@@ -64,7 +64,8 @@ public class StreamProcessorTest {
 		}));
 		try {
 			assertTrue(cursor.isAutoClose());
-			cursor.forEach((s) -> System.out.println("pos:" + cursor.getPosition() + ":" + s + "," + cursor.isClosed()));
+			cursor.forEach(
+					(s) -> System.out.println("pos:" + cursor.getPosition() + ":" + s + "," + cursor.isClosed()));
 			assertTrue(cursor.isClosed());
 		} finally {
 			cursor.close();
