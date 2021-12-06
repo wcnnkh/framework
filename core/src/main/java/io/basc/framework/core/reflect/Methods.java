@@ -70,7 +70,6 @@ public class Methods implements Iterable<Method>, Cloneable {
 			return this;
 		}
 
-		System.out.println(Arrays.toString(interfaces));
 		for (Class<?> interfaceClass : interfaces) {
 			withs.add(forClass(interfaceClass, declared));
 		}
