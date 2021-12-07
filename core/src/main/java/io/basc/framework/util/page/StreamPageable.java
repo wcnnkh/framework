@@ -19,7 +19,7 @@ public class StreamPageable<K, T> implements Pageable<K, T> {
 	}
 
 	@Override
-	public List<T> rows() {
+	public List<T> getList() {
 		return stream().collect(Collectors.toList());
 	}
 

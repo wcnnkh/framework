@@ -63,11 +63,11 @@ public class SharedPage<K, T> extends SharedPageable<K, T> implements Page<K, T>
 	}
 	
 	@Override
-	public void setRows(List<T> rows) {
+	public void setList(List<T> list) {
 		if(total == 0) {
-			total = rows.size();
+			total = list.size();
 		}
-		super.setRows(rows);
+		super.setList(list);
 	}
 
 	public void setTotal(long total) {

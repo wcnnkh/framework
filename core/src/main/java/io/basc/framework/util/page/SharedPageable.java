@@ -9,7 +9,7 @@ import io.basc.framework.mapper.MapperUtils;
 public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private List<T> rows;
+	private List<T> list;
 	private K cursorId;
 	private K nextCursorId;
 
@@ -29,26 +29,26 @@ public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 
 	/**
 	 * @param cursorId
-	 * @param rows
+	 * @param list
 	 * @param nextCursorId
 	 * @param next
 	 */
-	public SharedPageable(K cursorId, List<T> rows, K nextCursorId) {
+	public SharedPageable(K cursorId, List<T> list, K nextCursorId) {
 		this.cursorId = cursorId;
 		this.nextCursorId = nextCursorId;
-		this.rows = rows;
+		this.list = list;
 	}
 	
 	public SharedPageable(Pageable<K, T> pageable) {
-		this(pageable.getCursorId(), pageable.rows(), pageable.getNextCursorId());
+		this(pageable.getCursorId(), pageable.getList(), pageable.getNextCursorId());
 	}
 
 	@Override
-	public List<T> rows() {
-		if(rows == null) {
+	public List<T> getList() {
+		if(list == null) {
 			return Collections.emptyList();
 		}
-		return Collections.unmodifiableList(rows);
+		return Collections.unmodifiableList(list);
 	}
 
 	@Override
@@ -61,12 +61,8 @@ public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 		return nextCursorId;
 	}
 
-	public List<T> getRows() {
-		return rows;
-	}
-
-	public void setRows(List<T> rows) {
-		this.rows = rows;
+	public void setList(List<T> list) {
+		this.list = list;
 	}
 
 	public void setCursorId(K cursorId) {

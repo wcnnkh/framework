@@ -33,8 +33,8 @@ public class DefaultFields implements Fields {
 	}
 
 	@Override
-	public List<Field> rows() {
-		return fieldMetadatas.rows().stream()
+	public List<Field> getList() {
+		return fieldMetadatas.getList().stream()
 				.map((metadata) -> createField(metadata))
 				.collect(Collectors.toList());
 	}

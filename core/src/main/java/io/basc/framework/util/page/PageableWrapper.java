@@ -34,8 +34,8 @@ public class PageableWrapper<P extends Pageable<K, T>, K, T> extends Wrapper<P> 
 	}
 
 	@Override
-	public List<T> rows() {
-		return wrappedTarget.rows();
+	public List<T> getList() {
+		return wrappedTarget.getList();
 	}
 
 	@Override

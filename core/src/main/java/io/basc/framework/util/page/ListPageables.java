@@ -41,8 +41,8 @@ public class ListPageables<K, T> implements Pageables<K, T>, Serializable {
 	}
 
 	@Override
-	public List<T> rows() {
-		return pageables.get(index).rows();
+	public List<T> getList() {
+		return pageables.get(index).getList();
 	}
 
 	@Override

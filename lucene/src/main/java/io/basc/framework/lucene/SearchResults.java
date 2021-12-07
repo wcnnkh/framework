@@ -17,7 +17,7 @@ import io.basc.framework.util.page.Pages;
 
 public class SearchResults<T> extends TopFieldDocs implements Pages<ScoreDoc, T> {
 	private final SearchParameters parameters;
-	private final List<T> rows;
+	private final List<T> list;
 	private Sort resultSort;
 	private final LuceneTemplate luceneTemplete;
 	private final ScoreDocMapper<T> rowMapper;
@@ -36,12 +36,12 @@ public class SearchResults<T> extends TopFieldDocs implements Pages<ScoreDoc, T>
 	}
 
 	public SearchResults(SearchParameters parameters, ScoreDoc cursorId, TopDocs topDocs, SortField[] fields,
-			List<T> rows, ScoreDocMapper<T> rowMapper, LuceneTemplate luceneTemplete) {
+			List<T> list, ScoreDocMapper<T> rowMapper, LuceneTemplate luceneTemplete) {
 		super(topDocs.totalHits, topDocs.scoreDocs, fields);
 		this.cursorId = cursorId;
 		this.parameters = parameters;
 		this.luceneTemplete = luceneTemplete;
-		this.rows = rows;
+		this.list = list;
 		this.rowMapper = rowMapper;
 		if (hasNext()) {
 			this.nextCursorId = scoreDocs[scoreDocs.length - 1];
@@ -82,8 +82,8 @@ public class SearchResults<T> extends TopFieldDocs implements Pages<ScoreDoc, T>
 	}
 
 	@Override
-	public List<T> rows() {
-		return rows;
+	public List<T> getList() {
+		return list;
 	}
 
 	@Override

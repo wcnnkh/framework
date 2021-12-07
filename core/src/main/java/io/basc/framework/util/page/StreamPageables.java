@@ -29,8 +29,8 @@ public class StreamPageables<K, T> implements Pageables<K, T> {
 	}
 
 	@Override
-	public List<T> rows() {
-		return pageable.rows();
+	public List<T> getList() {
+		return pageable.getList();
 	}
 
 	@Override

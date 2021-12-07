@@ -34,10 +34,10 @@ public class AcceptFields implements Fields, Serializable {
 	}
 
 	@Override
-	public List<Field> rows() {
+	public List<Field> getList() {
 		if(fieldList == null) {
 			synchronized (this) {
-				fieldList = fields.rows().stream().filter(accept).collect(Collectors.toList());
+				fieldList = fields.getList().stream().filter(accept).collect(Collectors.toList());
 			}
 		}
 		return fieldList;

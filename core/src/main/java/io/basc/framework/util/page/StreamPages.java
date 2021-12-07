@@ -14,7 +14,7 @@ public class StreamPages<K, T> implements Pages<K, T> {
 
 	public StreamPages(long total, K cursorId, long count, PageableProcessor<K, T> processor) {
 		Pageable<K, T> pageable = processor.process(cursorId, count);
-		this.page = new SharedPage<K, T>(cursorId, pageable.rows(), pageable.getNextCursorId(), count, total);
+		this.page = new SharedPage<K, T>(cursorId, pageable.getList(), pageable.getNextCursorId(), count, total);
 		this.processor = processor;
 	}
 	
@@ -43,8 +43,8 @@ public class StreamPages<K, T> implements Pages<K, T> {
 	}
 
 	@Override
-	public List<T> rows() {
-		return page.rows();
+	public List<T> getList() {
+		return page.getList();
 	}
 
 	@Override

@@ -58,7 +58,7 @@ public interface ExcelExport extends Flushable, Closeable {
 			Iterator<? extends Pageable<C, T>> iterator = stream.iterator();
 			while (iterator.hasNext()) {
 				Pageable<C, T> page = iterator.next();
-				appendAll(page.rows(), rowsProcessor);
+				appendAll(page.getList(), rowsProcessor);
 				if(afterProcess != null) {
 					afterProcess.process(page);
 				}
