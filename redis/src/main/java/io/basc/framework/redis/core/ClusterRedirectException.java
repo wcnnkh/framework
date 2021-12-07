@@ -21,7 +21,6 @@ package io.basc.framework.redis.core;
  *
  * @author Christoph Strobl
  * @author Mark Paluch
- * @since 1.7
  */
 public class ClusterRedirectException extends RedisSystemException {
 

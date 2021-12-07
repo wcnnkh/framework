@@ -1,10 +1,14 @@
 package io.basc.framework.beans.ioc;
 
+import java.lang.reflect.AnnotatedElement;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import io.basc.framework.beans.annotation.Autowired;
 import io.basc.framework.beans.annotation.Destroy;
 import io.basc.framework.beans.annotation.InitMethod;
 import io.basc.framework.beans.annotation.Value;
-import io.basc.framework.core.annotation.AnnotationUtils;
 import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.logger.Logger;
@@ -14,12 +18,6 @@ import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.AbstractIterator;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
-
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 public final class Ioc {
 	private static Logger logger = LoggerFactory.getLogger(Ioc.class);
@@ -31,15 +29,17 @@ public final class Ioc {
 	};
 
 	private Ioc(Class<?> targetClass) {
-		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass, false, true, InitMethod.class)) {
-			ReflectionUtils.makeAccessible(method);
-			init.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
-		}
+		ReflectionUtils.getDeclaredMethods(targetClass).stream().filter((m) -> m.isAnnotationPresent(InitMethod.class))
+				.forEach((method) -> {
+					ReflectionUtils.makeAccessible(method);
+					init.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
+				});
 
-		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass, false, true, Destroy.class)) {
-			ReflectionUtils.makeAccessible(method);
-			destroy.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
-		}
+		ReflectionUtils.getDeclaredMethods(targetClass).stream().filter((m) -> m.isAnnotationPresent(Destroy.class))
+				.forEach((method) -> {
+					ReflectionUtils.makeAccessible(method);
+					destroy.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
+				});
 
 		for (Field field : MapperUtils.getFields(targetClass).accept(FieldFeature.SUPPORT_SETTER)) {
 			AnnotatedElement annotatedElement = field.getSetter();
@@ -54,16 +54,17 @@ public final class Ioc {
 			}
 		}
 
-		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass, false, true, Value.class)) {
-			if (method.getParameterTypes().length != 1) {
-				logger.error("@Value method one parameter must exis: {}", method);
-				continue;
-			}
+		ReflectionUtils.getDeclaredMethods(targetClass).stream().filter((m) -> m.isAnnotationPresent(Value.class))
+				.forEach((method) -> {
+					if (method.getParameterTypes().length != 1) {
+						logger.error("@Value method one parameter must exis: {}", method);
+						return;
+					}
 
-			Field field = new Field(null, targetClass, ParameterUtils.getParameterNames(method)[0], null, null, method);
-			this.dependence.getIocProcessors().add(new ValueIocProcessor(field));
-		}
-
+					Field field = new Field(null, targetClass, ParameterUtils.getParameterNames(method)[0], null, null,
+							method);
+					this.dependence.getIocProcessors().add(new ValueIocProcessor(field));
+				});
 		readyOnly();
 	}
 

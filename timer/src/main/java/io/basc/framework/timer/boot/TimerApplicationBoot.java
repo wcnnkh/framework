@@ -1,13 +1,17 @@
 package io.basc.framework.timer.boot;
 
+import java.lang.reflect.Method;
+import java.util.Calendar;
+import java.util.Date;
+
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.annotation.AnnotationUtils;
 import io.basc.framework.core.reflect.Invoker;
 import io.basc.framework.core.reflect.MethodInvoker;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.supplier.NameInstanceSupplier;
 import io.basc.framework.timer.Delayed;
 import io.basc.framework.timer.ScheduleTaskConfig;
@@ -20,25 +24,23 @@ import io.basc.framework.timer.support.SimpleCrontabConfig;
 import io.basc.framework.timer.support.SimpleTimerTaskConfig;
 import io.basc.framework.util.ArrayUtils;
 
-import java.lang.reflect.Method;
-import java.util.Calendar;
-import java.util.Date;
-
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public final class TimerApplicationBoot implements ApplicationPostProcessor {
 
 	public void postProcessApplication(ConfigurableApplication application) throws Throwable {
 		Timer timer = application.getBeanFactory().getInstance(Timer.class);
 		for (Class<?> clz : application.getContextClasses()) {
-			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, Schedule.class)) {
-				Schedule schedule = method.getAnnotation(Schedule.class);
-				schedule(application.getBeanFactory(), clz, method, timer, schedule);
-			}
+			ReflectionUtils.getDeclaredMethods(clz).streamAll().filter((m) -> m.isAnnotationPresent(Schedule.class))
+					.forEach((method) -> {
+						Schedule schedule = method.getAnnotation(Schedule.class);
+						schedule(application.getBeanFactory(), clz, method, timer, schedule);
+					});
 
-			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, Crontab.class)) {
-				Crontab c = method.getAnnotation(Crontab.class);
-				crontab(application.getBeanFactory(), clz, method, timer, c);
-			}
+			ReflectionUtils.getDeclaredMethods(clz).streamAll().filter((m) -> m.isAnnotationPresent(Crontab.class))
+					.forEach((method) -> {
+						Crontab c = method.getAnnotation(Crontab.class);
+						crontab(application.getBeanFactory(), clz, method, timer, c);
+					});
 		}
 	}
 

@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
@@ -970,8 +969,7 @@ public final class StringUtils {
 	 */
 	public static String[] tokenizeToArray(String str, String delimiters, boolean trimTokens,
 			boolean ignoreEmptyTokens) {
-		return tokenize(str, delimiters, trimTokens, ignoreEmptyTokens).collect(Collectors.toList())
-				.toArray(new String[0]);
+		return tokenize(str, delimiters, trimTokens, ignoreEmptyTokens).toArray(String[]::new);
 	}
 
 	public static Stream<String> tokenize(String str, String delimiters, boolean trimTokens,
@@ -2116,7 +2114,7 @@ public final class StringUtils {
 	public static String[] splitToArray(CharSequence charSequence, boolean trimTokens, boolean ignoreEmptyTokens,
 			CharSequence... filters) {
 		return split(charSequence, trimTokens, ignoreEmptyTokens, filters).map((s) -> s == null ? null : s.toString())
-				.collect(Collectors.toList()).toArray(new String[0]);
+				.toArray(String[]::new);
 	}
 
 	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence, boolean trimTokens,

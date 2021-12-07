@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.page.Page;
-import io.basc.framework.util.page.Pages;
+import io.basc.framework.util.page.Pageable;
+import io.basc.framework.util.page.Pageables;
 import io.basc.framework.util.stream.ConsumerProcessor;
 import io.basc.framework.util.stream.Processor;
 
@@ -38,7 +38,7 @@ public interface ExcelExport extends Flushable, Closeable {
 		flush();
 	}
 	
-	default <T, E extends Throwable> void appendAll(Pages<T> pages, Processor<T, Collection<?>, E> rowsProcessor) throws IOException, E{
+	default <T, E extends Throwable, C, P extends Pageables<C, T>> void appendAll(P pages, Processor<T, Collection<?>, E> rowsProcessor) throws IOException, E{
 		appendAll(pages, rowsProcessor, null);
 	}
 	
@@ -51,14 +51,14 @@ public interface ExcelExport extends Flushable, Closeable {
 	 * @throws IOException
 	 * @throws E
 	 */
-	default <T, E extends Throwable> void appendAll(Pages<T> pages, Processor<T, Collection<?>, E> rowsProcessor,
-			@Nullable ConsumerProcessor<Page<T>, E> afterProcess) throws IOException, E {
-		Stream<? extends Pages<T>> stream = pages.pages();
+	default <T, E extends Throwable, C, P extends Pageables<C, T>> void appendAll(P pages, Processor<T, Collection<?>, E> rowsProcessor,
+			@Nullable ConsumerProcessor<Pageable<C, T>, E> afterProcess) throws IOException, E {
+		Stream<? extends Pageable<C, T>> stream = pages.pages();
 		try {
-			Iterator<? extends Pages<T>> iterator = stream.iterator();
+			Iterator<? extends Pageable<C, T>> iterator = stream.iterator();
 			while (iterator.hasNext()) {
-				Pages<T> page = iterator.next();
-				appendAll(page.rows(), rowsProcessor);
+				Pageable<C, T> page = iterator.next();
+				appendAll(page.getList(), rowsProcessor);
 				if(afterProcess != null) {
 					afterProcess.process(page);
 				}

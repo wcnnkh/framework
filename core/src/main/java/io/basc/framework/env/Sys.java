@@ -34,7 +34,7 @@ public final class Sys extends DefaultEnvironment implements ServiceLoaderFactor
 
 	private static Logger logger = LoggerFactory.getLogger(Sys.class);
 	public static final Sys env = new Sys();
-	private static DefaultInstanceFactory instanceFactory = new DefaultInstanceFactory(env, true);
+	private static DefaultInstanceFactory instanceFactory = new DefaultInstanceFactory(env);
 
 	private static Clock clock;
 

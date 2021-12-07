@@ -4,13 +4,13 @@ import io.basc.framework.util.AbstractIterator;
 import io.basc.framework.util.StaticSupplier;
 import io.basc.framework.util.Supplier;
 
-public class PagesIterator<T> extends AbstractIterator<Pages<T>> {
-	private Pages<T> pages;
-	private Supplier<Pages<T>> current;
+final class PagesIterator<K, T> extends AbstractIterator<Pages<K, T>> {
+	private Pages<K, T> pages;
+	private Supplier<Pages<K, T>> current;
 
-	public PagesIterator(Pages<T> pages) {
+	public PagesIterator(Pages<K, T> pages) {
 		this.pages = pages;
-		this.current = new StaticSupplier<Pages<T>>(pages);
+		this.current = new StaticSupplier<Pages<K, T>>(pages);
 	}
 
 	@Override
@@ -23,9 +23,9 @@ public class PagesIterator<T> extends AbstractIterator<Pages<T>> {
 	}
 
 	@Override
-	public Pages<T> next() {
+	public Pages<K, T> next() {
 		if (current != null) {
-			Pages<T> value = current.get();
+			Pages<K, T> value = current.get();
 			current = null;
 			return value;
 		} else {

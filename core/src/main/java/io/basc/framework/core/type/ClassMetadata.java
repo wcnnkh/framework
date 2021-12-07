@@ -1,9 +1,12 @@
 package io.basc.framework.core.type;
 
+import io.basc.framework.lang.Nullable;
+
 /**
  * Interface that defines abstract metadata of a specific class, in a form that
  * does not require that class to be loaded yet.
- * 
+ *
+ * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/type/ClassMetadata.java
  * @see StandardClassMetadata
  * @see io.basc.framework.core.type.classreading.MetadataReader#getClassMetadata()
  * @see AnnotationMetadata
@@ -22,12 +25,9 @@ public interface ClassMetadata {
 
 	/**
 	 * Return whether the underlying class represents an annotation.
+	 * 
 	 */
 	boolean isAnnotation();
-
-	boolean isEnum();
-
-	boolean isPublic();
 
 	/**
 	 * Return whether the underlying class is marked as abstract.
@@ -38,12 +38,18 @@ public interface ClassMetadata {
 	 * Return whether the underlying class represents a concrete class, i.e. neither
 	 * an interface nor an abstract class.
 	 */
-	boolean isConcrete();
+	default boolean isConcrete() {
+		return !(isInterface() || isAbstract());
+	}
 
 	/**
 	 * Return whether the underlying class is marked as 'final'.
 	 */
 	boolean isFinal();
+
+	boolean isEnum();
+
+	boolean isPublic();
 
 	/**
 	 * Determine whether the underlying class is independent, i.e. whether it is a
@@ -60,23 +66,29 @@ public interface ClassMetadata {
 	 * If this method returns {@code false}, then the underlying class is a
 	 * top-level class.
 	 */
-	boolean hasEnclosingClass();
+	default boolean hasEnclosingClass() {
+		return (getEnclosingClassName() != null);
+	}
 
 	/**
 	 * Return the name of the enclosing class of the underlying class, or
 	 * {@code null} if the underlying class is a top-level class.
 	 */
+	@Nullable
 	String getEnclosingClassName();
 
 	/**
 	 * Return whether the underlying class has a super class.
 	 */
-	boolean hasSuperClass();
+	default boolean hasSuperClass() {
+		return (getSuperClassName() != null);
+	}
 
 	/**
 	 * Return the name of the super class of the underlying class, or {@code null}
 	 * if there is no super class defined.
 	 */
+	@Nullable
 	String getSuperClassName();
 
 	/**
@@ -91,6 +103,7 @@ public interface ClassMetadata {
 	 * (package) access, and private classes and interfaces declared by the class,
 	 * but excludes inherited classes and interfaces. An empty array is returned if
 	 * no member classes or interfaces exist.
+	 * 
 	 */
 	String[] getMemberClassNames();
 

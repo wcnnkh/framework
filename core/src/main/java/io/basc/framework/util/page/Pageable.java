@@ -17,13 +17,6 @@ public interface Pageable<K, T> extends Iterable<T> {
 	K getCursorId();
 
 	/**
-	 * 数量/分页的限制数量
-	 * 
-	 * @return
-	 */
-	long getCount();
-
-	/**
 	 * 获取下一页的开始游标id
 	 * 
 	 * @return
@@ -31,10 +24,10 @@ public interface Pageable<K, T> extends Iterable<T> {
 	@Nullable
 	K getNextCursorId();
 
-	List<T> rows();
+	List<T> getList();
 
 	default Stream<T> stream() {
-		return rows().stream();
+		return getList().stream();
 	}
 
 	/**
@@ -52,7 +45,7 @@ public interface Pageable<K, T> extends Iterable<T> {
 	 * @return
 	 */
 	default T first() {
-		List<T> rows = rows();
+		List<T> rows = getList();
 		if (CollectionUtils.isEmpty(rows)) {
 			return null;
 		}
@@ -65,7 +58,7 @@ public interface Pageable<K, T> extends Iterable<T> {
 	 * @return
 	 */
 	default T last() {
-		List<T> rows = rows();
+		List<T> rows = getList();
 		if (CollectionUtils.isEmpty(rows)) {
 			return null;
 		}

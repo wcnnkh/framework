@@ -28,18 +28,13 @@ public class DefaultFields implements Fields {
 	}
 
 	@Override
-	public long getCount() {
-		return fieldMetadatas.getCount();
-	}
-
-	@Override
 	public Class<?> getNextCursorId() {
 		return fieldMetadatas.getNextCursorId();
 	}
 
 	@Override
-	public List<Field> rows() {
-		return fieldMetadatas.rows().stream()
+	public List<Field> getList() {
+		return fieldMetadatas.getList().stream()
 				.map((metadata) -> createField(metadata))
 				.collect(Collectors.toList());
 	}

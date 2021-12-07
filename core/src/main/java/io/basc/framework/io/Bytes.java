@@ -409,7 +409,6 @@ public final class Bytes {
 	 *
 	 * @param byteBuffer must not be {@literal null}.
 	 * @return
-	 * @since 2.0
 	 */
 	public static byte[] getBytes(ByteBuffer byteBuffer) {
 		Assert.notNull(byteBuffer, "ByteBuffer must not be null!");

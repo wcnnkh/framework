@@ -6,22 +6,22 @@ import java.util.stream.Stream;
 
 import io.basc.framework.util.XUtils;
 
-public interface Pageables<K, T> extends Pageable<K, T>{
+public interface Pageables<K, T> extends Pageable<K, T> {
 	Pageables<K, T> jumpTo(K cursorId);
-	
+
 	default Pageables<K, T> next() {
 		if (!hasNext()) {
 			throw new NoSuchElementException(
-					"cursorId=" + getCursorId() + ", nextCursorId=" + getNextCursorId() + ", count=" + getCount());
+					"cursorId=" + getCursorId() + ", nextCursorId=" + getNextCursorId());
 		}
 		return jumpTo(getNextCursorId());
 	}
 
-	default Stream<? extends Pageables<K, T>> pages(){
+	default Stream<? extends Pageables<K, T>> pages() {
 		Iterator<Pageables<K, T>> iterator = new PageablesIterator<>(this);
 		return XUtils.stream(iterator);
 	}
-	
+
 	@Override
 	default Pageables<K, T> shared() {
 		return new SharedPageables<>(this);
@@ -33,10 +33,14 @@ public interface Pageables<K, T> extends Pageable<K, T>{
 	 * @return
 	 */
 	default Stream<T> streamAll() {
-		if(hasNext()) {
+		if (hasNext()) {
 			Iterator<T> iterator = new IteratorAll<>(this);
 			return XUtils.stream(iterator);
 		}
 		return stream();
+	}
+	
+	default Pageable<K, T> all(){
+		return new StreamPageable<K, T>(getCursorId(), () -> streamAll(), null);
 	}
 }

@@ -1,58 +1,52 @@
 package io.basc.framework.util.page;
 
-public class SharedPages<T> extends SharedPage<T> implements Pages<T> {
-	private static final long serialVersionUID = 1L;
-	private final transient Pages<T> pages;
+import java.util.stream.Stream;
 
-	public SharedPages(Pages<T> pages) {
-		super(pages);
+import io.basc.framework.lang.Nullable;
+
+public class SharedPages<K, T> extends SharedPage<K, T> implements Pages<K, T> {
+	private static final long serialVersionUID = 1L;
+	private Pages<K, T> pages;
+
+	public SharedPages() {
+	}
+	
+	public SharedPages(Pages<K, T> pages) {
+		this(pages, pages);
+	}
+	
+	public SharedPages(Page<K, T> currentPage, @Nullable Pages<K, T> pages) {
+		super(currentPage);
 		this.pages = pages;
 	}
 
 	@Override
-	public Pages<T> jumpTo(Long cursorId, long count) {
-		Pages<T> pages = this.pages.jumpTo(cursorId, count);
+	public Pages<K, T> jumpTo(K cursorId, long count) {
+		Pages<K, T> pages = this.pages.jumpTo(cursorId, count);
 		return new SharedPages<>(pages);
 	}
 
 	@Override
-	public Pages<T> shared() {
+	public Pages<K, T> shared() {
 		return this;
 	}
 
 	@Override
-	public Pages<T> jumpTo(Long cursorId) {
-		Pages<T> pages = this.pages.jumpTo(cursorId);
+	public Pages<K, T> next() {
+		Pages<K, T> pages = this.pages.next();
 		return new SharedPages<>(pages);
 	}
-
+	
 	@Override
-	public Pages<T> next() {
-		Pages<T> pages = this.pages.next();
-		return new SharedPages<>(pages);
+	public Stream<? extends Pages<K, T>> pages() {
+		return pages.pages();
 	}
-
-	@Override
-	public Pages<T> jumpToPage(long pageNumber) {
-		Pages<T> pages = this.pages.jumpToPage(pageNumber);
-		return new SharedPages<>(pages);
+	
+	public Pages<K, T> getPages(){
+		return pages;
 	}
-
-	@Override
-	public Pages<T> jumpToPage(long pageNumber, long count) {
-		Pages<T> pages = this.pages.jumpToPage(pageNumber, count);
-		return new SharedPages<>(pages);
-	}
-
-	@Override
-	public Pages<T> previous() {
-		Pages<T> pages = this.pages.previous();
-		return new SharedPages<>(pages);
-	}
-
-	@Override
-	public Pages<T> limit(long maxPageNumber) {
-		Pages<T> pages = this.pages.limit(maxPageNumber);
-		return new SharedPages<>(pages);
+	
+	public void setPages(Pages<K, T> pages) {
+		this.pages = pages;
 	}
 }

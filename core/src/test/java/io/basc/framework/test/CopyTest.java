@@ -25,13 +25,17 @@ public class CopyTest {
 		Source source = new Source();
 		source.setList(list);
 		System.out.println(source);
+		StopWatch stopWatch = new StopWatch("copy test");
+		stopWatch.start("first copy");
 		Copy.copy(source, target);
+		stopWatch.stop();
+		System.out.println(stopWatch.toString());
+		
 		System.out.println(target);
 		assertTrue(target.getList().size() == source.getList().size());
 		target.getList().clear();
 		// 浅拷贝的会一起清空
 		assertTrue(source.getList().size() == 0);
-		StopWatch stopWatch = new StopWatch("深拷贝");
 		List<String> deepList = new ArrayList<>();
 		deepList.add("b");
 		source.setList(deepList);

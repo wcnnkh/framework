@@ -24,12 +24,7 @@ public class SharedFields extends AbstractFields implements Fields {
 	}
 
 	@Override
-	public long getCount() {
-		return sharedFields.size();
-	}
-
-	@Override
-	public List<Field> rows() {
+	public List<Field> getList() {
 		return Collections.unmodifiableList(sharedFields);
 	}
 }

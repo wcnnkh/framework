@@ -154,11 +154,11 @@ public class DefaultMetadataFactory implements FieldMetadataFactory {
 
 	private class DefaultFieldMetadatas implements FieldMetadatas {
 		private final Class<?> cursorId;
-		private final List<FieldMetadata> rows;
+		private final List<FieldMetadata> list;
 
 		public DefaultFieldMetadatas(Class<?> cursorId) {
 			this.cursorId = cursorId;
-			this.rows = getFieldMetadataList(cursorId);
+			this.list = getFieldMetadataList(cursorId);
 		}
 
 		@Override
@@ -167,13 +167,8 @@ public class DefaultMetadataFactory implements FieldMetadataFactory {
 		}
 
 		@Override
-		public long getCount() {
-			return rows.size();
-		}
-
-		@Override
-		public List<FieldMetadata> rows() {
-			return rows;
+		public List<FieldMetadata> getList() {
+			return list;
 		}
 
 		@Override

@@ -8,6 +8,8 @@ import io.basc.framework.core.type.classreading.MetadataReaderFactory;
 /**
  * Base interface for type filters using a
  * {@link io.basc.framework.core.type.classreading.MetadataReader}.
+ *
+ * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/type/filter/TypeFilter.java
  */
 @FunctionalInterface
 public interface TypeFilter {

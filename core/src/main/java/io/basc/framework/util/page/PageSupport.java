@@ -1,5 +1,6 @@
 package io.basc.framework.util.page;
 
+import java.util.Collections;
 import java.util.List;
 
 import io.basc.framework.util.Assert;
@@ -50,37 +51,31 @@ public class PageSupport {
 		return start + limit;
 	}
 
-	public static <T> SharedPage<T> toPage(long total, long pageNumber, long limit,
-			List<T> list) {
-		return new SharedPage<>(getStart(pageNumber, limit), list, limit, total);
-	}
-	
-	public static <T> Pages<T> getPages(Page<T> page,
-			CursorProcessor<Long, T> processor) {
-		return new StreamPages<>(page, processor);
+	public static <T> Pagination<T> toPage(long total, long pageNumber, long limit, List<T> list) {
+		return new SharedPagination<>(getStart(pageNumber, limit), list, limit, total);
 	}
 
-	public static <K, T> Pageable<K, T> emptyPageable(K cursorId, long count) {
-		return new SharedPageable<K, T>(cursorId, count);
+	public static <K, T> Pageable<K, T> emptyPageable(K cursorId) {
+		return new SharedPageable<K, T>(cursorId);
 	}
 
-	public static <T> Page<T> emptyPage(long pageNumber, long count) {
-		SharedPage<T> sharedPage = new SharedPage<>(count);
-		sharedPage.setCursorId(getStart(pageNumber, count));
-		return sharedPage;
+	public static <K, T> Pageables<K, T> emptyPageables(K cursorId) {
+		return new SharedPageables<K, T>(emptyPageables(cursorId), null);
 	}
 
-	public static <K, T> Pageables<K, T> emptyPageables(K cursorId, long count) {
-		EmptyPageables<K, T> emptyPageables = new EmptyPageables<>();
-		emptyPageables.setCursorId(cursorId);
-		emptyPageables.setCount(count);
-		return emptyPageables;
+	public static <K, T> Page<K, T> emptyPage(K cursorId, long count) {
+		return new SharedPage<K, T>(cursorId, Collections.emptyList(), count, 0);
 	}
 
-	public static <T> Pages<T> emptyPages(long pageNumber, long count) {
-		EmptyPages<T> emptyPages = new EmptyPages<>();
-		emptyPages.setCursorId(getStart(pageNumber, count));
-		emptyPages.setCount(count);
-		return emptyPages;
+	public static <K, T> Pages<K, T> emptyPages(K cursorId, Long count) {
+		return new SharedPages<K, T>(emptyPage(cursorId, count), null);
+	}
+
+	public static <T> Pagination<T> emptyPagination(long start, long count) {
+		return new SharedPagination<T>(start, count);
+	}
+
+	public static <T> Paginations<T> emptyPaginations(long start, long count) {
+		return new SharedPaginations<T>(emptyPagination(start, count), null);
 	}
 }

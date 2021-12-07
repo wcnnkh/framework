@@ -24,18 +24,13 @@ public class StreamPageables<K, T> implements Pageables<K, T> {
 	}
 
 	@Override
-	public long getCount() {
-		return pageable.getCount();
-	}
-
-	@Override
 	public K getNextCursorId() {
 		return pageable.getNextCursorId();
 	}
 
 	@Override
-	public List<T> rows() {
-		return pageable.rows();
+	public List<T> getList() {
+		return pageable.getList();
 	}
 
 	@Override

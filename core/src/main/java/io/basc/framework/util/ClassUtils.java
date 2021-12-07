@@ -1539,7 +1539,7 @@ public final class ClassUtils {
 		return new StreamPageables<Class<?>, Class<?>>(sourceClass, (c) -> {
 			Class<?>[] interfaces = c.getInterfaces();
 			List<Class<?>> list = interfaces == null ? Collections.emptyList() : Arrays.asList(interfaces);
-			return new SharedPageable<>(c, list, c.getSuperclass(), list.size());
+			return new SharedPageable<>(c, list, c.getSuperclass());
 		});
 	}
 
@@ -1572,8 +1572,7 @@ public final class ClassUtils {
 			@Nullable TypeFilter typeFilter) {
 		Assert.requiredArgument(resourceLoader != null, "resourceLoader");
 		Assert.requiredArgument(resources != null, "resources");
-		MetadataReaderFactory factory = metadataReaderFactory == null
-				? new SimpleMetadataReaderFactory(resourceLoader, classLoader)
+		MetadataReaderFactory factory = metadataReaderFactory == null ? new SimpleMetadataReaderFactory(resourceLoader)
 				: metadataReaderFactory;
 		ClassLoader cl = classLoader == null ? resourceLoader.getClassLoader() : classLoader;
 		Stream<Class<?>> stream = resources.map((resource) -> {
@@ -1616,7 +1615,7 @@ public final class ClassUtils {
 
 		MetadataReaderFactory factory = metadataReaderFactory;
 		if (factory == null) {
-			factory = new SimpleMetadataReaderFactory(resourcePatternResolver, classLoader);
+			factory = new SimpleMetadataReaderFactory(resourcePatternResolver);
 		}
 
 		ClassLoader cl = classLoader;

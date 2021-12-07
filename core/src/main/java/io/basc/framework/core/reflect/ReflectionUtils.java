@@ -62,7 +62,7 @@ public abstract class ReflectionUtils {
 		}
 		return true;
 	}
-	
+
 	public static boolean isAvailable(Class<?> clazz) {
 		return isAvailable(clazz, null);
 	}
@@ -773,65 +773,91 @@ public abstract class ReflectionUtils {
 		return method.getDeclaringClass().getName() + "." + method.getName();
 	}
 
+	/**
+	 * @see Class#getFields()
+	 * @param sourceClass
+	 * @return
+	 */
 	public static Pageables<Class<?>, Field> getFields(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new StreamPageables<Class<?>, Field>(sourceClass, (c) -> {
 			Field[] fields = c.getFields();
 			List<Field> list = fields == null ? Collections.emptyList() : Arrays.asList(fields);
 			Class<?> superclass = c.getSuperclass();
-			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass,
-					list.size());
+			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass);
 		});
 	}
 
+	/**
+	 * @see Class#getDeclaredFields()
+	 * @param sourceClass
+	 * @return
+	 */
 	public static Pageables<Class<?>, Field> getDeclaredField(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new StreamPageables<Class<?>, Field>(sourceClass, (c) -> {
 			Field[] fields = c.getDeclaredFields();
 			List<Field> list = fields == null ? Collections.emptyList() : Arrays.asList(fields);
 			Class<?> superclass = c.getSuperclass();
-			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass,
-					list.size());
+			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass);
 		});
 	}
 
+	/**
+	 * @see Class#getMethods()
+	 * @param sourceClass
+	 * @return
+	 */
 	public static Pageables<Class<?>, Method> getMethods(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new StreamPageables<Class<?>, Method>(sourceClass, (c) -> {
 			Method[] methods = c.getMethods();
 			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
-			return new SharedPageable<>(c, list, c.getSuperclass(), list.size());
+			return new SharedPageable<>(c, list, c.getSuperclass());
 		});
 	}
 
+	/**
+	 * @see Class#getDeclaredMethods()
+	 * @param sourceClass
+	 * @return
+	 */
 	public static Pageables<Class<?>, Method> getDeclaredMethods(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new StreamPageables<Class<?>, Method>(sourceClass, (c) -> {
 			Method[] methods = c.getDeclaredMethods();
 			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
-			return new SharedPageable<>(c, list, c.getSuperclass(), list.size());
+			return new SharedPageable<>(c, list, c.getSuperclass());
 		});
 	}
 
+	/**
+	 * @see Class#getConstructors()
+	 * @param sourceClass
+	 * @return
+	 */
 	public static Pageables<Class<?>, Constructor<?>> getConstructors(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new StreamPageables<Class<?>, Constructor<?>>(sourceClass, (c) -> {
 			Constructor<?>[] constructors = c.getConstructors();
 			List<Constructor<?>> list = constructors == null ? Collections.emptyList() : Arrays.asList(constructors);
 			Class<?> superclass = c.getSuperclass();
-			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass,
-					list.size());
+			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass);
 		});
 	}
 
+	/**
+	 * @see Class#getDeclaredConstructors()
+	 * @param sourceClass
+	 * @return
+	 */
 	public static Pageables<Class<?>, Constructor<?>> getDeclaredConstructors(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new StreamPageables<Class<?>, Constructor<?>>(sourceClass, (c) -> {
 			Constructor<?>[] constructors = c.getDeclaredConstructors();
 			List<Constructor<?>> list = constructors == null ? Collections.emptyList() : Arrays.asList(constructors);
 			Class<?> superclass = c.getSuperclass();
-			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass,
-					list.size());
+			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass);
 		});
 	}
 

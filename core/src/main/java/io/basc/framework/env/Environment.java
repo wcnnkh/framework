@@ -10,7 +10,6 @@ import io.basc.framework.convert.resolve.ResourceResolver;
 import io.basc.framework.event.EmptyObservable;
 import io.basc.framework.event.Observable;
 import io.basc.framework.io.Resource;
-import io.basc.framework.io.ResourcePatternResolver;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.event.ObservableProperties;
 import io.basc.framework.io.resolver.PropertiesResolver;
@@ -22,7 +21,7 @@ import io.basc.framework.util.placeholder.PlaceholderReplacer;
 import io.basc.framework.util.placeholder.PropertyResolver;
 import io.basc.framework.value.PropertyFactory;
 
-public interface Environment extends ResourcePatternResolver, PropertyFactory, PropertyResolver {
+public interface Environment extends EnvironmentResourceLoader, PropertyFactory, PropertyResolver {
 	public static final String CHARSET_PROPERTY = "io.basc.framework.charset.name";
 	public static final String WORK_PATH_PROPERTY = "io.basc.framework.work.path";
 
@@ -57,35 +56,6 @@ public interface Environment extends ResourcePatternResolver, PropertyFactory, P
 		}
 
 		return getResourceResolver().resolveResource(resource, targetType);
-	}
-
-	default Resource getResource(String location) {
-		Resource[] resources = getResources(location);
-		if (ArrayUtils.isEmpty(resources)) {
-			return null;
-		}
-
-		Resource resourceToUse = resources[resources.length - 1];
-		for (Resource resource : resources) {
-			if (resource.exists()) {
-				resourceToUse = resource;
-				break;
-			}
-		}
-		return resourceToUse;
-	}
-
-	/**
-	 * 资源是否存在
-	 * 
-	 * @see Resource#exists()
-	 * @see #getResource(String)
-	 * @param location
-	 * @return
-	 */
-	default boolean exists(String location) {
-		Resource resource = getResource(location);
-		return resource != null && resource.exists();
 	}
 
 	default Observable<Properties> getProperties(String location) {
@@ -155,6 +125,4 @@ public interface Environment extends ResourcePatternResolver, PropertyFactory, P
 	ConversionService getConversionService();
 
 	ResourceResolver getResourceResolver();
-
-	Resource[] getResources(String locationPattern);
 }

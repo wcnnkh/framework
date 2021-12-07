@@ -8,6 +8,7 @@ import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.annotation.AnnotationAttributes;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.lang.Ignore;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.orm.ObjectRelationalResolver;
 import io.basc.framework.orm.support.ObjectRelationalResolverExtend;
@@ -155,7 +156,11 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 
 	@Override
 	public Boolean isNullable(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain) {
-		return AnnotatedElementUtils.isNullable(fieldDescriptor, () -> chain.isNullable(entityClass, fieldDescriptor));
+		Nullable nullable = AnnotatedElementUtils.getMergedAnnotation(fieldDescriptor, Nullable.class);
+		if (nullable == null) {
+			return chain.isNullable(entityClass, fieldDescriptor);
+		}
+		return nullable.value();
 	}
 
 	@Override
@@ -256,7 +261,7 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 
 	@Override
 	public Boolean isIncrement(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain) {
-		if(AnnotatedElementUtils.hasAnnotation(fieldDescriptor, Increment.class)) {
+		if (AnnotatedElementUtils.hasAnnotation(fieldDescriptor, Increment.class)) {
 			return true;
 		}
 		return chain.isUnique(entityClass, fieldDescriptor);

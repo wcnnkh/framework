@@ -4,14 +4,6 @@ import io.basc.framework.util.page.Pageables;
 
 public interface FieldMetadatas extends Pageables<Class<?>, FieldMetadata> {
 	
-	/**
-	 * 数量
-	 */
-	@Override
-	default long getCount() {
-		return rows().size();
-	}
-	
 	@Override
 	default FieldMetadatas next() {
 		return jumpTo(getNextCursorId());

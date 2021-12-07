@@ -1,50 +1,40 @@
 package io.basc.framework.core.type.classreading;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import io.basc.framework.io.DefaultResourceLoader;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.DefaultClassLoaderProvider;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  * Simple implementation of the {@link MetadataReaderFactory} interface,
  * creating a new ASM {@link io.basc.framework.asm.ClassReader} for every
  * request.
+ *
+ * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/type/classreading/SimpleMetadataReaderFactory.java
  */
 public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
+
 	private final ResourceLoader resourceLoader;
-	private final ClassLoaderProvider classLoaderProvider;
 
 	/**
 	 * Create a new SimpleMetadataReaderFactory for the default class loader.
 	 */
 	public SimpleMetadataReaderFactory() {
-		this(new DefaultResourceLoader());
-	}
-
-	public SimpleMetadataReaderFactory(ClassLoaderProvider classLoaderProvider) {
-		this(new DefaultResourceLoader(classLoaderProvider), classLoaderProvider);
-	}
-
-	public SimpleMetadataReaderFactory(ResourceLoader resourceLoader) {
-		this(resourceLoader, resourceLoader);
-	}
-
-	public SimpleMetadataReaderFactory(ResourceLoader resourceLoader, ClassLoader classLoader) {
-		this(resourceLoader, classLoader == null ? resourceLoader : new DefaultClassLoaderProvider(classLoader));
+		this.resourceLoader = new DefaultResourceLoader();
 	}
 
 	/**
 	 * Create a new SimpleMetadataReaderFactory for the given resource loader.
+	 * 
+	 * @param resourceLoader the Spring ResourceLoader to use (also determines the
+	 *                       ClassLoader to use)
 	 */
-	public SimpleMetadataReaderFactory(ResourceLoader resourceLoader, ClassLoaderProvider classLoaderProvider) {
+	public SimpleMetadataReaderFactory(@Nullable ResourceLoader resourceLoader) {
 		this.resourceLoader = (resourceLoader != null ? resourceLoader : new DefaultResourceLoader());
-		this.classLoaderProvider = classLoaderProvider;
 	}
 
 	/**
@@ -53,7 +43,8 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 	 * @param classLoader the ClassLoader to use
 	 */
 	public SimpleMetadataReaderFactory(@Nullable ClassLoader classLoader) {
-		this(new DefaultClassLoaderProvider(classLoader));
+		this.resourceLoader = (classLoader != null ? new DefaultResourceLoader(classLoader)
+				: new DefaultResourceLoader());
 	}
 
 	/**
@@ -64,16 +55,12 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 		return this.resourceLoader;
 	}
 
-	public ClassLoaderProvider getClassLoaderProvider() {
-		return classLoaderProvider;
-	}
-
+	@Override
 	public MetadataReader getMetadataReader(String className) throws IOException {
-		ResourceLoader resourceLoader = getResourceLoader();
 		try {
 			String resourcePath = ResourceLoader.CLASSPATH_URL_PREFIX
 					+ ClassUtils.convertClassNameToResourcePath(className) + ClassUtils.CLASS_FILE_SUFFIX;
-			Resource resource = resourceLoader.getResource(resourcePath);
+			Resource resource = this.resourceLoader.getResource(resourcePath);
 			return getMetadataReader(resource);
 		} catch (FileNotFoundException ex) {
 			// Maybe an inner class name using the dot name syntax? Need to use the dollar
@@ -86,7 +73,7 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 						+ className.substring(lastDotIndex + 1);
 				String innerClassResourcePath = ResourceLoader.CLASSPATH_URL_PREFIX
 						+ ClassUtils.convertClassNameToResourcePath(innerClassName) + ClassUtils.CLASS_FILE_SUFFIX;
-				Resource innerClassResource = resourceLoader.getResource(innerClassResourcePath);
+				Resource innerClassResource = this.resourceLoader.getResource(innerClassResourcePath);
 				if (innerClassResource.exists()) {
 					return getMetadataReader(innerClassResource);
 				}
@@ -95,8 +82,9 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 		}
 	}
 
+	@Override
 	public MetadataReader getMetadataReader(Resource resource) throws IOException {
-		return new SimpleMetadataReader(resource, ClassUtils.getClassLoader(getClassLoaderProvider()));
+		return new SimpleMetadataReader(resource, this.resourceLoader.getClassLoader());
 	}
 
 }

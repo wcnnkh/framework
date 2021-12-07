@@ -1,19 +1,18 @@
 package io.basc.framework.core.parameter;
 
-import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.core.annotation.AnnotatedElementWrapper;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.ObjectUtils;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DefaultParameterDescriptor extends
-		AnnotatedElementWrapper<AnnotatedElement> implements
-		ParameterDescriptor {
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
+import io.basc.framework.core.annotation.AnnotatedElementWrapper;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ObjectUtils;
+
+public class DefaultParameterDescriptor extends AnnotatedElementWrapper<AnnotatedElement>
+		implements ParameterDescriptor {
 	private final String name;
 	private final Class<?> type;
 	private final Type genericType;
@@ -22,20 +21,16 @@ public class DefaultParameterDescriptor extends
 		this(name, type, type);
 	}
 
-	public DefaultParameterDescriptor(String name, Class<?> type,
+	public DefaultParameterDescriptor(String name, Class<?> type, @Nullable Type genericType) {
+		this(name, AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT, type, genericType);
+	}
+
+	public DefaultParameterDescriptor(String name, Annotation[] annotations, Class<?> type,
 			@Nullable Type genericType) {
-		this(name, AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT, type,
-				genericType);
+		this(name, AnnotatedElementUtils.forAnnotations(annotations), type, genericType);
 	}
 
-	public DefaultParameterDescriptor(String name, Annotation[] annotations,
-			Class<?> type, @Nullable Type genericType) {
-		this(name, AnnotatedElementUtils.forAnnotations(annotations), type,
-				genericType);
-	}
-
-	public DefaultParameterDescriptor(String name,
-			AnnotatedElement annotatedElement, Class<?> type,
+	public DefaultParameterDescriptor(String name, AnnotatedElement annotatedElement, Class<?> type,
 			@Nullable Type genericType) {
 		super(annotatedElement);
 		this.name = name;
@@ -53,10 +48,6 @@ public class DefaultParameterDescriptor extends
 
 	public Type getGenericType() {
 		return genericType == null ? type : genericType;
-	}
-
-	public boolean isNullable() {
-		return AnnotatedElementUtils.isNullable(wrappedTarget);
 	}
 
 	@Override
@@ -91,13 +82,9 @@ public class DefaultParameterDescriptor extends
 		}
 
 		if (obj instanceof DefaultParameterDescriptor) {
-			return super.equals(obj)
-					&& ObjectUtils.equals(name,
-							((DefaultParameterDescriptor) obj).name)
-					&& ObjectUtils.equals(type,
-							((DefaultParameterDescriptor) obj).type)
-					&& ObjectUtils.equals(genericType,
-							((DefaultParameterDescriptor) obj).genericType);
+			return super.equals(obj) && ObjectUtils.equals(name, ((DefaultParameterDescriptor) obj).name)
+					&& ObjectUtils.equals(type, ((DefaultParameterDescriptor) obj).type)
+					&& ObjectUtils.equals(genericType, ((DefaultParameterDescriptor) obj).genericType);
 		}
 		return false;
 	}

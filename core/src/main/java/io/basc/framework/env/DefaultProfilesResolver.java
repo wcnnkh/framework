@@ -14,6 +14,11 @@ public class DefaultProfilesResolver implements ProfilesResolver {
 	private static final String[] PROFILES = new String[] { "io.basc.framework.env.profiles",
 			"io_basc_framework_env_profiles" };
 
+	/**
+	 * 默认的实现
+	 */
+	public static final ProfilesResolver INSTANCE = new DefaultProfilesResolver();
+
 	private String connector = "-";
 	private boolean ignoreCase = true;
 

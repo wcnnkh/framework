@@ -29,20 +29,15 @@ public class AcceptFields implements Fields, Serializable {
 	}
 	
 	@Override
-	public long getCount() {
-		return rows().size();
-	}
-	
-	@Override
 	public Stream<Field> stream() {
 		return fields.stream().filter(accept);
 	}
 
 	@Override
-	public List<Field> rows() {
+	public List<Field> getList() {
 		if(fieldList == null) {
 			synchronized (this) {
-				fieldList = fields.rows().stream().filter(accept).collect(Collectors.toList());
+				fieldList = fields.getList().stream().filter(accept).collect(Collectors.toList());
 			}
 		}
 		return fieldList;

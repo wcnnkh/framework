@@ -29,6 +29,7 @@ public interface MultiValueMap<K, V> extends Map<K, List<V>> {
 
 	/**
 	 * Return the first value for the given key.
+	 * 
 	 * @param key the key
 	 * @return the first value for the specified key, or {@code null}
 	 */
@@ -36,33 +37,50 @@ public interface MultiValueMap<K, V> extends Map<K, List<V>> {
 
 	/**
 	 * Add the given single value to the current list of values for the given key.
-	 * @param key the key
+	 * 
+	 * @param key   the key
 	 * @param value the value to be added
 	 */
 	void add(K key, V value);
 
 	/**
 	 * Set the given single value under the given key.
-	 * @param key the key
+	 * 
+	 * @param key   the key
 	 * @param value the value to set
 	 */
 	void set(K key, V value);
 
 	/**
 	 * Set the given values under.
+	 * 
 	 * @param values the values.
 	 */
 	void setAll(Map<K, V> values);
 
+	default void addAll(Map<K, List<V>> map) {
+		for (Entry<K, List<V>> entry : map.entrySet()) {
+			List<V> values = entry.getValue();
+			if (values == null) {
+				continue;
+			}
+
+			for (V value : values) {
+				add(entry.getKey(), value);
+			}
+		}
+	}
+
 	/**
 	 * Returns the first values contained in this {@code MultiValueMap}.
+	 * 
 	 * @return a single value representation of this map
 	 */
-	default Map<K, V> toSingleValueMap(){
-		if(isEmpty()) {
+	default Map<K, V> toSingleValueMap() {
+		if (isEmpty()) {
 			return Collections.emptyMap();
 		}
-		
+
 		Map<K, V> singleValueMap = new LinkedHashMap<K, V>(size());
 		for (java.util.Map.Entry<K, List<V>> entry : entrySet()) {
 			List<V> values = entry.getValue();

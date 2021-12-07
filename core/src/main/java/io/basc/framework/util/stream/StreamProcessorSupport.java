@@ -1,5 +1,6 @@
 package io.basc.framework.util.stream;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -123,5 +124,38 @@ public final class StreamProcessorSupport {
 
 	public static <T> StreamWrapper<T> emptyAutoCloseStream() {
 		return new StreamWrapper<>(emptyStream());
+	}
+
+	public static <T> Stream<T> concat(Collection<? extends Stream<T>> streams) {
+		if (streams == null) {
+			return emptyStream();
+		}
+
+		return concat(streams.iterator());
+	}
+
+	public static <T> Stream<T> concat(Iterator<? extends Stream<T>> streams) {
+		if (streams == null) {
+			return emptyStream();
+		}
+
+		if (!streams.hasNext()) {
+			return emptyStream();
+		}
+
+		Stream<T> stream = streams.next();
+		if (!streams.hasNext()) {
+			return stream;
+		}
+
+		stream = Stream.concat(stream, streams.next());
+		if (!streams.hasNext()) {
+			return stream;
+		}
+
+		while (streams.hasNext()) {
+			stream = Stream.concat(stream, streams.next());
+		}
+		return stream;
 	}
 }
