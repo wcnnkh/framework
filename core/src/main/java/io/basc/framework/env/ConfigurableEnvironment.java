@@ -22,10 +22,10 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	}
 
 	default void loadProperties(Resource resource) {
-		if(!getPropertiesResolver().canResolveProperties(resource)){
+		if (!getPropertiesResolver().canResolveProperties(resource)) {
 			throw new NotSupportedException(resource.getDescription());
 		}
-		
+
 		Observable<Properties> observable = new ObservableResource<Properties>(resource,
 				ResourceUtils.toPropertiesConverter(getPropertiesResolver()));
 		loadProperties(observable);

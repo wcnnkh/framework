@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class MainArgs implements PropertyFactory, Ordered{
+public class MainArgs implements PropertyFactory, Ordered {
 	private final String[] args;
 
 	public MainArgs(String[] args) {
@@ -28,8 +28,8 @@ public class MainArgs implements PropertyFactory, Ordered{
 		}
 		return -1;
 	}
-	
-	public boolean contains(String value){
+
+	public boolean contains(String value) {
 		return indexOf(value) != -1;
 	}
 
@@ -55,6 +55,7 @@ public class MainArgs implements PropertyFactory, Ordered{
 
 	/**
 	 * 获取指定内容的下一个值
+	 * 
 	 * @param instructionName
 	 * @return
 	 */
@@ -75,33 +76,33 @@ public class MainArgs implements PropertyFactory, Ordered{
 	public String toString() {
 		return Arrays.toString(args);
 	}
-	
-	protected boolean isProperty(String text){
+
+	protected boolean isProperty(String text) {
 		return text.startsWith("--") && text.indexOf("=") != -1;
 	}
-	
-	protected Pair<String, String> toProperty(String text){
-		if(text.startsWith("--")){
+
+	protected Pair<String, String> toProperty(String text) {
+		if (text.startsWith("--")) {
 			return StringUtils.parseKV(text.substring(2), "=");
 		}
 		return StringUtils.parseKV(text, "=");
 	}
-	
-	public String getProperty(String key){
+
+	public String getProperty(String key) {
 		for (String value : args) {
-			if(isProperty(value)){
+			if (isProperty(value)) {
 				Pair<String, String> keyValuePair = toProperty(value);
-				if(keyValuePair != null && keyValuePair.getKey().equals(key)){
+				if (keyValuePair != null && keyValuePair.getKey().equals(key)) {
 					return keyValuePair.getValue();
 				}
 			}
 		}
 		return null;
 	}
-	
+
 	public Value getValue(String key) {
 		String value = getProperty(key);
-		return value == null? null:new StringValue(value);
+		return value == null ? null : new StringValue(value);
 	}
 
 	public Iterator<String> iterator() {
@@ -111,31 +112,31 @@ public class MainArgs implements PropertyFactory, Ordered{
 	public boolean containsKey(String key) {
 		return getProperty(key) != null;
 	}
-	
-	private final class PropertyIterator extends AbstractIterator<String>{
+
+	private final class PropertyIterator extends AbstractIterator<String> {
 		private int index = 0;
-		
+
 		public boolean hasNext() {
-			while(index < args.length){
+			while (index < args.length) {
 				String value = args[index];
-				if(value == null){
+				if (value == null) {
 					continue;
 				}
-				
+
 				return isProperty(value);
 			}
 			return false;
 		}
 
 		public String next() {
-			if(!hasNext()){
+			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
-			
+
 			Pair<String, String> keyValuePair = toProperty(args[index]);
-			index ++;
+			index++;
 			return keyValuePair.getKey();
 		}
-		
+
 	}
 }

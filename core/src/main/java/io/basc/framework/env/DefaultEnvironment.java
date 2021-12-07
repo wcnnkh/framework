@@ -1,9 +1,6 @@
 package io.basc.framework.env;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 import io.basc.framework.convert.lang.ConversionServices;
@@ -13,19 +10,14 @@ import io.basc.framework.event.Observable;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
-import io.basc.framework.io.FileSystemResourceLoader;
 import io.basc.framework.io.ProtocolResolver;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
-import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.resolver.PropertiesResolvers;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.DefaultClassLoaderProvider;
 import io.basc.framework.util.MultiIterator;
 import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
@@ -38,19 +30,10 @@ import io.basc.framework.value.support.DefaultPropertyFactory;
 
 public class DefaultEnvironment extends DefaultPropertyFactory
 		implements ConfigurableEnvironment, Configurable, PropertyWrapper {
-	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
-
-	private final ConcurrentReferenceHashMap<String, Resource> cacheMap = new ConcurrentReferenceHashMap<String, Resource>(
-			256);
-	private final FileSystemResourceLoader configurableResourceLoader = new FileSystemResourceLoader() {
-		protected boolean ignoreClassPathResource(io.basc.framework.io.FileSystemResource resource) {
-			return super.ignoreClassPathResource(resource) || resource.getPath().startsWith(getWorkPath());
-		};
-	};
-
+	private final DefaultEnvironmentResourceLoader environmentResourceLoader = new DefaultEnvironmentResourceLoader(
+			this);
 	private final DefaultConversionServices conversionServices = new DefaultConversionServices();
 	private final DefaultPlaceholderReplacer placeholderReplacer = new DefaultPlaceholderReplacer();
-	private volatile ProfilesResolver profilesResolver = new DefaultProfilesResolver();
 
 	private ClassLoaderProvider classLoaderProvider;
 
@@ -61,17 +44,6 @@ public class DefaultEnvironment extends DefaultPropertyFactory
 	public DefaultEnvironment(@Nullable ClassLoaderProvider classLoaderProvider) {
 		super(true);
 		this.classLoaderProvider = classLoaderProvider;
-		configurableResourceLoader.setClassLoaderProvider(this);
-	}
-
-	public ProfilesResolver getProfilesResolver() {
-		return profilesResolver;
-	}
-
-	public void setProfilesResolver(ProfilesResolver profilesResolver) {
-		Assert.requiredArgument(profilesResolver != null, "profilesResolver");
-		logger.info("Set profiles resolver [{}]", profilesResolver);
-		this.profilesResolver = profilesResolver;
 	}
 
 	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
@@ -84,56 +56,21 @@ public class DefaultEnvironment extends DefaultPropertyFactory
 
 	@Override
 	public void addProtocolResolver(ProtocolResolver resolver) {
-		configurableResourceLoader.addProtocolResolver(resolver);
+		environmentResourceLoader.addProtocolResolver(resolver);
 	}
 
 	@Override
 	public void addResourceLoader(ResourceLoader resourceLoader) {
-		configurableResourceLoader.addResourceLoader(resourceLoader);
+		environmentResourceLoader.addResourceLoader(resourceLoader);
 	}
 
-	private Resource getResourceByCache(String location) {
-		Resource resource = cacheMap.get(location);
-		if (resource == null) {
-			resource = configurableResourceLoader.getResource(location);
-			if (resource == null) {
-				return null;
-			}
-
-			// 不存在的资源不缓存
-			if (resource.exists()) {
-				Resource cache = cacheMap.putIfAbsent(location, resource);
-				if (cache != null) {
-					resource = cache;
-				} else {
-					// 出现一个新的资源时主动清理一下缓存
-					cacheMap.purgeUnreferencedEntries();
-					if (logger.isDebugEnabled()) {
-						logger.debug("Find resource {} result {}", location, resource);
-					}
-				}
-				return resource;
-			}
-			return ResourceUtils.NONEXISTENT_RESOURCE;
-		}
-		return resource;
+	@Override
+	public Resource getResource(String location) {
+		return environmentResourceLoader.getResource(location);
 	}
 
 	public Resource[] getResources(String locationPattern) {
-		Collection<String> names = profilesResolver.resolve(this, resolvePlaceholders(locationPattern));
-		List<Resource> resources = new ArrayList<Resource>(names.size());
-		for (String name : names) {
-			Resource res = getResourceByCache(name);
-			if (res == null) {
-				continue;
-			}
-			resources.add(res);
-		}
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("Get resources [{}] results {}", resources);
-		}
-		return resources.toArray(new Resource[0]);
+		return environmentResourceLoader.getResources(locationPattern);
 	}
 
 	protected void aware(Object instance) {
@@ -209,14 +146,10 @@ public class DefaultEnvironment extends DefaultPropertyFactory
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		if (serviceLoaderFactory.isInstance(ProfilesResolver.class)) {
-			setProfilesResolver(serviceLoaderFactory.getInstance(ProfilesResolver.class));
-		}
-
+		environmentResourceLoader.configure(serviceLoaderFactory);
 		conversionServices.configure(serviceLoaderFactory);
 		propertyFactorys.configure(serviceLoaderFactory);
 		placeholderReplacer.configure(serviceLoaderFactory);
-		configurableResourceLoader.configure(serviceLoaderFactory);
 	}
 
 	@Override
