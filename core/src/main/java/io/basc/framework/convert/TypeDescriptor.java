@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2019 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package io.basc.framework.convert;
 
 import java.io.Serializable;
@@ -42,11 +26,14 @@ import io.basc.framework.util.XUtils;
  * Contextual descriptor about a type to convert from or to. Capable of
  * representing arrays and generic collection types.
  *
+ * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/convert/TypeDescriptor.java
+ * @author wcnnkh
  * @see ConversionService#canConvert(TypeDescriptor, TypeDescriptor)
  * @see ConversionService#convert(Object, TypeDescriptor, TypeDescriptor)
  */
-@SuppressWarnings("serial")
 public class TypeDescriptor implements AnnotatedElement, Serializable {
+	private static final long serialVersionUID = 1L;
+
 	private static final Map<Class<?>, TypeDescriptor> commonTypesCache = new HashMap<Class<?>, TypeDescriptor>(32);
 
 	private static final Class<?>[] CACHED_COMMON_TYPES = { boolean.class, Boolean.class, byte.class, Byte.class,
@@ -237,7 +224,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	public boolean isPrimitive() {
 		return getType().isPrimitive();
 	}
-	
+
 	public boolean isEnum() {
 		return getType().isEnum();
 	}
