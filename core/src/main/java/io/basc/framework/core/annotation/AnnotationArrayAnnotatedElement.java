@@ -3,6 +3,7 @@ package io.basc.framework.core.annotation;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.util.Arrays;
 
 public class AnnotationArrayAnnotatedElement implements AnnotatedElement, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -58,10 +59,16 @@ public class AnnotationArrayAnnotatedElement implements AnnotatedElement, Serial
 	}
 
 	public Annotation[] getAnnotations() {
-		return annotations;
+		return annotations.clone();
 	}
 
 	public Annotation[] getDeclaredAnnotations() {
-		return declaredAnnotations;
+		return declaredAnnotations.clone();
+	}
+
+	@Override
+	public String toString() {
+		return "AnnotationArrayAnnotatedElement(annotations=" + Arrays.toString(annotations) + ", declaredAnnotations="
+				+ Arrays.toString(declaredAnnotations) + ")";
 	}
 }
