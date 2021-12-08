@@ -7,8 +7,8 @@ import java.util.Arrays;
 
 public class AnnotationArrayAnnotatedElement implements AnnotatedElement, Serializable {
 	private static final long serialVersionUID = 1L;
-	private final Annotation[] annotations;
-	private final Annotation[] declaredAnnotations;
+	protected final Annotation[] annotations;
+	protected final Annotation[] declaredAnnotations;
 
 	public AnnotationArrayAnnotatedElement(AnnotatedElement annotatedElement) {
 		if (annotatedElement == null || annotatedElement instanceof EmptyAnnotatedElement) {
@@ -41,21 +41,6 @@ public class AnnotationArrayAnnotatedElement implements AnnotatedElement, Serial
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public final <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
-		return AnnotatedElement.super.getAnnotationsByType(annotationClass);
-	}
-
-	@Override
-	public final <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
-		return AnnotatedElement.super.getDeclaredAnnotation(annotationClass);
-	}
-
-	@Override
-	public final <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
-		return AnnotatedElement.super.getDeclaredAnnotationsByType(annotationClass);
 	}
 
 	public Annotation[] getAnnotations() {

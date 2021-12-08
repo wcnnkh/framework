@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
 
 public class MultiAnnotatedElement implements AnnotatedElement {
@@ -29,15 +28,26 @@ public class MultiAnnotatedElement implements AnnotatedElement {
 			return AnnotationUtils.EMPTY_ANNOTATION_ARRAY;
 		}
 
+		if (annotatedElements.size() == 1) {
+			AnnotatedElement annotatedElement = CollectionUtils.first(annotatedElements);
+			return isDeclared ? annotatedElement.getDeclaredAnnotations() : annotatedElement.getAnnotations();
+		}
+
 		List<Annotation> annotations = new ArrayList<Annotation>();
 		for (AnnotatedElement annotatedElement : annotatedElements) {
 			if (annotatedElement == null) {
 				continue;
 			}
 
-			Annotation[] as = isDeclared ? annotatedElement.getDeclaredAnnotations()
-					: annotatedElement.getAnnotations();
-			if (ArrayUtils.isEmpty(as)) {
+			Annotation[] as;
+			if (annotatedElement instanceof AnnotationArrayAnnotatedElement) {
+				AnnotationArrayAnnotatedElement arrayAnnotatedElement = (AnnotationArrayAnnotatedElement) annotatedElement;
+				as = isDeclared ? arrayAnnotatedElement.declaredAnnotations : arrayAnnotatedElement.annotations;
+			} else {
+				as = isDeclared ? annotatedElement.getDeclaredAnnotations() : annotatedElement.getAnnotations();
+			}
+
+			if (as == null || as.length == 0) {
 				continue;
 			}
 

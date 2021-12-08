@@ -94,7 +94,7 @@ public abstract class AnnotatedElementUtils {
 	 *                    {@code AnnotatedElement}
 	 */
 	public static AnnotatedElement forAnnotations(Annotation... annotations) {
-		return new AnnotatedElementForAnnotations(annotations);
+		return new AnnotationArrayAnnotatedElement(annotations);
 	}
 
 	/**
@@ -862,41 +862,6 @@ public abstract class AnnotatedElementUtils {
 			return null;
 		}
 		return annotation.asAnnotationAttributes(Adapt.values(classValuesAsString, nestedAnnotationsAsMap));
-	}
-
-	/**
-	 * Adapted {@link AnnotatedElement} that hold specific annotations.
-	 */
-	private static class AnnotatedElementForAnnotations implements AnnotatedElement {
-
-		private final Annotation[] annotations;
-
-		AnnotatedElementForAnnotations(Annotation... annotations) {
-			this.annotations = annotations;
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		@Nullable
-		public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-			for (Annotation annotation : this.annotations) {
-				if (annotation.annotationType() == annotationClass) {
-					return (T) annotation;
-				}
-			}
-			return null;
-		}
-
-		@Override
-		public Annotation[] getAnnotations() {
-			return this.annotations.clone();
-		}
-
-		@Override
-		public Annotation[] getDeclaredAnnotations() {
-			return this.annotations.clone();
-		}
-
 	}
 
 	public static String getCharsetName(AnnotatedElement annotatedElement, Supplier<String> defaultSupplier) {
