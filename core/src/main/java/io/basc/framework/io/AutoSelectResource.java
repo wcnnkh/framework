@@ -12,22 +12,23 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class AutomaticResource extends ResourceWrapper implements Observable<Resource>{
+public class AutoSelectResource extends ResourceWrapper implements Observable<Resource> {
 	private Collection<Resource> resources;
-	
-	public AutomaticResource(Resource ...resources) {
+
+	public AutoSelectResource(Resource... resources) {
 		this(Arrays.asList(resources));
 	}
 
 	/**
 	 * 从多个resource中自动选择一个可用的
+	 * 
 	 * @param resources 使用优先级从高到低
 	 */
-	public AutomaticResource(Collection<Resource> resources) {
+	public AutoSelectResource(Collection<Resource> resources) {
 		Assert.requiredArgument(!CollectionUtils.isEmpty(resources), "resources");
 		this.resources = resources;
 	}
-	
+
 	@Override
 	public Resource get() {
 		Iterator<Resource> iterator = this.resources.iterator();
@@ -46,7 +47,7 @@ public class AutomaticResource extends ResourceWrapper implements Observable<Res
 
 			@Override
 			public void onEvent(ChangeEvent<Resource> event) {
-				eventListener.onEvent(new ChangeEvent<Resource>(event.getEventType(), AutomaticResource.this));
+				eventListener.onEvent(new ChangeEvent<Resource>(event.getEventType(), AutoSelectResource.this));
 			}
 		}, resources);
 	}

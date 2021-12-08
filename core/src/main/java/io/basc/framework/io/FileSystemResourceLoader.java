@@ -34,7 +34,7 @@ public class FileSystemResourceLoader extends DefaultResourceLoader {
 			return fileSystemResource;
 		}
 		Resource resource = super.getResourceByPath(path);
-		return new AutomaticResource(fileSystemResource, resource);
+		return new AutoSelectResource(fileSystemResource, resource);
 	}
 
 	/**
