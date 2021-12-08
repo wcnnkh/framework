@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import io.basc.framework.event.Observable;
 import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.io.AutoSelectResource;
 import io.basc.framework.io.FileSystemResource;
 import io.basc.framework.io.FileSystemResourceLoader;
 import io.basc.framework.io.Resource;
@@ -15,14 +17,20 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 
 public class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader implements EnvironmentResourceLoader {
+	/**
+	 * @see AutoSelectResource
+	 */
+	private static final String AUTO_SELECT_RESOURCE = "basc.env.auto.select.resource";
 	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironmentResourceLoader.class);
 	private final ConcurrentReferenceHashMap<String, Resource> cacheMap = new ConcurrentReferenceHashMap<String, Resource>(
 			256);
 	private ProfilesResolver profilesResolver = DefaultProfilesResolver.INSTANCE;
 	private final Environment environment;
+	private final Observable<Boolean> autoSelect;
 
 	public DefaultEnvironmentResourceLoader(Environment environment) {
 		this.environment = environment;
+		this.autoSelect = environment.getObservableValue(AUTO_SELECT_RESOURCE, boolean.class, false);
 	}
 
 	@Override
@@ -57,6 +65,41 @@ public class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader i
 		return environment.getClassLoader();
 	}
 
+	public boolean isAutoSelectResource() {
+		return autoSelect.get();
+	}
+
+	@Override
+	public Resource getResource(String location) {
+		if (isAutoSelectResource()) {
+			Resource[] resources = getResources(location);
+			if (resources == null) {
+				return ResourceUtils.NONEXISTENT_RESOURCE;
+			}
+			return new AutoSelectResource(resources);
+		}
+		return super.getResource(location);
+	}
+
+	@Override
+	public Resource[] getResources(String locationPattern) {
+		Collection<String> names = profilesResolver.resolve(environment,
+				environment.resolvePlaceholders(locationPattern));
+		List<Resource> resources = new ArrayList<Resource>(names.size());
+		for (String name : names) {
+			Resource res = getResourceByCache(name);
+			if (res == null) {
+				continue;
+			}
+			resources.add(res);
+		}
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("Get resources [{}] results {}", resources);
+		}
+		return resources.isEmpty() ? new Resource[0] : resources.toArray(new Resource[0]);
+	}
+
 	private Resource getResourceByCache(String location) {
 		Resource resource = cacheMap.get(location);
 		if (resource == null) {
@@ -82,24 +125,5 @@ public class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader i
 			return ResourceUtils.NONEXISTENT_RESOURCE;
 		}
 		return resource;
-	}
-
-	@Override
-	public Resource[] getResources(String locationPattern) {
-		Collection<String> names = profilesResolver.resolve(environment,
-				environment.resolvePlaceholders(locationPattern));
-		List<Resource> resources = new ArrayList<Resource>(names.size());
-		for (String name : names) {
-			Resource res = getResourceByCache(name);
-			if (res == null) {
-				continue;
-			}
-			resources.add(res);
-		}
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("Get resources [{}] results {}", resources);
-		}
-		return resources.isEmpty() ? new Resource[0] : resources.toArray(new Resource[0]);
 	}
 }

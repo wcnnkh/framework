@@ -42,7 +42,9 @@ public interface EnvironmentResourceLoader extends ResourcePatternResolver {
 	}
 
 	/**
-	 * 获取环境中可用的资源列表
+	 * 获取环境中可用的资源列表，可用优先级从高到低
+	 * 
+	 * @see ProfilesResolver#resolve(io.basc.framework.value.ValueFactory, String)
 	 */
 	Resource[] getResources(String locationPattern);
 }
