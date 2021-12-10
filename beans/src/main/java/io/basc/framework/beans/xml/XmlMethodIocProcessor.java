@@ -36,8 +36,7 @@ public class XmlMethodIocProcessor extends AbstractIocProcessor {
 	}
 
 	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws BeansException {
-		XmlParametersFactory xmlParameterFactory = new XmlParametersFactory(beanFactory,
-				xmlBeanParameters);
+		XmlParametersFactory xmlParameterFactory = new XmlParametersFactory(beanFactory, xmlBeanParameters);
 		Class<?> tempClz = type;
 		while (tempClz != null) {
 			for (Method method : tempClz.getDeclaredMethods()) {
@@ -48,8 +47,8 @@ public class XmlMethodIocProcessor extends AbstractIocProcessor {
 				if (!method.getName().equals(name)) {
 					continue;
 				}
-				
-				if(!acceptModifiers(beanDefinition, bean, method.getModifiers())){
+
+				if (!acceptModifiers(beanDefinition, bean, method.getModifiers())) {
 					continue;
 				}
 

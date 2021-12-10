@@ -9,8 +9,9 @@ public class ConvertibleMessageListener<TK, TV, K, V> implements MessageListener
 	private final MessageListener<TK, TV> messageListener;
 	private final Converter<K, TK> keyConverter;
 	private final Converter<V, TV> valueConverter;
-	
-	public ConvertibleMessageListener(MessageListener<TK, TV> messageListener, Converter<K, TK> keyConverter, Converter<V, TV> valueConverter) {
+
+	public ConvertibleMessageListener(MessageListener<TK, TV> messageListener, Converter<K, TK> keyConverter,
+			Converter<V, TV> valueConverter) {
 		this.messageListener = messageListener;
 		this.keyConverter = keyConverter;
 		this.valueConverter = valueConverter;

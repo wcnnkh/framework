@@ -65,8 +65,8 @@ public class GeoRadiusArgs<K> implements Serializable {
 		this.storeDistKey = storeDistKey;
 		return this;
 	}
-	
-	public <T> GeoRadiusArgs<T> convert(Converter<K, T> convert){
+
+	public <T> GeoRadiusArgs<T> convert(Converter<K, T> convert) {
 		GeoRadiusArgs<T> geoRadiusArgs = new GeoRadiusArgs<T>();
 		geoRadiusArgs.count = count;
 		geoRadiusArgs.any = any;

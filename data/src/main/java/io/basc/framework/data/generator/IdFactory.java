@@ -2,6 +2,7 @@ package io.basc.framework.data.generator;
 
 /**
  * ID工厂
+ * 
  * @author shuchaowen
  *
  * @param <T>

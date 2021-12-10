@@ -4,7 +4,8 @@ import java.util.Collection;
 
 import io.basc.framework.orm.PropertyMetadataWrapper;
 
-public class ColumnMetadataWrapper<W extends ColumnMetadata> extends PropertyMetadataWrapper<W> implements ColumnMetadata {
+public class ColumnMetadataWrapper<W extends ColumnMetadata> extends PropertyMetadataWrapper<W>
+		implements ColumnMetadata {
 
 	public ColumnMetadataWrapper(W wrappedTarget) {
 		super(wrappedTarget);

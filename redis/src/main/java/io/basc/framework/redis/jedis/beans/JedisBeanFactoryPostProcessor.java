@@ -27,7 +27,7 @@ public class JedisBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 						RedisConnectionFactory.class.getName());
 			}
 		}
-		
+
 		beanFactory.getLifecycleDispatcher().registerListener((e) -> {
 			if (e.getStep() == Step.AFTER_DESTROY) {
 				if (e.getSource() != null && e.getSource() instanceof JedisPool) {

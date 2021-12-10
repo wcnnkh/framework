@@ -88,14 +88,14 @@ public class XmlParser implements DocumentParser {
 	@Override
 	public <T, E extends Throwable> T parse(Resource resource, Processor<Document, ? extends T, E> processor)
 			throws IOException, DomException, E {
-			return resource.read((is) -> {
-				Document document = parse(is);
-				try {
-					return processor.process(document);
-				} catch (Throwable e) {
-					throw new DomException(e);
-				}
-			});
+		return resource.read((is) -> {
+			Document document = parse(is);
+			try {
+				return processor.process(document);
+			} catch (Throwable e) {
+				throw new DomException(e);
+			}
+		});
 	}
 
 	public Document parse(InputSource source) {

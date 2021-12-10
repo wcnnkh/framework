@@ -562,7 +562,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		while (columns.hasNext()) {
 			Column column = columns.next();
 			Object value = getDataBaseValue(entity, column.getField());
-			if(StringUtils.isEmpty(value)) {
+			if (StringUtils.isEmpty(value)) {
 				continue;
 			}
 

@@ -8,7 +8,7 @@ public class ExchangeDeclare extends Declare {
 	public ExchangeDeclare(String name) {
 		super(name);
 	}
-	
+
 	@Override
 	public ExchangeDeclare setName(String name) {
 		super.setName(name);

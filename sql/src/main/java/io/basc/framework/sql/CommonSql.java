@@ -3,7 +3,7 @@ package io.basc.framework.sql;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommonSql extends SerializableSql{
+public class CommonSql extends SerializableSql {
 	private static final long serialVersionUID = 1L;
 	private StringBuilder sb;
 	private List<Object> paramList;

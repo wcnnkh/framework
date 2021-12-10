@@ -18,9 +18,8 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 	private final Method method;
 	private final Class<?> methodTargetClass;
 	private final ParameterDescriptors parameterDescriptors;
-	
-	public MethodBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> methodTargetClass,
-			Method method) {
+
+	public MethodBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> methodTargetClass, Method method) {
 		super(beanFactory, method.getReturnType());
 		this.methodTargetClass = methodTargetClass;
 		this.method = method;
@@ -33,10 +32,11 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 	}
 
 	private final AtomicBoolean error = new AtomicBoolean();
+
 	public boolean isInstance() {
 		boolean accept = isAccept(parameterDescriptors);
-		if(!accept){
-			if(!error.get() && error.compareAndSet(false, true)){
+		if (!accept) {
+			if (!error.get() && error.compareAndSet(false, true)) {
 				logger.error("not found {} accept method {}", this, method);
 			}
 		}
@@ -47,31 +47,32 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 		if (!isInstance()) {
 			throw new NotSupportedException("不支持的构造方式");
 		}
-		
+
 		return createInternal(methodTargetClass, parameterDescriptors, getParameters(parameterDescriptors));
 	}
-	
+
 	@Override
-	protected Object createInternal(Class<?> targetClass,
-			ParameterDescriptors parameterDescriptors, Object[] params) {
+	protected Object createInternal(Class<?> targetClass, ParameterDescriptors parameterDescriptors, Object[] params) {
 		Method method = ReflectionUtils.findMethod(targetClass, this.method.getName(), parameterDescriptors.getTypes());
 		ReflectionUtils.makeAccessible(method);
-		Object bean = ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null : beanFactory.getInstance(methodTargetClass), params);
-		if(beanFactory.getAop().isProxy(bean)){
-			//已经被代理过的
+		Object bean = ReflectionUtils.invokeMethod(method,
+				Modifier.isStatic(method.getModifiers()) ? null : beanFactory.getInstance(methodTargetClass), params);
+		if (beanFactory.getAop().isProxy(bean)) {
+			// 已经被代理过的
 			return bean;
 		}
-		
-		//必须要是接口，因为非接口不一定是无法保证一定可以代理实例
-		if (method.getReturnType().isInterface() && (isAopEnable(method.getReturnType(), method) || isAopEnable(bean.getClass(), method))) {
+
+		// 必须要是接口，因为非接口不一定是无法保证一定可以代理实例
+		if (method.getReturnType().isInterface()
+				&& (isAopEnable(method.getReturnType(), method) || isAopEnable(bean.getClass(), method))) {
 			return createInstanceProxy(bean, getTargetClass(), null).create();
 		}
 		return bean;
 	}
-	
+
 	@Override
 	public boolean isAopEnable() {
-		//必须要是接口，因为非接口不一定是无法保证一定可以代理实例
+		// 必须要是接口，因为非接口不一定是无法保证一定可以代理实例
 		return getTargetClass().isInterface() && super.isAopEnable();
 	}
 

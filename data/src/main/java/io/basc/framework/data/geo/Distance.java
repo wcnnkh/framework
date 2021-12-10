@@ -21,7 +21,8 @@ public class Distance implements Serializable, Comparable<Distance> {
 	private final Metric metric;
 
 	/**
-	 * Creates a new {@link Distance} with a neutral metric. This means the provided value needs to be in normalized form.
+	 * Creates a new {@link Distance} with a neutral metric. This means the provided
+	 * value needs to be in normalized form.
 	 *
 	 * @param value
 	 */
@@ -55,7 +56,8 @@ public class Distance implements Serializable, Comparable<Distance> {
 	}
 
 	/**
-	 * Creates a new {@link Range} by creating minimum and maximum {@link Distance} from the given values.
+	 * Creates a new {@link Range} by creating minimum and maximum {@link Distance}
+	 * from the given values.
 	 *
 	 * @param minValue
 	 * @param minMetric can be {@literal null}.
@@ -87,8 +89,8 @@ public class Distance implements Serializable, Comparable<Distance> {
 	}
 
 	/**
-	 * Adds the given distance to the current one. The resulting {@link Distance} will be in the same metric as the
-	 * current one.
+	 * Adds the given distance to the current one. The resulting {@link Distance}
+	 * will be in the same metric as the current one.
 	 *
 	 * @param other must not be {@literal null}.
 	 * @return
@@ -103,9 +105,10 @@ public class Distance implements Serializable, Comparable<Distance> {
 	}
 
 	/**
-	 * Adds the given {@link Distance} to the current one and forces the result to be in a given {@link Metric}.
+	 * Adds the given {@link Distance} to the current one and forces the result to
+	 * be in a given {@link Metric}.
 	 *
-	 * @param other must not be {@literal null}.
+	 * @param other  must not be {@literal null}.
 	 * @param metric must not be {@literal null}.
 	 * @return
 	 */
@@ -121,8 +124,9 @@ public class Distance implements Serializable, Comparable<Distance> {
 	}
 
 	/**
-	 * Returns a new {@link Distance} in the given {@link Metric}. This means that the returned instance will have the
-	 * same normalized value as the original instance.
+	 * Returns a new {@link Distance} in the given {@link Metric}. This means that
+	 * the returned instance will have the same normalized value as the original
+	 * instance.
 	 *
 	 * @param metric must not be {@literal null}.
 	 * @return
@@ -144,6 +148,7 @@ public class Distance implements Serializable, Comparable<Distance> {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
@@ -160,6 +165,7 @@ public class Distance implements Serializable, Comparable<Distance> {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override

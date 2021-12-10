@@ -15,15 +15,14 @@ import javax.jms.ConnectionFactory;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 @Provider
-public class ActivemqBeanFactoryPostProcessor implements BeanFactoryPostProcessor{
+public class ActivemqBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 	private static final String DEFAULT_CONFIG = ResourceUtils.CLASSPATH_URL_PREFIX + "/activemq/activemq.properties";
-	
-	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)
-			throws BeansException {
+
+	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
 		ConnectionFactoryBeanDefinition definition = new ConnectionFactoryBeanDefinition(beanFactory);
-		if(!beanFactory.containsDefinition(definition.getId())){
+		if (!beanFactory.containsDefinition(definition.getId())) {
 			beanFactory.registerDefinition(definition);
-			if(!beanFactory.isAlias(ConnectionFactory.class.getName())){
+			if (!beanFactory.isAlias(ConnectionFactory.class.getName())) {
 				beanFactory.registerAlias(definition.getId(), ConnectionFactory.class.getName());
 			}
 		}

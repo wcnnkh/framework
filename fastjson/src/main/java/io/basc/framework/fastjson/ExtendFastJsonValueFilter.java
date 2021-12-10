@@ -19,16 +19,16 @@ public class ExtendFastJsonValueFilter implements ValueFilter {
 		if (value == null) {
 			return value;
 		}
-		
-		if(value instanceof JSONAware){
+
+		if (value instanceof JSONAware) {
 			return ((JSONAware) value).toJSONString();
 		}
-		
-		if(value instanceof Value) {
+
+		if (value instanceof Value) {
 			return ((Value) value).getSourceValue();
 		}
 
-		//这是应该还想办法屏蔽Gson的Factory对象
+		// 这是应该还想办法屏蔽Gson的Factory对象
 		if ("callbacks".equals(name)) {
 			return null;
 		}

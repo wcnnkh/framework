@@ -14,8 +14,8 @@ import java.util.Map;
 public final class MemoryDataOperations implements DataOperations {
 	private final MemoryDataManager memoryDataManager;
 	private final MemoryCasOperations memoryCasOperations;
-	
-	public MemoryDataOperations(){
+
+	public MemoryDataOperations() {
 		this(new MemoryDataManager());
 	}
 

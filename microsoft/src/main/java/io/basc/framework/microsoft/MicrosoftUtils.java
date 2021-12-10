@@ -15,11 +15,13 @@ import java.util.List;
 
 public final class MicrosoftUtils {
 	private static Logger logger = LoggerFactory.getLogger(MicrosoftUtils.class);
+
 	private MicrosoftUtils() {
 	};
 
 	private static final ExcelOperations EXCEL_OPERATIONS = Sys.env.getServiceLoader(ExcelOperations.class,
-			"io.basc.framework.microsoft.poi.PoiExcelOperations", "io.basc.framework.microsoft.jxl.JxlExcelOperations").first();
+			"io.basc.framework.microsoft.poi.PoiExcelOperations", "io.basc.framework.microsoft.jxl.JxlExcelOperations")
+			.first();
 
 	static {
 		if (EXCEL_OPERATIONS == null) {

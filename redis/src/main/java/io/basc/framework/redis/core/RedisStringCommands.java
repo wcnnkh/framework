@@ -170,7 +170,7 @@ public interface RedisStringCommands<K, V> {
 		 */
 		PERSIST
 	}
-	
+
 	/**
 	 * https://redis.io/commands/getex<br/>
 	 * <br/>
@@ -271,7 +271,7 @@ public interface RedisStringCommands<K, V> {
 	 * @return
 	 */
 	Boolean psetex(K key, long milliseconds, V value);
-	
+
 	void set(K key, V value);
 
 	/**

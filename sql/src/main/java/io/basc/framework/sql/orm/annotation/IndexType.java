@@ -4,15 +4,15 @@ public enum IndexType {
 	/**
 	 * 默认索引
 	 */
-	DEFAULT, 
+	DEFAULT,
 	/**
 	 * 唯一索引
 	 */
-	UNIQUE, 
+	UNIQUE,
 	/**
 	 * 全文索引
 	 */
-	FULLTEXT, 
+	FULLTEXT,
 	/**
 	 * 空间索引
 	 */

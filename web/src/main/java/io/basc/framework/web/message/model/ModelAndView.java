@@ -9,9 +9,9 @@ import java.util.Map;
 
 public class ModelAndView extends LinkedHashMap<String, Object> implements Cloneable {
 	private static final long serialVersionUID = 1L;
-	
+
 	public static final TypeDescriptor TYPE_DESCRIPTOR = TypeDescriptor.valueOf(ModelAndView.class);
-	
+
 	private final String name;
 	private final HttpHeaders headers = new HttpHeaders();
 	private HttpStatus httpStatus;

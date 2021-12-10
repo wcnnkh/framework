@@ -181,14 +181,15 @@ public final class XmlBeanUtils {
 
 		return ClassUtils.forName(className, classLoader);
 	}
-	
-	public static <T> T readResourceBeans(ResourceLoader resourceLoader, Resource resource, Processor<NodeList, T, Throwable> processor){
+
+	public static <T> T readResourceBeans(ResourceLoader resourceLoader, Resource resource,
+			Processor<NodeList, T, Throwable> processor) {
 		return XmlUtils.getTemplate().parse(resource, (document) -> {
 			Node node = document.getDocumentElement();
 			if (!"beans".equals(node.getNodeName())) {
 				throw new BeansException("root tag name error [" + node.getNodeName() + "]");
 			}
-			
+
 			NodeList nodeList = DomUtils.getTemplate().getChildNodes(node, resourceLoader);
 			return processor.process(nodeList);
 		});

@@ -7,6 +7,7 @@ public interface StructureRegistry<S extends EntityStructure<? extends Property>
 
 	/**
 	 * 获取对应的结构
+	 * 
 	 * @see #isRegistry(Class)
 	 * @param entityClass
 	 * @return

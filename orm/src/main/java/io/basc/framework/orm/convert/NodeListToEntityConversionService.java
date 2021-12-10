@@ -32,8 +32,7 @@ public class NodeListToEntityConversionService extends EntityConversionService {
 		});
 	}
 
-	private static final class NodeNameEnumeration implements
-			Enumeration<String> {
+	private static final class NodeNameEnumeration implements Enumeration<String> {
 		private final NodeList nodeList;
 		private int i = 0;
 		private int len;

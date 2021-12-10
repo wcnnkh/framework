@@ -67,7 +67,7 @@ public class EditableSql implements Sql, Serializable {
 		}
 		return append(sql.getSql(), sql.getParams());
 	}
-	
+
 	@Override
 	public String toString() {
 		return SqlUtils.toString(sql.toString(), params.toArray());

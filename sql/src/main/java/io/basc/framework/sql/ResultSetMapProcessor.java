@@ -21,16 +21,15 @@ public class ResultSetMapProcessor<T> implements Processor<ResultSet, T, Throwab
 	private final FieldFactory fieldFactory;
 
 	public ResultSetMapProcessor(TypeDescriptor typeDescriptor) {
-		this(Sys.env.getConversionService(), MapperUtils.getFieldFactory(),
-				typeDescriptor);
+		this(Sys.env.getConversionService(), MapperUtils.getFieldFactory(), typeDescriptor);
 	}
 
 	public ResultSetMapProcessor(FieldFactory fieldFactory, TypeDescriptor typeDescriptor) {
 		this(Sys.env.getConversionService(), fieldFactory, typeDescriptor);
 	}
 
-	public ResultSetMapProcessor(ConversionService conversionService,
-			FieldFactory fieldFactory, TypeDescriptor typeDescriptor) {
+	public ResultSetMapProcessor(ConversionService conversionService, FieldFactory fieldFactory,
+			TypeDescriptor typeDescriptor) {
 		this.conversionService = conversionService;
 		this.fieldFactory = fieldFactory;
 		this.typeDescriptor = typeDescriptor;
@@ -52,10 +51,8 @@ public class ResultSetMapProcessor<T> implements Processor<ResultSet, T, Throwab
 	@Override
 	public T process(ResultSet rs) throws Throwable {
 		if (typeDescriptor.isArray() || typeDescriptor.isCollection()) {
-			Object[] array = SqlUtils.getRowValues(rs, rs.getMetaData()
-					.getColumnCount());
-			return (T) conversionService.convert(array,
-					TypeDescriptor.forObject(array), typeDescriptor);
+			Object[] array = SqlUtils.getRowValues(rs, rs.getMetaData().getColumnCount());
+			return (T) conversionService.convert(array, TypeDescriptor.forObject(array), typeDescriptor);
 		}
 
 		if (isEntity(typeDescriptor)) {
@@ -69,16 +66,14 @@ public class ResultSetMapProcessor<T> implements Processor<ResultSet, T, Throwab
 		}
 
 		Object value = rs.getObject(1);
-		return (T) conversionService.convert(value,
-				TypeDescriptor.forObject(value), typeDescriptor);
+		return (T) conversionService.convert(value, TypeDescriptor.forObject(value), typeDescriptor);
 	}
 
 	protected boolean isEntity(TypeDescriptor typeDescriptor) {
 		return !Value.isBaseType(typeDescriptor.getType());
 	}
 
-	protected Object mapEntity(ResultSet rs, TypeDescriptor typeDescriptor,
-			ConversionService conversionService)
+	protected Object mapEntity(ResultSet rs, TypeDescriptor typeDescriptor, ConversionService conversionService)
 			throws Throwable {
 		Object instance = ClassUtils.newInstance(typeDescriptor.getType());
 		Fields fields = MapperUtils.getFields(typeDescriptor.getType()).all().accept(FieldFeature.SUPPORT_SETTER)

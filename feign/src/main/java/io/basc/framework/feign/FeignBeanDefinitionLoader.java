@@ -10,7 +10,8 @@ import io.basc.framework.feign.annotation.FeignClient;
 @Provider
 public class FeignBeanDefinitionLoader implements BeanDefinitionLoader {
 
-	public BeanDefinition load(ConfigurableBeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
+	public BeanDefinition load(ConfigurableBeanFactory beanFactory, Class<?> sourceClass,
+			BeanDefinitionLoaderChain loaderChain) {
 		FeignClient feignClient = sourceClass.getAnnotation(FeignClient.class);
 		if (feignClient != null) {
 			return new FeignBeanDefinition(beanFactory, sourceClass, feignClient);

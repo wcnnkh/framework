@@ -13,7 +13,7 @@ public class StandardEntityDescriptor<T extends PropertyMetadata> extends Standa
 
 	public StandardEntityDescriptor() {
 	}
-	
+
 	public StandardEntityDescriptor(EntityMetadata entityMetadata) {
 		super(entityMetadata);
 	}

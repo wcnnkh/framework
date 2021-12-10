@@ -45,7 +45,7 @@ public class MessageProperties implements Serializable, Cloneable {
 		MessageProperties properties = new MessageProperties();
 		properties.contentType = this.contentType;
 		properties.contentEncoding = this.contentEncoding;
-		if(headers != null){
+		if (headers != null) {
 			properties.headers = new LinkedHashMap<String, Object>(headers);
 		}
 		properties.deliveryMode = this.deliveryMode;
@@ -177,7 +177,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	public void setClusterId(String clusterId) {
 		this.clusterId = clusterId;
 	}
-	
+
 	public Object getHeader(String name) {
 		if (headers == null) {
 			return null;
@@ -185,7 +185,7 @@ public class MessageProperties implements Serializable, Cloneable {
 
 		return headers.get(name);
 	}
-	
+
 	public Value getHeaderValue(String name) {
 		Object value = getHeader(name);
 		if (value == null) {
@@ -201,10 +201,11 @@ public class MessageProperties implements Serializable, Cloneable {
 		return this;
 	}
 
-	/**====================以下为框架支持的方法，并非AMQP协议内容==========================**/
-	
+	/** ====================以下为框架支持的方法，并非AMQP协议内容========================== **/
+
 	/**
 	 * 获取消息延迟发送时间(毫秒)
+	 * 
 	 * @return
 	 */
 	public long getDelay() {
@@ -214,6 +215,7 @@ public class MessageProperties implements Serializable, Cloneable {
 
 	/**
 	 * 设置消息延迟时间
+	 * 
 	 * @param delay
 	 * @param timeUnit
 	 * @return
@@ -314,35 +316,38 @@ public class MessageProperties implements Serializable, Cloneable {
 	public void setRetryDelay(long delay, TimeUnit timeUnit) {
 		setHeader(RETRY_DELAY, timeUnit.toMillis(delay));
 	}
-	
+
 	/**
 	 * 获取消息发送时的ORIGIN_ROUTING_KEY
+	 * 
 	 * @return
 	 */
-	public String getPublishRoutingKey(){
+	public String getPublishRoutingKey() {
 		return StringUtils.toString(getHeader(PUBLISH_ROUTING_KEY), null);
 	}
-	
-	public void setPublishRoutingKey(String routingKey){
+
+	public void setPublishRoutingKey(String routingKey) {
 		setHeader(PUBLISH_ROUTING_KEY, routingKey);
 	}
-	
+
 	/**
 	 * 获取事务消息确认延迟, 默认10分钟<br/>
 	 * 使用在消息发送前先发送延迟消息来保证消息一定会发送成功
+	 * 
 	 * @return
 	 */
-	public long getTransactionMessageConfirmDelay(){
+	public long getTransactionMessageConfirmDelay() {
 		Value value = getHeaderValue(TRANSACTION_MESSAGE_CONFIRM_DELAY_KEY);
-		return (value == null || value.isEmpty())? (TimeUtils.ONE_MINUTE * 10):value.getAsLongValue();
+		return (value == null || value.isEmpty()) ? (TimeUtils.ONE_MINUTE * 10) : value.getAsLongValue();
 	}
-	
+
 	/**
 	 * 设置事务消息的确认延迟
+	 * 
 	 * @param delay
 	 * @param timeUnit
 	 */
-	public void setTransactionMessageConfirmDelay(long delay, TimeUnit timeUnit){
+	public void setTransactionMessageConfirmDelay(long delay, TimeUnit timeUnit) {
 		setHeader(TRANSACTION_MESSAGE_CONFIRM_DELAY_KEY, timeUnit.toMillis(delay));
 	}
 }

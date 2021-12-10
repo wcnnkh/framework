@@ -8,6 +8,5 @@ import org.w3c.dom.Node;
 public interface DocumentWriter {
 	boolean canWrite(TypeDescriptor typeDescriptor);
 
-	void write(Document document, Node parentNode, String nodeName,
-			Object value, TypeDescriptor valueType);
+	void write(Document document, Node parentNode, String nodeName, Object value, TypeDescriptor valueType);
 }

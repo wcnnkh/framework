@@ -8,7 +8,7 @@ public interface EntityOperations {
 	default Class<?> getUserClass(Class<?> entityClass) {
 		return ProxyUtils.getFactory().getUserClass(entityClass);
 	}
-	
+
 	/**
 	 * @see #save(Class, Object)
 	 * @param entity
@@ -20,11 +20,12 @@ public interface EntityOperations {
 
 	/**
 	 * 保存
+	 * 
 	 * @param entityClass
 	 * @param entity
 	 */
 	<T> void save(Class<? extends T> entityClass, T entity);
-	
+
 	/**
 	 * @see #saveIfAbsent(Class, Object)
 	 * @param entity
@@ -34,9 +35,10 @@ public interface EntityOperations {
 		Assert.requiredArgument(entity != null, "entity");
 		return saveIfAbsent(getUserClass(entity.getClass()), entity);
 	}
-	
+
 	/**
 	 * 如果不存在就保存
+	 * 
 	 * @param entityClass
 	 * @param entity
 	 * @return 如果实体已经存在返回false
@@ -58,6 +60,7 @@ public interface EntityOperations {
 
 	/**
 	 * 删除数据
+	 * 
 	 * @param entityClass
 	 * @param entity
 	 * @return 如果数据不存在返回false
@@ -66,6 +69,7 @@ public interface EntityOperations {
 
 	/**
 	 * 删除数据
+	 * 
 	 * @param entityClass
 	 * @param ids
 	 * @return 如果数据不存在就返回false
@@ -74,10 +78,11 @@ public interface EntityOperations {
 
 	/**
 	 * 更新数据
+	 * 
 	 * @see #update(Class, Object)
 	 * @param entity
 	 * @return
- 	 */
+	 */
 	default boolean update(Object entity) {
 		if (entity == null) {
 			return false;
@@ -88,6 +93,7 @@ public interface EntityOperations {
 
 	/**
 	 * 更新
+	 * 
 	 * @param entityClass
 	 * @param entity
 	 * @return 如果数据不存在就返回false
@@ -106,12 +112,13 @@ public interface EntityOperations {
 
 	/**
 	 * 更新数据
+	 * 
 	 * @param entityClass
 	 * @param entity
 	 * @return 失败情况参考{@link #update(Class, Object)}
 	 */
 	default <T> boolean saveOrUpdate(Class<? extends T> entityClass, T entity) {
-		if(saveIfAbsent(entityClass, entity)) {
+		if (saveIfAbsent(entityClass, entity)) {
 			return true;
 		}
 		return update(entityClass, entity);
@@ -119,6 +126,7 @@ public interface EntityOperations {
 
 	/**
 	 * 获取数据
+	 * 
 	 * @param entityClass
 	 * @param ids
 	 * @return

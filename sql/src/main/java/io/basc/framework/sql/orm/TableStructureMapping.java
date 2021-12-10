@@ -7,6 +7,6 @@ import java.sql.SQLException;
 
 public interface TableStructureMapping {
 	Sql getSql();
-	
+
 	ColumnMetadata getName(ResultSet resultSet) throws SQLException;
 }

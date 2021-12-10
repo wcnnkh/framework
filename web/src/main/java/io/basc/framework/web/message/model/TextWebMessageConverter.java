@@ -20,15 +20,13 @@ import java.nio.charset.Charset;
 public class TextWebMessageConverter extends AbstractWebMessageConverter {
 
 	@Override
-	public boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor,
-			Object value) {
+	public boolean canWrite(HttpMessage message, TypeDescriptor typeDescriptor, Object value) {
 		return Text.class.isAssignableFrom(typeDescriptor.getType());
 	}
 
 	@Override
-	public void write(ServerHttpRequest request, ServerHttpResponse response,
-			TypeDescriptor typeDescriptor, Object body) throws IOException,
-			WebMessagelConverterException {
+	public void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor,
+			Object body) throws IOException, WebMessagelConverterException {
 		Text text = (Text) body;
 		MimeType mimeType = text.getMimeType();
 		if (mimeType == null) {
@@ -40,8 +38,7 @@ public class TextWebMessageConverter extends AbstractWebMessageConverter {
 	}
 
 	@Override
-	public ClientHttpRequest write(ClientHttpRequest request,
-			ParameterDescriptor parameterDescriptor, Object parameter)
+	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
 			throws IOException, WebMessagelConverterException {
 		Text text = (Text) parameter;
 		MimeType mimeType = text.getMimeType();
@@ -66,9 +63,8 @@ public class TextWebMessageConverter extends AbstractWebMessageConverter {
 	}
 
 	@Override
-	public Object read(ServerHttpRequest request,
-			ParameterDescriptor parameterDescriptor) throws IOException,
-			WebMessagelConverterException {
+	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
+			throws IOException, WebMessagelConverterException {
 		String content = request.getString();
 		return new Text() {
 

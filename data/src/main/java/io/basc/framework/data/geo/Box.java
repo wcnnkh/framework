@@ -5,6 +5,7 @@ import io.basc.framework.util.Assert;
 
 /**
  * 两个对角点可以确定一个矩形
+ * 
  * @author shuchaowen
  *
  */
@@ -16,7 +17,7 @@ public class Box implements Shape {
 	/**
 	 * Creates a new Box spanning from the given first to the second {@link Point}.
 	 *
-	 * @param first must not be {@literal null}.
+	 * @param first  must not be {@literal null}.
 	 * @param second must not be {@literal null}.
 	 */
 	public Box(Point first, Point second) {
@@ -29,9 +30,10 @@ public class Box implements Shape {
 	}
 
 	/**
-	 * Creates a new Box from the given {@code first} to the {@code second} point represented as the {@literal double[]}.
+	 * Creates a new Box from the given {@code first} to the {@code second} point
+	 * represented as the {@literal double[]}.
 	 *
-	 * @param first must not be {@literal null} and contain exactly 2 doubles.
+	 * @param first  must not be {@literal null} and contain exactly 2 doubles.
 	 * @param second must not be {@literal null} and contain exactly 2 doubles.
 	 */
 	public Box(double[] first, double[] second) {
@@ -63,6 +65,7 @@ public class Box implements Shape {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -72,6 +75,7 @@ public class Box implements Shape {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -87,6 +91,7 @@ public class Box implements Shape {
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override

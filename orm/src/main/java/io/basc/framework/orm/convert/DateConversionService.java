@@ -14,11 +14,11 @@ import java.util.Set;
 public class DateConversionService extends ConditionalConversionService {
 
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) throws ConversionException {
-		if(targetType.getType() == Timestamp.class){
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+			throws ConversionException {
+		if (targetType.getType() == Timestamp.class) {
 			return new Timestamp(((Date) source).getTime());
-		}else if(targetType.getType() == Time.class){
+		} else if (targetType.getType() == Time.class) {
 			return new Time(((Date) source).getTime());
 		}
 		return new java.sql.Date(((Date) source).getTime());
@@ -26,8 +26,7 @@ public class DateConversionService extends ConditionalConversionService {
 
 	@Override
 	public Set<ConvertiblePair> getConvertibleTypes() {
-		return Collections.singleton(new ConvertiblePair(Date.class,
-				java.sql.Date.class));
+		return Collections.singleton(new ConvertiblePair(Date.class, java.sql.Date.class));
 	}
 
 }

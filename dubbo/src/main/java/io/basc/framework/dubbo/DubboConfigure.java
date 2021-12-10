@@ -30,9 +30,9 @@ public interface DubboConfigure {
 	List<MonitorConfig> getMonitorConfigList();
 
 	List<ConfigCenterConfig> getConfigCenterConfigList();
-	
+
 	List<ConsumerConfig> getConsumerConfigList();
-	
+
 	List<ProtocolConfig> getProtocolConfigList();
 
 	List<ProviderConfig> getProviderConfigList();

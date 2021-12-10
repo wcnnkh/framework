@@ -99,9 +99,9 @@ public class ResultSetPropertyFactory implements PropertyFactory, Serializable {
 			}
 			return null;
 		}
-		
+
 		Integer index = singletonTableMap.get(key);
-		if(index == null) {
+		if (index == null) {
 			index = valueMap.get(key);
 		}
 		return index;

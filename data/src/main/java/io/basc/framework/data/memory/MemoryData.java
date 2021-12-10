@@ -4,15 +4,15 @@ import io.basc.framework.data.cas.CAS;
 
 public interface MemoryData {
 	long incr(long delta);
-	
+
 	long incr(long delta, long initialValue);
-	
+
 	long decr(long delta);
 
 	long decr(long delta, long initialValue);
 
 	void setExpire(long exp);
-	
+
 	boolean set(CAS<? extends Object> value);
 
 	void touch();
@@ -28,14 +28,15 @@ public interface MemoryData {
 	 * @return
 	 */
 	boolean setIfAbsent(Object value);
-	
+
 	/**
 	 * 判断cas是否匹配
+	 * 
 	 * @param cas
 	 * @return
 	 */
 	boolean incrCasAndCompare(long cas);
-	
+
 	/**
 	 * 如果不存在就插入
 	 * 

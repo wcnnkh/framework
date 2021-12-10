@@ -7,8 +7,7 @@ import io.basc.framework.sql.orm.TableMapping;
 import io.basc.framework.sql.orm.TableMetadata;
 import io.basc.framework.sql.orm.TableStructure;
 
-public class StandardTableStructure extends StandardEntityStructure<Column>
-		implements TableStructure {
+public class StandardTableStructure extends StandardEntityStructure<Column> implements TableStructure {
 	private String engine;
 	private String rowFormat;
 
@@ -36,16 +35,14 @@ public class StandardTableStructure extends StandardEntityStructure<Column>
 		this.rowFormat = rowFormat;
 	}
 
-	public static StandardTableStructure init(TableMapping tableMapping,
-			Class<?> entityClass) {
+	public static StandardTableStructure init(TableMapping tableMapping, Class<?> entityClass) {
 		TableMetadata tableMetadata = tableMapping.resolveMetadata(entityClass);
 		StandardTableStructure standardTableStructure = new StandardTableStructure(tableMetadata);
 		standardTableStructure.setEntityClass(entityClass);
 		return standardTableStructure;
 	}
 
-	private static void append(TableMapping tableMapping,
-			StandardTableStructure tableStructure, Class<?> entityClass,
+	private static void append(TableMapping tableMapping, StandardTableStructure tableStructure, Class<?> entityClass,
 			Field parentField) {
 		for (Field field : tableMapping.getFields(entityClass, parentField).all()) {
 			if (!field.isSupportGetter()) {
@@ -53,16 +50,14 @@ public class StandardTableStructure extends StandardEntityStructure<Column>
 			}
 
 			if (tableMapping.isEntity(entityClass, field.getGetter())) {
-				append(tableMapping, tableStructure, field.getGetter()
-						.getType(), field);
+				append(tableMapping, tableStructure, field.getGetter().getType(), field);
 			} else {
 				Column column = tableMapping.resolve(entityClass, field);
 				StandardColumn standardColumn = new StandardColumn(column);
 				if (standardColumn.getField().hasParent()) {
 					StringBuilder sb = new StringBuilder();
 					for (Field parent : standardColumn.getField().getParents()) {
-						sb.append(tableMapping.getName(entityClass,
-								parent.getGetter()));
+						sb.append(tableMapping.getName(entityClass, parent.getGetter()));
 						sb.append("_");
 					}
 					sb.append(standardColumn.getName());
@@ -73,10 +68,8 @@ public class StandardTableStructure extends StandardEntityStructure<Column>
 		}
 	}
 
-	public static StandardTableStructure resolveAll(TableMapping tableMapping,
-			Class<?> entityClass) {
-		StandardTableStructure standardTableStructure = init(tableMapping,
-				entityClass);
+	public static StandardTableStructure resolveAll(TableMapping tableMapping, Class<?> entityClass) {
+		StandardTableStructure standardTableStructure = init(tableMapping, entityClass);
 		append(tableMapping, standardTableStructure, entityClass, null);
 		return standardTableStructure;
 	}

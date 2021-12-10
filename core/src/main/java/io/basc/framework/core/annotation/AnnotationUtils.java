@@ -184,7 +184,7 @@ public abstract class AnnotationUtils {
 			return synthesizeAnnotation((A) annotation, annotationType);
 		}
 		// Shortcut: no searchable annotations to be found on plain Java classes and
-		// core Spring types...
+		// core types...
 		if (AnnotationsScanner.hasPlainJavaAnnotationsOnly(annotation)) {
 			return null;
 		}

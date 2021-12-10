@@ -8,8 +8,7 @@ import io.basc.framework.util.Assert;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SimpleStructureRegistry<S extends EntityStructure<? extends Property>>
-		implements StructureRegistry<S> {
+public class SimpleStructureRegistry<S extends EntityStructure<? extends Property>> implements StructureRegistry<S> {
 	private Map<Class<?>, S> map = new ConcurrentHashMap<>();
 
 	@Override

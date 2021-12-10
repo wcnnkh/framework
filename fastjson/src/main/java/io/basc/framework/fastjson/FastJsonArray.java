@@ -15,7 +15,8 @@ import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
 
-public final class FastJsonArray extends AbstractJson<Integer> implements JsonArray, JSONAware, Serializable, Converter<Object, JsonElement> {
+public final class FastJsonArray extends AbstractJson<Integer>
+		implements JsonArray, JSONAware, Serializable, Converter<Object, JsonElement> {
 	private static final long serialVersionUID = 1L;
 	private JSONArray jsonArray;
 
@@ -40,13 +41,13 @@ public final class FastJsonArray extends AbstractJson<Integer> implements JsonAr
 
 	public JsonElement getValue(Integer index) {
 		String text = jsonArray.getString(index);
-		if(text == null) {
+		if (text == null) {
 			return getDefaultValue(index);
 		}
-		
+
 		return new FastJsonElement(text);
 	}
-	
+
 	public boolean remove(int index) {
 		Object object = jsonArray.remove(index);
 		return object != null;
@@ -90,22 +91,22 @@ public final class FastJsonArray extends AbstractJson<Integer> implements JsonAr
 	public String toJSONString() {
 		return toJsonString();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return jsonArray.hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		if(obj == null){
+		if (obj == null) {
 			return false;
 		}
-		
-		if(obj instanceof FastJsonArray){
+
+		if (obj instanceof FastJsonArray) {
 			return jsonArray.equals(((FastJsonArray) obj).jsonArray);
 		}
-		
+
 		return false;
 	}
 }

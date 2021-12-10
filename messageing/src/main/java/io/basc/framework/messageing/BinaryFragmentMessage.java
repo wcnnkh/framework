@@ -2,10 +2,10 @@ package io.basc.framework.messageing;
 
 import java.nio.ByteBuffer;
 
-public class BinaryFragmentMessage extends BinaryMessage implements FragmentMessage<ByteBuffer>{
+public class BinaryFragmentMessage extends BinaryMessage implements FragmentMessage<ByteBuffer> {
 	private static final long serialVersionUID = 1L;
 	private boolean last;
-	
+
 	public BinaryFragmentMessage(ByteBuffer payload, boolean last) {
 		super(payload);
 		this.last = last;

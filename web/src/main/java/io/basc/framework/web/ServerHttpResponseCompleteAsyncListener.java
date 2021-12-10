@@ -2,13 +2,13 @@ package io.basc.framework.web;
 
 import java.io.IOException;
 
-public class ServerHttpResponseCompleteAsyncListener implements ServerHttpAsyncListener{
+public class ServerHttpResponseCompleteAsyncListener implements ServerHttpAsyncListener {
 	private ServerHttpResponse response;
-	
-	public ServerHttpResponseCompleteAsyncListener(ServerHttpResponse response){
+
+	public ServerHttpResponseCompleteAsyncListener(ServerHttpResponse response) {
 		this.response = response;
 	}
-	
+
 	public void onComplete(ServerHttpAsyncEvent event) throws IOException {
 		response.close();
 	}

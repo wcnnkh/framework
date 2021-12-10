@@ -10,6 +10,6 @@ public interface ServerHttpAsyncControl {
 	void complete();
 
 	boolean isCompleted();
-	
+
 	void addListener(ServerHttpAsyncListener serverHttpAsyncListener);
 }

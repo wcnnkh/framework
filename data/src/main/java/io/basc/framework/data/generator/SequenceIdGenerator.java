@@ -23,7 +23,7 @@ public final class SequenceIdGenerator implements IdGenerator<SequenceId> {
 	public SequenceIdGenerator(IdGenerator<Long> idGenerator) {
 		this(idGenerator, DEFAULT_TIME_FORMAT);
 	}
-	
+
 	public SequenceIdGenerator(Counter counter) {
 		this(counter, DEFAULT_TIME_FORMAT);
 	}
@@ -42,13 +42,13 @@ public final class SequenceIdGenerator implements IdGenerator<SequenceId> {
 	public SequenceId next() {
 		return next(System.currentTimeMillis());
 	}
-	
-	public SequenceId next(long currentTimeMillis){
+
+	public SequenceId next(long currentTimeMillis) {
 		int number = idGenerator.next().intValue();
 		if (number < 0) {
 			number = Integer.MAX_VALUE + number;
 		}
-		
+
 		String id = TimeUtils.format(currentTimeMillis, time_format) + StringUtils.complemented(number + "", '0', 10);
 		return new SequenceId(currentTimeMillis, id);
 	}

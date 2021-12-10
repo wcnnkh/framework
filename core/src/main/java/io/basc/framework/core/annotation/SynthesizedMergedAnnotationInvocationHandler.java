@@ -34,7 +34,7 @@ import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
 
 /**
- * {@link InvocationHandler} for an {@link Annotation} that Spring has
+ * {@link InvocationHandler} for an {@link Annotation} that has
  * <em>synthesized</em> (i.e. wrapped in a dynamic proxy) with additional
  * functionality such as attribute alias handling.
  *

@@ -19,7 +19,6 @@ public interface RedisConnection<K, V> extends RedisCommands<K, V>, AutoCloseabl
 	 * @see #isQueueing()
 	 */
 	boolean isPipelined();
-	
-	
+
 	void close();
 }

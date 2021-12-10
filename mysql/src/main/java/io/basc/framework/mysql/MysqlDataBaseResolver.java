@@ -5,11 +5,10 @@ import io.basc.framework.db.DataBaseResolver;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.util.StringUtils;
 
-public class MysqlDataBaseResolver implements DataBaseResolver{
+public class MysqlDataBaseResolver implements DataBaseResolver {
 
 	@Override
-	public DataBase resolve(String driverClassName, String url,
-			String username, String password) {
+	public DataBase resolve(String driverClassName, String url, String username, String password) {
 		if (StringUtils.isEmpty(driverClassName) && StringUtils.isEmpty(url)) {
 			throw new NotSupportedException("driverClassName和url至少要存在一个有效的参数");
 		}

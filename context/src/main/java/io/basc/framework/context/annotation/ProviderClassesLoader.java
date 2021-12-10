@@ -16,15 +16,13 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
 
-public class ProviderClassesLoader implements ClassesLoader,
-		Comparator<Class<?>> {
+public class ProviderClassesLoader implements ClassesLoader, Comparator<Class<?>> {
 	private static Logger logger = LoggerFactory.getLogger(ProviderServiceLoader.class);
 	private final ClassesLoader classesLoader;
 	private volatile Set<Class<?>> providers;
 	private final Class<?> serviceClass;
 
-	public ProviderClassesLoader(ClassesLoader classesLoader,
-			Class<?> serviceClass) {
+	public ProviderClassesLoader(ClassesLoader classesLoader, Class<?> serviceClass) {
 		this.classesLoader = classesLoader;
 		this.serviceClass = serviceClass;
 	}
@@ -33,8 +31,8 @@ public class ProviderClassesLoader implements ClassesLoader,
 		classesLoader.reload();
 		this.providers = getProivders();
 	}
-	
-	public Set<Class<?>> getProivders(){
+
+	public Set<Class<?>> getProivders() {
 		Set<Class<?>> list = new LinkedHashSet<Class<?>>();
 		for (Class<?> clazz : classesLoader) {
 			if (clazz.getName().equals(serviceClass.getName())) {// 防止死循环
@@ -53,7 +51,7 @@ public class ProviderClassesLoader implements ClassesLoader,
 			if (provider.value().length != 0) {
 				Collection<Class<?>> values = Arrays.asList(provider.value());
 				if (provider.assignableValue()) {
-					if(!isAssignable(values)) {
+					if (!isAssignable(values)) {
 						continue;
 					}
 				} else {
@@ -75,43 +73,43 @@ public class ProviderClassesLoader implements ClassesLoader,
 				list.remove(e);
 			}
 		}
-		
-		if(list.isEmpty()){
+
+		if (list.isEmpty()) {
 			return Collections.emptySet();
 		}
 
 		List<Class<?>> classes = new ArrayList<Class<?>>(list);
 		Collections.sort(classes, this);
-		if(logger.isDebugEnabled()){
+		if (logger.isDebugEnabled()) {
 			logger.debug("[{}] providers is {}", serviceClass, classes);
 		}
 		return new LinkedHashSet<Class<?>>(classes);
 	}
-	
+
 	private boolean isAssignable(Class<?> clazz) {
-		if(clazz == null || clazz == Object.class) {
+		if (clazz == null || clazz == Object.class) {
 			return false;
 		}
-		
+
 		Class<?>[] interfaceClasses = clazz.getInterfaces();
-		if(interfaceClasses != null) {
-			for(Class<?> interfaceClass : interfaceClasses) {
-				if(ClassUtils.isAssignable(serviceClass, interfaceClass)) {
+		if (interfaceClasses != null) {
+			for (Class<?> interfaceClass : interfaceClasses) {
+				if (ClassUtils.isAssignable(serviceClass, interfaceClass)) {
 					return true;
 				}
 			}
 		}
-		
-		if(clazz == serviceClass) {
+
+		if (clazz == serviceClass) {
 			return true;
 		}
-		
+
 		return isAssignable(clazz.getSuperclass());
 	}
-	
+
 	public boolean isAssignable(Collection<Class<?>> services) {
-		for(Class<?> clazz : services) {
-			if(isAssignable(clazz)) {
+		for (Class<?> clazz : services) {
+			if (isAssignable(clazz)) {
 				return true;
 			}
 		}
@@ -125,9 +123,9 @@ public class ProviderClassesLoader implements ClassesLoader,
 	}
 
 	public Iterator<Class<?>> iterator() {
-		if(providers == null){
+		if (providers == null) {
 			synchronized (this) {
-				if(providers == null){
+				if (providers == null) {
 					this.providers = getProivders();
 				}
 			}

@@ -16,7 +16,7 @@ public final class MemcachedLockFactory extends RenewableLockFactory {
 	public MemcachedLockFactory(Memcached memcached) {
 		this.memcached = memcached;
 	}
-	
+
 	@Override
 	public RenewableLock getLock(String name, TimeUnit timeUnit, long timeout) {
 		return new MemcachedLock(memcached, name, XUtils.getUUID(), timeUnit, timeout);

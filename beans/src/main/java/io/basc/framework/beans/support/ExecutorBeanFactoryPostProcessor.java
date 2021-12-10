@@ -15,30 +15,31 @@ import java.util.concurrent.TimeUnit;
 
 public class ExecutorBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
-	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)
-			throws BeansException {
-		if(!beanFactory.containsDefinition(ExecutorService.class.getName())){
-			beanFactory.registerDefinition(ExecutorService.class.getName(), new ThreadPoolExecutorBeanDefinition(beanFactory));
+	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
+		if (!beanFactory.containsDefinition(ExecutorService.class.getName())) {
+			beanFactory.registerDefinition(ExecutorService.class.getName(),
+					new ThreadPoolExecutorBeanDefinition(beanFactory));
 		}
-		
-		if(!beanFactory.containsDefinition(ScheduledExecutorService.class.getName())){
-			beanFactory.registerDefinition(ScheduledExecutorService.class.getName(), new ScheduledExecutorServiceBeanDefinition(beanFactory));
+
+		if (!beanFactory.containsDefinition(ScheduledExecutorService.class.getName())) {
+			beanFactory.registerDefinition(ScheduledExecutorService.class.getName(),
+					new ScheduledExecutorServiceBeanDefinition(beanFactory));
 		}
 	}
-	
-	private static int getCorePoolSize(Environment environment){
+
+	private static int getCorePoolSize(Environment environment) {
 		return environment.getValue("executor.pool.core.size", int.class, 0);
 	}
-	
-	private static int getMaxmumPoolSize(Environment environment){
+
+	private static int getMaxmumPoolSize(Environment environment) {
 		return environment.getValue("executor.pool.max.size", int.class, Runtime.getRuntime().availableProcessors());
 	}
-	
-	private static long getKeepAliveTime(Environment environment){
+
+	private static long getKeepAliveTime(Environment environment) {
 		return environment.getValue("executor.pool.keepAliveTime", long.class, 1L);
 	}
-	
-	private static TimeUnit getTimeUnit(Environment environment){
+
+	private static TimeUnit getTimeUnit(Environment environment) {
 		return environment.getValue("executor.pool.keepAliveTime.unit", TimeUnit.class, TimeUnit.HOURS);
 	}
 
@@ -74,10 +75,11 @@ public class ExecutorBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 		public boolean isInstance() {
 			return true;
 		}
-		
+
 		@Override
 		public Object create() throws BeansException {
-			return new ThreadPoolExecutor(getCorePoolSize(beanFactory.getEnvironment()), getMaxmumPoolSize(beanFactory.getEnvironment()), getKeepAliveTime(beanFactory.getEnvironment()),
+			return new ThreadPoolExecutor(getCorePoolSize(beanFactory.getEnvironment()),
+					getMaxmumPoolSize(beanFactory.getEnvironment()), getKeepAliveTime(beanFactory.getEnvironment()),
 					getTimeUnit(beanFactory.getEnvironment()), new LinkedBlockingQueue<Runnable>());
 		}
 

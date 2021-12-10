@@ -18,18 +18,16 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class JacksonJsonElement extends AbstractJsonElement implements
-		JsonSerializable, Serializable {
+public class JacksonJsonElement extends AbstractJsonElement implements JsonSerializable, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final JsonNode jsonNode;
 	private final ObjectMapper mapper;
 
-	public JacksonJsonElement(JsonNode jsonNode,
-			ObjectMapper mapper) {
+	public JacksonJsonElement(JsonNode jsonNode, ObjectMapper mapper) {
 		this.mapper = mapper;
 		this.jsonNode = jsonNode;
 	}
-	
+
 	@Override
 	public Object getSourceValue() {
 		return jsonNode;
@@ -72,14 +70,12 @@ public class JacksonJsonElement extends AbstractJsonElement implements
 	}
 
 	@Override
-	public void serialize(JsonGenerator gen, SerializerProvider serializers)
-			throws IOException {
+	public void serialize(JsonGenerator gen, SerializerProvider serializers) throws IOException {
 		jsonNode.serialize(gen, serializers);
 	}
 
 	@Override
-	public void serializeWithType(JsonGenerator gen,
-			SerializerProvider serializers, TypeSerializer typeSer)
+	public void serializeWithType(JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer)
 			throws IOException {
 		jsonNode.serializeWithType(gen, serializers, typeSer);
 	}

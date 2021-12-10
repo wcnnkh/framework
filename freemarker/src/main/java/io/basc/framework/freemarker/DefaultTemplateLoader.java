@@ -16,8 +16,8 @@ import freemarker.cache.TemplateLoader;
 public class DefaultTemplateLoader implements TemplateLoader {
 	private static Logger logger = LoggerFactory.getLogger(DefaultTemplateLoader.class);
 	private final ResourceLoader resourceLoader;
-	
-	public DefaultTemplateLoader(ResourceLoader resourceLoader){
+
+	public DefaultTemplateLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 	}
 

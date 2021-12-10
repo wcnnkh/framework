@@ -31,15 +31,17 @@ class NodeListToMapConversionService extends ConditionalConversionService {
 	public void setObjectRelationalMapping(ObjectRelationalMapping objectRelationalMapping) {
 		this.objectRelationalMapping = objectRelationalMapping;
 	}
-	
-	public boolean hasPrimaryKeys(Class<?> entityClass){
-		return MapperUtils.getFields(entityClass).accept(FieldFeature.SUPPORT_GETTER)
-		.streamAll().filter((field) -> getObjectRelationalMapping().isPrimaryKey(entityClass, field.getGetter())).findAny().isPresent();
+
+	public boolean hasPrimaryKeys(Class<?> entityClass) {
+		return MapperUtils.getFields(entityClass).accept(FieldFeature.SUPPORT_GETTER).streamAll()
+				.filter((field) -> getObjectRelationalMapping().isPrimaryKey(entityClass, field.getGetter())).findAny()
+				.isPresent();
 	}
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return super.canConvert(sourceType, targetType) && getConversionService().canConvert(sourceType, COLLECTION_TYPE);
+		return super.canConvert(sourceType, targetType)
+				&& getConversionService().canConvert(sourceType, COLLECTION_TYPE);
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {

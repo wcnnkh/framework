@@ -28,7 +28,8 @@ public interface ConnectionFactory {
 	 * @param processor
 	 * @throws SQLException
 	 */
-	default <E extends Throwable> void process(ConsumerProcessor<Connection, ? extends E> processor) throws SQLException, E {
+	default <E extends Throwable> void process(ConsumerProcessor<Connection, ? extends E> processor)
+			throws SQLException, E {
 		process(processor.toProcessor());
 	}
 }

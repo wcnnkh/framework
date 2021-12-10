@@ -120,7 +120,8 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 		throw new NotSupportedException(resource.getDescription());
 	}
 
-	public <E extends Throwable> void read(Resource resource, ConsumerProcessor<Document, E> processor) throws DomException {
+	public <E extends Throwable> void read(Resource resource, ConsumerProcessor<Document, E> processor)
+			throws DomException {
 		parse(resource, (document) -> {
 			processor.process(document);
 			return null;

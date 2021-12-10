@@ -1031,7 +1031,7 @@ public abstract class ConvertibleRedisCommands<TK, TV, K, V> implements RedisCom
 	public Boolean psetex(K key, long milliseconds, V value) {
 		return getTargetRedisCommands().psetex(keyCodec.encode(key), milliseconds, valueCodec.encode(value));
 	}
-	
+
 	@Override
 	public void set(K key, V value) {
 		getTargetRedisCommands().set(keyCodec.encode(key), valueCodec.encode(value));

@@ -15,7 +15,7 @@ public class DefaultSqlOperations extends DefaultSqlStatementProcessor implement
 	public DefaultSqlOperations(ConnectionFactory connectionFactory) {
 		this.connectionFactory = connectionFactory;
 	}
-	
+
 	@Override
 	public Mapper<ResultSet, Throwable> getMapper() {
 		return mapper;

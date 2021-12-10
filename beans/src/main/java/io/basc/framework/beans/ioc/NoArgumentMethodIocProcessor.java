@@ -17,7 +17,7 @@ public class NoArgumentMethodIocProcessor extends AbstractIocProcessor {
 	}
 
 	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws BeansException {
-		if(acceptModifiers(beanDefinition, bean, method.getModifiers())){
+		if (acceptModifiers(beanDefinition, bean, method.getModifiers())) {
 			noArgumentInvoke(bean);
 		}
 	}
@@ -27,7 +27,6 @@ public class NoArgumentMethodIocProcessor extends AbstractIocProcessor {
 	}
 
 	public Object noArgumentInvoke(Object bean) throws BeansException {
-		return ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null
-				: bean);
+		return ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null : bean);
 	}
 }

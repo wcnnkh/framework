@@ -4,10 +4,11 @@ import io.basc.framework.event.Event;
 
 /**
  * 生命周期事件
+ * 
  * @author shuchaowen
  *
  */
-public class BeanlifeCycleEvent implements Event{
+public class BeanlifeCycleEvent implements Event {
 	private final long createTime;
 	private final BeanFactory beanFactory;
 	private final Step step;
@@ -21,28 +22,28 @@ public class BeanlifeCycleEvent implements Event{
 		this.beanDefinition = beanDefinition;
 		this.step = step;
 	}
-	
+
 	public Object getSource() {
 		return source;
 	}
-	
+
 	public long getCreateTime() {
 		return this.createTime;
 	};
-	
+
 	public BeanFactory getBeanFactory() {
 		return beanFactory;
 	}
-	
+
 	public Step getStep() {
 		return step;
 	}
-	
+
 	public BeanDefinition getBeanDefinition() {
 		return beanDefinition;
 	}
 
-	public static enum Step{
+	public static enum Step {
 		/**
 		 * 执行依赖前
 		 */

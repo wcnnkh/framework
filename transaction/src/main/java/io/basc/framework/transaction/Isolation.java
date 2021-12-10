@@ -4,6 +4,7 @@ import java.sql.Connection;
 
 /**
  * 事务隔离级别
+ * 
  * @author shuchaowen
  *
  */
@@ -13,7 +14,7 @@ public enum Isolation {
 	 * 默认的，不设置隔离级别，由实现方自己决定
 	 */
 	DEFAULT(-1),
-	
+
 	/**
 	 * 读未提交<br/>
 	 * 可以读到未提交的事物

@@ -111,7 +111,8 @@ public final class XmlDubboUtils {
 
 						String packageName = getPackageName(environment, node);
 						if (StringUtils.isNotEmpty(packageName)) {
-							for (Class<?> clazz : classesLoaderFactory.getClassesLoader(packageName, (e, m) -> e.getAnnotationMetadata().isInterface())) {
+							for (Class<?> clazz : classesLoaderFactory.getClassesLoader(packageName,
+									(e, m) -> e.getAnnotationMetadata().isInterface())) {
 								if (!refInstanceFactory.isInstance(clazz)) {
 									logger.warn("{} not supported get instance", clazz);
 									continue;
@@ -185,7 +186,8 @@ public final class XmlDubboUtils {
 					public boolean doFilter(List<ReferenceConfig> list, Node node, ReferenceConfig config) {
 						String packageName = getPackageName(environment, node);
 						if (StringUtils.isNotEmpty(packageName)) {
-							for (Class<?> clazz : classesLoaderFactory.getClassesLoader(packageName, (e, m) -> e.getClassMetadata().isInterface())) {
+							for (Class<?> clazz : classesLoaderFactory.getClassesLoader(packageName,
+									(e, m) -> e.getClassMetadata().isInterface())) {
 								ReferenceConfig<?> referenceConfig = Copy.copy(config, ReferenceConfig.class);
 								referenceConfig.setInterface(clazz);
 								if (referenceConfig.isValid()) {

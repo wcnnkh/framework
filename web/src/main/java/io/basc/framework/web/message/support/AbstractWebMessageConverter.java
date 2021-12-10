@@ -75,9 +75,9 @@ public abstract class AbstractWebMessageConverter
 	public void write(ServerHttpRequest request, ServerHttpResponse response, TypeDescriptor typeDescriptor,
 			Object body) throws IOException, WebMessagelConverterException {
 		if (response.getContentType() == null) {
-			if(Value.isBaseType(typeDescriptor.getType())) {
+			if (Value.isBaseType(typeDescriptor.getType())) {
 				response.setContentType(MediaType.TEXT_HTML);
-			}else {
+			} else {
 				response.setContentType(MediaType.APPLICATION_JSON);
 			}
 		}

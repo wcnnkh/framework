@@ -17,8 +17,8 @@ public class XmlPropertiesIocProcessor extends AbstractFieldIocProcessor {
 	}
 
 	@Override
-	protected void processInternal(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws BeansException {
-		getField().getSetter().set(bean,
-				xmlBeanParameter.parseValue(getField().getSetter(), beanFactory));
+	protected void processInternal(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory)
+			throws BeansException {
+		getField().getSetter().set(bean, xmlBeanParameter.parseValue(getField().getSetter(), beanFactory));
 	}
 }

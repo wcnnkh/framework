@@ -15,17 +15,17 @@ public final class DruidUtils {
 		dataSource.setUrl(config.getUrl());
 		dataSource.setUsername(config.getUsername());
 		dataSource.setPassword(config.getPassword());
-		if(config.getMinSize() != null) {
+		if (config.getMinSize() != null) {
 			dataSource.setInitialSize(config.getMinSize());
 			dataSource.setMinIdle(config.getMinSize());
 		}
-		
-		if(config.getMaxSize() != null) {
+
+		if (config.getMaxSize() != null) {
 			dataSource.setMaxActive(config.getMaxSize());
 		}
 	}
-	
-	public static DataBase resolve(DruidDataSource druidDataSource, DataBaseResolver dataBaseResolver){
+
+	public static DataBase resolve(DruidDataSource druidDataSource, DataBaseResolver dataBaseResolver) {
 		return dataBaseResolver.resolve(druidDataSource.getDriverClassName(), druidDataSource.getUrl(),
 				druidDataSource.getUsername(), druidDataSource.getPassword());
 	}

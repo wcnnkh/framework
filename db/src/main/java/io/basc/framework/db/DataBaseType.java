@@ -7,18 +7,11 @@ package io.basc.framework.db;
  *
  */
 public enum DataBaseType {
-	Oracle("oracle.jdbc.driver.OracleDriver"), 
-	DB2("com.ibm.db2.jdbc.app.DB2Driver"),
-	SqlServer("com.microsoft.jdbc.sqlserver.SQLServerDriver"),
-	Sybase("com.sybase.jdbc.SybDriver"),
-	Informix("com.informix.jdbc.IfxDriver"), 
-	MySQL("com.mysql.jdbc.Driver"),
-	PostgreSQL("org.postgresql.Driver"), 
-	access("sun.jdbc.odbc.JdbcOdbcDriver"), 
-	Teradata("com.ncr.teradata.TeraDriver"), 
-	Netezza("org.netezza.Driver"),
-	SQLite("org.sqlite.JDBC")
-	;
+	Oracle("oracle.jdbc.driver.OracleDriver"), DB2("com.ibm.db2.jdbc.app.DB2Driver"),
+	SqlServer("com.microsoft.jdbc.sqlserver.SQLServerDriver"), Sybase("com.sybase.jdbc.SybDriver"),
+	Informix("com.informix.jdbc.IfxDriver"), MySQL("com.mysql.jdbc.Driver"), PostgreSQL("org.postgresql.Driver"),
+	access("sun.jdbc.odbc.JdbcOdbcDriver"), Teradata("com.ncr.teradata.TeraDriver"), Netezza("org.netezza.Driver"),
+	SQLite("org.sqlite.JDBC");
 
 	private final String driverClassName;
 

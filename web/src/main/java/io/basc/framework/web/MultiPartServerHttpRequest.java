@@ -21,10 +21,10 @@ public interface MultiPartServerHttpRequest extends ServerHttpRequest {
 
 	default MultiValueMap<String, MultipartMessage> getMultipartMessageMap() {
 		Collection<MultipartMessage> messages = getMultipartMessages();
-		if(CollectionUtils.isEmpty(messages)) {
+		if (CollectionUtils.isEmpty(messages)) {
 			return CollectionUtils.emptyMultiValueMap();
 		}
-		
+
 		MultiValueMap<String, MultipartMessage> map = new LinkedMultiValueMap<>(messages.size());
 		for (MultipartMessage part : messages) {
 			map.add(part.getName(), part);

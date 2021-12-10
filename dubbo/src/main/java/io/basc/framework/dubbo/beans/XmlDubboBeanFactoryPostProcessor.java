@@ -22,32 +22,40 @@ public class XmlDubboBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 	@Override
 	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
 		if (beanFactory instanceof XmlBeanFactory) {
-			if(!beanFactory.containsDefinition(DubboConfigure.class.getName())){
-				BeanDefinition definition = DefaultBeanDefinition.create(beanFactory, XmlDubboConfigure.class, () -> new XmlDubboConfigure(beanFactory.getEnvironment(), ((XmlBeanFactory) beanFactory).getConfigurationFile()));
-				if(!beanFactory.containsDefinition(definition.getId())){
+			if (!beanFactory.containsDefinition(DubboConfigure.class.getName())) {
+				BeanDefinition definition = DefaultBeanDefinition.create(beanFactory, XmlDubboConfigure.class,
+						() -> new XmlDubboConfigure(beanFactory.getEnvironment(),
+								((XmlBeanFactory) beanFactory).getConfigurationFile()));
+				if (!beanFactory.containsDefinition(definition.getId())) {
 					beanFactory.registerDefinition(definition);
 					beanFactory.registerAlias(definition.getId(), DubboConfigure.class.getName());
 				}
 			}
-			
-			if(!beanFactory.containsDefinition(DubboReferenceConfigure.class.getName())){
-				BeanDefinition definition = DefaultBeanDefinition.create(beanFactory, XmlDubboReferenceConfigure.class, () -> new XmlDubboReferenceConfigure(beanFactory.getEnvironment(), ((XmlBeanFactory) beanFactory).getConfigurationFile(), beanFactory.getClassesLoaderFactory()));
-				if(!beanFactory.containsDefinition(definition.getId())){
+
+			if (!beanFactory.containsDefinition(DubboReferenceConfigure.class.getName())) {
+				BeanDefinition definition = DefaultBeanDefinition.create(beanFactory, XmlDubboReferenceConfigure.class,
+						() -> new XmlDubboReferenceConfigure(beanFactory.getEnvironment(),
+								((XmlBeanFactory) beanFactory).getConfigurationFile(),
+								beanFactory.getClassesLoaderFactory()));
+				if (!beanFactory.containsDefinition(definition.getId())) {
 					beanFactory.registerDefinition(definition);
 					beanFactory.registerAlias(definition.getId(), DubboReferenceConfigure.class.getName());
 				}
 			}
-			
-			if(!beanFactory.containsDefinition(DubboServiceConfigure.class.getName())){
-				BeanDefinition definition = DefaultBeanDefinition.create(beanFactory, XmlDubboServiceConfigure.class, () -> new XmlDubboServiceConfigure(beanFactory.getEnvironment(), ((XmlBeanFactory) beanFactory).getConfigurationFile(), beanFactory.getClassesLoaderFactory(), beanFactory));
-				if(!beanFactory.containsDefinition(definition.getId())){
+
+			if (!beanFactory.containsDefinition(DubboServiceConfigure.class.getName())) {
+				BeanDefinition definition = DefaultBeanDefinition.create(beanFactory, XmlDubboServiceConfigure.class,
+						() -> new XmlDubboServiceConfigure(beanFactory.getEnvironment(),
+								((XmlBeanFactory) beanFactory).getConfigurationFile(),
+								beanFactory.getClassesLoaderFactory(), beanFactory));
+				if (!beanFactory.containsDefinition(definition.getId())) {
 					beanFactory.registerDefinition(definition);
 					beanFactory.registerAlias(definition.getId(), DubboServiceConfigure.class.getName());
 				}
 			}
 		}
-		
-		if(beanFactory.isInstance(DubboReferenceConfigure.class)){
+
+		if (beanFactory.isInstance(DubboReferenceConfigure.class)) {
 			DubboReferenceConfigure dubboReferenceConfigure = beanFactory.getInstance(DubboReferenceConfigure.class);
 			for (ReferenceConfig<?> config : dubboReferenceConfigure.getReferenceConfigList()) {
 				DubboBeanDefinition xmlDubboBean = new DubboBeanDefinition(beanFactory, config.getInterfaceClass(),

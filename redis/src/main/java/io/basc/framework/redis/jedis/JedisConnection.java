@@ -421,8 +421,8 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Boolean set(byte[] key, byte[] value, io.basc.framework.redis.core.RedisStringCommands.ExpireOption option, long time,
-			SetOption setOption) {
+	public Boolean set(byte[] key, byte[] value, io.basc.framework.redis.core.RedisStringCommands.ExpireOption option,
+			long time, SetOption setOption) {
 		SetParams params = new SetParams();
 		if (option != null) {
 			switch (option) {
@@ -574,7 +574,8 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public byte[] blmove(byte[] sourceKey, byte[] destinationKey, io.basc.framework.redis.core.RedisListsCommands.MovePosition from,
+	public byte[] blmove(byte[] sourceKey, byte[] destinationKey,
+			io.basc.framework.redis.core.RedisListsCommands.MovePosition from,
 			io.basc.framework.redis.core.RedisListsCommands.MovePosition to, long timout) {
 		return jedis.blmove(sourceKey, destinationKey, toListDirection(from), toListDirection(to), timout);
 	}
@@ -610,8 +611,8 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Long linsert(byte[] key, io.basc.framework.redis.core.RedisListsCommands.InsertPosition position, byte[] pivot,
-			byte[] value) {
+	public Long linsert(byte[] key, io.basc.framework.redis.core.RedisListsCommands.InsertPosition position,
+			byte[] pivot, byte[] value) {
 		return jedis.linsert(key, position == InsertPosition.AFTER ? ListPosition.AFTER : ListPosition.BEFORE, pivot,
 				value);
 	}
@@ -626,7 +627,8 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public byte[] lmove(byte[] sourceKey, byte[] destinationKey, io.basc.framework.redis.core.RedisListsCommands.MovePosition from,
+	public byte[] lmove(byte[] sourceKey, byte[] destinationKey,
+			io.basc.framework.redis.core.RedisListsCommands.MovePosition from,
 			io.basc.framework.redis.core.RedisListsCommands.MovePosition to) {
 		return jedis.lmove(sourceKey, destinationKey, toListDirection(from), toListDirection(to));
 	}
@@ -1107,8 +1109,8 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Collection<io.basc.framework.redis.core.RedisSortedSetsCommands.Tuple<byte[]>> zrevrangebyscoreWithScores(byte[] key,
-			Range<byte[]> range, int offset, int count) {
+	public Collection<io.basc.framework.redis.core.RedisSortedSetsCommands.Tuple<byte[]>> zrevrangebyscoreWithScores(
+			byte[] key, Range<byte[]> range, int offset, int count) {
 		Set<redis.clients.jedis.Tuple> tuples = jedis.zrevrangeByScoreWithScores(key,
 				RedisConverters.convertLowerBound(range.getLowerBound(), JedisCodec.INSTANCE),
 				RedisConverters.convertUpperBound(range.getUpperBound(), JedisCodec.INSTANCE), offset, count);
@@ -1126,7 +1128,8 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Collection<byte[]> zunion(io.basc.framework.redis.core.RedisSortedSetsCommands.InterArgs interArgs, byte[]... keys) {
+	public Collection<byte[]> zunion(io.basc.framework.redis.core.RedisSortedSetsCommands.InterArgs interArgs,
+			byte[]... keys) {
 		return jedis.zunion(toZParams(interArgs), keys);
 	}
 
@@ -1138,8 +1141,8 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Long zunionstore(byte[] destinationKey, io.basc.framework.redis.core.RedisSortedSetsCommands.InterArgs interArgs,
-			byte[]... keys) {
+	public Long zunionstore(byte[] destinationKey,
+			io.basc.framework.redis.core.RedisSortedSetsCommands.InterArgs interArgs, byte[]... keys) {
 		return jedis.zunionstore(destinationKey, toZParams(interArgs), keys);
 	}
 

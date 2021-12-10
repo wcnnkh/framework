@@ -9,6 +9,7 @@ package io.basc.framework.transaction;
 public interface TransactionLifecycle {
 	/**
 	 * 在commit之前调用(此时事务还未提交，如果发生错误将回滚事务)
+	 * 
 	 * @throws Throwable
 	 */
 	void beforeCommit() throws Throwable;

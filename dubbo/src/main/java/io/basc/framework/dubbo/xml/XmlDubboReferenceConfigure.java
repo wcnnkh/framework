@@ -20,8 +20,8 @@ public class XmlDubboReferenceConfigure implements DubboReferenceConfigure {
 	private final Environment environment;
 	private final ClassesLoaderFactory classesLoaderFactory;
 
-	public XmlDubboReferenceConfigure(Environment environment,
-			Resource resource, ClassesLoaderFactory classesLoaderFactory) {
+	public XmlDubboReferenceConfigure(Environment environment, Resource resource,
+			ClassesLoaderFactory classesLoaderFactory) {
 		this.environment = environment;
 		this.resource = resource;
 		this.classesLoaderFactory = classesLoaderFactory;
@@ -46,13 +46,12 @@ public class XmlDubboReferenceConfigure implements DubboReferenceConfigure {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public List<ReferenceConfig<?>> getReferenceConfigList() {
-		List<ReferenceConfig> list = read(
-				(nodeList) -> XmlDubboUtils.parseReferenceConfigList(
-						environment, nodeList, null, classesLoaderFactory));
-		if(CollectionUtils.isEmpty(list)){
+		List<ReferenceConfig> list = read((nodeList) -> XmlDubboUtils.parseReferenceConfigList(environment, nodeList,
+				null, classesLoaderFactory));
+		if (CollectionUtils.isEmpty(list)) {
 			return Collections.emptyList();
 		}
-		
-		return list.stream().map((r) -> (ReferenceConfig<?>)r).collect(Collectors.toList());
+
+		return list.stream().map((r) -> (ReferenceConfig<?>) r).collect(Collectors.toList());
 	}
 }

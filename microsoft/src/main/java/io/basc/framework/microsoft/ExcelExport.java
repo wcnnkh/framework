@@ -37,11 +37,12 @@ public interface ExcelExport extends Flushable, Closeable {
 		}
 		flush();
 	}
-	
-	default <T, E extends Throwable, C, P extends Pageables<C, T>> void appendAll(P pages, Processor<T, Collection<?>, E> rowsProcessor) throws IOException, E{
+
+	default <T, E extends Throwable, C, P extends Pageables<C, T>> void appendAll(P pages,
+			Processor<T, Collection<?>, E> rowsProcessor) throws IOException, E {
 		appendAll(pages, rowsProcessor, null);
 	}
-	
+
 	/**
 	 * @param <T>
 	 * @param <E>
@@ -51,15 +52,16 @@ public interface ExcelExport extends Flushable, Closeable {
 	 * @throws IOException
 	 * @throws E
 	 */
-	default <T, E extends Throwable, C, P extends Pageables<C, T>> void appendAll(P pages, Processor<T, Collection<?>, E> rowsProcessor,
-			@Nullable ConsumerProcessor<Pageable<C, T>, E> afterProcess) throws IOException, E {
+	default <T, E extends Throwable, C, P extends Pageables<C, T>> void appendAll(P pages,
+			Processor<T, Collection<?>, E> rowsProcessor, @Nullable ConsumerProcessor<Pageable<C, T>, E> afterProcess)
+			throws IOException, E {
 		Stream<? extends Pageable<C, T>> stream = pages.pages();
 		try {
 			Iterator<? extends Pageable<C, T>> iterator = stream.iterator();
 			while (iterator.hasNext()) {
 				Pageable<C, T> page = iterator.next();
 				appendAll(page.getList(), rowsProcessor);
-				if(afterProcess != null) {
+				if (afterProcess != null) {
 					afterProcess.process(page);
 				}
 			}

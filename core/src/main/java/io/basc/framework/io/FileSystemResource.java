@@ -27,9 +27,9 @@ import io.basc.framework.util.StringUtils;
  * extended {@link WritableResource} interface.
  *
  * <p>
- * Note: As of Spring Framework 5.0, this {@link Resource} implementation uses
- * NIO.2 API for read/write interactions. As of 5.1, it may be constructed with
- * a {@link java.nio.file.Path} handle in which case it will perform all file
+ * Note: This {@link Resource} implementation uses NIO.2 API for read/write
+ * interactions. As of 5.1, it may be constructed with a
+ * {@link java.nio.file.Path} handle in which case it will perform all file
  * system interactions via NIO.2, only resorting to {@link File} on
  * {@link #getFile()}.
  *

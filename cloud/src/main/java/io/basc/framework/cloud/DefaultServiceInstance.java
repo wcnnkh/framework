@@ -25,18 +25,12 @@ public class DefaultServiceInstance implements ServiceInstance, Serializable {
 	private URI uri;
 
 	/**
-	 * @param id
-	 *            the id of the instance.
-	 * @param name
-	 *            the id of the service.
-	 * @param host
-	 *            the host where the service instance can be found.
-	 * @param port
-	 *            the port on which the service is running.
-	 * @param secure
-	 *            indicates whether or not the connection needs to be secure.
-	 * @param metadata
-	 *            a map containing metadata.
+	 * @param id       the id of the instance.
+	 * @param name     the id of the service.
+	 * @param host     the host where the service instance can be found.
+	 * @param port     the port on which the service is running.
+	 * @param secure   indicates whether or not the connection needs to be secure.
+	 * @param metadata a map containing metadata.
 	 */
 	public DefaultServiceInstance(String id, String name, String host, int port, boolean secure,
 			Map<String, String> metadata) {
@@ -49,16 +43,11 @@ public class DefaultServiceInstance implements ServiceInstance, Serializable {
 	}
 
 	/**
-	 * @param id
-	 *            the id of the instance.
-	 * @param name
-	 *            the id of the service.
-	 * @param host
-	 *            the host where the service instance can be found.
-	 * @param port
-	 *            the port on which the service is running.
-	 * @param secure
-	 *            indicates whether or not the connection needs to be secure.
+	 * @param id     the id of the instance.
+	 * @param name   the id of the service.
+	 * @param host   the host where the service instance can be found.
+	 * @param port   the port on which the service is running.
+	 * @param secure indicates whether or not the connection needs to be secure.
 	 */
 	public DefaultServiceInstance(String id, String name, String host, int port, boolean secure) {
 		this(id, name, host, port, secure, new LinkedHashMap<String, String>());
@@ -70,8 +59,7 @@ public class DefaultServiceInstance implements ServiceInstance, Serializable {
 	/**
 	 * Creates a URI from the given ServiceInstance's host:port.
 	 * 
-	 * @param instance
-	 *            the ServiceInstance.
+	 * @param instance the ServiceInstance.
 	 * @return URI of the form (secure)?https:http + "host:port".
 	 */
 	public static URI getUri(ServiceInstance instance) {

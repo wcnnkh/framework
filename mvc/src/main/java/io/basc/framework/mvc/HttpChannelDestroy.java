@@ -23,7 +23,8 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 			try {
 				LifecycleAuxiliary.destroy(httpChannel);
 			} catch (Throwable e) {
-				logger.error(e, "[{}] destroy channel error: {}", WebUtils.getMessageId(httpChannel.getRequest(), httpChannel.getResponse()), this.toString());
+				logger.error(e, "[{}] destroy channel error: {}",
+						WebUtils.getMessageId(httpChannel.getRequest(), httpChannel.getResponse()), this.toString());
 			}
 		}
 		httpChannel.getResponse().close();

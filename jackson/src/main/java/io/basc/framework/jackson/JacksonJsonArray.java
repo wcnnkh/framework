@@ -17,8 +17,8 @@ import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 
-public class JacksonJsonArray extends AbstractJson<Integer> implements
-		JsonArray, JsonSerializable, Converter<JsonNode, JsonElement> {
+public class JacksonJsonArray extends AbstractJson<Integer>
+		implements JsonArray, JsonSerializable, Converter<JsonNode, JsonElement> {
 	private final ArrayNode arrayNode;
 	private final ObjectMapper mapper;
 
@@ -44,8 +44,7 @@ public class JacksonJsonArray extends AbstractJson<Integer> implements
 
 	@Override
 	public Iterator<JsonElement> iterator() {
-		return new ConvertibleIterator<JsonNode, JsonElement>(
-				arrayNode.iterator(), this);
+		return new ConvertibleIterator<JsonNode, JsonElement>(arrayNode.iterator(), this);
 	}
 
 	@Override
@@ -68,14 +67,12 @@ public class JacksonJsonArray extends AbstractJson<Integer> implements
 	}
 
 	@Override
-	public void serialize(JsonGenerator gen, SerializerProvider serializers)
-			throws IOException {
+	public void serialize(JsonGenerator gen, SerializerProvider serializers) throws IOException {
 		arrayNode.serialize(gen, serializers);
 	}
 
 	@Override
-	public void serializeWithType(JsonGenerator gen,
-			SerializerProvider serializers, TypeSerializer typeSer)
+	public void serializeWithType(JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer)
 			throws IOException {
 		arrayNode.serializeWithType(gen, serializers, typeSer);
 	}

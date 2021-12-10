@@ -7,20 +7,19 @@ import org.hibernate.Session;
 
 import io.basc.framework.util.ArrayUtils;
 
-public class SessionProxyInvocationHandler implements InvocationHandler{
+public class SessionProxyInvocationHandler implements InvocationHandler {
 	private Session targetSession;
-	
-	public SessionProxyInvocationHandler(Session targetSession){
+
+	public SessionProxyInvocationHandler(Session targetSession) {
 		this.targetSession = targetSession;
 	}
-	
-	public Object invoke(Object proxy, Method method, Object[] args)
-			throws Throwable {
-		if(ArrayUtils.isEmpty(args)){
-			if(method.getName().equals("getTargetSession")){
+
+	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+		if (ArrayUtils.isEmpty(args)) {
+			if (method.getName().equals("getTargetSession")) {
 				return targetSession;
-			}else if(method.getName().equals("close")){
-				//ignore 忽略关闭行为
+			} else if (method.getName().equals("close")) {
+				// ignore 忽略关闭行为
 				return null;
 			}
 		}

@@ -12,7 +12,8 @@ public class SqlExpression implements Sql, Serializable {
 	private final Sql right;
 
 	/**
-	 * a=b 解析为 name -> a,  left -> a , operator -> =, right -> b
+	 * a=b 解析为 name -> a, left -> a , operator -> =, right -> b
+	 * 
 	 * @param name
 	 * @param left
 	 * @param operator

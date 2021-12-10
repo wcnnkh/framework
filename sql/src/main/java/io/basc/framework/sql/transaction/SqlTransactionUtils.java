@@ -11,9 +11,10 @@ import java.sql.SQLException;
 public final class SqlTransactionUtils {
 	private SqlTransactionUtils() {
 	};
-	
+
 	/**
 	 * 获取一个当前事务的连接，如果不存在事务就返回可用的连接
+	 * 
 	 * @param transactionManager
 	 * @param connectionFactory
 	 * @return
@@ -27,10 +28,10 @@ public final class SqlTransactionUtils {
 
 		ConnectionTransactionResource resource = transaction.getResource(connectionFactory);
 		if (resource == null) {
-			ConnectionTransactionResource connectionTransactionResource = new ConnectionTransactionResource(connectionFactory, transaction.getDefinition(),
-					transaction.isActive());
+			ConnectionTransactionResource connectionTransactionResource = new ConnectionTransactionResource(
+					connectionFactory, transaction.getDefinition(), transaction.isActive());
 			resource = transaction.bindResource(connectionFactory, connectionTransactionResource);
-			if(resource == null){
+			if (resource == null) {
 				resource = connectionTransactionResource;
 			}
 		}

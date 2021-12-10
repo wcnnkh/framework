@@ -5,7 +5,6 @@ import io.basc.framework.redis.core.AbstractSubscription;
 import io.basc.framework.redis.core.MessageListener;
 import redis.clients.jedis.BinaryJedisPubSub;
 
-
 /**
  * Jedis specific subscription.
  *
@@ -15,8 +14,8 @@ class JedisSubscription extends AbstractSubscription<byte[], byte[]> {
 
 	private final BinaryJedisPubSub jedisPubSub;
 
-	JedisSubscription(MessageListener<byte[], byte[]> listener, BinaryJedisPubSub jedisPubSub, @Nullable byte[][] channels,
-			@Nullable byte[][] patterns) {
+	JedisSubscription(MessageListener<byte[], byte[]> listener, BinaryJedisPubSub jedisPubSub,
+			@Nullable byte[][] channels, @Nullable byte[][] patterns) {
 		super(listener, channels, patterns);
 		this.jedisPubSub = jedisPubSub;
 	}

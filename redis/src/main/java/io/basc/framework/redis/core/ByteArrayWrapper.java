@@ -18,7 +18,8 @@ package io.basc.framework.redis.core;
 import java.util.Arrays;
 
 /**
- * Simple wrapper class used for wrapping arrays so they can be used as keys inside maps.
+ * Simple wrapper class used for wrapping arrays so they can be used as keys
+ * inside maps.
  *
  * @author Costin Leau
  */

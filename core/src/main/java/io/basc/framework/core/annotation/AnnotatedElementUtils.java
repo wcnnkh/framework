@@ -21,10 +21,10 @@ import io.basc.framework.util.StringUtils;
  * repeatable annotations on {@link AnnotatedElement AnnotatedElements}.
  *
  * <p>
- * {@code AnnotatedElementUtils} defines the public API for Spring's
- * meta-annotation programming model with support for <em>annotation attribute
- * overrides</em>. If you do not need support for annotation attribute
- * overrides, consider using {@link AnnotationUtils} instead.
+ * {@code AnnotatedElementUtils} defines the public API meta-annotation
+ * programming model with support for <em>annotation attribute overrides</em>.
+ * If you do not need support for annotation attribute overrides, consider using
+ * {@link AnnotationUtils} instead.
  *
  * <p>
  * Note that the features of this class are not provided by the JDK's

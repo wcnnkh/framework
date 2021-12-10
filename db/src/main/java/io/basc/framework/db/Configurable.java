@@ -29,7 +29,7 @@ public class Configurable implements Serializable {
 	 * 是否自动创建数据库
 	 */
 	private boolean autoCreateDataBase;
-	
+
 	/**
 	 * 方言
 	 */

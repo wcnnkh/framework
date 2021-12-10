@@ -18,7 +18,8 @@ package io.basc.framework.redis.core;
 import io.basc.framework.lang.Nullable;
 
 /**
- * Exception thrown when issuing commands on a connection that is subscribed and waiting for events.
+ * Exception thrown when issuing commands on a connection that is subscribed and
+ * waiting for events.
  *
  */
 public class RedisSubscribedConnectionException extends RedisSystemException {

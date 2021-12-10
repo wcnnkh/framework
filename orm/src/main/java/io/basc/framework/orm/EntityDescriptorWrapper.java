@@ -35,7 +35,7 @@ public class EntityDescriptorWrapper<W extends EntityDescriptor<T>, T extends Pr
 	public Iterator<T> iterator() {
 		return wrappedTarget.iterator();
 	}
-	
+
 	@Override
 	public Stream<T> columns() {
 		return wrappedTarget.columns();

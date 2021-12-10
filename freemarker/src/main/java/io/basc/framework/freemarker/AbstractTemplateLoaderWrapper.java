@@ -17,8 +17,7 @@ public abstract class AbstractTemplateLoaderWrapper implements TemplateLoader {
 		return getTemplateLoader().getLastModified(templateSource);
 	}
 
-	public Reader getReader(Object templateSource, String encoding)
-			throws IOException {
+	public Reader getReader(Object templateSource, String encoding) throws IOException {
 		return getTemplateLoader().getReader(templateSource, encoding);
 	}
 

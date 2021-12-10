@@ -6,6 +6,7 @@ public interface DiscoveryClient {
 
 	/**
 	 * Gets all ServiceInstances associated with a particular name.
+	 * 
 	 * @param serviceId The serviceId to query.
 	 * @return A List of ServiceInstance.
 	 */

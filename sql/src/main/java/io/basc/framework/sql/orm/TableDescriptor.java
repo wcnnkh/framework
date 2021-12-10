@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface TableDescriptor extends EntityDescriptor<Column>, TableMetadata {
-	
+
 	default Map<IndexInfo, List<Column>> getIndexGroups() {
 		Map<IndexInfo, List<Column>> groups = new LinkedHashMap<>();
 		columns().forEach((column) -> {

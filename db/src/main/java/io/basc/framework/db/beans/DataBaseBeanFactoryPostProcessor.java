@@ -7,8 +7,6 @@ import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.db.Configurable;
 import io.basc.framework.db.DB;
 
-
-
 @Provider
 public class DataBaseBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 

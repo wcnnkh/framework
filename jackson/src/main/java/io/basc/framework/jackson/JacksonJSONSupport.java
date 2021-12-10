@@ -26,8 +26,7 @@ public class JacksonJSONSupport extends AbstractJSONSupport {
 			// 对于空的对象转json的时候不抛出错误
 			mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 			// 允许属性名称没有引号
-			mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES,
-					true);
+			mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
 			// 允许单引号
 			mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 			// 设置输入时忽略在json字符串中存在但在java对象实际没有的属性
@@ -51,8 +50,7 @@ public class JacksonJSONSupport extends AbstractJSONSupport {
 		} catch (JsonProcessingException e) {
 			throw new JSONException(e);
 		}
-		return new JacksonJsonElement(jsonNode,
-				mapper);
+		return new JacksonJsonElement(jsonNode, mapper);
 	}
 
 	@Override

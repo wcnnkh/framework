@@ -32,7 +32,8 @@ public class RedisConfigBeanDefinition extends DefaultBeanDefinition {
 	@Override
 	public Object create() throws InstanceException {
 		RedisConfiguration redisConfiguration = new RedisConfiguration();
-		io.basc.framework.event.Observable<Properties> observable = beanFactory.getEnvironment().getProperties(DEFAULT_CONFIGURATION);
+		io.basc.framework.event.Observable<Properties> observable = beanFactory.getEnvironment()
+				.getProperties(DEFAULT_CONFIGURATION);
 		EntityConversionService entityConfigure = new PropertyFactoryToEntityConversionService();
 		entityConfigure.setConversionService(beanFactory.getEnvironment().getConversionService());
 		PropertyFactory properties = new PropertiesPropertyFactory(observable.get());

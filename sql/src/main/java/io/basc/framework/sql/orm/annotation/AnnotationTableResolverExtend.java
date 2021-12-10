@@ -13,32 +13,32 @@ import io.basc.framework.sql.orm.TableResolver;
 import io.basc.framework.sql.orm.support.TableResolverExtend;
 import io.basc.framework.util.StringUtils;
 
-public class AnnotationTableResolverExtend extends AbstractObjectRelationalExtend implements TableResolverExtend, Ordered {
+public class AnnotationTableResolverExtend extends AbstractObjectRelationalExtend
+		implements TableResolverExtend, Ordered {
 
 	@Override
 	public int getOrder() {
 		return Ordered.DEFAULT_PRECEDENCE - 1;
 	}
-	
+
 	@Override
-	public String getCharsetName(Class<?> entityClass,
-			ObjectRelationalResolver chain) {
+	public String getCharsetName(Class<?> entityClass, ObjectRelationalResolver chain) {
 		Table table = AnnotatedElementUtils.getMergedAnnotation(entityClass, Table.class);
-		if(table != null && StringUtils.hasText(table.charset())){
+		if (table != null && StringUtils.hasText(table.charset())) {
 			return table.charset();
 		}
 		return super.getCharsetName(entityClass, chain);
 	}
-	
+
 	@Override
 	public String getName(Class<?> entityClass, ObjectRelationalResolver chain) {
 		Table table = AnnotatedElementUtils.getMergedAnnotation(entityClass, Table.class);
-		if(table != null && StringUtils.hasText(table.name())){
+		if (table != null && StringUtils.hasText(table.name())) {
 			return table.name();
 		}
 		return super.getName(entityClass, chain);
 	}
-	
+
 	@Override
 	public Collection<IndexInfo> getIndexs(Class<?> entityClass, FieldDescriptor descriptor, TableResolver chain) {
 		Collection<IndexInfo> indexInfos = chain.getIndexs(entityClass, descriptor);

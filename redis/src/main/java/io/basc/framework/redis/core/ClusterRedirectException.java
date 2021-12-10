@@ -16,8 +16,8 @@
 package io.basc.framework.redis.core;
 
 /**
- * {@link ClusterRedirectException} indicates that a requested slot is not served by the targeted server but can be
- * obtained on another one.
+ * {@link ClusterRedirectException} indicates that a requested slot is not
+ * served by the targeted server but can be obtained on another one.
  *
  * @author Christoph Strobl
  * @author Mark Paluch
@@ -33,10 +33,10 @@ public class ClusterRedirectException extends RedisSystemException {
 	/**
 	 * Creates new {@link ClusterRedirectException}.
 	 *
-	 * @param slot the slot to redirect to.
+	 * @param slot       the slot to redirect to.
 	 * @param targetHost the host to redirect to.
 	 * @param targetPort the port on the host.
-	 * @param e the root cause from the data access API in use.
+	 * @param e          the root cause from the data access API in use.
 	 */
 	public ClusterRedirectException(int slot, String targetHost, int targetPort, Throwable e) {
 

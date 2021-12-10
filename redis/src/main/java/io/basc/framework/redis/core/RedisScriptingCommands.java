@@ -17,7 +17,7 @@ public interface RedisScriptingCommands<K, V> {
 	static enum FlushMode {
 		ASYNC, SYNC
 	}
-	
+
 	void scriptFlush();
 
 	/**
@@ -38,8 +38,8 @@ public interface RedisScriptingCommands<K, V> {
 	 * https://redis.io/commands/script-load
 	 * 
 	 * @param script
-	 * @return Bulk string reply This command returns the SHA1 digest of the
-	 *         script added into the script cache.
+	 * @return Bulk string reply This command returns the SHA1 digest of the script
+	 *         added into the script cache.
 	 */
 	K scriptLoad(K script);
 }

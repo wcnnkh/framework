@@ -16,7 +16,7 @@ public class TooManyClusterRedirectionsException extends RedisSystemException {
 	/**
 	 * Creates new {@link TooManyClusterRedirectionsException}.
 	 *
-	 * @param msg the detail message.
+	 * @param msg   the detail message.
 	 * @param cause the root cause from the data access API in use.
 	 */
 	public TooManyClusterRedirectionsException(String msg, Throwable cause) {

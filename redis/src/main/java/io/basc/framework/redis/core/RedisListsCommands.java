@@ -3,7 +3,7 @@ package io.basc.framework.redis.core;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
-public interface RedisListsCommands<K, V>{
+public interface RedisListsCommands<K, V> {
 	static enum MovePosition {
 		LEFT, RIGHT
 	}
@@ -27,8 +27,8 @@ public interface RedisListsCommands<K, V>{
 	 */
 	V blmove(K sourceKey, K destinationKey, MovePosition from, MovePosition to, long timout);
 
-	List<V> blpop(K ...keys);
-	
+	List<V> blpop(K... keys);
+
 	/**
 	 * https://redis.io/commands/blpop<br/>
 	 * <br/>
@@ -45,11 +45,10 @@ public interface RedisListsCommands<K, V>{
 	 *         name of the key where an element was popped and the second element
 	 *         being the value of the popped element.
 	 */
-	List<V> blpop(double timeout, K ...keys);
+	List<V> blpop(double timeout, K... keys);
 
-	
-	List<V> brpop(K ...keys);
-	
+	List<V> brpop(K... keys);
+
 	/**
 	 * https://redis.io/commands/brpop <br/>
 	 * <br/>
@@ -70,13 +69,13 @@ public interface RedisListsCommands<K, V>{
 	 *         name of the key where an element was popped and the second element
 	 *         being the value of the popped element.
 	 */
-	List<V> brpop(double timeout, K ...keys);
+	List<V> brpop(double timeout, K... keys);
 
 	/**
 	 * https://redis.io/commands/brpoplpush <br/>
 	 * 
-	 * @param timout      History >= 6.0: timeout is interpreted as a double instead
-	 *                    of an integer.
+	 * @param timout History >= 6.0: timeout is interpreted as a double instead of
+	 *               an integer.
 	 * @return Bulk string reply: the element being popped from source and pushed to
 	 *         destination. If timeout is reached, a Null reply is returned.
 	 */

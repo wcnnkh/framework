@@ -9,10 +9,10 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 public final class HibernateUtils {
-	
-	
-	private HibernateUtils(){};
-	
+
+	private HibernateUtils() {
+	};
+
 	public static Session proxySession(Session session) {
 		if (session == null) {
 			return null;
@@ -22,10 +22,8 @@ public final class HibernateUtils {
 			return session;
 		}
 
-		return (Session) Proxy.newProxyInstance(
-				SessionProxy.class.getClassLoader(),
-				new Class<?>[] { SessionProxy.class },
-				new SessionProxyInvocationHandler(session));
+		return (Session) Proxy.newProxyInstance(SessionProxy.class.getClassLoader(),
+				new Class<?>[] { SessionProxy.class }, new SessionProxyInvocationHandler(session));
 	}
 
 	public static void closeProxySession(Session session) {
@@ -40,7 +38,7 @@ public final class HibernateUtils {
 
 		session.close();
 	}
-	
+
 	public static Session getTransactionSession(SessionFactory sessionFactory) {
 		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		if (transaction == null) {
@@ -52,7 +50,7 @@ public final class HibernateUtils {
 			SessionTransactionResource hibernateTransactionResource = new SessionTransactionResource(sessionFactory,
 					transaction.isActive());
 			resource = transaction.bindResource(sessionFactory, hibernateTransactionResource);
-			if(resource == null){
+			if (resource == null) {
 				resource = hibernateTransactionResource;
 			}
 		}

@@ -20,7 +20,7 @@ class EntityToMapConversionService extends ConditionalConversionService {
 						Map.class, sourceType),
 				targetType);
 	}
-	
+
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return super.canConvert(sourceType, targetType) && OrmUtils.getMapping().isEntity(sourceType.getType());

@@ -1,7 +1,5 @@
 package io.basc.framework.beans;
 
-
-
 public class BeanFactoryAccessor implements BeanFactoryAware {
 	private transient BeanFactory beanFactory;
 

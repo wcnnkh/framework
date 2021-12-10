@@ -31,16 +31,12 @@ public class SmartMapProcessor<T> extends ResultSetMapProcessor<T> {
 		this(OrmUtils.getMapping(), typeDescriptor);
 	}
 
-	public SmartMapProcessor(
-			ObjectRelationalMapping objectRelationalMapping,
-			TypeDescriptor typeDescriptor) {
-		this(objectRelationalMapping, Sys.env.getConversionService(),
-				typeDescriptor);
+	public SmartMapProcessor(ObjectRelationalMapping objectRelationalMapping, TypeDescriptor typeDescriptor) {
+		this(objectRelationalMapping, Sys.env.getConversionService(), typeDescriptor);
 	}
 
-	public SmartMapProcessor(
-			ObjectRelationalMapping objectRelationalMapping,
-			ConversionService conversionService, TypeDescriptor typeDescriptor) {
+	public SmartMapProcessor(ObjectRelationalMapping objectRelationalMapping, ConversionService conversionService,
+			TypeDescriptor typeDescriptor) {
 		super(conversionService, objectRelationalMapping, typeDescriptor);
 		this.objectRelationalMapping = objectRelationalMapping;
 	}
@@ -57,39 +53,38 @@ public class SmartMapProcessor<T> extends ResultSetMapProcessor<T> {
 		return structureRegistry;
 	}
 
-	public void setStructureRegistry(
-			StructureRegistry<TableStructure> structureRegistry) {
+	public void setStructureRegistry(StructureRegistry<TableStructure> structureRegistry) {
 		this.structureRegistry = structureRegistry;
 	}
 
 	@Override
 	protected boolean isEntity(TypeDescriptor typeDescriptor) {
-		if(structureRegistry != null && !typeDescriptor.isGeneric() && structureRegistry.isRegistry(typeDescriptor.getType())){
+		if (structureRegistry != null && !typeDescriptor.isGeneric()
+				&& structureRegistry.isRegistry(typeDescriptor.getType())) {
 			return true;
 		}
-		
-		if(mapper != null && !typeDescriptor.isGeneric() && mapper.isRegistred(typeDescriptor.getType())){
+
+		if (mapper != null && !typeDescriptor.isGeneric() && mapper.isRegistred(typeDescriptor.getType())) {
 			return true;
 		}
-		
+
 		return objectRelationalMapping.isEntity(typeDescriptor.getType());
 	}
 
 	@Override
-	protected Object mapEntity(ResultSet rs, TypeDescriptor typeDescriptor,
-			ConversionService conversionService) throws Throwable {
-		if(structureRegistry != null && !typeDescriptor.isGeneric() && structureRegistry.isRegistry(typeDescriptor.getType())){
+	protected Object mapEntity(ResultSet rs, TypeDescriptor typeDescriptor, ConversionService conversionService)
+			throws Throwable {
+		if (structureRegistry != null && !typeDescriptor.isGeneric()
+				&& structureRegistry.isRegistry(typeDescriptor.getType())) {
 			TableStructure tableStructure = structureRegistry.getStructure(typeDescriptor.getType());
 			return new EntityStructureMapProcessor<T>(tableStructure, getConversionService()).process(rs);
 		}
-		
-		if(mapper != null && !typeDescriptor.isGeneric() && mapper.isRegistred(typeDescriptor.getType())){
+
+		if (mapper != null && !typeDescriptor.isGeneric() && mapper.isRegistred(typeDescriptor.getType())) {
 			return mapper.process(typeDescriptor.getType(), rs);
 		}
-		
-		ResultSetPropertyFactory propertyFactory = new ResultSetPropertyFactory(
-				rs);
-		return conversionService.convert(propertyFactory,
-				TypeDescriptor.forObject(propertyFactory), typeDescriptor);
+
+		ResultSetPropertyFactory propertyFactory = new ResultSetPropertyFactory(rs);
+		return conversionService.convert(propertyFactory, TypeDescriptor.forObject(propertyFactory), typeDescriptor);
 	}
 }

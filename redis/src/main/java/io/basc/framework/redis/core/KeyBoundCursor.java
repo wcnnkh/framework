@@ -10,7 +10,7 @@ public abstract class KeyBoundCursor<K, T> extends ScanCursor<K, T> {
 	 * Crates new {@link ScanCursor}
 	 *
 	 * @param cursorId
-	 * @param options Defaulted to {@link ScanOptions#NONE} if nulled.
+	 * @param options  Defaulted to {@link ScanOptions#NONE} if nulled.
 	 */
 	public KeyBoundCursor(K key, long cursorId, @Nullable ScanOptions<K> options) {
 		super(cursorId, options);

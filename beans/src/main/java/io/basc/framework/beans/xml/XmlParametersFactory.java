@@ -9,8 +9,7 @@ public class XmlParametersFactory extends AbstractParametersFactory {
 	private final XmlBeanParameter[] xmlBeanParameters;
 	private final BeanFactory beanFactory;
 
-	public XmlParametersFactory(BeanFactory beanFactory,
-			XmlBeanParameter[] xmlBeanParameters) {
+	public XmlParametersFactory(BeanFactory beanFactory, XmlBeanParameter[] xmlBeanParameters) {
 		this.beanFactory = beanFactory;
 		this.xmlBeanParameters = xmlBeanParameters;
 	}
