@@ -4,7 +4,6 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
-import io.basc.framework.value.ValueUtils;
 
 class ValueConversionService implements ConversionService {
 	private final ConversionService conversionService;
@@ -29,9 +28,9 @@ class ValueConversionService implements ConversionService {
 			return false;
 		}
 		
-		return ValueUtils.isBaseType(sourceType.getType())
+		return Value.isBaseType(sourceType.getType())
 				|| Value.class.isAssignableFrom(sourceType.getType())
-				|| ValueUtils.isBaseType(targetType.getType())
+				|| Value.isBaseType(targetType.getType())
 				|| targetType.getType() == Value.class || AnyValue.class == targetType.getType();
 	}
 }

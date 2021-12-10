@@ -72,7 +72,7 @@ public abstract class AbstractValue implements BaseValue {
 
 	public final Object getAsObject(TypeDescriptor type) {
 		Class<?> rawClass = type.getType();
-		if (ValueUtils.isBaseType(rawClass)) {
+		if (Value.isBaseType(rawClass)) {
 			return getAsObject(rawClass);
 		}
 

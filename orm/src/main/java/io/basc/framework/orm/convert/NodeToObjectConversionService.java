@@ -12,7 +12,7 @@ import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.value.StringValue;
-import io.basc.framework.value.ValueUtils;
+import io.basc.framework.value.Value;
 
 class NodeToObjectConversionService extends ConditionalConversionService {
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
@@ -29,7 +29,7 @@ class NodeToObjectConversionService extends ConditionalConversionService {
 	}
 
 	public Object convert(Node node, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (ValueUtils.isBaseType(targetType.getType())) {
+		if (Value.isBaseType(targetType.getType())) {
 			StringValue value = new StringValue(node.getTextContent());
 			return value.getAsObject(targetType.getResolvableType().getType());
 		}

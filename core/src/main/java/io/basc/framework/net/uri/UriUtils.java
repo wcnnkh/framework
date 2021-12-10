@@ -19,7 +19,7 @@ import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.ValueUtils;
+import io.basc.framework.value.Value;
 
 public class UriUtils {
 	public static final String QUERY_CONNECTOR = "?";
@@ -236,7 +236,7 @@ public class UriUtils {
 			return null;
 		}
 
-		if (ValueUtils.isBaseType(body.getClass())) {
+		if (Value.isBaseType(body.getClass())) {
 			return body.toString();
 		}
 

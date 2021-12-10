@@ -13,7 +13,7 @@ import io.basc.framework.mapper.Fields;
 import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.stream.Processor;
-import io.basc.framework.value.ValueUtils;
+import io.basc.framework.value.Value;
 
 public class ResultSetMapProcessor<T> implements Processor<ResultSet, T, Throwable> {
 	private final ConversionService conversionService;
@@ -74,7 +74,7 @@ public class ResultSetMapProcessor<T> implements Processor<ResultSet, T, Throwab
 	}
 
 	protected boolean isEntity(TypeDescriptor typeDescriptor) {
-		return !ValueUtils.isBaseType(typeDescriptor.getType());
+		return !Value.isBaseType(typeDescriptor.getType());
 	}
 
 	protected Object mapEntity(ResultSet rs, TypeDescriptor typeDescriptor,
