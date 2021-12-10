@@ -16,10 +16,10 @@ public class AcceptFieldDescriptor implements Accept<FieldDescriptor> {
 
 	@Override
 	public boolean accept(FieldDescriptor descriptor) {
-		if(descriptor == null) {
+		if (descriptor == null) {
 			return false;
 		}
-		
+
 		if (type != null) {
 			if (type instanceof Class) {
 				if (!type.equals(descriptor.getType())) {

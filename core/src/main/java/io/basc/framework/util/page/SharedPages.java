@@ -10,11 +10,11 @@ public class SharedPages<K, T> extends SharedPage<K, T> implements Pages<K, T> {
 
 	public SharedPages() {
 	}
-	
+
 	public SharedPages(Pages<K, T> pages) {
 		this(pages, pages);
 	}
-	
+
 	public SharedPages(Page<K, T> currentPage, @Nullable Pages<K, T> pages) {
 		super(currentPage);
 		this.pages = pages;
@@ -36,16 +36,16 @@ public class SharedPages<K, T> extends SharedPage<K, T> implements Pages<K, T> {
 		Pages<K, T> pages = this.pages.next();
 		return new SharedPages<>(pages);
 	}
-	
+
 	@Override
 	public Stream<? extends Pages<K, T>> pages() {
 		return pages.pages();
 	}
-	
-	public Pages<K, T> getPages(){
+
+	public Pages<K, T> getPages() {
 		return pages;
 	}
-	
+
 	public void setPages(Pages<K, T> pages) {
 		this.pages = pages;
 	}

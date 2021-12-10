@@ -9,12 +9,14 @@ import io.basc.framework.util.Assert;
 
 /**
  * {@link Resource} implementation for a given byte array.
- * <p>Creates a {@link ByteArrayInputStream} for the given byte array.
+ * <p>
+ * Creates a {@link ByteArrayInputStream} for the given byte array.
  *
- * <p>Useful for loading content from any given byte array,
- * without having to resort to a single-use {@link InputStreamResource}.
- * Particularly useful for creating mail attachments from local content,
- * where JavaMail needs to be able to read the stream multiple times.
+ * <p>
+ * Useful for loading content from any given byte array, without having to
+ * resort to a single-use {@link InputStreamResource}. Particularly useful for
+ * creating mail attachments from local content, where JavaMail needs to be able
+ * to read the stream multiple times.
  */
 public class ByteArrayResource extends AbstractResource {
 
@@ -22,9 +24,9 @@ public class ByteArrayResource extends AbstractResource {
 
 	private final String description;
 
-
 	/**
 	 * Create a new {@code ByteArrayResource}.
+	 * 
 	 * @param byteArray the byte array to wrap
 	 */
 	public ByteArrayResource(byte[] byteArray) {
@@ -33,7 +35,8 @@ public class ByteArrayResource extends AbstractResource {
 
 	/**
 	 * Create a new {@code ByteArrayResource} with a description.
-	 * @param byteArray the byte array to wrap
+	 * 
+	 * @param byteArray   the byte array to wrap
 	 * @param description where the byte array comes from
 	 */
 	public ByteArrayResource(byte[] byteArray, String description) {
@@ -41,7 +44,6 @@ public class ByteArrayResource extends AbstractResource {
 		this.byteArray = byteArray;
 		this.description = (description != null ? description : "");
 	}
-
 
 	/**
 	 * Return the underlying byte array.
@@ -67,8 +69,9 @@ public class ByteArrayResource extends AbstractResource {
 	}
 
 	/**
-	 * This implementation returns a ByteArrayInputStream for the
-	 * underlying byte array.
+	 * This implementation returns a ByteArrayInputStream for the underlying byte
+	 * array.
+	 * 
 	 * @see java.io.ByteArrayInputStream
 	 */
 	public InputStream getInputStream() throws IOException {
@@ -83,20 +86,19 @@ public class ByteArrayResource extends AbstractResource {
 		return "Byte array resource [" + this.description + "]";
 	}
 
-
 	/**
 	 * This implementation compares the underlying byte array.
+	 * 
 	 * @see java.util.Arrays#equals(byte[], byte[])
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		return (obj == this ||
-			(obj instanceof ByteArrayResource && Arrays.equals(((ByteArrayResource) obj).byteArray, this.byteArray)));
+		return (obj == this || (obj instanceof ByteArrayResource
+				&& Arrays.equals(((ByteArrayResource) obj).byteArray, this.byteArray)));
 	}
 
 	/**
-	 * This implementation returns the hash code based on the
-	 * underlying byte array.
+	 * This implementation returns the hash code based on the underlying byte array.
 	 */
 	@Override
 	public int hashCode() {

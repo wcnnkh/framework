@@ -9,13 +9,13 @@ import io.basc.framework.util.SmartMap;
 
 /**
  * 这是一个同步的基于命名的事件分发器
+ * 
  * @author shuchaowen
  *
  * @param <K>
  * @param <T>
  */
-public class SimpleNamedEventDispatcher<K, T extends Event> implements
-		NamedEventDispatcher<K, T> {
+public class SimpleNamedEventDispatcher<K, T extends Event> implements NamedEventDispatcher<K, T> {
 	private volatile SmartMap<K, EventDispatcher<T>> namedEventListenerMap;
 	private final boolean concurrent;
 	private final int initialCapacity;
@@ -48,14 +48,11 @@ public class SimpleNamedEventDispatcher<K, T extends Event> implements
 		return new SimpleEventDispatcher<T>(isConcurrent());
 	}
 
-	public EventRegistration registerListener(K name,
-			EventListener<T> eventListener) {
-		EventDispatcher<T> eventDispatcher = getNamedEventListenerMap()
-				.get(name);
+	public EventRegistration registerListener(K name, EventListener<T> eventListener) {
+		EventDispatcher<T> eventDispatcher = getNamedEventListenerMap().get(name);
 		if (eventDispatcher == null) {
 			eventDispatcher = createEventDispatcher(name);
-			EventDispatcher<T> dispatcher = getNamedEventListenerMap()
-					.putIfAbsent(name, eventDispatcher);
+			EventDispatcher<T> dispatcher = getNamedEventListenerMap().putIfAbsent(name, eventDispatcher);
 			if (dispatcher != null) {
 				eventDispatcher = dispatcher;
 			}
@@ -65,8 +62,7 @@ public class SimpleNamedEventDispatcher<K, T extends Event> implements
 	}
 
 	public void publishEvent(K name, T event) {
-		EventDispatcher<T> dispatcher = getNamedEventListenerMap().get(
-				name);
+		EventDispatcher<T> dispatcher = getNamedEventListenerMap().get(name);
 		if (dispatcher == null) {
 			return;
 		}

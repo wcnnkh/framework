@@ -49,7 +49,8 @@ public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
 	}
 
 	@Override
-	protected Object readInternal(TypeDescriptor type, InputMessage inputMessage) throws IOException, MessageConvertException {
+	protected Object readInternal(TypeDescriptor type, InputMessage inputMessage)
+			throws IOException, MessageConvertException {
 		return null;
 	}
 
@@ -81,8 +82,8 @@ public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
 			map.put(BOUNDARY_NAME, boundary);
 			outputMessage.setContentType(new MimeType(MimeTypeUtils.MULTIPART_FORM_DATA, map));
 		}
-		
-		if(body instanceof MultipartMessage) {
+
+		if (body instanceof MultipartMessage) {
 			writeItem(boundary, (MultipartMessage) body, outputMessage);
 		} else if (body.getClass().isArray()) {
 			int len = Array.getLength(body);
@@ -124,7 +125,7 @@ public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
 				logger.error("non existent file [{}]", file.getPath());
 				return;
 			}
-			
+
 			multipartMessage = new ResourceMultipartMessage(fieldName, (File) value);
 		} else if (value instanceof Resource) {
 			Resource resource = (Resource) value;
@@ -181,7 +182,8 @@ public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
 		}
 	}
 
-	protected void writeItem(String boundary, MultipartMessage multipartMessage, OutputMessage outputMessage) throws IOException {
+	protected void writeItem(String boundary, MultipartMessage multipartMessage, OutputMessage outputMessage)
+			throws IOException {
 		OutputStream os = outputMessage.getOutputStream();
 		OutputStreamWriter osw = new OutputStreamWriter(os, getCharset(outputMessage));
 		osw.write(LINE);

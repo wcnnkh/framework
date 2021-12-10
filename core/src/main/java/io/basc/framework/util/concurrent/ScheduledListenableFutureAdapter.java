@@ -5,13 +5,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class ScheduledListenableFutureAdapter<V> implements
-		ScheduledListenableFuture<V> {
+public class ScheduledListenableFutureAdapter<V> implements ScheduledListenableFuture<V> {
 	private final ListenableFuture<? extends V> listenableFuture;
 	private final Delayed delayed;
 
-	public ScheduledListenableFutureAdapter(
-			ListenableFuture<? extends V> listenableFuture, Delayed delayed) {
+	public ScheduledListenableFutureAdapter(ListenableFuture<? extends V> listenableFuture, Delayed delayed) {
 		this.listenableFuture = listenableFuture;
 		this.delayed = delayed;
 	}
@@ -47,8 +45,7 @@ public class ScheduledListenableFutureAdapter<V> implements
 	}
 
 	@Override
-	public V get(long timeout, TimeUnit unit) throws InterruptedException,
-			ExecutionException, TimeoutException {
+	public V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
 		return listenableFuture.get(timeout, unit);
 	}
 
@@ -58,8 +55,7 @@ public class ScheduledListenableFutureAdapter<V> implements
 	}
 
 	@Override
-	public void addCallback(SuccessCallback<? super V> successCallback,
-			FailureCallback failureCallback) {
+	public void addCallback(SuccessCallback<? super V> successCallback, FailureCallback failureCallback) {
 		listenableFuture.addCallback(successCallback, failureCallback);
 	}
 }

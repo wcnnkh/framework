@@ -56,9 +56,9 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 
 	protected void run(Runnable task) throws Throwable {
 		task.run();
-		
+
 		if (isTryGet()) {
-			//其中一个目的是为了方便输出异常日志
+			// 其中一个目的是为了方便输出异常日志
 			if (task instanceof Future) {
 				((Future<?>) task).get();
 			}

@@ -9,21 +9,20 @@ import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
 import io.basc.framework.util.StaticSupplier;
 
-public class ObservableValue<K, V> extends AbstractObservable<V> implements AutoCloseable{
+public class ObservableValue<K, V> extends AbstractObservable<V> implements AutoCloseable {
 	private final ValueFactory<K> valueFactory;
 	private final K name;
 	private final Supplier<? extends V> defaultValue;
 	private final Type type;
 	private final EventRegistration eventRegistration;
-	
+
 	@SuppressWarnings("unchecked")
-	public ObservableValue(final ValueFactory<K> valueFactory,
-			K name, Type type, Object defaultValue) {
-		this(valueFactory, name, type, (Supplier<V>)(defaultValue == null? null:new StaticSupplier<Object>(defaultValue)));
+	public ObservableValue(final ValueFactory<K> valueFactory, K name, Type type, Object defaultValue) {
+		this(valueFactory, name, type,
+				(Supplier<V>) (defaultValue == null ? null : new StaticSupplier<Object>(defaultValue)));
 	}
 
-	public ObservableValue(final ValueFactory<K> valueFactory,
-			K name, Type type, Supplier<? extends V> defaultValue) {
+	public ObservableValue(final ValueFactory<K> valueFactory, K name, Type type, Supplier<? extends V> defaultValue) {
 		this.valueFactory = valueFactory;
 		this.name = name;
 		this.type = type;
@@ -36,12 +35,12 @@ public class ObservableValue<K, V> extends AbstractObservable<V> implements Auto
 			}
 		});
 	}
-	
+
 	@Override
 	public void close() {
 		eventRegistration.unregister();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public V forceGet() {
 		return (V) valueFactory.getValue(name, type, defaultValue);

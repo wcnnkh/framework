@@ -7,9 +7,9 @@ public interface Message {
 	Headers getHeaders();
 
 	MimeType getContentType();
-	
+
 	long getContentLength();
-	
+
 	@Nullable
 	default String getCharacterEncoding() {
 		MimeType mimeType = getContentType();

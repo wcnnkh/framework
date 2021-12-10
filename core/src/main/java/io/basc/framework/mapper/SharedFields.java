@@ -6,14 +6,12 @@ import java.util.List;
 public class SharedFields extends AbstractFields implements Fields {
 	private final List<Field> sharedFields;
 
-	public SharedFields(Class<?> cursorId, Fields fields,
-			List<Field> sharedFields) {
+	public SharedFields(Class<?> cursorId, Fields fields, List<Field> sharedFields) {
 		super(cursorId, fields);
 		this.sharedFields = sharedFields;
 	}
 
-	public SharedFields(Class<?> cursorId, Class<?> nextCursorId,
-			Fields fields, List<Field> sharedFields) {
+	public SharedFields(Class<?> cursorId, Class<?> nextCursorId, Fields fields, List<Field> sharedFields) {
 		super(cursorId, nextCursorId, fields);
 		this.sharedFields = sharedFields;
 	}

@@ -12,11 +12,9 @@ public class NestedRuntimeException extends RuntimeException {
 	}
 
 	/**
-	 * Construct a {@code NestedRuntimeException} with the specified detail
-	 * message.
+	 * Construct a {@code NestedRuntimeException} with the specified detail message.
 	 * 
-	 * @param msg
-	 *            the detail message
+	 * @param msg the detail message
 	 */
 	public NestedRuntimeException(String msg) {
 		super(msg);
@@ -31,8 +29,8 @@ public class NestedRuntimeException extends RuntimeException {
 	}
 
 	/**
-	 * Return the detail message, including the message from the nested
-	 * exception if there is one.
+	 * Return the detail message, including the message from the nested exception if
+	 * there is one.
 	 */
 	@Override
 	public String getMessage() {
@@ -63,12 +61,11 @@ public class NestedRuntimeException extends RuntimeException {
 	}
 
 	/**
-	 * Check whether this exception contains an exception of the given type:
-	 * either it is of the given class itself or it contains a nested cause of
-	 * the given type.
+	 * Check whether this exception contains an exception of the given type: either
+	 * it is of the given class itself or it contains a nested cause of the given
+	 * type.
 	 * 
-	 * @param exType
-	 *            the exception type to look for
+	 * @param exType the exception type to look for
 	 * @return whether there is a nested exception of the specified type
 	 */
 	public boolean contains(Class<?> exType) {

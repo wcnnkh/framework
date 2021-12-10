@@ -26,17 +26,14 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 public interface HttpConnection extends HttpConnectionFactory {
-	static final RedirectManager REDIRECT_MANAGER = Sys.env.getServiceLoader(
-			RedirectManager.class,
+	static final RedirectManager REDIRECT_MANAGER = Sys.env.getServiceLoader(RedirectManager.class,
 			"io.basc.framework.http.client.HttpConnection.DefaultRedirectManager").first();
 
 	/**
 	 * Add the given, single header value under the given name.
 	 * 
-	 * @param headerName
-	 *            the header name
-	 * @param headerValues
-	 *            the header value(s)
+	 * @param headerName   the header name
+	 * @param headerValues the header value(s)
 	 * @return this builder
 	 * @see HttpHeaders#add(String, String)
 	 */
@@ -45,47 +42,42 @@ public interface HttpConnection extends HttpConnectionFactory {
 	/**
 	 * Copy the given headers into the entity's headers map.
 	 * 
-	 * @param headers
-	 *            the existing HttpHeaders to copy from
+	 * @param headers the existing HttpHeaders to copy from
 	 * @return this builder
 	 * @see HttpHeaders#add(String, String)
 	 */
 	HttpConnection headers(@Nullable HttpHeaders headers);
 
 	/**
-	 * Set the list of acceptable {@linkplain MediaType media types}, as
-	 * specified by the {@code Accept} header.
+	 * Set the list of acceptable {@linkplain MediaType media types}, as specified
+	 * by the {@code Accept} header.
 	 * 
-	 * @param acceptableMediaTypes
-	 *            the acceptable media types
+	 * @param acceptableMediaTypes the acceptable media types
 	 */
 	HttpConnection accept(MediaType... acceptableMediaTypes);
 
 	/**
-	 * Set the list of acceptable {@linkplain Charset charsets}, as specified by
-	 * the {@code Accept-Charset} header.
+	 * Set the list of acceptable {@linkplain Charset charsets}, as specified by the
+	 * {@code Accept-Charset} header.
 	 * 
-	 * @param acceptableCharsets
-	 *            the acceptable charsets
+	 * @param acceptableCharsets the acceptable charsets
 	 */
 	HttpConnection acceptCharset(Charset... acceptableCharsets);
 
 	/**
 	 * Set the value of the {@code If-Modified-Since} header.
 	 * <p>
-	 * The date should be specified as the number of milliseconds since January
-	 * 1, 1970 GMT.
+	 * The date should be specified as the number of milliseconds since January 1,
+	 * 1970 GMT.
 	 * 
-	 * @param ifModifiedSince
-	 *            the new value of the header
+	 * @param ifModifiedSince the new value of the header
 	 */
 	HttpConnection ifModifiedSince(long ifModifiedSince);
 
 	/**
 	 * Set the values of the {@code If-None-Match} header.
 	 * 
-	 * @param ifNoneMatches
-	 *            the new value of the header
+	 * @param ifNoneMatches the new value of the header
 	 */
 	HttpConnection ifNoneMatch(String... ifNoneMatches);
 
@@ -95,40 +87,35 @@ public interface HttpConnection extends HttpConnectionFactory {
 	 * Set the length of the body in bytes, as specified by the
 	 * {@code Content-Length} header.
 	 * 
-	 * @param contentLength
-	 *            the content length
+	 * @param contentLength the content length
 	 * @return this builder
 	 * @see HttpHeaders#setContentLength(long)
 	 */
 	HttpConnection contentLength(long contentLength);
 
 	/**
-	 * Set the {@linkplain MediaType media type} of the body, as specified by
-	 * the {@code Content-Type} header.
+	 * Set the {@linkplain MediaType media type} of the body, as specified by the
+	 * {@code Content-Type} header.
 	 * 
-	 * @param contentType
-	 *            the content type
+	 * @param contentType the content type
 	 * @return this builder
 	 * @see HttpHeaders#setContentType(MediaType)
 	 */
 	HttpConnection contentType(MediaType contentType);
-	
+
 	default HttpConnection contentType(MediaType contentType, Charset charset) {
 		return contentType(new MediaType(contentType, charset));
 	}
-	
-	default HttpConnection contentType(MediaType contentType,
-			String charsetName) {
+
+	default HttpConnection contentType(MediaType contentType, String charsetName) {
 		return contentType(new MediaType(contentType, charsetName));
 	}
 
 	/**
 	 * Set the body of the request entity and build the RequestEntity.
 	 * 
-	 * @param <T>
-	 *            the type of the body
-	 * @param body
-	 *            the body of the request entity
+	 * @param <T>  the type of the body
+	 * @param body the body of the request entity
 	 * @return the built request entity
 	 */
 	HttpConnection body(Object body);
@@ -136,12 +123,9 @@ public interface HttpConnection extends HttpConnectionFactory {
 	/**
 	 * Set the body and type of the request entity and build the RequestEntity.
 	 * 
-	 * @param <T>
-	 *            the type of the body
-	 * @param body
-	 *            the body of the request entity
-	 * @param type
-	 *            the type of the body, useful for generic type resolution
+	 * @param <T>  the type of the body
+	 * @param body the body of the request entity
+	 * @param type the type of the body, useful for generic type resolution
 	 * @return the built request entity
 	 */
 	HttpConnection body(Object body, @Nullable TypeDescriptor typeDescriptor);
@@ -167,23 +151,19 @@ public interface HttpConnection extends HttpConnectionFactory {
 
 	HttpConnection setRequestFactory(ClientHttpRequestFactory requestFactory);
 
-	<T> HttpResponseEntity<T> execute(
-			ClientHttpResponseExtractor<T> responseExtractor)
-			throws HttpClientException;
+	<T> HttpResponseEntity<T> execute(ClientHttpResponseExtractor<T> responseExtractor) throws HttpClientException;
 
-	<T> HttpResponseEntity<T> execute(Class<T> responseType)
-			throws HttpClientException;
+	<T> HttpResponseEntity<T> execute(Class<T> responseType) throws HttpClientException;
 
-	<T> HttpResponseEntity<T> execute(TypeDescriptor responseType)
-			throws HttpClientException;
+	<T> HttpResponseEntity<T> execute(TypeDescriptor responseType) throws HttpClientException;
 
 	/**
 	 * 虽然返回的文件会自动删除(并非完全可靠的),但是推荐在使用完后手动删除
+	 * 
 	 * @return
 	 */
-	default HttpResponseEntity<File> download(){
-		DownLoadResponseExtractor responseExtractor = new DownLoadResponseExtractor(
-				getURI());
+	default HttpResponseEntity<File> download() {
+		DownLoadResponseExtractor responseExtractor = new DownLoadResponseExtractor(getURI());
 		return execute(responseExtractor);
 	}
 
@@ -200,14 +180,12 @@ public interface HttpConnection extends HttpConnectionFactory {
 		}
 
 		public URI getRedirect(HttpResponseEntity<?> responseEntity) {
-			return getLocation(responseEntity.getStatusCode(),
-					responseEntity.getHeaders());
+			return getLocation(responseEntity.getStatusCode(), responseEntity.getHeaders());
 		}
 
 		public URI getLocation(HttpStatus statusCode, HttpHeaders httpHeaders) {
 			// 重定向
-			if (statusCode == HttpStatus.MOVED_PERMANENTLY
-					|| statusCode == HttpStatus.FOUND) {
+			if (statusCode == HttpStatus.MOVED_PERMANENTLY || statusCode == HttpStatus.FOUND) {
 				URI location = httpHeaders.getLocation();
 				if (location != null) {
 					return location;
@@ -218,10 +196,8 @@ public interface HttpConnection extends HttpConnectionFactory {
 		}
 	}
 
-	static final class DownLoadResponseExtractor implements
-			ClientHttpResponseExtractor<File> {
-		private static Logger logger = LoggerFactory
-				.getLogger(DownLoadResponseExtractor.class);
+	static final class DownLoadResponseExtractor implements ClientHttpResponseExtractor<File> {
+		private static Logger logger = LoggerFactory.getLogger(DownLoadResponseExtractor.class);
 		private final URI url;
 
 		public DownLoadResponseExtractor(URI url) {
@@ -233,23 +209,20 @@ public interface HttpConnection extends HttpConnectionFactory {
 		}
 
 		public File execute(ClientHttpResponse response) throws IOException {
-			if (response.getStatusCode() != HttpStatus.OK
-					&& response.getStatusCode() != HttpStatus.NOT_MODIFIED) {
-				logger.error("Unable to download:{}, status:{}, statusText:{}",
-						url, response.getRawStatusCode(),
+			if (response.getStatusCode() != HttpStatus.OK && response.getStatusCode() != HttpStatus.NOT_MODIFIED) {
+				logger.error("Unable to download:{}, status:{}, statusText:{}", url, response.getRawStatusCode(),
 						response.getStatusText());
 				return null;
 			}
 
-			ContentDisposition contentDisposition = response.getHeaders()
-					.getContentDisposition();
-			String fileName = contentDisposition == null ? null
-					: contentDisposition.getFilename();
+			ContentDisposition contentDisposition = response.getHeaders().getContentDisposition();
+			String fileName = contentDisposition == null ? null : contentDisposition.getFilename();
 			if (StringUtils.isEmpty(fileName)) {
 				fileName = InetUtils.getFilename(url.getPath());
 			}
 
-			TemporaryFile file = new TemporaryFile(FileUtils.getTempDirectory() + File.separator + XUtils.getUUID() + File.separator + fileName);
+			TemporaryFile file = new TemporaryFile(
+					FileUtils.getTempDirectory() + File.separator + XUtils.getUUID() + File.separator + fileName);
 			if (logger.isDebugEnabled()) {
 				logger.debug("{} download to {}", url, file.getPath());
 			}
@@ -263,8 +236,8 @@ public interface HttpConnection extends HttpConnectionFactory {
 		}
 	}
 
-	static abstract class AbstractHttpConnection extends AbstractHttpConnectionFactory implements HttpConnection,
-			Cloneable {
+	static abstract class AbstractHttpConnection extends AbstractHttpConnectionFactory
+			implements HttpConnection, Cloneable {
 		private HttpMethod method;
 		private URI uri;
 		private final HttpHeaders headers;
@@ -279,7 +252,7 @@ public interface HttpConnection extends HttpConnectionFactory {
 		public AbstractHttpConnection() {
 			this.headers = new HttpHeaders();
 		}
-		
+
 		public AbstractHttpConnection(HttpMethod method, URI uri) {
 			this.headers = new HttpHeaders();
 			this.method = method;
@@ -301,8 +274,7 @@ public interface HttpConnection extends HttpConnectionFactory {
 			return requestFactory;
 		}
 
-		public HttpConnection setRequestFactory(
-				ClientHttpRequestFactory requestFactory) {
+		public HttpConnection setRequestFactory(ClientHttpRequestFactory requestFactory) {
 			this.requestFactory = requestFactory;
 			return this;
 		}
@@ -315,7 +287,7 @@ public interface HttpConnection extends HttpConnectionFactory {
 			this.redirectManager = redirectManager;
 			return this;
 		}
-		
+
 		public HttpHeaders getHeaders() {
 			return headers;
 		}
@@ -329,10 +301,10 @@ public interface HttpConnection extends HttpConnectionFactory {
 		}
 
 		public HttpConnection createConnection() {
-			if(uri == null && method == null){
+			if (uri == null && method == null) {
 				return this;
 			}
-			
+
 			return clone();
 		}
 
@@ -426,8 +398,7 @@ public interface HttpConnection extends HttpConnectionFactory {
 
 		@SuppressWarnings("unchecked")
 		public <T> HttpRequestEntity<T> buildRequestEntity() {
-			return (HttpRequestEntity<T>) HttpRequestEntity
-					.method(getMethod(), getURI()).headers(getHeaders())
+			return (HttpRequestEntity<T>) HttpRequestEntity.method(getMethod(), getURI()).headers(getHeaders())
 					.body(getBody(), getTypeDescriptor());
 		}
 

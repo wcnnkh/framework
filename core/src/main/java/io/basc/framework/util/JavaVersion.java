@@ -58,18 +58,18 @@ public class JavaVersion extends Version {
 	public boolean isSupported(int version) {
 		return version >= getMasterVersion();
 	}
-	
-	public static boolean isSupported(AnnotationMetadata annotationMetadata){
+
+	public static boolean isSupported(AnnotationMetadata annotationMetadata) {
 		Map<String, Object> map = annotationMetadata.getAnnotationAttributes(RequiredJavaVersion.class.getName());
-		if(!CollectionUtils.isEmpty(map)){
+		if (!CollectionUtils.isEmpty(map)) {
 			int version = (Integer) map.get("value");
-			if(!INSTANCE.isSupported(version)){
+			if (!INSTANCE.isSupported(version)) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
+
 	public static boolean isSupported(Class<?> clazz) {
 		RequiredJavaVersion requiredJavaVersion = clazz.getAnnotation(RequiredJavaVersion.class);
 		if (requiredJavaVersion != null) {

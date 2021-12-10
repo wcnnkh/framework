@@ -22,7 +22,7 @@ import io.basc.framework.util.ObjectUtils;
 
 import java.io.Serializable;
 
-public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable{
+public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -30,11 +30,9 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable{
 	 */
 	public static final HttpEntity<?> EMPTY = new HttpEntity<Object>();
 
-
 	private final HttpHeaders headers;
 
 	private final T body;
-
 
 	/**
 	 * Create a new, empty {@code HttpEntity}.
@@ -45,6 +43,7 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable{
 
 	/**
 	 * Create a new {@code HttpEntity} with the given body and no headers.
+	 * 
 	 * @param body the entity body
 	 */
 	public HttpEntity(T body) {
@@ -53,6 +52,7 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable{
 
 	/**
 	 * Create a new {@code HttpEntity} with the given headers and no body.
+	 * 
 	 * @param headers the entity headers
 	 */
 	public HttpEntity(MultiValueMap<String, String> headers) {
@@ -61,7 +61,8 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable{
 
 	/**
 	 * Create a new {@code HttpEntity} with the given body and headers.
-	 * @param body the entity body
+	 * 
+	 * @param body    the entity body
 	 * @param headers the entity headers
 	 */
 	public HttpEntity(T body, MultiValueMap<String, String> headers) {
@@ -72,7 +73,6 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable{
 		}
 		this.headers = tempHeaders;
 	}
-
 
 	/**
 	 * Returns the headers of this entity.
@@ -95,7 +95,6 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable{
 		return (this.body != null);
 	}
 
-
 	@Override
 	public boolean equals(Object other) {
 		if (this == other) {
@@ -105,8 +104,8 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable{
 			return false;
 		}
 		HttpEntity<?> otherEntity = (HttpEntity<?>) other;
-		return (ObjectUtils.equals(this.headers, otherEntity.headers) &&
-				ObjectUtils.equals(this.body, otherEntity.body));
+		return (ObjectUtils.equals(this.headers, otherEntity.headers)
+				&& ObjectUtils.equals(this.body, otherEntity.body));
 	}
 
 	@Override

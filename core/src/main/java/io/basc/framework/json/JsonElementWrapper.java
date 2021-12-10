@@ -2,8 +2,7 @@ package io.basc.framework.json;
 
 import io.basc.framework.value.ValueWrapper;
 
-public class JsonElementWrapper extends ValueWrapper<JsonElement> implements
-		JsonElement {
+public class JsonElementWrapper extends ValueWrapper<JsonElement> implements JsonElement {
 	private static final long serialVersionUID = 1L;
 
 	public JsonElementWrapper(JsonElement target) {

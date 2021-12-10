@@ -53,6 +53,7 @@ public class Version implements Serializable, Comparable<Version>, Comparator<Va
 
 	/**
 	 * 只比较部分,大于0就说明left>right
+	 * 
 	 * @param fragments
 	 * @return
 	 */

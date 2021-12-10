@@ -13,6 +13,7 @@ import io.basc.framework.util.CollectionFactory;
 
 /**
  * 这是一个同步的事件分发服务
+ * 
  * @author shuchaowen
  *
  * @param <T>
@@ -21,7 +22,7 @@ public class SimpleEventDispatcher<T extends Event> implements EventDispatcher<T
 	private volatile Collection<EventRegistrationInternal> eventListeners;
 	private final boolean concurrent;
 	private final int initialCapacity;
-	
+
 	public SimpleEventDispatcher(boolean concurrent) {
 		this(concurrent, 8);
 	}
@@ -32,9 +33,9 @@ public class SimpleEventDispatcher<T extends Event> implements EventDispatcher<T
 	}
 
 	public Collection<EventRegistrationInternal> getEventListeners() {
-		if(eventListeners == null){
+		if (eventListeners == null) {
 			synchronized (this) {
-				if(eventListeners == null){
+				if (eventListeners == null) {
 					this.eventListeners = CollectionFactory.createSet(concurrent, initialCapacity);
 				}
 			}
@@ -62,14 +63,15 @@ public class SimpleEventDispatcher<T extends Event> implements EventDispatcher<T
 		Assert.requiredArgument(event != null, "event");
 		publishEvent(event, getEventListeners().iterator());
 	}
-	
+
 	/**
 	 * 使用此方法的原因是即便发生了异常也将所有的listener通知一遍
+	 * 
 	 * @param event
 	 * @param iterator
 	 */
 	private void publishEvent(T event, Iterator<EventRegistrationInternal> iterator) {
-		if(iterator.hasNext()) {
+		if (iterator.hasNext()) {
 			EventRegistrationInternal registration = iterator.next();
 			try {
 				registration.getEventListener().onEvent(event);

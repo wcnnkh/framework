@@ -35,15 +35,15 @@ public abstract class HttpAccessor {
 	private ClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 
 	/**
-	 * Set the request factory that this accessor uses for obtaining client
-	 * request handles.
+	 * Set the request factory that this accessor uses for obtaining client request
+	 * handles.
 	 * <p>
-	 * The default is a {@link SimpleClientHttpRequestFactory} based on the
-	 * JDK's own HTTP libraries ({@link java.net.HttpURLConnection}).
+	 * The default is a {@link SimpleClientHttpRequestFactory} based on the JDK's
+	 * own HTTP libraries ({@link java.net.HttpURLConnection}).
 	 * <p>
-	 * <b>Note that the standard JDK HTTP library does not support the HTTP
-	 * PATCH method. Configure the Apache HttpComponents or OkHttp request
-	 * factory to enable PATCH.</b>
+	 * <b>Note that the standard JDK HTTP library does not support the HTTP PATCH
+	 * method. Configure the Apache HttpComponents or OkHttp request factory to
+	 * enable PATCH.</b>
 	 * 
 	 * @see #createRequest(URI, HttpMethod)
 	 */

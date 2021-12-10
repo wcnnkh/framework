@@ -70,7 +70,7 @@ public interface Resource extends InputStreamSource, EventRegistry<ChangeEvent<R
 	default EventRegistration registerListener(EventListener<ChangeEvent<Resource>> eventListener) {
 		return EventRegistration.EMPTY;
 	}
-	
+
 	@Override
 	default <T, E extends Throwable> T read(Processor<InputStream, ? extends T, E> processor) throws IOException, E {
 		if (!exists()) {

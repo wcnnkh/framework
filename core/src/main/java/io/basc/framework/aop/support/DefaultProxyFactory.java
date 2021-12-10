@@ -10,8 +10,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-public class DefaultProxyFactory extends AbstractConfigurableProxyFactory
-		implements ConfigurableProxyFactory {
+public class DefaultProxyFactory extends AbstractConfigurableProxyFactory implements ConfigurableProxyFactory {
 	private volatile List<ProxyFactory> proxyFactories;
 
 	@Override
@@ -33,8 +32,7 @@ public class DefaultProxyFactory extends AbstractConfigurableProxyFactory
 			}
 
 			this.proxyFactories.add(proxyFactory);
-			Collections.sort(proxyFactories,
-					OrderComparator.INSTANCE.reversed());
+			Collections.sort(proxyFactories, OrderComparator.INSTANCE.reversed());
 		}
 	}
 }

@@ -29,19 +29,19 @@ import io.basc.framework.util.Assert;
  * Inspired by {@code com.google.common.util.concurrent.ExecutionList}.
  *
  */
-public class ListenableFutureCallbackRegistry<T> implements Listenable<T>{
+public class ListenableFutureCallbackRegistry<T> implements Listenable<T> {
 
 	private final Queue<SuccessCallback<? super T>> successCallbacks = new LinkedList<SuccessCallback<? super T>>();
 
 	private final Queue<FailureCallback> failureCallbacks = new LinkedList<FailureCallback>();
-	
+
 	private State state = State.NEW;
 
 	private Object result = null;
 
 	private final Object mutex = new Object();
-	
-	public void reset(){
+
+	public void reset() {
 		synchronized (this.mutex) {
 			result = null;
 			state = State.NEW;
@@ -49,13 +49,13 @@ public class ListenableFutureCallbackRegistry<T> implements Listenable<T>{
 			successCallbacks.clear();
 		}
 	}
-	
+
 	public void addCallback(SuccessCallback<? super T> successCallback, FailureCallback failureCallback) {
-		if(successCallback != null){
+		if (successCallback != null) {
 			addSuccessCallback(successCallback);
 		}
-		
-		if(failureCallback != null){
+
+		if (failureCallback != null) {
 			addFailureCallback(failureCallback);
 		}
 	}
@@ -63,8 +63,7 @@ public class ListenableFutureCallbackRegistry<T> implements Listenable<T>{
 	/**
 	 * Add the given callback to this registry.
 	 * 
-	 * @param callback
-	 *            the callback to add
+	 * @param callback the callback to add
 	 */
 	public void addCallback(ListenableFutureCallback<? super T> callback) {
 		Assert.notNull(callback, "'callback' must not be null");
@@ -104,8 +103,7 @@ public class ListenableFutureCallbackRegistry<T> implements Listenable<T>{
 	/**
 	 * Add the given success callback to this registry.
 	 * 
-	 * @param callback
-	 *            the success callback to add
+	 * @param callback the success callback to add
 	 */
 	public void addSuccessCallback(SuccessCallback<? super T> callback) {
 		Assert.notNull(callback, "'callback' must not be null");
@@ -126,8 +124,7 @@ public class ListenableFutureCallbackRegistry<T> implements Listenable<T>{
 	/**
 	 * Add the given failure callback to this registry.
 	 * 
-	 * @param callback
-	 *            the failure callback to add
+	 * @param callback the failure callback to add
 	 */
 	public void addFailureCallback(FailureCallback callback) {
 		Assert.notNull(callback, "'callback' must not be null");
@@ -149,8 +146,7 @@ public class ListenableFutureCallbackRegistry<T> implements Listenable<T>{
 	 * Trigger a {@link ListenableFutureCallback#onSuccess(Object)} call on all
 	 * added callbacks with the given result.
 	 * 
-	 * @param result
-	 *            the result to trigger the callbacks with
+	 * @param result the result to trigger the callbacks with
 	 */
 	public void success(T result) {
 		synchronized (this.mutex) {
@@ -164,11 +160,10 @@ public class ListenableFutureCallbackRegistry<T> implements Listenable<T>{
 	}
 
 	/**
-	 * Trigger a {@link ListenableFutureCallback#onFailure(Throwable)} call on
-	 * all added callbacks with the given {@code Throwable}.
+	 * Trigger a {@link ListenableFutureCallback#onFailure(Throwable)} call on all
+	 * added callbacks with the given {@code Throwable}.
 	 * 
-	 * @param ex
-	 *            the exception to trigger the callbacks with
+	 * @param ex the exception to trigger the callbacks with
 	 */
 	public void failure(Throwable ex) {
 		synchronized (this.mutex) {

@@ -226,7 +226,7 @@ public class MediaType extends MimeType implements Serializable {
 	 * A String equivalent of {@link MediaType#TEXT_XML}.
 	 */
 	public final static String TEXT_XML_VALUE = "text/xml";
-	
+
 	public static final MediaType TEXT_JAVASCRIPT;
 
 	private static final String PARAM_QUALITY_FACTOR = "q";
@@ -257,21 +257,18 @@ public class MediaType extends MimeType implements Serializable {
 	/**
 	 * Create a new {@code MediaType} for the given primary type.
 	 * <p>
-	 * The {@linkplain #getSubtype() subtype} is set to "&#42;", parameters
-	 * empty.
+	 * The {@linkplain #getSubtype() subtype} is set to "&#42;", parameters empty.
 	 * 
-	 * @param type
-	 *            the primary type
-	 * @throws IllegalArgumentException
-	 *             if any of the parameters contain illegal characters
+	 * @param type the primary type
+	 * @throws IllegalArgumentException if any of the parameters contain illegal
+	 *                                  characters
 	 */
 	public MediaType(String type) {
 		super(type);
 	}
 
 	public MediaType(MimeType mimeType) {
-		this(mimeType.getType(), mimeType.getSubtype(), mimeType
-				.getParameters());
+		this(mimeType.getType(), mimeType.getSubtype(), mimeType.getParameters());
 	}
 
 	/**
@@ -279,29 +276,24 @@ public class MediaType extends MimeType implements Serializable {
 	 * <p>
 	 * The parameters are empty.
 	 * 
-	 * @param type
-	 *            the primary type
-	 * @param subtype
-	 *            the subtype
-	 * @throws IllegalArgumentException
-	 *             if any of the parameters contain illegal characters
+	 * @param type    the primary type
+	 * @param subtype the subtype
+	 * @throws IllegalArgumentException if any of the parameters contain illegal
+	 *                                  characters
 	 */
 	public MediaType(String type, String subtype) {
-		super(type, subtype, Collections.<String, String> emptyMap());
+		super(type, subtype, Collections.<String, String>emptyMap());
 	}
 
 	/**
 	 * Create a new {@code MediaType} for the given type, subtype, and character
 	 * set.
 	 * 
-	 * @param type
-	 *            the primary type
-	 * @param subtype
-	 *            the subtype
-	 * @param charset
-	 *            the character set
-	 * @throws IllegalArgumentException
-	 *             if any of the parameters contain illegal characters
+	 * @param type    the primary type
+	 * @param subtype the subtype
+	 * @param charset the character set
+	 * @throws IllegalArgumentException if any of the parameters contain illegal
+	 *                                  characters
 	 */
 	public MediaType(String type, String subtype, Charset charset) {
 		super(type, subtype, charset);
@@ -311,30 +303,24 @@ public class MediaType extends MimeType implements Serializable {
 	 * Create a new {@code MediaType} for the given type, subtype, and quality
 	 * value.
 	 * 
-	 * @param type
-	 *            the primary type
-	 * @param subtype
-	 *            the subtype
-	 * @param qualityValue
-	 *            the quality value
-	 * @throws IllegalArgumentException
-	 *             if any of the parameters contain illegal characters
+	 * @param type         the primary type
+	 * @param subtype      the subtype
+	 * @param qualityValue the quality value
+	 * @throws IllegalArgumentException if any of the parameters contain illegal
+	 *                                  characters
 	 */
 	public MediaType(String type, String subtype, double qualityValue) {
-		this(type, subtype, Collections.singletonMap(PARAM_QUALITY_FACTOR,
-				Double.toString(qualityValue)));
+		this(type, subtype, Collections.singletonMap(PARAM_QUALITY_FACTOR, Double.toString(qualityValue)));
 	}
 
 	/**
-	 * Copy-constructor that copies the type, subtype and parameters of the
-	 * given {@code MediaType}, and allows to set the specified character set.
+	 * Copy-constructor that copies the type, subtype and parameters of the given
+	 * {@code MediaType}, and allows to set the specified character set.
 	 * 
-	 * @param other
-	 *            the other media type
-	 * @param charset
-	 *            the character set
-	 * @throws IllegalArgumentException
-	 *             if any of the parameters contain illegal characters
+	 * @param other   the other media type
+	 * @param charset the character set
+	 * @throws IllegalArgumentException if any of the parameters contain illegal
+	 *                                  characters
 	 */
 	public MediaType(MimeType other, Charset charset) {
 		super(other, charset);
@@ -348,29 +334,23 @@ public class MediaType extends MimeType implements Serializable {
 	 * Copy-constructor that copies the type and subtype of the given
 	 * {@code MediaType}, and allows for different parameter.
 	 * 
-	 * @param other
-	 *            the other media type
-	 * @param parameters
-	 *            the parameters, may be {@code null}
-	 * @throws IllegalArgumentException
-	 *             if any of the parameters contain illegal characters
+	 * @param other      the other media type
+	 * @param parameters the parameters, may be {@code null}
+	 * @throws IllegalArgumentException if any of the parameters contain illegal
+	 *                                  characters
 	 */
 	public MediaType(MimeType other, Map<String, String> parameters) {
 		super(other.getType(), other.getSubtype(), parameters);
 	}
 
 	/**
-	 * Create a new {@code MediaType} for the given type, subtype, and
-	 * parameters.
+	 * Create a new {@code MediaType} for the given type, subtype, and parameters.
 	 * 
-	 * @param type
-	 *            the primary type
-	 * @param subtype
-	 *            the subtype
-	 * @param parameters
-	 *            the parameters, may be {@code null}
-	 * @throws IllegalArgumentException
-	 *             if any of the parameters contain illegal characters
+	 * @param type       the primary type
+	 * @param subtype    the subtype
+	 * @param parameters the parameters, may be {@code null}
+	 * @throws IllegalArgumentException if any of the parameters contain illegal
+	 *                                  characters
 	 */
 	public MediaType(String type, String subtype, Map<String, String> parameters) {
 		super(type, subtype, parameters);
@@ -382,8 +362,7 @@ public class MediaType extends MimeType implements Serializable {
 		if (PARAM_QUALITY_FACTOR.equals(attribute)) {
 			value = unquote(value);
 			double d = Double.parseDouble(value);
-			Assert.isTrue(d >= 0D && d <= 1D, "Invalid quality value \""
-					+ value + "\": should be between 0.0 and 1.0");
+			Assert.isTrue(d >= 0D && d <= 1D, "Invalid quality value \"" + value + "\": should be between 0.0 and 1.0");
 		}
 	}
 
@@ -395,8 +374,7 @@ public class MediaType extends MimeType implements Serializable {
 	 */
 	public double getQualityValue() {
 		String qualityFactor = getParameter(PARAM_QUALITY_FACTOR);
-		return (qualityFactor != null ? Double
-				.parseDouble(unquote(qualityFactor)) : 1D);
+		return (qualityFactor != null ? Double.parseDouble(unquote(qualityFactor)) : 1D);
 	}
 
 	/**
@@ -409,8 +387,7 @@ public class MediaType extends MimeType implements Serializable {
 	 * Simply calls {@link #includes(MimeType)} but declared with a
 	 * {@code MediaType} parameter for binary backwards compatibility.
 	 * 
-	 * @param other
-	 *            the reference media type with which to compare
+	 * @param other the reference media type with which to compare
 	 * @return {@code true} if this media type includes the given media type;
 	 *         {@code false} otherwise
 	 */
@@ -419,8 +396,8 @@ public class MediaType extends MimeType implements Serializable {
 	}
 
 	/**
-	 * Indicate whether this {@code MediaType} is compatible with the given
-	 * media type.
+	 * Indicate whether this {@code MediaType} is compatible with the given media
+	 * type.
 	 * <p>
 	 * For instance, {@code text/*} is compatible with {@code text/plain},
 	 * {@code text/html}, and vice versa. In effect, this method is similar to
@@ -429,10 +406,9 @@ public class MediaType extends MimeType implements Serializable {
 	 * Simply calls {@link #isCompatibleWith(MimeType)} but declared with a
 	 * {@code MediaType} parameter for binary backwards compatibility.
 	 * 
-	 * @param other
-	 *            the reference media type with which to compare
-	 * @return {@code true} if this media type is compatible with the given
-	 *         media type; {@code false} otherwise
+	 * @param other the reference media type with which to compare
+	 * @return {@code true} if this media type is compatible with the given media
+	 *         type; {@code false} otherwise
 	 */
 	public boolean isCompatibleWith(MediaType other) {
 		return super.isCompatibleWith(other);
@@ -449,34 +425,29 @@ public class MediaType extends MimeType implements Serializable {
 		if (!mediaType.getParameters().containsKey(PARAM_QUALITY_FACTOR)) {
 			return this;
 		}
-		Map<String, String> params = new LinkedHashMap<String, String>(
-				getParameters());
-		params.put(PARAM_QUALITY_FACTOR,
-				mediaType.getParameters().get(PARAM_QUALITY_FACTOR));
+		Map<String, String> params = new LinkedHashMap<String, String>(getParameters());
+		params.put(PARAM_QUALITY_FACTOR, mediaType.getParameters().get(PARAM_QUALITY_FACTOR));
 		return new MediaType(this, params);
 	}
 
 	/**
 	 * Return a replica of this instance with its quality value removed.
 	 * 
-	 * @return the same instance if the media type doesn't contain a quality
-	 *         value, or a new one otherwise
+	 * @return the same instance if the media type doesn't contain a quality value,
+	 *         or a new one otherwise
 	 */
 	public MediaType removeQualityValue() {
 		if (!getParameters().containsKey(PARAM_QUALITY_FACTOR)) {
 			return this;
 		}
-		Map<String, String> params = new LinkedHashMap<String, String>(
-				getParameters());
+		Map<String, String> params = new LinkedHashMap<String, String>(getParameters());
 		params.remove(PARAM_QUALITY_FACTOR);
 		return new MediaType(this, params);
 	}
 
 	/**
-	 * @param value
-	 *            the string to parse
-	 * @throws InvalidMediaTypeException
-	 *             if the media type value cannot be parsed
+	 * @param value the string to parse
+	 * @throws InvalidMediaTypeException if the media type value cannot be parsed
 	 * @see #parseMediaType(String)
 	 */
 	public static MediaType valueOf(String value) {
@@ -486,11 +457,9 @@ public class MediaType extends MimeType implements Serializable {
 	/**
 	 * Parse the given String into a single {@code MediaType}.
 	 * 
-	 * @param mediaType
-	 *            the string to parse
+	 * @param mediaType the string to parse
 	 * @return the media type
-	 * @throws InvalidMediaTypeException
-	 *             if the media type value cannot be parsed
+	 * @throws InvalidMediaTypeException if the media type value cannot be parsed
 	 */
 	public static MediaType parseMediaType(String mediaType) {
 		MimeType type;
@@ -500,8 +469,7 @@ public class MediaType extends MimeType implements Serializable {
 			throw new InvalidMediaTypeException(ex);
 		}
 		try {
-			return new MediaType(type.getType(), type.getSubtype(),
-					type.getParameters());
+			return new MediaType(type.getType(), type.getSubtype(), type.getParameters());
 		} catch (IllegalArgumentException ex) {
 			throw new InvalidMediaTypeException(mediaType, ex.getMessage());
 		}
@@ -513,11 +481,9 @@ public class MediaType extends MimeType implements Serializable {
 	 * <p>
 	 * This method can be used to parse an Accept or Content-Type header.
 	 * 
-	 * @param mediaTypes
-	 *            the string to parse
+	 * @param mediaTypes the string to parse
 	 * @return the list of media types
-	 * @throws InvalidMediaTypeException
-	 *             if the media type value cannot be parsed
+	 * @throws InvalidMediaTypeException if the media type value cannot be parsed
 	 */
 	public static List<MediaType> parseMediaTypes(String mediaTypes) {
 		if (StringUtils.isEmpty(mediaTypes)) {
@@ -532,20 +498,18 @@ public class MediaType extends MimeType implements Serializable {
 	}
 
 	/**
-	 * Parse the given list of (potentially) comma-separated strings into a list
-	 * of {@code MediaType} objects.
+	 * Parse the given list of (potentially) comma-separated strings into a list of
+	 * {@code MediaType} objects.
 	 * <p>
 	 * This method can be used to parse an Accept or Content-Type header.
 	 * 
-	 * @param mediaTypes
-	 *            the string to parse
+	 * @param mediaTypes the string to parse
 	 * @return the list of media types
-	 * @throws InvalidMediaTypeException
-	 *             if the media type value cannot be parsed
+	 * @throws InvalidMediaTypeException if the media type value cannot be parsed
 	 */
 	public static List<MediaType> parseMediaTypes(List<String> mediaTypes) {
 		if (CollectionUtils.isEmpty(mediaTypes)) {
-			return Collections.<MediaType> emptyList();
+			return Collections.<MediaType>emptyList();
 		} else if (mediaTypes.size() == 1) {
 			return parseMediaTypes(mediaTypes.get(0));
 		} else {
@@ -564,8 +528,7 @@ public class MediaType extends MimeType implements Serializable {
 	 * This method can be used to for an {@code Accept} or {@code Content-Type}
 	 * header.
 	 * 
-	 * @param mediaTypes
-	 *            the media types to create a string representation for
+	 * @param mediaTypes the media types to create a string representation for
 	 * @return the string representation
 	 */
 	public static String toString(Collection<MediaType> mediaTypes) {
@@ -577,11 +540,10 @@ public class MediaType extends MimeType implements Serializable {
 	 * <p>
 	 * Given two media types:
 	 * <ol>
-	 * <li>if either media type has a {@linkplain #isWildcardType() wildcard
-	 * type}, then the media type without the wildcard is ordered before the
-	 * other.</li>
-	 * <li>if the two media types have different {@linkplain #getType() types},
-	 * then they are considered equal and remain their current order.</li>
+	 * <li>if either media type has a {@linkplain #isWildcardType() wildcard type},
+	 * then the media type without the wildcard is ordered before the other.</li>
+	 * <li>if the two media types have different {@linkplain #getType() types}, then
+	 * they are considered equal and remain their current order.</li>
 	 * <li>if either media type has a {@linkplain #isWildcardSubtype() wildcard
 	 * subtype}, then the media type without the wildcard is sorted before the
 	 * other.</li>
@@ -589,23 +551,22 @@ public class MediaType extends MimeType implements Serializable {
 	 * subtypes}, then they are considered equal and remain their current order.
 	 * </li>
 	 * <li>if the two media types have different {@linkplain #getQualityValue()
-	 * quality value}, then the media type with the highest quality value is
-	 * ordered before the other.</li>
+	 * quality value}, then the media type with the highest quality value is ordered
+	 * before the other.</li>
 	 * <li>if the two media types have a different amount of
-	 * {@linkplain #getParameter(String) parameters}, then the media type with
-	 * the most parameters is ordered before the other.</li>
+	 * {@linkplain #getParameter(String) parameters}, then the media type with the
+	 * most parameters is ordered before the other.</li>
 	 * </ol>
 	 * <p>
-	 * For example: <blockquote>audio/basic &lt; audio/* &lt;
-	 * *&#047;*</blockquote> <blockquote>audio/* &lt; audio/*;q=0.7;
-	 * audio/*;q=0.3</blockquote> <blockquote>audio/basic;level=1 &lt;
-	 * audio/basic</blockquote> <blockquote>audio/basic ==
-	 * text/html</blockquote> <blockquote>audio/basic == audio/wave</blockquote>
+	 * For example: <blockquote>audio/basic &lt; audio/* &lt; *&#047;*</blockquote>
+	 * <blockquote>audio/* &lt; audio/*;q=0.7; audio/*;q=0.3</blockquote>
+	 * <blockquote>audio/basic;level=1 &lt; audio/basic</blockquote>
+	 * <blockquote>audio/basic == text/html</blockquote> <blockquote>audio/basic ==
+	 * audio/wave</blockquote>
 	 * 
-	 * @param mediaTypes
-	 *            the list of media types to be sorted
-	 * @see <a href="https://tools.ietf.org/html/rfc7231#section-5.3.2">HTTP
-	 *      1.1: Semantics and Content, section 5.3.2</a>
+	 * @param mediaTypes the list of media types to be sorted
+	 * @see <a href="https://tools.ietf.org/html/rfc7231#section-5.3.2">HTTP 1.1:
+	 *      Semantics and Content, section 5.3.2</a>
 	 */
 	public static void sortBySpecificity(List<MediaType> mediaTypes) {
 		Assert.notNull(mediaTypes, "'mediaTypes' must not be null");
@@ -620,13 +581,12 @@ public class MediaType extends MimeType implements Serializable {
 	 * Given two media types:
 	 * <ol>
 	 * <li>if the two media types have different {@linkplain #getQualityValue()
-	 * quality value}, then the media type with the highest quality value is
-	 * ordered before the other.</li>
-	 * <li>if either media type has a {@linkplain #isWildcardType() wildcard
-	 * type}, then the media type without the wildcard is ordered before the
-	 * other.</li>
-	 * <li>if the two media types have different {@linkplain #getType() types},
-	 * then they are considered equal and remain their current order.</li>
+	 * quality value}, then the media type with the highest quality value is ordered
+	 * before the other.</li>
+	 * <li>if either media type has a {@linkplain #isWildcardType() wildcard type},
+	 * then the media type without the wildcard is ordered before the other.</li>
+	 * <li>if the two media types have different {@linkplain #getType() types}, then
+	 * they are considered equal and remain their current order.</li>
 	 * <li>if either media type has a {@linkplain #isWildcardSubtype() wildcard
 	 * subtype}, then the media type without the wildcard is sorted before the
 	 * other.</li>
@@ -634,12 +594,11 @@ public class MediaType extends MimeType implements Serializable {
 	 * subtypes}, then they are considered equal and remain their current order.
 	 * </li>
 	 * <li>if the two media types have a different amount of
-	 * {@linkplain #getParameter(String) parameters}, then the media type with
-	 * the most parameters is ordered before the other.</li>
+	 * {@linkplain #getParameter(String) parameters}, then the media type with the
+	 * most parameters is ordered before the other.</li>
 	 * </ol>
 	 * 
-	 * @param mediaTypes
-	 *            the list of media types to be sorted
+	 * @param mediaTypes the list of media types to be sorted
 	 * @see #getQualityValue()
 	 */
 	public static void sortByQualityValue(List<MediaType> mediaTypes) {
@@ -659,8 +618,7 @@ public class MediaType extends MimeType implements Serializable {
 	public static void sortBySpecificityAndQuality(List<MediaType> mediaTypes) {
 		Assert.notNull(mediaTypes, "'mediaTypes' must not be null");
 		if (mediaTypes.size() > 1) {
-			Collections.sort(mediaTypes, new CompoundComparator<MediaType>(
-					MediaType.SPECIFICITY_COMPARATOR,
+			Collections.sort(mediaTypes, new CompoundComparator<MediaType>(MediaType.SPECIFICITY_COMPARATOR,
 					MediaType.QUALITY_VALUE_COMPARATOR));
 		}
 	}
@@ -676,42 +634,36 @@ public class MediaType extends MimeType implements Serializable {
 			int qualityComparison = Double.compare(quality2, quality1);
 			if (qualityComparison != 0) {
 				return qualityComparison; // audio/*;q=0.7 < audio/*;q=0.3
-			} else if (mediaType1.isWildcardType()
-					&& !mediaType2.isWildcardType()) { // */*
-														// <
-														// audio/*
+			} else if (mediaType1.isWildcardType() && !mediaType2.isWildcardType()) { // */*
+																						// <
+																						// audio/*
 				return 1;
-			} else if (mediaType2.isWildcardType()
-					&& !mediaType1.isWildcardType()) { // audio/*
-														// >
-														// */*
+			} else if (mediaType2.isWildcardType() && !mediaType1.isWildcardType()) { // audio/*
+																						// >
+																						// */*
 				return -1;
 			} else if (!mediaType1.getType().equals(mediaType2.getType())) { // audio/basic
 																				// ==
 																				// text/html
 				return 0;
 			} else { // mediaType1.getType().equals(mediaType2.getType())
-				if (mediaType1.isWildcardSubtype()
-						&& !mediaType2.isWildcardSubtype()) { // audio/*
-																// <
-																// audio/basic
+				if (mediaType1.isWildcardSubtype() && !mediaType2.isWildcardSubtype()) { // audio/*
+																							// <
+																							// audio/basic
 					return 1;
-				} else if (mediaType2.isWildcardSubtype()
-						&& !mediaType1.isWildcardSubtype()) { // audio/basic
-																// >
-																// audio/*
+				} else if (mediaType2.isWildcardSubtype() && !mediaType1.isWildcardSubtype()) { // audio/basic
+																								// >
+																								// audio/*
 					return -1;
-				} else if (!mediaType1.getSubtype().equals(
-						mediaType2.getSubtype())) { // audio/basic
-													// ==
-													// audio/wave
+				} else if (!mediaType1.getSubtype().equals(mediaType2.getSubtype())) { // audio/basic
+																						// ==
+																						// audio/wave
 					return 0;
 				} else {
 					int paramsSize1 = mediaType1.getParameters().size();
 					int paramsSize2 = mediaType2.getParameters().size();
 					// audio/basic;level=1 < audio/basic
-					return (paramsSize2 < paramsSize1 ? -1
-							: (paramsSize2 == paramsSize1 ? 0 : 1));
+					return (paramsSize2 < paramsSize1 ? -1 : (paramsSize2 == paramsSize1 ? 0 : 1));
 				}
 			}
 		}
@@ -723,8 +675,7 @@ public class MediaType extends MimeType implements Serializable {
 	public static final Comparator<MediaType> SPECIFICITY_COMPARATOR = new SpecificityComparator<MediaType>() {
 
 		@Override
-		protected int compareParameters(MediaType mediaType1,
-				MediaType mediaType2) {
+		protected int compareParameters(MediaType mediaType1, MediaType mediaType2) {
 			double quality1 = mediaType1.getQualityValue();
 			double quality2 = mediaType2.getQualityValue();
 			int qualityComparison = Double.compare(quality2, quality1);

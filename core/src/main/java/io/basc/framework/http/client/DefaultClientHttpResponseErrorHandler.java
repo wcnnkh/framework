@@ -11,13 +11,12 @@ import io.basc.framework.http.client.exception.HttpServerErrorException;
 import io.basc.framework.http.client.exception.UnknownHttpStatusCodeException;
 import io.basc.framework.io.IOUtils;
 
-public class DefaultClientHttpResponseErrorHandler implements
-		ClientHttpResponseErrorHandler {
+public class DefaultClientHttpResponseErrorHandler implements ClientHttpResponseErrorHandler {
 
 	/**
-	 * Delegates to {@link #hasError(HttpStatus)} (for a standard status enum
-	 * value) or {@link #hasError(int)} (for an unknown status code) with the
-	 * response status code.
+	 * Delegates to {@link #hasError(HttpStatus)} (for a standard status enum value)
+	 * or {@link #hasError(int)} (for an unknown status code) with the response
+	 * status code.
 	 * 
 	 * @see ClientHttpResponse#getRawStatusCode()
 	 * @see #hasError(HttpStatus)
@@ -40,8 +39,7 @@ public class DefaultClientHttpResponseErrorHandler implements
 	 * {@link HttpStatus.Series#SERVER_ERROR SERVER_ERROR}. Can be overridden in
 	 * subclasses.
 	 * 
-	 * @param statusCode
-	 *            the HTTP status code as enum value
+	 * @param statusCode the HTTP status code as enum value
 	 * @return {@code true} if the response indicates an error; {@code false}
 	 *         otherwise
 	 * @see HttpStatus#is4xxClientError()
@@ -59,8 +57,7 @@ public class DefaultClientHttpResponseErrorHandler implements
 	 * {@code HttpStatus.Series#SERVER_ERROR SERVER_ERROR}. Can be overridden in
 	 * subclasses.
 	 * 
-	 * @param unknownStatusCode
-	 *            the HTTP status code as raw value
+	 * @param unknownStatusCode the HTTP status code as raw value
 	 * @return {@code true} if the response indicates an error; {@code false}
 	 *         otherwise
 	 * @see HttpStatus.Series#CLIENT_ERROR
@@ -68,31 +65,27 @@ public class DefaultClientHttpResponseErrorHandler implements
 	 */
 	protected boolean hasError(int unknownStatusCode) {
 		int seriesCode = unknownStatusCode / 100;
-		return (seriesCode == HttpStatus.Series.CLIENT_ERROR.value() || seriesCode == HttpStatus.Series.SERVER_ERROR
-				.value());
+		return (seriesCode == HttpStatus.Series.CLIENT_ERROR.value()
+				|| seriesCode == HttpStatus.Series.SERVER_ERROR.value());
 	}
 
 	/**
-	 * This default implementation throws a {@link HttpClientErrorException} if
-	 * the response status code is
-	 * {@link HttpServerErrorException} if it is
+	 * This default implementation throws a {@link HttpClientErrorException} if the
+	 * response status code is {@link HttpServerErrorException} if it is
 	 * {@link RestClientException} in other cases.
 	 */
 	public void handleError(ClientHttpResponse response) throws IOException {
 		HttpStatus statusCode = getHttpStatusCode(response);
 		switch (statusCode.series()) {
 		case CLIENT_ERROR:
-			throw new HttpClientErrorException(statusCode,
-					response.getStatusText(), response.getHeaders(),
+			throw new HttpClientErrorException(statusCode, response.getStatusText(), response.getHeaders(),
 					getResponseBody(response), getCharset(response));
 		case SERVER_ERROR:
-			throw new HttpServerErrorException(statusCode,
-					response.getStatusText(), response.getHeaders(),
+			throw new HttpServerErrorException(statusCode, response.getStatusText(), response.getHeaders(),
 					getResponseBody(response), getCharset(response));
 		default:
-			throw new UnknownHttpStatusCodeException(statusCode.value(),
-					response.getStatusText(), response.getHeaders(),
-					getResponseBody(response), getCharset(response));
+			throw new UnknownHttpStatusCodeException(statusCode.value(), response.getStatusText(),
+					response.getHeaders(), getResponseBody(response), getCharset(response));
 		}
 	}
 
@@ -101,35 +94,28 @@ public class DefaultClientHttpResponseErrorHandler implements
 	 * <p>
 	 * Note: Only called from {@link #handleError}, not from {@link #hasError}.
 	 * 
-	 * @param response
-	 *            the response to inspect
+	 * @param response the response to inspect
 	 * @return the associated HTTP status
-	 * @throws IOException
-	 *             in case of I/O errors
-	 * @throws UnknownHttpStatusCodeException
-	 *             in case of an unknown status code that cannot be represented
-	 *             with the {@link HttpStatus} enum
+	 * @throws IOException                    in case of I/O errors
+	 * @throws UnknownHttpStatusCodeException in case of an unknown status code that
+	 *                                        cannot be represented with the
+	 *                                        {@link HttpStatus} enum
 	 */
-	protected HttpStatus getHttpStatusCode(ClientHttpResponse response)
-			throws IOException {
+	protected HttpStatus getHttpStatusCode(ClientHttpResponse response) throws IOException {
 		try {
 			return response.getStatusCode();
 		} catch (IllegalArgumentException ex) {
-			throw new UnknownHttpStatusCodeException(
-					response.getRawStatusCode(), response.getStatusText(),
-					response.getHeaders(), getResponseBody(response),
-					getCharset(response));
+			throw new UnknownHttpStatusCodeException(response.getRawStatusCode(), response.getStatusText(),
+					response.getHeaders(), getResponseBody(response), getCharset(response));
 		}
 	}
 
 	/**
-	 * Read the body of the given response (for inclusion in a status
-	 * exception).
+	 * Read the body of the given response (for inclusion in a status exception).
 	 * 
-	 * @param response
-	 *            the response to inspect
-	 * @return the response body as a byte array, or an empty byte array if the
-	 *         body could not be read
+	 * @param response the response to inspect
+	 * @return the response body as a byte array, or an empty byte array if the body
+	 *         could not be read
 	 */
 	protected byte[] getResponseBody(ClientHttpResponse response) {
 		try {
@@ -141,11 +127,9 @@ public class DefaultClientHttpResponseErrorHandler implements
 	}
 
 	/**
-	 * Determine the charset of the response (for inclusion in a status
-	 * exception).
+	 * Determine the charset of the response (for inclusion in a status exception).
 	 * 
-	 * @param response
-	 *            the response to inspect
+	 * @param response the response to inspect
 	 * @return the associated charset, or {@code null} if none
 	 */
 	protected Charset getCharset(ClientHttpResponse response) {

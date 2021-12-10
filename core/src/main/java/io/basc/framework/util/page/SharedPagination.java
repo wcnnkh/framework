@@ -17,7 +17,7 @@ public class SharedPagination<T> extends SharedPage<Long, T> implements Paginati
 	public SharedPagination(long start) {
 		super(start);
 	}
-	
+
 	public SharedPagination(long start, long count) {
 		super(start, count);
 	}

@@ -38,12 +38,13 @@ public class TimeoutRetryPolicy implements RetryPolicy {
 
 	/**
 	 * Setter for timeout in milliseconds. Default is {@link #DEFAULT_TIMEOUT}.
+	 * 
 	 * @param timeout
 	 */
 	public void setTimeout(long timeout) {
 		this.timeout = timeout;
 	}
-	
+
 	/**
 	 * The value of the timeout.
 	 * 

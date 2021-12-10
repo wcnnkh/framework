@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 public abstract class AbstractHolder<T> implements Holder<T> {
 	private final AtomicBoolean active = new AtomicBoolean(true);
 	private final Supplier<T> supplier;
-	
+
 	public AbstractHolder(Supplier<T> supplier) {
 		this.supplier = supplier;
 	}

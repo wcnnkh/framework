@@ -18,7 +18,8 @@ public abstract class InstanceParametersFactory extends AbstractParametersFactor
 	private final Environment environment;
 	private final ParameterFactory defaultValueFactory;
 
-	public InstanceParametersFactory(NoArgsInstanceFactory instanceFactory, Environment environment, ParameterFactory defaultValueFactory) {
+	public InstanceParametersFactory(NoArgsInstanceFactory instanceFactory, Environment environment,
+			ParameterFactory defaultValueFactory) {
 		this.instanceFactory = instanceFactory;
 		this.environment = environment;
 		this.defaultValueFactory = defaultValueFactory;
@@ -60,7 +61,7 @@ public abstract class InstanceParametersFactory extends AbstractParametersFactor
 		Value value = getEnvironment().getValue(name);
 		if (value == null) {
 			value = new AnyValue(defaultValueFactory.getParameter(parameterDescriptor));
-			if(value.isEmpty()) {
+			if (value.isEmpty()) {
 				return null;
 			}
 		}

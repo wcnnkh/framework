@@ -45,7 +45,6 @@ final class AnnotationTypeMappings {
 
 	private AnnotationTypeMappings(RepeatableContainers repeatableContainers, AnnotationFilter filter,
 			Class<? extends Annotation> annotationType) {
-
 		this.repeatableContainers = repeatableContainers;
 		this.filter = filter;
 		this.mappings = new ArrayList<>();
@@ -89,7 +88,6 @@ final class AnnotationTypeMappings {
 
 	private void addIfPossible(Deque<AnnotationTypeMapping> queue, @Nullable AnnotationTypeMapping source,
 			Class<? extends Annotation> annotationType, @Nullable Annotation ann) {
-
 		try {
 			queue.addLast(new AnnotationTypeMapping(source, annotationType, ann));
 		} catch (Exception ex) {
@@ -163,7 +161,6 @@ final class AnnotationTypeMappings {
 	 */
 	static AnnotationTypeMappings forAnnotationType(Class<? extends Annotation> annotationType,
 			AnnotationFilter annotationFilter) {
-
 		return forAnnotationType(annotationType, RepeatableContainers.standardRepeatables(), annotationFilter);
 	}
 
@@ -179,7 +176,6 @@ final class AnnotationTypeMappings {
 	 */
 	static AnnotationTypeMappings forAnnotationType(Class<? extends Annotation> annotationType,
 			RepeatableContainers repeatableContainers, AnnotationFilter annotationFilter) {
-
 		if (repeatableContainers == RepeatableContainers.standardRepeatables()) {
 			return standardRepeatablesCache
 					.computeIfAbsent(annotationFilter, key -> new Cache(repeatableContainers, key)).get(annotationType);

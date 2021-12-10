@@ -10,5 +10,5 @@ public class ExhaustedRetryException extends RetryException {
 	public ExhaustedRetryException(String msg) {
 		super(msg);
 	}
-	
+
 }

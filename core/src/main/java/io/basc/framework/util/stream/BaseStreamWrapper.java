@@ -11,9 +11,10 @@ public abstract class BaseStreamWrapper<T, W extends BaseStream<T, W>> extends W
 	 * 默认是自动关闭的
 	 */
 	static final boolean AUTO_CLOSE = true;
-	
+
 	/**
 	 * 默认是自动关闭的
+	 * 
 	 * @see #afterExecution()
 	 */
 	private boolean autoClose = AUTO_CLOSE;
@@ -23,17 +24,18 @@ public abstract class BaseStreamWrapper<T, W extends BaseStream<T, W>> extends W
 		super(wrappedTarget);
 		initWrap(wrappedTarget);
 	}
-	
+
 	public boolean isClosed() {
 		return closed;
 	}
-	
+
 	/**
 	 * 初始化解析(注意可能会执行多次)
+	 * 
 	 * @see Cursor
 	 * @param wrap
 	 */
-	protected void initWrap(W wrap){
+	protected void initWrap(W wrap) {
 		if (wrappedTarget instanceof BaseStreamWrapper) {
 			this.autoClose = ((BaseStreamWrapper<?, ?>) wrappedTarget).autoClose;
 		}
@@ -76,8 +78,8 @@ public abstract class BaseStreamWrapper<T, W extends BaseStream<T, W>> extends W
 
 	@Override
 	public void close() {
-		if(closed) {
-			return ;
+		if (closed) {
+			return;
 		}
 		closed = true;
 		wrappedTarget.close();

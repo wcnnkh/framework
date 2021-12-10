@@ -31,13 +31,13 @@ public final class GsonSupport extends AbstractJSONSupport {
 		com.google.gson.JsonElement gsonJsonElement = gson.fromJson(text, com.google.gson.JsonElement.class);
 		return new GsonElement(gsonJsonElement, gson);
 	}
-	
+
 	@Override
 	public JsonElement parseJson(Reader reader) throws IOException, JSONException {
 		com.google.gson.JsonElement gsonJsonElement = gson.fromJson(reader, com.google.gson.JsonElement.class);
 		return new GsonElement(gsonJsonElement, gson);
 	}
-	
+
 	@Override
 	protected String toJsonStringInternal(Object obj) {
 		return gson.toJson(obj);

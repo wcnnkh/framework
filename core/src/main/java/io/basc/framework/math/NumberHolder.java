@@ -8,7 +8,7 @@ import java.math.BigDecimal;
  * @author shuchaowen
  *
  */
-public interface NumberHolder extends Comparable<NumberHolder>{
+public interface NumberHolder extends Comparable<NumberHolder> {
 	/**
 	 * 加法
 	 * 
@@ -56,9 +56,10 @@ public interface NumberHolder extends Comparable<NumberHolder>{
 	 * @return
 	 */
 	NumberHolder pow(NumberHolder numberHolder);
-	
+
 	/**
 	 * 绝对值
+	 * 
 	 * @return
 	 */
 	NumberHolder abs();

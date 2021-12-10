@@ -14,10 +14,10 @@ public class AcceptIterator<E> extends AbstractIterator<E> {
 	}
 
 	public boolean hasNext() {
-		if(accept == null){
+		if (accept == null) {
 			return iterator.hasNext();
 		}
-		
+
 		if (supplier != null) {
 			return true;
 		}
@@ -33,10 +33,10 @@ public class AcceptIterator<E> extends AbstractIterator<E> {
 	}
 
 	public E next() {
-		if(accept == null){
+		if (accept == null) {
 			return iterator.next();
 		}
-		
+
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}

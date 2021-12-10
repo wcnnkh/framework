@@ -15,18 +15,19 @@ public abstract class OrderUtils {
 
 	static {
 		try {
-			priorityAnnotationType = (Class<? extends Annotation>)
-					ClassUtils.forName("javax.annotation.Priority", OrderUtils.class.getClassLoader());
-		}
-		catch (Throwable ex) {
-			// javax.annotation.Priority not available, or present but not loadable (on JDK 6)
+			priorityAnnotationType = (Class<? extends Annotation>) ClassUtils.forName("javax.annotation.Priority",
+					OrderUtils.class.getClassLoader());
+		} catch (Throwable ex) {
+			// javax.annotation.Priority not available, or present but not loadable (on JDK
+			// 6)
 		}
 	}
 
-
 	/**
 	 * Return the order on the specified {@code type}.
-	 * <p>Takes care of {@link Order @Order} and {@code @javax.annotation.Priority}.
+	 * <p>
+	 * Takes care of {@link Order @Order} and {@code @javax.annotation.Priority}.
+	 * 
 	 * @param type the type to handle
 	 * @return the order value, or {@code null} if none can be found
 	 * @see #getPriority(Class)
@@ -36,11 +37,14 @@ public abstract class OrderUtils {
 	}
 
 	/**
-	 * Return the order on the specified {@code type}, or the specified
-	 * default value if none can be found.
-	 * <p>Takes care of {@link Order @Order} and {@code @javax.annotation.Priority}.
+	 * Return the order on the specified {@code type}, or the specified default
+	 * value if none can be found.
+	 * <p>
+	 * Takes care of {@link Order @Order} and {@code @javax.annotation.Priority}.
+	 * 
 	 * @param type the type to handle
-	 * @return the priority value, or the specified default order if none can be found
+	 * @return the priority value, or the specified default order if none can be
+	 *         found
 	 * @see #getPriority(Class)
 	 */
 	public static Integer getOrder(Class<?> type, Integer defaultOrder) {
@@ -56,10 +60,12 @@ public abstract class OrderUtils {
 	}
 
 	/**
-	 * Return the value of the {@code javax.annotation.Priority} annotation
-	 * declared on the specified type, or {@code null} if none.
+	 * Return the value of the {@code javax.annotation.Priority} annotation declared
+	 * on the specified type, or {@code null} if none.
+	 * 
 	 * @param type the type to handle
-	 * @return the priority value if the annotation is declared, or {@code null} if none
+	 * @return the priority value if the annotation is declared, or {@code null} if
+	 *         none
 	 */
 	public static Integer getPriority(Class<?> type) {
 		if (priorityAnnotationType != null) {

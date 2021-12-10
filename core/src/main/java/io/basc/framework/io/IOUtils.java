@@ -82,7 +82,7 @@ public final class IOUtils {
 	private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
 	private static final int DEFAULT_READ_BUFFER_SIZE = 256;
-	
+
 	private static final byte[] EMPTY_CONTENT = new byte[0];
 
 	/**
@@ -1875,8 +1875,9 @@ public final class IOUtils {
 	}
 
 	/**
-	 * Copy the contents of the given InputStream into a new byte array.
-	 * Leaves the stream open when done.
+	 * Copy the contents of the given InputStream into a new byte array. Leaves the
+	 * stream open when done.
+	 * 
 	 * @param in the stream to copy from (may be {@code null} or empty)
 	 * @return the new byte array that has been copied to (possibly empty)
 	 * @throws IOException in case of I/O errors
@@ -1892,8 +1893,9 @@ public final class IOUtils {
 	}
 
 	/**
-	 * Copy the contents of the given InputStream into a String.
-	 * Leaves the stream open when done.
+	 * Copy the contents of the given InputStream into a String. Leaves the stream
+	 * open when done.
+	 * 
 	 * @param in the InputStream to copy from (may be {@code null} or empty)
 	 * @return the String that has been copied to (possibly empty)
 	 * @throws IOException in case of I/O errors
@@ -1914,9 +1916,10 @@ public final class IOUtils {
 	}
 
 	/**
-	 * Copy the contents of the given byte array to the given OutputStream.
-	 * Leaves the stream open when done.
-	 * @param in the byte array to copy from
+	 * Copy the contents of the given byte array to the given OutputStream. Leaves
+	 * the stream open when done.
+	 * 
+	 * @param in  the byte array to copy from
 	 * @param out the OutputStream to copy to
 	 * @throws IOException in case of I/O errors
 	 */
@@ -1930,9 +1933,10 @@ public final class IOUtils {
 	/**
 	 * Copy the contents of the given String to the given output OutputStream.
 	 * Leaves the stream open when done.
-	 * @param in the String to copy from
+	 * 
+	 * @param in      the String to copy from
 	 * @param charset the Charset
-	 * @param out the OutputStream to copy to
+	 * @param out     the OutputStream to copy to
 	 * @throws IOException in case of I/O errors
 	 */
 	public static void copy(String in, Charset charset, OutputStream out) throws IOException {
@@ -1947,13 +1951,16 @@ public final class IOUtils {
 
 	/**
 	 * Copy a range of content of the given InputStream to the given OutputStream.
-	 * <p>If the specified range exceeds the length of the InputStream, this copies
-	 * up to the end of the stream and returns the actual number of copied bytes.
-	 * <p>Leaves both streams open when done.
-	 * @param in the InputStream to copy from
-	 * @param out the OutputStream to copy to
+	 * <p>
+	 * If the specified range exceeds the length of the InputStream, this copies up
+	 * to the end of the stream and returns the actual number of copied bytes.
+	 * <p>
+	 * Leaves both streams open when done.
+	 * 
+	 * @param in    the InputStream to copy from
+	 * @param out   the OutputStream to copy to
 	 * @param start the position to start copying from
-	 * @param end the position to end copying
+	 * @param end   the position to end copying
 	 * @return the number of bytes copied
 	 * @throws IOException in case of I/O errors
 	 */
@@ -1972,12 +1979,10 @@ public final class IOUtils {
 			int bytesRead = in.read(buffer);
 			if (bytesRead == -1) {
 				break;
-			}
-			else if (bytesRead <= bytesToCopy) {
+			} else if (bytesRead <= bytesToCopy) {
 				out.write(buffer, 0, bytesRead);
 				bytesToCopy -= bytesRead;
-			}
-			else {
+			} else {
 				out.write(buffer, 0, (int) bytesToCopy);
 				bytesToCopy = 0;
 			}
@@ -1986,8 +1991,9 @@ public final class IOUtils {
 	}
 
 	/**
-	 * Drain the remaining content of the given InputStream.
-	 * Leaves the InputStream open when done.
+	 * Drain the remaining content of the given InputStream. Leaves the InputStream
+	 * open when done.
+	 * 
 	 * @param in the InputStream to drain
 	 * @return the number of bytes read
 	 * @throws IOException in case of I/O errors
@@ -2005,6 +2011,7 @@ public final class IOUtils {
 
 	/**
 	 * Return an efficient empty {@link InputStream}.
+	 * 
 	 * @return a {@link ByteArrayInputStream} based on an empty byte array
 	 */
 	public static InputStream emptyInput() {
@@ -2013,6 +2020,7 @@ public final class IOUtils {
 
 	/**
 	 * 包装成一个忽略close方法的流
+	 * 
 	 * @param out
 	 * @return
 	 */
@@ -2023,6 +2031,7 @@ public final class IOUtils {
 
 	/**
 	 * 包装成一个忽略close方法的流
+	 * 
 	 * @param out
 	 * @return
 	 */
@@ -2030,7 +2039,6 @@ public final class IOUtils {
 		Assert.notNull(out, "No OutputStream specified");
 		return new NonClosingOutputStream(out);
 	}
-
 
 	private static class NonClosingInputStream extends FilterInputStream {
 
@@ -2042,7 +2050,6 @@ public final class IOUtils {
 		public void close() throws IOException {
 		}
 	}
-
 
 	private static class NonClosingOutputStream extends FilterOutputStream {
 

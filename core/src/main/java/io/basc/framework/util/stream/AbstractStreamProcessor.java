@@ -3,7 +3,7 @@ package io.basc.framework.util.stream;
 import io.basc.framework.lang.Nullable;
 
 public abstract class AbstractStreamProcessor<T, E extends Throwable> implements StreamProcessor<T, E> {
-	//默认不自动关闭
+	// 默认不自动关闭
 	private boolean autoClose = false;
 	private boolean closed;
 	protected RunnableProcessor<E> closeProcessor;
@@ -17,7 +17,7 @@ public abstract class AbstractStreamProcessor<T, E extends Throwable> implements
 
 	@Override
 	public <S> StreamProcessor<S, E> map(Processor<T, ? extends S, ? extends E> processor) {
-		
+
 		return new AbstractStreamProcessor<S, E>() {
 
 			@Override

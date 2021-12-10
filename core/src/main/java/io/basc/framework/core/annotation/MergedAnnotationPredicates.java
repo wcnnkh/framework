@@ -81,7 +81,6 @@ public abstract class MergedAnnotationPredicates {
 	 */
 	public static <A extends Annotation> Predicate<MergedAnnotation<A>> firstRunOf(
 			Function<? super MergedAnnotation<A>, ?> valueExtractor) {
-
 		return new FirstRunOfPredicate<>(valueExtractor);
 	}
 
@@ -98,7 +97,6 @@ public abstract class MergedAnnotationPredicates {
 	 */
 	public static <A extends Annotation, K> Predicate<MergedAnnotation<A>> unique(
 			Function<? super MergedAnnotation<A>, K> keyExtractor) {
-
 		return new UniquePredicate<>(keyExtractor);
 	}
 

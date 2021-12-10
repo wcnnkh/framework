@@ -42,8 +42,7 @@ public class ExecutorServiceAdapter extends AbstractExecutorService {
 	/**
 	 * Create a new ExecutorServiceAdapter, using the given target executor.
 	 * 
-	 * @param taskExecutor
-	 *            the target executor to delegate to
+	 * @param taskExecutor the target executor to delegate to
 	 */
 	public ExecutorServiceAdapter(Executor executor) {
 		Assert.notNull(executor, "executor must not be null");

@@ -8,9 +8,8 @@ import io.basc.framework.util.concurrent.DelayableExecutor;
 
 import java.util.concurrent.TimeUnit;
 
-public class SimpleDelayableStringNamedEventDispatcher<T extends Event> extends
-		SimpleStringNamedEventDispatcher<T> implements
-		DelayableNamedEventDispatcher<String, T> {
+public class SimpleDelayableStringNamedEventDispatcher<T extends Event> extends SimpleStringNamedEventDispatcher<T>
+		implements DelayableNamedEventDispatcher<String, T> {
 	private final DelayableExecutor delayableExecutor;
 
 	public SimpleDelayableStringNamedEventDispatcher() {
@@ -29,8 +28,7 @@ public class SimpleDelayableStringNamedEventDispatcher<T extends Event> extends
 	}
 
 	@Override
-	public void publishEvent(String name, T event, long delay,
-			TimeUnit delayTimeUnit) {
+	public void publishEvent(String name, T event, long delay, TimeUnit delayTimeUnit) {
 		Assert.requiredArgument(delay >= 0, "delay");
 		delayableExecutor.schedule(() -> {
 			super.publishEvent(name, event);

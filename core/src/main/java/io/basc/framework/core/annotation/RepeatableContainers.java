@@ -44,7 +44,6 @@ public abstract class RepeatableContainers {
 	 * @return a new {@link RepeatableContainers} instance
 	 */
 	public RepeatableContainers and(Class<? extends Annotation> container, Class<? extends Annotation> repeatable) {
-
 		return new ExplicitRepeatableContainer(this, repeatable, container);
 	}
 
@@ -96,7 +95,6 @@ public abstract class RepeatableContainers {
 	 */
 	public static RepeatableContainers of(Class<? extends Annotation> repeatable,
 			@Nullable Class<? extends Annotation> container) {
-
 		return new ExplicitRepeatableContainer(null, repeatable, container);
 	}
 
@@ -173,7 +171,6 @@ public abstract class RepeatableContainers {
 
 		ExplicitRepeatableContainer(@Nullable RepeatableContainers parent, Class<? extends Annotation> repeatable,
 				@Nullable Class<? extends Annotation> container) {
-
 			super(parent);
 			Assert.notNull(repeatable, "Repeatable must not be null");
 			if (container == null) {

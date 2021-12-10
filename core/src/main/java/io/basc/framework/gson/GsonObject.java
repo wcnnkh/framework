@@ -13,7 +13,8 @@ import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
 import io.basc.framework.util.Pair;
 
-public final class GsonObject extends AbstractJson<String> implements JsonObject, Converter<Entry<String, com.google.gson.JsonElement>, Pair<String, JsonElement>> {
+public final class GsonObject extends AbstractJson<String>
+		implements JsonObject, Converter<Entry<String, com.google.gson.JsonElement>, Pair<String, JsonElement>> {
 	private com.google.gson.JsonObject gsonJsonObject;
 	private Gson gson;
 
@@ -33,7 +34,7 @@ public final class GsonObject extends AbstractJson<String> implements JsonObject
 
 	public JsonElement getValue(String key) {
 		com.google.gson.JsonElement gsonJsonElement = gsonJsonObject.get(key);
-		if(gsonJsonElement == null) {
+		if (gsonJsonElement == null) {
 			return getDefaultValue(key);
 		}
 
@@ -60,30 +61,30 @@ public final class GsonObject extends AbstractJson<String> implements JsonObject
 	public int hashCode() {
 		return gsonJsonObject.hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		if(obj == null){
+		if (obj == null) {
 			return false;
 		}
-		
-		if(obj instanceof GsonObject){
+
+		if (obj instanceof GsonObject) {
 			return gsonJsonObject.equals(((GsonObject) obj).gsonJsonObject);
 		}
-		
+
 		return false;
 	}
 
 	public boolean remove(String key) {
 		return gsonJsonObject.remove(key) != null;
 	}
-	
-	public Pair<String, JsonElement> convert(
-			Entry<String, com.google.gson.JsonElement> k) {
+
+	public Pair<String, JsonElement> convert(Entry<String, com.google.gson.JsonElement> k) {
 		return new Pair<String, JsonElement>(k.getKey(), new GsonElement(k.getValue(), gson));
 	}
 
 	public Iterator<Pair<String, JsonElement>> iterator() {
-		return new ConvertibleIterator<Entry<String, com.google.gson.JsonElement>, Pair<String,JsonElement>>(gsonJsonObject.entrySet().iterator(), this);
+		return new ConvertibleIterator<Entry<String, com.google.gson.JsonElement>, Pair<String, JsonElement>>(
+				gsonJsonObject.entrySet().iterator(), this);
 	}
 }

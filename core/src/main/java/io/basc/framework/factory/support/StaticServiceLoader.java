@@ -6,19 +6,19 @@ import java.util.Iterator;
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.factory.ServiceLoader;
 
-public final class StaticServiceLoader<S> implements ServiceLoader<S>{
+public final class StaticServiceLoader<S> implements ServiceLoader<S> {
 	private final Iterable<String> names;
 	private final NoArgsInstanceFactory instanceFactory;
-	
-	public StaticServiceLoader(NoArgsInstanceFactory instanceFactory, Iterable<String> names){
+
+	public StaticServiceLoader(NoArgsInstanceFactory instanceFactory, Iterable<String> names) {
 		this.instanceFactory = instanceFactory;
 		this.names = names;
 	}
-	
-	public StaticServiceLoader(NoArgsInstanceFactory instanceFactory, String ...names){
+
+	public StaticServiceLoader(NoArgsInstanceFactory instanceFactory, String... names) {
 		this(instanceFactory, Arrays.asList(names));
 	}
-	
+
 	public void reload() {
 	}
 

@@ -27,8 +27,7 @@ public class DefaultMessageConverters extends MessageConverters {
 		addService(new StringMessageConverter(conversionServices));
 		addService(new ByteArrayMessageConverter());
 		addService(new HttpFormMessageConveter());
-		addService(new MultipartMessageConverter(
-				InetUtils.getMultipartMessageResolver()));
+		addService(new MultipartMessageConverter(InetUtils.getMultipartMessageResolver()));
 		addService(new ResourceMessageConverter());
 	}
 
@@ -47,8 +46,7 @@ public class DefaultMessageConverters extends MessageConverters {
 	@Override
 	protected void aware(MessageConverter messageConverter) {
 		if (messageConverter instanceof ConversionServiceAware) {
-			((ConversionServiceAware) messageConverter)
-					.setConversionService(conversionServices);
+			((ConversionServiceAware) messageConverter).setConversionService(conversionServices);
 		}
 		super.aware(messageConverter);
 	}

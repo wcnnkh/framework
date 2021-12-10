@@ -9,5 +9,5 @@ public class StringToCharsetConverter implements Converter<String, Charset> {
 	public Charset convert(String source) {
 		return Charset.forName(source);
 	}
-	
+
 }

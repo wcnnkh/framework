@@ -11,14 +11,14 @@ public class ResourceRegion {
 
 	private final long count;
 
-
 	/**
-	 * Create a new {@code ResourceRegion} from a given {@link Resource}.
-	 * This region of a resource is represented by a start {@code position}
-	 * and a byte {@code count} within the given {@code Resource}.
+	 * Create a new {@code ResourceRegion} from a given {@link Resource}. This
+	 * region of a resource is represented by a start {@code position} and a byte
+	 * {@code count} within the given {@code Resource}.
+	 * 
 	 * @param resource a Resource
 	 * @param position the start position of the region in that resource
-	 * @param count the byte count of the region in that resource
+	 * @param count    the byte count of the region in that resource
 	 */
 	public ResourceRegion(Resource resource, long position, long count) {
 		Assert.notNull(resource, "Resource must not be null");
@@ -28,7 +28,6 @@ public class ResourceRegion {
 		this.position = position;
 		this.count = count;
 	}
-
 
 	/**
 	 * Return the underlying {@link Resource} for this {@code ResourceRegion}

@@ -6,6 +6,7 @@ import io.basc.framework.lang.Nullable;
 public interface FieldFactory {
 	/**
 	 * 获取珍上类所有的字段
+	 * 
 	 * @param entityClass
 	 * @return
 	 */
@@ -15,6 +16,7 @@ public interface FieldFactory {
 
 	/**
 	 * 获取一个类所有的字段
+	 * 
 	 * @param entityClass
 	 * @param parentField 父级字段
 	 * @return

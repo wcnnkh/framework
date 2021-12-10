@@ -14,7 +14,7 @@ public class StringValue extends AbstractValue implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String value;
 	private transient JSONSupport jsonSupport;
-	
+
 	public StringValue(String value) {
 		this.value = value;
 	}
@@ -26,7 +26,7 @@ public class StringValue extends AbstractValue implements Serializable {
 	public void setJsonSupport(JSONSupport jsonSupport) {
 		this.jsonSupport = jsonSupport;
 	}
-	
+
 	@Override
 	public Object getSourceValue() {
 		return value;
@@ -55,8 +55,7 @@ public class StringValue extends AbstractValue implements Serializable {
 			return null;
 		}
 
-		Object array = Array.newInstance(componentType.getType(),
-				values.length);
+		Object array = Array.newInstance(componentType.getType(), values.length);
 		for (int i = 0; i < values.length; i++) {
 			Value value = parseValue(values[i]);
 			if (value != null) {
@@ -75,8 +74,8 @@ public class StringValue extends AbstractValue implements Serializable {
 		if (value == null) {
 			return null;
 		}
-		
-		if(type.getType().isInstance(value)) {
+
+		if (type.getType().isInstance(value)) {
 			return value;
 		}
 
@@ -84,7 +83,7 @@ public class StringValue extends AbstractValue implements Serializable {
 		if (rawClass == Object.class || rawClass == null) {
 			return value;
 		}
-		
+
 		if (isSupportArray() && type.isArray()) {
 			return getAsArray(type.getElementTypeDescriptor());
 		}

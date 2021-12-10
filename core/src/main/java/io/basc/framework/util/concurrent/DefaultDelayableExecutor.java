@@ -12,23 +12,19 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class DefaultDelayableExecutor implements DelayableExecutor {
-	private static Logger logger = LoggerFactory
-			.getLogger(DefaultDelayableExecutor.class);
+	private static Logger logger = LoggerFactory.getLogger(DefaultDelayableExecutor.class);
 	private final ScheduledExecutorService scheduledExecutorService;
 
 	public DefaultDelayableExecutor() {
-		this(Executors.newScheduledThreadPool(Runtime.getRuntime()
-				.availableProcessors()));
+		this(Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors()));
 	}
 
-	public DefaultDelayableExecutor(
-			ScheduledExecutorService scheduledExecutorService) {
+	public DefaultDelayableExecutor(ScheduledExecutorService scheduledExecutorService) {
 		this.scheduledExecutorService = scheduledExecutorService;
 	}
 
 	@Override
-	public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay,
-			TimeUnit delayTimeUnit) {
+	public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit delayTimeUnit) {
 		final String taskId = XUtils.getUUID();
 		Callable<V> use = new Callable<V>() {
 

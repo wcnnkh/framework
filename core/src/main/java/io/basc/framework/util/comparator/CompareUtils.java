@@ -7,7 +7,7 @@ public final class CompareUtils {
 	/**
 	 * @param left
 	 * @param right
-	 * @param desc 是否降序
+	 * @param desc  是否降序
 	 * @return
 	 */
 	public static int compare(double left, double right, boolean desc) {

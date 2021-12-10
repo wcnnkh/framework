@@ -11,7 +11,7 @@ import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.util.CollectionFactory;
 
-class ArrayToCollectionConversionService extends ConditionalConversionService{
+class ArrayToCollectionConversionService extends ConditionalConversionService {
 	public ArrayToCollectionConversionService(ConversionService conversionService) {
 		setConversionService(conversionService);
 	}
@@ -35,8 +35,7 @@ class ArrayToCollectionConversionService extends ConditionalConversionService{
 				Object sourceElement = Array.get(source, i);
 				target.add(sourceElement);
 			}
-		}
-		else {
+		} else {
 			for (int i = 0; i < length; i++) {
 				Object sourceElement = Array.get(source, i);
 				Object targetElement = getConversionService().convert(sourceElement,

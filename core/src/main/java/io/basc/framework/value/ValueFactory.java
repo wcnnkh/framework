@@ -168,7 +168,7 @@ public interface ValueFactory<K> extends NamedEventRegistry<K, ChangeEvent<K>> {
 
 		return v == null ? (defaultValue == null ? getDefaultValue(key).getAsObject(type) : defaultValue) : v;
 	}
-	
+
 	default Object getValue(K key, Type type, @Nullable Supplier<?> defaultValue) {
 		Object v;
 		if (ClassUtils.isPrimitive(type)) {
@@ -186,7 +186,7 @@ public interface ValueFactory<K> extends NamedEventRegistry<K, ChangeEvent<K>> {
 		T v = (T) getObject(key, ClassUtils.resolvePrimitiveIfNecessary(type));
 		return v == null ? (defaultValue == null ? getDefaultValue(key).getAsObject(type) : defaultValue) : v;
 	}
-	
+
 	@Nullable
 	default <T> T getValue(K key, Class<? extends T> type, Supplier<? extends T> defaultValue) {
 		@SuppressWarnings("unchecked")
@@ -202,34 +202,28 @@ public interface ValueFactory<K> extends NamedEventRegistry<K, ChangeEvent<K>> {
 	default EventRegistration registerListener(K name, EventListener<ChangeEvent<K>> eventListener) {
 		return EventRegistration.EMPTY;
 	}
-	
+
 	default Observable<Value> getObservableValue(K key) {
 		return new ObservableValue<K, Value>(this, key, Value.class, null);
 	}
 
-	default Observable<Value> getObservableValue(K key,
-			@Nullable Value defaultValue) {
-		return new ObservableValue<K, Value>(this, key, Value.class,
-				defaultValue);
+	default Observable<Value> getObservableValue(K key, @Nullable Value defaultValue) {
+		return new ObservableValue<K, Value>(this, key, Value.class, defaultValue);
 	}
-	
-	default Observable<Value> getObservableValue(K key,
-			@Nullable Supplier<? extends Value> defaultValue) {
-		return new ObservableValue<K, Value>(this, key, Value.class,
-				defaultValue);
+
+	default Observable<Value> getObservableValue(K key, @Nullable Supplier<? extends Value> defaultValue) {
+		return new ObservableValue<K, Value>(this, key, Value.class, defaultValue);
 	}
 
 	default <T> Observable<T> getObservableValue(K key, Class<? extends T> type) {
 		return new ObservableValue<K, T>(this, key, type, null);
 	}
 
-	default <T> Observable<T> getObservableValue(K key,
-			Class<? extends T> type, T defaultValue) {
+	default <T> Observable<T> getObservableValue(K key, Class<? extends T> type, T defaultValue) {
 		return new ObservableValue<K, T>(this, key, type, defaultValue);
 	}
-	
-	default <T> Observable<T> getObservableValue(K key,
-			Class<? extends T> type, Supplier<? extends T> defaultValue) {
+
+	default <T> Observable<T> getObservableValue(K key, Class<? extends T> type, Supplier<? extends T> defaultValue) {
 		return new ObservableValue<K, T>(this, key, type, defaultValue);
 	}
 
@@ -237,13 +231,11 @@ public interface ValueFactory<K> extends NamedEventRegistry<K, ChangeEvent<K>> {
 		return new ObservableValue<K, Object>(this, key, type, null);
 	}
 
-	default Observable<Object> getObservableValue(K key, Type type,
-			Object defaultValue) {
+	default Observable<Object> getObservableValue(K key, Type type, Object defaultValue) {
 		return new ObservableValue<K, Object>(this, key, type, defaultValue);
 	}
-	
-	default Observable<Object> getObservableValue(K key, Type type,
-			Supplier<?> defaultValue) {
+
+	default Observable<Object> getObservableValue(K key, Type type, Supplier<?> defaultValue) {
 		return new ObservableValue<K, Object>(this, key, type, defaultValue);
 	}
 }

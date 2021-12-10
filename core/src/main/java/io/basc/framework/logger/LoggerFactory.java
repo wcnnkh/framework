@@ -18,7 +18,7 @@ import java.util.logging.Level;
 public final class LoggerFactory {
 	private static final java.util.logging.Logger ROOT_LOGGER = java.util.logging.Logger
 			.getLogger(LoggerFactory.class.getName());
-	
+
 	private static final ILoggerFactory LOGGER_FACTORY = CollectionUtils
 			.first(ServiceLoader.load(ILoggerFactory.class));
 	private volatile static Map<String, Logger> loggerMap = new HashMap<String, Logger>();
@@ -33,7 +33,8 @@ public final class LoggerFactory {
 				return true;
 			}
 		};
-		Iterator<LevelManager> levelManagerIterator = serviceLoaderFactory.getServiceLoader(LevelManager.class).iterator();
+		Iterator<LevelManager> levelManagerIterator = serviceLoaderFactory.getServiceLoader(LevelManager.class)
+				.iterator();
 		if (levelManagerIterator.hasNext()) {
 			LEVEL_MANAGER = levelManagerIterator.next();
 		} else {
@@ -41,7 +42,7 @@ public final class LoggerFactory {
 		}
 
 		// 使用spi机制加载handlers
-		if(propertyFactory.getValue("io.basc.framework.logger.handlers.enable", boolean.class, true)) {
+		if (propertyFactory.getValue("io.basc.framework.logger.handlers.enable", boolean.class, true)) {
 			List<Handler> handlers = serviceLoaderFactory.getServiceLoader(Handler.class).toList();
 			if (!CollectionUtils.isEmpty(handlers)) {
 				// 存在自定义handler的情况不使用父级的handler
@@ -52,9 +53,9 @@ public final class LoggerFactory {
 				}
 			}
 		}
-		
+
 		if (LOGGER_FACTORY == null) {
-			//使用jdk自身的日志系统
+			// 使用jdk自身的日志系统
 			java.util.logging.Logger logger = ROOT_LOGGER;
 			while (logger != null) {
 				Handler[] rootHandlers = logger.getHandlers();
@@ -70,10 +71,9 @@ public final class LoggerFactory {
 					break;
 				}
 			}
-		}else{
+		} else {
 			// 存在第三方日志系统
-			Logger logger = LOGGER_FACTORY.getLogger(LoggerFactory.class
-					.getName());
+			Logger logger = LOGGER_FACTORY.getLogger(LoggerFactory.class.getName());
 			logger.info("Use logger factory [" + LOGGER_FACTORY + "]");
 		}
 	}
@@ -121,8 +121,7 @@ public final class LoggerFactory {
 				cacheLogger = loggerMap.get(name);
 				if (cacheLogger == null) {
 					if (LOGGER_FACTORY == null) {
-						java.util.logging.Logger logger = java.util.logging.Logger
-								.getLogger(name);
+						java.util.logging.Logger logger = java.util.logging.Logger.getLogger(name);
 						java.util.logging.Logger parent = logger.getParent();
 						if (parent != ROOT_LOGGER) {
 							logger.setParent(ROOT_LOGGER);

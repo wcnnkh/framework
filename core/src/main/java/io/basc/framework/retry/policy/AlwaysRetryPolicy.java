@@ -19,7 +19,6 @@ package io.basc.framework.retry.policy;
 import io.basc.framework.retry.RetryContext;
 import io.basc.framework.retry.RetryPolicy;
 
-
 /**
  * A {@link RetryPolicy} that always permits a retry. Can also be used as a base
  * class for other policies, e.g. for test purposes as a stub.

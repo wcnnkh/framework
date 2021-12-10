@@ -12,13 +12,11 @@ public interface JsonElement extends Value, JSONAware {
 
 	default boolean isJsonArray() {
 		String text = getAsString();
-		return text.startsWith(JsonArray.PREFIX)
-				&& text.endsWith(JsonArray.SUFFIX);
+		return text.startsWith(JsonArray.PREFIX) && text.endsWith(JsonArray.SUFFIX);
 	}
 
 	default boolean isJsonObject() {
 		String text = getAsString();
-		return text.startsWith(JsonObject.PREFIX)
-				&& text.endsWith(JsonObject.SUFFIX);
+		return text.startsWith(JsonObject.PREFIX) && text.endsWith(JsonObject.SUFFIX);
 	}
 }

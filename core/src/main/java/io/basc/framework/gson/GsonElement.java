@@ -11,12 +11,12 @@ import com.google.gson.JsonElement;
 public final class GsonElement extends AbstractJsonElement {
 	private JsonElement gsonJsonElement;
 	private Gson gson;
-	
+
 	public GsonElement(JsonElement gsonJsonElement, Gson gson) {
 		this.gsonJsonElement = gsonJsonElement;
 		this.gson = gson;
 	}
-	
+
 	@Override
 	public Object getSourceValue() {
 		return gsonJsonElement;
@@ -28,7 +28,7 @@ public final class GsonElement extends AbstractJsonElement {
 		}
 		return gsonJsonElement.getAsString();
 	}
-	
+
 	@Override
 	protected Object getAsNonBaseType(TypeDescriptor type) {
 		return gson.fromJson(gsonJsonElement, type.getResolvableType().getType());

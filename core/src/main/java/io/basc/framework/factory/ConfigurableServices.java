@@ -18,8 +18,7 @@ import io.basc.framework.util.MultiIterator;
 import io.basc.framework.util.Supplier;
 
 public class ConfigurableServices<T> implements Configurable, Iterable<T> {
-	private static Logger LOGGER = LoggerFactory
-			.getLogger(ConfigurableServices.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(ConfigurableServices.class);
 	private final Class<T> serviceClass;
 	private final Consumer<T> consumer;
 	private final Supplier<Collection<T>> supplier;
@@ -31,13 +30,12 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 		this(serviceClass, null);
 	}
 
-	public ConfigurableServices(Class<T> serviceClass,
-			@Nullable Consumer<T> consumer) {
+	public ConfigurableServices(Class<T> serviceClass, @Nullable Consumer<T> consumer) {
 		this(serviceClass, consumer, () -> new ArrayList<>(8));
 	}
 
-	public ConfigurableServices(Class<T> serviceClass,
-			@Nullable Consumer<T> consumer, Supplier<Collection<T>> supplier) {
+	public ConfigurableServices(Class<T> serviceClass, @Nullable Consumer<T> consumer,
+			Supplier<Collection<T>> supplier) {
 		this.serviceClass = serviceClass;
 		this.consumer = consumer;
 		this.supplier = supplier;
@@ -101,11 +99,11 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 			}
 		}
 	}
-	
-	protected void afterProcess(Collection<T> services){
-		if(services.getClass() == ArrayList.class){
-			//如果是使用的ArrayList说明是没有经过自定义的
-			((ArrayList<T>)services).sort(OrderComparator.INSTANCE);
+
+	protected void afterProcess(Collection<T> services) {
+		if (services.getClass() == ArrayList.class) {
+			// 如果是使用的ArrayList说明是没有经过自定义的
+			((ArrayList<T>) services).sort(OrderComparator.INSTANCE);
 		}
 	}
 
@@ -121,7 +119,7 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 			}
 			boolean success = services.add(service);
 			if (success) {
-				if(this.services != null){
+				if (this.services != null) {
 					afterProcess(this.services);
 				}
 				if (logger.isDebugEnabled()) {
@@ -136,6 +134,7 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 
 	/**
 	 * 这是一个不可操作对象
+	 * 
 	 * @return
 	 */
 	public Collection<T> getService() {
@@ -161,16 +160,14 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 				boolean success = this.services.add(service);
 				if (success) {
 					if (logger.isDebugEnabled()) {
-						logger.debug("Add [{}] service {}", serviceClass,
-								service);
+						logger.debug("Add [{}] service {}", serviceClass, service);
 					}
 				} else {
-					logger.warn("Add [{}] service {} fail", serviceClass,
-							service);
+					logger.warn("Add [{}] service {} fail", serviceClass, service);
 				}
 			}
-			
-			if(this.services != null){
+
+			if (this.services != null) {
 				afterProcess(this.services);
 			}
 		}
@@ -201,13 +198,9 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 	public Iterator<T> iterator() {
 		T before = getBeforeService();
 		T after = getAfterService();
-		return new MultiIterator<T>(
-				before == null ? Collections.emptyIterator() : Arrays.asList(
-						before).iterator(),
-				services == null ? Collections.emptyIterator() : services
-						.iterator(),
-				after == null ? Collections.emptyIterator() : Arrays.asList(
-						after).iterator());
+		return new MultiIterator<T>(before == null ? Collections.emptyIterator() : Arrays.asList(before).iterator(),
+				services == null ? Collections.emptyIterator() : services.iterator(),
+				after == null ? Collections.emptyIterator() : Arrays.asList(after).iterator());
 	}
 
 	private volatile List<T> defaultServices;
@@ -223,13 +216,10 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 				newServices.removeAll(defaultServices);
 			}
 			afterProcess(newServices);
-			this.defaultServices = serviceLoaderFactory.getServiceLoader(
-					serviceClass).toList();
-			defaultServices.stream()
-					.forEach((service) -> aware(service));
+			this.defaultServices = serviceLoaderFactory.getServiceLoader(serviceClass).toList();
+			defaultServices.stream().forEach((service) -> aware(service));
 			if (logger.isDebugEnabled()) {
-				logger.debug("Configure [{}] services {}", serviceClass,
-						defaultServices);
+				logger.debug("Configure [{}] services {}", serviceClass, defaultServices);
 			}
 			newServices.addAll(defaultServices);
 			this.services = newServices;
@@ -238,7 +228,6 @@ public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 
 	@Override
 	public String toString() {
-		return "[" + serviceClass.getName() + "] services " + services == null ? "[]"
-				: services.toString();
+		return "[" + serviceClass.getName() + "] services " + services == null ? "[]" : services.toString();
 	}
 }

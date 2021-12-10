@@ -61,16 +61,47 @@ public final class ArrayUtils {
 		return list;
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * 默认是不进行深拷贝
+	 * 
+	 * @param <T>
+	 * @param array
+	 * @return
+	 */
 	public static <T> T clone(T array) {
+		return clone(array, false);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T clone(T array, boolean deep) {
 		if (array == null) {
 			return null;
 		}
 
-		int len = Array.getLength(array);
-		Object v = Array.newInstance(array.getClass().getComponentType(), len);
-		System.arraycopy(array, 0, v, 0, len);
-		return (T) v;
+		if (array instanceof Object[]) {
+			if (deep) {
+				return ObjectUtils.clone(array, deep);
+			} else {
+				return (T) ((Object[]) array).clone();
+			}
+		} else if (array instanceof byte[]) {
+			return (T) ((byte[]) array).clone();
+		} else if (array instanceof short[]) {
+			return (T) ((short[]) array).clone();
+		} else if (array instanceof int[]) {
+			return (T) ((int[]) array).clone();
+		} else if (array instanceof long[]) {
+			return (T) ((long[]) array).clone();
+		} else if (array instanceof char[]) {
+			return (T) ((char[]) array).clone();
+		} else if (array instanceof float[]) {
+			return (T) ((float[]) array).clone();
+		} else if (array instanceof double[]) {
+			return (T) ((double[]) array).clone();
+		} else if (array instanceof boolean[]) {
+			return (T) ((boolean[]) array).clone();
+		}
+		throw new IllegalArgumentException("Must be array type");
 	}
 
 	@SuppressWarnings("unchecked")

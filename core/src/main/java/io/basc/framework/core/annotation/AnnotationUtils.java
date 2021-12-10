@@ -332,7 +332,6 @@ public abstract class AnnotationUtils {
 	 */
 	public static <A extends Annotation> Set<A> getRepeatableAnnotations(AnnotatedElement annotatedElement,
 			Class<A> annotationType) {
-
 		return getRepeatableAnnotations(annotatedElement, annotationType, null);
 	}
 
@@ -375,7 +374,6 @@ public abstract class AnnotationUtils {
 	 */
 	public static <A extends Annotation> Set<A> getRepeatableAnnotations(AnnotatedElement annotatedElement,
 			Class<A> annotationType, @Nullable Class<? extends Annotation> containerAnnotationType) {
-
 		RepeatableContainers repeatableContainers = (containerAnnotationType != null
 				? RepeatableContainers.of(annotationType, containerAnnotationType)
 				: RepeatableContainers.standardRepeatables());
@@ -495,7 +493,6 @@ public abstract class AnnotationUtils {
 	@Nullable
 	public static <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement,
 			@Nullable Class<A> annotationType) {
-
 		if (annotationType == null) {
 			return null;
 		}
@@ -627,7 +624,6 @@ public abstract class AnnotationUtils {
 	@Nullable
 	public static Class<?> findAnnotationDeclaringClass(Class<? extends Annotation> annotationType,
 			@Nullable Class<?> clazz) {
-
 		if (clazz == null) {
 			return null;
 		}
@@ -735,7 +731,6 @@ public abstract class AnnotationUtils {
 	 */
 	public static boolean isAnnotationMetaPresent(Class<? extends Annotation> annotationType,
 			@Nullable Class<? extends Annotation> metaAnnotationType) {
-
 		if (metaAnnotationType == null) {
 			return false;
 		}
@@ -838,7 +833,6 @@ public abstract class AnnotationUtils {
 	 * @see #getAnnotationAttributes(Annotation, boolean, boolean)
 	 */
 	public static Map<String, Object> getAnnotationAttributes(Annotation annotation, boolean classValuesAsString) {
-
 		return getAnnotationAttributes(annotation, classValuesAsString, false);
 	}
 
@@ -867,7 +861,6 @@ public abstract class AnnotationUtils {
 	 */
 	public static AnnotationAttributes getAnnotationAttributes(Annotation annotation, boolean classValuesAsString,
 			boolean nestedAnnotationsAsMap) {
-
 		return getAnnotationAttributes(null, annotation, classValuesAsString, nestedAnnotationsAsMap);
 	}
 
@@ -890,7 +883,6 @@ public abstract class AnnotationUtils {
 	 */
 	public static AnnotationAttributes getAnnotationAttributes(@Nullable AnnotatedElement annotatedElement,
 			Annotation annotation) {
-
 		return getAnnotationAttributes(annotatedElement, annotation, false, false);
 	}
 
@@ -921,7 +913,6 @@ public abstract class AnnotationUtils {
 	 */
 	public static AnnotationAttributes getAnnotationAttributes(@Nullable AnnotatedElement annotatedElement,
 			Annotation annotation, boolean classValuesAsString, boolean nestedAnnotationsAsMap) {
-
 		Adapt[] adaptations = Adapt.values(classValuesAsString, nestedAnnotationsAsMap);
 		return MergedAnnotation.from(annotatedElement, annotation).withNonMergedAttributes()
 				.asMap(mergedAnnotation -> new AnnotationAttributes(mergedAnnotation.getType(), true), adaptations);
@@ -947,7 +938,6 @@ public abstract class AnnotationUtils {
 	}
 
 	private static Map<String, DefaultValueHolder> computeDefaultValues(Class<? extends Annotation> annotationType) {
-
 		AttributeMethods methods = AttributeMethods.forAnnotationType(annotationType);
 		if (!methods.hasDefaultValueMethod()) {
 			return Collections.emptyMap();
@@ -995,7 +985,6 @@ public abstract class AnnotationUtils {
 	 */
 	public static void postProcessAnnotationAttributes(@Nullable Object annotatedElement,
 			@Nullable AnnotationAttributes attributes, boolean classValuesAsString) {
-
 		if (attributes == null) {
 			return;
 		}
@@ -1039,7 +1028,6 @@ public abstract class AnnotationUtils {
 	@Nullable
 	private static Object adaptValue(@Nullable Object annotatedElement, @Nullable Object value,
 			boolean classValuesAsString) {
-
 		if (classValuesAsString) {
 			if (value instanceof Class) {
 				return ((Class<?>) value).getName();
@@ -1224,7 +1212,6 @@ public abstract class AnnotationUtils {
 	@Nullable
 	public static Object getDefaultValue(@Nullable Class<? extends Annotation> annotationType,
 			@Nullable String attributeName) {
-
 		if (annotationType == null || !StringUtils.hasText(attributeName)) {
 			return null;
 		}
@@ -1250,7 +1237,6 @@ public abstract class AnnotationUtils {
 	 */
 	public static <A extends Annotation> A synthesizeAnnotation(A annotation,
 			@Nullable AnnotatedElement annotatedElement) {
-
 		if (annotation instanceof SynthesizedAnnotation || AnnotationFilter.PLAIN.matches(annotation)) {
 			return annotation;
 		}
@@ -1311,7 +1297,6 @@ public abstract class AnnotationUtils {
 	 */
 	public static <A extends Annotation> A synthesizeAnnotation(Map<String, Object> attributes, Class<A> annotationType,
 			@Nullable AnnotatedElement annotatedElement) {
-
 		try {
 			return MergedAnnotation.of(annotatedElement, annotationType, attributes).synthesize();
 		} catch (NoSuchElementException | IllegalStateException ex) {
@@ -1361,7 +1346,6 @@ public abstract class AnnotationUtils {
 	 * Internal holder used to wrap default values.
 	 */
 	private static class DefaultValueHolder {
-
 		final Object defaultValue;
 
 		public DefaultValueHolder(Object defaultValue) {

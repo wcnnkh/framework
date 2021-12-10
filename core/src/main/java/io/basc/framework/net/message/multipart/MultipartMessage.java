@@ -21,7 +21,7 @@ public interface MultipartMessage extends InputMessage, AutoCloseable, Closeable
 	default Resource getResource() {
 		return new MultipartFileResource(this);
 	}
-	
+
 	@Override
 	default void close() {
 	}

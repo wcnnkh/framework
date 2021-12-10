@@ -2,11 +2,11 @@ package io.basc.framework.util;
 
 import java.util.Arrays;
 
-public class Accepts<E> implements Accept<E>{
+public class Accepts<E> implements Accept<E> {
 	private Iterable<Accept<E>> iterable;
 
 	@SafeVarargs
-	public Accepts(Accept<E> ...accepts) {
+	public Accepts(Accept<E>... accepts) {
 		this(ArrayUtils.isEmpty(accepts) ? null : Arrays.asList(accepts));
 	}
 
@@ -26,5 +26,5 @@ public class Accepts<E> implements Accept<E>{
 		}
 		return true;
 	}
-	
+
 }

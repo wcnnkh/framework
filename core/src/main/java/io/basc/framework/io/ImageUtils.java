@@ -21,19 +21,16 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public final class ImageUtils {
-	private ImageUtils(){};
-	
+	private ImageUtils() {
+	};
+
 	/**
 	 * 图片大小调整
 	 * 
-	 * @param imagePath
-	 *            原图片路径
-	 * @param newImagePath
-	 *            新图片路径
-	 * @param newWidth
-	 *            新图片大小
-	 * @param newHeight
-	 *            新图片大小
+	 * @param imagePath    原图片路径
+	 * @param newImagePath 新图片路径
+	 * @param newWidth     新图片大小
+	 * @param newHeight    新图片大小
 	 */
 	public static void scale(String imagePath, String newImagePath, int newWidth, int newHeight) {
 		BufferedImage oldImg;
@@ -65,8 +62,7 @@ public final class ImageUtils {
 	 * @param y
 	 * @param width
 	 * @param height
-	 * @param isFill
-	 *            当切割的高或宽大于图片本身的时候是否填充
+	 * @param isFill       当切割的高或宽大于图片本身的时候是否填充
 	 */
 	public static void cut(String oldImagePath, String newImagePath, int x, int y, int width, int height,
 			boolean isFill) {
@@ -104,8 +100,7 @@ public final class ImageUtils {
 	 * 将图片切成几行几列
 	 * 
 	 * @param imgPath
-	 * @param descDir
-	 *            生成的图片目录
+	 * @param descDir 生成的图片目录
 	 * @param rows
 	 * @param cols
 	 */
@@ -259,14 +254,14 @@ public final class ImageUtils {
 		sb.append("data:image/");
 		sb.append(FileUtils.getFileSuffix(filePath));
 		sb.append(";base64,");
-		
+
 		byte[] data;
 		try {
 			data = FileUtils.readFileToByteArray(new File(filePath));
 		} catch (IOException e) {
 			throw new RuntimeException(filePath, e);
 		}
-		
+
 		return Base64.DEFAULT.encode(data);
 	}
 }

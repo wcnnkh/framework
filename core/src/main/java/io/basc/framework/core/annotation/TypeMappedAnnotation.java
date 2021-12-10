@@ -114,14 +114,12 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 	private TypeMappedAnnotation(AnnotationTypeMapping mapping, @Nullable ClassLoader classLoader,
 			@Nullable Object source, @Nullable Object rootAttributes, ValueExtractor valueExtractor,
 			int aggregateIndex) {
-
 		this(mapping, classLoader, source, rootAttributes, valueExtractor, aggregateIndex, null);
 	}
 
 	private TypeMappedAnnotation(AnnotationTypeMapping mapping, @Nullable ClassLoader classLoader,
 			@Nullable Object source, @Nullable Object rootAttributes, ValueExtractor valueExtractor, int aggregateIndex,
 			@Nullable int[] resolvedRootMirrors) {
-
 		this.mapping = mapping;
 		this.classLoader = classLoader;
 		this.source = source;
@@ -140,7 +138,6 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 			@Nullable Object source, @Nullable Object rootAnnotation, ValueExtractor valueExtractor, int aggregateIndex,
 			boolean useMergedValues, @Nullable Predicate<String> attributeFilter, int[] resolvedRootMirrors,
 			int[] resolvedMirrors) {
-
 		this.classLoader = classLoader;
 		this.source = source;
 		this.rootAttributes = rootAnnotation;
@@ -229,7 +226,6 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 	@SuppressWarnings("unchecked")
 	public <T extends Annotation> MergedAnnotation<T>[] getAnnotationArray(String attributeName, Class<T> type)
 			throws NoSuchElementException {
-
 		int attributeIndex = getAttributeIndex(attributeName, true);
 		Method attribute = this.mapping.getAttributes().get(attributeIndex);
 		Class<?> componentType = attribute.getReturnType().getComponentType();
@@ -299,7 +295,6 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 
 	private <T extends Map<String, Object>> Object adaptValueForMapOptions(Method attribute, Object value,
 			Class<?> mapType, Function<MergedAnnotation<?>, T> factory, Adapt[] adaptations) {
-
 		if (value instanceof MergedAnnotation) {
 			MergedAnnotation<?> annotation = (MergedAnnotation<?>) value;
 			return (Adapt.ANNOTATION_TO_MAP.isIn(adaptations) ? annotation.asMap(factory, adaptations)
@@ -581,7 +576,6 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 
 	static <A extends Annotation> MergedAnnotation<A> of(@Nullable ClassLoader classLoader, @Nullable Object source,
 			Class<A> annotationType, @Nullable Map<String, ?> attributes) {
-
 		Assert.notNull(annotationType, "Annotation type must not be null");
 		AnnotationTypeMappings mappings = AnnotationTypeMappings.forAnnotationType(annotationType);
 		return new TypeMappedAnnotation<>(mappings.get(0), classLoader, source, attributes,
@@ -591,7 +585,6 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 	@Nullable
 	static <A extends Annotation> TypeMappedAnnotation<A> createIfPossible(AnnotationTypeMapping mapping,
 			MergedAnnotation<?> annotation, LogProcessor logger) {
-
 		if (annotation instanceof TypeMappedAnnotation) {
 			TypeMappedAnnotation<?> typeMappedAnnotation = (TypeMappedAnnotation<?>) annotation;
 			return createIfPossible(mapping, typeMappedAnnotation.source, typeMappedAnnotation.rootAttributes,
@@ -611,7 +604,6 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 	private static <A extends Annotation> TypeMappedAnnotation<A> createIfPossible(AnnotationTypeMapping mapping,
 			@Nullable Object source, @Nullable Object rootAttribute, ValueExtractor valueExtractor, int aggregateIndex,
 			LogProcessor logger) {
-
 		try {
 			return new TypeMappedAnnotation<>(mapping, null, source, rootAttribute, valueExtractor, aggregateIndex);
 		} catch (Exception ex) {

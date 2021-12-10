@@ -4,7 +4,7 @@ import io.basc.framework.lang.Nullable;
 
 public final class DefaultClassLoaderProvider implements ClassLoaderProvider {
 	private final Supplier<? extends ClassLoader> classLoader;
-	
+
 	public DefaultClassLoaderProvider(@Nullable Supplier<? extends ClassLoader> classLoader) {
 		this.classLoader = classLoader;
 	}
@@ -12,7 +12,7 @@ public final class DefaultClassLoaderProvider implements ClassLoaderProvider {
 	public DefaultClassLoaderProvider(@Nullable ClassLoader classLoader) {
 		this(new StaticSupplier<ClassLoader>(classLoader));
 	}
-	
+
 	public DefaultClassLoaderProvider(final Class<?> clazz) {
 		this(new Supplier<ClassLoader>() {
 			public ClassLoader get() {
@@ -22,7 +22,6 @@ public final class DefaultClassLoaderProvider implements ClassLoaderProvider {
 	}
 
 	public ClassLoader getClassLoader() {
-		return classLoader == null ? ClassUtils.getDefaultClassLoader()
-				: classLoader.get();
+		return classLoader == null ? ClassUtils.getDefaultClassLoader() : classLoader.get();
 	}
 }

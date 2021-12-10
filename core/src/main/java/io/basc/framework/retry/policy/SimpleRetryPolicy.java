@@ -47,8 +47,7 @@ public class SimpleRetryPolicy implements RetryPolicy {
 	private volatile int maxAttempts;
 
 	/**
-	 * Create a {@link SimpleRetryPolicy} with the default number of retry
-	 * attempts.
+	 * Create a {@link SimpleRetryPolicy} with the default number of retry attempts.
 	 */
 	public SimpleRetryPolicy() {
 		this(DEFAULT_MAX_ATTEMPTS);
@@ -56,8 +55,8 @@ public class SimpleRetryPolicy implements RetryPolicy {
 
 	/**
 	 * Create a {@link SimpleRetryPolicy} with the specified number of retry
-	 * attempts. If traverseCauses is true, the exception causes will be traversed until
-	 * a match is found.
+	 * attempts. If traverseCauses is true, the exception causes will be traversed
+	 * until a match is found.
 	 *
 	 * @param maxAttempts
 	 */
@@ -70,7 +69,7 @@ public class SimpleRetryPolicy implements RetryPolicy {
 	 * Setter for retry attempts.
 	 *
 	 * @param retryAttempts the number of attempts before a retry becomes
-	 * impossible.
+	 *                      impossible.
 	 */
 	public void setMaxAttempts(int retryAttempts) {
 		this.maxAttempts = retryAttempts;
@@ -88,8 +87,8 @@ public class SimpleRetryPolicy implements RetryPolicy {
 	/**
 	 * Test for retryable operation based on the status.
 	 *
-	 * @return true if the last exception was retryable and the number of
-	 * attempts so far is less than the limit.
+	 * @return true if the last exception was retryable and the number of attempts
+	 *         so far is less than the limit.
 	 */
 	public boolean canRetry(RetryContext context) {
 		return context.getRetryCount() < maxAttempts;
@@ -109,9 +108,9 @@ public class SimpleRetryPolicy implements RetryPolicy {
 	}
 
 	/**
-	 * Get a status object that can be used to track the current operation
-	 * according to this policy. Has to be aware of the latest exception and the
-	 * number of attempts.
+	 * Get a status object that can be used to track the current operation according
+	 * to this policy. Has to be aware of the latest exception and the number of
+	 * attempts.
 	 *
 	 */
 	public RetryContext open(RetryContext parent) {

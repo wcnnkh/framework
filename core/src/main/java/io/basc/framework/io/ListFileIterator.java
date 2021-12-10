@@ -18,7 +18,7 @@ public class ListFileIterator extends AbstractIterator<IterationFile<File>> {
 	/**
 	 * @param directory
 	 * @param fileFilter
-	 * @param maxDepth 迭代最大深度, -1不限制深度
+	 * @param maxDepth   迭代最大深度, -1不限制深度
 	 */
 	public ListFileIterator(File directory, @Nullable FileFilter fileFilter, int maxDepth) {
 		this(directory, fileFilter, maxDepth, 0);
@@ -70,26 +70,27 @@ public class ListFileIterator extends AbstractIterator<IterationFile<File>> {
 
 	@Override
 	public boolean hasNext() {
-		if(!canRecursive(depth)) {
+		if (!canRecursive(depth)) {
 			return false;
 		}
-		
+
 		if (files == null) {
 			files = fileFilter == null ? directory.listFiles() : directory.listFiles(fileFilter);
 		}
 
 		if (iterator == null) {
-			iterator = Arrays.asList(files).stream().map((file) -> new IterationFile<File>(depth, file, directory)) .iterator();
+			iterator = Arrays.asList(files).stream().map((file) -> new IterationFile<File>(depth, file, directory))
+					.iterator();
 		}
 
 		if (iterator.hasNext()) {
 			return true;
 		}
-		
-		if(!canRecursive(depth)) {
+
+		if (!canRecursive(depth)) {
 			return false;
 		}
-		
+
 		if (directoryIterator == null) {
 			directoryIterator = Arrays.asList(files).stream().filter((file) -> file.isDirectory()).iterator();
 		}

@@ -12,8 +12,7 @@ public final class FieldSetterListenUtils {
 
 	public static Proxy getFieldSetterListenProxy(ProxyFactory proxyFactory, Class<?> clazz) {
 		MethodInterceptor methodInterceptor = new FieldSetterListenMethodInterceptor();
-		return proxyFactory.getProxy(clazz,
-				FIELD_SETTER_LISTEN_INTERFACES, methodInterceptor);
+		return proxyFactory.getProxy(clazz, FIELD_SETTER_LISTEN_INTERFACES, methodInterceptor);
 	}
 
 	public static void clearFieldSetterListen(Object instance) {

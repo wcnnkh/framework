@@ -31,8 +31,7 @@ public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
 	}
 
 	/**
-	 * @param capacity
-	 *            缓存的消息数量
+	 * @param capacity 缓存的消息数量
 	 */
 	public ResponsiveIterator(int capacity) {
 		this.queue = new ArrayBlockingQueue<>(capacity);
@@ -47,6 +46,7 @@ public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
 
 	/**
 	 * 推送一条消息,当缓存消息已满时将等待
+	 * 
 	 * @see BlockingQueue#put(Object)
 	 * @param message
 	 * @throws InterruptedException
@@ -72,13 +72,13 @@ public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
 	 * @return
 	 * @throws InterruptedException
 	 */
-	public boolean offer(E message, long timeout, TimeUnit unit)
-			throws InterruptedException {
+	public boolean offer(E message, long timeout, TimeUnit unit) throws InterruptedException {
 		return queue.offer(new ResponsiveMessage<>(0, message), timeout, unit);
 	}
 
 	/**
 	 * 是否存在下一个值，如果不存在将等待，直到关闭{@link #close()}
+	 * 
 	 * @return
 	 */
 	@Override
@@ -97,8 +97,7 @@ public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
 							// 关闭消息
 							return false;
 						}
-						this.valueSupplier = new StaticSupplier<E>(
-								message.value);
+						this.valueSupplier = new StaticSupplier<E>(message.value);
 						return true;
 					} catch (InterruptedException e) {
 						// 线程中断返回false
@@ -112,6 +111,7 @@ public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
 
 	/**
 	 * 是否存在下一个值，如果不存在将等待指定时间
+	 * 
 	 * @param timeout
 	 * @param unit
 	 * @return
@@ -126,8 +126,7 @@ public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
 					}
 
 					try {
-						ResponsiveMessage<E> message = queue
-								.poll(timeout, unit);
+						ResponsiveMessage<E> message = queue.poll(timeout, unit);
 						if (message == null) {
 							// 超时了，返回false
 							return false;
@@ -137,8 +136,7 @@ public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
 							// 关闭消息
 							return false;
 						}
-						this.valueSupplier = new StaticSupplier<E>(
-								message.value);
+						this.valueSupplier = new StaticSupplier<E>(message.value);
 						return true;
 					} catch (InterruptedException e) {
 						// 线程中断返回false

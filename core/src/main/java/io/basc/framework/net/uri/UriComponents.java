@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class UriComponents implements Serializable{
+public abstract class UriComponents implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static final String DEFAULT_ENCODING = "UTF-8";
@@ -21,17 +21,14 @@ public abstract class UriComponents implements Serializable{
 	/** Captures URI template variable names */
 	private static final Pattern NAMES_PATTERN = Pattern.compile("\\{([^/]+?)\\}");
 
-
 	private final String scheme;
 
 	private final String fragment;
-
 
 	protected UriComponents(String scheme, String fragment) {
 		this.scheme = scheme;
 		this.fragment = fragment;
 	}
-
 
 	// Component getters
 
@@ -89,25 +86,26 @@ public abstract class UriComponents implements Serializable{
 	 */
 	public abstract MultiValueMap<String, String> getQueryParams();
 
-
 	/**
-	 * Encode all URI components using their specific encoding rules, and returns the
-	 * result as a new {@code UriComponents} instance. This method uses UTF-8 to encode.
+	 * Encode all URI components using their specific encoding rules, and returns
+	 * the result as a new {@code UriComponents} instance. This method uses UTF-8 to
+	 * encode.
+	 * 
 	 * @return the encoded URI components
 	 */
 	public final UriComponents encode() {
 		try {
 			return encode(DEFAULT_ENCODING);
-		}
-		catch (UnsupportedEncodingException ex) {
+		} catch (UnsupportedEncodingException ex) {
 			// should not occur
 			throw new IllegalStateException(ex);
 		}
 	}
 
 	/**
-	 * Encode all URI components using their specific encoding rules, and
-	 * returns the result as a new {@code UriComponents} instance.
+	 * Encode all URI components using their specific encoding rules, and returns
+	 * the result as a new {@code UriComponents} instance.
+	 * 
 	 * @param encoding the encoding of the values contained in this map
 	 * @return the encoded URI components
 	 * @throws UnsupportedEncodingException if the given encoding is not supported
@@ -116,8 +114,10 @@ public abstract class UriComponents implements Serializable{
 
 	/**
 	 * Replace all URI template variables with the values from a given map.
-	 * <p>The given map keys represent variable names; the corresponding values
+	 * <p>
+	 * The given map keys represent variable names; the corresponding values
 	 * represent variable values. The order of variables is not significant.
+	 * 
 	 * @param uriVariables the map of URI variables
 	 * @return the expanded URI components
 	 */
@@ -128,7 +128,10 @@ public abstract class UriComponents implements Serializable{
 
 	/**
 	 * Replace all URI template variables with the values from a given array.
-	 * <p>The given array represents variable values. The order of variables is significant.
+	 * <p>
+	 * The given array represents variable values. The order of variables is
+	 * significant.
+	 * 
 	 * @param uriVariableValues the URI variable values
 	 * @return the expanded URI components
 	 */
@@ -140,6 +143,7 @@ public abstract class UriComponents implements Serializable{
 	/**
 	 * Replace all URI template variables with the values from the given
 	 * {@link UriTemplateVariables}.
+	 * 
 	 * @param uriVariables the URI template values
 	 * @return the expanded URI components
 	 */
@@ -149,8 +153,9 @@ public abstract class UriComponents implements Serializable{
 	}
 
 	/**
-	 * Replace all URI template variables with the values from the given {@link
-	 * UriTemplateVariables}
+	 * Replace all URI template variables with the values from the given
+	 * {@link UriTemplateVariables}
+	 * 
 	 * @param uriVariables URI template values
 	 * @return the expanded URI components
 	 */
@@ -180,7 +185,6 @@ public abstract class UriComponents implements Serializable{
 	 * Set all components of the given UriComponentsBuilder.
 	 */
 	protected abstract void copyToUriComponentsBuilder(UriComponentsBuilder builder);
-
 
 	// Static expansion helpers
 
@@ -241,9 +245,9 @@ public abstract class UriComponents implements Serializable{
 		return (variableValue != null ? variableValue.toString() : "");
 	}
 
-
 	/**
 	 * Defines the contract for URI Template variables
+	 * 
 	 * @see HierarchicalUriComponents#expand
 	 */
 	public interface UriTemplateVariables {
@@ -251,15 +255,15 @@ public abstract class UriComponents implements Serializable{
 		Object SKIP_VALUE = UriTemplateVariables.class;
 
 		/**
-		 * Get the value for the given URI variable name.
-		 * If the value is {@code null}, an empty String is expanded.
-		 * If the value is {@link #SKIP_VALUE}, the URI variable is not expanded.
+		 * Get the value for the given URI variable name. If the value is {@code null},
+		 * an empty String is expanded. If the value is {@link #SKIP_VALUE}, the URI
+		 * variable is not expanded.
+		 * 
 		 * @param name the variable name
 		 * @return the variable value, possibly {@code null} or {@link #SKIP_VALUE}
 		 */
 		Object getValue(String name);
 	}
-
 
 	/**
 	 * URI template variables backed by a map.
@@ -279,7 +283,6 @@ public abstract class UriComponents implements Serializable{
 			return this.uriVariables.get(name);
 		}
 	}
-
 
 	/**
 	 * URI template variables backed by a variable argument array.

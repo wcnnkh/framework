@@ -24,7 +24,9 @@ public interface SuccessCallback<T> {
 
 	/**
 	 * Called when the {@link ListenableFuture} completes with success.
-	 * <p>Note that Exceptions raised by this method are ignored.
+	 * <p>
+	 * Note that Exceptions raised by this method are ignored.
+	 * 
 	 * @param result the result
 	 */
 	void onSuccess(T result);

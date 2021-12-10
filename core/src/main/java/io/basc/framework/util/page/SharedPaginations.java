@@ -7,7 +7,7 @@ import io.basc.framework.lang.Nullable;
 public class SharedPaginations<T> extends SharedPagination<T> implements Paginations<T> {
 	private static final long serialVersionUID = 1L;
 	private Paginations<T> paginations;
-	
+
 	public SharedPaginations() {
 	}
 
@@ -69,16 +69,16 @@ public class SharedPaginations<T> extends SharedPagination<T> implements Paginat
 		}
 		return new SharedPaginations<>(pages);
 	}
-	
+
 	@Override
 	public Stream<? extends Pages<Long, T>> pages() {
 		return paginations.pages();
 	}
-	
-	public Paginations<T> getPaginations(){
+
+	public Paginations<T> getPaginations() {
 		return paginations;
 	}
-	
+
 	public void setPaginations(Paginations<T> paginations) {
 		this.paginations = paginations;
 	}

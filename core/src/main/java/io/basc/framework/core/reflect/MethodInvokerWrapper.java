@@ -13,17 +13,18 @@ public class MethodInvokerWrapper implements MethodInvoker, Serializable {
 	public MethodInvokerWrapper(Supplier<MethodInvoker> sourceSupplier) {
 		this.sourceSupplier = sourceSupplier;
 	}
-	
-	public MethodInvokerWrapper(MethodInvoker source){
+
+	public MethodInvokerWrapper(MethodInvoker source) {
 		this.source = source;
 	}
-	
+
 	private final AtomicBoolean get = new AtomicBoolean();
-	public MethodInvoker getSource(){
-		if(source == null && sourceSupplier != null && !get.get()){
+
+	public MethodInvoker getSource() {
+		if (source == null && sourceSupplier != null && !get.get()) {
 			synchronized (this) {
-				if(source == null){
-					if(get.compareAndSet(false, true)){
+				if (source == null) {
+					if (get.compareAndSet(false, true)) {
 						source = sourceSupplier.get();
 					}
 				}

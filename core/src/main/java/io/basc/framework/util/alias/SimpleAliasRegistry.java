@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Simple implementation of the {@link AliasRegistry} interface. 
+ * Simple implementation of the {@link AliasRegistry} interface.
  *
  */
 public class SimpleAliasRegistry implements AliasRegistry, Cloneable {
@@ -68,10 +68,8 @@ public class SimpleAliasRegistry implements AliasRegistry, Cloneable {
 	/**
 	 * Determine whether the given name has the given alias registered.
 	 * 
-	 * @param name
-	 *            the name to check
-	 * @param alias
-	 *            the alias to look for
+	 * @param name  the name to check
+	 * @param alias the alias to look for
 	 */
 	public boolean hasAlias(String name, String alias) {
 		for (Map.Entry<String, String> entry : this.aliasMap.entrySet()) {
@@ -110,10 +108,8 @@ public class SimpleAliasRegistry implements AliasRegistry, Cloneable {
 	/**
 	 * Transitively retrieve all aliases for the given name.
 	 * 
-	 * @param name
-	 *            the target name to find aliases for
-	 * @param result
-	 *            the resulting aliases list
+	 * @param name   the target name to find aliases for
+	 * @param result the resulting aliases list
 	 */
 	private void retrieveAliases(String name, List<String> result) {
 		for (Map.Entry<String, String> entry : this.aliasMap.entrySet()) {
@@ -130,11 +126,10 @@ public class SimpleAliasRegistry implements AliasRegistry, Cloneable {
 	 * Resolve all alias target names and aliases registered in this factory,
 	 * applying the given StringValueResolver to them.
 	 * <p>
-	 * The value resolver may for example resolve placeholders in target bean
-	 * names and even in alias names.
+	 * The value resolver may for example resolve placeholders in target bean names
+	 * and even in alias names.
 	 * 
-	 * @param valueResolver
-	 *            the StringValueResolver to apply
+	 * @param valueResolver the StringValueResolver to apply
 	 */
 	public void resolveAliases(StringValueResolver valueResolver) {
 		Assert.notNull(valueResolver, "StringValueResolver must not be null");
@@ -170,14 +165,12 @@ public class SimpleAliasRegistry implements AliasRegistry, Cloneable {
 	}
 
 	/**
-	 * Check whether the given name points back to the given alias as an alias
-	 * in the other direction already, catching a circular reference upfront and
+	 * Check whether the given name points back to the given alias as an alias in
+	 * the other direction already, catching a circular reference upfront and
 	 * throwing a corresponding IllegalStateException.
 	 * 
-	 * @param name
-	 *            the candidate name
-	 * @param alias
-	 *            the candidate alias
+	 * @param name  the candidate name
+	 * @param alias the candidate alias
 	 * @see #registerAlias
 	 * @see #hasAlias
 	 */
@@ -192,8 +185,7 @@ public class SimpleAliasRegistry implements AliasRegistry, Cloneable {
 	/**
 	 * Determine the raw name, resolving aliases to canonical names.
 	 * 
-	 * @param name
-	 *            the user-specified name
+	 * @param name the user-specified name
 	 * @return the transformed name
 	 */
 	public String canonicalName(String name) {

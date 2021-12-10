@@ -22,7 +22,7 @@ public class SharedPage<K, T> extends SharedPageable<K, T> implements Page<K, T>
 	public SharedPage(K cursorId) {
 		super(cursorId);
 	}
-	
+
 	public SharedPage(K cursorId, long count) {
 		this(cursorId, null, count, 0);
 	}
@@ -61,10 +61,10 @@ public class SharedPage<K, T> extends SharedPageable<K, T> implements Page<K, T>
 	public long getTotal() {
 		return total;
 	}
-	
+
 	@Override
 	public void setList(List<T> list) {
-		if(total == 0) {
+		if (total == 0) {
 			total = list.size();
 		}
 		super.setList(list);
@@ -78,8 +78,8 @@ public class SharedPage<K, T> extends SharedPageable<K, T> implements Page<K, T>
 	public long getCount() {
 		return count;
 	}
-	
+
 	public void setCount(long count) {
-		this.count = count; 
+		this.count = count;
 	}
 }

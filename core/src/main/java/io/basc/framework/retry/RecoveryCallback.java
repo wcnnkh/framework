@@ -2,8 +2,9 @@ package io.basc.framework.retry;
 
 /**
  * 
- * 在所有尝试都已完成后回调以进行有状态重试
- * Callback for stateful retry after all tries are exhausted.
+ * 在所有尝试都已完成后回调以进行有状态重试 Callback for stateful retry after all tries are
+ * exhausted.
+ * 
  * @author shuchaowen
  *
  * @param <T>

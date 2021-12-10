@@ -13,8 +13,7 @@ public class ConvertibleObservableProperties<T> extends ConvertibleObservables<P
 		super(converter, PropertiesCombiner.DEFAULT);
 	}
 
-	public void combine(Resource resource,
-			Converter<Resource, Properties> converter) {
+	public void combine(Resource resource, Converter<Resource, Properties> converter) {
 		combine(new ObservableResource<Properties>(resource, converter));
 	}
 }

@@ -19,7 +19,7 @@ public class FileMimeTypeUitls {
 		MultiValueMap<String, MimeType> result = new LinkedMultiValueMap<String, MimeType>();
 		String mimeTypesFileName = "/io/basc/framework/net/mime/mime.types";
 		Resource resource = ResourceUtils.getSystemResource(mimeTypesFileName);
-		for(String line : ResourceUtils.getLines(resource, MimeTypeUtils.US_ASCII)){
+		for (String line : ResourceUtils.getLines(resource, MimeTypeUtils.US_ASCII)) {
 			if (line.isEmpty() || line.charAt(0) == '#') {
 				continue;
 			}
@@ -55,12 +55,12 @@ public class FileMimeTypeUitls {
 		if (ext == null) {
 			return Collections.emptyList();
 		}
-		
+
 		List<MimeType> mimeTypes = fileExtensionToMediaTypes.get(ext.toLowerCase(Locale.ENGLISH));
-		if(mimeTypes == null){
+		if (mimeTypes == null) {
 			return Collections.emptyList();
 		}
-		
+
 		return Collections.unmodifiableList(mimeTypes);
 	}
 }

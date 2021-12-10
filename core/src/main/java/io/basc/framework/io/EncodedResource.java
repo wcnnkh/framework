@@ -29,8 +29,9 @@ import java.nio.charset.Charset;
  * Holder that combines a {@link Resource} descriptor with a specific encoding
  * or {@code Charset} to be used for reading from the resource.
  *
- * <p>Used as an argument for operations that support reading content with
- * a specific encoding, typically via a {@code java.io.Reader}.
+ * <p>
+ * Used as an argument for operations that support reading content with a
+ * specific encoding, typically via a {@code java.io.Reader}.
  *
  * @see Resource#getInputStream()
  * @see java.io.Reader
@@ -44,10 +45,10 @@ public class EncodedResource implements InputStreamSource {
 
 	private final Charset charset;
 
-
 	/**
-	 * Create a new {@code EncodedResource} for the given {@code Resource},
-	 * not specifying an explicit encoding or {@code Charset}.
+	 * Create a new {@code EncodedResource} for the given {@code Resource}, not
+	 * specifying an explicit encoding or {@code Charset}.
+	 * 
 	 * @param resource the {@code Resource} to hold (never {@code null})
 	 */
 	public EncodedResource(Resource resource) {
@@ -55,8 +56,9 @@ public class EncodedResource implements InputStreamSource {
 	}
 
 	/**
-	 * Create a new {@code EncodedResource} for the given {@code Resource},
-	 * using the specified {@code encoding}.
+	 * Create a new {@code EncodedResource} for the given {@code Resource}, using
+	 * the specified {@code encoding}.
+	 * 
 	 * @param resource the {@code Resource} to hold (never {@code null})
 	 * @param encoding the encoding to use for reading from the resource
 	 */
@@ -65,10 +67,11 @@ public class EncodedResource implements InputStreamSource {
 	}
 
 	/**
-	 * Create a new {@code EncodedResource} for the given {@code Resource},
-	 * using the specified {@code Charset}.
+	 * Create a new {@code EncodedResource} for the given {@code Resource}, using
+	 * the specified {@code Charset}.
+	 * 
 	 * @param resource the {@code Resource} to hold (never {@code null})
-	 * @param charset the {@code Charset} to use for reading from the resource
+	 * @param charset  the {@code Charset} to use for reading from the resource
 	 */
 	public EncodedResource(Resource resource, Charset charset) {
 		this(resource, null, charset);
@@ -82,7 +85,6 @@ public class EncodedResource implements InputStreamSource {
 		this.charset = charset;
 	}
 
-
 	/**
 	 * Return the {@code Resource} held by this {@code EncodedResource}.
 	 */
@@ -91,25 +93,26 @@ public class EncodedResource implements InputStreamSource {
 	}
 
 	/**
-	 * Return the encoding to use for reading from the {@linkplain #getResource() resource},
-	 * or {@code null} if none specified.
+	 * Return the encoding to use for reading from the {@linkplain #getResource()
+	 * resource}, or {@code null} if none specified.
 	 */
 	public final String getEncoding() {
 		return this.encoding;
 	}
 
 	/**
-	 * Return the {@code Charset} to use for reading from the {@linkplain #getResource() resource},
-	 * or {@code null} if none specified.
+	 * Return the {@code Charset} to use for reading from the
+	 * {@linkplain #getResource() resource}, or {@code null} if none specified.
 	 */
 	public final Charset getCharset() {
 		return this.charset;
 	}
 
 	/**
-	 * Determine whether a {@link Reader} is required as opposed to an {@link InputStream},
-	 * i.e. whether an {@linkplain #getEncoding() encoding} or a {@link #getCharset() Charset}
-	 * has been specified.
+	 * Determine whether a {@link Reader} is required as opposed to an
+	 * {@link InputStream}, i.e. whether an {@linkplain #getEncoding() encoding} or
+	 * a {@link #getCharset() Charset} has been specified.
+	 * 
 	 * @see #getReader()
 	 * @see #getInputStream()
 	 */
@@ -119,8 +122,9 @@ public class EncodedResource implements InputStreamSource {
 
 	/**
 	 * Open a {@code java.io.Reader} for the specified resource, using the specified
-	 * {@link #getCharset() Charset} or {@linkplain #getEncoding() encoding}
-	 * (if any).
+	 * {@link #getCharset() Charset} or {@linkplain #getEncoding() encoding} (if
+	 * any).
+	 * 
 	 * @throws IOException if opening the Reader failed
 	 * @see #requiresReader()
 	 * @see #getInputStream()
@@ -128,18 +132,18 @@ public class EncodedResource implements InputStreamSource {
 	public Reader getReader() throws IOException {
 		if (this.charset != null) {
 			return new InputStreamReader(this.resource.getInputStream(), this.charset);
-		}
-		else if (this.encoding != null) {
+		} else if (this.encoding != null) {
 			return new InputStreamReader(this.resource.getInputStream(), this.encoding);
-		}
-		else {
+		} else {
 			return new InputStreamReader(this.resource.getInputStream());
 		}
 	}
 
 	/**
-	 * Open an {@code InputStream} for the specified resource, ignoring any specified
-	 * {@link #getCharset() Charset} or {@linkplain #getEncoding() encoding}.
+	 * Open an {@code InputStream} for the specified resource, ignoring any
+	 * specified {@link #getCharset() Charset} or {@linkplain #getEncoding()
+	 * encoding}.
+	 * 
 	 * @throws IOException if opening the InputStream failed
 	 * @see #requiresReader()
 	 * @see #getReader()
@@ -147,7 +151,6 @@ public class EncodedResource implements InputStreamSource {
 	public InputStream getInputStream() throws IOException {
 		return this.resource.getInputStream();
 	}
-
 
 	@Override
 	public boolean equals(Object other) {
@@ -158,9 +161,8 @@ public class EncodedResource implements InputStreamSource {
 			return false;
 		}
 		EncodedResource otherResource = (EncodedResource) other;
-		return (this.resource.equals(otherResource.resource) &&
-				ObjectUtils.equals(this.charset, otherResource.charset) &&
-				ObjectUtils.equals(this.encoding, otherResource.encoding));
+		return (this.resource.equals(otherResource.resource) && ObjectUtils.equals(this.charset, otherResource.charset)
+				&& ObjectUtils.equals(this.encoding, otherResource.encoding));
 	}
 
 	@Override

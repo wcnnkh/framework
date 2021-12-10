@@ -7,10 +7,11 @@ import java.lang.annotation.Target;
 
 /**
  * 忽略
+ * 
  * @author shuchaowen
  *
  */
-@Target({ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD, ElementType.CONSTRUCTOR})
+@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD, ElementType.CONSTRUCTOR })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Ignore {
 }

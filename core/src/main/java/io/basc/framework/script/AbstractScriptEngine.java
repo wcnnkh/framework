@@ -19,7 +19,7 @@ public abstract class AbstractScriptEngine<T> implements ScriptEngine<T> {
 		return resolvers;
 	}
 
-	protected T evalInternal(String script) throws ScriptException{
+	protected T evalInternal(String script) throws ScriptException {
 		throw new ScriptException(script);
 	}
 }

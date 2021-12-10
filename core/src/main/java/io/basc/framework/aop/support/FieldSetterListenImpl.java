@@ -10,14 +10,14 @@ import java.util.Map;
 
 public class FieldSetterListenImpl implements FieldSetterListen, Serializable {
 	public static final String FIELD_SETTER_MAP_FIELD_NAME = "field_setter_map";
-	
+
 	private Map<String, Object> field_setter_map;
-	
+
 	@Override
 	public Map<String, Object> _getFieldSetterMap() {
 		return field_setter_map;
 	}
-	
+
 	@Override
 	public void _fieldSet(MethodInvoker invoker, Field field, Object oldValue) {
 		if (field_setter_map == null) {

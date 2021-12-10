@@ -43,7 +43,7 @@ import java.util.concurrent.RejectedExecutionException;
  * @see java.util.concurrent.Executors
  */
 public interface AsyncExecutor extends Executor {
-	
+
 	@Override
 	default void execute(Runnable command) throws RejectedExecutionException {
 		submit(command);

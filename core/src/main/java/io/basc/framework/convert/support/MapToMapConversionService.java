@@ -14,19 +14,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-class MapToMapConversionService extends ConditionalConversionService{
-	
-	public MapToMapConversionService(ConversionService conversionService){
+class MapToMapConversionService extends ConditionalConversionService {
+
+	public MapToMapConversionService(ConversionService conversionService) {
 		setConversionService(conversionService);
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
-		if(source == null){
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (source == null) {
 			return null;
 		}
-		
+
 		Map<Object, Object> sourceMap = (Map) source;
 
 		// Shortcut if possible...
@@ -59,7 +58,7 @@ class MapToMapConversionService extends ConditionalConversionService{
 		}
 		return targetMap;
 	}
-	
+
 	private Object convertKey(Object sourceKey, TypeDescriptor sourceType, @Nullable TypeDescriptor targetType) {
 		if (targetType == null) {
 			return sourceKey;
@@ -71,7 +70,8 @@ class MapToMapConversionService extends ConditionalConversionService{
 		if (targetType == null) {
 			return sourceValue;
 		}
-		return getConversionService().convert(sourceValue, sourceType.getMapValueTypeDescriptor(sourceValue), targetType);
+		return getConversionService().convert(sourceValue, sourceType.getMapValueTypeDescriptor(sourceValue),
+				targetType);
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {

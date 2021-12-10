@@ -40,7 +40,7 @@ public abstract class AbstractStreamWrapper<T, S extends Stream<T>> extends Base
 	}
 
 	protected abstract S wrap(Stream<T> stream);
-	
+
 	@Override
 	public S sequential() {
 		Stream<T> stream = this.wrappedTarget.sequential();
@@ -64,7 +64,7 @@ public abstract class AbstractStreamWrapper<T, S extends Stream<T>> extends Base
 		Stream<T> stream = this.wrappedTarget.onClose(closeHandler);
 		return wrap(stream);
 	}
-	
+
 	@Override
 	public S filter(Predicate<? super T> predicate) {
 		Stream<T> stream = this.wrappedTarget.filter(predicate);

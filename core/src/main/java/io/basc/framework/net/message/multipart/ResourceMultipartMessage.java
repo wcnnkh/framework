@@ -31,12 +31,12 @@ public class ResourceMultipartMessage extends AbstractMultipartMessage {
 		}
 		getHeaders().setContentLength(resource.contentLength());
 	}
-	
+
 	@Override
 	public InputStream getInputStream() throws IOException {
 		return resource.getInputStream();
 	}
-	
+
 	@Override
 	public <T, E extends Throwable> T read(Processor<InputStream, ? extends T, E> processor) throws IOException, E {
 		return resource.read(processor);

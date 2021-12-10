@@ -12,24 +12,24 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class SmartPlaceholderReplacer implements PlaceholderReplacer{
+public class SmartPlaceholderReplacer implements PlaceholderReplacer {
 	private static final Logger logger = LoggerFactory.getLogger(SmartPlaceholderReplacer.class);
 	/** Value separator for system property placeholders: ":" */
 	private static final String VALUE_SEPARATOR = ":";
-	
+
 	private static final Map<String, String> wellKnownSimplePrefixes = new HashMap<String, String>(4);
 	static {
 		wellKnownSimplePrefixes.put("}", "{");
 		wellKnownSimplePrefixes.put("]", "[");
 		wellKnownSimplePrefixes.put(")", "(");
 	}
-	
+
 	public static final PlaceholderReplacer STRICT_REPLACER = new SmartPlaceholderReplacer(PLACEHOLDER_PREFIX,
 			PLACEHOLDER_SUFFIX, VALUE_SEPARATOR, false);
 
 	public static final PlaceholderReplacer NON_STRICT_REPLACER = new SmartPlaceholderReplacer(PLACEHOLDER_PREFIX,
 			PLACEHOLDER_SUFFIX, VALUE_SEPARATOR, true);
-	
+
 	private final String placeholderPrefix;
 
 	private final String placeholderSuffix;
@@ -39,38 +39,38 @@ public class SmartPlaceholderReplacer implements PlaceholderReplacer{
 	private final String valueSeparator;
 
 	private final boolean ignoreUnresolvablePlaceholders;
-	
+
 	/**
-	 * Creates a new {@code PropertyPlaceholderHelper} that uses the supplied
-	 * prefix and suffix. Unresolvable placeholders are ignored.
+	 * Creates a new {@code PropertyPlaceholderHelper} that uses the supplied prefix
+	 * and suffix. Unresolvable placeholders are ignored.
 	 * 
-	 * @param placeholderPrefix
-	 *            the prefix that denotes the start of a placeholder.
-	 * @param placeholderSuffix
-	 *            the suffix that denotes the end of a placeholder.
+	 * @param placeholderPrefix the prefix that denotes the start of a placeholder.
+	 * @param placeholderSuffix the suffix that denotes the end of a placeholder.
 	 */
 	public SmartPlaceholderReplacer(String placeholderPrefix, String placeholderSuffix) {
 		this(placeholderPrefix, placeholderSuffix, null, true);
 	}
-	
-	public SmartPlaceholderReplacer(String placeholderPrefix, String placeholderSuffix, boolean ignoreUnresolvablePlaceholders) {
+
+	public SmartPlaceholderReplacer(String placeholderPrefix, String placeholderSuffix,
+			boolean ignoreUnresolvablePlaceholders) {
 		this(placeholderPrefix, placeholderSuffix, VALUE_SEPARATOR, ignoreUnresolvablePlaceholders);
 	}
 
 	/**
-	 * Creates a new {@code PropertyPlaceholderHelper} that uses the supplied
-	 * prefix and suffix.
+	 * Creates a new {@code PropertyPlaceholderHelper} that uses the supplied prefix
+	 * and suffix.
 	 * 
-	 * @param placeholderPrefix
-	 *            the prefix that denotes the start of a placeholder
-	 * @param placeholderSuffix
-	 *            the suffix that denotes the end of a placeholder
-	 * @param valueSeparator
-	 *            the separating character between the placeholder variable and
-	 *            the associated default value, if any
-	 * @param ignoreUnresolvablePlaceholders
-	 *            indicates whether unresolvable placeholders should be ignored
-	 *            ({@code true}) or cause an exception ({@code false}).
+	 * @param placeholderPrefix              the prefix that denotes the start of a
+	 *                                       placeholder
+	 * @param placeholderSuffix              the suffix that denotes the end of a
+	 *                                       placeholder
+	 * @param valueSeparator                 the separating character between the
+	 *                                       placeholder variable and the associated
+	 *                                       default value, if any
+	 * @param ignoreUnresolvablePlaceholders indicates whether unresolvable
+	 *                                       placeholders should be ignored
+	 *                                       ({@code true}) or cause an exception
+	 *                                       ({@code false}).
 	 */
 	public SmartPlaceholderReplacer(String placeholderPrefix, String placeholderSuffix, String valueSeparator,
 			boolean ignoreUnresolvablePlaceholders) {
@@ -88,13 +88,12 @@ public class SmartPlaceholderReplacer implements PlaceholderReplacer{
 		this.valueSeparator = valueSeparator;
 		this.ignoreUnresolvablePlaceholders = ignoreUnresolvablePlaceholders;
 	}
-	
-	public String replacePlaceholders(String value,
-			PlaceholderResolver placeholderResolver) {
+
+	public String replacePlaceholders(String value, PlaceholderResolver placeholderResolver) {
 		Assert.notNull(value, "Argument 'value' must not be null.");
 		return parseStringValue(value, placeholderResolver, new HashSet<String>());
 	}
-	
+
 	protected String parseStringValue(String strVal, PlaceholderResolver placeholderResolver,
 			Set<String> visitedPlaceholders) {
 

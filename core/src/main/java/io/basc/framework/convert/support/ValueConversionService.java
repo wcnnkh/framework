@@ -12,25 +12,22 @@ class ValueConversionService implements ConversionService {
 		this.conversionService = conversionService;
 	}
 
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		AnyValue value = new AnyValue(source, conversionService);
-		if(targetType.getType() == Value.class || targetType.getType() == AnyValue.class){
+		if (targetType.getType() == Value.class || targetType.getType() == AnyValue.class) {
 			return value;
 		}
-		
+
 		return value.getAsObject(targetType);
 	}
-	
-	public boolean canConvert(TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
-		if(sourceType == null || targetType == null) {
+
+	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (sourceType == null || targetType == null) {
 			return false;
 		}
-		
-		return Value.isBaseType(sourceType.getType())
-				|| Value.class.isAssignableFrom(sourceType.getType())
-				|| Value.isBaseType(targetType.getType())
-				|| targetType.getType() == Value.class || AnyValue.class == targetType.getType();
+
+		return Value.isBaseType(sourceType.getType()) || Value.class.isAssignableFrom(sourceType.getType())
+				|| Value.isBaseType(targetType.getType()) || targetType.getType() == Value.class
+				|| AnyValue.class == targetType.getType();
 	}
 }

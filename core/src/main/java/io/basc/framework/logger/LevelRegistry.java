@@ -17,8 +17,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
-public class LevelRegistry extends TreeMap<String, Level> implements
-		EventDispatcher<ChangeEvent<LevelRegistry>> {
+public class LevelRegistry extends TreeMap<String, Level> implements EventDispatcher<ChangeEvent<LevelRegistry>> {
 	private static final long serialVersionUID = 1L;
 
 	public static final Comparator<String> LEVEL_NAME_COMPARATOR = new Comparator<String>() {
@@ -30,7 +29,7 @@ public class LevelRegistry extends TreeMap<String, Level> implements
 			return o1.length() > o2.length() ? -1 : 1;
 		};
 	};
-	
+
 	public static final Converter<Properties, LevelRegistry> CONVERTER = new Converter<Properties, LevelRegistry>() {
 
 		@Override
@@ -51,7 +50,7 @@ public class LevelRegistry extends TreeMap<String, Level> implements
 				if (level == null) {
 					continue;
 				}
-				
+
 				levelFactory.put(String.valueOf(key), level);
 			}
 			return levelFactory;
@@ -61,13 +60,11 @@ public class LevelRegistry extends TreeMap<String, Level> implements
 	private volatile EventDispatcher<ChangeEvent<LevelRegistry>> dispatcher;
 
 	@Override
-	public EventRegistration registerListener(
-			EventListener<ChangeEvent<LevelRegistry>> eventListener) {
+	public EventRegistration registerListener(EventListener<ChangeEvent<LevelRegistry>> eventListener) {
 		if (dispatcher == null) {
 			synchronized (this) {
 				if (dispatcher == null) {
-					dispatcher = new SimpleEventDispatcher<ChangeEvent<LevelRegistry>>(
-							true);
+					dispatcher = new SimpleEventDispatcher<ChangeEvent<LevelRegistry>>(true);
 				}
 			}
 		}
@@ -87,8 +84,7 @@ public class LevelRegistry extends TreeMap<String, Level> implements
 		return dispatcher;
 	}
 
-	public void setDispatcher(
-			EventDispatcher<ChangeEvent<LevelRegistry>> dispatcher) {
+	public void setDispatcher(EventDispatcher<ChangeEvent<LevelRegistry>> dispatcher) {
 		this.dispatcher = dispatcher;
 	}
 
@@ -138,8 +134,7 @@ public class LevelRegistry extends TreeMap<String, Level> implements
 			super.putAll(map);
 		} finally {
 			if (dispatcher != null) {
-				dispatcher.publishEvent(new ChangeEvent<LevelRegistry>(
-						EventType.UPDATE, this));
+				dispatcher.publishEvent(new ChangeEvent<LevelRegistry>(EventType.UPDATE, this));
 			}
 		}
 	}
@@ -151,8 +146,7 @@ public class LevelRegistry extends TreeMap<String, Level> implements
 				return super.put(key, value);
 			} finally {
 				if (dispatcher != null) {
-					dispatcher.publishEvent(new ChangeEvent<LevelRegistry>(
-							EventType.UPDATE, this));
+					dispatcher.publishEvent(new ChangeEvent<LevelRegistry>(EventType.UPDATE, this));
 				}
 			}
 		}
@@ -165,8 +159,7 @@ public class LevelRegistry extends TreeMap<String, Level> implements
 				return super.remove(key);
 			} finally {
 				if (dispatcher != null) {
-					dispatcher.publishEvent(new ChangeEvent<LevelRegistry>(
-							EventType.UPDATE, this));
+					dispatcher.publishEvent(new ChangeEvent<LevelRegistry>(EventType.UPDATE, this));
 				}
 			}
 		}
@@ -179,8 +172,7 @@ public class LevelRegistry extends TreeMap<String, Level> implements
 				super.clear();
 			} finally {
 				if (dispatcher != null) {
-					dispatcher.publishEvent(new ChangeEvent<LevelRegistry>(
-							EventType.UPDATE, this));
+					dispatcher.publishEvent(new ChangeEvent<LevelRegistry>(EventType.UPDATE, this));
 				}
 			}
 		}

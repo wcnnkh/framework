@@ -27,8 +27,7 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 	private final ServiceLoaderFactory serviceLoaderFactory;
 
 	public DefaultInstanceDefinition(NoArgsInstanceFactory instanceFactory, Environment environment,
-			Class<?> targetClass, ServiceLoaderFactory serviceLoaderFactory,
-			ParameterFactory defaultValueFactory) {
+			Class<?> targetClass, ServiceLoaderFactory serviceLoaderFactory, ParameterFactory defaultValueFactory) {
 		super(instanceFactory, environment, defaultValueFactory);
 		this.targetClass = targetClass;
 		this.serviceLoaderFactory = serviceLoaderFactory;
@@ -37,17 +36,17 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 	public Class<?> getTargetClass() {
 		return targetClass;
 	}
-	
+
 	protected void configurable(Object instance) {
-		if(instance instanceof EnvironmentAware) {
+		if (instance instanceof EnvironmentAware) {
 			((EnvironmentAware) instance).setEnvironment(getEnvironment());
 		}
-		
-		if(instance instanceof Configurable) {
+
+		if (instance instanceof Configurable) {
 			((Configurable) instance).configure(serviceLoaderFactory);
 		}
-		
-		if(instance instanceof DefaultValueFactoryAware) {
+
+		if (instance instanceof DefaultValueFactoryAware) {
 			((DefaultValueFactoryAware) instance).setDefaultValueFactory(getDefaultValueFactory());
 		}
 	}

@@ -13,13 +13,13 @@ public class ChangeEvent<T> extends ObjectEvent<T> {
 		super(source);
 		this.eventType = eventType;
 	}
-	
+
 	public ChangeEvent(ChangeEvent<T> event) {
 		super(event);
 		this.eventType = event.eventType;
 	}
-	
-	public ChangeEvent(ChangeEvent<?> event, T source){
+
+	public ChangeEvent(ChangeEvent<?> event, T source) {
 		super(source, event.getCreateTime());
 		this.eventType = event.eventType;
 	}

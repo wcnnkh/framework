@@ -11,7 +11,6 @@ public class HttpClientResponseException extends HttpClientException {
 
 	private static final String DEFAULT_CHARSET = "ISO-8859-1";
 
-
 	private final int rawStatusCode;
 
 	private final String statusText;
@@ -22,17 +21,17 @@ public class HttpClientResponseException extends HttpClientException {
 
 	private final String responseCharset;
 
-
 	/**
 	 * Construct a new instance of with the given response data.
-	 * @param statusCode the raw status code value
-	 * @param statusText the status text
+	 * 
+	 * @param statusCode      the raw status code value
+	 * @param statusText      the status text
 	 * @param responseHeaders the response headers (may be {@code null})
-	 * @param responseBody the response body content (may be {@code null})
+	 * @param responseBody    the response body content (may be {@code null})
 	 * @param responseCharset the response body charset (may be {@code null})
 	 */
-	public HttpClientResponseException(String message, int statusCode, String statusText,
-			HttpHeaders responseHeaders, byte[] responseBody, Charset responseCharset) {
+	public HttpClientResponseException(String message, int statusCode, String statusText, HttpHeaders responseHeaders,
+			byte[] responseBody, Charset responseCharset) {
 
 		super(message);
 		this.rawStatusCode = statusCode;
@@ -41,7 +40,6 @@ public class HttpClientResponseException extends HttpClientException {
 		this.responseBody = (responseBody != null ? responseBody : new byte[0]);
 		this.responseCharset = (responseCharset != null ? responseCharset.name() : DEFAULT_CHARSET);
 	}
-
 
 	/**
 	 * Return the raw HTTP status code value.
@@ -77,8 +75,7 @@ public class HttpClientResponseException extends HttpClientException {
 	public String getResponseBodyAsString() {
 		try {
 			return new String(this.responseBody, this.responseCharset);
-		}
-		catch (UnsupportedEncodingException ex) {
+		} catch (UnsupportedEncodingException ex) {
 			// should not occur
 			throw new IllegalStateException(ex);
 		}

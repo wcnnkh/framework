@@ -24,7 +24,8 @@ public final class JsonMessageConverter extends AbstractMessageConverter<Object>
 	}
 
 	@Override
-	protected Object readInternal(TypeDescriptor type, InputMessage inputMessage) throws IOException, MessageConvertException {
+	protected Object readInternal(TypeDescriptor type, InputMessage inputMessage)
+			throws IOException, MessageConvertException {
 		String text = readTextBody(inputMessage);
 		if (text == null) {
 			return null;

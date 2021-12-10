@@ -28,7 +28,7 @@ public abstract class AbstractClientHttpRequest implements ClientHttpRequest {
 	public MediaType getContentType() {
 		return getHeaders().getContentType();
 	}
-	
+
 	public final ClientHttpResponse execute() throws IOException {
 		assertNotExecuted();
 		ClientHttpResponse result = executeInternal(this.headers);

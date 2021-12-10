@@ -16,6 +16,7 @@ public abstract class AbstractClassTestingTypeFilter implements TypeFilter {
 
 	/**
 	 * Determine a match based on the given ClassMetadata object.
+	 * 
 	 * @param metadata the ClassMetadata object
 	 * @return whether this filter matches on the specified type
 	 */

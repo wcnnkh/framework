@@ -9,8 +9,8 @@ public class SerializableMethod implements MethodHolder, Serializable {
 	private final Class<?> declaringClass;
 	private final String name;
 	private final Class<?>[] parameterTypes;
-	
-	public SerializableMethod(Method method){
+
+	public SerializableMethod(Method method) {
 		this(method.getDeclaringClass(), method);
 	}
 
@@ -31,7 +31,7 @@ public class SerializableMethod implements MethodHolder, Serializable {
 		}
 		return method;
 	}
-	
+
 	public Class<?> getSourceClass() {
 		return declaringClass;
 	}

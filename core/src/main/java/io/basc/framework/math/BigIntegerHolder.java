@@ -7,9 +7,9 @@ public class BigIntegerHolder extends AbstractNumberHolder {
 	private static final long serialVersionUID = 1L;
 
 	public static final BigIntegerHolder ZERO = new BigIntegerHolder(BigInteger.ZERO);
-	
+
 	public static final BigIntegerHolder ONE = new BigIntegerHolder(BigInteger.ONE);
-	
+
 	private BigInteger bigInteger;
 
 	public BigIntegerHolder(BigInteger bigInteger) {
@@ -59,20 +59,20 @@ public class BigIntegerHolder extends AbstractNumberHolder {
 	public int hashCode() {
 		return bigInteger.hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		if(obj == null){
+		if (obj == null) {
 			return false;
 		}
-		
-		if(obj instanceof BigIntegerHolder){
+
+		if (obj instanceof BigIntegerHolder) {
 			return bigInteger.equals(((BigIntegerHolder) obj).bigInteger);
 		}
-		
+
 		return super.equals(obj);
 	}
-	
+
 	@Override
 	public String toString() {
 		return bigInteger.toString();

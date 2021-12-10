@@ -12,16 +12,16 @@ public class InstanceMethodInterceptorsInvoker extends MethodInterceptorsInvoker
 	private static final long serialVersionUID = 1L;
 	private final Object instance;
 
-	public InstanceMethodInterceptorsInvoker(MethodInvoker source,
-			Iterator<MethodInterceptor> iterator, Object instance) {
+	public InstanceMethodInterceptorsInvoker(MethodInvoker source, Iterator<MethodInterceptor> iterator,
+			Object instance) {
 		super(source, iterator);
 		this.instance = instance;
 	}
-	
+
 	@Override
-	public Object intercept(MethodInvoker invoker, Object[] args)
-			throws Throwable {
-		if(ArrayUtils.isEmpty(args) && invoker.getMethod().getName().equals(ProxyInstanceTarget.PROXY_TARGET_METHOD_NAME)){
+	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
+		if (ArrayUtils.isEmpty(args)
+				&& invoker.getMethod().getName().equals(ProxyInstanceTarget.PROXY_TARGET_METHOD_NAME)) {
 			return invoker.getInstance();
 		}
 		return super.intercept(invoker, args);

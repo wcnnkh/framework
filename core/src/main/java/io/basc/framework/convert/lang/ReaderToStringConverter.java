@@ -7,7 +7,7 @@ import io.basc.framework.io.IOUtils;
 import java.io.IOException;
 import java.io.Reader;
 
-public class ReaderToStringConverter implements Converter<Reader, String>{
+public class ReaderToStringConverter implements Converter<Reader, String> {
 
 	@Override
 	public String convert(Reader reader) {

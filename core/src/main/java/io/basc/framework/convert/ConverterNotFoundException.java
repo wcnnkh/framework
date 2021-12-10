@@ -12,6 +12,7 @@ public class ConverterNotFoundException extends ConversionException {
 
 	/**
 	 * Create a new conversion executor not found exception.
+	 * 
 	 * @param sourceType the source type requested to convert from
 	 * @param targetType the target type requested to convert to
 	 */
@@ -20,7 +21,6 @@ public class ConverterNotFoundException extends ConversionException {
 		this.sourceType = sourceType;
 		this.targetType = targetType;
 	}
-
 
 	/**
 	 * Return the source type that was requested to convert from.
@@ -38,4 +38,3 @@ public class ConverterNotFoundException extends ConversionException {
 	}
 
 }
-

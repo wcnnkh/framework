@@ -8,8 +8,7 @@ import io.basc.framework.util.Wrapper;
 import io.basc.framework.util.stream.ConsumerProcessor;
 import io.basc.framework.util.stream.Processor;
 
-public class OutputStreamSourceWrapper<W extends OutputStreamSource> extends Wrapper<W>
-		implements OutputStreamSource {
+public class OutputStreamSourceWrapper<W extends OutputStreamSource> extends Wrapper<W> implements OutputStreamSource {
 
 	public OutputStreamSourceWrapper(W wrappedTarget) {
 		super(wrappedTarget);
@@ -24,15 +23,15 @@ public class OutputStreamSourceWrapper<W extends OutputStreamSource> extends Wra
 	public WritableByteChannel writableChannel() throws IOException {
 		return wrappedTarget.writableChannel();
 	}
-	
+
 	@Override
 	public <E extends Throwable> void write(ConsumerProcessor<OutputStream, E> callback) throws IOException, E {
 		wrappedTarget.write(callback);
 	}
-	
+
 	@Override
 	public <T, E extends Throwable> T write(Processor<OutputStream, ? extends T, E> processor) throws IOException, E {
 		return wrappedTarget.write(processor);
 	}
-		
+
 }

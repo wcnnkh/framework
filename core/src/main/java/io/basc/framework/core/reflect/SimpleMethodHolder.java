@@ -14,7 +14,7 @@ public final class SimpleMethodHolder implements MethodHolder {
 	public Method getMethod() {
 		return method;
 	}
-	
+
 	public Class<?> getDeclaringClass() {
 		return declaringClass;
 	}

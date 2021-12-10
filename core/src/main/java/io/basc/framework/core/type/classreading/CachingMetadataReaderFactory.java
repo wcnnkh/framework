@@ -99,7 +99,7 @@ public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 			}
 			return metadataReader;
 		} else if (this.metadataReaderCache != null) {
-			//TODO 目前不可能到这里
+			// TODO 目前不可能到这里
 			synchronized (this.metadataReaderCache) {
 				MetadataReader metadataReader = this.metadataReaderCache.get(resource);
 				if (metadataReader == null) {

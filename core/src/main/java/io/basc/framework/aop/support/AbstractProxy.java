@@ -14,7 +14,7 @@ public abstract class AbstractProxy implements Proxy {
 		this.interfaces = interfaces;
 		this.methodInterceptor = methodInterceptor;
 	}
-	
+
 	public Class<?> getTargetClass() {
 		return targetClass;
 	}
@@ -26,8 +26,8 @@ public abstract class AbstractProxy implements Proxy {
 	public MethodInterceptor getMethodInterceptor() {
 		return methodInterceptor;
 	}
-	
-	public Object create(Class<?>[] parameterTypes, Object[] params) throws InstanceException{
+
+	public Object create(Class<?>[] parameterTypes, Object[] params) throws InstanceException {
 		if ((parameterTypes == null || parameterTypes.length == 0) && (params == null || params.length == 0)) {
 			return create();
 		}

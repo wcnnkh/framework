@@ -12,7 +12,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<AnnotatedElement> implements FieldDescriptor {
+public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<AnnotatedElement>
+		implements FieldDescriptor {
 	private final Class<?> declaringClass;
 	private final Field field;
 	private final Method method;
@@ -23,7 +24,7 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 		this.field = field;
 		this.method = method;
 	}
-	
+
 	public java.lang.reflect.Field getField() {
 		return field;
 	}
@@ -31,7 +32,7 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 	public Method getMethod() {
 		return method;
 	}
-	
+
 	public int getModifiers() {
 		Method method = getMethod();
 		Field field = getField();
@@ -82,24 +83,24 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 
 	@Override
 	public String toString() {
-		if(field == null && method == null){
+		if (field == null && method == null) {
 			return "declaringClass [" + getDeclaringClass() + "] name [" + getName() + "]";
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
-		if(field != null){
+		if (field != null) {
 			sb.append("field[").append(field).append("]");
 		}
-		
-		if(method != null){
-			if(sb.length() != 0){
+
+		if (method != null) {
+			if (sb.length() != 0) {
 				sb.append(" ");
 			}
 			sb.append("method[").append(method).append("]");
 		}
 		return sb.toString();
 	}
-	
+
 	public Object get(Object instance) {
 		Method method = getMethod();
 		if (method != null) {
@@ -107,7 +108,8 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 			try {
 				return method.invoke(Modifier.isStatic(method.getModifiers()) ? null : instance);
 			} catch (Exception e) {
-				throw new RuntimeException(toString() + " instance [" + instance + "]", NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
+				throw new RuntimeException(toString() + " instance [" + instance + "]",
+						NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
 			}
 		}
 
@@ -117,7 +119,8 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 			try {
 				return field.get(Modifier.isStatic(field.getModifiers()) ? null : instance);
 			} catch (Exception e) {
-				throw new RuntimeException(toString() + " instance [" + instance + "]",  NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
+				throw new RuntimeException(toString() + " instance [" + instance + "]",
+						NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
 			}
 		}
 		throw createNotSupportException();
@@ -130,7 +133,8 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 			try {
 				method.invoke(Modifier.isStatic(method.getModifiers()) ? null : instance, value);
 			} catch (Exception e) {
-				throw new RuntimeException(toString() + " instance [" + instance + "] value [" + value + "]", NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
+				throw new RuntimeException(toString() + " instance [" + instance + "] value [" + value + "]",
+						NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
 			}
 			return;
 		}
@@ -141,7 +145,8 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 			try {
 				field.set(Modifier.isStatic(field.getModifiers()) ? null : instance, value);
 			} catch (Exception e) {
-				throw new RuntimeException(toString() + " instance [" + instance + "] value [" + value + "]", NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
+				throw new RuntimeException(toString() + " instance [" + instance + "] value [" + value + "]",
+						NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
 			}
 			return;
 		}

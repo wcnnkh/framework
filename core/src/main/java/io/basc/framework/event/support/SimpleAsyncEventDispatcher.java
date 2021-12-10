@@ -5,8 +5,7 @@ import io.basc.framework.util.concurrent.TaskQueue;
 
 import java.util.concurrent.Executor;
 
-public class SimpleAsyncEventDispatcher<T extends Event> extends
-		SimpleEventDispatcher<T> {
+public class SimpleAsyncEventDispatcher<T extends Event> extends SimpleEventDispatcher<T> {
 	private Executor executor;
 
 	public SimpleAsyncEventDispatcher() {
@@ -21,7 +20,7 @@ public class SimpleAsyncEventDispatcher<T extends Event> extends
 		super(true);
 		this.executor = executor;
 	}
-	
+
 	@Override
 	public void publishEvent(T event) {
 		executor.execute(() -> super.publishEvent(event));

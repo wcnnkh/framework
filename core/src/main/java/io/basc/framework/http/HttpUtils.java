@@ -21,7 +21,8 @@ public final class HttpUtils {
 	private HttpUtils() {
 	};
 
-	private static final HttpClient HTTP_CLIENT = Sys.env.getServiceLoader(HttpClient.class, DefaultHttpClient.class).first();
+	private static final HttpClient HTTP_CLIENT = Sys.env.getServiceLoader(HttpClient.class, DefaultHttpClient.class)
+			.first();
 
 	/**
 	 * 获取默认的HttpClient(获取spi机制加载)
@@ -119,11 +120,13 @@ public final class HttpUtils {
 
 	/**
 	 * 将文件信息写入ContentDisposition
+	 * 
 	 * @param outputMessage
 	 * @param fileName
 	 * @param charset
 	 */
-	public static void writeFileMessageHeaders(HttpOutputMessage outputMessage, String fileName, @Nullable Charset charset) {
+	public static void writeFileMessageHeaders(HttpOutputMessage outputMessage, String fileName,
+			@Nullable Charset charset) {
 		MimeType mimeType = FileMimeTypeUitls.getMimeType(fileName);
 		if (mimeType != null) {
 			outputMessage.setContentType(mimeType);

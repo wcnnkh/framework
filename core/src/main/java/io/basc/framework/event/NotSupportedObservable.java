@@ -11,8 +11,7 @@ public class NotSupportedObservable<T> implements Observable<T> {
 		return source;
 	}
 
-	public EventRegistration registerListener(
-			EventListener<ChangeEvent<T>> eventListener) {
+	public EventRegistration registerListener(EventListener<ChangeEvent<T>> eventListener) {
 		return EventRegistration.EMPTY;
 	}
 }

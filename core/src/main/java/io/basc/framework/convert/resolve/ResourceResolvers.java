@@ -78,8 +78,8 @@ public class ResourceResolvers extends ConfigurableServices<ResourceResolver> im
 				return resolver.resolveResource(resource, targetType);
 			}
 		}
-		
-		if(getPropertiesResolvers().canResolveProperties(resource)) {
+
+		if (getPropertiesResolvers().canResolveProperties(resource)) {
 			Properties properties = new Properties();
 			getPropertiesResolvers().resolveProperties(properties, resource, charset == null ? null : charset.get());
 			return getConversionService().convert(properties, PROPERTIES_TYPE, targetType);

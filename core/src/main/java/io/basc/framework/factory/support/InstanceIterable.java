@@ -8,8 +8,7 @@ public final class InstanceIterable<E> implements Iterable<E> {
 	private NoArgsInstanceFactory instanceFactory;
 	private Iterable<String> names;
 
-	public InstanceIterable(NoArgsInstanceFactory instanceFactory,
-			Iterable<String> names) {
+	public InstanceIterable(NoArgsInstanceFactory instanceFactory, Iterable<String> names) {
 		this.instanceFactory = instanceFactory;
 		this.names = names;
 	}

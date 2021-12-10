@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class StringMessageConverter extends AbstractMessageConverter<Object> {
 	private final ConversionService conversionService;
-	
+
 	public StringMessageConverter(ConversionService conversionService) {
 		this.conversionService = conversionService;
 		supportMimeTypes.add(MimeTypeUtils.TEXT_PLAIN, TEXT_ALL);
@@ -25,7 +25,8 @@ public class StringMessageConverter extends AbstractMessageConverter<Object> {
 	}
 
 	@Override
-	protected Object readInternal(TypeDescriptor type, InputMessage inputMessage) throws IOException, MessageConvertException {
+	protected Object readInternal(TypeDescriptor type, InputMessage inputMessage)
+			throws IOException, MessageConvertException {
 		String text = readTextBody(inputMessage);
 		if (type.getResolvableType().getRawClass() == byte[].class) {
 			return text.getBytes(getCharset(inputMessage));

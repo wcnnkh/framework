@@ -38,8 +38,8 @@ public class StandardMethodMetadata implements MethodMetadata {
 	/**
 	 * Create a new StandardMethodMetadata wrapper for the given Method, providing
 	 * the option to return any nested annotations or annotation arrays in the form
-	 * of {@link io.basc.framework.core.annotation.AnnotationAttributes} instead
-	 * of actual {@link java.lang.annotation.Annotation} instances.
+	 * of {@link io.basc.framework.core.annotation.AnnotationAttributes} instead of
+	 * actual {@link java.lang.annotation.Annotation} instances.
 	 * 
 	 * @param introspectedMethod     the Method to introspect
 	 * @param nestedAnnotationsAsMap return nested annotations and annotation arrays

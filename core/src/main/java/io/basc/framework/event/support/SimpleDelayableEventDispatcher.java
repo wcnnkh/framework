@@ -23,7 +23,7 @@ public class SimpleDelayableEventDispatcher<T extends Event> extends SimpleEvent
 
 	@Override
 	public void publishEvent(T event) {
-		//不直接publish的目的是为了让消息异步
+		// 不直接publish的目的是为了让消息异步
 		publishEvent(event, 0, TimeUnit.MILLISECONDS);
 	}
 

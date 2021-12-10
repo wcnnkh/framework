@@ -22,13 +22,13 @@ import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
@@ -140,36 +140,7 @@ final class SynthesizedMergedAnnotationInvocationHandler<A extends Annotation> i
 	}
 
 	private int getValueHashCode(Object value) {
-		// Use Arrays.hashCode(...) since Spring's ObjectUtils doesn't comply
-		// with the requirements specified in Annotation#hashCode().
-		if (value instanceof boolean[]) {
-			return Arrays.hashCode((boolean[]) value);
-		}
-		if (value instanceof byte[]) {
-			return Arrays.hashCode((byte[]) value);
-		}
-		if (value instanceof char[]) {
-			return Arrays.hashCode((char[]) value);
-		}
-		if (value instanceof double[]) {
-			return Arrays.hashCode((double[]) value);
-		}
-		if (value instanceof float[]) {
-			return Arrays.hashCode((float[]) value);
-		}
-		if (value instanceof int[]) {
-			return Arrays.hashCode((int[]) value);
-		}
-		if (value instanceof long[]) {
-			return Arrays.hashCode((long[]) value);
-		}
-		if (value instanceof short[]) {
-			return Arrays.hashCode((short[]) value);
-		}
-		if (value instanceof Object[]) {
-			return Arrays.hashCode((Object[]) value);
-		}
-		return value.hashCode();
+		return ObjectUtils.hashCode(value, false);
 	}
 
 	private String annotationToString() {
@@ -196,18 +167,7 @@ final class SynthesizedMergedAnnotationInvocationHandler<A extends Annotation> i
 		if (value instanceof Class) {
 			return ((Class<?>) value).getName();
 		}
-		if (value.getClass().isArray()) {
-			StringBuilder builder = new StringBuilder("[");
-			for (int i = 0; i < Array.getLength(value); i++) {
-				if (i > 0) {
-					builder.append(", ");
-				}
-				builder.append(toString(Array.get(value, i)));
-			}
-			builder.append(']');
-			return builder.toString();
-		}
-		return String.valueOf(value);
+		return ObjectUtils.toString(value);
 	}
 
 	private Object getAttributeValue(Method method) {
@@ -234,33 +194,7 @@ final class SynthesizedMergedAnnotationInvocationHandler<A extends Annotation> i
 	 * @param array the array to clone
 	 */
 	private Object cloneArray(Object array) {
-		if (array instanceof boolean[]) {
-			return ((boolean[]) array).clone();
-		}
-		if (array instanceof byte[]) {
-			return ((byte[]) array).clone();
-		}
-		if (array instanceof char[]) {
-			return ((char[]) array).clone();
-		}
-		if (array instanceof double[]) {
-			return ((double[]) array).clone();
-		}
-		if (array instanceof float[]) {
-			return ((float[]) array).clone();
-		}
-		if (array instanceof int[]) {
-			return ((int[]) array).clone();
-		}
-		if (array instanceof long[]) {
-			return ((long[]) array).clone();
-		}
-		if (array instanceof short[]) {
-			return ((short[]) array).clone();
-		}
-
-		// else
-		return ((Object[]) array).clone();
+		return ArrayUtils.clone(array);
 	}
 
 	@SuppressWarnings("unchecked")

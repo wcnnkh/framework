@@ -6,7 +6,7 @@ import io.basc.framework.mapper.Field;
 
 import java.util.Map;
 
-public interface FieldSetterListen extends WriteReplaceInterface{
+public interface FieldSetterListen extends WriteReplaceInterface {
 	public static final String GET_CHANGE_MAP = "_getFieldSetterMap";
 	public static final String CLEAR_FIELD_LISTEN = "_clearFieldSetterMap";
 

@@ -30,10 +30,8 @@ public class Fraction extends Number implements NumberHolder {
 	/**
 	 * 构造一个分数
 	 * 
-	 * @param molecule
-	 *            分子
-	 * @param denominator
-	 *            分母
+	 * @param molecule    分子
+	 * @param denominator 分母
 	 */
 	public Fraction(String molecule, String denominator) {
 		this(new BigDecimalHolder(molecule), new BigDecimalHolder(denominator));
@@ -42,10 +40,8 @@ public class Fraction extends Number implements NumberHolder {
 	/**
 	 * 构造一个分数
 	 * 
-	 * @param molecule
-	 *            分子
-	 * @param denominator
-	 *            分母
+	 * @param molecule     分子
+	 * @param denominator  分母
 	 * @param scale
 	 * @param roundingMode
 	 */
@@ -57,10 +53,8 @@ public class Fraction extends Number implements NumberHolder {
 	/**
 	 * 构造一个分数
 	 * 
-	 * @param molecule
-	 *            分子
-	 * @param denominator
-	 *            分母
+	 * @param molecule    分子
+	 * @param denominator 分母
 	 */
 	public Fraction(NumberHolder molecule, NumberHolder denominator) {
 		this.molecule = molecule;
