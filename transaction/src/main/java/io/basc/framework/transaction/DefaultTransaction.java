@@ -17,12 +17,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
-  *  默认的事务实现<br/>
- * //TODO 是否应该重试？目前仅定义为事务载体，重试机制由使用方实现 
+ * 默认的事务实现<br/>
+ * //TODO 是否应该重试？目前仅定义为事务载体，重试机制由使用方实现
+ * 
  * @author shuchaowen
  *
  */
-public final class DefaultTransaction implements Transaction, TransactionResource{
+public final class DefaultTransaction implements Transaction, TransactionResource {
 	private static Logger logger = LoggerFactory.getLogger(DefaultTransaction.class);
 	private final DefaultTransaction parent;
 	private final boolean active;
@@ -46,7 +47,7 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 	public DefaultTransaction(DefaultTransaction parent, TransactionDefinition definition, boolean active) {
 		this(parent, definition, active, true, null);
 	}
-	
+
 	/**
 	 * 包装旧的事务
 	 * 
@@ -56,45 +57,48 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 	public DefaultTransaction(DefaultTransaction parent, TransactionDefinition definition) {
 		this(parent, definition, parent.isActive(), false, null);
 	}
-	
+
 	/**
 	 * 嵌套事务
+	 * 
 	 * @param parent
 	 * @param definition
 	 * @param savepoint
 	 */
-	public DefaultTransaction(DefaultTransaction parent, TransactionDefinition definition, Savepoint savepoint){
+	public DefaultTransaction(DefaultTransaction parent, TransactionDefinition definition, Savepoint savepoint) {
 		this(parent, definition, parent.isActive(), true, savepoint);
 	}
-	
+
 	/**
 	 * 自定义
+	 * 
 	 * @param parent
 	 * @param definition
 	 * @param active
 	 * @param isNew
 	 * @param savepoint
 	 */
-	public DefaultTransaction(DefaultTransaction parent, TransactionDefinition definition, boolean active, boolean isNew, @Nullable Savepoint savepoint){
+	public DefaultTransaction(DefaultTransaction parent, TransactionDefinition definition, boolean active,
+			boolean isNew, @Nullable Savepoint savepoint) {
 		Assert.isTrue(!(!isNew && parent == null), "An old transaction must have a parent(一个旧的事务一定存在父级)");
 		this.parent = parent;
 		this.active = active;
 		this.isNew = isNew;
 		this.definition = definition;
 		this.savepoint = savepoint;
-		
+
 		/**
 		 * 如果当前是一个嵌套事务，或者父级是一个嵌套事务，那么应该受父级管理
 		 */
-		if(parent != null && (savepoint != null || parent.hasSavepoint())){
+		if (parent != null && (savepoint != null || parent.hasSavepoint())) {
 			parent.addSynchronization(this);
 		}
 	}
-	
-	public boolean hasSavepoint(){
+
+	public boolean hasSavepoint() {
 		return savepoint != null;
 	}
-	
+
 	/**
 	 * 是否已经提交
 	 * 
@@ -132,7 +136,7 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 	public boolean isCompleted() {
 		return complete;
 	}
-	
+
 	private void checkStatus() {
 		if (complete) {
 			throw new TransactionException("当前事务已经结束，无法进行后序操作");
@@ -156,7 +160,7 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 			return;
 		}
 
-		if(transactionLifecycles == null){
+		if (transactionLifecycles == null) {
 			transactionLifecycles = new LinkedList<TransactionLifecycle>();
 		}
 		transactionLifecycles.add(tlc);
@@ -185,39 +189,39 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 		} else {
 			resourceToUse = resourceMap.get(name);
 		}
-		
-		if(resourceToUse == null){
+
+		if (resourceToUse == null) {
 			resourceMap.put(name, resource);
 			resourceToUse = resource;
 		}
 		return (T) resourceToUse;
 	}
-	
+
 	private boolean init;
 	private List<TransactionSynchronization> synchronizations;
-	
-	public void addSynchronization(TransactionSynchronization transactionSynchronization){
+
+	public void addSynchronization(TransactionSynchronization transactionSynchronization) {
 		checkStatus();
-		if(synchronizations == null){
+		if (synchronizations == null) {
 			synchronizations = new ArrayList<TransactionSynchronization>(8);
 		}
 		synchronizations.add(transactionSynchronization);
 	}
-	
-	private void init(){
-		if(init){
-			//已经初始化过了
-			return ;
+
+	private void init() {
+		if (init) {
+			// 已经初始化过了
+			return;
 		}
-		
+
 		init = true;
-		if(resourceMap == null){
+		if (resourceMap == null) {
 			this.synchronizations = Collections.emptyList();
 		} else {
-			if(synchronizations == null){
+			if (synchronizations == null) {
 				synchronizations = new ArrayList<TransactionSynchronization>(resourceMap.size());
 			}
-			
+
 			for (Entry<Object, Object> entry : resourceMap.entrySet()) {
 				Object resource = entry.getValue();
 				if (resource instanceof TransactionSynchronization) {
@@ -225,33 +229,33 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 				}
 			}
 		}
-		
-		if(synchronizations.isEmpty()){
+
+		if (synchronizations.isEmpty()) {
 			synchronizations = Collections.emptyList();
-		}else{
+		} else {
 			synchronizations.sort(OrderComparator.INSTANCE);
 			synchronizations = Collections.unmodifiableList(synchronizations);
 		}
-		
-		if(transactionLifecycles == null){
+
+		if (transactionLifecycles == null) {
 			transactionLifecycles = Collections.emptyList();
-		}else{
+		} else {
 			transactionLifecycles.sort(OrderComparator.INSTANCE);
 			transactionLifecycles = Collections.unmodifiableList(transactionLifecycles);
 		}
-		
-		if(resourceMap == null){
+
+		if (resourceMap == null) {
 			resourceMap = Collections.emptyMap();
-		}else{
+		} else {
 			resourceMap = Collections.unmodifiableMap(resourceMap);
 		}
 	}
-	
+
 	public Savepoint createSavepoint() throws TransactionException {
-		if(resourceMap == null){
+		if (resourceMap == null) {
 			return new EmptySavepoint();
 		}
-		
+
 		List<Savepoint> savepoints = new ArrayList<Savepoint>(resourceMap.size());
 		for (Entry<Object, Object> entry : resourceMap.entrySet()) {
 			Object resource = entry.getValue();
@@ -259,11 +263,11 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 				savepoints.add(((TransactionResource) resource).createSavepoint());
 			}
 		}
-		
-		if(savepoints.isEmpty()){
+
+		if (savepoints.isEmpty()) {
 			return new EmptySavepoint();
 		}
-		
+
 		return new MultipleSavepoint(savepoints);
 	}
 
@@ -282,11 +286,11 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 
 		commit = true;
 		init();
-		
+
 		for (TransactionLifecycle lifeCycle : transactionLifecycles) {
 			lifeCycle.beforeCommit();
 		}
-		
+
 		Iterator<TransactionSynchronization> iterator = synchronizations.iterator();
 		while (iterator.hasNext()) {
 			TransactionSynchronization transaction = iterator.next();
@@ -294,7 +298,7 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 				transaction.commit();
 			}
 		}
-		
+
 		for (TransactionLifecycle lifeCycle : transactionLifecycles) {
 			try {
 				lifeCycle.afterCommit();
@@ -315,7 +319,7 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 
 		commit = true;
 		init();
-		
+
 		for (TransactionLifecycle lifeCycle : transactionLifecycles) {
 			try {
 				lifeCycle.beforeRollback();
@@ -323,15 +327,15 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 				logger.error(e, "BeforeRollback transaction [{}] lifecycle[{}]", this, lifeCycle);
 			}
 		}
-		
-		if(savepoint != null){
+
+		if (savepoint != null) {
 			try {
 				savepoint.rollback();
 			} catch (Throwable e) {
 				logger.error(e, "Rollback savepoint transaction [{}] savepoint[{}]", this, savepoint);
 			}
 		}
-		
+
 		ListIterator<TransactionSynchronization> iterator = synchronizations.listIterator(synchronizations.size());
 		while (iterator.hasPrevious()) {
 			TransactionSynchronization synchronization = iterator.previous();
@@ -343,14 +347,14 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 				}
 			}
 		}
-		
+
 		for (TransactionLifecycle lifeCycle : transactionLifecycles) {
 			try {
 				lifeCycle.afterRollback();
 			} catch (Throwable e) {
 				logger.error(e, "AfterRollback transaction [{}] lifecycle[{}]", this, lifeCycle);
 			}
-			
+
 		}
 	}
 
@@ -362,18 +366,18 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 		if (!isNew) {
 			return;
 		}
-		
+
 		complete = true;
 		init();
-		
-		if(savepoint != null){
+
+		if (savepoint != null) {
 			try {
 				savepoint.release();
 			} catch (Throwable e) {
 				logger.error(e, "Complete savepoint transaction [{}] savepoint[{}]", this, savepoint);
 			}
 		}
-		
+
 		ListIterator<TransactionSynchronization> iterator = synchronizations.listIterator(synchronizations.size());
 		while (iterator.hasPrevious()) {
 			TransactionSynchronization synchronization = iterator.previous();
@@ -385,7 +389,7 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 				}
 			}
 		}
-		
+
 		for (TransactionLifecycle lifeCycle : transactionLifecycles) {
 			try {
 				lifeCycle.complete();

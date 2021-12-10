@@ -8,8 +8,8 @@ public interface HttpRequest extends HttpMessage {
 	default HttpMethod getMethod() {
 		return HttpMethod.resolve(getRawMethod());
 	}
-	
+
 	String getRawMethod();
-	
+
 	URI getURI();
 }

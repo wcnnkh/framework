@@ -30,10 +30,10 @@ public final class GsonArray extends AbstractJson<Integer>
 
 	public JsonElement getValue(Integer index) {
 		com.google.gson.JsonElement element = gsonJsonArray.get(index);
-		if(element == null) {
+		if (element == null) {
 			return getDefaultValue(index);
 		}
-		
+
 		return new GsonElement(element, gson);
 	}
 

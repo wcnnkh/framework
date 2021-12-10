@@ -8,12 +8,13 @@ import io.basc.framework.convert.annotation.JSON;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.json.JSONSupportAccessor;
 
-public class ObjectToStringConverter extends JSONSupportAccessor implements ConversionService, Converter<Object, String>, Ordered {
+public class ObjectToStringConverter extends JSONSupportAccessor
+		implements ConversionService, Converter<Object, String>, Ordered {
 
 	public String convert(Object o) {
-		return o == null? null:o.toString();
+		return o == null ? null : o.toString();
 	}
-	
+
 	@Override
 	public int getOrder() {
 		return Ordered.LOWEST_PRECEDENCE;
@@ -21,10 +22,10 @@ public class ObjectToStringConverter extends JSONSupportAccessor implements Conv
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if(sourceType == null || targetType == null) {
+		if (sourceType == null || targetType == null) {
 			return false;
 		}
-		
+
 		return targetType.getType() == String.class;
 	}
 

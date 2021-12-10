@@ -9,8 +9,8 @@ import io.basc.framework.util.StringMatchers;
 import io.basc.framework.value.PropertyFactory;
 
 /**
- * 有条件的启用
- * ${condition} = value
+ * 有条件的启用 ${condition} = value
+ * 
  * @author shuchaowen
  * @see EnableConditionUtils
  * @see PropertyFactory#getString(String)
@@ -20,15 +20,17 @@ import io.basc.framework.value.PropertyFactory;
 @Retention(RetentionPolicy.RUNTIME)
 @Indexed
 public @interface EnableCondition {
-	
+
 	/**
 	 * 满足一个即可
+	 * 
 	 * @return
 	 */
-	String[] value() default {"true"};
-	
+	String[] value() default { "true" };
+
 	/**
-	 *  条件
+	 * 条件
+	 * 
 	 * @return
 	 */
 	String condition();

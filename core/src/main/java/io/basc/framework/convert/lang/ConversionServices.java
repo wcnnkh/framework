@@ -11,8 +11,7 @@ import io.basc.framework.lang.LinkedThreadLocal;
 import io.basc.framework.value.EmptyValue;
 
 public class ConversionServices extends ConfigurableServices<ConversionService>
-		implements ConversionService, Comparable<Object>,
-		Iterable<ConversionService> {
+		implements ConversionService, Comparable<Object>, Iterable<ConversionService> {
 	private static final LinkedThreadLocal<ConversionService> NESTED = new LinkedThreadLocal<ConversionService>(
 			ConversionServices.class.getName());
 
@@ -65,12 +64,12 @@ public class ConversionServices extends ConfigurableServices<ConversionService>
 				NESTED.remove(service);
 			}
 		}
-		
+
 		if (canDirectlyConvert(sourceTypeToUse, targetType)) {
 			return source;
 		}
-		
-		if(sourceTypeToUse == null) {
+
+		if (sourceTypeToUse == null) {
 			Object value = EmptyValue.INSTANCE.getAsObject(targetType);
 			return value;
 		}

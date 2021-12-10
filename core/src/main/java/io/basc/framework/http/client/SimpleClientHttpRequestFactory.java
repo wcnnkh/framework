@@ -117,8 +117,7 @@ public class SimpleClientHttpRequestFactory extends HttpClientConfigAccessor imp
 	 * <p>
 	 * Note that this parameter is only used when
 	 * {@link #setBufferRequestBody(boolean) bufferRequestBody} is set to
-	 * {@code false}, and the
-	 * Content-Length} is not known in advance.
+	 * {@code false}, and the Content-Length} is not known in advance.
 	 * 
 	 * @see #setBufferRequestBody(boolean)
 	 */

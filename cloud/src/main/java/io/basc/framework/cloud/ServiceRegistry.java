@@ -25,8 +25,8 @@ package io.basc.framework.cloud;
 public interface ServiceRegistry<T extends ServiceInstance> {
 
 	/**
-	 * Registers the instance. A registration typically has information
-	 * about an instance, such as its hostname and port.
+	 * Registers the instance. A registration typically has information about an
+	 * instance, such as its hostname and port.
 	 * 
 	 */
 	void register(T instance) throws ServiceRegistryException;

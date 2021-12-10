@@ -26,7 +26,7 @@ public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comp
 
 	public MimeTypes(String... mimeTypes) {
 		this.mimeTypes = new TreeSet<>(this);
-		if(mimeTypes != null) {
+		if (mimeTypes != null) {
 			for (String mimeType : mimeTypes) {
 				if (StringUtils.isEmpty(mimeType)) {
 					continue;
@@ -49,14 +49,14 @@ public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comp
 	public final SortedSet<MimeType> getMimeTypes() {
 		return readyOnly ? Collections.unmodifiableSortedSet(mimeTypes) : mimeTypes;
 	}
-	
-	public final List<String> getRawMimeTypes(){
-		if(isEmpty()) {
+
+	public final List<String> getRawMimeTypes() {
+		if (isEmpty()) {
 			return Collections.emptyList();
 		}
-		
+
 		List<String> list = new ArrayList<>(mimeTypes.size());
-		for(MimeType mimeType : mimeTypes) {
+		for (MimeType mimeType : mimeTypes) {
 			list.add(mimeType.toString());
 		}
 		return list;

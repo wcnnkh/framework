@@ -54,16 +54,16 @@ public class ConvertiblePair extends TypeComparator implements Comparable<Conver
 	}
 
 	public int compareTo(ConvertiblePair o) {
-		//TODO 这个地方太绕了。。。我都晕了,有空整理一下
-		//目的是为了让小类型排在前
+		// TODO 这个地方太绕了。。。我都晕了,有空整理一下
+		// 目的是为了让小类型排在前
 		int v = compare(sourceType, o.sourceType);
 		int ov = compare(targetType, o.targetType);
-		if(v == 0) {
+		if (v == 0) {
 			return ov;
-		}else if(ov == 0) {
+		} else if (ov == 0) {
 			return v;
-		}else {
-			if(ov >= 0) {
+		} else {
+			if (ov >= 0) {
 				return v;
 			}
 			return 0;

@@ -11,14 +11,14 @@ import java.util.HashSet;
 
 public class ServiceBeanDefinition extends DefaultBeanDefinition {
 	private Collection<String> names;
-	
+
 	public ServiceBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> targetClass) {
 		super(beanFactory, targetClass);
 		this.names = getInternalNames();
 		this.names = Arrays.asList(names.toArray(new String[0]));
 	}
-	
-	private Collection<String> getInternalNames(){
+
+	private Collection<String> getInternalNames() {
 		Service service = getAnnotatedElement().getAnnotation(Service.class);
 		if (service == null) {
 			return super.getNames();

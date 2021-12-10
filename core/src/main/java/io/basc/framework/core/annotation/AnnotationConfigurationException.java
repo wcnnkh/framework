@@ -3,8 +3,8 @@ package io.basc.framework.core.annotation;
 import io.basc.framework.lang.NestedRuntimeException;
 
 /**
- * Thrown by {@link AnnotationUtils} and <em>synthesized annotations</em>
- * if an annotation is improperly configured.
+ * Thrown by {@link AnnotationUtils} and <em>synthesized annotations</em> if an
+ * annotation is improperly configured.
  * 
  * @see AnnotationUtils
  * @see SynthesizedAnnotation
@@ -13,8 +13,9 @@ import io.basc.framework.lang.NestedRuntimeException;
 public class AnnotationConfigurationException extends NestedRuntimeException {
 
 	/**
-	 * Construct a new {@code AnnotationConfigurationException} with the
-	 * supplied message.
+	 * Construct a new {@code AnnotationConfigurationException} with the supplied
+	 * message.
+	 * 
 	 * @param message the detail message
 	 */
 	public AnnotationConfigurationException(String message) {
@@ -22,10 +23,11 @@ public class AnnotationConfigurationException extends NestedRuntimeException {
 	}
 
 	/**
-	 * Construct a new {@code AnnotationConfigurationException} with the
-	 * supplied message and cause.
+	 * Construct a new {@code AnnotationConfigurationException} with the supplied
+	 * message and cause.
+	 * 
 	 * @param message the detail message
-	 * @param cause the root cause
+	 * @param cause   the root cause
 	 */
 	public AnnotationConfigurationException(String message, Throwable cause) {
 		super(message, cause);

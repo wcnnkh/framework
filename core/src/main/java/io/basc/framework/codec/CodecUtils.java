@@ -2,7 +2,7 @@ package io.basc.framework.codec;
 
 import io.basc.framework.util.Validator;
 
-public class CodecUtils {
+public final class CodecUtils {
 	private CodecUtils() {
 	}
 

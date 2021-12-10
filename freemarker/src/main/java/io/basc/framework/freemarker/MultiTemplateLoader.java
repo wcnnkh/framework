@@ -8,8 +8,7 @@ import java.util.LinkedList;
 
 import freemarker.cache.TemplateLoader;
 
-public class MultiTemplateLoader extends LinkedList<TemplateLoader> implements
-		TemplateLoader {
+public class MultiTemplateLoader extends LinkedList<TemplateLoader> implements TemplateLoader {
 	private static final long serialVersionUID = 1L;
 
 	public Object findTemplateSource(String name) throws IOException {
@@ -24,26 +23,22 @@ public class MultiTemplateLoader extends LinkedList<TemplateLoader> implements
 
 	public long getLastModified(Object templateSource) {
 		if (templateSource instanceof MultiTemplateLoaderSource) {
-			return ((MultiTemplateLoaderSource) templateSource)
-					.getLastModified();
+			return ((MultiTemplateLoaderSource) templateSource).getLastModified();
 		}
 		throw new NotSupportedException(templateSource.getClass().getName());
 	}
 
-	public Reader getReader(Object templateSource, String encoding)
-			throws IOException {
+	public Reader getReader(Object templateSource, String encoding) throws IOException {
 		if (templateSource instanceof MultiTemplateLoaderSource) {
-			return ((MultiTemplateLoaderSource) templateSource)
-					.getReader(encoding);
+			return ((MultiTemplateLoaderSource) templateSource).getReader(encoding);
 		}
-		throw new NotSupportedException(templateSource.getClass().getName()
-				+ ", encoding=" + encoding);
+		throw new NotSupportedException(templateSource.getClass().getName() + ", encoding=" + encoding);
 	}
 
 	public void closeTemplateSource(Object templateSource) throws IOException {
 		if (templateSource instanceof MultiTemplateLoaderSource) {
 			((MultiTemplateLoaderSource) templateSource).closeTemplateSource();
-			return ;
+			return;
 		}
 		throw new NotSupportedException(templateSource.getClass().getName());
 	}
@@ -52,8 +47,7 @@ public class MultiTemplateLoader extends LinkedList<TemplateLoader> implements
 		private final Object templateSource;
 		private final TemplateLoader templateLoader;
 
-		public MultiTemplateLoaderSource(Object templateSource,
-				TemplateLoader templateLoader) {
+		public MultiTemplateLoaderSource(Object templateSource, TemplateLoader templateLoader) {
 			this.templateSource = templateSource;
 			this.templateLoader = templateLoader;
 		}

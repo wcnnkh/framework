@@ -71,8 +71,8 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 	}
 
 	/**
-	 * Inspects the target class. Exceptions will be logged and a maker map
-	 * returned to indicate the lack of debug information.
+	 * Inspects the target class. Exceptions will be logged and a maker map returned
+	 * to indicate the lack of debug information.
 	 */
 	private Map<Member, String[]> inspectClass(Class<?> clazz) {
 		InputStream is = clazz.getResourceAsStream(ClassUtils.getClassFileName(clazz));
@@ -147,8 +147,8 @@ public class LocalVariableTableParameterNameDiscoverer implements ParameterNameD
 		private boolean hasLvtInfo = false;
 
 		/*
-		 * The nth entry contains the slot index of the LVT table entry holding
-		 * the argument name for the nth parameter.
+		 * The nth entry contains the slot index of the LVT table entry holding the
+		 * argument name for the nth parameter.
 		 */
 		private final int[] lvtSlotIndex;
 

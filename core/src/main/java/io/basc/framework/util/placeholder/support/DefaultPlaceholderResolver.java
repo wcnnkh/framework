@@ -15,12 +15,12 @@ public class DefaultPlaceholderResolver implements PlaceholderResolver {
 	public DefaultPlaceholderResolver(ValueFactory<String> valueFactory) {
 		this.valueFactory = valueFactory;
 	}
-	
+
 	public DefaultPlaceholderResolver(Map<String, ?> map) {
 		this(new MapValueFactory<String>(map));
 	}
-	
-	public DefaultPlaceholderResolver(Properties properties){
+
+	public DefaultPlaceholderResolver(Properties properties) {
 		this(new PropertiesValueFactory<String>(properties));
 	}
 

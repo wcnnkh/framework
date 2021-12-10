@@ -55,9 +55,8 @@ public class CompositeRetryPolicy implements RetryPolicy {
 	}
 
 	/**
-	 * Delegate to the policies that were in operation when the context was
-	 * created. If any of them cannot retry then return false, oetherwise return
-	 * true.
+	 * Delegate to the policies that were in operation when the context was created.
+	 * If any of them cannot retry then return false, oetherwise return true.
 	 *
 	 */
 	public boolean canRetry(RetryContext context) {
@@ -66,15 +65,14 @@ public class CompositeRetryPolicy implements RetryPolicy {
 
 		boolean retryable = true;
 
-		if(optimistic) {
+		if (optimistic) {
 			retryable = false;
 			for (int i = 0; i < contexts.length; i++) {
 				if (policies[i].canRetry(contexts[i])) {
 					retryable = true;
 				}
 			}
-		}
-		else {
+		} else {
 			for (int i = 0; i < contexts.length; i++) {
 				if (!policies[i].canRetry(contexts[i])) {
 					retryable = false;
@@ -86,9 +84,9 @@ public class CompositeRetryPolicy implements RetryPolicy {
 	}
 
 	/**
-	 * Delegate to the policies that were in operation when the context was
-	 * created. If any of them fails to close the exception is propagated (and
-	 * those later in the chain are closed before re-throwing).
+	 * Delegate to the policies that were in operation when the context was created.
+	 * If any of them fails to close the exception is propagated (and those later in
+	 * the chain are closed before re-throwing).
 	 *
 	 */
 	public void close(RetryContext context) {
@@ -98,8 +96,7 @@ public class CompositeRetryPolicy implements RetryPolicy {
 		for (int i = 0; i < contexts.length; i++) {
 			try {
 				policies[i].close(contexts[i]);
-			}
-			catch (RuntimeException e) {
+			} catch (RuntimeException e) {
 				if (exception == null) {
 					exception = e;
 				}
@@ -111,8 +108,8 @@ public class CompositeRetryPolicy implements RetryPolicy {
 	}
 
 	/**
-	 * Creates a new context that copies the existing policies and keeps a list
-	 * of the contexts from each one.
+	 * Creates a new context that copies the existing policies and keeps a list of
+	 * the contexts from each one.
 	 *
 	 */
 	public RetryContext open(RetryContext parent) {
@@ -124,8 +121,7 @@ public class CompositeRetryPolicy implements RetryPolicy {
 	}
 
 	/**
-	 * Delegate to the policies that were in operation when the context was
-	 * created.
+	 * Delegate to the policies that were in operation when the context was created.
 	 *
 	 */
 	public void registerThrowable(RetryContext context, Throwable throwable) {
@@ -137,7 +133,7 @@ public class CompositeRetryPolicy implements RetryPolicy {
 		((DefaultRetryContext) context).setLastThrowable(throwable);
 	}
 
-	private class CompositeRetryContext extends DefaultRetryContext{
+	private class CompositeRetryContext extends DefaultRetryContext {
 		RetryContext[] contexts;
 
 		RetryPolicy[] policies;

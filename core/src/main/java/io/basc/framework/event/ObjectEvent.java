@@ -7,6 +7,7 @@ import io.basc.framework.util.TimeUtils;
 
 /**
  * 这和jdk自身提供的区别是source字段可以被序列化
+ * 
  * @see EventObject
  * @author shuchaowen
  *
@@ -35,7 +36,6 @@ public class ObjectEvent<T> extends BasicEvent {
 
 	@Override
 	public String toString() {
-		return TimeUtils.format(getCreateTime(), "yyyy-MM-dd HH:mm:ss") + " <"
-				+ MapperUtils.toString(this) + ">";
+		return TimeUtils.format(getCreateTime(), "yyyy-MM-dd HH:mm:ss") + " <" + MapperUtils.toString(this) + ">";
 	}
 }

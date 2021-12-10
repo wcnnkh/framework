@@ -15,19 +15,20 @@ public abstract class AbstractFieldIocProcessor extends AbstractIocProcessor {
 	public Field getField() {
 		return field;
 	}
-	
+
 	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws BeansException {
-		if(field == null){
-			return ;
+		if (field == null) {
+			return;
 		}
-		
-		if(!acceptModifiers(beanDefinition, bean, field.getSetter().getModifiers())){
-			return ;
+
+		if (!acceptModifiers(beanDefinition, bean, field.getSetter().getModifiers())) {
+			return;
 		}
-		
+
 		checkField(bean, getField());
 		processInternal(beanDefinition, bean, beanFactory);
 	}
-	
-	protected abstract void processInternal(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws BeansException;
+
+	protected abstract void processInternal(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory)
+			throws BeansException;
 }

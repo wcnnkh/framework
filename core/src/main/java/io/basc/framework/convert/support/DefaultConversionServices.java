@@ -57,13 +57,10 @@ public class DefaultConversionServices extends ConversionServices {
 		addService(new JsonConversionService());
 		addService(new JsonToObjectConversionService());
 
-		addService(
-				new ConverterConversionService(String.class, Charset.class, new StringToCharsetConverter()));
+		addService(new ConverterConversionService(String.class, Charset.class, new StringToCharsetConverter()));
 		addService(new ConverterConversionService(String.class, Locale.class, new StringToLocaleConverter()));
-		addService(
-				new ConverterConversionService(String.class, TimeZone.class, new StringToTimeZoneConverter()));
-		addService(
-				new ConverterConversionService(String.class, Currency.class, new StringToCurrencyConverter()));
+		addService(new ConverterConversionService(String.class, TimeZone.class, new StringToTimeZoneConverter()));
+		addService(new ConverterConversionService(String.class, Currency.class, new StringToCurrencyConverter()));
 		addService(new ConverterConversionService(Reader.class, String.class, new ReaderToStringConverter()));
 
 		addService(new ObjectToArrayConversionService(this));

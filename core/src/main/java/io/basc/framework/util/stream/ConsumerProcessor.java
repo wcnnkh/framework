@@ -8,16 +8,14 @@ import java.util.function.Consumer;
  * @see Consumer
  * @author shuchaowen
  *
- * @param <S>
- *            回调的数据类型
- * @param <E>
- *            异常类型
+ * @param <S> 回调的数据类型
+ * @param <E> 异常类型
  */
 @FunctionalInterface
 public interface ConsumerProcessor<S, E extends Throwable> {
 	void process(S source) throws E;
-	
-	default Processor<S, Void, E> toProcessor(){
+
+	default Processor<S, Void, E> toProcessor() {
 		return new Processor<S, Void, E>() {
 
 			@Override
@@ -30,6 +28,7 @@ public interface ConsumerProcessor<S, E extends Throwable> {
 
 	/**
 	 * 在执行之前添加一个回调
+	 * 
 	 * @param callback
 	 * @return
 	 */
@@ -54,6 +53,7 @@ public interface ConsumerProcessor<S, E extends Throwable> {
 
 	/**
 	 * 在回调之后追加一个回调
+	 * 
 	 * @param callback
 	 * @return
 	 */

@@ -621,7 +621,6 @@ public interface MergedAnnotation<A extends Annotation> {
 	 * @see #of(AnnotatedElement, Class, Map)
 	 */
 	static <A extends Annotation> MergedAnnotation<A> of(Class<A> annotationType, @Nullable Map<String, ?> attributes) {
-
 		return of(null, annotationType, attributes);
 	}
 
@@ -640,7 +639,6 @@ public interface MergedAnnotation<A extends Annotation> {
 	 */
 	static <A extends Annotation> MergedAnnotation<A> of(@Nullable AnnotatedElement source, Class<A> annotationType,
 			@Nullable Map<String, ?> attributes) {
-
 		return of(null, source, annotationType, attributes);
 	}
 
@@ -660,7 +658,6 @@ public interface MergedAnnotation<A extends Annotation> {
 	 */
 	static <A extends Annotation> MergedAnnotation<A> of(@Nullable ClassLoader classLoader, @Nullable Object source,
 			Class<A> annotationType, @Nullable Map<String, ?> attributes) {
-
 		return TypeMappedAnnotation.of(classLoader, source, annotationType, attributes);
 	}
 

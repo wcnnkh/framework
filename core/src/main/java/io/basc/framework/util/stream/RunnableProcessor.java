@@ -9,8 +9,7 @@ package io.basc.framework.util.stream;
 public interface RunnableProcessor<E extends Throwable> {
 	void process() throws E;
 
-	default RunnableProcessor<E> beforeProcess(
-			RunnableProcessor<? extends E> processor) {
+	default RunnableProcessor<E> beforeProcess(RunnableProcessor<? extends E> processor) {
 		if (processor == null) {
 			return this;
 		}
@@ -31,11 +30,11 @@ public interface RunnableProcessor<E extends Throwable> {
 
 	/**
 	 * 在执行器外部追加指定的执行器
+	 * 
 	 * @param processor
 	 * @return
 	 */
-	default RunnableProcessor<E> afterProcess(
-			RunnableProcessor<? extends E> processor) {
+	default RunnableProcessor<E> afterProcess(RunnableProcessor<? extends E> processor) {
 		if (processor == null) {
 			return this;
 		}

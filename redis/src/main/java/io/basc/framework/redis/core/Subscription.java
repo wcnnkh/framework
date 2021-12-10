@@ -3,8 +3,9 @@ package io.basc.framework.redis.core;
 import java.util.Collection;
 
 /**
- * Subscription for Redis channels. Just like the underlying {@link RedisConnection}, it should not be used by multiple
- * threads. Note that once a subscription died, it cannot accept any more subscriptions.
+ * Subscription for Redis channels. Just like the underlying
+ * {@link RedisConnection}, it should not be used by multiple threads. Note that
+ * once a subscription died, it cannot accept any more subscriptions.
  *
  */
 @SuppressWarnings("unchecked")

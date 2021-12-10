@@ -12,14 +12,14 @@ import io.basc.framework.env.Environment;
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
-import io.basc.framework.value.ValueUtils;
 
 public abstract class InstanceParametersFactory extends AbstractParametersFactory {
 	private final NoArgsInstanceFactory instanceFactory;
 	private final Environment environment;
 	private final ParameterFactory defaultValueFactory;
 
-	public InstanceParametersFactory(NoArgsInstanceFactory instanceFactory, Environment environment, ParameterFactory defaultValueFactory) {
+	public InstanceParametersFactory(NoArgsInstanceFactory instanceFactory, Environment environment,
+			ParameterFactory defaultValueFactory) {
 		this.instanceFactory = instanceFactory;
 		this.environment = environment;
 		this.defaultValueFactory = defaultValueFactory;
@@ -39,7 +39,7 @@ public abstract class InstanceParametersFactory extends AbstractParametersFactor
 
 	protected boolean isProerptyType(ParameterDescriptor parameterConfig) {
 		Class<?> type = parameterConfig.getType();
-		if (ValueUtils.isBaseType(type) || type.isArray() || Collection.class.isAssignableFrom(type)
+		if (Value.isBaseType(type) || type.isArray() || Collection.class.isAssignableFrom(type)
 				|| Map.class.isAssignableFrom(type)) {
 			return true;
 		}
@@ -61,7 +61,7 @@ public abstract class InstanceParametersFactory extends AbstractParametersFactor
 		Value value = getEnvironment().getValue(name);
 		if (value == null) {
 			value = new AnyValue(defaultValueFactory.getParameter(parameterDescriptor));
-			if(value.isEmpty()) {
+			if (value.isEmpty()) {
 				return null;
 			}
 		}

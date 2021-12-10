@@ -19,8 +19,8 @@ import org.objectweb.asm.Type;
  */
 abstract class AnnotationReadingVisitorUtils {
 
-	public static AnnotationAttributes convertClassValues(Object annotatedElement,
-			ClassLoader classLoader, AnnotationAttributes original, boolean classValuesAsString) {
+	public static AnnotationAttributes convertClassValues(Object annotatedElement, ClassLoader classLoader,
+			AnnotationAttributes original, boolean classValuesAsString) {
 
 		if (original == null) {
 			return null;
@@ -33,35 +33,29 @@ abstract class AnnotationReadingVisitorUtils {
 			try {
 				Object value = entry.getValue();
 				if (value instanceof AnnotationAttributes) {
-					value = convertClassValues(
-							annotatedElement, classLoader, (AnnotationAttributes) value, classValuesAsString);
-				}
-				else if (value instanceof AnnotationAttributes[]) {
+					value = convertClassValues(annotatedElement, classLoader, (AnnotationAttributes) value,
+							classValuesAsString);
+				} else if (value instanceof AnnotationAttributes[]) {
 					AnnotationAttributes[] values = (AnnotationAttributes[]) value;
 					for (int i = 0; i < values.length; i++) {
 						values[i] = convertClassValues(annotatedElement, classLoader, values[i], classValuesAsString);
 					}
 					value = values;
-				}
-				else if (value instanceof Type) {
-					value = (classValuesAsString ? ((Type) value).getClassName() :
-							classLoader.loadClass(((Type) value).getClassName()));
-				}
-				else if (value instanceof Type[]) {
+				} else if (value instanceof Type) {
+					value = (classValuesAsString ? ((Type) value).getClassName()
+							: classLoader.loadClass(((Type) value).getClassName()));
+				} else if (value instanceof Type[]) {
 					Type[] array = (Type[]) value;
-					Object[] convArray =
-							(classValuesAsString ? new String[array.length] : new Class<?>[array.length]);
+					Object[] convArray = (classValuesAsString ? new String[array.length] : new Class<?>[array.length]);
 					for (int i = 0; i < array.length; i++) {
-						convArray[i] = (classValuesAsString ? array[i].getClassName() :
-								classLoader.loadClass(array[i].getClassName()));
+						convArray[i] = (classValuesAsString ? array[i].getClassName()
+								: classLoader.loadClass(array[i].getClassName()));
 					}
 					value = convArray;
-				}
-				else if (classValuesAsString) {
+				} else if (classValuesAsString) {
 					if (value instanceof Class) {
 						value = ((Class<?>) value).getName();
-					}
-					else if (value instanceof Class[]) {
+					} else if (value instanceof Class[]) {
 						Class<?>[] clazzArray = (Class<?>[]) value;
 						String[] newValue = new String[clazzArray.length];
 						for (int i = 0; i < clazzArray.length; i++) {
@@ -71,8 +65,7 @@ abstract class AnnotationReadingVisitorUtils {
 					}
 				}
 				entry.setValue(value);
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				// Class not found - can't resolve class reference in annotation attribute.
 				result.put(entry.getKey(), ex);
 			}
@@ -82,23 +75,25 @@ abstract class AnnotationReadingVisitorUtils {
 	}
 
 	/**
-	 * Retrieve the merged attributes of the annotation of the given type,
-	 * if any, from the supplied {@code attributesMap}.
-	 * <p>Annotation attribute values appearing <em>lower</em> in the annotation
-	 * hierarchy (i.e., closer to the declaring class) will override those
-	 * defined <em>higher</em> in the annotation hierarchy.
-	 * @param attributesMap the map of annotation attribute lists, keyed by
-	 * annotation type name
-	 * @param metaAnnotationMap the map of meta annotation relationships,
-	 * keyed by annotation type name
-	 * @param annotationName the fully qualified class name of the annotation
-	 * type to look for
-	 * @return the merged annotation attributes, or {@code null} if no
-	 * matching annotation is present in the {@code attributesMap}
+	 * Retrieve the merged attributes of the annotation of the given type, if any,
+	 * from the supplied {@code attributesMap}.
+	 * <p>
+	 * Annotation attribute values appearing <em>lower</em> in the annotation
+	 * hierarchy (i.e., closer to the declaring class) will override those defined
+	 * <em>higher</em> in the annotation hierarchy.
+	 * 
+	 * @param attributesMap     the map of annotation attribute lists, keyed by
+	 *                          annotation type name
+	 * @param metaAnnotationMap the map of meta annotation relationships, keyed by
+	 *                          annotation type name
+	 * @param annotationName    the fully qualified class name of the annotation
+	 *                          type to look for
+	 * @return the merged annotation attributes, or {@code null} if no matching
+	 *         annotation is present in the {@code attributesMap}
 	 */
 	public static AnnotationAttributes getMergedAnnotationAttributes(
-			LinkedMultiValueMap<String, AnnotationAttributes> attributesMap,
-			Map<String, Set<String>> metaAnnotationMap, String annotationName) {
+			LinkedMultiValueMap<String, AnnotationAttributes> attributesMap, Map<String, Set<String>> metaAnnotationMap,
+			String annotationName) {
 
 		// Get the unmerged list of attributes for the target annotation.
 		List<AnnotationAttributes> attributesList = attributesMap.get(annotationName);

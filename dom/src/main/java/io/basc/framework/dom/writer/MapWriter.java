@@ -25,17 +25,16 @@ public class MapWriter implements DocumentWriter {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void write(Document document, Node parentNode, String nodeName,
-			Object source, TypeDescriptor sourceTypeDescriptor) {
+	public void write(Document document, Node parentNode, String nodeName, Object source,
+			TypeDescriptor sourceTypeDescriptor) {
 		Element element = document.createElement(String.valueOf(nodeName));
 		for (Entry entry : (Set<Entry>) ((Map) source).entrySet()) {
 			Object key = entry.getKey();
 			if (key == null) {
 				continue;
 			}
-			writer.write(document, parentNode, String.valueOf(key), entry
-					.getValue(), sourceTypeDescriptor
-					.getMapValueTypeDescriptor(entry.getValue()));
+			writer.write(document, parentNode, String.valueOf(key), entry.getValue(),
+					sourceTypeDescriptor.getMapValueTypeDescriptor(entry.getValue()));
 		}
 		parentNode.appendChild(element);
 	}

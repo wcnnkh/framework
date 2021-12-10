@@ -105,7 +105,6 @@ final class MergedAnnotationsCollection implements MergedAnnotations {
 	@Override
 	public <A extends Annotation> MergedAnnotation<A> get(Class<A> annotationType,
 			@Nullable Predicate<? super MergedAnnotation<A>> predicate) {
-
 		return get(annotationType, predicate, null);
 	}
 
@@ -113,7 +112,6 @@ final class MergedAnnotationsCollection implements MergedAnnotations {
 	public <A extends Annotation> MergedAnnotation<A> get(Class<A> annotationType,
 			@Nullable Predicate<? super MergedAnnotation<A>> predicate,
 			@Nullable MergedAnnotationSelector<A> selector) {
-
 		MergedAnnotation<A> result = find(annotationType, predicate, selector);
 		return (result != null ? result : MergedAnnotation.missing());
 	}
@@ -126,7 +124,6 @@ final class MergedAnnotationsCollection implements MergedAnnotations {
 	@Override
 	public <A extends Annotation> MergedAnnotation<A> get(String annotationType,
 			@Nullable Predicate<? super MergedAnnotation<A>> predicate) {
-
 		return get(annotationType, predicate, null);
 	}
 
@@ -134,7 +131,6 @@ final class MergedAnnotationsCollection implements MergedAnnotations {
 	public <A extends Annotation> MergedAnnotation<A> get(String annotationType,
 			@Nullable Predicate<? super MergedAnnotation<A>> predicate,
 			@Nullable MergedAnnotationSelector<A> selector) {
-
 		MergedAnnotation<A> result = find(annotationType, predicate, selector);
 		return (result != null ? result : MergedAnnotation.missing());
 	}
@@ -144,7 +140,6 @@ final class MergedAnnotationsCollection implements MergedAnnotations {
 	private <A extends Annotation> MergedAnnotation<A> find(Object requiredType,
 			@Nullable Predicate<? super MergedAnnotation<A>> predicate,
 			@Nullable MergedAnnotationSelector<A> selector) {
-
 		if (selector == null) {
 			selector = MergedAnnotationSelectors.nearest();
 		}

@@ -28,10 +28,10 @@ public class ResourceMessageConverter extends AbstractMessageConverter<Resource>
 	public boolean support(Class<?> clazz) {
 		return Resource.class.isAssignableFrom(clazz) && File.class.isAssignableFrom(clazz);
 	}
-	
+
 	@Override
 	public boolean canWrite(MimeType contentType) {
-		if(MediaType.MULTIPART_FORM_DATA.equalsTypeAndSubtype(contentType)){
+		if (MediaType.MULTIPART_FORM_DATA.equalsTypeAndSubtype(contentType)) {
 			return false;
 		}
 		return super.canWrite(contentType);
@@ -43,7 +43,8 @@ public class ResourceMessageConverter extends AbstractMessageConverter<Resource>
 	}
 
 	@Override
-	protected Resource readInternal(TypeDescriptor type, InputMessage inputMessage) throws IOException, MessageConvertException {
+	protected Resource readInternal(TypeDescriptor type, InputMessage inputMessage)
+			throws IOException, MessageConvertException {
 		throw new NotSupportedException(type.toString());
 	}
 

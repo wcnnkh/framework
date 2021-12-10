@@ -69,7 +69,7 @@ public final class NonexistentResource implements Resource {
 	public String getDescription() {
 		return "empty resource";
 	}
-	
+
 	public boolean isSupportEventDispatcher() {
 		return false;
 	}

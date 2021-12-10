@@ -76,7 +76,6 @@ public abstract class MergedAnnotationCollectors {
 	 */
 	public static <R extends Annotation, A extends R> Collector<MergedAnnotation<A>, ?, R[]> toAnnotationArray(
 			IntFunction<R[]> generator) {
-
 		return Collector.of(ArrayList::new, (list, annotation) -> list.add(annotation.synthesize()),
 				MergedAnnotationCollectors::combiner, list -> list.toArray(generator.apply(list.size())));
 	}
@@ -96,7 +95,6 @@ public abstract class MergedAnnotationCollectors {
 	 */
 	public static <A extends Annotation> Collector<MergedAnnotation<A>, ?, MultiValueMap<String, Object>> toMultiValueMap(
 			Adapt... adaptations) {
-
 		return toMultiValueMap(Function.identity(), adaptations);
 	}
 
@@ -116,7 +114,6 @@ public abstract class MergedAnnotationCollectors {
 	 */
 	public static <A extends Annotation> Collector<MergedAnnotation<A>, ?, MultiValueMap<String, Object>> toMultiValueMap(
 			Function<MultiValueMap<String, Object>, MultiValueMap<String, Object>> finisher, Adapt... adaptations) {
-
 		Characteristics[] characteristics = (isSameInstance(finisher, Function.identity())
 				? IDENTITY_FINISH_CHARACTERISTICS
 				: NO_CHARACTERISTICS);

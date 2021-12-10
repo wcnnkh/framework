@@ -1,14 +1,14 @@
 package io.basc.framework.codec;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.ObjectUtils;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import io.basc.framework.convert.Converter;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ObjectUtils;
 
 /**
  * 编码器<br/>
@@ -45,29 +45,6 @@ public interface Encoder<D, E> {
 	@SuppressWarnings("unchecked")
 	default E[] encode(D... sources) throws DecodeException {
 		return toEncodeConverter().convert(sources);
-	}
-
-	static class NestedEncoder<D, T, E> implements Encoder<D, E> {
-		private final Encoder<D, T> parent;
-		private final Encoder<T, E> encoder;
-
-		public Encoder<D, T> getParent() {
-			return parent;
-		}
-
-		public Encoder<T, E> getEncoder() {
-			return encoder;
-		}
-
-		public NestedEncoder(Encoder<D, T> parent, Encoder<T, E> encoder) {
-			this.parent = parent;
-			this.encoder = encoder;
-		}
-
-		@Override
-		public E encode(D source) throws EncodeException {
-			return encoder.encode(parent.encode(source));
-		}
 	}
 
 	/**

@@ -22,22 +22,22 @@ public interface RedisTransactionsCommands<K> {
 	 * Executes all previously queued commands in a transaction and restores the
 	 * connection state to normal.
 	 * 
-	 * When using WATCH, EXEC will execute commands only if the watched keys
-	 * were not modified, allowing for a check-and-set mechanism.
+	 * When using WATCH, EXEC will execute commands only if the watched keys were
+	 * not modified, allowing for a check-and-set mechanism.
 	 * 
-	 * @return Array reply: each element being the reply to each of the commands
-	 *         in the atomic transaction.
+	 * @return Array reply: each element being the reply to each of the commands in
+	 *         the atomic transaction.
 	 * 
-	 *         When using WATCH, EXEC can return a Null reply if the execution
-	 *         was aborted.
+	 *         When using WATCH, EXEC can return a Null reply if the execution was
+	 *         aborted.
 	 */
 	List<Object> exec();
 
 	/**
 	 * https://redis.io/commands/multi<br/>
 	 * <br/>
-	 * Marks the start of a transaction block. Subsequent commands will be
-	 * queued for atomic execution using EXEC.
+	 * Marks the start of a transaction block. Subsequent commands will be queued
+	 * for atomic execution using EXEC.
 	 * 
 	 * @return Simple string reply: always OK.
 	 */

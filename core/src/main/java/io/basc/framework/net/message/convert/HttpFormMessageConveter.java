@@ -28,7 +28,8 @@ public class HttpFormMessageConveter extends AbstractMessageConverter<Object> {
 	}
 
 	@Override
-	protected Object readInternal(TypeDescriptor type, InputMessage inputMessage) throws IOException, MessageConvertException {
+	protected Object readInternal(TypeDescriptor type, InputMessage inputMessage)
+			throws IOException, MessageConvertException {
 		String content = readTextBody(inputMessage);
 		if (StringUtils.isEmpty(content)) {
 			return null;

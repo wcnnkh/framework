@@ -3,8 +3,7 @@ package io.basc.framework.convert.lang;
 import io.basc.framework.convert.Converter;
 
 public class NumberToBooleanConverter implements Converter<Number, Boolean> {
-	public static final NumberToBooleanConverter DEFAULT = new NumberToBooleanConverter(
-			null);
+	public static final NumberToBooleanConverter DEFAULT = new NumberToBooleanConverter(null);
 
 	private final Boolean defaultValue;
 

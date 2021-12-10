@@ -6,12 +6,12 @@ import java.util.NoSuchElementException;
 
 public final class MultiIterable<E> implements Iterable<E> {
 	private final Iterable<? extends Iterable<? extends E>> iterables;
-	
+
 	@SafeVarargs
-	public MultiIterable(Iterable<? extends E> ... iterables){
+	public MultiIterable(Iterable<? extends E>... iterables) {
 		this(Arrays.asList(iterables));
 	}
-	
+
 	public MultiIterable(Iterable<? extends Iterable<? extends E>> iterables) {
 		this.iterables = iterables;
 	}
@@ -31,10 +31,10 @@ public final class MultiIterable<E> implements Iterable<E> {
 
 			while (iterator != null && iterator.hasNext()) {
 				Iterable<? extends E> iterable = iterator.next();
-				if(iterable == null){
+				if (iterable == null) {
 					continue;
 				}
-				
+
 				valueIterator = iterable.iterator();
 				if (valueIterator.hasNext()) {
 					return true;

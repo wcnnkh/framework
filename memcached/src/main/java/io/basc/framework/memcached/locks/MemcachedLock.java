@@ -19,8 +19,8 @@ public final class MemcachedLock extends RenewableLock {
 	}
 
 	public boolean tryLock() {
-		boolean b = memcached.add(key, (int)getTimeout(TimeUnit.SECONDS), id);
-		if(b){
+		boolean b = memcached.add(key, (int) getTimeout(TimeUnit.SECONDS), id);
+		if (b) {
 			autoRenewal();
 		}
 		return b;
@@ -36,9 +36,9 @@ public final class MemcachedLock extends RenewableLock {
 
 	public boolean renewal(long time, TimeUnit unit) {
 		CAS<String> cas = memcached.getCASOperations().get(key);
-		if(!id.equals(cas.getValue())){
+		if (!id.equals(cas.getValue())) {
 			return false;
 		}
-		return memcached.getCASOperations().cas(key, id, (int)unit.toSeconds(time), cas.getCas());
+		return memcached.getCASOperations().cas(key, id, (int) unit.toSeconds(time), cas.getCas());
 	}
 }

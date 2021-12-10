@@ -28,10 +28,10 @@ import io.basc.framework.util.Assert;
  * <p>
  * Note: As of 5.1, {@link java.nio.file.Path} support is also available in
  * {@link FileSystemResource#FileSystemResource(Path) FileSystemResource},
- * applying Spring's standard String-based path transformations but performing
- * all operations via the {@link java.nio.file.Files} API. This
- * {@code PathResource} is effectively a pure {@code java.nio.path.Path} based
- * alternative with different {@code createRelative} behavior.
+ * applying standard String-based path transformations but performing all
+ * operations via the {@link java.nio.file.Files} API. This {@code PathResource}
+ * is effectively a pure {@code java.nio.path.Path} based alternative with
+ * different {@code createRelative} behavior.
  *
  * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/io/PathResource.java
  * @see java.nio.file.Path

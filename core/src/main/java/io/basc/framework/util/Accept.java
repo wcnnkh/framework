@@ -25,7 +25,7 @@ public interface Accept<E> extends Predicate<E> {
 		return new Accept<E>() {
 			@Override
 			public boolean accept(E e) {
-				if(e == null) {
+				if (e == null) {
 					return false;
 				}
 				return !Accept.this.accept(e);

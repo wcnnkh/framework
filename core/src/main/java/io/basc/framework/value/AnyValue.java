@@ -47,7 +47,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 		if (value instanceof Value) {
 			return ((Value) value).getAsString();
 		}
-		
+
 		return value.toString();
 	}
 
@@ -499,7 +499,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 		if (value.getClass().isArray()) {
 			return Array.getLength(value) == 0;
 		}
-		
+
 		if ("".equals(value)) {
 			return true;
 		}
@@ -523,11 +523,11 @@ public class AnyValue extends AbstractValue implements Serializable {
 
 	@Override
 	public Object getSourceValue() {
-		if(value == null) {
+		if (value == null) {
 			return null;
 		}
-		
-		if(value instanceof Value) {
+
+		if (value instanceof Value) {
 			return ((Value) value).getSourceValue();
 		}
 		return value;

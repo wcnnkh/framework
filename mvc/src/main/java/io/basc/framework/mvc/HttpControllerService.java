@@ -106,7 +106,8 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 		} finally {
 			if (httpChannel.getLogger().isDebugEnabled()) {
 				httpChannel.getLogger().debug("Execution {}ms of [{}] response: {}",
-						System.currentTimeMillis() - httpChannel.getCreateTime(), WebUtils.getMessageId(httpChannel.getRequest(), httpChannel.getResponse()), message);
+						System.currentTimeMillis() - httpChannel.getCreateTime(),
+						WebUtils.getMessageId(httpChannel.getRequest(), httpChannel.getResponse()), message);
 			}
 
 			if (!httpChannel.isCompleted()) {
@@ -144,7 +145,8 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 		}
 
 		if (httpChannel.getLogger().isDebugEnabled()) {
-			httpChannel.getLogger().debug("[{}] request: {}", WebUtils.getMessageId(requestToUse, responseToUse), request);
+			httpChannel.getLogger().debug("[{}] request: {}", WebUtils.getMessageId(requestToUse, responseToUse),
+					request);
 		}
 		return httpChannel;
 	}

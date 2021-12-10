@@ -39,7 +39,7 @@ public class OutputMessageWrapper<O extends OutputMessage> extends OutputStreamS
 	public void setCharacterEncoding(String charsetName) {
 		wrappedTarget.setCharacterEncoding(charsetName);
 	}
-	
+
 	@Override
 	public String getCharacterEncoding() {
 		return wrappedTarget.getCharacterEncoding();

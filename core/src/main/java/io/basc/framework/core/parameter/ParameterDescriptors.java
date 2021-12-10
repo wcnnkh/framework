@@ -15,7 +15,7 @@ public interface ParameterDescriptors extends AnnotatedElement, Iterable<Paramet
 	Object getSource();
 
 	Class<?>[] getTypes();
-	
+
 	ParameterDescriptor[] toArray();
 
 	default ParameterDescriptor getParameterDescriptor(int index) {
@@ -32,8 +32,8 @@ public interface ParameterDescriptors extends AnnotatedElement, Iterable<Paramet
 	}
 
 	default ParameterDescriptor getParameterDescriptor(String name) {
-		for(ParameterDescriptor descriptor : this) {
-			if(StringUtils.equals(descriptor.getName(), name)) {
+		for (ParameterDescriptor descriptor : this) {
+			if (StringUtils.equals(descriptor.getName(), name)) {
 				return descriptor;
 			}
 		}

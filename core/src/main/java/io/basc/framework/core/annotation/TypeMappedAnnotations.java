@@ -118,7 +118,6 @@ final class TypeMappedAnnotations implements MergedAnnotations {
 	@Override
 	public <A extends Annotation> MergedAnnotation<A> get(Class<A> annotationType,
 			@Nullable Predicate<? super MergedAnnotation<A>> predicate) {
-
 		return get(annotationType, predicate, null);
 	}
 
@@ -126,7 +125,6 @@ final class TypeMappedAnnotations implements MergedAnnotations {
 	public <A extends Annotation> MergedAnnotation<A> get(Class<A> annotationType,
 			@Nullable Predicate<? super MergedAnnotation<A>> predicate,
 			@Nullable MergedAnnotationSelector<A> selector) {
-
 		if (this.annotationFilter.matches(annotationType)) {
 			return MergedAnnotation.missing();
 		}
@@ -143,7 +141,6 @@ final class TypeMappedAnnotations implements MergedAnnotations {
 	@Override
 	public <A extends Annotation> MergedAnnotation<A> get(String annotationType,
 			@Nullable Predicate<? super MergedAnnotation<A>> predicate) {
-
 		return get(annotationType, predicate, null);
 	}
 
@@ -151,7 +148,6 @@ final class TypeMappedAnnotations implements MergedAnnotations {
 	public <A extends Annotation> MergedAnnotation<A> get(String annotationType,
 			@Nullable Predicate<? super MergedAnnotation<A>> predicate,
 			@Nullable MergedAnnotationSelector<A> selector) {
-
 		if (this.annotationFilter.matches(annotationType)) {
 			return MergedAnnotation.missing();
 		}
@@ -230,7 +226,6 @@ final class TypeMappedAnnotations implements MergedAnnotations {
 
 	static MergedAnnotations from(AnnotatedElement element, SearchStrategy searchStrategy,
 			RepeatableContainers repeatableContainers, AnnotationFilter annotationFilter) {
-
 		if (AnnotationsScanner.isKnownEmpty(element, searchStrategy)) {
 			return NONE;
 		}
@@ -239,7 +234,6 @@ final class TypeMappedAnnotations implements MergedAnnotations {
 
 	static MergedAnnotations from(@Nullable Object source, Annotation[] annotations,
 			RepeatableContainers repeatableContainers, AnnotationFilter annotationFilter) {
-
 		if (annotations.length == 0) {
 			return NONE;
 		}
@@ -248,7 +242,6 @@ final class TypeMappedAnnotations implements MergedAnnotations {
 
 	private static boolean isMappingForType(AnnotationTypeMapping mapping, AnnotationFilter annotationFilter,
 			@Nullable Object requiredType) {
-
 		Class<? extends Annotation> actualType = mapping.getAnnotationType();
 		return (!annotationFilter.matches(actualType)
 				&& (requiredType == null || actualType == requiredType || actualType.getName().equals(requiredType)));
@@ -357,7 +350,6 @@ final class TypeMappedAnnotations implements MergedAnnotations {
 
 		MergedAnnotationFinder(Object requiredType, @Nullable Predicate<? super MergedAnnotation<A>> predicate,
 				@Nullable MergedAnnotationSelector<A> selector) {
-
 			this.requiredType = requiredType;
 			this.predicate = predicate;
 			this.selector = (selector != null ? selector : MergedAnnotationSelectors.nearest());
@@ -373,7 +365,6 @@ final class TypeMappedAnnotations implements MergedAnnotations {
 		@Nullable
 		public MergedAnnotation<A> doWithAnnotations(Object type, int aggregateIndex, @Nullable Object source,
 				Annotation[] annotations) {
-
 			for (Annotation annotation : annotations) {
 				if (annotation != null && !annotationFilter.matches(annotation)) {
 					MergedAnnotation<A> result = process(type, aggregateIndex, source, annotation);
@@ -388,7 +379,6 @@ final class TypeMappedAnnotations implements MergedAnnotations {
 		@Nullable
 		private MergedAnnotation<A> process(Object type, int aggregateIndex, @Nullable Object source,
 				Annotation annotation) {
-
 			Annotation[] repeatedAnnotations = repeatableContainers.findRepeatedAnnotations(annotation);
 			if (repeatedAnnotations != null) {
 				return doWithAnnotations(type, aggregateIndex, source, repeatedAnnotations);
@@ -434,7 +424,6 @@ final class TypeMappedAnnotations implements MergedAnnotations {
 		@Nullable
 		public List<Aggregate> doWithAnnotations(Object criteria, int aggregateIndex, @Nullable Object source,
 				Annotation[] annotations) {
-
 			this.aggregates.add(createAggregate(aggregateIndex, source, annotations));
 			return null;
 		}

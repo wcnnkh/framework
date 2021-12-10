@@ -1,13 +1,13 @@
 package io.basc.framework.util;
 
-public class Wrapper<W> implements Decorator{
+public class Wrapper<W> implements Decorator {
 	protected final W wrappedTarget;
 
 	public Wrapper(W wrappedTarget) {
 		Assert.requiredArgument(wrappedTarget != null, "wrappedTarget");
 		this.wrappedTarget = wrappedTarget;
 	}
-	
+
 	@Override
 	public <T> T getDelegate(Class<T> targetType) {
 		return XUtils.getDelegate(wrappedTarget, targetType);

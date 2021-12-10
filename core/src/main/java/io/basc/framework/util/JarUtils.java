@@ -33,8 +33,7 @@ public abstract class JarUtils {
 		return Collections.EMPTY_MAP;
 	}
 
-	private static Map<String, String> formatManifestFile(InputStream inputStream)
-			throws IOException {
+	private static Map<String, String> formatManifestFile(InputStream inputStream) throws IOException {
 		Map<String, String> map = new HashMap<String, String>(8);
 		List<String> list = IOUtils.readLines(inputStream);
 		for (String content : list) {

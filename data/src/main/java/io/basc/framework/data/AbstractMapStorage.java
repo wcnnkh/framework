@@ -12,8 +12,8 @@ public abstract class AbstractMapStorage implements Storage {
 	public abstract Map<String, Object> getMap();
 
 	protected abstract Map<String, Object> createMap();
-	
-	protected Object cloneValue(Object value){
+
+	protected Object cloneValue(Object value) {
 		return SerializerUtils.clone(value);
 	}
 

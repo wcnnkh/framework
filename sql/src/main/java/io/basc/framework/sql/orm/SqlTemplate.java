@@ -527,7 +527,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		if (total == 0) {
 			return PageSupport.emptyPagination(start, limit);
 		}
-		
+
 		return new StreamPagination<T>(start, () -> limit(sql, start, limit, mapProcessor), limit, total);
 	}
 
@@ -542,8 +542,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		if (total == 0) {
 			return PageSupport.emptyPaginations(start, limit);
 		}
-		
-		return new StreamPaginations<T>(total, start, limit, (begin, count) -> limit(sql, begin, count, mapProcessor)); 
+
+		return new StreamPaginations<T>(total, start, limit, (begin, count) -> limit(sql, begin, count, mapProcessor));
 	}
 
 	default <T> Paginations<T> getPages(Class<? extends T> resultType, Sql sql, long pageNumber, int limit) {

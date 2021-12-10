@@ -11,12 +11,11 @@ import org.hibernate.Transaction;
 public class SessionTransactionResource implements TransactionResource {
 	private final SessionFactory sessionFactory;
 	private final boolean isActive;
-	
+
 	private Session session;
 	private Transaction transaction;
 
-	public SessionTransactionResource(SessionFactory sessionFactory,
-			boolean isActive) {
+	public SessionTransactionResource(SessionFactory sessionFactory, boolean isActive) {
 		this.sessionFactory = sessionFactory;
 		this.isActive = isActive;
 	}

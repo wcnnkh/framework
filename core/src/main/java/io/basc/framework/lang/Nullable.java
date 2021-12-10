@@ -11,8 +11,7 @@ import java.lang.annotation.Target;
  * @author shuchaowen
  *
  */
-@Target({ ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD,
-		ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+@Target({ ElementType.METHOD, ElementType.PARAMETER, ElementType.FIELD, ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Nullable {

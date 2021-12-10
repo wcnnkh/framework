@@ -33,37 +33,38 @@ public class SimpleResourceEventDispatcher extends SimpleEventDispatcher<ChangeE
 
 	/**
 	 * @param resource
-	 * @param period 不能小于1000ms
+	 * @param period   不能小于1000ms
 	 */
 	public SimpleResourceEventDispatcher(AbstractResource resource, long period) {
 		super(true);
 		this.resource = resource;
 		this.period = period < TimeUtils.ONE_SECOND ? LISTENER_PERIOD : period;
 	}
-	
+
 	private volatile TimerTask timerTask;
+
 	protected void listener() {
-		if(timerTask != null){
-			return ;
+		if (timerTask != null) {
+			return;
 		}
-		
+
 		timerTask = new DefaultEventTimerTask();
 		TIMER.schedule(timerTask, period, period);
 	}
-	
-	protected void cancelListener(){
-		if(timerTask != null){
+
+	protected void cancelListener() {
+		if (timerTask != null) {
 			timerTask.cancel();
 			timerTask = null;
 		}
 	}
-	
+
 	public AbstractResource getResource() {
 		return resource;
 	}
-	
-	protected void onChange(ChangeEvent<Resource> resourceEvent){
-		if(logger.isDebugEnabled()){
+
+	protected void onChange(ChangeEvent<Resource> resourceEvent) {
+		if (logger.isDebugEnabled()) {
 			logger.debug(resourceEvent.toString());
 		}
 		publishEvent(resourceEvent);

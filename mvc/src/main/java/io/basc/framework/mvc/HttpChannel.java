@@ -25,7 +25,7 @@ public interface HttpChannel extends ParameterFactory, ValueFactory<String>, NoA
 	ServerHttpResponse getResponse();
 
 	WebMessageConverters getMessageConverters();
-	
+
 	boolean isCompleted();
 
 	/**
@@ -69,8 +69,8 @@ public interface HttpChannel extends ParameterFactory, ValueFactory<String>, NoA
 	 * @return
 	 */
 	<T> UserSession<T> createUserSession(T uid);
-	
+
 	Logger getLogger();
-	
+
 	void setLogger(Logger logger);
 }

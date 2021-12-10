@@ -12,11 +12,11 @@ import io.basc.framework.core.annotation.AliasFor;
 public @interface Entity {
 	@AliasFor("name")
 	String value() default "";
-	
+
 	@AliasFor("value")
 	String name() default "";
-	
+
 	String[] primaryKeys() default {};
-	
+
 	String comment() default "";
 }

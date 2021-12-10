@@ -9,21 +9,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-class CollectionToObjectConversionService extends
-		ConditionalConversionService {
+class CollectionToObjectConversionService extends ConditionalConversionService {
 
-	public CollectionToObjectConversionService(
-			ConversionService conversionService) {
+	public CollectionToObjectConversionService(ConversionService conversionService) {
 		setConversionService(conversionService);
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
-		return Collections.singleton(new ConvertiblePair(Collection.class,
-				Object.class));
+		return Collections.singleton(new ConvertiblePair(Collection.class, Object.class));
 	}
 
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;
 		}
@@ -35,8 +31,7 @@ class CollectionToObjectConversionService extends
 			return null;
 		}
 		Object firstElement = sourceCollection.iterator().next();
-		return getConversionService().convert(firstElement,
-				sourceType.elementTypeDescriptor(firstElement), targetType);
+		return getConversionService().convert(firstElement, sourceType.elementTypeDescriptor(firstElement), targetType);
 	}
 
 }

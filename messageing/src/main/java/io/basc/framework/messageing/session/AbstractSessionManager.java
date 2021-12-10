@@ -18,8 +18,8 @@ public abstract class AbstractSessionManager implements SessionManager {
 
 		session.sendMessage(message);
 	}
-	
-	protected void logCloseError(Throwable e, Session session){
+
+	protected void logCloseError(Throwable e, Session session) {
 		getLogger().error(e, "session close error: {}", session);
 	}
 
@@ -29,10 +29,8 @@ public abstract class AbstractSessionManager implements SessionManager {
 		}
 	}
 
-	protected void logSendMessageError(Throwable e, String sessionId,
-			Object message) {
-		getLogger().error(e, "session [{}] send message [{}]", sessionId,
-				message);
+	protected void logSendMessageError(Throwable e, String sessionId, Object message) {
+		getLogger().error(e, "session [{}] send message [{}]", sessionId, message);
 	}
 
 	public void sendMessageToAll(Message<?> message) {

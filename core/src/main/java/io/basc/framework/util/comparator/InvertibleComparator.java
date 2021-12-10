@@ -16,8 +16,7 @@ public class InvertibleComparator<T> implements Comparator<T>, Serializable {
 	 * Create an InvertibleComparator that sorts ascending by default. For the
 	 * actual comparison, the specified Comparator will be used.
 	 * 
-	 * @param comparator
-	 *            the comparator to decorate
+	 * @param comparator the comparator to decorate
 	 */
 	public InvertibleComparator(Comparator<T> comparator) {
 		Assert.notNull(comparator, "Comparator must not be null");
@@ -25,13 +24,11 @@ public class InvertibleComparator<T> implements Comparator<T>, Serializable {
 	}
 
 	/**
-	 * Create an InvertibleComparator that sorts based on the provided order.
-	 * For the actual comparison, the specified Comparator will be used.
+	 * Create an InvertibleComparator that sorts based on the provided order. For
+	 * the actual comparison, the specified Comparator will be used.
 	 * 
-	 * @param comparator
-	 *            the comparator to decorate
-	 * @param ascending
-	 *            the sort order: ascending (true) or descending (false)
+	 * @param comparator the comparator to decorate
+	 * @param ascending  the sort order: ascending (true) or descending (false)
 	 */
 	public InvertibleComparator(Comparator<T> comparator, boolean ascending) {
 		Assert.notNull(comparator, "Comparator must not be null");
@@ -54,8 +51,7 @@ public class InvertibleComparator<T> implements Comparator<T>, Serializable {
 	}
 
 	/**
-	 * Invert the sort order: ascending -> descending or descending ->
-	 * ascending.
+	 * Invert the sort order: ascending -> descending or descending -> ascending.
 	 */
 	public void invertOrder() {
 		this.ascending = !this.ascending;

@@ -13,8 +13,7 @@ public class StreamFields extends AbstractFields implements Fields {
 		this.stream = stream;
 	}
 
-	public StreamFields(Class<?> cursorId, Class<?> nextCursorId,
-			Fields fields, Supplier<Stream<Field>> stream) {
+	public StreamFields(Class<?> cursorId, Class<?> nextCursorId, Fields fields, Supplier<Stream<Field>> stream) {
 		super(cursorId, nextCursorId, fields);
 		this.stream = stream;
 	}

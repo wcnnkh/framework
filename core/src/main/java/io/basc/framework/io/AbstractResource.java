@@ -33,7 +33,8 @@ import java.net.URL;
  */
 public abstract class AbstractResource implements Resource, EventDispatcher<ChangeEvent<Resource>> {
 	private static final Constructor<EventDispatcher<ChangeEvent<Resource>>> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
-			.findConstructor("io.basc.framework.io.event.WatchServiceResourceEventDispatcher", null, true, Resource.class);
+			.findConstructor("io.basc.framework.io.event.WatchServiceResourceEventDispatcher", null, true,
+					Resource.class);
 
 	private volatile EventDispatcher<ChangeEvent<Resource>> eventDispatcher;
 

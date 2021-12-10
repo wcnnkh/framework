@@ -13,8 +13,8 @@ public class CompoundComparator<T> implements Comparator<T>, Serializable {
 	private final List<InvertibleComparator> comparators;
 
 	/**
-	 * Construct a CompoundComparator with initially no Comparators. Clients
-	 * must add at least one Comparator before calling the compare method or an
+	 * Construct a CompoundComparator with initially no Comparators. Clients must
+	 * add at least one Comparator before calling the compare method or an
 	 * IllegalStateException is thrown.
 	 */
 	public CompoundComparator() {
@@ -22,14 +22,12 @@ public class CompoundComparator<T> implements Comparator<T>, Serializable {
 	}
 
 	/**
-	 * Construct a CompoundComparator from the Comparators in the provided
-	 * array.
+	 * Construct a CompoundComparator from the Comparators in the provided array.
 	 * <p>
 	 * All Comparators will default to ascending sort order, unless they are
 	 * InvertibleComparators.
 	 * 
-	 * @param comparators
-	 *            the comparators to build into a compound comparator
+	 * @param comparators the comparators to build into a compound comparator
 	 * @see InvertibleComparator
 	 */
 	public CompoundComparator(Comparator... comparators) {
@@ -46,8 +44,7 @@ public class CompoundComparator<T> implements Comparator<T>, Serializable {
 	 * The Comparator will default to ascending sort order, unless it is a
 	 * InvertibleComparator.
 	 * 
-	 * @param comparator
-	 *            the Comparator to add to the end of the chain
+	 * @param comparator the Comparator to add to the end of the chain
 	 * @see InvertibleComparator
 	 */
 	public void addComparator(Comparator<? extends T> comparator) {
@@ -61,10 +58,8 @@ public class CompoundComparator<T> implements Comparator<T>, Serializable {
 	/**
 	 * Add a Comparator to the end of the chain using the provided sort order.
 	 * 
-	 * @param comparator
-	 *            the Comparator to add to the end of the chain
-	 * @param ascending
-	 *            the sort order: ascending (true) or descending (false)
+	 * @param comparator the Comparator to add to the end of the chain
+	 * @param ascending  the sort order: ascending (true) or descending (false)
 	 */
 	public void addComparator(Comparator<? extends T> comparator, boolean ascending) {
 		this.comparators.add(new InvertibleComparator(comparator, ascending));
@@ -76,10 +71,8 @@ public class CompoundComparator<T> implements Comparator<T>, Serializable {
 	 * The Comparator will default to ascending sort order, unless it is a
 	 * InvertibleComparator.
 	 * 
-	 * @param index
-	 *            the index of the Comparator to replace
-	 * @param comparator
-	 *            the Comparator to place at the given index
+	 * @param index      the index of the Comparator to replace
+	 * @param comparator the Comparator to place at the given index
 	 * @see InvertibleComparator
 	 */
 	public void setComparator(int index, Comparator<? extends T> comparator) {
@@ -93,12 +86,9 @@ public class CompoundComparator<T> implements Comparator<T>, Serializable {
 	/**
 	 * Replace the Comparator at the given index using the given sort order.
 	 * 
-	 * @param index
-	 *            the index of the Comparator to replace
-	 * @param comparator
-	 *            the Comparator to place at the given index
-	 * @param ascending
-	 *            the sort order: ascending (true) or descending (false)
+	 * @param index      the index of the Comparator to replace
+	 * @param comparator the Comparator to place at the given index
+	 * @param ascending  the sort order: ascending (true) or descending (false)
 	 */
 	public void setComparator(int index, Comparator<T> comparator, boolean ascending) {
 		this.comparators.set(index, new InvertibleComparator<T>(comparator, ascending));
@@ -117,8 +107,7 @@ public class CompoundComparator<T> implements Comparator<T>, Serializable {
 	/**
 	 * Invert the sort order of the sort definition at the specified index.
 	 * 
-	 * @param index
-	 *            the index of the comparator to invert
+	 * @param index the index of the comparator to invert
 	 */
 	public void invertOrder(int index) {
 		this.comparators.get(index).invertOrder();
@@ -127,8 +116,7 @@ public class CompoundComparator<T> implements Comparator<T>, Serializable {
 	/**
 	 * Change the sort order at the given index to ascending.
 	 * 
-	 * @param index
-	 *            the index of the comparator to change
+	 * @param index the index of the comparator to change
 	 */
 	public void setAscendingOrder(int index) {
 		this.comparators.get(index).setAscending(true);
@@ -137,8 +125,7 @@ public class CompoundComparator<T> implements Comparator<T>, Serializable {
 	/**
 	 * Change the sort order at the given index to descending sort.
 	 * 
-	 * @param index
-	 *            the index of the comparator to change
+	 * @param index the index of the comparator to change
 	 */
 	public void setDescendingOrder(int index) {
 		this.comparators.get(index).setAscending(false);

@@ -15,17 +15,17 @@ import java.lang.reflect.Method;
 
 public final class ProxyUtils {
 	private static final ConfigurableProxyFactory FACTORY = new DefaultProxyFactory();
-	
-	static{
+
+	static {
 		SpiServiceLoader<ProxyFactory> serviceLoader = new SpiServiceLoader<ProxyFactory>(ProxyFactory.class);
-		for(ProxyFactory proxyFactory : serviceLoader){
+		for (ProxyFactory proxyFactory : serviceLoader) {
 			FACTORY.addProxyFactory(proxyFactory);
 		}
 	}
-	
+
 	private ProxyUtils() {
 	};
-	
+
 	public static ProxyFactory getFactory() {
 		return FACTORY;
 	}
@@ -39,7 +39,8 @@ public final class ProxyUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T proxyIngoreMethod(ProxyFactory proxyFactory, Class<? extends T> clazz, T instance, IgnoreMethodAccept ignoreMethodAccept) {
+	public static <T> T proxyIngoreMethod(ProxyFactory proxyFactory, Class<? extends T> clazz, T instance,
+			IgnoreMethodAccept ignoreMethodAccept) {
 		MethodInterceptor methodInterceptor = new IgnoreMethodFilter(instance, ignoreMethodAccept);
 		Proxy proxy = proxyFactory.getProxy(clazz, new Class<?>[] { IgnoreMethodTarget.class }, methodInterceptor);
 		return (T) proxy.create();
@@ -117,15 +118,15 @@ public final class ProxyUtils {
 	 * @return
 	 */
 	public static boolean isWriteReplaceMethod(MethodInvoker invoker) {
-		return ArrayUtils.isEmpty(invoker.getMethod().getParameterTypes()) && invoker.getInstance() instanceof Serializable
+		return ArrayUtils.isEmpty(invoker.getMethod().getParameterTypes())
+				&& invoker.getInstance() instanceof Serializable
 				&& invoker.getMethod().getName().equals(WriteReplaceInterface.WRITE_REPLACE_METHOD);
 	}
 
 	/**
 	 * 是否是ObjectStream中的WriteReplaceMethod
 	 * 
-	 * @param writeReplaceInterface
-	 *            原始类型是否应该实现{@see WriteReplaceInterface}
+	 * @param writeReplaceInterface 原始类型是否应该实现{@see WriteReplaceInterface}
 	 * @return
 	 */
 	public static boolean isWriteReplaceMethod(MethodInvoker invoker, boolean writeReplaceInterface) {

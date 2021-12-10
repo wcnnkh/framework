@@ -9,8 +9,8 @@ public class DefaultRetryContext extends SimpleAttributes<String, Object> implem
 	private int retryCount;
 	private Throwable lastThrowable;
 	private boolean exhaustedOnly;
-	
-	public DefaultRetryContext(@Nullable RetryContext parent){
+
+	public DefaultRetryContext(@Nullable RetryContext parent) {
 		this.parent = parent;
 	}
 
@@ -29,8 +29,8 @@ public class DefaultRetryContext extends SimpleAttributes<String, Object> implem
 	public Throwable setLastThrowable(Throwable lastThrowable) {
 		Throwable old = this.lastThrowable;
 		this.lastThrowable = lastThrowable;
-		if(lastThrowable != null){
-			retryCount ++;
+		if (lastThrowable != null) {
+			retryCount++;
 		}
 		return old;
 	}

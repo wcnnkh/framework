@@ -214,11 +214,9 @@ public final class MimeTypeUtils {
 	/**
 	 * Parse the given String into a single {@code MimeType}.
 	 * 
-	 * @param mimeType
-	 *            the string to parse
+	 * @param mimeType the string to parse
 	 * @return the mime type
-	 * @throws InvalidMimeTypeException
-	 *             if the string cannot be parsed
+	 * @throws InvalidMimeTypeException if the string cannot be parsed
 	 */
 	public static MimeType parseMimeType(String mimeType) {
 		if (StringUtils.isEmpty(mimeType)) {
@@ -291,11 +289,9 @@ public final class MimeTypeUtils {
 	 * Parse the given, comma-separated string into a list of {@code MimeType}
 	 * objects.
 	 * 
-	 * @param mimeTypes
-	 *            the string to parse
+	 * @param mimeTypes the string to parse
 	 * @return the list of mime types
-	 * @throws IllegalArgumentException
-	 *             if the string cannot be parsed
+	 * @throws IllegalArgumentException if the string cannot be parsed
 	 */
 	public static List<MimeType> parseMimeTypes(String mimeTypes) {
 		if (StringUtils.isEmpty(mimeTypes)) {
@@ -310,14 +306,11 @@ public final class MimeTypeUtils {
 	}
 
 	/**
-	 * Return a string representation of the given list of {@code MimeType}
-	 * objects.
+	 * Return a string representation of the given list of {@code MimeType} objects.
 	 * 
-	 * @param mimeTypes
-	 *            the string to parse
+	 * @param mimeTypes the string to parse
 	 * @return the list of mime types
-	 * @throws IllegalArgumentException
-	 *             if the String cannot be parsed
+	 * @throws IllegalArgumentException if the String cannot be parsed
 	 */
 	public static String toString(Collection<? extends MimeType> mimeTypes) {
 		StringBuilder builder = new StringBuilder();
@@ -336,32 +329,30 @@ public final class MimeTypeUtils {
 	 * <p>
 	 * Given two mime types:
 	 * <ol>
-	 * <li>if either mime type has a {@linkplain MimeType#isWildcardType()
-	 * wildcard type}, then the mime type without the wildcard is ordered before
-	 * the other.</li>
+	 * <li>if either mime type has a {@linkplain MimeType#isWildcardType() wildcard
+	 * type}, then the mime type without the wildcard is ordered before the
+	 * other.</li>
 	 * <li>if the two mime types have different {@linkplain MimeType#getType()
-	 * types}, then they are considered equal and remain their current
-	 * order.</li>
+	 * types}, then they are considered equal and remain their current order.</li>
 	 * <li>if either mime type has a {@linkplain MimeType#isWildcardSubtype()
-	 * wildcard subtype} , then the mime type without the wildcard is sorted
-	 * before the other.</li>
-	 * <li>if the two mime types have different
-	 * {@linkplain MimeType#getSubtype() subtypes}, then they are considered
-	 * equal and remain their current order.</li>
+	 * wildcard subtype} , then the mime type without the wildcard is sorted before
+	 * the other.</li>
+	 * <li>if the two mime types have different {@linkplain MimeType#getSubtype()
+	 * subtypes}, then they are considered equal and remain their current
+	 * order.</li>
 	 * <li>if the two mime types have a different amount of
 	 * {@linkplain MimeType#getParameter(String) parameters}, then the mime type
 	 * with the most parameters is ordered before the other.</li>
 	 * </ol>
 	 * <p>
-	 * For example: <blockquote>audio/basic &lt; audio/* &lt;
-	 * *&#047;*</blockquote> <blockquote>audio/basic;level=1 &lt;
-	 * audio/basic</blockquote> <blockquote>audio/basic ==
-	 * text/html</blockquote> <blockquote>audio/basic == audio/wave</blockquote>
+	 * For example: <blockquote>audio/basic &lt; audio/* &lt; *&#047;*</blockquote>
+	 * <blockquote>audio/basic;level=1 &lt; audio/basic</blockquote>
+	 * <blockquote>audio/basic == text/html</blockquote> <blockquote>audio/basic ==
+	 * audio/wave</blockquote>
 	 * 
-	 * @param mimeTypes
-	 *            the list of mime types to be sorted
-	 * @see <a href="https://tools.ietf.org/html/rfc7231#section-5.3.2">HTTP
-	 *      1.1: Semantics and Content, section 5.3.2</a>
+	 * @param mimeTypes the list of mime types to be sorted
+	 * @see <a href="https://tools.ietf.org/html/rfc7231#section-5.3.2">HTTP 1.1:
+	 *      Semantics and Content, section 5.3.2</a>
 	 */
 	public static void sortBySpecificity(List<MimeType> mimeTypes) {
 		Assert.notNull(mimeTypes, "'mimeTypes' must not be null");
@@ -371,8 +362,7 @@ public final class MimeTypeUtils {
 	}
 
 	/**
-	 * Generate a random MIME boundary as bytes, often used in multipart mime
-	 * types.
+	 * Generate a random MIME boundary as bytes, often used in multipart mime types.
 	 */
 	public static byte[] generateMultipartBoundary() {
 		byte[] boundary = new byte[RND.nextInt(11) + 30];

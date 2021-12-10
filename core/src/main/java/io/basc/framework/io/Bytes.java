@@ -403,7 +403,7 @@ public final class Bytes {
 		}
 		return chars;
 	}
-	
+
 	/**
 	 * Extract a byte array from {@link ByteBuffer} without consuming it.
 	 *

@@ -5,9 +5,9 @@ import java.util.Collection;
 
 import io.basc.framework.factory.InstanceDefinition;
 
-public interface BeanDefinition extends InstanceDefinition{
+public interface BeanDefinition extends InstanceDefinition {
 	String getId();
-	
+
 	Collection<String> getNames();
 
 	boolean isSingleton();

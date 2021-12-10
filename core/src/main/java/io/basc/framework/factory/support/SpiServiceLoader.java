@@ -212,9 +212,9 @@ public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderP
 			try {
 				Object instance = instanceFactory == null ? ClassUtils.newInstance(c) : instanceFactory.getInstance(c);
 				S p = service.cast(instance);
-				if(providers == null) {
+				if (providers == null) {
 					synchronized (this) {
-						if(providers == null) {
+						if (providers == null) {
 							providers = new LinkedHashMap<>(8);
 							providers.put(cn, p);
 						}
@@ -308,9 +308,10 @@ public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderP
 	 */
 	public Iterator<S> iterator() {
 		return new Iterator<S>() {
-			
-			Iterator<Map.Entry<String, S>> knownProviders = providers == null? Collections.emptyIterator():providers.entrySet().iterator();
-			
+
+			Iterator<Map.Entry<String, S>> knownProviders = providers == null ? Collections.emptyIterator()
+					: providers.entrySet().iterator();
+
 			public boolean hasNext() {
 				if (knownProviders.hasNext())
 					return true;
@@ -364,9 +365,9 @@ public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderP
 	 * installed into a running Java virtual machine.
 	 */
 	public void reload() {
-		if(providers != null) {
+		if (providers != null) {
 			synchronized (this) {
-				if(providers != null) {
+				if (providers != null) {
 					providers.clear();
 				}
 			}

@@ -81,7 +81,8 @@ public class DefaultValueFactory<K, F extends ValueFactory<K>> implements Config
 	}
 
 	public EventRegistration registerListener(final K key, final EventListener<ChangeEvent<K>> eventListener) {
-		EventRegistration registration1 = this.valueMap.getEventDispatcher().registerListener(key, (event) -> eventListener.onEvent(new ChangeEvent<K>(event, event.getSource().getKey())));
+		EventRegistration registration1 = this.valueMap.getEventDispatcher().registerListener(key,
+				(event) -> eventListener.onEvent(new ChangeEvent<K>(event, event.getSource().getKey())));
 		if (factories.size() == 0) {
 			return registration1;
 		}

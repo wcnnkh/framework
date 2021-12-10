@@ -19,23 +19,21 @@ import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.ValueUtils;
+import io.basc.framework.value.Value;
 
 public class UriUtils {
 	public static final String QUERY_CONNECTOR = "?";
 	public static final String PARAMETER_CONNECTOR = "&";
 	public static final String NAME_VALUE_CONNECTOR = "=";
-	
+
 	/**
 	 * Encode the given URI scheme with the given encoding.
 	 * 
-	 * @param scheme
-	 *            the scheme to be encoded
-	 * @param encoding
-	 *            the character encoding to encode to
+	 * @param scheme   the scheme to be encoded
+	 * @param encoding the character encoding to encode to
 	 * @return the encoded scheme
-	 * @throws UnsupportedEncodingException
-	 *             when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException when the given encoding parameter is not
+	 *                                      supported
 	 */
 	public static String encodeScheme(String scheme, String encoding) throws UnsupportedEncodingException {
 		return HierarchicalUriComponents.encodeUriComponent(scheme, encoding, HierarchicalUriComponents.Type.SCHEME);
@@ -44,13 +42,11 @@ public class UriUtils {
 	/**
 	 * Encode the given URI authority with the given encoding.
 	 * 
-	 * @param authority
-	 *            the authority to be encoded
-	 * @param encoding
-	 *            the character encoding to encode to
+	 * @param authority the authority to be encoded
+	 * @param encoding  the character encoding to encode to
 	 * @return the encoded authority
-	 * @throws UnsupportedEncodingException
-	 *             when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException when the given encoding parameter is not
+	 *                                      supported
 	 */
 	public static String encodeAuthority(String authority, String encoding) throws UnsupportedEncodingException {
 		return HierarchicalUriComponents.encodeUriComponent(authority, encoding,
@@ -60,13 +56,11 @@ public class UriUtils {
 	/**
 	 * Encode the given URI user info with the given encoding.
 	 * 
-	 * @param userInfo
-	 *            the user info to be encoded
-	 * @param encoding
-	 *            the character encoding to encode to
+	 * @param userInfo the user info to be encoded
+	 * @param encoding the character encoding to encode to
 	 * @return the encoded user info
-	 * @throws UnsupportedEncodingException
-	 *             when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException when the given encoding parameter is not
+	 *                                      supported
 	 */
 	public static String encodeUserInfo(String userInfo, String encoding) throws UnsupportedEncodingException {
 		return HierarchicalUriComponents.encodeUriComponent(userInfo, encoding,
@@ -76,13 +70,11 @@ public class UriUtils {
 	/**
 	 * Encode the given URI host with the given encoding.
 	 * 
-	 * @param host
-	 *            the host to be encoded
-	 * @param encoding
-	 *            the character encoding to encode to
+	 * @param host     the host to be encoded
+	 * @param encoding the character encoding to encode to
 	 * @return the encoded host
-	 * @throws UnsupportedEncodingException
-	 *             when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException when the given encoding parameter is not
+	 *                                      supported
 	 */
 	public static String encodeHost(String host, String encoding) throws UnsupportedEncodingException {
 		return HierarchicalUriComponents.encodeUriComponent(host, encoding, HierarchicalUriComponents.Type.HOST_IPV4);
@@ -91,13 +83,11 @@ public class UriUtils {
 	/**
 	 * Encode the given URI port with the given encoding.
 	 * 
-	 * @param port
-	 *            the port to be encoded
-	 * @param encoding
-	 *            the character encoding to encode to
+	 * @param port     the port to be encoded
+	 * @param encoding the character encoding to encode to
 	 * @return the encoded port
-	 * @throws UnsupportedEncodingException
-	 *             when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException when the given encoding parameter is not
+	 *                                      supported
 	 */
 	public static String encodePort(String port, String encoding) throws UnsupportedEncodingException {
 		return HierarchicalUriComponents.encodeUriComponent(port, encoding, HierarchicalUriComponents.Type.PORT);
@@ -106,13 +96,11 @@ public class UriUtils {
 	/**
 	 * Encode the given URI path with the given encoding.
 	 * 
-	 * @param path
-	 *            the path to be encoded
-	 * @param encoding
-	 *            the character encoding to encode to
+	 * @param path     the path to be encoded
+	 * @param encoding the character encoding to encode to
 	 * @return the encoded path
-	 * @throws UnsupportedEncodingException
-	 *             when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException when the given encoding parameter is not
+	 *                                      supported
 	 */
 	public static String encodePath(String path, String encoding) throws UnsupportedEncodingException {
 		return HierarchicalUriComponents.encodeUriComponent(path, encoding, HierarchicalUriComponents.Type.PATH);
@@ -121,13 +109,11 @@ public class UriUtils {
 	/**
 	 * Encode the given URI path segment with the given encoding.
 	 * 
-	 * @param segment
-	 *            the segment to be encoded
-	 * @param encoding
-	 *            the character encoding to encode to
+	 * @param segment  the segment to be encoded
+	 * @param encoding the character encoding to encode to
 	 * @return the encoded segment
-	 * @throws UnsupportedEncodingException
-	 *             when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException when the given encoding parameter is not
+	 *                                      supported
 	 */
 	public static String encodePathSegment(String segment, String encoding) throws UnsupportedEncodingException {
 		return HierarchicalUriComponents.encodeUriComponent(segment, encoding,
@@ -137,13 +123,11 @@ public class UriUtils {
 	/**
 	 * Encode the given URI query with the given encoding.
 	 * 
-	 * @param query
-	 *            the query to be encoded
-	 * @param encoding
-	 *            the character encoding to encode to
+	 * @param query    the query to be encoded
+	 * @param encoding the character encoding to encode to
 	 * @return the encoded query
-	 * @throws UnsupportedEncodingException
-	 *             when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException when the given encoding parameter is not
+	 *                                      supported
 	 */
 	public static String encodeQuery(String query, String encoding) throws UnsupportedEncodingException {
 		return HierarchicalUriComponents.encodeUriComponent(query, encoding, HierarchicalUriComponents.Type.QUERY);
@@ -152,13 +136,11 @@ public class UriUtils {
 	/**
 	 * Encode the given URI query parameter with the given encoding.
 	 * 
-	 * @param queryParam
-	 *            the query parameter to be encoded
-	 * @param encoding
-	 *            the character encoding to encode to
+	 * @param queryParam the query parameter to be encoded
+	 * @param encoding   the character encoding to encode to
 	 * @return the encoded query parameter
-	 * @throws UnsupportedEncodingException
-	 *             when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException when the given encoding parameter is not
+	 *                                      supported
 	 */
 	public static String encodeQueryParam(String queryParam, String encoding) throws UnsupportedEncodingException {
 		return HierarchicalUriComponents.encodeUriComponent(queryParam, encoding,
@@ -168,13 +150,11 @@ public class UriUtils {
 	/**
 	 * Encode the given URI fragment with the given encoding.
 	 * 
-	 * @param fragment
-	 *            the fragment to be encoded
-	 * @param encoding
-	 *            the character encoding to encode to
+	 * @param fragment the fragment to be encoded
+	 * @param encoding the character encoding to encode to
 	 * @return the encoded fragment
-	 * @throws UnsupportedEncodingException
-	 *             when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException when the given encoding parameter is not
+	 *                                      supported
 	 */
 	public static String encodeFragment(String fragment, String encoding) throws UnsupportedEncodingException {
 		return HierarchicalUriComponents.encodeUriComponent(fragment, encoding,
@@ -184,8 +164,7 @@ public class UriUtils {
 	/**
 	 * Extract the file extension from the given URI path.
 	 * 
-	 * @param path
-	 *            the URI path (e.g. "/products/index.html")
+	 * @param path the URI path (e.g. "/products/index.html")
 	 * @return the extracted file extension (e.g. "html")
 	 */
 	public static String extractFileExtension(String path) {
@@ -226,17 +205,18 @@ public class UriUtils {
 		}
 		return UriComponentsBuilder.newInstance().query(queryString).build().getQueryParams();
 	}
-	
+
 	public static String toQueryString(Object body, @Nullable Encoder<String, String> encoder) {
 		return toQueryString(body, encoder, PARAMETER_CONNECTOR, NAME_VALUE_CONNECTOR);
 	}
 
-	public static String toQueryString(Object body, @Nullable Encoder<String, String> encoder, @Nullable String parameterConnector, @Nullable String nameValueConnector) {
+	public static String toQueryString(Object body, @Nullable Encoder<String, String> encoder,
+			@Nullable String parameterConnector, @Nullable String nameValueConnector) {
 		if (body == null) {
 			return null;
 		}
 
-		if (ValueUtils.isBaseType(body.getClass())) {
+		if (Value.isBaseType(body.getClass())) {
 			return body.toString();
 		}
 
@@ -244,7 +224,8 @@ public class UriUtils {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private static String toQueryString(String key, Collection values, @Nullable Encoder<String, String> encoder, @Nullable String parameterConnector, @Nullable String nameValueConnector) {
+	private static String toQueryString(String key, Collection values, @Nullable Encoder<String, String> encoder,
+			@Nullable String parameterConnector, @Nullable String nameValueConnector) {
 		if (StringUtils.isEmpty(key) || CollectionUtils.isEmpty(values)) {
 			return null;
 		}
@@ -260,7 +241,7 @@ public class UriUtils {
 			}
 
 			sb.append(key);
-			if(nameValueConnector != null){
+			if (nameValueConnector != null) {
 				sb.append(nameValueConnector);
 			}
 			if (encoder != null) {
@@ -271,18 +252,19 @@ public class UriUtils {
 		}
 		return sb.toString();
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public static String toQueryString(Map parameterMap, @Nullable Encoder<String, String> encoder){
+	public static String toQueryString(Map parameterMap, @Nullable Encoder<String, String> encoder) {
 		return toQueryString(parameterMap, encoder, PARAMETER_CONNECTOR, NAME_VALUE_CONNECTOR);
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static String toQueryString(Map parameterMap, @Nullable Encoder<String, String> encoder, @Nullable String parameterConnector, @Nullable String nameValueConnector) {
+	public static String toQueryString(Map parameterMap, @Nullable Encoder<String, String> encoder,
+			@Nullable String parameterConnector, @Nullable String nameValueConnector) {
 		if (CollectionUtils.isEmpty(parameterMap)) {
 			return null;
 		}
-		
+
 		Map parameters = CollectionUtils.sort(parameterMap);
 		StringBuilder sb = new StringBuilder();
 		Set<Entry> entries = parameters.entrySet();
@@ -323,7 +305,8 @@ public class UriUtils {
 	 * @param charsetName
 	 * @return
 	 */
-	public static String appendQueryParams(String url, Map<String, ?> paramMap, @Nullable Encoder<String, String> encoder) {
+	public static String appendQueryParams(String url, Map<String, ?> paramMap,
+			@Nullable Encoder<String, String> encoder) {
 		if (paramMap == null || paramMap.isEmpty()) {
 			return url;
 		}
@@ -406,10 +389,10 @@ public class UriUtils {
 	}
 
 	public static boolean isUri(String uri) {
-		if(StringUtils.isEmpty(uri)){
+		if (StringUtils.isEmpty(uri)) {
 			return false;
 		}
-		
+
 		try {
 			new URI(uri);
 			return true;
@@ -417,7 +400,7 @@ public class UriUtils {
 			return false;
 		}
 	}
-	
+
 	public static URI toUri(String uri) {
 		try {
 			return new URI(uri);

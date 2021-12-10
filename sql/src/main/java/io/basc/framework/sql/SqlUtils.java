@@ -712,9 +712,9 @@ public final class SqlUtils {
 			if (v == null) {
 				sb.append("null");
 			} else {
-				if(ClassUtils.isPrimitiveOrWrapper(v.getClass()) && !ClassUtils.isChar(v.getClass())){
+				if (ClassUtils.isPrimitiveOrWrapper(v.getClass()) && !ClassUtils.isChar(v.getClass())) {
 					sb.append(v);
-				}else {
+				} else {
 					sb.append("'").append(StringUtils.transferredMeaning(String.valueOf(v), '\'')).append("'");
 				}
 			}

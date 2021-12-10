@@ -34,6 +34,7 @@ public @interface Index {
 
 	/**
 	 * 索引的排序方式
+	 * 
 	 * @return
 	 */
 	public IndexOrder order() default IndexOrder.DEFAULT;

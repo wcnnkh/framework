@@ -10,22 +10,23 @@ import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("rawtypes")
-public class MapToEntityConversionService extends EntityConversionService{
+public class MapToEntityConversionService extends EntityConversionService {
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected Enumeration<String> keys(Object source) {
-		return ConvertibleEnumeration.convertToStringEnumeration(CollectionUtils.toEnumeration(((Map)source).keySet().iterator()));
+		return ConvertibleEnumeration
+				.convertToStringEnumeration(CollectionUtils.toEnumeration(((Map) source).keySet().iterator()));
 	}
-	
+
 	@Override
 	protected Object getProperty(Object source, String key) {
-		return ((Map)source).get(key);
+		return ((Map) source).get(key);
 	}
-	
+
 	@Override
 	protected boolean containsKey(Object source, String key) {
-		return ((Map)source).containsKey(key);
+		return ((Map) source).containsKey(key);
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {

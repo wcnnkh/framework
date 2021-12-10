@@ -61,11 +61,11 @@ public class CompletableToListenableFutureAdapter<T> implements ListenableFuture
 	}
 
 	public void addCallback(SuccessCallback<? super T> successCallback, FailureCallback failureCallback) {
-		if(successCallback != null){
+		if (successCallback != null) {
 			this.callbacks.addSuccessCallback(successCallback);
 		}
-		
-		if(failureCallback != null){
+
+		if (failureCallback != null) {
 			this.callbacks.addFailureCallback(failureCallback);
 		}
 	}

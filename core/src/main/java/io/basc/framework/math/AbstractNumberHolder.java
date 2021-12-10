@@ -90,40 +90,40 @@ public abstract class AbstractNumberHolder extends Number implements NumberHolde
 	public NumberHolder pow(Fraction numberHolder) {
 		return toFractionNumberHolder(numberHolder).pow(numberHolder);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		if(obj == null){
+		if (obj == null) {
 			return false;
 		}
-		
-		if(obj instanceof NumberHolder){
+
+		if (obj instanceof NumberHolder) {
 			return toBigDecimal().equals(((NumberHolder) obj).toBigDecimal());
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public String toString() {
 		return toBigDecimal().toString();
 	}
-	
+
 	@Override
 	public int intValue() {
 		return toBigDecimal().intValue();
 	}
-	
+
 	@Override
 	public double doubleValue() {
 		return toBigDecimal().doubleValue();
 	}
-	
+
 	@Override
 	public float floatValue() {
 		return toBigDecimal().floatValue();
 	}
-	
+
 	@Override
 	public long longValue() {
 		return toBigDecimal().longValue();

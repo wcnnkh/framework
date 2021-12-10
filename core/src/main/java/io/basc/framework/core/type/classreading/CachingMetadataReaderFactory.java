@@ -12,8 +12,8 @@ import io.basc.framework.lang.Nullable;
 
 /**
  * Caching implementation of the {@link MetadataReaderFactory} interface,
- * caching a {@link MetadataReader} instance per Spring {@link Resource} handle
- * (i.e. per ".class" file).
+ * caching a {@link MetadataReader} instance per {@link Resource} handle (i.e.
+ * per ".class" file).
  *
  * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/type/classreading/CachingMetadataReaderFactory.java
  */
@@ -51,7 +51,7 @@ public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 	 * {@link ResourceLoader}, using a shared resource cache if supported or a local
 	 * resource cache otherwise.
 	 * 
-	 * @param resourceLoader the Spring ResourceLoader to use (also determines the
+	 * @param resourceLoader the ResourceLoader to use (also determines the
 	 *                       ClassLoader to use)
 	 * @see DefaultResourceLoader#getResourceCache
 	 */
@@ -99,7 +99,7 @@ public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 			}
 			return metadataReader;
 		} else if (this.metadataReaderCache != null) {
-			//TODO 目前不可能到这里
+			// TODO 目前不可能到这里
 			synchronized (this.metadataReaderCache) {
 				MetadataReader metadataReader = this.metadataReaderCache.get(resource);
 				if (metadataReader == null) {

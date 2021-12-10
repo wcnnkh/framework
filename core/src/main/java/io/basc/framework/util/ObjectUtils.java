@@ -4,6 +4,8 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Map;
 
+import io.basc.framework.core.reflect.ReflectionUtils;
+
 /**
  * Miscellaneous object utility methods.
  * 
@@ -12,7 +14,7 @@ import java.util.Map;
  */
 public abstract class ObjectUtils {
 	public static final Object[] EMPTY_ARRAY = new Object[0];
-	
+
 	/**
 	 * Return whether the given throwable is a checked exception: that is, neither a
 	 * RuntimeException nor an Error.
@@ -283,5 +285,45 @@ public abstract class ObjectUtils {
 
 	public static boolean equals(Object left, Object right) {
 		return equals(left, right, true);
+	}
+
+	/**
+	 * 克隆 默认不对数据里德深拷贝
+	 * 
+	 * @see ObjectUtils#clone(Object, boolean)
+	 * @param <T>
+	 * @param source
+	 * @return
+	 */
+	public static <T> T clone(T source) {
+		return clone(source, false);
+	}
+
+	/**
+	 * 克隆<br/>
+	 * 
+	 * 以下情况会进行克隆：<br/>
+	 * 实现{@link Cloneable}接口 是一个数组
+	 * 
+	 * @see Cloneable
+	 * @see ArrayUtils#clone(Object, boolean)
+	 * @param <T>
+	 * @param source
+	 * @param deep   对数组的操作
+	 * @return
+	 */
+	public static <T> T clone(T source, boolean deep) {
+		if (source == null) {
+			return null;
+		}
+
+		if (source.getClass().isArray()) {
+			return ArrayUtils.clone(source, deep);
+		}
+
+		if (source instanceof Cloneable) {
+			return ReflectionUtils.clone((Cloneable) source);
+		}
+		return source;
 	}
 }

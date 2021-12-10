@@ -13,7 +13,7 @@ import io.basc.framework.util.StringUtils;
 /**
  * {@link LinkedHashMap} subclass representing annotation attribute
  * <em>key-value</em> pairs as read by {@link AnnotationUtils},
- * {@link AnnotatedElementUtils}, and Spring's reflection- and ASM-based
+ * {@link AnnotatedElementUtils}, and reflection- and ASM-based
  * {@link io.basc.framework.core.type.AnnotationMetadata} implementations.
  *
  * <p>

@@ -52,7 +52,7 @@ public class ExceptionConvertStreamProcessor<SE extends Throwable, T, E extends 
 	public void setAutoClose(boolean autoClose) {
 		streamProcessor.setAutoClose(autoClose);
 	}
-	
+
 	@Override
 	public boolean isClosed() {
 		return streamProcessor.isClosed();

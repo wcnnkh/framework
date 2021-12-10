@@ -6,11 +6,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
-public abstract class AbstractLock implements Lock{
+public abstract class AbstractLock implements Lock {
 	private static final long DEFAULT_SLEEP_TIME = Sys.env.getValue("lock.sleep.time", Long.class, 1L);
-	
+
 	private long sleepTime = DEFAULT_SLEEP_TIME;
-	
+
 	public long getSleepTime() {
 		return sleepTime;
 	}
@@ -19,8 +19,7 @@ public abstract class AbstractLock implements Lock{
 		this.sleepTime = sleepTime;
 	}
 
-	public boolean tryLock(long period, TimeUnit timeUnit)
-			throws InterruptedException {
+	public boolean tryLock(long period, TimeUnit timeUnit) throws InterruptedException {
 		boolean b = false;
 		while (!(b = tryLock())) {
 			timeUnit.sleep(period);
@@ -44,7 +43,7 @@ public abstract class AbstractLock implements Lock{
 			TimeUnit.MILLISECONDS.sleep(sleepTime);
 		}
 	}
-	
+
 	public Condition newCondition() {
 		throw new UnsupportedOperationException();
 	}

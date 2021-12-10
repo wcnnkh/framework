@@ -17,19 +17,21 @@ import io.basc.framework.core.annotation.AliasFor;
 public @interface ComponentScan {
 	/**
 	 * Alias for {@link #basePackages}.
-	 * <p>Allows for more concise annotation declarations if no other attributes
-	 * are needed &mdash; for example, {@code @ComponentScan("org.my.pkg")}
-	 * instead of {@code @ComponentScan(basePackages = "org.my.pkg")}.
+	 * <p>
+	 * Allows for more concise annotation declarations if no other attributes are
+	 * needed &mdash; for example, {@code @ComponentScan("org.my.pkg")} instead of
+	 * {@code @ComponentScan(basePackages = "org.my.pkg")}.
 	 */
 	@AliasFor("basePackages")
 	String[] value() default {};
 
 	/**
 	 * Base packages to scan for annotated components.
-	 * <p>{@link #value} is an alias for (and mutually exclusive with) this
-	 * attribute.
-	 * <p>Use {@link #basePackageClasses} for a type-safe alternative to
-	 * String-based package names.
+	 * <p>
+	 * {@link #value} is an alias for (and mutually exclusive with) this attribute.
+	 * <p>
+	 * Use {@link #basePackageClasses} for a type-safe alternative to String-based
+	 * package names.
 	 */
 	@AliasFor("value")
 	String[] basePackages() default {};

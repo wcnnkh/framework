@@ -15,7 +15,7 @@ import java.util.Map;
 public class Headers extends AbstractMultiValueMap<String, String> {
 	private static final long serialVersionUID = 1L;
 	public static final Headers EMPTY = new Headers(Collections.emptyMap(), false);
-	
+
 	private Map<String, List<String>> headers;
 	private boolean readyOnly;
 
@@ -23,15 +23,13 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 		if (caseSensitiveKey) {
 			this.headers = new LinkedHashMap<String, List<String>>(8);
 		} else {
-			this.headers = new LinkedCaseInsensitiveMap<List<String>>(8,
-					Locale.ENGLISH);
+			this.headers = new LinkedCaseInsensitiveMap<List<String>>(8, Locale.ENGLISH);
 		}
 	}
 
-	public Headers(Map<String, List<String>> headers,
-			boolean caseSensitiveKey) {
+	public Headers(Map<String, List<String>> headers, boolean caseSensitiveKey) {
 		this(caseSensitiveKey);
-		if(!CollectionUtils.isEmpty(headers)){
+		if (!CollectionUtils.isEmpty(headers)) {
 			putAll(headers);
 		}
 	}
@@ -45,19 +43,18 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 			}
 		} else {
 			if (!(headers instanceof LinkedCaseInsensitiveMap)) {
-				map = new LinkedCaseInsensitiveMap<List<String>>(
-						headers.size(), Locale.ENGLISH);
+				map = new LinkedCaseInsensitiveMap<List<String>>(headers.size(), Locale.ENGLISH);
 				map.putAll(headers);
 			}
 		}
 		this.headers = map;
 	}
-	
+
 	public final boolean isReadyOnly() {
 		return readyOnly;
 	}
-	
-	public final boolean isCaseSensitiveKey(){
+
+	public final boolean isCaseSensitiveKey() {
 		return !(headers instanceof LinkedCaseInsensitiveMap);
 	}
 
@@ -80,8 +77,8 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 	}
 
 	/**
-	 * Return all values of a given header name, even if this header is set
-	 * multiple times.
+	 * Return all values of a given header name, even if this header is set multiple
+	 * times.
 	 */
 	public List<String> getValuesAsList(String headerName, String tokenize) {
 		List<String> values = get(headerName);
@@ -89,8 +86,7 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 			List<String> result = new ArrayList<String>();
 			for (String value : values) {
 				if (value != null) {
-					String[] tokens = StringUtils.tokenizeToArray(value,
-							tokenize);
+					String[] tokens = StringUtils.tokenizeToArray(value, tokenize);
 					for (String token : tokens) {
 						result.add(token);
 					}

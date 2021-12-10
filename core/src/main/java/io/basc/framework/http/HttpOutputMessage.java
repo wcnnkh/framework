@@ -3,8 +3,8 @@ package io.basc.framework.http;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.message.OutputMessage;
 
-public interface HttpOutputMessage extends OutputMessage, HttpMessage{
-	
+public interface HttpOutputMessage extends OutputMessage, HttpMessage {
+
 	default void setContentType(MediaType contentType) {
 		String charsetName = contentType.getCharsetName();
 		if (charsetName == null) {

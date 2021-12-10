@@ -4,12 +4,13 @@ import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.retry.RetryContext;
 import io.basc.framework.retry.RetryOperations;
 
-
 public final class RetrySynchronizationManager {
 
-	private RetrySynchronizationManager() {}
+	private RetrySynchronizationManager() {
+	}
 
-	private static final ThreadLocal<RetryContext> context = new NamedThreadLocal<RetryContext>(RetrySynchronizationManager.class.getSimpleName());
+	private static final ThreadLocal<RetryContext> context = new NamedThreadLocal<RetryContext>(
+			RetrySynchronizationManager.class.getSimpleName());
 
 	/**
 	 * Public accessor for the locally enclosing {@link RetryContext}.
@@ -23,8 +24,8 @@ public final class RetrySynchronizationManager {
 
 	/**
 	 * Method for registering a context - should only be used by
-	 * {@link RetryOperations} implementations to ensure that
-	 * {@link #getContext()} always returns the correct value.
+	 * {@link RetryOperations} implementations to ensure that {@link #getContext()}
+	 * always returns the correct value.
 	 * 
 	 * @param context the new context to register
 	 * @return the old context if there was one

@@ -46,8 +46,7 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 	 * Create a new LinkedCaseInsensitiveMap that stores case-insensitive keys
 	 * according to the given Locale (by default in lower case).
 	 * 
-	 * @param locale
-	 *            the Locale to use for case-insensitive key conversion
+	 * @param locale the Locale to use for case-insensitive key conversion
 	 * @see #convertKey(String)
 	 */
 	public LinkedCaseInsensitiveMap(@Nullable Locale locale) {
@@ -55,12 +54,11 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 	}
 
 	/**
-	 * Create a new LinkedCaseInsensitiveMap that wraps a {@link LinkedHashMap}
-	 * with the given initial capacity and stores case-insensitive keys
-	 * according to the default Locale (by default in lower case).
+	 * Create a new LinkedCaseInsensitiveMap that wraps a {@link LinkedHashMap} with
+	 * the given initial capacity and stores case-insensitive keys according to the
+	 * default Locale (by default in lower case).
 	 * 
-	 * @param initialCapacity
-	 *            the initial capacity
+	 * @param initialCapacity the initial capacity
 	 * @see #convertKey(String)
 	 */
 	public LinkedCaseInsensitiveMap(int initialCapacity) {
@@ -68,14 +66,12 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 	}
 
 	/**
-	 * Create a new LinkedCaseInsensitiveMap that wraps a {@link LinkedHashMap}
-	 * with the given initial capacity and stores case-insensitive keys
-	 * according to the given Locale (by default in lower case).
+	 * Create a new LinkedCaseInsensitiveMap that wraps a {@link LinkedHashMap} with
+	 * the given initial capacity and stores case-insensitive keys according to the
+	 * given Locale (by default in lower case).
 	 * 
-	 * @param initialCapacity
-	 *            the initial capacity
-	 * @param locale
-	 *            the Locale to use for case-insensitive key conversion
+	 * @param initialCapacity the initial capacity
+	 * @param locale          the Locale to use for case-insensitive key conversion
 	 * @see #convertKey(String)
 	 */
 	public LinkedCaseInsensitiveMap(int initialCapacity, @Nullable Locale locale) {
@@ -268,11 +264,10 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 	/**
 	 * Convert the given key to a case-insensitive key.
 	 * <p>
-	 * The default implementation converts the key to lower-case according to
-	 * this Map's Locale.
+	 * The default implementation converts the key to lower-case according to this
+	 * Map's Locale.
 	 * 
-	 * @param key
-	 *            the user-specified key
+	 * @param key the user-specified key
 	 * @return the key to use for storing
 	 * @see String#toLowerCase(Locale)
 	 */
@@ -283,8 +278,7 @@ public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable
 	/**
 	 * Determine whether this map should remove the given eldest entry.
 	 * 
-	 * @param eldest
-	 *            the candidate entry
+	 * @param eldest the candidate entry
 	 * @return {@code true} for removing it, {@code false} for keeping it
 	 * @see LinkedHashMap#removeEldestEntry
 	 */

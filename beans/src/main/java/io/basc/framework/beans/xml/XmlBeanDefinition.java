@@ -33,20 +33,22 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 		this(beanFactory, XmlBeanUtils.getClass(beanNode, true, beanFactory.getClassLoader()), beanNode);
 	}
 
-	public XmlBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> targetClass,
-			Node beanNode) throws Exception {
+	public XmlBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> targetClass, Node beanNode)
+			throws Exception {
 		super(beanFactory, targetClass);
 		Collection<String> names = getFilters(beanNode);
-		if(!CollectionUtils.isEmpty(names)){
-			getMethodInterceptors().addMethodInterceptor(new UnmodifiableMethodInterceptors(new InstanceIterable<MethodInterceptor>(beanFactory, names)));
+		if (!CollectionUtils.isEmpty(names)) {
+			getMethodInterceptors().addMethodInterceptor(
+					new UnmodifiableMethodInterceptors(new InstanceIterable<MethodInterceptor>(beanFactory, names)));
 		}
-		
+
 		NodeList nodeList = beanNode.getChildNodes();
-		ioc.getInit().getIocProcessors().addAll(XmlBeanUtils.getInitMethodIocProcessors(getTargetClass(), nodeList, beanFactory.getClassLoader()));
-		ioc.getDestroy().getIocProcessors()
-				.addAll(XmlBeanUtils.getDestroyMethodIocProcessors(getTargetClass(), nodeList, beanFactory.getClassLoader()));
-		ioc.getDependence().getIocProcessors()
-				.addAll(XmlBeanUtils.getBeanPropertiesIocProcessors(targetClass, nodeList, beanFactory.getClassLoader()));
+		ioc.getInit().getIocProcessors().addAll(
+				XmlBeanUtils.getInitMethodIocProcessors(getTargetClass(), nodeList, beanFactory.getClassLoader()));
+		ioc.getDestroy().getIocProcessors().addAll(
+				XmlBeanUtils.getDestroyMethodIocProcessors(getTargetClass(), nodeList, beanFactory.getClassLoader()));
+		ioc.getDependence().getIocProcessors().addAll(
+				XmlBeanUtils.getBeanPropertiesIocProcessors(targetClass, nodeList, beanFactory.getClassLoader()));
 		this.xmlParameterFactory = new XmlParametersFactory(beanFactory,
 				XmlBeanUtils.getConstructorParameters(nodeList, beanFactory.getClassLoader()));
 		this.id = getId(beanNode);
@@ -55,7 +57,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 		this.names = Arrays.asList(this.names.toArray(new String[0]));
 		this.singleton = XmlBeanUtils.isSingleton(beanNode);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	protected Collection<String> getFilters(Node node) {
 		String filters = DomUtils.getNodeAttributeValue(node, "filters");
@@ -78,7 +80,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 
 	@Override
 	public boolean isSingleton() {
-		return singleton == null? super.isSingleton() : singleton;
+		return singleton == null ? super.isSingleton() : singleton;
 	}
 
 	protected String getId(Node node) {
@@ -92,6 +94,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 	}
 
 	private final AtomicBoolean error = new AtomicBoolean();
+
 	@Override
 	public boolean isInstance() {
 		if (ArrayUtils.isEmpty(xmlParameterFactory.getXmlBeanParameters())) {
@@ -103,9 +106,10 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 				return true;
 			}
 		}
-		
-		if(!error.get() && error.compareAndSet(false, true)){
-			logger.error("not found {} accept parameters {}", this, Arrays.toString(xmlParameterFactory.getXmlBeanParameters()));
+
+		if (!error.get() && error.compareAndSet(false, true)) {
+			logger.error("not found {} accept parameters {}", this,
+					Arrays.toString(xmlParameterFactory.getXmlBeanParameters()));
 		}
 		return false;
 	}
@@ -115,7 +119,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 		if (ArrayUtils.isEmpty(xmlParameterFactory.getXmlBeanParameters())) {
 			return super.create();
 		}
-		
+
 		for (ParameterDescriptors parameterDescriptors : this) {
 			if (xmlParameterFactory.isAccept(parameterDescriptors)) {
 				return create(parameterDescriptors.getTypes(), xmlParameterFactory.getParameters(parameterDescriptors));

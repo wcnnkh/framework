@@ -7,10 +7,10 @@ import java.io.OutputStream;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.util.Assert;
 
-public class StreamCodecUtils {
+public final class StreamCodecUtils {
 	private StreamCodecUtils() {
 	}
-	
+
 	private static class SimpleStreamEncoder implements StreamEncoder {
 		private final Encoder<byte[], byte[]> encoder;
 

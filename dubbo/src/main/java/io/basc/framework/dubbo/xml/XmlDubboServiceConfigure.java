@@ -23,8 +23,7 @@ public class XmlDubboServiceConfigure implements DubboServiceConfigure {
 	private final NoArgsInstanceFactory refInstanceFactory;
 
 	public XmlDubboServiceConfigure(Environment environment, Resource resource,
-			ClassesLoaderFactory classesLoaderFactory,
-			NoArgsInstanceFactory refInstanceFactory) {
+			ClassesLoaderFactory classesLoaderFactory, NoArgsInstanceFactory refInstanceFactory) {
 		this.environment = environment;
 		this.resource = resource;
 		this.classesLoaderFactory = classesLoaderFactory;
@@ -54,14 +53,12 @@ public class XmlDubboServiceConfigure implements DubboServiceConfigure {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public List<ServiceConfig<?>> getServiceConfigList() {
-		List<ServiceConfig> list = read((nodeList) -> XmlDubboUtils
-				.parseServiceConfigList(environment, nodeList, null,
-						refInstanceFactory, classesLoaderFactory));
+		List<ServiceConfig> list = read((nodeList) -> XmlDubboUtils.parseServiceConfigList(environment, nodeList, null,
+				refInstanceFactory, classesLoaderFactory));
 		if (CollectionUtils.isEmpty(list)) {
 			return Collections.emptyList();
 		}
-		return list.stream().map((s) -> (ServiceConfig<?>) s)
-				.collect(Collectors.toList());
+		return list.stream().map((s) -> (ServiceConfig<?>) s).collect(Collectors.toList());
 	}
 
 }

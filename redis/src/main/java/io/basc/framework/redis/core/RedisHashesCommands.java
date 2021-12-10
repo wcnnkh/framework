@@ -189,7 +189,7 @@ public interface RedisHashesCommands<K, V> {
 	 *         fields and their values from the hash.
 	 */
 	List<K> hrandfield(K key, Integer count);
-	
+
 	Map<K, V> hrandfieldWithValue(K key, Integer count);
 
 	/**

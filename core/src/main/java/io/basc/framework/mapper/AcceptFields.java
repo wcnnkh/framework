@@ -27,7 +27,7 @@ public class AcceptFields implements Fields, Serializable {
 	public Class<?> getNextCursorId() {
 		return fields.getNextCursorId();
 	}
-	
+
 	@Override
 	public Stream<Field> stream() {
 		return fields.stream().filter(accept);
@@ -35,7 +35,7 @@ public class AcceptFields implements Fields, Serializable {
 
 	@Override
 	public List<Field> getList() {
-		if(fieldList == null) {
+		if (fieldList == null) {
 			synchronized (this) {
 				fieldList = fields.getList().stream().filter(accept).collect(Collectors.toList());
 			}
@@ -47,7 +47,7 @@ public class AcceptFields implements Fields, Serializable {
 	public boolean hasNext() {
 		return fields.hasNext();
 	}
-	
+
 	@Override
 	public Fields jumpTo(Class<?> cursorId) {
 		Fields fields = this.fields.jumpTo(cursorId);

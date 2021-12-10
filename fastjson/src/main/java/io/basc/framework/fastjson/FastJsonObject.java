@@ -18,7 +18,8 @@ import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
 import io.basc.framework.util.Pair;
 
-public final class FastJsonObject extends AbstractJson<String> implements JsonObject, JSONAware, Serializable, Converter<Entry<String, Object>, Pair<String, JsonElement>> {
+public final class FastJsonObject extends AbstractJson<String>
+		implements JsonObject, JSONAware, Serializable, Converter<Entry<String, Object>, Pair<String, JsonElement>> {
 	private static final long serialVersionUID = 1L;
 	private JSONObject jsonObject;
 
@@ -43,10 +44,10 @@ public final class FastJsonObject extends AbstractJson<String> implements JsonOb
 
 	public JsonElement getValue(String key) {
 		String text = jsonObject.getString(key);
-		if(text == null) {
+		if (text == null) {
 			return getDefaultValue(key);
 		}
-		
+
 		return new FastJsonElement(text);
 	}
 
@@ -73,19 +74,19 @@ public final class FastJsonObject extends AbstractJson<String> implements JsonOb
 	public String toJSONString() {
 		return toJsonString();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return jsonObject.hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		if(obj == null){
+		if (obj == null) {
 			return false;
 		}
-		
-		if(obj instanceof FastJsonObject){
+
+		if (obj instanceof FastJsonObject) {
 			return jsonObject.equals(((FastJsonObject) obj).jsonObject);
 		}
 
@@ -101,7 +102,8 @@ public final class FastJsonObject extends AbstractJson<String> implements JsonOb
 	}
 
 	public Iterator<Pair<String, JsonElement>> iterator() {
-		return new ConvertibleIterator<Entry<String, Object>, Pair<String, JsonElement>>(jsonObject.entrySet().iterator(), this);
+		return new ConvertibleIterator<Entry<String, Object>, Pair<String, JsonElement>>(
+				jsonObject.entrySet().iterator(), this);
 	}
 
 	public Pair<String, JsonElement> convert(Entry<String, Object> k) {

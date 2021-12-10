@@ -19,10 +19,8 @@ public abstract class NestedExceptionUtils {
 	/**
 	 * Build a message for the given base message and root cause.
 	 * 
-	 * @param message
-	 *            the base message
-	 * @param cause
-	 *            the root cause
+	 * @param message the base message
+	 * @param cause   the root cause
 	 * @return the full exception message
 	 */
 	public static String buildMessage(String message, Throwable cause) {
@@ -40,8 +38,7 @@ public abstract class NestedExceptionUtils {
 	/**
 	 * Retrieve the innermost cause of the given exception, if any.
 	 * 
-	 * @param original
-	 *            the original exception to introspect
+	 * @param original the original exception to introspect
 	 * @return the innermost exception, or {@code null} if none
 	 */
 	public static Throwable getRootCause(Throwable original) {
@@ -58,14 +55,13 @@ public abstract class NestedExceptionUtils {
 	}
 
 	/**
-	 * Retrieve the most specific cause of the given exception, that is, either
-	 * the innermost cause (root cause) or the exception itself.
+	 * Retrieve the most specific cause of the given exception, that is, either the
+	 * innermost cause (root cause) or the exception itself.
 	 * <p>
 	 * Differs from {@link #getRootCause} in that it falls back to the original
 	 * exception if there is no root cause.
 	 * 
-	 * @param original
-	 *            the original exception to introspect
+	 * @param original the original exception to introspect
 	 * @return the most specific cause (never {@code null})
 	 */
 	public static Throwable getMostSpecificCause(Throwable original) {
@@ -88,15 +84,13 @@ public abstract class NestedExceptionUtils {
 	}
 
 	public static String getNonEmptyMessage(Throwable error, boolean localized) {
-		String message = localized ? error.getLocalizedMessage() : error
-				.getMessage();
+		String message = localized ? error.getLocalizedMessage() : error.getMessage();
 		while (message == null) {
 			Throwable cause = error.getCause();
 			if (cause == null) {
 				break;
 			}
-			message = localized ? cause.getLocalizedMessage() : cause
-					.getMessage();
+			message = localized ? cause.getLocalizedMessage() : cause.getMessage();
 		}
 		return message;
 	}

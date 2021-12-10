@@ -17,15 +17,12 @@ public class DataBaseDefinition extends DefaultBeanDefinition {
 
 	@Override
 	public boolean isInstance() {
-		return beanFactory.isInstance(DruidDataSource.class)
-				&& beanFactory.isInstance(DataBaseResolver.class);
+		return beanFactory.isInstance(DruidDataSource.class) && beanFactory.isInstance(DataBaseResolver.class);
 	}
 
 	@Override
 	public Object create() throws InstanceException {
-		DruidDataSource druidDataSource = beanFactory
-				.getInstance(DruidDataSource.class);
-		return DruidUtils.resolve(druidDataSource,
-				beanFactory.getInstance(DataBaseResolver.class));
+		DruidDataSource druidDataSource = beanFactory.getInstance(DruidDataSource.class);
+		return DruidUtils.resolve(druidDataSource, beanFactory.getInstance(DataBaseResolver.class));
 	}
 }

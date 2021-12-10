@@ -58,10 +58,10 @@ public class ObservableMap<K, V> extends SmartMap<K, V> {
 
 		ChangeEvent<Pair<K, V>> event = null;
 		if (v == null) {
-			event = new ChangeEvent<Pair<K,V>>(EventType.CREATE, new Pair<K, V>(key, value));
+			event = new ChangeEvent<Pair<K, V>>(EventType.CREATE, new Pair<K, V>(key, value));
 		} else {
 			if (!v.equals(value)) {
-				event = new ChangeEvent<Pair<K,V>>(EventType.UPDATE, new Pair<K, V>(key, value));
+				event = new ChangeEvent<Pair<K, V>>(EventType.UPDATE, new Pair<K, V>(key, value));
 			}
 		}
 
@@ -74,7 +74,7 @@ public class ObservableMap<K, V> extends SmartMap<K, V> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public V remove(Object key) {
-		K keyToUse = (K)key;
+		K keyToUse = (K) key;
 		V v;
 		if (isConcurrent()) {
 			v = super.remove(keyToUse);
@@ -85,7 +85,8 @@ public class ObservableMap<K, V> extends SmartMap<K, V> {
 		}
 
 		if (v != null) {
-			eventDispatcher.publishEvent(keyToUse, new ChangeEvent<Pair<K,V>>(EventType.CREATE, new Pair<K, V>(keyToUse, v)));
+			eventDispatcher.publishEvent(keyToUse,
+					new ChangeEvent<Pair<K, V>>(EventType.CREATE, new Pair<K, V>(keyToUse, v)));
 		}
 		return v;
 	}
@@ -104,7 +105,8 @@ public class ObservableMap<K, V> extends SmartMap<K, V> {
 		}
 
 		for (Entry<K, V> entry : cloneMap.entrySet()) {
-			getEventDispatcher().publishEvent(entry.getKey(), new ChangeEvent<Pair<K,V>>(EventType.DELETE, new Pair<K, V>(entry.getKey(), entry.getValue())));
+			getEventDispatcher().publishEvent(entry.getKey(),
+					new ChangeEvent<Pair<K, V>>(EventType.DELETE, new Pair<K, V>(entry.getKey(), entry.getValue())));
 		}
 	}
 
@@ -120,7 +122,8 @@ public class ObservableMap<K, V> extends SmartMap<K, V> {
 		}
 
 		if (v != null) {
-			getEventDispatcher().publishEvent(key, new ChangeEvent<Pair<K,V>>(EventType.CREATE, new Pair<K, V>(key, value)));
+			getEventDispatcher().publishEvent(key,
+					new ChangeEvent<Pair<K, V>>(EventType.CREATE, new Pair<K, V>(key, value)));
 		}
 		return v;
 	}

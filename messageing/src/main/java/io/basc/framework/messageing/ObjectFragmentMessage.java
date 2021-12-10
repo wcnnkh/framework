@@ -1,7 +1,6 @@
 package io.basc.framework.messageing;
 
-public class ObjectFragmentMessage<T> extends AbstractMessage<T> implements
-		FragmentMessage<T> {
+public class ObjectFragmentMessage<T> extends AbstractMessage<T> implements FragmentMessage<T> {
 	private int length;
 	private boolean last;
 

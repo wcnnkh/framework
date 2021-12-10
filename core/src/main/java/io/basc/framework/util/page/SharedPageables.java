@@ -7,7 +7,7 @@ import io.basc.framework.lang.Nullable;
 public class SharedPageables<K, T> extends SharedPageable<K, T> implements Pageables<K, T> {
 	private static final long serialVersionUID = 1L;
 	private Pageables<K, T> pageables;
-	
+
 	public SharedPageables() {
 	}
 
@@ -36,16 +36,16 @@ public class SharedPageables<K, T> extends SharedPageable<K, T> implements Pagea
 		Pageables<K, T> pageables = this.pageables.next();
 		return new SharedPageables<>(pageables);
 	}
-	
+
 	@Override
 	public Stream<? extends Pageables<K, T>> pages() {
 		return pageables.pages();
 	}
-	
+
 	public Pageables<K, T> getPageables() {
 		return pageables;
 	}
-	
+
 	public void setPageables(Pageables<K, T> pageables) {
 		this.pageables = pageables;
 	}

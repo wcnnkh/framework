@@ -16,8 +16,8 @@ public class CharSequenceSplitIterator extends AbstractIterator<CharSequenceSpli
 	private int index;
 	private Supplier<Pair<Integer, CharSequence>> current;
 
-	public CharSequenceSplitIterator(CharSequence charSequence, Collection<? extends CharSequence> filters, int beginIndex,
-			int endIndex) {
+	public CharSequenceSplitIterator(CharSequence charSequence, Collection<? extends CharSequence> filters,
+			int beginIndex, int endIndex) {
 		this.charSequence = charSequence;
 		this.filters = filters;
 		this.index = beginIndex;

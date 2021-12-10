@@ -1,7 +1,6 @@
 package io.basc.framework.sql;
 
-
-public class SimpleSql extends SerializableSql{
+public class SimpleSql extends SerializableSql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;

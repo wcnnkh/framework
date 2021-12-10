@@ -1058,7 +1058,7 @@ public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
 			return commands.psetex(key, milliseconds, value);
 		});
 	}
-	
+
 	@Override
 	default void set(K key, V value) {
 		execute((commands) -> {

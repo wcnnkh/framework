@@ -23,17 +23,17 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 	private static final String TAG_NAME = "bean";
 	private Resource configurationFile;
 
-	public void readConfigurationFile(ConsumerProcessor<NodeList, Throwable> processor){
+	public void readConfigurationFile(ConsumerProcessor<NodeList, Throwable> processor) {
 		XmlBeanUtils.readResourceBeans(getEnvironment(), getConfigurationFile(), processor.toProcessor());
 	}
-	
+
 	public Resource getConfigurationFile() {
-		if(configurationFile == null) {
+		if (configurationFile == null) {
 			String config = getEnvironment().getString(XML_CONFIGURATION);
-			if(StringUtils.isNotEmpty(config)) {
+			if (StringUtils.isNotEmpty(config)) {
 				return getEnvironment().getResource(config);
 			}
-			
+
 			return getEnvironment().getResource(DEFAULT_CONFIG);
 		}
 		return configurationFile;
@@ -145,8 +145,8 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 			}
 
 			if ("mapping".equalsIgnoreCase(node.getNodeName())) {
-				Collection<String> names = Arrays.asList(
-						StringUtils.splitToArray(DomUtils.getRequireNodeAttributeValue(getEnvironment(), node, "name")));
+				Collection<String> names = Arrays.asList(StringUtils
+						.splitToArray(DomUtils.getRequireNodeAttributeValue(getEnvironment(), node, "name")));
 				String id = DomUtils.getRequireNodeAttributeValueOrNodeContent(getEnvironment(), node, "id");
 				for (String name : names) {
 					registerAlias(id, name);

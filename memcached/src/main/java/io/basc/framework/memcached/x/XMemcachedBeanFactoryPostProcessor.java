@@ -20,18 +20,17 @@ import net.rubyeye.xmemcached.transcoders.Transcoder;
 @Provider
 public class XMemcachedBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
-	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)
-			throws BeansException {
+	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
 		BeanDefinition clientDefinition = new MemcachedClientBeanDefinition(beanFactory);
-		if(!beanFactory.containsDefinition(clientDefinition.getId())){
+		if (!beanFactory.containsDefinition(clientDefinition.getId())) {
 			beanFactory.registerDefinition(clientDefinition);
 		}
-		
+
 		BeanDefinition builderDefinition = new XMemcachedClientBuilderBeanDefinition(beanFactory);
-		if(!beanFactory.containsDefinition(builderDefinition.getId())){
+		if (!beanFactory.containsDefinition(builderDefinition.getId())) {
 			beanFactory.registerDefinition(builderDefinition);
-			
-			if(!beanFactory.containsDefinition(MemcachedClientBuilder.class.getName())){
+
+			if (!beanFactory.containsDefinition(MemcachedClientBuilder.class.getName())) {
 				beanFactory.registerAlias(builderDefinition.getId(), MemcachedClientBuilder.class.getName());
 			}
 		}
@@ -79,7 +78,8 @@ public class XMemcachedBeanFactoryPostProcessor implements BeanFactoryPostProces
 		}
 
 		private String getHosts() {
-			String name = beanFactory.getEnvironment().getValue("memcached.hosts.config.name", String.class, "memcached.hosts");
+			String name = beanFactory.getEnvironment().getValue("memcached.hosts.config.name", String.class,
+					"memcached.hosts");
 			return beanFactory.getEnvironment().getString(name);
 		}
 

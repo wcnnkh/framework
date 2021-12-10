@@ -2,8 +2,7 @@ package io.basc.framework.util.stream;
 
 import io.basc.framework.lang.Nullable;
 
-public class NestingProcessor<P, S, T, E extends Throwable> implements
-		Processor<P, T, E> {
+public class NestingProcessor<P, S, T, E extends Throwable> implements Processor<P, T, E> {
 	private final Processor<P, ? extends S, ? extends E> processor;
 	private final Processor<S, ? extends T, ? extends E> nextProcessor;
 	private final ConsumerProcessor<S, ? extends E> closeProcessor;
@@ -22,7 +21,7 @@ public class NestingProcessor<P, S, T, E extends Throwable> implements
 		try {
 			return nextProcessor.process(s);
 		} finally {
-			if(closeProcessor != null){
+			if (closeProcessor != null) {
 				closeProcessor.process(s);
 			}
 		}

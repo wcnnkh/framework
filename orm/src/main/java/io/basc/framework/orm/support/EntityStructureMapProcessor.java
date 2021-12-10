@@ -16,8 +16,7 @@ public abstract class EntityStructureMapProcessor<P extends Property, S, T, E ex
 		this(structore, Sys.env.getConversionService());
 	}
 
-	public EntityStructureMapProcessor(EntityStructure<? extends P> structore,
-			ConversionService conversionService) {
+	public EntityStructureMapProcessor(EntityStructure<? extends P> structore, ConversionService conversionService) {
 		this.structore = structore;
 		this.conversionService = conversionService;
 	}
@@ -25,7 +24,6 @@ public abstract class EntityStructureMapProcessor<P extends Property, S, T, E ex
 	public EntityStructure<? extends P> getStructore() {
 		return structore;
 	}
-
 
 	public ConversionService getConversionService() {
 		return conversionService;

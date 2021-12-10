@@ -16,7 +16,7 @@ public class DefaultSerializerFactory extends SerializerFactory {
 
 	public DefaultSerializerFactory(ClassLoader classLoader) {
 		super(classLoader);
-		addFactory(new HessianAddSerializerFactory(BigDecimal.class,
-				new StringValueSerializer(), new BigDecimalDeserializer()));
+		addFactory(new HessianAddSerializerFactory(BigDecimal.class, new StringValueSerializer(),
+				new BigDecimalDeserializer()));
 	}
 }

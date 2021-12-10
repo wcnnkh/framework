@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-class ByteBufferConversionService extends ConditionalConversionService{
+class ByteBufferConversionService extends ConditionalConversionService {
 
 	private static final TypeDescriptor BYTE_BUFFER_TYPE = TypeDescriptor.valueOf(ByteBuffer.class);
 
@@ -62,8 +62,8 @@ class ByteBufferConversionService extends ConditionalConversionService{
 	}
 
 	private Object convertToByteBuffer(@Nullable Object source, TypeDescriptor sourceType) {
-		byte[] bytes = (byte[]) (source instanceof byte[] ? source :
-				this.getConversionService().convert(source, sourceType, BYTE_ARRAY_TYPE));
+		byte[] bytes = (byte[]) (source instanceof byte[] ? source
+				: this.getConversionService().convert(source, sourceType, BYTE_ARRAY_TYPE));
 
 		if (bytes == null) {
 			return ByteBuffer.wrap(new byte[0]);

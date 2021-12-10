@@ -18,9 +18,10 @@ public @interface Value {
 	Class<? extends ValueProcessor> processor() default SmartValueProcessor.class;
 
 	String charsetName() default "";
-	
+
 	/**
 	 * 是否监听变更
+	 * 
 	 * @return
 	 */
 	boolean listener() default true;

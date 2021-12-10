@@ -33,8 +33,7 @@ public class DirectoryStorage extends TimerTask implements Storage {
 	 * @param exp 单位:秒
 	 */
 	protected DirectoryStorage(long exp) {
-		this(exp, SerializerUtils.getSerializer(),
-				FileUtils.getTempDirectory() + File.separator + "file_cache_" + exp);
+		this(exp, SerializerUtils.getSerializer(), FileUtils.getTempDirectory() + File.separator + "file_cache_" + exp);
 	}
 
 	/**
@@ -282,7 +281,6 @@ public class DirectoryStorage extends TimerTask implements Storage {
 	}
 
 	public static DirectoryStorage create(String cacheDirectorySuffix, int exp) {
-		return new DirectoryStorage(exp,
-				FileUtils.getTempDirectory() + File.separator + cacheDirectorySuffix);
+		return new DirectoryStorage(exp, FileUtils.getTempDirectory() + File.separator + cacheDirectorySuffix);
 	}
 }

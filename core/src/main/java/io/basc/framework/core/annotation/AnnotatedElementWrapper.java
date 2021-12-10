@@ -5,7 +5,7 @@ import io.basc.framework.util.Wrapper;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-public class AnnotatedElementWrapper<A extends AnnotatedElement> extends Wrapper<A> implements AnnotatedElement{
+public class AnnotatedElementWrapper<A extends AnnotatedElement> extends Wrapper<A> implements AnnotatedElement {
 
 	public AnnotatedElementWrapper(A wrappedTarget) {
 		super(wrappedTarget);

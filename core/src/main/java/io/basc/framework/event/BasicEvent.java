@@ -5,11 +5,11 @@ import java.io.Serializable;
 import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.TimeUtils;
 
-public class BasicEvent implements Event, Serializable{
+public class BasicEvent implements Event, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final long createTime;
-	
-	public BasicEvent(){
+
+	public BasicEvent() {
 		this(System.currentTimeMillis());
 	}
 
@@ -20,7 +20,7 @@ public class BasicEvent implements Event, Serializable{
 	public BasicEvent(long createTime) {
 		this.createTime = createTime;
 	}
-	
+
 	public final long getCreateTime() {
 		return createTime;
 	}

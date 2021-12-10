@@ -64,7 +64,7 @@ import java.util.regex.Pattern;
 public class HttpHeaders extends Headers {
 	private static Logger logger = LoggerFactory.getLogger(HttpHeaders.class);
 	private static final long serialVersionUID = -8578554704772377436L;
-	
+
 	public static final HttpHeaders EMPTY = new HttpHeaders(Collections.emptyMap());
 
 	/**
@@ -98,13 +98,12 @@ public class HttpHeaders extends Headers {
 	/**
 	 * The HTTP {@code Accept-Ranges} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7233#section-2.3">Section
-	 *      5.3.5 of RFC 7233</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7233#section-2.3">Section 5.3.5
+	 *      of RFC 7233</a>
 	 */
 	public static final String ACCEPT_RANGES = "Accept-Ranges";
 	/**
-	 * The CORS {@code Access-Control-Allow-Credentials} response header field
-	 * name.
+	 * The CORS {@code Access-Control-Allow-Credentials} response header field name.
 	 * 
 	 * @see <a href="https://www.w3.org/TR/cors/">CORS W3C recommendation</a>
 	 */
@@ -128,8 +127,7 @@ public class HttpHeaders extends Headers {
 	 */
 	public static final String ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
 	/**
-	 * The CORS {@code Access-Control-Expose-Headers} response header field
-	 * name.
+	 * The CORS {@code Access-Control-Expose-Headers} response header field name.
 	 * 
 	 * @see <a href="https://www.w3.org/TR/cors/">CORS W3C recommendation</a>
 	 */
@@ -141,8 +139,7 @@ public class HttpHeaders extends Headers {
 	 */
 	public static final String ACCESS_CONTROL_MAX_AGE = "Access-Control-Max-Age";
 	/**
-	 * The CORS {@code Access-Control-Request-Headers} request header field
-	 * name.
+	 * The CORS {@code Access-Control-Request-Headers} request header field name.
 	 * 
 	 * @see <a href="https://www.w3.org/TR/cors/">CORS W3C recommendation</a>
 	 */
@@ -156,8 +153,8 @@ public class HttpHeaders extends Headers {
 	/**
 	 * The HTTP {@code Age} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7234#section-5.1">Section
-	 *      5.1 of RFC 7234</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7234#section-5.1">Section 5.1 of
+	 *      RFC 7234</a>
 	 */
 	public static final String AGE = "Age";
 	/**
@@ -170,29 +167,28 @@ public class HttpHeaders extends Headers {
 	/**
 	 * The HTTP {@code Authorization} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7235#section-4.2">Section
-	 *      4.2 of RFC 7235</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7235#section-4.2">Section 4.2 of
+	 *      RFC 7235</a>
 	 */
 	public static final String AUTHORIZATION = "Authorization";
 	/**
 	 * The HTTP {@code Cache-Control} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7234#section-5.2">Section
-	 *      5.2 of RFC 7234</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7234#section-5.2">Section 5.2 of
+	 *      RFC 7234</a>
 	 */
 	public static final String CACHE_CONTROL = "Cache-Control";
 	/**
 	 * The HTTP {@code Connection} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7230#section-6.1">Section
-	 *      6.1 of RFC 7230</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7230#section-6.1">Section 6.1 of
+	 *      RFC 7230</a>
 	 */
 	public static final String CONNECTION = "Connection";
 	/**
 	 * The HTTP {@code Content-Encoding} header field name.
 	 * 
-	 * @see <a href=
-	 *      "https://tools.ietf.org/html/rfc7231#section-3.1.2.2">Section
+	 * @see <a href= "https://tools.ietf.org/html/rfc7231#section-3.1.2.2">Section
 	 *      3.1.2.2 of RFC 7231</a>
 	 */
 	public static final String CONTENT_ENCODING = "Content-Encoding";
@@ -205,8 +201,7 @@ public class HttpHeaders extends Headers {
 	/**
 	 * The HTTP {@code Content-Language} header field name.
 	 * 
-	 * @see <a href=
-	 *      "https://tools.ietf.org/html/rfc7231#section-3.1.3.2">Section
+	 * @see <a href= "https://tools.ietf.org/html/rfc7231#section-3.1.3.2">Section
 	 *      3.1.3.2 of RFC 7231</a>
 	 */
 	public static final String CONTENT_LANGUAGE = "Content-Language";
@@ -220,23 +215,21 @@ public class HttpHeaders extends Headers {
 	/**
 	 * The HTTP {@code Content-Location} header field name.
 	 * 
-	 * @see <a href=
-	 *      "https://tools.ietf.org/html/rfc7231#section-3.1.4.2">Section
+	 * @see <a href= "https://tools.ietf.org/html/rfc7231#section-3.1.4.2">Section
 	 *      3.1.4.2 of RFC 7231</a>
 	 */
 	public static final String CONTENT_LOCATION = "Content-Location";
 	/**
 	 * The HTTP {@code Content-Range} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7233#section-4.2">Section
-	 *      4.2 of RFC 7233</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7233#section-4.2">Section 4.2 of
+	 *      RFC 7233</a>
 	 */
 	public static final String CONTENT_RANGE = "Content-Range";
 	/**
 	 * The HTTP {@code Content-Type} header field name.
 	 * 
-	 * @see <a href=
-	 *      "https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Section
+	 * @see <a href= "https://tools.ietf.org/html/rfc7231#section-3.1.1.5">Section
 	 *      3.1.1.5 of RFC 7231</a>
 	 */
 	public static final String CONTENT_TYPE = "Content-Type";
@@ -250,16 +243,15 @@ public class HttpHeaders extends Headers {
 	/**
 	 * The HTTP {@code Date} header field name.
 	 * 
-	 * @see <a href=
-	 *      "https://tools.ietf.org/html/rfc7231#section-7.1.1.2">Section
+	 * @see <a href= "https://tools.ietf.org/html/rfc7231#section-7.1.1.2">Section
 	 *      7.1.1.2 of RFC 7231</a>
 	 */
 	public static final String DATE = "Date";
 	/**
 	 * The HTTP {@code ETag} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7232#section-2.3">Section
-	 *      2.3 of RFC 7232</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7232#section-2.3">Section 2.3 of
+	 *      RFC 7232</a>
 	 */
 	public static final String ETAG = "ETag";
 	/**
@@ -272,8 +264,8 @@ public class HttpHeaders extends Headers {
 	/**
 	 * The HTTP {@code Expires} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7234#section-5.3">Section
-	 *      5.3 of RFC 7234</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7234#section-5.3">Section 5.3 of
+	 *      RFC 7234</a>
 	 */
 	public static final String EXPIRES = "Expires";
 	/**
@@ -286,50 +278,50 @@ public class HttpHeaders extends Headers {
 	/**
 	 * The HTTP {@code Host} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7230#section-5.4">Section
-	 *      5.4 of RFC 7230</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7230#section-5.4">Section 5.4 of
+	 *      RFC 7230</a>
 	 */
 	public static final String HOST = "Host";
 	/**
 	 * The HTTP {@code If-Match} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7232#section-3.1">Section
-	 *      3.1 of RFC 7232</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7232#section-3.1">Section 3.1 of
+	 *      RFC 7232</a>
 	 */
 	public static final String IF_MATCH = "If-Match";
 	/**
 	 * The HTTP {@code If-Modified-Since} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7232#section-3.3">Section
-	 *      3.3 of RFC 7232</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7232#section-3.3">Section 3.3 of
+	 *      RFC 7232</a>
 	 */
 	public static final String IF_MODIFIED_SINCE = "If-Modified-Since";
 	/**
 	 * The HTTP {@code If-None-Match} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7232#section-3.2">Section
-	 *      3.2 of RFC 7232</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7232#section-3.2">Section 3.2 of
+	 *      RFC 7232</a>
 	 */
 	public static final String IF_NONE_MATCH = "If-None-Match";
 	/**
 	 * The HTTP {@code If-Range} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7233#section-3.2">Section
-	 *      3.2 of RFC 7233</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7233#section-3.2">Section 3.2 of
+	 *      RFC 7233</a>
 	 */
 	public static final String IF_RANGE = "If-Range";
 	/**
 	 * The HTTP {@code If-Unmodified-Since} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7232#section-3.4">Section
-	 *      3.4 of RFC 7232</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7232#section-3.4">Section 3.4 of
+	 *      RFC 7232</a>
 	 */
 	public static final String IF_UNMODIFIED_SINCE = "If-Unmodified-Since";
 	/**
 	 * The HTTP {@code Last-Modified} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7232#section-2.2">Section
-	 *      2.2 of RFC 7232</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7232#section-2.2">Section 2.2 of
+	 *      RFC 7232</a>
 	 */
 	public static final String LAST_MODIFIED = "Last-Modified";
 	/**
@@ -361,29 +353,29 @@ public class HttpHeaders extends Headers {
 	/**
 	 * The HTTP {@code Pragma} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7234#section-5.4">Section
-	 *      5.4 of RFC 7234</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7234#section-5.4">Section 5.4 of
+	 *      RFC 7234</a>
 	 */
 	public static final String PRAGMA = "Pragma";
 	/**
 	 * The HTTP {@code Proxy-Authenticate} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7235#section-4.3">Section
-	 *      4.3 of RFC 7235</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7235#section-4.3">Section 4.3 of
+	 *      RFC 7235</a>
 	 */
 	public static final String PROXY_AUTHENTICATE = "Proxy-Authenticate";
 	/**
 	 * The HTTP {@code Proxy-Authorization} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7235#section-4.4">Section
-	 *      4.4 of RFC 7235</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7235#section-4.4">Section 4.4 of
+	 *      RFC 7235</a>
 	 */
 	public static final String PROXY_AUTHORIZATION = "Proxy-Authorization";
 	/**
 	 * The HTTP {@code Range} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7233#section-3.1">Section
-	 *      3.1 of RFC 7233</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7233#section-3.1">Section 3.1 of
+	 *      RFC 7233</a>
 	 */
 	public static final String RANGE = "Range";
 	/**
@@ -423,15 +415,15 @@ public class HttpHeaders extends Headers {
 	/**
 	 * The HTTP {@code TE} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7230#section-4.3">Section
-	 *      4.3 of RFC 7230</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7230#section-4.3">Section 4.3 of
+	 *      RFC 7230</a>
 	 */
 	public static final String TE = "TE";
 	/**
 	 * The HTTP {@code Trailer} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7230#section-4.4">Section
-	 *      4.4 of RFC 7230</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7230#section-4.4">Section 4.4 of
+	 *      RFC 7230</a>
 	 */
 	public static final String TRAILER = "Trailer";
 	/**
@@ -444,8 +436,8 @@ public class HttpHeaders extends Headers {
 	/**
 	 * The HTTP {@code Upgrade} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7230#section-6.7">Section
-	 *      6.7 of RFC 7230</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7230#section-6.7">Section 6.7 of
+	 *      RFC 7230</a>
 	 */
 	public static final String UPGRADE = "Upgrade";
 	/**
@@ -472,24 +464,24 @@ public class HttpHeaders extends Headers {
 	/**
 	 * The HTTP {@code Warning} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7234#section-5.5">Section
-	 *      5.5 of RFC 7234</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7234#section-5.5">Section 5.5 of
+	 *      RFC 7234</a>
 	 */
 	public static final String WARNING = "Warning";
 	/**
 	 * The HTTP {@code WWW-Authenticate} header field name.
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7235#section-4.1">Section
-	 *      4.1 of RFC 7235</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7235#section-4.1">Section 4.1 of
+	 *      RFC 7235</a>
 	 */
 	public static final String WWW_AUTHENTICATE = "WWW-Authenticate";
 
 	/**
-	 * Pattern matching ETag multiple field values in headers such as
-	 * "If-Match", "If-None-Match".
+	 * Pattern matching ETag multiple field values in headers such as "If-Match",
+	 * "If-None-Match".
 	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc7232#section-2.3">Section
-	 *      2.3 of RFC 7232</a>
+	 * @see <a href="https://tools.ietf.org/html/rfc7232#section-2.3">Section 2.3 of
+	 *      RFC 7232</a>
 	 */
 	private static final Pattern ETAG_HEADER_VALUE_PATTERN = Pattern.compile("\\*|\\s*((W\\/)?(\"[^\"]*\"))\\s*,?");
 
@@ -498,8 +490,7 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Date formats as specified in the HTTP RFC.
 	 * 
-	 * @see <a href=
-	 *      "https://tools.ietf.org/html/rfc7231#section-7.1.1.1">Section
+	 * @see <a href= "https://tools.ietf.org/html/rfc7231#section-7.1.1.1">Section
 	 *      7.1.1.1 of RFC 7231</a>
 	 */
 	private static final String[] DATE_FORMATS = new String[] { "EEE, dd MMM yyyy HH:mm:ss zzz",
@@ -510,43 +501,44 @@ public class HttpHeaders extends Headers {
 	public static final String X_REAL_IP = "X-Real-Ip";
 
 	public static final String X_FORWARDED_FOR = "X-Forwarded-For";
-	
-	private static final Converter<Properties, Map<String, String[]>> CONVERTER = new Converter<Properties, Map<String,String[]>>() {
-		public java.util.Map<String,String[]> convert(Properties properties) {
-			if(CollectionUtils.isEmpty(properties)){
+
+	private static final Converter<Properties, Map<String, String[]>> CONVERTER = new Converter<Properties, Map<String, String[]>>() {
+		public java.util.Map<String, String[]> convert(Properties properties) {
+			if (CollectionUtils.isEmpty(properties)) {
 				return Collections.emptyMap();
 			}
-			
+
 			LinkedHashMap<String, String[]> map = new LinkedHashMap<String, String[]>();
-			for(Entry<Object, Object> entry : properties.entrySet()){
+			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();
 				Object value = entry.getValue();
-				if(key == null || value == null){
+				if (key == null || value == null) {
 					continue;
 				}
-				
+
 				String[] values = StringUtils.splitToArray(String.valueOf(value));
-				if(ArrayUtils.isEmpty(values)){
+				if (ArrayUtils.isEmpty(values)) {
 					continue;
 				}
-				
+
 				map.put(String.valueOf(key), values);
 			}
-			
-			if(map.isEmpty()){
+
+			if (map.isEmpty()) {
 				return Collections.emptyMap();
 			}
-			
+
 			return Collections.unmodifiableMap(map);
 		};
 	};
-	
-	private static final ConvertibleObservableProperties<Map<String, String[]>> AJAX_HEADERS = new ConvertibleObservableProperties<Map<String, String[]>>(CONVERTER);
-	
+
+	private static final ConvertibleObservableProperties<Map<String, String[]>> AJAX_HEADERS = new ConvertibleObservableProperties<Map<String, String[]>>(
+			CONVERTER);
+
 	static {
 		AJAX_HEADERS.combine(Sys.env.getProperties("/io/basc/framework/net/headers/ajax.headers.properties"));
-		AJAX_HEADERS.combine(Sys.env.getProperties(Sys.env.getValue("io.basc.framework.net.ajax.headers", String.class,
-				"/ajax-headers.properties")));
+		AJAX_HEADERS.combine(Sys.env.getProperties(
+				Sys.env.getValue("io.basc.framework.net.ajax.headers", String.class, "/ajax-headers.properties")));
 	}
 
 	public HttpHeaders() {
@@ -558,8 +550,8 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Set the list of acceptable {@linkplain MediaType media types}, as
-	 * specified by the {@code Accept} header.
+	 * Set the list of acceptable {@linkplain MediaType media types}, as specified
+	 * by the {@code Accept} header.
 	 */
 	public void setAccept(List<MediaType> acceptableMediaTypes) {
 		set(ACCEPT, MediaType.toString(acceptableMediaTypes));
@@ -576,8 +568,8 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Set the (new) value of the {@code Access-Control-Allow-Credentials}
-	 * response header.
+	 * Set the (new) value of the {@code Access-Control-Allow-Credentials} response
+	 * header.
 	 */
 	public void setAccessControlAllowCredentials(boolean allowCredentials) {
 		set(ACCESS_CONTROL_ALLOW_CREDENTIALS, Boolean.toString(allowCredentials));
@@ -600,8 +592,7 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Return the value of the {@code Access-Control-Allow-Headers} response
-	 * header.
+	 * Return the value of the {@code Access-Control-Allow-Headers} response header.
 	 */
 	public List<String> getAccessControlAllowHeaders() {
 		return getValuesAsList(ACCESS_CONTROL_ALLOW_HEADERS);
@@ -616,8 +607,7 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Return the value of the {@code Access-Control-Allow-Methods} response
-	 * header.
+	 * Return the value of the {@code Access-Control-Allow-Methods} response header.
 	 */
 	public List<HttpMethod> getAccessControlAllowMethods() {
 		List<HttpMethod> result = new ArrayList<HttpMethod>();
@@ -643,8 +633,7 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Return the value of the {@code Access-Control-Allow-Origin} response
-	 * header.
+	 * Return the value of the {@code Access-Control-Allow-Origin} response header.
 	 */
 	public String getAccessControlAllowOrigin() {
 		return getFieldValues(ACCESS_CONTROL_ALLOW_ORIGIN);
@@ -667,8 +656,7 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Set the (new) value of the {@code Access-Control-Max-Age} response
-	 * header.
+	 * Set the (new) value of the {@code Access-Control-Max-Age} response header.
 	 */
 	public void setAccessControlMaxAge(long maxAge) {
 		set(ACCESS_CONTROL_MAX_AGE, Long.toString(maxAge));
@@ -709,16 +697,15 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Return the value of the {@code Access-Control-Request-Method} request
-	 * header.
+	 * Return the value of the {@code Access-Control-Request-Method} request header.
 	 */
 	public HttpMethod getAccessControlRequestMethod() {
 		return HttpMethod.resolve(getFirst(ACCESS_CONTROL_REQUEST_METHOD));
 	}
 
 	/**
-	 * Set the list of acceptable {@linkplain Charset charsets}, as specified by
-	 * the {@code Accept-Charset} header.
+	 * Set the list of acceptable {@linkplain Charset charsets}, as specified by the
+	 * {@code Accept-Charset} header.
 	 */
 	public void setAcceptCharset(List<Charset> acceptableCharsets) {
 		StringBuilder builder = new StringBuilder();
@@ -733,8 +720,8 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Return the list of acceptable {@linkplain Charset charsets}, as specified
-	 * by the {@code Accept-Charset} header.
+	 * Return the list of acceptable {@linkplain Charset charsets}, as specified by
+	 * the {@code Accept-Charset} header.
 	 */
 	public List<Charset> getAcceptCharset() {
 		String value = getFirst(ACCEPT_CHARSET);
@@ -760,16 +747,16 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Set the set of allowed {@link HttpMethod HTTP methods}, as specified by
-	 * the {@code Allow} header.
+	 * Set the set of allowed {@link HttpMethod HTTP methods}, as specified by the
+	 * {@code Allow} header.
 	 */
 	public void setAllow(Set<HttpMethod> allowedMethods) {
 		set(ALLOW, StringUtils.collectionToCommaDelimitedString(allowedMethods));
 	}
 
 	/**
-	 * Return the set of allowed {@link HttpMethod HTTP methods}, as specified
-	 * by the {@code Allow} header.
+	 * Return the set of allowed {@link HttpMethod HTTP methods}, as specified by
+	 * the {@code Allow} header.
 	 * <p>
 	 * Returns an empty set when the allowed methods are unspecified.
 	 */
@@ -829,10 +816,8 @@ public class HttpHeaders extends Headers {
 	 * Set the {@code Content-Disposition} header when creating a
 	 * {@code "multipart/form-data"} request.
 	 * 
-	 * @param name
-	 *            the control name
-	 * @param filename
-	 *            the filename (may be {@code null})
+	 * @param name     the control name
+	 * @param filename the filename (may be {@code null})
 	 */
 	public void setContentDispositionFormData(String name, String filename) {
 		Assert.notNull(name, "'name' must not be null");
@@ -848,9 +833,8 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Set the {@literal Content-Disposition} header.
 	 * <p>
-	 * This could be used on a response to indicate if the content is expected
-	 * to be displayed inline in the browser or as an attachment to be saved
-	 * locally.
+	 * This could be used on a response to indicate if the content is expected to be
+	 * displayed inline in the browser or as an attachment to be saved locally.
 	 * <p>
 	 * It can also be used for a {@code "multipart/form-data"} request. For more
 	 * details see notes on {@link #setContentDispositionFormData}.
@@ -862,8 +846,7 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Return a parsed representation of the {@literal Content-Disposition}
-	 * header.
+	 * Return a parsed representation of the {@literal Content-Disposition} header.
 	 * 
 	 * @see #setContentDisposition(ContentDisposition)
 	 */
@@ -895,23 +878,23 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Set the {@linkplain MediaType media type} of the body, as specified by
-	 * the {@code Content-Type} header.
+	 * Set the {@linkplain MediaType media type} of the body, as specified by the
+	 * {@code Content-Type} header.
 	 */
 	public void setContentType(MediaType mediaType) {
-		if(mediaType == null) {
+		if (mediaType == null) {
 			remove(CONTENT_TYPE);
-			return ;
+			return;
 		}
-		
+
 		Assert.isTrue(!mediaType.isWildcardType(), "Content-Type cannot contain wildcard type '*'");
 		Assert.isTrue(!mediaType.isWildcardSubtype(), "Content-Type cannot contain wildcard subtype '*'");
 		set(CONTENT_TYPE, mediaType.toString());
 	}
 
 	/**
-	 * Return the {@linkplain MediaType media type} of the body, as specified by
-	 * the {@code Content-Type} header.
+	 * Return the {@linkplain MediaType media type} of the body, as specified by the
+	 * {@code Content-Type} header.
 	 * <p>
 	 * Returns {@code null} when the content-type is unknown.
 	 */
@@ -921,25 +904,24 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Set the date and time at which the message was created, as specified by
-	 * the {@code Date} header.
+	 * Set the date and time at which the message was created, as specified by the
+	 * {@code Date} header.
 	 * <p>
-	 * The date should be specified as the number of milliseconds since January
-	 * 1, 1970 GMT.
+	 * The date should be specified as the number of milliseconds since January 1,
+	 * 1970 GMT.
 	 */
 	public void setDate(long date) {
 		setDate(DATE, date);
 	}
 
 	/**
-	 * Return the date and time at which the message was created, as specified
-	 * by the {@code Date} header.
+	 * Return the date and time at which the message was created, as specified by
+	 * the {@code Date} header.
 	 * <p>
-	 * The date is returned as the number of milliseconds since January 1, 1970
-	 * GMT. Returns -1 when the date is unknown.
+	 * The date is returned as the number of milliseconds since January 1, 1970 GMT.
+	 * Returns -1 when the date is unknown.
 	 * 
-	 * @throws IllegalArgumentException
-	 *             if the value cannot be converted to a date
+	 * @throws IllegalArgumentException if the value cannot be converted to a date
 	 */
 	public long getDate() {
 		return getFirstDate(DATE);
@@ -958,19 +940,18 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Return the entity tag of the body, as specified by the {@code ETag}
-	 * header.
+	 * Return the entity tag of the body, as specified by the {@code ETag} header.
 	 */
 	public String getETag() {
 		return getFirst(ETAG);
 	}
 
 	/**
-	 * Set the date and time at which the message is no longer valid, as
-	 * specified by the {@code Expires} header.
+	 * Set the date and time at which the message is no longer valid, as specified
+	 * by the {@code Expires} header.
 	 * <p>
-	 * The date should be specified as the number of milliseconds since January
-	 * 1, 1970 GMT.
+	 * The date should be specified as the number of milliseconds since January 1,
+	 * 1970 GMT.
 	 */
 	public void setExpires(long expires) {
 		setDate(EXPIRES, expires);
@@ -980,8 +961,8 @@ public class HttpHeaders extends Headers {
 	 * Return the date and time at which the message is no longer valid, as
 	 * specified by the {@code Expires} header.
 	 * <p>
-	 * The date is returned as the number of milliseconds since January 1, 1970
-	 * GMT. Returns -1 when the date is unknown.
+	 * The date is returned as the number of milliseconds since January 1, 1970 GMT.
+	 * Returns -1 when the date is unknown.
 	 */
 	public long getExpires() {
 		return getFirstDate(EXPIRES, false);
@@ -1014,8 +995,8 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Set the (new) value of the {@code If-Modified-Since} header.
 	 * <p>
-	 * The date should be specified as the number of milliseconds since January
-	 * 1, 1970 GMT.
+	 * The date should be specified as the number of milliseconds since January 1,
+	 * 1970 GMT.
 	 */
 	public void setIfModifiedSince(long ifModifiedSince) {
 		setDate(IF_MODIFIED_SINCE, ifModifiedSince);
@@ -1024,8 +1005,8 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Return the value of the {@code If-Modified-Since} header.
 	 * <p>
-	 * The date is returned as the number of milliseconds since January 1, 1970
-	 * GMT. Returns -1 when the date is unknown.
+	 * The date is returned as the number of milliseconds since January 1, 1970 GMT.
+	 * Returns -1 when the date is unknown.
 	 */
 	public long getIfModifiedSince() {
 		return getFirstDate(IF_MODIFIED_SINCE, false);
@@ -1055,8 +1036,8 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Set the (new) value of the {@code If-Unmodified-Since} header.
 	 * <p>
-	 * The date should be specified as the number of milliseconds since January
-	 * 1, 1970 GMT.
+	 * The date should be specified as the number of milliseconds since January 1,
+	 * 1970 GMT.
 	 * 
 	 */
 	public void setIfUnmodifiedSince(long ifUnmodifiedSince) {
@@ -1066,8 +1047,8 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Return the value of the {@code If-Unmodified-Since} header.
 	 * <p>
-	 * The date is returned as the number of milliseconds since January 1, 1970
-	 * GMT. Returns -1 when the date is unknown.
+	 * The date is returned as the number of milliseconds since January 1, 1970 GMT.
+	 * Returns -1 when the date is unknown.
 	 * 
 	 */
 	public long getIfUnmodifiedSince() {
@@ -1078,8 +1059,8 @@ public class HttpHeaders extends Headers {
 	 * Set the time the resource was last changed, as specified by the
 	 * {@code Last-Modified} header.
 	 * <p>
-	 * The date should be specified as the number of milliseconds since January
-	 * 1, 1970 GMT.
+	 * The date should be specified as the number of milliseconds since January 1,
+	 * 1970 GMT.
 	 */
 	public void setLastModified(long lastModified) {
 		setDate(LAST_MODIFIED, lastModified);
@@ -1089,24 +1070,24 @@ public class HttpHeaders extends Headers {
 	 * Return the time the resource was last changed, as specified by the
 	 * {@code Last-Modified} header.
 	 * <p>
-	 * The date is returned as the number of milliseconds since January 1, 1970
-	 * GMT. Returns -1 when the date is unknown.
+	 * The date is returned as the number of milliseconds since January 1, 1970 GMT.
+	 * Returns -1 when the date is unknown.
 	 */
 	public long getLastModified() {
 		return getFirstDate(LAST_MODIFIED, false);
 	}
 
 	/**
-	 * Set the (new) location of a resource, as specified by the
-	 * {@code Location} header.
+	 * Set the (new) location of a resource, as specified by the {@code Location}
+	 * header.
 	 */
 	public void setLocation(URI location) {
 		set(LOCATION, location.toASCIIString());
 	}
 
 	/**
-	 * Return the (new) location of a resource as specified by the
-	 * {@code Location} header.
+	 * Return the (new) location of a resource as specified by the {@code Location}
+	 * header.
 	 * <p>
 	 * Returns {@code null} when the location is unknown.
 	 */
@@ -1176,12 +1157,11 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Set the request header names (e.g. "Accept-Language") for which the
-	 * response is subject to content negotiation and variances based on the
-	 * value of those request headers.
+	 * Set the request header names (e.g. "Accept-Language") for which the response
+	 * is subject to content negotiation and variances based on the value of those
+	 * request headers.
 	 * 
-	 * @param requestHeaders
-	 *            the request header names
+	 * @param requestHeaders the request header names
 	 */
 	public void setVary(List<String> requestHeaders) {
 		set(VARY, toCommaDelimitedString(requestHeaders));
@@ -1208,12 +1188,11 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Parse the first header value for the given header name as a date, return
-	 * -1 if there is no value, or raise {@link IllegalArgumentException} if the
-	 * value cannot be parsed as a date.
+	 * Parse the first header value for the given header name as a date, return -1
+	 * if there is no value, or raise {@link IllegalArgumentException} if the value
+	 * cannot be parsed as a date.
 	 * 
-	 * @param headerName
-	 *            the header name
+	 * @param headerName the header name
 	 * @return the parsed date header, or -1 if none
 	 */
 	public long getFirstDate(String headerName) {
@@ -1221,17 +1200,15 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Parse the first header value for the given header name as a date, return
-	 * -1 if there is no value or also in case of an invalid value (if
-	 * {@code rejectInvalid=false}), or raise {@link IllegalArgumentException}
-	 * if the value cannot be parsed as a date.
+	 * Parse the first header value for the given header name as a date, return -1
+	 * if there is no value or also in case of an invalid value (if
+	 * {@code rejectInvalid=false}), or raise {@link IllegalArgumentException} if
+	 * the value cannot be parsed as a date.
 	 * 
-	 * @param headerName
-	 *            the header name
-	 * @param rejectInvalid
-	 *            whether to reject invalid values with an
-	 *            {@link IllegalArgumentException} ({@code true}) or rather
-	 *            return -1 in that case ({@code false})
+	 * @param headerName    the header name
+	 * @param rejectInvalid whether to reject invalid values with an
+	 *                      {@link IllegalArgumentException} ({@code true}) or
+	 *                      rather return -1 in that case ({@code false})
 	 * @return the parsed date header, or -1 if none (or invalid)
 	 */
 	private long getFirstDate(String headerName, boolean rejectInvalid) {
@@ -1263,8 +1240,8 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Return all values of a given header name, even if this header is set
-	 * multiple times.
+	 * Return all values of a given header name, even if this header is set multiple
+	 * times.
 	 */
 	public List<String> getValuesAsList(String headerName) {
 		return getValuesAsList(headerName, ",");
@@ -1273,8 +1250,7 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Retrieve a combined result from the field values of the ETag header.
 	 * 
-	 * @param headerName
-	 *            the header name
+	 * @param headerName the header name
 	 * @return the combined result
 	 */
 	protected List<String> getETagValuesAsList(String headerName) {
@@ -1305,8 +1281,7 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Retrieve a combined result from the field values of multi-valued headers.
 	 * 
-	 * @param headerName
-	 *            the header name
+	 * @param headerName the header name
 	 * @return the combined result
 	 */
 	protected String getFieldValues(String headerName) {
@@ -1317,8 +1292,7 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Turn the given list of header values into a comma-delimited result.
 	 * 
-	 * @param headerValues
-	 *            the list of header values
+	 * @param headerValues the list of header values
 	 * @return a combined result with comma delimitation
 	 */
 	protected String toCommaDelimitedString(List<String> headerValues) {
@@ -1338,8 +1312,7 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Return the first header value for the given header name, if any.
 	 * 
-	 * @param headerName
-	 *            the header name
+	 * @param headerName the header name
 	 * @return the first header value, or {@code null} if none
 	 */
 	public String getFirst(String headerName) {
@@ -1353,12 +1326,9 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Add the given, single header value under the given name.
 	 * 
-	 * @param headerName
-	 *            the header name
-	 * @param headerValue
-	 *            the header value
-	 * @throws UnsupportedOperationException
-	 *             if adding headers is not supported
+	 * @param headerName  the header name
+	 * @param headerValue the header value
+	 * @throws UnsupportedOperationException if adding headers is not supported
 	 * @see #put(String, List)
 	 * @see #set(String, String)
 	 */
@@ -1374,12 +1344,9 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Set the given, single header value under the given name.
 	 * 
-	 * @param headerName
-	 *            the header name
-	 * @param headerValue
-	 *            the header value
-	 * @throws UnsupportedOperationException
-	 *             if adding headers is not supported
+	 * @param headerName  the header name
+	 * @param headerValue the header value
+	 * @throws UnsupportedOperationException if adding headers is not supported
 	 * @see #put(String, List)
 	 * @see #add(String, String)
 	 */
@@ -1519,17 +1486,17 @@ public class HttpHeaders extends Headers {
 		return null;
 	}
 
-	public void addHeaders(String ...headers) throws IllegalStateException{
-		for(String header : headers){
-			if(StringUtils.isEmpty(header)){
+	public void addHeaders(String... headers) throws IllegalStateException {
+		for (String header : headers) {
+			if (StringUtils.isEmpty(header)) {
 				continue;
 			}
-			
+
 			Pair<String, String> hs = StringUtils.parseKV(header, ":");
-			if(hs == null){
+			if (hs == null) {
 				throw new IllegalStateException("error header [" + header + "]");
 			}
-			
+
 			add(hs.getKey(), hs.getValue());
 		}
 	}

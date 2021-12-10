@@ -57,7 +57,7 @@ public enum MysqlTypes implements SqlType {
 	 * 可以按照此格式输入可能的值： ENUM('X','Y','Z')
 	 */
 	ENUM("enum", Enum.class),
-	
+
 	/**
 	 * 与 ENUM 类似，不同的是，SET 最多只能包含 64 个列表项且 SET 可存储一个以上的选择。
 	 */
@@ -142,8 +142,8 @@ public enum MysqlTypes implements SqlType {
 	private final String name;
 	private final Class<?> type;
 	private final int length;
-	
-	MysqlTypes(String name, Class<?> type){
+
+	MysqlTypes(String name, Class<?> type) {
 		this(name, type, 0);
 	}
 
@@ -162,7 +162,7 @@ public enum MysqlTypes implements SqlType {
 	public Class<?> getType() {
 		return type;
 	}
-	
+
 	@Override
 	public int getLength() {
 		return length;

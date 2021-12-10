@@ -14,16 +14,14 @@ public abstract class AbstractFields implements Fields {
 		this.fields = fields;
 	}
 
-	public AbstractFields(Class<?> cursorId, Class<?> nextCursorId,
-			Fields fields) {
+	public AbstractFields(Class<?> cursorId, Class<?> nextCursorId, Fields fields) {
 		this(nextCursorId, fields);
 		this.nextCursorId = new StaticSupplier<Class<?>>(nextCursorId);
 	}
 
 	@Override
 	public Class<?> getNextCursorId() {
-		return nextCursorId == null ? Fields.super.getNextCursorId()
-				: nextCursorId.get();
+		return nextCursorId == null ? Fields.super.getNextCursorId() : nextCursorId.get();
 	}
 
 	@Override

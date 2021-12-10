@@ -22,10 +22,10 @@ public interface JSONSupport {
 	}
 
 	default JsonElement parseJson(Object obj) throws JSONException {
-		if(obj == null) {
+		if (obj == null) {
 			return null;
 		}
-		
+
 		if (obj instanceof Reader) {
 			try {
 				return parseJson((Reader) obj);
@@ -33,11 +33,11 @@ public interface JSONSupport {
 				throw new JSONException(obj.toString(), e);
 			}
 		}
-		
-		if(obj instanceof String) {
-			return parseJson((String)obj);
+
+		if (obj instanceof String) {
+			return parseJson((String) obj);
 		}
-		
+
 		return parseJson(toJSONString(obj));
 	}
 

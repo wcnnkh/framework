@@ -21,14 +21,12 @@ public class DataBaseDefinition extends DefaultBeanDefinition {
 
 	@Override
 	public boolean isInstance() {
-		return beanFactory.isInstance(ConnectionFactory.class)
-				&& beanFactory.isInstance(Configurable.class);
+		return beanFactory.isInstance(ConnectionFactory.class) && beanFactory.isInstance(Configurable.class);
 	}
 
 	@Override
 	public Object create() throws InstanceException {
-		ConnectionFactory connectionFactory = beanFactory
-				.getInstance(ConnectionFactory.class);
+		ConnectionFactory connectionFactory = beanFactory.getInstance(ConnectionFactory.class);
 		Configurable configurable = beanFactory.getInstance(Configurable.class);
 		SqlDialect sqlDialect = null;
 		if (StringUtils.isNotEmpty(configurable.getSqlDialect())) {
@@ -41,11 +39,9 @@ public class DataBaseDefinition extends DefaultBeanDefinition {
 				dataBase = beanFactory.getInstance(DataBase.class);
 			} else if (StringUtils.isNotEmpty(configurable.getUrl())) {
 				if (beanFactory.isInstance(DataBaseResolver.class)) {
-					dataBase = beanFactory.getInstance(DataBaseResolver.class)
-							.resolve(configurable.getDriverClassName(),
-									configurable.getUrl(),
-									configurable.getUsername(),
-									configurable.getPassword());
+					dataBase = beanFactory.getInstance(DataBaseResolver.class).resolve(
+							configurable.getDriverClassName(), configurable.getUrl(), configurable.getUsername(),
+							configurable.getPassword());
 				}
 			}
 
@@ -64,8 +60,7 @@ public class DataBaseDefinition extends DefaultBeanDefinition {
 
 		DB db = new DefaultDB(connectionFactory, sqlDialect);
 		if (StringUtils.isNotEmpty(configurable.getAutoCreateTables())) {
-			db.createTables(configurable.getAutoCreateTables(),
-					configurable.isRegisterManager());
+			db.createTables(configurable.getAutoCreateTables(), configurable.isRegisterManager());
 		}
 		return db;
 	}

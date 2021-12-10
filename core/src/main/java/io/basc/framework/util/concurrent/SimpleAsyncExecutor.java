@@ -10,8 +10,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadFactory;
 
-public class SimpleAsyncExecutor extends CustomizableThreadCreator
-		implements AsyncExecutor, Serializable {
+public class SimpleAsyncExecutor extends CustomizableThreadCreator implements AsyncExecutor, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -130,7 +129,7 @@ public class SimpleAsyncExecutor extends CustomizableThreadCreator
 	public final boolean isThrottleActive() {
 		return this.concurrencyThrottle.isThrottleActive();
 	}
-	
+
 	public void execute(Runnable task) {
 		Assert.notNull(task, "Runnable must not be null");
 		Runnable taskToUse = (this.taskDecorator != null ? this.taskDecorator.decorate(task) : task);

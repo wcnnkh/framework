@@ -19,7 +19,7 @@ public class ValueWrapper<V extends Value> implements Value, Serializable {
 	public V getTargetValue() {
 		return targetValue;
 	}
-	
+
 	@Override
 	public Object getSourceValue() {
 		return targetValue.getSourceValue();
@@ -151,8 +151,7 @@ public class ValueWrapper<V extends Value> implements Value, Serializable {
 		}
 
 		if (obj instanceof ValueWrapper) {
-			return ObjectUtils.equals(((ValueWrapper) obj).targetValue,
-					targetValue);
+			return ObjectUtils.equals(((ValueWrapper) obj).targetValue, targetValue);
 		}
 		return ObjectUtils.equals(obj, targetValue);
 	}

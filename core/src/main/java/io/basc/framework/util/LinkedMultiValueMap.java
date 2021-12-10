@@ -52,11 +52,10 @@ public class LinkedMultiValueMap<K, V> extends AbstractMultiValueMap<K, V> {
 	}
 
 	/**
-	 * Create a new LinkedMultiValueMap that wraps a {@link LinkedHashMap} with
-	 * the given initial capacity.
+	 * Create a new LinkedMultiValueMap that wraps a {@link LinkedHashMap} with the
+	 * given initial capacity.
 	 * 
-	 * @param initialCapacity
-	 *            the initial capacity
+	 * @param initialCapacity the initial capacity
 	 */
 	public LinkedMultiValueMap(int initialCapacity) {
 		this.targetMap = new LinkedHashMap<K, List<V>>(initialCapacity) {
@@ -102,11 +101,10 @@ public class LinkedMultiValueMap<K, V> extends AbstractMultiValueMap<K, V> {
 	}
 
 	/**
-	 * Copy constructor: Create a new LinkedMultiValueMap with the same mappings
-	 * as the specified Map.
+	 * Copy constructor: Create a new LinkedMultiValueMap with the same mappings as
+	 * the specified Map.
 	 * 
-	 * @param otherMap
-	 *            the Map whose mappings are to be placed in this Map
+	 * @param otherMap the Map whose mappings are to be placed in this Map
 	 */
 	public LinkedMultiValueMap(Map<K, List<V>> otherMap) {
 		this.targetMap = new LinkedHashMap<K, List<V>>(otherMap);

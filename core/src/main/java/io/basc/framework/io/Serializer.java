@@ -40,8 +40,8 @@ public interface Serializer {
 			input.close();
 		}
 	}
-	
-	default <D> Codec<D, byte[]> toCodec(){
+
+	default <D> Codec<D, byte[]> toCodec() {
 		return new SerializerCodec<D>(this);
 	}
 }

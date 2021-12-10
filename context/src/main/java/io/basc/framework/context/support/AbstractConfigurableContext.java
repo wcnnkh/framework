@@ -131,7 +131,7 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 			// 已经默认包含了
 			return;
 		}
-		
+
 		componentScan(packageName, null);
 	}
 

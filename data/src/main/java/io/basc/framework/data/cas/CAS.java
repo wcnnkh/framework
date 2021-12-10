@@ -2,7 +2,7 @@ package io.basc.framework.data.cas;
 
 import java.io.Serializable;
 
-public class CAS<T> implements Serializable{
+public class CAS<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final long cas;
 	private final T value;
@@ -19,7 +19,7 @@ public class CAS<T> implements Serializable{
 	public T getValue() {
 		return value;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

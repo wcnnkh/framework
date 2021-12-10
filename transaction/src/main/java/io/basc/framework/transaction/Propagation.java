@@ -8,14 +8,12 @@ package io.basc.framework.transaction;
  */
 public enum Propagation {
 	/**
-	 * 默认的
-	 * 如果存在一个事务，则支持当前事务。如果没有事务则开启一个新的事务
+	 * 默认的 如果存在一个事务，则支持当前事务。如果没有事务则开启一个新的事务
 	 */
 	REQUIRED,
 
 	/**
-	 * 如果存在一个事务，支持当前事务。如果没有事务，则非事务的执行。但是对于事务同步的事务管理器，
-	 * SUPPORTS与不使用事务有少许不同
+	 * 如果存在一个事务，支持当前事务。如果没有事务，则非事务的执行。但是对于事务同步的事务管理器， SUPPORTS与不使用事务有少许不同
 	 */
 	SUPPORTS,
 
@@ -40,8 +38,8 @@ public enum Propagation {
 	NEVER,
 
 	/**
-	 * 如果一个活动的事务存在，则运行在一个嵌套的事务中. 如果没有活动事务,
-	 * 则按REQUIRED执行
+	 * 如果一个活动的事务存在，则运行在一个嵌套的事务中. 如果没有活动事务, 则按REQUIRED执行
+	 * 
 	 * @see Savepoint
 	 */
 	NESTED

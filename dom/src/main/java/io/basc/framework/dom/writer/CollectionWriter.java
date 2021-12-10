@@ -22,11 +22,9 @@ public class CollectionWriter implements DocumentWriter {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public void write(Document document, Node parentNode, String nodeName,
-			Object value, TypeDescriptor valueType) {
+	public void write(Document document, Node parentNode, String nodeName, Object value, TypeDescriptor valueType) {
 		for (Object item : (Collection) value) {
-			writer.write(document, parentNode, nodeName, value,
-					valueType.elementTypeDescriptor(item));
+			writer.write(document, parentNode, nodeName, value, valueType.elementTypeDescriptor(item));
 		}
 	}
 }

@@ -9,16 +9,16 @@ import java.util.Set;
 
 public class DefaultAliasRegistry implements AliasRegistry, Cloneable {
 	private SmartMap<String, Set<String>> aliasMap;
-	
-	public DefaultAliasRegistry(){
+
+	public DefaultAliasRegistry() {
 		this(false);
 	}
-	
-	public DefaultAliasRegistry(boolean concurrent){
+
+	public DefaultAliasRegistry(boolean concurrent) {
 		this.aliasMap = new SmartMap<String, Set<String>>(concurrent);
 	}
-	
-	private DefaultAliasRegistry(SmartMap<String, Set<String>> aliasMap){
+
+	private DefaultAliasRegistry(SmartMap<String, Set<String>> aliasMap) {
 		this.aliasMap = aliasMap;
 	}
 
@@ -26,21 +26,20 @@ public class DefaultAliasRegistry implements AliasRegistry, Cloneable {
 		register(name, alias);
 		register(alias, name);
 	}
-	
-	private void register(String name, String alias){
+
+	private void register(String name, String alias) {
 		Assert.hasText(name, "'name' must not be empty");
 		Assert.hasText(alias, "'alias' must not be empty");
 		Set<String> names = aliasMap.get(name);
 		if (names == null) {
 			names = new HashSet<String>();
 			Set<String> sets = aliasMap.putIfAbsent(name, Collections.synchronizedSet(names));
-			if(sets != null) {
+			if (sets != null) {
 				names = sets;
 			}
 		} else {
 			if (names.contains(alias)) {
-					throw new IllegalStateException("Cannot register alias '"
-							+ alias + "' for name '" + name + "'");
+				throw new IllegalStateException("Cannot register alias '" + alias + "' for name '" + name + "'");
 			}
 		}
 		names.add(alias);
@@ -48,13 +47,13 @@ public class DefaultAliasRegistry implements AliasRegistry, Cloneable {
 
 	public void removeAlias(String alias) {
 		Set<String> names = aliasMap.remove(alias);
-		if(names == null){
-			return ;
+		if (names == null) {
+			return;
 		}
-		
-		for(String name : names){
+
+		for (String name : names) {
 			Set<String> aliasNames = aliasMap.get(name);
-			if(aliasNames != null){
+			if (aliasNames != null) {
 				aliasNames.remove(alias);
 			}
 		}
@@ -63,22 +62,22 @@ public class DefaultAliasRegistry implements AliasRegistry, Cloneable {
 	public boolean isAlias(String name) {
 		return aliasMap.containsKey(name);
 	}
-	
-	public boolean hasAlias(String name, String alias){
+
+	public boolean hasAlias(String name, String alias) {
 		Set<String> aliases = aliasMap.get(name);
-		if(aliases == null){
+		if (aliases == null) {
 			return false;
 		}
-		
+
 		return aliases.contains(alias);
 	}
 
 	public String[] getAliases(String name) {
 		Set<String> names = aliasMap.get(name);
-		if(names == null){
+		if (names == null) {
 			return new String[0];
 		}
-		
+
 		return names.toArray(new String[0]);
 	}
 

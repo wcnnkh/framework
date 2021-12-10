@@ -13,7 +13,7 @@ public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<
 	private Level level;
 
 	public synchronized void registerListener() {
-		if(eventRegistration == null) {
+		if (eventRegistration == null) {
 			eventRegistration = LoggerFactory.getLevelManager().registerListener(this);
 		}
 	}
@@ -32,21 +32,21 @@ public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<
 	public Level getLevel() {
 		return level;
 	}
-	
+
 	@Override
 	public boolean isLoggable(Level level) {
 		Level acceptLevel = getLevel();
-		if(acceptLevel == null) {
+		if (acceptLevel == null) {
 			return true;
 		}
-		
+
 		return CustomLevel.isGreaterOrEqual(level, acceptLevel);
 	}
 
 	public void setLevel(@Nullable Level level) {
 		this.level = level;
 	}
-	
+
 	@Override
 	public void close() {
 		if (eventRegistration != null) {
@@ -54,7 +54,7 @@ public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<
 		}
 		eventRegistration = null;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "[" + getLevel() + "] " + getName();

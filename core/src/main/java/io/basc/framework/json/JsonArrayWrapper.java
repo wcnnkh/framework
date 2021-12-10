@@ -2,8 +2,7 @@ package io.basc.framework.json;
 
 import java.util.Iterator;
 
-public class JsonArrayWrapper extends JsonWrapper<Integer, JsonArray> implements
-		JsonArray {
+public class JsonArrayWrapper extends JsonWrapper<Integer, JsonArray> implements JsonArray {
 
 	public JsonArrayWrapper(JsonArray target) {
 		super(target);

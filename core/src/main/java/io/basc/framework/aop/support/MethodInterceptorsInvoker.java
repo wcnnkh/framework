@@ -7,15 +7,15 @@ import io.basc.framework.core.reflect.MethodInvokerWrapper;
 
 import java.util.Iterator;
 
-public class MethodInterceptorsInvoker extends MethodInvokerWrapper implements MethodInterceptor{
+public class MethodInterceptorsInvoker extends MethodInvokerWrapper implements MethodInterceptor {
 	private static final long serialVersionUID = 1L;
 	private final Iterator<MethodInterceptor> iterator;
-	
+
 	public MethodInterceptorsInvoker(MethodInvoker source, Iterator<MethodInterceptor> iterator) {
 		super(source);
 		this.iterator = iterator;
 	}
-	
+
 	private MethodInterceptor getNextMethodInterceptor(MethodInvoker invoker, Object[] args) {
 		if (iterator.hasNext()) {
 			MethodInterceptor filter = iterator.next();
@@ -30,17 +30,16 @@ public class MethodInterceptorsInvoker extends MethodInvokerWrapper implements M
 		}
 		return null;
 	}
-	
-	public Object intercept(MethodInvoker invoker, Object[] args)
-			throws Throwable {
+
+	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
 		MethodInterceptor interceptor = getNextMethodInterceptor(invoker, args);
-		if(interceptor == null){
+		if (interceptor == null) {
 			return invoker.invoke(args);
 		}
 		MethodInvoker nextInvoker = new MethodInterceptorsInvoker(invoker, iterator);
 		return interceptor.intercept(nextInvoker, args);
 	}
-	
+
 	@Override
 	public Object invoke(Object... args) throws Throwable {
 		return intercept(getSource(), args);

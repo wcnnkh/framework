@@ -36,7 +36,7 @@ public class StreamPageable<K, T> implements Pageable<K, T> {
 	@Override
 	public Stream<T> stream() {
 		Stream<T> stream = suppler.get();
-		if(stream == null) {
+		if (stream == null) {
 			return StreamProcessorSupport.emptyStream();
 		}
 		return StreamProcessorSupport.autoClose(stream);

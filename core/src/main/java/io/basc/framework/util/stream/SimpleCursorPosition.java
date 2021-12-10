@@ -2,7 +2,7 @@ package io.basc.framework.util.stream;
 
 public final class SimpleCursorPosition implements CursorPosition {
 	private long position;
-	
+
 	public SimpleCursorPosition() {
 		this(0);
 	}

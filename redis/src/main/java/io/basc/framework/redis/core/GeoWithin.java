@@ -67,8 +67,8 @@ public class GeoWithin<V> {
 	public Point getCoordinates() {
 		return coordinates;
 	}
-	
-	public <T> GeoWithin<T> convert(Converter<V, T> converter){
+
+	public <T> GeoWithin<T> convert(Converter<V, T> converter) {
 		return new GeoWithin<T>(converter.convert(member), distance, geohash, coordinates);
 	}
 

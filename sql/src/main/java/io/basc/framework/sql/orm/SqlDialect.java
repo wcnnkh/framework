@@ -12,7 +12,7 @@ public interface SqlDialect extends TableMapping, EnvironmentAware {
 	SqlType getSqlType(Class<?> javaType);
 
 	Environment getEnvironment();
-	
+
 	default Object toDataBaseValue(Object value) {
 		return toDataBaseValue(value, TypeDescriptor.forObject(value));
 	}
@@ -34,7 +34,7 @@ public interface SqlDialect extends TableMapping, EnvironmentAware {
 	Sql toDeleteByIdSql(TableStructure tableStructure, Object... ids) throws SqlDialectException;
 
 	Sql toUpdateSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
-	
+
 	<T> Sql toUpdateSql(TableStructure tableStructure, T entity, T oldEntity) throws SqlDialectException;
 
 	/**
@@ -69,11 +69,11 @@ public interface SqlDialect extends TableMapping, EnvironmentAware {
 	Sql toMaxIdSql(TableStructure tableStructure, Field field) throws SqlDialectException;
 
 	TableStructureMapping getTableStructureMapping(TableStructure tableStructure);
-	
+
 	Sql toQuerySqlByPrimaryKeys(TableStructure tableStructure, Object query);
 
 	Sql toQuerySqlByIndexs(TableStructure tableStructure, Object query);
-	
+
 	Sql toQuerySql(TableStructure tableStructure, Object query);
 
 	/**

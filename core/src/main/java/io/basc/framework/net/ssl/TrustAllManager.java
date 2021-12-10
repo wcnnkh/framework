@@ -2,11 +2,11 @@ package io.basc.framework.net.ssl;
 
 /**
  * 信任所有
+ * 
  * @author shuchaowen
  *
  */
-public class TrustAllManager implements javax.net.ssl.TrustManager,
-		javax.net.ssl.X509TrustManager {
+public class TrustAllManager implements javax.net.ssl.TrustManager, javax.net.ssl.X509TrustManager {
 	public java.security.cert.X509Certificate[] getAcceptedIssuers() {
 		return null;
 	}
@@ -19,13 +19,13 @@ public class TrustAllManager implements javax.net.ssl.TrustManager,
 		return true;
 	}
 
-	public void checkServerTrusted(java.security.cert.X509Certificate[] certs,
-			String authType) throws java.security.cert.CertificateException {
+	public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType)
+			throws java.security.cert.CertificateException {
 		return;
 	}
 
-	public void checkClientTrusted(java.security.cert.X509Certificate[] certs,
-			String authType) throws java.security.cert.CertificateException {
+	public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType)
+			throws java.security.cert.CertificateException {
 		return;
 	}
 }

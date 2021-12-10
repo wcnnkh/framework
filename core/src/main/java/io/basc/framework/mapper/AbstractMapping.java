@@ -11,24 +11,24 @@ public abstract class AbstractMapping implements Mapping {
 	public <T> T newInstance(Class<? extends T> type) {
 		return Sys.env.getInstance(type);
 	}
-	
+
 	public <T> T mapping(Class<T> entityClass, Fields fields, FieldFactory fieldFactory) {
 		T entity = newInstance(entityClass);
-		for(Field field : fields){
+		for (Field field : fields) {
 			Object value;
-			if(isNesting(field.getSetter())){
+			if (isNesting(field.getSetter())) {
 				value = MapperUtils.mapping(fieldFactory, field.getSetter().getType(), field, this);
-			}else{
+			} else {
 				value = getValue(field);
 			}
-			
-			if(value != null){
+
+			if (value != null) {
 				field.getSetter().set(entity, value);
 			}
 		}
 		return entity;
 	}
-	
+
 	public boolean accept(Field field) {
 		return FieldFeature.IGNORE_STATIC.accept(field);
 	}
@@ -53,8 +53,7 @@ public abstract class AbstractMapping implements Mapping {
 		}
 
 		StringBuilder sb = new StringBuilder();
-		ListIterator<FieldDescriptor> iterator = fieldMetadatas
-				.listIterator(fieldMetadatas.size());
+		ListIterator<FieldDescriptor> iterator = fieldMetadatas.listIterator(fieldMetadatas.size());
 		while (iterator.hasPrevious()) {
 			FieldDescriptor fieldMetadata = iterator.next();
 			sb.append(fieldMetadata.getName());

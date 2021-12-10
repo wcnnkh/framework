@@ -17,13 +17,11 @@ public interface Json<K> extends ValueFactory<K>, JSONAware {
 
 	default JsonArray getJsonArray(K key) {
 		JsonElement jsonElement = getValue(key);
-		return jsonElement == null ? getDefaultValue(key).getAsJsonArray()
-				: jsonElement.getAsJsonArray();
+		return jsonElement == null ? getDefaultValue(key).getAsJsonArray() : jsonElement.getAsJsonArray();
 	}
 
 	default JsonObject getJsonObject(K key) {
 		JsonElement jsonElement = getValue(key);
-		return jsonElement == null ? getDefaultValue(key).getAsJsonObject()
-				: jsonElement.getAsJsonObject();
+		return jsonElement == null ? getDefaultValue(key).getAsJsonObject() : jsonElement.getAsJsonObject();
 	}
 }

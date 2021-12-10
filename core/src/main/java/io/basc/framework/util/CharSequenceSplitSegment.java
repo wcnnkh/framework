@@ -8,7 +8,7 @@ public class CharSequenceSplitSegment implements CharSequence {
 	private final CharSequence source;
 	@Nullable
 	private final CharSequence separator;
-	
+
 	public CharSequenceSplitSegment(CharSequence source) {
 		this(source, null);
 	}
@@ -18,7 +18,7 @@ public class CharSequenceSplitSegment implements CharSequence {
 		this.source = source;
 		this.separator = separator;
 	}
-	
+
 	public boolean isLast() {
 		return separator == null;
 	}
@@ -36,15 +36,15 @@ public class CharSequenceSplitSegment implements CharSequence {
 	public int length() {
 		return source.length();
 	}
-	
+
 	public boolean isEmpty() {
 		return source.length() == 0;
 	}
-	
+
 	public CharSequenceSplitSegment trim() {
 		return new CharSequenceSplitSegment(StringUtils.trimWhitespace(source), separator);
 	}
-	
+
 	public CharSequenceSplitSegment map(Function<CharSequence, CharSequence> mapper) {
 		return new CharSequenceSplitSegment(mapper.apply(source), separator);
 	}

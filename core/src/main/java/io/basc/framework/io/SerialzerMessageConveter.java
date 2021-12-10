@@ -34,9 +34,8 @@ public class SerialzerMessageConveter extends AbstractMessageConverter<Object> {
 	}
 
 	@Override
-	protected void writeInternal(TypeDescriptor type, Object body, MimeType contentType,
-			OutputMessage outputMessage) throws IOException,
-			MessageConvertException {
+	protected void writeInternal(TypeDescriptor type, Object body, MimeType contentType, OutputMessage outputMessage)
+			throws IOException, MessageConvertException {
 		serializer.serialize(outputMessage.getOutputStream(), body);
 	}
 

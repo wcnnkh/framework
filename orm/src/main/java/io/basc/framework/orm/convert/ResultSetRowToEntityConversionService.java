@@ -13,13 +13,14 @@ import java.util.Set;
 
 /**
  * 这是一个很简单的ResultSet映射
+ * 
  * @author shuchaowen
  *
  */
 public class ResultSetRowToEntityConversionService extends EntityConversionService {
-	
+
 	public ResultSetRowToEntityConversionService() {
-		//使用严格模式
+		// 使用严格模式
 		setStrict(true);
 	}
 

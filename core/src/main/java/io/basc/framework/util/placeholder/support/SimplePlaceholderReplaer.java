@@ -5,14 +5,14 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.placeholder.PlaceholderReplacer;
 import io.basc.framework.util.placeholder.PlaceholderResolver;
 
-public class SimplePlaceholderReplaer implements PlaceholderReplacer{
-	
+public class SimplePlaceholderReplaer implements PlaceholderReplacer {
+
 	public static final PlaceholderReplacer STRICT_REPLACER = new SimplePlaceholderReplaer(PLACEHOLDER_PREFIX,
 			PLACEHOLDER_SUFFIX, false);
 
 	public static final PlaceholderReplacer NON_STRICT_REPLACER = new SimplePlaceholderReplaer(PLACEHOLDER_PREFIX,
 			PLACEHOLDER_SUFFIX, true);
-	
+
 	private final char[] prefix;
 	private final char[] suffix;
 	private final boolean ignoreUnresolvablePlaceholders;
@@ -33,9 +33,8 @@ public class SimplePlaceholderReplaer implements PlaceholderReplacer{
 	public char[] getSuffix() {
 		return suffix;
 	}
-	
-	public String replacePlaceholders(String text,
-			PlaceholderResolver placeholderResolver) {
+
+	public String replacePlaceholders(String text, PlaceholderResolver placeholderResolver) {
 		if (StringUtils.isEmpty(text)) {
 			return text;
 		}
@@ -50,11 +49,10 @@ public class SimplePlaceholderReplaer implements PlaceholderReplacer{
 				String value = null;
 				while (begin < chars.length) {
 					if (suffixEq(chars, begin)) {
-						String placeholder = new String(chars, tempBegin
-								+ prefix.length, begin - tempBegin
-								- prefix.length);
+						String placeholder = new String(chars, tempBegin + prefix.length,
+								begin - tempBegin - prefix.length);
 						value = placeholderResolver.resolvePlaceholder(placeholder);
-						if(value == null && !ignoreUnresolvablePlaceholders){
+						if (value == null && !ignoreUnresolvablePlaceholders) {
 							throw new IllegalArgumentException("Could not resolve placeholder '" + placeholder + "'"
 									+ " in string value \"" + text + "\"");
 						}

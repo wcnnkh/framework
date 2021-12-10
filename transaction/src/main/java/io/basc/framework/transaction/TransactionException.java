@@ -6,8 +6,7 @@ public class TransactionException extends RuntimeException {
 	/**
 	 * Constructor for TransactionException.
 	 * 
-	 * @param msg
-	 *            the detail message
+	 * @param msg the detail message
 	 */
 	public TransactionException(String msg) {
 		super(msg);
@@ -20,10 +19,8 @@ public class TransactionException extends RuntimeException {
 	/**
 	 * Constructor for TransactionException.
 	 * 
-	 * @param msg
-	 *            the detail message
-	 * @param cause
-	 *            the root cause from the transaction API in use
+	 * @param msg   the detail message
+	 * @param cause the root cause from the transaction API in use
 	 */
 	public TransactionException(String msg, Throwable cause) {
 		super(msg, cause);

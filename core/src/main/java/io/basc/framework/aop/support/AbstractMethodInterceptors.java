@@ -5,7 +5,8 @@ import io.basc.framework.core.reflect.MethodInvoker;
 
 import java.io.Serializable;
 
-public abstract class AbstractMethodInterceptors implements Iterable<MethodInterceptor>, Serializable, MethodInterceptor {
+public abstract class AbstractMethodInterceptors
+		implements Iterable<MethodInterceptor>, Serializable, MethodInterceptor {
 	private static final long serialVersionUID = 1L;
 	private Object instance;
 
@@ -19,12 +20,11 @@ public abstract class AbstractMethodInterceptors implements Iterable<MethodInter
 
 	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
 		MethodInvoker wrapper;
-		if(instance == null){
+		if (instance == null) {
 			wrapper = new MethodInterceptorsInvoker(invoker, iterator());
-		}else{
+		} else {
 			wrapper = new InstanceMethodInterceptorsInvoker(invoker, iterator(), instance);
 		}
 		return wrapper.invoke(args);
 	}
 }
-

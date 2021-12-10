@@ -22,7 +22,7 @@ public class CglibMethodInterceptor implements net.sf.cglib.proxy.MethodIntercep
 		if (methodInterceptor == null) {
 			return invoker.invoke(args);
 		}
-		
+
 		return methodInterceptor.intercept(invoker, args);
 	}
 }

@@ -14,12 +14,12 @@ public class XmlDubboMapping extends DomAttributeMapping {
 		super(beanFactory.getEnvironment(), node);
 		this.beanFactory = beanFactory;
 	}
-	
+
 	@Override
 	public <T> T newInstance(Class<? extends T> type) {
 		return Sys.getUnsafeInstanceFactory().getInstance(type);
 	}
-	
+
 	@Override
 	protected Object getNodeValue(String name, String value, Class<?> type, Field field, Node node) {
 		if (type.toString().startsWith("org.apache.dubbo.config.") || "registry".equalsIgnoreCase(name)

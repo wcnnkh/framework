@@ -32,18 +32,18 @@ public class XmlDubboInitializer implements ApplicationPostProcessor {
 
 	@Override
 	public void postProcessApplication(ConfigurableApplication application) throws Throwable {
-		if(application.isInstance(DubboConfigure.class)){
+		if (application.isInstance(DubboConfigure.class)) {
 			DubboConfigure configure = application.getInstance(DubboConfigure.class);
 			List<RegistryConfig> registryConfigs = configure.getRegistryConfigList();
 			for (ApplicationConfig config : configure.getApplicationConfigList()) {
 				config.setRegistries(registryConfigs);
 				ApplicationModel.defaultModel().getApplicationConfigManager().setApplication(config);
 			}
-			
-			for(ProtocolConfig config : configure.getProtocolConfigList()){
+
+			for (ProtocolConfig config : configure.getProtocolConfigList()) {
 				ApplicationModel.defaultModel().getApplicationConfigManager().addProtocol(config);
 			}
-			
+
 			for (MetadataReportConfig config : configure.getMetadataReportConfigList()) {
 				ApplicationModel.defaultModel().getApplicationConfigManager().addMetadataReport(config);
 			}
@@ -59,25 +59,25 @@ public class XmlDubboInitializer implements ApplicationPostProcessor {
 			for (MonitorConfig config : configure.getMonitorConfigList()) {
 				ApplicationModel.defaultModel().getApplicationConfigManager().setMonitor(config);
 			}
-			
-			//default module
-			
+
+			// default module
+
 			for (ModuleConfig config : configure.getModuleConfigList()) {
 				ApplicationModel.defaultModel().getDefaultModule().getConfigManager().setModule(config);
 			}
-			
-			for(ProviderConfig config : configure.getProviderConfigList()){
+
+			for (ProviderConfig config : configure.getProviderConfigList()) {
 				ApplicationModel.defaultModel().getDefaultModule().getConfigManager().addProvider(config);
 			}
-			
-			for(ConsumerConfig config : configure.getConsumerConfigList()){
+
+			for (ConsumerConfig config : configure.getConsumerConfigList()) {
 				ApplicationModel.defaultModel().getDefaultModule().getConfigManager().addConsumer(config);
 			}
 		}
-		
-		if(application.isInstance(DubboServiceConfigure.class)){
+
+		if (application.isInstance(DubboServiceConfigure.class)) {
 			DubboServiceConfigure configure = application.getInstance(DubboServiceConfigure.class);
-			for(ServiceConfig<?> config : configure.getServiceConfigList()){
+			for (ServiceConfig<?> config : configure.getServiceConfigList()) {
 				config.export();
 			}
 		}

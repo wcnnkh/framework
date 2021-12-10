@@ -7,8 +7,8 @@ import io.basc.framework.aop.cglib.CglibProxyFactory;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.util.ClassUtils;
 
-public abstract class AbstractConfigurableProxyFactory extends CglibProxyFactory implements ProxyFactory,
-		Iterable<ProxyFactory> {
+public abstract class AbstractConfigurableProxyFactory extends CglibProxyFactory
+		implements ProxyFactory, Iterable<ProxyFactory> {
 
 	@Override
 	public boolean canProxy(Class<?> clazz) {
@@ -37,11 +37,11 @@ public abstract class AbstractConfigurableProxyFactory extends CglibProxyFactory
 				return proxyFactory.getProxy(clazz, interfaces, methodInterceptor);
 			}
 		}
-		
-		if(super.canProxy(clazz)){
+
+		if (super.canProxy(clazz)) {
 			return super.getProxy(clazz, interfaces, methodInterceptor);
 		}
-		
+
 		throw new NotSupportedException(clazz.getName());
 	}
 
@@ -52,37 +52,36 @@ public abstract class AbstractConfigurableProxyFactory extends CglibProxyFactory
 				return proxyFactory.getUserClass(proxyClass);
 			}
 		}
-		
-		if(super.isProxy(proxyClass)){
+
+		if (super.isProxy(proxyClass)) {
 			return super.getUserClass(proxyClass);
 		}
-		
+
 		return proxyClass;
 	}
-	
+
 	@Override
 	public boolean isProxy(String className, ClassLoader classLoader) throws ClassNotFoundException {
 		for (ProxyFactory proxyFactory : this) {
-			if(proxyFactory.isProxy(className, classLoader)){
+			if (proxyFactory.isProxy(className, classLoader)) {
 				return true;
 			}
 		}
 		return super.isProxy(className, classLoader);
 	}
-	
+
 	@Override
-	public Class<?> getUserClass(String className, ClassLoader classLoader)
-			throws ClassNotFoundException {
+	public Class<?> getUserClass(String className, ClassLoader classLoader) throws ClassNotFoundException {
 		for (ProxyFactory proxyFactory : this) {
 			if (proxyFactory.isProxy(className, classLoader)) {
 				return proxyFactory.getUserClass(className, classLoader);
 			}
 		}
-		
-		if(super.isProxy(className, classLoader)){
+
+		if (super.isProxy(className, classLoader)) {
 			return super.getUserClass(className, classLoader);
 		}
-		
+
 		return ClassUtils.forName(className, classLoader);
 	}
 }

@@ -46,11 +46,9 @@ public class CountLatch {
 	/**
 	 * Constructs a {@code CountDownLatch} initialized with the given count.
 	 *
-	 * @param count
-	 *            the number of times {@link #countDown} must be invoked before
-	 *            threads can pass through {@link #await}
-	 * @throws IllegalArgumentException
-	 *             if {@code count} is negative
+	 * @param count the number of times {@link #countDown} must be invoked before
+	 *              threads can pass through {@link #await}
+	 * @throws IllegalArgumentException if {@code count} is negative
 	 */
 	public CountLatch(int count) {
 		if (count < 0)
@@ -59,8 +57,8 @@ public class CountLatch {
 	}
 
 	/**
-	 * Causes the current thread to wait until the latch has counted down to
-	 * zero, unless the thread is {@linkplain Thread#interrupt interrupted}.
+	 * Causes the current thread to wait until the latch has counted down to zero,
+	 * unless the thread is {@linkplain Thread#interrupt interrupted}.
 	 *
 	 * <p>
 	 * If the current count is zero then this method returns immediately.
@@ -72,8 +70,8 @@ public class CountLatch {
 	 * <ul>
 	 * <li>The count reaches zero due to invocations of the {@link #countDown}
 	 * method; or
-	 * <li>Some other thread {@linkplain Thread#interrupt interrupts} the
-	 * current thread.
+	 * <li>Some other thread {@linkplain Thread#interrupt interrupts} the current
+	 * thread.
 	 * </ul>
 	 *
 	 * <p>
@@ -85,31 +83,31 @@ public class CountLatch {
 	 * then {@link InterruptedException} is thrown and the current thread's
 	 * interrupted status is cleared.
 	 *
-	 * @throws InterruptedException
-	 *             if the current thread is interrupted while waiting
+	 * @throws InterruptedException if the current thread is interrupted while
+	 *                              waiting
 	 */
 	public void await() throws InterruptedException {
 		sync.acquireSharedInterruptibly(1);
 	}
 
 	/**
-	 * Causes the current thread to wait until the latch has counted down to
-	 * zero, unless the thread is {@linkplain Thread#interrupt interrupted}, or
-	 * the specified waiting time elapses.
+	 * Causes the current thread to wait until the latch has counted down to zero,
+	 * unless the thread is {@linkplain Thread#interrupt interrupted}, or the
+	 * specified waiting time elapses.
 	 *
 	 * <p>
-	 * If the current count is zero then this method returns immediately with
-	 * the value {@code true}.
+	 * If the current count is zero then this method returns immediately with the
+	 * value {@code true}.
 	 *
 	 * <p>
 	 * If the current count is greater than zero then the current thread becomes
-	 * disabled for thread scheduling purposes and lies dormant until one of
-	 * three things happen:
+	 * disabled for thread scheduling purposes and lies dormant until one of three
+	 * things happen:
 	 * <ul>
 	 * <li>The count reaches zero due to invocations of the {@link #countDown}
 	 * method; or
-	 * <li>Some other thread {@linkplain Thread#interrupt interrupts} the
-	 * current thread; or
+	 * <li>Some other thread {@linkplain Thread#interrupt interrupts} the current
+	 * thread; or
 	 * <li>The specified waiting time elapses.
 	 * </ul>
 	 *
@@ -128,30 +126,28 @@ public class CountLatch {
 	 *
 	 * <p>
 	 * If the specified waiting time elapses then the value {@code false} is
-	 * returned. If the time is less than or equal to zero, the method will not
-	 * wait at all.
+	 * returned. If the time is less than or equal to zero, the method will not wait
+	 * at all.
 	 *
-	 * @param timeout
-	 *            the maximum time to wait
-	 * @param unit
-	 *            the time unit of the {@code timeout} argument
+	 * @param timeout the maximum time to wait
+	 * @param unit    the time unit of the {@code timeout} argument
 	 * @return {@code true} if the count reached zero and {@code false} if the
 	 *         waiting time elapsed before the count reached zero
-	 * @throws InterruptedException
-	 *             if the current thread is interrupted while waiting
+	 * @throws InterruptedException if the current thread is interrupted while
+	 *                              waiting
 	 */
 	public boolean await(long timeout, TimeUnit unit) throws InterruptedException {
 		return sync.tryAcquireSharedNanos(1, unit.toNanos(timeout));
 	}
 
 	/**
-	 * Decrements the count of the latch, releasing all waiting threads if the
-	 * count reaches zero.
+	 * Decrements the count of the latch, releasing all waiting threads if the count
+	 * reaches zero.
 	 *
 	 * <p>
-	 * If the current count is greater than zero then it is decremented. If the
-	 * new count is zero then all waiting threads are re-enabled for thread
-	 * scheduling purposes.
+	 * If the current count is greater than zero then it is decremented. If the new
+	 * count is zero then all waiting threads are re-enabled for thread scheduling
+	 * purposes.
 	 *
 	 * <p>
 	 * If the current count equals zero then nothing happens.
@@ -161,13 +157,13 @@ public class CountLatch {
 	}
 
 	/**
-	 * Increasing the count of the latch, releasing all waiting threads if the
-	 * count reaches zero.
+	 * Increasing the count of the latch, releasing all waiting threads if the count
+	 * reaches zero.
 	 *
 	 * <p>
-	 * If the current count is greater than zero then it is Increasing. If the
-	 * new count is zero then all waiting threads are re-enabled for thread
-	 * scheduling purposes.
+	 * If the current count is greater than zero then it is Increasing. If the new
+	 * count is zero then all waiting threads are re-enabled for thread scheduling
+	 * purposes.
 	 *
 	 * <p>
 	 * If the current count equals zero then nothing happens.
@@ -189,9 +185,9 @@ public class CountLatch {
 	}
 
 	/**
-	 * Returns a string identifying this latch, as well as its state. The state,
-	 * in brackets, includes the String {@code "Count ="} followed by the
-	 * current count.
+	 * Returns a string identifying this latch, as well as its state. The state, in
+	 * brackets, includes the String {@code "Count ="} followed by the current
+	 * count.
 	 *
 	 * @return a string identifying this latch, as well as its state
 	 */

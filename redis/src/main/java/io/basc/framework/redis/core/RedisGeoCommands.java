@@ -61,11 +61,11 @@ public interface RedisGeoCommands<K, V> {
 	default Long geoadd(K key, V member, Point point) {
 		return geoadd(key, null, member, point);
 	}
-	
+
 	default Long geoadd(K key, GeoaddOption option, V member, Point point) {
 		return geoadd(key, option, Collections.singletonMap(member, point));
 	}
-	
+
 	Long geoadd(K key, GeoaddOption option, Map<V, Point> members);
 
 	/**
@@ -253,6 +253,6 @@ public interface RedisGeoCommands<K, V> {
 	 * @return
 	 */
 	List<V> georadiusbymember(K key, V member, Distance distance, GeoRadiusArgs<K> args);
-	
+
 	List<GeoWithin<V>> georadiusbymember(K key, V member, Distance distance, GeoRadiusWith with, GeoRadiusArgs<K> args);
 }

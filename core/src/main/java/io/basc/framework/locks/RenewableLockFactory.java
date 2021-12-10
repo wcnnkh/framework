@@ -2,11 +2,11 @@ package io.basc.framework.locks;
 
 import java.util.concurrent.TimeUnit;
 
-public abstract class RenewableLockFactory implements LockFactory{
+public abstract class RenewableLockFactory implements LockFactory {
 	private TimeUnit timeUnit = TimeUnit.SECONDS;
-	//默认10秒
+	// 默认10秒
 	private long timeout = 10;
-	
+
 	public TimeUnit getTimeUnit() {
 		return timeUnit;
 	}
@@ -22,10 +22,10 @@ public abstract class RenewableLockFactory implements LockFactory{
 	public void setTimeout(long timeout) {
 		this.timeout = timeout;
 	}
-	
-	public final RenewableLock getLock(String name){
+
+	public final RenewableLock getLock(String name) {
 		return getLock(name, getTimeUnit(), getTimeout());
 	}
-	
+
 	public abstract RenewableLock getLock(String name, TimeUnit timeUnit, long timeout);
 }

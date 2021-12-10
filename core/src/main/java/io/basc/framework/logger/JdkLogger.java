@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 /**
  * 包装的jdk日志记录器
+ * 
  * @author shuchaowen
  *
  */

@@ -18,7 +18,8 @@ public class ExtendGsonTypeAdapter extends TypeAdapter<Object> {
 	public static final TypeAdapterFactory FACTORY = new TypeAdapterFactory() {
 
 		public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
-			if (JSONAware.class.isAssignableFrom(typeToken.getRawType()) || Value.class.isAssignableFrom(typeToken.getRawType())
+			if (JSONAware.class.isAssignableFrom(typeToken.getRawType())
+					|| Value.class.isAssignableFrom(typeToken.getRawType())
 					|| ProxyUtils.getFactory().isProxy(typeToken.getRawType())) {
 				return (TypeAdapter) new ExtendGsonTypeAdapter(gson);
 			}
@@ -31,8 +32,8 @@ public class ExtendGsonTypeAdapter extends TypeAdapter<Object> {
 	private ExtendGsonTypeAdapter(Gson context) {
 		this.context = context;
 	}
-	
-	private <T> TypeAdapter<T> getTypeAdapter(Class<T> type){
+
+	private <T> TypeAdapter<T> getTypeAdapter(Class<T> type) {
 		TypeAdapter<T> typeAdapter = context.getAdapter(type);
 		if (typeAdapter == null) {
 			throw new UnsupportedOperationException(
@@ -52,17 +53,17 @@ public class ExtendGsonTypeAdapter extends TypeAdapter<Object> {
 			out.jsonValue(((JSONAware) value).toJSONString());
 			return;
 		}
-		
-		if(value instanceof Value){
+
+		if (value instanceof Value) {
 			Object valueToUse = ((Value) value).getSourceValue();
-			if(valueToUse == null) {
+			if (valueToUse == null) {
 				out.nullValue();
-				return ;
+				return;
 			}
-			
+
 			TypeAdapter<Object> typeAdapter = (TypeAdapter<Object>) getTypeAdapter(valueToUse.getClass());
 			typeAdapter.write(out, valueToUse);
-			return ;
+			return;
 		}
 
 		Class clazz = ProxyUtils.getFactory().getUserClass(value.getClass());

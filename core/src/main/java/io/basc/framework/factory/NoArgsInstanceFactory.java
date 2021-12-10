@@ -4,21 +4,22 @@ import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Supplier;
 
-public interface NoArgsInstanceFactory extends ClassLoaderProvider{
-	
+public interface NoArgsInstanceFactory extends ClassLoaderProvider {
+
 	/**
 	 * 根据名称获取一个实例
+	 * 
 	 * @param <T>
 	 * @param name
 	 * @return
 	 */
-	default <T> T getInstance(String name){
+	default <T> T getInstance(String name) {
 		@SuppressWarnings("unchecked")
 		Class<T> clazz = (Class<T>) ClassUtils.getClass(name, getClassLoader());
 		return getInstance(clazz);
 	}
-	
-	default <T> Supplier<T> getInstanceSupplier(String name){
+
+	default <T> Supplier<T> getInstanceSupplier(String name) {
 		return new Supplier<T>() {
 			@Override
 			public T get() {
@@ -26,16 +27,17 @@ public interface NoArgsInstanceFactory extends ClassLoaderProvider{
 			}
 		};
 	}
-	
+
 	/**
 	 * 获取一个实例
+	 * 
 	 * @param <T>
 	 * @param clazz
 	 * @return
 	 */
 	<T> T getInstance(Class<T> clazz);
-	
-	default <T> Supplier<T> getInstanceSupplier(Class<T> clazz){
+
+	default <T> Supplier<T> getInstanceSupplier(Class<T> clazz) {
 		return new Supplier<T>() {
 			@Override
 			public T get() {
@@ -50,10 +52,10 @@ public interface NoArgsInstanceFactory extends ClassLoaderProvider{
 	 * @param name
 	 * @return
 	 */
-	default boolean isInstance(String name){
+	default boolean isInstance(String name) {
 		return isInstance(ClassUtils.getClass(name, getClassLoader()));
 	}
-	
+
 	/**
 	 * 表示可以使用getInstance(Class<T> type)方式获取实例
 	 * 

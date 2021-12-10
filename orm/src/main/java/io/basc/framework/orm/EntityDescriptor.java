@@ -11,13 +11,14 @@ public interface EntityDescriptor<T extends PropertyMetadata> extends EntityMeta
 	default Stream<T> stream() {
 		return getProperties().stream();
 	}
-	
+
 	/**
 	 * 获取所有的列, 属性不一定是列
+	 * 
 	 * @see #stream()
 	 * @return
 	 */
-	default Stream<T> columns(){
+	default Stream<T> columns() {
 		return stream();
 	}
 
@@ -25,9 +26,10 @@ public interface EntityDescriptor<T extends PropertyMetadata> extends EntityMeta
 	default Iterator<T> iterator() {
 		return stream().iterator();
 	}
-	
+
 	/**
 	 * 获取主键列
+	 * 
 	 * @see #columns()
 	 * @return
 	 */
@@ -37,6 +39,7 @@ public interface EntityDescriptor<T extends PropertyMetadata> extends EntityMeta
 
 	/**
 	 * 获取非主键列
+	 * 
 	 * @see #columns()
 	 * @return
 	 */

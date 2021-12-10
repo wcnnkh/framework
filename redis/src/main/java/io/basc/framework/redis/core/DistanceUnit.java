@@ -4,8 +4,7 @@ import io.basc.framework.data.geo.Metric;
 
 public enum DistanceUnit implements Metric {
 
-	METERS(6378137, "m"), KILOMETERS(6378.137, "km"), MILES(3963.191, "mi"), FEET(
-			20925646.325, "ft");
+	METERS(6378137, "m"), KILOMETERS(6378.137, "km"), MILES(3963.191, "mi"), FEET(20925646.325, "ft");
 
 	private final double multiplier;
 	private final String abbreviation;
@@ -13,8 +12,7 @@ public enum DistanceUnit implements Metric {
 	/**
 	 * Creates a new {@link DistanceUnit} using the given muliplier.
 	 *
-	 * @param multiplier
-	 *            the earth radius at equator.
+	 * @param multiplier the earth radius at equator.
 	 */
 	private DistanceUnit(double multiplier, String abbreviation) {
 

@@ -80,11 +80,11 @@ public final class MVCUtils {
 	public static Action getAction(ServerHttpRequest request) {
 		return (Action) request.getAttribute(Action.class.getName());
 	}
-	
+
 	public static String getModelAndView(ServerHttpRequest request) {
 		return (String) request.getAttribute(ModelAndView.class.getName());
 	}
-	
+
 	public static void setModelAndView(ServerHttpRequest request, String view) {
 		request.setAttribute(ModelAndView.class.getName(), view);
 	}

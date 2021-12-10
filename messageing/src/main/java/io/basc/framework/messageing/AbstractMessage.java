@@ -4,7 +4,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 
-public abstract class AbstractMessage<T> implements Message<T>{
+public abstract class AbstractMessage<T> implements Message<T> {
 	private final T payload;
 
 	AbstractMessage(T payload) {
@@ -27,7 +27,7 @@ public abstract class AbstractMessage<T> implements Message<T>{
 		if (!(other instanceof AbstractMessage)) {
 			return false;
 		}
-		
+
 		AbstractMessage<?> otherMessage = (AbstractMessage<?>) other;
 		return ObjectUtils.equals(this.payload, otherMessage.payload);
 	}
@@ -39,8 +39,7 @@ public abstract class AbstractMessage<T> implements Message<T>{
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + " payload=[" + toStringPayload() +
-				"], payloadLength=" + getPayloadLength();
+		return getClass().getSimpleName() + " payload=[" + toStringPayload() + "], payloadLength=" + getPayloadLength();
 	}
 
 	protected abstract String toStringPayload();

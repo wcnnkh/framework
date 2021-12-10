@@ -23,8 +23,7 @@ public class ToMapWriter implements DocumentWriter {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public void write(Document document, Node parentNode, String nodeName,
-			Object value, TypeDescriptor valueType) {
+	public void write(Document document, Node parentNode, String nodeName, Object value, TypeDescriptor valueType) {
 		Map map = ((ToMap) value).toMap();
 		if (map == null) {
 			return;

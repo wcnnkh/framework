@@ -20,7 +20,6 @@ import io.basc.framework.retry.RetryContext;
 import io.basc.framework.retry.RetryPolicy;
 import io.basc.framework.retry.context.DefaultRetryContext;
 
-
 /**
  * A {@link RetryPolicy} that allows the first attempt but never permits a
  * retry. Also be used as a base class for other policies, e.g. for test
@@ -32,8 +31,8 @@ import io.basc.framework.retry.context.DefaultRetryContext;
 public class NeverRetryPolicy implements RetryPolicy {
 
 	/**
-	 * Returns false after the first exception. So there is always one try, and
-	 * then the retry is prevented.
+	 * Returns false after the first exception. So there is always one try, and then
+	 * the retry is prevented.
 	 * 
 	 */
 	public boolean canRetry(RetryContext context) {
@@ -67,12 +66,11 @@ public class NeverRetryPolicy implements RetryPolicy {
 	}
 
 	/**
-	 * Special context object for {@link NeverRetryPolicy}. Implements a flag
-	 * with a similar function to {@link RetryContext#isExhaustedOnly()}, but
-	 * kept separate so that if subclasses of {@link NeverRetryPolicy} need to
-	 * they can modify the behaviour of
-	 * {@link NeverRetryPolicy#canRetry(RetryContext)} without affecting
-	 * {@link RetryContext#isExhaustedOnly()}.
+	 * Special context object for {@link NeverRetryPolicy}. Implements a flag with a
+	 * similar function to {@link RetryContext#isExhaustedOnly()}, but kept separate
+	 * so that if subclasses of {@link NeverRetryPolicy} need to they can modify the
+	 * behaviour of {@link NeverRetryPolicy#canRetry(RetryContext)} without
+	 * affecting {@link RetryContext#isExhaustedOnly()}.
 	 * 
 	 * @author Dave Syer
 	 * 

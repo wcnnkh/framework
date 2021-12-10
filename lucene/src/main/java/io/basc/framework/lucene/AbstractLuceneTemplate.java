@@ -26,7 +26,6 @@ import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
-import io.basc.framework.value.ValueUtils;
 
 public abstract class AbstractLuceneTemplate extends MapperConfigurator<Document, LuceneException>
 		implements LuceneTemplate {
@@ -163,7 +162,7 @@ public abstract class AbstractLuceneTemplate extends MapperConfigurator<Document
 	@Override
 	public Document wrap(Document document, Object instance) {
 		return wrap(document, instance, getFields(instance.getClass()).accept((field) -> {
-			return field.isAnnotationPresent(LuceneField.class) || ValueUtils.isBaseType(field.getGetter().getType());
+			return field.isAnnotationPresent(LuceneField.class) || Value.isBaseType(field.getGetter().getType());
 		}).all());
 	}
 
@@ -176,7 +175,7 @@ public abstract class AbstractLuceneTemplate extends MapperConfigurator<Document
 			}
 
 			Value v;
-			if (ValueUtils.isBaseType(field.getGetter().getType())) {
+			if (Value.isBaseType(field.getGetter().getType())) {
 				v = new AnyValue(value, getConversionService());
 			} else {
 				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
@@ -196,7 +195,7 @@ public abstract class AbstractLuceneTemplate extends MapperConfigurator<Document
 			}
 
 			Value v;
-			if (ValueUtils.isBaseType(property.getField().getGetter().getType())) {
+			if (Value.isBaseType(property.getField().getGetter().getType())) {
 				v = new AnyValue(value, getConversionService());
 			} else {
 				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));

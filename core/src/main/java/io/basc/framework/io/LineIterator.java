@@ -19,10 +19,8 @@ public class LineIterator extends AbstractIterator<String> implements Closeable 
 	/**
 	 * Constructs an iterator of the lines for a <code>Reader</code>.
 	 *
-	 * @param reader
-	 *            the <code>Reader</code> to read from, not null
-	 * @throws IllegalArgumentException
-	 *             if the reader is null
+	 * @param reader the <code>Reader</code> to read from, not null
+	 * @throws IllegalArgumentException if the reader is null
 	 */
 	public LineIterator(final Reader reader) throws IllegalArgumentException {
 		if (reader == null) {
@@ -42,8 +40,7 @@ public class LineIterator extends AbstractIterator<String> implements Closeable 
 	 * instance.
 	 *
 	 * @return {@code true} if the Reader has more lines
-	 * @throws IllegalStateException
-	 *             if an IO exception occurs
+	 * @throws IllegalStateException if an IO exception occurs
 	 */
 	@Override
 	public boolean hasNext() {
@@ -74,8 +71,7 @@ public class LineIterator extends AbstractIterator<String> implements Closeable 
 	 * Overridable method to validate each line that is returned. This
 	 * implementation always returns true.
 	 * 
-	 * @param line
-	 *            the line that is to be validated
+	 * @param line the line that is to be validated
 	 * @return true if valid, false to remove from the iterator
 	 */
 	protected boolean isValidLine(final String line) {
@@ -86,8 +82,7 @@ public class LineIterator extends AbstractIterator<String> implements Closeable 
 	 * Returns the next line in the wrapped <code>Reader</code>.
 	 *
 	 * @return the next line from the input
-	 * @throws NoSuchElementException
-	 *             if there is no line to return
+	 * @throws NoSuchElementException if there is no line to return
 	 */
 	@Override
 	public String next() {
@@ -98,8 +93,7 @@ public class LineIterator extends AbstractIterator<String> implements Closeable 
 	 * Returns the next line in the wrapped <code>Reader</code>.
 	 *
 	 * @return the next line from the input
-	 * @throws NoSuchElementException
-	 *             if there is no line to return
+	 * @throws NoSuchElementException if there is no line to return
 	 */
 	public String nextLine() {
 		if (!hasNext()) {
@@ -111,13 +105,12 @@ public class LineIterator extends AbstractIterator<String> implements Closeable 
 	}
 
 	/**
-	 * Closes the underlying {@code Reader}. This method is useful if you only
-	 * want to process the first few lines of a larger file. If you do not close
-	 * the iterator then the {@code Reader} remains open. This method can safely
-	 * be called multiple times.
+	 * Closes the underlying {@code Reader}. This method is useful if you only want
+	 * to process the first few lines of a larger file. If you do not close the
+	 * iterator then the {@code Reader} remains open. This method can safely be
+	 * called multiple times.
 	 *
-	 * @throws IOException
-	 *             if closing the underlying {@code Reader} fails.
+	 * @throws IOException if closing the underlying {@code Reader} fails.
 	 */
 	@Override
 	public void close() throws IOException {

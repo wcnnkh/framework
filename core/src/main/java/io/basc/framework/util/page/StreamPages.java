@@ -17,8 +17,8 @@ public class StreamPages<K, T> implements Pages<K, T> {
 		this.page = new SharedPage<K, T>(cursorId, pageable.getList(), pageable.getNextCursorId(), count, total);
 		this.processor = processor;
 	}
-	
-	public PageableProcessor<K, T> getProcessor(){
+
+	public PageableProcessor<K, T> getProcessor() {
 		return processor;
 	}
 

@@ -45,78 +45,74 @@ public class XmlDubboConfigure implements DubboConfigure {
 
 	@Override
 	public List<ApplicationConfig> getApplicationConfigList() {
-		List<ApplicationConfig> list = read((nodeList) -> XmlDubboUtils
-				.parseApplicationConfigList(environment, nodeList, null));
+		List<ApplicationConfig> list = read(
+				(nodeList) -> XmlDubboUtils.parseApplicationConfigList(environment, nodeList, null));
 		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<MetadataReportConfig> getMetadataReportConfigList() {
-		List<MetadataReportConfig> list = read((nodeList) -> XmlDubboUtils
-				.parseMetadataReportConfigList(environment, nodeList, null));
+		List<MetadataReportConfig> list = read(
+				(nodeList) -> XmlDubboUtils.parseMetadataReportConfigList(environment, nodeList, null));
 		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<RegistryConfig> getRegistryConfigList() {
-		List<RegistryConfig> list = read((nodeList) -> XmlDubboUtils
-				.parseRegistryConfigList(environment, nodeList, null));
+		List<RegistryConfig> list = read(
+				(nodeList) -> XmlDubboUtils.parseRegistryConfigList(environment, nodeList, null));
 		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<SslConfig> getSslConfigList() {
-		List<SslConfig> list = read((nodeList) -> XmlDubboUtils
-				.parseSslConfigList(environment, nodeList));
+		List<SslConfig> list = read((nodeList) -> XmlDubboUtils.parseSslConfigList(environment, nodeList));
 		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<MetricsConfig> getMetricsConfigList() {
-		List<MetricsConfig> list = read((nodeList) -> XmlDubboUtils
-				.parseMetricsConfigList(environment, nodeList));
+		List<MetricsConfig> list = read((nodeList) -> XmlDubboUtils.parseMetricsConfigList(environment, nodeList));
 		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<ModuleConfig> getModuleConfigList() {
-		List<ModuleConfig> list = read((nodeList) -> XmlDubboUtils
-				.parseModuleConfigList(environment, nodeList));
+		List<ModuleConfig> list = read((nodeList) -> XmlDubboUtils.parseModuleConfigList(environment, nodeList));
 		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<MonitorConfig> getMonitorConfigList() {
-		List<MonitorConfig> list = read((nodeList) -> XmlDubboUtils
-				.parseMonitorConfigList(environment, nodeList));
+		List<MonitorConfig> list = read((nodeList) -> XmlDubboUtils.parseMonitorConfigList(environment, nodeList));
 		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<ConfigCenterConfig> getConfigCenterConfigList() {
-		List<ConfigCenterConfig> list = read((nodeList) -> XmlDubboUtils
-				.parseConfigCenterConfigs(environment, nodeList));
+		List<ConfigCenterConfig> list = read(
+				(nodeList) -> XmlDubboUtils.parseConfigCenterConfigs(environment, nodeList));
 		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<ConsumerConfig> getConsumerConfigList() {
-		List<ConsumerConfig> list = read((nodeList) -> XmlDubboUtils
-				.parseConsumerConfigList(environment, nodeList, null));
+		List<ConsumerConfig> list = read(
+				(nodeList) -> XmlDubboUtils.parseConsumerConfigList(environment, nodeList, null));
 		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<ProtocolConfig> getProtocolConfigList() {
-		List<ProtocolConfig> list = read((nodeList) -> XmlDubboUtils
-				.parseProtocolConfigList(environment, nodeList, null));
+		List<ProtocolConfig> list = read(
+				(nodeList) -> XmlDubboUtils.parseProtocolConfigList(environment, nodeList, null));
 		return list == null ? Collections.emptyList() : list;
 	}
 
 	@Override
 	public List<ProviderConfig> getProviderConfigList() {
-		List<ProviderConfig> list = read((nodeList) -> XmlDubboUtils
-				.parseProviderConfigList(environment, nodeList, null));
+		List<ProviderConfig> list = read(
+				(nodeList) -> XmlDubboUtils.parseProviderConfigList(environment, nodeList, null));
 		return list == null ? Collections.emptyList() : list;
 	}
 

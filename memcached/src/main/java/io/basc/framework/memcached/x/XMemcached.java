@@ -55,7 +55,7 @@ public final class XMemcached implements Memcached {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	private void checkExp(long exp) {
 		Assert.requiredArgument(exp > Integer.MAX_VALUE, "exp should be less than or equal to " + Integer.MAX_VALUE);
 	}
@@ -63,7 +63,7 @@ public final class XMemcached implements Memcached {
 	public void set(String key, long exp, Object data) {
 		checkExp(exp);
 		try {
-			memcachedClient.set(key, (int)exp, data);
+			memcachedClient.set(key, (int) exp, data);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -88,7 +88,7 @@ public final class XMemcached implements Memcached {
 
 		checkExp(exp);
 		try {
-			return memcachedClient.add(key, (int)exp, data);
+			return memcachedClient.add(key, (int) exp, data);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -129,7 +129,7 @@ public final class XMemcached implements Memcached {
 			}
 
 			if (v != null) {
-				memcachedClient.set(key, (int)newExp, v);
+				memcachedClient.set(key, (int) newExp, v);
 			}
 
 			return (T) v;
@@ -142,7 +142,7 @@ public final class XMemcached implements Memcached {
 		checkExp(newExp);
 		if (isSupportTouch) {
 			try {
-				return memcachedClient.getAndTouch(key, (int)newExp);
+				return memcachedClient.getAndTouch(key, (int) newExp);
 			} catch (net.rubyeye.xmemcached.exception.MemcachedException e) {// 不支持touch协议
 				isSupportTouch = false;
 				return privateGetAndTouch(key, newExp);
@@ -158,7 +158,7 @@ public final class XMemcached implements Memcached {
 		checkExp(exp);
 		if (isSupportTouch) {
 			try {
-				return memcachedClient.touch(key, (int)exp);
+				return memcachedClient.touch(key, (int) exp);
 			} catch (net.rubyeye.xmemcached.exception.MemcachedException e) {// 不支持touch协议
 				isSupportTouch = false;
 				getAndTouch(key, exp);
@@ -240,8 +240,7 @@ public final class XMemcached implements Memcached {
 
 	public boolean delete(String key, long cas) {
 		try {
-			return memcachedClient.delete(key, cas,
-					memcachedClient.getOpTimeout());
+			return memcachedClient.delete(key, cas, memcachedClient.getOpTimeout());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -258,18 +257,16 @@ public final class XMemcached implements Memcached {
 	public long incr(String key, long delta, long initValue, long exp) {
 		checkExp(exp);
 		try {
-			return memcachedClient.incr(key, delta, initValue,
-					memcachedClient.getOpTimeout(), (int)exp);
+			return memcachedClient.incr(key, delta, initValue, memcachedClient.getOpTimeout(), (int) exp);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public long decr(String key, long delta, long initValue, long exp) {
 		checkExp(exp);
 		try {
-			return memcachedClient.decr(key, delta, initValue,
-					memcachedClient.getOpTimeout(), (int)exp);
+			return memcachedClient.decr(key, delta, initValue, memcachedClient.getOpTimeout(), (int) exp);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

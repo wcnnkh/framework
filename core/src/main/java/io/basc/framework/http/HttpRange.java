@@ -44,8 +44,7 @@ public abstract class HttpRange {
 	/**
 	 * Return the start of the range given the total length of a representation.
 	 * 
-	 * @param length
-	 *            the length of the representation
+	 * @param length the length of the representation
 	 * @return the start of this range for the representation
 	 */
 	public abstract long getRangeStart(long length);
@@ -54,8 +53,7 @@ public abstract class HttpRange {
 	 * Return the end of the range (inclusive) given the total length of a
 	 * representation.
 	 * 
-	 * @param length
-	 *            the length of the representation
+	 * @param length the length of the representation
 	 * @return the end of the range for the representation
 	 */
 	public abstract long getRangeEnd(long length);
@@ -63,8 +61,7 @@ public abstract class HttpRange {
 	/**
 	 * Create an {@code HttpRange} from the given position to the end.
 	 * 
-	 * @param firstBytePos
-	 *            the first byte position
+	 * @param firstBytePos the first byte position
 	 * @return a byte range that ranges from {@code firstPos} till the end
 	 * @see <a href="https://tools.ietf.org/html/rfc7233#section-2.1">Byte
 	 *      Ranges</a>
@@ -76,12 +73,9 @@ public abstract class HttpRange {
 	/**
 	 * Create a {@code HttpRange} from the given fist to last position.
 	 * 
-	 * @param firstBytePos
-	 *            the first byte position
-	 * @param lastBytePos
-	 *            the last byte position
-	 * @return a byte range that ranges from {@code firstPos} till
-	 *         {@code lastPos}
+	 * @param firstBytePos the first byte position
+	 * @param lastBytePos  the last byte position
+	 * @return a byte range that ranges from {@code firstPos} till {@code lastPos}
 	 * @see <a href="https://tools.ietf.org/html/rfc7233#section-2.1">Byte
 	 *      Ranges</a>
 	 */
@@ -90,13 +84,11 @@ public abstract class HttpRange {
 	}
 
 	/**
-	 * Create an {@code HttpRange} that ranges over the last given number of
-	 * bytes.
+	 * Create an {@code HttpRange} that ranges over the last given number of bytes.
 	 * 
-	 * @param suffixLength
-	 *            the number of bytes for the range
-	 * @return a byte range that ranges over the last {@code suffixLength}
-	 *         number of bytes
+	 * @param suffixLength the number of bytes for the range
+	 * @return a byte range that ranges over the last {@code suffixLength} number of
+	 *         bytes
 	 * @see <a href="https://tools.ietf.org/html/rfc7233#section-2.1">Byte
 	 *      Ranges</a>
 	 */
@@ -110,12 +102,10 @@ public abstract class HttpRange {
 	 * <p>
 	 * This method can be used to parse an {@code Range} header.
 	 * 
-	 * @param ranges
-	 *            the string to parse
+	 * @param ranges the string to parse
 	 * @return the list of ranges
-	 * @throws IllegalArgumentException
-	 *             if the string cannot be parsed or if the number of ranges is
-	 *             greater than 100
+	 * @throws IllegalArgumentException if the string cannot be parsed or if the
+	 *                                  number of ranges is greater than 100
 	 */
 	public static List<HttpRange> parseRanges(String ranges) {
 		if (StringUtils.isEmpty(ranges)) {
@@ -162,8 +152,7 @@ public abstract class HttpRange {
 	 * <p>
 	 * This method can be used to for an {@code Range} header.
 	 * 
-	 * @param ranges
-	 *            the ranges to create a string of
+	 * @param ranges the ranges to create a string of
 	 * @return the string representation
 	 */
 	public static String toString(Collection<HttpRange> ranges) {
@@ -180,8 +169,7 @@ public abstract class HttpRange {
 	}
 
 	/**
-	 * Represents an HTTP/1.1 byte range, with a first and optional last
-	 * position.
+	 * Represents an HTTP/1.1 byte range, with a first and optional last position.
 	 * 
 	 * @see <a href="https://tools.ietf.org/html/rfc7233#section-2.1">Byte
 	 *      Ranges</a>
@@ -233,8 +221,7 @@ public abstract class HttpRange {
 				return false;
 			}
 			ByteRange otherRange = (ByteRange) other;
-			return (this.firstPos == otherRange.firstPos
-					&& ObjectUtils.equals(this.lastPos, otherRange.lastPos));
+			return (this.firstPos == otherRange.firstPos && ObjectUtils.equals(this.lastPos, otherRange.lastPos));
 		}
 
 		@Override

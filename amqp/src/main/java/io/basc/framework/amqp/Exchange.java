@@ -2,7 +2,6 @@ package io.basc.framework.amqp;
 
 import io.basc.framework.core.reflect.MethodInvoker;
 
-
 public interface Exchange {
 	void bind(String routingKey, QueueDeclare queueDeclare, MessageListener messageListener) throws ExchangeException;
 

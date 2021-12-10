@@ -45,11 +45,10 @@ import io.basc.framework.util.XUtils;
  * A {@link ResourcePatternResolver} implementation that is able to resolve a
  * specified resource location path into one or more matching Resources. The
  * source path may be a simple path which has a one-to-one mapping to a target
- * {@link io.basc.framework.core.io.Resource}, or alternatively may contain
- * the special "{@code classpath*:}" prefix and/or internal Ant-style regular
- * expressions (matched using Spring's
- * {@link io.basc.framework.util.AntPathMatcher} utility). Both of the latter
- * are effectively wildcards.
+ * {@link io.basc.framework.core.io.Resource}, or alternatively may contain the
+ * special "{@code classpath*:}" prefix and/or internal Ant-style regular
+ * expressions (matched using {@link io.basc.framework.util.AntPathMatcher}
+ * utility). Both of the latter are effectively wildcards.
  *
  * <p>
  * <b>No Wildcards:</b>
@@ -580,9 +579,9 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 * Resolve the specified resource for path matching.
 	 * <p>
 	 * By default, Equinox OSGi "bundleresource:" / "bundleentry:" URL will be
-	 * resolved into a standard jar file URL that be traversed using Spring's
-	 * standard jar file traversal algorithm. For any preceding custom resolution,
-	 * override this method and replace the resource handle accordingly.
+	 * resolved into a standard jar file URL that be traversed using standard jar
+	 * file traversal algorithm. For any preceding custom resolution, override this
+	 * method and replace the resource handle accordingly.
 	 * 
 	 * @param original the resource to resolve
 	 * @return the resolved resource (may be identical to the passed-in resource)

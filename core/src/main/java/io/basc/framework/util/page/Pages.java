@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 import io.basc.framework.util.XUtils;
 
-public interface Pages<K, T> extends Page<K, T>, Pageables<K, T>{
+public interface Pages<K, T> extends Page<K, T>, Pageables<K, T> {
 
 	@Override
 	default Pages<K, T> next() {
@@ -25,11 +25,11 @@ public interface Pages<K, T> extends Page<K, T>, Pageables<K, T>{
 		Iterator<Pages<K, T>> iterator = new PagesIterator<>(this);
 		return XUtils.stream(iterator);
 	}
-	
+
 	@Override
 	default Page<K, T> all() {
 		return new StreamPage<K, T>(getCursorId(), () -> streamAll(), null, getTotal(), getTotal());
 	}
-	
+
 	Pages<K, T> jumpTo(K cursorId, long count);
 }

@@ -6,27 +6,22 @@ public final class RandomUtils {
 	private RandomUtils() {
 	};
 
-	public final static char[] CAPITAL_LETTERS = { 'A', 'B', 'C', 'D', 'E',
-			'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
-			'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', };
+	public final static char[] CAPITAL_LETTERS = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+			'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', };
 
-	public final static char[] LOWERCASE_LETTERS = { 'a', 'b', 'c', 'd', 'e',
-			'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
-			's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+	public final static char[] LOWERCASE_LETTERS = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+			'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
-	public final static char[] NUMBERIC_CHARACTER = { '0', '1', '2', '3', '4',
-			'5', '6', '7', '8', '9' };
+	public final static char[] NUMBERIC_CHARACTER = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
 	/**
 	 * 放在一起容易分辨的字符
 	 */
-	public final static char[] EASY_TO_DISTINGUISH = { '0', '1', '2', '3', '4',
-			'5', '6', '7', '8', '9', 'a', 'c', 'd', 'e', 'f', 'h', 'k', 'm',
-			'n', 'p', 'r', 's', 't', 'v', 'w', 'y', 'A', 'B', 'C', 'E', 'F',
-			'G', 'H', 'K', 'M', 'N', 'R', 'S', 'T', 'V', 'W', 'Y' };
+	public final static char[] EASY_TO_DISTINGUISH = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'c', 'd',
+			'e', 'f', 'h', 'k', 'm', 'n', 'p', 'r', 's', 't', 'v', 'w', 'y', 'A', 'B', 'C', 'E', 'F', 'G', 'H', 'K',
+			'M', 'N', 'R', 'S', 'T', 'V', 'W', 'Y' };
 
-	public final static char[] ALL = StringUtils.mergeCharArray(
-			NUMBERIC_CHARACTER, LOWERCASE_LETTERS, CAPITAL_LETTERS);
+	public final static char[] ALL = StringUtils.mergeCharArray(NUMBERIC_CHARACTER, LOWERCASE_LETTERS, CAPITAL_LETTERS);
 
 	/**
 	 * 获取某数组的随机数
@@ -65,8 +60,7 @@ public final class RandomUtils {
 	public static char[] getRandomCharArray(char[] randomCharArray, int length) {
 		char[] cArr = new char[length];
 		for (int i = 0; i < length; ++i) {
-			cArr[i] = randomCharArray[new Random()
-					.nextInt(randomCharArray.length)];
+			cArr[i] = randomCharArray[new Random().nextInt(randomCharArray.length)];
 		}
 		return cArr;
 	}
@@ -78,7 +72,6 @@ public final class RandomUtils {
 	 * @return
 	 */
 	public static String getNumCode(int len) {
-		return new String(getRandomCharArray(RandomUtils.NUMBERIC_CHARACTER,
-				len));
+		return new String(getRandomCharArray(RandomUtils.NUMBERIC_CHARACTER, len));
 	}
 }

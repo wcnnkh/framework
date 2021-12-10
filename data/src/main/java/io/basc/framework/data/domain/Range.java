@@ -23,8 +23,8 @@ public class Range<T> {
 		this.lowerBound = lowerBound;
 		this.upperBound = upperBound;
 	}
-	
-	public <V> Range<V> convert(Converter<T, V> converter){
+
+	public <V> Range<V> convert(Converter<T, V> converter) {
 		return new Range<V>(lowerBound.convert(converter), upperBound.convert(converter));
 	}
 

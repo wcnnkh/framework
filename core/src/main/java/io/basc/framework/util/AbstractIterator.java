@@ -2,6 +2,7 @@ package io.basc.framework.util;
 
 /**
  * 这是为了兼容1.5
+ * 
  * @author shuchaowen
  *
  * @param <E>

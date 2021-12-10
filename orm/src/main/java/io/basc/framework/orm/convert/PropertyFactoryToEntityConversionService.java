@@ -8,21 +8,21 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Set;
 
-public class PropertyFactoryToEntityConversionService extends EntityConversionService{
-	
+public class PropertyFactoryToEntityConversionService extends EntityConversionService {
+
 	@Override
 	protected Enumeration<String> keys(Object source) {
-		return CollectionUtils.toEnumeration(((PropertyFactory)source).iterator());
+		return CollectionUtils.toEnumeration(((PropertyFactory) source).iterator());
 	}
 
 	@Override
 	protected Object getProperty(Object source, String key) {
-		return ((PropertyFactory)source).getValue(key);
+		return ((PropertyFactory) source).getValue(key);
 	}
-	
+
 	@Override
 	protected boolean containsKey(Object source, String key) {
-		return ((PropertyFactory)source).containsKey(key);
+		return ((PropertyFactory) source).containsKey(key);
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {

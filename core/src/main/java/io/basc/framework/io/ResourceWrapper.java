@@ -75,7 +75,7 @@ public abstract class ResourceWrapper implements Resource, Observable<Resource> 
 	public boolean isFile() {
 		return get().isFile();
 	}
-	
+
 	@Override
 	public <T, E extends Throwable> T read(Processor<InputStream, ? extends T, E> processor) throws IOException, E {
 		return get().read(processor);
@@ -90,7 +90,7 @@ public abstract class ResourceWrapper implements Resource, Observable<Resource> 
 	public <E extends Throwable> void read(ConsumerProcessor<InputStream, E> callback) throws IOException, E {
 		get().read(callback);
 	}
-	
+
 	@Override
 	public byte[] getBytes() throws IOException {
 		return get().getBytes();

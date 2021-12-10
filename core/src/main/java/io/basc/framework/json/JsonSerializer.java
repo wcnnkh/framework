@@ -12,7 +12,7 @@ import java.io.OutputStream;
 
 public class JsonSerializer implements CrossLanguageSerializer {
 	public static final JsonSerializer INSTANCE = new JsonSerializer();
-	
+
 	private JSONSupport jsonSupport;
 	private Codec<String, byte[]> codec = CharsetCodec.UTF_8;
 

@@ -14,7 +14,7 @@ public class DefaultMethodInvoker implements MethodInvoker, Serializable, Clonea
 	private final MethodHolder methodHolder;
 	private Supplier<?> instanceSupplier;
 	private volatile Object instance;
-	
+
 	public DefaultMethodInvoker(Object instance, Class<?> sourceClass, Method method) {
 		this(instance, sourceClass, method, false);
 	}
@@ -22,35 +22,37 @@ public class DefaultMethodInvoker implements MethodInvoker, Serializable, Clonea
 	public DefaultMethodInvoker(NoArgsInstanceFactory instanceFactory, String instanceName, Class<?> sourceClass,
 			Method method) {
 		this(Modifier.isStatic(method.getModifiers()) ? null
-				: new NameInstanceSupplier<Object>(instanceFactory, instanceName), new SimpleMethodHolder(sourceClass, method));
+				: new NameInstanceSupplier<Object>(instanceFactory, instanceName),
+				new SimpleMethodHolder(sourceClass, method));
 	}
 
 	public DefaultMethodInvoker(Object instance, Class<?> sourceClass, Method method, boolean serialzerable) {
 		this(instance, serialzerable ? new SerializableMethod(method) : new SimpleMethodHolder(sourceClass, method));
 	}
-	
+
 	public DefaultMethodInvoker(Supplier<?> instanceSupplier, Class<?> sourceClass, Method method,
 			boolean serialzerable) {
 		this(instanceSupplier,
 				serialzerable ? new SerializableMethod(method) : new SimpleMethodHolder(sourceClass, method));
 	}
-	
+
 	public DefaultMethodInvoker(Object instance, MethodHolder methodHolder) {
 		this.methodHolder = methodHolder;
 		this.instance = instance;
 	}
-	
+
 	public DefaultMethodInvoker(Supplier<?> instanceSupplier, MethodHolder methodHolder) {
 		this.methodHolder = methodHolder;
 		this.instanceSupplier = instanceSupplier;
 	}
-	
+
 	private final AtomicBoolean get = new AtomicBoolean();
+
 	public Object get() {
-		if(instance == null && instanceSupplier != null && !get.get()){
+		if (instance == null && instanceSupplier != null && !get.get()) {
 			synchronized (this) {
-				if(instance == null){
-					if(get.compareAndSet(false, true)){
+				if (instance == null) {
+					if (get.compareAndSet(false, true)) {
 						instance = instanceSupplier.get();
 					}
 				}
@@ -58,7 +60,7 @@ public class DefaultMethodInvoker implements MethodInvoker, Serializable, Clonea
 		}
 		return instance;
 	}
-	
+
 	public Object getInstance() {
 		return get();
 	}
@@ -66,22 +68,23 @@ public class DefaultMethodInvoker implements MethodInvoker, Serializable, Clonea
 	public Method getMethod() {
 		return methodHolder.getMethod();
 	}
-	
+
 	public Class<?> getDeclaringClass() {
 		return methodHolder.getDeclaringClass();
 	}
-	
+
 	public Object invoke(Object... args) throws Throwable {
 		Method method = getMethod();
 		ReflectionUtils.makeAccessible(method);
-		return ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null : getInstance(), args);
+		return ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null : getInstance(),
+				args);
 	}
 
 	@Override
 	public String toString() {
 		return getMethod().toString();
 	}
-	
+
 	@Override
 	public DefaultMethodInvoker clone() {
 		return new DefaultMethodInvoker(this, methodHolder);

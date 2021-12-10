@@ -23,14 +23,14 @@ public abstract class MemoryLockFactory implements LockFactory {
 	}
 
 	protected abstract Lock createLock(String name);
-	
-	private final class LockSupplier implements Supplier<Lock>{
+
+	private final class LockSupplier implements Supplier<Lock> {
 		private final String name;
-		
-		public LockSupplier(String name){
+
+		public LockSupplier(String name) {
 			this.name = name;
 		}
-		
+
 		public Lock get() {
 			return createLock(name);
 		}

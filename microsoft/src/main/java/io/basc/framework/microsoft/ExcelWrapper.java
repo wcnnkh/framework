@@ -2,13 +2,13 @@ package io.basc.framework.microsoft;
 
 import java.io.IOException;
 
-public class ExcelWrapper implements Excel{
+public class ExcelWrapper implements Excel {
 	private final Excel excel;
-	
-	public ExcelWrapper(Excel excel){
+
+	public ExcelWrapper(Excel excel) {
 		this.excel = excel;
 	}
-	
+
 	public Excel getExcel() {
 		return excel;
 	}
@@ -28,5 +28,5 @@ public class ExcelWrapper implements Excel{
 	public int getNumberOfSheets() {
 		return excel.getNumberOfSheets();
 	}
-	
+
 }

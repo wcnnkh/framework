@@ -276,7 +276,6 @@ final class AnnotationTypeMapping {
 
 	private boolean isBetterConventionAnnotationValue(int index, boolean isValueAttribute,
 			AnnotationTypeMapping mapping) {
-
 		if (this.annotationValueMappings[index] == -1) {
 			return true;
 		}
@@ -493,7 +492,6 @@ final class AnnotationTypeMapping {
 	 * @return {@code true} if the value is equivalent to the default value
 	 */
 	boolean isEquivalentToDefaultValue(int attributeIndex, Object value, ValueExtractor valueExtractor) {
-
 		Method attribute = this.attributes.get(attributeIndex);
 		return isEquivalentToDefaultValue(attribute, value, valueExtractor);
 	}
@@ -526,13 +524,11 @@ final class AnnotationTypeMapping {
 	}
 
 	private static boolean isEquivalentToDefaultValue(Method attribute, Object value, ValueExtractor valueExtractor) {
-
 		return areEquivalent(attribute.getDefaultValue(), value, valueExtractor);
 	}
 
 	private static boolean areEquivalent(@Nullable Object value, @Nullable Object extractedValue,
 			ValueExtractor valueExtractor) {
-
 		if (ObjectUtils.equals(value, extractedValue)) {
 			return true;
 		}
@@ -566,7 +562,6 @@ final class AnnotationTypeMapping {
 
 	private static boolean areEquivalent(Annotation annotation, @Nullable Object extractedValue,
 			ValueExtractor valueExtractor) {
-
 		AttributeMethods attributes = AttributeMethods.forAnnotationType(annotation.annotationType());
 		for (int i = 0; i < attributes.size(); i++) {
 			Method attribute = attributes.get(i);

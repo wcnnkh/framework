@@ -10,19 +10,17 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 
-final class OpaqueUriComponents  extends UriComponents {
+final class OpaqueUriComponents extends UriComponents {
 	private static final long serialVersionUID = 1L;
 
 	private static final MultiValueMap<String, String> QUERY_PARAMS_NONE = new LinkedMultiValueMap<String, String>(0);
 
 	private final String ssp;
 
-
 	OpaqueUriComponents(String scheme, String schemeSpecificPart, String fragment) {
 		super(scheme, fragment);
 		this.ssp = schemeSpecificPart;
 	}
-
 
 	@Override
 	public String getSchemeSpecificPart() {
@@ -105,8 +103,7 @@ final class OpaqueUriComponents  extends UriComponents {
 	public URI toUri() {
 		try {
 			return new URI(getScheme(), this.ssp, getFragment());
-		}
-		catch (URISyntaxException ex) {
+		} catch (URISyntaxException ex) {
 			throw new IllegalStateException("Could not create URI object: " + ex.getMessage(), ex);
 		}
 	}
@@ -118,7 +115,6 @@ final class OpaqueUriComponents  extends UriComponents {
 		builder.fragment(getFragment());
 	}
 
-
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -129,9 +125,8 @@ final class OpaqueUriComponents  extends UriComponents {
 		}
 
 		OpaqueUriComponents other = (OpaqueUriComponents) obj;
-		return ObjectUtils.equals(getScheme(), other.getScheme()) &&
-				ObjectUtils.equals(this.ssp, other.ssp) &&
-				ObjectUtils.equals(getFragment(), other.getFragment());
+		return ObjectUtils.equals(getScheme(), other.getScheme()) && ObjectUtils.equals(this.ssp, other.ssp)
+				&& ObjectUtils.equals(getFragment(), other.getFragment());
 
 	}
 

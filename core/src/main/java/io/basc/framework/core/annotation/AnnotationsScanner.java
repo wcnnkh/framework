@@ -72,7 +72,6 @@ abstract class AnnotationsScanner {
 	@Nullable
 	private static <C, R> R processClass(C context, Class<?> source, SearchStrategy searchStrategy,
 			AnnotationsProcessor<C, R> processor) {
-
 		switch (searchStrategy) {
 		case DIRECT:
 			return processElement(context, source, processor);
@@ -91,7 +90,6 @@ abstract class AnnotationsScanner {
 	@Nullable
 	private static <C, R> R processClassInheritedAnnotations(C context, Class<?> source, SearchStrategy searchStrategy,
 			AnnotationsProcessor<C, R> processor) {
-
 		try {
 			if (isWithoutHierarchy(source, searchStrategy)) {
 				return processElement(context, source, processor);
@@ -143,14 +141,12 @@ abstract class AnnotationsScanner {
 	@Nullable
 	private static <C, R> R processClassHierarchy(C context, Class<?> source, AnnotationsProcessor<C, R> processor,
 			boolean includeInterfaces, boolean includeEnclosing) {
-
 		return processClassHierarchy(context, new int[] { 0 }, source, processor, includeInterfaces, includeEnclosing);
 	}
 
 	@Nullable
 	private static <C, R> R processClassHierarchy(C context, int[] aggregateIndex, Class<?> source,
 			AnnotationsProcessor<C, R> processor, boolean includeInterfaces, boolean includeEnclosing) {
-
 		try {
 			R result = processor.doWithAggregate(context, aggregateIndex[0]);
 			if (result != null) {
@@ -210,7 +206,6 @@ abstract class AnnotationsScanner {
 	@Nullable
 	private static <C, R> R processMethod(C context, Method source, SearchStrategy searchStrategy,
 			AnnotationsProcessor<C, R> processor) {
-
 		switch (searchStrategy) {
 		case DIRECT:
 		case INHERITED_ANNOTATIONS:
@@ -229,7 +224,6 @@ abstract class AnnotationsScanner {
 	@Nullable
 	private static <C, R> R processMethodInheritedAnnotations(C context, Method source,
 			AnnotationsProcessor<C, R> processor) {
-
 		try {
 			R result = processor.doWithAggregate(context, 0);
 			return (result != null ? result : processMethodAnnotations(context, 0, source, processor));
@@ -242,7 +236,6 @@ abstract class AnnotationsScanner {
 	@Nullable
 	private static <C, R> R processMethodHierarchy(C context, int[] aggregateIndex, Class<?> sourceClass,
 			AnnotationsProcessor<C, R> processor, Method rootMethod, boolean includeInterfaces) {
-
 		try {
 			R result = processor.doWithAggregate(context, aggregateIndex[0]);
 			if (result != null) {
@@ -345,7 +338,6 @@ abstract class AnnotationsScanner {
 
 	private static boolean hasSameGenericTypeParameters(Method rootMethod, Method candidateMethod,
 			Class<?>[] rootParameterTypes) {
-
 		Class<?> sourceDeclaringClass = rootMethod.getDeclaringClass();
 		Class<?> candidateDeclaringClass = candidateMethod.getDeclaringClass();
 		if (!candidateDeclaringClass.isAssignableFrom(sourceDeclaringClass)) {
@@ -364,7 +356,6 @@ abstract class AnnotationsScanner {
 	@Nullable
 	private static <C, R> R processMethodAnnotations(C context, int aggregateIndex, Method source,
 			AnnotationsProcessor<C, R> processor) {
-
 		Annotation[] annotations = getDeclaredAnnotations(source, false);
 		R result = processor.doWithAnnotations(context, aggregateIndex, source, annotations);
 		if (result != null) {
@@ -385,7 +376,6 @@ abstract class AnnotationsScanner {
 
 	@Nullable
 	private static <C, R> R processElement(C context, AnnotatedElement source, AnnotationsProcessor<C, R> processor) {
-
 		try {
 			R result = processor.doWithAggregate(context, 0);
 			return (result != null ? result

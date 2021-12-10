@@ -13,8 +13,8 @@ public interface SessionManager {
 	void removeSession(String sessionId);
 
 	Enumeration<String> sessionIds();
-	
+
 	void sendMessage(String sessionId, Message<?> message) throws IOException;
-	
+
 	void sendMessageToAll(Message<?> message);
 }

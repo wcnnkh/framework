@@ -31,8 +31,7 @@ public class JavaScriptUtils {
 	/**
 	 * Turn JavaScript special characters into escaped characters.
 	 * 
-	 * @param input
-	 *            the input string
+	 * @param input the input string
 	 * @return the string with escaped characters
 	 */
 	public static String javaScriptEscape(String input) {

@@ -26,7 +26,7 @@ public class WhereSql extends SerializableSql {
 		checkAnd();
 		privateWhere(whereSql, params);
 	}
-	
+
 	public void or(String whereSql, Object... params) {
 		checkOr();
 		privateWhere(whereSql, params);
@@ -143,9 +143,9 @@ public class WhereSql extends SerializableSql {
 		} else {
 			StringBuilder sql = new StringBuilder();
 			sql.append(beforeSql);
-			if(beforeSql.indexOf(" where ") != -1){
+			if (beforeSql.indexOf(" where ") != -1) {
 				sql.append(" and ");
-			}else{
+			} else {
 				sql.append(" where ");
 			}
 			sql.append(sb);

@@ -12,6 +12,6 @@ public interface BeanFactory extends InstanceFactory, Context, BeanDefinitionFac
 	boolean isSingleton(Class<?> clazz);
 
 	Aop getAop();
-	
+
 	ParameterFactory getDefaultValueFactory();
 }

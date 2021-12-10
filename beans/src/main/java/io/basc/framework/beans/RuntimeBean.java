@@ -19,7 +19,7 @@ public interface RuntimeBean {
 	boolean _init();
 
 	boolean _destroy();
-	
+
 	static class RuntimeBeanMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
 		private final AtomicBoolean _dependence = new AtomicBoolean();
 		private final AtomicBoolean _init = new AtomicBoolean();
@@ -29,7 +29,7 @@ public interface RuntimeBean {
 		public RuntimeBeanMethodInterceptor(BeanDefinition beanDefinition) {
 			this.beanDefinition = beanDefinition;
 		}
-		
+
 		public boolean isAccept(MethodInvoker invoker, Object[] args) {
 			if (ArrayUtils.isEmpty(args)) {
 				Method method = invoker.getMethod();

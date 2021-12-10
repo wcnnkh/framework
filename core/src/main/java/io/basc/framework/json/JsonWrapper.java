@@ -2,13 +2,12 @@ package io.basc.framework.json;
 
 import io.basc.framework.value.ValueFactoryWrapper;
 
-public class JsonWrapper<K, F extends Json<K>> extends
-		ValueFactoryWrapper<K, F> implements Json<K> {
+public class JsonWrapper<K, F extends Json<K>> extends ValueFactoryWrapper<K, F> implements Json<K> {
 
 	public JsonWrapper(F target) {
 		super(target);
 	}
-	
+
 	@Override
 	public JsonElement getDefaultValue(K key) {
 		return targetFactory.getDefaultValue(key);

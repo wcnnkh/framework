@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 使用WatchService实现resource监听<br/>
  * 需要jdk7(包含)以上<br/>
  * 事件可能会重复触发，这与操作系统的实现有关
+ * 
  * @author shuchaowen
  *
  */
@@ -55,7 +56,7 @@ public class WatchServiceResourceEventDispatcher extends SimpleResourceEventDisp
 								key.run();
 							}
 						} catch (Throwable e) {
-							//如果出现异常就休眠一秒再轮询
+							// 如果出现异常就休眠一秒再轮询
 							try {
 								Thread.sleep(1000L);
 							} catch (InterruptedException e1) {
@@ -90,12 +91,13 @@ public class WatchServiceResourceEventDispatcher extends SimpleResourceEventDisp
 	}
 
 	private AtomicBoolean registred = new AtomicBoolean();
+
 	private boolean watchServiceRegister() {
 		if (WATCH_SERVICE == null) {
 			return false;
 		}
-		
-		if(!registred.get() && registred.compareAndSet(false, true)){
+
+		if (!registred.get() && registred.compareAndSet(false, true)) {
 			File file;
 			try {
 				file = getResource().getFile();
@@ -131,7 +133,7 @@ public class WatchServiceResourceEventDispatcher extends SimpleResourceEventDisp
 	@Override
 	protected void onChange(ChangeEvent<Resource> resourceEvent) {
 		if (resourceEvent.getEventType() == EventType.CREATE) {
-			//如果资源创建了，那么尝试重新注册
+			// 如果资源创建了，那么尝试重新注册
 			if (watchServiceRegister()) {
 				cancelListener();
 			}
@@ -144,19 +146,19 @@ public class WatchServiceResourceEventDispatcher extends SimpleResourceEventDisp
 		if (watchServiceRegister()) {
 			return;
 		}
-		//注册失败就使用默认的方式实现
+		// 注册失败就使用默认的方式实现
 		super.listener();
 	}
-	
-	private static final class ResourceItem{
+
+	private static final class ResourceItem {
 		private final String name;
 		private final AbstractResource resource;
-		
+
 		public ResourceItem(String name, AbstractResource resource) {
 			this.name = name;
 			this.resource = resource;
 		}
-		
+
 		public String getName() {
 			return name;
 		}
@@ -167,17 +169,17 @@ public class WatchServiceResourceEventDispatcher extends SimpleResourceEventDisp
 
 		@Override
 		public boolean equals(Object obj) {
-			if(obj == null){
+			if (obj == null) {
 				return false;
 			}
-			
-			if(obj instanceof ResourceItem){
+
+			if (obj instanceof ResourceItem) {
 				return ((ResourceItem) obj).resource == resource;
 			}
-			
+
 			return false;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			return resource.hashCode();
@@ -200,25 +202,25 @@ public class WatchServiceResourceEventDispatcher extends SimpleResourceEventDisp
 			if (watchKey == null || !watchKey.isValid()) {
 				return;
 			}
-			
+
 			List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
 			try {
 				for (WatchEvent<?> event : watchEvents) {
 					Object context = event.context();
-					if(context == null){
+					if (context == null) {
 						continue;
 					}
-					
+
 					if (!(context instanceof Path)) {
 						continue;
 					}
-					
+
 					Path path = (Path) context;
 					File file = path.toFile();
-					if(file == null){
+					if (file == null) {
 						continue;
 					}
-					
+
 					EventType eventType = null;
 					if (StandardWatchEventKinds.ENTRY_CREATE.equals(event.kind())) {
 						eventType = EventType.CREATE;
@@ -227,25 +229,27 @@ public class WatchServiceResourceEventDispatcher extends SimpleResourceEventDisp
 					} else if (StandardWatchEventKinds.ENTRY_DELETE.equals(event.kind())) {
 						eventType = EventType.DELETE;
 					}
-					
+
 					if (eventType == null) {
 						continue;
 					}
-					
-					for(ResourceItem item : resources){
+
+					for (ResourceItem item : resources) {
 						if (file.getName().equals(item.getName())) {
-							ChangeEvent<Resource> resourceEvent = new ChangeEvent<Resource>(eventType, item.getResource());
-							if(logger.isDebugEnabled()){
+							ChangeEvent<Resource> resourceEvent = new ChangeEvent<Resource>(eventType,
+									item.getResource());
+							if (logger.isDebugEnabled()) {
 								logger.debug(resourceEvent.toString());
 							}
-							
+
 							try {
 								item.getResource().publishEvent(resourceEvent);
 							} catch (Throwable e) {
 								logger.error(e, item.getResource().getDescription());
 							}
 						}
-					};
+					}
+					;
 				}
 			} catch (Throwable e) {
 				logger.error(e, watchKey.toString());

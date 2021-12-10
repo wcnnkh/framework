@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-class CollectionToCollectionConversionService extends ConditionalConversionService{
+class CollectionToCollectionConversionService extends ConditionalConversionService {
 
 	public CollectionToCollectionConversionService(ConversionService conversionService) {
 		setConversionService(conversionService);
@@ -19,9 +19,8 @@ class CollectionToCollectionConversionService extends ConditionalConversionServi
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(Collection.class, Collection.class));
 	}
-	
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;
 		}
@@ -37,14 +36,14 @@ class CollectionToCollectionConversionService extends ConditionalConversionServi
 			return source;
 		}
 
-		// At this point, we need a collection copy in any case, even if just for finding out about element copies...
+		// At this point, we need a collection copy in any case, even if just for
+		// finding out about element copies...
 		Collection<Object> target = CollectionFactory.createCollection(targetType.getType(),
 				(elementDesc != null ? elementDesc.getType() : null), sourceCollection.size());
 
 		if (elementDesc == null) {
 			target.addAll(sourceCollection);
-		}
-		else {
+		} else {
 			for (Object sourceElement : sourceCollection) {
 				Object targetElement = this.getConversionService().convert(sourceElement,
 						sourceType.elementTypeDescriptor(sourceElement), elementDesc);

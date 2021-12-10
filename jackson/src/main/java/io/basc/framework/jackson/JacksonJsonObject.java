@@ -23,8 +23,8 @@ import io.basc.framework.json.JsonObject;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
 
-public class JacksonJsonObject extends AbstractJson<String> implements
-		JsonObject, JsonSerializable, Converter<JsonNode, JsonElement> {
+public class JacksonJsonObject extends AbstractJson<String>
+		implements JsonObject, JsonSerializable, Converter<JsonNode, JsonElement> {
 	private final ObjectNode objectNode;
 	private final ObjectMapper mapper;
 
@@ -51,24 +51,20 @@ public class JacksonJsonObject extends AbstractJson<String> implements
 
 	@Override
 	public Iterator<Pair<String, JsonElement>> iterator() {
-		return new ConvertibleIterator<Entry<String, JsonNode>, Pair<String, JsonElement>>(
-				objectNode.fields(),
+		return new ConvertibleIterator<Entry<String, JsonNode>, Pair<String, JsonElement>>(objectNode.fields(),
 				new Converter<Entry<String, JsonNode>, Pair<String, JsonElement>>() {
 
 					@Override
-					public Pair<String, JsonElement> convert(
-							Entry<String, JsonNode> o) {
-						return new Pair<String, JsonElement>(o.getKey(),
-								JacksonJsonObject.this.convert(o.getValue()));
+					public Pair<String, JsonElement> convert(Entry<String, JsonNode> o) {
+						return new Pair<String, JsonElement>(o.getKey(), JacksonJsonObject.this.convert(o.getValue()));
 					}
 				});
 	}
 
 	@Override
 	public Set<String> keySet() {
-		return Collections
-				.list(CollectionUtils.toEnumeration(objectNode.fieldNames()))
-				.stream().collect(Collectors.toSet());
+		return Collections.list(CollectionUtils.toEnumeration(objectNode.fieldNames())).stream()
+				.collect(Collectors.toSet());
 	}
 
 	@Override
@@ -83,14 +79,12 @@ public class JacksonJsonObject extends AbstractJson<String> implements
 	}
 
 	@Override
-	public void serialize(JsonGenerator gen, SerializerProvider serializers)
-			throws IOException {
+	public void serialize(JsonGenerator gen, SerializerProvider serializers) throws IOException {
 		objectNode.serialize(gen, serializers);
 	}
 
 	@Override
-	public void serializeWithType(JsonGenerator gen,
-			SerializerProvider serializers, TypeSerializer typeSer)
+	public void serializeWithType(JsonGenerator gen, SerializerProvider serializers, TypeSerializer typeSer)
 			throws IOException {
 		objectNode.serializeWithType(gen, serializers, typeSer);
 	}

@@ -6,26 +6,26 @@ import io.basc.framework.util.AbstractIterator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class InstanceIterator<E> extends AbstractIterator<E>{
+public class InstanceIterator<E> extends AbstractIterator<E> {
 	private final NoArgsInstanceFactory instanceFactory;
 	private final Iterator<String> iterator;
 	private String name;
-	
-	public InstanceIterator(NoArgsInstanceFactory instanceFactory, Iterator<String> iterator){
+
+	public InstanceIterator(NoArgsInstanceFactory instanceFactory, Iterator<String> iterator) {
 		this.instanceFactory = instanceFactory;
 		this.iterator = iterator;
 	}
-	
+
 	public boolean hasNext() {
-		while(name == null){
-			if(iterator == null || !iterator.hasNext()){
+		while (name == null) {
+			if (iterator == null || !iterator.hasNext()) {
 				return false;
 			}
-			
-			name =iterator.next();
-			if(name != null && instanceFactory.isInstance(name)){
+
+			name = iterator.next();
+			if (name != null && instanceFactory.isInstance(name)) {
 				return true;
-			}else{
+			} else {
 				name = null;
 			}
 		}

@@ -12,11 +12,11 @@ import com.caucho.hessian.io.SerializerFactory;
 
 public class Hessian2Serializer implements Serializer {
 	private final SerializerFactory serializerFactory;
-	
-	public Hessian2Serializer(){
+
+	public Hessian2Serializer() {
 		this(new DefaultSerializerFactory());
 	}
-	
+
 	public Hessian2Serializer(SerializerFactory serializerFactory) {
 		this.serializerFactory = serializerFactory;
 	}

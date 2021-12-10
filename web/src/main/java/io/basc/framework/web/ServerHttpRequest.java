@@ -14,7 +14,7 @@ import java.security.Principal;
 
 public interface ServerHttpRequest extends HttpInputMessage, HttpRequest, EditableAttributes<String, Object> {
 	String getPath();
-	
+
 	String getContextPath();
 
 	HttpCookie[] getCookies();
@@ -26,13 +26,14 @@ public interface ServerHttpRequest extends HttpInputMessage, HttpRequest, Editab
 	boolean isSupportAsyncControl();
 
 	ServerHttpAsyncControl getAsyncControl(ServerHttpResponse response);
-	
+
 	/**
 	 * 获取客户端请求的ip
+	 * 
 	 * @return
 	 */
 	String getIp();
-	
+
 	BufferedReader getReader() throws IOException;
 
 	/**

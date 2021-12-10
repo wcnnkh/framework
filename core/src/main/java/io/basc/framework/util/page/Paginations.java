@@ -28,7 +28,7 @@ public interface Paginations<T> extends Pagination<T>, Pages<Long, T> {
 	default Paginations<T> shared() {
 		return new SharedPaginations<T>(this);
 	}
-	
+
 	@Override
 	default Pagination<T> all() {
 		return new StreamPagination<T>(getCursorId(), () -> streamAll(), getTotal(), getTotal());
