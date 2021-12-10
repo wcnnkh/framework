@@ -13,6 +13,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 /**
  * 
  * {@link https://github.com/swagger-api/swagger-ui}
+ * {@link https://github.com/swagger-api/swagger-ui/tree/master/dist}
  * @author shuchaowen
  *
  */
