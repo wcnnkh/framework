@@ -22,20 +22,16 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 import java.util.zip.Checksum;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 
 public final class FileUtils {
@@ -2238,60 +2234,6 @@ public final class FileUtils {
 		return path;
 	}
 
-	public static boolean unZip(String zipPath, String toPath) {
-		Assert.securePathArgument(zipPath, "zipPath");
-		Assert.securePathArgument(toPath, "toPath");
-		String zipPathToUse = StringUtils.cleanPath(zipPath);
-		String toPathToUse = StringUtils.cleanPath(toPath);
-		try {
-			File zipF = new File(zipPathToUse);
-			if (!zipF.exists()) {
-				return false;
-			}
-
-			File to = new File(toPathToUse);
-			if (!to.exists()) {
-				to.mkdirs();
-			}
-
-			toPathToUse = to.getPath() + File.separator;
-			ZipFile zipFile = new ZipFile(zipPathToUse);
-			Enumeration<? extends ZipEntry> ens = zipFile.entries();
-			ZipEntry zipEntry = null;
-			while (ens.hasMoreElements()) {
-				zipEntry = ens.nextElement();
-				String dirName = zipEntry.getName();
-				dirName = Assert.securePath(dirName);
-				File f = new File(toPathToUse, dirName);
-				if (zipEntry.isDirectory()) {
-					// dirName = dirName.substring(0, dirName.length() - 1);
-					f.mkdirs();
-				} else {
-					/*
-					 * if(!f.exists()){ String[] arrFolderName = dirName.split("/"); StringBuilder
-					 * sb = new StringBuilder(); sb.append(toPath + File.separator); for(int i=0;
-					 * i<(arrFolderName.length - 1); i++){ sb.append(arrFolderName[i]);
-					 * sb.append(File.separator); }
-					 * 
-					 * File tempDir = new File(sb.toString()); tempDir.mkdir(); }
-					 */
-					f.createNewFile();
-					InputStream is = zipFile.getInputStream(zipEntry);
-					try {
-						copyInputStreamToFile(is, f);
-					} finally {
-						IOUtils.close(is);
-					}
-				}
-			}
-			zipFile.close();
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
 	/**
 	 * 将文件分割符换成与当前操作系统一致
 	 * 
@@ -2308,6 +2250,16 @@ public final class FileUtils {
 		} else {
 			return path.replaceAll("/", "\\\\");
 		}
+	}
+
+	/**
+	 * 迭代目录下的所有文件
+	 * 
+	 * @param directory
+	 * @return
+	 */
+	public static Stream<IterationFile<File>> stream(File directory) {
+		return stream(directory, (FileFilter) null);
 	}
 
 	/**
@@ -2358,14 +2310,6 @@ public final class FileUtils {
 		Assert.isTrue(directory.isDirectory(), directory + " is not a directory");
 		ListFilenameIterator iterator = new ListFilenameIterator(directory, filter, maxDepth);
 		return XUtils.stream(iterator);
-	}
-
-	public static String getFileSuffix(String filePath) {
-		int sufIndex = filePath.lastIndexOf(".");
-		if (sufIndex != -1) {
-			return filePath.substring(sufIndex + 1);
-		}
-		return null;
 	}
 
 	public static long write(Iterator<? extends byte[]> sourceIterator, File target) throws IOException {

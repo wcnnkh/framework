@@ -7,8 +7,18 @@ import io.basc.framework.net.message.InputMessage;
 import java.io.Closeable;
 
 public interface MultipartMessage extends InputMessage, AutoCloseable, Closeable {
+	/**
+	 * 名称
+	 * 
+	 * @return
+	 */
 	String getName();
 
+	/**
+	 * 文件名
+	 * 
+	 * @return
+	 */
 	@Nullable
 	String getOriginalFilename();
 

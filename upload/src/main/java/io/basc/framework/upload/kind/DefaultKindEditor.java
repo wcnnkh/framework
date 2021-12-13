@@ -8,9 +8,9 @@ import java.util.Collections;
 import java.util.List;
 
 import io.basc.framework.io.FileUtils;
+import io.basc.framework.io.FilenameUtils;
 import io.basc.framework.net.message.multipart.MultipartMessage;
 import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.TimeUtils;
 import io.basc.framework.util.comparator.FileComparator;
@@ -32,7 +32,7 @@ public class DefaultKindEditor extends AbstractKindUpload {
 	@Override
 	protected List<KindFileItem> managerInternal(String group, KindDirType dir, String path, KindOrderType orderType) {
 		String filePath = StringUtils.mergePaths(rootPath, path);
-		filePath = Assert.securePath(filePath);
+		filePath = FilenameUtils.normalize(filePath);
 		return list(new File(filePath), orderType);
 	}
 

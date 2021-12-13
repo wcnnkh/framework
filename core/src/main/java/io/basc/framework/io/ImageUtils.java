@@ -1,6 +1,7 @@
 package io.basc.framework.io;
 
 import io.basc.framework.codec.support.Base64;
+import io.basc.framework.util.StringUtils;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -252,7 +253,7 @@ public final class ImageUtils {
 	public static String getBase64ImageUrl(String filePath) {
 		StringBuilder sb = new StringBuilder("data:image/jpg;base64,");
 		sb.append("data:image/");
-		sb.append(FileUtils.getFileSuffix(filePath));
+		sb.append(StringUtils.getFilenameExtension(filePath));
 		sb.append(";base64,");
 
 		byte[] data;
