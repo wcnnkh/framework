@@ -14,7 +14,6 @@ import java.util.zip.ZipOutputStream;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.io.FileUtils;
-import io.basc.framework.io.FilenameUtils;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.util.Assert;
 
@@ -73,14 +72,7 @@ public class Zip extends FastStreamCodec {
 			ZipEntry zipEntry = null;
 			while (ens.hasMoreElements()) {
 				zipEntry = ens.nextElement();
-				String dirName = zipEntry.getName();
-				dirName = FilenameUtils.normalize(dirName);
-				if (dirName == null) {
-					// 非法的路径？
-					continue;
-				}
-
-				File f = new File(target, dirName);
+				File f = new File(target, Assert.securePath(zipEntry.getName()));
 				if (zipEntry.isDirectory()) {
 					// dirName = dirName.substring(0, dirName.length() - 1);
 					f.mkdirs();
