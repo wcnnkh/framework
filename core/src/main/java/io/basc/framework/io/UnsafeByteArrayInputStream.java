@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 /**
- * @author shuchaowen
+ * @author wcnnkh
  * @see ByteArrayInputStream
  */
 public class UnsafeByteArrayInputStream extends InputStream {
