@@ -6,7 +6,7 @@ import freemarker.template.SimpleDate;
 import freemarker.template.SimpleNumber;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
-import io.basc.framework.freemarker.annotation.SharedVariable;
+import io.basc.framework.freemarker.boot.annotation.SharedVariable;
 import io.basc.framework.util.TimeUtils;
 
 @SharedVariable

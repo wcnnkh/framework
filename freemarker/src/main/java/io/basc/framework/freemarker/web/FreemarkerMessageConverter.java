@@ -104,12 +104,12 @@ public class FreemarkerMessageConverter extends ModelAndViewMessageConverter imp
 		if (StringUtils.isEmpty(charset)) {
 			charset = Constants.UTF_8_NAME;
 		}
-		
-		if(request.getContentType() == null) {
+
+		if (request.getContentType() == null) {
 			request.setContentType(MediaType.TEXT_HTML);
 			request.setCharacterEncoding(charset);
 		}
-		
+
 		Template template = configuration.getTemplate(modelAndView.getName(), charset);
 		OutputStreamWriter writer = null;
 		try {

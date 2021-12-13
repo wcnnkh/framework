@@ -17,6 +17,8 @@ import io.basc.framework.util.NumberUtils;
  *
  */
 public class FreemarkerUtils {
+	private static final String NOT_MATCH = "The '%s' parameter not a %s";
+
 	@SuppressWarnings("unchecked")
 	public static <T> T getObject(TemplateModel model, String name, Class<T> targetClass)
 			throws TemplateModelException {
@@ -101,21 +103,13 @@ public class FreemarkerUtils {
 		return getNumber(params, name, Integer.class);
 	}
 
-	public static String getReqeustParams(Environment env, String key) {
-		try {
-			TemplateModel model = env.getDataModel().get(key);
-			if (model instanceof TemplateNumberModel) {
-				return ((TemplateNumberModel) model).getAsNumber().toString();
-			} else if (model instanceof TemplateScalarModel) {
-				return ((TemplateScalarModel) model).getAsString();
-			}
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		} catch (TemplateModelException e) {
-			e.printStackTrace();
+	public static String getReqeustParams(Environment env, String key) throws TemplateModelException {
+		TemplateModel model = env.getDataModel().get(key);
+		if (model instanceof TemplateNumberModel) {
+			return ((TemplateNumberModel) model).getAsNumber().toString();
+		} else if (model instanceof TemplateScalarModel) {
+			return ((TemplateScalarModel) model).getAsString();
 		}
 		return null;
 	}
-
-	private static final String NOT_MATCH = "The '%s' parameter not a %s";
 }
