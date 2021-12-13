@@ -1,4 +1,4 @@
-package io.basc.framework.freemarker.annotation;
+package io.basc.framework.freemarker.boot.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,6 +9,7 @@ import io.basc.framework.context.annotation.Indexed;
 
 /**
  * 标识这是一个freemarker方法
+ * 
  * @author shuchaowen
  *
  */
@@ -18,6 +19,7 @@ import io.basc.framework.context.annotation.Indexed;
 public @interface SharedVariable {
 	/**
 	 * 默认使用简写类名
+	 * 
 	 * @see Class#getSimpleName()
 	 * @return
 	 */

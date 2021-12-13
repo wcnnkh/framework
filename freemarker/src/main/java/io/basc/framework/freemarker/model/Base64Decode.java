@@ -1,7 +1,7 @@
 package io.basc.framework.freemarker.model;
 
 import io.basc.framework.codec.support.Base64;
-import io.basc.framework.freemarker.annotation.SharedVariable;
+import io.basc.framework.freemarker.boot.annotation.SharedVariable;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;

@@ -1,11 +1,10 @@
 package io.basc.framework.freemarker.model;
 
-import io.basc.framework.freemarker.annotation.SharedVariable;
-
 import java.util.List;
 
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
+import io.basc.framework.freemarker.boot.annotation.SharedVariable;
 
 @SharedVariable
 public class ToString implements TemplateMethodModelEx {

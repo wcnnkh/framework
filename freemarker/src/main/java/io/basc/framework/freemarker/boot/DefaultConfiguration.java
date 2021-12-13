@@ -1,8 +1,9 @@
-package io.basc.framework.freemarker;
+package io.basc.framework.freemarker.boot;
 
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.freemarker.annotation.SharedVariable;
+import io.basc.framework.freemarker.DefaultTemplateLoader;
+import io.basc.framework.freemarker.boot.annotation.SharedVariable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.StringUtils;
