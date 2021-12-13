@@ -6,6 +6,7 @@ import io.basc.framework.convert.lang.ConversionServices;
 import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.factory.support.DefaultValueFactoryAware;
+import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.message.convert.DefaultMessageConverters;
 import io.basc.framework.net.message.convert.MessageConverterAware;
 import io.basc.framework.net.message.convert.MessageConverters;
@@ -28,6 +29,7 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 		LastWebMessageConverter lastWebMessageConverter = new LastWebMessageConverter();
 		aware(lastWebMessageConverter);
 		afters.setAfterService(lastWebMessageConverter);
+		addService(new MultipartMessageWebMessageConverter(InetUtils.getMultipartMessageResolver()));
 		addService(new EntityMessageConverter());
 		addService(new InputMessageConverter());
 		addService(new ResourceMessageConverter());
