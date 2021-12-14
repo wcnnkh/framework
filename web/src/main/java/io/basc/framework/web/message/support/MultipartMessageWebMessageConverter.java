@@ -10,7 +10,6 @@ import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.message.multipart.MultipartMessage;
 import io.basc.framework.net.message.multipart.MultipartMessageConverter;
 import io.basc.framework.net.message.multipart.MultipartMessageResolver;
@@ -31,7 +30,7 @@ public class MultipartMessageWebMessageConverter extends MultipartMessageConvert
 		if (message instanceof MultiPartServerHttpRequest) {
 			return true;
 		}
-		return canReadType(descriptor);
+		return getMultipartMessageResolver() != null && canReadType(descriptor);
 	}
 
 	@Override
@@ -41,7 +40,7 @@ public class MultipartMessageWebMessageConverter extends MultipartMessageConvert
 		if (request instanceof MultiPartServerHttpRequest) {
 			messages = ((MultiPartServerHttpRequest) request).getMultipartMessages();
 		} else {
-			messages = InetUtils.getMultipartMessageResolver().resolve(request);
+			messages = getMultipartMessageResolver().resolve(request);
 		}
 		return convert(messages, new TypeDescriptor(parameterDescriptor));
 	}
@@ -49,7 +48,7 @@ public class MultipartMessageWebMessageConverter extends MultipartMessageConvert
 	@Override
 	public Object read(ClientHttpResponse response, TypeDescriptor typeDescriptor)
 			throws IOException, WebMessagelConverterException {
-		List<MultipartMessage> messages = InetUtils.getMultipartMessageResolver().resolve(response);
+		List<MultipartMessage> messages = getMultipartMessageResolver().resolve(response);
 		return convert(messages, typeDescriptor);
 	}
 
