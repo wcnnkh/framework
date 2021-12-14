@@ -561,7 +561,7 @@ public abstract class Assert {
 	 */
 	public static String securePathArgument(String path, String name) throws IllegalArgumentException {
 		try {
-			return securePath(path, () -> "[Assertion failed] - [" + name + "] argument is unsafe path: " + path);
+			return securePath(path);
 		} catch (IllegalStateException e) {
 			throw new IllegalArgumentException("[Assertion failed] - [" + name + "] argument is unsafe path: " + path,
 					e);

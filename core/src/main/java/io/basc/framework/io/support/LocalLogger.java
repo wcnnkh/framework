@@ -29,7 +29,7 @@ public final class LocalLogger {
 	private final String directory;
 
 	public LocalLogger(String directory) {
-		this.directory = StringUtils.cleanPath(directory);
+		this.directory = Assert.securePathArgument(directory, "directory");
 		File file = new File(directory);
 		if (!file.exists()) {
 			file.mkdirs();
@@ -42,8 +42,7 @@ public final class LocalLogger {
 	}
 
 	private File getFile(String key) {
-		Assert.securePathArgument(key, "key");
-		return new File(directory + "/" + StringUtils.cleanPath(key));
+		return new File(directory, Assert.securePathArgument(key, "key"));
 	}
 
 	public Record<byte[]> create(String id, byte[] data) throws IOException {
