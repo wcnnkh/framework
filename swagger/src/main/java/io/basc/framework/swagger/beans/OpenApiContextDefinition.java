@@ -28,9 +28,9 @@ public class OpenApiContextDefinition extends DefaultBeanDefinition {
 
 	@Override
 	public Object create() throws InstanceException {
-		//重新加载扩展
+		// 重新加载扩展
 		OpenAPIExtensionsReload.reload(beanFactory);
-		
+
 		SwaggerConfiguration configuration = beanFactory.getInstance(SwaggerConfiguration.class);
 		if (CollectionUtils.isEmpty(configuration.getResourceClasses())
 				&& StringUtils.isEmpty(configuration.getScannerClass())
@@ -39,6 +39,7 @@ public class OpenApiContextDefinition extends DefaultBeanDefinition {
 					.collect(Collectors.toSet());
 			configuration.setResourceClasses(classNames);
 		}
+
 		OpenApiContextBuilder builder = new WebOpenApiContextBuilder().openApiConfiguration(configuration);
 		try {
 			return builder.buildContext(true);

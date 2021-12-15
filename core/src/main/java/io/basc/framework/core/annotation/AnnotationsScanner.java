@@ -12,7 +12,7 @@ import io.basc.framework.core.BridgeMethodResolver;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.MergedAnnotations.SearchStrategy;
-import io.basc.framework.core.reflect.Methods;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.ObjectUtils;
@@ -300,7 +300,7 @@ abstract class AnnotationsScanner {
 		if (methods == null) {
 			boolean isInterface = baseType.isInterface();
 			methods = isInterface ? baseType.getMethods()
-					: Methods.forClass(baseType, true).withInterfaces(false).streamAll().toArray(Method[]::new);
+					: ReflectionUtils.getDeclaredMethods(baseType).withInterfaces().streamAll().toArray(Method[]::new);
 			int cleared = 0;
 			for (int i = 0; i < methods.length; i++) {
 				if ((!isInterface && Modifier.isPrivate(methods[i].getModifiers()))
