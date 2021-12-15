@@ -445,7 +445,7 @@ public final class CollectionFactory {
 	}
 
 	/**
-	 * 克隆一个map
+	 * 克隆一个{@link Map}
 	 * 
 	 * @param <M>
 	 * @param <K>
@@ -453,14 +453,31 @@ public final class CollectionFactory {
 	 * @param map
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static <M extends Map<K, V>, K, V> M clone(M map) {
 		Assert.requiredArgument(map != null, "map");
-		if (map instanceof Cloneable) {
+		return clone(map, false);
+	}
+
+	/**
+	 * 克隆一个{@link Map}
+	 * 
+	 * @param <M>
+	 * @param <K>
+	 * @param <V>
+	 * @param map
+	 * @param deep {@link ObjectUtils#clone(Object, boolean)}
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <M extends Map<K, V>, K, V> M clone(M map, boolean deep) {
+		Assert.requiredArgument(map != null, "map");
+		if (!deep && map instanceof Cloneable) {
 			return ReflectionUtils.clone((Cloneable) map);
 		} else {
 			M cloneMap = (M) createMap(map.getClass(), getEnumMapKeyType(map), map.size());
-			cloneMap.putAll(map);
+			for (Entry<K, V> entry : map.entrySet()) {
+				cloneMap.put(ObjectUtils.clone(entry.getKey(), deep), ObjectUtils.clone(entry.getValue(), deep));
+			}
 			return cloneMap;
 		}
 	}
@@ -475,22 +492,37 @@ public final class CollectionFactory {
 	}
 
 	/**
-	 * 克隆一个collection
+	 * 克隆一个{@link Collection}
 	 * 
 	 * @param <C>
 	 * @param <E>
 	 * @param collection
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static <C extends Collection<E>, E> C clone(C collection) {
+		return clone(collection, false);
+	}
+
+	/**
+	 * 克隆一个{@link Collection}
+	 * 
+	 * @param <C>
+	 * @param <E>
+	 * @param collection
+	 * @param deep
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <C extends Collection<E>, E> C clone(C collection, boolean deep) {
 		Assert.requiredArgument(collection != null, "collection");
-		if (collection instanceof Cloneable) {
+		if (!deep && collection instanceof Cloneable) {
 			return ReflectionUtils.clone((Cloneable) collection);
 		} else {
 			C cloneCollection = (C) createCollection(collection.getClass(), getEnumSetElementType(collection),
 					collection.size());
-			cloneCollection.addAll(collection);
+			for (E e : collection) {
+				cloneCollection.add(ObjectUtils.clone(e, deep));
+			}
 			return cloneCollection;
 		}
 	}

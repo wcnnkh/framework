@@ -3,6 +3,8 @@ package io.basc.framework.util;
 import java.util.Collection;
 import java.util.Map;
 
+import io.basc.framework.io.FilenameUtils;
+
 /**
  * Assertion utility class that assists in validating arguments. Useful for
  * identifying programmer errors early and clearly at runtime.
@@ -510,22 +512,59 @@ public abstract class Assert {
 		state(expression, "[Assertion failed] - this state invariant must be true");
 	}
 
-	public static String securePath(String path) {
+	/**
+	 * 安全路径验证
+	 * 
+	 * @see FilenameUtils#normalize(String)
+	 * @see #securePath(String, Supplier)
+	 * @param path
+	 * @return 返回安全路径
+	 * @throws IllegalStateException
+	 */
+	public static String securePath(String path) throws IllegalStateException {
 		return securePath(path, () -> "Unsafe path: " + path);
 	}
 
-	public static String securePath(String path, Supplier<String> message) {
+	/**
+	 * 安全路径验证
+	 * 
+	 * @see FilenameUtils#normalize(String)
+	 * @param path
+	 * @param message
+	 * @return 返回安全路径
+	 * @throws IllegalStateException 不安全的路径
+	 */
+	public static String securePath(String path, Supplier<String> message) throws IllegalStateException {
 		if (StringUtils.isEmpty(path)) {
 			return path;
 		}
 
-		if (path.indexOf("../") != -1 || path.indexOf("..\\") != -1) {
-			throw new IllegalArgumentException(message.get());
+		String pathToUse = FilenameUtils.normalize(path);
+		if (pathToUse == null) {
+			throw new IllegalStateException(message.get());
 		}
-		return path;
+
+		if (pathToUse.indexOf("../") != -1 || pathToUse.indexOf("..\\") != -1) {
+			throw new IllegalStateException(message.get());
+		}
+		return pathToUse;
 	}
 
-	public static String securePathArgument(String path, String name) {
-		return securePath(path, () -> "[Assertion failed] - [" + name + "] argument is unsafe path: " + path);
+	/**
+	 * 安全的路径参数验证
+	 * 
+	 * @see FilenameUtils#normalize(String)
+	 * @param path 路径
+	 * @param name 参数名
+	 * @return 返回安全的路径
+	 * @throws IllegalArgumentException 不安全的路径
+	 */
+	public static String securePathArgument(String path, String name) throws IllegalArgumentException {
+		try {
+			return securePath(path);
+		} catch (IllegalStateException e) {
+			throw new IllegalArgumentException("[Assertion failed] - [" + name + "] argument is unsafe path: " + path,
+					e);
+		}
 	}
 }

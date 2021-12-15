@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import io.basc.framework.core.Members;
 import io.basc.framework.core.annotation.Order;
 import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.lang.Ignore;
@@ -28,22 +29,17 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.comparator.CompareUtils;
-import io.basc.framework.util.page.Pageables;
-import io.basc.framework.util.page.SharedPageable;
-import io.basc.framework.util.page.StreamPageables;
 
 public abstract class ReflectionUtils {
 	private static final String SERIAL_VERSION_UID_FIELD_NAME = "serialVersionUID";
 
 	private static final Method CLONE_METOHD = ReflectionUtils.getMethod(Object.class, "clone");
 
-	private static final Method[] CLASS_PRESENT_METHODS = getMethods(Class.class, new Accept<Method>() {
-		public boolean accept(Method method) {
-			return !Modifier.isStatic(method.getModifiers()) && !Modifier.isNative(method.getModifiers())
-					&& Modifier.isPublic(method.getModifiers()) && method.getName().startsWith("get")
-					&& method.getParameterTypes().length == 0;
-		}
-	}).toArray(new Method[0]);
+	private static final Method[] CLASS_PRESENT_METHODS = getMethods(Class.class).stream().filter((method) -> {
+		return !Modifier.isStatic(method.getModifiers()) && !Modifier.isNative(method.getModifiers())
+				&& Modifier.isPublic(method.getModifiers()) && method.getName().startsWith("get")
+				&& method.getParameterTypes().length == 0;
+	}).toArray(Method[]::new);
 
 	/**
 	 * 判断此类是否可用(会静态初始化)
@@ -277,16 +273,6 @@ public abstract class ReflectionUtils {
 			searchType = searchType.getSuperclass();
 		}
 		return null;
-	}
-
-	public static List<Method> getMethods(Class<?> clazz, Accept<Method> accept) {
-		List<Method> methods = new ArrayList<Method>();
-		for (Method method : clazz.getMethods()) {
-			if (accept == null || accept.accept(method)) {
-				methods.add(method);
-			}
-		}
-		return methods;
 	}
 
 	/**
@@ -778,13 +764,16 @@ public abstract class ReflectionUtils {
 	 * @param sourceClass
 	 * @return
 	 */
-	public static Pageables<Class<?>, Field> getFields(Class<?> sourceClass) {
+	public static Members<Field, RuntimeException> getFields(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
-		return new StreamPageables<Class<?>, Field>(sourceClass, (c) -> {
+		return new Members<>(sourceClass, (c) -> {
+			if (c == Object.class) {
+				return null;
+			}
+
 			Field[] fields = c.getFields();
 			List<Field> list = fields == null ? Collections.emptyList() : Arrays.asList(fields);
-			Class<?> superclass = c.getSuperclass();
-			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass);
+			return list.stream();
 		});
 	}
 
@@ -793,13 +782,16 @@ public abstract class ReflectionUtils {
 	 * @param sourceClass
 	 * @return
 	 */
-	public static Pageables<Class<?>, Field> getDeclaredField(Class<?> sourceClass) {
+	public static Members<Field, RuntimeException> getDeclaredFields(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
-		return new StreamPageables<Class<?>, Field>(sourceClass, (c) -> {
+		return new Members<>(sourceClass, (c) -> {
+			if (c == Object.class) {
+				return null;
+			}
+
 			Field[] fields = c.getDeclaredFields();
 			List<Field> list = fields == null ? Collections.emptyList() : Arrays.asList(fields);
-			Class<?> superclass = c.getSuperclass();
-			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass);
+			return list.stream();
 		});
 	}
 
@@ -808,12 +800,12 @@ public abstract class ReflectionUtils {
 	 * @param sourceClass
 	 * @return
 	 */
-	public static Pageables<Class<?>, Method> getMethods(Class<?> sourceClass) {
+	public static Members<Method, RuntimeException> getMethods(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
-		return new StreamPageables<Class<?>, Method>(sourceClass, (c) -> {
+		return new Members<>(sourceClass, (c) -> {
 			Method[] methods = c.getMethods();
 			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
-			return new SharedPageable<>(c, list, c.getSuperclass());
+			return list.stream();
 		});
 	}
 
@@ -822,12 +814,12 @@ public abstract class ReflectionUtils {
 	 * @param sourceClass
 	 * @return
 	 */
-	public static Pageables<Class<?>, Method> getDeclaredMethods(Class<?> sourceClass) {
+	public static Members<Method, RuntimeException> getDeclaredMethods(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
-		return new StreamPageables<Class<?>, Method>(sourceClass, (c) -> {
+		return new Members<>(sourceClass, (c) -> {
 			Method[] methods = c.getDeclaredMethods();
 			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
-			return new SharedPageable<>(c, list, c.getSuperclass());
+			return list.stream();
 		});
 	}
 
@@ -836,13 +828,16 @@ public abstract class ReflectionUtils {
 	 * @param sourceClass
 	 * @return
 	 */
-	public static Pageables<Class<?>, Constructor<?>> getConstructors(Class<?> sourceClass) {
+	public static Members<Constructor<?>, RuntimeException> getConstructors(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
-		return new StreamPageables<Class<?>, Constructor<?>>(sourceClass, (c) -> {
+		return new Members<>(sourceClass, (c) -> {
+			if (c == Object.class) {
+				return null;
+			}
+
 			Constructor<?>[] constructors = c.getConstructors();
 			List<Constructor<?>> list = constructors == null ? Collections.emptyList() : Arrays.asList(constructors);
-			Class<?> superclass = c.getSuperclass();
-			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass);
+			return list.stream();
 		});
 	}
 
@@ -851,13 +846,16 @@ public abstract class ReflectionUtils {
 	 * @param sourceClass
 	 * @return
 	 */
-	public static Pageables<Class<?>, Constructor<?>> getDeclaredConstructors(Class<?> sourceClass) {
+	public static Members<Constructor<?>, RuntimeException> getDeclaredConstructors(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
-		return new StreamPageables<Class<?>, Constructor<?>>(sourceClass, (c) -> {
+		return new Members<>(sourceClass, (c) -> {
+			if (c == Object.class) {
+				return null;
+			}
+
 			Constructor<?>[] constructors = c.getDeclaredConstructors();
 			List<Constructor<?>> list = constructors == null ? Collections.emptyList() : Arrays.asList(constructors);
-			Class<?> superclass = c.getSuperclass();
-			return new SharedPageable<>(c, list, superclass == null || superclass == Object.class ? null : superclass);
+			return list.stream();
 		});
 	}
 

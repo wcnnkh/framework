@@ -13,7 +13,7 @@ import io.basc.framework.core.annotation.AnnotationUtils;
 import io.basc.framework.core.annotation.MergedAnnotations;
 import io.basc.framework.core.annotation.MergedAnnotations.SearchStrategy;
 import io.basc.framework.core.annotation.RepeatableContainers;
-import io.basc.framework.core.reflect.Methods;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.MultiValueMap;
 
@@ -102,7 +102,7 @@ public class StandardAnnotationMetadata extends StandardClassMetadata implements
 	public boolean hasAnnotatedMethods(String annotationName) {
 		if (AnnotationUtils.isCandidateClass(getIntrospectedClass(), annotationName)) {
 			try {
-				return Methods.forClass(getIntrospectedClass(), true).withInterfaces(true).streamAll()
+				return ReflectionUtils.getDeclaredMethods(getIntrospectedClass()).withInterfaces().streamAll()
 						.filter((method) -> isAnnotatedMethod(method, annotationName)).findAny().isPresent();
 			} catch (Throwable ex) {
 				throw new IllegalStateException("Failed to introspect annotated methods on " + getIntrospectedClass(),
@@ -116,7 +116,7 @@ public class StandardAnnotationMetadata extends StandardClassMetadata implements
 	public Set<MethodMetadata> getAnnotatedMethods(String annotationName) {
 		if (AnnotationUtils.isCandidateClass(getIntrospectedClass(), annotationName)) {
 			try {
-				return Methods.forClass(getIntrospectedClass(), true).withInterfaces(true).streamAll()
+				return ReflectionUtils.getDeclaredMethods(getIntrospectedClass()).withInterfaces().streamAll()
 						.filter((method) -> isAnnotatedMethod(method, annotationName))
 						.map((method) -> new StandardMethodMetadata(method, this.nestedAnnotationsAsMap))
 						.collect(Collectors.toCollection(() -> new LinkedHashSet<MethodMetadata>(4)));

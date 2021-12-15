@@ -288,12 +288,12 @@ public abstract class ObjectUtils {
 	}
 
 	/**
-	 * 克隆 默认不对数据里德深拷贝
+	 * 克隆 默认不对数组深拷贝
 	 * 
 	 * @see ObjectUtils#clone(Object, boolean)
 	 * @param <T>
 	 * @param source
-	 * @return
+	 * @return 如果无法克隆就返回本身
 	 */
 	public static <T> T clone(T source) {
 		return clone(source, false);
@@ -307,11 +307,14 @@ public abstract class ObjectUtils {
 	 * 
 	 * @see Cloneable
 	 * @see ArrayUtils#clone(Object, boolean)
+	 * @see CollectionFactory#clone(Collection, boolean)
+	 * @see CollectionFactory#clone(Map, boolean)
 	 * @param <T>
 	 * @param source
 	 * @param deep   对数组的操作
-	 * @return
+	 * @return 如果无法克隆就返回本身
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> T clone(T source, boolean deep) {
 		if (source == null) {
 			return null;
@@ -319,6 +322,14 @@ public abstract class ObjectUtils {
 
 		if (source.getClass().isArray()) {
 			return ArrayUtils.clone(source, deep);
+		}
+
+		if (source instanceof Collection) {
+			return (T) CollectionFactory.clone((Collection<?>) source, deep);
+		}
+
+		if (source instanceof Map) {
+			return (T) CollectionFactory.clone((Map<?, ?>) source, deep);
 		}
 
 		if (source instanceof Cloneable) {

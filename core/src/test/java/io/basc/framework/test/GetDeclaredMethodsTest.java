@@ -2,7 +2,7 @@ package io.basc.framework.test;
 
 import org.junit.Test;
 
-import io.basc.framework.core.reflect.Methods;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.ObjectUtils;
 
 public class GetDeclaredMethodsTest {
@@ -13,47 +13,49 @@ public class GetDeclaredMethodsTest {
 		System.out.println(ObjectUtils.toString(B.class.getInterfaces()));
 		System.out.println(ObjectUtils.toString(E.class.getDeclaredMethods()));
 		System.out.println("-------");
-		Methods.forClass(E.class, false).withInterfaces(false).forEach((e) -> System.out.println(e));
+		ReflectionUtils.getMethods(E.class).withInterfaces().forEach((e) -> System.out.println(e));
 	}
-	
-	static interface A{
+
+	static interface A {
 		void a();
-		
+
 		default void aa() {
 		}
 	}
-	
-	static interface B extends A{
+
+	static interface B extends A {
 		void b();
-		
-		default void bb() {}	
+
+		default void bb() {
+		}
 	}
-	
-	static interface C{
+
+	static interface C {
 		void c();
-		
-		default void cc() {};
-				
+
+		default void cc() {
+		};
+
 	}
-	
-	static class D implements C{
+
+	static class D implements C {
 
 		@Override
 		public void c() {
 		}
-		
+
 	}
-	
-	static class E implements B{
+
+	static class E implements B {
 
 		@Override
 		public void a() {
-			
+
 		}
 
 		@Override
 		public void b() {
 		}
-		
+
 	}
 }

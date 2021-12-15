@@ -59,13 +59,13 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	private String sign;
 
 	public Uploader(String directory) {
-		this.directory = cleanPath(directory);
+		this.directory = Assert.securePathArgument(directory, "directory");
 	}
 
 	@Override
 	public Resource get(String key) throws StorageException, IOException {
 		String cleanKey = cleanPath(key);
-		File file = new File(directory, cleanKey);
+		File file = new File(directory, Assert.securePathArgument(key, "key"));
 		StringBuilder sb = new StringBuilder();
 		sb.append(getBaseUrl());
 		sb.append("/");
@@ -76,8 +76,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	@Override
 	public boolean put(String key, InputMessage input) throws StorageException, IOException {
 		logger.info("put [{}]", key);
-		String cleanKey = cleanPath(key);
-		File file = new File(directory, cleanKey);
+		File file = new File(directory, Assert.securePathArgument(key, "key"));
 		InputStream is = null;
 		try {
 			is = input.getInputStream();
@@ -91,7 +90,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	@Override
 	public boolean delete(String key) throws StorageException {
 		logger.info("delete [{}]", key);
-		File file = new File(directory, cleanPath(key));
+		File file = new File(directory, Assert.securePathArgument(key, "key"));
 		return file.delete();
 	}
 
@@ -131,9 +130,8 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	public void setSign(String sign) {
 		this.sign = sign;
 	}
-	
+
 	protected String cleanPath(String key) {
-		Assert.securePathArgument(key, "key");
 		return StringUtils.cleanPath(key);
 	}
 
@@ -143,10 +141,11 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 
 	public Status<String> checkSign(String key, String expiration, String sign) {
 		long time = Long.parseLong(expiration);
-		if(logger.isDebugEnabled()) {
-			logger.debug("Check sign key={} expiration={} sign={}", key, TimeUtils.format(time, "yyyy-MM-dd HH:mm:ss"), sign);
+		if (logger.isDebugEnabled()) {
+			logger.debug("Check sign key={} expiration={} sign={}", key, TimeUtils.format(time, "yyyy-MM-dd HH:mm:ss"),
+					sign);
 		}
-		
+
 		if (System.currentTimeMillis() > time) {
 			return new DefaultStatus<>(false, "签名已过期");
 		}
@@ -227,7 +226,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 			file = new File(directory);
 		} else {
 			String suffix = prefix;
-			file = new File(directory + suffix);
+			file = new File(directory + Assert.securePath(suffix));
 			while (!file.exists() || !file.isDirectory()) {// 如果文件不存在或文件不是目录
 				int index = suffix.lastIndexOf("/");
 				if (index == -1 || index == 0) {
@@ -235,7 +234,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 				}
 
 				suffix = suffix.substring(0, index);
-				file = new File(directory + suffix);
+				file = new File(directory + Assert.securePath(suffix));
 			}
 		}
 

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.basc.framework.core.reflect.Methods;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
@@ -59,8 +59,9 @@ public final class BridgeMethodResolver {
 		Method bridgedMethod = cache.get(bridgeMethod);
 		if (bridgedMethod == null) {
 			// Gather all methods with matching name and parameter size.
-			List<Method> candidateMethods = Methods.forClass(bridgeMethod.getDeclaringClass(), true).withAll(true)
-					.streamAll().filter((candidateMethod) -> isBridgedCandidateFor(candidateMethod, bridgeMethod))
+			List<Method> candidateMethods = ReflectionUtils.getDeclaredMethods(bridgeMethod.getDeclaringClass())
+					.withAll().streamAll()
+					.filter((candidateMethod) -> isBridgedCandidateFor(candidateMethod, bridgeMethod))
 					.collect(Collectors.toList());
 			if (!candidateMethods.isEmpty()) {
 				bridgedMethod = candidateMethods.size() == 1 ? candidateMethods.get(0)
