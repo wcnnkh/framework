@@ -1,5 +1,14 @@
 package io.basc.framework.core.reflect;
 
+import io.basc.framework.core.Members;
+import io.basc.framework.core.parameter.ParameterUtils;
+import io.basc.framework.lang.NestedExceptionUtils;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Accept;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.CollectionUtils;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -9,26 +18,10 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.security.AccessControlException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import io.basc.framework.core.Members;
-import io.basc.framework.core.annotation.Order;
-import io.basc.framework.core.parameter.ParameterUtils;
-import io.basc.framework.lang.Ignore;
-import io.basc.framework.lang.NestedExceptionUtils;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Accept;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.comparator.CompareUtils;
 
 public abstract class ReflectionUtils {
 	private static final String SERIAL_VERSION_UID_FIELD_NAME = "serialVersionUID";
@@ -565,7 +558,7 @@ public abstract class ReflectionUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <T> Constructor<T> findConstructor(Class<T> type, boolean isPublic, Class<?>... parameterTypes) {
-		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
+		for (Constructor<?> constructor : isPublic ? getConstructors(type) : getDeclaredConstructors(type)) {
 			Class<?>[] types = constructor.getParameterTypes();
 			if (types.length == parameterTypes.length) {
 				boolean find = true;
@@ -849,124 +842,6 @@ public abstract class ReflectionUtils {
 			Class<?>[] parameterTypes, Object... params) throws NoSuchMethodException, SecurityException,
 			IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException {
 		return invokeStaticMethod(ClassUtils.forName(className, classLoader), name, parameterTypes, params);
-	}
-
-	private static final Comparator<Constructor<?>> CONSTRUCTOR_COMPARATOR = new Comparator<Constructor<?>>() {
-
-		public int compare(Constructor<?> o1, Constructor<?> o2) {
-			Deprecated d1 = o1.getAnnotation(Deprecated.class);
-			Deprecated d2 = o2.getAnnotation(Deprecated.class);
-
-			// 先比较作用域 public
-			int v1 = o1.getModifiers();
-			int v2 = o2.getModifiers();
-			if (!(d1 != null && d2 != null)) {
-				if (d1 != null) {
-					v1 = Integer.MAX_VALUE;
-				}
-
-				if (d2 != null) {
-					v2 = Integer.MAX_VALUE;
-				}
-			}
-
-			if (v1 == v2) {
-				return CompareUtils.compare(o1.getParameterTypes().length, o2.getParameterTypes().length, true);
-			}
-			return CompareUtils.compare(v1, v2, false);
-		}
-	};
-
-	public static <T> Collection<Constructor<?>> getConstructorOrderList(Class<?> clazz) {
-		LinkedList<Constructor<?>> autoList = new LinkedList<Constructor<?>>();
-		LinkedList<Constructor<?>> defList = new LinkedList<Constructor<?>>();
-		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
-			if (constructor.getAnnotation(Ignore.class) != null) {
-				continue;
-			}
-
-			Order order = constructor.getAnnotation(Order.class);
-			if (order == null) {
-				defList.add(constructor);
-			} else {
-				autoList.add(constructor);
-			}
-		}
-
-		autoList.sort(new Comparator<Constructor<?>>() {
-
-			public int compare(Constructor<?> o1, Constructor<?> o2) {
-				Order auto1 = o1.getAnnotation(Order.class);
-				Order auto2 = o2.getAnnotation(Order.class);
-				if (auto1.value() == auto2.value()) {
-					return CONSTRUCTOR_COMPARATOR.compare(o1, o2);
-				}
-				return CompareUtils.compare(auto1.value(), auto2.value(), true);
-			}
-		});
-
-		defList.sort(CONSTRUCTOR_COMPARATOR);
-		autoList.addAll(defList);
-		return autoList;
-	}
-
-	private static final Comparator<Method> METHOD_COMPARATOR = new Comparator<Method>() {
-
-		public int compare(Method o1, Method o2) {
-			Deprecated d1 = o1.getAnnotation(Deprecated.class);
-			Deprecated d2 = o2.getAnnotation(Deprecated.class);
-
-			// 先比较作用域 public
-			int v1 = o1.getModifiers();
-			int v2 = o2.getModifiers();
-			if (!(d1 != null && d2 != null)) {
-				if (d1 != null) {
-					v1 = Integer.MAX_VALUE;
-				}
-
-				if (d2 != null) {
-					v2 = Integer.MAX_VALUE;
-				}
-			}
-
-			if (v1 == v2) {
-				return CompareUtils.compare(o1.getParameterTypes().length, o2.getParameterTypes().length, true);
-			}
-			return CompareUtils.compare(v1, v2, false);
-		}
-	};
-
-	public static List<Method> getMethodOrderList(Class<?> targetClass, Method referenceMethod) {
-		List<Method> autoList = new ArrayList<Method>();
-		List<Method> defList = new ArrayList<Method>();
-		for (Method method : targetClass.getDeclaredMethods()) {
-			if (method.getAnnotation(Ignore.class) != null) {
-				continue;
-			}
-
-			Order order = method.getAnnotation(Order.class);
-			if (order == null) {
-				defList.add(method);
-			} else {
-				autoList.add(method);
-			}
-		}
-
-		autoList.sort(new Comparator<Method>() {
-
-			public int compare(Method o1, Method o2) {
-				Order auto1 = o1.getAnnotation(Order.class);
-				Order auto2 = o2.getAnnotation(Order.class);
-				if (auto1.value() == auto2.value()) {
-					return METHOD_COMPARATOR.compare(o1, o2);
-				}
-				return CompareUtils.compare(auto1.value(), auto2.value(), true);
-			}
-		});
-
-		defList.sort(METHOD_COMPARATOR);
-		autoList.addAll(defList);
-		return autoList;
 	}
 
 	/**
