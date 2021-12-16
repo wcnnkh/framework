@@ -1,5 +1,14 @@
 package io.basc.framework.core.reflect;
 
+import io.basc.framework.core.Members;
+import io.basc.framework.core.parameter.ParameterUtils;
+import io.basc.framework.lang.NestedExceptionUtils;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Accept;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.CollectionUtils;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -9,26 +18,10 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.security.AccessControlException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import io.basc.framework.core.Members;
-import io.basc.framework.core.annotation.Order;
-import io.basc.framework.core.parameter.ParameterUtils;
-import io.basc.framework.lang.Ignore;
-import io.basc.framework.lang.NestedExceptionUtils;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Accept;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.comparator.CompareUtils;
 
 public abstract class ReflectionUtils {
 	private static final String SERIAL_VERSION_UID_FIELD_NAME = "serialVersionUID";
@@ -137,17 +130,9 @@ public abstract class ReflectionUtils {
 	public static Field findField(Class<?> clazz, String name, Class<?> type) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.isTrue(name != null || type != null, "Either name or type of the field must be specified");
-		Class<?> searchType = clazz;
-		while (!Object.class.equals(searchType) && searchType != null) {
-			Field[] fields = searchType.getDeclaredFields();
-			for (Field field : fields) {
-				if ((name == null || name.equals(field.getName())) && (type == null || type.equals(field.getType()))) {
-					return field;
-				}
-			}
-			searchType = searchType.getSuperclass();
-		}
-		return null;
+		return getDeclaredFields(clazz).withAll().streamAll().filter((field) -> {
+			return (name == null || name.equals(field.getName())) && (type == null || type.equals(field.getType()));
+		}).findFirst().orElse(null);
 	}
 
 	/**
@@ -227,52 +212,34 @@ public abstract class ReflectionUtils {
 	public static Method findMethod(Class<?> clazz, String name, Class<?>... paramTypes) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(name, "Method name must not be null");
-		Class<?> searchType = clazz;
-		while (searchType != null) {
-			Method[] methods = (searchType.isInterface() ? searchType.getMethods() : searchType.getDeclaredMethods());
-			for (Method method : methods) {
-				if (name.equals(method.getName())
-						&& (paramTypes == null || Arrays.equals(paramTypes, method.getParameterTypes()))) {
-					makeAccessible(method);
-					return method;
-				}
-			}
-			searchType = searchType.getSuperclass();
-		}
-		return null;
+		return getDeclaredMethods(clazz).withAll().streamAll().filter((method) -> {
+			return name.equals(method.getName())
+					&& (paramTypes == null || Arrays.equals(paramTypes, method.getParameterTypes()));
+		}).findFirst().orElse(null);
 	}
 
 	public static Method findMethod(Class<?> clazz, String name, Object... args) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(name, "Method name must not be null");
-		Class<?> searchType = clazz;
-		while (searchType != null) {
-			for (Method method : (searchType.isInterface() ? searchType.getMethods()
-					: searchType.getDeclaredMethods())) {
-				if (!method.getName().equals(name)) {
-					continue;
-				}
+		return getDeclaredMethods(clazz).withAll().streamAll().filter((method) -> {
+			if (!method.getName().equals(name)) {
+				return false;
+			}
 
-				Class<?>[] parameterTypes = method.getParameterTypes();
-				if (parameterTypes.length != args.length) {
-					continue;
-				}
+			Class<?>[] parameterTypes = method.getParameterTypes();
+			if (parameterTypes.length != args.length) {
+				return false;
+			}
 
-				boolean b = true;
-				for (int i = 0; i < parameterTypes.length; i++) {
-					if (!ClassUtils.isAssignableValue(parameterTypes[i], args[i])) {
-						b = false;
-						break;
-					}
-				}
-
-				if (b) {
-					return method;
+			boolean b = true;
+			for (int i = 0; i < parameterTypes.length; i++) {
+				if (!ClassUtils.isAssignableValue(parameterTypes[i], args[i])) {
+					b = false;
+					break;
 				}
 			}
-			searchType = searchType.getSuperclass();
-		}
-		return null;
+			return b;
+		}).findFirst().orElse(null);
 	}
 
 	/**
@@ -527,6 +494,10 @@ public abstract class ReflectionUtils {
 	 * @see java.lang.reflect.Field#setAccessible
 	 */
 	public static void makeAccessible(Field field) {
+		if (field == null) {
+			return;
+		}
+
 		// JDK 9 被弃用
 		/*
 		 * if (field.isAccessible()) { return; }
@@ -548,6 +519,9 @@ public abstract class ReflectionUtils {
 	 * @see java.lang.reflect.Method#setAccessible
 	 */
 	public static void makeAccessible(Method method) {
+		if (method == null) {
+			return;
+		}
 		// JDK 9 被弃用
 		/*
 		 * if (method.isAccessible()) { return; }
@@ -568,6 +542,10 @@ public abstract class ReflectionUtils {
 	 * @see java.lang.reflect.Constructor#setAccessible
 	 */
 	public static void makeAccessible(Constructor<?> ctor) {
+		if (ctor == null) {
+			return;
+		}
+
 		// JDK 9 被弃用
 		/*
 		 * if (ctor.isAccessible()) { return; }
@@ -580,7 +558,7 @@ public abstract class ReflectionUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <T> Constructor<T> findConstructor(Class<T> type, boolean isPublic, Class<?>... parameterTypes) {
-		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
+		for (Constructor<?> constructor : isPublic ? getConstructors(type) : getDeclaredConstructors(type)) {
 			Class<?>[] types = constructor.getParameterTypes();
 			if (types.length == parameterTypes.length) {
 				boolean find = true;
@@ -765,7 +743,6 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	public static Members<Field, RuntimeException> getFields(Class<?> sourceClass) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new Members<>(sourceClass, (c) -> {
 			if (c == Object.class) {
 				return null;
@@ -783,7 +760,6 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	public static Members<Field, RuntimeException> getDeclaredFields(Class<?> sourceClass) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new Members<>(sourceClass, (c) -> {
 			if (c == Object.class) {
 				return null;
@@ -801,7 +777,6 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	public static Members<Method, RuntimeException> getMethods(Class<?> sourceClass) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new Members<>(sourceClass, (c) -> {
 			Method[] methods = c.getMethods();
 			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
@@ -815,7 +790,6 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	public static Members<Method, RuntimeException> getDeclaredMethods(Class<?> sourceClass) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new Members<>(sourceClass, (c) -> {
 			Method[] methods = c.getDeclaredMethods();
 			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
@@ -829,7 +803,6 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	public static Members<Constructor<?>, RuntimeException> getConstructors(Class<?> sourceClass) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new Members<>(sourceClass, (c) -> {
 			if (c == Object.class) {
 				return null;
@@ -847,7 +820,6 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	public static Members<Constructor<?>, RuntimeException> getDeclaredConstructors(Class<?> sourceClass) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new Members<>(sourceClass, (c) -> {
 			if (c == Object.class) {
 				return null;
@@ -870,124 +842,6 @@ public abstract class ReflectionUtils {
 			Class<?>[] parameterTypes, Object... params) throws NoSuchMethodException, SecurityException,
 			IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException {
 		return invokeStaticMethod(ClassUtils.forName(className, classLoader), name, parameterTypes, params);
-	}
-
-	private static final Comparator<Constructor<?>> CONSTRUCTOR_COMPARATOR = new Comparator<Constructor<?>>() {
-
-		public int compare(Constructor<?> o1, Constructor<?> o2) {
-			Deprecated d1 = o1.getAnnotation(Deprecated.class);
-			Deprecated d2 = o2.getAnnotation(Deprecated.class);
-
-			// 先比较作用域 public
-			int v1 = o1.getModifiers();
-			int v2 = o2.getModifiers();
-			if (!(d1 != null && d2 != null)) {
-				if (d1 != null) {
-					v1 = Integer.MAX_VALUE;
-				}
-
-				if (d2 != null) {
-					v2 = Integer.MAX_VALUE;
-				}
-			}
-
-			if (v1 == v2) {
-				return CompareUtils.compare(o1.getParameterTypes().length, o2.getParameterTypes().length, true);
-			}
-			return CompareUtils.compare(v1, v2, false);
-		}
-	};
-
-	public static <T> Collection<Constructor<?>> getConstructorOrderList(Class<?> clazz) {
-		LinkedList<Constructor<?>> autoList = new LinkedList<Constructor<?>>();
-		LinkedList<Constructor<?>> defList = new LinkedList<Constructor<?>>();
-		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
-			if (constructor.getAnnotation(Ignore.class) != null) {
-				continue;
-			}
-
-			Order order = constructor.getAnnotation(Order.class);
-			if (order == null) {
-				defList.add(constructor);
-			} else {
-				autoList.add(constructor);
-			}
-		}
-
-		autoList.sort(new Comparator<Constructor<?>>() {
-
-			public int compare(Constructor<?> o1, Constructor<?> o2) {
-				Order auto1 = o1.getAnnotation(Order.class);
-				Order auto2 = o2.getAnnotation(Order.class);
-				if (auto1.value() == auto2.value()) {
-					return CONSTRUCTOR_COMPARATOR.compare(o1, o2);
-				}
-				return CompareUtils.compare(auto1.value(), auto2.value(), true);
-			}
-		});
-
-		defList.sort(CONSTRUCTOR_COMPARATOR);
-		autoList.addAll(defList);
-		return autoList;
-	}
-
-	private static final Comparator<Method> METHOD_COMPARATOR = new Comparator<Method>() {
-
-		public int compare(Method o1, Method o2) {
-			Deprecated d1 = o1.getAnnotation(Deprecated.class);
-			Deprecated d2 = o2.getAnnotation(Deprecated.class);
-
-			// 先比较作用域 public
-			int v1 = o1.getModifiers();
-			int v2 = o2.getModifiers();
-			if (!(d1 != null && d2 != null)) {
-				if (d1 != null) {
-					v1 = Integer.MAX_VALUE;
-				}
-
-				if (d2 != null) {
-					v2 = Integer.MAX_VALUE;
-				}
-			}
-
-			if (v1 == v2) {
-				return CompareUtils.compare(o1.getParameterTypes().length, o2.getParameterTypes().length, true);
-			}
-			return CompareUtils.compare(v1, v2, false);
-		}
-	};
-
-	public static List<Method> getMethodOrderList(Class<?> targetClass, Method referenceMethod) {
-		List<Method> autoList = new ArrayList<Method>();
-		List<Method> defList = new ArrayList<Method>();
-		for (Method method : targetClass.getDeclaredMethods()) {
-			if (method.getAnnotation(Ignore.class) != null) {
-				continue;
-			}
-
-			Order order = method.getAnnotation(Order.class);
-			if (order == null) {
-				defList.add(method);
-			} else {
-				autoList.add(method);
-			}
-		}
-
-		autoList.sort(new Comparator<Method>() {
-
-			public int compare(Method o1, Method o2) {
-				Order auto1 = o1.getAnnotation(Order.class);
-				Order auto2 = o2.getAnnotation(Order.class);
-				if (auto1.value() == auto2.value()) {
-					return METHOD_COMPARATOR.compare(o1, o2);
-				}
-				return CompareUtils.compare(auto1.value(), auto2.value(), true);
-			}
-		});
-
-		defList.sort(METHOD_COMPARATOR);
-		autoList.addAll(defList);
-		return autoList;
 	}
 
 	/**
