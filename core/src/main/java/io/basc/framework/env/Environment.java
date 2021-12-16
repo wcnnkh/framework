@@ -71,7 +71,7 @@ public interface Environment extends EnvironmentResourceLoader, PropertyFactory,
 	}
 
 	default Observable<Properties> getProperties(PropertiesResolver propertiesResolver, String location) {
-		return getProperties(getPropertiesResolver(), location, (String) null);
+		return getProperties(propertiesResolver, location, (String) null);
 	}
 
 	default Observable<Properties> getProperties(PropertiesResolver propertiesResolver, String location,

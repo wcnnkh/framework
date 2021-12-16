@@ -22,7 +22,6 @@ import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
 import io.basc.framework.event.Observable;
 import io.basc.framework.event.support.SimpleEventDispatcher;
-import io.basc.framework.io.Resource;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.SplitLine;
@@ -100,10 +99,12 @@ public class DefaultApplication extends XmlBeanFactory
 			String applicationConfiguration = getEnvironment().getValue(APPLICATION_PREFIX_CONFIGURATION, String.class,
 					APPLICATION_PREFIX);
 			for (String suffix : new String[] { ".properties", ".yaml", ".yml" }) {
-				Resource resource = getEnvironment().getResource(applicationConfiguration + suffix);
-				if (resource != null && resource.exists()) {
-					getLogger().info("Configure application resource: {}", resource);
-					Observable<Properties> properties = Sys.env.toObservableProperties(resource);
+				String configPath = applicationConfiguration + suffix;
+				if (getEnvironment().exists(configPath)) {
+					getLogger().info("Configure application resource: {}", configPath);
+					// 此处使用Sys.env.getPropertiesResolver()的原因是此时还未初始化，无法得到相应的解析器
+					Observable<Properties> properties = getEnvironment().getProperties(Sys.env.getPropertiesResolver(),
+							configPath);
 					getEnvironment().loadProperties(properties);
 				}
 			}
