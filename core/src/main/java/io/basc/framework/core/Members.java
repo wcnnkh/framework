@@ -27,6 +27,8 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 	private final Processor<Class<?>, Stream<T>, E> processor;
 
 	public Members(Class<?> sourceClass, Processor<Class<?>, Stream<T>, E> processor) {
+		Assert.requiredArgument(sourceClass != null, "sourceClass");
+		Assert.requiredArgument(processor != null, "processor");
 		this.sourceClass = sourceClass;
 		this.processor = processor;
 	}

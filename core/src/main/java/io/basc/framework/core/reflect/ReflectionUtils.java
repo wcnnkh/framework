@@ -137,17 +137,9 @@ public abstract class ReflectionUtils {
 	public static Field findField(Class<?> clazz, String name, Class<?> type) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.isTrue(name != null || type != null, "Either name or type of the field must be specified");
-		Class<?> searchType = clazz;
-		while (!Object.class.equals(searchType) && searchType != null) {
-			Field[] fields = searchType.getDeclaredFields();
-			for (Field field : fields) {
-				if ((name == null || name.equals(field.getName())) && (type == null || type.equals(field.getType()))) {
-					return field;
-				}
-			}
-			searchType = searchType.getSuperclass();
-		}
-		return null;
+		return getDeclaredFields(clazz).withAll().streamAll().filter((field) -> {
+			return (name == null || name.equals(field.getName())) && (type == null || type.equals(field.getType()));
+		}).findFirst().orElse(null);
 	}
 
 	/**
@@ -227,52 +219,34 @@ public abstract class ReflectionUtils {
 	public static Method findMethod(Class<?> clazz, String name, Class<?>... paramTypes) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(name, "Method name must not be null");
-		Class<?> searchType = clazz;
-		while (searchType != null) {
-			Method[] methods = (searchType.isInterface() ? searchType.getMethods() : searchType.getDeclaredMethods());
-			for (Method method : methods) {
-				if (name.equals(method.getName())
-						&& (paramTypes == null || Arrays.equals(paramTypes, method.getParameterTypes()))) {
-					makeAccessible(method);
-					return method;
-				}
-			}
-			searchType = searchType.getSuperclass();
-		}
-		return null;
+		return getDeclaredMethods(clazz).withAll().streamAll().filter((method) -> {
+			return name.equals(method.getName())
+					&& (paramTypes == null || Arrays.equals(paramTypes, method.getParameterTypes()));
+		}).findFirst().orElse(null);
 	}
 
 	public static Method findMethod(Class<?> clazz, String name, Object... args) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(name, "Method name must not be null");
-		Class<?> searchType = clazz;
-		while (searchType != null) {
-			for (Method method : (searchType.isInterface() ? searchType.getMethods()
-					: searchType.getDeclaredMethods())) {
-				if (!method.getName().equals(name)) {
-					continue;
-				}
+		return getDeclaredMethods(clazz).withAll().streamAll().filter((method) -> {
+			if (!method.getName().equals(name)) {
+				return false;
+			}
 
-				Class<?>[] parameterTypes = method.getParameterTypes();
-				if (parameterTypes.length != args.length) {
-					continue;
-				}
+			Class<?>[] parameterTypes = method.getParameterTypes();
+			if (parameterTypes.length != args.length) {
+				return false;
+			}
 
-				boolean b = true;
-				for (int i = 0; i < parameterTypes.length; i++) {
-					if (!ClassUtils.isAssignableValue(parameterTypes[i], args[i])) {
-						b = false;
-						break;
-					}
-				}
-
-				if (b) {
-					return method;
+			boolean b = true;
+			for (int i = 0; i < parameterTypes.length; i++) {
+				if (!ClassUtils.isAssignableValue(parameterTypes[i], args[i])) {
+					b = false;
+					break;
 				}
 			}
-			searchType = searchType.getSuperclass();
-		}
-		return null;
+			return b;
+		}).findFirst().orElse(null);
 	}
 
 	/**
@@ -527,6 +501,10 @@ public abstract class ReflectionUtils {
 	 * @see java.lang.reflect.Field#setAccessible
 	 */
 	public static void makeAccessible(Field field) {
+		if (field == null) {
+			return;
+		}
+
 		// JDK 9 被弃用
 		/*
 		 * if (field.isAccessible()) { return; }
@@ -548,6 +526,9 @@ public abstract class ReflectionUtils {
 	 * @see java.lang.reflect.Method#setAccessible
 	 */
 	public static void makeAccessible(Method method) {
+		if (method == null) {
+			return;
+		}
 		// JDK 9 被弃用
 		/*
 		 * if (method.isAccessible()) { return; }
@@ -568,6 +549,10 @@ public abstract class ReflectionUtils {
 	 * @see java.lang.reflect.Constructor#setAccessible
 	 */
 	public static void makeAccessible(Constructor<?> ctor) {
+		if (ctor == null) {
+			return;
+		}
+
 		// JDK 9 被弃用
 		/*
 		 * if (ctor.isAccessible()) { return; }
@@ -765,7 +750,6 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	public static Members<Field, RuntimeException> getFields(Class<?> sourceClass) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new Members<>(sourceClass, (c) -> {
 			if (c == Object.class) {
 				return null;
@@ -783,7 +767,6 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	public static Members<Field, RuntimeException> getDeclaredFields(Class<?> sourceClass) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new Members<>(sourceClass, (c) -> {
 			if (c == Object.class) {
 				return null;
@@ -801,7 +784,6 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	public static Members<Method, RuntimeException> getMethods(Class<?> sourceClass) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new Members<>(sourceClass, (c) -> {
 			Method[] methods = c.getMethods();
 			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
@@ -815,7 +797,6 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	public static Members<Method, RuntimeException> getDeclaredMethods(Class<?> sourceClass) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new Members<>(sourceClass, (c) -> {
 			Method[] methods = c.getDeclaredMethods();
 			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
@@ -829,7 +810,6 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	public static Members<Constructor<?>, RuntimeException> getConstructors(Class<?> sourceClass) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new Members<>(sourceClass, (c) -> {
 			if (c == Object.class) {
 				return null;
@@ -847,7 +827,6 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	public static Members<Constructor<?>, RuntimeException> getDeclaredConstructors(Class<?> sourceClass) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new Members<>(sourceClass, (c) -> {
 			if (c == Object.class) {
 				return null;
