@@ -1,16 +1,16 @@
 package io.basc.framework.core;
 
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.stream.StreamProcessorSupport;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.stream.Processor;
-import io.basc.framework.util.stream.StreamProcessorSupport;
 
 /**
  * 类成员解析
@@ -20,13 +20,15 @@ import io.basc.framework.util.stream.StreamProcessorSupport;
  * @param <T>
  * @param <E>
  */
-public class Members<T, E extends RuntimeException> implements Iterable<T>, Cloneable {
+public class Members<T, E extends RuntimeException> implements Iterable<T>,
+		Cloneable {
 	@Nullable
 	private List<Members<T, E>> withs;
 	private final Class<?> sourceClass;
 	private final Processor<Class<?>, Stream<T>, E> processor;
 
-	public Members(Class<?> sourceClass, Processor<Class<?>, Stream<T>, E> processor) {
+	public Members(Class<?> sourceClass,
+			Processor<Class<?>, Stream<T>, E> processor) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		Assert.requiredArgument(processor != null, "processor");
 		this.sourceClass = sourceClass;
@@ -36,22 +38,40 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 	/**
 	 * 过滤
 	 * 
+	 * @see #map(Processor)
 	 * @see Stream#filter(Predicate)
 	 * @param predicate
 	 * @return 返回一个新的methods
 	 */
 	public Members<T, E> filter(Predicate<? super T> predicate) {
-		Members<T, E> methods = new Members<T, E>(sourceClass, (c) -> {
-			Stream<T> stream = processor.process(c);
+		return map((s) -> s.filter(predicate));
+	}
+
+	/**
+	 * 映射
+	 * 
+	 * @param processor
+	 * @return
+	 */
+	public <S> Members<S, E> map(Processor<Stream<T>, Stream<S>, E> processor) {
+		Members<S, E> members = new Members<S, E>(sourceClass, (c) -> {
+			Stream<T> stream = this.processor.process(c);
 			if (stream == null) {
 				return StreamProcessorSupport.emptyStream();
 			}
-			return stream.filter(predicate);
+			Stream<S> target = processor.process(stream);
+			if (target == null) {
+				return StreamProcessorSupport.emptyStream();
+			}
+			return target;
 		});
 		if (this.withs != null) {
-			methods.withs = new ArrayList<>(this.withs);
+			members.withs = new ArrayList<Members<S, E>>();
+			for (Members<T, E> source : this.withs) {
+				members.withs.add(source.map(processor));
+			}
 		}
-		return methods;
+		return members;
 	}
 
 	@Override
@@ -98,7 +118,8 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 	 * @return
 	 */
 	public Stream<T> streamAll() throws E {
-		return StreamProcessorSupport.concat(streamMembers().map((m) -> m.stream()).iterator());
+		return StreamProcessorSupport.concat(streamMembers().map(
+				(m) -> m.stream()).iterator());
 	}
 
 	public Members<T, E> with(Members<T, E> methods) {
@@ -116,7 +137,8 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 	 * @param processor
 	 * @return
 	 */
-	public Members<T, E> withClass(Class<?> sourceClass, Processor<Class<?>, Stream<T>, E> processor) {
+	public Members<T, E> withClass(Class<?> sourceClass,
+			Processor<Class<?>, Stream<T>, E> processor) {
 		return with(new Members<>(sourceClass, processor));
 	}
 
@@ -150,7 +172,8 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 	 * @param processor
 	 * @return
 	 */
-	public Members<T, E> withInterfaces(Processor<Class<?>, Stream<T>, E> processor) {
+	public Members<T, E> withInterfaces(
+			Processor<Class<?>, Stream<T>, E> processor) {
 		Assert.requiredArgument(processor != null, "processor");
 		Class<?>[] interfaces = sourceClass.getInterfaces();
 		if (interfaces == null || interfaces.length == 0) {
@@ -167,12 +190,14 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 	 * 关联父类
 	 * 
 	 * @param <E>
-	 * @param interfaces 是否也关联父类的接口
+	 * @param interfaces
+	 *            是否也关联父类的接口
 	 * @param processor
 	 * @return
 	 * @throws E
 	 */
-	public Members<T, E> withSuperclass(boolean interfaces, Processor<Class<?>, Stream<T>, E> processor) {
+	public Members<T, E> withSuperclass(boolean interfaces,
+			Processor<Class<?>, Stream<T>, E> processor) {
 		Assert.requiredArgument(processor != null, "processor");
 		Class<?> superclass = sourceClass.getSuperclass();
 		while (superclass != null) {
@@ -194,14 +219,16 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 	 * @return
 	 * @throws E
 	 */
-	public Members<T, E> withSuperclass(Processor<Class<?>, Stream<T>, E> processor) {
+	public Members<T, E> withSuperclass(
+			Processor<Class<?>, Stream<T>, E> processor) {
 		return withSuperclass(false, processor);
 	}
 
 	/**
 	 * 关联所有父类
 	 * 
-	 * @param interfaces 是否关联父类的接口 {@link #withInterfaces(boolean)}
+	 * @param interfaces
+	 *            是否关联父类的接口 {@link #withInterfaces(boolean)}
 	 * @return
 	 */
 	public Members<T, E> withSuperclass(boolean interfaces) {
