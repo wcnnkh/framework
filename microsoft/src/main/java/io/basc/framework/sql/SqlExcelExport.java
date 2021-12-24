@@ -28,13 +28,13 @@ public class SqlExcelExport implements ExcelExport {
 	}
 
 	@Override
-	public void append(Collection<String> contents) throws IOException {
+	public SqlExcelExport append(Collection<String> contents) throws IOException {
 		excelExport.append(contents);
+		return this;
 	}
 
-	public void append(SqlOperations sqlOperations, Sql sql,
-			Processor<ResultSet, String[], SQLException> sqlExportRowMapping)
-			throws ExcelException, IOException {
+	public SqlExcelExport append(SqlOperations sqlOperations, Sql sql,
+			Processor<ResultSet, String[], SQLException> sqlExportRowMapping) throws ExcelException, IOException {
 		sqlOperations.query(sql, sqlExportRowMapping).forEach((contents) -> {
 			try {
 				excelExport.append(contents);
@@ -43,12 +43,11 @@ public class SqlExcelExport implements ExcelExport {
 			}
 		});
 		excelExport.flush();
+		return this;
 	}
 
-	public void export(String[] titles, SqlOperations sqlOperations,
-			Collection<? extends Sql> sqls,
-			Processor<ResultSet, String[], SQLException> sqlExportRowMapping)
-			throws ExcelException, IOException {
+	public SqlExcelExport export(String[] titles, SqlOperations sqlOperations, Collection<? extends Sql> sqls,
+			Processor<ResultSet, String[], SQLException> sqlExportRowMapping) throws ExcelException, IOException {
 		try {
 			append(titles);
 			for (Sql sql : sqls) {
@@ -57,19 +56,17 @@ public class SqlExcelExport implements ExcelExport {
 		} finally {
 			close();
 		}
-	}
-	
-	public void export(String[] titles, SqlOperations sqlOperations,
-			Sql sql,
-			Processor<ResultSet, String[], SQLException> sqlExportRowMapping)
-			throws ExcelException, IOException {
-		export(titles, sqlOperations, Arrays.asList(sql), sqlExportRowMapping);
+		return this;
 	}
 
-	public void export(String[] titles, SqlOperations sqlOperations,
-			Sql... sqls) throws ExcelException, IOException {
-		export(titles, sqlOperations, Arrays.asList(sqls),
-				new SimpleSqlExportRowMapping(titles.length));
+	public SqlExcelExport export(String[] titles, SqlOperations sqlOperations, Sql sql,
+			Processor<ResultSet, String[], SQLException> sqlExportRowMapping) throws ExcelException, IOException {
+		return export(titles, sqlOperations, Arrays.asList(sql), sqlExportRowMapping);
+	}
+
+	public SqlExcelExport export(String[] titles, SqlOperations sqlOperations, Sql... sqls)
+			throws ExcelException, IOException {
+		return export(titles, sqlOperations, Arrays.asList(sqls), new SimpleSqlExportRowMapping(titles.length));
 	}
 
 	public static SqlExcelExport create(ExcelExport excelExport) {
