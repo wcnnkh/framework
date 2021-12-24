@@ -35,6 +35,11 @@
 			<version>${poi.version}</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>testing</artifactId>
+		</dependency>
+		
 		<!-- Support -->
 		<dependency>
 			<groupId>io.basc.framework</groupId>

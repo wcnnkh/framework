@@ -72,9 +72,9 @@ public final class DefaultExcelExport extends WritableExcelWrapper implements Ex
 		return maxColumns;
 	}
 
-	public void append(Collection<String> contents) throws IOException {
+	public ExcelExport append(Collection<String> contents) throws IOException {
 		if (CollectionUtils.isEmpty(contents)) {
-			return;
+			return this;
 		}
 
 		if (maxSheets > 0 && sheetIndex > maxSheets) {
@@ -97,5 +97,6 @@ public final class DefaultExcelExport extends WritableExcelWrapper implements Ex
 			this.rowIndex = 0;
 			sheetIndex++;
 		}
+		return this;
 	}
 }

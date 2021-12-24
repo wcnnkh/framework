@@ -17,13 +17,13 @@ import io.basc.framework.util.stream.ConsumerProcessor;
 import io.basc.framework.util.stream.Processor;
 
 public interface ExcelExport extends Flushable, Closeable {
-	void append(Collection<String> contents) throws IOException;
+	ExcelExport append(Collection<String> contents) throws IOException;
 
-	default void append(String... contents) throws IOException {
-		append(Arrays.asList(contents));
+	default ExcelExport append(String... contents) throws IOException {
+		return append(Arrays.asList(contents));
 	}
 
-	default <T, E extends Throwable> void appendAll(Collection<? extends T> rows,
+	default <T, E extends Throwable> ExcelExport appendAll(Collection<? extends T> rows,
 			Processor<T, Collection<?>, E> processor) throws IOException, E {
 		for (T obj : rows) {
 			Collection<?> cols = processor.process(obj);
@@ -36,11 +36,12 @@ public interface ExcelExport extends Flushable, Closeable {
 			append(values);
 		}
 		flush();
+		return this;
 	}
 
-	default <T, E extends Throwable, C, P extends Pageables<C, T>> void appendAll(P pages,
+	default <T, E extends Throwable, C, P extends Pageables<C, T>> ExcelExport appendAll(P pages,
 			Processor<T, Collection<?>, E> rowsProcessor) throws IOException, E {
-		appendAll(pages, rowsProcessor, null);
+		return appendAll(pages, rowsProcessor, null);
 	}
 
 	/**
@@ -52,7 +53,7 @@ public interface ExcelExport extends Flushable, Closeable {
 	 * @throws IOException
 	 * @throws E
 	 */
-	default <T, E extends Throwable, C, P extends Pageables<C, T>> void appendAll(P pages,
+	default <T, E extends Throwable, C, P extends Pageables<C, T>> ExcelExport appendAll(P pages,
 			Processor<T, Collection<?>, E> rowsProcessor, @Nullable ConsumerProcessor<Pageable<C, T>, E> afterProcess)
 			throws IOException, E {
 		Stream<? extends Pageable<C, T>> stream = pages.pages();
@@ -68,5 +69,6 @@ public interface ExcelExport extends Flushable, Closeable {
 		} finally {
 			stream.close();
 		}
+		return this;
 	}
 }
