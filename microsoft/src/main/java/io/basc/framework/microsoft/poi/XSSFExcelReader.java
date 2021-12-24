@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.XMLConstants;
+
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
@@ -39,13 +41,19 @@ public class XSSFExcelReader implements ExcelReader {
 	public boolean isFormulasNotResults() {
 		return formulasNotResults;
 	}
+	
+	public XMLReader createReader() throws SAXException {
+		XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+		xmlReader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		return xmlReader;
+	}
 
 	public void read(OPCPackage opcPackage, RowCallback rowCallback) throws IOException, ExcelException {
 		XSSFReader reader;
 		SharedStringsTable sst = null;
 		XMLReader xmlReader;
 		try {
-			xmlReader = XMLReaderFactory.createXMLReader();
+			xmlReader = createReader();
 			reader = new XSSFReader(opcPackage);
 			sst = reader.getSharedStringsTable();
 			XssfSheetContentsHandler contentsHandler = new XssfSheetContentsHandler(rowCallback, 0);
