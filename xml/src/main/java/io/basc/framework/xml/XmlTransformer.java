@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import javax.xml.XMLConstants;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -17,10 +18,21 @@ import org.w3c.dom.Node;
 
 import io.basc.framework.dom.DocumentTransformer;
 import io.basc.framework.dom.DomException;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 
 public class XmlTransformer implements DocumentTransformer {
+	private static Logger logger = LoggerFactory.getLogger(XmlTransformer.class);
 	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
+	static {
+		try {
+			TRANSFORMER_FACTORY.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		} catch (TransformerConfigurationException e) {
+			logger.warn(e, "config transformer factory error!");
+		}
+	}
+	
 	private final TransformerFactory transformerFactory;
 
 	public XmlTransformer() {

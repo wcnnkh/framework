@@ -1,14 +1,5 @@
 package io.basc.framework.xml;
 
-import io.basc.framework.dom.DocumentParser;
-import io.basc.framework.dom.DomException;
-import io.basc.framework.env.Sys;
-import io.basc.framework.io.Resource;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.Processor;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +7,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.net.URI;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -25,7 +17,19 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import io.basc.framework.dom.DocumentParser;
+import io.basc.framework.dom.DomException;
+import io.basc.framework.env.Sys;
+import io.basc.framework.io.Resource;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.stream.Processor;
+
 public class XmlParser implements DocumentParser {
+	private static Logger logger = LoggerFactory.getLogger(XmlParser.class);
 	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
 	@Nullable
 	private static final EntityResolver ENTITY_RESOLVER = Sys.env.getServiceLoader(EntityResolver.class).first();
@@ -41,6 +45,11 @@ public class XmlParser implements DocumentParser {
 				Sys.env.getValue("io.basc.framework.xml.expand.entity.references", boolean.class, false));
 		DOCUMENT_BUILDER_FACTORY
 				.setNamespaceAware(Sys.env.getValue("io.basc.framework.xml.namespace.aware", boolean.class, false));
+		try {
+			DOCUMENT_BUILDER_FACTORY.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+		} catch (ParserConfigurationException e) {
+			logger.warn(e, "config document builder factory error!");
+		}
 	}
 
 	private final DocumentBuilderFactory documentBuilderFactory;
