@@ -28,12 +28,11 @@ public class SqlExcelExport implements ExcelExport {
 	}
 
 	@Override
-	public SqlExcelExport append(Collection<String> contents) throws IOException {
+	public void append(Collection<String> contents) throws IOException {
 		excelExport.append(contents);
-		return this;
 	}
 
-	public SqlExcelExport append(SqlOperations sqlOperations, Sql sql,
+	public void append(SqlOperations sqlOperations, Sql sql,
 			Processor<ResultSet, String[], SQLException> sqlExportRowMapping) throws ExcelException, IOException {
 		sqlOperations.query(sql, sqlExportRowMapping).forEach((contents) -> {
 			try {
@@ -43,10 +42,9 @@ public class SqlExcelExport implements ExcelExport {
 			}
 		});
 		excelExport.flush();
-		return this;
 	}
 
-	public SqlExcelExport export(String[] titles, SqlOperations sqlOperations, Collection<? extends Sql> sqls,
+	public void export(String[] titles, SqlOperations sqlOperations, Collection<? extends Sql> sqls,
 			Processor<ResultSet, String[], SQLException> sqlExportRowMapping) throws ExcelException, IOException {
 		try {
 			append(titles);
@@ -56,17 +54,15 @@ public class SqlExcelExport implements ExcelExport {
 		} finally {
 			close();
 		}
-		return this;
 	}
 
-	public SqlExcelExport export(String[] titles, SqlOperations sqlOperations, Sql sql,
+	public void export(String[] titles, SqlOperations sqlOperations, Sql sql,
 			Processor<ResultSet, String[], SQLException> sqlExportRowMapping) throws ExcelException, IOException {
-		return export(titles, sqlOperations, Arrays.asList(sql), sqlExportRowMapping);
+		export(titles, sqlOperations, Arrays.asList(sql), sqlExportRowMapping);
 	}
 
-	public SqlExcelExport export(String[] titles, SqlOperations sqlOperations, Sql... sqls)
-			throws ExcelException, IOException {
-		return export(titles, sqlOperations, Arrays.asList(sqls), new SimpleSqlExportRowMapping(titles.length));
+	public void export(String[] titles, SqlOperations sqlOperations, Sql... sqls) throws ExcelException, IOException {
+		export(titles, sqlOperations, Arrays.asList(sqls), new SimpleSqlExportRowMapping(titles.length));
 	}
 
 	public static SqlExcelExport create(ExcelExport excelExport) {
