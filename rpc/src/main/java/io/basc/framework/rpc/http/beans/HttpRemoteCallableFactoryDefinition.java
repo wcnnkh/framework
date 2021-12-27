@@ -26,6 +26,6 @@ class HttpRemoteCallableFactoryDefinition extends DefaultBeanDefinition {
 				: null;
 		return new HttpRemoteCallableFactory(clientHttpRequestFactory,
 				beanFactory.getEnvironment().getConversionService(), getDefaultValueFactory(), httpRemoteUriResolver,
-				discoveryLoadBalancer);
+				beanFactory.getEnvironment(), discoveryLoadBalancer);
 	}
 }

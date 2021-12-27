@@ -10,6 +10,7 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.core.parameter.ParameterUtils;
+import io.basc.framework.env.Environment;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.http.HttpMethod;
@@ -31,14 +32,21 @@ public class HttpRemoteCallableFactory implements CallableFactory, Configurable 
 	private final HttpRemoteResolver httpRemoteUriResolver;
 	private final ClientHttpRequestFactory clientHttpRequestFactory;
 	private final DiscoveryLoadBalancer discoveryLoadBalancer;
+	private final Environment environment;
 
 	public HttpRemoteCallableFactory(ClientHttpRequestFactory clientHttpRequestFactory,
 			ConversionService conversionService, ParameterFactory defaultValueFactory,
-			HttpRemoteResolver httpRemoteUriResolver, @Nullable DiscoveryLoadBalancer discoveryLoadBalancer) {
+			HttpRemoteResolver httpRemoteUriResolver, Environment environment,
+			@Nullable DiscoveryLoadBalancer discoveryLoadBalancer) {
 		this.webMessageConverters = new DefaultWebMessageConverters(conversionService, defaultValueFactory);
 		this.clientHttpRequestFactory = clientHttpRequestFactory;
 		this.httpRemoteUriResolver = httpRemoteUriResolver;
 		this.discoveryLoadBalancer = discoveryLoadBalancer;
+		this.environment = environment;
+	}
+
+	public Environment getEnvironment() {
+		return environment;
 	}
 
 	public WebMessageConverters getWebMessageConverters() {
@@ -74,7 +82,7 @@ public class HttpRemoteCallableFactory implements CallableFactory, Configurable 
 
 	@Override
 	public Callable<Object> getCallable(Class<?> clazz, Method method, Object[] args) {
-		URI host = httpRemoteUriResolver.resolve(clazz, method);
+		URI host = httpRemoteUriResolver.resolve(clazz, method, environment);
 		if (host == null) {
 			return null;
 		}

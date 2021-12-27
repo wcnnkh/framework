@@ -1,11 +1,13 @@
 package io.basc.framework.net;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.NetworkInterface;
+import java.net.ServerSocket;
 import java.net.SocketException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -257,5 +259,73 @@ public final class InetUtils {
 			output.getHeaders().set(MESSAGE_ID, messageId);
 		}
 		return messageId;
+	}
+
+	/**
+	 * 端口是否可用
+	 * 
+	 * @param port
+	 * @return
+	 */
+	public static boolean isAvailablePort(int port) {
+		if(port < 0 || port > 65535) {
+			return false;
+		}
+		
+		ServerSocket socket = null;
+		try {
+			socket = new ServerSocket(port);
+			return true;
+		} catch (IOException e) {
+			return false;
+		} finally {
+			if (socket != null) {
+				try {
+					socket.close();
+				} catch (IOException e) {
+				}
+			}
+		}
+	}
+
+	/**
+	 * 获取指定范围内可用的端口(minPort<=port<=maxPort) {@linkplain 0 and 65535}
+	 * 
+	 * @param minPort
+	 * @param maxPort
+	 * @return
+	 */
+	public static int getAvailablePort(int minPort, int maxPort) {
+		for (int i = Math.max(0, minPort), max = Math.min(65535, maxPort); i <= max; i++) {
+			if (isAvailablePort(i)) {
+				return i;
+			}
+		}
+		throw new IllegalStateException("No ports available(" + minPort + "~" + maxPort + ")");
+	}
+
+	/**
+	 * 获取一个可用的端口号
+	 * 
+	 * @return
+	 */
+	public static int getAvailablePort() {
+		DatagramSocket socket = null;
+		try {
+			socket = new DatagramSocket(0);
+			return socket.getLocalPort();
+		} catch (SocketException e) {
+			throw new IllegalStateException("No ports available");
+		} finally {
+			if (socket != null) {
+				try {
+					if (socket.isConnected()) {
+						socket.disconnect();
+					}
+				} finally {
+					socket.close();
+				}
+			}
+		}
 	}
 }

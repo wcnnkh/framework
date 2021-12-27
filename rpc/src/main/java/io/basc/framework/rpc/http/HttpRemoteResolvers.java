@@ -7,9 +7,8 @@ import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.factory.ConfigurableServices;
 
-public class HttpRemoteResolvers extends
-		ConfigurableServices<HttpRemoteResolver> implements
-		HttpRemoteResolver, EnvironmentAware {
+public class HttpRemoteResolvers extends ConfigurableServices<HttpRemoteResolver>
+		implements HttpRemoteResolver, EnvironmentAware {
 	private Environment environment;
 
 	public HttpRemoteResolvers() {
@@ -26,14 +25,6 @@ public class HttpRemoteResolvers extends
 	}
 
 	@Override
-	protected void aware(HttpRemoteResolver service) {
-		if (environment != null && service instanceof EnvironmentAware) {
-			((EnvironmentAware) service).setEnvironment(environment);
-		}
-		super.aware(service);
-	}
-
-	@Override
 	public boolean canResolve(Class<?> clazz) {
 		for (HttpRemoteResolver resolver : this) {
 			if (resolver.canResolve(clazz)) {
@@ -44,10 +35,10 @@ public class HttpRemoteResolvers extends
 	}
 
 	@Override
-	public URI resolve(Class<?> clazz) {
+	public URI resolve(Class<?> clazz, Environment environment) {
 		for (HttpRemoteResolver resolver : this) {
 			if (resolver.canResolve(clazz)) {
-				return resolver.resolve(clazz);
+				return resolver.resolve(clazz, environment);
 			}
 		}
 		return null;
@@ -64,10 +55,10 @@ public class HttpRemoteResolvers extends
 	}
 
 	@Override
-	public URI resolve(Method method) {
+	public URI resolve(Method method, Environment environment) {
 		for (HttpRemoteResolver resolver : this) {
 			if (resolver.canResolve(method)) {
-				return resolver.resolve(method);
+				return resolver.resolve(method, environment);
 			}
 		}
 		return null;
@@ -84,10 +75,10 @@ public class HttpRemoteResolvers extends
 	}
 
 	@Override
-	public URI resolve(Class<?> clazz, Method method) {
+	public URI resolve(Class<?> clazz, Method method, Environment environment) {
 		for (HttpRemoteResolver resolver : this) {
 			if (resolver.canResolve(clazz, method)) {
-				return resolver.resolve(clazz, method);
+				return resolver.resolve(clazz, method, environment);
 			}
 		}
 		return null;

@@ -2,10 +2,10 @@ package io.basc.framework.tomcat;
 
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.ConfigurableApplication;
-import io.basc.framework.boot.Main;
 import io.basc.framework.boot.servlet.support.ApplicationServletContainerInitializer;
 import io.basc.framework.boot.servlet.support.ServletContextUtils;
 import io.basc.framework.boot.support.ApplicationUtils;
+import io.basc.framework.boot.support.Main;
 import io.basc.framework.context.Destroy;
 import io.basc.framework.context.servlet.ServletContextPropertyFactory;
 import io.basc.framework.core.reflect.ReflectionUtils;
@@ -204,7 +204,7 @@ public class TomcatStart implements Main, Destroy {
 		}
 
 		this.tomcat = new Tomcat();
-		int port = ApplicationUtils.getApplicationPort(application);
+		int port = ApplicationUtils.getServerPort(application.getEnvironment());
 		tomcat.setPort(port);
 		logger.info("The boot port is {}", port);
 

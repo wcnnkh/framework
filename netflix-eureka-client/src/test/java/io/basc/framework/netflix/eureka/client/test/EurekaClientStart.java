@@ -51,7 +51,7 @@ public class EurekaClientStart {
 	@Path("/port")
 	@GET
 	public Object test() {
-		return ApplicationUtils.getApplicationPort(application);
+		return ApplicationUtils.getServerPort(application.getEnvironment());
 	}
 
 	@Path("message")
