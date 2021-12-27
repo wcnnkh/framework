@@ -6,6 +6,8 @@ import org.junit.Test;
 
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.support.MainApplication;
+import io.basc.framework.logger.Levels;
+import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.rpc.http.annotation.HttpRemote;
 import io.basc.framework.util.XUtils;
@@ -17,6 +19,7 @@ public class HttRemoteTest {
 
 	@Test
 	public void test() throws Throwable {
+		LoggerFactory.getLevelManager().getCustomLevelRegistry().put("io.basc.framework.rpc", Levels.DEBUG.getValue());
 		Application application = MainApplication
 				.run(HttpRemote.class, new String[] { "-p", InetUtils.getAvailablePort() + "" }).get();
 		TestRemoteInterface test = application.getInstance(TestRemoteInterface.class);
