@@ -588,7 +588,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 			// 不存在 order by 子语句
 			countSql.append(sql);
 		}
-		countSql.append(") as basc_" + XUtils.getUUID());
+		countSql.append(") as count_" + XUtils.getUUID());
 		return countSql;
 	}
 }
