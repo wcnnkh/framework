@@ -9,6 +9,10 @@ import io.basc.framework.value.Value;
 public final class ApplicationUtils {
 	public static final String SERVER_PORT_PROPERTY = "server.port";
 	public static final String APPLICATION_NAME_PROPERTY = "application.name";
+	/**
+	 * 默认端口号:8080
+	 */
+	public static final int DEFAULT_SERVER_PORT = 8080;
 
 	@Nullable
 	public static String getApplicatoinName(Environment environment) {
@@ -19,15 +23,12 @@ public final class ApplicationUtils {
 	 * 
 	 * 获取服务端的端口号
 	 * 
+	 * @see ApplicationUtils#DEFAULT_SERVER_PORT
 	 * @param environment
-	 * @return 默认为8080端口
+	 * @return
 	 */
 	public static int getServerPort(Environment environment) {
-		return getServerPort(environment, 8080);
-	}
-
-	public static int getServerPort(Environment environment, int defaultPort) {
-		return environment.getValue(SERVER_PORT_PROPERTY, int.class, defaultPort);
+		return environment.getValue(SERVER_PORT_PROPERTY, int.class, DEFAULT_SERVER_PORT);
 	}
 
 	public static void setServerPort(ConfigurableEnvironment environment, int port) {
