@@ -1,9 +1,9 @@
 package io.basc.framework.boot.support;
 
-import io.basc.framework.env.ConfigurableEnvironment;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.MainArgs;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.value.ConfigurablePropertyFactory;
 import io.basc.framework.value.Value;
 
 public final class ApplicationUtils {
@@ -28,10 +28,21 @@ public final class ApplicationUtils {
 	 * @return
 	 */
 	public static int getServerPort(Environment environment) {
-		return environment.getValue(SERVER_PORT_PROPERTY, int.class, DEFAULT_SERVER_PORT);
+		return getServerPort(environment, DEFAULT_SERVER_PORT);
 	}
 
-	public static void setServerPort(ConfigurableEnvironment environment, int port) {
+	/**
+	 * 获取服务端的端口号
+	 * 
+	 * @param environment
+	 * @param defaultPort 默认端口号
+	 * @return
+	 */
+	public static int getServerPort(Environment environment, int defaultPort) {
+		return environment.getValue(SERVER_PORT_PROPERTY, int.class, defaultPort);
+	}
+
+	public static void setServerPort(ConfigurablePropertyFactory environment, int port) {
 		environment.put(SERVER_PORT_PROPERTY, port);
 	}
 
