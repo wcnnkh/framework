@@ -54,13 +54,7 @@ public final class ApplicationUtils {
 	 */
 	@Nullable
 	public static Integer getPort(MainArgs args) {
-		Value port = args.getValue(SERVER_PORT_PROPERTY);
-		if (port != null && !port.isEmpty()) {
-			// 这样做的目的是为了可以覆盖-p参数
-			return port.getAsInteger();
-		}
-
-		port = args.getNextValue("-p");
-		return (port != null && port.isNumber()) ? port.getAsInteger() : null;
+		Value port = args.getNextValue("-p");
+		return (port != null && !port.isEmpty()) ? port.getAsInteger() : null;
 	}
 }
