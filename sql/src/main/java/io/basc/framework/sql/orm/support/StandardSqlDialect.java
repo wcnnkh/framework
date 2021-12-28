@@ -579,29 +579,16 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	public Sql toCountSql(Sql sql) throws SqlDialectException {
 		String str = sql.getSql();
 		str = str.toLowerCase();
-		if (str.lastIndexOf(" group by ") != -1) {
-			// 如果存在group by语句
-			EditableSql countSql = new EditableSql();
-			countSql.append("select count(*) from (");
-			countSql.append(sql);
-			countSql.append(") as basc_" + XUtils.getUUID());
-			return countSql;
-		}
-
-		int fromIndex = str.indexOf(" from ");// ignore select
-		if (fromIndex == -1) {
-			throw new IndexOutOfBoundsException(str);
-		}
-
 		EditableSql countSql = new EditableSql();
-		countSql.append("select count(*)");
+		countSql.append("select count(*) from (");
 		int orderIndex = str.lastIndexOf(" order by ");
 		if (orderIndex != -1 && str.indexOf(")", orderIndex) == -1) {
-			countSql.append(SqlUtils.sub(sql, fromIndex, orderIndex));
+			countSql.append(SqlUtils.sub(sql, 0, orderIndex));
 		} else {
 			// 不存在 order by 子语句
-			countSql.append(SqlUtils.sub(sql, fromIndex));
+			countSql.append(sql);
 		}
+		countSql.append(") as count_" + XUtils.getUUID());
 		return countSql;
 	}
 }

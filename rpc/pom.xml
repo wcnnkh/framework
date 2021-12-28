@@ -20,9 +20,16 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>web</artifactId>
 		</dependency>
+		
+		<!-- testing-->
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>testing</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>tomcat</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

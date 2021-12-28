@@ -30,7 +30,7 @@ public class AutoIncrementTest {
 				System.out.println(i + "-" + b);
 			}
 		}
-		long count = db.count(new SimpleSql("select count(*) from auto_increment_test_bean"));
+		long count = db.count(new SimpleSql("select * from auto_increment_test_bean"));
 		assertTrue(size == count);
 	}
 }

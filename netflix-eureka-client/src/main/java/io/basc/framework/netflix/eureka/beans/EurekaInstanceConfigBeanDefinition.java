@@ -49,7 +49,7 @@ public class EurekaInstanceConfigBeanDefinition extends DefaultBeanDefinition {
 
 		String serverContextPath = beanFactory.getEnvironment().getValue("server.servlet.context-path", String.class, "/");
 		Application application = beanFactory.getInstance(Application.class);
-		int serverPort = ApplicationUtils.getApplicationPort(application);
+		int serverPort = ApplicationUtils.getServerPort(application.getEnvironment());
 
 		Integer managementPort = beanFactory.getEnvironment().getValue("management.server.port", Integer.class, null);
 		String managementContextPath = beanFactory.getEnvironment().getString("management.server.servlet.context-path");

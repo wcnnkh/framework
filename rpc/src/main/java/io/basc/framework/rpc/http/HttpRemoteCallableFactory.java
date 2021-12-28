@@ -10,11 +10,14 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.core.parameter.ParameterUtils;
+import io.basc.framework.env.Environment;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.client.ClientHttpRequestFactory;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.retry.RetryOperations;
 import io.basc.framework.retry.support.RetryTemplate;
 import io.basc.framework.rpc.CallableFactory;
@@ -25,20 +28,29 @@ import io.basc.framework.web.pattern.HttpPattern;
 import io.basc.framework.web.pattern.HttpPatternResolvers;
 
 public class HttpRemoteCallableFactory implements CallableFactory, Configurable {
+	private static Logger logger = LoggerFactory.getLogger(HttpRemoteCallableFactory.class);
+	
 	private RetryOperations retryOperations = new RetryTemplate();
 	private final WebMessageConverters webMessageConverters;
 	private final HttpPatternResolvers httpPatternResolvers = new DefaultHttpPatternResolvers();
 	private final HttpRemoteResolver httpRemoteUriResolver;
 	private final ClientHttpRequestFactory clientHttpRequestFactory;
 	private final DiscoveryLoadBalancer discoveryLoadBalancer;
+	private final Environment environment;
 
 	public HttpRemoteCallableFactory(ClientHttpRequestFactory clientHttpRequestFactory,
 			ConversionService conversionService, ParameterFactory defaultValueFactory,
-			HttpRemoteResolver httpRemoteUriResolver, @Nullable DiscoveryLoadBalancer discoveryLoadBalancer) {
+			HttpRemoteResolver httpRemoteUriResolver, Environment environment,
+			@Nullable DiscoveryLoadBalancer discoveryLoadBalancer) {
 		this.webMessageConverters = new DefaultWebMessageConverters(conversionService, defaultValueFactory);
 		this.clientHttpRequestFactory = clientHttpRequestFactory;
 		this.httpRemoteUriResolver = httpRemoteUriResolver;
 		this.discoveryLoadBalancer = discoveryLoadBalancer;
+		this.environment = environment;
+	}
+
+	public Environment getEnvironment() {
+		return environment;
 	}
 
 	public WebMessageConverters getWebMessageConverters() {
@@ -74,7 +86,7 @@ public class HttpRemoteCallableFactory implements CallableFactory, Configurable 
 
 	@Override
 	public Callable<Object> getCallable(Class<?> clazz, Method method, Object[] args) {
-		URI host = httpRemoteUriResolver.resolve(clazz, method);
+		URI host = httpRemoteUriResolver.resolve(clazz, method, environment);
 		if (host == null) {
 			return null;
 		}
@@ -83,6 +95,11 @@ public class HttpRemoteCallableFactory implements CallableFactory, Configurable 
 		if (httpPattern == null) {
 			return null;
 		}
+		
+		if(logger.isDebugEnabled()) {
+			logger.debug("Create {} callable by host: {}", method, host);
+		}
+		
 		return new HttpRemoteCallable(webMessageConverters, clientHttpRequestFactory, host, httpPattern,
 				ParameterUtils.getParameters(method), args, TypeDescriptor.forMethodReturnType(method), retryOperations,
 				discoveryLoadBalancer);

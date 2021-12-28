@@ -5,22 +5,18 @@ import java.lang.reflect.Method;
 import java.net.URI;
 
 import io.basc.framework.env.Environment;
-import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.rpc.http.HttpRemoteResolver;
 
-public class AnnotationHttpRemoteResolver implements HttpRemoteResolver,
-		EnvironmentAware {
-	private Environment environment;
+public class AnnotationHttpRemoteResolver implements HttpRemoteResolver {
 
 	@Override
 	public boolean canResolve(Class<?> clazz) {
 		return clazz.isAnnotationPresent(HttpRemote.class);
 	}
 
-	protected URI resolveByAnnotation(AnnotatedElement annotatedElement) {
-		HttpRemote httpRemote = annotatedElement
-				.getAnnotation(HttpRemote.class);
+	protected URI resolveByAnnotation(AnnotatedElement annotatedElement, Environment environment) {
+		HttpRemote httpRemote = annotatedElement.getAnnotation(HttpRemote.class);
 		String url = httpRemote.value();
 		if (environment != null) {
 			url = environment.resolvePlaceholders(url);
@@ -29,8 +25,8 @@ public class AnnotationHttpRemoteResolver implements HttpRemoteResolver,
 	}
 
 	@Override
-	public URI resolve(Class<?> clazz) {
-		return resolveByAnnotation(clazz);
+	public URI resolve(Class<?> clazz, Environment environment) {
+		return resolveByAnnotation(clazz, environment);
 	}
 
 	@Override
@@ -39,13 +35,7 @@ public class AnnotationHttpRemoteResolver implements HttpRemoteResolver,
 	}
 
 	@Override
-	public URI resolve(Method method) {
-		return resolveByAnnotation(method);
+	public URI resolve(Method method, Environment environment) {
+		return resolveByAnnotation(method, environment);
 	}
-
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
-	}
-
 }
