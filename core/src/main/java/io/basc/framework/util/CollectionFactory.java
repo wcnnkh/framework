@@ -27,7 +27,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import io.basc.framework.convert.Converter;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
 
 public final class CollectionFactory {
@@ -200,7 +199,7 @@ public final class CollectionFactory {
 				throw new IllegalArgumentException("Unsupported Collection type: " + collectionType.getName());
 			}
 			try {
-				return (Collection<E>) Sys.env.getInstance(collectionType);
+				return (Collection<E>)ClassUtils.newInstance(collectionType);
 			} catch (Throwable ex) {
 				throw new IllegalArgumentException("Could not instantiate Collection type: " + collectionType.getName(),
 						ex);
@@ -327,7 +326,7 @@ public final class CollectionFactory {
 				throw new IllegalArgumentException("Unsupported Map type: " + mapType.getName());
 			}
 			try {
-				return (Map<K, V>) Sys.env.getInstance(mapType);
+				return (Map<K, V>) ClassUtils.newInstance(mapType);
 			} catch (Throwable ex) {
 				throw new IllegalArgumentException("Could not instantiate Map type: " + mapType.getName(), ex);
 			}
@@ -474,7 +473,26 @@ public final class CollectionFactory {
 		if (!deep && map instanceof Cloneable) {
 			return ReflectionUtils.clone((Cloneable) map);
 		} else {
-			M cloneMap = (M) createMap(map.getClass(), getEnumMapKeyType(map), map.size());
+			Class<?> mapType = map.getClass();
+			M cloneMap;
+			if(mapType == TreeMap.class) {
+				cloneMap = (M) new TreeMap<K, V>(((TreeMap<K, V>)map).comparator());
+			}else {
+				cloneMap = (M) createMap(map.getClass(), getEnumMapKeyType(map), map.size());
+			}
+			
+			while(mapType != null && mapType != Object.class && !mapType.isInterface() && !(mapType.getName().startsWith("java.util.") && mapType.getName().endsWith("Map"))){
+				ReflectionUtils.getDeclaredFields(mapType).stream().forEach((f) -> {
+					try {
+						Object v = f.get(map);
+						f.set(cloneMap, ObjectUtils.clone(v, deep));
+					} catch (Exception e) {
+						throw new IllegalStateException("Should never get here", e);
+					}
+				});
+				mapType = mapType.getSuperclass();
+			}
+			
 			for (Entry<K, V> entry : map.entrySet()) {
 				cloneMap.put(ObjectUtils.clone(entry.getKey(), deep), ObjectUtils.clone(entry.getValue(), deep));
 			}
@@ -518,8 +536,27 @@ public final class CollectionFactory {
 		if (!deep && collection instanceof Cloneable) {
 			return ReflectionUtils.clone((Cloneable) collection);
 		} else {
-			C cloneCollection = (C) createCollection(collection.getClass(), getEnumSetElementType(collection),
+			C cloneCollection;
+			Class<?> collectionClass = collection.getClass();
+			if(collectionClass == TreeSet.class) {
+				cloneCollection = (C) new TreeSet<E>(((TreeSet<E>)collection).comparator());
+			}else {
+				cloneCollection = (C) createCollection(collection.getClass(), getEnumSetElementType(collection),
 					collection.size());
+			}
+			
+			while(collectionClass != null && collectionClass != Object.class && !collectionClass.isInterface() && !(collectionClass.getName().startsWith("java.util.") && (collectionClass.getName().endsWith("Set") || collectionClass.getName().endsWith("List")))){
+				ReflectionUtils.getDeclaredFields(collectionClass).stream().forEach((f) -> {
+					try {
+						Object v = f.get(collection);
+						f.set(cloneCollection, ObjectUtils.clone(v, deep));
+					} catch (Exception e) {
+						throw new IllegalStateException("Should never get here", e);
+					}
+				});
+				collectionClass = collectionClass.getSuperclass();
+			}
+			
 			for (E e : collection) {
 				cloneCollection.add(ObjectUtils.clone(e, deep));
 			}
