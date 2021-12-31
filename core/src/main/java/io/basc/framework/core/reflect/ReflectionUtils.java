@@ -8,6 +8,7 @@ import io.basc.framework.util.Accept;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ObjectUtils;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -884,5 +885,29 @@ public abstract class ReflectionUtils {
 		}
 
 		return (T[]) invokeMethod(method, null);
+	}
+
+	public static <T, E extends RuntimeException> void clone(T source, T target, boolean deep) throws E {
+		Assert.requiredArgument(source != null, "source");
+		Assert.requiredArgument(target != null, "target");
+		clone(getDeclaredFields(target.getClass()).withAll(), source, target, deep);
+	}
+
+	public static <T, E extends RuntimeException> void clone(Members<Field, E> members, T source, T target,
+			boolean deep) throws E {
+		Assert.requiredArgument(members != null, "members");
+		Assert.requiredArgument(source != null, "source");
+		Assert.requiredArgument(target != null, "target");
+		members.streamAll().filter((f) -> {
+			return !Modifier.isStatic(f.getModifiers()) && !Modifier.isTransient(f.getModifiers());
+		}).forEach((f) -> {
+			try {
+				Object value = f.get(source);
+				value = ObjectUtils.clone(value, deep);
+				f.set(target, value);
+			} catch (Exception e) {
+				throw new IllegalStateException("Should never get here", e);
+			}
+		});
 	}
 }
