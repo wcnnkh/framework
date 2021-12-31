@@ -21,13 +21,15 @@ import java.util.stream.Stream;
  * @param <T>
  * @param <E>
  */
-public class Members<T, E extends RuntimeException> implements Iterable<T>, Cloneable {
+public class Members<T, E extends RuntimeException> implements Iterable<T>,
+		Cloneable {
 	@Nullable
 	private List<Members<T, E>> withs;
 	private final Class<?> sourceClass;
 	private final Processor<Class<?>, Stream<T>, E> processor;
 
-	public Members(Class<?> sourceClass, Processor<Class<?>, Stream<T>, E> processor) {
+	public Members(Class<?> sourceClass,
+			Processor<Class<?>, Stream<T>, E> processor) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		Assert.requiredArgument(processor != null, "processor");
 		this.sourceClass = sourceClass;
@@ -125,7 +127,8 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 	 * @return
 	 */
 	public Stream<T> streamAll() throws E {
-		return StreamProcessorSupport.concat(streamMembers().map((m) -> m.stream()).iterator());
+		return StreamProcessorSupport.concat(streamMembers().map(
+				(m) -> m.stream()).iterator());
 	}
 
 	public Members<T, E> with(Members<T, E> methods) {
@@ -143,7 +146,8 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 	 * @param processor
 	 * @return
 	 */
-	public Members<T, E> withClass(Class<?> sourceClass, Processor<Class<?>, Stream<T>, E> processor) {
+	public Members<T, E> withClass(Class<?> sourceClass,
+			Processor<Class<?>, Stream<T>, E> processor) {
 		return with(new Members<>(sourceClass, processor));
 	}
 
@@ -158,17 +162,13 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 	}
 
 	/**
-	 * 该类上的所有接口(此方法不支持superclass的原因的，无法获取一个接口的父类，尝试获取一个接口的父类时始终为空)
-	 * 
-	 * @see Class#getInterfaces()
-	 * @see #withInterfaces(Processor)
+	 * 关联接口
+	 * @param predicate
+	 * @param processor
 	 * @return
 	 */
-	public Members<T, E> withInterfaces() {
-		return withInterfaces(this.processor);
-	}
-
-	public Members<T, E> withInterfaces(@Nullable Predicate<Class<?>> predicate,
+	public Members<T, E> withInterfaces(
+			@Nullable Predicate<Class<?>> predicate,
 			Processor<Class<?>, Stream<T>, E> processor) {
 		Assert.requiredArgument(processor != null, "processor");
 		Class<?>[] interfaces = this.sourceClass.getInterfaces();
@@ -188,29 +188,41 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 
 	/**
 	 * 关联接口
-	 * 
-	 * @see Class#getInterfaces()
-	 * 
-	 * @param <E>
-	 * @param processor
+	 * @param predicate
 	 * @return
 	 */
-	public Members<T, E> withInterfaces(Processor<Class<?>, Stream<T>, E> processor) {
-		return withInterfaces(null, processor);
-	}
-
 	public Members<T, E> withInterfaces(@Nullable Predicate<Class<?>> predicate) {
 		return withInterfaces(predicate, this.processor);
 	}
 
-	public Members<T, E> withSuperclass(boolean interfaces, @Nullable Predicate<Class<?>> predicate,
+	/**
+	 * 该类上的所有接口(此方法不支持superclass的原因的，无法获取一个接口的父类，尝试获取一个接口的父类时始终为空)
+	 * 
+	 * @see Class#getInterfaces()
+	 * @see #withInterfaces(Processor)
+	 * @return
+	 */
+	public Members<T, E> withInterfaces() {
+		return withInterfaces(null, this.processor);
+	}
+
+	/**
+	 * 关联所有父类
+	 * @param interfaces 是否关联父类的接口
+	 * @param predicate
+	 * @param processor
+	 * @return
+	 */
+	public Members<T, E> withSuperclass(boolean interfaces,
+			@Nullable Predicate<Class<?>> predicate,
 			Processor<Class<?>, Stream<T>, E> processor) {
 		Assert.requiredArgument(processor != null, "processor");
 		Class<?> superclass = this.sourceClass.getSuperclass();
 		while (superclass != null) {
 			if (predicate == null || predicate.test(superclass)) {
 				if (interfaces) {
-					withClass(superclass, processor).withInterfaces(predicate, processor);
+					withClass(superclass, processor).withInterfaces(predicate,
+							processor);
 				} else {
 					withClass(superclass, processor);
 				}
@@ -225,32 +237,26 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 	/**
 	 * 关联父类
 	 * 
-	 * @param <E>
-	 * @param interfaces 是否也关联父类的接口
-	 * @param processor
+	 * @param interfaces
+	 *            是否也关联父类的接口
+	 * @param predicate
 	 * @return
-	 * @throws E
 	 */
-	public Members<T, E> withSuperclass(boolean interfaces, Processor<Class<?>, Stream<T>, E> processor) {
-		return withSuperclass(interfaces, null, processor);
-	}
-
-	public Members<T, E> withSuperclass(boolean interfaces, @Nullable Predicate<Class<?>> predicate) {
+	public Members<T, E> withSuperclass(boolean interfaces,
+			@Nullable Predicate<Class<?>> predicate) {
 		return withSuperclass(interfaces, predicate, this.processor);
+	}
+	
+	public Members<T, E> withSuperclass(@Nullable Predicate<Class<?>> predicate, Processor<Class<?>, Stream<T>, E> processor) {
+		return withSuperclass(false, predicate, processor);
 	}
 
 	/**
-	 * 关联父类
+	 * 关联父类(不关联父类接口)
 	 * 
-	 * @param <E>
-	 * @param processor
+	 * @param predicate
 	 * @return
-	 * @throws E
 	 */
-	public Members<T, E> withSuperclass(Processor<Class<?>, Stream<T>, E> processor) {
-		return withSuperclass(false, processor);
-	}
-
 	public Members<T, E> withSuperclass(@Nullable Predicate<Class<?>> predicate) {
 		return withSuperclass(false, predicate);
 	}
@@ -258,44 +264,43 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 	/**
 	 * 关联所有父类
 	 * 
-	 * @param interfaces 是否关联父类的接口 {@link #withInterfaces(boolean)}
+	 * @param interfaces
+	 *            是否关联父类的接口 {@link #withInterfaces(boolean)}
 	 * @return
 	 */
 	public Members<T, E> withSuperclass(boolean interfaces) {
-		return withSuperclass(interfaces, this.processor);
+		return withSuperclass(interfaces, null, this.processor);
 	}
 
 	/**
-	 * 关联所有父类
+	 * 关联所有父类(不关联父类接口)
 	 * 
 	 * @return
 	 */
 	public Members<T, E> withSuperclass() {
 		return withSuperclass(false);
 	}
+	
+	public Members<T, E> withAll(@Nullable Predicate<Class<?>> predicate, Processor<Class<?>, Stream<T>, E> processor) {
+		return withInterfaces(predicate, processor).withSuperclass(predicate, processor);
+	}
 
+	/**
+	 * 关联所有的接口和父类(不关联父类接口)
+	 * 
+	 * @param predicate
+	 * @return
+	 */
 	public Members<T, E> withAll(@Nullable Predicate<Class<?>> predicate) {
 		return withInterfaces(predicate).withSuperclass(predicate);
 	}
 
 	/**
-	 * 关联所有的接口和父类
-	 * 
-	 * @param <E>
-	 * @param processor
-	 * @return
-	 * @throws E
-	 */
-	public Members<T, E> withAll(Processor<Class<?>, Stream<T>, E> processor) {
-		return withInterfaces(processor).withSuperclass(processor);
-	}
-
-	/**
-	 * 关联所有
+	 * 关联所有(不关联父类接口)
 	 * 
 	 * @return
 	 */
 	public Members<T, E> withAll() {
-		return withAll(this.processor);
+		return withAll(null, this.processor);
 	}
 }

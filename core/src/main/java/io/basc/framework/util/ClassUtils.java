@@ -1,29 +1,5 @@
 package io.basc.framework.util;
 
-import java.beans.Introspector;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.Type;
-import java.lang.reflect.UndeclaredThrowableException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Stream;
-
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.core.type.classreading.MetadataReaderFactory;
@@ -38,6 +14,28 @@ import io.basc.framework.util.page.Pageables;
 import io.basc.framework.util.page.SharedPageable;
 import io.basc.framework.util.page.StreamPageables;
 import io.basc.framework.util.stream.StreamProcessorSupport;
+
+import java.beans.Introspector;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -1465,10 +1463,8 @@ public final class ClassUtils {
 		// 不直接使用Class.newInstance()方法的原因是jdk1.9弃用了此方法
 		try {
 			return clazz.getConstructor().newInstance();
-		} catch (IllegalAccessException | IllegalArgumentException e) {
+		} catch (Exception e) {
 			ReflectionUtils.handleReflectionException(e);
-		} catch (InstantiationException | InvocationTargetException | NoSuchMethodException e) {
-			throw new UndeclaredThrowableException(e);
 		}
 		throw new IllegalStateException("Should never get here");
 	}

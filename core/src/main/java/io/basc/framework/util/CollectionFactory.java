@@ -1,5 +1,9 @@
 package io.basc.framework.util;
 
+import io.basc.framework.convert.Converter;
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.lang.Nullable;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,11 +28,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.function.Predicate;
-
-import io.basc.framework.convert.Converter;
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.lang.Nullable;
 
 public final class CollectionFactory {
 	private static final Field KEY_TYPE_FIELD = ReflectionUtils.findField(EnumMap.class, "keyType");
@@ -482,13 +481,7 @@ public final class CollectionFactory {
 				cloneMap = (M) createMap(map.getClass(), getEnumMapKeyType(map), map.size());
 			}
 
-			ReflectionUtils.clone(ReflectionUtils.getDeclaredFields(mapType).withAll(new Predicate<Class<?>>() {
-
-				@Override
-				public boolean test(Class<?> e) {
-					return e != Object.class && !(e.getName().startsWith("java.util.") && e.getName().endsWith("Map"));
-				}
-			}), map, cloneMap, deep);
+			ReflectionUtils.clone(ReflectionUtils.getDeclaredFields(mapType).withAll((e) -> e != Object.class && !(e.getName().startsWith("java.util.") && e.getName().endsWith("Map"))), map, cloneMap, deep);
 
 			for (Entry<K, V> entry : map.entrySet()) {
 				cloneMap.put(ObjectUtils.clone(entry.getKey(), deep), ObjectUtils.clone(entry.getValue(), deep));
@@ -542,14 +535,7 @@ public final class CollectionFactory {
 						collection.size());
 			}
 
-			ReflectionUtils.clone(ReflectionUtils.getDeclaredFields(collectionClass).withAll(new Predicate<Class<?>>() {
-
-				@Override
-				public boolean test(Class<?> e) {
-					return e != Object.class && !(e.getName().startsWith("java.util.")
-							&& (e.getName().endsWith("Set") || e.getName().endsWith("List")));
-				}
-			}), collection, cloneCollection, deep);
+			ReflectionUtils.clone(ReflectionUtils.getDeclaredFields(collectionClass).withAll((e) -> e != Object.class && !(e.getName().startsWith("java.util.") && (e.getName().endsWith("Set") || e.getName().endsWith("List")))), collection, cloneCollection, deep);
 
 			for (E e : collection) {
 				cloneCollection.add(ObjectUtils.clone(e, deep));

@@ -92,16 +92,8 @@ public abstract class ReflectionUtils {
 			constructor = clazz.getDeclaredConstructor();
 			makeAccessible(constructor);
 			return constructor.newInstance();
-		} catch (NoSuchMethodException e) {
+		} catch (Exception e) {
 			handleReflectionException(e);
-		} catch (InstantiationException e) {
-			handleReflectionException(e);
-		} catch (IllegalAccessException e) {
-			handleReflectionException(e);
-		} catch (IllegalArgumentException e) {
-			handleReflectionException(e);
-		} catch (InvocationTargetException e) {
-			handleInvocationTargetException(e);
 		}
 		throw new IllegalStateException("Should never get here");
 	}
@@ -888,16 +880,21 @@ public abstract class ReflectionUtils {
 	}
 
 	public static <T, E extends RuntimeException> void clone(T source, T target, boolean deep) throws E {
-		Assert.requiredArgument(source != null, "source");
 		Assert.requiredArgument(target != null, "target");
+		if(source == null){
+			return ;
+		}
+		
 		clone(getDeclaredFields(target.getClass()).withAll(), source, target, deep);
 	}
 
 	public static <T, E extends RuntimeException> void clone(Members<Field, E> members, T source, T target,
 			boolean deep) throws E {
 		Assert.requiredArgument(members != null, "members");
-		Assert.requiredArgument(source != null, "source");
-		Assert.requiredArgument(target != null, "target");
+		if(source == null || target == null){
+			return ;
+		}
+		
 		members.streamAll().filter((f) -> {
 			return !Modifier.isStatic(f.getModifiers()) && !Modifier.isTransient(f.getModifiers());
 		}).forEach((f) -> {
@@ -909,5 +906,22 @@ public abstract class ReflectionUtils {
 				throw new IllegalStateException("Should never get here", e);
 			}
 		});
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T, E extends RuntimeException> T clone(Members<Field, E> members, T source,
+			boolean deep){
+		Assert.requiredArgument(members != null, "members");
+		if(source == null) {
+			return null;
+		}
+		
+		T target = (T) newInstance(source.getClass());
+		clone(members, source, target, deep);
+		return target;
+	}
+	
+	public static <T> T clone(T source, boolean deep){
+		return clone(getDeclaredFields(source.getClass()).withAll(), source, deep);
 	}
 }
