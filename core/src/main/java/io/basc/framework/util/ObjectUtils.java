@@ -319,6 +319,10 @@ public abstract class ObjectUtils {
 		if (source == null) {
 			return null;
 		}
+		
+		if(ClassUtils.isPrimitiveOrWrapper(source.getClass())) {
+			return source;
+		}
 
 		if (source.getClass().isArray()) {
 			return ArrayUtils.clone(source, deep);

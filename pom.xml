@@ -345,6 +345,12 @@
 				<artifactId>cloud</artifactId>
 				<version>1.8.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>gateway</artifactId>
+				<version>1.8.0</version>
+			</dependency>
 
 			<dependency>
 				<groupId>io.basc.framework</groupId>
@@ -934,5 +940,6 @@
 		<module>testing</module>
 		<module>jstl</module>
 		<module>zookeeper-server</module>
+		<module>gateway</module>
 	</modules>
 </project>
