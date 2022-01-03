@@ -45,7 +45,7 @@ public class DirectoryStorage extends TimerTask implements Storage {
 	}
 
 	public DirectoryStorage(long exp, Serializer serializer, String directory) {
-		this(exp, SerializerUtils.getSerializer(), new File(Assert.securePathArgument(directory, "directory")));
+		this(exp, SerializerUtils.getSerializer(), new File(Assert.secureFilePathArgument(directory, "directory")));
 	}
 
 	/**

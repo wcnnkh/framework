@@ -72,7 +72,7 @@ public class Zip extends FastStreamCodec {
 			ZipEntry zipEntry = null;
 			while (ens.hasMoreElements()) {
 				zipEntry = ens.nextElement();
-				File f = new File(target, Assert.securePath(zipEntry.getName()));
+				File f = new File(target, Assert.secureFilePath(zipEntry.getName()));
 				if (zipEntry.isDirectory()) {
 					// dirName = dirName.substring(0, dirName.length() - 1);
 					f.mkdirs();

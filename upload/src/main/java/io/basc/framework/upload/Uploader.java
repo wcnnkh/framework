@@ -59,13 +59,13 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	private String sign;
 
 	public Uploader(String directory) {
-		this.directory = Assert.securePathArgument(directory, "directory");
+		this.directory = Assert.secureFilePathArgument(directory, "directory");
 	}
 
 	@Override
 	public Resource get(String key) throws StorageException, IOException {
 		String cleanKey = cleanPath(key);
-		File file = new File(directory, Assert.securePathArgument(key, "key"));
+		File file = new File(directory, Assert.secureFilePathArgument(key, "key"));
 		StringBuilder sb = new StringBuilder();
 		sb.append(getBaseUrl());
 		sb.append("/");
@@ -76,7 +76,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	@Override
 	public boolean put(String key, InputMessage input) throws StorageException, IOException {
 		logger.info("put [{}]", key);
-		File file = new File(directory, Assert.securePathArgument(key, "key"));
+		File file = new File(directory, Assert.secureFilePathArgument(key, "key"));
 		InputStream is = null;
 		try {
 			is = input.getInputStream();
@@ -90,7 +90,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	@Override
 	public boolean delete(String key) throws StorageException {
 		logger.info("delete [{}]", key);
-		File file = new File(directory, Assert.securePathArgument(key, "key"));
+		File file = new File(directory, Assert.secureFilePathArgument(key, "key"));
 		return file.delete();
 	}
 
@@ -226,7 +226,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 			file = new File(directory);
 		} else {
 			String suffix = prefix;
-			file = new File(directory + Assert.securePath(suffix));
+			file = new File(directory + Assert.secureFilePath(suffix));
 			while (!file.exists() || !file.isDirectory()) {// 如果文件不存在或文件不是目录
 				int index = suffix.lastIndexOf("/");
 				if (index == -1 || index == 0) {
@@ -234,7 +234,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 				}
 
 				suffix = suffix.substring(0, index);
-				file = new File(directory + Assert.securePath(suffix));
+				file = new File(directory + Assert.secureFilePath(suffix));
 			}
 		}
 
