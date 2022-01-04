@@ -343,6 +343,6 @@ public abstract class ObjectUtils {
 		if (source instanceof Cloneable) {
 			return ReflectionUtils.clone((Cloneable) source);
 		}
-		return source;
+		return ReflectionUtils.clone(source, deep);
 	}
 }

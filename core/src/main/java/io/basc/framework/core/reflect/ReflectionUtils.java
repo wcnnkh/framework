@@ -38,7 +38,7 @@ public abstract class ReflectionUtils {
 				&& Modifier.isPublic(method.getModifiers()) && method.getName().startsWith("get")
 				&& method.getParameterTypes().length == 0;
 	}).toArray(Method[]::new);
-
+	
 	/**
 	 * 实体成员，忽略静态的和transient修饰的
 	 */
@@ -907,9 +907,13 @@ public abstract class ReflectionUtils {
 
 		members.streamAll().filter(ENTITY_MEMBER).forEach((f) -> {
 			try {
-				Object value = f.get(source);
-				value = ObjectUtils.clone(value, deep);
-				f.set(target, value);
+				Object value = getField(f, source);
+				if(value == source) {
+					value = target;
+				}else {
+					value = ObjectUtils.clone(value, deep);
+				}
+				setField(f, target, value);
 			} catch (Exception e) {
 				throw new IllegalStateException("Should never get here", e);
 			}
@@ -922,7 +926,8 @@ public abstract class ReflectionUtils {
 		if (source == null) {
 			return null;
 		}
-
+		
+		
 		T target = (T) newInstance(source.getClass());
 		clone(members, source, target, deep);
 		return target;

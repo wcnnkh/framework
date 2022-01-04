@@ -478,7 +478,11 @@ public final class CollectionFactory {
 			if (mapType == TreeMap.class) {
 				cloneMap = (M) new TreeMap<K, V>(((TreeMap<K, V>) map).comparator());
 			} else {
-				cloneMap = (M) createMap(map.getClass(), getEnumMapKeyType(map), map.size());
+				try {
+					cloneMap = (M) createMap(map.getClass(), getEnumMapKeyType(map), map.size());
+				} catch (Exception e) {
+					return ReflectionUtils.clone(map, deep);
+				}
 			}
 
 			ReflectionUtils.clone(ReflectionUtils.getDeclaredFields(mapType).withAll((e) -> e != Object.class && !(e.getName().startsWith("java.util.") && e.getName().endsWith("Map"))), map, cloneMap, deep);
@@ -531,8 +535,12 @@ public final class CollectionFactory {
 			if (collectionClass == TreeSet.class) {
 				cloneCollection = (C) new TreeSet<E>(((TreeSet<E>) collection).comparator());
 			} else {
-				cloneCollection = (C) createCollection(collection.getClass(), getEnumSetElementType(collection),
-						collection.size());
+				try {
+					cloneCollection = (C) createCollection(collection.getClass(), getEnumSetElementType(collection),
+							collection.size());
+				} catch (IllegalArgumentException e) {
+					return ReflectionUtils.clone(collection, deep);
+				}
 			}
 
 			ReflectionUtils.clone(ReflectionUtils.getDeclaredFields(collectionClass).withAll((e) -> e != Object.class && !(e.getName().startsWith("java.util.") && (e.getName().endsWith("Set") || e.getName().endsWith("List")))), collection, cloneCollection, deep);

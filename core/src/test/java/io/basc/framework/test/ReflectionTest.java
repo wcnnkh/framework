@@ -14,6 +14,7 @@ public class ReflectionTest {
 		bean.a = XUtils.getUUID();
 		bean.b = new String[] { XUtils.getUUID() };
 		bean.c = "sss";
+		bean.d = bean;
 		String a = bean.toString();
 		System.out.println(a);
 		TestBean clone = ReflectionUtils.clone(bean, true);
@@ -38,6 +39,7 @@ public class ReflectionTest {
 		public String a;
 		public Object b;
 		public transient String c;
+		public TestBean d;
 
 		public String toString() {
 			return ReflectionUtils.toString(this);
