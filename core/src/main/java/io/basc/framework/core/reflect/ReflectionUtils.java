@@ -38,7 +38,7 @@ public abstract class ReflectionUtils {
 				&& Modifier.isPublic(method.getModifiers()) && method.getName().startsWith("get")
 				&& method.getParameterTypes().length == 0;
 	}).toArray(Method[]::new);
-	
+
 	/**
 	 * 实体成员，忽略静态的和transient修饰的
 	 */
@@ -212,6 +212,7 @@ public abstract class ReflectionUtils {
 	 *                   indicate any signature)
 	 * @return the Method object, or {@code null} if none found
 	 */
+	@Nullable
 	public static Method findMethod(Class<?> clazz, String name, Class<?>... paramTypes) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(name, "Method name must not be null");
@@ -908,9 +909,9 @@ public abstract class ReflectionUtils {
 		members.streamAll().filter(ENTITY_MEMBER).forEach((f) -> {
 			try {
 				Object value = getField(f, source);
-				if(value == source) {
+				if (value == source) {
 					value = target;
-				}else {
+				} else {
 					value = ObjectUtils.clone(value, deep);
 				}
 				setField(f, target, value);
@@ -926,8 +927,7 @@ public abstract class ReflectionUtils {
 		if (source == null) {
 			return null;
 		}
-		
-		
+
 		T target = (T) newInstance(source.getClass());
 		clone(members, source, target, deep);
 		return target;
@@ -1031,8 +1031,8 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see #ENTITY_MEMBER
-	 * @param <T>
-	 * @param <E>
+	 * @param         <T>
+	 * @param         <E>
 	 * @param members
 	 * @param left
 	 * @param right
@@ -1092,7 +1092,7 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see #ENTITY_MEMBER
-	 * @param <E>
+	 * @param         <E>
 	 * @param members
 	 * @param entity
 	 * @param deep
