@@ -320,7 +320,11 @@ public abstract class ObjectUtils {
 			return null;
 		}
 		
-		if(ClassUtils.isPrimitiveOrWrapper(source.getClass())) {
+		if(source instanceof String || source instanceof Class) {
+			return source;
+		}
+		
+		if(ClassUtils.isPrimitiveOrWrapper(source.getClass()) || source.getClass().isEnum()) {
 			return source;
 		}
 

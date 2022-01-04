@@ -80,7 +80,12 @@ public final class ArrayUtils {
 
 		if (array instanceof Object[]) {
 			if (deep) {
-				return ObjectUtils.clone(array, deep);
+				int len = Array.getLength(array);
+				Object clone = Array.newInstance(array.getClass().getComponentType(), len);
+				for (int i = 0; i < len; i++) {
+					Array.set(clone, i, ObjectUtils.clone(Array.get(array, i), deep));
+				}
+				return (T) clone;
 			} else {
 				return (T) ((Object[]) array).clone();
 			}
