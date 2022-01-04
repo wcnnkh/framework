@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import io.basc.framework.core.Members;
 import io.basc.framework.core.parameter.ParameterUtils;
@@ -37,6 +38,12 @@ public abstract class ReflectionUtils {
 				&& Modifier.isPublic(method.getModifiers()) && method.getName().startsWith("get")
 				&& method.getParameterTypes().length == 0;
 	}).toArray(Method[]::new);
+
+	/**
+	 * 实体成员，忽略静态的和transient修饰的
+	 */
+	public static final Predicate<Member> ENTITY_MEMBER = (m) -> !Modifier.isStatic(m.getModifiers())
+			&& !Modifier.isTransient(m.getModifiers());
 
 	/**
 	 * 判断此类是否可用(会静态初始化)
@@ -884,23 +891,21 @@ public abstract class ReflectionUtils {
 
 	public static <T, E extends RuntimeException> void clone(T source, T target, boolean deep) throws E {
 		Assert.requiredArgument(target != null, "target");
-		if(source == null){
-			return ;
+		if (source == null) {
+			return;
 		}
-		
+
 		clone(getDeclaredFields(target.getClass()).withAll(), source, target, deep);
 	}
 
 	public static <T, E extends RuntimeException> void clone(Members<Field, E> members, T source, T target,
 			boolean deep) throws E {
 		Assert.requiredArgument(members != null, "members");
-		if(source == null || target == null){
-			return ;
+		if (source == null || target == null) {
+			return;
 		}
-		
-		members.streamAll().filter((f) -> {
-			return !Modifier.isStatic(f.getModifiers()) && !Modifier.isTransient(f.getModifiers());
-		}).forEach((f) -> {
+
+		members.streamAll().filter(ENTITY_MEMBER).forEach((f) -> {
 			try {
 				Object value = f.get(source);
 				value = ObjectUtils.clone(value, deep);
@@ -910,31 +915,31 @@ public abstract class ReflectionUtils {
 			}
 		});
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public static <T, E extends RuntimeException> T clone(Members<Field, E> members, T source,
-			boolean deep){
+	public static <T, E extends RuntimeException> T clone(Members<Field, E> members, T source, boolean deep) {
 		Assert.requiredArgument(members != null, "members");
-		if(source == null) {
+		if (source == null) {
 			return null;
 		}
-		
+
 		T target = (T) newInstance(source.getClass());
 		clone(members, source, target, deep);
 		return target;
 	}
-	
-	public static <T> T clone(T source, boolean deep){
+
+	public static <T> T clone(T source, boolean deep) {
 		return clone(getDeclaredFields(source.getClass()).withAll(), source, deep);
 	}
-	
-	public static <M extends Member, E extends RuntimeException> Members<M, E> getEntityMembers(Class<?> entityClass, Processor<Class<?>, M[], E> processor){
-		return new Members<M, E>(entityClass, (c) -> Arrays.asList(processor.process(c)).stream()).filter((m) -> {
-			return !Modifier.isStatic(m.getModifiers()) && !Modifier.isTransient(m.getModifiers());
-		});
+
+	public static <M extends Member, E extends RuntimeException> Members<M, E> getEntityMembers(Class<?> entityClass,
+			Processor<Class<?>, M[], E> processor) {
+		return new Members<M, E>(entityClass, (c) -> Arrays.asList(processor.process(c)).stream())
+				.filter(ENTITY_MEMBER);
 	}
-	
-	public static <T, E extends RuntimeException> String toString(Members<Field, E> members, T entity, boolean deep) throws E {
+
+	public static <T, E extends RuntimeException> String toString(Members<Field, E> members, T entity, boolean deep)
+			throws E {
 		Assert.requiredArgument(members != null, "members");
 		if (entity == null) {
 			return null;
@@ -943,7 +948,7 @@ public abstract class ReflectionUtils {
 		StringBuilder builder = new StringBuilder();
 		builder.append(members.getSourceClass().getSimpleName());
 		builder.append('(');
-		Iterator<Field> iterator = members.streamAll().iterator();
+		Iterator<Field> iterator = members.streamAll().filter(ENTITY_MEMBER).iterator();
 		while (iterator.hasNext()) {
 			Field field = iterator.next();
 			builder.append(field.getName());
@@ -961,7 +966,7 @@ public abstract class ReflectionUtils {
 		builder.append(')');
 		return builder.toString();
 	}
-	
+
 	private static <T> void toString(StringBuilder sb, Class<? extends T> entityClass, T entity, boolean deep) {
 		if (entity == null) {
 			return;
@@ -969,7 +974,7 @@ public abstract class ReflectionUtils {
 
 		sb.append(entityClass.getSimpleName());
 		sb.append('(');
-		Iterator<Field> iterator = getEntityMembers(entityClass, (e) -> e.getDeclaredFields()).iterator();
+		Iterator<Field> iterator = getDeclaredFields(entityClass).stream().filter(ENTITY_MEMBER).iterator();
 		Class<?> superclass = entityClass.getSuperclass();
 		if (superclass != null && superclass != Object.class) {
 			sb.append("super=");
@@ -978,7 +983,7 @@ public abstract class ReflectionUtils {
 				sb.append(',').append(' ');
 			}
 		}
-		
+
 		while (iterator.hasNext()) {
 			Field field = iterator.next();
 			sb.append(field.getName());
@@ -995,16 +1000,15 @@ public abstract class ReflectionUtils {
 		}
 		sb.append(')');
 	}
-	
+
 	public static <T> String toString(Class<? extends T> entityClass, T entity, boolean deep) {
 		Assert.requiredArgument(entityClass != null, "entityClass");
 		StringBuilder sb = new StringBuilder();
 		toString(sb, entityClass, entity, deep);
 		return sb.toString();
 	}
-	
+
 	public static <T> String toString(Class<? extends T> entityClass, T entity) {
-		Assert.requiredArgument(entityClass != null, "entityClass");
 		return toString(entityClass, entity, true);
 	}
 
@@ -1019,8 +1023,20 @@ public abstract class ReflectionUtils {
 	public static String toString(Object entity) {
 		return toString(entity, true);
 	}
-	
-	public static <T, E extends RuntimeException> boolean equals(Members<Field, E> members, T left, T right, boolean deep) throws E {
+
+	/**
+	 * @see #ENTITY_MEMBER
+	 * @param <T>
+	 * @param <E>
+	 * @param members
+	 * @param left
+	 * @param right
+	 * @param deep
+	 * @return
+	 * @throws E
+	 */
+	public static <T, E extends RuntimeException> boolean equals(Members<Field, E> members, T left, T right,
+			boolean deep) throws E {
 		Assert.requiredArgument(members != null, "members");
 		if (left == right) {
 			return true;
@@ -1030,28 +1046,27 @@ public abstract class ReflectionUtils {
 			return false;
 		}
 
-		Iterator<Field> iterator = members.streamAll().iterator();
+		Iterator<Field> iterator = members.streamAll().filter(ENTITY_MEMBER).iterator();
 		while (iterator.hasNext()) {
 			Field field = iterator.next();
-			if (!ObjectUtils.equals(getField(field, left), getField(field, right),
-					deep)) {
+			if (!ObjectUtils.equals(getField(field, left), getField(field, right), deep)) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	public static <T, E extends RuntimeException> boolean equals(Members<Field, E> members, T left, T right) throws E{
+	public static <T, E extends RuntimeException> boolean equals(Members<Field, E> members, T left, T right) throws E {
 		return equals(members, left, right, true);
 	}
 
-	public static <T> boolean equals(Class<? extends T> entityClass, T left, T right, boolean deep){
+	public static <T> boolean equals(Class<? extends T> entityClass, T left, T right, boolean deep) {
 		Assert.requiredArgument(entityClass != null, "entityClass");
-		return equals(getEntityMembers(entityClass, (e) -> e.getDeclaredFields()).withSuperclass(), left, right, deep);
+		return equals(getDeclaredFields(entityClass).withSuperclass(), left, right, deep);
 	}
 
-	public static <T> boolean equals(Class<? extends T> clazz, T left, T right) {
-		return equals(getFields(clazz), left, right, true);
+	public static <T> boolean equals(Class<? extends T> entityClass, T left, T right) {
+		return equals(entityClass, left, right, true);
 	}
 
 	public static <T> boolean equals(T left, T right, boolean deep) {
@@ -1069,15 +1084,25 @@ public abstract class ReflectionUtils {
 	public static <T> boolean equals(T left, T right) {
 		return equals(left, right, true);
 	}
-	
-	public static <E extends RuntimeException> int hashCode(Members<Field, E> members, Object entity, boolean deep) throws E {
+
+	/**
+	 * @see #ENTITY_MEMBER
+	 * @param <E>
+	 * @param members
+	 * @param entity
+	 * @param deep
+	 * @return
+	 * @throws E
+	 */
+	public static <E extends RuntimeException> int hashCode(Members<Field, E> members, Object entity, boolean deep)
+			throws E {
 		Assert.requiredArgument(members != null, "members");
 		if (entity == null) {
 			return 0;
 		}
 
 		int hashCode = 1;
-		Iterator<Field> iterator = members.streamAll().iterator();
+		Iterator<Field> iterator = members.streamAll().filter(ENTITY_MEMBER).iterator();
 		while (iterator.hasNext()) {
 			Field field = iterator.next();
 			hashCode = 31 * hashCode + ObjectUtils.hashCode(getField(field, entity), deep);
@@ -1090,11 +1115,11 @@ public abstract class ReflectionUtils {
 	}
 
 	public static <T> int hashCode(Class<? extends T> entityClass, T entity, boolean deep) {
-		Assert.requiredArgument(entityClass != null, "clazz");
+		Assert.requiredArgument(entityClass != null, "entityClass");
 		if (entity == null) {
 			return 0;
 		}
-		return hashCode(getEntityMembers(entityClass, (e) -> e.getDeclaredFields()).withSuperclass(), entity, deep);
+		return hashCode(getDeclaredFields(entityClass).withSuperclass(), entity, deep);
 	}
 
 	public static <T> int hashCode(Class<? extends T> entityClass, T entity) {
