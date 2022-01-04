@@ -39,14 +39,14 @@ public final class ConfigManager {
 	 * 通过一个给定的路径构建一个配置管理器， 该管理器要求地址路径所在目录下必须存在config.properties文件
 	 */
 	private ConfigManager(String rootPath, String contextPath, String uri) throws FileNotFoundException, IOException {
-		this.rootPath = Assert.securePathArgument(rootPath, "rootPath");
+		this.rootPath = Assert.secureFilePathArgument(rootPath, "rootPath");
 		String contextPathToUse = StringUtils.cleanPath(contextPath);
 		if (contextPathToUse.length() > 0) {
 			this.originalPath = this.rootPath + StringUtils.cleanPath(uri).substring(contextPathToUse.length());
 		} else {
 			this.originalPath = this.rootPath + StringUtils.cleanPath(uri);
 		}
-		this.originalPath = Assert.securePath(originalPath);
+		this.originalPath = Assert.secureFilePath(originalPath);
 		this.initEnv();
 
 	}

@@ -96,6 +96,9 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>,
 		return sourceClass;
 	}
 
+	/**
+	 * @see #stream()
+	 */
 	@Override
 	public Iterator<T> iterator() throws E {
 		return stream().iterator();
@@ -103,7 +106,6 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>,
 
 	/**
 	 * 只获取当前的操作流
-	 * 
 	 * @return
 	 */
 	public Stream<T> stream() throws E {

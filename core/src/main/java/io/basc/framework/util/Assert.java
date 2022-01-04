@@ -521,8 +521,8 @@ public abstract class Assert {
 	 * @return 返回安全路径
 	 * @throws IllegalStateException
 	 */
-	public static String securePath(String path) throws IllegalStateException {
-		return securePath(path, () -> "Unsafe path: " + path);
+	public static String secureFilePath(String path) throws IllegalStateException {
+		return secureFilePath(path, () -> "Unsafe file path: " + path);
 	}
 
 	/**
@@ -534,7 +534,7 @@ public abstract class Assert {
 	 * @return 返回安全路径
 	 * @throws IllegalStateException 不安全的路径
 	 */
-	public static String securePath(String path, Supplier<String> message) throws IllegalStateException {
+	public static String secureFilePath(String path, Supplier<String> message) throws IllegalStateException {
 		if (StringUtils.isEmpty(path)) {
 			return path;
 		}
@@ -559,9 +559,9 @@ public abstract class Assert {
 	 * @return 返回安全的路径
 	 * @throws IllegalArgumentException 不安全的路径
 	 */
-	public static String securePathArgument(String path, String name) throws IllegalArgumentException {
+	public static String secureFilePathArgument(String path, String name) throws IllegalArgumentException {
 		try {
-			return securePath(path);
+			return secureFilePath(path);
 		} catch (IllegalStateException e) {
 			throw new IllegalArgumentException("[Assertion failed] - [" + name + "] argument is unsafe path: " + path,
 					e);
