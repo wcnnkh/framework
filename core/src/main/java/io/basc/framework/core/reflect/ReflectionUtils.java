@@ -936,6 +936,15 @@ public abstract class ReflectionUtils {
 		});
 	}
 
+	/**
+	 * @see Api#newInstance(Class)
+	 * @param <T>
+	 * @param <E>
+	 * @param members
+	 * @param source
+	 * @param deep
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T, E extends RuntimeException> T clone(Members<Field, E> members, T source, boolean deep) {
 		Assert.requiredArgument(members != null, "members");

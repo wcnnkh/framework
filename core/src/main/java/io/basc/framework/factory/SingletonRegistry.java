@@ -7,7 +7,7 @@ public interface SingletonRegistry extends SingletonFactory {
 
 	void removeSingleton(String name);
 
-	<T, E extends Throwable> Status<T> getSingleton(String name, Creator<T, E> creater) throws E;
+	<T, E extends Throwable> Status<T> getSingleton(String name, Factory<T, E> creater) throws E;
 
 	Object getSingletonMutex();
 }

@@ -189,13 +189,21 @@ public class Api implements Supplier<Object> {
 		return constructor;
 	}
 
+	/**
+	 * 是否可以实例化
+	 * 
+	 * @param type
+	 * @return
+	 */
 	public static boolean isInstance(Class<?> type) {
-		return REFLECTION_FACTORY.isAvailable() || UNSAFE.isAvailable();
+		return type != null && !type.isPrimitive() && !type.isInterface() && !Modifier.isAbstract(type.getModifiers())
+				&& REFLECTION_FACTORY.isAvailable() || UNSAFE.isAvailable();
 	}
 
 	/**
 	 * 实例一个对象，无论对象是否存在无参的构造方法
 	 * 
+	 * @see #isInstance(Class)
 	 * @see #REFLECTION_FACTORY
 	 * @see Api#UNSAFE
 	 * @see #getConstructor(Class)
