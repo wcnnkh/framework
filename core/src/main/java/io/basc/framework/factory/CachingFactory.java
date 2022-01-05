@@ -8,7 +8,7 @@ import io.basc.framework.util.Assert;
 public class CachingFactory<T, E extends Throwable> implements Factory<T, E> {
 	private final Factory<T, E> factory;
 	private final Object lock;
-	private volatile Supplier<T> supplier;
+	private volatile Supplier<T> caching;
 
 	public CachingFactory(Factory<T, E> factory) {
 		this(null, factory);
@@ -22,23 +22,33 @@ public class CachingFactory<T, E extends Throwable> implements Factory<T, E> {
 
 	@Override
 	public T create() throws E {
-		if (factory instanceof CachingFactory) {
-			return factory.create();
+		if (this.factory instanceof CachingFactory) {
+			return this.factory.create();
 		} else {
-			if (supplier == null) {
-				synchronized (lock == null ? this.factory : this.lock) {
-					if (supplier == null) {
-						T instance = factory.create();
-						this.supplier = () -> instance;
+			if (this.caching == null) {
+				synchronized (this.lock == null ? this.factory : this.lock) {
+					if (this.caching == null) {
+						T instance = this.factory.create();
+						this.caching = () -> instance;
 					}
 				}
 			}
-			return supplier.get();
+			return this.caching.get();
 		}
 	}
 
 	@Override
 	public Factory<T, E> single() {
 		return this;
+	}
+
+	public void clear() {
+		if (this.caching != null) {
+			synchronized (this.lock == null ? this.factory : this.lock) {
+				if (this.caching != null) {
+					this.caching = null;
+				}
+			}
+		}
 	}
 }

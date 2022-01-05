@@ -26,15 +26,25 @@ public class CachingProcessor<S, T, E extends Throwable> implements Processor<S,
 		if (this.processor instanceof CachingProcessor) {
 			return this.processor.process(source);
 		} else {
-			if (caching == null) {
+			if (this.caching == null) {
 				synchronized (this.lock == null ? this.processor : this.lock) {
-					if (caching == null) {
+					if (this.caching == null) {
 						T value = this.processor.process(source);
 						this.caching = () -> value;
 					}
 				}
 			}
 			return this.caching.get();
+		}
+	}
+
+	public void clear() {
+		if (this.caching != null) {
+			synchronized (this.lock == null ? this.processor : this.lock) {
+				if (this.caching != null) {
+					this.caching = null;
+				}
+			}
 		}
 	}
 
@@ -45,7 +55,7 @@ public class CachingProcessor<S, T, E extends Throwable> implements Processor<S,
 		if (p instanceof CachingProcessor) {
 			return p;
 		} else {
-			return new CachingProcessor<S, A, E>(lock, p);
+			return new CachingProcessor<S, A, E>(this.lock, p);
 		}
 	}
 
@@ -56,7 +66,7 @@ public class CachingProcessor<S, T, E extends Throwable> implements Processor<S,
 		if (p instanceof CachingProcessor) {
 			return p;
 		} else {
-			return new CachingProcessor<B, T, E>(lock, p);
+			return new CachingProcessor<B, T, E>(this.lock, p);
 		}
 	}
 
@@ -66,7 +76,12 @@ public class CachingProcessor<S, T, E extends Throwable> implements Processor<S,
 		if (p instanceof CachingProcessor) {
 			return p;
 		} else {
-			return new CachingProcessor<S, T, X>(lock, p);
+			return new CachingProcessor<S, T, X>(this.lock, p);
 		}
+	}
+
+	@Override
+	public Processor<S, T, E> caching() {
+		return this;
 	}
 }
