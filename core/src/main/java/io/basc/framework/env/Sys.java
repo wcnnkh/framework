@@ -1,10 +1,12 @@
 package io.basc.framework.env;
 
+import java.util.Iterator;
+import java.util.Properties;
+
 import io.basc.framework.convert.ConvertibleEnumeration;
 import io.basc.framework.event.Observable;
 import io.basc.framework.factory.InstanceDefinition;
 import io.basc.framework.factory.InstanceFactory;
-import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.factory.support.DefaultInstanceFactory;
@@ -16,9 +18,6 @@ import io.basc.framework.util.MultiIterator;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
-
-import java.util.Iterator;
-import java.util.Properties;
 
 /**
  * 不使用System这个名称的原因是名称冲突
@@ -38,16 +37,8 @@ public final class Sys extends DefaultEnvironment implements ServiceLoaderFactor
 
 	private static Clock clock;
 
-	/**
-	 * 不调用构造方法实例化对象
-	 */
-	private static NoArgsInstanceFactory unsafeInstanceFactory;
-
 	static {
 		env.load();
-		unsafeInstanceFactory = instanceFactory.getServiceLoader(NoArgsInstanceFactory.class,
-				"io.basc.framework.instance.support.SunNoArgsInstanceFactory",
-				"io.basc.framework.instance.support.UnsafeNoArgsInstanceFactory").first();
 		clock = env.getServiceLoader(Clock.class).first();
 		if (clock == null) {
 			clock = Clock.SYSTEM;
@@ -70,16 +61,6 @@ public final class Sys extends DefaultEnvironment implements ServiceLoaderFactor
 		 * 加载默认服务
 		 */
 		configure(instanceFactory);
-	}
-
-	/**
-	 * 不安全的实例工厂<br/>
-	 * 不调用构造方法实例化对象
-	 * 
-	 * @return
-	 */
-	public static NoArgsInstanceFactory getUnsafeInstanceFactory() {
-		return unsafeInstanceFactory;
 	}
 
 	public static Clock getClock() {

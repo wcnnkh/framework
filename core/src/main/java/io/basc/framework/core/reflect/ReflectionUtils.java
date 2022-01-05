@@ -20,6 +20,7 @@ import java.util.function.Predicate;
 import io.basc.framework.core.Members;
 import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.lang.NestedExceptionUtils;
+import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Accept;
 import io.basc.framework.util.Assert;
@@ -44,6 +45,20 @@ public abstract class ReflectionUtils {
 	 */
 	public static final Predicate<Member> ENTITY_MEMBER = (m) -> !Modifier.isStatic(m.getModifiers())
 			&& !Modifier.isTransient(m.getModifiers());
+
+	/**
+	 * Object对象的默认构造方法
+	 */
+	public static final Constructor<Object> OBJECT_CONSTRUCTOR;
+
+	static {
+		try {
+			OBJECT_CONSTRUCTOR = Object.class.getConstructor();
+		} catch (NoSuchMethodException e) {
+			// Object对象怎么可能没有默认的构造方法
+			throw new NotSupportedException(ReflectionUtils.class.getName(), e);
+		}
+	}
 
 	/**
 	 * 判断此类是否可用(会静态初始化)
@@ -928,7 +943,7 @@ public abstract class ReflectionUtils {
 			return null;
 		}
 
-		T target = (T) newInstance(source.getClass());
+		T target = (T) Api.newInstance(source.getClass());
 		clone(members, source, target, deep);
 		return target;
 	}
@@ -1031,8 +1046,8 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see #ENTITY_MEMBER
-	 * @param         <T>
-	 * @param         <E>
+	 * @param <T>
+	 * @param <E>
 	 * @param members
 	 * @param left
 	 * @param right
@@ -1092,7 +1107,7 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see #ENTITY_MEMBER
-	 * @param         <E>
+	 * @param <E>
 	 * @param members
 	 * @param entity
 	 * @param deep

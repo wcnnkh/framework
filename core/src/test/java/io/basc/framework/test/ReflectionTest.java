@@ -2,9 +2,13 @@ package io.basc.framework.test;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.junit.Test;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.XUtils;
 
 public class ReflectionTest {
@@ -23,6 +27,10 @@ public class ReflectionTest {
 		assertTrue(a.equals(b));
 		assertTrue(ReflectionUtils.equals(a, b));
 		assertTrue(ReflectionUtils.hashCode(a) == ReflectionUtils.hashCode(b));
+
+		Map<String, Object> map = Collections.singletonMap(XUtils.getUUID(), XUtils.getUUID());
+		Map<String, Object> cloneMap = CollectionFactory.clone(map, true);
+		assertTrue(map.equals(cloneMap));
 	}
 
 	public static class ParentBean {

@@ -1,11 +1,11 @@
 package io.basc.framework.dubbo.xml;
 
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.dom.DomAttributeMapping;
-import io.basc.framework.env.Sys;
-import io.basc.framework.mapper.Field;
-
 import org.w3c.dom.Node;
+
+import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.core.reflect.Api;
+import io.basc.framework.dom.DomAttributeMapping;
+import io.basc.framework.mapper.Field;
 
 public class XmlDubboMapping extends DomAttributeMapping {
 	private BeanFactory beanFactory;
@@ -17,7 +17,7 @@ public class XmlDubboMapping extends DomAttributeMapping {
 
 	@Override
 	public <T> T newInstance(Class<? extends T> type) {
-		return Sys.getUnsafeInstanceFactory().getInstance(type);
+		return Api.newInstance(type);
 	}
 
 	@Override
