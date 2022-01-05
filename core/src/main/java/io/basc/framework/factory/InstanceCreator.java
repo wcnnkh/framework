@@ -1,6 +1,6 @@
 package io.basc.framework.factory;
 
-public interface InstanceCreator<T> extends Creator<T, InstanceException> {
+public interface InstanceCreator<T> extends Factory<T, InstanceException> {
 	T create() throws InstanceException;
 
 	/**

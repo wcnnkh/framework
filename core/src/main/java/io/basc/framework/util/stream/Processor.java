@@ -19,7 +19,7 @@ public interface Processor<S, T, E extends Throwable> {
 	/**
 	 * 在执行外部嵌套一个执行器
 	 * 
-	 * @param <B>
+	 * @param                <B>
 	 * @param processor
 	 * @param closeProcessor
 	 * @return
@@ -32,7 +32,7 @@ public interface Processor<S, T, E extends Throwable> {
 	/**
 	 * 在执行内部嵌套一个执行器
 	 * 
-	 * @param <A>
+	 * @param                <A>
 	 * @param processor
 	 * @param closeProcessor
 	 * @return
@@ -54,5 +54,9 @@ public interface Processor<S, T, E extends Throwable> {
 				}
 			}
 		};
+	}
+
+	default Processor<S, T, E> caching() {
+		return new CachingProcessor<>(this);
 	}
 }

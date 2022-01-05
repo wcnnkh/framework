@@ -1,6 +1,6 @@
 package io.basc.framework.factory.support;
 
-import io.basc.framework.factory.Creator;
+import io.basc.framework.factory.Factory;
 import io.basc.framework.factory.SingletonRegistry;
 import io.basc.framework.util.DefaultStatus;
 import io.basc.framework.util.StringUtils;
@@ -49,7 +49,7 @@ public class DefaultSingletonRegistry implements SingletonRegistry {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T, E extends Throwable> DefaultStatus<T> getSingleton(String name, Creator<T, E> creater) throws E {
+	public <T, E extends Throwable> DefaultStatus<T> getSingleton(String name, Factory<T, E> creater) throws E {
 		T object = (T) singletionMap.get(name);
 		if (object == null) {
 			synchronized (singletionMap) {

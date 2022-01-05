@@ -309,6 +309,8 @@ public abstract class ObjectUtils {
 	 * @see ArrayUtils#clone(Object, boolean)
 	 * @see CollectionFactory#clone(Collection, boolean)
 	 * @see CollectionFactory#clone(Map, boolean)
+	 * @see ReflectionUtils#clone(Cloneable)
+	 * @see ReflectionUtils#clone(Object, boolean)
 	 * @param <T>
 	 * @param source
 	 * @param deep   对数组的操作
@@ -319,12 +321,12 @@ public abstract class ObjectUtils {
 		if (source == null) {
 			return null;
 		}
-		
-		if(source instanceof String || source instanceof Class) {
+
+		if (source instanceof String || source instanceof Class) {
 			return source;
 		}
-		
-		if(ClassUtils.isPrimitiveOrWrapper(source.getClass()) || source.getClass().isEnum()) {
+
+		if (ClassUtils.isPrimitiveOrWrapper(source.getClass()) || source.getClass().isEnum()) {
 			return source;
 		}
 
@@ -343,6 +345,8 @@ public abstract class ObjectUtils {
 		if (source instanceof Cloneable) {
 			return ReflectionUtils.clone((Cloneable) source);
 		}
-		return source;
+
+		// 是否可以直接return source, 应该这样吗？
+		return ReflectionUtils.clone(source, deep);
 	}
 }

@@ -8,9 +8,8 @@ import java.util.Map.Entry;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
+import io.basc.framework.core.reflect.Api;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.env.Sys;
-import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
@@ -18,7 +17,6 @@ import io.basc.framework.util.CollectionFactory;
 
 @SuppressWarnings("unchecked")
 public class Copy implements Cloneable {
-	private NoArgsInstanceFactory instanceFactory;
 	private FieldFactory fieldFactory;
 
 	/**
@@ -95,20 +93,6 @@ public class Copy implements Cloneable {
 
 		Copy copy = clone();
 		copy.invokeCloneableMethod = invokeCloneableMethod;
-		return copy;
-	}
-
-	public final NoArgsInstanceFactory getInstanceFactory() {
-		return instanceFactory == null ? Sys.env : instanceFactory;
-	}
-
-	public Copy setInstanceFactory(NoArgsInstanceFactory instanceFactory) {
-		if (this.instanceFactory == instanceFactory) {
-			return this;
-		}
-
-		Copy copy = new Copy();
-		copy.instanceFactory = instanceFactory;
 		return copy;
 	}
 
@@ -324,7 +308,7 @@ public class Copy implements Cloneable {
 		}
 
 		Class<?> targetClass = targetType.getType();
-		if (!getInstanceFactory().isInstance(targetClass)) {
+		if (!Api.isInstance(targetClass)) {
 			// 如果无法实例化
 			if (targetClass.isInstance(source)) {
 				return (T) targetClass.cast(source);
@@ -332,7 +316,7 @@ public class Copy implements Cloneable {
 			throw new IllegalStateException("Unable to copy " + sourceType + " -> " + targetType);
 		}
 
-		T target = (T) getInstanceFactory().getInstance(targetClass);
+		T target = (T) Api.newInstance(targetClass);
 		copy(sourceType.getType(), source, sourceParentField, targetClass, target, targetParentField);
 		return target;
 	}
@@ -439,11 +423,11 @@ public class Copy implements Cloneable {
 		}
 
 		Class<?> sourceClass = sourceType.getType();
-		if (!getInstanceFactory().isInstance(sourceClass)) {
+		if (!Api.isInstance(sourceClass)) {
 			return source;
 		}
 
-		Object target = getInstanceFactory().getInstance(sourceClass);
+		Object target = Api.newInstance(sourceClass);
 		copy(sourceClass, parentField, source, target);
 		return (T) target;
 	}

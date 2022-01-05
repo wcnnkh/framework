@@ -32,7 +32,7 @@ import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.support.SimpleEventDispatcher;
-import io.basc.framework.factory.Creator;
+import io.basc.framework.factory.Factory;
 import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.factory.ServiceLoaderFactory;
@@ -233,7 +233,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 	}
 
 	@Override
-	public <T, E extends Throwable> Status<T> getSingleton(String name, Creator<T, E> creater) throws E {
+	public <T, E extends Throwable> Status<T> getSingleton(String name, Factory<T, E> creater) throws E {
 		return singletonBeanRegistry.getSingleton(name, creater);
 	}
 
