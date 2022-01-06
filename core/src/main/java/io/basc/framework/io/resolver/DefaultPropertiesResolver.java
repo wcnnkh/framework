@@ -42,7 +42,7 @@ public class DefaultPropertiesResolver implements PropertiesResolver {
 				if (charset == null) {
 					properties.load(is);
 				} else {
-					Method method = ReflectionUtils.getMethod(Properties.class, "load", Reader.class);
+					Method method = ReflectionUtils.getDeclaredMethod(Properties.class, "load", Reader.class);
 					if (method == null) {
 						logger.warn("jdk1.6及以上的版本才支持指定字符集: " + resource.getDescription());
 						properties.load(is);

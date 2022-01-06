@@ -9,7 +9,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.security.AccessControlException;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -33,7 +32,7 @@ import io.basc.framework.util.stream.Processor;
 public abstract class ReflectionUtils {
 	private static final String SERIAL_VERSION_UID_FIELD_NAME = "serialVersionUID";
 
-	private static final Method CLONE_METOHD = ReflectionUtils.getMethod(Object.class, "clone");
+	private static final Method CLONE_METOHD = ReflectionUtils.getDeclaredMethod(Object.class, "clone");
 
 	private static final Method[] CLASS_PRESENT_METHODS = getMethods(Class.class).stream().filter((method) -> {
 		return !Modifier.isStatic(method.getModifiers()) && !Modifier.isNative(method.getModifiers())
@@ -358,42 +357,16 @@ public abstract class ReflectionUtils {
 	}
 
 	/**
-	 * Invoke the specified JDBC API {@link Method} against the supplied target
-	 * object with no arguments.
-	 * 
-	 * @param method the method to invoke
-	 * @param target the target object to invoke the method on
-	 * @return the invocation result, if any
-	 * @throws SQLException the JDBC API SQLException to rethrow (if any)
-	 * @see #invokeJdbcMethod(java.lang.reflect.Method, Object, Object[])
+	 * @see #makeAccessible(Method)
+	 * @see ReflectionUtils#invokeMethod(Method, Object, Object...)
+	 * @param method
+	 * @param target
+	 * @param args
+	 * @return
 	 */
-	public static Object invokeJdbcMethod(Method method, Object target) throws SQLException {
-		return invokeJdbcMethod(method, target, new Object[0]);
-	}
-
-	/**
-	 * Invoke the specified JDBC API {@link Method} against the supplied target
-	 * object with the supplied arguments.
-	 * 
-	 * @param method the method to invoke
-	 * @param target the target object to invoke the method on
-	 * @param args   the invocation arguments (may be {@code null})
-	 * @return the invocation result, if any
-	 * @throws SQLException the JDBC API SQLException to rethrow (if any)
-	 * @see #invokeMethod(java.lang.reflect.Method, Object, Object[])
-	 */
-	public static Object invokeJdbcMethod(Method method, Object target, Object... args) throws SQLException {
-		try {
-			return method.invoke(target, args);
-		} catch (IllegalAccessException ex) {
-			handleReflectionException(ex);
-		} catch (InvocationTargetException ex) {
-			if (ex.getTargetException() instanceof SQLException) {
-				throw (SQLException) ex.getTargetException();
-			}
-			handleInvocationTargetException(ex);
-		}
-		throw new IllegalStateException("Should never get here");
+	public static Object invokeDeclaredMethod(Method method, Object target, Object... args) {
+		makeAccessible(method);
+		return invokeMethod(method, target, args);
 	}
 
 	/**
@@ -550,14 +523,7 @@ public abstract class ReflectionUtils {
 	 * {@link java.lang.Object}.
 	 */
 	public static boolean isObjectMethod(Method method) {
-		try {
-			Object.class.getDeclaredMethod(method.getName(), method.getParameterTypes());
-			return true;
-		} catch (SecurityException ex) {
-			return false;
-		} catch (NoSuchMethodException ex) {
-			return false;
-		}
+		return getDeclaredMethod(Object.class, method.getName(), method.getParameterTypes()) != null;
 	}
 
 	/**
@@ -681,7 +647,7 @@ public abstract class ReflectionUtils {
 			throws NoSuchMethodException {
 		if (CollectionUtils.isEmpty(parameterMap)) {
 			try {
-				return getMethod(type, name).invoke(instance);
+				return getDeclaredMethod(type, name).invoke(instance);
 			} catch (IllegalAccessException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalArgumentException e) {
@@ -723,21 +689,21 @@ public abstract class ReflectionUtils {
 		throw new NoSuchMethodException(type.getName() + ", method=" + name);
 	}
 
-	public static Method getMethod(String className, @Nullable ClassLoader classLoader, String methodName,
+	public static Method getDeclaredMethod(String className, @Nullable ClassLoader classLoader, String methodName,
 			Class<?>... parameterTypes) {
 		Class<?> clz = ClassUtils.getClass(className, classLoader);
 		if (clz == null) {
 			return null;
 		}
 
-		return getMethod(clz, methodName, parameterTypes);
+		return getDeclaredMethod(clz, methodName, parameterTypes);
 	}
 
-	public static Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
+	public static Method getDeclaredMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
 		Method method;
 		try {
 			method = clazz.getDeclaredMethod(name, parameterTypes);
-		} catch (NoSuchMethodException e) {
+		} catch (NoSuchMethodException | SecurityException e) {
 			return null;
 		}
 
