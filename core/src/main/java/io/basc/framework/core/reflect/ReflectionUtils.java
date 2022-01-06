@@ -26,6 +26,7 @@ import io.basc.framework.util.Accept;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.stream.Processor;
 
@@ -58,6 +59,46 @@ public abstract class ReflectionUtils {
 			// Object对象怎么可能没有默认的构造方法
 			throw new NotSupportedException(ReflectionUtils.class.getName(), e);
 		}
+	}
+
+	private static final ConcurrentReferenceHashMap<Class<?>, Constructor<?>> CONSTRUCTOR_MAP = new ConcurrentReferenceHashMap<Class<?>, Constructor<?>>(
+			128);
+
+	/**
+	 * 获取无参的构造方法
+	 * 
+	 * @see #makeAccessible(Constructor)
+	 * @see Class#getDeclaredConstructor(Class...)
+	 * @param <T>
+	 * @param type
+	 * @return
+	 */
+	@Nullable
+	@SuppressWarnings("unchecked")
+	public static <T> Constructor<T> getConstructor(Class<T> type) {
+		Assert.requiredArgument(type != null, "type");
+		Constructor<T> constructor = (Constructor<T>) CONSTRUCTOR_MAP.get(type);
+		if (constructor == null) {
+			try {
+				constructor = type.getDeclaredConstructor();
+			} catch (NoSuchMethodException | SecurityException e) {
+			}
+
+			// 是否应该将空也存起来？
+			if (constructor == null) {
+				return null;
+			}
+
+			makeAccessible(constructor);
+			Constructor<T> old = (Constructor<T>) CONSTRUCTOR_MAP.putIfAbsent(type, constructor);
+			if (old == null) {
+				// 插入成功，整理内存
+				CONSTRUCTOR_MAP.purgeUnreferencedEntries();
+			} else {
+				constructor = old;
+			}
+		}
+		return constructor;
 	}
 
 	/**
@@ -98,29 +139,45 @@ public abstract class ReflectionUtils {
 			return false;
 		}
 
-		try {
-			return clazz.getDeclaredConstructor() != null;
-		} catch (NoSuchMethodException e) {
-			return false;
-		}
+		return getConstructor(clazz) != null;
 	}
 
 	/**
 	 * 使用反射查找无参的构造方法(包含未公开的构造方法)
 	 * 
+	 * @param <T>
 	 * @param clazz
 	 * @return
+	 * @throws IllegalArgumentException 不存在无参构造方法
 	 */
-	public static <T> T newInstance(Class<T> clazz) {
-		Constructor<T> constructor;
+	public static <T> T newInstance(Class<T> clazz) throws IllegalArgumentException {
+		Constructor<T> constructor = getConstructor(clazz);
+		if (constructor == null) {
+			throw new IllegalArgumentException(clazz.getName());
+		}
+
 		try {
-			constructor = clazz.getDeclaredConstructor();
-			makeAccessible(constructor);
 			return constructor.newInstance();
 		} catch (Exception e) {
 			handleReflectionException(e);
 		}
 		throw new IllegalStateException("Should never get here");
+	}
+
+	/**
+	 * @see ClassUtils#resolveClassName(String, ClassLoader)
+	 * @see #newInstance(Class)
+	 * @param <T>
+	 * @param className
+	 * @param classLoader
+	 * @return
+	 * @throws IllegalArgumentException
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T newInstance(String className, @Nullable ClassLoader classLoader)
+			throws IllegalArgumentException {
+		Class<?> clazz = ClassUtils.resolveClassName(className, classLoader);
+		return (T) newInstance(clazz);
 	}
 
 	/**
@@ -937,7 +994,7 @@ public abstract class ReflectionUtils {
 	}
 
 	/**
-	 * @see Api#newInstance(Class)
+	 * @see ReflectionApi#newInstance(Class)
 	 * @param <T>
 	 * @param <E>
 	 * @param members
@@ -952,7 +1009,7 @@ public abstract class ReflectionUtils {
 			return null;
 		}
 
-		T target = (T) Api.newInstance(source.getClass());
+		T target = (T) ReflectionApi.newInstance(source.getClass());
 		clone(members, source, target, deep);
 		return target;
 	}

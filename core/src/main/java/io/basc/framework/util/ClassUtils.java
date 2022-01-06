@@ -1409,67 +1409,6 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * 公有的无参构造方法
-	 * 
-	 * @param <T>
-	 * @param className
-	 * @param classLoader
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T newInstance(String className, ClassLoader classLoader) {
-		Class<?> clazz = resolveClassName(className, classLoader);
-		return newInstance((Class<T>) clazz);
-	}
-
-	/**
-	 * 是否存在public无参的构造方法
-	 * 
-	 * @param className
-	 * @param classLoader
-	 * @return
-	 */
-	public static boolean isInstance(String className, ClassLoader classLoader) {
-		try {
-			Class<?> clazz = resolveClassName(className, classLoader);
-			return isInstance(clazz);
-		} catch (IllegalArgumentException e) {
-			return false;
-		}
-	}
-
-	/**
-	 * 是否存在public无参的构造方法
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	public static boolean isInstance(Class<?> clazz) {
-		try {
-			return clazz.getConstructor() != null;
-		} catch (NoSuchMethodException e) {
-			return false;
-		}
-	}
-
-	/**
-	 * 公有的无参构造方法
-	 * 
-	 * @param <T>
-	 * @param clazz
-	 * @return
-	 */
-	public static <T> T newInstance(Class<T> clazz) {
-		// 不直接使用Class.newInstance()方法的原因是jdk1.9弃用了此方法
-		try {
-			return clazz.getConstructor().newInstance();
-		} catch (Exception e) {
-			ReflectionUtils.handleReflectionException(e);
-		}
-		throw new IllegalStateException("Should never get here");
-	}
-
-	/**
 	 * @see #getDefaultClassLoader()
 	 * @param classLoaderProvider
 	 * @return

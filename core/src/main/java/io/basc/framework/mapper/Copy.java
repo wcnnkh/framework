@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.core.reflect.Api;
+import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.lang.Nullable;
@@ -308,7 +308,7 @@ public class Copy implements Cloneable {
 		}
 
 		Class<?> targetClass = targetType.getType();
-		if (!Api.isInstance(targetClass)) {
+		if (!ReflectionApi.isInstance(targetClass)) {
 			// 如果无法实例化
 			if (targetClass.isInstance(source)) {
 				return (T) targetClass.cast(source);
@@ -316,7 +316,7 @@ public class Copy implements Cloneable {
 			throw new IllegalStateException("Unable to copy " + sourceType + " -> " + targetType);
 		}
 
-		T target = (T) Api.newInstance(targetClass);
+		T target = (T) ReflectionApi.newInstance(targetClass);
 		copy(sourceType.getType(), source, sourceParentField, targetClass, target, targetParentField);
 		return target;
 	}
@@ -423,11 +423,11 @@ public class Copy implements Cloneable {
 		}
 
 		Class<?> sourceClass = sourceType.getType();
-		if (!Api.isInstance(sourceClass)) {
+		if (!ReflectionApi.isInstance(sourceClass)) {
 			return source;
 		}
 
-		Object target = Api.newInstance(sourceClass);
+		Object target = ReflectionApi.newInstance(sourceClass);
 		copy(sourceClass, parentField, source, target);
 		return (T) target;
 	}

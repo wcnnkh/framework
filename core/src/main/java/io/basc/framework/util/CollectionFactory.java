@@ -1,9 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.lang.Nullable;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,6 +24,10 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+
+import io.basc.framework.convert.Converter;
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.lang.Nullable;
 
 public final class CollectionFactory {
 	private static final Field KEY_TYPE_FIELD = ReflectionUtils.findField(EnumMap.class, "keyType");
@@ -199,7 +199,7 @@ public final class CollectionFactory {
 				throw new IllegalArgumentException("Unsupported Collection type: " + collectionType.getName());
 			}
 			try {
-				return (Collection<E>) ClassUtils.newInstance(collectionType);
+				return (Collection<E>) ReflectionUtils.newInstance(collectionType);
 			} catch (Throwable ex) {
 				throw new IllegalArgumentException("Could not instantiate Collection type: " + collectionType.getName(),
 						ex);
@@ -326,7 +326,7 @@ public final class CollectionFactory {
 				throw new IllegalArgumentException("Unsupported Map type: " + mapType.getName());
 			}
 			try {
-				return (Map<K, V>) ClassUtils.newInstance(mapType);
+				return (Map<K, V>) ReflectionUtils.newInstance(mapType);
 			} catch (Throwable ex) {
 				throw new IllegalArgumentException("Could not instantiate Map type: " + mapType.getName(), ex);
 			}

@@ -21,17 +21,18 @@ import io.basc.framework.util.stream.Processor;
  * @author wcnnkh
  *
  */
-public class Api implements Supplier<Object> {
+public class ReflectionApi implements Supplier<Object> {
 	private final Class<?> declaringClass;
 	private final Processor<Class<?>, Object, Throwable> processor;
 
-	public Api(@Nullable Class<?> declaringClass, @Nullable Processor<Class<?>, Object, Throwable> processor) {
+	public ReflectionApi(@Nullable Class<?> declaringClass,
+			@Nullable Processor<Class<?>, Object, Throwable> processor) {
 		this.declaringClass = declaringClass;
 		this.processor = processor;
 	}
 
 	public Class<?> getDeclaringClass() {
-		return declaringClass;
+		return this.declaringClass;
 	}
 
 	/**
@@ -40,11 +41,11 @@ public class Api implements Supplier<Object> {
 	 * @return
 	 */
 	public boolean isAvailable() {
-		return declaringClass != null;
+		return this.declaringClass != null;
 	}
 
 	public Object get() {
-		if (declaringClass == null) {
+		if (this.declaringClass == null) {
 			throw new IllegalStateException("Unavailable API");
 		}
 
@@ -64,7 +65,7 @@ public class Api implements Supplier<Object> {
 		if (this.declaringClass == null) {
 			return null;
 		}
-		return ReflectionUtils.findMethod(declaringClass, name, parameterTypes);
+		return ReflectionUtils.findMethod(this.declaringClass, name, parameterTypes);
 	}
 
 	public Object invoke(Method method, Object... args) {
@@ -89,8 +90,8 @@ public class Api implements Supplier<Object> {
 		System.arraycopy(params, 0, parameterTypes, 0, parameterTypes.length);
 		Method method = getMethod(methodName, parameterTypes);
 		if (method == null) {
-			throw new IllegalArgumentException(declaringClass + " not found method[" + methodName + "] parameterTypes"
-					+ Arrays.toString(parameterTypes));
+			throw new IllegalArgumentException(this.declaringClass + " not found method[" + methodName
+					+ "] parameterTypes" + Arrays.toString(parameterTypes));
 		}
 		Object[] args = new Object[parameterTypes.length];
 		System.arraycopy(params, parameterTypes.length, args, 0, args.length);
@@ -108,18 +109,20 @@ public class Api implements Supplier<Object> {
 	 * 
 	 * @see sun/misc/Unsafe
 	 */
-	public static final Api UNSAFE = new Api(ClassUtils.getClass("sun.misc.Unsafe", null), UNSAFE_PROCESSOR);
+	public static final ReflectionApi UNSAFE = new ReflectionApi(ClassUtils.getClass("sun.misc.Unsafe", null),
+			UNSAFE_PROCESSOR);
 	private static final Method ALLOCATE_INSTANCE_METHOD = UNSAFE.getMethod("allocateInstance", Class.class);
 
 	/**
 	 * 分配一个实例，无需调用对象的构造方法
 	 * 
-	 * @see Api#UNSAFE
+	 * @see ReflectionApi#UNSAFE
 	 * @param <T>
 	 * @param type
 	 * @return
 	 */
 	public static <T> T allocateInstance(Class<T> type) {
+		Assert.isTrue(UNSAFE.isAvailable());
 		Assert.requiredArgument(type != null, "type");
 		return type.cast(UNSAFE.invoke(ALLOCATE_INSTANCE_METHOD, type));
 	}
@@ -134,8 +137,8 @@ public class Api implements Supplier<Object> {
 	 * 
 	 * @see sun/reflect/ReflectionFactory
 	 */
-	public static final Api REFLECTION_FACTORY = new Api(ClassUtils.getClass("sun.reflect.ReflectionFactory", null),
-			REFLECTION_FACTORY_PROCESSOR);
+	public static final ReflectionApi REFLECTION_FACTORY = new ReflectionApi(
+			ClassUtils.getClass("sun.reflect.ReflectionFactory", null), REFLECTION_FACTORY_PROCESSOR);
 	private static final Method NEW_CONSTRUCTOR_FOR_SERIALIZATION_METHOD = REFLECTION_FACTORY
 			.getMethod("newConstructorForSerialization", Class.class, Constructor.class);
 
@@ -149,13 +152,14 @@ public class Api implements Supplier<Object> {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> Constructor<T> newConstructorForSerialization(Class<T> type) {
+		Assert.isTrue(REFLECTION_FACTORY.isAvailable());
 		Assert.requiredArgument(type != null, "type");
 		return (Constructor<T>) REFLECTION_FACTORY.invoke(NEW_CONSTRUCTOR_FOR_SERIALIZATION_METHOD, type,
 				ReflectionUtils.OBJECT_CONSTRUCTOR);
 	}
 
 	private static final ConcurrentReferenceHashMap<Class<?>, Constructor<?>> CONSTRUCTOR_MAP = new ConcurrentReferenceHashMap<Class<?>, Constructor<?>>(
-			256);
+			128);
 
 	/**
 	 * 获取一个无参的构造方法, 无论对象是否存在无参的构造方法
@@ -164,18 +168,21 @@ public class Api implements Supplier<Object> {
 	 * @see Class#getDeclaredConstructor(Class...)
 	 * @param <T>
 	 * @param type
-	 * @return
+	 * @return {@link REFLECTION_FACTORY}不可用时返回空
 	 */
+	@Nullable
 	@SuppressWarnings("unchecked")
 	public static <T> Constructor<T> getConstructor(Class<T> type) {
 		Assert.requiredArgument(type != null, "type");
-		Constructor<T> constructor = (Constructor<T>) CONSTRUCTOR_MAP.get(type);
+		Constructor<T> constructor = ReflectionUtils.getConstructor(type);
 		if (constructor == null) {
-			try {
-				constructor = type.getDeclaredConstructor();
-			} catch (NoSuchMethodException | SecurityException e) {
-				// 不存在或无法获取
+			constructor = (Constructor<T>) CONSTRUCTOR_MAP.get(type);
+			if (constructor == null && REFLECTION_FACTORY.isAvailable()) {
 				constructor = newConstructorForSerialization(type);
+			}
+
+			if (constructor == null) {
+				return null;
 			}
 
 			Constructor<T> old = (Constructor<T>) CONSTRUCTOR_MAP.putIfAbsent(type, constructor);
@@ -196,8 +203,12 @@ public class Api implements Supplier<Object> {
 	 * @return
 	 */
 	public static boolean isInstance(Class<?> type) {
-		return type != null && !type.isPrimitive() && !type.isInterface() && !Modifier.isAbstract(type.getModifiers())
-				&& REFLECTION_FACTORY.isAvailable() || UNSAFE.isAvailable();
+		if (type == null || type.isPrimitive() || type.isArray() || type.isAnnotation() || type.isInterface()
+				|| Modifier.isAbstract(type.getModifiers())) {
+			return false;
+		}
+
+		return getConstructor(type) != null || UNSAFE.isAvailable();
 	}
 
 	/**
@@ -205,7 +216,7 @@ public class Api implements Supplier<Object> {
 	 * 
 	 * @see #isInstance(Class)
 	 * @see #REFLECTION_FACTORY
-	 * @see Api#UNSAFE
+	 * @see ReflectionApi#UNSAFE
 	 * @see #getConstructor(Class)
 	 * @param <T>
 	 * @param type
@@ -216,7 +227,7 @@ public class Api implements Supplier<Object> {
 			try {
 				return getConstructor(type).newInstance();
 			} catch (Exception e) {
-				// 如果出现异常，不交给Unsafe处理
+				// 如果出现异常，交给Unsafe处理
 			}
 		}
 

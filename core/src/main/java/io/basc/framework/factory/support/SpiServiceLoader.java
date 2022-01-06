@@ -19,6 +19,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.ServiceConfigurationError;
 
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.io.ResourceUtils;
@@ -210,7 +211,7 @@ public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderP
 			}
 
 			try {
-				Object instance = instanceFactory == null ? ClassUtils.newInstance(c) : instanceFactory.getInstance(c);
+				Object instance = instanceFactory == null ? ReflectionUtils.newInstance(c) : instanceFactory.getInstance(c);
 				S p = service.cast(instance);
 				if (providers == null) {
 					synchronized (this) {
