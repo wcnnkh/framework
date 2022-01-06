@@ -1,5 +1,6 @@
 package io.basc.framework.tomcat;
 
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
@@ -88,7 +89,7 @@ public final class TomcatUtils {
 	public static void addWsSci(Context context, Set<Class<?>> classes, ClassLoader classLoader) {
 		// init websocket
 		if (ClassUtils.isPresent("io.basc.framework.tomcat.WsServletContainerInitializer", classLoader)) {
-			ServletContainerInitializer initializer = ClassUtils
+			ServletContainerInitializer initializer = ReflectionUtils
 					.newInstance("io.basc.framework.tomcat.WsServletContainerInitializer", classLoader);
 			context.addServletContainerInitializer(initializer, classes);
 		}

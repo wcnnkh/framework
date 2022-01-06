@@ -145,21 +145,39 @@ public abstract class ReflectionUtils {
 	/**
 	 * 使用反射查找无参的构造方法(包含未公开的构造方法)
 	 * 
+	 * @param <T>
 	 * @param clazz
 	 * @return
+	 * @throws IllegalArgumentException 不存在无参构造方法
 	 */
-	public static <T> T newInstance(Class<T> clazz) {
+	public static <T> T newInstance(Class<T> clazz) throws IllegalArgumentException {
 		Constructor<T> constructor = getConstructor(clazz);
-		if(constructor == null) {
-			throw new IllegalStateException(clazz.getName());
+		if (constructor == null) {
+			throw new IllegalArgumentException(clazz.getName());
 		}
-		
+
 		try {
 			return constructor.newInstance();
 		} catch (Exception e) {
 			handleReflectionException(e);
 		}
 		throw new IllegalStateException("Should never get here");
+	}
+
+	/**
+	 * @see ClassUtils#resolveClassName(String, ClassLoader)
+	 * @see #newInstance(Class)
+	 * @param <T>
+	 * @param className
+	 * @param classLoader
+	 * @return
+	 * @throws IllegalArgumentException
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T newInstance(String className, @Nullable ClassLoader classLoader)
+			throws IllegalArgumentException {
+		Class<?> clazz = ClassUtils.resolveClassName(className, classLoader);
+		return (T) newInstance(clazz);
 	}
 
 	/**
