@@ -210,6 +210,21 @@ public abstract class ReflectionUtils {
 	}
 
 	/**
+	 * @see Class#getDeclaredField(String)
+	 * @param clazz
+	 * @param name
+	 * @return
+	 */
+	@Nullable
+	public static Field getField(Class<?> clazz, String name) {
+		try {
+			return clazz.getDeclaredField(name);
+		} catch (NoSuchFieldException | SecurityException e) {
+		}
+		return null;
+	}
+
+	/**
 	 * Set the field represented by the supplied {@link Field field object} on the
 	 * specified {@link Object target object} to the specified {@code value} . In
 	 * accordance with {@link Field#set(Object, Object)} semantics, the new value is
@@ -287,16 +302,16 @@ public abstract class ReflectionUtils {
 	public static Method findMethod(Class<?> clazz, String name, Class<?>... paramTypes) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(name, "Method name must not be null");
-		return getDeclaredMethods(clazz).withAll().streamAll().filter((method) -> {
+		return getDeclaredMethods(clazz).withAll().filter((method) -> {
 			return name.equals(method.getName())
 					&& (paramTypes == null || Arrays.equals(paramTypes, method.getParameterTypes()));
-		}).findFirst().orElse(null);
+		}).get();
 	}
 
 	public static Method findMethod(Class<?> clazz, String name, Object... args) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(name, "Method name must not be null");
-		return getDeclaredMethods(clazz).withAll().streamAll().filter((method) -> {
+		return getDeclaredMethods(clazz).withAll().filter((method) -> {
 			if (!method.getName().equals(name)) {
 				return false;
 			}
@@ -314,7 +329,7 @@ public abstract class ReflectionUtils {
 				}
 			}
 			return b;
-		}).findFirst().orElse(null);
+		}).get();
 	}
 
 	/**
@@ -348,25 +363,13 @@ public abstract class ReflectionUtils {
 	 * @return the invocation result, if any
 	 */
 	public static Object invokeMethod(Method method, Object target, Object... args) {
+		makeAccessible(method);
 		try {
 			return method.invoke(target, args);
 		} catch (Exception ex) {
 			handleReflectionException(ex);
 		}
 		throw new IllegalStateException("Should never get here");
-	}
-
-	/**
-	 * @see #makeAccessible(Method)
-	 * @see ReflectionUtils#invokeMethod(Method, Object, Object...)
-	 * @param method
-	 * @param target
-	 * @param args
-	 * @return
-	 */
-	public static Object invokeDeclaredMethod(Method method, Object target, Object... args) {
-		makeAccessible(method);
-		return invokeMethod(method, target, args);
 	}
 
 	/**

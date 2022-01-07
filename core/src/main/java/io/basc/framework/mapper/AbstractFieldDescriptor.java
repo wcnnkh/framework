@@ -104,9 +104,8 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 	public Object get(Object instance) {
 		Method method = getMethod();
 		if (method != null) {
-			ReflectionUtils.makeAccessible(method);
 			try {
-				return method.invoke(Modifier.isStatic(method.getModifiers()) ? null : instance);
+				return ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null : instance);
 			} catch (Exception e) {
 				throw new RuntimeException(toString() + " instance [" + instance + "]",
 						NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
@@ -129,9 +128,8 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 	public void set(Object instance, Object value) {
 		Method method = getMethod();
 		if (method != null) {
-			ReflectionUtils.makeAccessible(method);
 			try {
-				method.invoke(Modifier.isStatic(method.getModifiers()) ? null : instance, value);
+				ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null : instance, value);
 			} catch (Exception e) {
 				throw new RuntimeException(toString() + " instance [" + instance + "] value [" + value + "]",
 						NestedExceptionUtils.excludeInvalidNestedExcpetion(e));

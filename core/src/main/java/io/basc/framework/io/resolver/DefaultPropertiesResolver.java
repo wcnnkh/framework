@@ -50,7 +50,7 @@ public class DefaultPropertiesResolver implements PropertiesResolver {
 						InputStreamReader isr = null;
 						try {
 							isr = new InputStreamReader(is, charset);
-							method.invoke(properties, isr);
+							ReflectionUtils.invokeMethod(method, properties, isr);
 						} finally {
 							if (!resource.isOpen()) {
 								IOUtils.close(isr);

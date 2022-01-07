@@ -130,13 +130,13 @@ public class TomcatStart implements Main, Destroy {
 		}
 	}
 
-	protected void addServletMapping(Context context, String pattern, String servletName) throws Exception {
+	protected void addServletMapping(Context context, String pattern, String servletName) {
 		Method method = ReflectionUtils.getDeclaredMethod(Context.class, "addServletMappingDecoded", String.class,
 				String.class);
 		if (method == null) {// tomcat8以下
 			method = ReflectionUtils.getDeclaredMethod(Context.class, "addServletMapping", String.class, String.class);
 		}
-		method.invoke(context, pattern, servletName);
+		ReflectionUtils.invokeMethod(method, context, pattern, servletName);
 	}
 
 	protected void configureServlet(Context context, Application application, Class<?> mainClass) throws Exception {
