@@ -302,16 +302,16 @@ public abstract class ReflectionUtils {
 	public static Method findMethod(Class<?> clazz, String name, Class<?>... paramTypes) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(name, "Method name must not be null");
-		return getDeclaredMethods(clazz).withAll().filter((method) -> {
+		return getDeclaredMethods(clazz).withAll().streamAll().filter((method) -> {
 			return name.equals(method.getName())
 					&& (paramTypes == null || Arrays.equals(paramTypes, method.getParameterTypes()));
-		}).get();
+		}).findFirst().orElse(null);
 	}
 
 	public static Method findMethod(Class<?> clazz, String name, Object... args) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(name, "Method name must not be null");
-		return getDeclaredMethods(clazz).withAll().filter((method) -> {
+		return getDeclaredMethods(clazz).withAll().streamAll().filter((method) -> {
 			if (!method.getName().equals(name)) {
 				return false;
 			}
@@ -329,7 +329,7 @@ public abstract class ReflectionUtils {
 				}
 			}
 			return b;
-		}).get();
+		}).findFirst().orElse(null);
 	}
 
 	/**
@@ -989,8 +989,7 @@ public abstract class ReflectionUtils {
 
 	public static <M extends Member, E extends RuntimeException> Members<M, E> getEntityMembers(Class<?> entityClass,
 			Processor<Class<?>, M[], E> processor) {
-		return new Members<M, E>(entityClass, (c) -> Arrays.asList(processor.process(c)).stream())
-				.filter(ENTITY_MEMBER);
+		return new Members<M, E>(entityClass, (c) -> Arrays.asList(processor.process(c)).stream().filter(ENTITY_MEMBER));
 	}
 
 	public static <T, E extends RuntimeException> String toString(Members<Field, E> members, T entity, boolean deep)

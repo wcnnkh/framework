@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
- * 类成员解析
+ * 类成员
  * 
  * @author wcnnkh
  *
@@ -133,7 +133,7 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 		if (stream == null) {
 			return StreamProcessorSupport.emptyStream();
 		}
-		return stream.filter(predicate);
+		return this.predicate == null? stream : stream.filter(predicate);
 	}
 
 	public Stream<Members<T, E>> streamMembers() throws E {
