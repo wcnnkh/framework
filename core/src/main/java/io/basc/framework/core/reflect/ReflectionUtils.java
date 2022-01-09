@@ -201,7 +201,7 @@ public abstract class ReflectionUtils {
 	 * @param type  the type of the field (may be {@code null} if name is specified)
 	 * @return the corresponding Field object, or {@code null} if not found
 	 */
-	public static Field findField(Class<?> clazz, String name, Class<?> type) {
+	public static Field findField(Class<?> clazz, String name, @Nullable Class<?> type) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.isTrue(name != null || type != null, "Either name or type of the field must be specified");
 		return getDeclaredFields(clazz).withAll().streamAll().filter((field) -> {

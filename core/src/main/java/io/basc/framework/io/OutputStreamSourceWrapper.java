@@ -25,8 +25,8 @@ public class OutputStreamSourceWrapper<W extends OutputStreamSource> extends Wra
 	}
 
 	@Override
-	public <E extends Throwable> void write(ConsumerProcessor<OutputStream, E> callback) throws IOException, E {
-		wrappedTarget.write(callback);
+	public <E extends Throwable> void produce(ConsumerProcessor<OutputStream, E> callback) throws IOException, E {
+		wrappedTarget.produce(callback);
 	}
 
 	@Override

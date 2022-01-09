@@ -49,7 +49,7 @@ public interface OutputStreamSource {
 	 * @param processor
 	 * @throws IOException
 	 */
-	default <E extends Throwable> void write(ConsumerProcessor<OutputStream, E> processor) throws IOException, E {
+	default <E extends Throwable> void produce(ConsumerProcessor<OutputStream, E> processor) throws IOException, E {
 		write((is) -> {
 			processor.process(is);
 			return null;

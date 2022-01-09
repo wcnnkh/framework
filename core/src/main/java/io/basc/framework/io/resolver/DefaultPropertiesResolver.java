@@ -71,7 +71,7 @@ public class DefaultPropertiesResolver implements PropertiesResolver {
 	@Override
 	public void persistenceProperties(Properties properties, WritableResource resource, Charset charset) {
 		try {
-			resource.write((output) -> {
+			resource.produce((output) -> {
 				if (StringUtils.endsWithIgnoreCase(resource.getName(), ".xml")) {
 					if (charset == null) {
 						properties.storeToXML(output, null);

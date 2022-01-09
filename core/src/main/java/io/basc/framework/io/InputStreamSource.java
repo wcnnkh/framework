@@ -64,7 +64,7 @@ public interface InputStreamSource {
 	 * @param processor
 	 * @throws IOException
 	 */
-	default <E extends Throwable> void read(ConsumerProcessor<InputStream, E> processor) throws IOException, E {
+	default <E extends Throwable> void consume(ConsumerProcessor<InputStream, E> processor) throws IOException, E {
 		read((is) -> {
 			processor.process(is);
 			return null;
@@ -101,9 +101,7 @@ public interface InputStreamSource {
 	 *                               another transfer
 	 */
 	default void transferTo(File dest) throws IOException, IllegalStateException {
-		read((is) -> {
-			FileUtils.copyInputStreamToFile(is, dest);
-		});
+		consume((is) -> FileUtils.copyInputStreamToFile(is, dest));
 	}
 
 	/**
@@ -115,8 +113,6 @@ public interface InputStreamSource {
 	 * @see #transferTo(File)
 	 */
 	default void transferTo(Path dest) throws IOException, IllegalStateException {
-		read((is) -> {
-			FileUtils.copyInputStreamToPath(is, dest);
-		});
+		consume((is) -> FileUtils.copyInputStreamToPath(is, dest));
 	}
 }
