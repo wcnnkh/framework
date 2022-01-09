@@ -1,6 +1,10 @@
 package io.basc.framework.core;
 
-import java.util.ArrayList;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.stream.StreamProcessorSupport;
+
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -9,11 +13,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.stream.Processor;
-import io.basc.framework.util.stream.StreamProcessorSupport;
 
 /**
  * 类成员解析
@@ -24,20 +23,18 @@ import io.basc.framework.util.stream.StreamProcessorSupport;
  * @param <E>
  */
 public class Members<T, E extends RuntimeException> implements Iterable<T>, Cloneable, Supplier<T> {
-	@Nullable
-	private List<Members<T, E>> withs;
 	private final Class<?> sourceClass;
 	private final Processor<Class<?>, Stream<T>, E> processor;
-	// 这是为了实现filter时不用调用map方法
 	@Nullable
 	private Predicate<T> predicate;
-
+	@Nullable
+	private List<Members<T, E>> withs;
+	
 	public Members(Class<?> sourceClass, Processor<Class<?>, Stream<T>, E> processor) {
 		this(sourceClass, processor, null);
 	}
 
-	public Members(Class<?> sourceClass, Processor<Class<?>, Stream<T>, E> processor,
-			@Nullable Predicate<T> predicate) {
+	public Members(Class<?> sourceClass, Processor<Class<?>, Stream<T>, E> processor, @Nullable Predicate<T> predicate) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		Assert.requiredArgument(processor != null, "processor");
 		this.sourceClass = sourceClass;
@@ -46,15 +43,11 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 	}
 
 	public List<Members<T, E>> getWiths() {
-		return Collections.unmodifiableList(withs);
+		return withs == null? Collections.emptyList() : Collections.unmodifiableList(withs);
 	}
 
 	public Processor<Class<?>, Stream<T>, E> getProcessor() {
 		return processor;
-	}
-
-	public Predicate<T> getPredicate() {
-		return predicate;
 	}
 
 	/**
@@ -82,7 +75,7 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 	 * 映射
 	 * 
 	 * @param processor
-	 * @return
+	 * @return 一个新的Members
 	 */
 	public <S> Members<S, E> map(Processor<Stream<T>, Stream<S>, E> processor) {
 		Members<S, E> members = new Members<S, E>(this.sourceClass, (c) -> {
@@ -97,7 +90,7 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 			return target;
 		});
 		if (this.withs != null) {
-			members.withs = new ArrayList<Members<S, E>>();
+			members.withs = new LinkedList<Members<S, E>>();
 			for (Members<T, E> source : this.withs) {
 				if(source == this) {
 					members.withs.add(members);
@@ -113,7 +106,7 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 	public Members<T, E> clone() {
 		Members<T, E> clone = new Members<T, E>(this.sourceClass, this.processor, this.predicate);
 		if (this.withs != null) {
-			clone.withs = new ArrayList<>(this.withs);
+			clone.withs = new LinkedList<>(this.withs);
 		}
 		return clone;
 	}
@@ -140,7 +133,7 @@ public class Members<T, E extends RuntimeException> implements Iterable<T>, Clon
 		if (stream == null) {
 			return StreamProcessorSupport.emptyStream();
 		}
-		return stream.filter(this.predicate);
+		return stream.filter(predicate);
 	}
 
 	public Stream<Members<T, E>> streamMembers() throws E {
