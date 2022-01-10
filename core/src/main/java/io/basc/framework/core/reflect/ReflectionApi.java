@@ -228,7 +228,6 @@ public class ReflectionApi implements Supplier<Object> {
 	/**
 	 * 实例一个对象，无论对象是否存在无参的构造方法
 	 * 
-	 * @see #isInstance(Class)
 	 * @see #REFLECTION_FACTORY
 	 * @see ReflectionApi#UNSAFE
 	 * @see #getConstructor(Class)

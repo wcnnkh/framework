@@ -27,12 +27,17 @@ public class ReflectionApiTest {
 		assertTrue(aa.a == 1);
 		B bb = ReflectionApi.newInstance(B.class);
 		assertTrue(bb.b == 0);
+
+		ReflectionApi.newInstance(E.class);
+	}
+
+	private static enum E {
 	}
 
 	public static class A {
 		public int a;
 
-		public A() {
+		private A() {
 			a = 1;
 		}
 	}
@@ -40,7 +45,7 @@ public class ReflectionApiTest {
 	public static class B {
 		public int b;
 
-		public B(int b) {
+		private B(int b) {
 			this.b = b;
 		}
 	}

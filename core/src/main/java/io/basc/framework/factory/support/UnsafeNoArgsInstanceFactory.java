@@ -5,6 +5,7 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.ClassUtils;
 
 public class UnsafeNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
+	public static final UnsafeNoArgsInstanceFactory INSTANCE = new UnsafeNoArgsInstanceFactory();
 
 	public <T> T getInstance(Class<T> type) {
 		if (type == null) {
