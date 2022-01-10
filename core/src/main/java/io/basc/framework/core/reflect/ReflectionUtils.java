@@ -363,8 +363,8 @@ public abstract class ReflectionUtils {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(name, "Method name must not be null");
 		return getDeclaredMethods(clazz).withAll().streamAll().filter((method) -> {
-			return name.equals(method.getName()) && (paramTypes == null
-					|| Arrays.equals(paramTypes == null ? new Class[0] : paramTypes, method.getParameterTypes()));
+			return name.equals(method.getName()) && (paramTypes == null || ClassUtils
+					.isAssignable(paramTypes == null ? new Class[0] : paramTypes, method.getParameterTypes()));
 		}).findFirst().orElse(null);
 	}
 
