@@ -19,7 +19,7 @@ public final class SerializableField implements FieldHolder, Serializable {
 		if (field == null) {
 			synchronized (this) {
 				if (field == null) {
-					field = ReflectionUtils.findField(declaringClass, fieldName);
+					this.field = ReflectionUtils.getDeclaredField(this.declaringClass, this.fieldName);
 				}
 			}
 		}

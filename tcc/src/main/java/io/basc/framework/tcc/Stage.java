@@ -58,8 +58,7 @@ public class Stage extends SerializableMethod implements Runnable, BeanFactoryAw
 			}
 		}
 
-		ReflectionUtils.makeAccessible(method);
-		ReflectionUtils.invokeMethod(method, instance, args);
+		ReflectionUtils.invoke(method, instance, args);
 	}
 
 }

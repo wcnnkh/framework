@@ -73,7 +73,7 @@ public class ReflectionApi implements Supplier<Object> {
 		Assert.requiredArgument(isAvailable(), "declaringClass");
 		Assert.requiredArgument(method != null, "method");
 		ReflectionUtils.makeAccessible(method);
-		return ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null : get(), args);
+		return ReflectionUtils.invoke(method, Modifier.isStatic(method.getModifiers()) ? null : get(), args);
 	}
 
 	/**
@@ -203,7 +203,7 @@ public class ReflectionApi implements Supplier<Object> {
 	@Nullable
 	public static <T> Constructor<T> getConstructor(Class<T> type) {
 		Assert.requiredArgument(type != null, "type");
-		Constructor<T> constructor = ReflectionUtils.getConstructor(type);
+		Constructor<T> constructor = ReflectionUtils.getDeclaredConstructor(type);
 		if (constructor == null) {
 			constructor = getConstructorForSerialization(type);
 		}
@@ -236,7 +236,7 @@ public class ReflectionApi implements Supplier<Object> {
 	 * @return
 	 */
 	public static <T> T newInstance(Class<T> type) {
-		Constructor<T> constructor = ReflectionUtils.getConstructor(type);
+		Constructor<T> constructor = ReflectionUtils.getDeclaredConstructor(type);
 		if (constructor != null) {
 			try {
 				return constructor.newInstance();

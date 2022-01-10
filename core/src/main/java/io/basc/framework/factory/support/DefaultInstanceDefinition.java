@@ -52,16 +52,10 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 	}
 
 	protected Object createInternal(Class<?> targetClass, ParameterDescriptors parameterDescriptors, Object[] params) {
-		Constructor<?> constructor = ReflectionUtils.findConstructor(targetClass, false,
-				parameterDescriptors.getTypes());
-		try {
-			Object instance = constructor.newInstance(params == null ? new Object[0] : params);
-			configurable(instance);
-			return instance;
-		} catch (Exception e) {
-			ReflectionUtils.handleReflectionException(e);
-		}
-		throw new IllegalStateException("Should never get here");
+		Constructor<?> constructor = ReflectionUtils.getDeclaredConstructor(targetClass, parameterDescriptors.getTypes());
+		Object instance = ReflectionUtils.newInstance(constructor, params);
+		configurable(instance);
+		return instance;
 	}
 
 	protected ParameterDescriptors getParameterDescriptors(Object[] params) {

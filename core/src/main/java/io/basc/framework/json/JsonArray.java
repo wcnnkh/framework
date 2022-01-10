@@ -1,14 +1,13 @@
 package io.basc.framework.json;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.core.reflect.ReflectionUtils;
-
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import io.basc.framework.convert.Converter;
+import io.basc.framework.core.reflect.ReflectionUtils;
 
 public interface JsonArray extends Json<Integer>, Iterable<JsonElement> {
 	static final String PREFIX = "[";
@@ -41,19 +40,14 @@ public interface JsonArray extends Json<Integer>, Iterable<JsonElement> {
 				// 支持构造参数存在一个，且参数类型为JsonArray或JsonObject
 				Constructor<?> constructor = null;
 				if (o.isJsonArray()) {
-					constructor = ReflectionUtils.findConstructor(type, false, JsonArray.class);
+					constructor = ReflectionUtils.getDeclaredConstructor(type, JsonArray.class);
 				} else if (o.isJsonObject()) {
-					constructor = ReflectionUtils.findConstructor(type, false, JsonObject.class);
+					constructor = ReflectionUtils.getDeclaredConstructor(type, JsonObject.class);
 				}
 
 				if (constructor != null) {
-					ReflectionUtils.makeAccessible(constructor);
-					try {
-						return (T) constructor.newInstance(o.isJsonArray() ? o.getAsJsonArray() : o.getAsJsonObject());
-					} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-							| InvocationTargetException e) {
-						ReflectionUtils.handleThrowable(e);
-					}
+					return (T) ReflectionUtils.newInstance(constructor,
+							o.isJsonArray() ? o.getAsJsonArray() : o.getAsJsonObject());
 				}
 				return o.getAsObject(type);
 			}

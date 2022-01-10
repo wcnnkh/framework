@@ -358,7 +358,7 @@ abstract class SerializableTypeWrapper {
 			Object result = this.result;
 			if (result == null) {
 				// Lazy invocation of the target method on the provided type
-				result = ReflectionUtils.invokeMethod(this.method, this.provider.getType());
+				result = ReflectionUtils.invoke(this.method, this.provider.getType());
 				// Cache the result for further calls to getType()
 				this.result = result;
 			}

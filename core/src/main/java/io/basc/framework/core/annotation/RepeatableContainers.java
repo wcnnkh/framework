@@ -129,7 +129,7 @@ public abstract class RepeatableContainers {
 		Annotation[] findRepeatedAnnotations(Annotation annotation) {
 			Method method = getRepeatedAnnotationsMethod(annotation.annotationType());
 			if (method != null) {
-				return (Annotation[]) ReflectionUtils.invokeMethod(method, annotation);
+				return (Annotation[]) ReflectionUtils.invoke(method, annotation);
 			}
 			return super.findRepeatedAnnotations(annotation);
 		}
@@ -208,7 +208,7 @@ public abstract class RepeatableContainers {
 		@Nullable
 		Annotation[] findRepeatedAnnotations(Annotation annotation) {
 			if (this.container.isAssignableFrom(annotation.annotationType())) {
-				return (Annotation[]) ReflectionUtils.invokeMethod(this.valueMethod, annotation);
+				return (Annotation[]) ReflectionUtils.invoke(this.valueMethod, annotation);
 			}
 			return super.findRepeatedAnnotations(annotation);
 		}

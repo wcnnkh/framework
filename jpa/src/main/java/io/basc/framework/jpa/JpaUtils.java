@@ -15,6 +15,6 @@ public class JpaUtils {
 			throw new NoSuchMethodException(method.toString());
 		}
 		
-		return ReflectionUtils.invokeMethod(entityManagerMethod, entityManager, args);
+		return ReflectionUtils.invoke(entityManagerMethod, entityManager, args);
 	}
 }

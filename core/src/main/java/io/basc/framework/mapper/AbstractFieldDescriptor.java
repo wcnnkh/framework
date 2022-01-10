@@ -105,7 +105,7 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 		Method method = getMethod();
 		if (method != null) {
 			try {
-				return ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null : instance);
+				return ReflectionUtils.invoke(method, Modifier.isStatic(method.getModifiers()) ? null : instance);
 			} catch (Exception e) {
 				throw new RuntimeException(toString() + " instance [" + instance + "]",
 						NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
@@ -116,7 +116,7 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 		if (field != null) {
 			ReflectionUtils.makeAccessible(field);
 			try {
-				return field.get(Modifier.isStatic(field.getModifiers()) ? null : instance);
+				return ReflectionUtils.get(field, Modifier.isStatic(field.getModifiers()) ? null : instance);
 			} catch (Exception e) {
 				throw new RuntimeException(toString() + " instance [" + instance + "]",
 						NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
@@ -129,7 +129,7 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 		Method method = getMethod();
 		if (method != null) {
 			try {
-				ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null : instance, value);
+				ReflectionUtils.invoke(method, Modifier.isStatic(method.getModifiers()) ? null : instance, value);
 			} catch (Exception e) {
 				throw new RuntimeException(toString() + " instance [" + instance + "] value [" + value + "]",
 						NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
@@ -141,7 +141,7 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 		if (field != null) {
 			ReflectionUtils.makeAccessible(field);
 			try {
-				field.set(Modifier.isStatic(field.getModifiers()) ? null : instance, value);
+				ReflectionUtils.set(field, Modifier.isStatic(field.getModifiers()) ? null : instance, value);
 			} catch (Exception e) {
 				throw new RuntimeException(toString() + " instance [" + instance + "] value [" + value + "]",
 						NestedExceptionUtils.excludeInvalidNestedExcpetion(e));

@@ -136,7 +136,7 @@ public class TomcatStart implements Main, Destroy {
 		if (method == null) {// tomcat8以下
 			method = ReflectionUtils.getDeclaredMethod(Context.class, "addServletMapping", String.class, String.class);
 		}
-		ReflectionUtils.invokeMethod(method, context, pattern, servletName);
+		ReflectionUtils.invoke(method, context, pattern, servletName);
 	}
 
 	protected void configureServlet(Context context, Application application, Class<?> mainClass) throws Exception {

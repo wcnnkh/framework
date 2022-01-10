@@ -14,7 +14,7 @@ public class ReflectionApiTest {
 		assertTrue(a.a == 0);
 		A a1 = ReflectionApi.getConstructorForSerialization(A.class).newInstance();
 		assertTrue(a1.a == 0);
-		A a2 = ReflectionUtils.getConstructor(A.class).newInstance();
+		A a2 = ReflectionUtils.getDeclaredConstructor(A.class).newInstance();
 		assertTrue(a2.a == 1);
 
 		B b = ReflectionApi.getConstructor(B.class).newInstance();

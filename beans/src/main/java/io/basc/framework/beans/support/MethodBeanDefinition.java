@@ -54,8 +54,7 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 	@Override
 	protected Object createInternal(Class<?> targetClass, ParameterDescriptors parameterDescriptors, Object[] params) {
 		Method method = ReflectionUtils.findMethod(targetClass, this.method.getName(), parameterDescriptors.getTypes());
-		ReflectionUtils.makeAccessible(method);
-		Object bean = ReflectionUtils.invokeMethod(method,
+		Object bean = ReflectionUtils.invoke(method,
 				Modifier.isStatic(method.getModifiers()) ? null : beanFactory.getInstance(methodTargetClass), params);
 		if (beanFactory.getAop().isProxy(bean)) {
 			// 已经被代理过的

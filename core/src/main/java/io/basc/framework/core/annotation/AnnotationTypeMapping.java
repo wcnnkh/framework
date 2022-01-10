@@ -215,7 +215,7 @@ final class AnnotationTypeMapping {
 			mapping.claimedAliases.addAll(aliases);
 			if (mapping.annotation != null) {
 				int[] resolvedMirrors = mapping.mirrorSets.resolve(null, mapping.annotation,
-						ReflectionUtils::invokeMethod);
+						ReflectionUtils::invoke);
 				for (int i = 0; i < mapping.attributes.size(); i++) {
 					if (aliases.contains(mapping.attributes.get(i))) {
 						this.annotationValueMappings[attributeIndex] = resolvedMirrors[i];
@@ -478,7 +478,7 @@ final class AnnotationTypeMapping {
 		if (source == this && metaAnnotationsOnly) {
 			return null;
 		}
-		return ReflectionUtils.invokeMethod(source.attributes.get(mappedIndex), source.annotation);
+		return ReflectionUtils.invoke(source.attributes.get(mappedIndex), source.annotation);
 	}
 
 	/**
@@ -565,7 +565,7 @@ final class AnnotationTypeMapping {
 		AttributeMethods attributes = AttributeMethods.forAnnotationType(annotation.annotationType());
 		for (int i = 0; i < attributes.size(); i++) {
 			Method attribute = attributes.get(i);
-			Object value1 = ReflectionUtils.invokeMethod(attribute, annotation);
+			Object value1 = ReflectionUtils.invoke(attribute, annotation);
 			Object value2;
 			if (extractedValue instanceof TypeMappedAnnotation) {
 				value2 = ((TypeMappedAnnotation<?>) extractedValue).getValue(attribute.getName()).orElse(null);

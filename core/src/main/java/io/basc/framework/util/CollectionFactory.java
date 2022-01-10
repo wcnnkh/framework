@@ -30,8 +30,8 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
 
 public final class CollectionFactory {
-	private static final Field KEY_TYPE_FIELD = ReflectionUtils.findField(EnumMap.class, "keyType");
-	private static final Field ELEMENT_TYPE_FIELD = ReflectionUtils.findField(EnumSet.class, "elementType");
+	private static final Field KEY_TYPE_FIELD = ReflectionUtils.getField(EnumMap.class, "keyType");
+	private static final Field ELEMENT_TYPE_FIELD = ReflectionUtils.getField(EnumSet.class, "elementType");
 
 	private static final Set<Class<?>> approximableCollectionTypes = new HashSet<Class<?>>();
 
@@ -438,7 +438,7 @@ public final class CollectionFactory {
 	public static <T> Class<T> getEnumMapKeyType(Map map) {
 		Class<T> keyType = null;
 		if (map instanceof EnumMap) {
-			keyType = (Class<T>) ReflectionUtils.getField(KEY_TYPE_FIELD, map);
+			keyType = (Class<T>) ReflectionUtils.get(KEY_TYPE_FIELD, map);
 		}
 		return keyType;
 	}
@@ -485,7 +485,11 @@ public final class CollectionFactory {
 				}
 			}
 
-			ReflectionUtils.clone(ReflectionUtils.getDeclaredFields(mapType).withAll((e) -> e != Object.class && !(e.getName().startsWith("java.util.") && e.getName().endsWith("Map"))), map, cloneMap, deep);
+			ReflectionUtils.clone(
+					ReflectionUtils.getDeclaredFields(mapType)
+							.withAll((e) -> e != Object.class
+									&& !(e.getName().startsWith("java.util.") && e.getName().endsWith("Map"))),
+					map, cloneMap, deep);
 
 			for (Entry<K, V> entry : map.entrySet()) {
 				cloneMap.put(ObjectUtils.clone(entry.getKey(), deep), ObjectUtils.clone(entry.getValue(), deep));
@@ -498,7 +502,7 @@ public final class CollectionFactory {
 	public static <T> Class<T> getEnumSetElementType(@SuppressWarnings("rawtypes") Collection collection) {
 		Class<T> elementType = null;
 		if (collection instanceof EnumSet) {
-			elementType = (Class<T>) ReflectionUtils.getField(ELEMENT_TYPE_FIELD, collection);
+			elementType = (Class<T>) ReflectionUtils.get(ELEMENT_TYPE_FIELD, collection);
 		}
 		return elementType;
 	}
@@ -543,7 +547,11 @@ public final class CollectionFactory {
 				}
 			}
 
-			ReflectionUtils.clone(ReflectionUtils.getDeclaredFields(collectionClass).withAll((e) -> e != Object.class && !(e.getName().startsWith("java.util.") && (e.getName().endsWith("Set") || e.getName().endsWith("List")))), collection, cloneCollection, deep);
+			ReflectionUtils.clone(
+					ReflectionUtils.getDeclaredFields(collectionClass)
+							.withAll((e) -> e != Object.class && !(e.getName().startsWith("java.util.")
+									&& (e.getName().endsWith("Set") || e.getName().endsWith("List")))),
+					collection, cloneCollection, deep);
 
 			for (E e : collection) {
 				cloneCollection.add(ObjectUtils.clone(e, deep));

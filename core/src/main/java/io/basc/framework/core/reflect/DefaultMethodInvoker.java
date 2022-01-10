@@ -76,7 +76,7 @@ public class DefaultMethodInvoker implements MethodInvoker, Serializable, Clonea
 	public Object invoke(Object... args) throws Throwable {
 		Method method = getMethod();
 		ReflectionUtils.makeAccessible(method);
-		return ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null : getInstance(),
+		return ReflectionUtils.invoke(method, Modifier.isStatic(method.getModifiers()) ? null : getInstance(),
 				args);
 	}
 

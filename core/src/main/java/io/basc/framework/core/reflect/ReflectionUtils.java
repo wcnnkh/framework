@@ -74,7 +74,7 @@ public abstract class ReflectionUtils {
 	 */
 	@Nullable
 	@SuppressWarnings("unchecked")
-	public static <T> Constructor<T> getConstructor(Class<T> type) {
+	public static <T> Constructor<T> getDeclaredConstructor(Class<T> type) {
 		Assert.requiredArgument(type != null, "type");
 		Constructor<T> constructor = (Constructor<T>) CONSTRUCTOR_MAP.get(type);
 		if (constructor == null) {
@@ -101,6 +101,106 @@ public abstract class ReflectionUtils {
 	}
 
 	/**
+	 * @see Class#getConstructor(Class...)
+	 * @see #getDeclaredConstructor(Class)
+	 * @param <T>
+	 * @param type
+	 * @return
+	 */
+	public static <T> Constructor<T> getConstructor(Class<T> type) {
+		Constructor<T> constructor = getDeclaredConstructor(type);
+		return (constructor != null && Modifier.isPublic(constructor.getModifiers())) ? constructor : null;
+	}
+
+	/**
+	 * @see Class#getConstructor(Class...)
+	 * @param <T>
+	 * @param type
+	 * @param parameterTypes
+	 * @return
+	 */
+	public static <T> Constructor<T> getConstructor(Class<T> type, Class<?>... parameterTypes) {
+		if (parameterTypes == null || parameterTypes.length == 0) {
+			return getConstructor(type);
+		}
+
+		try {
+			return type.getConstructor(parameterTypes);
+		} catch (NoSuchMethodException | SecurityException e) {
+		}
+		return null;
+	}
+
+	/**
+	 * @see ClassUtils#getClass(String, ClassLoader)
+	 * @see #getConstructor(Class, Class...)
+	 * @param <T>
+	 * @param className
+	 * @param classLoader
+	 * @param parameterTypes
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> Constructor<T> getConstructor(String className, ClassLoader classLoader,
+			Class<?>... parameterTypes) {
+		Class<T> clazz = (Class<T>) ClassUtils.getClass(className, classLoader);
+		if (clazz == null) {
+			return null;
+		}
+
+		return getConstructor(clazz, parameterTypes);
+	}
+
+	/**
+	 * @see ClassUtils#getClass(String, ClassLoader)
+	 * @see #getDeclaredConstructor(Class, Class...)
+	 * @param <T>
+	 * @param className
+	 * @param classLoader
+	 * @param parameterTypes
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> Constructor<T> getDeclaredConstructor(String className, ClassLoader classLoader,
+			Class<?>... parameterTypes) {
+		Class<T> clazz = (Class<T>) ClassUtils.getClass(className, classLoader);
+		if (clazz == null) {
+			return null;
+		}
+
+		return getDeclaredConstructor(clazz, parameterTypes);
+	}
+
+	/**
+	 * @see Class#getDeclaredConstructor(Class...)
+	 * @param <T>
+	 * @param type
+	 * @param parameterTypes
+	 * @return
+	 */
+	public static <T> Constructor<T> getDeclaredConstructor(Class<T> type, Class<?>... parameterTypes) {
+		if (parameterTypes == null || parameterTypes.length == 0) {
+			return getDeclaredConstructor(type);
+		}
+
+		try {
+			return type.getDeclaredConstructor(parameterTypes);
+		} catch (NoSuchMethodException | SecurityException e) {
+		}
+		return null;
+	}
+
+	public static <T> T newInstance(Constructor<T> constructor, Object... args) {
+		makeAccessible(constructor);
+		try {
+			return constructor.newInstance(args == null ? new Object[0] : args);
+		} catch (Exception ex) {
+			handleReflectionException(ex);
+		}
+		throw new IllegalStateException("Should never get here");
+	}
+
+	/**
 	 * 判断此类是否可用(会静态初始化)
 	 * 
 	 * @param clazz
@@ -124,7 +224,7 @@ public abstract class ReflectionUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T clone(Cloneable source) {
-		return (T) invokeMethod(CLONE_METOHD, source);
+		return (T) invoke(CLONE_METOHD, source);
 	}
 
 	/**
@@ -138,7 +238,7 @@ public abstract class ReflectionUtils {
 			return false;
 		}
 
-		return getConstructor(clazz) != null;
+		return getDeclaredConstructor(clazz) != null;
 	}
 
 	/**
@@ -150,7 +250,7 @@ public abstract class ReflectionUtils {
 	 * @throws IllegalArgumentException 不存在无参构造方法
 	 */
 	public static <T> T newInstance(Class<T> clazz) throws IllegalArgumentException {
-		Constructor<T> constructor = getConstructor(clazz);
+		Constructor<T> constructor = getDeclaredConstructor(clazz);
 		if (constructor == null) {
 			throw new IllegalArgumentException(clazz.getName());
 		}
@@ -164,49 +264,17 @@ public abstract class ReflectionUtils {
 	}
 
 	/**
-	 * @see ClassUtils#resolveClassName(String, ClassLoader)
-	 * @see #newInstance(Class)
-	 * @param <T>
-	 * @param className
-	 * @param classLoader
+	 * @see Class#getField(String)
+	 * @param clazz
+	 * @param name
 	 * @return
-	 * @throws IllegalArgumentException
 	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T newInstance(String className, @Nullable ClassLoader classLoader)
-			throws IllegalArgumentException {
-		Class<?> clazz = ClassUtils.resolveClassName(className, classLoader);
-		return (T) newInstance(clazz);
-	}
-
-	/**
-	 * Attempt to find a {@link Field field} on the supplied {@link Class} with the
-	 * supplied {@code name}. Searches all superclasses up to {@link Object} .
-	 * 
-	 * @param clazz the class to introspect
-	 * @param name  the name of the field
-	 * @return the corresponding Field object, or {@code null} if not found
-	 */
-	public static Field findField(Class<?> clazz, String name) {
-		return findField(clazz, name, null);
-	}
-
-	/**
-	 * Attempt to find a {@link Field field} on the supplied {@link Class} with the
-	 * supplied {@code name} and/or {@link Class type}. Searches all superclasses up
-	 * to {@link Object}.
-	 * 
-	 * @param clazz the class to introspect
-	 * @param name  the name of the field (may be {@code null} if type is specified)
-	 * @param type  the type of the field (may be {@code null} if name is specified)
-	 * @return the corresponding Field object, or {@code null} if not found
-	 */
-	public static Field findField(Class<?> clazz, String name, @Nullable Class<?> type) {
-		Assert.notNull(clazz, "Class must not be null");
-		Assert.isTrue(name != null || type != null, "Either name or type of the field must be specified");
-		return getDeclaredFields(clazz).withAll().streamAll().filter((field) -> {
-			return (name == null || name.equals(field.getName())) && (type == null || type.equals(field.getType()));
-		}).findFirst().orElse(null);
+	public static Field getField(Class<?> clazz, String name) {
+		try {
+			return clazz.getField(name);
+		} catch (NoSuchFieldException | SecurityException e) {
+		}
+		return null;
 	}
 
 	/**
@@ -216,7 +284,7 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	@Nullable
-	public static Field getField(Class<?> clazz, String name) {
+	public static Field getDeclaredField(Class<?> clazz, String name) {
 		try {
 			return clazz.getDeclaredField(name);
 		} catch (NoSuchFieldException | SecurityException e) {
@@ -237,7 +305,7 @@ public abstract class ReflectionUtils {
 	 * @param target the target object on which to set the field
 	 * @param value  the value to set; may be {@code null}
 	 */
-	public static void setField(Field field, Object target, Object value) {
+	public static void set(Field field, Object target, Object value) {
 		makeAccessible(field);
 		try {
 			field.set(target, value);
@@ -261,7 +329,7 @@ public abstract class ReflectionUtils {
 	 * @param target the target object from which to get the field
 	 * @return the field's current value
 	 */
-	public static Object getField(Field field, Object target) {
+	public static Object get(Field field, Object target) {
 		makeAccessible(field);
 		try {
 			return field.get(target);
@@ -270,20 +338,6 @@ public abstract class ReflectionUtils {
 			throw new IllegalStateException(
 					"Unexpected reflection exception - " + ex.getClass().getName() + ": " + ex.getMessage());
 		}
-	}
-
-	/**
-	 * Attempt to find a {@link Method} on the supplied class with the supplied name
-	 * and no parameters. Searches all superclasses up to {@code Object}.
-	 * <p>
-	 * Returns {@code null} if no {@link Method} can be found.
-	 * 
-	 * @param clazz the class to introspect
-	 * @param name  the name of the method
-	 * @return the Method object, or {@code null} if none found
-	 */
-	public static Method findMethod(Class<?> clazz, String name) {
-		return findMethod(clazz, name, new Class[0]);
 	}
 
 	/**
@@ -303,50 +357,81 @@ public abstract class ReflectionUtils {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(name, "Method name must not be null");
 		return getDeclaredMethods(clazz).withAll().streamAll().filter((method) -> {
-			return name.equals(method.getName())
-					&& (paramTypes == null || Arrays.equals(paramTypes, method.getParameterTypes()));
-		}).findFirst().orElse(null);
-	}
-
-	public static Method findMethod(Class<?> clazz, String name, Object... args) {
-		Assert.notNull(clazz, "Class must not be null");
-		Assert.notNull(name, "Method name must not be null");
-		return getDeclaredMethods(clazz).withAll().streamAll().filter((method) -> {
-			if (!method.getName().equals(name)) {
-				return false;
-			}
-
-			Class<?>[] parameterTypes = method.getParameterTypes();
-			if (parameterTypes.length != args.length) {
-				return false;
-			}
-
-			boolean b = true;
-			for (int i = 0; i < parameterTypes.length; i++) {
-				if (!ClassUtils.isAssignableValue(parameterTypes[i], args[i])) {
-					b = false;
-					break;
-				}
-			}
-			return b;
+			return name.equals(method.getName()) && (paramTypes == null
+					|| Arrays.equals(paramTypes == null ? new Class[0] : paramTypes, method.getParameterTypes()));
 		}).findFirst().orElse(null);
 	}
 
 	/**
-	 * Invoke the specified {@link Method} against the supplied target object with
-	 * no arguments. The target object can be {@code null} when invoking a static
-	 * {@link Method}.
-	 * <p>
-	 * Thrown exceptions are handled via a call to
-	 * {@link #handleReflectionException}.
-	 * 
-	 * @param method the method to invoke
-	 * @param target the target object to invoke the method on
-	 * @return the invocation result, if any
-	 * @see #invokeMethod(java.lang.reflect.Method, Object, Object[])
+	 * @see ClassUtils#getClass(String, ClassLoader)
+	 * @see #getDeclaredMethod(Class, String, Class...)
+	 * @param className
+	 * @param classLoader
+	 * @param methodName
+	 * @param parameterTypes
+	 * @return
 	 */
-	public static Object invokeMethod(Method method, Object target) {
-		return invokeMethod(method, target, new Object[0]);
+	public static Method getDeclaredMethod(String className, @Nullable ClassLoader classLoader, String methodName,
+			Class<?>... parameterTypes) {
+		Class<?> clz = ClassUtils.getClass(className, classLoader);
+		if (clz == null) {
+			return null;
+		}
+
+		return getDeclaredMethod(clz, methodName, parameterTypes);
+	}
+
+	/**
+	 * @see Class#getDeclaredMethod(String, Class...)
+	 * @param clazz
+	 * @param name
+	 * @param parameterTypes
+	 * @return
+	 */
+	public static Method getDeclaredMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
+		Method method;
+		try {
+			method = clazz.getDeclaredMethod(name, parameterTypes);
+		} catch (NoSuchMethodException | SecurityException e) {
+			return null;
+		}
+		return method;
+	}
+
+	/**
+	 * @see ClassUtils#getClass(String, ClassLoader)
+	 * @see ReflectionUtils#getMethod(Class, String, Class...)
+	 * @param className
+	 * @param classLoader
+	 * @param methodName
+	 * @param parameterTypes
+	 * @return
+	 */
+	public static Method getMethod(String className, @Nullable ClassLoader classLoader, String methodName,
+			Class<?>... parameterTypes) {
+		Class<?> clz = ClassUtils.getClass(className, classLoader);
+		if (clz == null) {
+			return null;
+		}
+
+		return getMethod(clz, methodName, parameterTypes);
+	}
+
+	/**
+	 * @see Class#getMethod(String, Class...)
+	 * @param clazz
+	 * @param name
+	 * @param parameterTypes
+	 * @return
+	 */
+	public static Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
+		Method method;
+		try {
+			method = clazz.getMethod(name, parameterTypes);
+		} catch (NoSuchMethodException | SecurityException e) {
+			return null;
+		}
+		return method;
 	}
 
 	/**
@@ -362,10 +447,10 @@ public abstract class ReflectionUtils {
 	 * @param args   the invocation arguments (may be {@code null})
 	 * @return the invocation result, if any
 	 */
-	public static Object invokeMethod(Method method, Object target, Object... args) {
+	public static Object invoke(Method method, @Nullable Object target, Object... args) {
 		makeAccessible(method);
 		try {
-			return method.invoke(target, args);
+			return method.invoke(target, args == null ? new Object[0] : args);
 		} catch (Exception ex) {
 			handleReflectionException(ex);
 		}
@@ -601,41 +686,6 @@ public abstract class ReflectionUtils {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> Constructor<T> findConstructor(Class<T> type, boolean isPublic, Class<?>... parameterTypes) {
-		for (Constructor<?> constructor : isPublic ? getConstructors(type) : getDeclaredConstructors(type)) {
-			Class<?>[] types = constructor.getParameterTypes();
-			if (types.length == parameterTypes.length) {
-				boolean find = true;
-				for (int i = 0; i < types.length; i++) {
-					if (!ClassUtils.isAssignable(parameterTypes[i], types[i])) {
-						find = false;
-						break;
-					}
-				}
-
-				if (find) {
-					if (!isPublic && !Modifier.isPublic(constructor.getModifiers())) {
-						constructor.setAccessible(true);
-					}
-					return (Constructor<T>) constructor;
-				}
-			}
-		}
-		return null;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> Constructor<T> findConstructor(String className, @Nullable ClassLoader classLoader,
-			boolean isPublic, Class<?>... parameterTypes) {
-		Class<?> clazz = ClassUtils.getClass(className, classLoader);
-		if (clazz == null) {
-			return null;
-		}
-
-		return (Constructor<T>) findConstructor(clazz, isPublic, parameterTypes);
-	}
-
 	/**
 	 * 根据参数名来调用方法
 	 * 
@@ -690,28 +740,6 @@ public abstract class ReflectionUtils {
 		}
 
 		throw new NoSuchMethodException(type.getName() + ", method=" + name);
-	}
-
-	public static Method getDeclaredMethod(String className, @Nullable ClassLoader classLoader, String methodName,
-			Class<?>... parameterTypes) {
-		Class<?> clz = ClassUtils.getClass(className, classLoader);
-		if (clz == null) {
-			return null;
-		}
-
-		return getDeclaredMethod(clz, methodName, parameterTypes);
-	}
-
-	public static Method getDeclaredMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
-		Method method;
-		try {
-			method = clazz.getDeclaredMethod(name, parameterTypes);
-		} catch (NoSuchMethodException | SecurityException e) {
-			return null;
-		}
-
-		makeAccessible(method);
-		return method;
 	}
 
 	/**
@@ -778,8 +806,21 @@ public abstract class ReflectionUtils {
 	 * @return the qualified name of the method
 	 */
 	public static String getQualifiedMethodName(Method method) {
+		return getQualifiedMethodName(method, null);
+	}
+
+	/**
+	 * Return the qualified name of the given method, consisting of fully qualified
+	 * interface/class name + "." + method name.
+	 * 
+	 * @param method the method
+	 * @param clazz  the clazz that the method is being invoked on (may be
+	 *               {@code null} to indicate the method's declaring class)
+	 * @return the qualified name of the method
+	 */
+	public static String getQualifiedMethodName(Method method, @Nullable Class<?> clazz) {
 		Assert.notNull(method, "Method must not be null");
-		return method.getDeclaringClass().getName() + "." + method.getName();
+		return (clazz != null ? clazz : method.getDeclaringClass()).getName() + '.' + method.getName();
 	}
 
 	/**
@@ -876,19 +917,6 @@ public abstract class ReflectionUtils {
 		});
 	}
 
-	public static Object invokeStaticMethod(Class<?> clazz, String name, Class<?>[] parameterTypes, Object... params)
-			throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException {
-		Method method = clazz.getDeclaredMethod(name, parameterTypes);
-		return method.invoke(null, params);
-	}
-
-	public static Object invokeStaticMethod(String className, ClassLoader classLoader, String name,
-			Class<?>[] parameterTypes, Object... params) throws NoSuchMethodException, SecurityException,
-			IllegalAccessException, IllegalArgumentException, InvocationTargetException, ClassNotFoundException {
-		return invokeStaticMethod(ClassUtils.forName(className, classLoader), name, parameterTypes, params);
-	}
-
 	/**
 	 * Returns {@code true} if this method is a default method; returns
 	 * {@code false} otherwise.
@@ -928,7 +956,7 @@ public abstract class ReflectionUtils {
 			return (T[]) Array.newInstance(enumClass, 0);
 		}
 
-		return (T[]) invokeMethod(method, null);
+		return (T[]) invoke(method, null);
 	}
 
 	public static <T, E extends RuntimeException> void clone(T source, T target, boolean deep) throws E {
@@ -949,13 +977,13 @@ public abstract class ReflectionUtils {
 
 		members.streamAll().filter(ENTITY_MEMBER).forEach((f) -> {
 			try {
-				Object value = getField(f, source);
+				Object value = get(f, source);
 				if (value == source) {
 					value = target;
 				} else {
 					value = ObjectUtils.clone(value, deep);
 				}
-				setField(f, target, value);
+				set(f, target, value);
 			} catch (Exception e) {
 				throw new IllegalStateException("Should never get here", e);
 			}
@@ -989,7 +1017,8 @@ public abstract class ReflectionUtils {
 
 	public static <M extends Member, E extends RuntimeException> Members<M, E> getEntityMembers(Class<?> entityClass,
 			Processor<Class<?>, M[], E> processor) {
-		return new Members<M, E>(entityClass, (c) -> Arrays.asList(processor.process(c)).stream().filter(ENTITY_MEMBER));
+		return new Members<M, E>(entityClass,
+				(c) -> Arrays.asList(processor.process(c)).stream().filter(ENTITY_MEMBER));
 	}
 
 	public static <T, E extends RuntimeException> String toString(Members<Field, E> members, T entity, boolean deep)
@@ -1007,7 +1036,7 @@ public abstract class ReflectionUtils {
 			Field field = iterator.next();
 			builder.append(field.getName());
 			builder.append('=');
-			Object value = getField(field, entity);
+			Object value = get(field, entity);
 			if (value == entity) {
 				builder.append("(this)");
 			} else {
@@ -1042,7 +1071,7 @@ public abstract class ReflectionUtils {
 			Field field = iterator.next();
 			sb.append(field.getName());
 			sb.append('=');
-			Object value = getField(field, entity);
+			Object value = get(field, entity);
 			if (value == entity) {
 				sb.append("(this)");
 			} else {
@@ -1103,7 +1132,7 @@ public abstract class ReflectionUtils {
 		Iterator<Field> iterator = members.streamAll().filter(ENTITY_MEMBER).iterator();
 		while (iterator.hasNext()) {
 			Field field = iterator.next();
-			if (!ObjectUtils.equals(getField(field, left), getField(field, right), deep)) {
+			if (!ObjectUtils.equals(get(field, left), get(field, right), deep)) {
 				return false;
 			}
 		}
@@ -1159,7 +1188,7 @@ public abstract class ReflectionUtils {
 		Iterator<Field> iterator = members.streamAll().filter(ENTITY_MEMBER).iterator();
 		while (iterator.hasNext()) {
 			Field field = iterator.next();
-			hashCode = 31 * hashCode + ObjectUtils.hashCode(getField(field, entity), deep);
+			hashCode = 31 * hashCode + ObjectUtils.hashCode(get(field, entity), deep);
 		}
 		return hashCode;
 	}
@@ -1191,4 +1220,27 @@ public abstract class ReflectionUtils {
 		return hashCode(entity, true);
 	}
 
+	/**
+	 * Determine whether the given method is declared by the user or at least
+	 * pointing to a user-declared method.
+	 * <p>
+	 * Checks {@link Method#isSynthetic()} (for implementation methods) as well as
+	 * the {@code GroovyObject} interface (for interface methods; on an
+	 * implementation class, implementations of the {@code GroovyObject} methods
+	 * will be marked as synthetic anyway). Note that, despite being synthetic,
+	 * bridge methods ({@link Method#isBridge()}) are considered as user-level
+	 * methods since they are eventually pointing to a user-declared generic method.
+	 * 
+	 * @param method the method to check
+	 * @return {@code true} if the method can be considered as user-declared; [@code
+	 *         false} otherwise
+	 */
+	public static boolean isUserLevelMethod(Method method) {
+		Assert.notNull(method, "Method must not be null");
+		return (method.isBridge() || (!method.isSynthetic() && !isGroovyObjectMethod(method)));
+	}
+
+	private static boolean isGroovyObjectMethod(Method method) {
+		return method.getDeclaringClass().getName().equals("groovy.lang.GroovyObject");
+	}
 }

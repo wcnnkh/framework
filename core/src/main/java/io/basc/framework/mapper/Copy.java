@@ -497,7 +497,7 @@ public class Copy implements Cloneable {
 	public static <T> T cloneAndSetValue(Class<? extends T> sourceClass, Object source, java.lang.reflect.Field field,
 			Object value) {
 		T target = copy(source, sourceClass);
-		ReflectionUtils.setField(field, target, value);
+		ReflectionUtils.set(field, target, value);
 		return target;
 	}
 }

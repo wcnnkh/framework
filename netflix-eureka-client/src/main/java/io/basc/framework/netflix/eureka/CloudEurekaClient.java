@@ -50,7 +50,7 @@ public class CloudEurekaClient extends DiscoveryClient {
 		super(applicationInfoManager, config, args);
 		this.applicationInfoManager = applicationInfoManager;
 		this.publisher = publisher;
-		this.eurekaTransportField = ReflectionUtils.findField(DiscoveryClient.class, "eurekaTransport");
+		this.eurekaTransportField = ReflectionUtils.getField(DiscoveryClient.class, "eurekaTransport");
 		ReflectionUtils.makeAccessible(this.eurekaTransportField);
 	}
 
@@ -75,7 +75,7 @@ public class CloudEurekaClient extends DiscoveryClient {
 		if (this.eurekaHttpClient.get() == null) {
 			try {
 				Object eurekaTransport = this.eurekaTransportField.get(this);
-				Field registrationClientField = ReflectionUtils.findField(eurekaTransport.getClass(),
+				Field registrationClientField = ReflectionUtils.getField(eurekaTransport.getClass(),
 						"registrationClient");
 				ReflectionUtils.makeAccessible(registrationClientField);
 				this.eurekaHttpClient.compareAndSet(null,
