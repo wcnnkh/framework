@@ -27,13 +27,13 @@ public abstract class AbstractIocProcessor implements IocProcessor {
 
 	public void checkField(Object obj, Field field) {
 		if (Modifier.isStatic(field.getSetter().getModifiers())) {
-			logger.warn("class [{}] field [{}] is a static", field.getSetter().getDeclaringClass(),
+			logger.warn("class [{}] field [{}] is a static", field.getSetter().getSourceClass(),
 					field.getSetter().getName());
 		}
 
 		if (MapperUtils.isExistValue(field, obj)) {
-			logger.warn("class[{}] fieldName[{}] existence default value",
-					field.getSetter().getDeclaringClass().getName(), field.getSetter().getName());
+			logger.warn("class[{}] fieldName[{}] existence default value", field.getSetter().getSourceClass(),
+					field.getSetter().getName());
 		}
 	}
 }

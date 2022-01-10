@@ -14,13 +14,13 @@ import java.lang.reflect.Modifier;
 
 public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<AnnotatedElement>
 		implements FieldDescriptor {
-	private final Class<?> declaringClass;
+	private final Class<?> sourceClass;
 	private final Field field;
 	private final Method method;
 
-	public AbstractFieldDescriptor(Class<?> declaringClass, Field field, Method method) {
+	public AbstractFieldDescriptor(Class<?> sourceClass, Field field, Method method) {
 		super(new AnnotationArrayAnnotatedElement(MultiAnnotatedElement.forAnnotatedElements(method, field)));
-		this.declaringClass = declaringClass;
+		this.sourceClass = sourceClass;
 		this.field = field;
 		this.method = method;
 	}
@@ -51,11 +51,11 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 	}
 
 	protected NotSupportedException createNotSupportException() {
-		return new NotSupportedException("class=[" + getDeclaringClass() + "] field [" + getName() + "]");
+		return new NotSupportedException("class=[" + sourceClass + "] field [" + getName() + "]");
 	}
 
-	public Class<?> getDeclaringClass() {
-		return declaringClass;
+	public Class<?> getSourceClass() {
+		return sourceClass;
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 	@Override
 	public String toString() {
 		if (field == null && method == null) {
-			return "declaringClass [" + getDeclaringClass() + "] name [" + getName() + "]";
+			return "declaringClass [" + sourceClass + "] name [" + getName() + "]";
 		}
 
 		StringBuilder sb = new StringBuilder();

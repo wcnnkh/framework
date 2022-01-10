@@ -42,7 +42,7 @@ public abstract class AbstractAction extends AnnotatedElementWrapper<AnnotatedEl
 		this.httpPatterns = Arrays.asList(httpPatterns.toArray(new HttpPattern[0]));
 	}
 
-	public Class<?> getDeclaringClass() {
+	public Class<?> getSourceClass() {
 		return sourceClass;
 	}
 

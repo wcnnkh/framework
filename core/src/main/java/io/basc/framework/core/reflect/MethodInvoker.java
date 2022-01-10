@@ -7,4 +7,11 @@ public interface MethodInvoker extends Invoker, MethodHolder {
 	 * @return
 	 */
 	Object getInstance();
+
+	/**
+	 * 来源类(并不一定是方法的声明类)
+	 * 
+	 * @return
+	 */
+	Class<?> getSourceClass();
 }

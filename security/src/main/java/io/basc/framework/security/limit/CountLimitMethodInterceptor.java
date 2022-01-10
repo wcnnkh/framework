@@ -33,7 +33,7 @@ public final class CountLimitMethodInterceptor implements MethodInterceptor, Met
 
 	private CountLimitSecurity getCountLimitSecurity(MethodInvoker invoker) {
 		CountLimitSecurity countLimitSecurity = AnnotationUtils.getAnnotation(CountLimitSecurity.class,
-				invoker.getDeclaringClass(), invoker.getMethod());
+				invoker.getSourceClass(), invoker.getMethod());
 		if (countLimitSecurity == null) {
 			return null;
 		}

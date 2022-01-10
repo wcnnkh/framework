@@ -3,6 +3,8 @@ package io.basc.framework.core.reflect;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
+import io.basc.framework.util.Assert;
+
 public class SerializableMethod implements MethodHolder, Serializable {
 	private static final long serialVersionUID = 1L;
 	private volatile transient Method method;
@@ -11,21 +13,18 @@ public class SerializableMethod implements MethodHolder, Serializable {
 	private final Class<?>[] parameterTypes;
 
 	public SerializableMethod(Method method) {
-		this(method.getDeclaringClass(), method);
-	}
-
-	public SerializableMethod(Class<?> declaringClass, Method method) {
-		this.declaringClass = declaringClass;
+		Assert.requiredArgument(method != null, "method");
+		this.declaringClass = method.getDeclaringClass();
 		this.method = method;
-		this.name = method == null ? null : method.getName();
-		this.parameterTypes = method == null ? null : method.getParameterTypes();
+		this.name = method.getName();
+		this.parameterTypes = method.getParameterTypes();
 	}
 
 	public Method getMethod() {
 		if (method == null) {
 			synchronized (this) {
 				if (method == null) {
-					method = ReflectionUtils.findMethod(declaringClass, name, parameterTypes);
+					method = ReflectionUtils.getDeclaredMethod(declaringClass, name, parameterTypes);
 				}
 			}
 		}

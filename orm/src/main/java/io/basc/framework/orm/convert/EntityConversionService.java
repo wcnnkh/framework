@@ -288,8 +288,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 			}
 
 			// 该字段的声明类
-			Class<?> declaringClass = field.getSetter().getDeclaringClass();
-			for (String entityName : getObjectRelationalMapping().getAliasNames(declaringClass)) {
+			for (String entityName : getObjectRelationalMapping().getAliasNames(field.getSetter().getSourceClass())) {
 				for (String alias : aliasNames) {
 					names.add(toUseName(parentName, entityName + connector + alias));
 					if (aliasRegistry != null) {

@@ -20,18 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Provider(value = HttpActionAuthorityManager.class)
-public class DefaultHttpActionAuthorityManager extends
-		DefaultHttpAuthorityManager<HttpAuthority> implements
-		HttpActionAuthorityManager {
-	private static final Encoder<String, String> ID_ENCODER = CharsetCodec.UTF_8
-			.toBase64();
+public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManager<HttpAuthority>
+		implements HttpActionAuthorityManager {
+	private static final Encoder<String, String> ID_ENCODER = CharsetCodec.UTF_8.toBase64();
 
-	private String getParentId(AnnotatedElement annotatedElement,
-			String defaultId) {
-		ActionAuthorityParent actionAuthorityParent = annotatedElement
-				.getAnnotation(ActionAuthorityParent.class);
-		String parentId = actionAuthorityParent == null ? defaultId
-				: actionAuthorityParent.value().getName();
+	private String getParentId(AnnotatedElement annotatedElement, String defaultId) {
+		ActionAuthorityParent actionAuthorityParent = annotatedElement.getAnnotation(ActionAuthorityParent.class);
+		String parentId = actionAuthorityParent == null ? defaultId : actionAuthorityParent.value().getName();
 		if (parentId != null) {
 			parentId = ID_ENCODER.encode(parentId);
 		}
@@ -39,27 +34,24 @@ public class DefaultHttpActionAuthorityManager extends
 	}
 
 	public void register(Action action) {
-		ActionAuthority classAuthority = action.getDeclaringClass()
-				.getAnnotation(ActionAuthority.class);
+		ActionAuthority classAuthority = action.getSourceClass().getAnnotation(ActionAuthority.class);
 		if (classAuthority != null) {// 如果在类上存在此注解说明这是一个菜单
-			String id = action.getDeclaringClass().getName();
+			String id = action.getSourceClass().getName();
 			id = ID_ENCODER.encode(id);
 			HttpAuthority authority = getAuthority(id);
 			if (authority == null) {
-				String parentId = getParentId(action.getDeclaringClass(), null);
+				String parentId = getParentId(action.getSourceClass(), null);
 				boolean isMenu = classAuthority.menu();
 				if (isMenu) {
 					checkIsMenu(parentId, action);
 				}
 
-				register(new DefaultHttpAuthority(id, parentId,
-						classAuthority.value(),
-						getAttributeMap(classAuthority), isMenu, null, null));
+				register(new DefaultHttpAuthority(id, parentId, classAuthority.value(), getAttributeMap(classAuthority),
+						isMenu, null, null));
 			}
 		}
 
-		ActionAuthority methodAuthority = action
-				.getAnnotation(ActionAuthority.class);
+		ActionAuthority methodAuthority = action.getAnnotation(ActionAuthority.class);
 		if (methodAuthority == null) {
 			return;
 		}
@@ -70,10 +62,8 @@ public class DefaultHttpActionAuthorityManager extends
 			return;
 		}
 
-		String parentId = getParentId(
-				new MultiAnnotatedElement(action.getDeclaringClass(),
-						action.getMethod()), action.getDeclaringClass()
-						.getName());
+		String parentId = getParentId(new MultiAnnotatedElement(action.getSourceClass(), action.getMethod()),
+				action.getSourceClass().getName());
 		boolean isMenu = methodAuthority.menu();
 		if (isMenu) {
 			checkIsMenu(parentId, action);
@@ -81,9 +71,8 @@ public class DefaultHttpActionAuthorityManager extends
 
 		String id = descriptor.getMethod() + "&" + descriptor.getPath();
 		id = ID_ENCODER.encode(id);
-		register(new DefaultHttpAuthority(id, parentId,
-				methodAuthority.value(), getAttributeMap(classAuthority,
-						methodAuthority), isMenu, descriptor.getPath(),
+		register(new DefaultHttpAuthority(id, parentId, methodAuthority.value(),
+				getAttributeMap(classAuthority, methodAuthority), isMenu, descriptor.getPath(),
 				descriptor.getMethod()));
 	}
 
@@ -98,8 +87,7 @@ public class DefaultHttpActionAuthorityManager extends
 
 	public HttpAuthority getAuthority(Action action) {
 		for (HttpPattern descriptor : action.getPatternts()) {
-			HttpAuthority authority = getAuthority(descriptor.getPath(),
-					descriptor.getMethod());
+			HttpAuthority authority = getAuthority(descriptor.getPath(), descriptor.getMethod());
 			if (authority != null) {
 				return authority;
 			}
@@ -107,8 +95,7 @@ public class DefaultHttpActionAuthorityManager extends
 		return null;
 	}
 
-	protected final Map<String, String> getAttributeMap(
-			ActionAuthority... authoritys) {
+	protected final Map<String, String> getAttributeMap(ActionAuthority... authoritys) {
 		Map<String, String> attributeMap = new HashMap<String, String>();
 		if (authoritys != null) {
 			for (ActionAuthority actionAuthority : authoritys) {

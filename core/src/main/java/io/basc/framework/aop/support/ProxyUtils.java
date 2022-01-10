@@ -132,9 +132,9 @@ public final class ProxyUtils {
 	public static boolean isWriteReplaceMethod(MethodInvoker invoker, boolean writeReplaceInterface) {
 		if (isWriteReplaceMethod(invoker)) {
 			if (writeReplaceInterface) {
-				return WriteReplaceInterface.class.isAssignableFrom(invoker.getDeclaringClass());
+				return WriteReplaceInterface.class.isAssignableFrom(invoker.getSourceClass());
 			} else {
-				return !WriteReplaceInterface.class.isAssignableFrom(invoker.getDeclaringClass());
+				return !WriteReplaceInterface.class.isAssignableFrom(invoker.getSourceClass());
 			}
 		}
 		return false;

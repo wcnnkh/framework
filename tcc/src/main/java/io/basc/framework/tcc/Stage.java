@@ -16,8 +16,8 @@ public class Stage extends SerializableMethod implements Runnable, BeanFactoryAw
 	private final Object[] args;
 	private transient Object instance;
 
-	public Stage(Class<?> declaringClass, Method method, String beanName, Object[] args) {
-		super(declaringClass, method);
+	public Stage(Method method, String beanName, Object[] args) {
+		super(method);
 		this.beanName = beanName;
 		this.args = args;
 	}

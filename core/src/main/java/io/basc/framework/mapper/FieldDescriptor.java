@@ -11,6 +11,13 @@ public interface FieldDescriptor extends ParameterDescriptor, MethodHolder, Fiel
 	int getModifiers();
 
 	/**
+	 * 来源类(不一定是声明类)
+	 * 
+	 * @return
+	 */
+	Class<?> getSourceClass();
+
+	/**
 	 * 可能返回空, 但field和method必定存在一个
 	 * 
 	 * @return
