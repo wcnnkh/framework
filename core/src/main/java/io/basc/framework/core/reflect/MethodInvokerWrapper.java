@@ -56,11 +56,12 @@ public class MethodInvokerWrapper implements MethodInvoker, Serializable {
 		return getSource().hashCode();
 	}
 
-	public Class<?> getDeclaringClass() {
-		return getSource().getDeclaringClass();
-	}
-
 	public Method getMethod() {
 		return getSource().getMethod();
+	}
+
+	@Override
+	public Class<?> getSourceClass() {
+		return getSource().getSourceClass();
 	}
 }

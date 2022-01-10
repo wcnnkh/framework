@@ -29,6 +29,6 @@ public class InstanceMethodInterceptorsInvoker extends MethodInterceptorsInvoker
 
 	@Override
 	public Object invoke(Object... args) throws Throwable {
-		return intercept(new DefaultMethodInvoker(instance, getDeclaringClass(), getMethod(), true), args);
+		return intercept(new DefaultMethodInvoker(instance, getSourceClass(), getMethod(), true), args);
 	}
 }

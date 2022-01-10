@@ -1,6 +1,12 @@
 package io.basc.framework.sql.orm.convert;
 
+import java.sql.ResultSet;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import io.basc.framework.convert.ConversionService;
+import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.env.Sys;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.orm.EntityStructure;
@@ -9,11 +15,6 @@ import io.basc.framework.sql.SqlUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.stream.Processor;
-
-import java.sql.ResultSet;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 public class EntityStructureMapProcessor<T> implements Processor<ResultSet, T, Throwable> {
 	private final EntityStructure<? extends Property> structure;
@@ -51,7 +52,7 @@ public class EntityStructureMapProcessor<T> implements Processor<ResultSet, T, T
 	@Override
 	public T process(ResultSet rs) throws Throwable {
 		MultiValueMap<String, Object> valueMap = SqlUtils.getRowValueMap(rs);
-		Object instance = Sys.env.getInstance(structure.getEntityClass());
+		Object instance = ReflectionApi.newInstance(structure.getEntityClass());
 		for (Property column : structure) {
 			List<Object> values = getValue(valueMap, column);
 			if (values == null) {

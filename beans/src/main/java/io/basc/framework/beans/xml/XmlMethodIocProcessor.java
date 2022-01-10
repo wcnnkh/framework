@@ -55,8 +55,7 @@ public class XmlMethodIocProcessor extends AbstractIocProcessor {
 				ParameterDescriptors parameterDescriptors = new ExecutableParameterDescriptors(type, method);
 				if (xmlParameterFactory.isAccept(parameterDescriptors)) {
 					Object[] args = xmlParameterFactory.getParameters(parameterDescriptors);
-					ReflectionUtils.makeAccessible(method);
-					ReflectionUtils.invokeMethod(method, bean, args);
+					ReflectionUtils.invoke(method, bean, args);
 					return;
 				}
 			}

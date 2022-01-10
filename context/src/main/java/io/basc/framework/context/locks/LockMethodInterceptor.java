@@ -20,11 +20,11 @@ import java.util.concurrent.locks.Lock;
  * @author shuchaowen
  *
  */
-@Provider(order=Ordered.HIGHEST_PRECEDENCE)
+@Provider(order = Ordered.HIGHEST_PRECEDENCE)
 public final class LockMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
 	private LockFactory lockFactory;
-	
-	public LockMethodInterceptor(){
+
+	public LockMethodInterceptor() {
 		this(new ReentrantLockFactory());
 	}
 
@@ -33,11 +33,12 @@ public final class LockMethodInterceptor implements MethodInterceptor, MethodInt
 	}
 
 	public boolean isAccept(MethodInvoker invoker, Object[] args) {
-		return AnnotationUtils.getAnnotation(LockConfig.class, invoker.getMethod(), invoker.getDeclaringClass()) != null;
+		return AnnotationUtils.getAnnotation(LockConfig.class, invoker.getMethod(), invoker.getSourceClass()) != null;
 	}
 
 	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
-		LockConfig lockConfig = AnnotationUtils.getAnnotation(LockConfig.class, invoker.getMethod(), invoker.getDeclaringClass());
+		LockConfig lockConfig = AnnotationUtils.getAnnotation(LockConfig.class, invoker.getMethod(),
+				invoker.getSourceClass());
 		if (lockConfig == null) {
 			return invoker.invoke(args);
 		}

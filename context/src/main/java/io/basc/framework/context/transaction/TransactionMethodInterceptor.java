@@ -14,16 +14,17 @@ import io.basc.framework.transaction.TransactionUtils;
 
 /**
  * 以aop的方式管理事务
+ * 
  * @author shuchaowen
  *
  */
-@Provider(order=Ordered.HIGHEST_PRECEDENCE)
-public final class TransactionMethodInterceptor implements MethodInterceptor{
+@Provider(order = Ordered.HIGHEST_PRECEDENCE)
+public final class TransactionMethodInterceptor implements MethodInterceptor {
 	private static Logger logger = LoggerFactory.getLogger(TransactionMethodInterceptor.class);
 	private TransactionDefinition transactionDefinition;
 
 	public TransactionDefinition getTransactionDefinition() {
-		return transactionDefinition == null? TransactionDefinition.DEFAULT:transactionDefinition;
+		return transactionDefinition == null ? TransactionDefinition.DEFAULT : transactionDefinition;
 	}
 
 	public void setTransactionDefinition(TransactionDefinition transactionDefinition) {
@@ -41,10 +42,10 @@ public final class TransactionMethodInterceptor implements MethodInterceptor{
 			}
 		}
 	}
-	
+
 	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
 		TransactionManager transactionManager = TransactionUtils.getManager();
-		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, invoker.getDeclaringClass(),
+		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, invoker.getSourceClass(),
 				invoker.getMethod());
 		if (tx == null && transactionManager.hasTransaction()) {
 			Object rtn = invoker.invoke(args);

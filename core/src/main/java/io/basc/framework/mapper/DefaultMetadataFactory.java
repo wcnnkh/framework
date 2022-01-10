@@ -29,7 +29,7 @@ public class DefaultMetadataFactory implements FieldMetadataFactory {
 				continue;
 			}
 
-			Method getterMethod = ReflectionUtils.getMethod(currentClass, MapperUtils.getGetterMethodName(field));
+			Method getterMethod = ReflectionUtils.getDeclaredMethod(currentClass, MapperUtils.getGetterMethodName(field));
 			if (getterMethod != null && Modifier.isStatic(getterMethod.getModifiers())
 					&& !Modifier.isStatic(field.getModifiers())) {
 				// 如果是静态方法但字段是非静态字段， 那么是不成立的
@@ -66,7 +66,7 @@ public class DefaultMetadataFactory implements FieldMetadataFactory {
 				continue;
 			}
 
-			Method setterMethod = ReflectionUtils.getMethod(currentClass, MapperUtils.getSetterMethodName(field),
+			Method setterMethod = ReflectionUtils.getDeclaredMethod(currentClass, MapperUtils.getSetterMethodName(field),
 					field.getType());
 			if (setterMethod != null && Modifier.isStatic(setterMethod.getModifiers())
 					&& !Modifier.isStatic(field.getModifiers())) {

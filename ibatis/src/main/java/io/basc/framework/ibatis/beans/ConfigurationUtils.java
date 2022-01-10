@@ -107,7 +107,7 @@ public class ConfigurationUtils {
 
 	public static void registerMapper(Configuration configuration, Resource resource) {
 		try {
-			resource.read((is) -> {
+			resource.consume((is) -> {
 				XMLMapperBuilder builder = new XMLMapperBuilder(is, configuration, resource.getURI().toString(),
 						configuration.getSqlFragments());
 				builder.parse();

@@ -14,6 +14,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.env.Sys;
 import io.basc.framework.factory.NoArgsInstanceFactory;
+import io.basc.framework.factory.support.UnsafeNoArgsInstanceFactory;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -77,7 +78,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	}
 
 	public NoArgsInstanceFactory getInstanceFactory() {
-		return instanceFactory == null ? Sys.env : instanceFactory;
+		return instanceFactory == null ? UnsafeNoArgsInstanceFactory.INSTANCE : instanceFactory;
 	}
 
 	public void setInstanceFactory(NoArgsInstanceFactory instanceFactory) {
@@ -287,8 +288,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 			}
 
 			// 该字段的声明类
-			Class<?> declaringClass = field.getSetter().getDeclaringClass();
-			for (String entityName : getObjectRelationalMapping().getAliasNames(declaringClass)) {
+			for (String entityName : getObjectRelationalMapping().getAliasNames(field.getSetter().getSourceClass())) {
 				for (String alias : aliasNames) {
 					names.add(toUseName(parentName, entityName + connector + alias));
 					if (aliasRegistry != null) {

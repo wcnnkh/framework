@@ -22,14 +22,12 @@ import org.slf4j.LoggerFactory;
 
 @Provider(order = Ordered.HIGHEST_PRECEDENCE)
 public class TccActionInterceptor implements MethodInterceptor {
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(TccActionInterceptor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TccActionInterceptor.class);
 
 	private ActionInterceptorHandler actionInterceptorHandler = new ActionInterceptorHandler();
 
 	private volatile boolean disable = ConfigurationFactory.getInstance()
-			.getBoolean(ConfigurationKeys.DISABLE_GLOBAL_TRANSACTION,
-					DEFAULT_DISABLE_GLOBAL_TRANSACTION);
+			.getBoolean(ConfigurationKeys.DISABLE_GLOBAL_TRANSACTION, DEFAULT_DISABLE_GLOBAL_TRANSACTION);
 
 	/**
 	 * remoting bean info
@@ -45,16 +43,13 @@ public class TccActionInterceptor implements MethodInterceptor {
 	}
 
 	@Override
-	public Object intercept(MethodInvoker invoker, Object[] args)
-			throws Throwable {
-		if (!RootContext.inGlobalTransaction() || disable
-				|| RootContext.inSagaBranch()) {
+	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
+		if (!RootContext.inGlobalTransaction() || disable || RootContext.inSagaBranch()) {
 			// not in transaction
 			return invoker.invoke(args);
 		}
 		Method method = getActionInterfaceMethod(invoker);
-		TwoPhaseBusinessAction businessAction = method
-				.getAnnotation(TwoPhaseBusinessAction.class);
+		TwoPhaseBusinessAction businessAction = method.getAnnotation(TwoPhaseBusinessAction.class);
 		// try method
 		if (businessAction != null) {
 			// save the xid
@@ -67,10 +62,9 @@ public class TccActionInterceptor implements MethodInterceptor {
 			}
 			try {
 				// Handler the TCC Aspect
-				Map<String, Object> ret = actionInterceptorHandler.proceed(
-						method, args, xid, businessAction, () -> {
-							return invoker.invoke(args);
-						});
+				Map<String, Object> ret = actionInterceptorHandler.proceed(method, args, xid, businessAction, () -> {
+					return invoker.invoke(args);
+				});
 				// return the final result
 				return ret.get(Constants.TCC_METHOD_RESULT);
 			} finally {
@@ -86,34 +80,29 @@ public class TccActionInterceptor implements MethodInterceptor {
 	/**
 	 * get the method from interface
 	 *
-	 * @param invocation
-	 *            the invocation
+	 * @param invocation the invocation
 	 * @return the action interface method
 	 */
 	protected Method getActionInterfaceMethod(MethodInvoker invoker) {
 		Class<?> interfaceType = null;
 		try {
 			if (remotingDesc == null) {
-				interfaceType = invoker.getDeclaringClass();
+				interfaceType = invoker.getSourceClass();
 			} else {
 				interfaceType = remotingDesc.getInterfaceClass();
 			}
-			if (interfaceType == null
-					&& remotingDesc.getInterfaceClassName() != null) {
-				interfaceType = Class.forName(remotingDesc
-						.getInterfaceClassName(), true, Thread.currentThread()
-						.getContextClassLoader());
+			if (interfaceType == null && remotingDesc.getInterfaceClassName() != null) {
+				interfaceType = Class.forName(remotingDesc.getInterfaceClassName(), true,
+						Thread.currentThread().getContextClassLoader());
 			}
 			if (interfaceType == null) {
 				return invoker.getMethod();
 			}
-			return interfaceType.getMethod(invoker.getMethod().getName(),
-					invoker.getMethod().getParameterTypes());
+			return interfaceType.getMethod(invoker.getMethod().getName(), invoker.getMethod().getParameterTypes());
 		} catch (NoSuchMethodException e) {
-			if (interfaceType != null
-					&& !invoker.getMethod().getName().equals("toString")) {
-				LOGGER.warn("no such method '{}' from interface {}", invoker
-						.getMethod().getName(), interfaceType.getName());
+			if (interfaceType != null && !invoker.getMethod().getName().equals("toString")) {
+				LOGGER.warn("no such method '{}' from interface {}", invoker.getMethod().getName(),
+						interfaceType.getName());
 			}
 			return invoker.getMethod();
 		} catch (Exception e) {

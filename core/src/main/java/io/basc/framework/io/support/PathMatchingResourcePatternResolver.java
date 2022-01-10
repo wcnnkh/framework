@@ -529,7 +529,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 			rootDirResource = resolveRootDirResource(rootDirResource);
 			URL rootDirUrl = rootDirResource.getURL();
 			if (equinoxResolveMethod != null && rootDirUrl.getProtocol().startsWith("bundle")) {
-				URL resolvedUrl = (URL) ReflectionUtils.invokeMethod(equinoxResolveMethod, null, rootDirUrl);
+				URL resolvedUrl = (URL) ReflectionUtils.invoke(equinoxResolveMethod, null, rootDirUrl);
 				if (resolvedUrl != null) {
 					rootDirUrl = resolvedUrl;
 				}

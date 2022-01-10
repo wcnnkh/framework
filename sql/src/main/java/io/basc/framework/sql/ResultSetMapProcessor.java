@@ -5,7 +5,7 @@ import java.sql.ResultSetMetaData;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.env.Sys;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFactory;
@@ -75,7 +75,7 @@ public class ResultSetMapProcessor<T> implements Processor<ResultSet, T, Throwab
 
 	protected Object mapEntity(ResultSet rs, TypeDescriptor typeDescriptor, ConversionService conversionService)
 			throws Throwable {
-		Object instance = ReflectionUtils.newInstance(typeDescriptor.getType());
+		Object instance = ReflectionApi.newInstance(typeDescriptor.getType());
 		Fields fields = MapperUtils.getFields(typeDescriptor.getType()).all().accept(FieldFeature.SUPPORT_SETTER)
 				.shared();
 		ResultSetMetaData metaData = rs.getMetaData();

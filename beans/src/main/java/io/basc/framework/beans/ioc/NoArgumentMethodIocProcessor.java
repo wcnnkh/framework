@@ -27,6 +27,6 @@ public class NoArgumentMethodIocProcessor extends AbstractIocProcessor {
 	}
 
 	public Object noArgumentInvoke(Object bean) throws BeansException {
-		return ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null : bean);
+		return ReflectionUtils.invoke(method, Modifier.isStatic(method.getModifiers()) ? null : bean);
 	}
 }

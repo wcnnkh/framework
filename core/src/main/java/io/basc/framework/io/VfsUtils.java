@@ -165,12 +165,12 @@ public abstract class VfsUtils {
 
 	@Nullable
 	protected static Object doGetVisitorAttributes() {
-		return ReflectionUtils.getField(VISITOR_ATTRIBUTES_FIELD_RECURSE, null);
+		return ReflectionUtils.get(VISITOR_ATTRIBUTES_FIELD_RECURSE, null);
 	}
 
 	@Nullable
 	protected static String doGetPath(Object resource) {
-		return (String) ReflectionUtils.invokeMethod(VIRTUAL_FILE_METHOD_GET_PATH_NAME, resource);
+		return (String) ReflectionUtils.invoke(VIRTUAL_FILE_METHOD_GET_PATH_NAME, resource);
 	}
 
 }

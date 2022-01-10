@@ -1,26 +1,8 @@
 package io.basc.framework.util;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.core.type.classreading.MetadataReader;
-import io.basc.framework.core.type.classreading.MetadataReaderFactory;
-import io.basc.framework.core.type.classreading.SimpleMetadataReaderFactory;
-import io.basc.framework.core.type.filter.TypeFilter;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.ResourceLoader;
-import io.basc.framework.io.ResourcePatternResolver;
-import io.basc.framework.lang.Ignore;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.page.Pageables;
-import io.basc.framework.util.page.SharedPageable;
-import io.basc.framework.util.page.StreamPageables;
-import io.basc.framework.util.stream.StreamProcessorSupport;
-
 import java.beans.Introspector;
 import java.io.IOException;
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -36,6 +18,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
+
+import io.basc.framework.core.type.classreading.MetadataReader;
+import io.basc.framework.core.type.classreading.MetadataReaderFactory;
+import io.basc.framework.core.type.classreading.SimpleMetadataReaderFactory;
+import io.basc.framework.core.type.filter.TypeFilter;
+import io.basc.framework.io.Resource;
+import io.basc.framework.io.ResourceLoader;
+import io.basc.framework.io.ResourcePatternResolver;
+import io.basc.framework.lang.Ignore;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.page.Pageables;
+import io.basc.framework.util.page.SharedPageable;
+import io.basc.framework.util.page.StreamPageables;
+import io.basc.framework.util.stream.StreamProcessorSupport;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -117,6 +113,9 @@ public final class ClassUtils {
 		registerCommonClasses(Enum.class, Iterable.class, Cloneable.class, Comparable.class);
 	}
 
+	private ClassUtils() {
+	};
+
 	@SuppressWarnings("unchecked")
 	public static <T> Class<T>[] emptyArray() {
 		return (Class<T>[]) EMPTY_ARRAY;
@@ -153,324 +152,6 @@ public final class ClassUtils {
 		} while (!ancestor.isAssignableFrom(clazz2));
 		return ancestor;
 	}
-
-	/**
-	 * Return the qualified name of the given method, consisting of fully qualified
-	 * interface/class name + "." + method name.
-	 * 
-	 * @param method the method
-	 * @return the qualified name of the method
-	 */
-	public static String getQualifiedMethodName(Method method) {
-		return getQualifiedMethodName(method, null);
-	}
-
-	/**
-	 * Return the qualified name of the given method, consisting of fully qualified
-	 * interface/class name + "." + method name.
-	 * 
-	 * @param method the method
-	 * @param clazz  the clazz that the method is being invoked on (may be
-	 *               {@code null} to indicate the method's declaring class)
-	 * @return the qualified name of the method
-	 */
-	public static String getQualifiedMethodName(Method method, Class<?> clazz) {
-		Assert.notNull(method, "Method must not be null");
-		return (clazz != null ? clazz : method.getDeclaringClass()).getName() + '.' + method.getName();
-	}
-
-	/**
-	 * Determine whether the given class has a public constructor with the given
-	 * signature.
-	 * <p>
-	 * Essentially translates {@code NoSuchMethodException} to "false".
-	 * 
-	 * @param clazz      the clazz to analyze
-	 * @param paramTypes the parameter types of the method
-	 * @return whether the class has a corresponding constructor
-	 * @see Class#getMethod
-	 */
-	public static boolean hasConstructor(Class<?> clazz, Class<?>... paramTypes) {
-		return (getConstructorIfAvailable(clazz, paramTypes) != null);
-	}
-
-	/**
-	 * Determine whether the given class has a public constructor with the given
-	 * signature, and return it if available (else return {@code null}).
-	 * <p>
-	 * Essentially translates {@code NoSuchMethodException} to {@code null}.
-	 * 
-	 * @param clazz      the clazz to analyze
-	 * @param paramTypes the parameter types of the method
-	 * @return the constructor, or {@code null} if not found
-	 * @see Class#getConstructor
-	 */
-	public static <T> Constructor<T> getConstructorIfAvailable(Class<T> clazz, Class<?>... paramTypes) {
-		Assert.notNull(clazz, "Class must not be null");
-		try {
-			return clazz.getConstructor(paramTypes);
-		} catch (NoSuchMethodException ex) {
-			return null;
-		}
-	}
-
-	/**
-	 * Determine whether the given class has a public method with the given
-	 * signature.
-	 * <p>
-	 * Essentially translates {@code NoSuchMethodException} to "false".
-	 * 
-	 * @param clazz      the clazz to analyze
-	 * @param methodName the name of the method
-	 * @param paramTypes the parameter types of the method
-	 * @return whether the class has a corresponding method
-	 * @see Class#getMethod
-	 */
-	public static boolean hasMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
-		return (getMethodIfAvailable(clazz, methodName, paramTypes) != null);
-	}
-
-	/**
-	 * Determine whether the given class has a public method with the given
-	 * signature, and return it if available (else throws an
-	 * {@code IllegalStateException}).
-	 * <p>
-	 * In case of any signature specified, only returns the method if there is a
-	 * unique candidate, i.e. a single public method with the specified name.
-	 * <p>
-	 * Essentially translates {@code NoSuchMethodException} to
-	 * {@code IllegalStateException}.
-	 * 
-	 * @param clazz      the clazz to analyze
-	 * @param methodName the name of the method
-	 * @param paramTypes the parameter types of the method (may be {@code null} to
-	 *                   indicate any signature)
-	 * @return the method (never {@code null})
-	 * @throws IllegalStateException if the method has not been found
-	 * @see Class#getMethod
-	 */
-	public static Method getMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
-		Assert.notNull(clazz, "Class must not be null");
-		Assert.notNull(methodName, "Method name must not be null");
-		if (paramTypes != null) {
-			try {
-				return clazz.getMethod(methodName, paramTypes);
-			} catch (NoSuchMethodException ex) {
-				throw new IllegalStateException("Expected method not found: " + ex);
-			}
-		} else {
-			Set<Method> candidates = new HashSet<Method>(1);
-			Method[] methods = clazz.getMethods();
-			for (Method method : methods) {
-				if (methodName.equals(method.getName())) {
-					candidates.add(method);
-				}
-			}
-			if (candidates.size() == 1) {
-				return candidates.iterator().next();
-			} else if (candidates.isEmpty()) {
-				throw new IllegalStateException("Expected method not found: " + clazz.getName() + '.' + methodName);
-			} else {
-				throw new IllegalStateException("No unique method found: " + clazz.getName() + '.' + methodName);
-			}
-		}
-	}
-
-	/**
-	 * Determine whether the given class has a public method with the given
-	 * signature, and return it if available (else return {@code null}).
-	 * <p>
-	 * In case of any signature specified, only returns the method if there is a
-	 * unique candidate, i.e. a single public method with the specified name.
-	 * <p>
-	 * Essentially translates {@code NoSuchMethodException} to {@code null}.
-	 * 
-	 * @param clazz      the clazz to analyze
-	 * @param methodName the name of the method
-	 * @param paramTypes the parameter types of the method (may be {@code null} to
-	 *                   indicate any signature)
-	 * @return the method, or {@code null} if not found
-	 * @see Class#getMethod
-	 */
-	public static Method getMethodIfAvailable(Class<?> clazz, String methodName, Class<?>... paramTypes) {
-		Assert.notNull(clazz, "Class must not be null");
-		Assert.notNull(methodName, "Method name must not be null");
-		if (paramTypes != null) {
-			try {
-				return clazz.getMethod(methodName, paramTypes);
-			} catch (NoSuchMethodException ex) {
-				return null;
-			}
-		} else {
-			Set<Method> candidates = new HashSet<Method>(1);
-			Method[] methods = clazz.getMethods();
-			for (Method method : methods) {
-				if (methodName.equals(method.getName())) {
-					candidates.add(method);
-				}
-			}
-			if (candidates.size() == 1) {
-				return candidates.iterator().next();
-			}
-			return null;
-		}
-	}
-
-	/**
-	 * Return the number of methods with a given name (with any argument types), for
-	 * the given class and/or its superclasses. Includes non-public methods.
-	 * 
-	 * @param clazz      the clazz to check
-	 * @param methodName the name of the method
-	 * @return the number of methods with the given name
-	 */
-	public static int getMethodCountForName(Class<?> clazz, String methodName) {
-		Assert.notNull(clazz, "Class must not be null");
-		Assert.notNull(methodName, "Method name must not be null");
-		int count = 0;
-		Method[] declaredMethods = clazz.getDeclaredMethods();
-		for (Method method : declaredMethods) {
-			if (methodName.equals(method.getName())) {
-				count++;
-			}
-		}
-		Class<?>[] ifcs = clazz.getInterfaces();
-		for (Class<?> ifc : ifcs) {
-			count += getMethodCountForName(ifc, methodName);
-		}
-		if (clazz.getSuperclass() != null) {
-			count += getMethodCountForName(clazz.getSuperclass(), methodName);
-		}
-		return count;
-	}
-
-	/**
-	 * Does the given class or one of its superclasses at least have one or more
-	 * methods with the supplied name (with any argument types)? Includes non-public
-	 * methods.
-	 * 
-	 * @param clazz      the clazz to check
-	 * @param methodName the name of the method
-	 * @return whether there is at least one method with the given name
-	 */
-	public static boolean hasAtLeastOneMethodWithName(Class<?> clazz, String methodName) {
-		Assert.notNull(clazz, "Class must not be null");
-		Assert.notNull(methodName, "Method name must not be null");
-		Method[] declaredMethods = clazz.getDeclaredMethods();
-		for (Method method : declaredMethods) {
-			if (method.getName().equals(methodName)) {
-				return true;
-			}
-		}
-		Class<?>[] ifcs = clazz.getInterfaces();
-		for (Class<?> ifc : ifcs) {
-			if (hasAtLeastOneMethodWithName(ifc, methodName)) {
-				return true;
-			}
-		}
-		return (clazz.getSuperclass() != null && hasAtLeastOneMethodWithName(clazz.getSuperclass(), methodName));
-	}
-
-	/**
-	 * Given a method, which may come from an interface, and a target class used in
-	 * the current reflective invocation, find the corresponding target method if
-	 * there is one. E.g. the method may be {@code IFoo.bar()} and the target class
-	 * may be {@code DefaultFoo}. In this case, the method may be
-	 * {@code DefaultFoo.bar()}. This enables attributes on that method to be found.
-	 * <p>
-	 * 
-	 * @param method      the method to be invoked, which may come from an interface
-	 * @param targetClass the target class for the current invocation. May be
-	 *                    {@code null} or may not even implement the method.
-	 * @return the specific target method, or the original method if the
-	 *         {@code targetClass} doesn't implement it or is {@code null}
-	 */
-	public static Method getMostSpecificMethod(Method method, Class<?> targetClass) {
-		if (method != null && isOverridable(method, targetClass) && targetClass != null
-				&& targetClass != method.getDeclaringClass()) {
-			try {
-				if (Modifier.isPublic(method.getModifiers())) {
-					try {
-						return targetClass.getMethod(method.getName(), method.getParameterTypes());
-					} catch (NoSuchMethodException ex) {
-						return method;
-					}
-				} else {
-					Method specificMethod = ReflectionUtils.findMethod(targetClass, method.getName(),
-							method.getParameterTypes());
-					return (specificMethod != null ? specificMethod : method);
-				}
-			} catch (SecurityException ex) {
-				// Security settings are disallowing reflective access; fall
-				// back to 'method' below.
-			}
-		}
-		return method;
-	}
-
-	/**
-	 * Determine whether the given method is declared by the user or at least
-	 * pointing to a user-declared method.
-	 * <p>
-	 * Checks {@link Method#isSynthetic()} (for implementation methods) as well as
-	 * the {@code GroovyObject} interface (for interface methods; on an
-	 * implementation class, implementations of the {@code GroovyObject} methods
-	 * will be marked as synthetic anyway). Note that, despite being synthetic,
-	 * bridge methods ({@link Method#isBridge()}) are considered as user-level
-	 * methods since they are eventually pointing to a user-declared generic method.
-	 * 
-	 * @param method the method to check
-	 * @return {@code true} if the method can be considered as user-declared; [@code
-	 *         false} otherwise
-	 */
-	public static boolean isUserLevelMethod(Method method) {
-		Assert.notNull(method, "Method must not be null");
-		return (method.isBridge() || (!method.isSynthetic() && !isGroovyObjectMethod(method)));
-	}
-
-	private static boolean isGroovyObjectMethod(Method method) {
-		return method.getDeclaringClass().getName().equals("groovy.lang.GroovyObject");
-	}
-
-	/**
-	 * Determine whether the given method is overridable in the given target class.
-	 * 
-	 * @param method      the method to check
-	 * @param targetClass the target class to check against
-	 */
-	private static boolean isOverridable(Method method, Class<?> targetClass) {
-		if (Modifier.isPrivate(method.getModifiers())) {
-			return false;
-		}
-		if (Modifier.isPublic(method.getModifiers()) || Modifier.isProtected(method.getModifiers())) {
-			return true;
-		}
-		return getPackageName(method.getDeclaringClass()).equals(getPackageName(targetClass));
-	}
-
-	/**
-	 * Return a public static method of a class.
-	 * 
-	 * @param clazz      the class which defines the method
-	 * @param methodName the static method name
-	 * @param args       the parameter types to the method
-	 * @return the static method, or {@code null} if no static method was found
-	 * @throws IllegalArgumentException if the method name is blank or the clazz is
-	 *                                  null
-	 */
-	public static Method getStaticMethod(Class<?> clazz, String methodName, Class<?>... args) {
-		Assert.notNull(clazz, "Class must not be null");
-		Assert.notNull(methodName, "Method name must not be null");
-		try {
-			Method method = clazz.getMethod(methodName, args);
-			return Modifier.isStatic(method.getModifiers()) ? method : null;
-		} catch (NoSuchMethodException ex) {
-			return null;
-		}
-	}
-
-	private ClassUtils() {
-	};
 
 	/**
 	 * 获取父类 不包含java.lang.Object
@@ -1044,6 +725,23 @@ public final class ClassUtils {
 		return false;
 	}
 
+	public static boolean isAssignable(Class<?>[] lhsTypes, Class<?>[] rhsTypes) {
+		if (ArrayUtils.isEmpty(lhsTypes)) {
+			return ArrayUtils.isEmpty(rhsTypes);
+		}
+
+		if (lhsTypes.length != (rhsTypes == null ? 0 : rhsTypes.length)) {
+			return false;
+		}
+
+		for (int i = 0; i < lhsTypes.length; i++) {
+			if (!isAssignable(lhsTypes[i], rhsTypes[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public static boolean isAssignable(Collection<Class<?>> lhsTypes, Collection<Class<?>> rhsTypes) {
 		if (CollectionUtils.isEmpty(lhsTypes)) {
 			return CollectionUtils.isEmpty(rhsTypes);
@@ -1326,57 +1024,6 @@ public final class ClassUtils {
 			// No interface class found...
 			return false;
 		}
-	}
-
-	public static boolean equals(Class<?>[] clazzArray1, Class<?>[] clazzArray2) {
-		if (clazzArray1 == null || clazzArray1.length == 0) {
-			return clazzArray2 == null || clazzArray2.length == 0;
-		}
-
-		if (clazzArray2 == null || clazzArray2.length == 0) {
-			return clazzArray1 == null || clazzArray1.length == 0;
-		}
-
-		if (clazzArray1.length != clazzArray2.length) {
-			return false;
-		}
-
-		for (int i = 0; i < clazzArray1.length; i++) {
-			if (clazzArray1[i] != clazzArray2[i]) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public static Object[] cast(Class<?>[] types, Object[] args) {
-		if (types == null || args == null) {
-			throw new IllegalArgumentException("参数不能为空");
-		}
-
-		if (types.length != args.length) {
-			throw new IllegalArgumentException("参数长度不一致");
-		}
-
-		if (types.length == 0) {
-			return new Object[0];
-		}
-
-		Object[] values = new Object[args.length];
-		for (int i = 0; i < values.length; i++) {
-			if (args[i] == null) {
-				values[i] = null;
-				continue;
-			}
-
-			if (isPrimitiveOrWrapper(types[i])) {
-				values[i] = args[i];
-				continue;
-			}
-
-			values[i] = types[i].cast(args[i]);
-		}
-		return values;
 	}
 
 	/**

@@ -42,7 +42,7 @@ public class DefaultPropertiesResolver implements PropertiesResolver {
 				if (charset == null) {
 					properties.load(is);
 				} else {
-					Method method = ReflectionUtils.getMethod(Properties.class, "load", Reader.class);
+					Method method = ReflectionUtils.getDeclaredMethod(Properties.class, "load", Reader.class);
 					if (method == null) {
 						logger.warn("jdk1.6及以上的版本才支持指定字符集: " + resource.getDescription());
 						properties.load(is);
@@ -50,7 +50,7 @@ public class DefaultPropertiesResolver implements PropertiesResolver {
 						InputStreamReader isr = null;
 						try {
 							isr = new InputStreamReader(is, charset);
-							method.invoke(properties, isr);
+							ReflectionUtils.invoke(method, properties, isr);
 						} finally {
 							if (!resource.isOpen()) {
 								IOUtils.close(isr);
@@ -71,7 +71,7 @@ public class DefaultPropertiesResolver implements PropertiesResolver {
 	@Override
 	public void persistenceProperties(Properties properties, WritableResource resource, Charset charset) {
 		try {
-			resource.write((output) -> {
+			resource.produce((output) -> {
 				if (StringUtils.endsWithIgnoreCase(resource.getName(), ".xml")) {
 					if (charset == null) {
 						properties.storeToXML(output, null);

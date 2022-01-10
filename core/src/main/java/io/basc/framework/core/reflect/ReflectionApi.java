@@ -2,6 +2,7 @@ package io.basc.framework.core.reflect;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -72,7 +73,7 @@ public class ReflectionApi implements Supplier<Object> {
 		Assert.requiredArgument(isAvailable(), "declaringClass");
 		Assert.requiredArgument(method != null, "method");
 		ReflectionUtils.makeAccessible(method);
-		return ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null : get(), args);
+		return ReflectionUtils.invoke(method, Modifier.isStatic(method.getModifiers()) ? null : get(), args);
 	}
 
 	/**
@@ -162,36 +163,49 @@ public class ReflectionApi implements Supplier<Object> {
 			128);
 
 	/**
+	 * 获取无参的构造方法(来自序列化的方式)
+	 * 
+	 * @see #REFLECTION_FACTORY
+	 * @param <T>
+	 * @param type
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> Constructor<T> getConstructorForSerialization(Class<T> type) {
+		Constructor<T> constructor = (Constructor<T>) CONSTRUCTOR_MAP.get(type);
+		if (constructor == null && REFLECTION_FACTORY.isAvailable()) {
+			constructor = newConstructorForSerialization(type);
+		}
+
+		if (constructor == null) {
+			return null;
+		}
+
+		Constructor<T> old = (Constructor<T>) CONSTRUCTOR_MAP.putIfAbsent(type, constructor);
+		if (old == null) {
+			// 插入成功,整理缓存
+			CONSTRUCTOR_MAP.purgeUnreferencedEntries();
+		} else {
+			constructor = old;
+		}
+		return constructor;
+	}
+
+	/**
 	 * 获取一个无参的构造方法, 无论对象是否存在无参的构造方法
 	 * 
-	 * @see #newConstructorForSerialization(Class)
 	 * @see Class#getDeclaredConstructor(Class...)
+	 * @see #getConstructorForSerialization(Class)
 	 * @param <T>
 	 * @param type
 	 * @return {@link REFLECTION_FACTORY}不可用时返回空
 	 */
 	@Nullable
-	@SuppressWarnings("unchecked")
 	public static <T> Constructor<T> getConstructor(Class<T> type) {
 		Assert.requiredArgument(type != null, "type");
-		Constructor<T> constructor = ReflectionUtils.getConstructor(type);
+		Constructor<T> constructor = ReflectionUtils.getDeclaredConstructor(type);
 		if (constructor == null) {
-			constructor = (Constructor<T>) CONSTRUCTOR_MAP.get(type);
-			if (constructor == null && REFLECTION_FACTORY.isAvailable()) {
-				constructor = newConstructorForSerialization(type);
-			}
-
-			if (constructor == null) {
-				return null;
-			}
-
-			Constructor<T> old = (Constructor<T>) CONSTRUCTOR_MAP.putIfAbsent(type, constructor);
-			if (old == null) {
-				// 插入成功,整理缓存
-				CONSTRUCTOR_MAP.purgeUnreferencedEntries();
-			} else {
-				constructor = old;
-			}
+			constructor = getConstructorForSerialization(type);
 		}
 		return constructor;
 	}
@@ -214,7 +228,6 @@ public class ReflectionApi implements Supplier<Object> {
 	/**
 	 * 实例一个对象，无论对象是否存在无参的构造方法
 	 * 
-	 * @see #isInstance(Class)
 	 * @see #REFLECTION_FACTORY
 	 * @see ReflectionApi#UNSAFE
 	 * @see #getConstructor(Class)
@@ -223,11 +236,21 @@ public class ReflectionApi implements Supplier<Object> {
 	 * @return
 	 */
 	public static <T> T newInstance(Class<T> type) {
-		if (REFLECTION_FACTORY.isAvailable()) {
+		Constructor<T> constructor = ReflectionUtils.getDeclaredConstructor(type);
+		if (constructor != null) {
 			try {
-				return getConstructor(type).newInstance();
-			} catch (Exception e) {
-				// 如果出现异常，交给Unsafe处理
+				return constructor.newInstance();
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException e) {
+			}
+		}
+
+		constructor = getConstructorForSerialization(type);
+		if (constructor != null) {
+			try {
+				return constructor.newInstance();
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException e) {
 			}
 		}
 

@@ -87,8 +87,8 @@ public abstract class ResourceWrapper implements Resource, Observable<Resource> 
 	}
 
 	@Override
-	public <E extends Throwable> void read(ConsumerProcessor<InputStream, E> callback) throws IOException, E {
-		get().read(callback);
+	public <E extends Throwable> void consume(ConsumerProcessor<InputStream, E> callback) throws IOException, E {
+		get().consume(callback);
 	}
 
 	@Override

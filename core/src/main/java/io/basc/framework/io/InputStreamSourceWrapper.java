@@ -27,8 +27,8 @@ public class InputStreamSourceWrapper<I extends InputStreamSource> extends Wrapp
 	}
 
 	@Override
-	public <E extends Throwable> void read(ConsumerProcessor<InputStream, E> callback) throws IOException, E {
-		wrappedTarget.read(callback);
+	public <E extends Throwable> void consume(ConsumerProcessor<InputStream, E> callback) throws IOException, E {
+		wrappedTarget.consume(callback);
 	}
 
 	@Override

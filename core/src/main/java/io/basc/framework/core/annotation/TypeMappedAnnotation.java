@@ -397,7 +397,7 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 		}
 		if (value == null) {
 			Method attribute = this.mapping.getAttributes().get(attributeIndex);
-			value = ReflectionUtils.invokeMethod(attribute, this.mapping.getAnnotation());
+			value = ReflectionUtils.invoke(attribute, this.mapping.getAnnotation());
 		}
 		return value;
 	}
@@ -512,7 +512,7 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 
 	private ValueExtractor getValueExtractor(Object value) {
 		if (value instanceof Annotation) {
-			return ReflectionUtils::invokeMethod;
+			return ReflectionUtils::invoke;
 		}
 		if (value instanceof Map) {
 			return TypeMappedAnnotation::extractFromMap;
@@ -571,7 +571,7 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 	static <A extends Annotation> MergedAnnotation<A> from(@Nullable Object source, A annotation) {
 		Assert.notNull(annotation, "Annotation must not be null");
 		AnnotationTypeMappings mappings = AnnotationTypeMappings.forAnnotationType(annotation.annotationType());
-		return new TypeMappedAnnotation<>(mappings.get(0), null, source, annotation, ReflectionUtils::invokeMethod, 0);
+		return new TypeMappedAnnotation<>(mappings.get(0), null, source, annotation, ReflectionUtils::invoke, 0);
 	}
 
 	static <A extends Annotation> MergedAnnotation<A> of(@Nullable ClassLoader classLoader, @Nullable Object source,
@@ -597,7 +597,7 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 	@Nullable
 	static <A extends Annotation> TypeMappedAnnotation<A> createIfPossible(AnnotationTypeMapping mapping,
 			@Nullable Object source, Annotation annotation, int aggregateIndex, LogProcessor logger) {
-		return createIfPossible(mapping, source, annotation, ReflectionUtils::invokeMethod, aggregateIndex, logger);
+		return createIfPossible(mapping, source, annotation, ReflectionUtils::invoke, aggregateIndex, logger);
 	}
 
 	@Nullable

@@ -133,7 +133,7 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 
 		if (action != null) {
 			// jsonp支持
-			Jsonp jsonp = AnnotationUtils.getAnnotation(Jsonp.class, action.getDeclaringClass(), action);
+			Jsonp jsonp = AnnotationUtils.getAnnotation(Jsonp.class, action.getSourceClass(), action);
 			if (jsonp != null && jsonp.value()) {
 				responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse);
 			}
@@ -141,7 +141,7 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 
 		HttpChannel httpChannel = httpChannelFactory.create(requestToUse, responseToUse);
 		if (action != null) {
-			httpChannel.setLogger(LoggerFactory.getLogger(action.getDeclaringClass().getName()));
+			httpChannel.setLogger(LoggerFactory.getLogger(action.getSourceClass().getName()));
 		}
 
 		if (httpChannel.getLogger().isDebugEnabled()) {

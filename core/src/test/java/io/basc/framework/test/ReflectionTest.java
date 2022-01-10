@@ -8,6 +8,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.io.ClassPathResource;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.XUtils;
 
@@ -31,6 +32,9 @@ public class ReflectionTest {
 		Map<String, Object> map = Collections.singletonMap(XUtils.getUUID(), XUtils.getUUID());
 		Map<String, Object> cloneMap = CollectionFactory.clone(map, true);
 		assertTrue(map.equals(cloneMap));
+
+		assertTrue(ReflectionUtils.getConstructor("io.basc.framework.io.event.WatchServiceResourceEventDispatcher",
+				null, ClassPathResource.class) != null);
 	}
 
 	public static class ParentBean {

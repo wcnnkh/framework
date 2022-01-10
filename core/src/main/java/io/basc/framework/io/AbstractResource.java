@@ -1,5 +1,15 @@
 package io.basc.framework.io;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Constructor;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventDispatcher;
@@ -10,16 +20,6 @@ import io.basc.framework.lang.NestedIOException;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.JavaVersion;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Constructor;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 
 /**
  * Convenience base class for {@link Resource} implementations, pre-implementing
@@ -33,8 +33,8 @@ import java.net.URL;
  */
 public abstract class AbstractResource implements Resource, EventDispatcher<ChangeEvent<Resource>> {
 	private static final Constructor<EventDispatcher<ChangeEvent<Resource>>> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
-			.findConstructor("io.basc.framework.io.event.WatchServiceResourceEventDispatcher", null, true,
-					Resource.class);
+			.getDeclaredConstructor("io.basc.framework.io.event.WatchServiceResourceEventDispatcher", null,
+					AbstractResource.class);
 
 	private volatile EventDispatcher<ChangeEvent<Resource>> eventDispatcher;
 
@@ -43,11 +43,7 @@ public abstract class AbstractResource implements Resource, EventDispatcher<Chan
 			synchronized (this) {
 				if (eventDispatcher == null) {
 					if (JavaVersion.INSTANCE.getMasterVersion() >= 7) {
-						try {
-							eventDispatcher = WATCH_SERVICE_CONSTRUCTOR.newInstance(this);
-						} catch (Exception e) {
-							ReflectionUtils.handleReflectionException(e);
-						}
+						eventDispatcher = ReflectionUtils.newInstance(WATCH_SERVICE_CONSTRUCTOR, this);
 					}
 
 					if (eventDispatcher == null) {

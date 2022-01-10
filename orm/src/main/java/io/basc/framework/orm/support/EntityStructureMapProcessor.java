@@ -1,6 +1,7 @@
 package io.basc.framework.orm.support;
 
 import io.basc.framework.convert.ConversionService;
+import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.env.Sys;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.orm.EntityStructure;
@@ -32,7 +33,7 @@ public abstract class EntityStructureMapProcessor<P extends Property, S, T, E ex
 	@SuppressWarnings("unchecked")
 	@Override
 	public T process(S source) throws E {
-		Object instance = Sys.env.getInstance(structore.getEntityClass());
+		Object instance = ReflectionApi.newInstance(structore.getEntityClass());
 		for (P property : structore) {
 			if (contains(source, property)) {
 				Field field = property.getField();

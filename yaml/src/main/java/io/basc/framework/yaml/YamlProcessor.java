@@ -485,7 +485,7 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 	@Override
 	public void persistenceProperties(Properties properties, WritableResource resource, Charset charset) {
 		try {
-			resource.write((output) -> {
+			resource.produce((output) -> {
 				Yaml yaml = createYaml();
 				Writer writer = charset == null ? new OutputStreamWriter(output)
 						: new OutputStreamWriter(output, charset);

@@ -15,9 +15,9 @@ public class HystrixCommandMethodInterceptor implements MethodInterceptor, Metho
 	public HystrixCommandMethodInterceptor(HystrixCommandFactory hystrixCommandFactory) {
 		this.hystrixCommandFactory = hystrixCommandFactory;
 	}
-	
+
 	public boolean isAccept(MethodInvoker invoker, Object[] args) {
-		return invoker.getDeclaringClass().getAnnotation(Hystrix.class) != null;
+		return invoker.getSourceClass().getAnnotation(Hystrix.class) != null;
 	}
 
 	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {

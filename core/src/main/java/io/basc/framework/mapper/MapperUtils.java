@@ -318,7 +318,7 @@ public class MapperUtils {
 			Field field = iterator.next();
 			sb.append(field.getName());
 			sb.append('=');
-			Object value = ReflectionUtils.getField(field, instance);
+			Object value = ReflectionUtils.get(field, instance);
 			if (value == instance) {
 				sb.append("(this)");
 			} else {
@@ -380,7 +380,7 @@ public class MapperUtils {
 		Iterator<Field> iterator = getters(fields).iterator();
 		while (iterator.hasNext()) {
 			Field field = iterator.next();
-			if (!ObjectUtils.equals(ReflectionUtils.getField(field, left), ReflectionUtils.getField(field, right),
+			if (!ObjectUtils.equals(ReflectionUtils.get(field, left), ReflectionUtils.get(field, right),
 					deep)) {
 				return false;
 			}
@@ -431,7 +431,7 @@ public class MapperUtils {
 		Iterator<Field> iterator = getters(fields).iterator();
 		while (iterator.hasNext()) {
 			Field field = iterator.next();
-			hashCode = 31 * hashCode + ObjectUtils.hashCode(ReflectionUtils.getField(field, source), deep);
+			hashCode = 31 * hashCode + ObjectUtils.hashCode(ReflectionUtils.get(field, source), deep);
 		}
 
 		if (fields.hasNext()) {
