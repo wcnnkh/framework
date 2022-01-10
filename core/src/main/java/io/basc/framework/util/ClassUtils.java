@@ -725,6 +725,23 @@ public final class ClassUtils {
 		return false;
 	}
 
+	public static boolean isAssignable(Class<?>[] lhsTypes, Class<?>[] rhsTypes) {
+		if (ArrayUtils.isEmpty(lhsTypes)) {
+			return ArrayUtils.isEmpty(rhsTypes);
+		}
+
+		if (lhsTypes.length != (rhsTypes == null ? 0 : rhsTypes.length)) {
+			return false;
+		}
+
+		for (int i = 0; i < lhsTypes.length; i++) {
+			if (!isAssignable(lhsTypes[i], rhsTypes[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public static boolean isAssignable(Collection<Class<?>> lhsTypes, Collection<Class<?>> rhsTypes) {
 		if (CollectionUtils.isEmpty(lhsTypes)) {
 			return CollectionUtils.isEmpty(rhsTypes);
@@ -1007,57 +1024,6 @@ public final class ClassUtils {
 			// No interface class found...
 			return false;
 		}
-	}
-
-	public static boolean equals(Class<?>[] clazzArray1, Class<?>[] clazzArray2) {
-		if (clazzArray1 == null || clazzArray1.length == 0) {
-			return clazzArray2 == null || clazzArray2.length == 0;
-		}
-
-		if (clazzArray2 == null || clazzArray2.length == 0) {
-			return clazzArray1 == null || clazzArray1.length == 0;
-		}
-
-		if (clazzArray1.length != clazzArray2.length) {
-			return false;
-		}
-
-		for (int i = 0; i < clazzArray1.length; i++) {
-			if (clazzArray1[i] != clazzArray2[i]) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public static Object[] cast(Class<?>[] types, Object[] args) {
-		if (types == null || args == null) {
-			throw new IllegalArgumentException("参数不能为空");
-		}
-
-		if (types.length != args.length) {
-			throw new IllegalArgumentException("参数长度不一致");
-		}
-
-		if (types.length == 0) {
-			return new Object[0];
-		}
-
-		Object[] values = new Object[args.length];
-		for (int i = 0; i < values.length; i++) {
-			if (args[i] == null) {
-				values[i] = null;
-				continue;
-			}
-
-			if (isPrimitiveOrWrapper(types[i])) {
-				values[i] = args[i];
-				continue;
-			}
-
-			values[i] = types[i].cast(args[i]);
-		}
-		return values;
 	}
 
 	/**

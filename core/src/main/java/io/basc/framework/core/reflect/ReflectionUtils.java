@@ -119,6 +119,7 @@ public abstract class ReflectionUtils {
 	 * @param parameterTypes
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> Constructor<T> getConstructor(Class<T> type, Class<?>... parameterTypes) {
 		if (parameterTypes == null || parameterTypes.length == 0) {
 			return getConstructor(type);
@@ -128,7 +129,9 @@ public abstract class ReflectionUtils {
 			return type.getConstructor(parameterTypes);
 		} catch (NoSuchMethodException | SecurityException e) {
 		}
-		return null;
+
+		return (Constructor<T>) getConstructors(type).streamAll()
+				.filter((e) -> ClassUtils.isAssignable(e.getParameterTypes(), parameterTypes)).findFirst().orElse(null);
 	}
 
 	/**
@@ -141,7 +144,7 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> Constructor<T> getConstructor(String className, ClassLoader classLoader,
+	public static <T> Constructor<T> getConstructor(String className, @Nullable ClassLoader classLoader,
 			Class<?>... parameterTypes) {
 		Class<T> clazz = (Class<T>) ClassUtils.getClass(className, classLoader);
 		if (clazz == null) {
@@ -161,7 +164,7 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> Constructor<T> getDeclaredConstructor(String className, ClassLoader classLoader,
+	public static <T> Constructor<T> getDeclaredConstructor(String className, @Nullable ClassLoader classLoader,
 			Class<?>... parameterTypes) {
 		Class<T> clazz = (Class<T>) ClassUtils.getClass(className, classLoader);
 		if (clazz == null) {
@@ -178,6 +181,7 @@ public abstract class ReflectionUtils {
 	 * @param parameterTypes
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T> Constructor<T> getDeclaredConstructor(Class<T> type, Class<?>... parameterTypes) {
 		if (parameterTypes == null || parameterTypes.length == 0) {
 			return getDeclaredConstructor(type);
@@ -187,7 +191,9 @@ public abstract class ReflectionUtils {
 			return type.getDeclaredConstructor(parameterTypes);
 		} catch (NoSuchMethodException | SecurityException e) {
 		}
-		return null;
+
+		return (Constructor<T>) getDeclaredConstructors(type).streamAll()
+				.filter((e) -> ClassUtils.isAssignable(e.getParameterTypes(), parameterTypes)).findFirst().orElse(null);
 	}
 
 	public static <T> T newInstance(Constructor<T> constructor, Object... args) {
@@ -389,13 +395,13 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	public static Method getDeclaredMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
-		Method method;
 		try {
-			method = clazz.getDeclaredMethod(name, parameterTypes);
+			return clazz.getDeclaredMethod(name, parameterTypes);
 		} catch (NoSuchMethodException | SecurityException e) {
-			return null;
 		}
-		return method;
+		return getDeclaredMethods(clazz).streamAll().filter(
+				(e) -> e.getName().equals(name) && ClassUtils.isAssignable(e.getParameterTypes(), parameterTypes))
+				.findFirst().orElse(null);
 	}
 
 	/**
@@ -425,13 +431,13 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	public static Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes) {
-		Method method;
 		try {
-			method = clazz.getMethod(name, parameterTypes);
+			return clazz.getMethod(name, parameterTypes);
 		} catch (NoSuchMethodException | SecurityException e) {
-			return null;
 		}
-		return method;
+		return getMethods(clazz).streamAll().filter(
+				(e) -> e.getName().equals(name) && ClassUtils.isAssignable(e.getParameterTypes(), parameterTypes))
+				.findFirst().orElse(null);
 	}
 
 	/**
