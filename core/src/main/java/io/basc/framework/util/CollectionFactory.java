@@ -30,8 +30,8 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
 
 public final class CollectionFactory {
-	private static final Field KEY_TYPE_FIELD = ReflectionUtils.getField(EnumMap.class, "keyType");
-	private static final Field ELEMENT_TYPE_FIELD = ReflectionUtils.getField(EnumSet.class, "elementType");
+	private static final Field KEY_TYPE_FIELD = ReflectionUtils.getDeclaredField(EnumMap.class, "keyType");
+	private static final Field ELEMENT_TYPE_FIELD = ReflectionUtils.getDeclaredField(EnumSet.class, "elementType");
 
 	private static final Set<Class<?>> approximableCollectionTypes = new HashSet<Class<?>>();
 

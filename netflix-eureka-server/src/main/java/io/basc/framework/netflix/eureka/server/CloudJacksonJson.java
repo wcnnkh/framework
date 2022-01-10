@@ -127,7 +127,7 @@ public class CloudJacksonJson extends LegacyJacksonJson {
 		}
 
 		void setField(String name, Object value) {
-			Field field = ReflectionUtils.getField(EurekaJacksonCodec.class, name);
+			Field field = ReflectionUtils.getDeclaredField(EurekaJacksonCodec.class, name);
 			ReflectionUtils.set(field, this, value);
 		}
 
