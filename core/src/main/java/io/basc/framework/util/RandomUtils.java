@@ -354,10 +354,10 @@ public final class RandomUtils {
 	public static <T, E extends Throwable> T random(BigDecimal totalWeight, BigDecimal randomWeight,
 			Iterator<? extends T> iterator, Processor<T, BigDecimal, E> weightProcessor,
 			@Nullable Predicate<? super T> removePredicate) throws E {
-		Assert.requiredArgument(totalWeight != null && totalWeight.compareTo(BigDecimal.ZERO) > 0,
-				"totalWeight must be greater than 0");
-		Assert.requiredArgument(randomWeight != null && randomWeight.compareTo(BigDecimal.ZERO) > 0,
-				"randomWeight must be greater than 0");
+		Assert.requiredArgument(totalWeight != null && totalWeight.compareTo(BigDecimal.ZERO) >= 0,
+				"totalWeight greater than or equal to 0");
+		Assert.requiredArgument(randomWeight != null && randomWeight.compareTo(BigDecimal.ZERO) >= 0,
+				"randomWeight greater than or equal to 0");
 		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
 		Assert.requiredArgument(iterator != null, "iterator");
 		BigDecimal indexWeight = BigDecimal.ZERO;
@@ -390,8 +390,8 @@ public final class RandomUtils {
 
 	public static <T, E extends Throwable> T random(long totalWeight, long randomWeight, Iterator<? extends T> iterator,
 			Processor<T, Long, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
-		Assert.requiredArgument(totalWeight > 0, "totalWeight must be greater than 0");
-		Assert.requiredArgument(randomWeight > 0, "randomWeight must be greater than 0");
+		Assert.requiredArgument(totalWeight >= 0, "totalWeight greater than or equal to 0");
+		Assert.requiredArgument(randomWeight >= 0, "randomWeight greater than or equal to 0");
 		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
 		Assert.requiredArgument(iterator != null, "iterator");
 		long indexWeight = 0;
