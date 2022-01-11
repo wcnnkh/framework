@@ -52,7 +52,7 @@ public enum Calculators implements Calculator {
 	}
 
 	@Override
-	public NumberHolder calculate(NumberHolder left, NumberHolder right) {
+	public NumberHolder eval(NumberHolder left, NumberHolder right) {
 		switch (this) {
 		case ADD:
 			return left.add(right);
