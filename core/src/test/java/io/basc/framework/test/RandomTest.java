@@ -15,7 +15,7 @@ public class RandomTest {
 		list.add(1);
 		list.add(3);
 
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 1000000; i++) {
 			RandomUtils.random(list, (e) -> (long) e, null);
 		}
 	}
