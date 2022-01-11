@@ -389,7 +389,7 @@ public final class RandomUtils {
 	}
 
 	public static <T, E extends Throwable> T random(long totalWeight, long randomWeight, Iterator<? extends T> iterator,
-			Processor<T, Long, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
+			Processor<T, Number, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
 		Assert.requiredArgument(totalWeight >= 0, "totalWeight greater than or equal to 0");
 		Assert.requiredArgument(randomWeight >= 0, "randomWeight greater than or equal to 0");
 		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
@@ -401,12 +401,12 @@ public final class RandomUtils {
 				continue;
 			}
 
-			Long weight = weightProcessor.process(item);
+			Number weight = weightProcessor.process(item);
 			if (weight == null) {
 				continue;
 			}
 
-			indexWeight += weight;
+			indexWeight += weight.longValue();
 			if (indexWeight >= randomWeight) {
 				if (removePredicate != null && removePredicate.test(item)) {
 					iterator.remove();
@@ -418,12 +418,12 @@ public final class RandomUtils {
 	}
 
 	public static <T, E extends Throwable> T random(long totalWeight, Iterator<? extends T> iterator,
-			Processor<T, Long, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
+			Processor<T, Number, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
 		return random(totalWeight, random(0, totalWeight), iterator, weightProcessor, removePredicate);
 	}
 
 	public static <T, E extends Throwable> T random(Collection<? extends T> collection,
-			Processor<T, Long, E> weightProcessor, Processor<Long, Long, E> randomProcessor,
+			Processor<T, Number, E> weightProcessor, Processor<Long, Number, E> randomProcessor,
 			@Nullable Predicate<? super T> removePredicate) throws E {
 		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
 		Assert.requiredArgument(randomProcessor != null, "randomProcessor");
@@ -437,23 +437,23 @@ public final class RandomUtils {
 				continue;
 			}
 
-			Long weight = weightProcessor.process(t);
+			Number weight = weightProcessor.process(t);
 			if (weight == null) {
 				continue;
 			}
 
-			totalWegith += weight;
+			totalWegith += weight.longValue();
 		}
 
-		Long randomWeight = randomProcessor.process(totalWegith);
+		Number randomWeight = randomProcessor.process(totalWegith);
 		if (randomWeight == null) {
 			return null;
 		}
-		return random(totalWegith, randomWeight, collection.iterator(), weightProcessor, removePredicate);
+		return random(totalWegith, randomWeight.longValue(), collection.iterator(), weightProcessor, removePredicate);
 	}
 
 	public static <T, E extends Throwable> T random(Collection<? extends T> collection,
-			Processor<T, Long, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
+			Processor<T, Number, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
 		return random(collection, weightProcessor, (e) -> random(0, e), removePredicate);
 	}
 }
