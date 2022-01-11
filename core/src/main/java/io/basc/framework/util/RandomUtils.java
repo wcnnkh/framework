@@ -2,12 +2,15 @@ package io.basc.framework.util;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.function.Predicate;
 
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.math.Addition;
+import io.basc.framework.math.NumberComparator;
 import io.basc.framework.util.stream.Processor;
 
 public final class RandomUtils {
@@ -63,6 +66,8 @@ public final class RandomUtils {
 	 * @return
 	 */
 	public static BigDecimal random(Random random, BigDecimal min, BigDecimal max) {
+		Assert.requiredArgument(min != null, "min");
+		Assert.requiredArgument(max != null, "max");
 		return new BigDecimal(random.nextDouble() + "").multiply(max.subtract(min).add(BigDecimal.ONE)).add(min);
 	}
 
@@ -74,7 +79,44 @@ public final class RandomUtils {
 	 * @return
 	 */
 	public static BigDecimal random(BigDecimal min, BigDecimal max) {
+		Assert.requiredArgument(min != null, "min");
+		Assert.requiredArgument(max != null, "max");
 		return new BigDecimal(Math.random() + "").multiply(max.subtract(min).add(BigDecimal.ONE)).add(min);
+	}
+
+	/**
+	 * 获取某闭区间的随机值[min, max]
+	 * 
+	 * @param random
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	public static Number random(Random random, Number min, Number max) {
+		Assert.requiredArgument(min != null, "min");
+		Assert.requiredArgument(max != null, "max");
+		if (min instanceof BigDecimal || min instanceof Float || min instanceof Double || max instanceof BigDecimal
+				|| max instanceof Float || max instanceof Double) {
+			return random(random, (BigDecimal) Addition.INSTANCE.eval(BigDecimal.ZERO, min),
+					(BigDecimal) Addition.INSTANCE.eval(BigDecimal.ZERO, max));
+		} else if (max instanceof BigInteger || min instanceof BigInteger) {
+			return random(random, (BigDecimal) Addition.INSTANCE.eval(BigInteger.ZERO, min),
+					(BigDecimal) Addition.INSTANCE.eval(BigInteger.ZERO, max));
+		}
+		return random(random, min.longValue(), max.longValue());
+	}
+
+	/**
+	 * 获取某闭区间的随机值[min, max]
+	 * 
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	public static Number random(Number min, Number max) {
+		Assert.requiredArgument(min != null, "min");
+		Assert.requiredArgument(max != null, "max");
+		return random(new Random(), min, max);
 	}
 
 	public static <T> T random(Random random, T[] array) {
@@ -351,50 +393,17 @@ public final class RandomUtils {
 		return new String(random(NUMBERIC_CHARACTER, len));
 	}
 
-	public static <T, E extends Throwable> T random(BigDecimal totalWeight, BigDecimal randomWeight,
-			Iterator<? extends T> iterator, Processor<T, BigDecimal, E> weightProcessor,
+	@Nullable
+	public static <T, E extends Throwable> T random(Number totalWeight, Number randomWeight,
+			Iterator<? extends T> iterator, Processor<T, Number, E> weightProcessor,
 			@Nullable Predicate<? super T> removePredicate) throws E {
-		Assert.requiredArgument(totalWeight != null && totalWeight.compareTo(BigDecimal.ZERO) >= 0,
+		Assert.requiredArgument(totalWeight != null && NumberComparator.INSTANCE.compare(totalWeight, 0) >= 0,
 				"totalWeight greater than or equal to 0");
-		Assert.requiredArgument(randomWeight != null && randomWeight.compareTo(BigDecimal.ZERO) >= 0,
+		Assert.requiredArgument(randomWeight != null && NumberComparator.INSTANCE.compare(randomWeight, 0) >= 0,
 				"randomWeight greater than or equal to 0");
 		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
 		Assert.requiredArgument(iterator != null, "iterator");
-		BigDecimal indexWeight = BigDecimal.ZERO;
-		while (iterator.hasNext()) {
-			T item = iterator.next();
-			if (item == null) {
-				continue;
-			}
-
-			BigDecimal weight = weightProcessor.process(item);
-			if (weight == null) {
-				continue;
-			}
-
-			indexWeight = indexWeight.add(weight);
-			if (indexWeight.compareTo(randomWeight) >= 0) {
-				if (removePredicate != null && removePredicate.test(item)) {
-					iterator.remove();
-				}
-				return item;
-			}
-		}
-		return null;
-	}
-
-	public static <T, E extends Throwable> T random(BigDecimal totalWeight, Iterator<? extends T> iterator,
-			Processor<T, BigDecimal, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
-		return random(totalWeight, random(BigDecimal.ZERO, totalWeight), iterator, weightProcessor, removePredicate);
-	}
-
-	public static <T, E extends Throwable> T random(long totalWeight, long randomWeight, Iterator<? extends T> iterator,
-			Processor<T, Number, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
-		Assert.requiredArgument(totalWeight >= 0, "totalWeight greater than or equal to 0");
-		Assert.requiredArgument(randomWeight >= 0, "randomWeight greater than or equal to 0");
-		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
-		Assert.requiredArgument(iterator != null, "iterator");
-		long indexWeight = 0;
+		Number indexWeight = 0;
 		while (iterator.hasNext()) {
 			T item = iterator.next();
 			if (item == null) {
@@ -406,8 +415,8 @@ public final class RandomUtils {
 				continue;
 			}
 
-			indexWeight += weight.longValue();
-			if (indexWeight >= randomWeight) {
+			indexWeight = Addition.INSTANCE.eval(indexWeight, weight);
+			if (NumberComparator.INSTANCE.compare(indexWeight, randomWeight) >= 0) {
 				if (removePredicate != null && removePredicate.test(item)) {
 					iterator.remove();
 				}
@@ -417,13 +426,34 @@ public final class RandomUtils {
 		return null;
 	}
 
-	public static <T, E extends Throwable> T random(long totalWeight, Iterator<? extends T> iterator,
+	public static <T, E extends Throwable> Number getWeight(Iterator<? extends T> iterator,
+			Processor<T, Number, E> weightProcessor) throws E {
+		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
+		Assert.requiredArgument(iterator != null, "iterator");
+		Number totalWegith = 0;
+		while (iterator.hasNext()) {
+			T item = iterator.next();
+			if (item == null) {
+				continue;
+			}
+
+			Number weight = weightProcessor.process(item);
+			if (weight == null) {
+				continue;
+			}
+
+			totalWegith = Addition.INSTANCE.eval(totalWegith, weight);
+		}
+		return totalWegith;
+	}
+
+	public static <T, E extends Throwable> T random(Number totalWeight, Iterator<? extends T> iterator,
 			Processor<T, Number, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
 		return random(totalWeight, random(0, totalWeight), iterator, weightProcessor, removePredicate);
 	}
 
 	public static <T, E extends Throwable> T random(Collection<? extends T> collection,
-			Processor<T, Number, E> weightProcessor, Processor<Long, Number, E> randomProcessor,
+			Processor<T, Number, E> weightProcessor, Processor<Number, Number, E> randomProcessor,
 			@Nullable Predicate<? super T> removePredicate) throws E {
 		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
 		Assert.requiredArgument(randomProcessor != null, "randomProcessor");
@@ -431,20 +461,7 @@ public final class RandomUtils {
 			return null;
 		}
 
-		long totalWegith = 0;
-		for (T t : collection) {
-			if (t == null) {
-				continue;
-			}
-
-			Number weight = weightProcessor.process(t);
-			if (weight == null) {
-				continue;
-			}
-
-			totalWegith += weight.longValue();
-		}
-
+		Number totalWegith = getWeight(collection.iterator(), weightProcessor);
 		Number randomWeight = randomProcessor.process(totalWegith);
 		if (randomWeight == null) {
 			return null;

@@ -1,9 +1,9 @@
 package io.basc.framework.math;
 
-import io.basc.framework.math.gcd.GreatestCommonDivisor;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
+import io.basc.framework.math.gcd.GreatestCommonDivisor;
 
 /**
  * 分数
@@ -27,6 +27,10 @@ public class Fraction extends Number implements NumberHolder {
 
 	private GreatestCommonDivisor greatestCommonDivisor = MathUtils.getGreatestCommonDivisor();
 
+	public Fraction(BigDecimal bigDecimal) {
+		this(new BigDecimalHolder(bigDecimal), new BigDecimalHolder(BigDecimal.ONE));
+	}
+	
 	/**
 	 * 构造一个分数
 	 * 
