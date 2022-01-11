@@ -37,8 +37,8 @@ public class DruidWebStateInitizer implements ServletContextInitialization {
 				application.getInstance(WebStatFilter.class));
 		// 经常需要排除一些不必要的url，比如.js,/jslib/等等。配置在init-param中
 		filterDynamic.setInitParameter("exclusions", "/druid/*");
-		filterDynamic.setInitParameter("loginUsername", RandomUtils.getRandomStr(10));
-		filterDynamic.setInitParameter("loginPassword", RandomUtils.getRandomStr(10));
+		filterDynamic.setInitParameter("loginUsername", RandomUtils.randomString(10));
+		filterDynamic.setInitParameter("loginPassword", RandomUtils.randomString(10));
 		application.getEnvironment().streamByPrefix("druid.web.stat.").forEach((e) -> {
 			filterDynamic.setInitParameter(e.getKey(), e.getValue().getAsString());
 		});
