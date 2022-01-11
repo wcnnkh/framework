@@ -1,5 +1,12 @@
 package io.basc.framework.script;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import io.basc.framework.env.Sys;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
@@ -12,13 +19,6 @@ import io.basc.framework.math.NumberHolder;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * 实现单简单的数学计算(并不成熟，不推荐进行复杂计算)
  * 
@@ -26,21 +26,22 @@ import java.util.List;
  *
  */
 public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
-	static final Function[] FUNCTIONS;
+	static final MathScriptFunction[] FUNCTIONS;
 
 	static {
-		List<Function> functions = new ArrayList<Function>(Sys.env.getServiceLoader(Function.class).toList());
+		List<MathScriptFunction> functions = new ArrayList<MathScriptFunction>(
+				Sys.env.getServiceLoader(MathScriptFunction.class).toList());
 		functions.add(new MaxFunction());
 		functions.add(new MinFunction());
 		functions.add(new MeaninglessFunction("{", "}"));
 		functions.add(new MeaninglessFunction("[", "]"));
 		functions.add(new MeaninglessFunction("(", ")"));
 		functions.add(new AbsoluteValueFunction());
-		FUNCTIONS = functions.toArray(new Function[0]);
+		FUNCTIONS = functions.toArray(new MathScriptFunction[0]);
 	}
 
 	private void resolve(Collection<Fragment> fragments, String script, Calculator lastOperator) {
-		for (Function function : FUNCTIONS) {
+		for (MathScriptFunction function : FUNCTIONS) {
 			Pair<Integer, Integer> indexPair = StringUtils.indexOf(script, function.getPrefix(), function.getSuffix());
 			if (indexPair == null) {
 				continue;
@@ -128,7 +129,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	}
 
 	private Fragment operator(Fragment left, Fragment right) {
-		NumberHolder value = left.getOperator().calculate(left.getValue(), right.getValue());
+		NumberHolder value = left.getOperator().eval(left.getValue(), right.getValue());
 		Fragment valueFragment = new ValueFragment(value);
 		valueFragment.setOperator(right.getOperator());
 		return valueFragment;
@@ -205,7 +206,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 
 	@Override
 	protected NumberHolder evalInternal(String script) throws ScriptException {
-		for (Function function : FUNCTIONS) {
+		for (MathScriptFunction function : FUNCTIONS) {
 			Pair<Integer, Integer> indexPair = StringUtils.indexOf(script, function.getPrefix(), function.getSuffix());
 			if (indexPair == null) {
 				continue;
@@ -322,10 +323,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 		}
 	}
 
-	public static interface Function extends ScriptFunction<NumberHolder> {
-	}
-
-	static final class MeaninglessFunction implements Function {
+	static final class MeaninglessFunction implements MathScriptFunction {
 		private String prefix;
 		private String suffix;
 
@@ -347,7 +345,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 		}
 	}
 
-	static final class AbsoluteValueFunction implements Function {
+	static final class AbsoluteValueFunction implements MathScriptFunction {
 
 		public String getPrefix() {
 			return "|";
@@ -363,7 +361,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 		}
 	}
 
-	static final class MaxFunction implements Function {
+	static final class MaxFunction implements MathScriptFunction {
 
 		public String getPrefix() {
 			return "max(";
@@ -388,7 +386,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 
 	}
 
-	static final class MinFunction implements Function {
+	static final class MinFunction implements MathScriptFunction {
 
 		public String getPrefix() {
 			return "min(";

@@ -34,12 +34,47 @@ public final class RandomUtils {
 	/**
 	 * 获取某闭区间的随机值[min, max]
 	 * 
+	 * @param random
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	public static long random(Random random, long min, long max) {
+		return (long) (random.nextDouble() * (max - min + 1)) + min;
+	}
+
+	/**
+	 * 获取某闭区间的随机值[min, max]
+	 * 
 	 * @param min
 	 * @param max
 	 * @return
 	 */
 	public static long random(long min, long max) {
 		return (long) (Math.random() * (max - min + 1)) + min;
+	}
+
+	/**
+	 * 获取某闭区间的随机值[min, max]
+	 * 
+	 * @param random
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	public static BigDecimal random(Random random, BigDecimal min, BigDecimal max) {
+		return new BigDecimal(random.nextDouble() + "").multiply(max.subtract(min).add(BigDecimal.ONE)).add(min);
+	}
+
+	/**
+	 * 获取某闭区间的随机值[min, max]
+	 * 
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	public static BigDecimal random(BigDecimal min, BigDecimal max) {
+		return new BigDecimal(Math.random() + "").multiply(max.subtract(min).add(BigDecimal.ONE)).add(min);
 	}
 
 	public static <T> T random(Random random, T[] array) {
@@ -346,6 +381,11 @@ public final class RandomUtils {
 			}
 		}
 		return null;
+	}
+
+	public static <T, E extends Throwable> T random(BigDecimal totalWeight, Iterator<? extends T> iterator,
+			Processor<T, BigDecimal, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
+		return random(totalWeight, random(BigDecimal.ZERO, totalWeight), iterator, weightProcessor, removePredicate);
 	}
 
 	public static <T, E extends Throwable> T random(long totalWeight, long randomWeight, Iterator<? extends T> iterator,

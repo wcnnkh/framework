@@ -7,27 +7,27 @@ import io.basc.framework.util.Assert;
 /**
  * 运算器/计算器
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
-public interface Calculator {
+public interface Calculator extends MathFunction<NumberHolder, NumberHolder> {
 
-	default NumberHolder calculate(String left, String right) {
+	default NumberHolder eval(String left, String right) {
 		Assert.requiredArgument(left != null, "left");
 		Assert.requiredArgument(right != null, "right");
-		return calculate(new BigDecimalHolder(left), new BigDecimalHolder(right));
+		return eval(new BigDecimalHolder(left), new BigDecimalHolder(right));
 	}
 
-	default NumberHolder calculate(BigDecimal left, BigDecimal right) {
+	default NumberHolder eval(BigDecimal left, BigDecimal right) {
 		Assert.requiredArgument(left != null, "left");
 		Assert.requiredArgument(right != null, "right");
-		return calculate(new BigDecimalHolder(left), new BigDecimalHolder(right));
+		return eval(new BigDecimalHolder(left), new BigDecimalHolder(right));
 	}
 
-	default NumberHolder calculate(BigDecimal left, String right) {
+	default NumberHolder eval(BigDecimal left, String right) {
 		Assert.requiredArgument(left != null, "left");
 		Assert.requiredArgument(right != null, "right");
-		return calculate(new BigDecimalHolder(left), new BigDecimalHolder(right));
+		return eval(new BigDecimalHolder(left), new BigDecimalHolder(right));
 	}
 
 	/**
@@ -36,6 +36,4 @@ public interface Calculator {
 	 * @return
 	 */
 	String getOperator();
-
-	NumberHolder calculate(NumberHolder left, NumberHolder right);
 }
