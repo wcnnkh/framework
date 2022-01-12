@@ -35,30 +35,59 @@ public final class RandomUtils {
 	public final static char[] ALL = StringUtils.mergeCharArray(NUMBERIC_CHARACTER, LOWERCASE_LETTERS, CAPITAL_LETTERS);
 
 	/**
-	 * 获取某闭区间的随机值[min, max]
+	 * 获取某区间的随机值[min, max)
 	 * 
 	 * @param random
 	 * @param min
 	 * @param max
 	 * @return
 	 */
-	public static long random(Random random, long min, long max) {
-		return (long) (random.nextDouble() * (max - min + 1)) + min;
+	public static int random(Random random, int min, int max) {
+		if (max == min) {
+			return min;
+		}
+		return (int) (random.nextDouble() * (max - min)) + min;
 	}
 
 	/**
-	 * 获取某闭区间的随机值[min, max]
+	 * 获取某区间的随机值[min, max)
+	 * 
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	public static int random(int min, int max) {
+		return (int) (Math.random() * (max - min)) + min;
+	}
+
+	/**
+	 * 获取某区间的随机值[min, max)
+	 * 
+	 * @param random
+	 * @param min
+	 * @param max
+	 * @return [min, max)
+	 */
+	public static long random(Random random, long min, long max) {
+		if (max == min) {
+			return min;
+		}
+		return (long) (random.nextDouble() * (max - min)) + min;
+	}
+
+	/**
+	 * 获取某区间的随机值[min, max)
 	 * 
 	 * @param min
 	 * @param max
 	 * @return
 	 */
 	public static long random(long min, long max) {
-		return (long) (Math.random() * (max - min + 1)) + min;
+		return (long) (Math.random() * (max - min)) + min;
 	}
 
 	/**
-	 * 获取某闭区间的随机值[min, max]
+	 * 获取某闭区间的随机值[min, max)
 	 * 
 	 * @param random
 	 * @param min
@@ -68,11 +97,14 @@ public final class RandomUtils {
 	public static BigDecimal random(Random random, BigDecimal min, BigDecimal max) {
 		Assert.requiredArgument(min != null, "min");
 		Assert.requiredArgument(max != null, "max");
-		return new BigDecimal(random.nextDouble() + "").multiply(max.subtract(min).add(BigDecimal.ONE)).add(min);
+		if (min.equals(max)) {
+			return min;
+		}
+		return new BigDecimal(random.nextDouble() + "").multiply(max.subtract(min)).add(min);
 	}
 
 	/**
-	 * 获取某闭区间的随机值[min, max]
+	 * 获取某区间的随机值[min, max)
 	 * 
 	 * @param min
 	 * @param max
@@ -81,11 +113,47 @@ public final class RandomUtils {
 	public static BigDecimal random(BigDecimal min, BigDecimal max) {
 		Assert.requiredArgument(min != null, "min");
 		Assert.requiredArgument(max != null, "max");
-		return new BigDecimal(Math.random() + "").multiply(max.subtract(min).add(BigDecimal.ONE)).add(min);
+		if (min.equals(max)) {
+			return min;
+		}
+		return new BigDecimal(Math.random() + "").multiply(max.subtract(min)).add(min);
 	}
 
 	/**
-	 * 获取某闭区间的随机值[min, max]
+	 * 获取某闭区间的随机值[min, max)
+	 * 
+	 * @param random
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	public static BigInteger random(Random random, BigInteger min, BigInteger max) {
+		Assert.requiredArgument(min != null, "min");
+		Assert.requiredArgument(max != null, "max");
+		if (min.equals(max)) {
+			return min;
+		}
+		return new BigInteger(random.nextDouble() + "").multiply(max.subtract(min)).add(min);
+	}
+
+	/**
+	 * 获取某区间的随机值[min, max)
+	 * 
+	 * @param min
+	 * @param max
+	 * @return
+	 */
+	public static BigInteger random(BigInteger min, BigInteger max) {
+		Assert.requiredArgument(min != null, "min");
+		Assert.requiredArgument(max != null, "max");
+		if (min.equals(max)) {
+			return min;
+		}
+		return new BigInteger(Math.random() + "").multiply(max.subtract(min)).add(min);
+	}
+
+	/**
+	 * 获取某区间的随机值[min, max)
 	 * 
 	 * @param random
 	 * @param min
@@ -100,14 +168,14 @@ public final class RandomUtils {
 			return random(random, (BigDecimal) Addition.INSTANCE.eval(BigDecimal.ZERO, min),
 					(BigDecimal) Addition.INSTANCE.eval(BigDecimal.ZERO, max));
 		} else if (max instanceof BigInteger || min instanceof BigInteger) {
-			return random(random, (BigDecimal) Addition.INSTANCE.eval(BigInteger.ZERO, min),
-					(BigDecimal) Addition.INSTANCE.eval(BigInteger.ZERO, max));
+			return random(random, (BigInteger) Addition.INSTANCE.eval(BigInteger.ZERO, min),
+					(BigInteger) Addition.INSTANCE.eval(BigInteger.ZERO, max));
 		}
 		return random(random, min.longValue(), max.longValue());
 	}
 
 	/**
-	 * 获取某闭区间的随机值[min, max]
+	 * 获取某区间的随机值[min, max)
 	 * 
 	 * @param min
 	 * @param max
@@ -393,16 +461,30 @@ public final class RandomUtils {
 		return new String(random(NUMBERIC_CHARACTER, len));
 	}
 
+	/**
+	 * 获取指定权重位的元素
+	 * 
+	 * @param <T>
+	 * @param <E>
+	 * @param totalWeight
+	 * @param weight
+	 * @param iterator
+	 * @param weightProcessor 返回元素的权重，忽略0或null
+	 * @param removePredicate 找到元素后如果返回true将删除该元素 {@link Iterator#remove()}
+	 * @return
+	 * @throws E
+	 */
 	@Nullable
-	public static <T, E extends Throwable> T random(Number totalWeight, Number randomWeight,
-			Iterator<? extends T> iterator, Processor<T, Number, E> weightProcessor,
-			@Nullable Predicate<? super T> removePredicate) throws E {
-		Assert.requiredArgument(totalWeight != null && NumberComparator.INSTANCE.compare(totalWeight, 0) >= 0,
-				"totalWeight greater than or equal to 0");
-		Assert.requiredArgument(randomWeight != null && NumberComparator.INSTANCE.compare(randomWeight, 0) >= 0,
-				"randomWeight greater than or equal to 0");
+	public static <T, E extends Throwable> T random(Number totalWeight, Number weight, Iterator<? extends T> iterator,
+			Processor<T, Number, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
 		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
 		Assert.requiredArgument(iterator != null, "iterator");
+		Assert.isTrue(totalWeight != null && NumberComparator.INSTANCE.compare(totalWeight, 0) > 0,
+				"totalWeight needs to be greater than 0");
+		Assert.isTrue(weight != null && NumberComparator.INSTANCE.compare(weight, 0) > 0,
+				"weight needs to be greater than 0");
+		Assert.isTrue(NumberComparator.INSTANCE.compare(weight, totalWeight) <= 0,
+				"weight[" + weight + "] cannot be greater than totalweight[" + totalWeight + "]");
 		Number indexWeight = 0;
 		while (iterator.hasNext()) {
 			T item = iterator.next();
@@ -410,13 +492,27 @@ public final class RandomUtils {
 				continue;
 			}
 
-			Number weight = weightProcessor.process(item);
-			if (weight == null) {
+			Number itemWeight = weightProcessor.process(item);
+			if (itemWeight == null) {
 				continue;
 			}
 
-			indexWeight = Addition.INSTANCE.eval(indexWeight, weight);
-			if (NumberComparator.INSTANCE.compare(indexWeight, randomWeight) >= 0) {
+			int compareValue = NumberComparator.INSTANCE.compare(itemWeight, 0);
+			if (compareValue == 0) {
+				continue;
+			}
+
+			if (compareValue < 0) {
+				// 权重需要大于0
+				throw new IllegalArgumentException("Weight needs to be greater than 0");
+			}
+
+			indexWeight = Addition.INSTANCE.eval(indexWeight, itemWeight);
+			// weight = 3
+			// indexWeight = 2 + 2
+			// weight <= indexWeight 成立
+			// 1-2 3-4 5-6
+			if (NumberComparator.INSTANCE.compare(weight, indexWeight) <= 0) {
 				if (removePredicate != null && removePredicate.test(item)) {
 					iterator.remove();
 				}
@@ -426,6 +522,16 @@ public final class RandomUtils {
 		return null;
 	}
 
+	/**
+	 * 获取总权重
+	 * 
+	 * @param <T>
+	 * @param <E>
+	 * @param iterator
+	 * @param weightProcessor 返回元素的权重，忽略0或null
+	 * @return
+	 * @throws E
+	 */
 	public static <T, E extends Throwable> Number getWeight(Iterator<? extends T> iterator,
 			Processor<T, Number, E> weightProcessor) throws E {
 		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
@@ -442,16 +548,51 @@ public final class RandomUtils {
 				continue;
 			}
 
+			int compareValue = NumberComparator.INSTANCE.compare(weight, 0);
+			if (compareValue == 0) {
+				continue;
+			}
+
+			if (compareValue < 0) {
+				// 权重需要大于0
+				throw new IllegalArgumentException("Weight needs to be greater than 0");
+			}
+
 			totalWegith = Addition.INSTANCE.eval(totalWegith, weight);
 		}
 		return totalWegith;
 	}
 
+	/**
+	 * 随机获取一个总权重范围内的元素
+	 * 
+	 * @param <T>
+	 * @param <E>
+	 * @param totalWeight
+	 * @param iterator
+	 * @param weightProcessor 返回元素的权重，忽略0或null
+	 * @param removePredicate 找到元素后如果返回true将删除该元素 {@link Iterator#remove()}
+	 * @return
+	 * @throws E
+	 */
 	public static <T, E extends Throwable> T random(Number totalWeight, Iterator<? extends T> iterator,
 			Processor<T, Number, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
-		return random(totalWeight, random(0, totalWeight), iterator, weightProcessor, removePredicate);
+		return random(totalWeight, random(1, Addition.INSTANCE.eval(totalWeight, 1)), iterator, weightProcessor,
+				removePredicate);
 	}
 
+	/**
+	 * 随机获取一个元素
+	 * 
+	 * @param <T>
+	 * @param <E>
+	 * @param collection
+	 * @param weightProcessor 返回元素的权重，忽略0或null
+	 * @param randomProcessor 获取随机数
+	 * @param removePredicate 找到元素后如果返回true将删除该元素 {@link Iterator#remove()}
+	 * @return
+	 * @throws E
+	 */
 	public static <T, E extends Throwable> T random(Collection<? extends T> collection,
 			Processor<T, Number, E> weightProcessor, Processor<Number, Number, E> randomProcessor,
 			@Nullable Predicate<? super T> removePredicate) throws E {
@@ -466,11 +607,22 @@ public final class RandomUtils {
 		if (randomWeight == null) {
 			return null;
 		}
-		return random(totalWegith, randomWeight.longValue(), collection.iterator(), weightProcessor, removePredicate);
+		return random(totalWegith, randomWeight, collection.iterator(), weightProcessor, removePredicate);
 	}
 
+	/**
+	 * 随机获取一个元素
+	 * 
+	 * @param <T>
+	 * @param <E>
+	 * @param collection
+	 * @param weightProcessor 返回元素的权重，忽略0或null
+	 * @param removePredicate 找到元素后如果返回true将删除该元素 {@link Iterator#remove()}
+	 * @return
+	 * @throws E
+	 */
 	public static <T, E extends Throwable> T random(Collection<? extends T> collection,
 			Processor<T, Number, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
-		return random(collection, weightProcessor, (e) -> random(0, e), removePredicate);
+		return random(collection, weightProcessor, (e) -> random(1, Addition.INSTANCE.eval(e, 1)), removePredicate);
 	}
 }

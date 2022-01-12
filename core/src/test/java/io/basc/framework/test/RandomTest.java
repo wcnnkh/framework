@@ -1,5 +1,7 @@
 package io.basc.framework.test;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +18,7 @@ public class RandomTest {
 		list.add(3);
 
 		for (int i = 0; i < 1000000; i++) {
-			RandomUtils.random(list, (e) -> e, null);
+			assertTrue(RandomUtils.random(list, (e) -> e, null) != null);
 		}
 	}
 }
