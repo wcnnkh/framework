@@ -57,6 +57,9 @@ public final class RandomUtils {
 	 * @return
 	 */
 	public static int random(int min, int max) {
+		if (max == min) {
+			return min;
+		}
 		return (int) (Math.random() * (max - min)) + min;
 	}
 
@@ -83,6 +86,9 @@ public final class RandomUtils {
 	 * @return
 	 */
 	public static long random(long min, long max) {
+		if (max == min) {
+			return min;
+		}
 		return (long) (Math.random() * (max - min)) + min;
 	}
 
@@ -163,6 +169,10 @@ public final class RandomUtils {
 	public static Number random(Random random, Number min, Number max) {
 		Assert.requiredArgument(min != null, "min");
 		Assert.requiredArgument(max != null, "max");
+		if (min.equals(max)) {
+			return min;
+		}
+
 		if (min instanceof BigDecimal || min instanceof Float || min instanceof Double || max instanceof BigDecimal
 				|| max instanceof Float || max instanceof Double) {
 			return random(random, (BigDecimal) Addition.INSTANCE.eval(BigDecimal.ZERO, min),
