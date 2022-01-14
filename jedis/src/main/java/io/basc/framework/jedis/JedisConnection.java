@@ -1253,11 +1253,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 			if (transaction == null) {
 				return;
 			}
-			try {
-				transaction.discard();
-			} finally {
-				transaction = null;
-			}
+			transaction.discard();
 		}
 	}
 
@@ -1273,15 +1269,18 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 
 	@Override
 	public List<Object> exec() {
-		if (transaction == null) {
-			throw new IllegalAccessError("No ongoing transaction. Did you forget to call multi?");
+		if (transaction != null) {
+			synchronized (this) {
+				if (transaction != null) {
+					try {
+						return transaction.exec();
+					} finally {
+						this.transaction = null;
+					}
+				}
+			}
 		}
-
-		synchronized (this) {
-
-		}
-
-		return transaction.exec();
+		throw new IllegalAccessError("No ongoing transaction. Did you forget to call multi?");
 	}
 
 	private volatile @Nullable Pipeline pipeline;
@@ -1306,7 +1305,11 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		if (pipeline != null) {
 			synchronized (this) {
 				if (pipeline != null) {
-					return pipeline.syncAndReturnAll();
+					try {
+						return pipeline.syncAndReturnAll();
+					} finally {
+						pipeline = null;
+					}
 				}
 			}
 		}
