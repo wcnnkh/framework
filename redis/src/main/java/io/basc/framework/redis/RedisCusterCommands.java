@@ -60,17 +60,6 @@ public interface RedisCusterCommands {
 	 */
 	byte[] cluster_delslots(int... slots);
 
-	static enum FailoverOption {
-		/**
-		 * manual failover when the master is down
-		 */
-		FORCE,
-		/**
-		 * manual failover without cluster consensus
-		 */
-		TAKEOVER
-	}
-
 	/**
 	 * https://redis.io/commands/cluster-failover
 	 * 
@@ -215,10 +204,6 @@ public interface RedisCusterCommands {
 	 */
 	byte[] cluster_replicate(byte[] nodeId);
 
-	static enum ResetType {
-		HARD, SLFT
-	}
-
 	/**
 	 * https://redis.io/commands/cluster-reset
 	 * 
@@ -243,10 +228,6 @@ public interface RedisCusterCommands {
 	 */
 	byte[] cluster_set_config_epoch();
 
-	static enum SetOption {
-		IMPORTING, MIGRATING, STABLE, NODE
-	}
-
 	/**
 	 * https://redis.io/commands/cluster-setslot
 	 * 
@@ -256,7 +237,7 @@ public interface RedisCusterCommands {
 	 * @return Simple string reply: All the subcommands return OK if the command was
 	 *         successful. Otherwise an error is returned.
 	 */
-	byte[] cluster_setslot(int slot, SetOption option, byte[] nodeId);
+	byte[] cluster_setslot(int slot, SetSlotOption option, byte[] nodeId);
 
 	/**
 	 * https://redis.io/commands/cluster-slaves<br/>

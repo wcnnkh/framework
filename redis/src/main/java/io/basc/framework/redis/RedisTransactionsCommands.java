@@ -14,7 +14,7 @@ public interface RedisTransactionsCommands<K> {
 	 * 
 	 * @return Simple string reply: always OK.
 	 */
-	void discard();
+	String discard();
 
 	/**
 	 * https://redis.io/commands/exec<br/>
@@ -52,7 +52,7 @@ public interface RedisTransactionsCommands<K> {
 	 * 
 	 * @return Simple string reply: always OK.
 	 */
-	void unwatch();
+	String unwatch();
 
 	/**
 	 * https://redis.io/commands/watch<br/>
@@ -64,5 +64,5 @@ public interface RedisTransactionsCommands<K> {
 	 * @param keys
 	 * @return Simple string reply: always OK.
 	 */
-	void watch(K... keys);
+	String watch(K... keys);
 }

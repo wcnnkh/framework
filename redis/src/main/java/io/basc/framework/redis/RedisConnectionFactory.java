@@ -159,10 +159,9 @@ public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
 	}
 
 	@Override
-	default void hmset(K key, Map<K, V> values) {
-		execute((commands) -> {
-			commands.hmset(key, values);
-			return null;
+	default String hmset(K key, Map<K, V> values) {
+		return execute((commands) -> {
+			return commands.hmset(key, values);
 		});
 	}
 
@@ -364,10 +363,9 @@ public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
 	}
 
 	@Override
-	default void rename(K key, K newKey) {
-		execute((commands) -> {
-			commands.renamenx(key, newKey);
-			return null;
+	default String rename(K key, K newKey) {
+		return execute((commands) -> {
+			return commands.rename(key, newKey);
 		});
 	}
 
@@ -379,11 +377,10 @@ public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
 	}
 
 	@Override
-	default void restore(K key, long ttl, byte[] serializedValue, boolean replace, boolean absTtl, Long idleTime,
+	default String restore(K key, long ttl, byte[] serializedValue, boolean replace, boolean absTtl, Long idleTime,
 			Long frequency) {
-		execute((commands) -> {
-			commands.restore(key, ttl, serializedValue, replace, absTtl, idleTime, frequency);
-			return null;
+		return execute((commands) -> {
+			return commands.restore(key, ttl, serializedValue, replace, absTtl, idleTime, frequency);
 		});
 	}
 
@@ -635,26 +632,23 @@ public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
 	}
 
 	@Override
-	default void scriptFlush() {
-		execute((commands) -> {
-			commands.scriptFlush();
-			return null;
+	default String scriptFlush() {
+		return execute((commands) -> {
+			return commands.scriptFlush();
 		});
 	}
 
 	@Override
-	default void scriptFlush(FlushMode flushMode) {
-		execute((commands) -> {
-			commands.scriptFlush(flushMode);
-			return null;
+	default String scriptFlush(FlushMode flushMode) {
+		return execute((commands) -> {
+			return commands.scriptFlush(flushMode);
 		});
 	}
 
 	@Override
-	default void scriptKill() {
-		execute((commands) -> {
-			commands.scriptKill();
-			return null;
+	default String scriptKill() {
+		return execute((commands) -> {
+			return commands.scriptKill();
 		});
 	}
 
@@ -1060,10 +1054,9 @@ public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
 	}
 
 	@Override
-	default void set(K key, V value) {
-		execute((commands) -> {
-			commands.set(key, value);
-			return null;
+	default String set(K key, V value) {
+		return execute((commands) -> {
+			return commands.set(key, value);
 		});
 	}
 
@@ -1222,10 +1215,9 @@ public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
 	}
 
 	@Override
-	default void discard() {
-		execute((commands) -> {
-			commands.discard();
-			return null;
+	default String discard() {
+		return execute((commands) -> {
+			return commands.discard();
 		});
 	}
 
@@ -1245,18 +1237,16 @@ public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
 	}
 
 	@Override
-	default void unwatch() {
-		execute((commands) -> {
-			commands.unwatch();
-			return null;
+	default String unwatch() {
+		return execute((commands) -> {
+			return commands.unwatch();
 		});
 	}
 
 	@Override
-	default void watch(K... keys) {
-		execute((commands) -> {
-			commands.watch(keys);
-			return null;
+	default String watch(K... keys) {
+		return execute((commands) -> {
+			return commands.watch(keys);
 		});
 	}
 

@@ -1,9 +1,11 @@
-package io.basc.framework.redis;
+package io.basc.framework.redis.async;
 
 import java.util.List;
 
+import io.basc.framework.redis.ClaimArgs;
+
 @SuppressWarnings("unchecked")
-public interface RedisStreamsCommands<K, V> {
+public interface AsyncRedisStreamsCommands<K, V> {
 	/**
 	 * https://redis.io/commands/xack<br/>
 	 * <br/>
@@ -33,7 +35,7 @@ public interface RedisStreamsCommands<K, V> {
 	 *         because they have already been acknowledged), and XACK will not count
 	 *         them as successfully acknowledged.
 	 */
-	Long xack(K key, K group, K... ids);
+	Response<Long> xack(K key, K group, K... ids);
 
 	/**
 	 * https://redis.io/commands/xclaim
@@ -45,7 +47,7 @@ public interface RedisStreamsCommands<K, V> {
 	 *         only the message IDs are reported, without including the actual
 	 *         message.
 	 */
-	List<V> xclaim(K key, K group, K consumer, long minIdleTime, ClaimArgs args, K... ids);
+	Response<List<V>> xclaim(K key, K group, K consumer, long minIdleTime, ClaimArgs args, K... ids);
 
 	/**
 	 * https://redis.io/commands/xdel
@@ -54,5 +56,5 @@ public interface RedisStreamsCommands<K, V> {
 	 * @param ids
 	 * @return Integer reply: the number of entries actually deleted.
 	 */
-	Long xdel(K key, K... ids);
+	Response<Long> xdel(K key, K... ids);
 }

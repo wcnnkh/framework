@@ -1,28 +1,5 @@
 package io.basc.framework.redis.convert;
 
-import io.basc.framework.codec.Codec;
-import io.basc.framework.convert.Converter;
-import io.basc.framework.convert.IdentityConverter;
-import io.basc.framework.data.domain.Range;
-import io.basc.framework.data.geo.Circle;
-import io.basc.framework.data.geo.Distance;
-import io.basc.framework.data.geo.Metric;
-import io.basc.framework.data.geo.Point;
-import io.basc.framework.redis.Cursor;
-import io.basc.framework.redis.DataType;
-import io.basc.framework.redis.GeoRadiusArgs;
-import io.basc.framework.redis.GeoRadiusWith;
-import io.basc.framework.redis.GeoWithin;
-import io.basc.framework.redis.MessageListener;
-import io.basc.framework.redis.RedisAuth;
-import io.basc.framework.redis.RedisCommands;
-import io.basc.framework.redis.RedisValueEncoding;
-import io.basc.framework.redis.ScanOptions;
-import io.basc.framework.redis.SetOption;
-import io.basc.framework.redis.Subscription;
-import io.basc.framework.util.CollectionFactory;
-import io.basc.framework.util.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,6 +9,39 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import io.basc.framework.codec.Codec;
+import io.basc.framework.convert.Converter;
+import io.basc.framework.convert.IdentityConverter;
+import io.basc.framework.data.domain.Range;
+import io.basc.framework.data.geo.Circle;
+import io.basc.framework.data.geo.Distance;
+import io.basc.framework.data.geo.Metric;
+import io.basc.framework.data.geo.Point;
+import io.basc.framework.redis.BitOP;
+import io.basc.framework.redis.ClaimArgs;
+import io.basc.framework.redis.Cursor;
+import io.basc.framework.redis.DataType;
+import io.basc.framework.redis.ExpireOption;
+import io.basc.framework.redis.FlushMode;
+import io.basc.framework.redis.GeoRadiusArgs;
+import io.basc.framework.redis.GeoRadiusWith;
+import io.basc.framework.redis.GeoWithin;
+import io.basc.framework.redis.GeoaddOption;
+import io.basc.framework.redis.InsertPosition;
+import io.basc.framework.redis.InterArgs;
+import io.basc.framework.redis.MessageListener;
+import io.basc.framework.redis.MovePosition;
+import io.basc.framework.redis.RedisAuth;
+import io.basc.framework.redis.RedisCommands;
+import io.basc.framework.redis.RedisValueEncoding;
+import io.basc.framework.redis.ScanOptions;
+import io.basc.framework.redis.ScoreOption;
+import io.basc.framework.redis.SetOption;
+import io.basc.framework.redis.Subscription;
+import io.basc.framework.redis.Tuple;
+import io.basc.framework.util.CollectionFactory;
+import io.basc.framework.util.CollectionUtils;
 
 @SuppressWarnings("unchecked")
 public abstract class ConvertibleRedisCommands<TK, TV, K, V> implements RedisCommands<K, V> {
@@ -197,11 +207,11 @@ public abstract class ConvertibleRedisCommands<TK, TV, K, V> implements RedisCom
 	}
 
 	@Override
-	public void hmset(K key, Map<K, V> values) {
+	public String hmset(K key, Map<K, V> values) {
 		TK k = keyCodec.encode(key);
 		Map<TK, TV> tMap = CollectionFactory.convert(values, keyCodec.toEncodeConverter(),
 				valueCodec.toEncodeConverter());
-		getTargetRedisCommands().hmset(k, tMap);
+		return getTargetRedisCommands().hmset(k, tMap);
 	}
 
 	@Override
@@ -387,10 +397,10 @@ public abstract class ConvertibleRedisCommands<TK, TV, K, V> implements RedisCom
 	}
 
 	@Override
-	public void rename(K key, K newKey) {
+	public String rename(K key, K newKey) {
 		TK k = keyCodec.encode(key);
 		TK tkNewKey = keyCodec.encode(newKey);
-		getTargetRedisCommands().rename(k, tkNewKey);
+		return getTargetRedisCommands().rename(k, tkNewKey);
 	}
 
 	@Override
@@ -401,10 +411,10 @@ public abstract class ConvertibleRedisCommands<TK, TV, K, V> implements RedisCom
 	}
 
 	@Override
-	public void restore(K key, long ttl, byte[] serializedValue, boolean replace, boolean absTtl, Long idleTime,
+	public String restore(K key, long ttl, byte[] serializedValue, boolean replace, boolean absTtl, Long idleTime,
 			Long frequency) {
 		TK k = keyCodec.encode(key);
-		getTargetRedisCommands().restore(k, ttl, serializedValue, replace, absTtl, idleTime, frequency);
+		return getTargetRedisCommands().restore(k, ttl, serializedValue, replace, absTtl, idleTime, frequency);
 	}
 
 	@Override
@@ -636,18 +646,18 @@ public abstract class ConvertibleRedisCommands<TK, TV, K, V> implements RedisCom
 	}
 
 	@Override
-	public void scriptFlush() {
-		getTargetRedisCommands().scriptFlush();
+	public String scriptFlush() {
+		return getTargetRedisCommands().scriptFlush();
 	}
 
 	@Override
-	public void scriptFlush(FlushMode flushMode) {
-		getTargetRedisCommands().scriptFlush(flushMode);
+	public String scriptFlush(FlushMode flushMode) {
+		return getTargetRedisCommands().scriptFlush(flushMode);
 	}
 
 	@Override
-	public void scriptKill() {
-		getTargetRedisCommands().scriptKill();
+	public String scriptKill() {
+		return getTargetRedisCommands().scriptKill();
 	}
 
 	@Override
@@ -1019,8 +1029,8 @@ public abstract class ConvertibleRedisCommands<TK, TV, K, V> implements RedisCom
 	}
 
 	@Override
-	public void set(K key, V value) {
-		getTargetRedisCommands().set(keyCodec.encode(key), valueCodec.encode(value));
+	public String set(K key, V value) {
+		return getTargetRedisCommands().set(keyCodec.encode(key), valueCodec.encode(value));
 	}
 
 	@Override
@@ -1143,8 +1153,8 @@ public abstract class ConvertibleRedisCommands<TK, TV, K, V> implements RedisCom
 	}
 
 	@Override
-	public void discard() {
-		getTargetRedisCommands().discard();
+	public String discard() {
+		return getTargetRedisCommands().discard();
 	}
 
 	@Override
@@ -1158,12 +1168,12 @@ public abstract class ConvertibleRedisCommands<TK, TV, K, V> implements RedisCom
 	}
 
 	@Override
-	public void unwatch() {
-		getTargetRedisCommands().unwatch();
+	public String unwatch() {
+		return getTargetRedisCommands().unwatch();
 	}
 
 	@Override
-	public void watch(K... keys) {
-		getTargetRedisCommands().watch(keyCodec.encode(keys));
+	public String watch(K... keys) {
+		return getTargetRedisCommands().watch(keyCodec.encode(keys));
 	}
 }

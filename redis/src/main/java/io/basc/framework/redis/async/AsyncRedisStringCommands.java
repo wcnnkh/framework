@@ -1,10 +1,14 @@
-package io.basc.framework.redis;
+package io.basc.framework.redis.async;
 
 import java.util.List;
 import java.util.Map;
 
+import io.basc.framework.redis.BitOP;
+import io.basc.framework.redis.ExpireOption;
+import io.basc.framework.redis.SetOption;
+
 @SuppressWarnings("unchecked")
-public interface RedisStringCommands<K, V> {
+public interface AsyncRedisStringCommands<K, V> {
 	/**
 	 * https://redis.io/commands/append<br/>
 	 * <br/>
@@ -16,7 +20,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param value
 	 * @return Integer reply: the length of the string after the append operation.
 	 */
-	Long append(K key, V value);
+	Response<Long> append(K key, V value);
 
 	/**
 	 * https://redis.io/commands/bitcount<br/>
@@ -41,7 +45,7 @@ public interface RedisStringCommands<K, V> {
 	 * 
 	 *         The number of bits set to 1.
 	 */
-	Long bitcount(K key, long start, long end);
+	Response<Long> bitcount(K key, long start, long end);
 
 	/**
 	 * https://redis.io/commands/bitop<br/>
@@ -55,7 +59,7 @@ public interface RedisStringCommands<K, V> {
 	 *         The size of the string stored in the destination key, that is equal
 	 *         to the size of the longest input string.
 	 */
-	Long bitop(BitOP op, K destkey, K... srcKeys);
+	Response<Long> bitop(BitOP op, K destkey, K... srcKeys);
 
 	/**
 	 * https://redis.io/commands/bitpos
@@ -87,7 +91,7 @@ public interface RedisStringCommands<K, V> {
 	 *         the specified range, the function returns -1 as the user specified a
 	 *         clear range and there are no 0 bits in that range.
 	 */
-	Long bitpos(K key, boolean bit, Long start, Long end);
+	Response<Long> bitpos(K key, boolean bit, Long start, Long end);
 
 	/**
 	 * https://redis.io/commands/decr
@@ -95,7 +99,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param key
 	 * @return Integer reply: the value of key after the decrement
 	 */
-	Long decr(K key);
+	Response<Long> decr(K key);
 
 	/**
 	 * https://redis.io/commands/decrby
@@ -104,7 +108,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param decrement
 	 * @return Integer reply: the value of key after the decrement
 	 */
-	Long decrBy(K key, long decrement);
+	Response<Long> decrBy(K key, long decrement);
 
 	/**
 	 * https://redis.io/commands/get<br/>
@@ -116,7 +120,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param key
 	 * @return Bulk string reply: the value of key, or nil when key does not exist.
 	 */
-	V get(K key);
+	Response<V> get(K key);
 
 	/**
 	 * https://redis.io/commands/getbit
@@ -125,7 +129,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param offset
 	 * @return Integer reply: the bit value stored at offset.
 	 */
-	Boolean getbit(K key, Long offset);
+	Response<Boolean> getbit(K key, Long offset);
 
 	/**
 	 * https://redis.io/commands/getdel<br/>
@@ -139,7 +143,7 @@ public interface RedisStringCommands<K, V> {
 	 * @return Bulk string reply: the value of key, nil when key does not exist, or
 	 *         an error if the key's value type isn't a string.
 	 */
-	V getdel(K key);
+	Response<V> getdel(K key);
 
 	/**
 	 * https://redis.io/commands/getex<br/>
@@ -152,7 +156,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param time
 	 * @return Bulk string reply: the value of key, or nil when key does not exist.
 	 */
-	V getEx(K key, ExpireOption option, Long time);
+	Response<V> getEx(K key, ExpireOption option, Long time);
 
 	/**
 	 * https://redis.io/commands/getrange<br/>
@@ -161,7 +165,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param key
 	 * @return Bulk string reply
 	 */
-	V getrange(K key, long startOffset, long endOffset);
+	Response<V> getrange(K key, long startOffset, long endOffset);
 
 	/**
 	 * https://redis.io/commands/getset<br/>
@@ -174,7 +178,7 @@ public interface RedisStringCommands<K, V> {
 	 * @return Bulk string reply: the old value stored at key, or nil when key did
 	 *         not exist.
 	 */
-	V getset(K key, V value);
+	Response<V> getset(K key, V value);
 
 	/**
 	 * https://redis.io/commands/incr
@@ -182,7 +186,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param key
 	 * @return Integer reply: the value of key after the increment
 	 */
-	Long incr(K key);
+	Response<Long> incr(K key);
 
 	/**
 	 * https://redis.io/commands/incrby
@@ -191,7 +195,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param increment
 	 * @return Integer reply: the value of key after the increment
 	 */
-	Long incrBy(K key, long increment);
+	Response<Long> incrBy(K key, long increment);
 
 	/**
 	 * https://redis.io/commands/incrbyfloat
@@ -200,7 +204,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param increment
 	 * @return Bulk string reply: the value of key after the increment.
 	 */
-	Double incrByFloat(K key, double increment);
+	Response<Double> incrByFloat(K key, double increment);
 
 	/**
 	 * https://redis.io/commands/mget
@@ -208,7 +212,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param keys
 	 * @return Array reply: list of values at the specified keys.
 	 */
-	List<V> mget(K... keys);
+	Response<List<V>> mget(K... keys);
 
 	/**
 	 * https://redis.io/commands/mset
@@ -216,7 +220,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param pairs
 	 * @return Simple string reply: always OK since MSET can't fail.
 	 */
-	Boolean mset(Map<K, V> pairs);
+	Response<Boolean> mset(Map<K, V> pairs);
 
 	/**
 	 * https://redis.io/commands/msetnx
@@ -227,7 +231,7 @@ public interface RedisStringCommands<K, V> {
 	 *         1 if the all the keys were set. 0 if no key was set (at least one key
 	 *         already existed).
 	 */
-	Long msetnx(Map<K, V> pairs);
+	Response<Long> msetnx(Map<K, V> pairs);
 
 	/**
 	 * https://redis.io/commands/psetex<br/>
@@ -240,9 +244,9 @@ public interface RedisStringCommands<K, V> {
 	 * @param value
 	 * @return
 	 */
-	Boolean psetex(K key, long milliseconds, V value);
+	Response<Boolean> psetex(K key, long milliseconds, V value);
 
-	String set(K key, V value);
+	Response<String> set(K key, V value);
 
 	/**
 	 * https://redis.io/commands/set<br/>
@@ -269,7 +273,7 @@ public interface RedisStringCommands<K, V> {
 	 *         or XX option but the condition was not met, or if the user specified
 	 *         the GET option and there was no previous value for the key.
 	 */
-	Boolean set(K key, V value, ExpireOption option, long time, SetOption setOption);
+	Response<Boolean> set(K key, V value, ExpireOption option, long time, SetOption setOption);
 
 	/**
 	 * https://redis.io/commands/setbit<br/>
@@ -289,7 +293,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param value
 	 * @return Integer reply: the original bit value stored at offset.
 	 */
-	Boolean setbit(K key, long offset, boolean value);
+	Response<Boolean> setbit(K key, long offset, boolean value);
 
 	/**
 	 * https://redis.io/commands/setex<br/>
@@ -304,7 +308,7 @@ public interface RedisStringCommands<K, V> {
 	 * 
 	 *         Examples
 	 */
-	Boolean setex(K key, long seconds, V value);
+	Response<Boolean> setex(K key, long seconds, V value);
 
 	/**
 	 * https://redis.io/commands/setnx<br/>
@@ -319,7 +323,7 @@ public interface RedisStringCommands<K, V> {
 	 * 
 	 *         1 if the key was set 0 if the key was not set
 	 */
-	Boolean setNX(K key, V value);
+	Response<Boolean> setNX(K key, V value);
 
 	/**
 	 * https://redis.io/commands/setrange<br/>
@@ -337,7 +341,7 @@ public interface RedisStringCommands<K, V> {
 	 * @return Integer reply: the length of the string after it was modified by the
 	 *         command.
 	 */
-	Long setrange(K key, Long offset, V value);
+	Response<Boolean> setrange(K key, Long offset, V value);
 
 	/**
 	 * https://redis.io/commands/strlen<br/>
@@ -349,5 +353,5 @@ public interface RedisStringCommands<K, V> {
 	 * @return Integer reply: the length of the string at key, or 0 when key does
 	 *         not exist.
 	 */
-	Long strlen(K key);
+	Response<Boolean> strlen(K key);
 }
