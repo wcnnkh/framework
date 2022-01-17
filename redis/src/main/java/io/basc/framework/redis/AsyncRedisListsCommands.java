@@ -1,9 +1,6 @@
-package io.basc.framework.redis.async;
+package io.basc.framework.redis;
 
 import java.util.List;
-
-import io.basc.framework.redis.InsertPosition;
-import io.basc.framework.redis.MovePosition;
 
 @SuppressWarnings("unchecked")
 public interface AsyncRedisListsCommands<K, V> {
@@ -24,9 +21,9 @@ public interface AsyncRedisListsCommands<K, V> {
 	 * @return Bulk string reply: the element being popped from source and pushed to
 	 *         destination. If timeout is reached, a Null reply is returned.
 	 */
-	Response<V> blmove(K sourceKey, K destinationKey, MovePosition from, MovePosition to, long timout);
+	RedisResponse<V> blmove(K sourceKey, K destinationKey, MovePosition from, MovePosition to, long timout);
 
-	default Response<List<V>> blpop(K... keys) {
+	default RedisResponse<List<V>> blpop(K... keys) {
 		return blpop((double) 0, keys);
 	}
 
@@ -46,9 +43,9 @@ public interface AsyncRedisListsCommands<K, V> {
 	 *         name of the key where an element was popped and the second element
 	 *         being the value of the popped element.
 	 */
-	Response<List<V>> blpop(double timeout, K... keys);
+	RedisResponse<List<V>> blpop(double timeout, K... keys);
 
-	default Response<List<V>> brpop(K... keys) {
+	default RedisResponse<List<V>> brpop(K... keys) {
 		return brpop((double) 0, keys);
 	}
 
@@ -72,7 +69,7 @@ public interface AsyncRedisListsCommands<K, V> {
 	 *         name of the key where an element was popped and the second element
 	 *         being the value of the popped element.
 	 */
-	Response<List<V>> brpop(double timeout, K... keys);
+	RedisResponse<List<V>> brpop(double timeout, K... keys);
 
 	/**
 	 * https://redis.io/commands/brpoplpush <br/>
@@ -82,7 +79,7 @@ public interface AsyncRedisListsCommands<K, V> {
 	 * @return Bulk string reply: the element being popped from source and pushed to
 	 *         destination. If timeout is reached, a Null reply is returned.
 	 */
-	Response<V> brpoplpush(K sourceKey, K destinationKey, double timout);
+	RedisResponse<V> brpoplpush(K sourceKey, K destinationKey, double timout);
 
 	/**
 	 * Returns the element at index index in the list stored at key. The index is
@@ -98,7 +95,7 @@ public interface AsyncRedisListsCommands<K, V> {
 	 * @return Bulk string reply: the requested element, or nil when index is out of
 	 *         range.
 	 */
-	Response<V> lindex(K key, long index);
+	RedisResponse<V> lindex(K key, long index);
 
 	/**
 	 * https://redis.io/commands/linsert<br/>
@@ -118,7 +115,7 @@ public interface AsyncRedisListsCommands<K, V> {
 	 * @return Integer reply: the length of the list after the insert operation, or
 	 *         -1 when the value pivot was not found.
 	 */
-	Response<Long> linsert(K key, InsertPosition position, V pivot, V value);
+	RedisResponse<Long> linsert(K key, InsertPosition position, V pivot, V value);
 
 	/**
 	 * https://redis.io/commands/llen<br/>
@@ -130,7 +127,7 @@ public interface AsyncRedisListsCommands<K, V> {
 	 * @param key
 	 * @return Integer reply: the length of the list at key.
 	 */
-	Response<Long> llen(K key);
+	RedisResponse<Long> llen(K key);
 
 	/**
 	 * https://redis.io/commands/lmove<br/>
@@ -159,7 +156,7 @@ public interface AsyncRedisListsCommands<K, V> {
 	 * @param position2
 	 * @return Bulk string reply: the element being popped and pushed.
 	 */
-	Response<V> lmove(K sourceKey, K destinationKey, MovePosition from, MovePosition to);
+	RedisResponse<V> lmove(K sourceKey, K destinationKey, MovePosition from, MovePosition to);
 
 	/**
 	 * https://redis.io/commands/lpop<br/>
@@ -182,7 +179,7 @@ public interface AsyncRedisListsCommands<K, V> {
 	 *         Array reply: the values of the first elements, or nil when key does
 	 *         not exist.
 	 */
-	Response<List<V>> lpop(K key, int count);
+	RedisResponse<List<V>> lpop(K key, int count);
 
 	/**
 	 * https://redis.io/commands/lpush<br/>
@@ -202,7 +199,7 @@ public interface AsyncRedisListsCommands<K, V> {
 	 * @param elements
 	 * @return Integer reply: the length of the list after the push operations.
 	 */
-	Response<Long> lpush(K key, V... elements);
+	RedisResponse<Long> lpush(K key, V... elements);
 
 	/**
 	 * https://redis.io/commands/lpushx<br/>
@@ -215,7 +212,7 @@ public interface AsyncRedisListsCommands<K, V> {
 	 * @param elements
 	 * @return Integer reply: the length of the list after the push operation.
 	 */
-	Response<Long> lpushx(K key, V... elements);
+	RedisResponse<Long> lpushx(K key, V... elements);
 
 	/**
 	 * https://redis.io/commands/lrange<br/>
@@ -230,7 +227,7 @@ public interface AsyncRedisListsCommands<K, V> {
 	 * @param stop
 	 * @return Array reply: list of elements in the specified range.
 	 */
-	Response<List<V>> lrange(K key, long start, long stop);
+	RedisResponse<List<V>> lrange(K key, long start, long stop);
 
 	/**
 	 * https://redis.io/commands/lrem<br/>
@@ -252,7 +249,7 @@ public interface AsyncRedisListsCommands<K, V> {
 	 * @param element
 	 * @return Integer reply: the number of removed elements.
 	 */
-	Response<Long> lrem(K key, int count, V element);
+	RedisResponse<Long> lrem(K key, int count, V element);
 
 	/**
 	 * https://redis.io/commands/lset<br/>
@@ -267,7 +264,7 @@ public interface AsyncRedisListsCommands<K, V> {
 	 * @param element
 	 * @return Simple string reply
 	 */
-	Response<Boolean> lset(K key, long index, V element);
+	RedisResponse<Boolean> lset(K key, long index, V element);
 
 	/**
 	 * https://redis.io/commands/ltrim
@@ -277,7 +274,7 @@ public interface AsyncRedisListsCommands<K, V> {
 	 * @param stop
 	 * @return Simple string reply
 	 */
-	Response<Boolean> ltrim(K key, long start, long stop);
+	RedisResponse<Boolean> ltrim(K key, long start, long stop);
 
 	/**
 	 * https://redis.io/commands/rpop<br/>
@@ -302,7 +299,7 @@ public interface AsyncRedisListsCommands<K, V> {
 	 *         Array reply: the values of the last elements, or nil when key does
 	 *         not exist.
 	 */
-	Response<List<V>> rpop(K key, int count);
+	RedisResponse<List<V>> rpop(K key, int count);
 
 	/**
 	 * https://redis.io/commands/rpoplpush<br/>
@@ -325,7 +322,7 @@ public interface AsyncRedisListsCommands<K, V> {
 	 * 
 	 * @return Bulk string reply: the element being popped and pushed.
 	 */
-	Response<V> rpoplpush(K sourceKey, K destinationKey);
+	RedisResponse<V> rpoplpush(K sourceKey, K destinationKey);
 
 	/**
 	 * https://redis.io/commands/rpush<br/>
@@ -345,7 +342,7 @@ public interface AsyncRedisListsCommands<K, V> {
 	 * @param elements
 	 * @return Integer reply: the length of the list after the push operation.
 	 */
-	Response<Long> rpush(K key, V... elements);
+	RedisResponse<Long> rpush(K key, V... elements);
 
 	/**
 	 * https://redis.io/commands/rpushx<br/>
@@ -358,5 +355,5 @@ public interface AsyncRedisListsCommands<K, V> {
 	 * @param elements
 	 * @return Integer reply: the length of the list after the push operation.
 	 */
-	Response<Long> rpushx(K key, V... elements);
+	RedisResponse<Long> rpushx(K key, V... elements);
 }

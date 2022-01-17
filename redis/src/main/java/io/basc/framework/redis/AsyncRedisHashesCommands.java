@@ -1,4 +1,4 @@
-package io.basc.framework.redis.async;
+package io.basc.framework.redis;
 
 import java.util.List;
 import java.util.Map;
@@ -24,7 +24,7 @@ public interface AsyncRedisHashesCommands<K, V> {
 	 * @return Integer reply: the number of fields that were removed from the hash,
 	 *         not including specified but non existing fields.
 	 */
-	Response<Long> hdel(K key, K... fields);
+	RedisResponse<Long> hdel(K key, K... fields);
 
 	/**
 	 * https://redis.io/commands/hexists<br/>
@@ -38,7 +38,7 @@ public interface AsyncRedisHashesCommands<K, V> {
 	 *         1 if the hash contains field. 0 if the hash does not contain field,
 	 *         or key does not exist.
 	 */
-	Response<Boolean> hexists(K key, K field);
+	RedisResponse<Boolean> hexists(K key, K field);
 
 	/**
 	 * https://redis.io/commands/hget<br/>
@@ -50,7 +50,7 @@ public interface AsyncRedisHashesCommands<K, V> {
 	 * @return Bulk string reply: the value associated with field, or nil when field
 	 *         is not present in the hash or key does not exist.
 	 */
-	Response<V> hget(K key, K field);
+	RedisResponse<V> hget(K key, K field);
 
 	/**
 	 * https://redis.io/commands/hgetall<br/>
@@ -63,7 +63,7 @@ public interface AsyncRedisHashesCommands<K, V> {
 	 * @return Array reply: list of fields and their values stored in the hash, or
 	 *         an empty list when key does not exist.
 	 */
-	Response<Map<K, V>> hgetall(K key);
+	RedisResponse<Map<K, V>> hgetall(K key);
 
 	/**
 	 * Increments the number stored at field in the hash stored at key by increment.
@@ -78,7 +78,7 @@ public interface AsyncRedisHashesCommands<K, V> {
 	 * @param increment
 	 * @return Integer reply: the value at field after the increment operation.
 	 */
-	Response<Long> hincrby(K key, K field, long increment);
+	RedisResponse<Long> hincrby(K key, K field, long increment);
 
 	/**
 	 * 
@@ -101,7 +101,7 @@ public interface AsyncRedisHashesCommands<K, V> {
 	 * @param increment
 	 * @return Bulk string reply: the value of field after the increment.
 	 */
-	Response<Double> hincrbyfloat(K key, K field, double increment);
+	RedisResponse<Double> hincrbyfloat(K key, K field, double increment);
 
 	/**
 	 * https://redis.io/commands/hkeys<br/>
@@ -112,7 +112,7 @@ public interface AsyncRedisHashesCommands<K, V> {
 	 * @return Array reply: list of fields in the hash, or an empty list when key
 	 *         does not exist.
 	 */
-	Response<Set<K>> hkeys(K key);
+	RedisResponse<Set<K>> hkeys(K key);
 
 	/**
 	 * https://redis.io/commands/hlen<br/>
@@ -123,7 +123,7 @@ public interface AsyncRedisHashesCommands<K, V> {
 	 * @return Integer reply: number of fields in the hash, or 0 when key does not
 	 *         exist.
 	 */
-	Response<Long> hlen(K key);
+	RedisResponse<Long> hlen(K key);
 
 	/**
 	 * https://redis.io/commands/hmget<br/>
@@ -140,7 +140,7 @@ public interface AsyncRedisHashesCommands<K, V> {
 	 * @return Array reply: list of values associated with the given fields, in the
 	 *         same order as they are requested.
 	 */
-	Response<List<V>> hmget(K key, K... fields);
+	RedisResponse<List<V>> hmget(K key, K... fields);
 
 	/**
 	 * https://redis.io/commands/hmset<br/>
@@ -156,7 +156,7 @@ public interface AsyncRedisHashesCommands<K, V> {
 	 * @param pairs
 	 * @return Simple string reply
 	 */
-	Response<String> hmset(K key, Map<K, V> values);
+	RedisResponse<String> hmset(K key, Map<K, V> values);
 
 	/**
 	 * https://redis.io/commands/hrandfield<br/>
@@ -188,9 +188,9 @@ public interface AsyncRedisHashesCommands<K, V> {
 	 *         not exist. If the WITHVALUES modifier is used, the reply is a list
 	 *         fields and their values from the hash.
 	 */
-	Response<List<K>> hrandfield(K key, Integer count);
+	RedisResponse<List<K>> hrandfield(K key, Integer count);
 
-	Response<Map<K, V>> hrandfieldWithValue(K key, Integer count);
+	RedisResponse<Map<K, V>> hrandfieldWithValue(K key, Integer count);
 
 	/**
 	 * https://redis.io/commands/hset<br/>
@@ -206,7 +206,7 @@ public interface AsyncRedisHashesCommands<K, V> {
 	 * @param pairs
 	 * @return Integer reply: The number of fields that were added.
 	 */
-	Response<Long> hset(K key, Map<K, V> values);
+	RedisResponse<Long> hset(K key, Map<K, V> values);
 
 	/**
 	 * https://redis.io/commands/hsetnx<br/>
@@ -223,7 +223,7 @@ public interface AsyncRedisHashesCommands<K, V> {
 	 *         1 if field is a new field in the hash and value was set. 0 if field
 	 *         already exists in the hash and no operation was performed.
 	 */
-	Response<Boolean> hsetnx(K key, K field, V value);
+	RedisResponse<Boolean> hsetnx(K key, K field, V value);
 
 	/**
 	 * https://redis.io/commands/hstrlen<br/>
@@ -237,7 +237,7 @@ public interface AsyncRedisHashesCommands<K, V> {
 	 *         or zero when field is not present in the hash or key does not exist
 	 *         at all.
 	 */
-	Response<Long> hstrlen(K key, K field);
+	RedisResponse<Long> hstrlen(K key, K field);
 
 	/**
 	 * Returns all values in the hash stored at key.
@@ -246,5 +246,5 @@ public interface AsyncRedisHashesCommands<K, V> {
 	 * @return Array reply: list of values in the hash, or an empty list when key
 	 *         does not exist.
 	 */
-	Response<List<V>> hvals(K key);
+	RedisResponse<List<V>> hvals(K key);
 }

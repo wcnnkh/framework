@@ -3,10 +3,8 @@ package io.basc.framework.jedis;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import io.basc.framework.convert.lang.NumberToBooleanConverter;
@@ -56,13 +54,11 @@ import redis.clients.jedis.args.GeoUnit;
 import redis.clients.jedis.args.ListDirection;
 import redis.clients.jedis.args.ListPosition;
 import redis.clients.jedis.params.BitPosParams;
-import redis.clients.jedis.params.GeoAddParams;
 import redis.clients.jedis.params.GeoRadiusParam;
 import redis.clients.jedis.params.GetExParams;
 import redis.clients.jedis.params.MigrateParams;
 import redis.clients.jedis.params.RestoreParams;
 import redis.clients.jedis.params.SetParams;
-import redis.clients.jedis.params.XClaimParams;
 import redis.clients.jedis.params.ZAddParams;
 import redis.clients.jedis.params.ZParams;
 import redis.clients.jedis.resps.GeoRadiusResponse;
@@ -400,28 +396,14 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return jedis.mget(keys);
 	}
 
-	private byte[][] toPairsArgs(Map<byte[], byte[]> pairs) {
-		if (CollectionUtils.isEmpty(pairs)) {
-			return new byte[0][0];
-		}
-		List<byte[]> args = new ArrayList<byte[]>();
-		for (Entry<byte[], byte[]> entry : pairs.entrySet()) {
-			args.add(entry.getKey());
-			args.add(entry.getValue());
-		}
-		return args.toArray(new byte[0][0]);
-	}
-
 	@Override
 	public Boolean mset(Map<byte[], byte[]> pairs) {
-		byte[][] bytes = toPairsArgs(pairs);
-		return "OK".equalsIgnoreCase(jedis.mset(bytes));
+		return "OK".equalsIgnoreCase(jedis.mset(JedisUtils.toPairsArgs(pairs)));
 	}
 
 	@Override
 	public Long msetnx(Map<byte[], byte[]> pairs) {
-		byte[][] bytes = toPairsArgs(pairs);
-		return jedis.msetnx(bytes);
+		return jedis.msetnx(JedisUtils.toPairsArgs(pairs));
 	}
 
 	@Override
@@ -716,32 +698,9 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return jedis.ping(message);
 	}
 
-	private GeoAddParams toGeoAddParams(GeoaddOption option) {
-		GeoAddParams params = new GeoAddParams();
-		switch (option) {
-		case CH:
-			params.ch();
-			break;
-		case NX:
-			params.nx();
-			break;
-		case XX:
-			params.xx();
-			break;
-		default:
-			break;
-		}
-		return params;
-	}
-
 	@Override
 	public Long geoadd(byte[] key, GeoaddOption option, Map<byte[], Point> members) {
-		Map<byte[], GeoCoordinate> memberCoordinateMap = new HashMap<byte[], GeoCoordinate>(members.size());
-		for (Entry<byte[], Point> entry : members.entrySet()) {
-			GeoCoordinate coordinate = new GeoCoordinate(entry.getValue().getX(), entry.getValue().getY());
-			memberCoordinateMap.put(entry.getKey(), coordinate);
-		}
-		return jedis.geoadd(key, toGeoAddParams(option), memberCoordinateMap);
+		return jedis.geoadd(key, JedisUtils.toGeoAddParams(option), JedisUtils.toMemberCoordinateMap(members));
 	}
 
 	@Override
@@ -1149,35 +1108,13 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return jedis.xack(key, group, ids);
 	}
 
-	private XClaimParams toXClaimParams(ClaimArgs args) {
-		XClaimParams params = new XClaimParams();
-		if (args != null) {
-			if (args.getIdle() != null) {
-				params.idle(args.getIdle());
-			}
-
-			if (args.getTime() != null) {
-				params.time(args.getTime());
-			}
-
-			if (args.getRetryCount() != null) {
-				params.retryCount(args.getRetryCount());
-			}
-
-			if (args.isForce()) {
-				params.force();
-			}
-		}
-		return params;
-	}
-
 	@Override
 	public List<byte[]> xclaim(byte[] key, byte[] group, byte[] consumer, long minIdleTime, ClaimArgs args,
 			byte[]... ids) {
 		if (args != null && args.isJustId()) {
-			return jedis.xclaimJustId(key, group, consumer, minIdleTime, toXClaimParams(args), ids);
+			return jedis.xclaimJustId(key, group, consumer, minIdleTime, JedisUtils.toXClaimParams(args), ids);
 		} else {
-			return jedis.xclaim(key, group, consumer, minIdleTime, toXClaimParams(args), ids);
+			return jedis.xclaim(key, group, consumer, minIdleTime, JedisUtils.toXClaimParams(args), ids);
 		}
 	}
 

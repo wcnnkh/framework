@@ -1,13 +1,8 @@
-package io.basc.framework.redis.async;
+package io.basc.framework.redis;
 
 import java.util.Set;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.redis.Cursor;
-import io.basc.framework.redis.DataType;
-import io.basc.framework.redis.RedisAuth;
-import io.basc.framework.redis.RedisValueEncoding;
-import io.basc.framework.redis.ScanOptions;
 
 /**
  * https://redis.io/commands#generic
@@ -24,7 +19,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * @param destination
 	 * @return 1 if source was copied. 0 if source was not copied.
 	 */
-	Response<Boolean> copy(K source, K destination, @Nullable Integer destinationDB, boolean replace);
+	RedisResponse<Boolean> copy(K source, K destination, @Nullable Integer destinationDB, boolean replace);
 
 	/**
 	 * https://redis.io/commands/del
@@ -32,7 +27,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * @param keys
 	 * @return The number of keys that were removed.
 	 */
-	Response<Long> del(K... keys);
+	RedisResponse<Long> del(K... keys);
 
 	/**
 	 * https://redis.io/commands/dump
@@ -40,7 +35,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * @param key
 	 * @return Bulk string reply: the serialized value.
 	 */
-	Response<V> dump(K key);
+	RedisResponse<V> dump(K key);
 
 	/**
 	 * https://redis.io/commands/exists
@@ -56,7 +51,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 *         Keys mentioned multiple times and existing are counted multiple
 	 *         times.
 	 */
-	Response<Long> exists(K... keys);
+	RedisResponse<Long> exists(K... keys);
 
 	/**
 	 * https://redis.io/commands/expire
@@ -67,7 +62,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * 
 	 *         1 if the timeout was set. 0 if key does not exist.
 	 */
-	Response<Long> expire(K key, long seconds);
+	RedisResponse<Long> expire(K key, long seconds);
 
 	/**
 	 * https://redis.io/commands/expireat
@@ -78,7 +73,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * 
 	 *         1 if the timeout was set. 0 if key does not exist.
 	 */
-	Response<Long> expireAt(K key, long timestamp);
+	RedisResponse<Long> expireAt(K key, long timestamp);
 
 	/**
 	 * Supported glob-style patterns:
@@ -93,9 +88,9 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * @param pattern
 	 * @return Array reply: list of keys matching pattern.
 	 */
-	Response<Set<K>> keys(K pattern);
+	RedisResponse<Set<K>> keys(K pattern);
 
-	Response<String> migrate(String host, int port, K key, int targetDB, int timeout);
+	RedisResponse<String> migrate(String host, int port, K key, int targetDB, int timeout);
 
 	/**
 	 * https://redis.io/commands/migrate
@@ -118,7 +113,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * @return Simple string reply: The command returns OK on success, or NOKEY if
 	 *         no keys were found in the source instance.
 	 */
-	Response<String> migrate(String host, int port, int targetDB, int timeout, boolean copy, boolean replace, RedisAuth auth,
+	RedisResponse<String> migrate(String host, int port, int targetDB, int timeout, boolean copy, boolean replace, RedisAuth auth,
 			K... keys);
 
 	/**
@@ -130,7 +125,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * 
 	 *         1 if key was moved. 0 if key was not moved.
 	 */
-	Response<Long> move(K key, int targetDB);
+	RedisResponse<Long> move(K key, int targetDB);
 
 	/**
 	 * https://redis.io/commands/object
@@ -138,7 +133,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * @param key
 	 * @return
 	 */
-	Response<Long> objectRefCount(K key);
+	RedisResponse<Long> objectRefCount(K key);
 
 	/**
 	 * https://redis.io/commands/object
@@ -146,7 +141,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * @param key
 	 * @return
 	 */
-	Response<RedisValueEncoding> objectEncoding(K key);
+	RedisResponse<RedisValueEncoding> objectEncoding(K key);
 
 	/**
 	 * https://redis.io/commands/object
@@ -154,9 +149,9 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * @param key
 	 * @return
 	 */
-	Response<Long> objectIdletime(K key);
+	RedisResponse<Long> objectIdletime(K key);
 
-	Response<Long> objectFreq(K key);
+	RedisResponse<Long> objectFreq(K key);
 
 	/**
 	 * https://redis.io/commands/persist
@@ -167,7 +162,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 *         1 if the timeout was removed. 0 if key does not exist or does not
 	 *         have an associated timeout.
 	 */
-	Response<Long> persist(K key);
+	RedisResponse<Long> persist(K key);
 
 	/**
 	 * https://redis.io/commands/pexpire
@@ -178,7 +173,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * 
 	 *         1 if the timeout was set. 0 if key does not exist.
 	 */
-	Response<Long> pexpire(K key, long milliseconds);
+	RedisResponse<Long> pexpire(K key, long milliseconds);
 
 	/**
 	 * PEXPIREAT has the same effect and semantic as EXPIREAT, but the Unix time at
@@ -193,7 +188,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * 
 	 *         1 if the timeout was set. 0 if key does not exist.
 	 */
-	Response<Long> pexpireAt(K key, long timestamp);
+	RedisResponse<Long> pexpireAt(K key, long timestamp);
 
 	/**
 	 * Like TTL this command returns the remaining time to live of a key that has an
@@ -214,7 +209,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * @return Integer reply: TTL in milliseconds, or a negative value in order to
 	 *         signal an error (see the description above).
 	 */
-	Response<Long> pttl(K key);
+	RedisResponse<Long> pttl(K key);
 
 	/**
 	 * Return a random key from the currently selected database. <br/>
@@ -222,7 +217,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * 
 	 * @return Bulk string reply: the random key, or nil when the database is empty.
 	 */
-	Response<K> randomkey();
+	RedisResponse<K> randomkey();
 
 	/**
 	 * Renames key to newkey. It returns an error when key does not exist. If newkey
@@ -245,7 +240,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * @param newKey
 	 * @return Return value Simple string reply
 	 */
-	Response<String> rename(K key, K newKey);
+	RedisResponse<String> rename(K key, K newKey);
 
 	/**
 	 * Renames key to newkey if newkey does not yet exist. It returns an error when
@@ -266,7 +261,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * 
 	 *         1 if key was renamed to newkey. 0 if newkey already exists.
 	 */
-	Response<Boolean> renamenx(K key, K newKey);
+	RedisResponse<Boolean> renamenx(K key, K newKey);
 
 	/**
 	 * Create a key associated with a value that is obtained by deserializing the
@@ -295,7 +290,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * @param serializedValue
 	 * @return Simple string reply: The command returns OK on success.
 	 */
-	Response<String> restore(K key, long ttl, byte[] serializedValue, boolean replace, boolean absTtl, Long idleTime,
+	RedisResponse<String> restore(K key, long ttl, byte[] serializedValue, boolean replace, boolean absTtl, Long idleTime,
 			Long frequency);
 
 	/**
@@ -331,7 +326,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 *                call to the command.
 	 * @return
 	 */
-	Response<Cursor<K>> scan(long cursorId, ScanOptions<K> options);
+	RedisResponse<Cursor<K>> scan(long cursorId, ScanOptions<K> options);
 
 	/**
 	 * https://redis.io/commands/touch
@@ -340,7 +335,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 *             does not exist.
 	 * @return Integer reply: The number of keys that were touched.
 	 */
-	Response<Long> touch(K... keys);
+	RedisResponse<Long> touch(K... keys);
 
 	/**
 	 * https://redis.io/commands/ttl <br/>
@@ -363,7 +358,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * @return Integer reply: TTL in seconds, or a negative value in order to signal
 	 *         an error (see the description above).
 	 */
-	Response<Long> ttl(K key);
+	RedisResponse<Long> ttl(K key);
 
 	/**
 	 * https://redis.io/commands/type<br/>
@@ -375,7 +370,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * @param key
 	 * @return Simple string reply: type of key, or none when key does not exist.
 	 */
-	Response<DataType> type(K key);
+	RedisResponse<DataType> type(K key);
 
 	/**
 	 * https://redis.io/commands/unlink<br/>
@@ -390,7 +385,7 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * @param keys
 	 * @return Integer reply: The number of keys that were unlinked.
 	 */
-	Response<Long> unlink(K... keys);
+	RedisResponse<Long> unlink(K... keys);
 
 	/**
 	 * https://redis.io/commands/wait<br/>
@@ -400,5 +395,5 @@ public interface AsyncRedisKeysCommands<K, V> {
 	 * @return Integer reply: The command returns the number of replicas reached by
 	 *         all the writes performed in the context of the current connection.
 	 */
-	Response<Long> wait(int numreplicas, long timeout);
+	RedisResponse<Long> wait(int numreplicas, long timeout);
 }

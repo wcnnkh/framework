@@ -1,4 +1,4 @@
-package io.basc.framework.redis.async;
+package io.basc.framework.redis;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -9,12 +9,6 @@ import io.basc.framework.data.geo.Circle;
 import io.basc.framework.data.geo.Distance;
 import io.basc.framework.data.geo.Metric;
 import io.basc.framework.data.geo.Point;
-import io.basc.framework.redis.GeoRadiusArgs;
-import io.basc.framework.redis.GeoRadiusWith;
-import io.basc.framework.redis.GeoResultWith;
-import io.basc.framework.redis.GeoWithin;
-import io.basc.framework.redis.GeoaddOption;
-import io.basc.framework.redis.GeoradiusStroage;
 import io.basc.framework.util.comparator.Sort;
 
 /**
@@ -38,15 +32,15 @@ public interface AsyncRedisGeoCommands<K, V> {
 	 *         specified, the number of elements that were changed (added or
 	 *         updated).
 	 */
-	default Response<Long> geoadd(K key, V member, Point point) {
+	default RedisResponse<Long> geoadd(K key, V member, Point point) {
 		return geoadd(key, null, member, point);
 	}
 
-	default Response<Long> geoadd(K key, GeoaddOption option, V member, Point point) {
+	default RedisResponse<Long> geoadd(K key, GeoaddOption option, V member, Point point) {
 		return geoadd(key, option, Collections.singletonMap(member, point));
 	}
 
-	Response<Long> geoadd(K key, GeoaddOption option, Map<V, Point> members);
+	RedisResponse<Long> geoadd(K key, GeoaddOption option, Map<V, Point> members);
 
 	/**
 	 * https://redis.io/commands/geodist <br/>
@@ -58,7 +52,7 @@ public interface AsyncRedisGeoCommands<K, V> {
 	 *         string) in the specified unit, or NULL if one or both the elements
 	 *         are missing.
 	 */
-	Response<Double> geodist(K key, V member1, V member2, Metric metric);
+	RedisResponse<Double> geodist(K key, V member1, V member2, Metric metric);
 
 	/**
 	 * https://redis.io/commands/geohash<br/>
@@ -93,7 +87,7 @@ public interface AsyncRedisGeoCommands<K, V> {
 	 *         The command returns an array where each element is the Geohash
 	 *         corresponding to each member name passed as argument to the command.
 	 */
-	Response<List<String>> geohash(K key, V... members);
+	RedisResponse<List<String>> geohash(K key, V... members);
 
 	/**
 	 * https://redis.io/commands/geopos<br/>
@@ -123,7 +117,7 @@ public interface AsyncRedisGeoCommands<K, V> {
 	 * 
 	 * 
 	 */
-	Response<List<Point>> geopos(K key, V... members);
+	RedisResponse<List<Point>> geopos(K key, V... members);
 
 	/**
 	 * https://redis.io/commands/georadius
@@ -167,9 +161,9 @@ public interface AsyncRedisGeoCommands<K, V> {
 	 *         a two items x,y array (longitude,latitude).
 	 */
 
-	Response<Collection<V>> georadius(K key, Circle within, GeoRadiusArgs<K> args);
+	RedisResponse<Collection<V>> georadius(K key, Circle within, GeoRadiusArgs<K> args);
 
-	Response<List<GeoWithin<V>>> georadius(K key, Circle within, GeoRadiusWith with, GeoRadiusArgs<K> args);
+	RedisResponse<List<GeoWithin<V>>> georadius(K key, Circle within, GeoRadiusWith with, GeoRadiusArgs<K> args);
 
 	/**
 	 * https://redis.io/commands/georadiusbymember<br/>
@@ -179,7 +173,7 @@ public interface AsyncRedisGeoCommands<K, V> {
 	 *      GeoResultWith...)
 	 * @return
 	 */
-	Response<List<V>> georadiusbymember(K key, V member, Distance distance, GeoRadiusArgs<K> args);
+	RedisResponse<List<V>> georadiusbymember(K key, V member, Distance distance, GeoRadiusArgs<K> args);
 
-	Response<List<GeoWithin<V>>> georadiusbymember(K key, V member, Distance distance, GeoRadiusWith with, GeoRadiusArgs<K> args);
+	RedisResponse<List<GeoWithin<V>>> georadiusbymember(K key, V member, Distance distance, GeoRadiusWith with, GeoRadiusArgs<K> args);
 }

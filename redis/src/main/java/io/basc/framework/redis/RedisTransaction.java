@@ -1,4 +1,4 @@
-package io.basc.framework.redis.async;
+package io.basc.framework.redis;
 
 /**
  * redis事务

@@ -1,4 +1,4 @@
-package io.basc.framework.redis.async;
+package io.basc.framework.redis;
 
 @SuppressWarnings("unchecked")
 public interface AsyncRedisHyperloglogCommands<K, V> {
@@ -33,7 +33,7 @@ public interface AsyncRedisHyperloglogCommands<K, V> {
 	 *         1 if at least 1 HyperLogLog internal register was altered. 0
 	 *         otherwise.
 	 */
-	Response<Long> pfadd(K key, V... elements);
+	RedisResponse<Long> pfadd(K key, V... elements);
 
 	/**
 	 * https://redis.io/commands/pfcount<br/>
@@ -66,7 +66,7 @@ public interface AsyncRedisHyperloglogCommands<K, V> {
 	 * 
 	 *         The approximated number of unique elements observed via PFADD.
 	 */
-	Response<Long> pfcount(K... keys);
+	RedisResponse<Long> pfcount(K... keys);
 
 	/**
 	 * https://redis.io/commands/pfmerge<br/>
@@ -86,5 +86,5 @@ public interface AsyncRedisHyperloglogCommands<K, V> {
 	 * @param sourceKeys
 	 * @return Simple string reply: The command just returns OK.
 	 */
-	Response<Boolean> pfmerge(K destKey, K... sourceKeys);
+	RedisResponse<Boolean> pfmerge(K destKey, K... sourceKeys);
 }

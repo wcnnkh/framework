@@ -1,10 +1,7 @@
-package io.basc.framework.redis.async;
+package io.basc.framework.redis;
 
 import java.util.List;
 import java.util.Set;
-
-import io.basc.framework.redis.Cursor;
-import io.basc.framework.redis.ScanOptions;
 
 @SuppressWarnings("unchecked")
 public interface AsyncRedisSetsCommands<K, V> {
@@ -20,7 +17,7 @@ public interface AsyncRedisSetsCommands<K, V> {
 	 * @return Integer reply: the number of elements that were added to the set, not
 	 *         including all the elements already present in the set.
 	 */
-	Response<Long> sadd(K key, V... members);
+	RedisResponse<Long> sadd(K key, V... members);
 
 	/**
 	 * https://redis.io/commands/scard<br/>
@@ -31,7 +28,7 @@ public interface AsyncRedisSetsCommands<K, V> {
 	 * @return Integer reply: the cardinality (number of elements) of the set, or 0
 	 *         if key does not exist.
 	 */
-	Response<Long> scard(K key);
+	RedisResponse<Long> scard(K key);
 
 	/**
 	 * https://redis.io/commands/sdiff<br/>
@@ -42,7 +39,7 @@ public interface AsyncRedisSetsCommands<K, V> {
 	 * @param keys
 	 * @return Array reply: list with members of the resulting set.
 	 */
-	Response<Set<V>> sdiff(K... keys);
+	RedisResponse<Set<V>> sdiff(K... keys);
 
 	/**
 	 * https://redis.io/commands/sdiffstore<br/>
@@ -56,7 +53,7 @@ public interface AsyncRedisSetsCommands<K, V> {
 	 * @param keys
 	 * @return Integer reply: the number of elements in the resulting set.
 	 */
-	Response<Long> sdiffstore(K destinationKey, K... keys);
+	RedisResponse<Long> sdiffstore(K destinationKey, K... keys);
 
 	/**
 	 * https://redis.io/commands/sinter<br/>
@@ -67,7 +64,7 @@ public interface AsyncRedisSetsCommands<K, V> {
 	 * @param keys
 	 * @return Array reply: list with members of the resulting set.
 	 */
-	Response<Set<V>> sinter(K... keys);
+	RedisResponse<Set<V>> sinter(K... keys);
 
 	/**
 	 * https://redis.io/commands/sinterstore<br/>
@@ -77,7 +74,7 @@ public interface AsyncRedisSetsCommands<K, V> {
 	 * @param keys
 	 * @return Integer reply: the number of elements in the resulting set.
 	 */
-	Response<Long> sinterstore(K destinationKey, K... keys);
+	RedisResponse<Long> sinterstore(K destinationKey, K... keys);
 
 	/**
 	 * https://redis.io/commands/sismember<br/>
@@ -91,7 +88,7 @@ public interface AsyncRedisSetsCommands<K, V> {
 	 *         1 if the element is a member of the set. 0 if the element is not a
 	 *         member of the set, or if key does not exist.
 	 */
-	Response<Boolean> sismember(K key, V member);
+	RedisResponse<Boolean> sismember(K key, V member);
 
 	/**
 	 * https://redis.io/commands/smembers<br/>
@@ -103,7 +100,7 @@ public interface AsyncRedisSetsCommands<K, V> {
 	 * @param key
 	 * @return Array reply: all elements of the set.
 	 */
-	Response<Set<V>> smembers(K key);
+	RedisResponse<Set<V>> smembers(K key);
 
 	/**
 	 * https://redis.io/commands/smismember<br/>
@@ -118,7 +115,7 @@ public interface AsyncRedisSetsCommands<K, V> {
 	 * @return Array reply: list representing the membership of the given elements,
 	 *         in the same order as they are requested.
 	 */
-	Response<List<Boolean>> smismember(K key, V... members);
+	RedisResponse<List<Boolean>> smismember(K key, V... members);
 
 	/**
 	 * https://redis.io/commands/smove<br/>
@@ -143,7 +140,7 @@ public interface AsyncRedisSetsCommands<K, V> {
 	 *         1 if the element is moved. 0 if the element is not a member of source
 	 *         and no operation was performed.
 	 */
-	Response<Boolean> sMove(K sourceKey, K destinationKey, V member);
+	RedisResponse<Boolean> sMove(K sourceKey, K destinationKey, V member);
 
 	/**
 	 * https://redis.io/commands/spop<br/>
@@ -170,7 +167,7 @@ public interface AsyncRedisSetsCommands<K, V> {
 	 *         Array reply: the removed members, or an empty array when key does not
 	 *         exist.
 	 */
-	Response<Set<V>> spop(K key, int count);
+	RedisResponse<Set<V>> spop(K key, int count);
 
 	/**
 	 * https://redis.io/commands/srandmember<br/>
@@ -196,7 +193,7 @@ public interface AsyncRedisSetsCommands<K, V> {
 	 *         command returns an array of elements, or an empty array when key does
 	 *         not exist.
 	 */
-	Response<List<V>> srandmember(K key, int count);
+	RedisResponse<List<V>> srandmember(K key, int count);
 
 	/**
 	 * https://redis.io/commands/srem<br/>
@@ -213,7 +210,7 @@ public interface AsyncRedisSetsCommands<K, V> {
 	 * @return Integer reply: the number of members that were removed from the set,
 	 *         not including non existing members.
 	 */
-	Response<Long> srem(K key, V... members);
+	RedisResponse<Long> srem(K key, V... members);
 
 	/**
 	 * https://redis.io/commands/sunion<br/>
@@ -224,7 +221,7 @@ public interface AsyncRedisSetsCommands<K, V> {
 	 * @param keys
 	 * @return Array reply: list with members of the resulting set.
 	 */
-	Response<Set<V>> sunion(K... keys);
+	RedisResponse<Set<V>> sunion(K... keys);
 
 	/**
 	 * https://redis.io/commands/sunionstore<br/>
@@ -238,7 +235,7 @@ public interface AsyncRedisSetsCommands<K, V> {
 	 * @param keys
 	 * @return Integer reply: the number of elements in the resulting set.
 	 */
-	Response<Long> sunionstore(K destinationKey, K... keys);
+	RedisResponse<Long> sunionstore(K destinationKey, K... keys);
 
 	/**
 	 * Use a {@link Cursor} to iterate over elements in set at {@code key}.
@@ -248,5 +245,5 @@ public interface AsyncRedisSetsCommands<K, V> {
 	 * @return never {@literal null}.
 	 * @see <a href="https://redis.io/commands/scan">Redis Documentation: SCAN</a>
 	 */
-	Response<Cursor<K>> sScan(long cursorId, K key, ScanOptions<K> options);
+	RedisResponse<Cursor<K>> sScan(long cursorId, K key, ScanOptions<K> options);
 }
