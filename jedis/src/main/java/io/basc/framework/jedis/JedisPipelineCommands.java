@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.basc.framework.convert.lang.NumberToBooleanConverter;
 import io.basc.framework.data.geo.Circle;
 import io.basc.framework.data.geo.Distance;
 import io.basc.framework.data.geo.Metric;
@@ -162,103 +163,102 @@ public class JedisPipelineCommands implements RedisPipelineCommands<byte[], byte
 
 	@Override
 	public RedisResponse<List<byte[]>> hrandfield(byte[] key, Integer count) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<byte[]>> response = commands.hrandfield(key, count);
+		return new DefaultRedisResponse<List<byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Map<byte[], byte[]>> hrandfieldWithValue(byte[] key, Integer count) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Map<byte[], byte[]>> response = commands.hrandfieldWithValues(key, count);
+		return new DefaultRedisResponse<Map<byte[],byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> hset(byte[] key, Map<byte[], byte[]> values) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.hset(key, values);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Boolean> hsetnx(byte[] key, byte[] field, byte[] value) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.hsetnx(key, field, value);
+		return new DefaultRedisResponse<Boolean>(() -> NumberToBooleanConverter.DEFAULT.convert(response.get()));
 	}
 
 	@Override
 	public RedisResponse<Long> hstrlen(byte[] key, byte[] field) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.hstrlen(key, field);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<List<byte[]>> hvals(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<byte[]>> response = commands.hvals(key);
+		return new DefaultRedisResponse<List<byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> pfadd(byte[] key, byte[]... elements) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.pfadd(key, elements);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> pfcount(byte[]... keys) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.pfcount(keys);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
-	public RedisResponse<Boolean> pfmerge(byte[] destKey, byte[]... sourceKeys) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<String> pfmerge(byte[] destKey, byte[]... sourceKeys) {
+		Response<String> response = commands.pfmerge(destKey, sourceKeys);
+		return new DefaultRedisResponse<String>(() -> response.get());
 	}
 
 	@Override
-	public RedisResponse<Boolean> copy(byte[] source, byte[] destination, Integer destinationDB, boolean replace) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<Boolean> copy(byte[] source, byte[] destination, boolean replace) {
+		Response<Boolean> response = commands.copy(source, destination, replace);
+		return new DefaultRedisResponse<Boolean>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> del(byte[]... keys) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.del(keys);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<byte[]> dump(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<byte[]> response = commands.dump(key);
+		return new DefaultRedisResponse<byte[]>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> exists(byte[]... keys) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.exists(keys);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> expire(byte[] key, long seconds) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.expire(key, seconds);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> expireAt(byte[] key, long timestamp) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.expireAt(key, timestamp);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Set<byte[]>> keys(byte[] pattern) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Set<byte[]>> response = commands.hkeys(pattern);
+		return new DefaultRedisResponse<Set<byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<String> migrate(String host, int port, byte[] key, int targetDB, int timeout) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -801,14 +801,14 @@ public class JedisPipelineCommands implements RedisPipelineCommands<byte[], byte
 	}
 
 	@Override
-	public RedisResponse<Boolean> setrange(byte[] key, Long offset, byte[] value) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<Long> setrange(byte[] key, Long offset, byte[] value) {
+		Response<Long> response = commands.setrange(key, offset, value);
+		return new DefaultRedisResponse<>(() -> response.get());
 	}
 
 	@Override
-	public RedisResponse<Boolean> strlen(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<Long> strlen(byte[] key) {
+		Response<Long> response = commands.strlen(key);
+		return new DefaultRedisResponse<>(() -> response.get());
 	}
 }

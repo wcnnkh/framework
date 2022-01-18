@@ -222,7 +222,7 @@ public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
 	}
 
 	@Override
-	default Boolean pfmerge(K destKey, K... sourceKeys) {
+	default String pfmerge(K destKey, K... sourceKeys) {
 		return execute((commands) -> {
 			return commands.pfmerge(destKey, sourceKeys);
 		});

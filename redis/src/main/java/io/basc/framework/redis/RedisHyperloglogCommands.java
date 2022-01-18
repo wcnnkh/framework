@@ -86,5 +86,5 @@ public interface RedisHyperloglogCommands<K, V> {
 	 * @param sourceKeys
 	 * @return Simple string reply: The command just returns OK.
 	 */
-	Boolean pfmerge(K destKey, K... sourceKeys);
+	String pfmerge(K destKey, K... sourceKeys);
 }

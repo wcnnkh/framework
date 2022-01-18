@@ -272,7 +272,7 @@ public abstract class ConvertibleRedisCommands<TK, TV, K, V> implements RedisCom
 	}
 
 	@Override
-	public Boolean pfmerge(K destKey, K... sourceKeys) {
+	public String pfmerge(K destKey, K... sourceKeys) {
 		TK dk = keyCodec.encode(destKey);
 		TK[] sks = keyCodec.encode(sourceKeys);
 		return getTargetRedisCommands().pfmerge(dk, sks);

@@ -2,8 +2,6 @@ package io.basc.framework.redis;
 
 import java.util.Set;
 
-import io.basc.framework.lang.Nullable;
-
 /**
  * https://redis.io/commands#generic
  * 
@@ -19,7 +17,7 @@ public interface RedisKeysPipelineCommands<K, V> {
 	 * @param destination
 	 * @return 1 if source was copied. 0 if source was not copied.
 	 */
-	RedisResponse<Boolean> copy(K source, K destination, @Nullable Integer destinationDB, boolean replace);
+	RedisResponse<Boolean> copy(K source, K destination, boolean replace);
 
 	/**
 	 * https://redis.io/commands/del

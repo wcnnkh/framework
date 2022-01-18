@@ -337,7 +337,7 @@ public interface RedisStringPipelineCommands<K, V> {
 	 * @return Integer reply: the length of the string after it was modified by the
 	 *         command.
 	 */
-	RedisResponse<Boolean> setrange(K key, Long offset, V value);
+	RedisResponse<Long> setrange(K key, Long offset, V value);
 
 	/**
 	 * https://redis.io/commands/strlen<br/>
@@ -349,5 +349,5 @@ public interface RedisStringPipelineCommands<K, V> {
 	 * @return Integer reply: the length of the string at key, or 0 when key does
 	 *         not exist.
 	 */
-	RedisResponse<Boolean> strlen(K key);
+	RedisResponse<Long> strlen(K key);
 }

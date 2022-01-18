@@ -674,9 +674,8 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Boolean pfmerge(byte[] destKey, byte[]... sourceKeys) {
-		String response = jedis.pfmerge(destKey, sourceKeys);
-		return JedisUtils.parseBoolean(response);
+	public String pfmerge(byte[] destKey, byte[]... sourceKeys) {
+		return jedis.pfmerge(destKey, sourceKeys);
 	}
 
 	@Override
