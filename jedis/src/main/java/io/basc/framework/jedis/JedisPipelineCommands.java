@@ -1,5 +1,6 @@
 package io.basc.framework.jedis;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -23,132 +24,140 @@ import io.basc.framework.redis.GeoaddOption;
 import io.basc.framework.redis.InsertPosition;
 import io.basc.framework.redis.MovePosition;
 import io.basc.framework.redis.RedisAuth;
+import io.basc.framework.redis.RedisPipelineCommands;
 import io.basc.framework.redis.RedisResponse;
-import io.basc.framework.redis.RedisTransaction;
 import io.basc.framework.redis.RedisValueEncoding;
 import io.basc.framework.redis.ScanOptions;
 import io.basc.framework.redis.SetOption;
+import redis.clients.jedis.GeoCoordinate;
 import redis.clients.jedis.Response;
-import redis.clients.jedis.Transaction;
+import redis.clients.jedis.commands.PipelineBinaryCommands;
+import redis.clients.jedis.resps.GeoRadiusResponse;
 
-public class JedisTransaction implements RedisTransaction<byte[], byte[]> {
-	private final Transaction transaction;
+public class JedisPipelineCommands implements RedisPipelineCommands<byte[], byte[]> {
+	private final PipelineBinaryCommands commands;
 
-	public JedisTransaction(Transaction transaction) {
-		this.transaction = transaction;
+	public JedisPipelineCommands(PipelineBinaryCommands commands) {
+		this.commands = commands;
 	}
 
 	@Override
 	public RedisResponse<Long> geoadd(byte[] key, GeoaddOption option, Map<byte[], Point> members) {
-		Response<Long> response = transaction.geoadd(key, JedisUtils.toGeoAddParams(option),
+		Response<Long> response = commands.geoadd(key, JedisUtils.toGeoAddParams(option),
 				JedisUtils.toMemberCoordinateMap(members));
 		return new DefaultRedisResponse<>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Double> geodist(byte[] key, byte[] member1, byte[] member2, Metric metric) {
-		transaction.unwatch();
-		// TODO Auto-generated method stub
-		return null;
+		Response<Double> response = commands.geodist(key, member1, member2, JedisUtils.toGeoUnit(metric));
+		return new DefaultRedisResponse<>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<List<String>> geohash(byte[] key, byte[]... members) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<byte[]>> response = commands.geohash(key, members);
+		return new DefaultRedisResponse<>(
+				() -> JedisCodec.INSTANCE.toDecodeConverter().convert(response.get(), new ArrayList<String>()));
 	}
 
 	@Override
 	public RedisResponse<List<Point>> geopos(byte[] key, byte[]... members) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<GeoCoordinate>> response = commands.geopos(key, members);
+		return new DefaultRedisResponse<List<Point>>(() -> JedisUtils.toPoints(response.get()));
 	}
 
 	@Override
 	public RedisResponse<Collection<byte[]>> georadius(byte[] key, Circle within, GeoRadiusArgs<byte[]> args) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<GeoRadiusResponse>> response = commands.georadius(key, within.getPoint().getX(),
+				within.getPoint().getY(), within.getRadius().getValue(),
+				JedisUtils.toGeoUnit(within.getRadius().getMetric()), JedisUtils.toGeoRadiusParam(null, args));
+		return new DefaultRedisResponse<Collection<byte[]>>(() -> JedisUtils.toGeoMembers(response.get()));
 	}
 
 	@Override
 	public RedisResponse<List<GeoWithin<byte[]>>> georadius(byte[] key, Circle within, GeoRadiusWith with,
 			GeoRadiusArgs<byte[]> args) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<GeoRadiusResponse>> response = commands.georadius(key, within.getPoint().getX(),
+				within.getPoint().getY(), within.getRadius().getValue(),
+				JedisUtils.toGeoUnit(within.getRadius().getMetric()), JedisUtils.toGeoRadiusParam(null, args));
+		return new DefaultRedisResponse<List<GeoWithin<byte[]>>>(() -> JedisUtils.toGeoWithins(response.get()));
 	}
 
 	@Override
 	public RedisResponse<List<byte[]>> georadiusbymember(byte[] key, byte[] member, Distance distance,
 			GeoRadiusArgs<byte[]> args) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<GeoRadiusResponse>> response = commands.georadiusByMember(key, member, distance.getValue(),
+				JedisUtils.toGeoUnit(distance.getMetric()), JedisUtils.toGeoRadiusParam(null, args));
+		return new DefaultRedisResponse<List<byte[]>>(() -> JedisUtils.toGeoMembers(response.get()));
 	}
 
 	@Override
 	public RedisResponse<List<GeoWithin<byte[]>>> georadiusbymember(byte[] key, byte[] member, Distance distance,
 			GeoRadiusWith with, GeoRadiusArgs<byte[]> args) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<GeoRadiusResponse>> response = commands.georadiusByMember(key, member, distance.getValue(),
+				JedisUtils.toGeoUnit(distance.getMetric()), JedisUtils.toGeoRadiusParam(with, args));
+		return new DefaultRedisResponse<List<GeoWithin<byte[]>>>(() -> JedisUtils.toGeoWithins(response.get()));
 	}
 
 	@Override
 	public RedisResponse<Long> hdel(byte[] key, byte[]... fields) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.hdel(key, fields);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Boolean> hexists(byte[] key, byte[] field) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Boolean> response = commands.hexists(key, field);
+		return new DefaultRedisResponse<Boolean>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<byte[]> hget(byte[] key, byte[] field) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<byte[]> response = commands.hget(key, field);
+		return new DefaultRedisResponse<byte[]>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Map<byte[], byte[]>> hgetall(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Map<byte[], byte[]>> response = commands.hgetAll(key);
+		return new DefaultRedisResponse<Map<byte[], byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> hincrby(byte[] key, byte[] field, long increment) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.hincrBy(key, field, increment);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Double> hincrbyfloat(byte[] key, byte[] field, double increment) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Double> response = commands.hincrByFloat(key, field, increment);
+		return new DefaultRedisResponse<Double>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Set<byte[]>> hkeys(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Set<byte[]>> response = commands.hkeys(key);
+		return new DefaultRedisResponse<Set<byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> hlen(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.hlen(key);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<List<byte[]>> hmget(byte[] key, byte[]... fields) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<byte[]>> response = commands.hmget(key, fields);
+		return new DefaultRedisResponse<List<byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<String> hmset(byte[] key, Map<byte[], byte[]> values) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<String> response = commands.hmset(key, values);
+		return new DefaultRedisResponse<String>(() -> response.get());
 	}
 
 	@Override

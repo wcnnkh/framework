@@ -1,7 +1,7 @@
 package io.basc.framework.redis;
 
 @SuppressWarnings("unchecked")
-public interface AsyncRedisHyperloglogCommands<K, V> {
+public interface RedisHyperloglogPipelineCommands<K, V> {
 	/**
 	 * https://redis.io/commands/pfadd<br/>
 	 * <br/>

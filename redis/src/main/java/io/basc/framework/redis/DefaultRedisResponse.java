@@ -14,16 +14,13 @@ public class DefaultRedisResponse<T> extends FutureTask<T> implements RedisRespo
 		super(callable);
 	}
 
-	public DefaultRedisResponse(Runnable runnable, T result) {
-		super(runnable, result);
-	}
-
 	@Override
 	public T get() throws RedisSystemException {
 		try {
 			return super.get();
 		} catch (InterruptedException e) {
-			throw new IllegalStateException("Should never get here", e);
+			throw new IllegalStateException("Thread[" + Thread.currentThread().getId() + "]["
+					+ Thread.currentThread().getName() + "] interrupt", e);
 		} catch (ExecutionException e) {
 			throw new RedisSystemException(NestedExceptionUtils.getMostSpecificCause(e));
 		}
@@ -34,7 +31,8 @@ public class DefaultRedisResponse<T> extends FutureTask<T> implements RedisRespo
 		try {
 			return super.get(timeout, unit);
 		} catch (InterruptedException e) {
-			throw new IllegalStateException("Should never get here", e);
+			throw new IllegalStateException("Thread[" + Thread.currentThread().getId() + "]["
+					+ Thread.currentThread().getName() + "] interrupt", e);
 		} catch (ExecutionException e) {
 			throw new RedisSystemException(NestedExceptionUtils.getMostSpecificCause(e));
 		}

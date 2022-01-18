@@ -3,7 +3,7 @@ package io.basc.framework.redis;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
-public interface AsyncRedisStreamsCommands<K, V> {
+public interface RedisStreamsPipelineCommands<K, V> {
 	/**
 	 * https://redis.io/commands/xack<br/>
 	 * <br/>

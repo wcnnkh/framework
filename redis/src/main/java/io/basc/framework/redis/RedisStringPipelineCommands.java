@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
-public interface AsyncRedisStringCommands<K, V> {
+public interface RedisStringPipelineCommands<K, V> {
 	/**
 	 * https://redis.io/commands/append<br/>
 	 * <br/>

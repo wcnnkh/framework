@@ -3,7 +3,7 @@ package io.basc.framework.redis;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
-public interface AsyncRedisListsCommands<K, V> {
+public interface RedisListsPipelineCommands<K, V> {
 	/**
 	 * https://redis.io/commands/blmove<br/>
 	 * <br/>

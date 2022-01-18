@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("unchecked")
-public interface AsyncRedisSetsCommands<K, V> {
+public interface RedisSetsPipelineCommands<K, V> {
 	/**
 	 * Add the specified members to the set stored at key. Specified members that
 	 * are already a member of this set are ignored. If key does not exist, a new

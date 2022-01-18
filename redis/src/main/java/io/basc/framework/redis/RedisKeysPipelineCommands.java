@@ -11,7 +11,7 @@ import io.basc.framework.lang.Nullable;
  *
  */
 @SuppressWarnings("unchecked")
-public interface AsyncRedisKeysCommands<K, V> {
+public interface RedisKeysPipelineCommands<K, V> {
 	/**
 	 * https://redis.io/commands/copy
 	 * 

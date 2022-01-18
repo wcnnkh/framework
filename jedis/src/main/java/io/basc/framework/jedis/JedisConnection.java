@@ -42,24 +42,19 @@ import io.basc.framework.redis.convert.RedisConverters;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Decorator;
-import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.comparator.Sort;
 import redis.clients.jedis.BinaryJedisPubSub;
 import redis.clients.jedis.GeoCoordinate;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Transaction;
-import redis.clients.jedis.args.GeoUnit;
 import redis.clients.jedis.args.ListDirection;
 import redis.clients.jedis.args.ListPosition;
 import redis.clients.jedis.params.BitPosParams;
-import redis.clients.jedis.params.GeoRadiusParam;
 import redis.clients.jedis.params.GetExParams;
 import redis.clients.jedis.params.MigrateParams;
 import redis.clients.jedis.params.RestoreParams;
 import redis.clients.jedis.params.SetParams;
-import redis.clients.jedis.params.ZAddParams;
 import redis.clients.jedis.params.ZParams;
 import redis.clients.jedis.resps.GeoRadiusResponse;
 import redis.clients.jedis.util.SafeEncoder;
@@ -452,7 +447,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		}
 
 		String response = jedis.set(key, value, params);
-		return parseBoolean(response);
+		return JedisUtils.parseBoolean(response);
 	}
 
 	@Override
@@ -460,14 +455,10 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return jedis.setbit(key, offset, value);
 	}
 
-	private Boolean parseBoolean(String response) {
-		return response == null ? null : "OK".equalsIgnoreCase(response);
-	}
-
 	@Override
 	public Boolean setex(byte[] key, long seconds, byte[] value) {
 		String response = jedis.setex(key, seconds, value);
-		return parseBoolean(response);
+		return JedisUtils.parseBoolean(response);
 	}
 
 	@Override
@@ -643,13 +634,13 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	@Override
 	public Boolean lset(byte[] key, long index, byte[] element) {
 		String response = jedis.lset(key, index, element);
-		return parseBoolean(response);
+		return JedisUtils.parseBoolean(response);
 	}
 
 	@Override
 	public Boolean ltrim(byte[] key, long start, long stop) {
 		String response = jedis.ltrim(key, start, stop);
-		return parseBoolean(response);
+		return JedisUtils.parseBoolean(response);
 	}
 
 	@Override
@@ -685,7 +676,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	@Override
 	public Boolean pfmerge(byte[] destKey, byte[]... sourceKeys) {
 		String response = jedis.pfmerge(destKey, sourceKeys);
-		return parseBoolean(response);
+		return JedisUtils.parseBoolean(response);
 	}
 
 	@Override
@@ -705,135 +696,51 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 
 	@Override
 	public Double geodist(byte[] key, byte[] member1, byte[] member2, Metric metric) {
-		return jedis.geodist(key, member1, member2, toGeoUnit(metric));
+		return jedis.geodist(key, member1, member2, JedisUtils.toGeoUnit(metric));
 	}
 
 	@Override
 	public List<String> geohash(byte[] key, byte[]... members) {
 		List<byte[]> list = jedis.geohash(key, members);
-		return new JedisCodec().toDecodeConverter().convert(list, new ArrayList<String>());
+		return JedisCodec.INSTANCE.toDecodeConverter().convert(list, new ArrayList<String>());
 	}
 
 	@Override
 	public List<Point> geopos(byte[] key, byte[]... members) {
 		List<GeoCoordinate> list = jedis.geopos(key, members);
-		List<Point> points = new ArrayList<Point>();
-		for (GeoCoordinate geo : list) {
-			points.add(new Point(geo.getLatitude(), geo.getLongitude()));
-		}
-		return points;
-	}
-
-	private GeoUnit toGeoUnit(Metric metric) {
-		if (metric == null) {
-			return GeoUnit.M;
-		}
-
-		String name = metric.getAbbreviation();
-		if (StringUtils.isEmpty(name)) {
-			return GeoUnit.M;
-		}
-		return GeoUnit.valueOf(name.toUpperCase());
-	}
-
-	private GeoRadiusParam toGeoRadiusParam(GeoRadiusWith with, GeoRadiusArgs<byte[]> args) {
-		GeoRadiusParam param = new GeoRadiusParam();
-		Integer count = args.getCount();
-		if (count != null) {
-			param.count(args.getCount());
-		}
-
-		Sort sort = args.getSort();
-		if (sort != null) {
-			switch (sort) {
-			case ASC:
-				param.sortAscending();
-				break;
-			case DESC:
-				param.sortDescending();
-				break;
-			default:
-				break;
-			}
-		}
-
-		if (with != null) {
-			if (with.isWithCoord()) {
-				param.withCoord();
-			}
-
-			if (with.isWithDist()) {
-				param.withCoord();
-			}
-
-			if (with.isWithHash()) {
-				param.withHash();
-			}
-		}
-		return param;
-	}
-
-	private List<byte[]> toGeoMembers(List<GeoRadiusResponse> list) {
-		if (CollectionUtils.isEmpty(list)) {
-			return Collections.emptyList();
-		}
-
-		List<byte[]> members = new ArrayList<byte[]>();
-		for (GeoRadiusResponse radiusResponse : list) {
-			members.add(radiusResponse.getMember());
-		}
-		return members;
+		return JedisUtils.toPoints(list);
 	}
 
 	@Override
 	public List<byte[]> georadius(byte[] key, Circle within, GeoRadiusArgs<byte[]> args) {
 		List<GeoRadiusResponse> list = jedis.georadius(key, within.getPoint().getX(), within.getPoint().getY(),
-				within.getRadius().getValue(), toGeoUnit(within.getRadius().getMetric()), toGeoRadiusParam(null, args));
-		return toGeoMembers(list);
-	}
-
-	private Point toPoint(GeoCoordinate coordinate) {
-		if (coordinate == null) {
-			return null;
-		}
-		return new Point(coordinate.getLongitude(), coordinate.getLatitude());
-	}
-
-	private List<GeoWithin<byte[]>> toGeoWithins(List<GeoRadiusResponse> list) {
-		if (CollectionUtils.isEmpty(list)) {
-			return Collections.emptyList();
-		}
-
-		List<GeoWithin<byte[]>> members = new ArrayList<GeoWithin<byte[]>>();
-		for (GeoRadiusResponse radiusResponse : list) {
-			GeoWithin<byte[]> geoWithin = new GeoWithin<byte[]>(radiusResponse.getMember(),
-					radiusResponse.getDistance(), null, toPoint(radiusResponse.getCoordinate()));
-			members.add(geoWithin);
-		}
-		return members;
+				within.getRadius().getValue(), JedisUtils.toGeoUnit(within.getRadius().getMetric()),
+				JedisUtils.toGeoRadiusParam(null, args));
+		return JedisUtils.toGeoMembers(list);
 	}
 
 	@Override
 	public List<GeoWithin<byte[]>> georadius(byte[] key, Circle within, GeoRadiusWith with,
 			GeoRadiusArgs<byte[]> args) {
 		List<GeoRadiusResponse> list = jedis.georadius(key, within.getPoint().getX(), within.getPoint().getY(),
-				within.getRadius().getValue(), toGeoUnit(within.getRadius().getMetric()), toGeoRadiusParam(null, args));
-		return toGeoWithins(list);
+				within.getRadius().getValue(), JedisUtils.toGeoUnit(within.getRadius().getMetric()),
+				JedisUtils.toGeoRadiusParam(null, args));
+		return JedisUtils.toGeoWithins(list);
 	}
 
 	@Override
 	public List<byte[]> georadiusbymember(byte[] key, byte[] member, Distance distance, GeoRadiusArgs<byte[]> args) {
 		List<GeoRadiusResponse> list = jedis.georadiusByMember(key, member, distance.getValue(),
-				toGeoUnit(distance.getMetric()), toGeoRadiusParam(null, args));
-		return toGeoMembers(list);
+				JedisUtils.toGeoUnit(distance.getMetric()), JedisUtils.toGeoRadiusParam(null, args));
+		return JedisUtils.toGeoMembers(list);
 	}
 
 	@Override
 	public List<GeoWithin<byte[]>> georadiusbymember(byte[] key, byte[] member, Distance distance, GeoRadiusWith with,
 			GeoRadiusArgs<byte[]> args) {
 		List<GeoRadiusResponse> list = jedis.georadiusByMember(key, member, distance.getValue(),
-				toGeoUnit(distance.getMetric()), toGeoRadiusParam(with, args));
-		return toGeoWithins(list);
+				JedisUtils.toGeoUnit(distance.getMetric()), JedisUtils.toGeoRadiusParam(with, args));
+		return JedisUtils.toGeoWithins(list);
 	}
 
 	@Override
@@ -841,49 +748,16 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return jedis.bzpopmin(timeout, keys);
 	}
 
-	private ZAddParams toZAddParams(SetOption setOption, ScoreOption scoreOption, boolean changed) {
-		ZAddParams params = new ZAddParams();
-		if (setOption != null) {
-			switch (setOption) {
-			case NX:
-				params.nx();
-				break;
-			case XX:
-				params.xx();
-
-			default:
-				break;
-			}
-		}
-
-		if (scoreOption != null) {
-			switch (scoreOption) {
-			case GT:
-				params.gt();
-				break;
-			case LT:
-				params.lt();
-			default:
-				break;
-			}
-		}
-
-		if (changed) {
-			params.ch();
-		}
-		return params;
-	}
-
 	@Override
 	public Long zadd(byte[] key, SetOption setOption, ScoreOption scoreOption, boolean changed,
 			Map<byte[], Double> memberScores) {
-		return jedis.zadd(key, memberScores, toZAddParams(setOption, scoreOption, changed));
+		return jedis.zadd(key, memberScores, JedisUtils.toZAddParams(setOption, scoreOption, changed));
 	}
 
 	@Override
 	public Double zaddIncr(byte[] key, SetOption setOption, ScoreOption scoreOption, boolean changed, double score,
 			byte[] member) {
-		return jedis.zaddIncr(key, score, member, toZAddParams(setOption, scoreOption, changed));
+		return jedis.zaddIncr(key, score, member, JedisUtils.toZAddParams(setOption, scoreOption, changed));
 	}
 
 	@Override
@@ -1186,9 +1060,9 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 
 	@Override
 	public String discard() {
-		if(transaction != null) {
+		if (transaction != null) {
 			synchronized (this) {
-				if(transaction != null) {
+				if (transaction != null) {
 					return transaction.discard();
 				}
 			}

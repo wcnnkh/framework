@@ -18,7 +18,7 @@ import io.basc.framework.util.comparator.Sort;
  *
  */
 @SuppressWarnings("unchecked")
-public interface AsyncRedisGeoCommands<K, V> {
+public interface RedisGeoPipelineCommands<K, V> {
 	/**
 	 * https://redis.io/commands/geoadd
 	 * 

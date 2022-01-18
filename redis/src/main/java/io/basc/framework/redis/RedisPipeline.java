@@ -8,5 +8,5 @@ package io.basc.framework.redis;
  * @param <K>
  * @param <V>
  */
-public interface RedisPipeline<K, V> extends AsyncRedisCommands<K, V> {
+public interface RedisPipeline<K, V> extends RedisPipelineCommands<K, V> {
 }

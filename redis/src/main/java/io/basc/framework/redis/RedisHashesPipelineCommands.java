@@ -11,7 +11,7 @@ import java.util.Set;
  *
  */
 @SuppressWarnings("unchecked")
-public interface AsyncRedisHashesCommands<K, V> {
+public interface RedisHashesPipelineCommands<K, V> {
 	/**
 	 * https://redis.io/commands/hdel<br/>
 	 * <br/>

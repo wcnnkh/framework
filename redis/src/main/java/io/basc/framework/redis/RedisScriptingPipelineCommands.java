@@ -5,7 +5,7 @@ import java.util.List;
 import io.basc.framework.lang.Nullable;
 
 @SuppressWarnings("unchecked")
-public interface AsyncRedisScriptingCommands<K, V> {
+public interface RedisScriptingPipelineCommands<K, V> {
 	@Nullable
 	<T> RedisResponse<T> eval(K script, List<K> keys, List<V> args);
 
