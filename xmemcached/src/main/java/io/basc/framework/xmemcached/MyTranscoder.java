@@ -1,4 +1,4 @@
-package io.basc.framework.memcached.x;
+package io.basc.framework.xmemcached;
 
 import io.basc.framework.codec.Codec;
 import net.rubyeye.xmemcached.transcoders.SerializingTranscoder;

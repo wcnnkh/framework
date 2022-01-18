@@ -1,4 +1,4 @@
-package io.basc.framework.memcached.x;
+package io.basc.framework.xmemcached;
 
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.data.cas.CAS;

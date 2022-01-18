@@ -1,4 +1,4 @@
-package io.basc.framework.memcached.x;
+package io.basc.framework.xmemcached.beans;
 
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactoryPostProcessor;
@@ -8,6 +8,7 @@ import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.io.SerializerUtils;
 import io.basc.framework.net.InetUtils;
+import io.basc.framework.xmemcached.MyTranscoder;
 
 import java.io.IOException;
 

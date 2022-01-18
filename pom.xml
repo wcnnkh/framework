@@ -447,6 +447,12 @@
 				<artifactId>memcached</artifactId>
 				<version>1.8.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>xmemcached</artifactId>
+				<version>1.8.0</version>
+			</dependency>
 
 			<dependency>
 				<groupId>io.basc.framework</groupId>
@@ -955,5 +961,6 @@
 		<module>gateway</module>
 		<module>redisson</module>
 		<module>jedis</module>
+		<module>xmemcached</module>
 	</modules>
 </project>
