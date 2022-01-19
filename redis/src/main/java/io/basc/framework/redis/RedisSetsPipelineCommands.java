@@ -3,6 +3,8 @@ package io.basc.framework.redis;
 import java.util.List;
 import java.util.Set;
 
+import io.basc.framework.util.page.Pageable;
+
 @SuppressWarnings("unchecked")
 public interface RedisSetsPipelineCommands<K, V> {
 	/**
@@ -140,7 +142,7 @@ public interface RedisSetsPipelineCommands<K, V> {
 	 *         1 if the element is moved. 0 if the element is not a member of source
 	 *         and no operation was performed.
 	 */
-	RedisResponse<Boolean> sMove(K sourceKey, K destinationKey, V member);
+	RedisResponse<Long> sMove(K sourceKey, K destinationKey, V member);
 
 	/**
 	 * https://redis.io/commands/spop<br/>
@@ -245,5 +247,5 @@ public interface RedisSetsPipelineCommands<K, V> {
 	 * @return never {@literal null}.
 	 * @see <a href="https://redis.io/commands/scan">Redis Documentation: SCAN</a>
 	 */
-	RedisResponse<Cursor<K>> sScan(long cursorId, K key, ScanOptions<K> options);
+	RedisResponse<Pageable<Long, K>> sScan(long cursorId, K key, ScanOptions<K> options);
 }

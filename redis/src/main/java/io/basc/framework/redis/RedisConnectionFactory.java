@@ -1,15 +1,16 @@
 package io.basc.framework.redis;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.data.geo.Circle;
 import io.basc.framework.data.geo.Distance;
 import io.basc.framework.data.geo.Metric;
 import io.basc.framework.data.geo.Point;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import io.basc.framework.util.page.Pageable;
 
 @SuppressWarnings("unchecked")
 public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
@@ -285,10 +286,9 @@ public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
 	}
 
 	@Override
-	default String migrate(String host, int port, int targetDB, int timeout, boolean copy, boolean replace,
-			RedisAuth auth, K... keys) {
+	default String migrate(String host, int port, int targetDB, int timeout, MigrateParams option, K... keys) {
 		return execute((commands) -> {
-			return commands.migrate(host, port, targetDB, timeout, copy, replace, auth, keys);
+			return commands.migrate(host, port, targetDB, timeout, option, keys);
 		});
 	}
 
@@ -377,15 +377,14 @@ public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
 	}
 
 	@Override
-	default String restore(K key, long ttl, byte[] serializedValue, boolean replace, boolean absTtl, Long idleTime,
-			Long frequency) {
+	default String restore(K key, long ttl, byte[] serializedValue, RestoreParams params) {
 		return execute((commands) -> {
-			return commands.restore(key, ttl, serializedValue, replace, absTtl, idleTime, frequency);
+			return commands.restore(key, ttl, serializedValue, params);
 		});
 	}
 
 	@Override
-	default Cursor<K> scan(long cursorId, ScanOptions<K> options) {
+	default Pageable<Long, K> scan(long cursorId, ScanOptions<K> options) {
 		return execute((commands) -> {
 			return commands.scan(cursorId, options);
 		});
@@ -1208,7 +1207,7 @@ public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
 	}
 
 	@Override
-	default Cursor<K> sScan(long cursorId, K key, ScanOptions<K> options) {
+	default Pageable<Long, K> sScan(long cursorId, K key, ScanOptions<K> options) {
 		return execute((commands) -> {
 			return commands.sScan(cursorId, key, options);
 		});

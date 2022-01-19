@@ -3,6 +3,8 @@ package io.basc.framework.redis;
 import java.util.List;
 import java.util.Set;
 
+import io.basc.framework.util.page.Pageable;
+
 @SuppressWarnings("unchecked")
 public interface RedisSetsCommands<K, V> {
 	/**
@@ -245,5 +247,5 @@ public interface RedisSetsCommands<K, V> {
 	 * @return never {@literal null}.
 	 * @see <a href="https://redis.io/commands/scan">Redis Documentation: SCAN</a>
 	 */
-	Cursor<K> sScan(long cursorId, K key, ScanOptions<K> options);
+	Pageable<Long, K> sScan(long cursorId, K key, ScanOptions<K> options);
 }

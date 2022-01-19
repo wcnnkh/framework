@@ -264,7 +264,7 @@ public interface RedisListsPipelineCommands<K, V> {
 	 * @param element
 	 * @return Simple string reply
 	 */
-	RedisResponse<Boolean> lset(K key, long index, V element);
+	RedisResponse<String> lset(K key, long index, V element);
 
 	/**
 	 * https://redis.io/commands/ltrim
@@ -274,7 +274,7 @@ public interface RedisListsPipelineCommands<K, V> {
 	 * @param stop
 	 * @return Simple string reply
 	 */
-	RedisResponse<Boolean> ltrim(K key, long start, long stop);
+	RedisResponse<String> ltrim(K key, long start, long stop);
 
 	/**
 	 * https://redis.io/commands/rpop<br/>

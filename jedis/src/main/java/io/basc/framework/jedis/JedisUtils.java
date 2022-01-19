@@ -14,6 +14,8 @@ import io.basc.framework.redis.GeoRadiusArgs;
 import io.basc.framework.redis.GeoRadiusWith;
 import io.basc.framework.redis.GeoWithin;
 import io.basc.framework.redis.GeoaddOption;
+import io.basc.framework.redis.InsertPosition;
+import io.basc.framework.redis.MovePosition;
 import io.basc.framework.redis.ScanOptions;
 import io.basc.framework.redis.ScoreOption;
 import io.basc.framework.redis.SetOption;
@@ -21,9 +23,14 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.comparator.Sort;
 import redis.clients.jedis.GeoCoordinate;
+import redis.clients.jedis.args.BitOP;
 import redis.clients.jedis.args.GeoUnit;
+import redis.clients.jedis.args.ListDirection;
+import redis.clients.jedis.args.ListPosition;
 import redis.clients.jedis.params.GeoAddParams;
 import redis.clients.jedis.params.GeoRadiusParam;
+import redis.clients.jedis.params.MigrateParams;
+import redis.clients.jedis.params.RestoreParams;
 import redis.clients.jedis.params.ScanParams;
 import redis.clients.jedis.params.XClaimParams;
 import redis.clients.jedis.params.ZAddParams;
@@ -82,6 +89,21 @@ public final class JedisUtils {
 			break;
 		}
 		return params;
+	}
+
+	public static BitOP toBitOP(io.basc.framework.redis.BitOP bitOP) {
+		switch (bitOP) {
+		case AND:
+			return BitOP.AND;
+		case NOT:
+			return BitOP.NOT;
+		case OR:
+			return BitOP.OR;
+		case XOR:
+			return BitOP.XOR;
+		default:
+			return null;
+		}
 	}
 
 	public static Map<byte[], GeoCoordinate> toMemberCoordinateMap(Map<byte[], Point> members) {
@@ -230,5 +252,57 @@ public final class JedisUtils {
 			points.add(new Point(geo.getLatitude(), geo.getLongitude()));
 		}
 		return points;
+	}
+
+	public static MigrateParams toMigrateParams(io.basc.framework.redis.MigrateParams params) {
+		MigrateParams option = new MigrateParams();
+		if (params.isCopy()) {
+			option.copy();
+		}
+
+		if (params.isReplace()) {
+			option.replace();
+		}
+
+		if (params.getUsername() != null) {
+			option.auth2(params.getUsername(), params.getPassword());
+		} else {
+			option.auth(params.getPassword());
+		}
+		return option;
+	}
+
+	public static RestoreParams toRestoreParams(io.basc.framework.redis.RestoreParams option) {
+		if (option == null) {
+			return null;
+		}
+		RestoreParams params = new RestoreParams();
+		if (option.isReplace()) {
+			params.replace();
+		}
+
+		if (option.isAbsTtl()) {
+			params.absTtl();
+		}
+
+		if (option.getIdleTime() != null) {
+			params.idleTime(option.getIdleTime());
+		}
+
+		if (option.getFrequency() != null) {
+			params.frequency(option.getFrequency());
+		}
+		return params;
+	}
+
+	public static ListDirection toListDirection(MovePosition position) {
+		return position == MovePosition.LEFT ? ListDirection.LEFT : ListDirection.RIGHT;
+	}
+
+	public static ListPosition toListPosition(InsertPosition position) {
+		if (position == null) {
+			return null;
+		}
+		return position == InsertPosition.AFTER ? ListPosition.AFTER : ListPosition.BEFORE;
 	}
 }

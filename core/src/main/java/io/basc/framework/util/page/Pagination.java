@@ -1,5 +1,7 @@
 package io.basc.framework.util.page;
 
+import java.util.function.Function;
+
 public interface Pagination<T> extends Page<Long, T> {
 	/**
 	 * 获取当前页码
@@ -40,5 +42,10 @@ public interface Pagination<T> extends Page<Long, T> {
 	@Override
 	default Pagination<T> shared() {
 		return new SharedPagination<>(this);
+	}
+
+	@Override
+	default <TT> Pagination<TT> map(Function<? super T, TT> map) {
+		return new MapPagination<>(this, map);
 	}
 }

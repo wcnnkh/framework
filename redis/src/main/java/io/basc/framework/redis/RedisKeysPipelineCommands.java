@@ -2,6 +2,9 @@ package io.basc.framework.redis;
 
 import java.util.Set;
 
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.page.Pageable;
+
 /**
  * https://redis.io/commands#generic
  * 
@@ -88,7 +91,7 @@ public interface RedisKeysPipelineCommands<K, V> {
 	 */
 	RedisResponse<Set<K>> keys(K pattern);
 
-	RedisResponse<String> migrate(String host, int port, K key, int targetDB, int timeout);
+	RedisResponse<String> migrate(String host, int port, K key, int timeout);
 
 	/**
 	 * https://redis.io/commands/migrate
@@ -111,19 +114,7 @@ public interface RedisKeysPipelineCommands<K, V> {
 	 * @return Simple string reply: The command returns OK on success, or NOKEY if
 	 *         no keys were found in the source instance.
 	 */
-	RedisResponse<String> migrate(String host, int port, int targetDB, int timeout, boolean copy, boolean replace, RedisAuth auth,
-			K... keys);
-
-	/**
-	 * https://redis.io/commands/move
-	 * 
-	 * @param key
-	 * @param targetDB
-	 * @return Integer reply, specifically:
-	 * 
-	 *         1 if key was moved. 0 if key was not moved.
-	 */
-	RedisResponse<Long> move(K key, int targetDB);
+	RedisResponse<String> migrate(String host, int port, int timeout, MigrateParams option, K... keys);
 
 	/**
 	 * https://redis.io/commands/object
@@ -259,7 +250,7 @@ public interface RedisKeysPipelineCommands<K, V> {
 	 * 
 	 *         1 if key was renamed to newkey. 0 if newkey already exists.
 	 */
-	RedisResponse<Boolean> renamenx(K key, K newKey);
+	RedisResponse<Long> renamenx(K key, K newKey);
 
 	/**
 	 * Create a key associated with a value that is obtained by deserializing the
@@ -288,8 +279,7 @@ public interface RedisKeysPipelineCommands<K, V> {
 	 * @param serializedValue
 	 * @return Simple string reply: The command returns OK on success.
 	 */
-	RedisResponse<String> restore(K key, long ttl, byte[] serializedValue, boolean replace, boolean absTtl, Long idleTime,
-			Long frequency);
+	RedisResponse<String> restore(K key, long ttl, byte[] serializedValue, @Nullable RestoreParams params);
 
 	/**
 	 * https://redis.io/commands/scan
@@ -324,7 +314,7 @@ public interface RedisKeysPipelineCommands<K, V> {
 	 *                call to the command.
 	 * @return
 	 */
-	RedisResponse<Cursor<K>> scan(long cursorId, ScanOptions<K> options);
+	RedisResponse<Pageable<Long, K>> scan(long cursorId, ScanOptions<K> options);
 
 	/**
 	 * https://redis.io/commands/touch
@@ -384,14 +374,4 @@ public interface RedisKeysPipelineCommands<K, V> {
 	 * @return Integer reply: The number of keys that were unlinked.
 	 */
 	RedisResponse<Long> unlink(K... keys);
-
-	/**
-	 * https://redis.io/commands/wait<br/>
-	 * 
-	 * @param numreplicas
-	 * @param timeout
-	 * @return Integer reply: The command returns the number of replicas reached by
-	 *         all the writes performed in the context of the current connection.
-	 */
-	RedisResponse<Long> wait(int numreplicas, long timeout);
 }

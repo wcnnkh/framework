@@ -13,27 +13,31 @@ import io.basc.framework.data.geo.Metric;
 import io.basc.framework.data.geo.Point;
 import io.basc.framework.redis.BitOP;
 import io.basc.framework.redis.ClaimArgs;
-import io.basc.framework.redis.Cursor;
 import io.basc.framework.redis.DataType;
 import io.basc.framework.redis.DefaultRedisResponse;
 import io.basc.framework.redis.ExpireOption;
-import io.basc.framework.redis.FlushMode;
 import io.basc.framework.redis.GeoRadiusArgs;
 import io.basc.framework.redis.GeoRadiusWith;
 import io.basc.framework.redis.GeoWithin;
 import io.basc.framework.redis.GeoaddOption;
 import io.basc.framework.redis.InsertPosition;
 import io.basc.framework.redis.MovePosition;
-import io.basc.framework.redis.RedisAuth;
 import io.basc.framework.redis.RedisPipelineCommands;
 import io.basc.framework.redis.RedisResponse;
 import io.basc.framework.redis.RedisValueEncoding;
+import io.basc.framework.redis.RedisValueEncodings;
 import io.basc.framework.redis.ScanOptions;
 import io.basc.framework.redis.SetOption;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.page.Pageable;
+import io.basc.framework.util.page.SharedPageable;
 import redis.clients.jedis.GeoCoordinate;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.commands.PipelineBinaryCommands;
 import redis.clients.jedis.resps.GeoRadiusResponse;
+import redis.clients.jedis.resps.ScanResult;
+import redis.clients.jedis.util.SafeEncoder;
 
 public class JedisPipelineCommands implements RedisPipelineCommands<byte[], byte[]> {
 	private final PipelineBinaryCommands commands;
@@ -170,7 +174,7 @@ public class JedisPipelineCommands implements RedisPipelineCommands<byte[], byte
 	@Override
 	public RedisResponse<Map<byte[], byte[]>> hrandfieldWithValue(byte[] key, Integer count) {
 		Response<Map<byte[], byte[]>> response = commands.hrandfieldWithValues(key, count);
-		return new DefaultRedisResponse<Map<byte[],byte[]>>(() -> response.get());
+		return new DefaultRedisResponse<Map<byte[], byte[]>>(() -> response.get());
 	}
 
 	@Override
@@ -258,420 +262,401 @@ public class JedisPipelineCommands implements RedisPipelineCommands<byte[], byte
 	}
 
 	@Override
-	public RedisResponse<String> migrate(String host, int port, byte[] key, int targetDB, int timeout) {
-		return null;
+	public RedisResponse<String> migrate(String host, int port, byte[] key, int timeout) {
+		Response<String> response = commands.migrate(host, port, key, timeout);
+		return new DefaultRedisResponse<String>(() -> response.get());
 	}
 
 	@Override
-	public RedisResponse<String> migrate(String host, int port, int targetDB, int timeout, boolean copy,
-			boolean replace, RedisAuth auth, byte[]... keys) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public RedisResponse<Long> move(byte[] key, int targetDB) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<String> migrate(String host, int port, int timeout,
+			io.basc.framework.redis.MigrateParams option, byte[]... keys) {
+		Response<String> response = commands.migrate(host, port, timeout, JedisUtils.toMigrateParams(option), keys);
+		return new DefaultRedisResponse<String>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> objectRefCount(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.objectRefcount(key);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<RedisValueEncoding> objectEncoding(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<byte[]> response = commands.objectEncoding(key);
+		return new DefaultRedisResponse<RedisValueEncoding>(() -> {
+			RedisValueEncoding encoding = RedisValueEncoding.of(SafeEncoder.encode(response.get()));
+			return encoding == null ? RedisValueEncodings.VACANT : encoding;
+		});
 	}
 
 	@Override
 	public RedisResponse<Long> objectIdletime(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.objectIdletime(key);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> objectFreq(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.objectFreq(key);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> persist(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.persist(key);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> pexpire(byte[] key, long milliseconds) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.pexpire(key, milliseconds);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> pexpireAt(byte[] key, long timestamp) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.pexpireAt(key, timestamp);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> pttl(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.pttl(key);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<byte[]> randomkey() {
-		// TODO Auto-generated method stub
-		return null;
+		Response<byte[]> response = commands.randomBinaryKey();
+		return new DefaultRedisResponse<byte[]>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<String> rename(byte[] key, byte[] newKey) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<String> response = commands.rename(key, newKey);
+		return new DefaultRedisResponse<String>(() -> response.get());
 	}
 
 	@Override
-	public RedisResponse<Boolean> renamenx(byte[] key, byte[] newKey) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<Long> renamenx(byte[] key, byte[] newKey) {
+		Response<Long> response = commands.renamenx(key, newKey);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
-	public RedisResponse<String> restore(byte[] key, long ttl, byte[] serializedValue, boolean replace, boolean absTtl,
-			Long idleTime, Long frequency) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<String> restore(byte[] key, long ttl, byte[] serializedValue,
+			io.basc.framework.redis.RestoreParams params) {
+		Response<String> response = commands.restore(key, ttl, serializedValue, JedisUtils.toRestoreParams(params));
+		return new DefaultRedisResponse<String>(() -> response.get());
 	}
 
 	@Override
-	public RedisResponse<Cursor<byte[]>> scan(long cursorId, ScanOptions<byte[]> options) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<Pageable<Long, byte[]>> scan(long cursorId, ScanOptions<byte[]> options) {
+		Response<ScanResult<byte[]>> response = commands.scan(SafeEncoder.encode(String.valueOf(cursorId)),
+				JedisUtils.toScanParams(options));
+		return new DefaultRedisResponse<Pageable<Long, byte[]>>(() -> {
+			ScanResult<byte[]> result = response.get();
+			String next = result.getCursor();
+			return new SharedPageable<Long, byte[]>(cursorId, result.getResult(),
+					StringUtils.isEmpty(next) ? null : Long.parseLong(next));
+		});
 	}
 
 	@Override
 	public RedisResponse<Long> touch(byte[]... keys) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.touch(keys);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> ttl(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.ttl(key);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<DataType> type(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<String> response = commands.type(key);
+		return new DefaultRedisResponse<DataType>(() -> {
+			String type = response.get();
+			return type == null ? null : DataType.fromCode(type);
+		});
 	}
 
 	@Override
 	public RedisResponse<Long> unlink(byte[]... keys) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public RedisResponse<Long> wait(int numreplicas, long timeout) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.unlink(keys);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<byte[]> blmove(byte[] sourceKey, byte[] destinationKey, MovePosition from, MovePosition to,
 			long timout) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<byte[]> response = commands.blmove(sourceKey, destinationKey, JedisUtils.toListDirection(from),
+				JedisUtils.toListDirection(to), timout);
+		return new DefaultRedisResponse<byte[]>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<List<byte[]>> blpop(double timeout, byte[]... keys) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<byte[]>> response = commands.blpop(timeout, keys);
+		return new DefaultRedisResponse<List<byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<List<byte[]>> brpop(double timeout, byte[]... keys) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<byte[]>> response = commands.brpop(timeout, keys);
+		return new DefaultRedisResponse<List<byte[]>>(() -> response.get());
 	}
 
 	@Override
-	public RedisResponse<byte[]> brpoplpush(byte[] sourceKey, byte[] destinationKey, double timout) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<byte[]> brpoplpush(byte[] sourceKey, byte[] destinationKey, double timeout) {
+		Assert.isTrue(timeout <= Integer.MAX_VALUE && timeout >= 0);
+		Response<byte[]> response = commands.brpoplpush(sourceKey, destinationKey, (int) timeout);
+		return new DefaultRedisResponse<byte[]>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<byte[]> lindex(byte[] key, long index) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<byte[]> response = commands.lindex(key, index);
+		return new DefaultRedisResponse<byte[]>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> linsert(byte[] key, InsertPosition position, byte[] pivot, byte[] value) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.linsert(key, JedisUtils.toListPosition(position), pivot, value);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> llen(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.llen(key);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<byte[]> lmove(byte[] sourceKey, byte[] destinationKey, MovePosition from, MovePosition to) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<byte[]> response = commands.lmove(sourceKey, destinationKey, JedisUtils.toListDirection(from),
+				JedisUtils.toListDirection(to));
+		return new DefaultRedisResponse<byte[]>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<List<byte[]>> lpop(byte[] key, int count) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<byte[]>> response = commands.lpop(key, count);
+		return new DefaultRedisResponse<List<byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> lpush(byte[] key, byte[]... elements) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.lpush(key, elements);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> lpushx(byte[] key, byte[]... elements) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.lpushx(key, elements);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<List<byte[]>> lrange(byte[] key, long start, long stop) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<byte[]>> response = commands.lrange(key, start, stop);
+		return new DefaultRedisResponse<List<byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> lrem(byte[] key, int count, byte[] element) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.lrem(key, count, element);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
-	public RedisResponse<Boolean> lset(byte[] key, long index, byte[] element) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<String> lset(byte[] key, long index, byte[] element) {
+		Response<String> response = commands.lset(key, index, element);
+		return new DefaultRedisResponse<>(() -> response.get());
 	}
 
 	@Override
-	public RedisResponse<Boolean> ltrim(byte[] key, long start, long stop) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<String> ltrim(byte[] key, long start, long stop) {
+		Response<String> response = commands.ltrim(key, start, stop);
+		return new DefaultRedisResponse<String>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<List<byte[]>> rpop(byte[] key, int count) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<byte[]>> response = commands.rpop(key, count);
+		return new DefaultRedisResponse<List<byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<byte[]> rpoplpush(byte[] sourceKey, byte[] destinationKey) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<byte[]> response = commands.rpoplpush(sourceKey, destinationKey);
+		return new DefaultRedisResponse<byte[]>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> rpush(byte[] key, byte[]... elements) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.rpush(key, elements);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> rpushx(byte[] key, byte[]... elements) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.rpushx(key, elements);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> RedisResponse<T> eval(byte[] script, List<byte[]> keys, List<byte[]> args) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Object> response = commands.eval(script, keys, args);
+		return new DefaultRedisResponse<T>(() -> (T) response.get());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> RedisResponse<T> evalsha(byte[] sha1, List<byte[]> keys, List<byte[]> args) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public RedisResponse<List<Boolean>> scriptexists(byte[]... sha1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public RedisResponse<String> scriptFlush() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public RedisResponse<String> scriptFlush(FlushMode flushMode) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public RedisResponse<String> scriptKill() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public RedisResponse<byte[]> scriptLoad(byte[] script) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Object> response = commands.evalsha(sha1, keys, args);
+		return new DefaultRedisResponse<>(() -> (T) response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> sadd(byte[] key, byte[]... members) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.sadd(key, members);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> scard(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.scard(key);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Set<byte[]>> sdiff(byte[]... keys) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Set<byte[]>> response = commands.sdiff(keys);
+		return new DefaultRedisResponse<Set<byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> sdiffstore(byte[] destinationKey, byte[]... keys) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.sdiffstore(destinationKey, keys);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Set<byte[]>> sinter(byte[]... keys) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Set<byte[]>> response = commands.sinter(keys);
+		return new DefaultRedisResponse<Set<byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> sinterstore(byte[] destinationKey, byte[]... keys) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.sinterstore(destinationKey, keys);
+		return new DefaultRedisResponse<>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Boolean> sismember(byte[] key, byte[] member) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Boolean> response = commands.sismember(key, member);
+		return new DefaultRedisResponse<Boolean>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Set<byte[]>> smembers(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Set<byte[]>> response = commands.smembers(key);
+		return new DefaultRedisResponse<Set<byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<List<Boolean>> smismember(byte[] key, byte[]... members) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<Boolean>> response = commands.smismember(key, members);
+		return new DefaultRedisResponse<List<Boolean>>(() -> response.get());
 	}
 
 	@Override
-	public RedisResponse<Boolean> sMove(byte[] sourceKey, byte[] destinationKey, byte[] member) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<Long> sMove(byte[] sourceKey, byte[] destinationKey, byte[] member) {
+		Response<Long> response = commands.smove(sourceKey, destinationKey, member);
+		return new DefaultRedisResponse<>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Set<byte[]>> spop(byte[] key, int count) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Set<byte[]>> response = commands.spop(key, count);
+		return new DefaultRedisResponse<Set<byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<List<byte[]>> srandmember(byte[] key, int count) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<byte[]>> response = commands.srandmember(key, count);
+		return new DefaultRedisResponse<List<byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> srem(byte[] key, byte[]... members) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.srem(key, members);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Set<byte[]>> sunion(byte[]... keys) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Set<byte[]>> response = commands.sunion(keys);
+		return new DefaultRedisResponse<Set<byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> sunionstore(byte[] destinationKey, byte[]... keys) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.sunionstore(destinationKey, keys);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
-	public RedisResponse<Cursor<byte[]>> sScan(long cursorId, byte[] key, ScanOptions<byte[]> options) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<Pageable<Long, byte[]>> sScan(long cursorId, byte[] key, ScanOptions<byte[]> options) {
+		Response<ScanResult<byte[]>> response = commands.scan(SafeEncoder.encode(String.valueOf(cursorId)),
+				JedisUtils.toScanParams(options));
+		return new DefaultRedisResponse<>(() -> {
+			ScanResult<byte[]> result = response.get();
+			return new SharedPageable<Long, byte[]>(cursorId, result.getResult(), Long.parseLong(result.getCursor()));
+		});
 	}
 
 	@Override
 	public RedisResponse<Long> xack(byte[] key, byte[] group, byte[]... ids) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.xack(key, group, ids);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<List<byte[]>> xclaim(byte[] key, byte[] group, byte[] consumer, long minIdleTime,
 			ClaimArgs args, byte[]... ids) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<byte[]>> response = commands.xclaim(key, group, consumer, minIdleTime,
+				JedisUtils.toXClaimParams(args), ids);
+		return new DefaultRedisResponse<List<byte[]>>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> xdel(byte[] key, byte[]... ids) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.xdel(key, ids);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> append(byte[] key, byte[] value) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.append(key, value);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> bitcount(byte[] key, long start, long end) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.bitcount(key, start, end);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> bitop(BitOP op, byte[] destkey, byte[]... srcKeys) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.bitop(JedisUtils.toBitOP(op), destkey, srcKeys);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override

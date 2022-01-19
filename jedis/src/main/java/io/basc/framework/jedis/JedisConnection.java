@@ -16,7 +16,6 @@ import io.basc.framework.data.geo.Point;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.redis.Aggregate;
 import io.basc.framework.redis.ClaimArgs;
-import io.basc.framework.redis.Cursor;
 import io.basc.framework.redis.DataType;
 import io.basc.framework.redis.ExpireOption;
 import io.basc.framework.redis.FlushMode;
@@ -24,11 +23,8 @@ import io.basc.framework.redis.GeoRadiusArgs;
 import io.basc.framework.redis.GeoRadiusWith;
 import io.basc.framework.redis.GeoWithin;
 import io.basc.framework.redis.GeoaddOption;
-import io.basc.framework.redis.InsertPosition;
 import io.basc.framework.redis.InterArgs;
 import io.basc.framework.redis.MessageListener;
-import io.basc.framework.redis.MovePosition;
-import io.basc.framework.redis.RedisAuth;
 import io.basc.framework.redis.RedisConnection;
 import io.basc.framework.redis.RedisSubscribedConnectionException;
 import io.basc.framework.redis.RedisValueEncoding;
@@ -42,21 +38,21 @@ import io.basc.framework.redis.convert.RedisConverters;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Decorator;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.page.Pageable;
+import io.basc.framework.util.page.SharedPageable;
 import redis.clients.jedis.BinaryJedisPubSub;
 import redis.clients.jedis.GeoCoordinate;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Transaction;
-import redis.clients.jedis.args.ListDirection;
-import redis.clients.jedis.args.ListPosition;
 import redis.clients.jedis.params.BitPosParams;
 import redis.clients.jedis.params.GetExParams;
-import redis.clients.jedis.params.MigrateParams;
-import redis.clients.jedis.params.RestoreParams;
 import redis.clients.jedis.params.SetParams;
 import redis.clients.jedis.params.ZParams;
 import redis.clients.jedis.resps.GeoRadiusResponse;
+import redis.clients.jedis.resps.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
 @SuppressWarnings({ "unchecked" })
@@ -127,25 +123,9 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public String migrate(String host, int port, int targetDB, int timeout, boolean copy, boolean replace,
-			RedisAuth auth, byte[]... keys) {
-		MigrateParams params = new MigrateParams();
-		if (copy) {
-			params.copy();
-		}
-
-		if (replace) {
-			params.replace();
-		}
-
-		if (auth != null) {
-			if (auth.getUsername() != null) {
-				params.auth2(auth.getUsername(), auth.getPassword());
-			} else {
-				params.auth(auth.getPassword());
-			}
-		}
-		return jedis.migrate(host, port, targetDB, timeout, params, keys);
+	public String migrate(String host, int port, int targetDB, int timeout,
+			io.basc.framework.redis.MigrateParams option, byte[]... keys) {
+		return jedis.migrate(host, port, targetDB, timeout, JedisUtils.toMigrateParams(option), keys);
 	}
 
 	@Override
@@ -211,30 +191,17 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public String restore(byte[] key, long ttl, byte[] serializedValue, boolean replace, boolean absTtl, Long idleTime,
-			Long frequency) {
-		RestoreParams params = new RestoreParams();
-		if (replace) {
-			params.replace();
-		}
-
-		if (absTtl) {
-			params.absTtl();
-		}
-
-		if (idleTime != null) {
-			params.idleTime(idleTime);
-		}
-
-		if (frequency != null) {
-			params.frequency(frequency);
-		}
-		return jedis.restore(key, ttl, serializedValue, params);
+	public String restore(byte[] key, long ttl, byte[] serializedValue, io.basc.framework.redis.RestoreParams params) {
+		return jedis.restore(key, ttl, serializedValue, JedisUtils.toRestoreParams(params));
 	}
 
 	@Override
-	public Cursor<byte[]> scan(long cursorId, ScanOptions<byte[]> options) {
-		return new JedisScanCursor(cursorId, options, jedis);
+	public Pageable<Long, byte[]> scan(long cursorId, ScanOptions<byte[]> options) {
+		ScanResult<byte[]> result = jedis.scan(SafeEncoder.encode(String.valueOf(cursorId)),
+				JedisUtils.toScanParams(options));
+		String next = result.getCursor();
+		return new SharedPageable<Long, byte[]>(cursorId, result.getResult(),
+				StringUtils.isEmpty(next) ? null : Long.parseLong(next));
 	}
 
 	@Override
@@ -275,18 +242,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 
 	@Override
 	public Long bitop(io.basc.framework.redis.BitOP op, byte[] destkey, byte[]... srcKeys) {
-		switch (op) {
-		case AND:
-			return jedis.bitop(redis.clients.jedis.args.BitOP.AND, destkey, srcKeys);
-		case NOT:
-			return jedis.bitop(redis.clients.jedis.args.BitOP.NOT, destkey, srcKeys);
-		case OR:
-			return jedis.bitop(redis.clients.jedis.args.BitOP.OR, destkey, srcKeys);
-		case XOR:
-			return jedis.bitop(redis.clients.jedis.args.BitOP.XOR, destkey, srcKeys);
-		default:
-			return null;
-		}
+		return jedis.bitop(JedisUtils.toBitOP(op), destkey, srcKeys);
 	}
 
 	@Override
@@ -554,15 +510,18 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Cursor<byte[]> sScan(long cursorId, byte[] key, ScanOptions<byte[]> options) {
+	public Pageable<Long, byte[]> sScan(long cursorId, byte[] key, ScanOptions<byte[]> options) {
 		Assert.notNull(key, "Key must not be null!");
-		return new JedisKeyBoundCursor(key, cursorId, options, jedis);
+		ScanResult<byte[]> result = jedis.scan(SafeEncoder.encode(String.valueOf(cursorId)),
+				JedisUtils.toScanParams(options));
+		return new SharedPageable<Long, byte[]>(cursorId, result.getResult(), Long.parseLong(result.getCursor()));
 	}
 
 	@Override
 	public byte[] blmove(byte[] sourceKey, byte[] destinationKey, io.basc.framework.redis.MovePosition from,
 			io.basc.framework.redis.MovePosition to, long timout) {
-		return jedis.blmove(sourceKey, destinationKey, toListDirection(from), toListDirection(to), timout);
+		return jedis.blmove(sourceKey, destinationKey, JedisUtils.toListDirection(from), JedisUtils.toListDirection(to),
+				timout);
 	}
 
 	@Override
@@ -587,8 +546,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 
 	@Override
 	public Long linsert(byte[] key, io.basc.framework.redis.InsertPosition position, byte[] pivot, byte[] value) {
-		return jedis.linsert(key, position == InsertPosition.AFTER ? ListPosition.AFTER : ListPosition.BEFORE, pivot,
-				value);
+		return jedis.linsert(key, JedisUtils.toListPosition(position), pivot, value);
 	}
 
 	@Override
@@ -596,14 +554,10 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return jedis.llen(key);
 	}
 
-	private ListDirection toListDirection(MovePosition position) {
-		return position == MovePosition.LEFT ? ListDirection.LEFT : ListDirection.RIGHT;
-	}
-
 	@Override
 	public byte[] lmove(byte[] sourceKey, byte[] destinationKey, io.basc.framework.redis.MovePosition from,
 			io.basc.framework.redis.MovePosition to) {
-		return jedis.lmove(sourceKey, destinationKey, toListDirection(from), toListDirection(to));
+		return jedis.lmove(sourceKey, destinationKey, JedisUtils.toListDirection(from), JedisUtils.toListDirection(to));
 	}
 
 	@Override

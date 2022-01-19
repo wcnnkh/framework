@@ -20,7 +20,6 @@ import io.basc.framework.data.geo.Metric;
 import io.basc.framework.data.geo.Point;
 import io.basc.framework.redis.BitOP;
 import io.basc.framework.redis.ClaimArgs;
-import io.basc.framework.redis.Cursor;
 import io.basc.framework.redis.DataType;
 import io.basc.framework.redis.ExpireOption;
 import io.basc.framework.redis.FlushMode;
@@ -31,10 +30,11 @@ import io.basc.framework.redis.GeoaddOption;
 import io.basc.framework.redis.InsertPosition;
 import io.basc.framework.redis.InterArgs;
 import io.basc.framework.redis.MessageListener;
+import io.basc.framework.redis.MigrateParams;
 import io.basc.framework.redis.MovePosition;
-import io.basc.framework.redis.RedisAuth;
 import io.basc.framework.redis.RedisCommands;
 import io.basc.framework.redis.RedisValueEncoding;
+import io.basc.framework.redis.RestoreParams;
 import io.basc.framework.redis.ScanOptions;
 import io.basc.framework.redis.ScoreOption;
 import io.basc.framework.redis.SetOption;
@@ -42,6 +42,7 @@ import io.basc.framework.redis.Subscription;
 import io.basc.framework.redis.Tuple;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.page.Pageable;
 
 @SuppressWarnings("unchecked")
 public abstract class ConvertibleRedisCommands<TK, TV, K, V> implements RedisCommands<K, V> {
@@ -330,10 +331,9 @@ public abstract class ConvertibleRedisCommands<TK, TV, K, V> implements RedisCom
 	}
 
 	@Override
-	public String migrate(String host, int port, int targetDB, int timeout, boolean copy, boolean replace,
-			RedisAuth auth, K... keys) {
+	public String migrate(String host, int port, int targetDB, int timeout, MigrateParams option, K... keys) {
 		TK[] ks = keyCodec.encode(keys);
-		return getTargetRedisCommands().migrate(host, port, targetDB, timeout, copy, replace, auth, ks);
+		return getTargetRedisCommands().migrate(host, port, targetDB, timeout, option, ks);
 	}
 
 	@Override
@@ -411,17 +411,15 @@ public abstract class ConvertibleRedisCommands<TK, TV, K, V> implements RedisCom
 	}
 
 	@Override
-	public String restore(K key, long ttl, byte[] serializedValue, boolean replace, boolean absTtl, Long idleTime,
-			Long frequency) {
+	public String restore(K key, long ttl, byte[] serializedValue, RestoreParams params) {
 		TK k = keyCodec.encode(key);
-		return getTargetRedisCommands().restore(k, ttl, serializedValue, replace, absTtl, idleTime, frequency);
+		return getTargetRedisCommands().restore(k, ttl, serializedValue, params);
 	}
 
 	@Override
-	public Cursor<K> scan(long cursorId, ScanOptions<K> options) {
+	public Pageable<Long, K> scan(long cursorId, ScanOptions<K> options) {
 		ScanOptions<TK> to = options.convert(keyCodec.toEncodeConverter());
-		Cursor<TK> cursor = getTargetRedisCommands().scan(cursorId, to);
-		return new ConvertibleCursor<TK, K>(cursor, keyCodec.toDecodeConverter());
+		return getTargetRedisCommands().scan(cursorId, to).map((v) -> keyCodec.decode(v));
 	}
 
 	@Override
@@ -1146,10 +1144,10 @@ public abstract class ConvertibleRedisCommands<TK, TV, K, V> implements RedisCom
 	}
 
 	@Override
-	public Cursor<K> sScan(long cursorId, K key, ScanOptions<K> options) {
-		Cursor<TK> cursor = getTargetRedisCommands().sScan(cursorId, keyCodec.encode(key),
-				options.convert(keyCodec.toEncodeConverter()));
-		return new ConvertibleCursor<TK, K>(cursor, keyCodec.toDecodeConverter());
+	public Pageable<Long, K> sScan(long cursorId, K key, ScanOptions<K> options) {
+		return getTargetRedisCommands()
+				.sScan(cursorId, keyCodec.encode(key), options.convert(keyCodec.toEncodeConverter()))
+				.map((v) -> keyCodec.decode(v));
 	}
 
 	@Override
