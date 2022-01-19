@@ -661,128 +661,128 @@ public class JedisPipelineCommands implements RedisPipelineCommands<byte[], byte
 
 	@Override
 	public RedisResponse<Long> bitpos(byte[] key, boolean bit, Long start, Long end) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.bitpos(key, bit, JedisUtils.toBitPosParams(start, end));
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> decr(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.decr(key);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> decrBy(byte[] key, long decrement) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.decrBy(key, decrement);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<byte[]> get(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<byte[]> response = commands.get(key);
+		return new DefaultRedisResponse<byte[]>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Boolean> getbit(byte[] key, Long offset) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Boolean> response = commands.getbit(key, offset);
+		return new DefaultRedisResponse<Boolean>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<byte[]> getdel(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<byte[]> response = commands.getDel(key);
+		return new DefaultRedisResponse<byte[]>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<byte[]> getEx(byte[] key, ExpireOption option, Long time) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<byte[]> response = commands.getEx(key, JedisUtils.toGetExParams(option, time));
+		return new DefaultRedisResponse<byte[]>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<byte[]> getrange(byte[] key, long startOffset, long endOffset) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<byte[]> response = commands.getrange(key, startOffset, endOffset);
+		return new DefaultRedisResponse<byte[]>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<byte[]> getset(byte[] key, byte[] value) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<byte[]> response = commands.getSet(key, value);
+		return new DefaultRedisResponse<byte[]>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> incr(byte[] key) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.incr(key);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> incrBy(byte[] key, long increment) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.incrBy(key, increment);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Double> incrByFloat(byte[] key, double increment) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Double> response = commands.incrByFloat(key, increment);
+		return new DefaultRedisResponse<Double>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<List<byte[]>> mget(byte[]... keys) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<List<byte[]>> response = commands.mget(keys);
+		return new DefaultRedisResponse<List<byte[]>>(() -> response.get());
 	}
 
 	@Override
-	public RedisResponse<Boolean> mset(Map<byte[], byte[]> pairs) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<String> mset(Map<byte[], byte[]> pairs) {
+		Response<String> response = commands.mset(JedisUtils.toPairsArgs(pairs));
+		return new DefaultRedisResponse<>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Long> msetnx(Map<byte[], byte[]> pairs) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Long> response = commands.msetnx(JedisUtils.toPairsArgs(pairs));
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 
 	@Override
-	public RedisResponse<Boolean> psetex(byte[] key, long milliseconds, byte[] value) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<String> psetex(byte[] key, long milliseconds, byte[] value) {
+		Response<String> response = commands.psetex(key, milliseconds, value);
+		return new DefaultRedisResponse<>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<String> set(byte[] key, byte[] value) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<String> response = commands.set(key, value);
+		return new DefaultRedisResponse<String>(() -> response.get());
 	}
 
 	@Override
-	public RedisResponse<Boolean> set(byte[] key, byte[] value, ExpireOption option, long time, SetOption setOption) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<String> set(byte[] key, byte[] value, ExpireOption option, long time, SetOption setOption) {
+		Response<String> response = commands.set(key, value, JedisUtils.toSetParams(option, time, setOption));
+		return new DefaultRedisResponse<>(() -> response.get());
 	}
 
 	@Override
 	public RedisResponse<Boolean> setbit(byte[] key, long offset, boolean value) {
-		// TODO Auto-generated method stub
-		return null;
+		Response<Boolean> response = commands.setbit(key, offset, value);
+		return new DefaultRedisResponse<Boolean>(() -> response.get());
 	}
 
 	@Override
-	public RedisResponse<Boolean> setex(byte[] key, long seconds, byte[] value) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<String> setex(byte[] key, long seconds, byte[] value) {
+		Response<String> response = commands.setex(key, seconds, value);
+		return new DefaultRedisResponse<>(() -> response.get());
 	}
 
 	@Override
-	public RedisResponse<Boolean> setNX(byte[] key, byte[] value) {
-		// TODO Auto-generated method stub
-		return null;
+	public RedisResponse<Long> setNX(byte[] key, byte[] value) {
+		Response<Long> response = commands.setnx(key, value);
+		return new DefaultRedisResponse<>(() -> response.get());
 	}
 
 	@Override

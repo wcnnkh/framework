@@ -19,7 +19,6 @@ public enum ExpireOption {
 	 * expire, in milliseconds.
 	 */
 	PXAT,
-
 	/**
 	 * Remove the time to live associated with the key.
 	 */

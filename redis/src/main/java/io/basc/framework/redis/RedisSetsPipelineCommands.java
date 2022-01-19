@@ -240,7 +240,7 @@ public interface RedisSetsPipelineCommands<K, V> {
 	RedisResponse<Long> sunionstore(K destinationKey, K... keys);
 
 	/**
-	 * Use a {@link Cursor} to iterate over elements in set at {@code key}.
+	 * Use a {@link Pageable} to iterate over elements in set at {@code key}.
 	 *
 	 * @param key     must not be {@literal null}.
 	 * @param options must not be {@literal null}.

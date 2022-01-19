@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import io.basc.framework.data.geo.Metric;
 import io.basc.framework.data.geo.Point;
 import io.basc.framework.redis.ClaimArgs;
+import io.basc.framework.redis.ExpireOption;
 import io.basc.framework.redis.GeoRadiusArgs;
 import io.basc.framework.redis.GeoRadiusWith;
 import io.basc.framework.redis.GeoWithin;
@@ -27,11 +28,14 @@ import redis.clients.jedis.args.BitOP;
 import redis.clients.jedis.args.GeoUnit;
 import redis.clients.jedis.args.ListDirection;
 import redis.clients.jedis.args.ListPosition;
+import redis.clients.jedis.params.BitPosParams;
 import redis.clients.jedis.params.GeoAddParams;
 import redis.clients.jedis.params.GeoRadiusParam;
+import redis.clients.jedis.params.GetExParams;
 import redis.clients.jedis.params.MigrateParams;
 import redis.clients.jedis.params.RestoreParams;
 import redis.clients.jedis.params.ScanParams;
+import redis.clients.jedis.params.SetParams;
 import redis.clients.jedis.params.XClaimParams;
 import redis.clients.jedis.params.ZAddParams;
 import redis.clients.jedis.resps.GeoRadiusResponse;
@@ -304,5 +308,78 @@ public final class JedisUtils {
 			return null;
 		}
 		return position == InsertPosition.AFTER ? ListPosition.AFTER : ListPosition.BEFORE;
+	}
+	
+	public static SetParams toSetParams(ExpireOption option, long time, SetOption setOption) {
+		SetParams params = new SetParams();
+		if (option != null) {
+			switch (option) {
+			case EX:
+				params.ex(time);
+				break;
+			case EXAT:
+				params.exAt(time);
+				break;
+			case PX:
+				params.px(time);
+				break;
+			case PXAT:
+				params.pxAt(time);
+			default:
+				break;
+			}
+		}
+
+		if (setOption != null) {
+			switch (setOption) {
+			case NX:
+				params.nx();
+				break;
+			case XX:
+				params.xx();
+				break;
+			default:
+				break;
+			}
+		}
+		return params;
+	}
+	
+	public static GetExParams toGetExParams(ExpireOption option, long time) {
+		GetExParams params = new GetExParams();
+		switch (option) {
+		case EX:
+			params.ex(time);
+			break;
+		case EXAT:
+			params.exAt(time);
+			break;
+		case PX:
+			params.px(time);
+			break;
+		case PXAT:
+			params.pxAt(time);
+		case PERSIST:
+			params.persist();
+			break;
+		default:
+			break;
+		}
+		return params;
+	}
+	
+	public static BitPosParams toBitPosParams(Long start, Long end) {
+		if(start == null && end == null) {
+			return null;
+		}
+		
+		if(start == null) {
+			return new BitPosParams(0, end);
+		}
+		if(end == null) {
+			return new BitPosParams(start);
+		}
+		
+		return new BitPosParams(start, end);
 	}
 }

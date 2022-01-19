@@ -216,7 +216,7 @@ public interface RedisStringPipelineCommands<K, V> {
 	 * @param pairs
 	 * @return Simple string reply: always OK since MSET can't fail.
 	 */
-	RedisResponse<Boolean> mset(Map<K, V> pairs);
+	RedisResponse<String> mset(Map<K, V> pairs);
 
 	/**
 	 * https://redis.io/commands/msetnx
@@ -240,7 +240,7 @@ public interface RedisStringPipelineCommands<K, V> {
 	 * @param value
 	 * @return
 	 */
-	RedisResponse<Boolean> psetex(K key, long milliseconds, V value);
+	RedisResponse<String> psetex(K key, long milliseconds, V value);
 
 	RedisResponse<String> set(K key, V value);
 
@@ -269,7 +269,7 @@ public interface RedisStringPipelineCommands<K, V> {
 	 *         or XX option but the condition was not met, or if the user specified
 	 *         the GET option and there was no previous value for the key.
 	 */
-	RedisResponse<Boolean> set(K key, V value, ExpireOption option, long time, SetOption setOption);
+	RedisResponse<String> set(K key, V value, ExpireOption option, long time, SetOption setOption);
 
 	/**
 	 * https://redis.io/commands/setbit<br/>
@@ -304,7 +304,7 @@ public interface RedisStringPipelineCommands<K, V> {
 	 * 
 	 *         Examples
 	 */
-	RedisResponse<Boolean> setex(K key, long seconds, V value);
+	RedisResponse<String> setex(K key, long seconds, V value);
 
 	/**
 	 * https://redis.io/commands/setnx<br/>
@@ -319,7 +319,7 @@ public interface RedisStringPipelineCommands<K, V> {
 	 * 
 	 *         1 if the key was set 0 if the key was not set
 	 */
-	RedisResponse<Boolean> setNX(K key, V value);
+	RedisResponse<Long> setNX(K key, V value);
 
 	/**
 	 * https://redis.io/commands/setrange<br/>

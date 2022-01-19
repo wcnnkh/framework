@@ -47,9 +47,6 @@ import redis.clients.jedis.GeoCoordinate;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Transaction;
-import redis.clients.jedis.params.BitPosParams;
-import redis.clients.jedis.params.GetExParams;
-import redis.clients.jedis.params.SetParams;
 import redis.clients.jedis.params.ZParams;
 import redis.clients.jedis.resps.GeoRadiusResponse;
 import redis.clients.jedis.resps.ScanResult;
@@ -250,22 +247,8 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		if (start == null && end == null) {
 			return jedis.bitpos(key, bit);
 		}
-
-		if (start == null) {
-			if (end == null) {
-				return jedis.bitpos(key, bit);
-			}
-			BitPosParams params = new BitPosParams(0, end);
-			return jedis.bitpos(key, bit, params);
-		} else {
-			if (end == null) {
-				BitPosParams params = new BitPosParams(start);
-				return jedis.bitpos(key, bit, params);
-			} else {
-				BitPosParams params = new BitPosParams(start, end);
-				return jedis.bitpos(key, bit, params);
-			}
-		}
+		
+		return jedis.bitpos(key, bit, JedisUtils.toBitPosParams(start, end));
 	}
 
 	@Override
@@ -295,26 +278,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 
 	@Override
 	public byte[] getEx(byte[] key, ExpireOption option, Long time) {
-		GetExParams params = new GetExParams();
-		switch (option) {
-		case EX:
-			params.ex(time);
-			break;
-		case EXAT:
-			params.exAt(time);
-			break;
-		case PX:
-			params.px(time);
-			break;
-		case PXAT:
-			params.pxAt(time);
-		case PERSIST:
-			params.persist();
-			break;
-		default:
-			break;
-		}
-		return jedis.getEx(key, params);
+		return jedis.getEx(key, JedisUtils.toGetExParams(option, time));
 	}
 
 	@Override
@@ -369,40 +333,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 
 	@Override
 	public Boolean set(byte[] key, byte[] value, ExpireOption option, long time, SetOption setOption) {
-		SetParams params = new SetParams();
-		if (option != null) {
-			switch (option) {
-			case EX:
-				params.ex(time);
-				break;
-			case EXAT:
-				params.exAt(time);
-				break;
-			case PX:
-				params.px(time);
-				break;
-			case PXAT:
-				params.pxAt(time);
-			case PERSIST:
-			default:
-				break;
-			}
-		}
-
-		if (setOption != null) {
-			switch (setOption) {
-			case NX:
-				params.nx();
-				break;
-			case XX:
-				params.xx();
-				break;
-			default:
-				break;
-			}
-		}
-
-		String response = jedis.set(key, value, params);
+		String response = jedis.set(key, value, JedisUtils.toSetParams(option, time, setOption));
 		return JedisUtils.parseBoolean(response);
 	}
 
