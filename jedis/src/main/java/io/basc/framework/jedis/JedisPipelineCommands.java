@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import io.basc.framework.convert.lang.NumberToBooleanConverter;
+import io.basc.framework.data.domain.Range;
 import io.basc.framework.data.geo.Circle;
 import io.basc.framework.data.geo.Distance;
 import io.basc.framework.data.geo.Metric;
@@ -21,13 +22,17 @@ import io.basc.framework.redis.GeoRadiusWith;
 import io.basc.framework.redis.GeoWithin;
 import io.basc.framework.redis.GeoaddOption;
 import io.basc.framework.redis.InsertPosition;
+import io.basc.framework.redis.InterArgs;
 import io.basc.framework.redis.MovePosition;
 import io.basc.framework.redis.RedisPipelineCommands;
 import io.basc.framework.redis.RedisResponse;
 import io.basc.framework.redis.RedisValueEncoding;
 import io.basc.framework.redis.RedisValueEncodings;
 import io.basc.framework.redis.ScanOptions;
+import io.basc.framework.redis.ScoreOption;
 import io.basc.framework.redis.SetOption;
+import io.basc.framework.redis.Tuple;
+import io.basc.framework.redis.convert.RedisConverters;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.page.Pageable;
@@ -795,5 +800,234 @@ public class JedisPipelineCommands implements RedisPipelineCommands<byte[], byte
 	public RedisResponse<Long> strlen(byte[] key) {
 		Response<Long> response = commands.strlen(key);
 		return new DefaultRedisResponse<>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<List<byte[]>> bzpopmin(double timeout, byte[]... keys) {
+		Response<List<byte[]>> response = commands.bzpopmin(timeout, keys);
+		return new DefaultRedisResponse<List<byte[]>>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Long> zadd(byte[] key, SetOption setOption, ScoreOption scoreOption, boolean changed,
+			Map<byte[], Double> memberScores) {
+		Response<Long> response = commands.zadd(key, memberScores,
+				JedisUtils.toZAddParams(setOption, scoreOption, changed));
+		return new DefaultRedisResponse<Long>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Double> zaddIncr(byte[] key, SetOption setOption, ScoreOption scoreOption, boolean changed,
+			double score, byte[] member) {
+		Response<Double> response = commands.zaddIncr(key, score, member,
+				JedisUtils.toZAddParams(setOption, scoreOption, changed));
+		return new DefaultRedisResponse<Double>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Long> zcard(byte[] key) {
+		Response<Long> response = commands.zcard(key);
+		return new DefaultRedisResponse<Long>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Long> zcount(byte[] key, Range<? extends Number> range) {
+		Response<Long> response = commands.zcount(key, range.getLowerBound().getValue().get().doubleValue(),
+				range.getUpperBound().getValue().get().doubleValue());
+		return new DefaultRedisResponse<Long>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Long> zdiffstore(byte[] destinationKey, byte[]... keys) {
+		Response<Long> response = commands.zdiffStore(destinationKey, keys);
+		return new DefaultRedisResponse<Long>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Double> zincrby(byte[] key, double increment, byte[] member) {
+		Response<Double> response = commands.zincrby(key, increment, member);
+		return new DefaultRedisResponse<Double>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Collection<byte[]>> zinter(InterArgs args, byte[]... keys) {
+		Response<Set<byte[]>> response = commands.zinter(JedisUtils.toZParams(args), keys);
+		return new DefaultRedisResponse<Collection<byte[]>>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Collection<Tuple<byte[]>>> zinterWithScores(InterArgs args, byte[]... keys) {
+		Response<Set<redis.clients.jedis.resps.Tuple>> response = commands.zinterWithScores(JedisUtils.toZParams(args),
+				keys);
+		return new DefaultRedisResponse<Collection<Tuple<byte[]>>>(() -> JedisUtils.toTuples(response.get()));
+	}
+
+	@Override
+	public RedisResponse<Long> zinterstore(byte[] destinationKey, InterArgs interArgs, byte[]... keys) {
+		Response<Long> response = commands.zinterstore(destinationKey, JedisUtils.toZParams(interArgs), keys);
+		return new DefaultRedisResponse<Long>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Long> zlexcount(byte[] key, Range<byte[]> range) {
+		Response<Long> response = commands.zlexcount(key,
+				RedisConverters.convertLowerBound(range.getLowerBound(), JedisCodec.INSTANCE),
+				RedisConverters.convertUpperBound(range.getUpperBound(), JedisCodec.INSTANCE));
+		return new DefaultRedisResponse<Long>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<List<Double>> zmscore(byte[] key, byte[]... members) {
+		Response<List<Double>> response = commands.zmscore(key, members);
+		return new DefaultRedisResponse<>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Collection<Tuple<byte[]>>> zpopmax(byte[] key, int count) {
+		Response<List<redis.clients.jedis.resps.Tuple>> response = commands.zpopmax(key, count);
+		return new DefaultRedisResponse<Collection<Tuple<byte[]>>>(() -> JedisUtils.toTuples(response.get()));
+	}
+
+	@Override
+	public RedisResponse<Collection<Tuple<byte[]>>> zpopmin(byte[] key, int count) {
+		Response<List<redis.clients.jedis.resps.Tuple>> response = commands.zpopmin(key, count);
+		return new DefaultRedisResponse<Collection<Tuple<byte[]>>>(() -> JedisUtils.toTuples(response.get()));
+	}
+
+	@Override
+	public RedisResponse<Collection<byte[]>> zrandmember(byte[] key, int count) {
+		Response<List<byte[]>> response = commands.zrandmember(key, count);
+		return new DefaultRedisResponse<Collection<byte[]>>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Collection<Tuple<byte[]>>> zrandmemberWithScores(byte[] key, int count) {
+		Response<List<redis.clients.jedis.resps.Tuple>> response = commands.zrandmemberWithScores(key, count);
+		return new DefaultRedisResponse<Collection<Tuple<byte[]>>>(() -> JedisUtils.toTuples(response.get()));
+	}
+
+	@Override
+	public RedisResponse<Collection<byte[]>> zrange(byte[] key, long start, long stop) {
+		Response<List<byte[]>> response = commands.zrange(key, start, stop);
+		return new DefaultRedisResponse<Collection<byte[]>>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Collection<byte[]>> zrangeByLex(byte[] key, Range<byte[]> range, int offset, int limit) {
+		Response<List<byte[]>> response = commands.zrangeByLex(key, key, key, offset, limit);
+		return new DefaultRedisResponse<Collection<byte[]>>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Collection<byte[]>> zrangeByScore(byte[] key, Range<byte[]> range, int offset, int limit) {
+		Response<List<byte[]>> response = commands.zrangeByScore(key,
+				RedisConverters.convertLowerBound(range.getLowerBound(), JedisCodec.INSTANCE),
+				RedisConverters.convertUpperBound(range.getUpperBound(), JedisCodec.INSTANCE), offset, limit);
+		return new DefaultRedisResponse<Collection<byte[]>>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Collection<Tuple<byte[]>>> zrangeByScoreWithScores(byte[] key, Range<byte[]> range, int offset,
+			int limit) {
+		Response<List<redis.clients.jedis.resps.Tuple>> response = commands.zrangeByScoreWithScores(key,
+				RedisConverters.convertLowerBound(range.getLowerBound(), JedisCodec.INSTANCE),
+				RedisConverters.convertUpperBound(range.getUpperBound(), JedisCodec.INSTANCE), offset, limit);
+		return new DefaultRedisResponse<Collection<Tuple<byte[]>>>(() -> JedisUtils.toTuples(response.get()));
+	}
+
+	@Override
+	public RedisResponse<Long> zrank(byte[] key, byte[] member) {
+		Response<Long> response = commands.zrank(key, member);
+		return new DefaultRedisResponse<Long>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Long> zrem(byte[] key, byte[]... members) {
+		Response<Long> response = commands.zrem(key, members);
+		return new DefaultRedisResponse<Long>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Long> zremrangebylex(byte[] key, Range<byte[]> range) {
+		Response<Long> response = commands.zremrangeByLex(key,
+				RedisConverters.convertLowerBound(range.getLowerBound(), JedisCodec.INSTANCE),
+				RedisConverters.convertUpperBound(range.getUpperBound(), JedisCodec.INSTANCE));
+		return new DefaultRedisResponse<Long>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Long> zremrangebyrank(byte[] key, long start, long stop) {
+		Response<Long> response = commands.zremrangeByRank(key, start, stop);
+		return new DefaultRedisResponse<Long>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Long> zremrangebyscore(byte[] key, Range<byte[]> range) {
+		Response<Long> response = commands.zremrangeByScore(key,
+				RedisConverters.convertLowerBound(range.getLowerBound(), JedisCodec.INSTANCE),
+				RedisConverters.convertUpperBound(range.getUpperBound(), JedisCodec.INSTANCE));
+		return new DefaultRedisResponse<Long>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Collection<byte[]>> zrevrange(byte[] key, long start, long stop) {
+		Response<List<byte[]>> response = commands.zrevrange(key, start, stop);
+		return new DefaultRedisResponse<Collection<byte[]>>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Collection<byte[]>> zrevrangebylex(byte[] key, Range<byte[]> range, int offset, int count) {
+		Response<List<byte[]>> response = commands.zrevrangeByLex(key,
+				RedisConverters.convertLowerBound(range.getLowerBound(), JedisCodec.INSTANCE),
+				RedisConverters.convertUpperBound(range.getUpperBound(), JedisCodec.INSTANCE), offset, count);
+		return new DefaultRedisResponse<Collection<byte[]>>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Collection<byte[]>> zrevrangebyscore(byte[] key, Range<byte[]> range, int offset, int count) {
+		Response<List<byte[]>> response = commands.zrevrangeByScore(key,
+				RedisConverters.convertLowerBound(range.getLowerBound(), JedisCodec.INSTANCE),
+				RedisConverters.convertUpperBound(range.getUpperBound(), JedisCodec.INSTANCE), offset, count);
+		return new DefaultRedisResponse<Collection<byte[]>>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Collection<Tuple<byte[]>>> zrevrangebyscoreWithScores(byte[] key, Range<byte[]> range,
+			int offset, int count) {
+		Response<List<redis.clients.jedis.resps.Tuple>> response = commands.zrevrangeByScoreWithScores(key,
+				RedisConverters.convertLowerBound(range.getLowerBound(), JedisCodec.INSTANCE),
+				RedisConverters.convertUpperBound(range.getUpperBound(), JedisCodec.INSTANCE), offset, count);
+		return new DefaultRedisResponse<Collection<Tuple<byte[]>>>(() -> JedisUtils.toTuples(response.get()));
+	}
+
+	@Override
+	public RedisResponse<Long> zrevrank(byte[] key, byte[] member) {
+		Response<Long> response = commands.zrevrank(key, member);
+		return new DefaultRedisResponse<Long>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Double> zscore(byte[] key, byte[] member) {
+		Response<Double> response = commands.zscore(key, member);
+		return new DefaultRedisResponse<Double>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Collection<byte[]>> zunion(InterArgs interArgs, byte[]... keys) {
+		Response<Set<byte[]>> response = commands.zunion(JedisUtils.toZParams(interArgs), keys);
+		return new DefaultRedisResponse<>(() -> response.get());
+	}
+
+	@Override
+	public RedisResponse<Collection<Tuple<byte[]>>> zunionWithScores(InterArgs interArgs, byte[]... keys) {
+		Response<Set<redis.clients.jedis.resps.Tuple>> response = commands
+				.zunionWithScores(JedisUtils.toZParams(interArgs), keys);
+		return new DefaultRedisResponse<Collection<Tuple<byte[]>>>(() -> JedisUtils.toTuples(response.get()));
+	}
+
+	@Override
+	public RedisResponse<Long> zunionstore(byte[] destinationKey, InterArgs interArgs, byte[]... keys) {
+		Response<Long> response = commands.zunionstore(destinationKey, JedisUtils.toZParams(interArgs), keys);
+		return new DefaultRedisResponse<Long>(() -> response.get());
 	}
 }

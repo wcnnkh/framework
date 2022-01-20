@@ -2,7 +2,6 @@ package io.basc.framework.jedis;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,7 +13,6 @@ import io.basc.framework.data.geo.Distance;
 import io.basc.framework.data.geo.Metric;
 import io.basc.framework.data.geo.Point;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.redis.Aggregate;
 import io.basc.framework.redis.ClaimArgs;
 import io.basc.framework.redis.DataType;
 import io.basc.framework.redis.ExpireOption;
@@ -36,7 +34,6 @@ import io.basc.framework.redis.Subscription;
 import io.basc.framework.redis.Tuple;
 import io.basc.framework.redis.convert.RedisConverters;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Decorator;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
@@ -47,7 +44,6 @@ import redis.clients.jedis.GeoCoordinate;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Transaction;
-import redis.clients.jedis.params.ZParams;
 import redis.clients.jedis.resps.GeoRadiusResponse;
 import redis.clients.jedis.resps.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
@@ -247,7 +243,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		if (start == null && end == null) {
 			return jedis.bitpos(key, bit);
 		}
-		
+
 		return jedis.bitpos(key, bit, JedisUtils.toBitPosParams(start, end));
 	}
 
@@ -665,59 +661,20 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return jedis.zincrby(key, increment, member);
 	}
 
-	private ZParams toZParams(InterArgs args) {
-		ZParams params = new ZParams();
-		if (args != null) {
-			double[] weights = args.getWeights();
-			if (weights != null) {
-				params.weights(weights);
-			}
-
-			Aggregate aggregate = args.getAggregate();
-			if (aggregate != null) {
-				switch (aggregate) {
-				case MAX:
-					params.aggregate(redis.clients.jedis.params.ZParams.Aggregate.MAX);
-					break;
-				case MIN:
-					params.aggregate(redis.clients.jedis.params.ZParams.Aggregate.MIN);
-					break;
-				case SUM:
-					params.aggregate(redis.clients.jedis.params.ZParams.Aggregate.SUM);
-					break;
-				default:
-					break;
-				}
-			}
-		}
-		return params;
-	}
-
 	@Override
 	public Collection<byte[]> zinter(InterArgs args, byte[]... keys) {
-		return jedis.zinter(toZParams(args), keys);
-	}
-
-	private Collection<Tuple<byte[]>> toTuples(Collection<redis.clients.jedis.resps.Tuple> tuples) {
-		if (CollectionUtils.isEmpty(tuples)) {
-			return Collections.emptyList();
-		}
-		List<Tuple<byte[]>> list = new ArrayList<Tuple<byte[]>>(tuples.size());
-		for (redis.clients.jedis.resps.Tuple tuple : tuples) {
-			list.add(new Tuple<byte[]>(tuple.getBinaryElement(), tuple.getScore()));
-		}
-		return list;
+		return jedis.zinter(JedisUtils.toZParams(args), keys);
 	}
 
 	@Override
 	public Collection<Tuple<byte[]>> zinterWithScores(InterArgs args, byte[]... keys) {
-		Set<redis.clients.jedis.resps.Tuple> tuples = jedis.zinterWithScores(toZParams(args), keys);
-		return toTuples(tuples);
+		Set<redis.clients.jedis.resps.Tuple> tuples = jedis.zinterWithScores(JedisUtils.toZParams(args), keys);
+		return JedisUtils.toTuples(tuples);
 	}
 
 	@Override
 	public Long zinterstore(byte[] destinationKey, InterArgs interArgs, byte[]... keys) {
-		return jedis.zinterstore(destinationKey, toZParams(interArgs), keys);
+		return jedis.zinterstore(destinationKey, JedisUtils.toZParams(interArgs), keys);
 	}
 
 	@Override
@@ -734,13 +691,13 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	@Override
 	public Collection<Tuple<byte[]>> zpopmax(byte[] key, int count) {
 		List<redis.clients.jedis.resps.Tuple> tuples = jedis.zpopmax(key, count);
-		return toTuples(tuples);
+		return JedisUtils.toTuples(tuples);
 	}
 
 	@Override
 	public Collection<Tuple<byte[]>> zpopmin(byte[] key, int count) {
 		List<redis.clients.jedis.resps.Tuple> tuples = jedis.zpopmin(key, count);
-		return toTuples(tuples);
+		return JedisUtils.toTuples(tuples);
 	}
 
 	@Override
@@ -751,7 +708,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	@Override
 	public Collection<Tuple<byte[]>> zrandmemberWithScores(byte[] key, int count) {
 		List<redis.clients.jedis.resps.Tuple> tuples = jedis.zrandmemberWithScores(key, count);
-		return toTuples(tuples);
+		return JedisUtils.toTuples(tuples);
 	}
 
 	@Override
@@ -776,7 +733,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		List<redis.clients.jedis.resps.Tuple> tuples = jedis.zrangeByScoreWithScores(key,
 				RedisConverters.convertLowerBound(range.getLowerBound(), JedisCodec.INSTANCE),
 				RedisConverters.convertUpperBound(range.getUpperBound(), JedisCodec.INSTANCE), offset, limit);
-		return toTuples(tuples);
+		return JedisUtils.toTuples(tuples);
 	}
 
 	@Override
@@ -831,7 +788,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		List<redis.clients.jedis.resps.Tuple> tuples = jedis.zrevrangeByScoreWithScores(key,
 				RedisConverters.convertLowerBound(range.getLowerBound(), JedisCodec.INSTANCE),
 				RedisConverters.convertUpperBound(range.getUpperBound(), JedisCodec.INSTANCE), offset, count);
-		return toTuples(tuples);
+		return JedisUtils.toTuples(tuples);
 	}
 
 	@Override
@@ -846,19 +803,19 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 
 	@Override
 	public Collection<byte[]> zunion(io.basc.framework.redis.InterArgs interArgs, byte[]... keys) {
-		return jedis.zunion(toZParams(interArgs), keys);
+		return jedis.zunion(JedisUtils.toZParams(interArgs), keys);
 	}
 
 	@Override
 	public Collection<io.basc.framework.redis.Tuple<byte[]>> zunionWithScores(
 			io.basc.framework.redis.InterArgs interArgs, byte[]... keys) {
-		Set<redis.clients.jedis.resps.Tuple> tuples = jedis.zunionWithScores(toZParams(interArgs), keys);
-		return toTuples(tuples);
+		Set<redis.clients.jedis.resps.Tuple> tuples = jedis.zunionWithScores(JedisUtils.toZParams(interArgs), keys);
+		return JedisUtils.toTuples(tuples);
 	}
 
 	@Override
 	public Long zunionstore(byte[] destinationKey, io.basc.framework.redis.InterArgs interArgs, byte[]... keys) {
-		return jedis.zunionstore(destinationKey, toZParams(interArgs), keys);
+		return jedis.zunionstore(destinationKey, JedisUtils.toZParams(interArgs), keys);
 	}
 
 	@Override

@@ -10,7 +10,8 @@ import io.basc.framework.data.geo.Circle;
 import io.basc.framework.data.geo.Distance;
 import io.basc.framework.data.geo.Metric;
 import io.basc.framework.data.geo.Point;
-import io.basc.framework.util.page.Pageable;
+import io.basc.framework.util.page.Pageables;
+import io.basc.framework.util.page.StreamPageables;
 
 @SuppressWarnings("unchecked")
 public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
@@ -384,10 +385,9 @@ public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
 	}
 
 	@Override
-	default Pageable<Long, K> scan(long cursorId, ScanOptions<K> options) {
-		return execute((commands) -> {
-			return commands.scan(cursorId, options);
-		});
+	default Pageables<Long, K> scan(long cursorId, ScanOptions<K> options) {
+		return new StreamPageables<Long, K>(cursorId,
+				(cursor) -> execute((commands) -> commands.scan(cursor, options)));
 	}
 
 	@Override
@@ -1207,10 +1207,9 @@ public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
 	}
 
 	@Override
-	default Pageable<Long, K> sScan(long cursorId, K key, ScanOptions<K> options) {
-		return execute((commands) -> {
-			return commands.sScan(cursorId, key, options);
-		});
+	default Pageables<Long, K> sScan(long cursorId, K key, ScanOptions<K> options) {
+		return new StreamPageables<Long, K>(cursorId,
+				(cursor) -> execute((commands) -> commands.sScan(cursor, key, options)));
 	}
 
 	@Override
