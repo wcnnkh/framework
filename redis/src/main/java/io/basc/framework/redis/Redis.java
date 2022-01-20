@@ -36,7 +36,7 @@ public class Redis implements RedisConnectionFactory<String, String> {
 	@Override
 	public RedisConnection<String, String> getConnection() {
 		RedisConnection<byte[], byte[]> connection = targetConnectionFactory.getConnection();
-		return new ConvertibleRedisConnection<byte[], byte[], String, String>(connection, keyCodec, valueCodec);
+		return new ConvertibleRedisConnection<byte[], String, byte[], String>(connection, keyCodec, valueCodec);
 	}
 
 	public RedisCommands<String, Object> getObjectCommands() {
