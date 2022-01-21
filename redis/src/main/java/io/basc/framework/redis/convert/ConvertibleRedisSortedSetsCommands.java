@@ -21,6 +21,7 @@ import io.basc.framework.util.CollectionUtils;
 @SuppressWarnings("unchecked")
 public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 		extends RedisCodec<SK, K, SV, V>, RedisSortedSetsCommands<K, V> {
+	
 	RedisSortedSetsCommands<SK, SV> getSourceRedisSortedSetsCommands();
 
 	@Override

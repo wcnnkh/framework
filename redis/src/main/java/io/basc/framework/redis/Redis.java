@@ -39,7 +39,7 @@ public class Redis extends DefaultConvertibleRedisClient<RedisClient<byte[], byt
 		return dataOperations;
 	}
 
-	public Lbs<String> getMarkerManager(String key) {
+	public Lbs<String> getLbs(String key) {
 		return new RedisLbs<String, String>(this, key);
 	}
 

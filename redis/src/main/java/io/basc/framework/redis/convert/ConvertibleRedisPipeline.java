@@ -12,7 +12,7 @@ public interface ConvertibleRedisPipeline<SK, K, SV, V>
 	RedisPipeline<SK, SV> getSourceRedisPipeline();
 
 	@Override
-	default RedisPipelineCommands<SK, SV> getSourceRedisPipelineCommands() {
+	default RedisPipelineCommands<SK, SV> getSourceRedisCommands() {
 		return getSourceRedisPipeline();
 	}
 

@@ -8,25 +8,25 @@ import io.basc.framework.redis.RedisResponse;
 public interface ConvertibleRedisHyperloglogPipelineCommands<SK, K, SV, V>
 		extends RedisCodec<SK, K, SV, V>, RedisHyperloglogPipelineCommands<K, V> {
 
-	RedisHyperloglogPipelineCommands<SK, SV> getSourceRedisHyperloglogPipelineCommands();
+	RedisHyperloglogPipelineCommands<SK, SV> getSourceRedisHyperloglogCommands();
 
 	@Override
 	default RedisResponse<Long> pfadd(K key, V... elements) {
 		SK k = getKeyCodec().encode(key);
 		SV[] tvs = getValueCodec().encode(elements);
-		return getSourceRedisHyperloglogPipelineCommands().pfadd(k, tvs);
+		return getSourceRedisHyperloglogCommands().pfadd(k, tvs);
 	}
 
 	@Override
 	default RedisResponse<Long> pfcount(K... keys) {
 		SK[] ks = getKeyCodec().encode(keys);
-		return getSourceRedisHyperloglogPipelineCommands().pfcount(ks);
+		return getSourceRedisHyperloglogCommands().pfcount(ks);
 	}
 
 	@Override
 	default RedisResponse<String> pfmerge(K destKey, K... sourceKeys) {
 		SK dk = getKeyCodec().encode(destKey);
 		SK[] sks = getKeyCodec().encode(sourceKeys);
-		return getSourceRedisHyperloglogPipelineCommands().pfmerge(dk, sks);
+		return getSourceRedisHyperloglogCommands().pfmerge(dk, sks);
 	}
 }

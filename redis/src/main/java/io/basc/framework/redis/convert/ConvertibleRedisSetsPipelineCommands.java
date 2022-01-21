@@ -13,98 +13,96 @@ import io.basc.framework.util.page.Pageable;
 public interface ConvertibleRedisSetsPipelineCommands<SK, K, SV, V>
 		extends RedisCodec<SK, K, SV, V>, RedisSetsPipelineCommands<K, V> {
 
-	RedisSetsPipelineCommands<SK, SV> getSourceRedisSetsPipelineCommands();
+	RedisSetsPipelineCommands<SK, SV> getSourceRedisSetsCommands();
 
 	@Override
 	default RedisResponse<Long> sadd(K key, V... members) {
-		return getSourceRedisSetsPipelineCommands().sadd(getKeyCodec().encode(key), getValueCodec().encode(members));
+		return getSourceRedisSetsCommands().sadd(getKeyCodec().encode(key), getValueCodec().encode(members));
 	}
 
 	@Override
 	default RedisResponse<Long> scard(K key) {
-		return getSourceRedisSetsPipelineCommands().scard(getKeyCodec().encode(key));
+		return getSourceRedisSetsCommands().scard(getKeyCodec().encode(key));
 	}
 
 	@Override
 	default RedisResponse<Set<V>> sdiff(K... keys) {
-		return getSourceRedisSetsPipelineCommands().sdiff(getKeyCodec().encode(keys))
+		return getSourceRedisSetsCommands().sdiff(getKeyCodec().encode(keys))
 				.map((vs) -> getValueCodec().toDecodeConverter().convert(vs));
 	}
 
 	@Override
 	default RedisResponse<Long> sdiffstore(K destinationKey, K... keys) {
-		return getSourceRedisSetsPipelineCommands().sdiffstore(getKeyCodec().encode(destinationKey),
+		return getSourceRedisSetsCommands().sdiffstore(getKeyCodec().encode(destinationKey),
 				getKeyCodec().encode(keys));
 	}
 
 	@Override
 	default RedisResponse<Set<V>> sinter(K... keys) {
-		return getSourceRedisSetsPipelineCommands().sinter(getKeyCodec().encode(keys))
+		return getSourceRedisSetsCommands().sinter(getKeyCodec().encode(keys))
 				.map((vs) -> getValueCodec().toDecodeConverter().convert(vs));
 	}
 
 	@Override
 	default RedisResponse<Long> sinterstore(K destinationKey, K... keys) {
-		return getSourceRedisSetsPipelineCommands().sinterstore(getKeyCodec().encode(destinationKey),
+		return getSourceRedisSetsCommands().sinterstore(getKeyCodec().encode(destinationKey),
 				getKeyCodec().encode(keys));
 	}
 
 	@Override
 	default RedisResponse<Boolean> sismember(K key, V member) {
-		return getSourceRedisSetsPipelineCommands().sismember(getKeyCodec().encode(key),
-				getValueCodec().encode(member));
+		return getSourceRedisSetsCommands().sismember(getKeyCodec().encode(key), getValueCodec().encode(member));
 	}
 
 	@Override
 	default RedisResponse<Set<V>> smembers(K key) {
-		return getSourceRedisSetsPipelineCommands().smembers(getKeyCodec().encode(key))
+		return getSourceRedisSetsCommands().smembers(getKeyCodec().encode(key))
 				.map((vs) -> getValueCodec().toDecodeConverter().convert(vs));
 	}
 
 	@Override
 	default RedisResponse<List<Boolean>> smismember(K key, V... members) {
-		return getSourceRedisSetsPipelineCommands().smismember(getKeyCodec().encode(key),
-				getValueCodec().encode(members));
+		return getSourceRedisSetsCommands().smismember(getKeyCodec().encode(key), getValueCodec().encode(members));
 	}
 
 	@Override
 	default RedisResponse<Long> sMove(K sourceKey, K destinationKey, V member) {
-		return getSourceRedisSetsPipelineCommands().sMove(getKeyCodec().encode(sourceKey),
-				getKeyCodec().encode(destinationKey), getValueCodec().encode(member));
+		return getSourceRedisSetsCommands().sMove(getKeyCodec().encode(sourceKey), getKeyCodec().encode(destinationKey),
+				getValueCodec().encode(member));
 	}
 
 	@Override
 	default RedisResponse<Set<V>> spop(K key, int count) {
-		return getSourceRedisSetsPipelineCommands().spop(getKeyCodec().encode(key), count)
+		return getSourceRedisSetsCommands().spop(getKeyCodec().encode(key), count)
 				.map((vs) -> getValueCodec().toDecodeConverter().convert(vs));
 	}
 
 	@Override
 	default RedisResponse<List<V>> srandmember(K key, int count) {
-		return getSourceRedisSetsPipelineCommands().srandmember(getKeyCodec().encode(key), count)
+		return getSourceRedisSetsCommands().srandmember(getKeyCodec().encode(key), count)
 				.map((vs) -> getValueCodec().decode(vs));
 	}
 
 	@Override
 	default RedisResponse<Long> srem(K key, V... members) {
-		return getSourceRedisSetsPipelineCommands().srem(getKeyCodec().encode(key), getValueCodec().encode(members));
+		return getSourceRedisSetsCommands().srem(getKeyCodec().encode(key), getValueCodec().encode(members));
 	}
 
 	@Override
 	default RedisResponse<Set<V>> sunion(K... keys) {
-		return getSourceRedisSetsPipelineCommands().sunion(getKeyCodec().encode(keys))
+		return getSourceRedisSetsCommands().sunion(getKeyCodec().encode(keys))
 				.map((vs) -> getValueCodec().toDecodeConverter().convert(vs));
 	}
 
 	@Override
 	default RedisResponse<Long> sunionstore(K destinationKey, K... keys) {
-		return getSourceRedisSetsPipelineCommands().sunionstore(getKeyCodec().encode(destinationKey),
+		return getSourceRedisSetsCommands().sunionstore(getKeyCodec().encode(destinationKey),
 				getKeyCodec().encode(keys));
 	}
 
 	@Override
 	default RedisResponse<Pageable<Long, K>> sScan(long cursorId, K key, ScanOptions<K> options) {
-		return getSourceRedisSetsPipelineCommands()
+		return getSourceRedisSetsCommands()
 				.sScan(cursorId, getKeyCodec().encode(key), options.convert(getKeyCodec().toEncodeConverter()))
 				.map((p) -> p.map((v) -> getKeyCodec().decode(v)));
 	}

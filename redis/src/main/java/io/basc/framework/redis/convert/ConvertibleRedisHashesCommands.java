@@ -12,6 +12,7 @@ import io.basc.framework.util.CollectionFactory;
 @SuppressWarnings("unchecked")
 public interface ConvertibleRedisHashesCommands<SK, K, SV, V>
 		extends RedisCodec<SK, K, SV, V>, RedisHashesCommands<K, V> {
+	
 	RedisHashesCommands<SK, SV> getSourceRedisHashesCommands();
 
 	@Override

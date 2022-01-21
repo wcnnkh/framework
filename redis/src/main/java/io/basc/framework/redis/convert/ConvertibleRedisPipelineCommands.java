@@ -20,55 +20,55 @@ public interface ConvertibleRedisPipelineCommands<SK, K, SV, V>
 		ConvertibleRedisStreamsPipelineCommands<SK, K, SV, V>, ConvertibleRedisStringPipelineCommands<SK, K, SV, V>,
 		RedisPipelineCommands<K, V> {
 
-	RedisPipelineCommands<SK, SV> getSourceRedisPipelineCommands();
+	RedisPipelineCommands<SK, SV> getSourceRedisCommands();
 
 	@Override
-	default RedisGeoPipelineCommands<SK, SV> getSourceRedisGeoPipelineCommands() {
-		return getSourceRedisPipelineCommands();
+	default RedisGeoPipelineCommands<SK, SV> getSourceRedisGeoCommands() {
+		return getSourceRedisCommands();
 	}
 
 	@Override
-	default RedisHashesPipelineCommands<SK, SV> getSourceRedisHashesPipelineCommands() {
-		return getSourceRedisPipelineCommands();
+	default RedisHashesPipelineCommands<SK, SV> getSourceRedisHashesCommands() {
+		return getSourceRedisCommands();
 	}
 
 	@Override
-	default RedisHyperloglogPipelineCommands<SK, SV> getSourceRedisHyperloglogPipelineCommands() {
-		return getSourceRedisPipelineCommands();
+	default RedisHyperloglogPipelineCommands<SK, SV> getSourceRedisHyperloglogCommands() {
+		return getSourceRedisCommands();
 	}
 
 	@Override
-	default RedisKeysPipelineCommands<SK, SV> getSourceRedisKeysPipelineCommands() {
-		return getSourceRedisPipelineCommands();
+	default RedisKeysPipelineCommands<SK, SV> getSourceRedisKeysCommands() {
+		return getSourceRedisCommands();
 	}
 
 	@Override
-	default RedisListsPipelineCommands<SK, SV> getSourceRedisListsPipelineCommands() {
-		return getSourceRedisPipelineCommands();
+	default RedisListsPipelineCommands<SK, SV> getSourceRedisListsCommands() {
+		return getSourceRedisCommands();
 	}
 
 	@Override
-	default RedisScriptingPipelineCommands<SK, SV> getSourceRedisScriptingPipelineCommands() {
-		return getSourceRedisPipelineCommands();
+	default RedisScriptingPipelineCommands<SK, SV> getSourceRedisScriptingCommands() {
+		return getSourceRedisCommands();
 	}
 
 	@Override
-	default RedisSetsPipelineCommands<SK, SV> getSourceRedisSetsPipelineCommands() {
-		return getSourceRedisPipelineCommands();
+	default RedisSetsPipelineCommands<SK, SV> getSourceRedisSetsCommands() {
+		return getSourceRedisCommands();
 	}
 
 	@Override
-	default RedisSortedSetsPipelineCommands<SK, SV> getSourceRedisSortedSetsPipelineCommands() {
-		return getSourceRedisPipelineCommands();
+	default RedisSortedSetsPipelineCommands<SK, SV> getSourceRedisSortedSetsCommands() {
+		return getSourceRedisCommands();
 	}
 
 	@Override
-	default RedisStreamsPipelineCommands<SK, SV> getSourceRedisStreamsPipelineCommands() {
-		return getSourceRedisPipelineCommands();
+	default RedisStreamsPipelineCommands<SK, SV> getSourceRedisStreamsCommands() {
+		return getSourceRedisCommands();
 	}
 
 	@Override
-	default RedisStringPipelineCommands<SK, SV> getSourceRedisStringPipelineCommands() {
-		return getSourceRedisPipelineCommands();
+	default RedisStringPipelineCommands<SK, SV> getSourceRedisStringCommands() {
+		return getSourceRedisCommands();
 	}
 }

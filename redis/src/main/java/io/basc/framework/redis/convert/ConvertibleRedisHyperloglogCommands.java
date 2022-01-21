@@ -6,6 +6,7 @@ import io.basc.framework.redis.RedisHyperloglogCommands;
 @SuppressWarnings("unchecked")
 public interface ConvertibleRedisHyperloglogCommands<SK, K, SV, V>
 		extends RedisCodec<SK, K, SV, V>, RedisHyperloglogCommands<K, V> {
+	
 	RedisHyperloglogCommands<SK, SV> getSourceRedisHyperloglogCommands();
 
 	@Override

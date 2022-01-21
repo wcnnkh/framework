@@ -14,7 +14,7 @@ public class DefaultConvertibleRedisPipelineCommands<P extends RedisPipelineComm
 	}
 
 	@Override
-	public P getSourceRedisPipelineCommands() {
+	public P getSourceRedisCommands() {
 		return commands;
 	}
 }

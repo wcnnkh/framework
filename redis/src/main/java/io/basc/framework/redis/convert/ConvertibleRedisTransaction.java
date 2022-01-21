@@ -10,7 +10,7 @@ public interface ConvertibleRedisTransaction<SK, K, SV, V> extends ConvertibleRe
 	RedisTransaction<SK, SV> getSourceRedisTransaction();
 
 	@Override
-	default RedisPipelineCommands<SK, SV> getSourceRedisPipelineCommands() {
+	default RedisPipelineCommands<SK, SV> getSourceRedisCommands() {
 		return getSourceRedisTransaction();
 	}
 

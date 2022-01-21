@@ -9,14 +9,14 @@ import io.basc.framework.redis.RedisScriptingPipelineCommands;
 public interface ConvertibleRedisScriptingPipelineCommands<SK, K, SV, V>
 		extends RedisCodec<SK, K, SV, V>, RedisScriptingPipelineCommands<K, V> {
 
-	RedisScriptingPipelineCommands<SK, SV> getSourceRedisScriptingPipelineCommands();
+	RedisScriptingPipelineCommands<SK, SV> getSourceRedisScriptingCommands();
 
 	@Override
 	default <T> RedisResponse<T> eval(K script, List<K> keys, List<V> args) {
 		SK k = getKeyCodec().encode(script);
 		List<SK> ks = getKeyCodec().encode(keys);
 		List<SV> vs = getValueCodec().encode(args);
-		return getSourceRedisScriptingPipelineCommands().eval(k, ks, vs);
+		return getSourceRedisScriptingCommands().eval(k, ks, vs);
 	}
 
 	@Override
@@ -24,6 +24,6 @@ public interface ConvertibleRedisScriptingPipelineCommands<SK, K, SV, V>
 		SK k = getKeyCodec().encode(sha1);
 		List<SK> ks = getKeyCodec().encode(keys);
 		List<SV> vs = getValueCodec().encode(args);
-		return getSourceRedisScriptingPipelineCommands().evalsha(k, ks, vs);
+		return getSourceRedisScriptingCommands().evalsha(k, ks, vs);
 	}
 }

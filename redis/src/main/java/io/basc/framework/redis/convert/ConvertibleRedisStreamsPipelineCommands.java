@@ -11,23 +11,23 @@ import io.basc.framework.redis.RedisStreamsPipelineCommands;
 public interface ConvertibleRedisStreamsPipelineCommands<SK, K, SV, V>
 		extends RedisCodec<SK, K, SV, V>, RedisStreamsPipelineCommands<K, V> {
 
-	RedisStreamsPipelineCommands<SK, SV> getSourceRedisStreamsPipelineCommands();
+	RedisStreamsPipelineCommands<SK, SV> getSourceRedisStreamsCommands();
 
 	@Override
 	default RedisResponse<Long> xack(K key, K group, K... ids) {
-		return getSourceRedisStreamsPipelineCommands().xack(getKeyCodec().encode(key), getKeyCodec().encode(group),
+		return getSourceRedisStreamsCommands().xack(getKeyCodec().encode(key), getKeyCodec().encode(group),
 				getKeyCodec().encode(ids));
 	}
 
 	@Override
 	default RedisResponse<List<V>> xclaim(K key, K group, K consumer, long minIdleTime, ClaimArgs args, K... ids) {
-		return getSourceRedisStreamsPipelineCommands().xclaim(getKeyCodec().encode(key), getKeyCodec().encode(group),
+		return getSourceRedisStreamsCommands().xclaim(getKeyCodec().encode(key), getKeyCodec().encode(group),
 				getKeyCodec().encode(consumer), minIdleTime, args, getKeyCodec().encode(ids))
 				.map((values) -> getValueCodec().decode(values));
 	}
 
 	@Override
 	default RedisResponse<Long> xdel(K key, K... ids) {
-		return getSourceRedisStreamsPipelineCommands().xdel(getKeyCodec().encode(key), getKeyCodec().encode(ids));
+		return getSourceRedisStreamsCommands().xdel(getKeyCodec().encode(key), getKeyCodec().encode(ids));
 	}
 }
