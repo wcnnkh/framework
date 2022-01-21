@@ -13,24 +13,24 @@ import io.basc.framework.util.CollectionUtils;
 
 @Provider
 public class RedisDataOperations implements DataOperations {
-	private final Redis redisTemplete;
+	private final Redis redis;
 
-	public RedisDataOperations(Redis redisTemplate) {
-		this.redisTemplete = redisTemplate;
+	public RedisDataOperations(Redis redis) {
+		this.redis = redis;
 	}
 
 	@Override
 	public boolean touch(String key, long exp) {
-		return redisTemplete.touch(key) == 1;
+		return redis.touch(key) == 1;
 	}
 
 	@Override
 	public boolean add(String key, long exp, Object value) {
 		if (exp > 0) {
-			Boolean b = redisTemplete.getObjectCommands().set(key, value, ExpireOption.EX, exp, SetOption.NX);
+			Boolean b = redis.getRedisObjectClient().set(key, value, ExpireOption.EX, exp, SetOption.NX);
 			return b == null ? false : b;
 		} else {
-			redisTemplete.getObjectCommands().setNX(key, value);
+			redis.getRedisObjectClient().setNX(key, value);
 			return true;
 		}
 	}
@@ -38,22 +38,22 @@ public class RedisDataOperations implements DataOperations {
 	@Override
 	public void set(String key, long exp, Object value) {
 		if (exp > 0) {
-			redisTemplete.getObjectCommands().setex(key, exp, value);
+			redis.getRedisObjectClient().setex(key, exp, value);
 		} else {
-			redisTemplete.getObjectCommands().set(key, value);
+			redis.getRedisObjectClient().set(key, value);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T get(String key) {
-		return (T) redisTemplete.get(key);
+		return (T) redis.get(key);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> Map<String, T> get(Collection<String> keys) {
-		List<Object> list = redisTemplete.getObjectCommands().mget(keys.toArray(new String[0]));
+		List<Object> list = redis.getRedisObjectClient().mget(keys.toArray(new String[0]));
 		if (CollectionUtils.isEmpty(list)) {
 			return Collections.emptyMap();
 		}
@@ -69,58 +69,58 @@ public class RedisDataOperations implements DataOperations {
 
 	@Override
 	public boolean add(String key, Object value) {
-		Boolean v = redisTemplete.getObjectCommands().setNX(key, value);
+		Boolean v = redis.getRedisObjectClient().setNX(key, value);
 		return v == null ? false : v;
 	}
 
 	@Override
 	public void set(String key, Object value) {
-		redisTemplete.getObjectCommands().set(key, value);
+		redis.getRedisObjectClient().set(key, value);
 	}
 
 	@Override
 	public boolean isExist(String key) {
-		return redisTemplete.exists(key) == 1;
+		return redis.exists(key) == 1;
 	}
 
 	@Override
 	public boolean delete(String key) {
-		return redisTemplete.del(key) == 1;
+		return redis.del(key) == 1;
 	}
 
 	@Override
 	public void delete(Collection<String> keys) {
-		redisTemplete.del(keys.toArray(new String[0]));
+		redis.del(keys.toArray(new String[0]));
 	}
 
 	@Override
 	public long incr(String key, long delta, long initialValue, long exp) {
-		return redisTemplete.incr(key, delta, initialValue, exp);
+		return redis.incr(key, delta, initialValue, exp);
 	}
 
 	@Override
 	public long decr(String key, long delta, long initialValue, long exp) {
-		return redisTemplete.decr(key, delta, initialValue, exp);
+		return redis.decr(key, delta, initialValue, exp);
 	}
 
 	@Override
 	public long incr(String key, long delta) {
-		return redisTemplete.incrBy(key, delta);
+		return redis.incrBy(key, delta);
 	}
 
 	@Override
 	public long incr(String key, long delta, long initialValue) {
-		return redisTemplete.incr(key, delta, initialValue, 0);
+		return redis.incr(key, delta, initialValue, 0);
 	}
 
 	@Override
 	public long decr(String key, long delta) {
-		return redisTemplete.decrBy(key, delta);
+		return redis.decrBy(key, delta);
 	}
 
 	@Override
 	public long decr(String key, long delta, long initialValue) {
-		return redisTemplete.decr(key, delta, initialValue, 0);
+		return redis.decr(key, delta, initialValue, 0);
 	}
 
 }

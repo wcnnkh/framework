@@ -24,7 +24,10 @@ import io.basc.framework.redis.GeoaddOption;
 import io.basc.framework.redis.InterArgs;
 import io.basc.framework.redis.MessageListener;
 import io.basc.framework.redis.RedisConnection;
+import io.basc.framework.redis.RedisPipeline;
 import io.basc.framework.redis.RedisSubscribedConnectionException;
+import io.basc.framework.redis.RedisSystemException;
+import io.basc.framework.redis.RedisTransaction;
 import io.basc.framework.redis.RedisValueEncoding;
 import io.basc.framework.redis.RedisValueEncodings;
 import io.basc.framework.redis.ScanOptions;
@@ -42,8 +45,6 @@ import io.basc.framework.util.page.SharedPageable;
 import redis.clients.jedis.BinaryJedisPubSub;
 import redis.clients.jedis.GeoCoordinate;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.Transaction;
 import redis.clients.jedis.resps.GeoRadiusResponse;
 import redis.clients.jedis.resps.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
@@ -884,19 +885,23 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return jedis.scriptLoad(script);
 	}
 
-	private volatile Transaction transaction;
+	private volatile RedisTransaction<byte[], byte[]> transaction;
+	private volatile RedisPipeline<byte[], byte[]> pipeline;
 
 	@Override
-	public void multi() {
-		if (transaction != null) {
-			return;
-		}
+	public RedisTransaction<byte[], byte[]> multi() {
+		if (transaction == null) {
+			synchronized (jedis) {
+				if (transaction == null) {
+					if (transaction != null) {
+						throw new RedisSystemException("Pipes cannot be used in transactions");
+					}
 
-		synchronized (this) {
-			if (transaction == null) {
-				transaction = jedis.multi();
+					transaction = new JedisTransaction(jedis.multi());
+				}
 			}
 		}
+		return transaction;
 	}
 
 	@Override
@@ -924,50 +929,49 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	@Override
 	public List<Object> exec() {
 		if (transaction != null) {
-			synchronized (this) {
+			synchronized (jedis) {
 				if (transaction != null) {
 					try {
 						return transaction.exec();
 					} finally {
-						this.transaction = null;
+						transaction = null;
 					}
 				}
 			}
 		}
-		throw new IllegalAccessError("No ongoing transaction. Did you forget to call multi?");
-	}
 
-	private volatile @Nullable Pipeline pipeline;
-
-	public boolean isPipelined() {
-		return (pipeline != null);
-	}
-
-	@Override
-	public void openPipeline() {
-		if (pipeline == null) {
-			synchronized (this) {
-				if (pipeline == null) {
-					pipeline = jedis.pipelined();
-				}
-			}
-		}
-	}
-
-	@Override
-	public List<Object> closePipeline() {
 		if (pipeline != null) {
-			synchronized (this) {
+			synchronized (jedis) {
 				if (pipeline != null) {
 					try {
-						return pipeline.syncAndReturnAll();
+						return pipeline.exec();
 					} finally {
 						pipeline = null;
 					}
 				}
 			}
 		}
-		throw new IllegalAccessError("Pipeline does not exist");
+		throw new RedisSystemException("No transaction or pipeline exists");
+	}
+
+	public boolean isPipelined() {
+		return (pipeline != null);
+	}
+
+	@Override
+	public RedisPipeline<byte[], byte[]> pipeline() {
+		if (pipeline == null) {
+			synchronized (jedis) {
+				if (pipeline == null) {
+					if (transaction != null) {
+						throw new RedisSystemException("Pipes cannot be used in transactions");
+					}
+
+					pipeline = new JedisPipeline(jedis.pipelined());
+				}
+			}
+		}
+		return pipeline;
 	}
 
 	private volatile @Nullable JedisSubscription subscription;

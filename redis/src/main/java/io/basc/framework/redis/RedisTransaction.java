@@ -8,5 +8,6 @@ package io.basc.framework.redis;
  * @param <K>
  * @param <V>
  */
-public interface RedisTransaction<K, V> extends RedisPipelineCommands<K, V> {
+public interface RedisTransaction<K, V> extends RedisPipelineCommands<K, V>, RedisTransactionsCommands<K, V> {
+
 }

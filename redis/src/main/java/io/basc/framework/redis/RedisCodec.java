@@ -1,4 +1,9 @@
 package io.basc.framework.redis;
 
-public interface RedisCodec<SK, K, SV, V> extends RedisKeyCodec<SK, K>, RedisValueCodec<SV, V> {
+import io.basc.framework.codec.Codec;
+
+public interface RedisCodec<SK, K, SV, V> {
+	Codec<K, SK> getKeyCodec();
+
+	Codec<V, SV> getValueCodec();
 }

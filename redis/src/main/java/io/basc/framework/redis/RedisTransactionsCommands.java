@@ -3,7 +3,7 @@ package io.basc.framework.redis;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
-public interface RedisTransactionsCommands<K> {
+public interface RedisTransactionsCommands<K, V> {
 	/**
 	 * https://redis.io/commands/discard<br/>
 	 * <br/>
@@ -41,7 +41,7 @@ public interface RedisTransactionsCommands<K> {
 	 * 
 	 * @return Simple string reply: always OK.
 	 */
-	void multi();
+	RedisTransaction<K, V> multi();
 
 	/**
 	 * https://redis.io/commands/unwatch<br/>

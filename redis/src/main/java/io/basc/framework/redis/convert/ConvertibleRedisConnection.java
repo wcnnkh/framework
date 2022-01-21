@@ -1,66 +1,42 @@
 package io.basc.framework.redis.convert;
 
-import java.util.List;
-
-import io.basc.framework.codec.Codec;
 import io.basc.framework.redis.RedisCommands;
 import io.basc.framework.redis.RedisConnection;
+import io.basc.framework.redis.RedisPipeline;
 
-public class ConvertibleRedisConnection<SK, K, SV, V>
-		implements ConvertibleRedisCommands<SK, K, SV, V>, RedisConnection<K, V> {
-	private final RedisConnection<SK, SV> redisConnection;
-	private final Codec<K, SK> keyCodec;
-	private final Codec<V, SV> valueCodec;
+public interface ConvertibleRedisConnection<SK, K, SV, V>
+		extends ConvertibleRedisCommands<SK, K, SV, V>, RedisConnection<K, V> {
 
-	public ConvertibleRedisConnection(RedisConnection<SK, SV> redisConnection, Codec<K, SK> keyCodec,
-			Codec<V, SV> valueCodec) {
-		this.redisConnection = redisConnection;
-		this.keyCodec = keyCodec;
-		this.valueCodec = valueCodec;
+	RedisConnection<SK, SV> getSourceConnection();
+
+	@Override
+	default RedisCommands<SK, SV> getSourceRedisCommands() {
+		return getSourceConnection();
 	}
 
 	@Override
-	public RedisCommands<SK, SV> getSourceRedisCommands() {
-		return redisConnection;
+	default boolean isQueueing() {
+		return getSourceConnection().isQueueing();
 	}
 
 	@Override
-	public Codec<K, SK> getKeyCodec() {
-		return keyCodec;
+	default boolean isPipelined() {
+		return getSourceConnection().isPipelined();
 	}
 
 	@Override
-	public Codec<V, SV> getValueCodec() {
-		return valueCodec;
+	default void close() {
+		getSourceConnection().close();
 	}
 
 	@Override
-	public boolean isQueueing() {
-		return redisConnection.isQueueing();
+	default boolean isClosed() {
+		return getSourceConnection().isClosed();
 	}
 
 	@Override
-	public boolean isPipelined() {
-		return redisConnection.isPipelined();
-	}
-
-	@Override
-	public void close() {
-		redisConnection.close();
-	}
-
-	@Override
-	public boolean isClosed() {
-		return redisConnection.isClosed();
-	}
-
-	@Override
-	public void openPipeline() {
-		redisConnection.openPipeline();
-	}
-
-	@Override
-	public List<Object> closePipeline() {
-		return redisConnection.closePipeline();
+	default RedisPipeline<K, V> pipeline() {
+		RedisPipeline<SK, SV> pipeline = getSourceConnection().pipeline();
+		return new DefaultConvertibleRedisPipeline<>(pipeline, getKeyCodec(), getValueCodec());
 	}
 }

@@ -2,14 +2,15 @@ package io.basc.framework.redis.convert;
 
 import java.util.List;
 
-import io.basc.framework.redis.RedisKeyCodec;
+import io.basc.framework.redis.RedisCodec;
+import io.basc.framework.redis.RedisTransaction;
 import io.basc.framework.redis.RedisTransactionsCommands;
 
 @SuppressWarnings("unchecked")
-public interface ConvertibleRedisTransactionsCommands<SK, K>
-		extends RedisKeyCodec<SK, K>, RedisTransactionsCommands<K> {
+public interface ConvertibleRedisTransactionsCommands<SK, K, SV, V>
+		extends RedisCodec<SK, K, SV, V>, RedisTransactionsCommands<K, V> {
 
-	RedisTransactionsCommands<SK> getSourceRedisTransactionsCommands();
+	RedisTransactionsCommands<SK, SV> getSourceRedisTransactionsCommands();
 
 	@Override
 	default String discard() {
@@ -22,8 +23,9 @@ public interface ConvertibleRedisTransactionsCommands<SK, K>
 	}
 
 	@Override
-	default void multi() {
-		getSourceRedisTransactionsCommands().multi();
+	default RedisTransaction<K, V> multi() {
+		RedisTransaction<SK, SV> transaction = getSourceRedisTransactionsCommands().multi();
+		return new DefaultConvertibleRedisTransactionsCommands<>(transaction, getKeyCodec(), getValueCodec());
 	}
 
 	@Override

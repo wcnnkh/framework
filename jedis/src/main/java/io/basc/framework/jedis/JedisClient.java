@@ -1,14 +1,14 @@
 package io.basc.framework.jedis;
 
 import io.basc.framework.redis.RedisConnection;
-import io.basc.framework.redis.RedisConnectionFactory;
+import io.basc.framework.redis.RedisClient;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-public class JedisConnectionFactory implements RedisConnectionFactory<byte[], byte[]> {
+public class JedisClient implements RedisClient<byte[], byte[]> {
 	private final JedisPool jedisPool;
 
-	public JedisConnectionFactory(JedisPool jedisPool) {
+	public JedisClient(JedisPool jedisPool) {
 		this.jedisPool = jedisPool;
 	}
 

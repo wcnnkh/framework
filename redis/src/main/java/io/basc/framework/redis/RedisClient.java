@@ -14,7 +14,11 @@ import io.basc.framework.util.page.Pageables;
 import io.basc.framework.util.page.StreamPageables;
 
 @SuppressWarnings("unchecked")
-public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
+public interface RedisClient<K, V> extends RedisConnectionCommands<K, V>, RedisGeoCommands<K, V>,
+		RedisHashesCommands<K, V>, RedisHyperloglogCommands<K, V>, RedisKeysCommands<K, V>, RedisListsCommands<K, V>,
+		RedisPubSubCommands<K, V>, RedisScriptingCommands<K, V>, RedisSortedSetsCommands<K, V>,
+		RedisStreamsCommands<K, V>, RedisStringCommands<K, V>, RedisSetsCommands<K, V> {
+
 	RedisConnection<K, V> getConnection();
 
 	default <T> T execute(RedisCallback<K, V, T> callback) throws RedisSystemException {
@@ -1211,41 +1215,4 @@ public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
 		return new StreamPageables<Long, K>(cursorId,
 				(cursor) -> execute((commands) -> commands.sScan(cursor, key, options)));
 	}
-
-	@Override
-	default String discard() {
-		return execute((commands) -> {
-			return commands.discard();
-		});
-	}
-
-	@Override
-	default List<Object> exec() {
-		return execute((commands) -> {
-			return commands.exec();
-		});
-	}
-
-	@Override
-	default void multi() {
-		execute((commands) -> {
-			commands.multi();
-			return null;
-		});
-	}
-
-	@Override
-	default String unwatch() {
-		return execute((commands) -> {
-			return commands.unwatch();
-		});
-	}
-
-	@Override
-	default String watch(K... keys) {
-		return execute((commands) -> {
-			return commands.watch(keys);
-		});
-	}
-
 }

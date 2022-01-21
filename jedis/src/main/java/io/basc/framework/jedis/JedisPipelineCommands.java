@@ -44,10 +44,10 @@ import redis.clients.jedis.resps.GeoRadiusResponse;
 import redis.clients.jedis.resps.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
-public class JedisPipelineCommands implements RedisPipelineCommands<byte[], byte[]> {
-	private final PipelineBinaryCommands commands;
+public class JedisPipelineCommands<P extends PipelineBinaryCommands> implements RedisPipelineCommands<byte[], byte[]> {
+	protected final P commands;
 
-	public JedisPipelineCommands(PipelineBinaryCommands commands) {
+	public JedisPipelineCommands(P commands) {
 		this.commands = commands;
 	}
 

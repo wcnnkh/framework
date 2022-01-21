@@ -1,17 +1,17 @@
 package io.basc.framework.redis.cas;
 
-import io.basc.framework.data.cas.CAS;
-import io.basc.framework.data.cas.CASOperations;
-import io.basc.framework.redis.RedisCommands;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.value.AnyValue;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.basc.framework.data.cas.CAS;
+import io.basc.framework.data.cas.CASOperations;
+import io.basc.framework.redis.RedisClient;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.value.AnyValue;
 
 public class RedisCASOperations implements CASOperations {
 	private static final String CAS_IS_NULL = "if (" + isNullScript("cas") + ") then cas = 0 end";
@@ -49,32 +49,32 @@ public class RedisCASOperations implements CASOperations {
 		return sb.toString();
 	}
 
-	private RedisCommands<String, Object> redisCommands;
+	private RedisClient<String, Object> client;
 
-	public RedisCASOperations(RedisCommands<String, Object> redisCommands) {
-		this.redisCommands = redisCommands;
+	public RedisCASOperations(RedisClient<String, Object> client) {
+		this.client = client;
 	}
 
 	public boolean cas(String key, Object value, int exp, long cas) {
 		Object resposne;
 		if (exp > 0) {
-			resposne = redisCommands.eval(CAS_EXP_SCRIPT, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + "", exp + ""),
+			resposne = client.eval(CAS_EXP_SCRIPT, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + "", exp + ""),
 					Arrays.asList(value));
 		} else {
-			resposne = redisCommands.eval(CAS_SCRIPT, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + ""),
+			resposne = client.eval(CAS_SCRIPT, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + ""),
 					Arrays.asList(value));
 		}
 		return new AnyValue(resposne).getAsBooleanValue();
 	}
 
 	public boolean delete(String key, long cas) {
-		Object v = redisCommands.eval(CAS_DELETE, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + ""), null);
+		Object v = client.eval(CAS_DELETE, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + ""), null);
 		return new AnyValue(v).getAsBooleanValue();
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> CAS<T> get(String key) {
-		List<Object> values = redisCommands.eval(CAS_GET, Arrays.asList(key, CAS_KEY_PREFIX + key), null);
+		List<Object> values = client.eval(CAS_GET, Arrays.asList(key, CAS_KEY_PREFIX + key), null);
 		if (CollectionUtils.isEmpty(values) || values.size() != 2) {
 			return null;
 		}
@@ -86,23 +86,23 @@ public class RedisCASOperations implements CASOperations {
 
 	public void set(String key, Object value, int exp) {
 		if (exp > 0) {
-			redisCommands.eval(SET_EXP, Arrays.asList(key, CAS_KEY_PREFIX + key, exp + ""), Arrays.asList(value));
+			client.eval(SET_EXP, Arrays.asList(key, CAS_KEY_PREFIX + key, exp + ""), Arrays.asList(value));
 		} else {
-			redisCommands.eval(SET, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
+			client.eval(SET, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
 		}
 	}
 
 	public boolean delete(String key) {
-		redisCommands.eval(DELETE, Arrays.asList(key, CAS_KEY_PREFIX + key), null);
+		client.eval(DELETE, Arrays.asList(key, CAS_KEY_PREFIX + key), null);
 		return true;
 	}
 
 	public boolean add(String key, Object value, int exp) {
 		Object v;
 		if (exp > 0) {
-			v = redisCommands.eval(ADD_EXP, Arrays.asList(key, CAS_KEY_PREFIX + key, exp + ""), Arrays.asList(value));
+			v = client.eval(ADD_EXP, Arrays.asList(key, CAS_KEY_PREFIX + key, exp + ""), Arrays.asList(value));
 		} else {
-			v = redisCommands.eval(ADD, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
+			v = client.eval(ADD, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
 		}
 		return new AnyValue(v).getAsBooleanValue();
 	}
