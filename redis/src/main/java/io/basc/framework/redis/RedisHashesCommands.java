@@ -223,7 +223,7 @@ public interface RedisHashesCommands<K, V> {
 	 *         1 if field is a new field in the hash and value was set. 0 if field
 	 *         already exists in the hash and no operation was performed.
 	 */
-	Boolean hsetnx(K key, K field, V value);
+	Long hsetnx(K key, K field, V value);
 
 	/**
 	 * https://redis.io/commands/hstrlen<br/>

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import io.basc.framework.convert.lang.NumberToBooleanConverter;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.data.geo.Circle;
 import io.basc.framework.data.geo.Distance;
@@ -885,16 +884,24 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return jedis.scriptLoad(script);
 	}
 
+	@Nullable
 	private volatile RedisTransaction<byte[], byte[]> transaction;
+	@Nullable
 	private volatile RedisPipeline<byte[], byte[]> pipeline;
+	@Nullable
+	private volatile JedisSubscription subscription;
 
 	@Override
 	public RedisTransaction<byte[], byte[]> multi() {
-		if (transaction == null) {
+		if (!isQueueing()) {
 			synchronized (jedis) {
-				if (transaction == null) {
-					if (transaction != null) {
+				if (!isQueueing()) {
+					if (isPipelined()) {
 						throw new RedisSystemException("Pipes cannot be used in transactions");
+					}
+
+					if (isSubscribed()) {
+						throw new RedisSystemException("Subscribed connections cannot use transactions");
 					}
 
 					transaction = new JedisTransaction(jedis.multi());
@@ -906,9 +913,9 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 
 	@Override
 	public String discard() {
-		if (transaction != null) {
+		if (isQueueing()) {
 			synchronized (this) {
-				if (transaction != null) {
+				if (isQueueing()) {
 					return transaction.discard();
 				}
 			}
@@ -928,26 +935,18 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 
 	@Override
 	public List<Object> exec() {
-		if (transaction != null) {
+		if (isQueueing()) {
 			synchronized (jedis) {
-				if (transaction != null) {
-					try {
-						return transaction.exec();
-					} finally {
-						transaction = null;
-					}
+				if (isQueueing()) {
+					return transaction.exec();
 				}
 			}
 		}
 
-		if (pipeline != null) {
+		if (isPipelined()) {
 			synchronized (jedis) {
-				if (pipeline != null) {
-					try {
-						return pipeline.exec();
-					} finally {
-						pipeline = null;
-					}
+				if (isPipelined()) {
+					return pipeline.exec();
 				}
 			}
 		}
@@ -955,16 +954,20 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	public boolean isPipelined() {
-		return (pipeline != null);
+		return (pipeline != null && !pipeline.isClosed());
 	}
 
 	@Override
-	public RedisPipeline<byte[], byte[]> pipeline() {
-		if (pipeline == null) {
+	public RedisPipeline<byte[], byte[]> pipelined() {
+		if (!isPipelined()) {
 			synchronized (jedis) {
-				if (pipeline == null) {
-					if (transaction != null) {
+				if (!isPipelined()) {
+					if (isQueueing()) {
 						throw new RedisSystemException("Pipes cannot be used in transactions");
+					}
+
+					if (isSubscribed()) {
+						throw new RedisSystemException("Pipes cannot be used in subscriptions");
 					}
 
 					pipeline = new JedisPipeline(jedis.pipelined());
@@ -974,25 +977,23 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return pipeline;
 	}
 
-	private volatile @Nullable JedisSubscription subscription;
-
 	@Override
 	public boolean isSubscribed() {
 		return (subscription != null && subscription.isAlive());
 	}
 
 	@Override
-	public Subscription<byte[], byte[]> getSubscription() {
-		return subscription;
+	public boolean isQueueing() {
+		return transaction != null && transaction.isAlive();
 	}
 
-	public boolean isQueueing() {
-		return transaction != null;
+	@Override
+	public Subscription<byte[], byte[]> getSubscription() {
+		return isSubscribed() ? subscription : null;
 	}
 
 	@Override
 	public void pSubscribe(MessageListener<byte[], byte[]> listener, byte[]... patterns) {
-
 		if (isSubscribed()) {
 			throw new RedisSubscribedConnectionException(
 					"Connection already subscribed; use the connection Subscription to cancel or add new channels");
@@ -1002,9 +1003,20 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 			throw new UnsupportedOperationException();
 		}
 
-		BinaryJedisPubSub jedisPubSub = new JedisMessageListener(listener);
-		subscription = new JedisSubscription(listener, jedisPubSub, null, patterns);
-		jedis.psubscribe(jedisPubSub, patterns);
+		synchronized (jedis) {
+			if (isSubscribed()) {
+				throw new RedisSubscribedConnectionException(
+						"Connection already subscribed; use the connection Subscription to cancel or add new channels");
+			}
+
+			if (isQueueing() || isPipelined()) {
+				throw new UnsupportedOperationException();
+			}
+
+			BinaryJedisPubSub jedisPubSub = new JedisMessageListener(listener);
+			this.subscription = new JedisSubscription(listener, jedisPubSub, null, patterns);
+			jedis.psubscribe(jedisPubSub, patterns);
+		}
 	}
 
 	@Override
@@ -1023,9 +1035,20 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 			throw new UnsupportedOperationException();
 		}
 
-		BinaryJedisPubSub jedisPubSub = new JedisMessageListener(listener);
-		subscription = new JedisSubscription(listener, jedisPubSub, channels, null);
-		jedis.subscribe(jedisPubSub, channels);
+		synchronized (jedis) {
+			if (isSubscribed()) {
+				throw new RedisSubscribedConnectionException(
+						"Connection already subscribed; use the connection Subscription to cancel or add new channels");
+			}
+
+			if (isQueueing() || isPipelined()) {
+				throw new UnsupportedOperationException();
+			}
+
+			BinaryJedisPubSub jedisPubSub = new JedisMessageListener(listener);
+			this.subscription = new JedisSubscription(listener, jedisPubSub, channels, null);
+			jedis.subscribe(jedisPubSub, channels);
+		}
 	}
 
 	@Override
@@ -1094,9 +1117,8 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Boolean hsetnx(byte[] key, byte[] field, byte[] value) {
-		Long v = jedis.hsetnx(key, field, value);
-		return NumberToBooleanConverter.DEFAULT.convert(v);
+	public Long hsetnx(byte[] key, byte[] field, byte[] value) {
+		return jedis.hsetnx(key, field, value);
 	}
 
 	@Override

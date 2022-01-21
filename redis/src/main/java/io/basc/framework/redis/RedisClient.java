@@ -14,10 +14,10 @@ import io.basc.framework.util.page.Pageables;
 import io.basc.framework.util.page.StreamPageables;
 
 @SuppressWarnings("unchecked")
-public interface RedisClient<K, V> extends RedisConnectionCommands<K, V>, RedisGeoCommands<K, V>,
-		RedisHashesCommands<K, V>, RedisHyperloglogCommands<K, V>, RedisKeysCommands<K, V>, RedisListsCommands<K, V>,
-		RedisPubSubCommands<K, V>, RedisScriptingCommands<K, V>, RedisSortedSetsCommands<K, V>,
-		RedisStreamsCommands<K, V>, RedisStringCommands<K, V>, RedisSetsCommands<K, V> {
+public interface RedisClient<K, V>
+		extends RedisConnectionCommands<K, V>, RedisGeoCommands<K, V>, RedisHashesCommands<K, V>,
+		RedisHyperloglogCommands<K, V>, RedisKeysCommands<K, V>, RedisListsCommands<K, V>, RedisScriptingCommands<K, V>,
+		RedisSortedSetsCommands<K, V>, RedisStreamsCommands<K, V>, RedisStringCommands<K, V>, RedisSetsCommands<K, V> {
 
 	RedisConnection<K, V> getConnection();
 
@@ -193,7 +193,7 @@ public interface RedisClient<K, V> extends RedisConnectionCommands<K, V>, RedisG
 	}
 
 	@Override
-	default Boolean hsetnx(K key, K field, V value) {
+	default Long hsetnx(K key, K field, V value) {
 		return execute((commands) -> {
 			return commands.hsetnx(key, field, value);
 		});
@@ -576,40 +576,9 @@ public interface RedisClient<K, V> extends RedisConnectionCommands<K, V>, RedisG
 		});
 	}
 
-	@Override
-	default boolean isSubscribed() {
-		return execute((commands) -> {
-			return commands.isSubscribed();
-		});
-	}
-
-	@Override
-	default Subscription<K, V> getSubscription() {
-		return execute((commands) -> {
-			return commands.getSubscription();
-		});
-	}
-
-	@Override
 	default Long publish(K channel, V message) {
 		return execute((commands) -> {
 			return commands.publish(channel, message);
-		});
-	}
-
-	@Override
-	default void subscribe(MessageListener<K, V> listener, K... channels) {
-		execute((commands) -> {
-			commands.subscribe(listener, channels);
-			return null;
-		});
-	}
-
-	@Override
-	default void pSubscribe(MessageListener<K, V> listener, K... patterns) {
-		execute((commands) -> {
-			commands.pSubscribe(listener, patterns);
-			return null;
 		});
 	}
 

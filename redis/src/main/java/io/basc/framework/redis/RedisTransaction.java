@@ -9,5 +9,5 @@ package io.basc.framework.redis;
  * @param <V>
  */
 public interface RedisTransaction<K, V> extends RedisPipelineCommands<K, V>, RedisTransactionsCommands<K, V> {
-
+	boolean isAlive();
 }

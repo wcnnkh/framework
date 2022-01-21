@@ -18,4 +18,9 @@ public interface ConvertibleRedisTransaction<SK, K, SV, V> extends ConvertibleRe
 	default RedisTransactionsCommands<SK, SV> getSourceRedisTransactionsCommands() {
 		return getSourceRedisTransaction();
 	}
+
+	@Override
+	default boolean isAlive() {
+		return getSourceRedisTransaction().isAlive();
+	}
 }

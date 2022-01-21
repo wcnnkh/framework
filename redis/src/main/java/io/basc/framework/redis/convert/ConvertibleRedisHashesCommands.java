@@ -110,7 +110,7 @@ public interface ConvertibleRedisHashesCommands<SK, K, SV, V>
 	}
 
 	@Override
-	default Boolean hsetnx(K key, K field, V value) {
+	default Long hsetnx(K key, K field, V value) {
 		SK k = getKeyCodec().encode(key);
 		SK tf = getKeyCodec().encode(field);
 		SV tv = getValueCodec().encode(value);

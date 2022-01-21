@@ -44,5 +44,5 @@ public interface RedisConnection<K, V> extends RedisCommands<K, V>, AutoCloseabl
 	 * many cases the performance benefits are minimal yet the impact on usage are
 	 * not.
 	 */
-	RedisPipeline<K, V> pipeline();
+	RedisPipeline<K, V> pipelined();
 }

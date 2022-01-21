@@ -19,4 +19,6 @@ public interface RedisPipeline<K, V> extends RedisPipelineCommands<K, V>, Closea
 	 * 执行并关闭管道
 	 */
 	void close() throws RedisSystemException;
+
+	boolean isClosed();
 }

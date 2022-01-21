@@ -25,4 +25,9 @@ public interface ConvertibleRedisPipeline<SK, K, SV, V>
 	default List<Object> exec() throws RedisSystemException {
 		return getSourceRedisPipeline().exec();
 	}
+
+	@Override
+	default boolean isClosed() {
+		return getSourceRedisPipeline().isClosed();
+	}
 }

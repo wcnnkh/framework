@@ -35,8 +35,8 @@ public interface ConvertibleRedisConnection<SK, K, SV, V>
 	}
 
 	@Override
-	default RedisPipeline<K, V> pipeline() {
-		RedisPipeline<SK, SV> pipeline = getSourceConnection().pipeline();
+	default RedisPipeline<K, V> pipelined() {
+		RedisPipeline<SK, SV> pipeline = getSourceConnection().pipelined();
 		return new DefaultConvertibleRedisPipeline<>(pipeline, getKeyCodec(), getValueCodec());
 	}
 }
