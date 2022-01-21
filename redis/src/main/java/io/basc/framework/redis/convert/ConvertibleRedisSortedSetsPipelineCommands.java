@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import io.basc.framework.convert.IdentityConverter;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.redis.InterArgs;
-import io.basc.framework.redis.RedisCodec;
 import io.basc.framework.redis.RedisResponse;
 import io.basc.framework.redis.RedisSortedSetsPipelineCommands;
 import io.basc.framework.redis.ScoreOption;

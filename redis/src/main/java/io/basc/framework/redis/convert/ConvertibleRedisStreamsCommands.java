@@ -3,7 +3,6 @@ package io.basc.framework.redis.convert;
 import java.util.List;
 
 import io.basc.framework.redis.ClaimArgs;
-import io.basc.framework.redis.RedisCodec;
 import io.basc.framework.redis.RedisStreamsCommands;
 
 @SuppressWarnings("unchecked")

@@ -4,7 +4,6 @@ import java.util.List;
 
 import io.basc.framework.redis.InsertPosition;
 import io.basc.framework.redis.MovePosition;
-import io.basc.framework.redis.RedisCodec;
 import io.basc.framework.redis.RedisListsPipelineCommands;
 import io.basc.framework.redis.RedisResponse;
 

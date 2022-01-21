@@ -3,7 +3,6 @@ package io.basc.framework.redis.convert;
 import java.util.List;
 import java.util.Set;
 
-import io.basc.framework.redis.RedisCodec;
 import io.basc.framework.redis.RedisSetsCommands;
 import io.basc.framework.redis.ScanOptions;
 import io.basc.framework.util.page.Pageable;

@@ -267,12 +267,6 @@ public class JedisPipelineCommands<P extends PipelineBinaryCommands> implements 
 	}
 
 	@Override
-	public RedisResponse<String> migrate(String host, int port, byte[] key, int timeout) {
-		Response<String> response = commands.migrate(host, port, key, timeout);
-		return new DefaultRedisResponse<String>(() -> response.get());
-	}
-
-	@Override
 	public RedisResponse<String> migrate(String host, int port, int timeout,
 			io.basc.framework.redis.MigrateParams option, byte[]... keys) {
 		Response<String> response = commands.migrate(host, port, timeout, JedisUtils.toMigrateParams(option), keys);

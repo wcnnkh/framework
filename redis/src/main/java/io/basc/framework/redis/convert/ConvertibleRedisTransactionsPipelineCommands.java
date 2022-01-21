@@ -2,7 +2,6 @@ package io.basc.framework.redis.convert;
 
 import java.util.List;
 
-import io.basc.framework.redis.RedisCodec;
 import io.basc.framework.redis.RedisResponse;
 import io.basc.framework.redis.RedisTransaction;
 import io.basc.framework.redis.RedisTransactionsPipelineCommands;

@@ -91,7 +91,9 @@ public interface RedisKeysPipelineCommands<K, V> {
 	 */
 	RedisResponse<Set<K>> keys(K pattern);
 
-	RedisResponse<String> migrate(String host, int port, K key, int timeout);
+	default RedisResponse<String> migrate(String host, int port, K key, int timeout) {
+		return migrate(host, port, timeout, new MigrateParams(), key);
+	}
 
 	/**
 	 * https://redis.io/commands/migrate

@@ -1,6 +1,5 @@
 package io.basc.framework.redis.convert;
 
-import io.basc.framework.redis.RedisCodec;
 import io.basc.framework.redis.RedisHyperloglogPipelineCommands;
 import io.basc.framework.redis.RedisResponse;
 

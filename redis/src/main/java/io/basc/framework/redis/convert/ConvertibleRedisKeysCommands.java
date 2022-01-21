@@ -5,7 +5,6 @@ import java.util.Set;
 
 import io.basc.framework.redis.DataType;
 import io.basc.framework.redis.MigrateParams;
-import io.basc.framework.redis.RedisCodec;
 import io.basc.framework.redis.RedisKeysCommands;
 import io.basc.framework.redis.RedisValueEncoding;
 import io.basc.framework.redis.RestoreParams;

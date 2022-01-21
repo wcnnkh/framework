@@ -1,7 +1,6 @@
 package io.basc.framework.redis.convert;
 
 import io.basc.framework.redis.MessageListener;
-import io.basc.framework.redis.RedisCodec;
 import io.basc.framework.redis.RedisPubSubCommands;
 import io.basc.framework.redis.Subscription;
 

@@ -51,16 +51,28 @@ public class Redis extends DefaultConvertibleRedisClient<RedisClient<byte[], byt
 		this.serializer = serializer;
 	}
 
+	private Long toLongValue(Object value) {
+		if (value == null) {
+			return null;
+		}
+
+		if (value instanceof byte[]) {
+			String v = getValueCodec().decode((byte[]) value);
+			return Long.parseLong(v);
+		}
+		return new AnyValue(value).getAsLong();
+	}
+
 	public Long incr(String key, long delta, long initialValue, long exp) {
 		Object value = eval(INCR_AND_INIT_SCRIPT, Arrays.asList(key),
 				Arrays.asList(String.valueOf(delta), String.valueOf(initialValue), String.valueOf(exp)));
-		return new AnyValue(value).getAsLong();
+		return toLongValue(value);
 	}
 
 	public Long decr(String key, long delta, long initialValue, long exp) {
 		Object value = eval(DECR_AND_INIT_SCRIPT, Arrays.asList(key),
 				Arrays.asList(String.valueOf(delta), String.valueOf(initialValue), String.valueOf(exp)));
-		return new AnyValue(value).getAsLong();
+		return toLongValue(value);
 	}
 
 }

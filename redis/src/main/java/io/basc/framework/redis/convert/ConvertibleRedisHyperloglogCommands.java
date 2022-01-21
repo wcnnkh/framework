@@ -1,6 +1,5 @@
 package io.basc.framework.redis.convert;
 
-import io.basc.framework.redis.RedisCodec;
 import io.basc.framework.redis.RedisHyperloglogCommands;
 
 @SuppressWarnings("unchecked")

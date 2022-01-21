@@ -5,7 +5,7 @@ import io.basc.framework.redis.Redis;
 import io.basc.framework.redis.RedisClient;
 import redis.clients.jedis.JedisPool;
 
-public class RedisTest {
+public class JedisTest {
 	public static void main(String[] args) {
 		JedisPool jedisPool = new JedisPool("localhost", 6379);
 		RedisClient<byte[], byte[]> connectionFactory = new JedisClient(jedisPool);
@@ -13,5 +13,9 @@ public class RedisTest {
 		redis.set("a", "b");
 		System.out.println(redis.get("a"));
 		redis.del("a");
+
+		for(int i=0 ;i<10; i++) {
+			System.out.println(redis.incr("v", 1, 10, 0));
+		}
 	}
 }

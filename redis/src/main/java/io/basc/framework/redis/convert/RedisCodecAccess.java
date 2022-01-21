@@ -1,4 +1,4 @@
-package io.basc.framework.redis;
+package io.basc.framework.redis.convert;
 
 import io.basc.framework.codec.Codec;
 import io.basc.framework.util.Assert;

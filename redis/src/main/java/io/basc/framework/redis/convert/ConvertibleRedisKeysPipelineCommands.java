@@ -5,7 +5,6 @@ import java.util.Set;
 
 import io.basc.framework.redis.DataType;
 import io.basc.framework.redis.MigrateParams;
-import io.basc.framework.redis.RedisCodec;
 import io.basc.framework.redis.RedisKeysPipelineCommands;
 import io.basc.framework.redis.RedisResponse;
 import io.basc.framework.redis.RedisValueEncoding;
@@ -61,12 +60,6 @@ public interface ConvertibleRedisKeysPipelineCommands<SK, K, SV, V>
 		SK k = getKeyCodec().encode(pattern);
 		return getSourceRedisKeysCommands().keys(k)
 				.map((tvs) -> getKeyCodec().toDecodeConverter().convert(tvs, new LinkedHashSet<K>(tvs.size())));
-	}
-
-	@Override
-	default RedisResponse<String> migrate(String host, int port, K key, int timeout) {
-		SK k = getKeyCodec().encode(key);
-		return getSourceRedisKeysCommands().migrate(host, port, k, timeout);
 	}
 
 	@Override

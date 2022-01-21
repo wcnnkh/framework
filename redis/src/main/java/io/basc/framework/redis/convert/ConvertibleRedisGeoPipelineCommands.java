@@ -15,7 +15,6 @@ import io.basc.framework.redis.GeoRadiusArgs;
 import io.basc.framework.redis.GeoRadiusWith;
 import io.basc.framework.redis.GeoWithin;
 import io.basc.framework.redis.GeoaddOption;
-import io.basc.framework.redis.RedisCodec;
 import io.basc.framework.redis.RedisGeoPipelineCommands;
 import io.basc.framework.redis.RedisResponse;
 

@@ -5,7 +5,6 @@ import java.util.Map;
 
 import io.basc.framework.redis.BitOP;
 import io.basc.framework.redis.ExpireOption;
-import io.basc.framework.redis.RedisCodec;
 import io.basc.framework.redis.RedisResponse;
 import io.basc.framework.redis.RedisStringPipelineCommands;
 import io.basc.framework.redis.SetOption;
