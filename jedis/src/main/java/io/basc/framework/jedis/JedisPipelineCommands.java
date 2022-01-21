@@ -1078,6 +1078,10 @@ public class JedisPipelineCommands<P extends PipelineBinaryCommands> implements 
 						+ Thread.currentThread().getName() + "] interrupt", e);
 			}
 
+			if (!isDone()) {
+				throw new TimeoutException("The result is not obtained within the specified time, you can try again");
+			}
+
 			try {
 				return callable.call();
 			} catch (Exception e) {
