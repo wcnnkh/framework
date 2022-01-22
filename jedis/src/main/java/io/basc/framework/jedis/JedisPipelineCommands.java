@@ -1,15 +1,5 @@
 package io.basc.framework.jedis;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 import io.basc.framework.convert.lang.NumberToBooleanConverter;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.data.geo.Circle;
@@ -17,7 +7,6 @@ import io.basc.framework.data.geo.Distance;
 import io.basc.framework.data.geo.Metric;
 import io.basc.framework.data.geo.Point;
 import io.basc.framework.lang.NestedExceptionUtils;
-import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.redis.BitOP;
 import io.basc.framework.redis.ClaimArgs;
 import io.basc.framework.redis.DataType;
@@ -43,6 +32,18 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.page.Pageable;
 import io.basc.framework.util.page.SharedPageable;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import redis.clients.jedis.GeoCoordinate;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.commands.PipelineBinaryCommands;
@@ -1031,26 +1032,31 @@ public class JedisPipelineCommands<P extends PipelineBinaryCommands> implements 
 		return new JedisRedisResponse<Long>(() -> response.get());
 	}
 
-	private List<CountDownLatch> countDownLatchs = new ArrayList<CountDownLatch>();
+	private volatile List<CountDownLatch> countDownLatchs = new ArrayList<CountDownLatch>();
 
 	/**
 	 * 结束并清空所有的等待
 	 */
 	public void responseDown() {
-		for (CountDownLatch countDownLatch : countDownLatchs) {
-			countDownLatch.countDown();
+		synchronized (countDownLatchs) {
+			for (CountDownLatch countDownLatch : countDownLatchs) {
+				countDownLatch.countDown();
+			}
+			countDownLatchs.clear();
 		}
-		countDownLatchs.clear();
 	}
 
 	protected final class JedisRedisResponse<T> implements RedisResponse<T> {
 		private final Callable<T> callable;
+		private final AtomicBoolean cancelled = new AtomicBoolean(false);
 		private final CountDownLatch countDownLatch;
 
 		public JedisRedisResponse(Callable<T> callable) {
 			this.callable = callable;
 			this.countDownLatch = new CountDownLatch(1);
-			countDownLatchs.add(this.countDownLatch);
+			synchronized (countDownLatchs) {
+				countDownLatchs.add(this.countDownLatch);
+			}
 		}
 
 		@Override
@@ -1060,6 +1066,10 @@ public class JedisPipelineCommands<P extends PipelineBinaryCommands> implements 
 			} catch (InterruptedException e) {
 				throw new RedisSystemException("Thread[" + Thread.currentThread().getId() + "]["
 						+ Thread.currentThread().getName() + "] interrupt", e);
+			}
+			
+			if(isCancelled()){
+				throw new RedisSystemException("It has been cancelled");
 			}
 
 			try {
@@ -1077,6 +1087,10 @@ public class JedisPipelineCommands<P extends PipelineBinaryCommands> implements 
 				throw new RedisSystemException("Thread[" + Thread.currentThread().getId() + "]["
 						+ Thread.currentThread().getName() + "] interrupt", e);
 			}
+			
+			if(isCancelled()){
+				throw new RedisSystemException("It has been cancelled");
+			}
 
 			if (!isDone()) {
 				throw new TimeoutException("The result is not obtained within the specified time, you can try again");
@@ -1091,12 +1105,16 @@ public class JedisPipelineCommands<P extends PipelineBinaryCommands> implements 
 
 		@Override
 		public boolean cancel(boolean mayInterruptIfRunning) {
-			throw new NotSupportedException("Unable to cancel pipeline command");
+			if(cancelled.compareAndSet(false, true)){
+				countDownLatch.countDown();
+				return true;
+			}
+			return false;
 		}
 
 		@Override
 		public boolean isCancelled() {
-			return false;
+			return cancelled.get();
 		}
 
 		@Override
