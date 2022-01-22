@@ -17,22 +17,22 @@ import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class RedisLbs<K, V> implements Lbs<V> {
-	private final RedisCommands<K, V> redisCommands;
+	private final RedisClient<K, V> factory;
 	private final K key;
 
-	public RedisLbs(RedisCommands<K, V> redisCommands, K key) {
-		this.redisCommands = redisCommands;
+	public RedisLbs(RedisClient<K, V> factory, K key) {
+		this.factory = factory;
 		this.key = key;
 	}
 
 	@Override
 	public void report(Marker<V> marker) {
-		redisCommands.geoadd(key, marker.getName(), marker);
+		factory.geoadd(key, marker.getName(), marker);
 	}
 
 	@Override
 	public Marker<V> getMarker(V key) {
-		List<Point> list = redisCommands.geopos(this.key, key);
+		List<Point> list = factory.geopos(this.key, key);
 		if (CollectionUtils.isEmpty(list)) {
 			return null;
 		}
@@ -43,12 +43,12 @@ public class RedisLbs<K, V> implements Lbs<V> {
 	@Override
 	public boolean remove(V key) {
 		// redis geo 本质上是一个有序set
-		return redisCommands.zrem(this.key, key) == 1;
+		return factory.zrem(this.key, key) == 1;
 	}
 
 	@Override
 	public boolean exists(V key) {
-		return redisCommands.zrank(this.key, key) != null;
+		return factory.zrank(this.key, key) != null;
 	}
 
 	protected final Converter<GeoWithin<V>, Marker<V>> markerConvert = new Converter<GeoWithin<V>, Marker<V>>() {
@@ -60,7 +60,7 @@ public class RedisLbs<K, V> implements Lbs<V> {
 
 	@Override
 	public Cursor<Marker<V>> getNearbyMarkers(Point point, Distance radius, int count, Sort sort) {
-		Collection<GeoWithin<V>> collection = redisCommands.georadius(this.key, new Circle(point, radius),
+		Collection<GeoWithin<V>> collection = factory.georadius(this.key, new Circle(point, radius),
 				new GeoRadiusWith().withCoord(), new GeoRadiusArgs<K>().sort(sort).count(count));
 		if (CollectionUtils.isEmpty(collection)) {
 			return StreamProcessorSupport.emptyCursor();

@@ -68,7 +68,7 @@ public abstract class AbstractClassesLoader implements ClassesLoader, ClassLoade
 					logger.trace(e, "This class[{}] cannot be included because:", c.getName());
 				} else if (logger.isDebugEnabled()) {
 					logger.debug("This class[{}] cannot be included because {}: {}", c.getName(),
-							NestedExceptionUtils.getRootCause(e).getClass(),
+							NestedExceptionUtils.getMostSpecificCause(e).getClass(),
 							NestedExceptionUtils.getNonEmptyMessage(e, false));
 				}
 				return false;

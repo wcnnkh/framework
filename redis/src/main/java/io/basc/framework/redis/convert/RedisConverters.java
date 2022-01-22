@@ -7,6 +7,9 @@ import io.basc.framework.util.ArrayUtils;
 public class RedisConverters {
 	private static final String INCLUSIVE_LEFT = "[";
 	private static final String INCLUSIVE_RIGHT = "[";
+	
+	private RedisConverters() {
+	}
 
 	public static byte[] convertLowerBound(Range.Bound<? extends byte[]> bound, Encoder<String, byte[]> encoder) {
 		if (bound.isBounded()) {

@@ -2,60 +2,50 @@ package io.basc.framework.jedis;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
-import io.basc.framework.convert.lang.NumberToBooleanConverter;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.data.geo.Circle;
 import io.basc.framework.data.geo.Distance;
 import io.basc.framework.data.geo.Metric;
 import io.basc.framework.data.geo.Point;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.redis.Cursor;
+import io.basc.framework.redis.ClaimArgs;
 import io.basc.framework.redis.DataType;
+import io.basc.framework.redis.ExpireOption;
+import io.basc.framework.redis.FlushMode;
 import io.basc.framework.redis.GeoRadiusArgs;
 import io.basc.framework.redis.GeoRadiusWith;
 import io.basc.framework.redis.GeoWithin;
+import io.basc.framework.redis.GeoaddOption;
+import io.basc.framework.redis.InterArgs;
 import io.basc.framework.redis.MessageListener;
-import io.basc.framework.redis.RedisAuth;
 import io.basc.framework.redis.RedisConnection;
+import io.basc.framework.redis.RedisPipeline;
 import io.basc.framework.redis.RedisSubscribedConnectionException;
+import io.basc.framework.redis.RedisSystemException;
+import io.basc.framework.redis.RedisTransaction;
 import io.basc.framework.redis.RedisValueEncoding;
 import io.basc.framework.redis.RedisValueEncodings;
 import io.basc.framework.redis.ScanOptions;
+import io.basc.framework.redis.ScoreOption;
 import io.basc.framework.redis.SetOption;
 import io.basc.framework.redis.Subscription;
+import io.basc.framework.redis.Tuple;
 import io.basc.framework.redis.convert.RedisConverters;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Decorator;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.comparator.Sort;
+import io.basc.framework.util.page.Pageable;
+import io.basc.framework.util.page.SharedPageable;
 import redis.clients.jedis.BinaryJedisPubSub;
 import redis.clients.jedis.GeoCoordinate;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.Transaction;
-import redis.clients.jedis.args.GeoUnit;
-import redis.clients.jedis.args.ListDirection;
-import redis.clients.jedis.args.ListPosition;
-import redis.clients.jedis.params.BitPosParams;
-import redis.clients.jedis.params.GeoAddParams;
-import redis.clients.jedis.params.GeoRadiusParam;
-import redis.clients.jedis.params.GetExParams;
-import redis.clients.jedis.params.MigrateParams;
-import redis.clients.jedis.params.RestoreParams;
-import redis.clients.jedis.params.SetParams;
-import redis.clients.jedis.params.XClaimParams;
-import redis.clients.jedis.params.ZAddParams;
-import redis.clients.jedis.params.ZParams;
 import redis.clients.jedis.resps.GeoRadiusResponse;
+import redis.clients.jedis.resps.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
 @SuppressWarnings({ "unchecked" })
@@ -126,25 +116,9 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public String migrate(String host, int port, int targetDB, int timeout, boolean copy, boolean replace,
-			RedisAuth auth, byte[]... keys) {
-		MigrateParams params = new MigrateParams();
-		if (copy) {
-			params.copy();
-		}
-
-		if (replace) {
-			params.replace();
-		}
-
-		if (auth != null) {
-			if (auth.getUsername() != null) {
-				params.auth2(auth.getUsername(), auth.getPassword());
-			} else {
-				params.auth(auth.getPassword());
-			}
-		}
-		return jedis.migrate(host, port, targetDB, timeout, params, keys);
+	public String migrate(String host, int port, int targetDB, int timeout,
+			io.basc.framework.redis.MigrateParams option, byte[]... keys) {
+		return jedis.migrate(host, port, targetDB, timeout, JedisUtils.toMigrateParams(option), keys);
 	}
 
 	@Override
@@ -200,8 +174,8 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public void rename(byte[] key, byte[] newKey) {
-		jedis.rename(key, newKey);
+	public String rename(byte[] key, byte[] newKey) {
+		return jedis.rename(key, newKey);
 	}
 
 	@Override
@@ -210,30 +184,17 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public void restore(byte[] key, long ttl, byte[] serializedValue, boolean replace, boolean absTtl, Long idleTime,
-			Long frequency) {
-		RestoreParams params = new RestoreParams();
-		if (replace) {
-			params.replace();
-		}
-
-		if (absTtl) {
-			params.absTtl();
-		}
-
-		if (idleTime != null) {
-			params.idleTime(idleTime);
-		}
-
-		if (frequency != null) {
-			params.frequency(frequency);
-		}
-		jedis.restore(key, ttl, serializedValue, params);
+	public String restore(byte[] key, long ttl, byte[] serializedValue, io.basc.framework.redis.RestoreParams params) {
+		return jedis.restore(key, ttl, serializedValue, JedisUtils.toRestoreParams(params));
 	}
 
 	@Override
-	public Cursor<byte[]> scan(long cursorId, ScanOptions<byte[]> options) {
-		return new JedisScanCursor(cursorId, options, jedis);
+	public Pageable<Long, byte[]> scan(long cursorId, ScanOptions<byte[]> options) {
+		ScanResult<byte[]> result = jedis.scan(SafeEncoder.encode(String.valueOf(cursorId)),
+				JedisUtils.toScanParams(options));
+		String next = result.getCursor();
+		return new SharedPageable<Long, byte[]>(cursorId, result.getResult(),
+				StringUtils.isEmpty(next) ? null : Long.parseLong(next));
 	}
 
 	@Override
@@ -273,19 +234,8 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Long bitop(io.basc.framework.redis.RedisStringCommands.BitOP op, byte[] destkey, byte[]... srcKeys) {
-		switch (op) {
-		case AND:
-			return jedis.bitop(redis.clients.jedis.args.BitOP.AND, destkey, srcKeys);
-		case NOT:
-			return jedis.bitop(redis.clients.jedis.args.BitOP.NOT, destkey, srcKeys);
-		case OR:
-			return jedis.bitop(redis.clients.jedis.args.BitOP.OR, destkey, srcKeys);
-		case XOR:
-			return jedis.bitop(redis.clients.jedis.args.BitOP.XOR, destkey, srcKeys);
-		default:
-			return null;
-		}
+	public Long bitop(io.basc.framework.redis.BitOP op, byte[] destkey, byte[]... srcKeys) {
+		return jedis.bitop(JedisUtils.toBitOP(op), destkey, srcKeys);
 	}
 
 	@Override
@@ -294,21 +244,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 			return jedis.bitpos(key, bit);
 		}
 
-		if (start == null) {
-			if (end == null) {
-				return jedis.bitpos(key, bit);
-			}
-			BitPosParams params = new BitPosParams(0, end);
-			return jedis.bitpos(key, bit, params);
-		} else {
-			if (end == null) {
-				BitPosParams params = new BitPosParams(start);
-				return jedis.bitpos(key, bit, params);
-			} else {
-				BitPosParams params = new BitPosParams(start, end);
-				return jedis.bitpos(key, bit, params);
-			}
-		}
+		return jedis.bitpos(key, bit, JedisUtils.toBitPosParams(start, end));
 	}
 
 	@Override
@@ -337,27 +273,8 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public byte[] getEx(byte[] key, io.basc.framework.redis.RedisStringCommands.ExpireOption option, Long time) {
-		GetExParams params = new GetExParams();
-		switch (option) {
-		case EX:
-			params.ex(time);
-			break;
-		case EXAT:
-			params.exAt(time);
-			break;
-		case PX:
-			params.px(time);
-			break;
-		case PXAT:
-			params.pxAt(time);
-		case PERSIST:
-			params.persist();
-			break;
-		default:
-			break;
-		}
-		return jedis.getEx(key, params);
+	public byte[] getEx(byte[] key, ExpireOption option, Long time) {
+		return jedis.getEx(key, JedisUtils.toGetExParams(option, time));
 	}
 
 	@Override
@@ -390,28 +307,14 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return jedis.mget(keys);
 	}
 
-	private byte[][] toPairsArgs(Map<byte[], byte[]> pairs) {
-		if (CollectionUtils.isEmpty(pairs)) {
-			return new byte[0][0];
-		}
-		List<byte[]> args = new ArrayList<byte[]>();
-		for (Entry<byte[], byte[]> entry : pairs.entrySet()) {
-			args.add(entry.getKey());
-			args.add(entry.getValue());
-		}
-		return args.toArray(new byte[0][0]);
-	}
-
 	@Override
 	public Boolean mset(Map<byte[], byte[]> pairs) {
-		byte[][] bytes = toPairsArgs(pairs);
-		return "OK".equalsIgnoreCase(jedis.mset(bytes));
+		return "OK".equalsIgnoreCase(jedis.mset(JedisUtils.toPairsArgs(pairs)));
 	}
 
 	@Override
 	public Long msetnx(Map<byte[], byte[]> pairs) {
-		byte[][] bytes = toPairsArgs(pairs);
-		return jedis.msetnx(bytes);
+		return jedis.msetnx(JedisUtils.toPairsArgs(pairs));
 	}
 
 	@Override
@@ -420,48 +323,14 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public void set(byte[] key, byte[] value) {
-		jedis.set(key, value);
+	public String set(byte[] key, byte[] value) {
+		return jedis.set(key, value);
 	}
 
 	@Override
-	public Boolean set(byte[] key, byte[] value, io.basc.framework.redis.RedisStringCommands.ExpireOption option,
-			long time, SetOption setOption) {
-		SetParams params = new SetParams();
-		if (option != null) {
-			switch (option) {
-			case EX:
-				params.ex(time);
-				break;
-			case EXAT:
-				params.exAt(time);
-				break;
-			case PX:
-				params.px(time);
-				break;
-			case PXAT:
-				params.pxAt(time);
-			case PERSIST:
-			default:
-				break;
-			}
-		}
-
-		if (setOption != null) {
-			switch (setOption) {
-			case NX:
-				params.nx();
-				break;
-			case XX:
-				params.xx();
-				break;
-			default:
-				break;
-			}
-		}
-
-		String response = jedis.set(key, value, params);
-		return parseBoolean(response);
+	public Boolean set(byte[] key, byte[] value, ExpireOption option, long time, SetOption setOption) {
+		String response = jedis.set(key, value, JedisUtils.toSetParams(option, time, setOption));
+		return JedisUtils.parseBoolean(response);
 	}
 
 	@Override
@@ -469,14 +338,10 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return jedis.setbit(key, offset, value);
 	}
 
-	private Boolean parseBoolean(String response) {
-		return response == null ? null : "OK".equalsIgnoreCase(response);
-	}
-
 	@Override
 	public Boolean setex(byte[] key, long seconds, byte[] value) {
 		String response = jedis.setex(key, seconds, value);
-		return parseBoolean(response);
+		return JedisUtils.parseBoolean(response);
 	}
 
 	@Override
@@ -572,16 +437,18 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Cursor<byte[]> sScan(long cursorId, byte[] key, ScanOptions<byte[]> options) {
+	public Pageable<Long, byte[]> sScan(long cursorId, byte[] key, ScanOptions<byte[]> options) {
 		Assert.notNull(key, "Key must not be null!");
-		return new JedisKeyBoundCursor(key, cursorId, options, jedis);
+		ScanResult<byte[]> result = jedis.scan(SafeEncoder.encode(String.valueOf(cursorId)),
+				JedisUtils.toScanParams(options));
+		return new SharedPageable<Long, byte[]>(cursorId, result.getResult(), Long.parseLong(result.getCursor()));
 	}
 
 	@Override
-	public byte[] blmove(byte[] sourceKey, byte[] destinationKey,
-			io.basc.framework.redis.RedisListsCommands.MovePosition from,
-			io.basc.framework.redis.RedisListsCommands.MovePosition to, long timout) {
-		return jedis.blmove(sourceKey, destinationKey, toListDirection(from), toListDirection(to), timout);
+	public byte[] blmove(byte[] sourceKey, byte[] destinationKey, io.basc.framework.redis.MovePosition from,
+			io.basc.framework.redis.MovePosition to, long timout) {
+		return jedis.blmove(sourceKey, destinationKey, JedisUtils.toListDirection(from), JedisUtils.toListDirection(to),
+				timout);
 	}
 
 	@Override
@@ -605,10 +472,8 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Long linsert(byte[] key, io.basc.framework.redis.RedisListsCommands.InsertPosition position, byte[] pivot,
-			byte[] value) {
-		return jedis.linsert(key, position == InsertPosition.AFTER ? ListPosition.AFTER : ListPosition.BEFORE, pivot,
-				value);
+	public Long linsert(byte[] key, io.basc.framework.redis.InsertPosition position, byte[] pivot, byte[] value) {
+		return jedis.linsert(key, JedisUtils.toListPosition(position), pivot, value);
 	}
 
 	@Override
@@ -616,15 +481,10 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return jedis.llen(key);
 	}
 
-	private ListDirection toListDirection(MovePosition position) {
-		return position == MovePosition.LEFT ? ListDirection.LEFT : ListDirection.RIGHT;
-	}
-
 	@Override
-	public byte[] lmove(byte[] sourceKey, byte[] destinationKey,
-			io.basc.framework.redis.RedisListsCommands.MovePosition from,
-			io.basc.framework.redis.RedisListsCommands.MovePosition to) {
-		return jedis.lmove(sourceKey, destinationKey, toListDirection(from), toListDirection(to));
+	public byte[] lmove(byte[] sourceKey, byte[] destinationKey, io.basc.framework.redis.MovePosition from,
+			io.basc.framework.redis.MovePosition to) {
+		return jedis.lmove(sourceKey, destinationKey, JedisUtils.toListDirection(from), JedisUtils.toListDirection(to));
 	}
 
 	@Override
@@ -655,13 +515,13 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	@Override
 	public Boolean lset(byte[] key, long index, byte[] element) {
 		String response = jedis.lset(key, index, element);
-		return parseBoolean(response);
+		return JedisUtils.parseBoolean(response);
 	}
 
 	@Override
 	public Boolean ltrim(byte[] key, long start, long stop) {
 		String response = jedis.ltrim(key, start, stop);
-		return parseBoolean(response);
+		return JedisUtils.parseBoolean(response);
 	}
 
 	@Override
@@ -695,9 +555,8 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Boolean pfmerge(byte[] destKey, byte[]... sourceKeys) {
-		String response = jedis.pfmerge(destKey, sourceKeys);
-		return parseBoolean(response);
+	public String pfmerge(byte[] destKey, byte[]... sourceKeys) {
+		return jedis.pfmerge(destKey, sourceKeys);
 	}
 
 	@Override
@@ -710,165 +569,58 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return jedis.ping(message);
 	}
 
-	private GeoAddParams toGeoAddParams(GeoaddOption option) {
-		GeoAddParams params = new GeoAddParams();
-		switch (option) {
-		case CH:
-			params.ch();
-			break;
-		case NX:
-			params.nx();
-			break;
-		case XX:
-			params.xx();
-			break;
-		default:
-			break;
-		}
-		return params;
-	}
-
 	@Override
 	public Long geoadd(byte[] key, GeoaddOption option, Map<byte[], Point> members) {
-		Map<byte[], GeoCoordinate> memberCoordinateMap = new HashMap<byte[], GeoCoordinate>(members.size());
-		for (Entry<byte[], Point> entry : members.entrySet()) {
-			GeoCoordinate coordinate = new GeoCoordinate(entry.getValue().getX(), entry.getValue().getY());
-			memberCoordinateMap.put(entry.getKey(), coordinate);
-		}
-		return jedis.geoadd(key, toGeoAddParams(option), memberCoordinateMap);
+		return jedis.geoadd(key, JedisUtils.toGeoAddParams(option), JedisUtils.toMemberCoordinateMap(members));
 	}
 
 	@Override
 	public Double geodist(byte[] key, byte[] member1, byte[] member2, Metric metric) {
-		return jedis.geodist(key, member1, member2, toGeoUnit(metric));
+		return jedis.geodist(key, member1, member2, JedisUtils.toGeoUnit(metric));
 	}
 
 	@Override
 	public List<String> geohash(byte[] key, byte[]... members) {
 		List<byte[]> list = jedis.geohash(key, members);
-		return new JedisCodec().toDecodeConverter().convert(list, new ArrayList<String>());
+		return JedisCodec.INSTANCE.toDecodeConverter().convert(list, new ArrayList<String>());
 	}
 
 	@Override
 	public List<Point> geopos(byte[] key, byte[]... members) {
 		List<GeoCoordinate> list = jedis.geopos(key, members);
-		List<Point> points = new ArrayList<Point>();
-		for (GeoCoordinate geo : list) {
-			points.add(new Point(geo.getLatitude(), geo.getLongitude()));
-		}
-		return points;
-	}
-
-	private GeoUnit toGeoUnit(Metric metric) {
-		if (metric == null) {
-			return GeoUnit.M;
-		}
-
-		String name = metric.getAbbreviation();
-		if (StringUtils.isEmpty(name)) {
-			return GeoUnit.M;
-		}
-		return GeoUnit.valueOf(name.toUpperCase());
-	}
-
-	private GeoRadiusParam toGeoRadiusParam(GeoRadiusWith with, GeoRadiusArgs<byte[]> args) {
-		GeoRadiusParam param = new GeoRadiusParam();
-		Integer count = args.getCount();
-		if (count != null) {
-			param.count(args.getCount());
-		}
-
-		Sort sort = args.getSort();
-		if (sort != null) {
-			switch (sort) {
-			case ASC:
-				param.sortAscending();
-				break;
-			case DESC:
-				param.sortDescending();
-				break;
-			default:
-				break;
-			}
-		}
-
-		if (with != null) {
-			if (with.isWithCoord()) {
-				param.withCoord();
-			}
-
-			if (with.isWithDist()) {
-				param.withCoord();
-			}
-
-			if (with.isWithHash()) {
-				param.withHash();
-			}
-		}
-		return param;
-	}
-
-	private List<byte[]> toGeoMembers(List<GeoRadiusResponse> list) {
-		if (CollectionUtils.isEmpty(list)) {
-			return Collections.emptyList();
-		}
-
-		List<byte[]> members = new ArrayList<byte[]>();
-		for (GeoRadiusResponse radiusResponse : list) {
-			members.add(radiusResponse.getMember());
-		}
-		return members;
+		return JedisUtils.toPoints(list);
 	}
 
 	@Override
 	public List<byte[]> georadius(byte[] key, Circle within, GeoRadiusArgs<byte[]> args) {
 		List<GeoRadiusResponse> list = jedis.georadius(key, within.getPoint().getX(), within.getPoint().getY(),
-				within.getRadius().getValue(), toGeoUnit(within.getRadius().getMetric()), toGeoRadiusParam(null, args));
-		return toGeoMembers(list);
-	}
-
-	private Point toPoint(GeoCoordinate coordinate) {
-		if (coordinate == null) {
-			return null;
-		}
-		return new Point(coordinate.getLongitude(), coordinate.getLatitude());
-	}
-
-	private List<GeoWithin<byte[]>> toGeoWithins(List<GeoRadiusResponse> list) {
-		if (CollectionUtils.isEmpty(list)) {
-			return Collections.emptyList();
-		}
-
-		List<GeoWithin<byte[]>> members = new ArrayList<GeoWithin<byte[]>>();
-		for (GeoRadiusResponse radiusResponse : list) {
-			GeoWithin<byte[]> geoWithin = new GeoWithin<byte[]>(radiusResponse.getMember(),
-					radiusResponse.getDistance(), null, toPoint(radiusResponse.getCoordinate()));
-			members.add(geoWithin);
-		}
-		return members;
+				within.getRadius().getValue(), JedisUtils.toGeoUnit(within.getRadius().getMetric()),
+				JedisUtils.toGeoRadiusParam(null, args));
+		return JedisUtils.toGeoMembers(list);
 	}
 
 	@Override
 	public List<GeoWithin<byte[]>> georadius(byte[] key, Circle within, GeoRadiusWith with,
 			GeoRadiusArgs<byte[]> args) {
 		List<GeoRadiusResponse> list = jedis.georadius(key, within.getPoint().getX(), within.getPoint().getY(),
-				within.getRadius().getValue(), toGeoUnit(within.getRadius().getMetric()), toGeoRadiusParam(null, args));
-		return toGeoWithins(list);
+				within.getRadius().getValue(), JedisUtils.toGeoUnit(within.getRadius().getMetric()),
+				JedisUtils.toGeoRadiusParam(null, args));
+		return JedisUtils.toGeoWithins(list);
 	}
 
 	@Override
 	public List<byte[]> georadiusbymember(byte[] key, byte[] member, Distance distance, GeoRadiusArgs<byte[]> args) {
 		List<GeoRadiusResponse> list = jedis.georadiusByMember(key, member, distance.getValue(),
-				toGeoUnit(distance.getMetric()), toGeoRadiusParam(null, args));
-		return toGeoMembers(list);
+				JedisUtils.toGeoUnit(distance.getMetric()), JedisUtils.toGeoRadiusParam(null, args));
+		return JedisUtils.toGeoMembers(list);
 	}
 
 	@Override
 	public List<GeoWithin<byte[]>> georadiusbymember(byte[] key, byte[] member, Distance distance, GeoRadiusWith with,
 			GeoRadiusArgs<byte[]> args) {
 		List<GeoRadiusResponse> list = jedis.georadiusByMember(key, member, distance.getValue(),
-				toGeoUnit(distance.getMetric()), toGeoRadiusParam(with, args));
-		return toGeoWithins(list);
+				JedisUtils.toGeoUnit(distance.getMetric()), JedisUtils.toGeoRadiusParam(with, args));
+		return JedisUtils.toGeoWithins(list);
 	}
 
 	@Override
@@ -876,49 +628,16 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return jedis.bzpopmin(timeout, keys);
 	}
 
-	private ZAddParams toZAddParams(SetOption setOption, ScoreOption scoreOption, boolean changed) {
-		ZAddParams params = new ZAddParams();
-		if (setOption != null) {
-			switch (setOption) {
-			case NX:
-				params.nx();
-				break;
-			case XX:
-				params.xx();
-
-			default:
-				break;
-			}
-		}
-
-		if (scoreOption != null) {
-			switch (scoreOption) {
-			case GT:
-				params.gt();
-				break;
-			case LT:
-				params.lt();
-			default:
-				break;
-			}
-		}
-
-		if (changed) {
-			params.ch();
-		}
-		return params;
-	}
-
 	@Override
 	public Long zadd(byte[] key, SetOption setOption, ScoreOption scoreOption, boolean changed,
 			Map<byte[], Double> memberScores) {
-		return jedis.zadd(key, memberScores, toZAddParams(setOption, scoreOption, changed));
+		return jedis.zadd(key, memberScores, JedisUtils.toZAddParams(setOption, scoreOption, changed));
 	}
 
 	@Override
 	public Double zaddIncr(byte[] key, SetOption setOption, ScoreOption scoreOption, boolean changed, double score,
 			byte[] member) {
-		return jedis.zaddIncr(key, score, member, toZAddParams(setOption, scoreOption, changed));
+		return jedis.zaddIncr(key, score, member, JedisUtils.toZAddParams(setOption, scoreOption, changed));
 	}
 
 	@Override
@@ -942,59 +661,20 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return jedis.zincrby(key, increment, member);
 	}
 
-	private ZParams toZParams(InterArgs args) {
-		ZParams params = new ZParams();
-		if (args != null) {
-			double[] weights = args.getWeights();
-			if (weights != null) {
-				params.weights(weights);
-			}
-
-			Aggregate aggregate = args.getAggregate();
-			if (aggregate != null) {
-				switch (aggregate) {
-				case MAX:
-					params.aggregate(redis.clients.jedis.params.ZParams.Aggregate.MAX);
-					break;
-				case MIN:
-					params.aggregate(redis.clients.jedis.params.ZParams.Aggregate.MIN);
-					break;
-				case SUM:
-					params.aggregate(redis.clients.jedis.params.ZParams.Aggregate.SUM);
-					break;
-				default:
-					break;
-				}
-			}
-		}
-		return params;
-	}
-
 	@Override
 	public Collection<byte[]> zinter(InterArgs args, byte[]... keys) {
-		return jedis.zinter(toZParams(args), keys);
-	}
-
-	private Collection<Tuple<byte[]>> toTuples(Collection<redis.clients.jedis.resps.Tuple> tuples) {
-		if (CollectionUtils.isEmpty(tuples)) {
-			return Collections.emptyList();
-		}
-		List<Tuple<byte[]>> list = new ArrayList<Tuple<byte[]>>(tuples.size());
-		for (redis.clients.jedis.resps.Tuple tuple : tuples) {
-			list.add(new Tuple<byte[]>(tuple.getBinaryElement(), tuple.getScore()));
-		}
-		return list;
+		return jedis.zinter(JedisUtils.toZParams(args), keys);
 	}
 
 	@Override
 	public Collection<Tuple<byte[]>> zinterWithScores(InterArgs args, byte[]... keys) {
-		Set<redis.clients.jedis.resps.Tuple> tuples = jedis.zinterWithScores(toZParams(args), keys);
-		return toTuples(tuples);
+		Set<redis.clients.jedis.resps.Tuple> tuples = jedis.zinterWithScores(JedisUtils.toZParams(args), keys);
+		return JedisUtils.toTuples(tuples);
 	}
 
 	@Override
 	public Long zinterstore(byte[] destinationKey, InterArgs interArgs, byte[]... keys) {
-		return jedis.zinterstore(destinationKey, toZParams(interArgs), keys);
+		return jedis.zinterstore(destinationKey, JedisUtils.toZParams(interArgs), keys);
 	}
 
 	@Override
@@ -1011,13 +691,13 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	@Override
 	public Collection<Tuple<byte[]>> zpopmax(byte[] key, int count) {
 		List<redis.clients.jedis.resps.Tuple> tuples = jedis.zpopmax(key, count);
-		return toTuples(tuples);
+		return JedisUtils.toTuples(tuples);
 	}
 
 	@Override
 	public Collection<Tuple<byte[]>> zpopmin(byte[] key, int count) {
 		List<redis.clients.jedis.resps.Tuple> tuples = jedis.zpopmin(key, count);
-		return toTuples(tuples);
+		return JedisUtils.toTuples(tuples);
 	}
 
 	@Override
@@ -1028,7 +708,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	@Override
 	public Collection<Tuple<byte[]>> zrandmemberWithScores(byte[] key, int count) {
 		List<redis.clients.jedis.resps.Tuple> tuples = jedis.zrandmemberWithScores(key, count);
-		return toTuples(tuples);
+		return JedisUtils.toTuples(tuples);
 	}
 
 	@Override
@@ -1053,7 +733,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		List<redis.clients.jedis.resps.Tuple> tuples = jedis.zrangeByScoreWithScores(key,
 				RedisConverters.convertLowerBound(range.getLowerBound(), JedisCodec.INSTANCE),
 				RedisConverters.convertUpperBound(range.getUpperBound(), JedisCodec.INSTANCE), offset, limit);
-		return toTuples(tuples);
+		return JedisUtils.toTuples(tuples);
 	}
 
 	@Override
@@ -1103,12 +783,12 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Collection<io.basc.framework.redis.RedisSortedSetsCommands.Tuple<byte[]>> zrevrangebyscoreWithScores(
-			byte[] key, Range<byte[]> range, int offset, int count) {
+	public Collection<io.basc.framework.redis.Tuple<byte[]>> zrevrangebyscoreWithScores(byte[] key, Range<byte[]> range,
+			int offset, int count) {
 		List<redis.clients.jedis.resps.Tuple> tuples = jedis.zrevrangeByScoreWithScores(key,
 				RedisConverters.convertLowerBound(range.getLowerBound(), JedisCodec.INSTANCE),
 				RedisConverters.convertUpperBound(range.getUpperBound(), JedisCodec.INSTANCE), offset, count);
-		return toTuples(tuples);
+		return JedisUtils.toTuples(tuples);
 	}
 
 	@Override
@@ -1122,22 +802,20 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Collection<byte[]> zunion(io.basc.framework.redis.RedisSortedSetsCommands.InterArgs interArgs,
-			byte[]... keys) {
-		return jedis.zunion(toZParams(interArgs), keys);
+	public Collection<byte[]> zunion(io.basc.framework.redis.InterArgs interArgs, byte[]... keys) {
+		return jedis.zunion(JedisUtils.toZParams(interArgs), keys);
 	}
 
 	@Override
-	public Collection<io.basc.framework.redis.RedisSortedSetsCommands.Tuple<byte[]>> zunionWithScores(
-			io.basc.framework.redis.RedisSortedSetsCommands.InterArgs interArgs, byte[]... keys) {
-		Set<redis.clients.jedis.resps.Tuple> tuples = jedis.zunionWithScores(toZParams(interArgs), keys);
-		return toTuples(tuples);
+	public Collection<io.basc.framework.redis.Tuple<byte[]>> zunionWithScores(
+			io.basc.framework.redis.InterArgs interArgs, byte[]... keys) {
+		Set<redis.clients.jedis.resps.Tuple> tuples = jedis.zunionWithScores(JedisUtils.toZParams(interArgs), keys);
+		return JedisUtils.toTuples(tuples);
 	}
 
 	@Override
-	public Long zunionstore(byte[] destinationKey, io.basc.framework.redis.RedisSortedSetsCommands.InterArgs interArgs,
-			byte[]... keys) {
-		return jedis.zunionstore(destinationKey, toZParams(interArgs), keys);
+	public Long zunionstore(byte[] destinationKey, io.basc.framework.redis.InterArgs interArgs, byte[]... keys) {
+		return jedis.zunionstore(destinationKey, JedisUtils.toZParams(interArgs), keys);
 	}
 
 	@Override
@@ -1145,35 +823,13 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return jedis.xack(key, group, ids);
 	}
 
-	private XClaimParams toXClaimParams(ClaimArgs args) {
-		XClaimParams params = new XClaimParams();
-		if (args != null) {
-			if (args.getIdle() != null) {
-				params.idle(args.getIdle());
-			}
-
-			if (args.getTime() != null) {
-				params.time(args.getTime());
-			}
-
-			if (args.getRetryCount() != null) {
-				params.retryCount(args.getRetryCount());
-			}
-
-			if (args.isForce()) {
-				params.force();
-			}
-		}
-		return params;
-	}
-
 	@Override
-	public List<byte[]> xclaim(byte[] key, byte[] group, byte[] consumer, long minIdleTime,
-			io.basc.framework.redis.RedisStreamsCommands.ClaimArgs args, byte[]... ids) {
+	public List<byte[]> xclaim(byte[] key, byte[] group, byte[] consumer, long minIdleTime, ClaimArgs args,
+			byte[]... ids) {
 		if (args != null && args.isJustId()) {
-			return jedis.xclaimJustId(key, group, consumer, minIdleTime, toXClaimParams(args), ids);
+			return jedis.xclaimJustId(key, group, consumer, minIdleTime, JedisUtils.toXClaimParams(args), ids);
 		} else {
-			return jedis.xclaim(key, group, consumer, minIdleTime, toXClaimParams(args), ids);
+			return jedis.xclaim(key, group, consumer, minIdleTime, JedisUtils.toXClaimParams(args), ids);
 		}
 	}
 
@@ -1208,19 +864,19 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public void scriptFlush() {
-		jedis.scriptFlush();
+	public String scriptFlush() {
+		return jedis.scriptFlush();
 	}
 
 	@Override
-	public void scriptFlush(io.basc.framework.redis.RedisScriptingCommands.FlushMode flushMode) {
-		jedis.scriptFlush(flushMode == FlushMode.ASYNC ? redis.clients.jedis.args.FlushMode.ASYNC
+	public String scriptFlush(io.basc.framework.redis.FlushMode flushMode) {
+		return jedis.scriptFlush(flushMode == FlushMode.ASYNC ? redis.clients.jedis.args.FlushMode.ASYNC
 				: redis.clients.jedis.args.FlushMode.SYNC);
 	}
 
 	@Override
-	public void scriptKill() {
-		jedis.scriptKill();
+	public String scriptKill() {
+		return jedis.scriptKill();
 	}
 
 	@Override
@@ -1228,95 +884,98 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		return jedis.scriptLoad(script);
 	}
 
-	private volatile Transaction transaction;
+	@Nullable
+	private volatile RedisTransaction<byte[], byte[]> transaction;
+	@Nullable
+	private volatile RedisPipeline<byte[], byte[]> pipeline;
+	@Nullable
+	private volatile JedisSubscription subscription;
 
 	@Override
-	public void multi() {
-		if (transaction != null) {
-			return;
-		}
-
-		synchronized (this) {
-			if (transaction == null) {
-				transaction = jedis.multi();
-			}
-		}
-	}
-
-	@Override
-	public void discard() {
-		if (transaction == null) {
-			return;
-		}
-
-		synchronized (this) {
-			if (transaction == null) {
-				return;
-			}
-			transaction.discard();
-		}
-	}
-
-	@Override
-	public void watch(byte[]... keys) {
-		jedis.watch(keys);
-	}
-
-	@Override
-	public void unwatch() {
-		jedis.unwatch();
-	}
-
-	@Override
-	public List<Object> exec() {
-		if (transaction != null) {
-			synchronized (this) {
-				if (transaction != null) {
-					try {
-						return transaction.exec();
-					} finally {
-						this.transaction = null;
+	public RedisTransaction<byte[], byte[]> multi() {
+		if (!isQueueing()) {
+			synchronized (jedis) {
+				if (!isQueueing()) {
+					if (isPipelined()) {
+						throw new RedisSystemException("Pipes cannot be used in transactions");
 					}
+
+					if (isSubscribed()) {
+						throw new RedisSystemException("Subscribed connections cannot use transactions");
+					}
+
+					transaction = new JedisTransaction(jedis.multi());
+				}
+			}
+		}
+		return transaction;
+	}
+
+	@Override
+	public String discard() {
+		if (isQueueing()) {
+			synchronized (this) {
+				if (isQueueing()) {
+					return transaction.discard();
 				}
 			}
 		}
 		throw new IllegalAccessError("No ongoing transaction. Did you forget to call multi?");
 	}
 
-	private volatile @Nullable Pipeline pipeline;
+	@Override
+	public String watch(byte[]... keys) {
+		return jedis.watch(keys);
+	}
+
+	@Override
+	public String unwatch() {
+		return jedis.unwatch();
+	}
+
+	@Override
+	public List<Object> exec() {
+		if (isQueueing()) {
+			synchronized (jedis) {
+				if (isQueueing()) {
+					return transaction.exec();
+				}
+			}
+		}
+
+		if (isPipelined()) {
+			synchronized (jedis) {
+				if (isPipelined()) {
+					return pipeline.exec();
+				}
+			}
+		}
+		throw new RedisSystemException("No transaction or pipeline exists");
+	}
 
 	public boolean isPipelined() {
-		return (pipeline != null);
+		return (pipeline != null && !pipeline.isClosed());
 	}
 
 	@Override
-	public void openPipeline() {
-		if (pipeline == null) {
-			synchronized (this) {
-				if (pipeline == null) {
-					pipeline = jedis.pipelined();
-				}
-			}
-		}
-	}
-
-	@Override
-	public List<Object> closePipeline() {
-		if (pipeline != null) {
-			synchronized (this) {
-				if (pipeline != null) {
-					try {
-						return pipeline.syncAndReturnAll();
-					} finally {
-						pipeline = null;
+	public RedisPipeline<byte[], byte[]> pipelined() {
+		if (!isPipelined()) {
+			synchronized (jedis) {
+				if (!isPipelined()) {
+					if (isQueueing()) {
+						throw new RedisSystemException("Pipes cannot be used in transactions");
 					}
+
+					if (isSubscribed()) {
+						throw new RedisSystemException("Pipes cannot be used in subscriptions");
+					}
+
+					pipeline = new JedisPipeline(jedis.pipelined());
 				}
 			}
 		}
-		throw new IllegalAccessError("Pipeline does not exist");
+		return pipeline;
 	}
-
-	private volatile @Nullable JedisSubscription subscription;
 
 	@Override
 	public boolean isSubscribed() {
@@ -1324,17 +983,17 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Subscription<byte[], byte[]> getSubscription() {
-		return subscription;
+	public boolean isQueueing() {
+		return transaction != null && transaction.isAlive();
 	}
 
-	public boolean isQueueing() {
-		return transaction != null;
+	@Override
+	public Subscription<byte[], byte[]> getSubscription() {
+		return isSubscribed() ? subscription : null;
 	}
 
 	@Override
 	public void pSubscribe(MessageListener<byte[], byte[]> listener, byte[]... patterns) {
-
 		if (isSubscribed()) {
 			throw new RedisSubscribedConnectionException(
 					"Connection already subscribed; use the connection Subscription to cancel or add new channels");
@@ -1344,9 +1003,20 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 			throw new UnsupportedOperationException();
 		}
 
-		BinaryJedisPubSub jedisPubSub = new JedisMessageListener(listener);
-		subscription = new JedisSubscription(listener, jedisPubSub, null, patterns);
-		jedis.psubscribe(jedisPubSub, patterns);
+		synchronized (jedis) {
+			if (isSubscribed()) {
+				throw new RedisSubscribedConnectionException(
+						"Connection already subscribed; use the connection Subscription to cancel or add new channels");
+			}
+
+			if (isQueueing() || isPipelined()) {
+				throw new UnsupportedOperationException();
+			}
+
+			BinaryJedisPubSub jedisPubSub = new JedisMessageListener(listener);
+			this.subscription = new JedisSubscription(listener, jedisPubSub, null, patterns);
+			jedis.psubscribe(jedisPubSub, patterns);
+		}
 	}
 
 	@Override
@@ -1365,9 +1035,20 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 			throw new UnsupportedOperationException();
 		}
 
-		BinaryJedisPubSub jedisPubSub = new JedisMessageListener(listener);
-		subscription = new JedisSubscription(listener, jedisPubSub, channels, null);
-		jedis.subscribe(jedisPubSub, channels);
+		synchronized (jedis) {
+			if (isSubscribed()) {
+				throw new RedisSubscribedConnectionException(
+						"Connection already subscribed; use the connection Subscription to cancel or add new channels");
+			}
+
+			if (isQueueing() || isPipelined()) {
+				throw new UnsupportedOperationException();
+			}
+
+			BinaryJedisPubSub jedisPubSub = new JedisMessageListener(listener);
+			this.subscription = new JedisSubscription(listener, jedisPubSub, channels, null);
+			jedis.subscribe(jedisPubSub, channels);
+		}
 	}
 
 	@Override
@@ -1416,8 +1097,8 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public void hmset(byte[] key, Map<byte[], byte[]> values) {
-		jedis.hmset(key, values);
+	public String hmset(byte[] key, Map<byte[], byte[]> values) {
+		return jedis.hmset(key, values);
 	}
 
 	@Override
@@ -1436,9 +1117,8 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Boolean hsetnx(byte[] key, byte[] field, byte[] value) {
-		Long v = jedis.hsetnx(key, field, value);
-		return NumberToBooleanConverter.DEFAULT.convert(v);
+	public Long hsetnx(byte[] key, byte[] field, byte[] value) {
+		return jedis.hsetnx(key, field, value);
 	}
 
 	@Override

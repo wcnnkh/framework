@@ -78,6 +78,8 @@ public class XmlDubboInitializer implements ApplicationPostProcessor {
 		if (application.isInstance(DubboServiceConfigure.class)) {
 			DubboServiceConfigure configure = application.getInstance(DubboServiceConfigure.class);
 			for (ServiceConfig<?> config : configure.getServiceConfigList()) {
+				//TODO 按理说不用设置的{@link org.apache.dubbo.config.AbstractMethodConfig}，但在升级到3.0.5时出现了异常，还未找到原因(可能是classloader的问题)
+				config.setScopeModel(ApplicationModel.defaultModel().getDefaultModule());
 				config.export();
 			}
 		}

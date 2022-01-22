@@ -3,6 +3,8 @@ package io.basc.framework.redis;
 import java.util.List;
 import java.util.Set;
 
+import io.basc.framework.util.page.Pageable;
+
 @SuppressWarnings("unchecked")
 public interface RedisSetsCommands<K, V> {
 	/**
@@ -238,12 +240,12 @@ public interface RedisSetsCommands<K, V> {
 	Long sunionstore(K destinationKey, K... keys);
 
 	/**
-	 * Use a {@link Cursor} to iterate over elements in set at {@code key}.
+	 * Use a {@link Pageable} to iterate over elements in set at {@code key}.
 	 *
 	 * @param key     must not be {@literal null}.
 	 * @param options must not be {@literal null}.
 	 * @return never {@literal null}.
 	 * @see <a href="https://redis.io/commands/scan">Redis Documentation: SCAN</a>
 	 */
-	Cursor<K> sScan(long cursorId, K key, ScanOptions<K> options);
+	Pageable<Long, K> sScan(long cursorId, K key, ScanOptions<K> options);
 }

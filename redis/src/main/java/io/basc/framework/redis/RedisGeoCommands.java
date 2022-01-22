@@ -20,32 +20,6 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public interface RedisGeoCommands<K, V> {
 	/**
-	 * Note: The XX and NX options are mutually exclusive.
-	 * 
-	 * @author shuchaowen
-	 *
-	 */
-	static enum GeoaddOption {
-		/**
-		 * Only update elements that already exist. Never add elements.
-		 */
-		XX,
-		/**
-		 * Don't update already existing elements. Always add new elements.
-		 */
-		NX,
-		/**
-		 * Modify the return value from the number of new elements added, to the total
-		 * number of elements changed (CH is an abbreviation of changed). Changed
-		 * elements are new elements added and elements already existing for which the
-		 * coordinates was updated. So elements specified in the command line having the
-		 * same score as they had in the past are not counted. Note: normally, the
-		 * return value of GEOADD only counts the number of new elements added.
-		 */
-		CH
-	}
-
-	/**
 	 * https://redis.io/commands/geoadd
 	 * 
 	 * @param key
@@ -144,59 +118,6 @@ public interface RedisGeoCommands<K, V> {
 	 * 
 	 */
 	List<Point> geopos(K key, V... members);
-
-	static class GeoradiusStroage {
-		private final String option;
-		private final byte[] key;
-
-		public GeoradiusStroage(String option, byte[] key) {
-			this.option = option;
-			this.key = key;
-		}
-
-		public String getOption() {
-			return option;
-		}
-
-		public byte[] getKey() {
-			return key;
-		}
-	}
-
-	static class GeoResults extends Circle {
-		private static final long serialVersionUID = 1L;
-		private final byte[] key;
-		private final byte[] hash;
-
-		public GeoResults(byte[] key, Distance distance, Point point, byte[] hash) {
-			super(point, distance);
-			this.key = key;
-			this.hash = hash;
-		}
-
-		public byte[] getKey() {
-			return key;
-		}
-
-		public byte[] getHash() {
-			return hash;
-		}
-	}
-
-	static enum GeoResultWith {
-		/**
-		 * 还返回返回的项目到指定中心的距离。距离以与指定为命令的radius参数的单位相同的单位返回。
-		 */
-		WITHDIST,
-		/**
-		 * 还返回匹配项的经度，纬度坐标。
-		 */
-		WITHCOORD,
-		/**
-		 * 还以52位无符号整数的形式返回该项目的原始geohash编码的排序集得分。这仅对低级黑客或调试有用，否则对于一般用户来说就没什么用了。
-		 */
-		WITHHASH
-	}
 
 	/**
 	 * https://redis.io/commands/georadius

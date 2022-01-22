@@ -4,10 +4,6 @@ import java.util.List;
 
 @SuppressWarnings("unchecked")
 public interface RedisListsCommands<K, V> {
-	static enum MovePosition {
-		LEFT, RIGHT
-	}
-
 	/**
 	 * https://redis.io/commands/blmove<br/>
 	 * <br/>
@@ -100,10 +96,6 @@ public interface RedisListsCommands<K, V> {
 	 *         range.
 	 */
 	V lindex(K key, long index);
-
-	static enum InsertPosition {
-		BEFORE, AFTER
-	}
 
 	/**
 	 * https://redis.io/commands/linsert<br/>

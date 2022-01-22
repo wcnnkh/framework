@@ -1,6 +1,7 @@
 package io.basc.framework.redis;
 
-import io.basc.framework.codec.Codec;
+import java.util.Arrays;
+
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.data.DataOperations;
 import io.basc.framework.data.cas.CASOperations;
@@ -10,53 +11,35 @@ import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.redis.cas.RedisCASOperations;
-import io.basc.framework.redis.convert.ConvertibleRedisConnection;
-import io.basc.framework.redis.convert.ConvertibleRedisConnectionFactory;
+import io.basc.framework.redis.convert.DefaultConvertibleRedisClient;
 import io.basc.framework.value.AnyValue;
 
-import java.util.Arrays;
-
-public class Redis implements RedisConnectionFactory<String, String> {
+public class Redis extends DefaultConvertibleRedisClient<RedisClient<byte[], byte[]>, byte[], String, byte[], String> {
 	private static final String INCR_AND_INIT_SCRIPT = ResourceUtils
 			.getContent(ResourceUtils.getSystemResource("/io/basc/framework/redis/incr.script"), Constants.UTF_8);
 	private static final String DECR_AND_INIT_SCRIPT = ResourceUtils
 			.getContent(ResourceUtils.getSystemResource("/io/basc/framework/redis/decr.script"), Constants.UTF_8);
 
-	private Codec<String, byte[]> keyCodec = CharsetCodec.DEFAULT;
-	private Codec<String, byte[]> valueCodec = CharsetCodec.DEFAULT;
 	private Serializer serializer = JavaSerializer.INSTANCE;
 	private final RedisDataOperations dataOperations = new RedisDataOperations(this);
 
-	private final RedisConnectionFactory<byte[], byte[]> targetConnectionFactory;
-
-	public Redis(RedisConnectionFactory<byte[], byte[]> targetConnectionFactory) {
-		this.targetConnectionFactory = targetConnectionFactory;
+	public Redis(RedisClient<byte[], byte[]> source) {
+		super(source, CharsetCodec.DEFAULT, CharsetCodec.DEFAULT);
 	}
 
-	@Override
-	public RedisConnection<String, String> getConnection() {
-		RedisConnection<byte[], byte[]> connection = targetConnectionFactory.getConnection();
-		return new ConvertibleRedisConnection<byte[], byte[], String, String>(connection, keyCodec, valueCodec);
-	}
-
-	public RedisCommands<String, Object> getObjectCommands() {
-		return new ConvertibleRedisConnectionFactory<byte[], byte[], String, Object>(targetConnectionFactory, keyCodec,
-				serializer.toCodec());
-	}
-
-	public RedisCommands<byte[], byte[]> getBinaryCommands() {
-		return targetConnectionFactory;
+	public RedisClient<String, Object> getRedisObjectClient() {
+		return new DefaultConvertibleRedisClient<>(client, getKeyCodec(), serializer.toCodec());
 	}
 
 	public CASOperations getCASOperations() {
-		return new RedisCASOperations(getObjectCommands());
+		return new RedisCASOperations(getRedisObjectClient());
 	}
 
 	public DataOperations getDataOperations() {
 		return dataOperations;
 	}
 
-	public Lbs<String> getMarkerManager(String key) {
+	public Lbs<String> getLbs(String key) {
 		return new RedisLbs<String, String>(this, key);
 	}
 
@@ -68,32 +51,28 @@ public class Redis implements RedisConnectionFactory<String, String> {
 		this.serializer = serializer;
 	}
 
-	public final Codec<String, byte[]> getKeyCodec() {
-		return keyCodec;
-	}
+	private Long toLongValue(Object value) {
+		if (value == null) {
+			return null;
+		}
 
-	public void setKeyCodec(Codec<String, byte[]> keyCodec) {
-		this.keyCodec = keyCodec;
-	}
-
-	public final Codec<String, byte[]> getValueCodec() {
-		return valueCodec;
-	}
-
-	public void setValueCodec(Codec<String, byte[]> valueCodec) {
-		this.valueCodec = valueCodec;
+		if (value instanceof byte[]) {
+			String v = getValueCodec().decode((byte[]) value);
+			return Long.parseLong(v);
+		}
+		return new AnyValue(value).getAsLong();
 	}
 
 	public Long incr(String key, long delta, long initialValue, long exp) {
 		Object value = eval(INCR_AND_INIT_SCRIPT, Arrays.asList(key),
 				Arrays.asList(String.valueOf(delta), String.valueOf(initialValue), String.valueOf(exp)));
-		return new AnyValue(value).getAsLong();
+		return toLongValue(value);
 	}
 
 	public Long decr(String key, long delta, long initialValue, long exp) {
 		Object value = eval(DECR_AND_INIT_SCRIPT, Arrays.asList(key),
 				Arrays.asList(String.valueOf(delta), String.valueOf(initialValue), String.valueOf(exp)));
-		return new AnyValue(value).getAsLong();
+		return toLongValue(value);
 	}
 
 }

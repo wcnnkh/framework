@@ -6,7 +6,7 @@ import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.BeanlifeCycleEvent.Step;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.redis.RedisConnectionFactory;
+import io.basc.framework.redis.RedisClient;
 import redis.clients.jedis.JedisPool;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
@@ -22,9 +22,9 @@ public class JedisBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 		if (!beanFactory.containsDefinition(jedisConnectionFactoryDefinition.getId())) {
 			beanFactory.registerDefinition(jedisConnectionFactoryDefinition);
 
-			if (beanFactory.isAlias(RedisConnectionFactory.class.getName())) {
+			if (beanFactory.isAlias(RedisClient.class.getName())) {
 				beanFactory.registerAlias(jedisConnectionFactoryDefinition.getId(),
-						RedisConnectionFactory.class.getName());
+						RedisClient.class.getName());
 			}
 		}
 

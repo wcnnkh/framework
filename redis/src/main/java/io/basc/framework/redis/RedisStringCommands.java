@@ -43,10 +43,6 @@ public interface RedisStringCommands<K, V> {
 	 */
 	Long bitcount(K key, long start, long end);
 
-	static enum BitOP {
-		AND, OR, XOR, NOT;
-	}
-
 	/**
 	 * https://redis.io/commands/bitop<br/>
 	 * <br/>
@@ -144,32 +140,6 @@ public interface RedisStringCommands<K, V> {
 	 *         an error if the key's value type isn't a string.
 	 */
 	V getdel(K key);
-
-	static enum ExpireOption {
-		/**
-		 * seconds -- Set the specified expire time, in seconds.
-		 */
-		EX,
-		/**
-		 * milliseconds -- Set the specified expire time, in milliseconds.
-		 */
-		PX,
-		/**
-		 * timestamp-seconds -- Set the specified Unix time at which the key will
-		 * expire, in seconds
-		 */
-		EXAT,
-		/**
-		 * timestamp-milliseconds -- Set the specified Unix time at which the key will
-		 * expire, in milliseconds.
-		 */
-		PXAT,
-
-		/**
-		 * Remove the time to live associated with the key.
-		 */
-		PERSIST
-	}
 
 	/**
 	 * https://redis.io/commands/getex<br/>
@@ -272,7 +242,7 @@ public interface RedisStringCommands<K, V> {
 	 */
 	Boolean psetex(K key, long milliseconds, V value);
 
-	void set(K key, V value);
+	String set(K key, V value);
 
 	/**
 	 * https://redis.io/commands/set<br/>

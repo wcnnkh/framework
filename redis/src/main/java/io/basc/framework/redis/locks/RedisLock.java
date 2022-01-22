@@ -1,14 +1,14 @@
 package io.basc.framework.redis.locks;
 
+import java.util.Collections;
+import java.util.concurrent.TimeUnit;
+
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.locks.RenewableLock;
+import io.basc.framework.redis.ExpireOption;
 import io.basc.framework.redis.Redis;
 import io.basc.framework.redis.SetOption;
-import io.basc.framework.redis.RedisStringCommands.ExpireOption;
-
-import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 
 public final class RedisLock extends RenewableLock {
 	private static final String UNLOCK_SCRIPT = ResourceUtils

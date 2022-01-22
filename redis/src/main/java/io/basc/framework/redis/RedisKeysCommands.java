@@ -1,8 +1,9 @@
 package io.basc.framework.redis;
 
-import io.basc.framework.lang.Nullable;
-
 import java.util.Set;
+
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.page.Pageable;
 
 /**
  * https://redis.io/commands#generic
@@ -113,8 +114,7 @@ public interface RedisKeysCommands<K, V> {
 	 * @return Simple string reply: The command returns OK on success, or NOKEY if
 	 *         no keys were found in the source instance.
 	 */
-	String migrate(String host, int port, int targetDB, int timeout, boolean copy, boolean replace, RedisAuth auth,
-			K... keys);
+	String migrate(String host, int port, int targetDB, int timeout, MigrateParams option, K... keys);
 
 	/**
 	 * https://redis.io/commands/move
@@ -240,7 +240,7 @@ public interface RedisKeysCommands<K, V> {
 	 * @param newKey
 	 * @return Return value Simple string reply
 	 */
-	void rename(K key, K newKey);
+	String rename(K key, K newKey);
 
 	/**
 	 * Renames key to newkey if newkey does not yet exist. It returns an error when
@@ -290,8 +290,7 @@ public interface RedisKeysCommands<K, V> {
 	 * @param serializedValue
 	 * @return Simple string reply: The command returns OK on success.
 	 */
-	void restore(K key, long ttl, byte[] serializedValue, boolean replace, boolean absTtl, Long idleTime,
-			Long frequency);
+	String restore(K key, long ttl, byte[] serializedValue, @Nullable RestoreParams params);
 
 	/**
 	 * https://redis.io/commands/scan
@@ -326,7 +325,7 @@ public interface RedisKeysCommands<K, V> {
 	 *                call to the command.
 	 * @return
 	 */
-	Cursor<K> scan(long cursorId, ScanOptions<K> options);
+	Pageable<Long, K> scan(long cursorId, ScanOptions<K> options);
 
 	/**
 	 * https://redis.io/commands/touch

@@ -1,54 +1,42 @@
 package io.basc.framework.redis.convert;
 
-import java.util.List;
-
-import io.basc.framework.codec.Codec;
 import io.basc.framework.redis.RedisCommands;
 import io.basc.framework.redis.RedisConnection;
+import io.basc.framework.redis.RedisPipeline;
 
-public class ConvertibleRedisConnection<TK, TV, K, V> extends ConvertibleRedisCommands<TK, TV, K, V>
-		implements RedisConnection<K, V> {
-	private final RedisConnection<TK, TV> redisConnection;
+public interface ConvertibleRedisConnection<SK, K, SV, V>
+		extends ConvertibleRedisCommands<SK, K, SV, V>, RedisConnection<K, V> {
 
-	public ConvertibleRedisConnection(RedisConnection<TK, TV> redisConnection, Codec<K, TK> keyCodec,
-			Codec<V, TV> valueCodec) {
-		super(keyCodec, valueCodec);
-		this.redisConnection = redisConnection;
+	RedisConnection<SK, SV> getSourceConnection();
+
+	@Override
+	default RedisCommands<SK, SV> getSourceRedisCommands() {
+		return getSourceConnection();
 	}
 
 	@Override
-	public boolean isQueueing() {
-		return redisConnection.isQueueing();
+	default boolean isQueueing() {
+		return getSourceConnection().isQueueing();
 	}
 
 	@Override
-	public boolean isPipelined() {
-		return redisConnection.isPipelined();
+	default boolean isPipelined() {
+		return getSourceConnection().isPipelined();
 	}
 
 	@Override
-	public void close() {
-		redisConnection.close();
+	default void close() {
+		getSourceConnection().close();
 	}
 
 	@Override
-	protected RedisCommands<TK, TV> getTargetRedisCommands() {
-		return redisConnection;
+	default boolean isClosed() {
+		return getSourceConnection().isClosed();
 	}
 
 	@Override
-	public boolean isClosed() {
-		return redisConnection.isClosed();
+	default RedisPipeline<K, V> pipelined() {
+		RedisPipeline<SK, SV> pipeline = getSourceConnection().pipelined();
+		return new DefaultConvertibleRedisPipeline<>(pipeline, getKeyCodec(), getValueCodec());
 	}
-
-	@Override
-	public void openPipeline() {
-		 redisConnection.openPipeline();
-	}
-
-	@Override
-	public List<Object> closePipeline() {
-		return redisConnection.closePipeline();
-	}
-
 }

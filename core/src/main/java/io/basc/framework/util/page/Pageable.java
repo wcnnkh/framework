@@ -2,6 +2,7 @@ package io.basc.framework.util.page;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
@@ -45,11 +46,7 @@ public interface Pageable<K, T> extends Iterable<T> {
 	 * @return
 	 */
 	default T first() {
-		List<T> rows = getList();
-		if (CollectionUtils.isEmpty(rows)) {
-			return null;
-		}
-		return rows.get(0);
+		return stream().findFirst().orElse(null);
 	}
 
 	/**
@@ -72,5 +69,13 @@ public interface Pageable<K, T> extends Iterable<T> {
 
 	default Pageable<K, T> shared() {
 		return new SharedPageable<>(this);
+	}
+
+	default <TT> Pageable<K, TT> map(Function<? super T, TT> map) {
+		return map(Function.identity(), map);
+	}
+
+	default <TK, TT> Pageable<TK, TT> map(Function<? super K, TK> keyMap, Function<? super T, TT> valueMap) {
+		return new MapPageable<>(this, keyMap, valueMap);
 	}
 }

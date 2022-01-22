@@ -14,25 +14,21 @@ public interface RedisScriptingCommands<K, V> {
 
 	List<Boolean> scriptexists(K... sha1);
 
-	static enum FlushMode {
-		ASYNC, SYNC
-	}
-
-	void scriptFlush();
+	String scriptFlush();
 
 	/**
 	 * https://redis.io/commands/script-flush
 	 * 
 	 * @return Simple string reply
 	 */
-	void scriptFlush(FlushMode flushMode);
+	String scriptFlush(FlushMode flushMode);
 
 	/**
 	 * https://redis.io/commands/script-kill
 	 * 
 	 * @return
 	 */
-	void scriptKill();
+	String scriptKill();
 
 	/**
 	 * https://redis.io/commands/script-load

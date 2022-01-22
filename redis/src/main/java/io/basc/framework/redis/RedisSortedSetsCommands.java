@@ -1,14 +1,10 @@
 package io.basc.framework.redis;
 
-import io.basc.framework.data.domain.Range;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.Supplier;
-
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import io.basc.framework.data.domain.Range;
 
 @SuppressWarnings("unchecked")
 public interface RedisSortedSetsCommands<K, V> {
@@ -48,19 +44,6 @@ public interface RedisSortedSetsCommands<K, V> {
 	 *         popped element.
 	 */
 	List<V> bzpopmin(double timeout, K... keys);
-
-	static enum ScoreOption {
-		/**
-		 * Only update existing elements if the new score is greater than the current
-		 * score. This flag doesn't prevent adding new elements.
-		 */
-		GT,
-		/**
-		 * Only update existing elements if the new score is less than the current
-		 * score. This flag doesn't prevent adding new elements.
-		 */
-		LT
-	}
 
 	/**
 	 * https://redis.io/commands/zadd<br/>
@@ -133,35 +116,6 @@ public interface RedisSortedSetsCommands<K, V> {
 
 	Double zincrby(K key, double increment, V member);
 
-	static enum Aggregate {
-		SUM, MIN, MAX
-	}
-
-	static class InterArgs implements Serializable {
-		private static final long serialVersionUID = 1L;
-		private Aggregate aggregate;
-		private double[] weights;
-
-		public InterArgs aggregate(Aggregate aggregate) {
-			this.aggregate = aggregate;
-			return this;
-		}
-
-		public Aggregate getAggregate() {
-			return aggregate;
-		}
-
-		@Nullable
-		public double[] getWeights() {
-			return weights;
-		}
-
-		public InterArgs weights(double... weights) {
-			this.weights = weights;
-			return this;
-		}
-	}
-
 	/**
 	 * https://redis.io/commands/zinter<br/>
 	 * <br/>
@@ -174,58 +128,6 @@ public interface RedisSortedSetsCommands<K, V> {
 	 *         scores, in case the WITHSCORES option is given).
 	 */
 	Collection<V> zinter(InterArgs args, K... keys);
-
-	static class Tuple<V> implements Supplier<V>, Serializable {
-		private static final long serialVersionUID = 1L;
-		private final V value;
-		private final double score;
-
-		public Tuple(V value, double score) {
-			this.value = value;
-			this.score = score;
-		}
-
-		@Override
-		public V get() {
-			return value;
-		}
-
-		public V getValue() {
-			return value;
-		}
-
-		public double getScore() {
-			return score;
-		}
-
-		@SuppressWarnings("rawtypes")
-		@Override
-		public boolean equals(Object o) {
-			if (o == null) {
-				return false;
-			}
-
-			if (o instanceof Tuple) {
-				return ObjectUtils.equals(value, ((Tuple) o).value)
-						&& Double.compare(this.score, ((Tuple) o).score) == 0;
-			}
-			return false;
-		}
-
-		@Override
-		public int hashCode() {
-			long temp = Double.doubleToLongBits(score);
-			int result = (int) (temp ^ (temp >>> 32));
-			result = 31 * result + (value != null ? value.hashCode() : 0);
-			return result;
-		}
-
-		@Override
-		public String toString() {
-			return value != null ? String.format("ScoredValue[%f, %s]", score, getValue())
-					: String.format("ScoredValue[%f].empty", score);
-		}
-	}
 
 	Collection<Tuple<V>> zinterWithScores(InterArgs args, K... keys);
 
@@ -350,10 +252,6 @@ public interface RedisSortedSetsCommands<K, V> {
 	Collection<V> zrandmember(K key, int count);
 
 	Collection<Tuple<V>> zrandmemberWithScores(K key, int count);
-
-	static enum RangeBy {
-		SCORE, LEX
-	}
 
 	/**
 	 * https://redis.io/commands/zrange<br/>

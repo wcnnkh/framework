@@ -1,0 +1,33 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.basc.framework</groupId>
+		<artifactId>framework</artifactId>
+		<version>1.8.0</version>
+	</parent>
+	<artifactId>xmemcached</artifactId>
+	<properties>
+		<xmemcached.version>2.4.7</xmemcached.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>memcached</artifactId>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.googlecode.xmemcached/xmemcached -->
+		<dependency>
+			<groupId>com.googlecode.xmemcached</groupId>
+			<artifactId>xmemcached</artifactId>
+			<version>${xmemcached.version}</version>
+		</dependency>
+
+		<!-- provided -->
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>beans</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+</project>
