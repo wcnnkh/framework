@@ -20,6 +20,7 @@ public class InMemoryPaginationsTest {
 		for (int i = 1; i < 100; i++) {
 			InMemoryPaginations<String> paginations = new InMemoryPaginations<String>(
 					list, 0, i);
+			Assert.assertTrue(paginations.jumpToPage(paginations.getPages() + 1).getList().size() == 0);
 			Assert.assertTrue(!paginations.jumpToPage(paginations.getPages()).hasNext());
 			Assert.assertArrayEquals(list.toArray(new String[0]), paginations
 					.streamAll().toArray(String[]::new));

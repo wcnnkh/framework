@@ -3,6 +3,7 @@ package io.basc.framework.util.page;
 import io.basc.framework.util.Assert;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -52,7 +53,12 @@ public class InMemoryPaginations<T> implements Paginations<T>, Serializable {
 
 	@Override
 	public List<T> getList() {
-		return source.subList(start, Math.min(start + count, source.size()));
+		int end = Math.min(start + count, source.size());
+		if (start >= end) {
+			return Collections.emptyList();
+		}
+
+		return source.subList(start, end);
 	}
 
 	@Override
