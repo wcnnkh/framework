@@ -53,10 +53,10 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- https://mvnrepository.com/artifact/io.swagger.core.v3 -->
-		<swagger.version>2.1.11</swagger.version>
+		<swagger.version>2.1.12</swagger.version>
 		<!-- tomcat7只支持jdk1.6及以上的版本 -->
 		<!-- tomcat8只支持jdk1.7及以上的版本 -->
-		<tomcat.version>9.0.52</tomcat.version>
+		<tomcat.version>9.0.58</tomcat.version>
 
 		<eureka.version>1.10.17</eureka.version>
 		<xstream.version>1.4.18</xstream.version>
