@@ -22,6 +22,8 @@ public class InMemoryPaginations<T> implements Paginations<T>, Serializable {
 
 	public InMemoryPaginations(List<T> source, int start, int count) {
 		Assert.requiredArgument(source != null, "source");
+		Assert.isTrue(start >= 0, "start[" + start + "] cannot be less than 0");
+		Assert.isTrue(count > 0, "count[" + count + "] greater than 0 is required");
 		this.start = start;
 		this.source = source;
 		this.count = count;
@@ -44,11 +46,12 @@ public class InMemoryPaginations<T> implements Paginations<T>, Serializable {
 
 	@Override
 	public Long getNextCursorId() {
-		if ((start + count) >= source.size()) {
+		int end = start + count;
+		if (end <= 0 || end >= source.size()) {
+			// 超过数量或int溢出了
 			return null;
 		}
-
-		return (long) Math.min(start + count, source.size());
+		return (long) Math.min(end, source.size());
 	}
 
 	@Override
@@ -71,7 +74,6 @@ public class InMemoryPaginations<T> implements Paginations<T>, Serializable {
 		Assert.requiredArgument(cursorId != null, "cursorId");
 		Assert.isTrue(cursorId <= Integer.MAX_VALUE);
 		Assert.isTrue(count <= Integer.MAX_VALUE);
-		return new InMemoryPaginations<T>(source, cursorId.intValue(),
-				(int) count);
+		return new InMemoryPaginations<T>(source, cursorId.intValue(), (int) count);
 	}
 }
