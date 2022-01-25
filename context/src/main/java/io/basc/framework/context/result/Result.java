@@ -9,7 +9,7 @@ import java.io.Serializable;
 public class Result implements Status<Long>, ResultMsgCode, RollbackOnlyResult, Serializable {
 	private static final long serialVersionUID = 1L;
 	private long code = 0;
-	private Boolean rollbackOnlyResult;
+	private Boolean rollbackOnly;
 	private String msg;
 	private boolean success = true;
 
@@ -20,7 +20,7 @@ public class Result implements Status<Long>, ResultMsgCode, RollbackOnlyResult, 
 		this.success = result.success;
 		this.msg = result.msg;
 		this.code = result.code;
-		this.rollbackOnlyResult = result.rollbackOnlyResult;
+		this.rollbackOnly = result.rollbackOnly;
 	}
 
 	public String getMsg() {
@@ -48,7 +48,7 @@ public class Result implements Status<Long>, ResultMsgCode, RollbackOnlyResult, 
 	}
 
 	public boolean isRollbackOnly() {
-		return rollbackOnlyResult == null ? isError() : rollbackOnlyResult;
+		return rollbackOnly == null ? isError() : rollbackOnly;
 	}
 
 	public Result setMsg(String msg) {
@@ -56,17 +56,17 @@ public class Result implements Status<Long>, ResultMsgCode, RollbackOnlyResult, 
 		return this;
 	}
 
-	public Boolean getRollbackOnlyResult() {
-		return rollbackOnlyResult;
+	public Boolean getRollbackOnly() {
+		return rollbackOnly;
 	}
 
 	/**
 	 * 一般情况下不用设置此值
 	 * 
-	 * @param rollbackOnlyResult
+	 * @param rollbackOnly
 	 */
-	public Result setRollbackOnlyResult(Boolean rollbackOnlyResult) {
-		this.rollbackOnlyResult = rollbackOnlyResult;
+	public Result setRollbackOnly(Boolean rollbackOnly) {
+		this.rollbackOnly = rollbackOnly;
 		return this;
 	}
 

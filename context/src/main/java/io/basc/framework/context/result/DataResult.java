@@ -33,8 +33,8 @@ public class DataResult<T> extends Result {
 	}
 
 	@Override
-	public DataResult<T> setRollbackOnlyResult(Boolean rollbackOnlyResult) {
-		super.setRollbackOnlyResult(rollbackOnlyResult);
+	public DataResult<T> setRollbackOnly(Boolean rollbackOnlyResult) {
+		super.setRollbackOnly(rollbackOnlyResult);
 		return this;
 	}
 
