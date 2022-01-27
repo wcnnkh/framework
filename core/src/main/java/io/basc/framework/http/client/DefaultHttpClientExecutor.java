@@ -13,14 +13,11 @@ import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.http.client.exception.HttpClientException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.net.uri.DefaultUriTemplateHandler;
 import io.basc.framework.net.uri.UriTemplateHandler;
 import io.basc.framework.util.CollectionUtils;
 
 public class DefaultHttpClientExecutor implements HttpClientExecutor, Configurable {
 	private static Logger logger = LoggerFactory.getLogger(DefaultHttpClientExecutor.class);
-	private static final UriTemplateHandler URI_TEMPLATE_HANDLER = Sys.env
-			.getServiceLoader(UriTemplateHandler.class, DefaultUriTemplateHandler.class).first();
 	private static final ClientHttpResponseErrorHandler CLIENT_HTTP_RESPONSE_ERROR_HANDLER = Sys.env
 			.getServiceLoader(ClientHttpResponseErrorHandler.class, DefaultClientHttpResponseErrorHandler.class)
 			.first();
@@ -48,15 +45,6 @@ public class DefaultHttpClientExecutor implements HttpClientExecutor, Configurab
 		this.cookieHandler = executor.cookieHandler;
 		this.responseErrorHandler = executor.responseErrorHandler;
 		this.interceptor = executor.interceptor;
-	}
-
-	public UriTemplateHandler getUriTemplateHandler() {
-		return uriTemplateHandler == null ? URI_TEMPLATE_HANDLER : uriTemplateHandler;
-	}
-
-	public DefaultHttpClientExecutor setUriTemplateHandler(UriTemplateHandler uriTemplateHandler) {
-		this.uriTemplateHandler = uriTemplateHandler;
-		return this;
 	}
 
 	public ClientHttpRequestFactory getRequestFactory() {
@@ -155,10 +143,6 @@ public class DefaultHttpClientExecutor implements HttpClientExecutor, Configurab
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		if (serviceLoaderFactory.isInstance(UriTemplateHandler.class)) {
-			setUriTemplateHandler(serviceLoaderFactory.getInstance(UriTemplateHandler.class));
-		}
-
 		if (serviceLoaderFactory.isInstance(CookieHandler.class)) {
 			setCookieHandler(serviceLoaderFactory.getInstance(CookieHandler.class));
 		}
