@@ -1,7 +1,7 @@
 package io.basc.framework.http.client;
 
 import java.io.IOException;
-import java.net.CookieManager;
+import java.net.CookieHandler;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +16,6 @@ import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.http.MediaType;
-import io.basc.framework.http.client.HttpConnection.AbstractHttpConnection;
-import io.basc.framework.http.client.HttpConnection.RedirectManager;
-import io.basc.framework.http.client.HttpConnectionFactory.AbstractHttpConnectionFactory;
 import io.basc.framework.http.client.exception.HttpClientException;
 import io.basc.framework.http.client.exception.HttpClientResourceAccessException;
 import io.basc.framework.lang.NotSupportedException;
@@ -41,12 +38,12 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 	static final ClientHttpResponseErrorHandler CLIENT_HTTP_RESPONSE_ERROR_HANDLER = Sys.env
 			.getServiceLoader(ClientHttpResponseErrorHandler.class, DefaultClientHttpResponseErrorHandler.class)
 			.first();
-	static final CookieManager COOKIE_MANAGER = Sys.env.getServiceLoader(CookieManager.class).first();
+	static final CookieHandler COOKIE_HANDLER = Sys.env.getServiceLoader(CookieHandler.class).first();
 	static final List<ClientHttpRequestInterceptor> ROOT_INTERCEPTORS = Sys.env
 			.getServiceLoader(ClientHttpRequestInterceptor.class).toList();
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultHttpClient.class);
-	private CookieManager cookieManager = COOKIE_MANAGER;
+	private CookieHandler cookieHandler = COOKIE_HANDLER;
 	private ClientHttpResponseErrorHandler clientHttpResponseErrorHandler = CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
 	protected final MessageConverters messageConverters = new DefaultMessageConverters();
 	private final ConfigurableServices<ClientHttpRequestInterceptor> interceptors = new ConfigurableServices<>(
@@ -61,6 +58,10 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 
 		if (serviceLoaderFactory.isInstance(UriTemplateHandler.class)) {
 			setUriTemplateHandler(serviceLoaderFactory.getInstance(UriTemplateHandler.class));
+		}
+
+		if (serviceLoaderFactory.isInstance(CookieHandler.class)) {
+			setCookieHandler(serviceLoaderFactory.getInstance(CookieHandler.class));
 		}
 
 		if (serviceLoaderFactory.isInstance(ClientHttpResponseErrorHandler.class)) {
@@ -127,13 +128,12 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 		this.clientHttpResponseErrorHandler = clientHttpResponseErrorHandler;
 	}
 
-	public CookieManager getCookieManager() {
-		return cookieManager;
+	public CookieHandler getCookieHandler() {
+		return cookieHandler;
 	}
 
-	public void setCookieManager(CookieManager cookieManager) {
-		Assert.notNull(cookieManager, "cookieManager must not be null");
-		this.cookieManager = cookieManager;
+	public void setCookieHandler(CookieHandler cookieHandler) {
+		this.cookieHandler = cookieHandler;
 	}
 
 	protected void handleResponse(ClientHttpRequest request, ClientHttpResponse response) throws IOException {
@@ -149,12 +149,11 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 		}
 	}
 
-	public final <T> HttpResponseEntity<T> execute(ClientHttpRequest request,
+	protected <T> HttpResponseEntity<T> execute(CookieHandler cookieHandler, ClientHttpRequest request,
 			ClientHttpResponseExtractor<T> responseExtractor) throws HttpClientException, IOException {
 		ClientHttpResponse response = null;
-		CookieManager cookieManager = getCookieManager();
-		if (cookieManager != null) {
-			Map<String, List<String>> map = cookieManager.get(request.getURI(), request.getHeaders());
+		if (cookieHandler != null) {
+			Map<String, List<String>> map = cookieHandler.get(request.getURI(), request.getHeaders());
 			if (!CollectionUtils.isEmpty(map)) {
 				request.getHeaders().addAll(map);
 			}
@@ -165,12 +164,17 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 				ROOT_INTERCEPTORS.iterator(), chain);
 		response = chainToUse.intercept(request);
 		handleResponse(request, response);
-		if (cookieManager != null) {
-			cookieManager.put(request.getURI(), response.getHeaders());
+		if (cookieHandler != null) {
+			cookieHandler.put(request.getURI(), response.getHeaders());
 		}
 
 		T body = responseExtractor(request, response, responseExtractor);
 		return new HttpResponseEntity<T>(body, response.getHeaders(), response.getStatusCode());
+	}
+
+	public final <T> HttpResponseEntity<T> execute(ClientHttpRequest request,
+			ClientHttpResponseExtractor<T> responseExtractor) throws HttpClientException, IOException {
+		return execute(getCookieHandler(), request, responseExtractor);
 	}
 
 	public final <T> HttpResponseEntity<T> execute(ClientHttpRequest request, Class<T> responseType)
