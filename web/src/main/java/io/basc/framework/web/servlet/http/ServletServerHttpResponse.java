@@ -1,18 +1,18 @@
 package io.basc.framework.web.servlet.http;
 
-import io.basc.framework.http.HttpCookie;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.HttpCookie;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.util.Decorator;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.web.ServerHttpResponse;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 
 public class ServletServerHttpResponse implements ServerHttpResponse, Decorator {
 	private HttpServletResponse httpServletResponse;
@@ -59,19 +59,7 @@ public class ServletServerHttpResponse implements ServerHttpResponse, Decorator 
 	}
 
 	public void addCookie(HttpCookie cookie) {
-		javax.servlet.http.Cookie c = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
-		if (cookie.getMaxAge() >= 0) {
-			c.setMaxAge(cookie.getMaxAge());
-		}
-
-		if (cookie.getPath() != null) {
-			c.setPath(cookie.getPath());
-		}
-
-		if (cookie.getDomain() != null) {
-			c.setDomain(cookie.getDomain());
-		}
-		httpServletResponse.addCookie(c);
+		httpServletResponse.addCookie(ServletCookieCodec.INSTANCE.decode(cookie));
 	}
 
 	public void addCookie(String name, String value) {

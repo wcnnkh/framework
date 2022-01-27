@@ -1,6 +1,7 @@
 package io.basc.framework.web;
 
 import java.io.IOException;
+import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.Map.Entry;
 import org.w3c.dom.Document;
 
 import io.basc.framework.codec.support.CharsetCodec;
-import io.basc.framework.http.HttpCookie;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.http.client.ClientHttpRequest;

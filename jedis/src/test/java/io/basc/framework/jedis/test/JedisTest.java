@@ -30,7 +30,13 @@ public class JedisTest {
 		System.out.println("--------------");
 		RedisClient<byte[], byte[]> connectionFactory = new JedisClient(jedisPool);
 		Redis redis = new Redis(connectionFactory);
+		System.out.println("----redis-info-----");
+		System.out.println(redis.info());
+		System.out.println("----redis-info------");
 		redis.set("a", "b");
+		System.out.println("----memoryUsage-----");
+		System.out.println(redis.memoryUsage("a"));
+		System.out.println("----memoryUsage------");
 		System.out.println(redis.get("a"));
 		redis.del("a");
 		

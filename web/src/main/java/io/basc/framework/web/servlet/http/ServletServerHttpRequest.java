@@ -1,6 +1,24 @@
 package io.basc.framework.web.servlet.http;
 
-import io.basc.framework.http.HttpCookie;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpCookie;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.InvalidMediaTypeException;
@@ -16,25 +34,6 @@ import io.basc.framework.util.XUtils;
 import io.basc.framework.web.ServerHttpAsyncControl;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
-import io.basc.framework.web.servlet.ServletUtils;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.security.Principal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 public class ServletServerHttpRequest implements ServerHttpRequest, Decorator {
 	private HttpHeaders headers;
@@ -67,7 +66,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator {
 
 		HttpCookie[] values = new HttpCookie[cookies.length];
 		for (int i = 0; i < cookies.length; i++) {
-			values[i] = ServletUtils.wrapper(cookies[i]).readyOnly();
+			values[i] = ServletCookieCodec.INSTANCE.encode(cookies[i]);
 		}
 		return values;
 	}

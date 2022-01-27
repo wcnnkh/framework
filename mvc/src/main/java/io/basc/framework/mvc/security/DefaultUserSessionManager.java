@@ -1,8 +1,9 @@
 package io.basc.framework.mvc.security;
 
+import java.net.HttpCookie;
+
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.env.Sys;
-import io.basc.framework.http.HttpCookie;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mvc.HttpChannel;
