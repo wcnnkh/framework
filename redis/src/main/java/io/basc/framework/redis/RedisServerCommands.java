@@ -4,8 +4,22 @@ import java.util.List;
 
 import io.basc.framework.lang.Nullable;
 
+/**
+ * redis server commands <br/>
+ * <br/>
+ * TODO 补全受支持的命令
+ * 
+ * @author wcnnkh
+ *
+ * @param <K>
+ * @param <V>
+ */
 @SuppressWarnings("unchecked")
 public interface RedisServerCommands<K, V> {
+	/**
+	 * @see #aclCat(Object)
+	 * @return
+	 */
 	default List<K> aclCat() {
 		return aclCat(null);
 	}
@@ -20,12 +34,30 @@ public interface RedisServerCommands<K, V> {
 	 */
 	List<K> aclCat(@Nullable K categoryname);
 
+	/**
+	 * https://redis.io/commands/acl-deluser
+	 * 
+	 * @param username
+	 * @param usernames
+	 * @return Integer reply: The number of users that were deleted. This number
+	 *         will not always match the number of arguments since certain users may
+	 *         not exist.
+	 */
 	Long aclDelUser(K username, K... usernames);
 
 	default String aclGenPass() {
 		return aclGenPass(null);
 	}
 
+	/**
+	 * https://redis.io/commands/acl-genpass
+	 * 
+	 * @param bits
+	 * @return Bulk string reply: by default 64 bytes string representing 256 bits
+	 *         of pseudorandom data. Otherwise if an argument if needed, the output
+	 *         string length is the number of specified bits (rounded to the next
+	 *         multiple of 4) divided by 4.
+	 */
 	String aclGenPass(@Nullable Integer bits);
 
 	/**
