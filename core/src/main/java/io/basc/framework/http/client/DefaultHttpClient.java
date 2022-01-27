@@ -1,8 +1,10 @@
 package io.basc.framework.http.client;
 
 import java.io.IOException;
+import java.net.CookieManager;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
@@ -26,6 +28,7 @@ import io.basc.framework.net.message.convert.DefaultMessageConverters;
 import io.basc.framework.net.message.convert.MessageConverters;
 import io.basc.framework.net.uri.UriTemplateHandler;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
 
 public class DefaultHttpClient extends AbstractHttpConnectionFactory implements HttpClient, Configurable {
 	/**
@@ -38,13 +41,12 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 	static final ClientHttpResponseErrorHandler CLIENT_HTTP_RESPONSE_ERROR_HANDLER = Sys.env
 			.getServiceLoader(ClientHttpResponseErrorHandler.class, DefaultClientHttpResponseErrorHandler.class)
 			.first();
-	static final HttpClientCookieManager COOKIE_MANAGER = Sys.env.getServiceLoader(HttpClientCookieManager.class)
-			.first();
+	static final CookieManager COOKIE_MANAGER = Sys.env.getServiceLoader(CookieManager.class).first();
 	static final List<ClientHttpRequestInterceptor> ROOT_INTERCEPTORS = Sys.env
 			.getServiceLoader(ClientHttpRequestInterceptor.class).toList();
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultHttpClient.class);
-	private HttpClientCookieManager cookieManager = COOKIE_MANAGER;
+	private CookieManager cookieManager = COOKIE_MANAGER;
 	private ClientHttpResponseErrorHandler clientHttpResponseErrorHandler = CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
 	protected final MessageConverters messageConverters = new DefaultMessageConverters();
 	private final ConfigurableServices<ClientHttpRequestInterceptor> interceptors = new ConfigurableServices<>(
@@ -63,10 +65,6 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 
 		if (serviceLoaderFactory.isInstance(ClientHttpResponseErrorHandler.class)) {
 			setClientHttpResponseErrorHandler(serviceLoaderFactory.getInstance(ClientHttpResponseErrorHandler.class));
-		}
-
-		if (serviceLoaderFactory.isInstance(HttpClientCookieManager.class)) {
-			setCookieManager(serviceLoaderFactory.getInstance(HttpClientCookieManager.class));
 		}
 
 		if (serviceLoaderFactory.isInstance(ClientHttpRequestFactory.class)) {
@@ -129,12 +127,12 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 		this.clientHttpResponseErrorHandler = clientHttpResponseErrorHandler;
 	}
 
-	public HttpClientCookieManager getCookieManager() {
+	public CookieManager getCookieManager() {
 		return cookieManager;
 	}
 
-	public void setCookieManager(HttpClientCookieManager cookieManager) {
-		Assert.notNull(clientHttpResponseErrorHandler, "HttpClientCookieManager must not be null");
+	public void setCookieManager(CookieManager cookieManager) {
+		Assert.notNull(cookieManager, "cookieManager must not be null");
 		this.cookieManager = cookieManager;
 	}
 
@@ -154,9 +152,12 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 	public final <T> HttpResponseEntity<T> execute(ClientHttpRequest request,
 			ClientHttpResponseExtractor<T> responseExtractor) throws HttpClientException, IOException {
 		ClientHttpResponse response = null;
-		HttpClientCookieManager cookieManager = getCookieManager();
+		CookieManager cookieManager = getCookieManager();
 		if (cookieManager != null) {
-			cookieManager.accept(request);
+			Map<String, List<String>> map = cookieManager.get(request.getURI(), request.getHeaders());
+			if (!CollectionUtils.isEmpty(map)) {
+				request.getHeaders().addAll(map);
+			}
 		}
 
 		ClientHttpRequestInterceptorChain chain = new ClientHttpRequestInterceptorChain(getInterceptors().iterator());
@@ -165,7 +166,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 		response = chainToUse.intercept(request);
 		handleResponse(request, response);
 		if (cookieManager != null) {
-			cookieManager.accept(response);
+			cookieManager.put(request.getURI(), response.getHeaders());
 		}
 
 		T body = responseExtractor(request, response, responseExtractor);
