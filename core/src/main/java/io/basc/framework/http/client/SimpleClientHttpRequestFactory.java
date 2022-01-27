@@ -14,7 +14,6 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
 import io.basc.framework.env.Sys;
-import io.basc.framework.http.client.accessor.HttpClientConfigAccessor;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.logger.Logger;

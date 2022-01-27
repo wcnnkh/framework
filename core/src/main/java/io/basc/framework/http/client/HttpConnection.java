@@ -1,6 +1,7 @@
 package io.basc.framework.http.client;
 
 import java.io.File;
+import java.net.CookieHandler;
 import java.net.URI;
 import java.nio.charset.Charset;
 
@@ -130,6 +131,10 @@ public interface HttpConnection extends HttpConnectionFactory {
 	RedirectManager getRedirectManager();
 
 	HttpConnection setRedirectManager(RedirectManager redirectManager);
+	
+	CookieHandler getCookieHandler();
+	
+	HttpConnection setCookieHandler(CookieHandler cookieHandler);
 
 	ClientHttpRequestFactory getRequestFactory();
 

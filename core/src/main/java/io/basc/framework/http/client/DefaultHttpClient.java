@@ -1,15 +1,10 @@
 package io.basc.framework.http.client;
 
 import java.io.IOException;
-import java.net.CookieHandler;
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.env.Sys;
 import io.basc.framework.factory.Configurable;
-import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpRequestEntity;
@@ -23,88 +18,29 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.message.convert.DefaultMessageConverters;
 import io.basc.framework.net.message.convert.MessageConverters;
-import io.basc.framework.net.uri.UriTemplateHandler;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
 
 public class DefaultHttpClient extends AbstractHttpConnectionFactory implements HttpClient, Configurable {
-	/**
-	 * 默认的client http request factory
-	 */
-	public static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = Sys.env
-			.getServiceLoader(ClientHttpRequestFactory.class).first();
-	private static final UriTemplateHandler URI_TEMPLATE_HANDLER = Sys.env
-			.getServiceLoader(UriTemplateHandler.class, "io.basc.framework.net.uri.DefaultUriTemplateHandler").first();
-	static final ClientHttpResponseErrorHandler CLIENT_HTTP_RESPONSE_ERROR_HANDLER = Sys.env
-			.getServiceLoader(ClientHttpResponseErrorHandler.class, DefaultClientHttpResponseErrorHandler.class)
-			.first();
-	static final CookieHandler COOKIE_HANDLER = Sys.env.getServiceLoader(CookieHandler.class).first();
-	static final List<ClientHttpRequestInterceptor> ROOT_INTERCEPTORS = Sys.env
-			.getServiceLoader(ClientHttpRequestInterceptor.class).toList();
-
 	private static Logger logger = LoggerFactory.getLogger(DefaultHttpClient.class);
-	private CookieHandler cookieHandler = COOKIE_HANDLER;
-	private ClientHttpResponseErrorHandler clientHttpResponseErrorHandler = CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
 	protected final MessageConverters messageConverters = new DefaultMessageConverters();
-	private final ConfigurableServices<ClientHttpRequestInterceptor> interceptors = new ConfigurableServices<>(
-			ClientHttpRequestInterceptor.class);
-	private ClientHttpRequestFactory clientHttpRequestFactory;
-	private UriTemplateHandler uriTemplateHandler;
+	private final ClientHttpRequestInterceptors interceptors = new ClientHttpRequestInterceptors();
+
+	public DefaultHttpClient() {
+		super.setInterceptor(interceptors);
+	}
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		interceptors.configure(serviceLoaderFactory);
 		messageConverters.configure(serviceLoaderFactory);
-
-		if (serviceLoaderFactory.isInstance(UriTemplateHandler.class)) {
-			setUriTemplateHandler(serviceLoaderFactory.getInstance(UriTemplateHandler.class));
-		}
-
-		if (serviceLoaderFactory.isInstance(CookieHandler.class)) {
-			setCookieHandler(serviceLoaderFactory.getInstance(CookieHandler.class));
-		}
-
-		if (serviceLoaderFactory.isInstance(ClientHttpResponseErrorHandler.class)) {
-			setClientHttpResponseErrorHandler(serviceLoaderFactory.getInstance(ClientHttpResponseErrorHandler.class));
-		}
-
-		if (serviceLoaderFactory.isInstance(ClientHttpRequestFactory.class)) {
-			setClientHttpRequestFactory(serviceLoaderFactory.getInstance(ClientHttpRequestFactory.class));
-		}
+		super.configure(serviceLoaderFactory);
 	}
 
-	public ConfigurableServices<ClientHttpRequestInterceptor> getInterceptors() {
+	public final ClientHttpRequestInterceptors getInterceptors() {
 		return interceptors;
-	}
-
-	public void setClientHttpResponseErrorHandler(ClientHttpResponseErrorHandler clientHttpResponseErrorHandler) {
-		this.clientHttpResponseErrorHandler = clientHttpResponseErrorHandler;
 	}
 
 	public MessageConverters getMessageConverters() {
 		return messageConverters;
-	}
-
-	public ClientHttpRequestFactory getClientHttpRequestFactory() {
-		if (clientHttpRequestFactory == null) {
-			return CLIENT_HTTP_REQUEST_FACTORY;
-		}
-		return clientHttpRequestFactory;
-	}
-
-	public void setClientHttpRequestFactory(ClientHttpRequestFactory clientHttpRequestFactory) {
-		this.clientHttpRequestFactory = clientHttpRequestFactory;
-	}
-
-	public UriTemplateHandler getUriTemplateHandler() {
-		if (uriTemplateHandler == null) {
-			return URI_TEMPLATE_HANDLER;
-		}
-		return uriTemplateHandler;
-	}
-
-	public void setUriTemplateHandler(UriTemplateHandler uriTemplateHandler) {
-		this.uriTemplateHandler = uriTemplateHandler;
 	}
 
 	protected void requestCallback(ClientHttpRequest request, ClientHttpRequestCallback requestCallback)
@@ -112,69 +48,6 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 		if (requestCallback != null) {
 			requestCallback.callback(request);
 		}
-	}
-
-	protected <T> T responseExtractor(ClientHttpRequest request, ClientHttpResponse response,
-			ClientHttpResponseExtractor<T> clientResponseExtractor) throws IOException {
-		return clientResponseExtractor == null ? null : clientResponseExtractor.execute(response);
-	}
-
-	public ClientHttpResponseErrorHandler getClientHttpResponseErrorHandler() {
-		return clientHttpResponseErrorHandler;
-	}
-
-	public void setClientHttpInputMessageErrorHandler(ClientHttpResponseErrorHandler clientHttpResponseErrorHandler) {
-		Assert.notNull(clientHttpResponseErrorHandler, "ClientHttpInputMessageErrorHandler must not be null");
-		this.clientHttpResponseErrorHandler = clientHttpResponseErrorHandler;
-	}
-
-	public CookieHandler getCookieHandler() {
-		return cookieHandler;
-	}
-
-	public void setCookieHandler(CookieHandler cookieHandler) {
-		this.cookieHandler = cookieHandler;
-	}
-
-	protected void handleResponse(ClientHttpRequest request, ClientHttpResponse response) throws IOException {
-		ClientHttpResponseErrorHandler errorHandler = getClientHttpResponseErrorHandler();
-		boolean hasError = errorHandler.hasError(response);
-		if (logger.isDebugEnabled()) {
-			logger.debug(request.getMethod().name() + " request for \"" + request.getURI() + "\" resulted in "
-					+ response.getRawStatusCode() + " (" + response.getStatusText() + ")"
-					+ (hasError ? "; invoking error handler" : ""));
-		}
-		if (hasError) {
-			errorHandler.handleError(response);
-		}
-	}
-
-	protected <T> HttpResponseEntity<T> execute(CookieHandler cookieHandler, ClientHttpRequest request,
-			ClientHttpResponseExtractor<T> responseExtractor) throws HttpClientException, IOException {
-		ClientHttpResponse response = null;
-		if (cookieHandler != null) {
-			Map<String, List<String>> map = cookieHandler.get(request.getURI(), request.getHeaders());
-			if (!CollectionUtils.isEmpty(map)) {
-				request.getHeaders().addAll(map);
-			}
-		}
-
-		ClientHttpRequestInterceptorChain chain = new ClientHttpRequestInterceptorChain(getInterceptors().iterator());
-		ClientHttpRequestInterceptorChain chainToUse = new ClientHttpRequestInterceptorChain(
-				ROOT_INTERCEPTORS.iterator(), chain);
-		response = chainToUse.intercept(request);
-		handleResponse(request, response);
-		if (cookieHandler != null) {
-			cookieHandler.put(request.getURI(), response.getHeaders());
-		}
-
-		T body = responseExtractor(request, response, responseExtractor);
-		return new HttpResponseEntity<T>(body, response.getHeaders(), response.getStatusCode());
-	}
-
-	public final <T> HttpResponseEntity<T> execute(ClientHttpRequest request,
-			ClientHttpResponseExtractor<T> responseExtractor) throws HttpClientException, IOException {
-		return execute(getCookieHandler(), request, responseExtractor);
 	}
 
 	public final <T> HttpResponseEntity<T> execute(ClientHttpRequest request, Class<T> responseType)
@@ -213,7 +86,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 	public final <T> HttpResponseEntity<T> execute(URI url, HttpMethod method,
 			ClientHttpRequestCallback requestCallback, ClientHttpResponseExtractor<T> responseExtractor)
 			throws HttpClientException {
-		return execute(url, method, getClientHttpRequestFactory(), requestCallback, responseExtractor);
+		return execute(url, method, getRequestFactory(), requestCallback, responseExtractor);
 	}
 
 	public final <T> HttpResponseEntity<T> execute(HttpRequestEntity<?> requestEntity,
@@ -241,21 +114,21 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 
 	public final <T> HttpResponseEntity<T> execute(HttpRequestEntity<?> requestEntity,
 			ClientHttpResponseExtractor<T> responseExtractor) throws HttpClientException {
-		return execute(requestEntity, getClientHttpRequestFactory(), responseExtractor);
+		return execute(requestEntity, getRequestFactory(), responseExtractor);
 	}
 
 	public final <T> HttpResponseEntity<T> execute(HttpRequestEntity<?> requestEntity, Class<T> responseType)
 			throws HttpClientException {
 		ClientHttpResponseExtractor<T> responseExtractor = getClientHttpResponseExtractor(requestEntity.getMethod(),
 				TypeDescriptor.valueOf(responseType));
-		return execute(requestEntity, getClientHttpRequestFactory(), responseExtractor);
+		return execute(requestEntity, getRequestFactory(), responseExtractor);
 	}
 
 	public final <T> HttpResponseEntity<T> execute(HttpRequestEntity<?> requestEntity, TypeDescriptor responseType)
 			throws HttpClientException {
 		ClientHttpResponseExtractor<T> responseExtractor = getClientHttpResponseExtractor(requestEntity.getMethod(),
 				responseType);
-		return execute(requestEntity, getClientHttpRequestFactory(), responseExtractor);
+		return execute(requestEntity, getRequestFactory(), responseExtractor);
 	}
 
 	protected ClientHttpRequestCallback createRequestBodyCallback(final HttpRequestEntity<?> requestEntity) {
@@ -338,25 +211,15 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 	private final class DefaultHttpConnection extends AbstractHttpConnection {
 
 		public DefaultHttpConnection() {
+			super(DefaultHttpClient.this);
 		}
 
 		public DefaultHttpConnection(HttpMethod method, URI url) {
-			super(method, url);
+			super(DefaultHttpClient.this, method, url);
 		}
 
 		public DefaultHttpConnection(DefaultHttpConnection httpConnection) {
 			super(httpConnection);
-		}
-
-		@Override
-		protected UriTemplateHandler getUriTemplateHandler() {
-			return DefaultHttpClient.this.getUriTemplateHandler();
-		}
-
-		@Override
-		public ClientHttpRequestFactory getRequestFactory() {
-			ClientHttpRequestFactory requestFactory = super.getRequestFactory();
-			return requestFactory == null ? DefaultHttpClient.this.getClientHttpRequestFactory() : requestFactory;
 		}
 
 		public <T> HttpResponseEntity<T> execute(ClientHttpResponseExtractor<T> responseExtractor)

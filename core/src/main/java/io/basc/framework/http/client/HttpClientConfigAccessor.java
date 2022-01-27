@@ -1,4 +1,4 @@
-package io.basc.framework.http.client.accessor;
+package io.basc.framework.http.client;
 
 import io.basc.framework.env.Sys;
 import io.basc.framework.event.Observable;
@@ -18,10 +18,13 @@ public class HttpClientConfigAccessor {
 
 	private String userAgent;
 
-	public void setConfig(HttpClientConfigAccessor config) {
-		this.connectTimeout = config.connectTimeout;
-		this.readTimeout = config.readTimeout;
-		this.userAgent = config.userAgent;
+	public HttpClientConfigAccessor() {
+	}
+
+	public HttpClientConfigAccessor(HttpClientConfigAccessor configAccessor) {
+		this.connectTimeout = configAccessor.connectTimeout;
+		this.readTimeout = configAccessor.readTimeout;
+		this.userAgent = configAccessor.userAgent;
 	}
 
 	public int getConnectTimeout() {

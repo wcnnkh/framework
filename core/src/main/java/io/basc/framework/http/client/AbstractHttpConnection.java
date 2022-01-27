@@ -1,5 +1,6 @@
 package io.basc.framework.http.client;
 
+import java.net.CookieHandler;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Arrays;
@@ -24,45 +25,43 @@ public abstract class AbstractHttpConnection extends AbstractHttpConnectionFacto
 	@Nullable
 	private TypeDescriptor typeDescriptor;
 	private boolean redirectEnable = false;
-	private ClientHttpRequestFactory requestFactory;
-	private RedirectManager redirectManager;
 
-	public AbstractHttpConnection() {
+	public AbstractHttpConnection(AbstractHttpConnectionFactory connectionFactory) {
+		super(connectionFactory);
 		this.headers = new HttpHeaders();
 	}
 
-	public AbstractHttpConnection(HttpMethod method, URI uri) {
+	public AbstractHttpConnection(AbstractHttpConnectionFactory connectionFactory, HttpMethod method, URI uri) {
+		super(connectionFactory);
 		this.headers = new HttpHeaders();
 		this.method = method;
 		this.uri = uri;
 	}
 
 	public AbstractHttpConnection(AbstractHttpConnection httpConnection) {
+		super(httpConnection);
 		this.method = httpConnection.method;
 		this.uri = httpConnection.uri;
 		this.body = httpConnection.body;
 		this.typeDescriptor = httpConnection.typeDescriptor;
 		this.headers = new HttpHeaders(httpConnection.headers);
 		this.redirectEnable = httpConnection.redirectEnable;
-		this.requestFactory = httpConnection.requestFactory;
-		this.redirectManager = httpConnection.redirectManager;
 	}
 
-	public ClientHttpRequestFactory getRequestFactory() {
-		return requestFactory;
-	}
-
-	public HttpConnection setRequestFactory(ClientHttpRequestFactory requestFactory) {
-		this.requestFactory = requestFactory;
+	@Override
+	public AbstractHttpConnection setRequestFactory(ClientHttpRequestFactory clientHttpRequestFactory) {
+		super.setRequestFactory(clientHttpRequestFactory);
 		return this;
 	}
 
-	public RedirectManager getRedirectManager() {
-		return redirectManager == null ? REDIRECT_MANAGER : redirectManager;
+	public AbstractHttpConnection setRedirectManager(RedirectManager redirectManager) {
+		super.setRedirectManager(redirectManager);
+		return this;
 	}
 
-	public HttpConnection setRedirectManager(RedirectManager redirectManager) {
-		this.redirectManager = redirectManager;
+	@Override
+	public AbstractHttpConnection setCookieHandler(CookieHandler cookieHandler) {
+		super.setCookieHandler(cookieHandler);
 		return this;
 	}
 

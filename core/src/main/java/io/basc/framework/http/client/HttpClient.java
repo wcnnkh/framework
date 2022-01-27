@@ -16,10 +16,7 @@ import io.basc.framework.http.client.exception.HttpClientException;
  * @author shuchaowen
  *
  */
-public interface HttpClient extends HttpConnectionFactory {
-	<T> HttpResponseEntity<T> execute(ClientHttpRequest request, ClientHttpResponseExtractor<T> responseExtractor)
-			throws HttpClientException, IOException;
-
+public interface HttpClient extends HttpConnectionFactory, HttpClientExecutor {
 	<T> HttpResponseEntity<T> execute(ClientHttpRequest request, Class<T> responseType)
 			throws HttpClientException, IOException;
 
