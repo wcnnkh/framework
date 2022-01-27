@@ -7,9 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import io.basc.framework.data.domain.HostAndPort;
 import io.basc.framework.data.geo.Metric;
 import io.basc.framework.data.geo.Point;
+import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.redis.Aggregate;
 import io.basc.framework.redis.ClaimArgs;
 import io.basc.framework.redis.ExpireOption;
@@ -23,16 +26,20 @@ import io.basc.framework.redis.MovePosition;
 import io.basc.framework.redis.ScanOptions;
 import io.basc.framework.redis.ScoreOption;
 import io.basc.framework.redis.SetOption;
+import io.basc.framework.redis.Slowlog;
 import io.basc.framework.redis.Tuple;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.comparator.Sort;
 import redis.clients.jedis.GeoCoordinate;
 import redis.clients.jedis.args.BitOP;
+import redis.clients.jedis.args.FlushMode;
 import redis.clients.jedis.args.GeoUnit;
 import redis.clients.jedis.args.ListDirection;
 import redis.clients.jedis.args.ListPosition;
+import redis.clients.jedis.args.SaveMode;
 import redis.clients.jedis.params.BitPosParams;
+import redis.clients.jedis.params.FailoverParams;
 import redis.clients.jedis.params.GeoAddParams;
 import redis.clients.jedis.params.GeoRadiusParam;
 import redis.clients.jedis.params.GetExParams;
@@ -425,5 +432,68 @@ public final class JedisUtils {
 			list.add(new Tuple<byte[]>(tuple.getBinaryElement(), tuple.getScore()));
 		}
 		return list;
+	}
+
+	public static FailoverParams toFailoverParams(io.basc.framework.redis.FailoverParams params) {
+		if (params == null) {
+			return null;
+		}
+
+		FailoverParams failoverParams = new FailoverParams();
+		if (StringUtils.isNotEmpty(params.getHost())) {
+			failoverParams.to(params.getHost(), params.getPort());
+		}
+
+		if (params.isForce()) {
+			failoverParams.force();
+		}
+
+		if (params.getTimeout() != null) {
+			failoverParams.timeout(params.getTimeout());
+		}
+		return failoverParams;
+	}
+
+	public static FlushMode toFlushMode(io.basc.framework.redis.FlushMode flushMode) {
+		if (flushMode == null) {
+			return null;
+		}
+
+		switch (flushMode) {
+		case ASYNC:
+			return FlushMode.ASYNC;
+		case SYNC:
+			return FlushMode.SYNC;
+		default:
+			throw new NotSupportedException(flushMode.name());
+		}
+	}
+
+	public static SaveMode toSaveMode(io.basc.framework.redis.SaveMode saveMode) {
+		if (saveMode == null) {
+			return null;
+		}
+
+		switch (saveMode) {
+		case NOSAVE:
+			return SaveMode.NOSAVE;
+		case SAVE:
+			return SaveMode.SAVE;
+		default:
+			throw new NotSupportedException(saveMode.name());
+		}
+	}
+
+	public static List<Slowlog> toSlowlogList(List<redis.clients.jedis.resps.Slowlog> list) {
+		if (list == null || list.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		return list.stream()
+				.map((e) -> new Slowlog(e.getId(), e.getTimeStamp(), e.getExecutionTime(), e.getArgs(),
+						e.getClientIpPort() == null ? null
+								: new HostAndPort(e.getClientIpPort().getHost(), e.getClientIpPort().getPort()),
+						e.getClientName()))
+				.collect(Collectors.toList());
 	}
 }

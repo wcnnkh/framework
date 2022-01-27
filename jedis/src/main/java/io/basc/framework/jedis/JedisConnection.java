@@ -2,9 +2,11 @@ package io.basc.framework.jedis;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.data.geo.Circle;
@@ -15,6 +17,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.redis.ClaimArgs;
 import io.basc.framework.redis.DataType;
 import io.basc.framework.redis.ExpireOption;
+import io.basc.framework.redis.FailoverParams;
 import io.basc.framework.redis.FlushMode;
 import io.basc.framework.redis.GeoRadiusArgs;
 import io.basc.framework.redis.GeoRadiusWith;
@@ -22,6 +25,7 @@ import io.basc.framework.redis.GeoWithin;
 import io.basc.framework.redis.GeoaddOption;
 import io.basc.framework.redis.InterArgs;
 import io.basc.framework.redis.MessageListener;
+import io.basc.framework.redis.Module;
 import io.basc.framework.redis.RedisConnection;
 import io.basc.framework.redis.RedisPipeline;
 import io.basc.framework.redis.RedisSubscribedConnectionException;
@@ -29,9 +33,11 @@ import io.basc.framework.redis.RedisSystemException;
 import io.basc.framework.redis.RedisTransaction;
 import io.basc.framework.redis.RedisValueEncoding;
 import io.basc.framework.redis.RedisValueEncodings;
+import io.basc.framework.redis.SaveMode;
 import io.basc.framework.redis.ScanOptions;
 import io.basc.framework.redis.ScoreOption;
 import io.basc.framework.redis.SetOption;
+import io.basc.framework.redis.Slowlog;
 import io.basc.framework.redis.Subscription;
 import io.basc.framework.redis.Tuple;
 import io.basc.framework.redis.convert.RedisConverters;
@@ -1129,5 +1135,220 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	@Override
 	public List<byte[]> hvals(byte[] key) {
 		return jedis.hvals(key);
+	}
+
+	@Override
+	public List<byte[]> aclCat(byte[] categoryname) {
+		if (categoryname == null) {
+			return jedis.aclCatBinary();
+		}
+		return jedis.aclCat(categoryname);
+	}
+
+	@Override
+	public Long aclDelUser(byte[] username, byte[]... usernames) {
+		return jedis.aclDelUser(username, usernames);
+	}
+
+	@Override
+	public String aclGenPass(Integer bits) {
+		if (bits == null) {
+			return jedis.aclGenPass();
+		}
+		return jedis.aclGenPass(bits);
+	}
+
+	@Override
+	public List<byte[]> aclList() {
+		return jedis.aclListBinary();
+	}
+
+	@Override
+	public String aclLoad() {
+		return jedis.aclLoad();
+	}
+
+	@Override
+	public List<byte[]> aclLog(Integer count) {
+		if (count == null) {
+			return jedis.aclLogBinary();
+		} else {
+			return jedis.aclLogBinary(count);
+		}
+	}
+
+	@Override
+	public String aclLogReset() {
+		return jedis.aclLogReset();
+	}
+
+	@Override
+	public String aclSave() {
+		return jedis.aclSave();
+	}
+
+	@Override
+	public String aclSetuser(byte[] username, byte[]... rules) {
+		return jedis.aclSetUser(username, rules);
+	}
+
+	@Override
+	public List<byte[]> aclUsers() {
+		return jedis.aclUsersBinary();
+	}
+
+	@Override
+	public byte[] aclWhoami() {
+		return jedis.aclWhoAmIBinary();
+	}
+
+	@Override
+	public String bgrewriteaof() {
+		return jedis.bgrewriteaof();
+	}
+
+	@Override
+	public String bgsave() {
+		return jedis.bgsave();
+	}
+
+	@Override
+	public List<byte[]> configGet(byte[] parameter) {
+		return jedis.configGet(parameter);
+	}
+
+	@Override
+	public String configResetstat() {
+		return jedis.configResetStat();
+	}
+
+	@Override
+	public String configRewrite() {
+		return jedis.configRewrite();
+	}
+
+	@Override
+	public String configSet(byte[] parameter, byte[] value) {
+		return jedis.configSet(parameter, value);
+	}
+
+	@Override
+	public Long dbsize() {
+		return jedis.dbSize();
+	}
+
+	@Override
+	public String failoverAbort() {
+		return jedis.failoverAbort();
+	}
+
+	@Override
+	public String failover(FailoverParams params) {
+		if (params == null) {
+			return jedis.failover();
+		}
+
+		return jedis.failover(JedisUtils.toFailoverParams(params));
+	}
+
+	@Override
+	public String flushall(FlushMode flushMode) {
+		if (flushMode == null) {
+			return jedis.flushAll();
+		}
+
+		return jedis.flushAll(JedisUtils.toFlushMode(flushMode));
+	}
+
+	@Override
+	public String flushdb(FlushMode flushMode) {
+		return flushMode == null ? jedis.flushDB() : jedis.flushDB(JedisUtils.toFlushMode(flushMode));
+	}
+
+	@Override
+	public String info(String section) {
+		return section == null ? jedis.info() : jedis.info(section);
+	}
+
+	@Override
+	public Long lastsave() {
+		return jedis.lastsave();
+	}
+
+	@Override
+	public String memoryDoctor() {
+		return jedis.memoryDoctor();
+	}
+
+	@Override
+	public Long memoryUsage(byte[] key, int samples) {
+		return jedis.memoryUsage(key, samples);
+	}
+
+	@Override
+	public List<Module> moduleList() {
+		List<redis.clients.jedis.Module> modules = jedis.moduleList();
+		return modules == null ? Collections.emptyList()
+				: modules.stream().map((e) -> new Module(e.getName(), e.getVersion())).collect(Collectors.toList());
+	}
+
+	@Override
+	public String moduleLoad(String path) {
+		return jedis.moduleLoad(path);
+	}
+
+	@Override
+	public String moduleUnload(String name) {
+		return jedis.moduleUnload(name);
+	}
+
+	@Override
+	public List<Object> role() {
+		return jedis.role();
+	}
+
+	@Override
+	public String save() {
+		return jedis.save();
+	}
+
+	@Override
+	public void shutdown(SaveMode saveMode) {
+		if (saveMode == null) {
+			jedis.shutdown();
+		} else {
+			jedis.shutdown(JedisUtils.toSaveMode(saveMode));
+		}
+	}
+
+	@Override
+	public String slaveof(String host, int port) {
+		return jedis.slaveof(host, port);
+	}
+
+	@Override
+	public List<Slowlog> slowlogGet(Long count) {
+		List<redis.clients.jedis.resps.Slowlog> list = count == null ? jedis.slowlogGet() : jedis.slowlogGet(count);
+		return JedisUtils.toSlowlogList(list);
+	}
+
+	@Override
+	public Long slowlogLen() {
+		return jedis.slowlogLen();
+	}
+
+	@Override
+	public String slowlogReset() {
+		return jedis.slowlogReset();
+	}
+
+	@Override
+	public String swapdb(int index1, int index2) {
+		return jedis.swapDB(index1, index2);
+	}
+
+	@Override
+	public List<String> time() {
+		return jedis.time();
 	}
 }

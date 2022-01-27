@@ -9,20 +9,21 @@ import io.basc.framework.redis.RedisKeysCommands;
 import io.basc.framework.redis.RedisListsCommands;
 import io.basc.framework.redis.RedisPubSubCommands;
 import io.basc.framework.redis.RedisScriptingCommands;
+import io.basc.framework.redis.RedisServerCommands;
 import io.basc.framework.redis.RedisSetsCommands;
 import io.basc.framework.redis.RedisSortedSetsCommands;
 import io.basc.framework.redis.RedisStreamsCommands;
 import io.basc.framework.redis.RedisStringCommands;
 import io.basc.framework.redis.RedisTransactionsCommands;
 
-public interface ConvertibleRedisCommands<SK, K, SV, V>
-		extends ConvertibleRedisConnectionCommands<SK, K, SV, V>, ConvertibleRedisGeoCommands<SK, K, SV, V>,
-		ConvertibleRedisHashesCommands<SK, K, SV, V>, ConvertibleRedisHyperloglogCommands<SK, K, SV, V>,
-		ConvertibleRedisKeysCommands<SK, K, SV, V>, ConvertibleRedisListsCommands<SK, K, SV, V>,
-		ConvertibleRedisScriptingCommands<SK, K, SV, V>, ConvertibleRedisPubSubCommands<SK, K, SV, V>,
-		ConvertibleRedisSetsCommands<SK, K, SV, V>, ConvertibleRedisSortedSetsCommands<SK, K, SV, V>,
-		ConvertibleRedisStreamsCommands<SK, K, SV, V>, ConvertibleRedisStringCommands<SK, K, SV, V>,
-		ConvertibleRedisTransactionsCommands<SK, K, SV, V>, RedisCommands<K, V> {
+public interface ConvertibleRedisCommands<SK, K, SV, V> extends ConvertibleRedisConnectionCommands<SK, K, SV, V>,
+		ConvertibleRedisGeoCommands<SK, K, SV, V>, ConvertibleRedisHashesCommands<SK, K, SV, V>,
+		ConvertibleRedisHyperloglogCommands<SK, K, SV, V>, ConvertibleRedisKeysCommands<SK, K, SV, V>,
+		ConvertibleRedisListsCommands<SK, K, SV, V>, ConvertibleRedisScriptingCommands<SK, K, SV, V>,
+		ConvertibleRedisPubSubCommands<SK, K, SV, V>, ConvertibleRedisSetsCommands<SK, K, SV, V>,
+		ConvertibleRedisSortedSetsCommands<SK, K, SV, V>, ConvertibleRedisStreamsCommands<SK, K, SV, V>,
+		ConvertibleRedisStringCommands<SK, K, SV, V>, ConvertibleRedisTransactionsCommands<SK, K, SV, V>,
+		ConvertibleRedisServerCommands<SK, K, SV, V>, RedisCommands<K, V> {
 
 	RedisCommands<SK, SV> getSourceRedisCommands();
 
@@ -88,6 +89,11 @@ public interface ConvertibleRedisCommands<SK, K, SV, V>
 
 	@Override
 	default RedisHashesCommands<SK, SV> getSourceRedisHashesCommands() {
+		return getSourceRedisCommands();
+	}
+	
+	@Override
+	default RedisServerCommands<SK, SV> getSourceRedisServerCommands() {
 		return getSourceRedisCommands();
 	}
 }
