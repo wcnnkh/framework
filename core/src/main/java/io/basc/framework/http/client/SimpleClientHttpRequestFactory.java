@@ -14,6 +14,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
 import io.basc.framework.env.Sys;
+import io.basc.framework.http.HttpMethod;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.logger.Logger;
@@ -22,7 +23,7 @@ import io.basc.framework.net.ssl.SSLContexts;
 import io.basc.framework.net.ssl.TrustAllManager;
 import io.basc.framework.util.StringUtils;
 
-public class SimpleClientHttpRequestFactory extends HttpClientConfigAccessor implements ClientHttpRequestFactory {
+public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAccessor implements ClientHttpRequestFactory {
 	private static Logger logger = LoggerFactory.getLogger(SimpleClientHttpRequestFactory.class);
 
 	/**
@@ -170,22 +171,16 @@ public class SimpleClientHttpRequestFactory extends HttpClientConfigAccessor imp
 			connection.setReadTimeout(readTimeout);
 		}
 
-		connection.setDoInput(true);
-
+		connection.setRequestMethod(httpMethod);
 		if ("GET".equals(httpMethod)) {
 			connection.setInstanceFollowRedirects(true);
 		} else {
 			connection.setInstanceFollowRedirects(false);
 		}
-
-		if ("POST".equals(httpMethod) || "PUT".equals(httpMethod) || "PATCH".equals(httpMethod)
-				|| "DELETE".equals(httpMethod)) {
-			connection.setDoOutput(true);
-		} else {
-			connection.setDoOutput(false);
-		}
-
-		connection.setRequestMethod(httpMethod);
+		
+		connection.setDoInput(HttpMethod.hasResponseBody(httpMethod));
+		connection.setDoOutput(HttpMethod.hasRequestBody(httpMethod));
+		
 
 		if (connection instanceof HttpsURLConnection) {
 			SSLSocketFactory factory = getSslSocketFactory();
@@ -195,5 +190,4 @@ public class SimpleClientHttpRequestFactory extends HttpClientConfigAccessor imp
 			((HttpsURLConnection) connection).setSSLSocketFactory(factory);
 		}
 	}
-
 }
