@@ -12,6 +12,7 @@ import io.basc.framework.http.client.exception.UnknownHttpStatusCodeException;
 import io.basc.framework.io.IOUtils;
 
 public class DefaultClientHttpResponseErrorHandler implements ClientHttpResponseErrorHandler {
+	public static final ClientHttpResponseErrorHandler INSTANCE = new DefaultClientHttpResponseErrorHandler();
 
 	/**
 	 * Delegates to {@link #hasError(HttpStatus)} (for a standard status enum value)

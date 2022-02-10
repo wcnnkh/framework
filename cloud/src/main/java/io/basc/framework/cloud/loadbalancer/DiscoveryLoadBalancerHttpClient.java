@@ -8,7 +8,6 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.http.client.ClientHttpRequestCallback;
-import io.basc.framework.http.client.ClientHttpRequestFactory;
 import io.basc.framework.http.client.ClientHttpResponseExtractor;
 import io.basc.framework.http.client.DefaultHttpClient;
 import io.basc.framework.http.client.exception.HttpClientException;
@@ -36,11 +35,10 @@ public class DiscoveryLoadBalancerHttpClient extends DefaultHttpClient {
 	}
 
 	@Override
-	public <T> HttpResponseEntity<T> execute(URI url, HttpMethod method, ClientHttpRequestFactory requestFactory,
-			ClientHttpRequestCallback requestCallback, ClientHttpResponseExtractor<T> responseExtractor)
-			throws HttpClientException {
+	public <T> HttpResponseEntity<T> execute(URI url, HttpMethod method, ClientHttpRequestCallback requestCallback,
+			ClientHttpResponseExtractor<T> responseExtractor) throws HttpClientException {
 		return loadbalancer.execute(url, getRetryOperations(), (context, server, uri) -> {
-			return super.execute(uri, method, requestFactory, requestCallback, responseExtractor);
+			return super.execute(uri, method, requestCallback, responseExtractor);
 		});
 	}
 }

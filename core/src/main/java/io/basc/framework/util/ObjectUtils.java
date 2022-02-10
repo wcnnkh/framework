@@ -155,7 +155,7 @@ public abstract class ObjectUtils {
 	/**
 	 * Case insensitive alternative to {@link Enum#valueOf(Class, String)}.
 	 * 
-	 * @param <E>        the concrete Enum type
+	 * @param            <E> the concrete Enum type
 	 * @param enumValues the array of all Enum constants in question, usually per
 	 *                   Enum.values()
 	 * @param constant   the constant to get the enum value of
@@ -288,19 +288,20 @@ public abstract class ObjectUtils {
 	}
 
 	/**
-	 * 克隆 默认不对数组深拷贝
+	 * 克隆 深拷贝(如果对象实现了Cloneable接口,那么会调用clone方法)
 	 * 
 	 * @see ObjectUtils#clone(Object, boolean)
-	 * @param <T>
+	 * @param        <T>
 	 * @param source
 	 * @return 如果无法克隆就返回本身
 	 */
 	public static <T> T clone(T source) {
-		return clone(source, false);
+		return clone(source, true);
 	}
 
 	/**
 	 * 克隆<br/>
+	 * (如果对象实现了Cloneable接口,那么会调用clone方法) </br>
 	 * 
 	 * 以下情况会进行克隆：<br/>
 	 * 实现{@link Cloneable}接口 是一个数组
@@ -309,11 +310,11 @@ public abstract class ObjectUtils {
 	 * @see ArrayUtils#clone(Object, boolean)
 	 * @see CollectionFactory#clone(Collection, boolean)
 	 * @see CollectionFactory#clone(Map, boolean)
-	 * @see ReflectionUtils#clone(Cloneable)
+	 * @see ReflectionUtils#invokeCloneMethod(Object)
 	 * @see ReflectionUtils#clone(Object, boolean)
-	 * @param <T>
+	 * @param        <T>
 	 * @param source
-	 * @param deep   对数组的操作
+	 * @param deep   对集合的操作
 	 * @return 如果无法克隆就返回本身
 	 */
 	@SuppressWarnings("unchecked")
@@ -343,7 +344,7 @@ public abstract class ObjectUtils {
 		}
 
 		if (source instanceof Cloneable) {
-			return ReflectionUtils.clone((Cloneable) source);
+			return ReflectionUtils.invokeCloneMethod((Cloneable) source);
 		}
 
 		// 是否可以直接return source, 应该这样吗？

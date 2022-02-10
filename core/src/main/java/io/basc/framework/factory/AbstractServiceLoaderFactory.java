@@ -12,6 +12,18 @@ public abstract class AbstractServiceLoaderFactory extends AbstractNoArgsInstanc
 		implements ServiceLoaderFactory {
 	private static final String ENABLE_PREFIX = "io.basc.framework.spi";
 	private final AntPathMatcher antPathMatcher = new AntPathMatcher(".");
+	/**
+	 * 是否强制使用spi
+	 */
+	private boolean forceSpi = false;
+
+	public boolean isForceSpi() {
+		return forceSpi;
+	}
+
+	public void setForceSpi(boolean forceSpi) {
+		this.forceSpi = forceSpi;
+	}
 
 	protected abstract ValueFactory<String> getConfigFactory();
 
@@ -32,10 +44,10 @@ public abstract class AbstractServiceLoaderFactory extends AbstractNoArgsInstanc
 
 	public <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass) {
 		ServiceLoader<S> configServiceLoader = new ConfigServiceLoader<S>(serviceClass, getConfigFactory(), this);
-		ServiceLoader<S> spiServiceLoader = null;
-		if (serviceClass.getName().startsWith(Constants.SYSTEM_PACKAGE_NAME) || useSpi(serviceClass)) {
-			spiServiceLoader = new SpiServiceLoader<S>(serviceClass, this);
+		if (isForceSpi() || serviceClass.getName().startsWith(Constants.SYSTEM_PACKAGE_NAME) || useSpi(serviceClass)) {
+			ServiceLoader<S> spiServiceLoader = new SpiServiceLoader<S>(serviceClass, this);
+			return new ServiceLoaders<S>(configServiceLoader, spiServiceLoader);
 		}
-		return new ServiceLoaders<S>(configServiceLoader, spiServiceLoader);
+		return configServiceLoader;
 	}
 }

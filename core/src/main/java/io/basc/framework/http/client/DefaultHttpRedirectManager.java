@@ -9,11 +9,11 @@ import io.basc.framework.http.HttpStatus;
 
 public class DefaultHttpRedirectManager implements RedirectManager {
 
-	public URI getRedirect(ClientHttpResponse response) throws IOException {
+	public URI getRedirect(ClientHttpResponse response, long deep) throws IOException {
 		return getLocation(response.getStatusCode(), response.getHeaders());
 	}
 
-	public URI getRedirect(HttpResponseEntity<?> responseEntity) {
+	public URI getRedirect(HttpResponseEntity<?> responseEntity, long deep) {
 		return getLocation(responseEntity.getStatusCode(), responseEntity.getHeaders());
 	}
 

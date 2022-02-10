@@ -1,10 +1,10 @@
 package io.basc.framework.http.client;
 
-import io.basc.framework.http.HttpInputMessage;
-import io.basc.framework.http.HttpStatus;
-
 import java.io.Closeable;
 import java.io.IOException;
+
+import io.basc.framework.http.HttpInputMessage;
+import io.basc.framework.http.HttpStatus;
 
 public interface ClientHttpResponse extends HttpInputMessage, Closeable {
 	/**

@@ -1,12 +1,5 @@
 package io.basc.framework.logger;
 
-import io.basc.framework.factory.ServiceLoaderFactory;
-import io.basc.framework.factory.support.DefaultServiceLoaderFactory;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.value.PropertyFactory;
-import io.basc.framework.value.support.SystemPropertyFactory;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +7,12 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.logging.Handler;
 import java.util.logging.Level;
+
+import io.basc.framework.factory.support.DefaultServiceLoaderFactory;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.value.PropertyFactory;
+import io.basc.framework.value.support.SystemPropertyFactory;
 
 public final class LoggerFactory {
 	private static final java.util.logging.Logger ROOT_LOGGER = java.util.logging.Logger
@@ -27,12 +26,8 @@ public final class LoggerFactory {
 
 	static {
 		PropertyFactory propertyFactory = SystemPropertyFactory.INSTANCE;
-		ServiceLoaderFactory serviceLoaderFactory = new DefaultServiceLoaderFactory(propertyFactory) {
-			@Override
-			protected boolean useSpi(Class<?> serviceClass) {
-				return true;
-			}
-		};
+		DefaultServiceLoaderFactory serviceLoaderFactory = new DefaultServiceLoaderFactory(propertyFactory);
+		serviceLoaderFactory.setForceSpi(true);
 		Iterator<LevelManager> levelManagerIterator = serviceLoaderFactory.getServiceLoader(LevelManager.class)
 				.iterator();
 		if (levelManagerIterator.hasNext()) {

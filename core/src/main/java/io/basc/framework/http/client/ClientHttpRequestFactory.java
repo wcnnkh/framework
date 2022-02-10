@@ -1,9 +1,9 @@
 package io.basc.framework.http.client;
 
-import io.basc.framework.http.HttpMethod;
-
 import java.io.IOException;
 import java.net.URI;
+
+import io.basc.framework.http.HttpMethod;
 
 public interface ClientHttpRequestFactory {
 	default ClientHttpRequest createRequest(URI url, HttpMethod httpMethod) throws IOException {

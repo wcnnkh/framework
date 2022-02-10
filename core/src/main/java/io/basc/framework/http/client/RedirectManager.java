@@ -6,7 +6,7 @@ import java.net.URI;
 import io.basc.framework.http.HttpResponseEntity;
 
 public interface RedirectManager {
-	URI getRedirect(ClientHttpResponse response) throws IOException;
+	URI getRedirect(ClientHttpResponse response, long deep) throws IOException;
 
-	URI getRedirect(HttpResponseEntity<?> responseEntity);
+	URI getRedirect(HttpResponseEntity<?> responseEntity, long deep);
 }
