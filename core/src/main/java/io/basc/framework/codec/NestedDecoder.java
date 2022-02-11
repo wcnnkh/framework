@@ -1,20 +1,12 @@
 package io.basc.framework.codec;
 
-final class NestedDecoder<D, T, E> implements Decoder<D, E> {
-	private final Decoder<D, T> parent;
-	private final Decoder<T, E> decoder;
+public class NestedDecoder<P extends Decoder<D, T>, DE extends Decoder<T, E>, D, T, E> implements Decoder<D, E> {
+	protected final P parent;
+	protected final DE decoder;
 
-	NestedDecoder(Decoder<D, T> parent, Decoder<T, E> decoder) {
+	public NestedDecoder(P parent, DE decoder) {
 		this.parent = parent;
 		this.decoder = decoder;
-	}
-
-	public Decoder<D, T> getParent() {
-		return parent;
-	}
-
-	public Decoder<T, E> getDecoder() {
-		return decoder;
 	}
 
 	@Override

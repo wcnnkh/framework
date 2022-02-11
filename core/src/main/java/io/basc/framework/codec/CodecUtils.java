@@ -37,7 +37,7 @@ public final class CodecUtils {
 	}
 
 	public static <T> MultipleCodec<T> build(Codec<T, T> codec) {
-		return new MultipleCodec<T>() {
+		return new SimpleMultipleCodec<T>() {
 
 			@Override
 			public T encode(T source) throws EncodeException {
@@ -52,7 +52,7 @@ public final class CodecUtils {
 	}
 
 	public static <D> MultipleDecoder<D> build(Decoder<D, D> decoder) {
-		return new MultipleDecoder<D>() {
+		return new SimpleMultipleDecoder<D>() {
 
 			@Override
 			public D decode(D source) throws DecodeException {
@@ -62,7 +62,7 @@ public final class CodecUtils {
 	}
 
 	public static <E> MultipleEncoder<E> build(Encoder<E, E> encoder) {
-		return new MultipleEncoder<E>() {
+		return new SimpleMultipleEncoder<E>() {
 
 			@Override
 			public E encode(E source) throws EncodeException {

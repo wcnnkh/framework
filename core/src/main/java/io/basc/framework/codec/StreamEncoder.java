@@ -11,7 +11,15 @@ import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.UnsafeByteArrayInputStream;
 import io.basc.framework.io.UnsafeByteArrayOutputStream;
 
-public interface StreamEncoder extends MultipleEncoder<byte[]> {
+public interface StreamEncoder<D, E>, {
+	void reset() throws CodecException;
+	
+	void encode(D source) throws EncodeException;
+	
+	void encode() throws EncodeException;
+	
+	
+	
 	void encode(InputStream source, OutputStream target) throws IOException, EncodeException;
 
 	default void encode(File source, OutputStream target) throws IOException, EncodeException {

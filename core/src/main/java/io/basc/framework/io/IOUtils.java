@@ -1,11 +1,5 @@
 package io.basc.framework.io;
 
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.StreamWrapper;
-import io.basc.framework.util.stream.StreamProcessorSupport;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -27,12 +21,19 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.stream.StreamProcessorSupport;
+import io.basc.framework.util.stream.StreamWrapper;
 
 public final class IOUtils {
 	// NOTE: This class is focussed on InputStream, OutputStream, Reader and
@@ -60,6 +61,14 @@ public final class IOUtils {
 	 * The Windows line separator string.
 	 */
 	public static final String LINE_SEPARATOR_WINDOWS = "\r\n";
+
+	/**
+	 * The default buffer size ({@value} ) to use for
+	 * {@link #copyLarge(InputStream, OutputStream)} and
+	 * {@link #copyLarge(Reader, Writer)}
+	 */
+	public static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+
 	/**
 	 * The system line separator string.
 	 */
@@ -73,13 +82,6 @@ public final class IOUtils {
 		LINE_SEPARATOR = buf.toString();
 		out.close();
 	}
-
-	/**
-	 * The default buffer size ({@value} ) to use for
-	 * {@link #copyLarge(InputStream, OutputStream)} and
-	 * {@link #copyLarge(Reader, Writer)}
-	 */
-	private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
 	private static final int DEFAULT_READ_BUFFER_SIZE = 256;
 
@@ -421,6 +423,10 @@ public final class IOUtils {
 	 * @throws IOException          if an I/O error occurs
 	 */
 	public static byte[] toByteArray(InputStream input) throws IOException {
+		if (input instanceof UnsafeByteArrayInputStream) {
+			return ((UnsafeByteArrayInputStream) input).toByteArray();
+		}
+
 		UnsafeByteArrayOutputStream output = new UnsafeByteArrayOutputStream();
 		copy(input, output);
 		return output.toByteArray();
@@ -1690,6 +1696,67 @@ public final class IOUtils {
 		if (skipped != toSkip) {
 			throw new EOFException("Chars to skip: " + toSkip + " actual: " + skipped);
 		}
+	}
+
+	public static <E extends Throwable> long read(ByteBuffer buffer, BufferProcessor<byte[], E> reader) throws E {
+		return read(buffer, DEFAULT_BUFFER_SIZE, reader);
+	}
+
+	public static <E extends Throwable> long read(ByteBuffer buffer, int bufferSize, BufferProcessor<byte[], E> reader)
+			throws E {
+		Assert.isTrue(bufferSize > 0, "Buffersize needs to be greater than 0");
+		if (reader == null) {
+			return 0;
+		}
+
+		if (buffer == null || !buffer.hasRemaining()) {
+			return 0;
+		}
+
+		if (buffer.hasArray()) {
+			byte[] b = buffer.array();
+			int ofs = buffer.arrayOffset();
+			int pos = buffer.position();
+			int lim = buffer.limit();
+			reader.process(b, ofs + pos, lim - pos);
+			buffer.position(lim);
+			return lim - pos;
+		} else {
+			int len = buffer.remaining();
+			int n = Math.min(len, bufferSize);
+			byte[] tempArray = new byte[n];
+			long size = 0;
+			while (len > 0) {
+				int chunk = Math.min(len, tempArray.length);
+				buffer.get(tempArray, 0, chunk);
+				reader.process(tempArray, 0, chunk);
+				len -= chunk;
+				size += chunk;
+			}
+			return size;
+		}
+	}
+
+	public static <E extends Throwable> long read(InputStream input, BufferProcessor<byte[], E> reader)
+			throws E, IOException {
+		return read(input, DEFAULT_BUFFER_SIZE, reader);
+	}
+
+	public static <E extends Throwable> long read(InputStream input, int bufferSize, BufferProcessor<byte[], E> reader)
+			throws E, IOException {
+		Assert.isTrue(bufferSize > 0, "Buffersize needs to be greater than 0");
+		if (reader == null || input == null) {
+			return 0;
+		}
+
+		byte[] buffer = new byte[bufferSize];
+		long count = 0;
+		int n = 0;
+		while (EOF != (n = input.read(buffer))) {
+			reader.process(buffer, 0, n);
+			count += n;
+		}
+		return count;
 	}
 
 	/**

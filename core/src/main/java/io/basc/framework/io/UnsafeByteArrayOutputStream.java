@@ -147,8 +147,12 @@ public class UnsafeByteArrayOutputStream extends OutputStream {
 	 * @return the current contents of this output stream, as a byte array.
 	 * @see java.io.ByteArrayOutputStream#size()
 	 */
-	public byte toByteArray()[] {
+	public byte[] toByteArray() {
 		return Arrays.copyOf(buf, count);
+	}
+
+	public UnsafeByteArrayInputStream toInputStream() {
+		return new UnsafeByteArrayInputStream(buf, 0, count);
 	}
 
 	/**

@@ -2,11 +2,12 @@ package io.basc.framework.codec;
 
 /**
  * 多次编解码
+ * 
  * @author shuchaowen
  *
  * @param <T>
  */
-public interface MultipleCodec<T> extends Codec<T, T>, MultipleEncoder<T>, MultipleDecoder<T>{
+public interface MultipleCodec<T> extends Codec<T, T>, MultipleEncoder<T>, MultipleDecoder<T> {
 
 	@Override
 	default int getCount() {
@@ -18,40 +19,16 @@ public interface MultipleCodec<T> extends Codec<T, T>, MultipleEncoder<T>, Multi
 	 */
 	@Override
 	default MultipleCodec<T> multiple(int count) {
-		return new MultipleCodec<T>() {
-			
-			@Override
-			public T decode(T source) throws DecodeException {
-				T t = source;
-				for(int i=0; i<count; i++) {
-					t = decode(t, i);
-				}
-				return t;
-			}
-			
-			@Override
-			public T decode(T source, int currentCount) throws DecodeException{
-				return MultipleCodec.this.decode(source, currentCount);
-			}
+		return new NestedMultipleCodec<>(this, count);
+	}
 
-			@Override
-			public T encode(T source) throws EncodeException {
-				T t = source;
-				for(int i=0; i<count; i++) {
-					t = encode(t, i);
-				}
-				return t;
-			}
-			
-			@Override
-			public T encode(T encode, int currentCount) throws EncodeException{
-				return MultipleCodec.this.encode(encode, currentCount);
-			}
-			
-			@Override
-			public int getCount() {
-				return count;
-			}
-		};
+	@Override
+	default T encode(T source) throws EncodeException {
+		return MultipleEncoder.super.encode(source);
+	}
+
+	@Override
+	default T decode(T source) throws DecodeException {
+		return MultipleDecoder.super.decode(source);
 	}
 }

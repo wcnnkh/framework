@@ -1,9 +1,11 @@
 package io.basc.framework.codec;
 
+import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Validator;
 
 /**
-  *  签名
+ * 签名
+ * 
  * @author shuchaowen
  *
  * @param <D>
@@ -15,43 +17,25 @@ public interface Signer<D, E> extends Encoder<D, E>, Validator<D, E> {
 	 */
 	@Override
 	E encode(D source) throws EncodeException;
-	
+
 	/**
 	 * 校验签名
 	 */
 	@Override
-	boolean verify(D source, E encode) throws CodecException;
-	
-	default <F> Signer<F, E> fromEncoder(Encoder<F, D> encoder){
-		return new Signer<F, E>() {
-
-			@Override
-			public E encode(F source) throws EncodeException {
-				return Signer.this.encode(encoder.encode(source));
-			}
-
-			@Override
-			public boolean verify(F source, E encode) {
-				return Signer.this.verify(encoder.encode(source), encode);
-			}
-		};
+	default boolean verify(D source, E encode) throws CodecException {
+		return ObjectUtils.equals(this.encode(source), encode);
 	}
-	
+
+	default <F> Signer<F, E> fromEncoder(Encoder<F, D> encoder) {
+		return new NestedEncodeSigner<>(encoder, this);
+	}
+
 	@Override
 	default Signer<D, E> toSigner() {
 		return this;
 	}
-	
-	default <T> Signer<D, T> to(Codec<E, T> codec){
-		return new Signer<D, T>() {
 
-			public T encode(D source) throws EncodeException {
-				return codec.encode(Signer.this.encode(source));
-			}
-
-			public boolean verify(D source, T encode) throws CodecException {
-				return Signer.this.verify(source, codec.decode(encode));
-			}
-		};
+	default <T> Signer<D, T> to(Codec<E, T> codec) {
+		return new CodedSigner<>(codec, this);
 	}
 }

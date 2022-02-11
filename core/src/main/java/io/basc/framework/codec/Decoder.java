@@ -53,7 +53,7 @@ public interface Decoder<E, D> {
 	 * @return
 	 */
 	default <F> Decoder<F, D> fromDecoder(Decoder<F, E> decoder) {
-		return new NestedDecoder<F, E, D>(decoder, this);
+		return new NestedDecoder<>(decoder, this);
 	}
 
 	/**
@@ -63,16 +63,10 @@ public interface Decoder<E, D> {
 	 * @return
 	 */
 	default <T> Decoder<E, T> toDecoder(Decoder<D, T> decoder) {
-		return new NestedDecoder<E, D, T>(this, decoder);
+		return new NestedDecoder<>(this, decoder);
 	}
 
 	default Converter<E, D> toDecodeConverter() {
-		return new Converter<E, D>() {
-
-			@Override
-			public D convert(E o) {
-				return decode(o);
-			}
-		};
+		return (o) -> decode(o);
 	}
 }

@@ -18,7 +18,7 @@ public interface Codec<D, E> extends Encoder<D, E>, Decoder<E, D> {
 	 * @return
 	 */
 	default <F> Codec<F, E> from(Codec<F, D> codec) {
-		return new NestedCodec<F, D, E>(codec, this);
+		return new NestedCodec<>(codec, this);
 	}
 
 	/**
@@ -29,7 +29,7 @@ public interface Codec<D, E> extends Encoder<D, E>, Decoder<E, D> {
 	 * @return
 	 */
 	default <T> Codec<D, T> to(Codec<E, T> codec) {
-		return new NestedCodec<D, E, T>(this, codec);
+		return new NestedCodec<>(this, codec);
 	}
 
 	/**

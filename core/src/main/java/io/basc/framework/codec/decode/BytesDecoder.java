@@ -1,39 +1,50 @@
 package io.basc.framework.codec.decode;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.Decoder;
 import io.basc.framework.io.IOUtils;
+import io.basc.framework.io.UnsafeByteArrayInputStream;
+import io.basc.framework.io.UnsafeByteArrayOutputStream;
 
-public interface BytesDecoder<D> extends Decoder<byte[], D> {
+public interface BytesDecoder extends FromBytesDecoder<byte[]>, Decoder<byte[], byte[]> {
+
+	default BytesDecoder toDecoder(BytesDecoder decoder) {
+		return new NestedBytesDecoder(this, decoder);
+	}
+
+	default BytesDecoder fromDecoder(BytesDecoder decoder) {
+		return new NestedBytesDecoder(decoder, this);
+	}
+
 	@Override
-	default D decode(byte[] source) throws DecodeException {
+	default byte[] decode(byte[] source) throws DecodeException {
+		UnsafeByteArrayOutputStream target = new UnsafeByteArrayOutputStream();
 		try {
-			return decode(new ByteArrayInputStream(source));
-		} catch (Exception e) {
-			// 理论上不会执行到这里,除非解码内部抛出io异常
+			decode(new UnsafeByteArrayInputStream(source), source.length, target);
+		} catch (IOException e) {
 			throw new DecodeException(e);
 		}
+		return target.toByteArray();
 	}
 
-	D decode(InputStream source) throws IOException, DecodeException;
-
-	default D decode(File source) throws IOException, DecodeException {
-		if (!source.exists()) {
-			return null;
-		}
-
-		FileInputStream fis = null;
+	@Override
+	default byte[] decode(InputStream source, int bufferSize) throws IOException, DecodeException {
+		UnsafeByteArrayOutputStream target = new UnsafeByteArrayOutputStream();
 		try {
-			fis = new FileInputStream(source);
-			return decode(fis);
-		} finally {
-			IOUtils.close(fis);
+			decode(source, bufferSize, target);
+		} catch (IOException e) {
+			throw new DecodeException(e);
 		}
+		return target.toByteArray();
 	}
+
+	default void decode(InputStream source, OutputStream target) throws DecodeException, IOException {
+		decode(source, IOUtils.DEFAULT_BUFFER_SIZE, target);
+	}
+
+	void decode(InputStream source, int bufferSize, OutputStream target) throws DecodeException, IOException;
 }

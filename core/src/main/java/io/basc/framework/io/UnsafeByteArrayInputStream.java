@@ -175,6 +175,12 @@ public class UnsafeByteArrayInputStream extends InputStream {
 		return count - pos;
 	}
 
+	public byte[] toByteArray() {
+		byte[] copy = new byte[available()];
+		System.arraycopy(buf, pos, copy, 0, copy.length);
+		return copy;
+	}
+
 	/**
 	 * Tests if this <code>InputStream</code> supports mark/reset. The
 	 * <code>markSupported</code> method of <code>ByteArrayInputStream</code> always

@@ -8,7 +8,6 @@ import java.util.List;
 import io.basc.framework.convert.Converter;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.ObjectUtils;
 
 /**
  * 编码器<br/>
@@ -54,7 +53,7 @@ public interface Encoder<D, E> {
 	 * @return
 	 */
 	default <F> Encoder<F, E> fromEncoder(Encoder<F, D> encoder) {
-		return new NestedEncoder<F, D, E>(encoder, this);
+		return new NestedEncoder<>(encoder, this);
 	}
 
 	/**
@@ -64,46 +63,18 @@ public interface Encoder<D, E> {
 	 * @return
 	 */
 	default <T> Encoder<D, T> toEncoder(Encoder<E, T> encoder) {
-		return new NestedEncoder<D, E, T>(this, encoder);
+		return new NestedEncoder<>(this, encoder);
 	}
 
 	default Signer<D, E> toSigner() {
-		return new Signer<D, E>() {
-
-			@Override
-			public E encode(D source) throws EncodeException {
-				return Encoder.this.encode(source);
-			}
-
-			@Override
-			public boolean verify(D source, E encode) {
-				return ObjectUtils.equals(this.encode(source), encode);
-			}
-		};
+		return (source) -> Encoder.this.encode(source);
 	}
 
 	default <T> Signer<D, T> toSigner(Signer<E, T> signer) {
-		return new Signer<D, T>() {
-
-			@Override
-			public boolean verify(D source, T encode) {
-				return signer.verify(Encoder.this.encode(source), encode);
-			}
-
-			@Override
-			public T encode(D source) throws EncodeException {
-				return signer.encode(Encoder.this.encode(source));
-			}
-		};
+		return signer.fromEncoder(this);
 	}
 
 	default Converter<D, E> toEncodeConverter() {
-		return new Converter<D, E>() {
-
-			@Override
-			public E convert(D o) {
-				return encode(o);
-			}
-		};
+		return (o) -> encode(o);
 	}
 }

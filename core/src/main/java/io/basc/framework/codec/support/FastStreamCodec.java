@@ -15,12 +15,12 @@ import java.io.OutputStream;
  * @author shuchaowen
  *
  */
-public class FastStreamCodec implements StreamCodec, BytesCodec<byte[]> {
+public class FastStreamCodec implements StreamCodec {
 	/**
 	 * 为了节省内存，默认使用的缓冲区较小，所以相对的执行速度也会相对较慢
 	 */
 	static final int DEFAULT_BUFF_SIZE = Integer.getInteger("codec.stream.buffsize", 256);
-	
+
 	private final int buffSize;
 
 	public FastStreamCodec(int buffSize) {
