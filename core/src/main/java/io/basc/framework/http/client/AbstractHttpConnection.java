@@ -13,8 +13,7 @@ import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.lang.Nullable;
 
-public abstract class AbstractHttpConnection extends AbstractHttpConnectionFactory
-		implements HttpConnection, Cloneable {
+public abstract class AbstractHttpConnection implements HttpConnection, Cloneable {
 	static final RedirectManager REDIRECT_MANAGER = Sys.env
 			.getServiceLoader(RedirectManager.class, DefaultHttpRedirectManager.class).first();
 	private HttpMethod method;
@@ -25,27 +24,11 @@ public abstract class AbstractHttpConnection extends AbstractHttpConnectionFacto
 	@Nullable
 	private TypeDescriptor typeDescriptor;
 	private boolean redirectEnable = false;
-
-	public AbstractHttpConnection(AbstractHttpConnectionFactory connectionFactory) {
-		super(connectionFactory);
-		this.headers = new HttpHeaders();
-	}
-
-	public AbstractHttpConnection(AbstractHttpConnectionFactory connectionFactory, HttpMethod method, URI uri) {
-		super(connectionFactory);
-		this.headers = new HttpHeaders();
-		this.method = method;
+	
+	public AbstractHttpConnection(AbstractHttpConnection connection) {
+		this.method = connection.method;
 		this.uri = uri;
-	}
-
-	public AbstractHttpConnection(AbstractHttpConnection httpConnection) {
-		super(httpConnection);
-		this.method = httpConnection.method;
-		this.uri = httpConnection.uri;
-		this.body = httpConnection.body;
-		this.typeDescriptor = httpConnection.typeDescriptor;
-		this.headers = new HttpHeaders(httpConnection.headers);
-		this.redirectEnable = httpConnection.redirectEnable;
+		this.headers = connection.headers.
 	}
 
 	@Override
