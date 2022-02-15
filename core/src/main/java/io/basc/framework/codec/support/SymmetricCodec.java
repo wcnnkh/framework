@@ -1,14 +1,8 @@
 package io.basc.framework.codec.support;
 
-import io.basc.framework.codec.CodecException;
-import io.basc.framework.codec.DecodeException;
-import io.basc.framework.codec.EncodeException;
-import io.basc.framework.io.IOUtils;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.StringUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.spec.AlgorithmParameterSpec;
@@ -18,6 +12,13 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
+
+import io.basc.framework.codec.CodecException;
+import io.basc.framework.codec.DecodeException;
+import io.basc.framework.codec.EncodeException;
+import io.basc.framework.io.IOUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
 
 /**
  * 对称编解码器
@@ -143,29 +144,8 @@ public class SymmetricCodec extends CryptoCodec {
 		return getCompleteAlgorithm();
 	}
 
-	public byte[] doFinal(Cipher cipher, byte[] source, int count)
-			throws IllegalBlockSizeException, BadPaddingException {
-		byte[] res = source;
-		for (int i = 0; i < count; i++) {
-			cipher.update(res);
-			// 执行并重置
-			res = cipher.doFinal();
-		}
-		return res;
-	}
-
-	public byte[] doFinal(Cipher cipher, InputStream source, int bufferSize, int count)
-			throws IOException, IllegalBlockSizeException, BadPaddingException {
-		IOUtils.read(source, bufferSize, cipher::update);
-		byte[] res = cipher.doFinal();
-		if (count > 1) {
-			return doFinal(cipher, res, count - 1);
-		}
-		return res;
-	}
-
 	@Override
-	public byte[] encode(byte[] source, int count) throws EncodeException {
+	public void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException {
 		Cipher cipher = getCipher();
 		try {
 			cipher.init(Cipher.ENCRYPT_MODE, secretKey, algorithmParameterSpec);
@@ -173,15 +153,18 @@ public class SymmetricCodec extends CryptoCodec {
 			throw new CodecException(e);
 		}
 
+		IOUtils.read(source, bufferSize, cipher::update);
+		byte[] v;
 		try {
-			return doFinal(cipher, source, count);
+			v = cipher.doFinal();
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			throw new EncodeException(e);
 		}
+		target.write(v);
 	}
 
 	@Override
-	public byte[] decode(byte[] source, int count) throws DecodeException {
+	public void decode(InputStream source, int bufferSize, OutputStream target) throws DecodeException, IOException {
 		Cipher cipher = getCipher();
 		try {
 			cipher.init(Cipher.DECRYPT_MODE, secretKey, algorithmParameterSpec);
@@ -189,42 +172,14 @@ public class SymmetricCodec extends CryptoCodec {
 			throw new CodecException(e);
 		}
 
+		IOUtils.read(source, bufferSize, cipher::update);
+		byte[] v;
 		try {
-			return doFinal(cipher, source, count);
+			v = cipher.doFinal();
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
-			throw new DecodeException(e);
+			throw new EncodeException(e);
 		}
+		target.write(v);
 	}
 
-	@Override
-	public byte[] encode(InputStream source, int bufferSize, int count) throws IOException, EncodeException {
-		Cipher cipher = getCipher();
-		try {
-			cipher.init(Cipher.ENCRYPT_MODE, secretKey, algorithmParameterSpec);
-		} catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
-			throw new CodecException(e);
-		}
-
-		try {
-			return doFinal(cipher, source, bufferSize, count);
-		} catch (IllegalBlockSizeException | BadPaddingException e) {
-			throw new DecodeException(e);
-		}
-	}
-
-	@Override
-	public byte[] decode(InputStream source, int bufferSize, int count) throws IOException, DecodeException {
-		Cipher cipher = getCipher();
-		try {
-			cipher.init(Cipher.DECRYPT_MODE, secretKey, algorithmParameterSpec);
-		} catch (InvalidKeyException | InvalidAlgorithmParameterException e) {
-			throw new CodecException(e);
-		}
-
-		try {
-			return doFinal(cipher, source, bufferSize, count);
-		} catch (IllegalBlockSizeException | BadPaddingException e) {
-			throw new DecodeException(e);
-		}
-	}
 }

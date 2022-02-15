@@ -17,46 +17,8 @@ import io.basc.framework.io.FileUtils;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.util.Assert;
 
-public class Zip extends FastStreamCodec {
-	public static final Zip DEFAULT = new Zip(DEFAULT_BUFF_SIZE);
-
-	public Zip(int buffSize) {
-		super(buffSize);
-	}
-
-	@Override
-	public void encode(InputStream source, OutputStream target) throws IOException, EncodeException {
-		Assert.requiredArgument(source != null, "source");
-		Assert.requiredArgument(target != null, "target");
-		if (target instanceof ZipOutputStream) {
-			super.encode(source, target);
-		} else {
-			ZipOutputStream zip = null;
-			try {
-				zip = new ZipOutputStream(target);
-				super.encode(source, zip);
-			} finally {
-				IOUtils.closeQuietly(zip);
-			}
-		}
-	}
-
-	@Override
-	public void decode(InputStream source, OutputStream target) throws IOException, DecodeException {
-		Assert.requiredArgument(source != null, "source");
-		Assert.requiredArgument(target != null, "target");
-		if (source instanceof ZipInputStream) {
-			super.decode(source, target);
-		} else {
-			ZipInputStream zip = null;
-			try {
-				zip = new ZipInputStream(source);
-				super.decode(zip, target);
-			} finally {
-				IOUtils.closeQuietly(zip);
-			}
-		}
-	}
+public class Zip implements BytesCodec {
+	public static final Zip DEFAULT = new Zip();
 
 	public static void unZip(File source, File target) throws ZipException, IOException {
 		Assert.requiredArgument(source != null, "source");
@@ -89,6 +51,40 @@ public class Zip extends FastStreamCodec {
 			}
 		} finally {
 			IOUtils.close(zipFile);
+		}
+	}
+
+	@Override
+	public void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException {
+		Assert.requiredArgument(source != null, "source");
+		Assert.requiredArgument(target != null, "target");
+		if (target instanceof ZipOutputStream) {
+			IOUtils.write(source, target, bufferSize);
+		} else {
+			ZipOutputStream zip = null;
+			try {
+				zip = new ZipOutputStream(target);
+				IOUtils.write(source, zip, bufferSize);
+			} finally {
+				IOUtils.closeQuietly(zip);
+			}
+		}
+	}
+
+	@Override
+	public void decode(InputStream source, int bufferSize, OutputStream target) throws DecodeException, IOException {
+		Assert.requiredArgument(source != null, "source");
+		Assert.requiredArgument(target != null, "target");
+		if (source instanceof ZipInputStream) {
+			IOUtils.write(source, target, bufferSize);
+		} else {
+			ZipInputStream zip = null;
+			try {
+				zip = new ZipInputStream(source);
+				IOUtils.write(zip, target, bufferSize);
+			} finally {
+				IOUtils.closeQuietly(zip);
+			}
 		}
 	}
 }

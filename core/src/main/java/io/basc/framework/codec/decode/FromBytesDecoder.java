@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.Decoder;
@@ -21,18 +20,15 @@ public interface FromBytesDecoder<D> extends Decoder<byte[], D> {
 
 	@Override
 	default D decode(byte[] source) throws DecodeException {
+		if (source == null) {
+			return null;
+		}
+
 		try {
 			return decode(new ByteArrayInputStream(source), source.length);
 		} catch (IOException e) {
-			// 理论上不会执行到这里,除非解码内部抛出io异常
 			throw new DecodeException(e);
 		}
-	}
-
-	default D decode(ByteBuffer source) throws DecodeException {
-		byte[] buf = new byte[source.position()];
-		source.get(buf, 0, buf.length);
-		return decode(buf);
 	}
 
 	@Override

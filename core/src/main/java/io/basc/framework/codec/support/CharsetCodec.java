@@ -1,15 +1,19 @@
 package io.basc.framework.codec.support;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.codec.Encoder;
 import io.basc.framework.codec.encode.HmacMD5;
 import io.basc.framework.codec.encode.HmacSHA1;
+import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.Constants;
-
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 
 /**
  * 使用指定字符集进行编解码<br/>
@@ -17,12 +21,12 @@ import java.nio.charset.Charset;
  * @author shuchaowen
  *
  */
-public class CharsetCodec implements BytesCodec<String> {
+public class CharsetCodec implements ToBytesCodec<String> {
 	/**
 	 * @see Charset#defaultCharset()
 	 */
 	public static final CharsetCodec DEFAULT = new CharsetCodec(Charset.defaultCharset());
-	
+
 	public static final CharsetCodec UTF_8 = new CharsetCodec(Constants.UTF_8);
 
 	public static final CharsetCodec ISO_8859_1 = new CharsetCodec(Constants.ISO_8859_1);
@@ -71,6 +75,20 @@ public class CharsetCodec implements BytesCodec<String> {
 		}
 	}
 
+	@Override
+	public void encode(String source, OutputStream target) throws IOException, EncodeException {
+		byte[] v = encode(source);
+		if (v == null) {
+			return;
+		}
+		target.write(v);
+	}
+
+	@Override
+	public String decode(InputStream source, int bufferSize) throws IOException, DecodeException {
+		return decode(IOUtils.copyToByteArray(source, bufferSize));
+	}
+
 	public String decode(byte[] source) throws DecodeException {
 		if (source == null) {
 			return null;
@@ -94,7 +112,7 @@ public class CharsetCodec implements BytesCodec<String> {
 	public Codec<String, String> gzip() {
 		return gzip(HexCodec.DEFAULT);
 	}
-	
+
 	public Encoder<String, String> toHmacMD5(String secretKey) {
 		return toEncoder(new HmacMD5(encode(secretKey)).toEncoder(HexCodec.DEFAULT));
 	}

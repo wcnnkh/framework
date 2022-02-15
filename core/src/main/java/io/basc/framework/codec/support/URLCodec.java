@@ -7,10 +7,10 @@ import java.nio.charset.Charset;
 
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
-import io.basc.framework.codec.SimpleMultipleCodec;
+import io.basc.framework.codec.MultipleCodec;
 import io.basc.framework.lang.Constants;
 
-public class URLCodec implements SimpleMultipleCodec<String> {
+public class URLCodec implements MultipleCodec<String> {
 	public static final URLCodec UTF_8 = new URLCodec(Constants.UTF_8_NAME);
 	private final String charsetName;
 

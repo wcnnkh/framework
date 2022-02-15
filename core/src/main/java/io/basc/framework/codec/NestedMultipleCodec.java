@@ -10,7 +10,6 @@ public class NestedMultipleCodec<W extends MultipleCodec<T>, T> extends Wrapper<
 		this.count = count;
 	}
 
-	@Override
 	public int getCount() {
 		return count;
 	}

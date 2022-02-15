@@ -9,7 +9,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-import io.basc.framework.codec.BytesCodec;
 import io.basc.framework.codec.CodecException;
 
 public abstract class SecurityCodec implements BytesCodec {

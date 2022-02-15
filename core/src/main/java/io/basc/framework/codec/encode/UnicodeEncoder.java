@@ -1,9 +1,9 @@
 package io.basc.framework.codec.encode;
 
 import io.basc.framework.codec.EncodeException;
-import io.basc.framework.codec.SimpleMultipleEncoder;
+import io.basc.framework.codec.MultipleEncoder;
 
-public class UnicodeEncoder implements SimpleMultipleEncoder<CharSequence> {
+public class UnicodeEncoder implements MultipleEncoder<CharSequence> {
 	private static final String EMPTY = "";
 	public static final UnicodeEncoder DEFAULT = new UnicodeEncoder();
 

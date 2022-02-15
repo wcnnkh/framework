@@ -36,38 +36,19 @@ public final class CodecUtils {
 		};
 	}
 
-	public static <T> MultipleCodec<T> build(Codec<T, T> codec) {
-		return new SimpleMultipleCodec<T>() {
-
-			@Override
-			public T encode(T source) throws EncodeException {
-				return codec.encode(source);
-			}
-
-			@Override
-			public T decode(T source) throws DecodeException {
-				return codec.decode(source);
-			}
-		};
+	public static <E> E encode(Encoder<E, E> encoder, E source, int count) {
+		E e = source;
+		for (int i = 0; i < count; i++) {
+			e = encoder.encode(e);
+		}
+		return e;
 	}
 
-	public static <D> MultipleDecoder<D> build(Decoder<D, D> decoder) {
-		return new SimpleMultipleDecoder<D>() {
-
-			@Override
-			public D decode(D source) throws DecodeException {
-				return decoder.decode(source);
-			}
-		};
-	}
-
-	public static <E> MultipleEncoder<E> build(Encoder<E, E> encoder) {
-		return new SimpleMultipleEncoder<E>() {
-
-			@Override
-			public E encode(E source) throws EncodeException {
-				return encoder.encode(source);
-			}
-		};
+	public static <D> D decode(Decoder<D, D> decoder, D source, int count) {
+		D d = source;
+		for (int i = 0; i < count; i++) {
+			d = decoder.decode(d);
+		}
+		return d;
 	}
 }

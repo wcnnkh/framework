@@ -1,14 +1,14 @@
 package io.basc.framework.json;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.io.CrossLanguageSerializer;
 import io.basc.framework.io.IOUtils;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 public class JsonSerializer implements CrossLanguageSerializer {
 	public static final JsonSerializer INSTANCE = new JsonSerializer();
@@ -33,9 +33,9 @@ public class JsonSerializer implements CrossLanguageSerializer {
 	}
 
 	@Override
-	public void serialize(OutputStream out, TypeDescriptor type, Object data) throws IOException {
-		String content = jsonSupport.toJSONString(data);
-		out.write(codec.encode(content));
+	public void serialize(Object source, TypeDescriptor sourceTypeDescriptor, OutputStream target) throws IOException {
+		String content = jsonSupport.toJSONString(source);
+		target.write(codec.encode(content));
 	}
 
 	@Override

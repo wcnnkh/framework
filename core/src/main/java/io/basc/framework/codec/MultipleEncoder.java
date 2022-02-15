@@ -9,24 +9,21 @@ package io.basc.framework.codec;
  */
 public interface MultipleEncoder<E> extends Encoder<E, E> {
 
-	default int getCount() {
-		return 1;
-	}
-
-	@Override
-	default E encode(E source) throws EncodeException {
-		return encode(source, getCount());
-	}
-
 	/**
-	 * 进行指定数据的编码
+	 * 进行指定数据的多次编码
 	 * 
 	 * @param source
 	 * @param count  次数
 	 * @return
 	 * @throws EncodeException
 	 */
-	E encode(E source, int count) throws EncodeException;
+	default E encode(E source, int count) throws EncodeException {
+		E e = source;
+		for (int i = 0; i < count; i++) {
+			e = encode(e);
+		}
+		return e;
+	}
 
 	/**
 	 * 多次操作

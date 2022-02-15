@@ -9,9 +9,21 @@ import java.io.OutputStream;
 public class JavaSerializer implements Serializer {
 	public final static JavaSerializer INSTANCE = new JavaSerializer();
 
+	@Override
+	public void serialize(Object source, OutputStream target) throws IOException {
+		ObjectOutputStream oos = null;
+		try {
+			oos = new ObjectOutputStream(target);
+			oos.writeObject(source);
+			oos.flush();
+		} finally {
+			IOUtils.close(oos);
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T deserialize(InputStream input) throws IOException, ClassNotFoundException {
+	public <T> T deserialize(InputStream input, int bufferSize) throws IOException, ClassNotFoundException {
 		ObjectInputStream ois = null;
 		try {
 			ois = new ObjectInputStream(input);
@@ -20,17 +32,6 @@ public class JavaSerializer implements Serializer {
 			if (ois != null) {
 				ois.close();
 			}
-		}
-	}
-
-	public void serialize(OutputStream out, Object data) throws IOException {
-		ObjectOutputStream oos = null;
-		try {
-			oos = new ObjectOutputStream(out);
-			oos.writeObject(data);
-			oos.flush();
-		} finally {
-			IOUtils.close(oos);
 		}
 	}
 }

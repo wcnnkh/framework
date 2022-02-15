@@ -8,15 +8,6 @@ package io.basc.framework.codec;
  * @param <D>
  */
 public interface MultipleDecoder<D> extends Decoder<D, D> {
-	default int getCount() {
-		return 1;
-	}
-
-	@Override
-	default D decode(D source) throws DecodeException {
-		return decode(source, getCount());
-	}
-
 	/**
 	 * 进行多次解码
 	 * 
@@ -25,7 +16,13 @@ public interface MultipleDecoder<D> extends Decoder<D, D> {
 	 * @return
 	 * @throws DecodeException
 	 */
-	D decode(D source, int count) throws DecodeException;
+	default D decode(D source, int count) throws DecodeException {
+		D v = source;
+		for (int i = 0; i < count; i++) {
+			v = decode(v);
+		}
+		return v;
+	}
 
 	/**
 	 * 多次操作

@@ -12,7 +12,6 @@ import io.basc.framework.codec.CodecException;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.io.IOUtils;
-import io.basc.framework.io.UnsafeByteArrayOutputStream;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 
@@ -79,51 +78,7 @@ public class AsymmetricCodec extends CryptoCodec {
 	}
 
 	@Override
-	public void encode(InputStream source, int bufferSize, OutputStream target, int count)
-			throws IOException, EncodeException {
-		if (count == 1) {
-			Cipher cipher = getCipher();
-			try {
-				cipher.init(Cipher.ENCRYPT_MODE, encodeKey);
-			} catch (InvalidKeyException e) {
-				throw new CodecException(e);
-			}
-
-			try {
-				doFinal(cipher, this.maxBlock - 11, source, target);
-			} catch (IOException e) {
-				throw e;
-			} catch (Exception e) {
-				throw new EncodeException(e);
-			}
-		}
-		super.encode(source, bufferSize, target, count);
-	}
-
-	@Override
-	public void decode(InputStream source, int bufferSize, OutputStream target, int count)
-			throws DecodeException, IOException {
-		if (count == 1) {
-			Cipher cipher = getCipher();
-			try {
-				cipher.init(Cipher.DECRYPT_MODE, decodeKey);
-			} catch (InvalidKeyException e) {
-				throw new CodecException(e);
-			}
-
-			try {
-				doFinal(cipher, this.maxBlock, source, target);
-			} catch (IOException e) {
-				throw e;
-			} catch (Exception e) {
-				throw new EncodeException(e);
-			}
-		}
-		super.decode(source, bufferSize, target, count);
-	}
-
-	@Override
-	public byte[] encode(InputStream source, int bufferSize, int count) throws IOException, EncodeException {
+	public void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException {
 		Cipher cipher = getCipher();
 		try {
 			cipher.init(Cipher.ENCRYPT_MODE, encodeKey);
@@ -131,21 +86,17 @@ public class AsymmetricCodec extends CryptoCodec {
 			throw new CodecException(e);
 		}
 
-		InputStream input = source;
-		for (int i = 0; i < count; i++) {
-			UnsafeByteArrayOutputStream output = new UnsafeByteArrayOutputStream();
-			try {
-				doFinal(cipher, this.maxBlock - 11, input, output);
-			} catch (Exception e) {
-				throw new DecodeException(e);
-			}
-			input = output.toInputStream();
+		try {
+			doFinal(cipher, this.maxBlock - 11, source, target);
+		} catch (IOException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new EncodeException(e);
 		}
-		return IOUtils.toByteArray(input);
 	}
 
 	@Override
-	public byte[] decode(InputStream source, int bufferSize, int count) throws IOException, DecodeException {
+	public void decode(InputStream source, int bufferSize, OutputStream target) throws DecodeException, IOException {
 		Cipher cipher = getCipher();
 		try {
 			cipher.init(Cipher.DECRYPT_MODE, decodeKey);
@@ -153,16 +104,12 @@ public class AsymmetricCodec extends CryptoCodec {
 			throw new CodecException(e);
 		}
 
-		InputStream input = source;
-		for (int i = 0; i < count; i++) {
-			UnsafeByteArrayOutputStream output = new UnsafeByteArrayOutputStream();
-			try {
-				doFinal(cipher, this.maxBlock, input, output);
-			} catch (Exception e) {
-				throw new DecodeException(e);
-			}
-			input = output.toInputStream();
+		try {
+			doFinal(cipher, this.maxBlock, source, target);
+		} catch (IOException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new EncodeException(e);
 		}
-		return IOUtils.toByteArray(input);
 	}
 }

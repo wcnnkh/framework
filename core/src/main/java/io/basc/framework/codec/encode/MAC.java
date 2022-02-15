@@ -2,6 +2,7 @@ package io.basc.framework.codec.encode;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -55,30 +56,12 @@ public class MAC implements BytesEncoder {
 		return new SecretKeySpec(secretKey, algorithm);
 	}
 
-	public byte[] encode(byte[] source, int count) throws EncodeException {
-		return encode(getMac(), source, count);
-	}
-
-	public byte[] encode(Mac mac, byte[] source, int count) throws EncodeException {
-		byte[] res = source;
-		for (int i = 0; i < count; i++) {
-			mac.reset();
-			mac.update(res);
-			res = mac.doFinal();
-		}
-		return res;
-	}
-
 	@Override
-	public byte[] encode(InputStream source, int bufferSize, int count) throws IOException, EncodeException {
+	public void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException {
 		Mac mac = getMac();
 		mac.reset();
 		IOUtils.read(source, bufferSize, mac::update);
 		byte[] response = mac.doFinal();
-		if (count > 1) {
-			return encode(mac, response, count - 1);
-		}
-		return response;
+		target.write(response);
 	}
-
 }

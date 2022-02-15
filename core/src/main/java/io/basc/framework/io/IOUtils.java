@@ -3,7 +3,6 @@ package io.basc.framework.io;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.CharArrayWriter;
 import java.io.Closeable;
 import java.io.EOFException;
@@ -1950,12 +1949,20 @@ public final class IOUtils {
 	 * @throws IOException in case of I/O errors
 	 */
 	public static byte[] copyToByteArray(InputStream in) throws IOException {
+		return copyToByteArray(in, DEFAULT_BUFFER_SIZE);
+	}
+
+	public static byte[] copyToByteArray(InputStream in, int bufferSize) throws IOException {
 		if (in == null) {
 			return new byte[0];
 		}
 
-		ByteArrayOutputStream out = new ByteArrayOutputStream(DEFAULT_BUFFER_SIZE);
-		copy(in, out);
+		if (in instanceof UnsafeByteArrayInputStream) {
+			return ((UnsafeByteArrayInputStream) in).toByteArray();
+		}
+
+		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream(bufferSize);
+		copy(in, out, new byte[bufferSize]);
 		return out.toByteArray();
 	}
 

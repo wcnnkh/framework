@@ -10,7 +10,6 @@ public class NestedMultipleEncoder<W extends MultipleEncoder<E>, E> extends Wrap
 		this.count = count;
 	}
 
-	@Override
 	public int getCount() {
 		return count;
 	}

@@ -1,7 +1,5 @@
 package io.basc.framework.hessian;
 
-import io.basc.framework.io.Serializer;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -9,6 +7,8 @@ import java.io.OutputStream;
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 import com.caucho.hessian.io.SerializerFactory;
+
+import io.basc.framework.io.Serializer;
 
 public class Hessian2Serializer implements Serializer {
 	private final SerializerFactory serializerFactory;
@@ -22,11 +22,11 @@ public class Hessian2Serializer implements Serializer {
 	}
 
 	@Override
-	public void serialize(OutputStream out, Object data) throws IOException {
-		Hessian2Output output = new Hessian2Output(out);
+	public void serialize(Object source, OutputStream target) throws IOException {
+		Hessian2Output output = new Hessian2Output(target);
 		output.setSerializerFactory(serializerFactory);
 		try {
-			output.writeObject(data);
+			output.writeObject(source);
 			output.completeMessage();
 		} finally {
 			output.close();
@@ -35,7 +35,7 @@ public class Hessian2Serializer implements Serializer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T deserialize(InputStream input) throws IOException, ClassNotFoundException {
+	public <T> T deserialize(InputStream input, int bufferSize) throws IOException, ClassNotFoundException {
 		Hessian2Input hi = new Hessian2Input(input);
 		hi.setSerializerFactory(serializerFactory);
 		try {

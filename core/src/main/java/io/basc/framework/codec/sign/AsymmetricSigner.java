@@ -6,6 +6,8 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
@@ -17,17 +19,15 @@ import java.security.Signature;
  *
  */
 public class AsymmetricSigner implements BytesSigner<byte[]> {
-	private static Logger logger = LoggerFactory
-			.getLogger(AsymmetricSigner.class);
-	
+	private static Logger logger = LoggerFactory.getLogger(AsymmetricSigner.class);
+
 	public static final String SHA1_WITH_RSA = "SHA1WithRSA";
-	
+
 	private final String algorithm;
 	private final PrivateKey privateKey;
 	private final PublicKey publicKey;
 
-	public AsymmetricSigner(String algorithm, @Nullable PrivateKey privateKey,
-			@Nullable PublicKey publicKey) {
+	public AsymmetricSigner(String algorithm, @Nullable PrivateKey privateKey, @Nullable PublicKey publicKey) {
 		this.algorithm = algorithm;
 		this.privateKey = privateKey;
 		this.publicKey = publicKey;
@@ -36,8 +36,7 @@ public class AsymmetricSigner implements BytesSigner<byte[]> {
 	public byte[] encode(byte[] source) throws EncodeException {
 		Assert.requiredArgument(privateKey != null, "privateKey");
 		try {
-			Signature signature = java.security.Signature
-					.getInstance(algorithm);
+			Signature signature = java.security.Signature.getInstance(algorithm);
 			signature.initSign(privateKey);
 			signature.update(source);
 			return signature.sign();
@@ -49,8 +48,7 @@ public class AsymmetricSigner implements BytesSigner<byte[]> {
 	public boolean verify(byte[] source, byte[] sign) {
 		Assert.requiredArgument(publicKey != null, "publicKey");
 		try {
-			Signature signature = java.security.Signature
-					.getInstance(algorithm);
+			Signature signature = java.security.Signature.getInstance(algorithm);
 			signature.initVerify(publicKey);
 			signature.update(source);
 			return signature.verify(sign);
@@ -58,6 +56,12 @@ public class AsymmetricSigner implements BytesSigner<byte[]> {
 			logger.error(e, "verify error");
 		}
 		return false;
+	}
+
+	@Override
+	public void encode(byte[] source, OutputStream target) throws IOException, EncodeException {
+		byte[] v = encode(source);
+		target.write(v);
 	}
 
 }

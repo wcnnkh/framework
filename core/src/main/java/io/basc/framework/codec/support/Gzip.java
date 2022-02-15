@@ -11,24 +11,20 @@ import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-public class Gzip extends FastStreamCodec {
-	public static final Gzip DEFAULT = new Gzip(DEFAULT_BUFF_SIZE);
-
-	public Gzip(int buffSize) {
-		super(buffSize);
-	}
+public class Gzip implements BytesCodec {
+	public static final Gzip DEFAULT = new Gzip();
 
 	@Override
-	public void encode(InputStream source, OutputStream target) throws IOException, EncodeException {
+	public void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException {
 		Assert.requiredArgument(source != null, "source");
 		Assert.requiredArgument(target != null, "target");
 		if (target instanceof GZIPOutputStream) {
-			super.encode(source, target);
+			IOUtils.write(source, target, bufferSize);
 		} else {
 			GZIPOutputStream gzip = null;
 			try {
 				gzip = new GZIPOutputStream(target);
-				super.encode(source, gzip);
+				IOUtils.write(source, gzip, bufferSize);
 			} finally {
 				IOUtils.closeQuietly(gzip);
 			}
@@ -36,16 +32,16 @@ public class Gzip extends FastStreamCodec {
 	}
 
 	@Override
-	public void decode(InputStream source, OutputStream target) throws IOException, DecodeException {
+	public void decode(InputStream source, int bufferSize, OutputStream target) throws DecodeException, IOException {
 		Assert.requiredArgument(source != null, "source");
 		Assert.requiredArgument(target != null, "target");
 		if (source instanceof GZIPInputStream) {
-			super.decode(source, target);
+			IOUtils.write(source, target, bufferSize);
 		} else {
 			GZIPInputStream gzip = null;
 			try {
 				gzip = new GZIPInputStream(source);
-				super.decode(gzip, target);
+				IOUtils.write(gzip, target, bufferSize);
 			} finally {
 				IOUtils.closeQuietly(gzip);
 			}
