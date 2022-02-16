@@ -471,7 +471,7 @@ public final class CollectionFactory {
 	public static <M extends Map<K, V>, K, V> M clone(M map, boolean deep) {
 		Assert.requiredArgument(map != null, "map");
 		if (!deep && map instanceof Cloneable) {
-			return ReflectionUtils.clone((Cloneable) map);
+			return ReflectionUtils.invokeCloneMethod((Cloneable) map);
 		} else {
 			Class<?> mapType = map.getClass();
 			M cloneMap;
@@ -532,7 +532,7 @@ public final class CollectionFactory {
 	public static <C extends Collection<E>, E> C clone(C collection, boolean deep) {
 		Assert.requiredArgument(collection != null, "collection");
 		if (!deep && collection instanceof Cloneable) {
-			return ReflectionUtils.clone((Cloneable) collection);
+			return ReflectionUtils.invokeCloneMethod((Cloneable) collection);
 		} else {
 			C cloneCollection;
 			Class<?> collectionClass = collection.getClass();

@@ -54,7 +54,7 @@ public class EntityMessageConverter extends AbstractWebMessageConverter {
 		} else {
 			value = getMessageConverter().read(typeDescriptor.getNested(0), response);
 		}
-		return new HttpResponseEntity<Object>(value, response.getHeaders(), response.getStatusCode());
+		return new HttpResponseEntity<Object>(value, typeDescriptor, response.getHeaders(), response.getStatusCode());
 	}
 
 	@Override

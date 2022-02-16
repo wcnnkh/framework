@@ -1,10 +1,5 @@
 package io.basc.framework.net.message;
 
-import io.basc.framework.util.AbstractMultiValueMap;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.LinkedCaseInsensitiveMap;
-import io.basc.framework.util.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -12,9 +7,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import io.basc.framework.util.AbstractMultiValueMap;
+import io.basc.framework.util.CollectionFactory;
+import io.basc.framework.util.LinkedCaseInsensitiveMap;
+import io.basc.framework.util.StringUtils;
+
 public class Headers extends AbstractMultiValueMap<String, String> {
 	private static final long serialVersionUID = 1L;
-	public static final Headers EMPTY = new Headers(Collections.emptyMap(), false);
+	public static final Headers EMPTY = new Headers(Collections.emptyMap(), true);
 
 	private Map<String, List<String>> headers;
 	private boolean readyOnly;
@@ -27,11 +27,19 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 		}
 	}
 
-	public Headers(Map<String, List<String>> headers, boolean caseSensitiveKey) {
-		this(caseSensitiveKey);
-		if (!CollectionUtils.isEmpty(headers)) {
-			putAll(headers);
-		}
+	public Headers(Map<String, List<String>> headers, boolean readyOnly) {
+		this.headers = readyOnly ? Collections.unmodifiableMap(headers) : headers;
+		this.readyOnly = readyOnly;
+	}
+
+	/**
+	 * 克隆一个新的
+	 * 
+	 * @param headers
+	 */
+	public Headers(Headers headers) {
+		this.headers = headers.readyOnly ? headers.headers : CollectionFactory.clone(headers.headers);
+		this.readyOnly = headers.readyOnly;
 	}
 
 	public void caseSensitiveKey(boolean caseSensitiveKey) {

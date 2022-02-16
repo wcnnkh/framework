@@ -339,7 +339,7 @@ public class Copy implements Cloneable {
 		} catch (IllegalArgumentException e) {
 			// 无法构造
 			if (sources instanceof Cloneable) {
-				return ReflectionUtils.clone((Cloneable) sources);
+				return ReflectionUtils.invokeCloneMethod((Cloneable) sources);
 			}
 			return (T) sources;
 		}
@@ -359,7 +359,7 @@ public class Copy implements Cloneable {
 		} catch (IllegalArgumentException e) {
 			// 无法构造
 			if (sourceMap instanceof Cloneable) {
-				return ReflectionUtils.clone((Cloneable) sourceMap);
+				return ReflectionUtils.invokeCloneMethod((Cloneable) sourceMap);
 			}
 			return (T) sourceMap;
 		}
@@ -419,7 +419,7 @@ public class Copy implements Cloneable {
 		}
 
 		if (isInvokeCloneableMethod() && source instanceof Cloneable) {
-			return ReflectionUtils.clone((Cloneable) source);
+			return ReflectionUtils.invokeCloneMethod((Cloneable) source);
 		}
 
 		Class<?> sourceClass = sourceType.getType();

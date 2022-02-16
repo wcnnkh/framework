@@ -1,11 +1,11 @@
 package io.basc.framework.http.client;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.util.Assert;
-
-import java.io.IOException;
-import java.io.OutputStream;
 
 public abstract class AbstractClientHttpRequest implements ClientHttpRequest {
 	private final HttpHeaders headers = new HttpHeaders();

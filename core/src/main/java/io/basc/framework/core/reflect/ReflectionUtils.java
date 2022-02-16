@@ -68,7 +68,7 @@ public abstract class ReflectionUtils {
 	 * 
 	 * @see #makeAccessible(Constructor)
 	 * @see Class#getDeclaredConstructor(Class...)
-	 * @param <T>
+	 * @param      <T>
 	 * @param type
 	 * @return
 	 */
@@ -103,7 +103,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * @see Class#getConstructor(Class...)
 	 * @see #getDeclaredConstructor(Class)
-	 * @param <T>
+	 * @param      <T>
 	 * @param type
 	 * @return
 	 */
@@ -114,7 +114,7 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see Class#getConstructor(Class...)
-	 * @param <T>
+	 * @param                <T>
 	 * @param type
 	 * @param parameterTypes
 	 * @return
@@ -137,7 +137,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * @see ClassUtils#getClass(String, ClassLoader)
 	 * @see #getConstructor(Class, Class...)
-	 * @param <T>
+	 * @param                <T>
 	 * @param className
 	 * @param classLoader
 	 * @param parameterTypes
@@ -157,7 +157,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * @see ClassUtils#getClass(String, ClassLoader)
 	 * @see #getDeclaredConstructor(Class, Class...)
-	 * @param <T>
+	 * @param                <T>
 	 * @param className
 	 * @param classLoader
 	 * @param parameterTypes
@@ -176,7 +176,7 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see Class#getDeclaredConstructor(Class...)
-	 * @param <T>
+	 * @param                <T>
 	 * @param type
 	 * @param parameterTypes
 	 * @return
@@ -228,8 +228,15 @@ public abstract class ReflectionUtils {
 		return isAvailable(clazz, null);
 	}
 
+	/**
+	 * 通过反射调用clone方法
+	 * 
+	 * @see java.lang.Object.clone()
+	 * @param source
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T clone(Cloneable source) {
+	public static <T> T invokeCloneMethod(Object source) {
 		return (T) invoke(CLONE_METOHD, source);
 	}
 
@@ -250,7 +257,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * 使用反射查找无参的构造方法(包含未公开的构造方法)
 	 * 
-	 * @param <T>
+	 * @param       <T>
 	 * @param clazz
 	 * @return
 	 * @throws IllegalArgumentException 不存在无参构造方法
@@ -998,11 +1005,11 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see ReflectionApi#newInstance(Class)
-	 * @param <T>
-	 * @param <E>
+	 * @param         <T>
+	 * @param         <E>
 	 * @param members
 	 * @param source
-	 * @param deep
+	 * @param deep  对集合的操作
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -1019,6 +1026,15 @@ public abstract class ReflectionUtils {
 
 	public static <T> T clone(T source, boolean deep) {
 		return clone(getDeclaredFields(source.getClass()).withAll(), source, deep);
+	}
+	
+	/**
+	 * 深克隆(如果对象实现了Cloneable接口,那么会调用clone方法)
+	 * @param source
+	 * @return
+	 */
+	public static <T> T clone(T source) {
+		return clone(source, true);
 	}
 
 	public static <M extends Member, E extends RuntimeException> Members<M, E> getEntityMembers(Class<?> entityClass,
@@ -1115,8 +1131,8 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see #ENTITY_MEMBER
-	 * @param <T>
-	 * @param <E>
+	 * @param         <T>
+	 * @param         <E>
 	 * @param members
 	 * @param left
 	 * @param right
@@ -1176,7 +1192,7 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see #ENTITY_MEMBER
-	 * @param <E>
+	 * @param         <E>
 	 * @param members
 	 * @param entity
 	 * @param deep
