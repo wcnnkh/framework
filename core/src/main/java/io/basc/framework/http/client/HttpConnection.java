@@ -1,72 +1,22 @@
 package io.basc.framework.http.client;
 
 import java.io.File;
-import java.net.CookieHandler;
-import java.net.URI;
 import java.nio.charset.Charset;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.http.HttpMethod;
+import io.basc.framework.http.HttpRequest;
+import io.basc.framework.http.HttpRequestEntity;
+import io.basc.framework.http.HttpRequestEntity.HeadersBuilder;
 import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.exception.HttpClientException;
 import io.basc.framework.lang.Nullable;
 
-public interface HttpConnection extends HttpConnectionFactory {
-	/**
-	 * Add the given, single header value under the given name.
-	 * 
-	 * @param headerName   the header name
-	 * @param headerValues the header value(s)
-	 * @return this builder
-	 * @see HttpHeaders#add(String, String)
-	 */
-	HttpConnection header(String headerName, String... headerValues);
+public interface HttpConnection
+		extends HttpClientConfigurable<HttpConnection>, HttpRequest, HeadersBuilder<HttpConnection> {
 
-	/**
-	 * Copy the given headers into the entity's headers map.
-	 * 
-	 * @param headers the existing HttpHeaders to copy from
-	 * @return this builder
-	 * @see HttpHeaders#add(String, String)
-	 */
-	HttpConnection headers(@Nullable HttpHeaders headers);
-
-	/**
-	 * Set the list of acceptable {@linkplain MediaType media types}, as specified
-	 * by the {@code Accept} header.
-	 * 
-	 * @param acceptableMediaTypes the acceptable media types
-	 */
-	HttpConnection accept(MediaType... acceptableMediaTypes);
-
-	/**
-	 * Set the list of acceptable {@linkplain Charset charsets}, as specified by the
-	 * {@code Accept-Charset} header.
-	 * 
-	 * @param acceptableCharsets the acceptable charsets
-	 */
-	HttpConnection acceptCharset(Charset... acceptableCharsets);
-
-	/**
-	 * Set the value of the {@code If-Modified-Since} header.
-	 * <p>
-	 * The date should be specified as the number of milliseconds since January 1,
-	 * 1970 GMT.
-	 * 
-	 * @param ifModifiedSince the new value of the header
-	 */
-	HttpConnection ifModifiedSince(long ifModifiedSince);
-
-	/**
-	 * Set the values of the {@code If-None-Match} header.
-	 * 
-	 * @param ifNoneMatches the new value of the header
-	 */
-	HttpConnection ifNoneMatch(String... ifNoneMatches);
-
-	HttpHeaders getHeaders();
+	HttpConnection clone();
 
 	/**
 	 * Set the length of the body in bytes, as specified by the
@@ -103,7 +53,9 @@ public interface HttpConnection extends HttpConnectionFactory {
 	 * @param body the body of the request entity
 	 * @return the built request entity
 	 */
-	HttpConnection body(Object body);
+	default HttpConnection body(Object body) {
+		return body(body, null);
+	}
 
 	/**
 	 * Set the body and type of the request entity and build the RequestEntity.
@@ -118,31 +70,24 @@ public interface HttpConnection extends HttpConnectionFactory {
 	@Nullable
 	TypeDescriptor getTypeDescriptor();
 
+	@Nullable
 	Object getBody();
 
-	HttpMethod getMethod();
+	default boolean hasBody() {
+		return getBody() != null;
+	}
 
-	URI getURI();
-
-	boolean isRedirectEnable();
-
-	HttpConnection setRedirectEnable(boolean enable);
-
-	RedirectManager getRedirectManager();
-
-	HttpConnection setRedirectManager(RedirectManager redirectManager);
-	
-	CookieHandler getCookieHandler();
-	
-	HttpConnection setCookieHandler(CookieHandler cookieHandler);
-
-	ClientHttpRequestFactory getRequestFactory();
-
-	HttpConnection setRequestFactory(ClientHttpRequestFactory requestFactory);
+	@SuppressWarnings("unchecked")
+	@Override
+	default <T> HttpRequestEntity<T> build() {
+		return new HttpRequestEntity<T>((T) getBody(), getHeaders(), getRawMethod(), getURI(), getTypeDescriptor());
+	}
 
 	<T> HttpResponseEntity<T> execute(ClientHttpResponseExtractor<T> responseExtractor) throws HttpClientException;
 
-	<T> HttpResponseEntity<T> execute(Class<T> responseType) throws HttpClientException;
+	default <T> HttpResponseEntity<T> execute(Class<T> responseType) throws HttpClientException {
+		return execute(TypeDescriptor.valueOf(responseType));
+	}
 
 	<T> HttpResponseEntity<T> execute(TypeDescriptor responseType) throws HttpClientException;
 
@@ -152,7 +97,6 @@ public interface HttpConnection extends HttpConnectionFactory {
 	 * @return
 	 */
 	default HttpResponseEntity<File> download() {
-		DownLoadResponseExtractor responseExtractor = new DownLoadResponseExtractor(getURI());
-		return execute(responseExtractor);
+		return execute(DownLoadResponseExtractor.INSTANCE);
 	}
 }

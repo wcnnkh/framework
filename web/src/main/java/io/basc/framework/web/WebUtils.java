@@ -12,8 +12,8 @@ import org.w3c.dom.Document;
 
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.http.HttpMethod;
+import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpStatus;
-import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
 import io.basc.framework.json.JSONUtils;
@@ -394,11 +394,11 @@ public final class WebUtils {
 		return messageId;
 	}
 
-	public static String getMessageId(ClientHttpRequest clientHttpRequest) {
+	public static String getMessageId(HttpRequest httpRequest) {
 		ServerHttpRequest request = getLocalServerHttpRequest();
 		if (request == null) {
-			return InetUtils.getMessageId(clientHttpRequest, clientHttpRequest);
+			return InetUtils.getMessageId(httpRequest, httpRequest);
 		}
-		return getMessageId(request, clientHttpRequest);
+		return getMessageId(request, httpRequest);
 	}
 }

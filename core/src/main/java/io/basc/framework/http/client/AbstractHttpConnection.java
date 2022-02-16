@@ -6,46 +6,47 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.env.Sys;
 import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.http.HttpMethod;
-import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.lang.Nullable;
 
-public abstract class AbstractHttpConnection implements HttpConnection, Cloneable {
-	static final RedirectManager REDIRECT_MANAGER = Sys.env
-			.getServiceLoader(RedirectManager.class, DefaultHttpRedirectManager.class).first();
-	private HttpMethod method;
+public abstract class AbstractHttpConnection implements HttpConnection {
+	private ClientHttpRequestFactory requestFactory;
+	private CookieHandler cookieHandler;
+	private RedirectManager redirectManager;
+	private String httpMethod;
 	private URI uri;
 	private final HttpHeaders headers;
 	@Nullable
 	private Object body;
 	@Nullable
 	private TypeDescriptor typeDescriptor;
-	private boolean redirectEnable = false;
-	
-	public AbstractHttpConnection(AbstractHttpConnection connection) {
-		this.method = connection.method;
+	private boolean cloneBeforeSet;
+
+	public AbstractHttpConnection(URI uri, String httpMethod) {
 		this.uri = uri;
-		this.headers = connection.headers.
+		this.httpMethod = httpMethod;
+		this.headers = new HttpHeaders();
 	}
 
-	@Override
-	public AbstractHttpConnection setRequestFactory(ClientHttpRequestFactory clientHttpRequestFactory) {
-		super.setRequestFactory(clientHttpRequestFactory);
-		return this;
+	public AbstractHttpConnection(AbstractHttpConnection connection) {
+		this.requestFactory = connection.requestFactory;
+		this.cookieHandler = connection.cookieHandler;
+		this.redirectManager = connection.redirectManager;
+		this.httpMethod = connection.httpMethod;
+		this.uri = connection.uri;
+		this.headers = new HttpHeaders(connection.headers);
+		this.body = connection.body;
+		this.typeDescriptor = connection.typeDescriptor;
+		this.cloneBeforeSet = connection.cloneBeforeSet;
 	}
 
-	public AbstractHttpConnection setRedirectManager(RedirectManager redirectManager) {
-		super.setRedirectManager(redirectManager);
-		return this;
+	public boolean isCloneBeforeSet() {
+		return cloneBeforeSet;
 	}
 
-	@Override
-	public AbstractHttpConnection setCookieHandler(CookieHandler cookieHandler) {
-		super.setCookieHandler(cookieHandler);
-		return this;
+	public void setCloneBeforeSet(boolean cloneBeforeSet) {
+		this.cloneBeforeSet = cloneBeforeSet;
 	}
 
 	public HttpHeaders getHeaders() {
@@ -56,93 +57,71 @@ public abstract class AbstractHttpConnection implements HttpConnection, Cloneabl
 		return uri;
 	}
 
-	public HttpMethod getMethod() {
-		return method;
+	@Override
+	public String getRawMethod() {
+		return httpMethod;
 	}
 
-	public HttpConnection createConnection() {
-		if (uri == null && method == null) {
-			return this;
-		}
-
-		return clone();
-	}
-
-	public HttpConnection createConnection(HttpMethod method, URI uri) {
-		if (this.method != null || this.uri != null) {
-			// 创建一个新的
-			AbstractHttpConnection connection = clone();
-			connection.method = method;
-			connection.uri = uri;
-			return connection;
-		}
-		this.method = method;
-		this.uri = uri;
-		return this;
-	}
-
-	public boolean isRedirectEnable() {
-		return redirectEnable;
-	}
-
-	public HttpConnection setRedirectEnable(boolean enable) {
-		this.redirectEnable = enable;
-		return this;
-	}
+	@Override
+	public abstract AbstractHttpConnection clone();
 
 	public HttpConnection header(String headerName, String... headerValues) {
+		AbstractHttpConnection connection = isCloneBeforeSet() ? clone() : this;
 		for (String headerValue : headerValues) {
-			this.headers.add(headerName, headerValue);
+			connection.headers.add(headerName, headerValue);
 		}
-		return this;
+		return connection;
 	}
 
 	public HttpConnection headers(@Nullable HttpHeaders headers) {
+		AbstractHttpConnection connection = isCloneBeforeSet() ? clone() : this;
 		if (headers != null) {
-			this.headers.putAll(headers);
+			connection.headers.putAll(headers);
 		}
-		return this;
+		return connection;
 	}
 
 	public HttpConnection accept(MediaType... acceptableMediaTypes) {
-		this.headers.setAccept(Arrays.asList(acceptableMediaTypes));
-		return this;
+		AbstractHttpConnection connection = isCloneBeforeSet() ? clone() : this;
+		connection.headers.setAccept(Arrays.asList(acceptableMediaTypes));
+		return connection;
 	}
 
 	public HttpConnection acceptCharset(Charset... acceptableCharsets) {
-		this.headers.setAcceptCharset(Arrays.asList(acceptableCharsets));
-		return this;
+		AbstractHttpConnection connection = isCloneBeforeSet() ? clone() : this;
+		connection.headers.setAcceptCharset(Arrays.asList(acceptableCharsets));
+		return connection;
 	}
 
 	public HttpConnection contentLength(long contentLength) {
-		this.headers.setContentLength(contentLength);
-		return this;
+		AbstractHttpConnection connection = isCloneBeforeSet() ? clone() : this;
+		connection.headers.setContentLength(contentLength);
+		return connection;
 	}
 
 	public HttpConnection contentType(MediaType contentType) {
-		this.headers.setContentType(contentType);
-		return this;
+		AbstractHttpConnection connection = isCloneBeforeSet() ? clone() : this;
+		connection.headers.setContentType(contentType);
+		return connection;
 	}
 
 	public HttpConnection ifNoneMatch(String... ifNoneMatches) {
-		this.headers.setIfNoneMatch(Arrays.asList(ifNoneMatches));
-		return this;
+		AbstractHttpConnection connection = isCloneBeforeSet() ? clone() : this;
+		connection.headers.setIfNoneMatch(Arrays.asList(ifNoneMatches));
+		return connection;
 	}
 
 	public HttpConnection ifModifiedSince(long ifModifiedSince) {
-		this.headers.setIfModifiedSince(ifModifiedSince);
-		return this;
-	}
-
-	public HttpConnection body(Object body) {
-		this.body = body;
-		return this;
+		AbstractHttpConnection connection = isCloneBeforeSet() ? clone() : this;
+		connection.headers.setIfModifiedSince(ifModifiedSince);
+		return connection;
 	}
 
 	public HttpConnection body(Object body, TypeDescriptor typeDescriptor) {
-		this.body = body;
-		this.typeDescriptor = typeDescriptor;
-		return this;
+		AbstractHttpConnection connection = isCloneBeforeSet() ? clone() : this;
+		connection.body = body;
+		connection.typeDescriptor = typeDescriptor;
+		return connection;
 	}
 
 	public Object getBody() {
@@ -156,18 +135,39 @@ public abstract class AbstractHttpConnection implements HttpConnection, Cloneabl
 		return typeDescriptor;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> HttpRequestEntity<T> buildRequestEntity() {
-		return (HttpRequestEntity<T>) HttpRequestEntity.method(getMethod(), getURI()).headers(getHeaders())
-				.body(getBody(), getTypeDescriptor());
+	@Override
+	public CookieHandler getCookieHandler() {
+		return cookieHandler;
 	}
 
 	@Override
-	public AbstractHttpConnection clone() {
-		try {
-			return (AbstractHttpConnection) super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
-		}
+	public HttpConnection setCookieHandler(CookieHandler cookieHandler) {
+		AbstractHttpConnection connection = isCloneBeforeSet() ? clone() : this;
+		connection.cookieHandler = cookieHandler;
+		return connection;
+	}
+
+	@Override
+	public RedirectManager getRedirectManager() {
+		return redirectManager;
+	}
+
+	@Override
+	public HttpConnection setRedirectManager(RedirectManager redirectManager) {
+		AbstractHttpConnection connection = isCloneBeforeSet() ? clone() : this;
+		connection.redirectManager = redirectManager;
+		return connection;
+	}
+
+	@Override
+	public ClientHttpRequestFactory getRequestFactory() {
+		return requestFactory;
+	}
+
+	@Override
+	public HttpConnection setRequestFactory(ClientHttpRequestFactory requestFactory) {
+		AbstractHttpConnection connection = isCloneBeforeSet() ? clone() : this;
+		connection.requestFactory = requestFactory;
+		return connection;
 	}
 }

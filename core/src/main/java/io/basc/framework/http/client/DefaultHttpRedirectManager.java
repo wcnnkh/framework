@@ -9,9 +9,16 @@ import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.http.HttpStatus;
 
 public class DefaultHttpRedirectManager implements RedirectManager {
-	private final int maxDeep;
+	private final long maxDeep;
 
-	public DefaultHttpRedirectManager(int maxDeep) {
+	/**
+	 * 默认最多进行3次重定向
+	 */
+	public DefaultHttpRedirectManager() {
+		this(3);
+	}
+
+	public DefaultHttpRedirectManager(long maxDeep) {
 		this.maxDeep = maxDeep;
 	}
 
@@ -24,7 +31,11 @@ public class DefaultHttpRedirectManager implements RedirectManager {
 	}
 
 	public URI getLocation(HttpStatus statusCode, HttpHeaders httpHeaders, long deep) {
-		if (maxDeep > deep) {
+		if (deep < 0) {
+			return null;
+		}
+
+		if (maxDeep >= 0 && deep >= maxDeep) {
 			return null;
 		}
 
