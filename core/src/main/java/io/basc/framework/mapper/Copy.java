@@ -227,7 +227,7 @@ public class Copy implements Cloneable {
 	 * 复制，要求get和set都存在字段{@link java.lang.reflect.Field}
 	 * 
 	 * @see FieldFeature#EXISTING_FIELD
-	 * @param <T>
+	 * @param             <T>
 	 * @param entityClass
 	 * @param parentField
 	 * @param source
@@ -245,8 +245,8 @@ public class Copy implements Cloneable {
 	/**
 	 * 复制,要求sourceClass字段满足{@link FieldFeature#EXISTING_GETTER_FIELD }和targetClass字段满足{@link FieldFeature#EXISTING_SETTER_FIELD }
 	 * 
-	 * @param <T>
-	 * @param <S>
+	 * @param                   <T>
+	 * @param                   <S>
 	 * @param sourceClass
 	 * @param source
 	 * @param sourceParentField
@@ -277,8 +277,8 @@ public class Copy implements Cloneable {
 	 * 创建实例并复制到对应的属性
 	 * 
 	 * @see #copy(Class, Object, Field, Class, Object, Field)
-	 * @param <T>
-	 * @param <S>
+	 * @param                   <T>
+	 * @param                   <S>
 	 * @param sourceType
 	 * @param source
 	 * @param sourceParentField
@@ -338,10 +338,8 @@ public class Copy implements Cloneable {
 			targets = CollectionFactory.createCollection(targetType.getType(), elementType.getType(), sources.size());
 		} catch (IllegalArgumentException e) {
 			// 无法构造
-			if (sources instanceof Cloneable) {
-				return ReflectionUtils.invokeCloneMethod((Cloneable) sources);
-			}
-			return (T) sources;
+			T value = ReflectionUtils.invokeCloneMethod(sources);
+			return value == null ? (T) sources : value;
 		}
 
 		for (Object source : sources) {
@@ -358,10 +356,8 @@ public class Copy implements Cloneable {
 			targetMap = CollectionFactory.createMap(keyType.getType(), valueType.getType(), sourceMap.size());
 		} catch (IllegalArgumentException e) {
 			// 无法构造
-			if (sourceMap instanceof Cloneable) {
-				return ReflectionUtils.invokeCloneMethod((Cloneable) sourceMap);
-			}
-			return (T) sourceMap;
+			T value = ReflectionUtils.invokeCloneMethod(sourceMap);
+			return value == null ? (T) sourceMap : value;
 		}
 
 		for (Entry<?, ?> entry : sourceMap.entrySet()) {
@@ -374,7 +370,7 @@ public class Copy implements Cloneable {
 	/**
 	 * 克隆一个实例
 	 * 
-	 * @param <T>
+	 * @param             <T>
 	 * @param source
 	 * @param parentField
 	 * @return
@@ -390,7 +386,7 @@ public class Copy implements Cloneable {
 	/**
 	 * 克隆一个实体，
 	 * 
-	 * @param <T>
+	 * @param             <T>
 	 * @param sourceType
 	 * @param source
 	 * @param parentField
@@ -418,8 +414,11 @@ public class Copy implements Cloneable {
 			return cloneMap((Map<?, ?>) source, parentField, sourceType);
 		}
 
-		if (isInvokeCloneableMethod() && source instanceof Cloneable) {
-			return ReflectionUtils.invokeCloneMethod((Cloneable) source);
+		if (isInvokeCloneableMethod()) {
+			T value = ReflectionUtils.invokeCloneMethod(source);
+			if (value != null) {
+				return value;
+			}
 		}
 
 		Class<?> sourceClass = sourceType.getType();
@@ -456,7 +455,7 @@ public class Copy implements Cloneable {
 	 * 浅拷贝
 	 * 
 	 * @see #SHALLOW
-	 * @param <T>
+	 * @param             <T>
 	 * @param targetClass
 	 * @param source
 	 * @return
@@ -471,7 +470,7 @@ public class Copy implements Cloneable {
 	 * 浅拷贝
 	 * 
 	 * @see #SHALLOW
-	 * @param <T>
+	 * @param        <T>
 	 * @param source
 	 * @param target
 	 * @return
@@ -487,7 +486,7 @@ public class Copy implements Cloneable {
 	 * 拷贝(浅拷贝)一个对象并对对应的字段插入值
 	 * 
 	 * @see #copy(Object, Class)
-	 * @param <T>
+	 * @param             <T>
 	 * @param sourceClass
 	 * @param source
 	 * @param field

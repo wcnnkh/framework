@@ -10,6 +10,7 @@ import io.basc.framework.codec.EncodeException;
 import io.basc.framework.codec.Encoder;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
+import io.basc.framework.util.ObjectUtils;
 
 public interface FromBytesEncoder<E> extends Encoder<byte[], E> {
 
@@ -23,6 +24,40 @@ public interface FromBytesEncoder<E> extends Encoder<byte[], E> {
 	 * @throws EncodeException
 	 */
 	E encode(InputStream source, int bufferSize) throws IOException, EncodeException;
+
+	default boolean verify(InputStream source, E target) throws EncodeException, IOException {
+		return verify(source, IOUtils.DEFAULT_BUFFER_SIZE, target);
+	}
+
+	default boolean verify(InputStream source, int bufferSize, E target) throws EncodeException, IOException {
+		return ObjectUtils.equals(encode(source, bufferSize), target);
+	}
+
+	default boolean verify(File source, int bufferSize, E target) throws EncodeException, IOException {
+		if (!source.exists()) {
+			return false;
+		}
+
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream(source);
+			return ObjectUtils.equals(encode(fis, bufferSize), target);
+		} finally {
+			IOUtils.close(fis);
+		}
+	}
+
+	default boolean verify(File source, E target) throws EncodeException, IOException {
+		return verify(source, IOUtils.DEFAULT_BUFFER_SIZE, target);
+	}
+
+	default boolean verify(Resource source, E target) throws EncodeException, IOException {
+		return verify(source, IOUtils.DEFAULT_BUFFER_SIZE, target);
+	}
+
+	default boolean verify(Resource source, int bufferSize, E target) throws EncodeException, IOException {
+		return source.read((is) -> verify(is, bufferSize, target));
+	}
 
 	/**
 	 * @see #encode(InputStream, int)

@@ -1,24 +1,7 @@
 package io.basc.framework.codec;
 
-import io.basc.framework.util.Validator;
-
 public final class CodecUtils {
 	private CodecUtils() {
-	}
-
-	public static <D, E> Signer<D, E> build(Encoder<D, E> encoder, Validator<D, E> validator) {
-		return new Signer<D, E>() {
-
-			@Override
-			public boolean verify(D source, E encode) throws CodecException {
-				return validator.verify(source, encode);
-			}
-
-			@Override
-			public E encode(D source) throws EncodeException {
-				return encoder.encode(source);
-			}
-		};
 	}
 
 	public static <D, E> Codec<D, E> build(Encoder<D, E> encoder, Decoder<E, D> decoder) {

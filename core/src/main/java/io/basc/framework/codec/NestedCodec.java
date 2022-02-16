@@ -18,4 +18,9 @@ public class NestedCodec<P extends Codec<D, T>, C extends Codec<T, E>, D, T, E> 
 	public D decode(E source) throws DecodeException {
 		return parent.decode(codec.decode(source));
 	}
+
+	@Override
+	public boolean verify(D source, E encode) throws EncodeException {
+		return codec.verify(parent.encode(source), encode);
+	}
 }

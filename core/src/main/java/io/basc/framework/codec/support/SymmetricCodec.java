@@ -144,6 +144,13 @@ public class SymmetricCodec extends CryptoCodec {
 		return getCompleteAlgorithm();
 	}
 
+	public byte[] doFinal(Cipher cipher, InputStream source, int bufferSize)
+			throws IOException, IllegalBlockSizeException, BadPaddingException {
+		// 在进行流式操作时出现了问题
+		// IOUtils.read(source, bufferSize, cipher::update);
+		return cipher.doFinal(IOUtils.copyToByteArray(source, bufferSize));
+	}
+
 	@Override
 	public void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException {
 		Cipher cipher = getCipher();
@@ -153,10 +160,9 @@ public class SymmetricCodec extends CryptoCodec {
 			throw new CodecException(e);
 		}
 
-		IOUtils.read(source, bufferSize, cipher::update);
 		byte[] v;
 		try {
-			v = cipher.doFinal();
+			v = doFinal(cipher, source, bufferSize);
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			throw new EncodeException(e);
 		}
@@ -172,10 +178,9 @@ public class SymmetricCodec extends CryptoCodec {
 			throw new CodecException(e);
 		}
 
-		IOUtils.read(source, bufferSize, cipher::update);
 		byte[] v;
 		try {
-			v = cipher.doFinal();
+			v = doFinal(cipher, source, bufferSize);
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			throw new EncodeException(e);
 		}

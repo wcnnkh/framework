@@ -1,16 +1,6 @@
 package io.basc.framework.test;
 
 import static org.junit.Assert.assertTrue;
-import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.Signer;
-import io.basc.framework.codec.sign.SHA1WithRSASigner;
-import io.basc.framework.codec.support.AES;
-import io.basc.framework.codec.support.Base64;
-import io.basc.framework.codec.support.CharsetCodec;
-import io.basc.framework.codec.support.DES;
-import io.basc.framework.codec.support.HexCodec;
-import io.basc.framework.codec.support.RSA;
-import io.basc.framework.codec.support.URLCodec;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -20,6 +10,17 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
 import org.junit.Test;
+
+import io.basc.framework.codec.Codec;
+import io.basc.framework.codec.Encoder;
+import io.basc.framework.codec.encode.SHA1WithRSASigner;
+import io.basc.framework.codec.support.AES;
+import io.basc.framework.codec.support.Base64;
+import io.basc.framework.codec.support.CharsetCodec;
+import io.basc.framework.codec.support.DES;
+import io.basc.framework.codec.support.HexCodec;
+import io.basc.framework.codec.support.RSA;
+import io.basc.framework.codec.support.URLCodec;
 
 public class CodecTest {
 	public static String content = "这是一段加解密测试内容!";
@@ -74,7 +75,7 @@ public class CodecTest {
 		System.out.println("----------------END RSA------------------");
 		
 		SHA1WithRSASigner rsaSigner = new SHA1WithRSASigner(privateKey, publicKey);
-		Signer<String, String> encoder = charsetCodec.toSigner(rsaSigner).to(Base64.DEFAULT);
+		Encoder<String, String> encoder = charsetCodec.toEncoder(rsaSigner).toEncoder(Base64.DEFAULT);
 		String sign = encoder.encode(content);
 		System.out.println("sign:" + sign);
 		assertTrue(encoder.verify(content, sign));

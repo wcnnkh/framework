@@ -13,4 +13,9 @@ public class NestedEncoder<P extends Encoder<D, T>, EN extends Encoder<T, E>, D,
 	public E encode(D source) throws EncodeException {
 		return encoder.encode(parent.encode(source));
 	}
+
+	@Override
+	public boolean verify(D source, E encode) throws EncodeException {
+		return encoder.verify(parent.encode(source), encode);
+	}
 }

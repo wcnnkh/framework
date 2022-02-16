@@ -70,10 +70,9 @@ public class AsymmetricCodec extends CryptoCodec {
 	public void doFinal(Cipher cipher, int maxBlock, InputStream source, OutputStream output)
 			throws IOException, Exception {
 		Assert.requiredArgument(source != null, "source");
-		byte[] buffer = new byte[maxBlock];
 		IOUtils.read(source, maxBlock, (buff, offset, len) -> {
-			int resLen = cipher.doFinal(buff, offset, len, buffer);
-			output.write(buffer, 0, resLen);
+			byte[] target = cipher.doFinal(buff, offset, len);
+			output.write(target);
 		});
 	}
 

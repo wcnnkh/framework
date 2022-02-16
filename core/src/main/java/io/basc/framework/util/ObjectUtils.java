@@ -288,7 +288,7 @@ public abstract class ObjectUtils {
 	}
 
 	/**
-	 * 克隆 深拷贝(如果对象实现了Cloneable接口,那么会调用clone方法)
+	 * 浅拷贝
 	 * 
 	 * @see ObjectUtils#clone(Object, boolean)
 	 * @param        <T>
@@ -341,10 +341,6 @@ public abstract class ObjectUtils {
 
 		if (source instanceof Map) {
 			return (T) CollectionFactory.clone((Map<?, ?>) source, deep);
-		}
-
-		if (source instanceof Cloneable) {
-			return ReflectionUtils.invokeCloneMethod((Cloneable) source);
 		}
 
 		// 是否可以直接return source, 应该这样吗？

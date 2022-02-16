@@ -32,8 +32,6 @@ import io.basc.framework.util.stream.Processor;
 public abstract class ReflectionUtils {
 	private static final String SERIAL_VERSION_UID_FIELD_NAME = "serialVersionUID";
 
-	private static final Method CLONE_METOHD = ReflectionUtils.getDeclaredMethod(Object.class, "clone");
-
 	private static final Method[] CLASS_PRESENT_METHODS = getMethods(Class.class).stream().filter((method) -> {
 		return !Modifier.isStatic(method.getModifiers()) && !Modifier.isNative(method.getModifiers())
 				&& Modifier.isPublic(method.getModifiers()) && method.getName().startsWith("get")
@@ -228,16 +226,33 @@ public abstract class ReflectionUtils {
 		return isAvailable(clazz, null);
 	}
 
+	public static boolean isCloneable(Object source) {
+		return source != null && source instanceof Cloneable && (getCloneMethod((Cloneable) source) != null);
+	}
+
 	/**
 	 * 通过反射调用clone方法
 	 * 
 	 * @see java.lang.Object.clone()
 	 * @param source
-	 * @return
+	 * @return 如果对象不存在clone行为就返回空
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T invokeCloneMethod(Object source) {
-		return (T) invoke(CLONE_METOHD, source);
+		if (source == null) {
+			return null;
+		}
+
+		if (!(source instanceof Cloneable)) {
+			return null;
+		}
+
+		Method method = getCloneMethod((Cloneable) source);
+		if (method == null) {
+			return null;
+		}
+
+		return (T) invoke(method, source);
 	}
 
 	/**
@@ -1009,7 +1024,7 @@ public abstract class ReflectionUtils {
 	 * @param         <E>
 	 * @param members
 	 * @param source
-	 * @param deep  对集合的操作
+	 * @param deep    对集合的操作
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -1025,16 +1040,43 @@ public abstract class ReflectionUtils {
 	}
 
 	public static <T> T clone(T source, boolean deep) {
+		if (source == null) {
+			return null;
+		}
+
+		if (!deep) {
+			T target = invokeCloneMethod(source);
+			if (target != null) {
+				return target;
+			}
+		}
 		return clone(getDeclaredFields(source.getClass()).withAll(), source, deep);
 	}
-	
+
+	public static Method getCloneMethod(Cloneable source) {
+		if (source == null) {
+			return null;
+		}
+
+		Method method = findMethod(source.getClass(), "clone");
+		if (method == null) {
+			return null;
+		}
+
+		if (ClassUtils.isAssignableValue(method.getReturnType(), source)) {
+			return method;
+		}
+		return null;
+	}
+
 	/**
-	 * 深克隆(如果对象实现了Cloneable接口,那么会调用clone方法)
+	 * 浅克隆(如果对象实现了Cloneable接口,那么会调用clone方法)
+	 * 
 	 * @param source
 	 * @return
 	 */
 	public static <T> T clone(T source) {
-		return clone(source, true);
+		return clone(source, false);
 	}
 
 	public static <M extends Member, E extends RuntimeException> Members<M, E> getEntityMembers(Class<?> entityClass,
