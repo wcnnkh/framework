@@ -9,6 +9,8 @@ import java.io.OutputStream;
 
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.codec.MultipleEncoder;
+import io.basc.framework.io.BufferProcessor;
+import io.basc.framework.io.FileUtils;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.UnsafeByteArrayInputStream;
 import io.basc.framework.io.UnsafeByteArrayOutputStream;
@@ -82,6 +84,8 @@ public interface BytesEncoder extends FromBytesEncoder<byte[]>, ToBytesEncoder<b
 
 	/**
 	 * 将一个输入流内容编码n次后写入到输出流, 会使用临时文件存储上一次的编码内容
+	 * <br/>
+	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
 	 * 
 	 * @param source
 	 * @param bufferSize
@@ -222,4 +226,77 @@ public interface BytesEncoder extends FromBytesEncoder<byte[]>, ToBytesEncoder<b
 	 * @throws EncodeException
 	 */
 	void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException;
+
+	/**
+	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
+	 * 
+	 * @param source
+	 * @param bufferSize
+	 * @param targetProcessor
+	 * @throws IOException
+	 * @throws EncodeException
+	 * @throws E
+	 */
+	default <E extends Throwable> void encode(InputStream source, int bufferSize,
+			BufferProcessor<byte[], E> targetProcessor, int count) throws IOException, EncodeException, E {
+		Assert.isTrue(count > 0, "Count must be greater than 0");
+		if (count == 1) {
+			encode(source, bufferSize, targetProcessor);
+			return;
+		}
+
+		// 前n-1次都使用临时文件存储
+		// 后一次的结果依赖前一次
+		File firstFile = File.createTempFile("encode", "count.0");
+		encode(source, bufferSize, firstFile);
+
+		File lastFile = firstFile;
+		for (int i = 1; i < count - 1; i++) {
+			File targetFile = File.createTempFile("encode", "count." + i);
+			try {
+				encode(lastFile, bufferSize, targetFile);
+			} finally {
+				// 删除上一次的临时文件
+				lastFile.delete();
+			}
+			lastFile = targetFile;
+		}
+
+		try {
+			encode(lastFile, bufferSize, targetProcessor);
+		} finally {
+			lastFile.delete();
+		}
+	}
+
+	default <E extends Throwable> void encode(File source, int bufferSize, BufferProcessor<byte[], E> targetProcessor)
+			throws IOException, EncodeException, E {
+		FileInputStream fis = new FileInputStream(source);
+		try {
+			encode(fis, bufferSize, targetProcessor);
+		} finally {
+			fis.close();
+		}
+	}
+
+	/**
+	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
+	 * 
+	 * @param source
+	 * @param bufferSize
+	 * @param targetProcessor
+	 * @throws IOException
+	 * @throws EncodeException
+	 * @throws E
+	 */
+	default <E extends Throwable> void encode(InputStream source, int bufferSize,
+			BufferProcessor<byte[], E> targetProcessor) throws IOException, EncodeException, E {
+		File tempFile = File.createTempFile("encode", "processor");
+		try {
+			encode(source, bufferSize, tempFile);
+			FileUtils.read(tempFile, bufferSize, targetProcessor);
+		} finally {
+			tempFile.delete();
+		}
+	}
 }

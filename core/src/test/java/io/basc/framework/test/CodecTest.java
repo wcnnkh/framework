@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.Encoder;
+import io.basc.framework.codec.encode.MD5;
 import io.basc.framework.codec.encode.SHA1WithRSASigner;
 import io.basc.framework.codec.support.AES;
 import io.basc.framework.codec.support.Base64;
@@ -31,9 +32,8 @@ public class CodecTest {
 		System.out.println("----------------BEGIN DES------------------");
 		byte[] secreKey = charsetCodec.encode("12345678");
 		byte[] iv = charsetCodec.encode("12345678");
-		Codec<String, String> codec = charsetCodec.to(new DES(secreKey, iv))
-				.to(HexCodec.DEFAULT);
-		
+		Codec<String, String> codec = charsetCodec.to(new DES(secreKey, iv)).to(HexCodec.DEFAULT);
+
 		String encode = codec.encode(content);
 		System.out.println("encode:" + encode);
 		String decode = codec.decode(encode);
@@ -46,8 +46,7 @@ public class CodecTest {
 		System.out.println("----------------BEGIN AES------------------");
 		byte[] secreKey = charsetCodec.encode("1234567812346578");
 		byte[] iv = charsetCodec.encode("1234567812345678");
-		Codec<String, String> codec = charsetCodec.to(new AES(secreKey, iv))
-				.to(HexCodec.DEFAULT);
+		Codec<String, String> codec = charsetCodec.to(new AES(secreKey, iv)).to(HexCodec.DEFAULT);
 		String encode = codec.encode(content);
 		System.out.println("encode:" + encode);
 		String decode = codec.decode(encode);
@@ -73,14 +72,14 @@ public class CodecTest {
 		String decode = codec.decode(encode);
 		System.out.println("decode:" + decode);
 		System.out.println("----------------END RSA------------------");
-		
+
 		SHA1WithRSASigner rsaSigner = new SHA1WithRSASigner(privateKey, publicKey);
 		Encoder<String, String> encoder = charsetCodec.toEncoder(rsaSigner).toEncoder(Base64.DEFAULT);
 		String sign = encoder.encode(content);
 		System.out.println("sign:" + sign);
 		assertTrue(encoder.verify(content, sign));
 	}
-	
+
 	@Test
 	public void multiple() {
 		System.out.println("----------------BEGIN multiple------------------");
@@ -98,5 +97,15 @@ public class CodecTest {
 		System.out.println(decode);
 		assertTrue(decode.equals(content));
 		System.out.println("----------------END multiple------------------");
+	}
+
+	@Test
+	public void md5() {
+		String msg = "md5";
+		Encoder<String, String> md5 = charsetCodec
+				.toEncoder(new MD5().wrapperSecretKey(charsetCodec.encode(msg)).toHex());
+		String sign = md5.encode(msg);
+		System.out.println("md5:" + sign);
+		assertTrue(md5.verify(msg, sign));
 	}
 }

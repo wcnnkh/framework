@@ -25,7 +25,11 @@ public class NestedBytesDecoder implements BytesDecoder {
 	@Override
 	public void decode(InputStream source, int bufferSize, OutputStream target) throws DecodeException, IOException {
 		File tempFile = File.createTempFile("nested", "decode");
-		parent.decode(source, bufferSize, tempFile, count);
-		decoder.decode(tempFile, bufferSize, target, count);
+		try {
+			parent.decode(source, bufferSize, tempFile, count);
+			decoder.decode(tempFile, bufferSize, target, count);
+		} finally {
+			tempFile.delete();
+		}
 	}
 }

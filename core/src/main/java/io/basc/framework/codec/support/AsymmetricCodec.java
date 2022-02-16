@@ -11,6 +11,7 @@ import javax.crypto.Cipher;
 import io.basc.framework.codec.CodecException;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
+import io.basc.framework.io.BufferProcessor;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
@@ -67,17 +68,18 @@ public class AsymmetricCodec extends CryptoCodec {
 		return algorithm;
 	}
 
-	public void doFinal(Cipher cipher, int maxBlock, InputStream source, OutputStream output)
-			throws IOException, Exception {
+	public <E extends Throwable> void doFinal(Cipher cipher, int maxBlock, InputStream source,
+			BufferProcessor<byte[], E> targetProcessor) throws Throwable {
 		Assert.requiredArgument(source != null, "source");
 		IOUtils.read(source, maxBlock, (buff, offset, len) -> {
 			byte[] target = cipher.doFinal(buff, offset, len);
-			output.write(target);
+			targetProcessor.process(target, 0, target.length);
 		});
 	}
 
 	@Override
-	public void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException {
+	public <E extends Throwable> void encode(InputStream source, int bufferSize,
+			BufferProcessor<byte[], E> targetProcessor) throws IOException, EncodeException, E {
 		Cipher cipher = getCipher();
 		try {
 			cipher.init(Cipher.ENCRYPT_MODE, encodeKey);
@@ -86,16 +88,17 @@ public class AsymmetricCodec extends CryptoCodec {
 		}
 
 		try {
-			doFinal(cipher, this.maxBlock - 11, source, target);
+			doFinal(cipher, this.maxBlock - 11, source, targetProcessor);
 		} catch (IOException e) {
 			throw e;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new EncodeException(e);
 		}
 	}
 
 	@Override
-	public void decode(InputStream source, int bufferSize, OutputStream target) throws DecodeException, IOException {
+	public <E extends Throwable> void decode(InputStream source, int bufferSize,
+			BufferProcessor<byte[], E> targetProcessor) throws DecodeException, IOException, E {
 		Cipher cipher = getCipher();
 		try {
 			cipher.init(Cipher.DECRYPT_MODE, decodeKey);
@@ -104,11 +107,21 @@ public class AsymmetricCodec extends CryptoCodec {
 		}
 
 		try {
-			doFinal(cipher, this.maxBlock, source, target);
+			doFinal(cipher, this.maxBlock, source, targetProcessor);
 		} catch (IOException e) {
 			throw e;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new EncodeException(e);
 		}
+	}
+
+	@Override
+	public void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException {
+		encode(source, bufferSize, target::write);
+	}
+
+	@Override
+	public void decode(InputStream source, int bufferSize, OutputStream target) throws DecodeException, IOException {
+		decode(source, bufferSize, target::write);
 	}
 }

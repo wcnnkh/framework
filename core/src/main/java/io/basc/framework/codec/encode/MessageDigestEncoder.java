@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
 import io.basc.framework.codec.CodecException;
 import io.basc.framework.codec.EncodeException;
@@ -29,20 +28,6 @@ public class MessageDigestEncoder implements BytesEncoder {
 		return signer;
 	}
 
-	public byte[] encode(byte[] source) throws EncodeException {
-		MessageDigest messageDigest = getMessageDigest();
-		messageDigest.reset();
-
-		if (secretKey == null) {
-			messageDigest.update(source);
-		} else {
-			byte[] secretSource = Arrays.copyOf(source, source.length + secretKey.length);
-			System.arraycopy(secretKey, 0, secretSource, source.length, secretKey.length);
-			messageDigest.update(secretSource);
-		}
-		return messageDigest.digest();
-	}
-
 	public static MessageDigest getMessageDigest(String algorithm) {
 		try {
 			return MessageDigest.getInstance(algorithm);
@@ -57,14 +42,19 @@ public class MessageDigestEncoder implements BytesEncoder {
 	}
 
 	@Override
-	public void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException {
+	public byte[] encode(InputStream source, int bufferSize) throws IOException, EncodeException {
 		MessageDigest messageDigest = getMessageDigest();
 		messageDigest.reset();
 		if (secretKey != null) {
 			messageDigest.update(secretKey);
 		}
 		IOUtils.read(source, bufferSize, messageDigest::update);
-		byte[] res = messageDigest.digest();
+		return messageDigest.digest();
+	}
+
+	@Override
+	public void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException {
+		byte[] res = encode(source, bufferSize);
 		target.write(res);
 	}
 }

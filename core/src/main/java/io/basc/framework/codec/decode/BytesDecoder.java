@@ -9,6 +9,8 @@ import java.io.OutputStream;
 
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.MultipleDecoder;
+import io.basc.framework.io.BufferProcessor;
+import io.basc.framework.io.FileUtils;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.UnsafeByteArrayInputStream;
 import io.basc.framework.io.UnsafeByteArrayOutputStream;
@@ -79,6 +81,16 @@ public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<b
 		}
 	}
 
+	default <E extends Throwable> void decode(File source, int bufferSize, BufferProcessor<byte[], E> targetProcessor)
+			throws IOException, DecodeException, E {
+		FileInputStream fis = new FileInputStream(source);
+		try {
+			decode(fis, bufferSize, targetProcessor);
+		} finally {
+			fis.close();
+		}
+	}
+
 	default void decode(InputStream source, OutputStream target) throws DecodeException, IOException {
 		decode(source, IOUtils.DEFAULT_BUFFER_SIZE, target);
 	}
@@ -90,7 +102,7 @@ public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<b
 	default void decode(File source, int bufferSize, OutputStream target) throws DecodeException, IOException {
 		FileInputStream fis = new FileInputStream(source);
 		try {
-			decode(source, bufferSize, target);
+			decode(fis, bufferSize, target);
 		} finally {
 			IOUtils.close(fis);
 		}
@@ -100,7 +112,7 @@ public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<b
 			throws DecodeException, IOException {
 		FileInputStream fis = new FileInputStream(source);
 		try {
-			decode(source, bufferSize, target, count);
+			decode(fis, bufferSize, target, count);
 		} finally {
 			IOUtils.close(fis);
 		}
@@ -145,6 +157,16 @@ public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<b
 		}
 	}
 
+	/**
+	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
+	 * 
+	 * @param source
+	 * @param bufferSize
+	 * @param target
+	 * @param count
+	 * @throws DecodeException
+	 * @throws IOException
+	 */
 	default void decode(InputStream source, int bufferSize, OutputStream target, int count)
 			throws DecodeException, IOException {
 		Assert.isTrue(count > 0, "Count must be greater than 0");
@@ -178,4 +200,68 @@ public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<b
 	}
 
 	void decode(InputStream source, int bufferSize, OutputStream target) throws DecodeException, IOException;
+
+	/**
+	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
+	 * 
+	 * @param source
+	 * @param bufferSize
+	 * @param targetProcessor
+	 * @param count
+	 * @throws DecodeException
+	 * @throws IOException
+	 * @throws E
+	 */
+	default <E extends Throwable> void decode(InputStream source, int bufferSize,
+			BufferProcessor<byte[], E> targetProcessor, int count) throws DecodeException, IOException, E {
+		Assert.isTrue(count > 0, "Count must be greater than 0");
+		if (count == 1) {
+			decode(source, bufferSize, targetProcessor);
+			return;
+		}
+
+		// 前n-1次都使用临时文件存储
+		// 后一次的结果依赖前一次
+		File firstFile = File.createTempFile("encode", "count.0");
+		decode(source, bufferSize, firstFile);
+
+		File lastFile = firstFile;
+		for (int i = 1; i < count - 1; i++) {
+			File targetFile = File.createTempFile("encode", "count." + i);
+			try {
+				decode(lastFile, bufferSize, targetFile);
+			} finally {
+				// 删除上一次的临时文件
+				lastFile.delete();
+			}
+			lastFile = targetFile;
+		}
+
+		try {
+			decode(lastFile, bufferSize, targetProcessor);
+		} finally {
+			lastFile.delete();
+		}
+	}
+
+	/**
+	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
+	 * 
+	 * @param source
+	 * @param bufferSize
+	 * @param targetProcessor
+	 * @throws DecodeException
+	 * @throws IOException
+	 * @throws E
+	 */
+	default <E extends Throwable> void decode(InputStream source, int bufferSize,
+			BufferProcessor<byte[], E> targetProcessor) throws DecodeException, IOException, E {
+		File tempFile = File.createTempFile("decode", "processor");
+		try {
+			decode(source, bufferSize, tempFile);
+			FileUtils.read(tempFile, bufferSize, targetProcessor);
+		} finally {
+			tempFile.delete();
+		}
+	}
 }

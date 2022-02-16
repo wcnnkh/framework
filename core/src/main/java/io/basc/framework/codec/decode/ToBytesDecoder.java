@@ -7,6 +7,8 @@ import java.io.OutputStream;
 
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.Decoder;
+import io.basc.framework.io.BufferProcessor;
+import io.basc.framework.io.FileUtils;
 import io.basc.framework.io.UnsafeByteArrayOutputStream;
 
 public interface ToBytesDecoder<E> extends Decoder<E, byte[]> {
@@ -33,4 +35,24 @@ public interface ToBytesDecoder<E> extends Decoder<E, byte[]> {
 	}
 
 	void decode(E source, OutputStream target) throws DecodeException, IOException;
+
+	/**
+	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
+	 * 
+	 * @param source
+	 * @param targetProcessor
+	 * @throws DecodeException
+	 * @throws IOException
+	 * @throws S
+	 */
+	default <S extends Throwable> void decode(E source, BufferProcessor<byte[], S> targetProcessor)
+			throws DecodeException, IOException, S {
+		File tempFile = File.createTempFile("decode", "processor");
+		try {
+			decode(source, tempFile);
+			FileUtils.read(tempFile, targetProcessor);
+		} finally {
+			tempFile.delete();
+		}
+	}
 }

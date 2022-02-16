@@ -9,6 +9,8 @@ import io.basc.framework.codec.EncodeException;
 import io.basc.framework.codec.Encoder;
 import io.basc.framework.codec.support.Base64;
 import io.basc.framework.codec.support.HexCodec;
+import io.basc.framework.io.BufferProcessor;
+import io.basc.framework.io.FileUtils;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.UnsafeByteArrayOutputStream;
 
@@ -57,4 +59,24 @@ public interface ToBytesEncoder<D> extends Encoder<D, byte[]> {
 	}
 
 	void encode(D source, OutputStream target) throws IOException, EncodeException;
+
+	/**
+	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
+	 * 
+	 * @param source
+	 * @param targetProcessor
+	 * @throws IOException
+	 * @throws EncodeException
+	 * @throws E
+	 */
+	default <E extends Throwable> void encode(D source, BufferProcessor<byte[], E> targetProcessor)
+			throws IOException, EncodeException, E {
+		File tempFile = File.createTempFile("encode", "processor");
+		try {
+			encode(source, tempFile);
+			FileUtils.read(tempFile, targetProcessor);
+		} finally {
+			tempFile.delete();
+		}
+	}
 }

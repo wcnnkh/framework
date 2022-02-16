@@ -28,8 +28,13 @@ class NestedBytesCodec extends NestedCodec<BytesCodec, BytesCodec, byte[], byte[
 			return;
 		}
 		File tempFile = File.createTempFile("nested", "decode");
-		parent.encode(source, bufferSize, tempFile, count);
-		codec.encode(tempFile, bufferSize, target, count);
+		try {
+			parent.encode(source, bufferSize, tempFile, count);
+			codec.encode(tempFile, bufferSize, target, count);
+		} finally {
+			tempFile.delete();
+		}
+
 	}
 
 	@Override
@@ -40,7 +45,12 @@ class NestedBytesCodec extends NestedCodec<BytesCodec, BytesCodec, byte[], byte[
 		}
 
 		File tempFile = File.createTempFile("nested", "decode");
-		codec.decode(source, bufferSize, tempFile, count);
-		parent.decode(tempFile, bufferSize, target, count);
+		try {
+			codec.decode(source, bufferSize, tempFile, count);
+			parent.decode(tempFile, bufferSize, target, count);
+		} finally {
+			tempFile.delete();
+		}
+
 	}
 }
