@@ -7,7 +7,7 @@ import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.http.client.HttpClient;
-import io.basc.framework.http.client.exception.HttpStatusCodeException;
+import io.basc.framework.http.client.HttpStatusCodeException;
 import io.basc.framework.rpc.RemoteException;
 import io.basc.framework.rpc.remote.RemoteMessageCodec;
 import io.basc.framework.rpc.remote.RemoteRequestMessage;

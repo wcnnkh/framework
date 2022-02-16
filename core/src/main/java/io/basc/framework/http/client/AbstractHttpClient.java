@@ -12,8 +12,6 @@ import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.HttpResponseEntity;
-import io.basc.framework.http.client.exception.HttpClientException;
-import io.basc.framework.http.client.exception.HttpClientResourceAccessException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.message.convert.MessageConverter;
 import io.basc.framework.net.uri.DefaultUriTemplateHandler;

@@ -1,4 +1,4 @@
-package io.basc.framework.http.client.exception;
+package io.basc.framework.http.client;
 
 import io.basc.framework.http.HttpHeaders;
 

@@ -10,7 +10,6 @@ import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.HttpRequestEntity.HeadersBuilder;
 import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.http.MediaType;
-import io.basc.framework.http.client.exception.HttpClientException;
 import io.basc.framework.lang.Nullable;
 
 public interface HttpConnection

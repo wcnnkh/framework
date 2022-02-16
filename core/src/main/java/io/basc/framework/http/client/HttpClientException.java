@@ -1,4 +1,4 @@
-package io.basc.framework.http.client.exception;
+package io.basc.framework.http.client;
 
 public class HttpClientException extends RuntimeException {
 	private static final long serialVersionUID = 1L;

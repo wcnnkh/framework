@@ -4,7 +4,6 @@ import java.net.URI;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.http.HttpResponseEntity;
-import io.basc.framework.http.client.exception.HttpClientException;
 
 public class HttpClientConnection extends AbstractHttpConnection {
 	private final HttpClient httpClient;
