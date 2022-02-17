@@ -22,9 +22,10 @@ import io.basc.framework.codec.support.DES;
 import io.basc.framework.codec.support.HexCodec;
 import io.basc.framework.codec.support.RSA;
 import io.basc.framework.codec.support.URLCodec;
+import io.basc.framework.util.XUtils;
 
 public class CodecTest {
-	public static String content = "这是一段加解密测试内容!";
+	public static String content = XUtils.getUUID() + "这是一段加解密测试内容!";
 	public static CharsetCodec charsetCodec = CharsetCodec.UTF_8;
 
 	@Test
@@ -38,6 +39,7 @@ public class CodecTest {
 		System.out.println("encode:" + encode);
 		String decode = codec.decode(encode);
 		System.out.println("decode:" + decode);
+		assertTrue(decode.equals(content));
 		System.out.println("----------------END DES------------------");
 	}
 
@@ -51,6 +53,7 @@ public class CodecTest {
 		System.out.println("encode:" + encode);
 		String decode = codec.decode(encode);
 		System.out.println("decode:" + decode);
+		assertTrue(decode.equals(content));
 		System.out.println("----------------END AES------------------");
 	}
 
@@ -71,6 +74,7 @@ public class CodecTest {
 		System.out.println("encode:" + encode);
 		String decode = codec.decode(encode);
 		System.out.println("decode:" + decode);
+		assertTrue(decode.equals(content));
 		System.out.println("----------------END RSA------------------");
 
 		SHA1WithRSASigner rsaSigner = new SHA1WithRSASigner(privateKey, publicKey);

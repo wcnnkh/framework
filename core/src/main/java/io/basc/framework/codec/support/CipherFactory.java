@@ -1,5 +1,7 @@
 package io.basc.framework.codec.support;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -11,70 +13,45 @@ import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.spec.AlgorithmParameterSpec;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import io.basc.framework.codec.CodecException;
+import io.basc.framework.io.BufferProcessor;
+import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 
 public class CipherFactory implements Cloneable {
-	private final ThreadLocal<Cipher[]> threadLocal;
+	private final ThreadLocal<Cipher> threadLocal;
+	private final int opmode;
 	private final String transformation;
 	private final Object key;
 	private final Object params;
 	private final SecureRandom secureRandom;
 	private final Object provider;
 
-	public CipherFactory(String transformation, @Nullable String provider, Certificate key,
-			@Nullable AlgorithmParameterSpec params, @Nullable SecureRandom secureRandom) {
-		this(transformation, (Object) provider, (Object) key, (Object) params, secureRandom);
+	public CipherFactory(String transformation, int opmode, Object key, @Nullable Object params) {
+		this(transformation, null, opmode, key, params, null);
 	}
 
-	public CipherFactory(String transformation, @Nullable String provider, Certificate key,
-			@Nullable AlgorithmParameters params, @Nullable SecureRandom secureRandom) {
-		this(transformation, (Object) provider, (Object) key, (Object) params, secureRandom);
+	public CipherFactory(String transformation, @Nullable Object provider, int opmode, Object key,
+			@Nullable Object params) {
+		this(transformation, provider, opmode, key, params, null);
 	}
 
-	public CipherFactory(String transformation, @Nullable String provider, Key key,
-			@Nullable AlgorithmParameterSpec params, @Nullable SecureRandom secureRandom) {
-		this(transformation, (Object) provider, (Object) key, (Object) params, secureRandom);
-	}
-
-	public CipherFactory(String transformation, @Nullable String provider, Key key,
-			@Nullable AlgorithmParameters params, @Nullable SecureRandom secureRandom) {
-		this(transformation, (Object) provider, (Object) key, (Object) params, secureRandom);
-	}
-
-	public CipherFactory(String transformation, @Nullable Provider provider, Certificate key,
-			@Nullable AlgorithmParameterSpec params, @Nullable SecureRandom secureRandom) {
-		this(transformation, (Object) provider, (Object) key, (Object) params, secureRandom);
-	}
-
-	public CipherFactory(String transformation, @Nullable Provider provider, Certificate key,
-			@Nullable AlgorithmParameters params, @Nullable SecureRandom secureRandom) {
-		this(transformation, (Object) provider, (Object) key, (Object) params, secureRandom);
-	}
-
-	public CipherFactory(String transformation, @Nullable Provider provider, Key key,
-			@Nullable AlgorithmParameterSpec params, @Nullable SecureRandom secureRandom) {
-		this(transformation, (Object) provider, (Object) key, (Object) params, secureRandom);
-	}
-
-	public CipherFactory(String transformation, @Nullable Provider provider, Key key,
-			@Nullable AlgorithmParameters params, @Nullable SecureRandom secureRandom) {
-		this(transformation, (Object) provider, (Object) key, (Object) params, secureRandom);
-	}
-
-	public CipherFactory(String transformation, @Nullable Object provider, Object key, @Nullable Object params,
-			@Nullable SecureRandom secureRandom) {
+	public CipherFactory(String transformation, @Nullable Object provider, int opmode, Object key,
+			@Nullable Object params, @Nullable SecureRandom secureRandom) {
 		Assert.requiredArgument(StringUtils.hasText(transformation), "transformation");
 		Assert.requiredArgument(key != null, "key");
-		this.threadLocal = new NamedThreadLocal<Cipher[]>(transformation);
+		this.threadLocal = new NamedThreadLocal<Cipher>(transformation);
 		this.transformation = transformation;
 		this.provider = provider;
+		this.opmode = opmode;
 		this.key = key;
 		this.params = params;
 		this.secureRandom = secureRandom;
@@ -84,6 +61,7 @@ public class CipherFactory implements Cloneable {
 		this.threadLocal = cipherFactory.threadLocal;
 		this.transformation = cipherFactory.transformation;
 		this.provider = cipherFactory.provider;
+		this.opmode = cipherFactory.opmode;
 		this.key = cipherFactory.key;
 		this.params = cipherFactory.params;
 		this.secureRandom = cipherFactory.secureRandom;
@@ -92,6 +70,10 @@ public class CipherFactory implements Cloneable {
 	@Override
 	public CipherFactory clone() {
 		return new CipherFactory(this);
+	}
+
+	public int getOpmode() {
+		return opmode;
 	}
 
 	public String getTransformation() {
@@ -114,19 +96,9 @@ public class CipherFactory implements Cloneable {
 		return provider;
 	}
 
-	public Cipher getCipher(int opmode) throws CodecException, NoSuchAlgorithmException, NoSuchPaddingException,
+	public Cipher getCipher() throws CodecException, NoSuchAlgorithmException, NoSuchPaddingException,
 			NoSuchProviderException, InvalidKeyException, InvalidAlgorithmParameterException {
-		Cipher[] ciphers = threadLocal.get();
-		if (ciphers == null) {
-			// 容量为4, 因为只有4种模式
-			ciphers = new Cipher[4];
-		}
-
-		if (opmode > ciphers.length) {
-			throw new CodecException(transformation + "[" + opmode + "]");
-		}
-
-		Cipher cipher = ciphers[opmode];
+		Cipher cipher = threadLocal.get();
 		if (cipher != null) {
 			return cipher;
 		}
@@ -170,8 +142,58 @@ public class CipherFactory implements Cloneable {
 				}
 			}
 		}
-		ciphers[opmode] = cipher;
-		threadLocal.set(ciphers);
+		threadLocal.set(cipher);
 		return cipher;
+	}
+
+	public <E extends Throwable> long doFinal(InputStream source, int bufferSize,
+			BufferProcessor<byte[], E> targetProcessor) throws IOException, CodecException, E {
+		Cipher cipher;
+		try {
+			cipher = getCipher();
+		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | NoSuchProviderException
+				| InvalidAlgorithmParameterException e) {
+			throw new CodecException(e);
+		}
+
+		return IOUtils.read(source, bufferSize, (buff, offset, len) -> {
+			byte[] target;
+			try {
+				target = cipher.doFinal(buff, offset, len);
+			} catch (IllegalBlockSizeException | BadPaddingException e) {
+				throw new CodecException(e);
+			}
+			targetProcessor.process(target, 0, target.length);
+		});
+	}
+
+	public byte[] doFinal(byte[] source) throws CodecException {
+		Cipher cipher;
+		try {
+			cipher = getCipher();
+		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | NoSuchProviderException
+				| InvalidAlgorithmParameterException e) {
+			throw new CodecException(e);
+		}
+		try {
+			return cipher.doFinal(source);
+		} catch (IllegalBlockSizeException | BadPaddingException e) {
+			throw new CodecException(e);
+		}
+	}
+
+	public byte[] doFinal(byte[] source, int offset, int len) throws CodecException {
+		Cipher cipher;
+		try {
+			cipher = getCipher();
+		} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | NoSuchProviderException
+				| InvalidAlgorithmParameterException e) {
+			throw new CodecException(e);
+		}
+		try {
+			return cipher.doFinal(source, offset, len);
+		} catch (IllegalBlockSizeException | BadPaddingException e) {
+			throw new CodecException(e);
+		}
 	}
 }

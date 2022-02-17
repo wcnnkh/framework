@@ -2,22 +2,12 @@ package io.basc.framework.codec.support;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.AlgorithmParameters;
-import java.security.InvalidKeyException;
 import java.security.Key;
-import java.security.spec.AlgorithmParameterSpec;
 
-import javax.crypto.Cipher;
-
-import io.basc.framework.codec.CodecException;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.io.BufferProcessor;
-import io.basc.framework.io.IOUtils;
-import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Assert;
 
 /**
  * 非对称加密 一次能加密的明文长度与密钥长度成正比：<br/>
@@ -29,122 +19,45 @@ import io.basc.framework.util.Assert;
  *
  */
 public class AsymmetricCodec extends CryptoCodec {
-	/**
-	 * ALGORITHM ['ælgərɪð(ə)m] 算法的意思
-	 */
-	public static final String RSA = "RSA";
-
 	public static final String SHA1WithRSA = "SHA1WithRSA";
 
-	protected final String algorithm;
-	protected final Key encodeKey;
-	private final Key decodeKey;
 	private final int maxBlock;
-	private final ThreadLocal<Cipher> encoderLocal;
-	private final ThreadLocal<Cipher> decoderLocal;
 
+	/**
+	 * @param algorithm ['ælgərɪð(ə)m] 算法的意思
+	 * @param encodeKey
+	 * @param decodeKey
+	 * @param maxBlock
+	 */
 	public AsymmetricCodec(String algorithm, @Nullable Key encodeKey, @Nullable Key decodeKey, int maxBlock) {
-		Assert.requiredArgument(algorithm != null, "algorithm");
-		Assert.requiredArgument(!(encodeKey == null && decodeKey == null), "encodeKey or decodeKey");
-		this.algorithm = algorithm;
-		this.encodeKey = encodeKey;
-		this.decodeKey = decodeKey;
+		super(algorithm, encodeKey, decodeKey, null);
 		this.maxBlock = maxBlock;
-		this.encoderLocal = new NamedThreadLocal<Cipher>(algorithm);
-		this.decoderLocal = new NamedThreadLocal<Cipher>(algorithm);
 	}
 
-	public final String getAlgorithm() {
-		return algorithm;
+	public AsymmetricCodec(CipherFactory encoder, CipherFactory decoder, int maxBlock) {
+		super(encoder, decoder);
+		this.maxBlock = maxBlock;
 	}
 
-	public Key getEncodeKey() {
-		return encodeKey;
-	}
-
-	public Key getDecodeKey() {
-		return decodeKey;
-	}
-	
-	public Cipher getEncoder() {
-		Cipher cipher = encoderLocal.get();
-		if(cipher != null) {
-			return cipher;
-		}
-		
-		cipher = getCipher(algorithm);
-		try {
-			cipher.init(Cipher.ENCRYPT_MODE, encodeKey);
-			cipher.init
-			cipher.init
-		} catch (InvalidKeyException e) {
-			throw new CodecException(e);
-		}
-	}
-
-	public Cipher getCipher() {
-		return getCipher(algorithm);
+	protected AsymmetricCodec(AsymmetricCodec codec) {
+		super(codec);
+		this.maxBlock = codec.maxBlock;
 	}
 
 	@Override
-	public String toString() {
-		return algorithm;
+	public AsymmetricCodec clone() {
+		return new AsymmetricCodec(this);
 	}
 
-	public <E extends Throwable> void doFinal(Cipher cipher, int maxBlock, InputStream source,
-			BufferProcessor<byte[], E> targetProcessor) throws Throwable {
-		Assert.requiredArgument(source != null, "source");
-		IOUtils.read(source, maxBlock, (buff, offset, len) -> {
-			byte[] target = cipher.doFinal(buff, offset, len);
-			targetProcessor.process(target, 0, target.length);
-		});
-	}
-	
 	@Override
 	public <E extends Throwable> void encode(InputStream source, int bufferSize,
 			BufferProcessor<byte[], E> targetProcessor) throws IOException, EncodeException, E {
-		Cipher cipher = getCipher();
-		try {
-			cipher.init(Cipher.ENCRYPT_MODE, encodeKey);
-		} catch (InvalidKeyException e) {
-			throw new CodecException(e);
-		}
-
-		try {
-			doFinal(cipher, this.maxBlock - 11, source, targetProcessor);
-		} catch (IOException e) {
-			throw e;
-		} catch (Throwable e) {
-			throw new EncodeException(e);
-		}
+		super.encode(source, this.maxBlock - 11, targetProcessor);
 	}
 
 	@Override
 	public <E extends Throwable> void decode(InputStream source, int bufferSize,
 			BufferProcessor<byte[], E> targetProcessor) throws DecodeException, IOException, E {
-		Cipher cipher = getCipher();
-		try {
-			cipher.init(Cipher.DECRYPT_MODE, decodeKey);
-		} catch (InvalidKeyException e) {
-			throw new CodecException(e);
-		}
-
-		try {
-			doFinal(cipher, this.maxBlock, source, targetProcessor);
-		} catch (IOException e) {
-			throw e;
-		} catch (Throwable e) {
-			throw new EncodeException(e);
-		}
-	}
-
-	@Override
-	public void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException {
-		encode(source, bufferSize, target::write);
-	}
-
-	@Override
-	public void decode(InputStream source, int bufferSize, OutputStream target) throws DecodeException, IOException {
-		decode(source, bufferSize, target::write);
+		super.decode(source, this.maxBlock, targetProcessor);
 	}
 }

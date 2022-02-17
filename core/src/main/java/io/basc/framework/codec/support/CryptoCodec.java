@@ -3,17 +3,12 @@ package io.basc.framework.codec.support;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.SecretKeySpec;
@@ -22,16 +17,80 @@ import io.basc.framework.codec.CodecException;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.io.BufferProcessor;
-import io.basc.framework.io.IOUtils;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 
-public class CryptoCodec extends SecurityCodec {
+public class CryptoCodec extends SecurityCodec implements Cloneable {
 	private final CipherFactory encoder;
 	private final CipherFactory decoder;
 
-	public CryptoCodec(CipherFactory encoder, CipherFactory decoder) {
+	/**
+	 * 对称编码
+	 * 
+	 * @param transformation
+	 * @param key
+	 * @param params
+	 */
+	public CryptoCodec(String transformation, Object key, @Nullable Object params) {
+		this(transformation, null, key, params, null);
+	}
+
+	/**
+	 * 对称编码
+	 * 
+	 * @param transformation
+	 * @param provider
+	 * @param key
+	 * @param params
+	 * @param secureRandom
+	 */
+	public CryptoCodec(String transformation, @Nullable Object provider, Object key, @Nullable Object params,
+			@Nullable SecureRandom secureRandom) {
+		this(transformation, provider, key, key, params, secureRandom);
+	}
+
+	/**
+	 * 非对称编码
+	 * 
+	 * @param transformation
+	 * @param encoderKey
+	 * @param decoderKey
+	 * @param params
+	 */
+	public CryptoCodec(String transformation, @Nullable Object encoderKey, @Nullable Object decoderKey,
+			@Nullable Object params) {
+		this(transformation, null, encoderKey, decoderKey, params, null);
+	}
+
+	/**
+	 * 非对称编码
+	 * 
+	 * @param transformation
+	 * @param provider
+	 * @param encoderKey
+	 * @param decoderKey
+	 * @param params
+	 * @param secureRandom
+	 */
+	public CryptoCodec(String transformation, @Nullable Object provider, @Nullable Object encoderKey,
+			@Nullable Object decoderKey, @Nullable Object params, @Nullable SecureRandom secureRandom) {
+		this(encoderKey == null ? null : new CipherFactory(transformation, Cipher.ENCRYPT_MODE, encoderKey, params),
+				decoderKey == null ? null : new CipherFactory(transformation, Cipher.DECRYPT_MODE, decoderKey, params));
+	}
+
+	public CryptoCodec(@Nullable CipherFactory encoder, @Nullable CipherFactory decoder) {
 		this.encoder = encoder;
 		this.decoder = decoder;
+	}
+
+	protected CryptoCodec(CryptoCodec codec) {
+		this.decoder = codec.decoder;
+		this.encoder = codec.encoder;
+	}
+
+	@Override
+	public CryptoCodec clone() {
+		return new CryptoCodec(this);
 	}
 
 	public static SecretKeyFactory getSecretKeyFactory(String algorithm) {
@@ -55,85 +114,49 @@ public class CryptoCodec extends SecurityCodec {
 		return new SecretKeySpec(secretKey, algorithm);
 	}
 
-	public CipherFactory getEncoder() {
+	@Nullable
+	public final CipherFactory getEncoder() {
 		return encoder;
 	}
 
-	public CipherFactory getDecoder() {
+	@Nullable
+	public final CipherFactory getDecoder() {
 		return decoder;
 	}
 
 	@Override
 	public byte[] encode(byte[] source) throws EncodeException {
-		Cipher cipher;
-		try {
-			cipher = encoder.getCipher(Cipher.ENCRYPT_MODE);
-		} catch (CodecException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
-				| NoSuchProviderException | InvalidAlgorithmParameterException e) {
-			throw new CodecException(e);
-		}
-		try {
-			return cipher.doFinal(source);
-		} catch (IllegalBlockSizeException | BadPaddingException e) {
-			throw new EncodeException(e);
-		}
+		Assert.requiredArgument(encoder != null, "encoder");
+		return encoder.doFinal(source);
 	}
 
 	@Override
 	public byte[] decode(byte[] source) throws DecodeException {
-		Cipher cipher;
-		try {
-			cipher = encoder.getCipher(Cipher.DECRYPT_MODE);
-		} catch (CodecException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
-				| NoSuchProviderException | InvalidAlgorithmParameterException e) {
-			throw new CodecException(e);
-		}
-		try {
-			return cipher.doFinal(source);
-		} catch (IllegalBlockSizeException | BadPaddingException e) {
-			throw new EncodeException(e);
-		}
-	}
-
-	public <E extends Throwable> void doFinal(int opmode, int maxBlock, InputStream source,
-			BufferProcessor<byte[], E> targetProcessor) throws Throwable {
-		Assert.requiredArgument(source != null, "source");
-		Cipher cipher = get
-		IOUtils.read(source, maxBlock, (buff, offset, len) -> {
-			byte[] target = cipher.doFinal(buff, offset, len);
-			targetProcessor.process(target, 0, target.length);
-		});
+		Assert.requiredArgument(decoder != null, "decoder");
+		return decoder.doFinal(source);
 	}
 
 	@Override
 	public void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException {
-		Cipher cipher;
-		try {
-			cipher = encoder.getCipher(Cipher.DECRYPT_MODE);
-		} catch (CodecException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
-				| NoSuchProviderException | InvalidAlgorithmParameterException e) {
-			throw new CodecException(e);
-		}
-		try {
-			return cipher.doFinal(source);
-		} catch (IllegalBlockSizeException | BadPaddingException e) {
-			throw new EncodeException(e);
-		}
+		encode(source, bufferSize, target::write);
 	}
 
 	@Override
 	public void decode(InputStream source, int bufferSize, OutputStream target) throws DecodeException, IOException {
-		Cipher cipher;
-		try {
-			cipher = encoder.getCipher(Cipher.DECRYPT_MODE);
-		} catch (CodecException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
-				| NoSuchProviderException | InvalidAlgorithmParameterException e) {
-			throw new CodecException(e);
-		}
-		try {
-			return cipher.doFinal(source);
-		} catch (IllegalBlockSizeException | BadPaddingException e) {
-			throw new EncodeException(e);
-		}
+		decode(source, bufferSize, target::write);
+	}
+
+	@Override
+	public <E extends Throwable> void encode(InputStream source, int bufferSize,
+			BufferProcessor<byte[], E> targetProcessor) throws IOException, EncodeException, E {
+		Assert.requiredArgument(encoder != null, "encoder");
+		encoder.doFinal(source, bufferSize, targetProcessor);
+	}
+
+	@Override
+	public <E extends Throwable> void decode(InputStream source, int bufferSize,
+			BufferProcessor<byte[], E> targetProcessor) throws DecodeException, IOException, E {
+		Assert.requiredArgument(decoder != null, "decoder");
+		decoder.doFinal(source, bufferSize, targetProcessor);
 	}
 }
