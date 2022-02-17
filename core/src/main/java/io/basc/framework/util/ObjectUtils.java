@@ -155,7 +155,7 @@ public abstract class ObjectUtils {
 	/**
 	 * Case insensitive alternative to {@link Enum#valueOf(Class, String)}.
 	 * 
-	 * @param            <E> the concrete Enum type
+	 * @param <E>        the concrete Enum type
 	 * @param enumValues the array of all Enum constants in question, usually per
 	 *                   Enum.values()
 	 * @param constant   the constant to get the enum value of
@@ -291,12 +291,12 @@ public abstract class ObjectUtils {
 	 * 浅拷贝
 	 * 
 	 * @see ObjectUtils#clone(Object, boolean)
-	 * @param        <T>
+	 * @param <T>
 	 * @param source
 	 * @return 如果无法克隆就返回本身
 	 */
 	public static <T> T clone(T source) {
-		return clone(source, true);
+		return clone(source, false);
 	}
 
 	/**
@@ -312,7 +312,7 @@ public abstract class ObjectUtils {
 	 * @see CollectionFactory#clone(Map, boolean)
 	 * @see ReflectionUtils#invokeCloneMethod(Object)
 	 * @see ReflectionUtils#clone(Object, boolean)
-	 * @param        <T>
+	 * @param <T>
 	 * @param source
 	 * @param deep   对集合的操作
 	 * @return 如果无法克隆就返回本身

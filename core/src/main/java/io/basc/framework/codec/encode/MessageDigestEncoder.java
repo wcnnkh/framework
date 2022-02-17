@@ -9,21 +9,56 @@ import java.security.NoSuchAlgorithmException;
 import io.basc.framework.codec.CodecException;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.io.IOUtils;
+import io.basc.framework.lang.NamedThreadLocal;
 
-public class MessageDigestEncoder implements BytesEncoder {
+public class MessageDigestEncoder implements BytesEncoder, Cloneable {
+	private final NamedThreadLocal<MessageDigest> threadLocal;
+
 	protected final String algorithm;
 	private byte[] secretKey;
 
 	public MessageDigestEncoder(String algorithm) {
 		this.algorithm = algorithm;
+		threadLocal = new NamedThreadLocal<MessageDigest>(algorithm);
+	}
+
+	protected MessageDigestEncoder(MessageDigestEncoder encoder) {
+		this.threadLocal = encoder.threadLocal;
+		this.algorithm = encoder.algorithm;
+		this.secretKey = encoder.secretKey;
+	}
+
+	public byte[] getSecretKey() {
+		return secretKey;
+	}
+
+	public void setSecretKey(byte[] secretKey) {
+		this.secretKey = secretKey;
+	}
+
+	public String getAlgorithm() {
+		return algorithm;
+	}
+
+	@Override
+	public MessageDigestEncoder clone() {
+		return new MessageDigestEncoder(this);
 	}
 
 	public MessageDigest getMessageDigest() {
-		return getMessageDigest(algorithm);
+		MessageDigest messageDigest = threadLocal.get();
+		if (messageDigest != null) {
+			messageDigest.reset();
+			return messageDigest;
+		}
+
+		messageDigest = getMessageDigest(algorithm);
+		threadLocal.set(messageDigest);
+		return messageDigest;
 	}
 
 	public MessageDigestEncoder wrapperSecretKey(byte[] secretKey) {
-		MessageDigestEncoder signer = new MessageDigestEncoder(algorithm);
+		MessageDigestEncoder signer = clone();
 		signer.secretKey = secretKey;
 		return signer;
 	}
@@ -44,7 +79,6 @@ public class MessageDigestEncoder implements BytesEncoder {
 	@Override
 	public byte[] encode(InputStream source, int bufferSize) throws IOException, EncodeException {
 		MessageDigest messageDigest = getMessageDigest();
-		messageDigest.reset();
 		if (secretKey != null) {
 			messageDigest.update(secretKey);
 		}

@@ -108,4 +108,22 @@ public class CodecTest {
 		System.out.println("md5:" + sign);
 		assertTrue(md5.verify(msg, sign));
 	}
+
+	@Test
+	public void HmacSHA1() {
+		Encoder<String, String> mac = charsetCodec
+				.toEncoder(new io.basc.framework.codec.encode.HmacSHA1("1234".getBytes()).toHex());
+		String sign = mac.encode(content);
+		System.out.println("HmacSHA1:" + sign);
+		assertTrue(mac.verify(content, sign));
+	}
+
+	@Test
+	public void HmacMD5() {
+		Encoder<String, String> mac = charsetCodec
+				.toEncoder(new io.basc.framework.codec.encode.HmacMD5("1234".getBytes()).toHex());
+		String sign = mac.encode(content);
+		System.out.println("HmacMD5:" + sign);
+		assertTrue(mac.verify(content, sign));
+	}
 }

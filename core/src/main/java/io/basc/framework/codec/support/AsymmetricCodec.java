@@ -3,8 +3,10 @@ package io.basc.framework.codec.support;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.AlgorithmParameters;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.spec.AlgorithmParameterSpec;
 
 import javax.crypto.Cipher;
 
@@ -13,6 +15,7 @@ import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.io.BufferProcessor;
 import io.basc.framework.io.IOUtils;
+import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 
@@ -37,6 +40,8 @@ public class AsymmetricCodec extends CryptoCodec {
 	protected final Key encodeKey;
 	private final Key decodeKey;
 	private final int maxBlock;
+	private final ThreadLocal<Cipher> encoderLocal;
+	private final ThreadLocal<Cipher> decoderLocal;
 
 	public AsymmetricCodec(String algorithm, @Nullable Key encodeKey, @Nullable Key decodeKey, int maxBlock) {
 		Assert.requiredArgument(algorithm != null, "algorithm");
@@ -45,6 +50,8 @@ public class AsymmetricCodec extends CryptoCodec {
 		this.encodeKey = encodeKey;
 		this.decodeKey = decodeKey;
 		this.maxBlock = maxBlock;
+		this.encoderLocal = new NamedThreadLocal<Cipher>(algorithm);
+		this.decoderLocal = new NamedThreadLocal<Cipher>(algorithm);
 	}
 
 	public final String getAlgorithm() {
@@ -57,6 +64,22 @@ public class AsymmetricCodec extends CryptoCodec {
 
 	public Key getDecodeKey() {
 		return decodeKey;
+	}
+	
+	public Cipher getEncoder() {
+		Cipher cipher = encoderLocal.get();
+		if(cipher != null) {
+			return cipher;
+		}
+		
+		cipher = getCipher(algorithm);
+		try {
+			cipher.init(Cipher.ENCRYPT_MODE, encodeKey);
+			cipher.init
+			cipher.init
+		} catch (InvalidKeyException e) {
+			throw new CodecException(e);
+		}
 	}
 
 	public Cipher getCipher() {
@@ -76,7 +99,7 @@ public class AsymmetricCodec extends CryptoCodec {
 			targetProcessor.process(target, 0, target.length);
 		});
 	}
-
+	
 	@Override
 	public <E extends Throwable> void encode(InputStream source, int bufferSize,
 			BufferProcessor<byte[], E> targetProcessor) throws IOException, EncodeException, E {
