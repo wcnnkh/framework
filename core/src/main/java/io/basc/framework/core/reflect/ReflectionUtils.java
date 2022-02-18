@@ -2,6 +2,7 @@ package io.basc.framework.core.reflect;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
@@ -14,7 +15,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import io.basc.framework.core.Members;
 import io.basc.framework.core.parameter.ParameterUtils;
@@ -27,6 +30,7 @@ import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.stream.Processor;
 
 public abstract class ReflectionUtils {
@@ -66,7 +70,7 @@ public abstract class ReflectionUtils {
 	 * 
 	 * @see #makeAccessible(Constructor)
 	 * @see Class#getDeclaredConstructor(Class...)
-	 * @param      <T>
+	 * @param <T>
 	 * @param type
 	 * @return
 	 */
@@ -101,7 +105,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * @see Class#getConstructor(Class...)
 	 * @see #getDeclaredConstructor(Class)
-	 * @param      <T>
+	 * @param <T>
 	 * @param type
 	 * @return
 	 */
@@ -112,7 +116,7 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see Class#getConstructor(Class...)
-	 * @param                <T>
+	 * @param <T>
 	 * @param type
 	 * @param parameterTypes
 	 * @return
@@ -135,7 +139,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * @see ClassUtils#getClass(String, ClassLoader)
 	 * @see #getConstructor(Class, Class...)
-	 * @param                <T>
+	 * @param <T>
 	 * @param className
 	 * @param classLoader
 	 * @param parameterTypes
@@ -155,7 +159,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * @see ClassUtils#getClass(String, ClassLoader)
 	 * @see #getDeclaredConstructor(Class, Class...)
-	 * @param                <T>
+	 * @param <T>
 	 * @param className
 	 * @param classLoader
 	 * @param parameterTypes
@@ -174,7 +178,7 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see Class#getDeclaredConstructor(Class...)
-	 * @param                <T>
+	 * @param <T>
 	 * @param type
 	 * @param parameterTypes
 	 * @return
@@ -272,7 +276,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * 使用反射查找无参的构造方法(包含未公开的构造方法)
 	 * 
-	 * @param       <T>
+	 * @param <T>
 	 * @param clazz
 	 * @return
 	 * @throws IllegalArgumentException 不存在无参构造方法
@@ -483,6 +487,178 @@ public abstract class ReflectionUtils {
 			handleReflectionException(ex);
 		}
 		throw new IllegalStateException("Should never get here");
+	}
+
+	private static <T extends Executable> ExecutableMatchingResults<T> getExecutableMatchingResults(T executable,
+			Object[] params, int minStart) {
+		Class<?>[] parameterTypes = executable.getParameterTypes();
+		if (parameterTypes.length == 0) {
+			return new ExecutableMatchingResults<>(executable, new Object[0], 0);
+		}
+
+		Object[] cloneParams = params.clone();
+		Object[] args = new Object[parameterTypes.length];
+		int count = 0;
+		for (int i = 0; i < parameterTypes.length; i++) {
+			Class<?> parameterType = parameterTypes[i];
+			// 取最小值的目的是可以动态控制初始查找位置
+			for (int a = Math.min(minStart, i); a < cloneParams.length; a++) {
+				Object value = cloneParams[a];
+				if (value == null) {
+					continue;
+				}
+
+				if (ClassUtils.isAssignableValue(parameterType, value)) {
+					args[i] = value;
+					cloneParams[a] = null;
+					count++;
+					break;
+				}
+			}
+		}
+		return new ExecutableMatchingResults<>(executable, args, count);
+	}
+
+	public static <T extends Executable> Stream<ExecutableMatchingResults<T>> matchParams(Stream<T> sourceStream,
+			int validParametersCount, Object... params) {
+		Assert.requiredArgument(sourceStream != null, "sourceStream");
+		Assert.requiredArgument(params != null, "params");
+		return sourceStream.filter((e) -> e.getParameterCount() <= validParametersCount).sorted((e1, e2) -> {
+			Class<?>[] parameterTypes1 = e1.getParameterTypes();
+			Class<?>[] parameterTypes2 = e2.getParameterTypes();
+			int v = Integer.compare(parameterTypes1.length, parameterTypes2.length);
+			if (v == 0) {
+				int leftCount = 0;
+				int rightCount = 0;
+				for (int i = 0; i < parameterTypes1.length; i++) {
+					if (ClassUtils.isAssignable(parameterTypes1[i], parameterTypes2[i])) {
+						leftCount++;
+					}
+
+					if (ClassUtils.isAssignable(parameterTypes2[i], parameterTypes1[i])) {
+						rightCount++;
+					}
+				}
+
+				if (leftCount == rightCount) {
+					// 参数数量相同，比较参数顺序
+					ExecutableMatchingResults<T> matchingResults1 = getExecutableMatchingResults(e1, params,
+							params.length);
+					ExecutableMatchingResults<T> matchingResults2 = getExecutableMatchingResults(e2, params,
+							params.length);
+					return Integer.compare(matchingResults2.getMatchingResultes(),
+							matchingResults1.getMatchingResultes());
+				}
+				return leftCount - rightCount;
+			}
+			return -v;
+		}).map((e) -> getExecutableMatchingResults(e, params, 0))
+				.sorted((e1, e2) -> Integer.compare(e2.getMatchingResultes(), e1.getMatchingResultes()))
+				.filter((e) -> e.getExecutable().getParameterCount() == e.getMatchingResultes());
+	}
+
+	/**
+	 * 通过参数获取可以调用的{@link java.lang.reflect.Executable}
+	 * 
+	 * @param <T>
+	 * @param sourceStream
+	 * @param strict       true表示严格的验证参数(包含有效长度、类型等)
+	 * @param params
+	 * @return
+	 * @throws NoSuchMethodException
+	 */
+	public static <T extends Executable> ExecutableMatchingResults<T> getByParams(Stream<T> sourceStream,
+			boolean strict, Object... params) throws NoSuchMethodException {
+		long validParametersCount = Arrays.asList(params).stream().filter((e) -> e != null).count();
+		Stream<ExecutableMatchingResults<T>> stream;
+		if (strict) {
+			stream = matchParams(sourceStream, (int) validParametersCount, params)
+					.filter((e) -> e.getMatchingResultes() == validParametersCount);
+		} else {
+			stream = matchParams(sourceStream, params.length, params);
+		}
+
+		try {
+			return stream.findFirst().get();
+		} catch (NoSuchElementException e) {
+			throw (e.getLocalizedMessage() == null ? new NoSuchMethodException()
+					: new NoSuchMethodException(e.getLocalizedMessage()));
+		}
+	}
+
+	/**
+	 * 获取重载的方法
+	 * 
+	 * @param <T>
+	 * @param sourceClass
+	 * @param methodName
+	 * @param strict      {@link #findByParams(Stream, boolean, Object...)}
+	 * @param args
+	 * @return
+	 * @throws NoSuchMethodException
+	 */
+	public static ExecutableMatchingResults<Method> getOverloadMethod(Class<?> sourceClass, String methodName,
+			boolean strict, Predicate<Method> predicate, Object... args) throws NoSuchMethodException {
+		Assert.requiredArgument(sourceClass != null, "sourceClass");
+		Stream<Method> methods = getMethods(sourceClass).withAll().streamAll()
+				.filter((m) -> StringUtils.isEmpty(methodName) || methodName.equals(m.getName())).filter(predicate);
+		return getByParams(methods, strict, args);
+	}
+
+	/**
+	 * 根据参数调用方法(非静态方法)
+	 * 
+	 * @param target
+	 * @param methodName
+	 * @param strict     {@link #findByParams(Stream, boolean, Object...)}
+	 * @param args
+	 * @return
+	 * @throws NoSuchMethodException 不存在对应的方法
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T invokeOverloadMethod(Object target, String methodName, boolean strict, Object... args)
+			throws NoSuchMethodException {
+		Assert.requiredArgument(target != null, "target");
+		ExecutableMatchingResults<Method> results = getOverloadMethod(target.getClass(), methodName, strict,
+				(m) -> !Modifier.isStatic(m.getModifiers()), args);
+		return (T) invoke(results.getExecutable(), target, results.getUnsafeParams());
+	}
+
+	/**
+	 * 根据参数调用方法(静态方法)
+	 * 
+	 * @param sourceClass
+	 * @param methodName
+	 * @param strict      {@link #findByParams(Stream, boolean, Object...)}
+	 * @param args
+	 * @return
+	 * @throws NoSuchMethodException 不存在对应的方法
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T invokeOverloadMethod(Class<?> sourceClass, String methodName, boolean strict, Object... args)
+			throws NoSuchMethodException {
+		ExecutableMatchingResults<Method> results = getOverloadMethod(sourceClass, methodName, strict,
+				(m) -> Modifier.isStatic(m.getModifiers()), args);
+		return (T) invoke(results.getExecutable(), null, results.getUnsafeParams());
+	}
+
+	/**
+	 * 根据参数调用构造方法
+	 * 
+	 * @param <T>
+	 * @param sourceClass
+	 * @param strict      {@link #findByParams(Stream, boolean, Object...)}
+	 * @param args
+	 * @return
+	 * @throws NoSuchMethodException 不存在指定的构造方法
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T invokeOverloadConstructor(Class<? extends T> sourceClass, boolean strict, Object... args)
+			throws NoSuchMethodException {
+		Assert.requiredArgument(sourceClass != null, "sourceClass");
+		Stream<Constructor<?>> constructors = getConstructors(sourceClass).streamAll();
+		ExecutableMatchingResults<Constructor<?>> results = getByParams(constructors, strict, args);
+		return (T) newInstance(results.getExecutable(), results.getUnsafeParams());
 	}
 
 	/**
@@ -739,7 +915,9 @@ public abstract class ReflectionUtils {
 		}
 
 		int size = parameterMap.size();
-		for (Method method : type.getDeclaredMethods()) {
+		Iterator<Method> iterator = getDeclaredMethods(type).withAll().streamAll().iterator();
+		while (iterator.hasNext()) {
+			Method method = iterator.next();
 			if (size == method.getParameterTypes().length) {
 				String[] names = ParameterUtils.getParameterNames(method);
 				Object[] args = new Object[size];
@@ -754,19 +932,10 @@ public abstract class ReflectionUtils {
 				}
 
 				if (find) {
-					if (!Modifier.isPublic(method.getModifiers())) {
-						method.setAccessible(true);
-					}
-					try {
-						return method.invoke(instance, args);
-					} catch (Exception e) {
-						new RuntimeException(e);
-					}
-					break;
+					return invoke(method, instance, args);
 				}
 			}
 		}
-
 		throw new NoSuchMethodException(type.getName() + ", method=" + name);
 	}
 
@@ -856,7 +1025,7 @@ public abstract class ReflectionUtils {
 	 * @param sourceClass
 	 * @return
 	 */
-	public static Members<Field, RuntimeException> getFields(Class<?> sourceClass) {
+	public static Members<Field> getFields(Class<?> sourceClass) {
 		return new Members<>(sourceClass, (c) -> {
 			if (c == Object.class) {
 				return null;
@@ -873,7 +1042,7 @@ public abstract class ReflectionUtils {
 	 * @param sourceClass
 	 * @return
 	 */
-	public static Members<Field, RuntimeException> getDeclaredFields(Class<?> sourceClass) {
+	public static Members<Field> getDeclaredFields(Class<?> sourceClass) {
 		return new Members<>(sourceClass, (c) -> {
 			if (c == Object.class) {
 				return null;
@@ -890,7 +1059,7 @@ public abstract class ReflectionUtils {
 	 * @param sourceClass
 	 * @return
 	 */
-	public static Members<Method, RuntimeException> getMethods(Class<?> sourceClass) {
+	public static Members<Method> getMethods(Class<?> sourceClass) {
 		return new Members<>(sourceClass, (c) -> {
 			Method[] methods = c.getMethods();
 			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
@@ -903,7 +1072,7 @@ public abstract class ReflectionUtils {
 	 * @param sourceClass
 	 * @return
 	 */
-	public static Members<Method, RuntimeException> getDeclaredMethods(Class<?> sourceClass) {
+	public static Members<Method> getDeclaredMethods(Class<?> sourceClass) {
 		return new Members<>(sourceClass, (c) -> {
 			Method[] methods = c.getDeclaredMethods();
 			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
@@ -916,7 +1085,7 @@ public abstract class ReflectionUtils {
 	 * @param sourceClass
 	 * @return
 	 */
-	public static Members<Constructor<?>, RuntimeException> getConstructors(Class<?> sourceClass) {
+	public static Members<Constructor<?>> getConstructors(Class<?> sourceClass) {
 		return new Members<>(sourceClass, (c) -> {
 			if (c == Object.class) {
 				return null;
@@ -933,7 +1102,7 @@ public abstract class ReflectionUtils {
 	 * @param sourceClass
 	 * @return
 	 */
-	public static Members<Constructor<?>, RuntimeException> getDeclaredConstructors(Class<?> sourceClass) {
+	public static Members<Constructor<?>> getDeclaredConstructors(Class<?> sourceClass) {
 		return new Members<>(sourceClass, (c) -> {
 			if (c == Object.class) {
 				return null;
@@ -987,7 +1156,7 @@ public abstract class ReflectionUtils {
 		return (T[]) invoke(method, null);
 	}
 
-	public static <T, E extends RuntimeException> void clone(T source, T target, boolean deep) throws E {
+	public static <T> void clone(T source, T target, boolean deep) {
 		Assert.requiredArgument(target != null, "target");
 		if (source == null) {
 			return;
@@ -996,8 +1165,7 @@ public abstract class ReflectionUtils {
 		clone(getDeclaredFields(target.getClass()).withAll(), source, target, deep);
 	}
 
-	public static <T, E extends RuntimeException> void clone(Members<Field, E> members, T source, T target,
-			boolean deep) throws E {
+	public static <T> void clone(Members<Field> members, T source, T target, boolean deep) {
 		Assert.requiredArgument(members != null, "members");
 		if (source == null || target == null) {
 			return;
@@ -1020,15 +1188,14 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see ReflectionApi#newInstance(Class)
-	 * @param         <T>
-	 * @param         <E>
+	 * @param <T>
 	 * @param members
 	 * @param source
 	 * @param deep    对集合的操作
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T, E extends RuntimeException> T clone(Members<Field, E> members, T source, boolean deep) {
+	public static <T> T clone(Members<Field> members, T source, boolean deep) {
 		Assert.requiredArgument(members != null, "members");
 		if (source == null) {
 			return null;
@@ -1079,14 +1246,12 @@ public abstract class ReflectionUtils {
 		return clone(source, false);
 	}
 
-	public static <M extends Member, E extends RuntimeException> Members<M, E> getEntityMembers(Class<?> entityClass,
-			Processor<Class<?>, M[], E> processor) {
-		return new Members<M, E>(entityClass,
-				(c) -> Arrays.asList(processor.process(c)).stream().filter(ENTITY_MEMBER));
+	public static <M extends Member> Members<M> getEntityMembers(Class<?> entityClass,
+			Processor<Class<?>, M[], ? extends RuntimeException> processor) {
+		return new Members<M>(entityClass, (c) -> Arrays.asList(processor.process(c)).stream().filter(ENTITY_MEMBER));
 	}
 
-	public static <T, E extends RuntimeException> String toString(Members<Field, E> members, T entity, boolean deep)
-			throws E {
+	public static <T> String toString(Members<Field> members, T entity, boolean deep) {
 		Assert.requiredArgument(members != null, "members");
 		if (entity == null) {
 			return null;
@@ -1173,17 +1338,15 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see #ENTITY_MEMBER
-	 * @param         <T>
-	 * @param         <E>
+	 * @param <T>
+	 * @param <E>
 	 * @param members
 	 * @param left
 	 * @param right
 	 * @param deep
 	 * @return
-	 * @throws E
 	 */
-	public static <T, E extends RuntimeException> boolean equals(Members<Field, E> members, T left, T right,
-			boolean deep) throws E {
+	public static <T, E> boolean equals(Members<Field> members, T left, T right, boolean deep) {
 		Assert.requiredArgument(members != null, "members");
 		if (left == right) {
 			return true;
@@ -1203,7 +1366,7 @@ public abstract class ReflectionUtils {
 		return true;
 	}
 
-	public static <T, E extends RuntimeException> boolean equals(Members<Field, E> members, T left, T right) throws E {
+	public static <T> boolean equals(Members<Field> members, T left, T right) {
 		return equals(members, left, right, true);
 	}
 
@@ -1234,15 +1397,13 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see #ENTITY_MEMBER
-	 * @param         <E>
+	 * @param <E>
 	 * @param members
 	 * @param entity
 	 * @param deep
 	 * @return
-	 * @throws E
 	 */
-	public static <E extends RuntimeException> int hashCode(Members<Field, E> members, Object entity, boolean deep)
-			throws E {
+	public static int hashCode(Members<Field> members, Object entity, boolean deep) {
 		Assert.requiredArgument(members != null, "members");
 		if (entity == null) {
 			return 0;
@@ -1257,7 +1418,7 @@ public abstract class ReflectionUtils {
 		return hashCode;
 	}
 
-	public static <E extends RuntimeException> int hashCode(Members<Field, E> members, Object entity) throws E {
+	public static int hashCode(Members<Field> members, Object entity) {
 		return hashCode(members, entity, true);
 	}
 

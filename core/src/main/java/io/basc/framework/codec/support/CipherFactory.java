@@ -2,16 +2,12 @@ package io.basc.framework.codec.support;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.AlgorithmParameters;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.Provider;
 import java.security.SecureRandom;
-import java.security.cert.Certificate;
-import java.security.spec.AlgorithmParameterSpec;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -19,6 +15,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import io.basc.framework.codec.CodecException;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.io.BufferProcessor;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.NamedThreadLocal;
@@ -113,34 +110,10 @@ public class CipherFactory implements Cloneable {
 			throw new CodecException(provider.toString());
 		}
 
-		if (params == null) {
-			if (key instanceof Certificate) {
-				if (secureRandom == null) {
-					cipher.init(opmode, (Certificate) key);
-				} else {
-					cipher.init(opmode, (Certificate) key, secureRandom);
-				}
-			} else if (key instanceof Key) {
-				if (secureRandom == null) {
-					cipher.init(opmode, (Key) key);
-				} else {
-					cipher.init(opmode, (Key) key, secureRandom);
-				}
-			}
-		} else {
-			if (params instanceof AlgorithmParameterSpec) {
-				if (secureRandom == null) {
-					cipher.init(opmode, (Key) key, (AlgorithmParameterSpec) params);
-				} else {
-					cipher.init(opmode, (Key) key, (AlgorithmParameterSpec) secureRandom);
-				}
-			} else if (params instanceof AlgorithmParameters) {
-				if (secureRandom == null) {
-					cipher.init(opmode, (Key) key, (AlgorithmParameters) params);
-				} else {
-					cipher.init(opmode, (Key) key, (AlgorithmParameters) params, secureRandom);
-				}
-			}
+		try {
+			ReflectionUtils.invokeOverloadMethod(cipher, "init", true, opmode, key, params, secureRandom);
+		} catch (NoSuchMethodException e) {
+			throw new CodecException(e);
 		}
 		threadLocal.set(cipher);
 		return cipher;
