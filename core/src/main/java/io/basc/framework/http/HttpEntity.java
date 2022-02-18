@@ -1,26 +1,12 @@
-/*
- * Copyright 2002-2015 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package io.basc.framework.http;
 
+import java.io.Serializable;
+
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.message.Entity;
 import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.ObjectUtils;
-
-import java.io.Serializable;
 
 public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -32,7 +18,11 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable {
 
 	private final HttpHeaders headers;
 
+	@Nullable
 	private final T body;
+
+	@Nullable
+	private final TypeDescriptor typeDescriptor;
 
 	/**
 	 * Create a new, empty {@code HttpEntity}.
@@ -46,8 +36,8 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable {
 	 * 
 	 * @param body the entity body
 	 */
-	public HttpEntity(T body) {
-		this(body, null);
+	public HttpEntity(T body, TypeDescriptor bodyTypeDescriptor) {
+		this(body, bodyTypeDescriptor, null);
 	}
 
 	/**
@@ -56,7 +46,7 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable {
 	 * @param headers the entity headers
 	 */
 	public HttpEntity(MultiValueMap<String, String> headers) {
-		this(null, headers);
+		this(null, null, headers);
 	}
 
 	/**
@@ -65,8 +55,9 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable {
 	 * @param body    the entity body
 	 * @param headers the entity headers
 	 */
-	public HttpEntity(T body, MultiValueMap<String, String> headers) {
+	public HttpEntity(T body, TypeDescriptor bodyTypeDescriptor, MultiValueMap<String, String> headers) {
 		this.body = body;
+		this.typeDescriptor = bodyTypeDescriptor;
 		HttpHeaders tempHeaders = new HttpHeaders();
 		if (headers != null) {
 			tempHeaders.putAll(headers);
@@ -93,6 +84,22 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable {
 	 */
 	public boolean hasBody() {
 		return (this.body != null);
+	}
+
+	/**
+	 * Return the type of the request's body.
+	 * 
+	 * @return the request's body type, or {@code null} if not known
+	 */
+	@Nullable
+	public TypeDescriptor getTypeDescriptor() {
+		if (this.typeDescriptor == null) {
+			T body = getBody();
+			if (body != null) {
+				return TypeDescriptor.forObject(body);
+			}
+		}
+		return this.typeDescriptor;
 	}
 
 	@Override

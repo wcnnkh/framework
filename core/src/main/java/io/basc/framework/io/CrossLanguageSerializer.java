@@ -14,26 +14,26 @@ import java.io.OutputStream;
  */
 public interface CrossLanguageSerializer {
 
-	void serialize(OutputStream out, TypeDescriptor type, Object data) throws IOException;
+	void serialize(Object source, TypeDescriptor sourceTypeDescriptor, OutputStream target) throws IOException;
 
-	default byte[] serialize(TypeDescriptor type, Object data) {
-		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream();
+	default byte[] serialize(Object source, TypeDescriptor sourceTypeDescriptor) {
+		UnsafeByteArrayOutputStream target = new UnsafeByteArrayOutputStream();
 		try {
-			serialize(out, type, data);
-			return out.toByteArray();
+			serialize(source, sourceTypeDescriptor, target);
+			return target.toByteArray();
 		} catch (IOException e) {
 			throw new SerializerException(e);
 		} finally {
-			out.close();
+			target.close();
 		}
 	}
 
-	<T> T deserialize(InputStream input, TypeDescriptor type) throws IOException;
+	<T> T deserialize(InputStream source, TypeDescriptor targetTypeDescriptor) throws IOException;
 
-	default <T> T deserialize(byte[] data, TypeDescriptor type) {
+	default <T> T deserialize(byte[] data, TypeDescriptor targetTypeDescriptor) {
 		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(data);
 		try {
-			return deserialize(input, type);
+			return deserialize(input, targetTypeDescriptor);
 		} catch (IOException e) {
 			throw new SerializerException(e);
 		} finally {

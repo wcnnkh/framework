@@ -446,9 +446,9 @@ public final class CollectionFactory {
 	/**
 	 * 克隆一个{@link Map}
 	 * 
-	 * @param <M>
-	 * @param <K>
-	 * @param <V>
+	 * @param     <M>
+	 * @param     <K>
+	 * @param     <V>
 	 * @param map
 	 * @return
 	 */
@@ -460,9 +460,9 @@ public final class CollectionFactory {
 	/**
 	 * 克隆一个{@link Map}
 	 * 
-	 * @param <M>
-	 * @param <K>
-	 * @param <V>
+	 * @param      <M>
+	 * @param      <K>
+	 * @param      <V>
 	 * @param map
 	 * @param deep {@link ObjectUtils#clone(Object, boolean)}
 	 * @return
@@ -470,32 +470,31 @@ public final class CollectionFactory {
 	@SuppressWarnings("unchecked")
 	public static <M extends Map<K, V>, K, V> M clone(M map, boolean deep) {
 		Assert.requiredArgument(map != null, "map");
-		if (!deep && map instanceof Cloneable) {
-			return ReflectionUtils.clone((Cloneable) map);
-		} else {
-			Class<?> mapType = map.getClass();
-			M cloneMap;
-			if (mapType == TreeMap.class) {
-				cloneMap = (M) new TreeMap<K, V>(((TreeMap<K, V>) map).comparator());
-			} else {
-				try {
-					cloneMap = (M) createMap(map.getClass(), getEnumMapKeyType(map), map.size());
-				} catch (Exception e) {
-					return ReflectionUtils.clone(map, deep);
-				}
-			}
-
-			ReflectionUtils.clone(
-					ReflectionUtils.getDeclaredFields(mapType)
-							.withAll((e) -> e != Object.class
-									&& !(e.getName().startsWith("java.util.") && e.getName().endsWith("Map"))),
-					map, cloneMap, deep);
-
-			for (Entry<K, V> entry : map.entrySet()) {
-				cloneMap.put(ObjectUtils.clone(entry.getKey(), deep), ObjectUtils.clone(entry.getValue(), deep));
-			}
-			return cloneMap;
+		if (!deep) {
+			return ReflectionUtils.clone(map);
 		}
+		Class<?> mapType = map.getClass();
+		M cloneMap;
+		if (mapType == TreeMap.class) {
+			cloneMap = (M) new TreeMap<K, V>(((TreeMap<K, V>) map).comparator());
+		} else {
+			try {
+				cloneMap = (M) createMap(map.getClass(), getEnumMapKeyType(map), map.size());
+			} catch (Exception e) {
+				return ReflectionUtils.clone(map, deep);
+			}
+		}
+
+		ReflectionUtils.clone(
+				ReflectionUtils.getDeclaredFields(mapType)
+						.withAll((e) -> e != Object.class
+								&& !(e.getName().startsWith("java.util.") && e.getName().endsWith("Map"))),
+				map, cloneMap, deep);
+
+		for (Entry<K, V> entry : map.entrySet()) {
+			cloneMap.put(ObjectUtils.clone(entry.getKey(), deep), ObjectUtils.clone(entry.getValue(), deep));
+		}
+		return cloneMap;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -510,8 +509,8 @@ public final class CollectionFactory {
 	/**
 	 * 克隆一个{@link Collection}
 	 * 
-	 * @param <C>
-	 * @param <E>
+	 * @param            <C>
+	 * @param            <E>
 	 * @param collection
 	 * @return
 	 */
@@ -522,8 +521,8 @@ public final class CollectionFactory {
 	/**
 	 * 克隆一个{@link Collection}
 	 * 
-	 * @param <C>
-	 * @param <E>
+	 * @param            <C>
+	 * @param            <E>
 	 * @param collection
 	 * @param deep
 	 * @return
@@ -531,33 +530,34 @@ public final class CollectionFactory {
 	@SuppressWarnings("unchecked")
 	public static <C extends Collection<E>, E> C clone(C collection, boolean deep) {
 		Assert.requiredArgument(collection != null, "collection");
-		if (!deep && collection instanceof Cloneable) {
-			return ReflectionUtils.clone((Cloneable) collection);
-		} else {
-			C cloneCollection;
-			Class<?> collectionClass = collection.getClass();
-			if (collectionClass == TreeSet.class) {
-				cloneCollection = (C) new TreeSet<E>(((TreeSet<E>) collection).comparator());
-			} else {
-				try {
-					cloneCollection = (C) createCollection(collection.getClass(), getEnumSetElementType(collection),
-							collection.size());
-				} catch (IllegalArgumentException e) {
-					return ReflectionUtils.clone(collection, deep);
-				}
-			}
-
-			ReflectionUtils.clone(
-					ReflectionUtils.getDeclaredFields(collectionClass)
-							.withAll((e) -> e != Object.class && !(e.getName().startsWith("java.util.")
-									&& (e.getName().endsWith("Set") || e.getName().endsWith("List")))),
-					collection, cloneCollection, deep);
-
-			for (E e : collection) {
-				cloneCollection.add(ObjectUtils.clone(e, deep));
-			}
-			return cloneCollection;
+		if (!deep) {
+			return ReflectionUtils.clone(collection);
 		}
+
+		C cloneCollection;
+		Class<?> collectionClass = collection.getClass();
+		if (collectionClass == TreeSet.class) {
+			cloneCollection = (C) new TreeSet<E>(((TreeSet<E>) collection).comparator());
+		} else {
+			try {
+				cloneCollection = (C) createCollection(collection.getClass(), getEnumSetElementType(collection),
+						collection.size());
+			} catch (IllegalArgumentException e) {
+				return ReflectionUtils.clone(collection, deep);
+			}
+		}
+
+		ReflectionUtils.clone(
+				ReflectionUtils.getDeclaredFields(collectionClass)
+						.withAll((e) -> e != Object.class && !(e.getName().startsWith("java.util.")
+								&& (e.getName().endsWith("Set") || e.getName().endsWith("List")))),
+				collection, cloneCollection, deep);
+
+		for (E e : collection) {
+			cloneCollection.add(ObjectUtils.clone(e, deep));
+		}
+		return cloneCollection;
+
 	}
 
 	public static <K, V, SK, SV> Map<K, V> convert(Map<? extends SK, ? extends SV> sourceMap,

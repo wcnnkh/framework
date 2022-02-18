@@ -1,10 +1,10 @@
 package io.basc.framework.codec;
 
-final class NestedCodec<D, T, E> implements Codec<D, E> {
-	private final Codec<D, T> parent;
-	private final Codec<T, E> codec;
+public class NestedCodec<P extends Codec<D, T>, C extends Codec<T, E>, D, T, E> implements Codec<D, E> {
+	protected final P parent;
+	protected final C codec;
 
-	NestedCodec(Codec<D, T> parent, Codec<T, E> codec) {
+	public NestedCodec(P parent, C codec) {
 		this.parent = parent;
 		this.codec = codec;
 	}
@@ -17,5 +17,10 @@ final class NestedCodec<D, T, E> implements Codec<D, E> {
 	@Override
 	public D decode(E source) throws DecodeException {
 		return parent.decode(codec.decode(source));
+	}
+
+	@Override
+	public boolean verify(D source, E encode) throws EncodeException {
+		return codec.verify(parent.encode(source), encode);
 	}
 }

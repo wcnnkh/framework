@@ -149,7 +149,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 		if (System.currentTimeMillis() > time) {
 			return new DefaultStatus<>(false, "签名已过期");
 		}
-		boolean succes = CharsetCodec.UTF_8.toMD5().toSigner().verify(key + expiration + this.sign, sign);
+		boolean succes = CharsetCodec.UTF_8.toMD5().verify(key + expiration + this.sign, sign);
 		if (succes) {
 			return new DefaultStatus<>(true, "上传成功");
 		}

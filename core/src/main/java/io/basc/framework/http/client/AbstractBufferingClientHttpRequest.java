@@ -1,10 +1,10 @@
 package io.basc.framework.http.client;
 
-import io.basc.framework.http.HttpHeaders;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import io.basc.framework.http.HttpHeaders;
 
 public abstract class AbstractBufferingClientHttpRequest extends AbstractClientHttpRequest {
 	private ByteArrayOutputStream bufferedOutput = new ByteArrayOutputStream(1024);

@@ -3,27 +3,29 @@ package io.basc.framework.http.client;
 import java.io.IOException;
 import java.util.Iterator;
 
-public class ClientHttpRequestInterceptorChain {
-	private Iterator<ClientHttpRequestInterceptor> iterator;
-	private ClientHttpRequestInterceptorChain nextChain;
+import io.basc.framework.lang.Nullable;
 
-	public ClientHttpRequestInterceptorChain(Iterator<ClientHttpRequestInterceptor> iterator) {
+public class ClientHttpRequestInterceptorChain implements ClientHttpRequestExecutor {
+	private Iterator<ClientHttpRequestInterceptor> iterator;
+	private ClientHttpRequestExecutor nextChain;
+
+	public ClientHttpRequestInterceptorChain(@Nullable Iterator<ClientHttpRequestInterceptor> iterator) {
 		this(iterator, null);
 	}
 
-	public ClientHttpRequestInterceptorChain(Iterator<ClientHttpRequestInterceptor> iterator,
-			ClientHttpRequestInterceptorChain nextChain) {
+	public ClientHttpRequestInterceptorChain(@Nullable Iterator<ClientHttpRequestInterceptor> iterator,
+			@Nullable ClientHttpRequestExecutor nextChain) {
 		this.iterator = iterator;
 		this.nextChain = nextChain;
 	}
 
-	public ClientHttpResponse intercept(ClientHttpRequest request) throws IOException {
+	public ClientHttpResponse execute(ClientHttpRequest request) throws IOException {
 		ClientHttpRequestInterceptor interceptor = getNextInterceptor(request);
 		if (interceptor == null) {
 			if (nextChain == null) {
 				return request.execute();
 			} else {
-				return nextChain.intercept(request);
+				return nextChain.execute(request);
 			}
 		}
 		return interceptor.intercept(request, this);

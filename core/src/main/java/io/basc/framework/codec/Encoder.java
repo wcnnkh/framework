@@ -9,6 +9,7 @@ import io.basc.framework.convert.Converter;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.Validator;
 
 /**
  * 编码器<br/>
@@ -19,7 +20,7 @@ import io.basc.framework.util.ObjectUtils;
  * @param <E>
  */
 @FunctionalInterface
-public interface Encoder<D, E> {
+public interface Encoder<D, E> extends Validator<D, E>{
 	/**
 	 * 编码
 	 * 
@@ -28,6 +29,14 @@ public interface Encoder<D, E> {
 	 * @throws EncodeException
 	 */
 	E encode(D source) throws EncodeException;
+	
+	/**
+	 * 校验
+	 */
+	@Override
+	default boolean verify(D source, E encode) throws EncodeException {
+		return ObjectUtils.equals(this.encode(source), encode);
+	}
 
 	default List<E> encode(Collection<? extends D> sources) throws EncodeException {
 		if (CollectionUtils.isEmpty(sources)) {
@@ -54,7 +63,7 @@ public interface Encoder<D, E> {
 	 * @return
 	 */
 	default <F> Encoder<F, E> fromEncoder(Encoder<F, D> encoder) {
-		return new NestedEncoder<F, D, E>(encoder, this);
+		return new NestedEncoder<>(encoder, this);
 	}
 
 	/**
@@ -64,46 +73,10 @@ public interface Encoder<D, E> {
 	 * @return
 	 */
 	default <T> Encoder<D, T> toEncoder(Encoder<E, T> encoder) {
-		return new NestedEncoder<D, E, T>(this, encoder);
-	}
-
-	default Signer<D, E> toSigner() {
-		return new Signer<D, E>() {
-
-			@Override
-			public E encode(D source) throws EncodeException {
-				return Encoder.this.encode(source);
-			}
-
-			@Override
-			public boolean verify(D source, E encode) {
-				return ObjectUtils.equals(this.encode(source), encode);
-			}
-		};
-	}
-
-	default <T> Signer<D, T> toSigner(Signer<E, T> signer) {
-		return new Signer<D, T>() {
-
-			@Override
-			public boolean verify(D source, T encode) {
-				return signer.verify(Encoder.this.encode(source), encode);
-			}
-
-			@Override
-			public T encode(D source) throws EncodeException {
-				return signer.encode(Encoder.this.encode(source));
-			}
-		};
+		return new NestedEncoder<>(this, encoder);
 	}
 
 	default Converter<D, E> toEncodeConverter() {
-		return new Converter<D, E>() {
-
-			@Override
-			public E convert(D o) {
-				return encode(o);
-			}
-		};
+		return (o) -> encode(o);
 	}
 }

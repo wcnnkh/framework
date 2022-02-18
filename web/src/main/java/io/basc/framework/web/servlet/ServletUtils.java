@@ -6,13 +6,11 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import io.basc.framework.env.Environment;
 import io.basc.framework.factory.ServiceLoaderFactory;
-import io.basc.framework.http.HttpCookie;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.web.ServerHttpRequest;
@@ -43,11 +41,6 @@ public final class ServletUtils {
 
 	public static String getForwardRequestUri(ServletRequest servletRequest) {
 		return (String) servletRequest.getAttribute(ATTRIBUTE_FORWARD_REQUEST_URI);
-	}
-
-	public static HttpCookie wrapper(Cookie cookie) {
-		return new HttpCookie(cookie.getName(), cookie.getValue()).setDomain(cookie.getDomain())
-				.setMaxAge(cookie.getMaxAge()).setSecure(cookie.getSecure()).setPath(cookie.getPath());
 	}
 
 	public static HttpServletRequest getHttpServletRequest(ServerHttpRequest request) {

@@ -14,10 +14,10 @@ import io.basc.framework.util.page.Pageables;
 import io.basc.framework.util.page.StreamPageables;
 
 @SuppressWarnings("unchecked")
-public interface RedisClient<K, V>
-		extends RedisConnectionCommands<K, V>, RedisGeoCommands<K, V>, RedisHashesCommands<K, V>,
-		RedisHyperloglogCommands<K, V>, RedisKeysCommands<K, V>, RedisListsCommands<K, V>, RedisScriptingCommands<K, V>,
-		RedisSortedSetsCommands<K, V>, RedisStreamsCommands<K, V>, RedisStringCommands<K, V>, RedisSetsCommands<K, V> {
+public interface RedisClient<K, V> extends RedisConnectionCommands<K, V>, RedisGeoCommands<K, V>,
+		RedisHashesCommands<K, V>, RedisHyperloglogCommands<K, V>, RedisKeysCommands<K, V>, RedisListsCommands<K, V>,
+		RedisScriptingCommands<K, V>, RedisSortedSetsCommands<K, V>, RedisStreamsCommands<K, V>,
+		RedisStringCommands<K, V>, RedisSetsCommands<K, V>, RedisServerCommands<K, V> {
 
 	RedisConnection<K, V> getConnection();
 
@@ -1167,21 +1167,210 @@ public interface RedisClient<K, V>
 
 	@Override
 	default Set<V> sunion(K... keys) {
-		return execute((commands) -> {
-			return commands.sunion(keys);
-		});
+		return execute((commands) -> commands.sunion(keys));
 	}
 
 	@Override
 	default Long sunionstore(K destinationKey, K... keys) {
-		return execute((commands) -> {
-			return commands.sunionstore(destinationKey, keys);
-		});
+		return execute((commands) -> commands.sunionstore(destinationKey, keys));
 	}
 
 	@Override
 	default Pageables<Long, K> sScan(long cursorId, K key, ScanOptions<K> options) {
 		return new StreamPageables<Long, K>(cursorId,
 				(cursor) -> execute((commands) -> commands.sScan(cursor, key, options)));
+	}
+
+	@Override
+	default List<K> aclCat(K categoryname) {
+		return execute((e) -> e.aclCat(categoryname));
+	}
+
+	@Override
+	default Long aclDelUser(K username, K... usernames) {
+		return execute((e) -> e.aclDelUser(username, usernames));
+	}
+
+	@Override
+	default String aclGenPass(Integer bits) {
+		return execute((e) -> e.aclGenPass(bits));
+	}
+
+	@Override
+	default List<K> aclList() {
+		return execute((e) -> e.aclList());
+	}
+
+	@Override
+	default String aclLoad() {
+		return execute((e) -> e.aclLoad());
+	}
+
+	@Override
+	default List<K> aclLog(Integer count) {
+		return execute((e) -> e.aclLog(count));
+	}
+
+	@Override
+	default String aclLogReset() {
+		return execute((e) -> e.aclLogReset());
+	}
+
+	@Override
+	default String aclSave() {
+		return execute((e) -> e.aclSave());
+	}
+
+	@Override
+	default String aclSetuser(K username, K... rules) {
+		return execute((e) -> e.aclSetuser(username, rules));
+	}
+
+	@Override
+	default List<K> aclUsers() {
+		return execute((e) -> e.aclUsers());
+	}
+
+	@Override
+	default K aclWhoami() {
+		return execute((e) -> e.aclWhoami());
+	}
+
+	@Override
+	default String bgrewriteaof() {
+		return execute((e) -> e.bgrewriteaof());
+	}
+
+	@Override
+	default String bgsave() {
+		return execute((e) -> e.bgsave());
+	}
+
+	@Override
+	default List<V> configGet(K parameter) {
+		return execute((e) -> e.configGet(parameter));
+	}
+
+	@Override
+	default String configResetstat() {
+		return execute((e) -> e.configResetstat());
+	}
+
+	@Override
+	default String configRewrite() {
+		return execute((e) -> e.configRewrite());
+	}
+
+	@Override
+	default String configSet(K parameter, V value) {
+		return execute((e) -> e.configSet(parameter, value));
+	}
+
+	@Override
+	default Long dbsize() {
+		return execute((e) -> e.dbsize());
+	}
+
+	@Override
+	default String failover(FailoverParams params) {
+		return execute((e) -> e.failover(params));
+	}
+
+	@Override
+	default String failoverAbort() {
+		return execute((e) -> e.failover());
+	}
+
+	@Override
+	default String flushall(FlushMode flushMode) {
+		return execute((e) -> e.flushall(flushMode));
+	}
+
+	@Override
+	default String flushdb(FlushMode flushMode) {
+		return execute((e) -> e.flushdb(flushMode));
+	}
+
+	@Override
+	default String info(String section) {
+		return execute((e) -> e.info(section));
+	}
+
+	@Override
+	default Long lastsave() {
+		return execute((e) -> e.lastsave());
+	}
+
+	@Override
+	default String memoryDoctor() {
+		return execute((e) -> e.memoryDoctor());
+	}
+
+	@Override
+	default Long memoryUsage(K key, int samples) {
+		return execute((e) -> e.memoryUsage(key, samples));
+	}
+
+	@Override
+	default List<Module> moduleList() {
+		return execute((e) -> e.moduleList());
+	}
+
+	@Override
+	default String moduleLoad(String path) {
+		return execute((e) -> e.moduleLoad(path));
+	}
+
+	@Override
+	default String moduleUnload(String name) {
+		return execute((e) -> e.moduleUnload(name));
+	}
+
+	@Override
+	default List<Object> role() {
+		return execute((e) -> e.role());
+	}
+
+	@Override
+	default String save() {
+		return execute((e) -> e.save());
+	}
+
+	@Override
+	default void shutdown(SaveMode saveMode) {
+		execute((e) -> {
+			e.shutdown(saveMode);
+			return null;
+		});
+	}
+
+	@Override
+	default String slaveof(String host, int port) {
+		return execute((e) -> e.slaveof(host, port));
+	}
+
+	@Override
+	default List<Slowlog> slowlogGet(Long count) {
+		return execute((e) -> e.slowlogGet(count));
+	}
+
+	@Override
+	default Long slowlogLen() {
+		return execute((e) -> e.slowlogLen());
+	}
+
+	@Override
+	default String slowlogReset() {
+		return execute((e) -> e.slowlogReset());
+	}
+
+	@Override
+	default String swapdb(int index1, int index2) {
+		return execute((e) -> e.swapdb(index1, index2));
+	}
+
+	@Override
+	default List<String> time() {
+		return execute((e) -> e.time());
 	}
 }

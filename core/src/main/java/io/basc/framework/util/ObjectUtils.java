@@ -288,7 +288,7 @@ public abstract class ObjectUtils {
 	}
 
 	/**
-	 * 克隆 默认不对数组深拷贝
+	 * 浅拷贝
 	 * 
 	 * @see ObjectUtils#clone(Object, boolean)
 	 * @param <T>
@@ -301,6 +301,7 @@ public abstract class ObjectUtils {
 
 	/**
 	 * 克隆<br/>
+	 * (如果对象实现了Cloneable接口,那么会调用clone方法) </br>
 	 * 
 	 * 以下情况会进行克隆：<br/>
 	 * 实现{@link Cloneable}接口 是一个数组
@@ -309,11 +310,11 @@ public abstract class ObjectUtils {
 	 * @see ArrayUtils#clone(Object, boolean)
 	 * @see CollectionFactory#clone(Collection, boolean)
 	 * @see CollectionFactory#clone(Map, boolean)
-	 * @see ReflectionUtils#clone(Cloneable)
+	 * @see ReflectionUtils#invokeCloneMethod(Object)
 	 * @see ReflectionUtils#clone(Object, boolean)
 	 * @param <T>
 	 * @param source
-	 * @param deep   对数组的操作
+	 * @param deep   对集合的操作
 	 * @return 如果无法克隆就返回本身
 	 */
 	@SuppressWarnings("unchecked")
@@ -340,10 +341,6 @@ public abstract class ObjectUtils {
 
 		if (source instanceof Map) {
 			return (T) CollectionFactory.clone((Map<?, ?>) source, deep);
-		}
-
-		if (source instanceof Cloneable) {
-			return ReflectionUtils.clone((Cloneable) source);
 		}
 
 		// 是否可以直接return source, 应该这样吗？

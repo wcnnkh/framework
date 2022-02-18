@@ -6,12 +6,10 @@ import java.nio.charset.Charset;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.http.MediaType;
-import io.basc.framework.http.client.exception.HttpClientErrorException;
-import io.basc.framework.http.client.exception.HttpServerErrorException;
-import io.basc.framework.http.client.exception.UnknownHttpStatusCodeException;
 import io.basc.framework.io.IOUtils;
 
 public class DefaultClientHttpResponseErrorHandler implements ClientHttpResponseErrorHandler {
+	public static final ClientHttpResponseErrorHandler INSTANCE = new DefaultClientHttpResponseErrorHandler();
 
 	/**
 	 * Delegates to {@link #hasError(HttpStatus)} (for a standard status enum value)

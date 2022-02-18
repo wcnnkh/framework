@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public class DefaultUriTemplateHandler extends AbstractUriTemplateHandler {
+	public static final UriTemplateHandler INSTANCE = new DefaultUriTemplateHandler();
 
 	private boolean parsePath;
 

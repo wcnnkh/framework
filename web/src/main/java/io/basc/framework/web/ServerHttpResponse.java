@@ -1,13 +1,13 @@
 package io.basc.framework.web;
 
-import io.basc.framework.http.HttpCookie;
-import io.basc.framework.http.HttpOutputMessage;
-import io.basc.framework.http.HttpStatus;
-
 import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.HttpCookie;
+
+import io.basc.framework.http.HttpOutputMessage;
+import io.basc.framework.http.HttpStatus;
 
 public interface ServerHttpResponse extends HttpOutputMessage, Closeable, Flushable {
 	void addCookie(HttpCookie cookie);

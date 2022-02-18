@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.HashSet;
 
 import io.basc.framework.cloud.ServiceInstance;
-import io.basc.framework.http.client.exception.HttpClientException;
+import io.basc.framework.http.client.HttpClientException;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.retry.ExhaustedRetryException;
 import io.basc.framework.retry.RetryOperations;

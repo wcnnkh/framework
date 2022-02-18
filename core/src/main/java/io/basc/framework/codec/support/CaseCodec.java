@@ -1,11 +1,11 @@
 package io.basc.framework.codec.support;
 
+import java.util.Locale;
+
+import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
-import io.basc.framework.codec.MultipleCodec;
 import io.basc.framework.lang.Nullable;
-
-import java.util.Locale;
 
 /**
  * 大小写转换,默认是小写->大写
@@ -13,9 +13,9 @@ import java.util.Locale;
  * @author shuchaowen
  *
  */
-public class CaseCodec implements MultipleCodec<String> {
+public class CaseCodec implements Codec<String, String> {
 	public static final CaseCodec DEFAULT = new CaseCodec();
-	
+
 	private final Locale locale;
 
 	public CaseCodec() {

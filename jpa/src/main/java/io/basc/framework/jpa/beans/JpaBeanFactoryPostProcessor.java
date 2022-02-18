@@ -11,12 +11,10 @@ import io.basc.framework.jpa.beans.annotation.Repository;
 public class JpaBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
 	@Override
-	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)
-			throws BeansException {
+	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
 		for (Class<?> clazz : beanFactory.getContextClasses()) {
 			if (clazz.isAnnotationPresent(Repository.class)) {
-				BeanDefinition definition = new RepositoryDefinition(
-						beanFactory, clazz);
+				BeanDefinition definition = new RepositoryDefinition(beanFactory, clazz);
 				if (!beanFactory.containsDefinition(definition.getId())) {
 					beanFactory.registerDefinition(definition);
 				}

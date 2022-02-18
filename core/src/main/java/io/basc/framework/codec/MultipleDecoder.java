@@ -2,47 +2,35 @@ package io.basc.framework.codec;
 
 /**
  * 多次解码器
+ * 
  * @author shuchaowen
  *
  * @param <D>
  */
-public interface MultipleDecoder<D> extends Decoder<D, D>{
-	default int getCount() {
-		return 1;
-	}
-	
+public interface MultipleDecoder<D> extends Decoder<D, D> {
 	/**
-	 * 第n次解码
+	 * 进行多次解码
+	 * 
 	 * @param source
-	 * @param currentCount
+	 * @param count
 	 * @return
 	 * @throws DecodeException
 	 */
-	default D decode(D source, int currentCount) throws DecodeException{
-		return decode(source);
+	default D decode(D source, int count) throws DecodeException {
+		D v = source;
+		for (int i = 0; i < count; i++) {
+			v = decode(v);
+		}
+		return v;
 	}
-	
+
 	/**
 	 * 多次操作
+	 * 
 	 * @param count
 	 * @return
 	 */
-	default MultipleDecoder<D> multiple(int count){
-		return new MultipleDecoder<D>() {
-			
-			@Override
-			public D decode(D source) throws DecodeException {
-				D d = source;
-				for(int i=0; i<count; i++) {
-					d = decode(d, i);
-				}
-				return d;
-			}
-			
-			@Override
-			public D decode(D source, int currentCount) throws DecodeException {
-				return MultipleDecoder.this.decode(source, currentCount);
-			}
-		};
+	default MultipleDecoder<D> multiple(int count) {
+		return new NestedMultipleDecoder<>(this, count);
 	}
 }

@@ -546,7 +546,14 @@ public class HttpHeaders extends Headers {
 	}
 
 	public HttpHeaders(Map<String, List<String>> wrapperHeaders) {
-		super(wrapperHeaders, false);
+		super(false);
+		if (wrapperHeaders != null) {
+			putAll(wrapperHeaders);
+		}
+	}
+
+	public HttpHeaders(HttpHeaders httpHeaders) {
+		super(httpHeaders);
 	}
 
 	/**

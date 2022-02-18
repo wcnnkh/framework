@@ -1,16 +1,6 @@
 package io.basc.framework.test;
 
 import static org.junit.Assert.assertTrue;
-import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.Signer;
-import io.basc.framework.codec.sign.SHA1WithRSASigner;
-import io.basc.framework.codec.support.AES;
-import io.basc.framework.codec.support.Base64;
-import io.basc.framework.codec.support.CharsetCodec;
-import io.basc.framework.codec.support.DES;
-import io.basc.framework.codec.support.HexCodec;
-import io.basc.framework.codec.support.RSA;
-import io.basc.framework.codec.support.URLCodec;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -21,8 +11,21 @@ import java.security.interfaces.RSAPublicKey;
 
 import org.junit.Test;
 
+import io.basc.framework.codec.Codec;
+import io.basc.framework.codec.Encoder;
+import io.basc.framework.codec.encode.MD5;
+import io.basc.framework.codec.encode.SHA1WithRSASigner;
+import io.basc.framework.codec.support.AES;
+import io.basc.framework.codec.support.Base64;
+import io.basc.framework.codec.support.CharsetCodec;
+import io.basc.framework.codec.support.DES;
+import io.basc.framework.codec.support.HexCodec;
+import io.basc.framework.codec.support.RSA;
+import io.basc.framework.codec.support.URLCodec;
+import io.basc.framework.util.XUtils;
+
 public class CodecTest {
-	public static String content = "这是一段加解密测试内容!";
+	public static String content = XUtils.getUUID() + "这是一段加解密测试内容!";
 	public static CharsetCodec charsetCodec = CharsetCodec.UTF_8;
 
 	@Test
@@ -30,13 +33,13 @@ public class CodecTest {
 		System.out.println("----------------BEGIN DES------------------");
 		byte[] secreKey = charsetCodec.encode("12345678");
 		byte[] iv = charsetCodec.encode("12345678");
-		Codec<String, String> codec = charsetCodec.to(new DES(secreKey, iv))
-				.to(HexCodec.DEFAULT);
-		
+		Codec<String, String> codec = charsetCodec.to(new DES(secreKey, iv)).to(HexCodec.DEFAULT);
+
 		String encode = codec.encode(content);
 		System.out.println("encode:" + encode);
 		String decode = codec.decode(encode);
 		System.out.println("decode:" + decode);
+		assertTrue(decode.equals(content));
 		System.out.println("----------------END DES------------------");
 	}
 
@@ -45,12 +48,12 @@ public class CodecTest {
 		System.out.println("----------------BEGIN AES------------------");
 		byte[] secreKey = charsetCodec.encode("1234567812346578");
 		byte[] iv = charsetCodec.encode("1234567812345678");
-		Codec<String, String> codec = charsetCodec.to(new AES(secreKey, iv))
-				.to(HexCodec.DEFAULT);
+		Codec<String, String> codec = charsetCodec.to(new AES(secreKey, iv)).to(HexCodec.DEFAULT);
 		String encode = codec.encode(content);
 		System.out.println("encode:" + encode);
 		String decode = codec.decode(encode);
 		System.out.println("decode:" + decode);
+		assertTrue(decode.equals(content));
 		System.out.println("----------------END AES------------------");
 	}
 
@@ -71,15 +74,16 @@ public class CodecTest {
 		System.out.println("encode:" + encode);
 		String decode = codec.decode(encode);
 		System.out.println("decode:" + decode);
+		assertTrue(decode.equals(content));
 		System.out.println("----------------END RSA------------------");
-		
+
 		SHA1WithRSASigner rsaSigner = new SHA1WithRSASigner(privateKey, publicKey);
-		Signer<String, String> encoder = charsetCodec.toSigner(rsaSigner).to(Base64.DEFAULT);
+		Encoder<String, String> encoder = charsetCodec.toEncoder(rsaSigner).toEncoder(Base64.DEFAULT);
 		String sign = encoder.encode(content);
 		System.out.println("sign:" + sign);
 		assertTrue(encoder.verify(content, sign));
 	}
-	
+
 	@Test
 	public void multiple() {
 		System.out.println("----------------BEGIN multiple------------------");
@@ -97,5 +101,33 @@ public class CodecTest {
 		System.out.println(decode);
 		assertTrue(decode.equals(content));
 		System.out.println("----------------END multiple------------------");
+	}
+
+	@Test
+	public void md5() {
+		String msg = "md5";
+		Encoder<String, String> md5 = charsetCodec
+				.toEncoder(new MD5().wrapperSecretKey(charsetCodec.encode(msg)).toHex());
+		String sign = md5.encode(msg);
+		System.out.println("md5:" + sign);
+		assertTrue(md5.verify(msg, sign));
+	}
+
+	@Test
+	public void HmacSHA1() {
+		Encoder<String, String> mac = charsetCodec
+				.toEncoder(new io.basc.framework.codec.encode.HmacSHA1("1234".getBytes()).toHex());
+		String sign = mac.encode(content);
+		System.out.println("HmacSHA1:" + sign);
+		assertTrue(mac.verify(content, sign));
+	}
+
+	@Test
+	public void HmacMD5() {
+		Encoder<String, String> mac = charsetCodec
+				.toEncoder(new io.basc.framework.codec.encode.HmacMD5("1234".getBytes()).toHex());
+		String sign = mac.encode(content);
+		System.out.println("HmacMD5:" + sign);
+		assertTrue(mac.verify(content, sign));
 	}
 }

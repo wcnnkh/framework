@@ -11,8 +11,8 @@ import io.basc.framework.beans.xml.XmlBeanFactory;
 import io.basc.framework.beans.xml.XmlBeanUtils;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.dom.DomUtils;
-import io.basc.framework.http.client.ClientHttpRequestFactory;
-import io.basc.framework.http.client.DefaultHttpClient;
+import io.basc.framework.http.HttpUtils;
+import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.rpc.CallableFactory;
@@ -76,7 +76,7 @@ public class HttpRemoteBeanFactoryPostProcessor implements BeanFactoryPostProces
 	}
 
 	private static class CallableFactorySupplier implements Supplier<CallableFactory> {
-		private ClientHttpRequestFactory requestFactory;
+		private HttpClient httpClient;
 		private RemoteMessageCodec codec;
 		private String url;
 
@@ -99,15 +99,14 @@ public class HttpRemoteBeanFactoryPostProcessor implements BeanFactoryPostProces
 				codec = beanFactory.getInstance(codecName);
 			}
 
-			String connectionFactoryName = DomUtils.getNodeAttributeValue(beanFactory.getEnvironment(), node,
-					"connectionFactory");
-			if (StringUtils.isNotEmpty(connectionFactoryName)) {
-				this.requestFactory = beanFactory.getInstance(connectionFactoryName);
+			String httpClientName = DomUtils.getNodeAttributeValue(beanFactory.getEnvironment(), node, "httpClient");
+			if (StringUtils.isNotEmpty(httpClientName)) {
+				this.httpClient = beanFactory.getInstance(httpClientName);
 			}
 		}
 
-		public ClientHttpRequestFactory getRequestFactory() {
-			return requestFactory == null ? DefaultHttpClient.CLIENT_HTTP_REQUEST_FACTORY : requestFactory;
+		public HttpClient getHttpClient() {
+			return httpClient == null ? HttpUtils.getHttpClient() : httpClient;
 		}
 
 		public String getUrl() {
@@ -123,7 +122,7 @@ public class HttpRemoteBeanFactoryPostProcessor implements BeanFactoryPostProces
 						if (codec == null) {
 							throw new NotSupportedException("未配置codec, 请检查codec/secretKey是否配置");
 						}
-						callableFactory = new HttpCallableFactory(getRequestFactory(), codec, getUrl());
+						callableFactory = new HttpCallableFactory(getHttpClient(), codec, getUrl());
 					}
 				}
 			}

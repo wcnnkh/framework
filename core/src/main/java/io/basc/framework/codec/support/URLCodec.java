@@ -1,27 +1,27 @@
 package io.basc.framework.codec.support;
 
-import io.basc.framework.codec.DecodeException;
-import io.basc.framework.codec.EncodeException;
-import io.basc.framework.codec.MultipleCodec;
-import io.basc.framework.lang.Constants;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 
-public class URLCodec implements MultipleCodec<String>{
+import io.basc.framework.codec.DecodeException;
+import io.basc.framework.codec.EncodeException;
+import io.basc.framework.codec.MultipleCodec;
+import io.basc.framework.lang.Constants;
+
+public class URLCodec implements MultipleCodec<String> {
 	public static final URLCodec UTF_8 = new URLCodec(Constants.UTF_8_NAME);
 	private final String charsetName;
-	
-	public URLCodec(String charsetName){
+
+	public URLCodec(String charsetName) {
 		this.charsetName = charsetName;
 	}
-	
-	public URLCodec(Charset charset){
+
+	public URLCodec(Charset charset) {
 		this(charset.name());
 	}
-	
+
 	public String encode(String source) throws EncodeException {
 		try {
 			return URLEncoder.encode(source, charsetName);

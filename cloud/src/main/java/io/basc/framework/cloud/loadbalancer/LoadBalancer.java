@@ -2,7 +2,7 @@ package io.basc.framework.cloud.loadbalancer;
 
 import java.util.HashSet;
 
-import io.basc.framework.http.client.exception.HttpClientException;
+import io.basc.framework.http.client.HttpClientException;
 import io.basc.framework.retry.ExhaustedRetryException;
 import io.basc.framework.retry.RetryOperations;
 

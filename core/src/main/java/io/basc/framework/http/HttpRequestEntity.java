@@ -1,14 +1,14 @@
 package io.basc.framework.http;
 
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.ObjectUtils;
-
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.util.Arrays;
 
 public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 	private static final long serialVersionUID = 1L;
@@ -17,9 +17,6 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 	private final String method;
 
 	private final URI url;
-
-	@Nullable
-	private final TypeDescriptor typeDescriptor;
 
 	/**
 	 * Constructor with method and URL but without body nor headers.
@@ -89,10 +86,9 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 	 */
 	public HttpRequestEntity(@Nullable T body, @Nullable MultiValueMap<String, String> headers, @Nullable String method,
 			URI url, @Nullable TypeDescriptor typeDescriptor) {
-		super(body, headers);
+		super(body, typeDescriptor, headers);
 		this.method = method;
 		this.url = url;
-		this.typeDescriptor = typeDescriptor;
 	}
 
 	/**
@@ -114,22 +110,6 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 	@Override
 	public final URI getURI() {
 		return this.url;
-	}
-
-	/**
-	 * Return the type of the request's body.
-	 * 
-	 * @return the request's body type, or {@code null} if not known
-	 */
-	@Nullable
-	public TypeDescriptor getTypeDescriptor() {
-		if (this.typeDescriptor == null) {
-			T body = getBody();
-			if (body != null) {
-				return TypeDescriptor.forObject(body);
-			}
-		}
-		return this.typeDescriptor;
 	}
 
 	@Override
@@ -184,11 +164,11 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 	 * @param url    the URL
 	 * @return the created builder
 	 */
-	public static BodyBuilder method(HttpMethod method, URI url) {
+	public static BodyBuilder<?> method(HttpMethod method, URI url) {
 		return new DefaultBodyBuilder(method, url);
 	}
 
-	public static BodyBuilder method(HttpMethod method, String url) {
+	public static BodyBuilder<?> method(HttpMethod method, String url) {
 		return method(method, UriUtils.toUri(url));
 	}
 
@@ -226,11 +206,11 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 	 * @param url the URL
 	 * @return the created builder
 	 */
-	public static BodyBuilder post(URI url) {
+	public static BodyBuilder<?> post(URI url) {
 		return method(HttpMethod.POST, url);
 	}
 
-	public static BodyBuilder post(String url) {
+	public static BodyBuilder<?> post(String url) {
 		return post(UriUtils.toUri(url));
 	}
 
@@ -240,11 +220,11 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 	 * @param url the URL
 	 * @return the created builder
 	 */
-	public static BodyBuilder put(URI url) {
+	public static BodyBuilder<?> put(URI url) {
 		return method(HttpMethod.PUT, url);
 	}
 
-	public static BodyBuilder put(String url) {
+	public static BodyBuilder<?> put(String url) {
 		return put(UriUtils.toUri(url));
 	}
 
@@ -254,11 +234,11 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 	 * @param url the URL
 	 * @return the created builder
 	 */
-	public static BodyBuilder patch(URI url) {
+	public static BodyBuilder<?> patch(URI url) {
 		return method(HttpMethod.PATCH, url);
 	}
 
-	public static BodyBuilder patch(String url) {
+	public static BodyBuilder<?> patch(String url) {
 		return patch(UriUtils.toUri(url));
 	}
 
@@ -355,13 +335,13 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 		 * @return the request entity
 		 * @see BodyBuilder#body(Object)
 		 */
-		HttpRequestEntity<Void> build();
+		<T> HttpRequestEntity<T> build();
 	}
 
 	/**
 	 * Defines a builder that adds a body to the request entity.
 	 */
-	public interface BodyBuilder extends HeadersBuilder<BodyBuilder> {
+	public interface BodyBuilder<B extends BodyBuilder<B>> extends HeadersBuilder<B> {
 
 		/**
 		 * Set the length of the body in bytes, as specified by the
@@ -371,7 +351,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 		 * @return this builder
 		 * @see HttpHeaders#setContentLength(long)
 		 */
-		BodyBuilder contentLength(long contentLength);
+		B contentLength(long contentLength);
 
 		/**
 		 * Set the {@linkplain MediaType media type} of the body, as specified by the
@@ -381,7 +361,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 		 * @return this builder
 		 * @see HttpHeaders#setContentType(MediaType)
 		 */
-		BodyBuilder contentType(MediaType contentType);
+		B contentType(MediaType contentType);
 
 		/**
 		 * Set the body of the request entity and build the RequestEntity.
@@ -403,7 +383,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 		<T> HttpRequestEntity<T> body(T body, TypeDescriptor typeDescriptor);
 	}
 
-	private static class DefaultBodyBuilder implements BodyBuilder {
+	private static class DefaultBodyBuilder implements BodyBuilder<DefaultBodyBuilder> {
 
 		private final String method;
 
@@ -420,52 +400,53 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 			this.url = url;
 		}
 
-		public BodyBuilder header(String headerName, String... headerValues) {
+		public DefaultBodyBuilder header(String headerName, String... headerValues) {
 			for (String headerValue : headerValues) {
 				this.headers.add(headerName, headerValue);
 			}
 			return this;
 		}
 
-		public BodyBuilder headers(@Nullable HttpHeaders headers) {
+		public DefaultBodyBuilder headers(@Nullable HttpHeaders headers) {
 			if (headers != null) {
 				this.headers.putAll(headers);
 			}
 			return this;
 		}
 
-		public BodyBuilder accept(MediaType... acceptableMediaTypes) {
+		public DefaultBodyBuilder accept(MediaType... acceptableMediaTypes) {
 			this.headers.setAccept(Arrays.asList(acceptableMediaTypes));
 			return this;
 		}
 
-		public BodyBuilder acceptCharset(Charset... acceptableCharsets) {
+		public DefaultBodyBuilder acceptCharset(Charset... acceptableCharsets) {
 			this.headers.setAcceptCharset(Arrays.asList(acceptableCharsets));
 			return this;
 		}
 
-		public BodyBuilder contentLength(long contentLength) {
+		public DefaultBodyBuilder contentLength(long contentLength) {
 			this.headers.setContentLength(contentLength);
 			return this;
 		}
 
-		public BodyBuilder contentType(MediaType contentType) {
+		public DefaultBodyBuilder contentType(MediaType contentType) {
 			this.headers.setContentType(contentType);
 			return this;
 		}
 
-		public BodyBuilder ifNoneMatch(String... ifNoneMatches) {
+		public DefaultBodyBuilder ifNoneMatch(String... ifNoneMatches) {
 			this.headers.setIfNoneMatch(Arrays.asList(ifNoneMatches));
 			return this;
 		}
 
-		public BodyBuilder ifModifiedSince(long ifModifiedSince) {
+		public DefaultBodyBuilder ifModifiedSince(long ifModifiedSince) {
 			this.headers.setIfModifiedSince(ifModifiedSince);
 			return this;
 		}
 
-		public HttpRequestEntity<Void> build() {
-			return new HttpRequestEntity<Void>(this.headers, this.method, this.url);
+		@Override
+		public <T> HttpRequestEntity<T> build() {
+			return new HttpRequestEntity<>(this.headers, this.method, this.url);
 		}
 
 		public <T> HttpRequestEntity<T> body(T body) {

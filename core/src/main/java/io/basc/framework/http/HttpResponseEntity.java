@@ -16,14 +16,16 @@
 
 package io.basc.framework.http;
 
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.MultiValueMap;
-import io.basc.framework.util.ObjectUtils;
-
 import java.net.URI;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.ObjectUtils;
 
 public class HttpResponseEntity<T> extends HttpEntity<T> {
 	private static final long serialVersionUID = 1L;
@@ -46,8 +48,8 @@ public class HttpResponseEntity<T> extends HttpEntity<T> {
 	 * @param body   the entity body
 	 * @param status the status code
 	 */
-	public HttpResponseEntity(T body, HttpStatus status) {
-		this(body, null, status);
+	public HttpResponseEntity(T body, TypeDescriptor bodyTypeDescriptor, HttpStatus status) {
+		this(body, bodyTypeDescriptor, null, status);
 	}
 
 	/**
@@ -58,7 +60,7 @@ public class HttpResponseEntity<T> extends HttpEntity<T> {
 	 * @param status  the status code
 	 */
 	public HttpResponseEntity(MultiValueMap<String, String> headers, HttpStatus status) {
-		this(null, headers, status);
+		this(null, null, headers, status);
 	}
 
 	/**
@@ -69,8 +71,9 @@ public class HttpResponseEntity<T> extends HttpEntity<T> {
 	 * @param headers the entity headers
 	 * @param status  the status code
 	 */
-	public HttpResponseEntity(T body, MultiValueMap<String, String> headers, HttpStatus status) {
-		super(body, headers);
+	public HttpResponseEntity(T body, TypeDescriptor bodyTypeDescriptor, MultiValueMap<String, String> headers,
+			HttpStatus status) {
+		super(body, bodyTypeDescriptor, headers);
 		Assert.notNull(status, "HttpStatus must not be null");
 		this.status = status;
 	}
@@ -84,8 +87,9 @@ public class HttpResponseEntity<T> extends HttpEntity<T> {
 	 * @param status  the status code (as {@code HttpStatus} or as {@code Integer}
 	 *                value)
 	 */
-	private HttpResponseEntity(T body, MultiValueMap<String, String> headers, Object status) {
-		super(body, headers);
+	private HttpResponseEntity(T body, TypeDescriptor bodyTypeDescriptor, MultiValueMap<String, String> headers,
+			Object status) {
+		super(body, bodyTypeDescriptor, headers);
 		this.status = status;
 	}
 
@@ -391,7 +395,11 @@ public class HttpResponseEntity<T> extends HttpEntity<T> {
 		 * @param body the body of the response entity
 		 * @return the built response entity
 		 */
-		<T> HttpResponseEntity<T> body(T body);
+		default <T> HttpResponseEntity<T> body(T body) {
+			return body(body, null);
+		}
+
+		<T> HttpResponseEntity<T> body(T body, @Nullable TypeDescriptor bodyTypeDescriptor);
 	}
 
 	private static class DefaultBuilder implements BodyBuilder {
@@ -473,8 +481,8 @@ public class HttpResponseEntity<T> extends HttpEntity<T> {
 			return body(null);
 		}
 
-		public <T> HttpResponseEntity<T> body(T body) {
-			return new HttpResponseEntity<T>(body, this.headers, this.statusCode);
+		public <T> HttpResponseEntity<T> body(T body, TypeDescriptor typeDescriptor) {
+			return new HttpResponseEntity<T>(body, typeDescriptor, this.headers, this.statusCode);
 		}
 	}
 

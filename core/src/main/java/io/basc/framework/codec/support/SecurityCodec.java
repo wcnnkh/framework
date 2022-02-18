@@ -1,8 +1,5 @@
 package io.basc.framework.codec.support;
 
-import io.basc.framework.codec.CodecException;
-import io.basc.framework.codec.MultipleCodec;
-
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -12,7 +9,9 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-public abstract class SecurityCodec implements BytesCodec<byte[]>, MultipleCodec<byte[]> {
+import io.basc.framework.codec.CodecException;
+
+public abstract class SecurityCodec implements BytesCodec {
 	
 	public static KeyFactory getKeyFactory(String algorithm) {
 		try {

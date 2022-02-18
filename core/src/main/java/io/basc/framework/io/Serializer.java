@@ -1,34 +1,47 @@
 package io.basc.framework.io;
 
-import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.support.SerializerCodec;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import io.basc.framework.codec.Codec;
+import io.basc.framework.codec.DecodeException;
+import io.basc.framework.codec.EncodeException;
+import io.basc.framework.codec.support.SerializerCodec;
+import io.basc.framework.codec.support.ToBytesCodec;
+
 /**
  * 序列化与反序列化
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
-public interface Serializer {
-	void serialize(OutputStream out, Object data) throws IOException;
+public interface Serializer extends ToBytesCodec<Object> {
+
+	void serialize(Object source, OutputStream target) throws IOException;
+
+	@Override
+	default void encode(Object source, OutputStream target) throws IOException, EncodeException {
+		serialize(source, target);
+	}
 
 	default byte[] serialize(Object data) throws SerializerException {
-		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream();
+		UnsafeByteArrayOutputStream target = new UnsafeByteArrayOutputStream();
 		try {
-			serialize(out, data);
-			return out.toByteArray();
+			serialize(data, target);
+			return target.toByteArray();
 		} catch (IOException e) {
 			throw new SerializerException(e);
 		} finally {
-			out.close();
+			target.close();
 		}
 	}
 
-	<T> T deserialize(InputStream input) throws IOException, ClassNotFoundException;
+	<T> T deserialize(InputStream input, int bufferSize) throws IOException, ClassNotFoundException;
+
+	default <T> T deserialize(InputStream input) throws IOException, ClassNotFoundException {
+		return deserialize(input, IOUtils.DEFAULT_BUFFER_SIZE);
+	}
 
 	default <T> T deserialize(byte[] data) throws ClassNotFoundException, SerializerException {
 		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(data);
@@ -38,6 +51,20 @@ public interface Serializer {
 			throw new SerializerException(e);
 		} finally {
 			input.close();
+		}
+	}
+
+	@Override
+	default byte[] encode(Object source) throws EncodeException {
+		return serialize(source);
+	}
+
+	@Override
+	default Object decode(InputStream source, int bufferSize) throws IOException, DecodeException {
+		try {
+			return deserialize(source, bufferSize);
+		} catch (ClassNotFoundException e) {
+			throw new DecodeException(e);
 		}
 	}
 

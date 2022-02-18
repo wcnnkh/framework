@@ -10,6 +10,8 @@ import java.security.PublicKey;
  *
  */
 public class RSA extends AsymmetricCodec {
+	public static final String RSA = "RSA";
+	
 	/**
 	 * @param publicKey
 	 * @param privateKey

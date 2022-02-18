@@ -1,27 +1,96 @@
 package io.basc.framework.codec.support;
 
-import io.basc.framework.codec.CodecException;
-
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.SecretKeySpec;
 
-public abstract class CryptoCodec extends SecurityCodec {
+import io.basc.framework.codec.CodecException;
+import io.basc.framework.codec.DecodeException;
+import io.basc.framework.codec.EncodeException;
+import io.basc.framework.io.BufferProcessor;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
 
-	public static Cipher getCipher(String algorithm) {
-		try {
-			return Cipher.getInstance(algorithm);
-		} catch (NoSuchAlgorithmException e) {
-			throw new CodecException(algorithm, e);
-		} catch (NoSuchPaddingException e) {
-			throw new CodecException(algorithm, e);
-		}
+public class CryptoCodec extends SecurityCodec implements Cloneable {
+	private final CipherFactory encoder;
+	private final CipherFactory decoder;
+
+	/**
+	 * 对称编码
+	 * 
+	 * @param transformation
+	 * @param key
+	 * @param params
+	 */
+	public CryptoCodec(String transformation, Object key, @Nullable Object params) {
+		this(transformation, null, key, params, null);
+	}
+
+	/**
+	 * 对称编码
+	 * 
+	 * @param transformation
+	 * @param provider
+	 * @param key
+	 * @param params
+	 * @param secureRandom
+	 */
+	public CryptoCodec(String transformation, @Nullable Object provider, Object key, @Nullable Object params,
+			@Nullable SecureRandom secureRandom) {
+		this(transformation, provider, key, key, params, secureRandom);
+	}
+
+	/**
+	 * 非对称编码
+	 * 
+	 * @param transformation
+	 * @param encoderKey
+	 * @param decoderKey
+	 * @param params
+	 */
+	public CryptoCodec(String transformation, @Nullable Object encoderKey, @Nullable Object decoderKey,
+			@Nullable Object params) {
+		this(transformation, null, encoderKey, decoderKey, params, null);
+	}
+
+	/**
+	 * 非对称编码
+	 * 
+	 * @param transformation
+	 * @param provider
+	 * @param encoderKey
+	 * @param decoderKey
+	 * @param params
+	 * @param secureRandom
+	 */
+	public CryptoCodec(String transformation, @Nullable Object provider, @Nullable Object encoderKey,
+			@Nullable Object decoderKey, @Nullable Object params, @Nullable SecureRandom secureRandom) {
+		this(encoderKey == null ? null : new CipherFactory(transformation, Cipher.ENCRYPT_MODE, encoderKey, params),
+				decoderKey == null ? null : new CipherFactory(transformation, Cipher.DECRYPT_MODE, decoderKey, params));
+	}
+
+	public CryptoCodec(@Nullable CipherFactory encoder, @Nullable CipherFactory decoder) {
+		this.encoder = encoder;
+		this.decoder = decoder;
+	}
+
+	protected CryptoCodec(CryptoCodec codec) {
+		this.decoder = codec.decoder;
+		this.encoder = codec.encoder;
+	}
+
+	@Override
+	public CryptoCodec clone() {
+		return new CryptoCodec(this);
 	}
 
 	public static SecretKeyFactory getSecretKeyFactory(String algorithm) {
@@ -40,8 +109,54 @@ public abstract class CryptoCodec extends SecurityCodec {
 			throw new CodecException(e);
 		}
 	}
-	
-	public static SecretKey getSecretKey(String algorithm, byte[] secretKey){
+
+	public static SecretKey getSecretKey(String algorithm, byte[] secretKey) {
 		return new SecretKeySpec(secretKey, algorithm);
+	}
+
+	@Nullable
+	public final CipherFactory getEncoder() {
+		return encoder;
+	}
+
+	@Nullable
+	public final CipherFactory getDecoder() {
+		return decoder;
+	}
+
+	@Override
+	public byte[] encode(byte[] source) throws EncodeException {
+		Assert.requiredArgument(encoder != null, "encoder");
+		return encoder.doFinal(source);
+	}
+
+	@Override
+	public byte[] decode(byte[] source) throws DecodeException {
+		Assert.requiredArgument(decoder != null, "decoder");
+		return decoder.doFinal(source);
+	}
+
+	@Override
+	public void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException {
+		encode(source, bufferSize, target::write);
+	}
+
+	@Override
+	public void decode(InputStream source, int bufferSize, OutputStream target) throws DecodeException, IOException {
+		decode(source, bufferSize, target::write);
+	}
+
+	@Override
+	public <E extends Throwable> void encode(InputStream source, int bufferSize,
+			BufferProcessor<byte[], E> targetProcessor) throws IOException, EncodeException, E {
+		Assert.requiredArgument(encoder != null, "encoder");
+		encoder.doFinal(source, bufferSize, targetProcessor);
+	}
+
+	@Override
+	public <E extends Throwable> void decode(InputStream source, int bufferSize,
+			BufferProcessor<byte[], E> targetProcessor) throws DecodeException, IOException, E {
+		Assert.requiredArgument(decoder != null, "decoder");
+		decoder.doFinal(source, bufferSize, targetProcessor);
 	}
 }

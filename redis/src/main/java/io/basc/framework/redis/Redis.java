@@ -28,7 +28,7 @@ public class Redis extends DefaultConvertibleRedisClient<RedisClient<byte[], byt
 	}
 
 	public RedisClient<String, Object> getRedisObjectClient() {
-		return new DefaultConvertibleRedisClient<>(client, getKeyCodec(), serializer.toCodec());
+		return new DefaultConvertibleRedisClient<>(client, getKeyCodec(), serializer);
 	}
 
 	public CASOperations getCASOperations() {
