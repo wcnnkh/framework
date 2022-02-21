@@ -5,14 +5,21 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.util.XUtils;
 
 public class InvokeOverloadMethodTest {
 
 	@Test
 	public void test() throws NoSuchMethodException {
-		int value = ReflectionUtils.invokeOverloadMethod(this, "a", true, 1, 2, 3, 4);
-		System.out.println(value);
-		assertTrue(value == 8);
+		for (int i = 0; i < 100; i++) {
+			int value = ReflectionUtils.invokeOverloadMethod(this, "a", true, 1, 2, 3, 4);
+			assertTrue(value == 8);
+		}
+
+		for (int i = 0; i < 100; i++) {
+			int value = ReflectionUtils.invokeOverloadMethod(this, "a", true, 1, 2, 3, XUtils.getUUID());
+			assertTrue(value == 10);
+		}
 	}
 
 	public int a(int a, Object b) {
@@ -49,5 +56,9 @@ public class InvokeOverloadMethodTest {
 
 	public int a(int a, int b, int c, int d, Object e) {
 		return 9;
+	}
+
+	public int a(int a, int b, int c, String d) {
+		return 10;
 	}
 }

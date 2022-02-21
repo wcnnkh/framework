@@ -546,15 +546,12 @@ public abstract class ReflectionUtils {
 							params.length);
 					ExecutableMatchingResults<T> matchingResults2 = getExecutableMatchingResults(e2, params,
 							params.length);
-					return Integer.compare(matchingResults2.getMatchingResultes(),
-							matchingResults1.getMatchingResultes());
+					return matchingResults1.compareTo(matchingResults2);
 				}
 				return leftCount - rightCount;
 			}
 			return -v;
-		}).map((e) -> getExecutableMatchingResults(e, params, 0))
-				.sorted((e1, e2) -> Integer.compare(e2.getMatchingResultes(), e1.getMatchingResultes()))
-				.filter((e) -> e.getExecutable().getParameterCount() == e.getMatchingResultes());
+		}).map((e) -> getExecutableMatchingResults(e, params, 0)).sorted();
 	}
 
 	/**

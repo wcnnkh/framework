@@ -729,6 +729,12 @@
 				<artifactId>mongodb</artifactId>
 				<version>1.8.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>console</artifactId>
+				<version>1.8.0</version>
+			</dependency>
 
 			<!-- 测试 -->
 			<dependency>
@@ -969,5 +975,6 @@
 		<module>jedis</module>
 		<module>xmemcached</module>
 		<module>mongodb</module>
+		<module>console</module>
 	</modules>
 </project>
