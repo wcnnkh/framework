@@ -1,13 +1,12 @@
 package io.basc.framework.console;
 
-import io.basc.framework.util.Assert;
+import io.basc.framework.lang.Nullable;
 
 public abstract class AbstractConsoleProcessor<T> implements ConsoleProcessor<T> {
 	private String pattern;
-	private final String name;
+	private String name;
 
-	public AbstractConsoleProcessor(String name) {
-		Assert.requiredArgument(name != null, name);
+	public AbstractConsoleProcessor(@Nullable String name) {
 		this.name = name;
 	}
 
@@ -23,5 +22,9 @@ public abstract class AbstractConsoleProcessor<T> implements ConsoleProcessor<T>
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

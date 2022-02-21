@@ -7,15 +7,17 @@ import java.util.TreeMap;
 import io.basc.framework.util.Assert;
 
 public class DefaultConsoleWindow<T> implements ConsoleWindow<T> {
-	private int incrId = 1;
+	private int incrId = 0;
 	private final TreeMap<String, ConsoleProcessor<T>> processorMap;
 
 	public DefaultConsoleWindow() {
 		this.processorMap = new TreeMap<>();
+		addProcess(new UpperConsoleProcessor<>());
 	}
 
 	public DefaultConsoleWindow(Comparator<String> comparator) {
 		this.processorMap = new TreeMap<>();
+		addProcess(new UpperConsoleProcessor<>());
 	}
 
 	@Override
@@ -41,5 +43,9 @@ public class DefaultConsoleWindow<T> implements ConsoleWindow<T> {
 
 		Assert.requiredArgument(processor.getPattern() != null, "ConsoleProcessor#getPattern()");
 		processorMap.putIfAbsent(processor.getPattern(), processor);
+	}
+
+	public void clear() {
+		processorMap.clear();
 	}
 }

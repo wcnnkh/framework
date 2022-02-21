@@ -1,12 +1,17 @@
 package io.basc.framework.console;
 
+import java.util.Collection;
 import java.util.Scanner;
 
 import io.basc.framework.util.Assert;
 
-public class ConsoleBootstrap extends Thread {
+public class ConsoleBootstrap extends Thread implements ConsoleWindow<Scanner> {
 	private final ConsoleNavigation<Scanner> navigation;
 	private final Scanner scanner;
+
+	public ConsoleBootstrap() {
+		this(new DefaultConsoleWindow<>());
+	}
 
 	public ConsoleBootstrap(ConsoleWindow<Scanner> window) {
 		this(new ConsoleNavigation<>(window));
@@ -53,7 +58,7 @@ public class ConsoleBootstrap extends Thread {
 		try {
 			ConsoleNavigation<Scanner> next = processor.process(navigation, this.scanner);
 			if (next == null) {
-				process(navigation);
+				reset(navigation, null);
 				return;
 			}
 			process(next);
@@ -68,5 +73,21 @@ public class ConsoleBootstrap extends Thread {
 			e.printStackTrace();
 		}
 		process(navigation);
+	}
+
+	@Override
+	public ConsoleProcessor<Scanner> getProcessor(String pattern) {
+		return navigation.getProcessor(pattern);
+	}
+
+	@Override
+	public Collection<ConsoleProcessor<Scanner>> getProcessors() {
+		return navigation.getProcessors();
+	}
+
+	@Override
+	public void addProcess(ConsoleProcessor<Scanner> processor) {
+		navigation.addProcess(processor);
+		;
 	}
 }

@@ -5,18 +5,22 @@ import java.util.Scanner;
 import io.basc.framework.console.AbstractConsoleProcessor;
 import io.basc.framework.console.ConsoleBootstrap;
 import io.basc.framework.console.ConsoleNavigation;
-import io.basc.framework.console.ConsoleWindow;
-import io.basc.framework.console.DefaultConsoleWindow;
 
 public class ConsoleBootstrapTest {
 	public static void main(String[] args) {
-		ConsoleWindow<Scanner> window = new DefaultConsoleWindow<Scanner>();
-		window.addProcess(new TestProcessor("测试1"));
-		window.addProcess(new TestProcessor("测试2"));
-		window.addProcess(new TestProcessor("测试3"));
-		window.addProcess(new TestProcessor("测试4"));
+		ConsoleNavigation<Scanner> next = new ConsoleNavigation<>();
+		next.addProcess(new TestProcessor("下一页测试1"));
+		next.addProcess(new TestProcessor("下一页测试2"));
+		next.addProcess(new TestProcessor("下一页测试3"));
+		next.addProcess(new TestProcessor("下一页测试4"));
+		next.setName("下一页");
 
-		ConsoleBootstrap bootstrap = new ConsoleBootstrap(window);
+		ConsoleBootstrap bootstrap = new ConsoleBootstrap();
+		bootstrap.addProcess(new TestProcessor("测试1"));
+		bootstrap.addProcess(new TestProcessor("测试2"));
+		bootstrap.addProcess(new TestProcessor("测试3"));
+		bootstrap.addProcess(new TestProcessor("测试4"));
+		bootstrap.addProcess(next);
 		bootstrap.start();
 	}
 
@@ -28,7 +32,7 @@ public class ConsoleBootstrapTest {
 
 		@Override
 		public ConsoleNavigation<Scanner> process(ConsoleNavigation<Scanner> navigation, Scanner message) {
-			return null;
+			return navigation;
 		}
 	}
 }
