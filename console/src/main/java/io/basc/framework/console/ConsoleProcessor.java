@@ -1,7 +1,9 @@
 package io.basc.framework.console;
 
-public interface ConsoleProcessor {
-	String getId();
+public interface ConsoleProcessor<T> {
+	String getPattern();
 
-	String process(String message);
+	String getName();
+
+	ConsoleNavigation<T> process(ConsoleNavigation<T> navigation, T message);
 }

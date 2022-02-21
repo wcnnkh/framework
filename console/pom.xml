@@ -12,5 +12,11 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>boot</artifactId>
 		</dependency>
+
+		<!-- 测试 -->
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>testing</artifactId>
+		</dependency>
 	</dependencies>
 </project>
