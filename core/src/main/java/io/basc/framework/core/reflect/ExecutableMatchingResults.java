@@ -4,7 +4,7 @@ import java.lang.reflect.Executable;
 
 import io.basc.framework.util.Assert;
 
-public class ExecutableMatchingResults<E extends Executable> {
+public class ExecutableMatchingResults<E extends Executable> implements Comparable<ExecutableMatchingResults<E>> {
 	private final E executable;
 	private final Object[] params;
 	private final int matchingResultes;
@@ -32,4 +32,18 @@ public class ExecutableMatchingResults<E extends Executable> {
 	public int getMatchingResultes() {
 		return matchingResultes;
 	}
+
+	public boolean isJust() {
+		return params.length == matchingResultes;
+	}
+
+	/**
+	 * 默认匹配更完整的在前面
+	 */
+	@Override
+	public int compareTo(ExecutableMatchingResults<E> o) {
+		return (this.isJust() && o.isJust()) ? Integer.compare(o.getMatchingResultes(), this.getMatchingResultes())
+				: (this.isJust() ? 1 : (o.isJust() ? -1 : 0));
+	}
+
 }
