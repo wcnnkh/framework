@@ -43,6 +43,12 @@ public class SimpleAttributes<K, V> implements EditableAttributes<K, V> {
 		attributeMap.remove(name);
 	}
 
+	public void clear() {
+		if (attributeMap != null) {
+			attributeMap.clear();
+		}
+	}
+
 	@Override
 	public String toString() {
 		return attributeMap == null ? "{}" : attributeMap.toString();
