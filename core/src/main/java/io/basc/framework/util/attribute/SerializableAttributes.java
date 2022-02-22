@@ -61,6 +61,12 @@ public class SerializableAttributes<K, V> implements EditableAttributes<K, V>, S
 		attrbitues.remove(name);
 	}
 
+	public void clear() {
+		if (attrbitues != null) {
+			this.attrbitues.clear();
+		}
+	}
+
 	@Override
 	public int hashCode() {
 		if (attrbitues == null) {
