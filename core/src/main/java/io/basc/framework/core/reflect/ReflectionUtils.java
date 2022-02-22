@@ -12,6 +12,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.security.AccessControlException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,11 @@ public abstract class ReflectionUtils {
 	 */
 	public static final Predicate<Member> ENTITY_MEMBER = (m) -> !Modifier.isStatic(m.getModifiers())
 			&& !Modifier.isTransient(m.getModifiers());
+
+	/**
+	 * 作用域比较
+	 */
+	public static final Comparator<Member> MEMBER_SCOPE_COMPARATOR = new MemberScopeComparator<Member>();
 
 	/**
 	 * Object对象的默认构造方法
@@ -279,12 +285,12 @@ public abstract class ReflectionUtils {
 	 * @param <T>
 	 * @param clazz
 	 * @return
-	 * @throws IllegalArgumentException 不存在无参构造方法
+	 * @throws NotSupportedException 不存在无参构造方法
 	 */
-	public static <T> T newInstance(Class<T> clazz) throws IllegalArgumentException {
+	public static <T> T newInstance(Class<T> clazz) throws NotSupportedException {
 		Constructor<T> constructor = getDeclaredConstructor(clazz);
 		if (constructor == null) {
-			throw new IllegalArgumentException(clazz.getName());
+			throw new NotSupportedException(clazz.getName());
 		}
 
 		try {
@@ -293,6 +299,62 @@ public abstract class ReflectionUtils {
 			handleReflectionException(e);
 		}
 		throw new IllegalStateException("Should never get here");
+	}
+
+	/**
+	 * 使用空值构造实体
+	 * 
+	 * @param <T>
+	 * @param entityClass
+	 * @return
+	 * @throws NotSupportedException
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T newInstanceWithNullValues(Class<T> entityClass) throws NotSupportedException {
+		Assert.requiredArgument(entityClass != null, "entityClass");
+		Stream<Constructor<?>> stream = ReflectionUtils.getDeclaredConstructors(entityClass).streamAll()
+				.sorted(MEMBER_SCOPE_COMPARATOR).sorted(Comparator.comparingInt(Constructor::getParameterCount));
+		try {
+			Iterator<Constructor<?>> iterator = stream.iterator();
+			while (iterator.hasNext()) {
+				Constructor<?> constructor = iterator.next();
+				return (T) newInstance(constructor, new Object[constructor.getParameterCount()]);
+			}
+		} finally {
+			stream.close();
+		}
+		throw new NotSupportedException(entityClass.getName());
+	}
+
+	/**
+	 * 根据参数来构造实体
+	 * 
+	 * @param <T>
+	 * @param entityClass
+	 * @param params
+	 * @return
+	 * @throws NotSupportedException
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T newInstanceWithParams(Class<T> entityClass, Object... params) throws NotSupportedException {
+		Assert.requiredArgument(entityClass != null, "entityClass");
+		Assert.requiredArgument(params != null, "params");
+		Stream<ExecutableMatchingResults<Constructor<?>>> stream = matchParams(
+				ReflectionUtils.getDeclaredConstructors(entityClass).streamAll(), false, params);
+		try {
+			Iterator<ExecutableMatchingResults<Constructor<?>>> iterator = stream.iterator();
+			if (iterator.hasNext()) {
+				ExecutableMatchingResults<Constructor<?>> results = iterator.next();
+				try {
+					return (T) ReflectionUtils.newInstance(results.getExecutable(), results.getParams());
+				} catch (Exception e) {
+					// 忽略
+				}
+			}
+		} finally {
+			stream.close();
+		}
+		throw new NotSupportedException(entityClass.getName());
 	}
 
 	/**
@@ -523,35 +585,36 @@ public abstract class ReflectionUtils {
 			int validParametersCount, Object... params) {
 		Assert.requiredArgument(sourceStream != null, "sourceStream");
 		Assert.requiredArgument(params != null, "params");
-		return sourceStream.filter((e) -> e.getParameterCount() <= validParametersCount).sorted((e1, e2) -> {
-			Class<?>[] parameterTypes1 = e1.getParameterTypes();
-			Class<?>[] parameterTypes2 = e2.getParameterTypes();
-			int v = Integer.compare(parameterTypes1.length, parameterTypes2.length);
-			if (v == 0) {
-				int leftCount = 0;
-				int rightCount = 0;
-				for (int i = 0; i < parameterTypes1.length; i++) {
-					if (ClassUtils.isAssignable(parameterTypes1[i], parameterTypes2[i])) {
-						leftCount++;
-					}
+		return sourceStream.filter((e) -> e.getParameterCount() <= validParametersCount).sorted(MEMBER_SCOPE_COMPARATOR)
+				.sorted((e1, e2) -> {
+					Class<?>[] parameterTypes1 = e1.getParameterTypes();
+					Class<?>[] parameterTypes2 = e2.getParameterTypes();
+					int v = Integer.compare(parameterTypes1.length, parameterTypes2.length);
+					if (v == 0) {
+						int leftCount = 0;
+						int rightCount = 0;
+						for (int i = 0; i < parameterTypes1.length; i++) {
+							if (ClassUtils.isAssignable(parameterTypes1[i], parameterTypes2[i])) {
+								leftCount++;
+							}
 
-					if (ClassUtils.isAssignable(parameterTypes2[i], parameterTypes1[i])) {
-						rightCount++;
-					}
-				}
+							if (ClassUtils.isAssignable(parameterTypes2[i], parameterTypes1[i])) {
+								rightCount++;
+							}
+						}
 
-				if (leftCount == rightCount) {
-					// 参数数量相同，比较参数顺序
-					ExecutableMatchingResults<T> matchingResults1 = getExecutableMatchingResults(e1, params,
-							params.length);
-					ExecutableMatchingResults<T> matchingResults2 = getExecutableMatchingResults(e2, params,
-							params.length);
-					return matchingResults1.compareTo(matchingResults2);
-				}
-				return leftCount - rightCount;
-			}
-			return -v;
-		}).map((e) -> getExecutableMatchingResults(e, params, 0)).sorted();
+						if (leftCount == rightCount) {
+							// 参数数量相同，比较参数顺序
+							ExecutableMatchingResults<T> matchingResults1 = getExecutableMatchingResults(e1, params,
+									params.length);
+							ExecutableMatchingResults<T> matchingResults2 = getExecutableMatchingResults(e2, params,
+									params.length);
+							return matchingResults1.compareTo(matchingResults2);
+						}
+						return leftCount - rightCount;
+					}
+					return -v;
+				}).map((e) -> getExecutableMatchingResults(e, params, 0)).sorted();
 	}
 
 	/**
@@ -562,19 +625,34 @@ public abstract class ReflectionUtils {
 	 * @param strict       true表示严格的验证参数(包含有效长度、类型等)
 	 * @param params
 	 * @return
-	 * @throws NoSuchMethodException
 	 */
-	public static <T extends Executable> ExecutableMatchingResults<T> getByParams(Stream<T> sourceStream,
-			boolean strict, Object... params) throws NoSuchMethodException {
-		long validParametersCount = Arrays.asList(params).stream().filter((e) -> e != null).count();
+	public static <T extends Executable> Stream<ExecutableMatchingResults<T>> matchParams(Stream<T> sourceStream,
+			boolean strict, Object... params) {
 		Stream<ExecutableMatchingResults<T>> stream;
 		if (strict) {
+			long validParametersCount = Arrays.asList(params).stream().filter((e) -> e != null).count();
 			stream = matchParams(sourceStream, (int) validParametersCount, params)
 					.filter((e) -> e.getMatchingResultes() == validParametersCount);
 		} else {
 			stream = matchParams(sourceStream, params.length, params);
 		}
+		return stream;
+	}
 
+	/**
+	 * 通过参数获取可以调用的{@link java.lang.reflect.Executable}
+	 * 
+	 * @see #matchParams(Stream, boolean, Object...)
+	 * @param <T>
+	 * @param sourceStream
+	 * @param strict       true表示严格的验证参数(包含有效长度、类型等)
+	 * @param params
+	 * @return
+	 * @throws NoSuchMethodException
+	 */
+	public static <T extends Executable> ExecutableMatchingResults<T> getByParams(Stream<T> sourceStream,
+			boolean strict, Object... params) throws NoSuchMethodException {
+		Stream<ExecutableMatchingResults<T>> stream = matchParams(sourceStream, strict, params);
 		try {
 			return stream.findFirst().get();
 		} catch (NoSuchElementException e) {

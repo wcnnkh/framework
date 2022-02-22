@@ -1,39 +1,27 @@
-package io.basc.framework.jackson.test;
+package io.basc.framework.fastjson.test;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Test;
 
-import io.basc.framework.jackson.JacksonJSONSupport;
+import io.basc.framework.fastjson.FastJsonSupport;
 import io.basc.framework.util.XUtils;
 
-public class JacksonTest {
+public class FastJsonTest {
 	@Test
 	public void test() {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("a", "a1");
-		map.put("b", "b2");
-
-		System.out.println(JacksonJSONSupport.INSTANCE.toJSONString(map));
-
 		A a = new A(XUtils.getUUID());
-		String json = JacksonJSONSupport.INSTANCE.toJSONString(a);
+		String json = FastJsonSupport.INSTANCE.toJSONString(a);
 		System.out.println(json);
-		a = JacksonJSONSupport.INSTANCE.parseObject(json, A.class);
+		a = FastJsonSupport.INSTANCE.parseObject(json, A.class);
 		System.out.println(a);
-		assertTrue(JacksonJSONSupport.INSTANCE.toJSONString(a).equals(json));
+		assertTrue(FastJsonSupport.INSTANCE.toJSONString(a).equals(json));
 	}
 
 	public static class A {
 		private String a;
 		private int b;
 		private Object c;
-
-		protected A() {
-		}
 
 		public A(String a) {
 			this.a = a;

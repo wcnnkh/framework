@@ -1,8 +1,8 @@
 package io.basc.framework.security;
 
 import java.io.Serializable;
-import java.util.Date;
 
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.StringUtils;
 
 /**
@@ -17,6 +17,13 @@ public class Token implements Serializable, Cloneable {
 	private final int expiresIn;
 	private final long createTime;
 	private final boolean isNew;
+
+	/**
+	 * 序列化使用
+	 */
+	protected Token() {
+		this(null, 0);
+	}
 
 	public Token(String token, int expiresIn) {
 		this(token, expiresIn, System.currentTimeMillis(), true);
@@ -59,14 +66,14 @@ public class Token implements Serializable, Cloneable {
 	public boolean isNew() {
 		return isNew;
 	}
-	
-	public boolean isExpired(){
+
+	public boolean isExpired() {
 		return isExpired(0);
 	}
-	
 
 	/**
 	 * 是否已过期,如果expiresIn或createTime小于等于0那么始终返回false
+	 * 
 	 * @param ahead 提前多久过期(秒)
 	 * @return
 	 */
@@ -88,13 +95,12 @@ public class Token implements Serializable, Cloneable {
 
 	@Override
 	public String toString() {
-		return "token=" + token + ", expiresIn=" + expiresIn + ", createTime=" + new Date(createTime) + ", isNew="
-				+ isNew;
+		return ReflectionUtils.toString(this);
 	}
 
 	@Override
 	public int hashCode() {
-		return token.hashCode();
+		return token == null ? 0 : token.hashCode();
 	}
 
 	@Override

@@ -1,5 +1,10 @@
 package io.basc.framework.web.message.support;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.util.List;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.http.MediaType;
@@ -8,15 +13,10 @@ import io.basc.framework.http.client.BufferingClientHttpRequestWrapper;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.net.uri.UriComponentsBuilder;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.XUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.message.WebMessagelConverterException;
-
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.util.List;
 
 /**
  * query or form params
@@ -30,7 +30,7 @@ public abstract class AbstractParamWebMessageConverter extends AbstractWebMessag
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
 		Object value;
-		if (XUtils.isMultipleValues(parameterDescriptor.getType())) {
+		if (ClassUtils.isMultipleValues(parameterDescriptor.getType())) {
 			List<String> values = request.getParameterMap().get(parameterDescriptor.getName());
 			if (CollectionUtils.isEmpty(values)) {
 				value = getDefaultValue(parameterDescriptor);
@@ -81,7 +81,7 @@ public abstract class AbstractParamWebMessageConverter extends AbstractWebMessag
 	@Override
 	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
 			Object parameter) throws WebMessagelConverterException {
-		if (XUtils.isMultipleValues(parameterDescriptor.getType())) {
+		if (ClassUtils.isMultipleValues(parameterDescriptor.getType())) {
 			List<String> values = (List<String>) getConversionService().convert(parameter,
 					new TypeDescriptor(parameterDescriptor), TypeDescriptor.collection(List.class, String.class));
 			return builder.queryParam(parameterDescriptor.getName(), values.toArray());

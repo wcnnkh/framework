@@ -1206,4 +1206,16 @@ public final class ClassUtils {
 		}
 		return forResources(Arrays.asList(resources).stream(), classLoader, factory, typeFilter);
 	}
+
+	/**
+	 * 是否是一个有多个值的类型
+	 * 
+	 * @see Collection
+	 * @see Array
+	 * @param type
+	 * @return
+	 */
+	public static boolean isMultipleValues(Class<?> type) {
+		return type != null && (type.isArray() || Collection.class.isAssignableFrom(type));
+	}
 }
