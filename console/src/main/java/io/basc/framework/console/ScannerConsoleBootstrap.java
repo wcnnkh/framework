@@ -5,27 +5,27 @@ import java.util.Scanner;
 
 import io.basc.framework.util.Assert;
 
-public class ConsoleBootstrap extends Thread implements ConsoleWindow<Scanner> {
+public class ScannerConsoleBootstrap extends Thread implements ConsoleWindow<Scanner> {
 	private final ConsoleNavigation<Scanner> navigation;
 	private final Scanner scanner;
 
-	public ConsoleBootstrap() {
-		this(new DefaultConsoleWindow<>());
+	public ScannerConsoleBootstrap() {
+		this(new DefaultConsoleWindow<Scanner>().clear());
 	}
 
-	public ConsoleBootstrap(ConsoleWindow<Scanner> window) {
+	public ScannerConsoleBootstrap(ConsoleWindow<Scanner> window) {
 		this(new ConsoleNavigation<>(window));
 	}
 
-	public ConsoleBootstrap(ConsoleWindow<Scanner> window, Scanner scanner) {
+	public ScannerConsoleBootstrap(ConsoleWindow<Scanner> window, Scanner scanner) {
 		this(new ConsoleNavigation<Scanner>(null, window), scanner);
 	}
 
-	public ConsoleBootstrap(ConsoleNavigation<Scanner> navigation) {
+	public ScannerConsoleBootstrap(ConsoleNavigation<Scanner> navigation) {
 		this(navigation, new Scanner(System.in));
 	}
 
-	public ConsoleBootstrap(ConsoleNavigation<Scanner> navigation, Scanner scanner) {
+	public ScannerConsoleBootstrap(ConsoleNavigation<Scanner> navigation, Scanner scanner) {
 		Assert.requiredArgument(navigation != null, "navigation");
 		Assert.requiredArgument(scanner != null, "scanner");
 		this.navigation = navigation;
