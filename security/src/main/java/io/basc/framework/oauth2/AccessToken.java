@@ -65,7 +65,8 @@ public class AccessToken implements Serializable, Cloneable {
 
 	@Override
 	public AccessToken clone() {
-		return new AccessToken(token.clone(), type, refreshToken.clone(), scope, state);
+		return new AccessToken(this.token == null ? null : token.clone(), type,
+				this.refreshToken == null ? null : refreshToken.clone(), scope, state);
 	}
 
 	@Override
