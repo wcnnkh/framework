@@ -2,7 +2,6 @@ package io.basc.framework.core.reflect;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -221,8 +220,7 @@ public class ReflectionApi implements Supplier<Object> {
 				|| Modifier.isAbstract(type.getModifiers())) {
 			return false;
 		}
-
-		return getConstructor(type) != null || UNSAFE.isAvailable();
+		return true;
 	}
 
 	/**
@@ -233,31 +231,36 @@ public class ReflectionApi implements Supplier<Object> {
 	 * @see #getConstructor(Class)
 	 * @param <T>
 	 * @param type
+	 * @param params 可选的参数
 	 * @return
+	 * @throws NotSupportedException
 	 */
-	public static <T> T newInstance(Class<T> type) {
-		Constructor<T> constructor = ReflectionUtils.getDeclaredConstructor(type);
-		if (constructor != null) {
+	public static <T> T newInstance(Class<T> type, Object... params) throws NotSupportedException {
+		if (params != null && params.length > 0) {
 			try {
-				return constructor.newInstance();
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException e) {
+				return ReflectionUtils.newInstanceWithParams(type, params);
+			} catch (NotSupportedException e) {
+				// 忽略
 			}
 		}
 
-		constructor = getConstructorForSerialization(type);
+		Constructor<T> constructor = getConstructor(type);
 		if (constructor != null) {
 			try {
-				return constructor.newInstance();
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException e) {
+				return ReflectionUtils.newInstance(constructor);
+			} catch (Exception e) {
+				// 忽略
 			}
 		}
 
 		if (UNSAFE.isAvailable()) {
-			return allocateInstance(type);
+			try {
+				return allocateInstance(type);
+			} catch (Exception e) {
+				// 忽略
+			}
 		}
 
-		throw new NotSupportedException(type.getName());
+		return ReflectionUtils.newInstanceWithNullValues(type);
 	}
 }

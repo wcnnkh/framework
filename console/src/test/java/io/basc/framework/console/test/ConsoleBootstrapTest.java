@@ -3,7 +3,7 @@ package io.basc.framework.console.test;
 import java.util.Scanner;
 
 import io.basc.framework.console.AbstractConsoleProcessor;
-import io.basc.framework.console.ConsoleBootstrap;
+import io.basc.framework.console.ScannerConsoleBootstrap;
 import io.basc.framework.console.ConsoleNavigation;
 
 public class ConsoleBootstrapTest {
@@ -15,7 +15,7 @@ public class ConsoleBootstrapTest {
 		next.addProcess(new TestProcessor("下一页测试4"));
 		next.setName("下一页");
 
-		ConsoleBootstrap bootstrap = new ConsoleBootstrap();
+		ScannerConsoleBootstrap bootstrap = new ScannerConsoleBootstrap();
 		bootstrap.addProcess(new TestProcessor("测试1"));
 		bootstrap.addProcess(new TestProcessor("测试2"));
 		bootstrap.addProcess(new TestProcessor("测试3"));

@@ -1,28 +1,43 @@
 package io.basc.framework.oauth2;
 
-import io.basc.framework.security.Token;
-
 import java.io.Serializable;
+
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.security.Token;
 
 public class AccessToken implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private final Token token;
-	private final TokenType tokenType;
+	private final String type;
 	private final Token refreshToken;
 	private final String scope;
 	private final String state;
 
-	public AccessToken(AccessToken accessToken) {
+	/**
+	 * 方便序列化使用
+	 */
+	protected AccessToken() {
+		this(null, null, null, null, null);
+	}
+
+	protected AccessToken(AccessToken accessToken) {
 		this.token = accessToken.token;
-		this.tokenType = accessToken.tokenType;
+		this.type = accessToken.type;
 		this.refreshToken = accessToken.refreshToken;
 		this.scope = accessToken.scope;
 		this.state = accessToken.state;
 	}
 
-	public AccessToken(Token accessToken, TokenType tokenType, Token refreshToken, String scope, String state) {
+	/**
+	 * @param accessToken
+	 * @param type         For example: bearer、mac 等
+	 * @param refreshToken
+	 * @param scope
+	 * @param state
+	 */
+	public AccessToken(Token accessToken, String type, Token refreshToken, String scope, String state) {
 		this.token = accessToken;
-		this.tokenType = tokenType;
+		this.type = type;
 		this.refreshToken = refreshToken;
 		this.scope = scope;
 		this.state = state;
@@ -32,8 +47,8 @@ public class AccessToken implements Serializable, Cloneable {
 		return token;
 	}
 
-	public TokenType getTokenType() {
-		return tokenType;
+	public String getType() {
+		return type;
 	}
 
 	public Token getRefreshToken() {
@@ -50,12 +65,12 @@ public class AccessToken implements Serializable, Cloneable {
 
 	@Override
 	public AccessToken clone() {
-		return new AccessToken(token.clone(), tokenType, refreshToken.clone(), scope, state);
+		return new AccessToken(this.token == null ? null : token.clone(), type,
+				this.refreshToken == null ? null : refreshToken.clone(), scope, state);
 	}
 
 	@Override
 	public String toString() {
-		return "accessToken=[" + token + "], tokenType=[" + tokenType + "], refreshToken=[" + refreshToken
-				+ "], scope=" + scope + ", state=" + state;
+		return ReflectionUtils.toString(this);
 	}
 }

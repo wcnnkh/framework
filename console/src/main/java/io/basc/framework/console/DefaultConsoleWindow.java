@@ -2,21 +2,22 @@ package io.basc.framework.console;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.TreeMap;
 
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 
 public class DefaultConsoleWindow<T> implements ConsoleWindow<T> {
 	private int incrId = 0;
-	private final TreeMap<String, ConsoleProcessor<T>> processorMap;
+	private final Map<String, ConsoleProcessor<T>> processorMap;
 
 	public DefaultConsoleWindow() {
-		this.processorMap = new TreeMap<>();
-		addProcess(new UpperConsoleProcessor<>());
+		this(null);
 	}
 
-	public DefaultConsoleWindow(Comparator<String> comparator) {
-		this.processorMap = new TreeMap<>();
+	public DefaultConsoleWindow(@Nullable Comparator<String> comparator) {
+		this.processorMap = new TreeMap<>(comparator);
 		addProcess(new UpperConsoleProcessor<>());
 	}
 
@@ -45,7 +46,8 @@ public class DefaultConsoleWindow<T> implements ConsoleWindow<T> {
 		processorMap.putIfAbsent(processor.getPattern(), processor);
 	}
 
-	public void clear() {
+	public DefaultConsoleWindow<T> clear() {
 		processorMap.clear();
+		return this;
 	}
 }

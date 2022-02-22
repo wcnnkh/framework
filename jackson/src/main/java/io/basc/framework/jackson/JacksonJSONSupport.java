@@ -4,6 +4,7 @@ import io.basc.framework.core.annotation.Order;
 import io.basc.framework.env.Sys;
 import io.basc.framework.json.AbstractJSONSupport;
 import io.basc.framework.json.JSONException;
+import io.basc.framework.json.JSONSupport;
 import io.basc.framework.json.JsonElement;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -16,6 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 public class JacksonJSONSupport extends AbstractJSONSupport {
+	public static final JSONSupport INSTANCE = new JacksonJSONSupport();
+
 	private ObjectMapper mapper;
 
 	@Order
