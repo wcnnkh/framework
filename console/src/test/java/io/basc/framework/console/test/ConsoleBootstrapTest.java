@@ -2,9 +2,9 @@ package io.basc.framework.console.test;
 
 import java.util.Scanner;
 
-import io.basc.framework.console.AbstractConsoleProcessor;
-import io.basc.framework.console.ScannerConsoleBootstrap;
 import io.basc.framework.console.ConsoleNavigation;
+import io.basc.framework.console.scanner.ScannerConsoleBootstrap;
+import io.basc.framework.console.scanner.ScannerConsoleProcessor;
 
 public class ConsoleBootstrapTest {
 	public static void main(String[] args) {
@@ -24,7 +24,7 @@ public class ConsoleBootstrapTest {
 		bootstrap.start();
 	}
 
-	private static class TestProcessor extends AbstractConsoleProcessor<Scanner> {
+	private static class TestProcessor extends ScannerConsoleProcessor {
 
 		public TestProcessor(String name) {
 			super(name);

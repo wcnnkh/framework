@@ -1,6 +1,13 @@
 package io.basc.framework.data.file;
 
-import io.basc.framework.data.Storage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.storage.Storage;
+import io.basc.framework.io.CrossLanguageSerializer;
 import io.basc.framework.io.FileUtils;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.io.SerializerUtils;
@@ -9,24 +16,14 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 @SuppressWarnings("unchecked")
-public class DirectoryStorage extends TimerTask implements Storage {
+public class DirectoryStorage extends TimerTask implements Storage<String> {
 	private static Logger logger = LoggerFactory.getLogger(DirectoryStorage.class);
 	// 守望线程，自动退出
 	private static final Timer TIMER = new Timer(DirectoryStorage.class.getSimpleName(), true);
 	private final long exp;// 0表示不过期
-	private final Serializer serializer;
+	private final CrossLanguageSerializer serializer;
 	private final File directory;
 
 	/**
@@ -66,7 +63,7 @@ public class DirectoryStorage extends TimerTask implements Storage {
 		}
 	}
 
-	public final Serializer getSerializer() {
+	public final CrossLanguageSerializer getSerializer() {
 		return serializer;
 	}
 
@@ -92,12 +89,12 @@ public class DirectoryStorage extends TimerTask implements Storage {
 		return key.hashCode() % 1024;
 	}
 
-	protected final Object readObject(File file) {
+	protected final Object readObject(File file, TypeDescriptor typeDescriptor) {
 		if (file.exists()) {
 			byte[] data;
 			try {
 				data = FileUtils.readFileToByteArray(file);
-				return serializer.deserialize(data);
+				return serializer.deserialize(data, typeDescriptor);
 			} catch (Exception e) {
 				throw new NestedRuntimeException(e);
 			}
@@ -105,9 +102,9 @@ public class DirectoryStorage extends TimerTask implements Storage {
 		return null;
 	}
 
-	protected final void writeObject(File file, Object value, boolean touch) {
+	protected final void writeObject(File file, Object value, TypeDescriptor valueType, boolean touch) {
 		try {
-			FileUtils.writeByteArrayToFile(file, serializer.serialize(value));
+			FileUtils.writeByteArrayToFile(file, serializer.serialize(value, valueType));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -147,36 +144,49 @@ public class DirectoryStorage extends TimerTask implements Storage {
 		return null;
 	}
 
-	public <T> T get(String key) {
+	@Override
+	public <T> T get(TypeDescriptor type, String key) {
 		File file = getNotExpireFile(key);
 		if (file == null) {
 			return (T) getNotFound(key);
 		}
 
-		return (T) readObject(file);
+		return (T) readObject(file, type);
 	}
 
-	public <T> T getAndTouch(String key) {
+	public <T> T getAndTouch(TypeDescriptor type, String key) {
 		File file = getNotExpireFile(key);
 		if (file == null) {
 			return (T) getNotFound(key);
 		}
 
 		touchFile(file);
-		return (T) readObject(file);
+		return (T) readObject(file, type);
 	}
 
-	public void set(String key, Object value) {
+	@Override
+	public void set(String key, Object value, TypeDescriptor valueType) {
 		File file = getNotExpireFile(key);
-		writeObject(getFile(key), value, file == null);
+		writeObject(getFile(key), value, valueType, file == null);
 	}
 
-	public boolean add(String key, Object value) {
+	@Override
+	public boolean setIfAbsent(String key, Object value, TypeDescriptor valueType) {
 		File file = getNotExpireFile(key);
 		if (file == null) {
-			writeObject(getFile(key), value, true);
+			writeObject(getFile(key), value, valueType, true);
 		}
 		return false;
+	}
+	
+	@Override
+	public boolean setIfPresent(String key, Object value, TypeDescriptor valueType) {
+		File file = getNotExpireFile(key);
+		if (file == null) {
+			return false;
+		}
+		writeObject(getFile(key), value, valueType, true);
+		return true;
 	}
 
 	public boolean touch(String key) {
@@ -197,25 +207,8 @@ public class DirectoryStorage extends TimerTask implements Storage {
 		return false;
 	}
 
-	public boolean isExist(String key) {
+	public boolean exists(String key) {
 		return getNotExpireFile(key) != null;
-	}
-
-	public <T> Map<String, T> get(Collection<String> keyCollections) {
-		if (CollectionUtils.isEmpty(keyCollections)) {
-			return Collections.EMPTY_MAP;
-		}
-
-		Map<String, T> map = new HashMap<String, T>(keyCollections.size());
-		for (String key : keyCollections) {
-			T value = get(key);
-			if (value == null) {
-				continue;
-			}
-
-			map.put(key, value);
-		}
-		return map;
 	}
 
 	/**
@@ -263,16 +256,6 @@ public class DirectoryStorage extends TimerTask implements Storage {
 			sannerExpireFile(directory, scheduledExecutionTime());
 		} catch (Exception e) {
 			logger.error(e, "执行过期缓存扫描异常");
-		}
-	}
-
-	public void delete(Collection<String> keys) {
-		if (CollectionUtils.isEmpty(keys)) {
-			return;
-		}
-
-		for (String key : keys) {
-			delete(key);
 		}
 	}
 

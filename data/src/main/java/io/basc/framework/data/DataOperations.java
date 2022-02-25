@@ -1,4 +1,6 @@
 package io.basc.framework.data;
 
-public interface DataOperations extends TemporaryStorage, Storage, TemporaryCounter, Counter {
+import io.basc.framework.data.kv.TemporaryKeyValueOperations;
+
+public interface DataOperations extends TemporaryKeyValueOperations<String, Object> {
 }

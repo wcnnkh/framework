@@ -1,6 +1,8 @@
 package io.basc.framework.security.login;
 
-import io.basc.framework.data.TemporaryStorage;
+import java.util.concurrent.TimeUnit;
+
+import io.basc.framework.data.storage.TemporaryStorage;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
@@ -9,10 +11,12 @@ import io.basc.framework.util.XUtils;
 public abstract class AbstractLoginService<T> implements LoginService<T> {
 	private final TemporaryStorage temporaryCache;
 	private final int exp;
+	private final Class<T> uidType;
 
-	public AbstractLoginService(TemporaryStorage temporaryCache, int exp) {
+	public AbstractLoginService(TemporaryStorage temporaryCache, int exp, Class<T> uidType) {
 		this.temporaryCache = temporaryCache;
 		this.exp = exp;
+		this.uidType = uidType;
 	}
 
 	public TemporaryStorage getTemporaryCache() {
@@ -36,11 +40,11 @@ public abstract class AbstractLoginService<T> implements LoginService<T> {
 			return null;
 		}
 
-		T uid = temporaryCache.getAndTouch(token, exp);
+		T uid = temporaryCache.getAndTouch(uidType, token, exp, TimeUnit.SECONDS);
 		if (uid == null) {
 			return null;
 		}
-		temporaryCache.touch(formatUid(uid), exp);
+		temporaryCache.touch(formatUid(uid), exp, TimeUnit.SECONDS);
 		return new UserToken<T>(token, uid);
 	}
 
@@ -49,12 +53,12 @@ public abstract class AbstractLoginService<T> implements LoginService<T> {
 			return null;
 		}
 
-		String token = temporaryCache.getAndTouch(formatUid(uid), exp);
+		String token = temporaryCache.getAndTouch(String.class, formatUid(uid), exp, TimeUnit.SECONDS);
 		if (token == null) {
 			return null;
 		}
 
-		temporaryCache.touch(token, exp);
+		temporaryCache.touch(token, exp, TimeUnit.SECONDS);
 		return new UserToken<T>(token, uid);
 	}
 
@@ -63,7 +67,7 @@ public abstract class AbstractLoginService<T> implements LoginService<T> {
 			return false;
 		}
 
-		T uid = temporaryCache.get(token);
+		T uid = temporaryCache.get(uidType, token);
 		if (uid != null) {
 			temporaryCache.delete(formatUid(uid));
 		}
@@ -75,7 +79,7 @@ public abstract class AbstractLoginService<T> implements LoginService<T> {
 			return false;
 		}
 
-		String token = temporaryCache.get(formatUid(uid));
+		String token = temporaryCache.get(String.class, formatUid(uid));
 		if (token != null) {
 			temporaryCache.delete(token);
 		}
@@ -85,14 +89,14 @@ public abstract class AbstractLoginService<T> implements LoginService<T> {
 	public UserToken<T> login(T uid) {
 		Assert.notNull(uid);
 
-		String oldToken = temporaryCache.get(formatUid(uid));
-		if(oldToken != null){
+		String oldToken = temporaryCache.get(String.class, formatUid(uid));
+		if (oldToken != null) {
 			temporaryCache.delete(oldToken);
 		}
-		
+
 		String token = generatorToken(uid);
-		temporaryCache.set(token, exp, uid);
-		temporaryCache.set(formatUid(uid), exp, token);
+		temporaryCache.set(token, uid, exp, TimeUnit.SECONDS);
+		temporaryCache.set(formatUid(uid), token, exp, TimeUnit.SECONDS);
 		return new UserToken<T>(token, uid);
 	}
 

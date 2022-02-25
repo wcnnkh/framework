@@ -1,16 +1,18 @@
 package io.basc.framework.oauth2.client;
 
-import io.basc.framework.data.TemporaryStorage;
+import java.util.concurrent.TimeUnit;
+
+import io.basc.framework.data.storage.TemporaryStorage;
 import io.basc.framework.oauth2.AccessToken;
 
 public abstract class AbstractCredentialsClient implements CredentialsClient {
 	protected final TemporaryStorage temporaryCache;
-	private int tokenExpireAheadTime = 60;//token提前过期时间
+	private int tokenExpireAheadTime = 60;// token提前过期时间
 
 	public AbstractCredentialsClient(TemporaryStorage temporaryCache) {
 		this.temporaryCache = temporaryCache;
 	}
-	
+
 	public final int getTokenExpireAheadTime() {
 		return tokenExpireAheadTime;
 	}
@@ -25,7 +27,7 @@ public abstract class AbstractCredentialsClient implements CredentialsClient {
 		}
 
 		String key = getTemporaryCacheKey(scope);
-		AccessToken accessToken = temporaryCache.get(key);
+		AccessToken accessToken = temporaryCache.get(AccessToken.class, key);
 		if (accessToken == null || accessToken.getToken().isExpired(tokenExpireAheadTime)) {
 			if (accessToken != null && accessToken.getRefreshToken() != null
 					&& !accessToken.getRefreshToken().isExpired(tokenExpireAheadTime)) {
@@ -36,10 +38,10 @@ public abstract class AbstractCredentialsClient implements CredentialsClient {
 			} else {
 				accessToken = getNewAccessToken(scope);
 			}
-			temporaryCache.set(key,
+			temporaryCache.set(key, accessToken.clone(),
 					Math.max(accessToken.getToken().getExpiresIn(),
 							accessToken.getRefreshToken() == null ? 0 : accessToken.getRefreshToken().getExpiresIn()),
-					accessToken.clone());
+					TimeUnit.SECONDS);
 		}
 		return accessToken;
 	}

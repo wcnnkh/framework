@@ -7,13 +7,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.basc.framework.data.CasDataOperations;
 import io.basc.framework.data.cas.CAS;
-import io.basc.framework.data.cas.CASOperations;
+import io.basc.framework.data.cas.CasKeyValueOperations;
 import io.basc.framework.redis.RedisClient;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.value.AnyValue;
 
-public class RedisCASOperations implements CASOperations {
+public class RedisCASOperations implements CasDataOperations {
 	private static final String CAS_IS_NULL = "if (" + isNullScript("cas") + ") then cas = 0 end";
 
 	private static final String CAS_KEY_PREFIX = "cas_";
@@ -73,15 +74,15 @@ public class RedisCASOperations implements CASOperations {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> CAS<T> get(String key) {
+	public CAS<Object> gets(String key) {
 		List<Object> values = client.eval(CAS_GET, Arrays.asList(key, CAS_KEY_PREFIX + key), null);
 		if (CollectionUtils.isEmpty(values) || values.size() != 2) {
 			return null;
 		}
 
-		T value = (T) values.get(0);
+		Object value = values.get(0);
 		long verion = new AnyValue(values.get(1)).getAsLongValue();
-		return new CAS<T>(verion, value);
+		return new CAS<>(verion, value);
 	}
 
 	public void set(String key, Object value, int exp) {
@@ -108,7 +109,7 @@ public class RedisCASOperations implements CASOperations {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> Map<String, CAS<T>> get(Collection<String> keys) {
+	public <T> Map<String, CAS<T>> gets(Collection<String> keys) {
 		if (CollectionUtils.isEmpty(keys)) {
 			return Collections.EMPTY_MAP;
 		}

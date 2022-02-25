@@ -1,9 +1,9 @@
 package io.basc.framework.codec;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.basc.framework.convert.Converter;
 import io.basc.framework.lang.Nullable;
@@ -20,7 +20,7 @@ import io.basc.framework.util.Validator;
  * @param <E>
  */
 @FunctionalInterface
-public interface Encoder<D, E> extends Validator<D, E>{
+public interface Encoder<D, E> extends Validator<D, E> {
 	/**
 	 * 编码
 	 * 
@@ -29,7 +29,7 @@ public interface Encoder<D, E> extends Validator<D, E>{
 	 * @throws EncodeException
 	 */
 	E encode(D source) throws EncodeException;
-	
+
 	/**
 	 * 校验
 	 */
@@ -43,11 +43,7 @@ public interface Encoder<D, E> extends Validator<D, E>{
 			return Collections.emptyList();
 		}
 
-		List<E> list = new ArrayList<E>(sources.size());
-		for (D source : sources) {
-			list.add(encode(source));
-		}
-		return list;
+		return sources.stream().map((e) -> encode(e)).collect(Collectors.toList());
 	}
 
 	@Nullable

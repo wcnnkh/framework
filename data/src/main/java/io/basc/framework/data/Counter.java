@@ -1,20 +1,24 @@
 package io.basc.framework.data;
 
+import io.basc.framework.data.kv.KeyOperations;
+
 /**
  * 计数器
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 
-public interface Counter {
-	boolean isExist(String key);
-
-	long incr(String key, long delta);
+public interface Counter extends KeyOperations<String> {
+	default long incr(String key, long delta) {
+		return incr(key, delta, 0);
+	}
 
 	long incr(String key, long delta, long initialValue);
 
-	long decr(String key, long delta);
+	default long decr(String key, long delta) {
+		return decr(key, delta, 0);
+	}
 
 	long decr(String key, long delta, long initialValue);
 }

@@ -40,4 +40,8 @@ public interface CrossLanguageSerializer {
 			input.close();
 		}
 	}
+
+	default Serializer toSerializer(TypeDescriptor typeDescriptor) {
+		return new ObjectSerializer(this, typeDescriptor);
+	}
 }

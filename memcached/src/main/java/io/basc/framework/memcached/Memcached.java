@@ -1,8 +1,6 @@
 package io.basc.framework.memcached;
 
-import io.basc.framework.data.DataOperations;
-import io.basc.framework.data.cas.CASOperations;
+import io.basc.framework.data.CasDataOperations;
 
-public interface Memcached extends DataOperations {
-	CASOperations getCASOperations();
+public interface Memcached extends CasDataOperations {
 }

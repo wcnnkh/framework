@@ -28,6 +28,8 @@ public interface MemoryData {
 	 * @return
 	 */
 	boolean setIfAbsent(Object value);
+	
+	boolean setIfPresent(Object value);
 
 	/**
 	 * 判断cas是否匹配

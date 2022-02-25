@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.basc.framework.codec.Codec;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.data.geo.Circle;
 import io.basc.framework.data.geo.Distance;
 import io.basc.framework.data.geo.Metric;
 import io.basc.framework.data.geo.Point;
+import io.basc.framework.redis.convert.DefaultConvertibleRedisClient;
 import io.basc.framework.util.page.Pageables;
 import io.basc.framework.util.page.StreamPageables;
 
@@ -20,6 +22,10 @@ public interface RedisClient<K, V> extends RedisConnectionCommands<K, V>, RedisG
 		RedisStringCommands<K, V>, RedisSetsCommands<K, V>, RedisServerCommands<K, V> {
 
 	RedisConnection<K, V> getConnection();
+
+	default <TK, TV> RedisClient<TK, TV> to(Codec<TK, K> keyCodec, Codec<TV, V> valueCodec) {
+		return new DefaultConvertibleRedisClient<>(this, keyCodec, valueCodec);
+	}
 
 	default <T> T execute(RedisCallback<K, V, T> callback) throws RedisSystemException {
 		RedisConnection<K, V> connection = getConnection();

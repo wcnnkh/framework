@@ -1,12 +1,15 @@
 package io.basc.framework.security.session;
 
 import java.util.HashSet;
+import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
+import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.Order;
-import io.basc.framework.data.TemporaryStorage;
-import io.basc.framework.data.memory.MemoryDataOperations;
+import io.basc.framework.data.memory.MemoryOperations;
+import io.basc.framework.data.storage.TemporaryStorage;
 import io.basc.framework.env.Sys;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -25,7 +28,7 @@ public class DefaultUserSessionFactory implements UserSessionFactory {
 	private String prefix = USER_SESSION_PREFIX;
 
 	public DefaultUserSessionFactory() {
-		this(new MemoryDataOperations());
+		this(new MemoryOperations());
 		logger.info("Using memory {}", getTemporaryCache());
 	}
 
@@ -82,17 +85,22 @@ public class DefaultUserSessionFactory implements UserSessionFactory {
 
 	public <T> SessionIds<T> getSessionIds(T uid, boolean create) {
 		String key = getUidToSessionIdsKey(uid);
-		SessionIds<T> ids = temporaryCache.getAndTouch(key, sessionFactory.getMaxInactiveInterval());
+		TypeDescriptor typeDescriptor = TypeDescriptor
+				.valueOf(ResolvableType.forClassWithGenerics(SessionIds.class, uid.getClass()));
+		SessionIds<T> ids = temporaryCache.getAndTouch(typeDescriptor, key, sessionFactory.getMaxInactiveInterval(),
+				TimeUnit.SECONDS);
 		if (ids == null) {
 			if (create) {
 				while (true) {
-					ids = temporaryCache.getAndTouch(key, sessionFactory.getMaxInactiveInterval());
+					ids = temporaryCache.getAndTouch(typeDescriptor, key, sessionFactory.getMaxInactiveInterval(),
+							TimeUnit.SECONDS);
 					if (ids != null) {
 						break;
 					}
 
 					ids = new SessionIds<T>(sessionFactory.getMaxInactiveInterval());
-					if (temporaryCache.add(key, sessionFactory.getMaxInactiveInterval(), ids)) {
+					if (temporaryCache.setIfAbsent(key, ids, sessionFactory.getMaxInactiveInterval(),
+							TimeUnit.SECONDS)) {
 						break;
 					}
 				}
@@ -103,16 +111,18 @@ public class DefaultUserSessionFactory implements UserSessionFactory {
 
 	public <T> void updateSessionIds(T uid, SessionIds<T> sessionIds) {
 		String key = getUidToSessionIdsKey(uid);
-		temporaryCache.set(key, sessionIds.getMaxInactiveInterval(), sessionIds);
+		temporaryCache.set(key, sessionIds, sessionIds.getMaxInactiveInterval(), TimeUnit.SECONDS);
 	}
 
 	protected <T> void createUserSession(T uid, String sessionId) {
 		String key = getUidToSessionIdsKey(uid);
-		SessionIds<T> ids = temporaryCache.get(key);
+		TypeDescriptor typeDescriptor = TypeDescriptor
+				.valueOf(ResolvableType.forClassWithGenerics(SessionIds.class, uid.getClass()));
+		SessionIds<T> ids = temporaryCache.get(typeDescriptor, key);
 		if (ids == null) {
 			ids = new SessionIds<T>(sessionFactory.getMaxInactiveInterval());
 			ids.add(sessionId);
-			if (!temporaryCache.add(key, sessionFactory.getMaxInactiveInterval(), ids)) {
+			if (!temporaryCache.setIfAbsent(key, ids, sessionFactory.getMaxInactiveInterval(), TimeUnit.SECONDS)) {
 				createUserSession(uid, sessionId);
 			}
 		} else {
