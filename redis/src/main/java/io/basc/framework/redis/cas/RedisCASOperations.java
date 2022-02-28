@@ -6,15 +6,17 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.data.CasDataOperations;
-import io.basc.framework.data.cas.CAS;
-import io.basc.framework.data.cas.CasKeyValueOperations;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.CAS;
+import io.basc.framework.data.TemporaryStorageCasOperations;
+import io.basc.framework.redis.Redis;
 import io.basc.framework.redis.RedisClient;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.value.AnyValue;
 
-public class RedisCASOperations implements CasDataOperations {
+public class RedisCASOperations implements TemporaryStorageCasOperations {
 	private static final String CAS_IS_NULL = "if (" + isNullScript("cas") + ") then cas = 0 end";
 
 	private static final String CAS_KEY_PREFIX = "cas_";
@@ -50,32 +52,34 @@ public class RedisCASOperations implements CasDataOperations {
 		return sb.toString();
 	}
 
-	private RedisClient<String, Object> client;
+	private Redis redis;
 
-	public RedisCASOperations(RedisClient<String, Object> client) {
-		this.client = client;
+	public RedisCASOperations(Redis redis) {
+		this.redis = redis;
 	}
-
-	public boolean cas(String key, Object value, int exp, long cas) {
+	
+	@Override
+	public boolean cas(String key, Object value, TypeDescriptor valueType, long cas, long exp, TimeUnit expUnit) {
+		byte[] target = redis.getSerializer().serialize(value, valueType);
 		Object resposne;
 		if (exp > 0) {
-			resposne = client.eval(CAS_EXP_SCRIPT, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + "", exp + ""),
-					Arrays.asList(value));
+			resposne = redis.getSourceRedisClient().eval(redis.getKeyCodec().encode(CAS_EXP_SCRIPT), redis.getKeyCodec().encode(Arrays.asList(key, CAS_KEY_PREFIX + key, cas + "", exp + "")),
+					Arrays.asList(target));
 		} else {
-			resposne = client.eval(CAS_SCRIPT, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + ""),
-					Arrays.asList(value));
+			resposne = redis.getSourceRedisClient().eval(redis.getKeyCodec().encode(CAS_SCRIPT), redis.getKeyCodec().encode(Arrays.asList(key, CAS_KEY_PREFIX + key, cas + "")),
+					Arrays.asList(target));
 		}
 		return new AnyValue(resposne).getAsBooleanValue();
 	}
 
 	public boolean delete(String key, long cas) {
-		Object v = client.eval(CAS_DELETE, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + ""), null);
+		Object v = redis.eval(CAS_DELETE, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + ""), null);
 		return new AnyValue(v).getAsBooleanValue();
 	}
 
 	@SuppressWarnings("unchecked")
 	public CAS<Object> gets(String key) {
-		List<Object> values = client.eval(CAS_GET, Arrays.asList(key, CAS_KEY_PREFIX + key), null);
+		List<Object> values = redis.eval(CAS_GET, Arrays.asList(key, CAS_KEY_PREFIX + key), null);
 		if (CollectionUtils.isEmpty(values) || values.size() != 2) {
 			return null;
 		}
@@ -106,24 +110,6 @@ public class RedisCASOperations implements CasDataOperations {
 			v = client.eval(ADD, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
 		}
 		return new AnyValue(v).getAsBooleanValue();
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> Map<String, CAS<T>> gets(Collection<String> keys) {
-		if (CollectionUtils.isEmpty(keys)) {
-			return Collections.EMPTY_MAP;
-		}
-
-		Map<String, CAS<T>> map = new LinkedHashMap<String, CAS<T>>(keys.size());
-		for (String key : keys) {
-			CAS<T> v = get(key);
-			if (v == null) {
-				continue;
-			}
-
-			map.put(key, v);
-		}
-		return map;
 	}
 
 }

@@ -1,6 +1,6 @@
 package io.basc.framework.data.memory;
 
-import io.basc.framework.data.cas.CAS;
+import io.basc.framework.data.CAS;
 import io.basc.framework.io.SerializerUtils;
 
 import java.util.concurrent.atomic.AtomicLong;

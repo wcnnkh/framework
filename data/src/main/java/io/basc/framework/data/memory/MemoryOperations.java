@@ -2,11 +2,12 @@ package io.basc.framework.data.memory;
 
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.data.CasDataOperations;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.CAS;
 import io.basc.framework.data.TemporaryCounter;
-import io.basc.framework.data.cas.CAS;
+import io.basc.framework.data.TemporaryStorageCasOperations;
 
-public final class MemoryOperations implements CasDataOperations, TemporaryCounter {
+public final class MemoryOperations implements TemporaryStorageCasOperations, TemporaryCounter {
 	private final MemoryDataManager memoryDataManager;
 
 	public MemoryOperations() {
@@ -16,7 +17,7 @@ public final class MemoryOperations implements CasDataOperations, TemporaryCount
 	public MemoryOperations(MemoryDataManager memoryDataManager) {
 		this.memoryDataManager = memoryDataManager;
 	}
-
+	
 	@Override
 	public Object get(String key) {
 		MemoryData memoryData = memoryDataManager.getMemoryCache(key);
@@ -27,29 +28,16 @@ public final class MemoryOperations implements CasDataOperations, TemporaryCount
 		CAS<Object> cas = memoryData.get();
 		return cas == null ? null : cas.getValue();
 	}
-
+	
 	@Override
-	public Object getAndTouch(String key, long exp, TimeUnit expUnit) {
-		MemoryData memoryData = memoryDataManager.getMemoryCache(key);
-		if (memoryData == null) {
-			return null;
-		}
-
-		memoryData.setExpire(expUnit.toMillis(exp));
-		memoryData.touch();
-		CAS<Object> cas = memoryData.get();
-		return cas == null ? null : cas.getValue();
-	}
-
-	@Override
-	public void set(String key, Object value, long exp, TimeUnit expUnit) {
+	public void set(String key, Object value, TypeDescriptor valueType, long exp, TimeUnit expUnit) {
 		MemoryData memoryData = memoryDataManager.createDefaultMemoryCache(key);
 		memoryData.set(value);
 		memoryData.setExpire(expUnit.toMillis(exp));
 	}
-
+	
 	@Override
-	public boolean setIfAbsent(String key, Object value, long exp, TimeUnit expUnit) {
+	public boolean setIfAbsent(String key, Object value, TypeDescriptor valueType, long exp, TimeUnit expUnit) {
 		MemoryData memoryData = memoryDataManager.createDefaultMemoryCache(key);
 		if (!memoryData.setIfAbsent(value)) {
 			return false;
@@ -93,9 +81,9 @@ public final class MemoryOperations implements CasDataOperations, TemporaryCount
 	public boolean delete(String key) {
 		return memoryDataManager.delete(key);
 	}
-
+	
 	@Override
-	public boolean cas(String key, Object value, long cas, long exp, TimeUnit expUnit) {
+	public boolean cas(String key, Object value, TypeDescriptor valueType, long cas, long exp, TimeUnit expUnit) {
 		MemoryData memoryData = memoryDataManager.createDefaultMemoryCache(key);
 		if (memoryData.set(new CAS<Object>(cas, value))) {
 			memoryData.setExpire(expUnit.toMillis(exp));
@@ -108,7 +96,7 @@ public final class MemoryOperations implements CasDataOperations, TemporaryCount
 	public boolean delete(String key, long cas) {
 		return memoryDataManager.delete(key, cas);
 	}
-
+	
 	@Override
 	public CAS<Object> gets(String key) {
 		MemoryData memoryData = memoryDataManager.getMemoryCache(key);
@@ -117,8 +105,7 @@ public final class MemoryOperations implements CasDataOperations, TemporaryCount
 		}
 		return memoryData.get();
 	}
-
-	@Override
+	
 	public Object getAndTouch(String key) {
 		MemoryData memoryData = memoryDataManager.getMemoryCache(key);
 		if (memoryData == null) {
@@ -130,7 +117,6 @@ public final class MemoryOperations implements CasDataOperations, TemporaryCount
 		return cas == null ? null : cas.getValue();
 	}
 
-	@Override
 	public boolean touch(String key) {
 		MemoryData memoryData = memoryDataManager.getMemoryCache(key);
 		if (memoryData == null) {
@@ -153,7 +139,7 @@ public final class MemoryOperations implements CasDataOperations, TemporaryCount
 	}
 
 	@Override
-	public boolean setIfPresent(String key, Object value, long exp, TimeUnit expUnit) {
+	public boolean setIfPresent(String key, Object value, TypeDescriptor valueType, long exp, TimeUnit expUnit) {
 		MemoryData memoryData = memoryDataManager.createDefaultMemoryCache(key);
 		if (!memoryData.setIfPresent(value)) {
 			return false;

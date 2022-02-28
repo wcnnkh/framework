@@ -2,8 +2,6 @@ package io.basc.framework.data;
 
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.data.kv.TemporaryKeyOperations;
-
 public interface TemporaryCounter extends Counter, TemporaryKeyOperations<String> {
 
 	@Override

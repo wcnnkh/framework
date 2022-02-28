@@ -1,9 +1,7 @@
 package io.basc.framework.data;
 
-import io.basc.framework.data.storage.TemporaryStorageWrapper;
-
-public interface StorageOperationsWrapper extends StorageOperations, TemporaryStorageWrapper<String> {
+public interface StorageOperationsWrapper extends StorageOperations, DataOperationsWrapper<String> {
 
 	@Override
-	StorageOperations getSourceOperations();
+	DataOperations<String> getSourceOperations();
 }

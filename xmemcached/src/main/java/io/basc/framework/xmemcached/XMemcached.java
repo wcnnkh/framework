@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.cas.CAS;
+import io.basc.framework.data.CAS;
 import io.basc.framework.memcached.Memcached;
 import io.basc.framework.util.Assert;
 import net.rubyeye.xmemcached.GetsResponse;
@@ -23,12 +23,7 @@ public final class XMemcached implements Memcached {
 		this.memcachedClient = memcachedClient;
 	}
 
-	@Override
-	public <T> T get(TypeDescriptor type, String key) {
-		return get(key);
-	}
-
-	public <T> T get(String key) {
+	public Object get(String key) {
 		try {
 			return memcachedClient.get(key);
 		} catch (Exception e) {
@@ -36,20 +31,15 @@ public final class XMemcached implements Memcached {
 		}
 	}
 
-	@Override
-	public <T> CAS<T> gets(TypeDescriptor type, String key) {
-		return gets(key);
-	}
-
-	public <T> CAS<T> gets(String key) {
-		GetsResponse<T> cas;
+	public CAS<Object> gets(String key) {
+		GetsResponse<Object> cas;
 		try {
 			cas = memcachedClient.gets(key);
 			if (cas == null) {
 				return null;
 			}
 
-			return new CAS<T>(cas.getCas(), cas.getValue());
+			return new CAS<>(cas.getCas(), cas.getValue());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -138,12 +128,7 @@ public final class XMemcached implements Memcached {
 		}
 	}
 
-	@Override
-	public <T> T getAndTouch(TypeDescriptor type, String key, long exp, TimeUnit expUnit) {
-		return getAndTouch(key, exp, expUnit);
-	}
-
-	public <T> T getAndTouch(String key, long newExp, TimeUnit expUnit) {
+	public Object getAndTouch(String key, long newExp, TimeUnit expUnit) {
 		checkExp(newExp);
 		if (isSupportTouch) {
 			try {
@@ -178,7 +163,7 @@ public final class XMemcached implements Memcached {
 	}
 
 	@Override
-	public <T> Map<String, T> get(Class<T> type, Collection<String> keys) {
+	public Map<String, Object> get(Collection<String> keys) {
 		try {
 			return memcachedClient.get(keys);
 		} catch (Exception e) {
@@ -218,13 +203,8 @@ public final class XMemcached implements Memcached {
 		}
 	}
 
-	@Override
-	public <T> Map<String, CAS<T>> gets(TypeDescriptor type, Collection<String> keys) {
-		return gets(keys);
-	}
-
-	public <T> Map<String, CAS<T>> gets(Collection<String> keyCollections) {
-		Map<String, GetsResponse<T>> map = null;
+	public Map<String, CAS<Object>> gets(Collection<String> keyCollections) {
+		Map<String, GetsResponse<Object>> map = null;
 		try {
 			map = memcachedClient.gets(keyCollections);
 		} catch (Exception e) {
@@ -232,10 +212,10 @@ public final class XMemcached implements Memcached {
 		}
 
 		if (map != null) {
-			Map<String, CAS<T>> casMap = new HashMap<String, CAS<T>>();
-			for (Entry<String, GetsResponse<T>> entry : map.entrySet()) {
-				GetsResponse<T> v = entry.getValue();
-				casMap.put(entry.getKey(), new CAS<T>(v.getCas(), v.getValue()));
+			Map<String, CAS<Object>> casMap = new HashMap<String, CAS<Object>>();
+			for (Entry<String, GetsResponse<Object>> entry : map.entrySet()) {
+				GetsResponse<Object> v = entry.getValue();
+				casMap.put(entry.getKey(), new CAS<Object>(v.getCas(), v.getValue()));
 			}
 			return casMap;
 		}
@@ -280,5 +260,10 @@ public final class XMemcached implements Memcached {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public boolean expire(String key, long exp, TimeUnit expUnit) {
+		return touch(key, exp, expUnit);
 	}
 }

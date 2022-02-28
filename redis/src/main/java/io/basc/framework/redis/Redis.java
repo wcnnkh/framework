@@ -5,7 +5,8 @@ import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.DataOperations;
+import io.basc.framework.data.TemporaryCounter;
+import io.basc.framework.data.TemporaryStorageOperations;
 import io.basc.framework.data.geo.Lbs;
 import io.basc.framework.io.CrossLanguageSerializer;
 import io.basc.framework.io.JavaSerializer;
@@ -16,7 +17,7 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.value.AnyValue;
 
 public class Redis extends DefaultConvertibleRedisClient<RedisClient<byte[], byte[]>, byte[], String, byte[], String>
-		implements DataOperations {
+		implements TemporaryStorageOperations, TemporaryCounter {
 	private static final String INCR_AND_INIT_SCRIPT = ResourceUtils
 			.getContent(ResourceUtils.getSystemResource("/io/basc/framework/redis/incr.script"), Constants.UTF_8);
 	private static final String DECR_AND_INIT_SCRIPT = ResourceUtils
@@ -97,6 +98,14 @@ public class Redis extends DefaultConvertibleRedisClient<RedisClient<byte[], byt
 	}
 
 	@Override
+	public boolean setIfPresent(String key, Object value, TypeDescriptor valueType, long exp, TimeUnit expUnit) {
+		byte[] target = serializer.serialize(value, valueType);
+		Boolean success = getSourceRedisClient().set(getKeyCodec().encode(key), target, ExpireOption.PX,
+				expUnit.toMillis(exp), SetOption.XX);
+		return success == null ? false : success;
+	}
+
+	@Override
 	public boolean touch(String key, long exp, TimeUnit expUnit) {
 		Long success = touch(key);
 		if (success == null || success == 0) {
@@ -105,5 +114,11 @@ public class Redis extends DefaultConvertibleRedisClient<RedisClient<byte[], byt
 
 		Long value = pexpire(key, expUnit.toMillis(exp));
 		return value != null && value != 0;
+	}
+
+	@Override
+	public boolean expire(String key, long exp, TimeUnit expUnit) {
+		Long value = pexpire(key, expUnit.toMillis(exp));
+		return value != null && value == 1;
 	}
 }

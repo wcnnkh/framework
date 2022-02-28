@@ -3,7 +3,6 @@ package io.basc.framework.data;
 import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.codec.Codec;
-import io.basc.framework.data.kv.TemporaryKeyOperationsWrapper;
 
 public interface TemporaryCounterWrapper
 		extends CounterWrapper, TemporaryCounter, TemporaryKeyOperationsWrapper<String> {

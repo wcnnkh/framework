@@ -6,7 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.storage.Storage;
+import io.basc.framework.data.StorageOperations;
 import io.basc.framework.io.CrossLanguageSerializer;
 import io.basc.framework.io.FileUtils;
 import io.basc.framework.io.Serializer;
@@ -17,13 +17,12 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.util.Assert;
 
-@SuppressWarnings("unchecked")
-public class DirectoryStorage extends TimerTask implements Storage<String> {
+public class DirectoryStorage extends TimerTask implements StorageOperations {
 	private static Logger logger = LoggerFactory.getLogger(DirectoryStorage.class);
 	// 守望线程，自动退出
 	private static final Timer TIMER = new Timer(DirectoryStorage.class.getSimpleName(), true);
 	private final long exp;// 0表示不过期
-	private final CrossLanguageSerializer serializer;
+	private final Serializer serializer;
 	private final File directory;
 
 	/**
@@ -89,12 +88,12 @@ public class DirectoryStorage extends TimerTask implements Storage<String> {
 		return key.hashCode() % 1024;
 	}
 
-	protected final Object readObject(File file, TypeDescriptor typeDescriptor) {
+	protected final Object readObject(File file) {
 		if (file.exists()) {
 			byte[] data;
 			try {
 				data = FileUtils.readFileToByteArray(file);
-				return serializer.deserialize(data, typeDescriptor);
+				return serializer.deserialize(data);
 			} catch (Exception e) {
 				throw new NestedRuntimeException(e);
 			}
@@ -145,23 +144,13 @@ public class DirectoryStorage extends TimerTask implements Storage<String> {
 	}
 
 	@Override
-	public <T> T get(TypeDescriptor type, String key) {
+	public Object get(String key) {
 		File file = getNotExpireFile(key);
 		if (file == null) {
-			return (T) getNotFound(key);
+			return getNotFound(key);
 		}
 
-		return (T) readObject(file, type);
-	}
-
-	public <T> T getAndTouch(TypeDescriptor type, String key) {
-		File file = getNotExpireFile(key);
-		if (file == null) {
-			return (T) getNotFound(key);
-		}
-
-		touchFile(file);
-		return (T) readObject(file, type);
+		return readObject(file);
 	}
 
 	@Override
@@ -178,7 +167,7 @@ public class DirectoryStorage extends TimerTask implements Storage<String> {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean setIfPresent(String key, Object value, TypeDescriptor valueType) {
 		File file = getNotExpireFile(key);

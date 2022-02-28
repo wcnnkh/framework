@@ -1,7 +1,5 @@
 package io.basc.framework.data;
 
-import io.basc.framework.data.kv.KeyOperations;
-
 /**
  * 计数器
  * 

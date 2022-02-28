@@ -1,9 +1,14 @@
 package io.basc.framework.data;
 
-import io.basc.framework.data.kv.TemporaryKeyValueOperationsWrapper;
+import io.basc.framework.codec.Codec;
 
-public interface DataOperationsWrapper extends DataOperations, TemporaryKeyValueOperationsWrapper<String, Object> {
+public interface DataOperationsWrapper<K>
+		extends DataOperations<K>, KeyValueOperationsWrapper<K, Object>, ObjectOperationsWrapper<K> {
+	@Override
+	DataOperations<K> getSourceOperations();
 
 	@Override
-	DataOperations getSourceOperations();
+	default Codec<K, K> getKeyFomatter() {
+		return ObjectOperationsWrapper.super.getKeyFomatter();
+	}
 }

@@ -2,7 +2,7 @@ package io.basc.framework.data.memory;
 
 import java.util.Map;
 
-import io.basc.framework.data.kv.KeyValueOperations;
+import io.basc.framework.data.KeyValueOperations;
 import io.basc.framework.io.SerializerUtils;
 
 public abstract class AbstractMapOperations<K, V> implements KeyValueOperations<K, V> {

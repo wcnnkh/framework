@@ -1,0 +1,18 @@
+package io.basc.framework.data;
+
+import io.basc.framework.convert.TypeDescriptor;
+
+public interface DataCasOperations<K>
+		extends KeyValueCasOperations<K, Object>, DataOperations<K>, ObjectCasOperations<K> {
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default <T> CAS<T> gets(TypeDescriptor type, K key) {
+		CAS<Object> value = gets(key);
+		if (value == null) {
+			return null;
+		}
+		return new CAS<T>(value.getCas(),
+				(T) getConversionService().convert(value.getValue(), TypeDescriptor.forObject(value.getValue()), type));
+	}
+}
