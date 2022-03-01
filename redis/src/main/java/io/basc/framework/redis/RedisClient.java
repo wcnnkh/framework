@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.codec.Codec;
 import io.basc.framework.data.domain.Range;
@@ -12,6 +13,7 @@ import io.basc.framework.data.geo.Distance;
 import io.basc.framework.data.geo.Metric;
 import io.basc.framework.data.geo.Point;
 import io.basc.framework.redis.convert.DefaultConvertibleRedisClient;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.page.Pageables;
 import io.basc.framework.util.page.StreamPageables;
 
@@ -272,6 +274,23 @@ public interface RedisClient<K, V> extends RedisConnectionCommands<K, V>, RedisG
 	default Long expire(K key, long seconds) {
 		return execute((commands) -> {
 			return commands.expire(key, seconds);
+		});
+	}
+
+	default Long expire(Collection<K> keys, long time, TimeUnit timeUnit) {
+		if (CollectionUtils.isEmpty(keys)) {
+			return 0L;
+		}
+
+		return execute((commands) -> {
+			Long value = null;
+			for (K key : keys) {
+				Long v = commands.pexpire(key, timeUnit.toMillis(time));
+				if (v != null) {
+					value = value == null ? 0L : (value + v);
+				}
+			}
+			return value;
 		});
 	}
 

@@ -3,6 +3,8 @@ package io.basc.framework.data;
 import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.kv.TemporaryKeyValueCasOperationsWrapper;
+import io.basc.framework.data.object.TemporaryObjectCasOperationsWrapper;
 
 public interface TemporaryDataCasOperationsWrapper<K>
 		extends TemporaryDataCasOperations<K>, TemporaryDataOperationsWrapper<K>, DataCasOperationsWrapper<K>,

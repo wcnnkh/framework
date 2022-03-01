@@ -2,6 +2,8 @@ package io.basc.framework.data;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.kv.KeyValueOperations;
+import io.basc.framework.data.object.ObjectOperations;
 import io.basc.framework.env.Sys;
 
 @SuppressWarnings("unchecked")

@@ -6,7 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.StorageOperations;
+import io.basc.framework.data.template.TemporaryStorageTemplate;
 import io.basc.framework.io.CrossLanguageSerializer;
 import io.basc.framework.io.FileUtils;
 import io.basc.framework.io.Serializer;
@@ -17,7 +17,7 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.util.Assert;
 
-public class DirectoryStorage extends TimerTask implements StorageOperations {
+public class DirectoryStorage extends TimerTask implements TemporaryStorageTemplate {
 	private static Logger logger = LoggerFactory.getLogger(DirectoryStorage.class);
 	// 守望线程，自动退出
 	private static final Timer TIMER = new Timer(DirectoryStorage.class.getSimpleName(), true);
@@ -176,6 +176,16 @@ public class DirectoryStorage extends TimerTask implements StorageOperations {
 		}
 		writeObject(getFile(key), value, valueType, true);
 		return true;
+	}
+
+	public Object getAndTouch(String key) {
+		File file = getNotExpireFile(key);
+		if (file == null) {
+			return getNotFound(key);
+		}
+
+		touchFile(file);
+		return readObject(file);
 	}
 
 	public boolean touch(String key) {

@@ -3,6 +3,7 @@ package io.basc.framework.redis;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.TemporaryCounter;
@@ -34,6 +35,10 @@ public class Redis extends DefaultConvertibleRedisClient<RedisClient<byte[], byt
 
 	public CrossLanguageSerializer getSerializer() {
 		return serializer;
+	}
+
+	public RedisClient<String, Object> to(Codec<Object, byte[]> codec) {
+		return getSourceRedisClient().to(getKeyCodec(), codec);
 	}
 
 	public void setSerializer(CrossLanguageSerializer serializer) {

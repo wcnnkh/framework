@@ -1,6 +1,8 @@
 package io.basc.framework.data;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.kv.KeyValueCasOperations;
+import io.basc.framework.data.object.ObjectCasOperations;
 
 public interface DataCasOperations<K>
 		extends KeyValueCasOperations<K, Object>, DataOperations<K>, ObjectCasOperations<K> {

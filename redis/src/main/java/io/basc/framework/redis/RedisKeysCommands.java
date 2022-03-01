@@ -8,7 +8,7 @@ import io.basc.framework.util.page.Pageable;
 /**
  * https://redis.io/commands#generic
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @SuppressWarnings("unchecked")

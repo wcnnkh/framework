@@ -1,8 +1,8 @@
 package io.basc.framework.redis;
 
-import io.basc.framework.lang.Nullable;
-
 import java.util.List;
+
+import io.basc.framework.lang.Nullable;
 
 @SuppressWarnings("unchecked")
 public interface RedisScriptingCommands<K, V> {

@@ -69,19 +69,6 @@ public final class XMemcached implements Memcached {
 	}
 
 	@Override
-	public boolean setIfAbsent(String key, Object value, TypeDescriptor valueType) {
-		if (value == null) {
-			return false;
-		}
-
-		try {
-			return memcachedClient.add(key, 0, value);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
 	public boolean setIfAbsent(String key, Object value, TypeDescriptor valueType, long exp, TimeUnit expUnit) {
 		if (value == null) {
 			return false;
@@ -93,6 +80,23 @@ public final class XMemcached implements Memcached {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * 无原子性，分两步执行的
+	 */
+	@Override
+	public boolean setIfPresent(String key, Object value, TypeDescriptor valueType, long exp, TimeUnit expUnit) {
+		if (value == null) {
+			return false;
+		}
+
+		if (!exists(key)) {
+			return false;
+		}
+
+		set(key, value, valueType, exp, expUnit);
+		return true;
 	}
 
 	@Override
