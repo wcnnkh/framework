@@ -1,14 +1,14 @@
-package io.basc.framework.data;
-
-import io.basc.framework.http.HttpRequestEntity;
-import io.basc.framework.io.Resource;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.net.message.InputMessage;
+package io.basc.framework.data.resource;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
+
+import io.basc.framework.data.DataException;
+import io.basc.framework.io.Resource;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.net.message.InputMessage;
 
 /**
  * 资源存储服务
@@ -64,8 +64,7 @@ public interface ResourceStorageService {
 	 * @return
 	 * @throws DataException
 	 */
-	List<Resource> list(@Nullable String prefix, @Nullable String marker, int limit)
-			throws DataException, IOException;
+	List<Resource> list(@Nullable String prefix, @Nullable String marker, int limit) throws DataException, IOException;
 
 	/**
 	 * 生成上传策略<br/>
@@ -77,23 +76,5 @@ public interface ResourceStorageService {
 	 * @return
 	 * @throws DataException
 	 */
-	UploadPolicy generatePolicy(String key, Date expiration) throws DataException;
-
-	static final class UploadPolicy {
-		private final HttpRequestEntity<?> policy;
-		private final String url;
-
-		public UploadPolicy(String url, HttpRequestEntity<?> policy) {
-			this.url = url;
-			this.policy = policy;
-		}
-
-		public HttpRequestEntity<?> getPolicy() {
-			return policy;
-		}
-
-		public String getUrl() {
-			return url;
-		}
-	}
+	ResourceUploadPolicy generatePolicy(String key, Date expiration) throws DataException;
 }
