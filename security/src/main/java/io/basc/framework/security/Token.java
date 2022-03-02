@@ -1,6 +1,7 @@
 package io.basc.framework.security;
 
 import java.io.Serializable;
+import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.StringUtils;
@@ -14,39 +15,60 @@ import io.basc.framework.util.StringUtils;
 public class Token implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private final String token;
-	private final int expiresIn;
 	private final long createTime;
+	private final long expireAtTime;
 	private final boolean isNew;
 
 	/**
 	 * 序列化使用
 	 */
 	protected Token() {
-		this(null, 0);
+		this(null, 0, 0);
 	}
 
-	public Token(String token, int expiresIn) {
-		this(token, expiresIn, System.currentTimeMillis(), true);
+	public Token(String token, long expireDuration, TimeUnit expireUnit) {
+		this(token, System.currentTimeMillis(), expireDuration, expireUnit);
 	}
 
-	public Token(String token, int expiresIn, long createTime, boolean isNew) {
+	/**
+	 * @param token
+	 * @param createTime
+	 * @param expireDuration 过期时长
+	 * @param expireUnit
+	 */
+	public Token(String token, long createTime, long expireDuration, TimeUnit expireUnit) {
+		this(token, createTime, expireDuration, expireUnit, false);
+	}
+
+	/**
+	 * @param token
+	 * @param createTime
+	 * @param expireDuration 过期时长
+	 * @param expireUnit
+	 * @param isNew
+	 */
+	public Token(String token, long createTime, long expireDuration, TimeUnit expireUnit, boolean isNew) {
+		this(token, createTime, createTime + expireUnit.toMillis(expireDuration), isNew);
+	}
+
+	/**
+	 * @param token
+	 * @param createTime
+	 * @param expireAtTime 到期时间
+	 */
+	public Token(String token, long createTime, long expireAtTime) {
+		this(token, createTime, expireAtTime, true);
+	}
+
+	public Token(String token, long createTime, long expireAtTime, boolean isNew) {
 		this.token = token;
-		this.expiresIn = expiresIn;
+		this.expireAtTime = expireAtTime;
 		this.createTime = createTime;
 		this.isNew = isNew;
 	}
 
 	public String getToken() {
 		return token;
-	}
-
-	/**
-	 * 过期时间(秒)
-	 * 
-	 * @return
-	 */
-	public int getExpiresIn() {
-		return Math.max(0, expiresIn);
 	}
 
 	/**
@@ -59,6 +81,24 @@ public class Token implements Serializable, Cloneable {
 	}
 
 	/**
+	 * 到期时间点
+	 * 
+	 * @return
+	 */
+	public long getExpireAtTime() {
+		return expireAtTime;
+	}
+
+	/**
+	 * 有效期(毫秒)
+	 * 
+	 * @return
+	 */
+	public long getPeriodOfValidity() {
+		return expireAtTime - createTime;
+	}
+
+	/**
 	 * 是否是新创建的
 	 * 
 	 * @return
@@ -68,21 +108,21 @@ public class Token implements Serializable, Cloneable {
 	}
 
 	public boolean isExpired() {
-		return isExpired(0);
+		return isExpired(0, TimeUnit.MILLISECONDS);
 	}
 
 	/**
 	 * 是否已过期,如果expiresIn或createTime小于等于0那么始终返回false
 	 * 
-	 * @param ahead 提前多久过期(秒)
+	 * @param ahead 提前多久过期
 	 * @return
 	 */
-	public boolean isExpired(int ahead) {
-		if (expiresIn <= 0 || createTime <= 0) {
+	public boolean isExpired(long ahead, TimeUnit timeUnit) {
+		if (expireAtTime <= 0 || createTime <= 0) {
 			return false;
 		}
 
-		return (System.currentTimeMillis() - createTime) > ((expiresIn - ahead) * 1000);
+		return (expireAtTime - timeUnit.toMillis(ahead)) - System.currentTimeMillis() <= 0;
 	}
 
 	/**
@@ -90,7 +130,7 @@ public class Token implements Serializable, Cloneable {
 	 */
 	@Override
 	public Token clone() {
-		return new Token(token, expiresIn, createTime, false);
+		return new Token(token, expireAtTime, createTime, false);
 	}
 
 	@Override

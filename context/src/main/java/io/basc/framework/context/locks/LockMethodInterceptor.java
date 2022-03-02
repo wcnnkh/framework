@@ -12,8 +12,6 @@ import io.basc.framework.json.JSONUtils;
 import io.basc.framework.locks.LockFactory;
 import io.basc.framework.locks.ReentrantLockFactory;
 
-import java.util.concurrent.locks.Lock;
-
 /**
  * 实现方法级别的锁
  * 
@@ -61,18 +59,7 @@ public final class LockMethodInterceptor implements MethodInterceptor, MethodInt
 				sb.append(JSONUtils.getJsonSupport().toJSONString(args[i]));
 			}
 		}
-
-		String lockKey = sb.toString();
-		Lock lock = lockFactory.getLock(lockKey);
-		try {
-			if (lockConfig.isWait()) {
-				lock.lock();
-			} else if (!lock.tryLock()) {
-				throw new HasBeenLockedException(lockKey);
-			}
-			return invoker.invoke(args);
-		} finally {
-			lock.unlock();
-		}
+		return lockFactory.process(sb.toString(), lockConfig.tryLockTime(), lockConfig.tryLockTimeUnit(),
+				() -> invoker.invoke(args));
 	}
 }
