@@ -9,6 +9,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.TemporaryCounter;
 import io.basc.framework.data.TemporaryStorageOperations;
 import io.basc.framework.data.geo.Lbs;
+import io.basc.framework.data.template.TemporaryStorageTemplate;
 import io.basc.framework.io.CrossLanguageSerializer;
 import io.basc.framework.io.JavaSerializer;
 import io.basc.framework.io.ResourceUtils;
@@ -18,7 +19,7 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.value.AnyValue;
 
 public class Redis extends DefaultConvertibleRedisClient<RedisClient<byte[], byte[]>, byte[], String, byte[], String>
-		implements TemporaryStorageOperations, TemporaryCounter {
+		implements TemporaryStorageOperations, TemporaryCounter, TemporaryStorageTemplate {
 	private static final String INCR_AND_INIT_SCRIPT = ResourceUtils
 			.getContent(ResourceUtils.getSystemResource("/io/basc/framework/redis/incr.script"), Constants.UTF_8);
 	private static final String DECR_AND_INIT_SCRIPT = ResourceUtils
@@ -111,9 +112,14 @@ public class Redis extends DefaultConvertibleRedisClient<RedisClient<byte[], byt
 	}
 
 	@Override
+	public boolean touch(String key) {
+		Long value = touch(new String[] { key });
+		return value != null && value != 0;
+	}
+
+	@Override
 	public boolean touch(String key, long exp, TimeUnit expUnit) {
-		Long success = touch(key);
-		if (success == null || success == 0) {
+		if (!touch(key)) {
 			return false;
 		}
 
