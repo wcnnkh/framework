@@ -8,16 +8,6 @@ public interface TemporaryStorageCasOperationsWrapper extends TemporaryStorageCa
 	TemporaryDataCasOperations<String> getSourceOperations();
 
 	@Override
-	default boolean setIfAbsent(String key, Object value, TypeDescriptor valueType) {
-		return TemporaryStorageCasOperations.super.setIfAbsent(key, value, valueType);
-	}
-
-	@Override
-	default boolean setIfPresent(String key, Object value, TypeDescriptor valueType) {
-		return TemporaryStorageCasOperations.super.setIfPresent(key, value, valueType);
-	}
-
-	@Override
 	default boolean cas(String key, Object value, long cas) {
 		return TemporaryStorageCasOperations.super.cas(key, value, cas);
 	}
@@ -26,10 +16,4 @@ public interface TemporaryStorageCasOperationsWrapper extends TemporaryStorageCa
 	default boolean cas(String key, Object value, TypeDescriptor valueType, long cas) {
 		return TemporaryStorageCasOperations.super.cas(key, value, valueType, cas);
 	}
-
-	@Override
-	default void set(String key, Object value, TypeDescriptor valueType) {
-		TemporaryStorageCasOperations.super.set(key, value, valueType);
-	}
-
 }
