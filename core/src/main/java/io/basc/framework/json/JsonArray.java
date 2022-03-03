@@ -5,9 +5,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import io.basc.framework.convert.Converter;
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.util.XUtils;
 
 public interface JsonArray extends Json<Integer>, Iterable<JsonElement> {
 	static final String PREFIX = "[";
@@ -18,6 +20,10 @@ public interface JsonArray extends Json<Integer>, Iterable<JsonElement> {
 	boolean add(Object element);
 
 	boolean remove(int index);
+
+	default Stream<JsonElement> stream() {
+		return XUtils.stream(this.iterator());
+	}
 
 	default <T> List<T> convert(Converter<JsonElement, T> converter) {
 		if (isEmpty()) {
