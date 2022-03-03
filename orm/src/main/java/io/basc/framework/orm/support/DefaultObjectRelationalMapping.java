@@ -24,8 +24,14 @@ public class DefaultObjectRelationalMapping extends DefaultObjectRelationalResol
 	}
 
 	@Override
+	public final Fields getFields(Class<?> entityClass) {
+		return ObjectRelationalMapping.super.getFields(entityClass);
+	}
+
+	@Override
 	public Fields getFields(Class<?> entityClass, Field parentField) {
 		return getFieldFactory().getFields(entityClass, parentField).accept(FieldFeature.IGNORE_STATIC)
-				.accept(FieldFeature.SUPPORT_GETTER).accept((field) -> !isIgnore(entityClass, field.getGetter()));
+				.accept((field) -> (field.isSupportGetter() && !isIgnore(entityClass, field.getGetter()))
+						|| (field.isSupportSetter() && !isIgnore(entityClass, field.getSetter())));
 	}
 }
