@@ -58,7 +58,7 @@ public class PreparedStatementProcessor implements SqlProcessor<PreparedStatemen
 		return process((ps) -> (Boolean) ps.execute());
 	}
 
-	public int update() throws SqlException {
-		return process((ps) -> (int) ps.executeUpdate());
+	public long update() throws SqlException {
+		return process((ps) -> (long) ps.executeUpdate());
 	}
 }

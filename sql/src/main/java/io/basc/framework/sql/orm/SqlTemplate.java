@@ -92,7 +92,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default void setAutoIncrementLastId(Connection connection, TableStructure tableStructure, Object entity,
-			int updateCount) {
+			long updateCount) {
 		if (updateCount != 1) {
 			return;
 		}
@@ -111,18 +111,18 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		save(entityClass, entity, null);
 	}
 
-	default <T> int save(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
+	default <T> long save(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
 		Assert.requiredArgument(entityClass != null, "entityClass");
 		return save(resolve(entityClass, entity, tableName), entity);
 	}
 
-	default <T> int save(TableStructure tableStructure, T entity) {
+	default <T> long save(TableStructure tableStructure, T entity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
 
 		Sql sql = getSqlDialect().toSaveSql(tableStructure, entity);
 		return prepare(sql).process((ps) -> {
-			int updateCount = ps.executeUpdate();
+			long updateCount = ps.executeUpdate();
 			setAutoIncrementLastId(ps.getConnection(), tableStructure, entity, updateCount);
 			return updateCount;
 		});
@@ -132,16 +132,16 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return saveIfAbsent(entityClass, entity, null) > 0;
 	}
 
-	default <T> int saveIfAbsent(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
+	default <T> long saveIfAbsent(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
 		return saveIfAbsent(resolve(entityClass, entity, tableName), entity);
 	}
 
-	default <T> int saveIfAbsent(TableStructure tableStructure, T entity) {
+	default <T> long saveIfAbsent(TableStructure tableStructure, T entity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
 		Sql sql = getSqlDialect().toSaveIfAbsentSql(tableStructure, entity);
 		return prepare(sql).process((ps) -> {
-			int updateCount = ps.executeUpdate();
+			long updateCount = ps.executeUpdate();
 			setAutoIncrementLastId(ps.getConnection(), tableStructure, entity, updateCount);
 			return updateCount;
 		});
@@ -152,11 +152,11 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return delete(entityClass, entity, null) > 0;
 	}
 
-	default <T> int delete(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
+	default <T> long delete(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
 		return delete(resolve(entityClass, entity, tableName), entity);
 	}
 
-	default <T> int delete(TableStructure tableStructure, T entity) {
+	default <T> long delete(TableStructure tableStructure, T entity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
 		Sql sql = getSqlDialect().toDeleteSql(tableStructure, entity);
@@ -168,14 +168,14 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return deleteById(null, entityClass, ids) > 0;
 	}
 
-	default int deleteById(@Nullable String tableName, Class<?> entityClass, Object... ids) {
+	default long deleteById(@Nullable String tableName, Class<?> entityClass, Object... ids) {
 		if (entityClass == null) {
 			return 0;
 		}
 		return deleteById(resolve(entityClass, null, tableName), ids);
 	}
 
-	default int deleteById(TableStructure tableStructure, Object... ids) {
+	default long deleteById(TableStructure tableStructure, Object... ids) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Sql sql = getSqlDialect().toDeleteByIdSql(tableStructure, ids);
 		return update(sql);
@@ -190,11 +190,11 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return updatePart(entityClass, entity, null) > 0;
 	}
 
-	default <T> int updatePart(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
+	default <T> long updatePart(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
 		return updatePart(resolve(entityClass, entity, tableName), entity);
 	}
 
-	default int updatePart(TableStructure tableStructure, Object entity) {
+	default long updatePart(TableStructure tableStructure, Object entity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
 		Sql sql = getSqlDialect().toUpdatePartSql(tableStructure, entity);
@@ -206,7 +206,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return update(entityClass, entity, null) > 0;
 	}
 
-	default <T> int update(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
+	default <T> long update(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
 		return update(resolve(entityClass, entity, tableName), entity);
 	}
 
@@ -218,7 +218,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	 * @param entity
 	 * @return
 	 */
-	default <T> int update(TableStructure tableStructure, T entity) {
+	default <T> long update(TableStructure tableStructure, T entity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
 		Sql sql = getSqlDialect().toUpdateSql(tableStructure, entity);
@@ -229,11 +229,11 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return update(entityClass, entity, oldEntity, null) > 0;
 	}
 
-	default <T> int update(Class<? extends T> entityClass, T entity, T oldEntity, @Nullable String tableName) {
+	default <T> long update(Class<? extends T> entityClass, T entity, T oldEntity, @Nullable String tableName) {
 		return update(resolve(entityClass, entity, tableName), entity, oldEntity);
 	}
 
-	default <T> int update(TableStructure tableStructure, T entity, T oldEntity) {
+	default <T> long update(TableStructure tableStructure, T entity, T oldEntity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
 		Assert.requiredArgument(oldEntity != null, "condition");
@@ -254,12 +254,12 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	 * @param tableName
 	 * @return
 	 */
-	default <T> int saveOrUpdate(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
+	default <T> long saveOrUpdate(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
 		return saveOrUpdate(resolve(entityClass, entity, tableName), entity);
 	}
 
-	default <T> int saveOrUpdate(TableStructure tableStructure, T entity) {
-		int count = saveIfAbsent(tableStructure, entity);
+	default <T> long saveOrUpdate(TableStructure tableStructure, T entity) {
+		long count = saveIfAbsent(tableStructure, entity);
 		if (count > 0) {
 			return count;
 		}
@@ -489,6 +489,13 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return query(resolve(queryClass, query, null), query);
 	}
 
+	/**
+	 * 这里是将sql转为获取结果集的数量
+	 * 
+	 * @see SqlDialect#toCountSql(Sql)
+	 * @param sql
+	 * @return
+	 */
 	default long count(Sql sql) {
 		Sql countSql = getSqlDialect().toCountSql(sql);
 		return queryFirst(long.class, countSql);
