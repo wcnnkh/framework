@@ -1,20 +1,19 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.util.Accept;
-
 import java.io.Serializable;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class AcceptFields implements Fields, Serializable {
+public class MapFields implements Fields, Serializable {
 	private static final long serialVersionUID = 1L;
-	private final Accept<Field> accept;
+	private final Function<Stream<Field>, Stream<Field>> map;
 	private final Fields fields;
 	private volatile List<Field> fieldList;
 
-	public AcceptFields(Fields fields, Accept<Field> accept) {
-		this.accept = accept;
+	public MapFields(Fields fields, Function<Stream<Field>, Stream<Field>> map) {
+		this.map = map;
 		this.fields = fields;
 	}
 
@@ -30,14 +29,14 @@ public class AcceptFields implements Fields, Serializable {
 
 	@Override
 	public Stream<Field> stream() {
-		return fields.stream().filter(accept);
+		return map.apply(fields.stream());
 	}
 
 	@Override
 	public List<Field> getList() {
 		if (fieldList == null) {
 			synchronized (this) {
-				fieldList = fields.getList().stream().filter(accept).collect(Collectors.toList());
+				fieldList = map.apply(fields.getList().stream()).collect(Collectors.toList());
 			}
 		}
 		return fieldList;
@@ -51,6 +50,6 @@ public class AcceptFields implements Fields, Serializable {
 	@Override
 	public Fields jumpTo(Class<?> cursorId) {
 		Fields fields = this.fields.jumpTo(cursorId);
-		return new AcceptFields(fields, accept);
+		return new MapFields(fields, map);
 	}
 }

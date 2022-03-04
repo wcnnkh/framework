@@ -55,7 +55,6 @@ public class DefaultTableMapping extends DefaultObjectRelationalMapping implemen
 
 	@Override
 	public Fields getFields(Class<?> entityClass, Field parentField) {
-		return getFieldFactory().getFields(entityClass, parentField).entity()
-				.accept((field) -> !isIgnore(entityClass, field.getGetter()));
+		return super.getFields(entityClass, parentField).entity();
 	}
 }

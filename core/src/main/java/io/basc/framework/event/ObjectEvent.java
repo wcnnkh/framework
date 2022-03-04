@@ -2,7 +2,7 @@ package io.basc.framework.event;
 
 import java.util.EventObject;
 
-import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.TimeUtils;
 
 /**
@@ -36,6 +36,6 @@ public class ObjectEvent<T> extends BasicEvent {
 
 	@Override
 	public String toString() {
-		return TimeUtils.format(getCreateTime(), "yyyy-MM-dd HH:mm:ss") + " <" + MapperUtils.toString(this) + ">";
+		return TimeUtils.format(getCreateTime(), "yyyy-MM-dd HH:mm:ss") + " <" + ReflectionUtils.toString(this) + ">";
 	}
 }

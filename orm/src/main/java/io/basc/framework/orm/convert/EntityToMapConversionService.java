@@ -26,9 +26,7 @@ class EntityToMapConversionService extends ConditionalConversionService {
 		Map<Object, Object> sourceMap = CollectionFactory.createMap(targetType.getType(),
 				targetType.getMapKeyTypeDescriptor().getType(), 16);
 		objectRelationalMapping.getStructure(sourceType.getType()).stream()
-				.filter((p) -> p.getField().isSupportGetter()
-						&& !objectRelationalMapping.isIgnore(sourceType.getType(), p.getField().getGetter()))
-				.forEach((property) -> {
+				.filter((p) -> p.getField().isSupportGetter()).forEach((property) -> {
 					Object value = property.getField().getGetter().get(source);
 					TypeDescriptor valuetype = new TypeDescriptor(property.getField().getGetter());
 					value = getConversionService().convert(value, valuetype, targetType.getMapValueTypeDescriptor());

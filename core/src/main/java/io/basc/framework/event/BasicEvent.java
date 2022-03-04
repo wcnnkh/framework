@@ -2,7 +2,7 @@ package io.basc.framework.event;
 
 import java.io.Serializable;
 
-import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.TimeUtils;
 
 public class BasicEvent implements Event, Serializable {
@@ -26,6 +26,6 @@ public class BasicEvent implements Event, Serializable {
 	}
 
 	public String toString() {
-		return TimeUtils.format(createTime, TimeUtils.TIME_MILLIS_PATTERN) + " <" + MapperUtils.toString(this) + ">";
+		return TimeUtils.format(createTime, TimeUtils.TIME_MILLIS_PATTERN) + " <" + ReflectionUtils.toString(this) + ">";
 	};
 }
