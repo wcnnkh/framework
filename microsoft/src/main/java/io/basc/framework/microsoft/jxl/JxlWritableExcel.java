@@ -1,11 +1,10 @@
 package io.basc.framework.microsoft.jxl;
 
+import java.io.IOException;
+
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.WritableExcel;
 import io.basc.framework.microsoft.WritableSheet;
-
-import java.io.IOException;
-
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
