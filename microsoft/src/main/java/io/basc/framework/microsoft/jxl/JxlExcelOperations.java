@@ -1,7 +1,15 @@
 package io.basc.framework.microsoft.jxl;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.microsoft.AbstractExcelReader;
 import io.basc.framework.microsoft.DefaultExcelExport;
 import io.basc.framework.microsoft.Excel;
 import io.basc.framework.microsoft.ExcelException;
@@ -10,19 +18,11 @@ import io.basc.framework.microsoft.ExcelOperations;
 import io.basc.framework.microsoft.ExcelVersion;
 import io.basc.framework.microsoft.RowCallback;
 import io.basc.framework.microsoft.WritableExcel;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import jxl.write.WritableWorkbook;
 
-public class JxlExcelOperations implements ExcelOperations {
+public class JxlExcelOperations extends AbstractExcelReader implements ExcelOperations {
 
 	public Excel create(InputStream inputStream) throws IOException, ExcelException {
 		Workbook workbook;
@@ -80,10 +80,6 @@ public class JxlExcelOperations implements ExcelOperations {
 	public WritableExcel createWritableExcel(File file) throws IOException, ExcelException {
 		FileOutputStream outputStream = new FileOutputStream(file);
 		return create(outputStream);
-	}
-
-	public ExcelExport createExcelExport(OutputStream outputStream) throws IOException, ExcelException {
-		return new DefaultExcelExport(create(outputStream), ExcelVersion.XLS, 0, 0);
 	}
 
 	public ExcelExport createExcelExport(File file) throws IOException, ExcelException {

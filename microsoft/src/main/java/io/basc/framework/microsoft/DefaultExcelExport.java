@@ -97,5 +97,10 @@ public final class DefaultExcelExport extends WritableExcelWrapper implements Ex
 			this.rowIndex = 0;
 			sheetIndex++;
 		}
+		
+		//最少每256行flush一次，已节省内存
+		if(rowIndex%256 == 0) {
+			flush();
+		}
 	}
 }

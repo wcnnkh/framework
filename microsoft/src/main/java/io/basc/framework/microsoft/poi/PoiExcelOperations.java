@@ -2,6 +2,7 @@ package io.basc.framework.microsoft.poi;
 
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.RequiredJavaVersion;
+import io.basc.framework.microsoft.AbstractExcelReader;
 import io.basc.framework.microsoft.DefaultExcelExport;
 import io.basc.framework.microsoft.Excel;
 import io.basc.framework.microsoft.ExcelException;
@@ -24,7 +25,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 @RequiredJavaVersion(8)
-public class PoiExcelOperations implements ExcelOperations {
+public class PoiExcelOperations extends AbstractExcelReader implements ExcelOperations {
 	private static final ExcelReader OLE2_READER = Sys.env
 			.getInstance("io.basc.framework.microsoft.poi.HSSFExcelReader");
 	private static final ExcelReader OOXML_READER = Sys.env
@@ -75,22 +76,15 @@ public class PoiExcelOperations implements ExcelOperations {
 	}
 
 	public WritableExcel create(OutputStream outputStream) throws IOException, ExcelException {
-		Workbook workbook = SXSS_WORKBOOK_CLASS != null
-				? Sys.env.getInstance(SXSS_WORKBOOK_CLASS)
+		Workbook workbook = SXSS_WORKBOOK_CLASS != null ? Sys.env.getInstance(SXSS_WORKBOOK_CLASS)
 				: WorkbookFactory.create(XSSF_SUPPORT);
 		return new PoiExcel(workbook, outputStream);
 	}
 
 	public WritableExcel createWritableExcel(File file) throws IOException, ExcelException {
-		Workbook workbook = SXSS_WORKBOOK_CLASS != null
-				? Sys.env.getInstance(SXSS_WORKBOOK_CLASS)
+		Workbook workbook = SXSS_WORKBOOK_CLASS != null ? Sys.env.getInstance(SXSS_WORKBOOK_CLASS)
 				: WorkbookFactory.create(file, null, false);
 		return new PoiExcel(workbook, new FileOutputStream(file));
-	}
-
-	public ExcelExport createExcelExport(OutputStream outputStream) throws IOException, ExcelException {
-		WritableExcel writableExcel = create(outputStream);
-		return new DefaultExcelExport(writableExcel, ExcelVersion.XLS, 0, 0);
 	}
 
 	public ExcelExport createExcelExport(File file) throws IOException, ExcelException {
@@ -104,7 +98,7 @@ public class PoiExcelOperations implements ExcelOperations {
 
 	public WritableExcel create(OutputStream outputStream, ExcelVersion excelVersion)
 			throws IOException, ExcelException {
-		ExcelVersion excelVersionTouse = excelVersion == null? ExcelVersion.XLS:excelVersion;
+		ExcelVersion excelVersionTouse = excelVersion == null ? ExcelVersion.XLS : excelVersion;
 		Workbook workbook;
 		if (excelVersionTouse == ExcelVersion.XLS) {
 			workbook = WorkbookFactory.create(false);
@@ -117,7 +111,7 @@ public class PoiExcelOperations implements ExcelOperations {
 
 	public ExcelExport createExcelExport(OutputStream outputStream, ExcelVersion excelVersion)
 			throws IOException, ExcelException {
-		ExcelVersion excelVersionTouse = excelVersion == null? ExcelVersion.XLS:excelVersion;
+		ExcelVersion excelVersionTouse = excelVersion == null ? ExcelVersion.XLS : excelVersion;
 		WritableExcel writableExcel = create(outputStream, excelVersionTouse);
 		return new DefaultExcelExport(writableExcel, excelVersionTouse, 0, 0);
 	}

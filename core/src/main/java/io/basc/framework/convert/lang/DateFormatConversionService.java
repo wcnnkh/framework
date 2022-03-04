@@ -73,7 +73,7 @@ public class DateFormatConversionService implements ConversionService {
 
 	private Date stringToDate(String source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		DateFormat sourceFormat = sourceType.getAnnotation(DateFormat.class);
-		DateFormat targetFormat = sourceType.getAnnotation(DateFormat.class);
+		DateFormat targetFormat = targetType.getAnnotation(DateFormat.class);
 		if (sourceFormat == null) {
 			if (targetFormat == null) {
 				return TimeUtils.parse(source);
@@ -97,8 +97,8 @@ public class DateFormatConversionService implements ConversionService {
 
 	private String dateToString(Date source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		DateFormat sourceFormat = sourceType.getAnnotation(DateFormat.class);
-		DateFormat dateFormat = targetType.getAnnotation(DateFormat.class);
-		if (dateFormat == null) {
+		DateFormat targetFormat = targetType.getAnnotation(DateFormat.class);
+		if (targetFormat == null) {
 			if (sourceFormat == null) {
 				return String.valueOf(source);
 			} else {
@@ -108,7 +108,7 @@ public class DateFormatConversionService implements ConversionService {
 			if (sourceFormat != null) {
 				source = TimeUtils.parse(TimeUtils.format(source, sourceFormat.value()), sourceFormat.value());
 			}
-			return TimeUtils.format(source, dateFormat.value());
+			return TimeUtils.format(source, targetFormat.value());
 		}
 	}
 

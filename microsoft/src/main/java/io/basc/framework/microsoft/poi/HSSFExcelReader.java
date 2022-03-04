@@ -1,18 +1,19 @@
 package io.basc.framework.microsoft.poi;
 
-import io.basc.framework.lang.RequiredJavaVersion;
-import io.basc.framework.microsoft.ExcelException;
-import io.basc.framework.microsoft.ExcelReader;
-import io.basc.framework.microsoft.RowCallback;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
+import io.basc.framework.lang.RequiredJavaVersion;
+import io.basc.framework.microsoft.AbstractExcelReader;
+import io.basc.framework.microsoft.ExcelException;
+import io.basc.framework.microsoft.ExcelReader;
+import io.basc.framework.microsoft.RowCallback;
+
 @RequiredJavaVersion(8)
-public class HSSFExcelReader implements ExcelReader {
+public class HSSFExcelReader extends AbstractExcelReader implements ExcelReader {
 
 	public void read(POIFSFileSystem poifsFileSystem, RowCallback rowCallback) throws IOException, ExcelException {
 		XLS2CSVmra hssfReader = new XLS2CSVmra(poifsFileSystem, rowCallback, -1);
