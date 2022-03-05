@@ -1,14 +1,16 @@
 package io.basc.framework.log4j2;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.config.Configurator;
+
 import io.basc.framework.logger.ILoggerFactory;
 import io.basc.framework.logger.Logger;
-
-import org.apache.logging.log4j.LogManager;
 
 public class Log4j2LoggerFactory implements ILoggerFactory {
 
 	static {
 		LogManager.class.getName();
+		Configurator.initialize(null, "io/basc/framework/log4j2/configuration.xml");
 	}
 
 	public void destroy() {

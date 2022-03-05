@@ -1,12 +1,13 @@
 package io.basc.framework.log4j2;
 
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.CustomLogger;
-import io.basc.framework.util.PlaceholderFormat;
-
 import java.util.logging.Level;
 
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.logger.CustomLogger;
+import io.basc.framework.util.PlaceholderFormat;
 
 public class Log4j2Logger extends CustomLogger {
 	private final Logger logger;
@@ -16,6 +17,12 @@ public class Log4j2Logger extends CustomLogger {
 		this.placeholder = placeholder;
 		this.logger = logger;
 	}
+	
+	@Override
+	public void setLevel(Level level) {
+		Configurator.setLevel(this.logger, parse(level));
+		super.setLevel(level);
+	}
 
 	public String getName() {
 		return logger.getName();
@@ -23,7 +30,7 @@ public class Log4j2Logger extends CustomLogger {
 
 	@Override
 	public boolean isTraceEnabled() {
-		return super.isTraceEnabled() || logger.isTraceEnabled();
+		return logger.isTraceEnabled();
 	}
 
 	@Override
@@ -33,7 +40,7 @@ public class Log4j2Logger extends CustomLogger {
 
 	@Override
 	public boolean isDebugEnabled() {
-		return super.isDebugEnabled() || logger.isDebugEnabled();
+		return logger.isDebugEnabled();
 	}
 
 	@Override
@@ -43,7 +50,7 @@ public class Log4j2Logger extends CustomLogger {
 
 	@Override
 	public boolean isInfoEnabled() {
-		return super.isInfoEnabled() || logger.isInfoEnabled();
+		return logger.isInfoEnabled();
 	}
 
 	@Override
@@ -53,7 +60,7 @@ public class Log4j2Logger extends CustomLogger {
 
 	@Override
 	public boolean isWarnEnabled() {
-		return super.isWarnEnabled() || logger.isWarnEnabled();
+		return logger.isWarnEnabled();
 	}
 
 	@Override
@@ -63,7 +70,7 @@ public class Log4j2Logger extends CustomLogger {
 
 	@Override
 	public boolean isErrorEnabled() {
-		return super.isErrorEnabled() || logger.isErrorEnabled();
+		return logger.isErrorEnabled();
 	}
 
 	@Override
