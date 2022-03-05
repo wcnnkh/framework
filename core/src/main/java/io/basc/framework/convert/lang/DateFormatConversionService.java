@@ -4,14 +4,13 @@ import java.util.Date;
 
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionFailedException;
-import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.annotation.DateFormat;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.TimeUtils;
 import io.basc.framework.value.AnyValue;
 
-public class DateFormatConversionService implements ConversionService {
+public class DateFormatConversionService extends AbstractConversionService {
 
 	private boolean canConvert(Class<?> type) {
 		return type == String.class || Date.class.isAssignableFrom(type) || NumberUtils.isNumber(type);
@@ -68,7 +67,12 @@ public class DateFormatConversionService implements ConversionService {
 			}
 		}
 
-		throw new ConversionFailedException(sourceType, targetType, source, null);
+		if(!getConversionService().canConvert(sourceType, TypeDescriptor.valueOf(Date.class))) {
+			throw new ConversionFailedException(sourceType, targetType, source, null);
+		}
+		
+		Date date = (Date) getConversionService().convert(source, sourceType, TypeDescriptor.valueOf(Date.class));
+		return convert(date, sourceType.narrow(date), targetType);
 	}
 
 	private Date stringToDate(String source, TypeDescriptor sourceType, TypeDescriptor targetType) {

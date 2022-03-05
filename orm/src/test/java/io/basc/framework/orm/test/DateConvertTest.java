@@ -21,7 +21,7 @@ public class DateConvertTest {
 
 		Target target = new Target();
 		target.a = new Date();
-		target.b = new Date();
+		target.b = new java.sql.Date(System.currentTimeMillis());
 		Object value = Sys.env.getConversionService().convert(target, TypeDescriptor.forObject(target),
 				TypeDescriptor.map(Map.class, String.class, String.class));
 		System.out.println(value);
@@ -32,7 +32,7 @@ public class DateConvertTest {
 		@DateFormat(value = "yyyy-MM-dd")
 		public Date a;
 		@DateFormat(value = "yyyy-MM-dd HH:mm:ss")
-		public Date b;
+		public java.sql.Date b;
 
 	}
 }
