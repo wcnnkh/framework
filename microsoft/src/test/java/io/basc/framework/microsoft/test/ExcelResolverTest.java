@@ -2,41 +2,38 @@ package io.basc.framework.microsoft.test;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
 import io.basc.framework.convert.annotation.DateFormat;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.io.ClassPathResource;
-import io.basc.framework.io.Resource;
 import io.basc.framework.microsoft.ExcelException;
+import io.basc.framework.microsoft.ExcelVersion;
 import io.basc.framework.microsoft.MicrosoftUtils;
-import io.basc.framework.microsoft.RowCallback;
 import io.basc.framework.microsoft.annotation.ExcelColumn;
+import io.basc.framework.util.RandomUtils;
+import io.basc.framework.util.XUtils;
 
-public class ExcelTest {
+public class ExcelResolverTest {
 	
 	@Test
 	public void test() throws ExcelException, IOException {
-		Resource resource = new ClassPathResource("test.xlsx");
-		List<String[]> list = new ArrayList<String[]>();
-		MicrosoftUtils.getExcelOperations().read(resource.getInputStream(), new RowCallback() {
-
-			@Override
-			public void processRow(int sheetIndex, int rowIndex, String[] contents) {
-				list.add(contents);
-			}
-		});
-		assertTrue(list.size() == 2);
-
-		MicrosoftUtils.read(TestBean.class, resource).forEach((e) -> {
-			System.out.println(e);
-		});
+		List<TestBean> exportList = new ArrayList<TestBean>();
+		for(int i=0; i<10; i++) {
+			exportList.add(new TestBean(XUtils.getUUID(), RandomUtils.random(0, i), new Date()));
+		}
+		File file = File.createTempFile("export", ExcelVersion.XLSX.getFileSuffixName());
+		MicrosoftUtils.export(exportList.stream(), file);
 		
+		List<TestBean> readList = MicrosoftUtils.read(TestBean.class, file).collect(Collectors.toList());
+		assertTrue(exportList.equals(readList));
+		file.delete();
 	}
 
 	public static class TestBean {
@@ -45,8 +42,14 @@ public class ExcelTest {
 		@ExcelColumn
 		private int b;
 		@ExcelColumn
-		@DateFormat("yyyy-MM-dd")
+		@DateFormat("yyyy-MM-dd HH:mm:ss,SSS")
 		private Date c;
+		
+		public TestBean(String a, int b, Date c) {
+			this.a = a;
+			this.b = b;
+			this.c = c;
+		}
 
 		public String getA() {
 			return a;
@@ -70,6 +73,16 @@ public class ExcelTest {
 
 		public void setC(Date c) {
 			this.c = c;
+		}
+		
+		@Override
+		public int hashCode() {
+			return ReflectionUtils.hashCode(this);
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			return ReflectionUtils.equals(this, obj);
 		}
 
 		@Override

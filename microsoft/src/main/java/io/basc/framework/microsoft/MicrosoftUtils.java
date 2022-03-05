@@ -1,9 +1,7 @@
 package io.basc.framework.microsoft;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +21,7 @@ public final class MicrosoftUtils {
 
 	private MicrosoftUtils() {
 	};
+
 	private static final ExcelOperations EXCEL_OPERATIONS = Sys.env.getServiceLoader(ExcelOperations.class,
 			"io.basc.framework.microsoft.poi.PoiExcelOperations", "io.basc.framework.microsoft.jxl.JxlExcelOperations")
 			.first();
@@ -114,27 +113,23 @@ public final class MicrosoftUtils {
 
 	public static <T> void export(Stream<? extends T> source, Object target, @Nullable ExcelVersion excelVersion)
 			throws ExcelException, IOException {
-		ExcelExport export;
-		if (target instanceof OutputStream) {
-			export = getExcelOperations().createExcelExport((OutputStream) target, excelVersion);
-		} else if (target instanceof File) {
-			export = getExcelOperations().createExcelExport((File) target);
-		} else {
-			throw new NotSupportedException(target.toString());
+		ExcelExport export = getExcelOperations().createExcelExport(target, excelVersion);
+		try {
+			getExcelResolver().export(export, source);
+		} finally {
+			export.close();
 		}
-		getExcelResolver().export(export, source);
+		
 	}
 
 	public static <T> void export(Class<T> type, Stream<? extends T> source, Object target,
 			@Nullable ExcelVersion excelVersion) throws ExcelException, IOException {
-		ExcelExport export;
-		if (target instanceof OutputStream) {
-			export = getExcelOperations().createExcelExport((OutputStream) target, excelVersion);
-		} else if (target instanceof File) {
-			export = getExcelOperations().createExcelExport((File) target);
-		} else {
-			throw new NotSupportedException(target.toString());
+		ExcelExport export = getExcelOperations().createExcelExport(target, excelVersion);
+		try {
+			getExcelResolver().export(export, type, source);
+		} finally {
+			export.close();
 		}
-		getExcelResolver().export(export, type, source);
+		
 	}
 }

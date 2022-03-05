@@ -37,7 +37,7 @@ public abstract class AbstractExcelReader implements ExcelReader {
 		READ_EXECUTOR.execute(() -> {
 			try {
 				read(source, callback);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				logger.error(e, "read error");
 			} finally {
 				try {

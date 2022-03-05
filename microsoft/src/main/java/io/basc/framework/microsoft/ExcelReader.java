@@ -23,6 +23,12 @@ public interface ExcelReader {
 
 	void read(File file, RowCallback rowCallback) throws IOException, ExcelException;
 
+	/**
+	 * @param source      InputStream or File or Resource ...
+	 * @param rowCallback
+	 * @throws IOException
+	 * @throws ExcelException
+	 */
 	default void read(Object source, RowCallback rowCallback) throws IOException, ExcelException {
 		Assert.requiredArgument(source != null, "source");
 		Assert.requiredArgument(rowCallback != null, "rowCallback");
@@ -37,5 +43,11 @@ public interface ExcelReader {
 		}
 	}
 
+	/**
+	 * @param source InputStream or File or Resource ...
+	 * @return
+	 * @throws IOException
+	 * @throws ExcelException
+	 */
 	Stream<String[]> read(Object source) throws IOException, ExcelException;
 }

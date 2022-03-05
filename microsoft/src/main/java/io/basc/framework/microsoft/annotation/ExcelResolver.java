@@ -76,14 +76,16 @@ public class ExcelResolver extends DefaultObjectRelationalMapping {
 		return read(reader, getStructure(type), source);
 	}
 
-	public final <T> void export(ExcelExport export, EntityStructure<? extends Property> structure,
-			Stream<? extends T> source) {
-		appendTitles(export, structure);
-		export(export, getConversionService(), structure, source);
+	public final <T> void export(ExcelExport export, Class<T> type, Stream<? extends T> source) {
+		export(export, getStructure(type), source, true);
 	}
 
-	public final <T> void export(ExcelExport export, Class<T> type, Stream<? extends T> source) {
-		export(export, getStructure(type), source);
+	public final <T> void export(ExcelExport export, EntityStructure<? extends Property> structure,
+			Stream<? extends T> source, boolean appendTitles) {
+		if (appendTitles) {
+			appendTitles(export, structure);
+		}
+		export(export, getConversionService(), structure, source);
 	}
 
 	public final <T> void export(ExcelExport export, Stream<? extends T> source) {
@@ -100,8 +102,8 @@ public class ExcelResolver extends DefaultObjectRelationalMapping {
 
 			structure = getStructure(entity.getClass());
 			appendTitles(export, structure);
-			export(export, structure, nullList.stream());
-			export(export, structure, Arrays.asList(entity).stream());
+			export(export, structure, nullList.stream(), false);
+			export(export, structure, Arrays.asList(entity).stream(), false);
 			break;
 		}
 
@@ -109,7 +111,7 @@ public class ExcelResolver extends DefaultObjectRelationalMapping {
 			return;
 		}
 
-		export(export, structure, source);
+		export(export, structure, XUtils.stream(iterator), false);
 	}
 
 	/**
@@ -135,8 +137,8 @@ public class ExcelResolver extends DefaultObjectRelationalMapping {
 		} catch (IOException e) {
 			throw new ExcelException(structure.getEntityClass().getName(), e);
 		}
-		
-		while(iterator.hasNext()) {
+
+		while (iterator.hasNext()) {
 			String[] contents = iterator.next();
 			if (nameToIndexMap.isEmpty() && contents != null && contents.length > 0) {
 				for (int i = 0; i < contents.length; i++) {
@@ -145,7 +147,7 @@ public class ExcelResolver extends DefaultObjectRelationalMapping {
 				break;
 			}
 		}
-		
+
 		// 映射
 		return XUtils.stream(iterator).map((contents) -> {
 			T instance = (T) ReflectionApi.newInstance(structure.getEntityClass());
