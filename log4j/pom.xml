@@ -7,6 +7,11 @@
 		<version>1.8.0</version>
 	</parent>
 	<artifactId>log4j</artifactId>
+	
+	<properties>
+		<log4j.version>1.2.17</log4j.version>
+		<slf4j-log4j12.version>1.7.30</slf4j-log4j12.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
@@ -17,13 +22,13 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
+			<version>${log4j.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.30</version>
+			<version>${slf4j-log4j12.version}</version>
 		</dependency>
 		
 		<!-- 测试 -->

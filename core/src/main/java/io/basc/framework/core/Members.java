@@ -1,16 +1,16 @@
 package io.basc.framework.core;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.page.Pageables;
 import io.basc.framework.util.stream.Processor;
 import io.basc.framework.util.stream.StreamProcessorSupport;
 
@@ -21,11 +21,11 @@ import io.basc.framework.util.stream.StreamProcessorSupport;
  *
  * @param <T>
  */
-public class Members<T> implements Iterable<T>, Cloneable, Supplier<T> {
+public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T> {
 	private final Class<?> sourceClass;
 	private final Processor<Class<?>, Stream<T>, ? extends RuntimeException> processor;
 	@Nullable
-	private List<Members<T>> withs;
+	private Members<T> with;
 
 	public Members(Class<?> sourceClass, Processor<Class<?>, Stream<T>, ? extends RuntimeException> processor) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
@@ -34,8 +34,34 @@ public class Members<T> implements Iterable<T>, Cloneable, Supplier<T> {
 		this.processor = processor;
 	}
 
-	public List<Members<T>> getWiths() {
-		return this.withs == null ? Collections.emptyList() : Collections.unmodifiableList(this.withs);
+	@Override
+	public Class<?> getCursorId() {
+		return sourceClass;
+	}
+
+	@Override
+	public List<T> getList() {
+		return stream().collect(Collectors.toList());
+	}
+
+	@Override
+	public Class<?> getNextCursorId() {
+		return with == null ? null : with.sourceClass;
+	}
+
+	@Override
+	public boolean hasNext() {
+		return with != null;
+	}
+
+	@Override
+	public Members<T> next() {
+		return with;
+	}
+
+	@Override
+	public Members<T> jumpTo(Class<?> cursorId) {
+		return new Members<>(sourceClass, this.processor);
 	}
 
 	/**
@@ -44,10 +70,18 @@ public class Members<T> implements Iterable<T>, Cloneable, Supplier<T> {
 	 * @see #map(Processor)
 	 * @see Stream#filter(Predicate)
 	 * @param predicate
-	 * @return 返回一个新的
+	 * @return
 	 */
 	public Members<T> filter(Predicate<? super T> predicate) {
-		return map((s) -> s.filter(predicate));
+		if (predicate == null) {
+			return this;
+		}
+		return mapProcessor((s) -> s == null ? s : s.filter(predicate));
+	}
+
+	@Override
+	public <TT> Members<TT> map(Function<? super T, TT> map) {
+		return mapProcessor((s) -> s == null ? null : s.map(map));
 	}
 
 	/**
@@ -56,27 +90,18 @@ public class Members<T> implements Iterable<T>, Cloneable, Supplier<T> {
 	 * @param processor
 	 * @return 返回一个新的
 	 */
-	public <S> Members<S> map(Processor<Stream<T>, Stream<S>, ? extends RuntimeException> processor) {
-		Members<S> members = new Members<S>(this.sourceClass, (c) -> {
-			Stream<T> stream = Members.this.stream();
-			if (stream == null) {
-				return StreamProcessorSupport.emptyStream();
-			}
-			Stream<S> target = processor.process(stream);
-			if (target == null) {
-				return StreamProcessorSupport.emptyStream();
-			}
-			return target;
-		});
-		if (this.withs != null) {
-			members.withs = new LinkedList<Members<S>>();
-			for (Members<T> source : this.withs) {
-				if (source == this) {
-					members.withs.add(members);
-				} else {
-					members.withs.add(source.map(processor));
-				}
-			}
+	public <S> Members<S> mapProcessor(Processor<Stream<T>, Stream<S>, ? extends RuntimeException> processor) {
+		Assert.requiredArgument(processor != null, "processor");
+		return mapProcessor(processor, (e) -> processor.process(this.processor.process(e)), this.processor);
+	}
+
+	private <S> Members<S> mapProcessor(Processor<Stream<T>, Stream<S>, ? extends RuntimeException> processor,
+			Processor<Class<?>, Stream<S>, ? extends RuntimeException> rootMapProcessor,
+			Processor<Class<?>, Stream<T>, ? extends RuntimeException> rootProcessor) {
+		Members<S> members = new Members<S>(this.sourceClass, this.processor == rootProcessor ? rootMapProcessor
+				: ((e) -> processor.process(this.processor.process(e))));
+		if (this.with != null) {
+			members.with = this.with.mapProcessor(processor, rootMapProcessor, rootProcessor);
 		}
 		return members;
 	}
@@ -84,22 +109,14 @@ public class Members<T> implements Iterable<T>, Cloneable, Supplier<T> {
 	@Override
 	public Members<T> clone() {
 		Members<T> clone = new Members<T>(this.sourceClass, this.processor);
-		if (this.withs != null) {
-			clone.withs = new LinkedList<>(this.withs);
+		if (this.with != null) {
+			clone.with = this.with.clone();
 		}
 		return clone;
 	}
 
 	public Class<?> getSourceClass() {
 		return sourceClass;
-	}
-
-	/**
-	 * @see #stream()
-	 */
-	@Override
-	public Iterator<T> iterator() {
-		return stream().iterator();
 	}
 
 	/**
@@ -115,27 +132,12 @@ public class Members<T> implements Iterable<T>, Cloneable, Supplier<T> {
 		return stream;
 	}
 
-	public Stream<Members<T>> streamMembers() {
-		if (withs == null) {
-			return Stream.of(this);
+	public Members<T> with(Members<T> with) {
+		if (this.with == null) {
+			this.with = with;
+		} else {
+			this.with.with(with);
 		}
-		return Stream.concat(Stream.of(this), withs.stream());
-	}
-
-	/**
-	 * 合并全部后的操作流
-	 * 
-	 * @return
-	 */
-	public Stream<T> streamAll() {
-		return StreamProcessorSupport.concat(streamMembers().map((m) -> m.stream()).iterator());
-	}
-
-	public Members<T> with(Members<T> methods) {
-		if (this.withs == null) {
-			this.withs = new LinkedList<>();
-		}
-		this.withs.add(methods);
 		return this;
 	}
 
