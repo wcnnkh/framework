@@ -10,7 +10,6 @@
 	
 	<properties>
 		<log4j.version>1.2.17</log4j.version>
-		<slf4j-log4j12.version>1.7.30</slf4j-log4j12.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -28,7 +27,6 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>${slf4j-log4j12.version}</version>
 		</dependency>
 		
 		<!-- 测试 -->

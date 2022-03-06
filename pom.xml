@@ -62,7 +62,7 @@
 		<xstream.version>1.4.18</xstream.version>
 		<jersey.version>1.19.4</jersey.version>
 		<jackson.version>2.13.0</jackson.version>
-		<slf4j.version>1.7.32</slf4j.version>
+		<slf4j.version>1.7.36</slf4j.version>
 	</properties>
 
 	<dependencyManagement>
@@ -186,6 +186,12 @@
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
 				<version>${slf4j.version}</version>
 			</dependency>
 
@@ -345,7 +351,7 @@
 				<artifactId>cloud</artifactId>
 				<version>1.8.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>gateway</artifactId>
@@ -447,7 +453,7 @@
 				<artifactId>memcached</artifactId>
 				<version>1.8.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>xmemcached</artifactId>
@@ -459,13 +465,13 @@
 				<artifactId>redis</artifactId>
 				<version>1.8.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>jedis</artifactId>
 				<version>1.8.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>redisson</artifactId>
@@ -723,13 +729,13 @@
 				<artifactId>jstl</artifactId>
 				<version>1.8.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>mongodb</artifactId>
 				<version>1.8.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>console</artifactId>

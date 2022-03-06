@@ -5,11 +5,21 @@ import java.io.IOException;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import io.basc.framework.env.Environment;
+import io.basc.framework.env.Sys;
 import io.basc.framework.io.Resource;
+import io.basc.framework.lang.NotSupportedException;
 
 public class Log4j2Utils {
 	private static final String DEFAULT_CONFIG_LOCATION = "io/basc/framework/log4j2/configuration.xml";
 	private static final String CONFIG_LOCATION = "log4j2.xml";
+	
+	public static void defaultInit() {
+		try {
+			defaultInit(Sys.env);
+		} catch (IOException e) {
+			throw new NotSupportedException(e);
+		}
+	}
 
 	public static void defaultInit(Environment environment) throws IOException {
 
