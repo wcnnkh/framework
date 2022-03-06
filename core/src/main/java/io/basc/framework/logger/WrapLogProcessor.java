@@ -1,5 +1,6 @@
 package io.basc.framework.logger;
 
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
 class WrapLogProcessor implements LogProcessor {
@@ -18,6 +19,11 @@ class WrapLogProcessor implements LogProcessor {
 
 	@Override
 	public void log(Throwable e, String msg, Object... args) {
+		logger.log(level, e, msg, args);
+	}
+
+	@Override
+	public void log(Throwable e, Supplier<String> msg, Object... args) {
 		logger.log(level, e, msg, args);
 	}
 

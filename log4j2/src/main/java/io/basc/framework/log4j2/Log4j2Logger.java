@@ -1,5 +1,6 @@
 package io.basc.framework.log4j2;
 
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
 import org.apache.logging.log4j.Logger;
@@ -8,6 +9,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.CustomLogger;
 import io.basc.framework.util.PlaceholderFormat;
+import io.basc.framework.util.XUtils;
 
 public class Log4j2Logger extends CustomLogger {
 	private final Logger logger;
@@ -17,7 +19,7 @@ public class Log4j2Logger extends CustomLogger {
 		this.placeholder = placeholder;
 		this.logger = logger;
 	}
-	
+
 	@Override
 	public void setLevel(Level level) {
 		Configurator.setLevel(this.logger, parse(level));
@@ -95,6 +97,14 @@ public class Log4j2Logger extends CustomLogger {
 		org.apache.logging.log4j.Level lv = parse(level);
 		if (logger.isEnabled(lv)) {
 			logger.log(lv, new PlaceholderFormat(format, placeholder, args), e);
+		}
+	}
+
+	@Override
+	public void log(Level level, Throwable e, Supplier<String> msg, Object... args) {
+		org.apache.logging.log4j.Level lv = parse(level);
+		if (logger.isEnabled(lv)) {
+			logger.log(lv, XUtils.toString(() -> new PlaceholderFormat(msg.get(), placeholder, args).toString()), e);
 		}
 	}
 }

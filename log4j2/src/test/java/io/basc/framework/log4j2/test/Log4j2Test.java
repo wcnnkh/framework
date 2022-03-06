@@ -13,5 +13,9 @@ public class Log4j2Test {
 		Logger logger =  loggerFactory.getLogger(Log4j2Test.class.getName());
 		//assertTrue(logger.isInfoEnabled());
 		logger.info(XUtils.getUUID());
+		logger.debug(XUtils.getUUID());
+		logger.warn(XUtils.getUUID());
+		logger.error(XUtils.getUUID());
+		logger.trace(XUtils.getUUID());
 	}
 }

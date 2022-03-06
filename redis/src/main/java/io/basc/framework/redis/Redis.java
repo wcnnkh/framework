@@ -88,6 +88,11 @@ public class Redis extends DefaultConvertibleRedisClient<RedisClient<byte[], byt
 		byte[] value = getSourceRedisClient().get(getKeyCodec().encode(key));
 		return serializer.deserialize(value, type);
 	}
+	
+	@Override
+	public String get(String key) {
+		return super.get(key);
+	}
 
 	@Override
 	public void set(String key, Object value, TypeDescriptor valueType, long exp, TimeUnit expUnit) {

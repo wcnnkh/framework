@@ -4,6 +4,7 @@ import io.basc.framework.logger.CustomLevel;
 import io.basc.framework.logger.CustomLogger;
 import io.basc.framework.util.PlaceholderFormat;
 
+import java.util.function.Supplier;
 import java.util.logging.Level;
 
 import org.slf4j.Logger;
@@ -86,6 +87,11 @@ public class Slf4jLogger extends CustomLogger {
 				logger.info("Unsupported " + level + " | " + message, e);
 			}
 		}
+	}
+
+	@Override
+	public void log(Level level, Throwable e, Supplier<String> msg, Object... args) {
+		log(level, e, msg.get(), args);
 	}
 
 }

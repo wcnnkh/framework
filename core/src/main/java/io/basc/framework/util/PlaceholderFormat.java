@@ -2,10 +2,11 @@ package io.basc.framework.util;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.function.Supplier;
 
 import io.basc.framework.lang.Nullable;
 
-public final class PlaceholderFormat implements AppendTo, Serializable {
+public final class PlaceholderFormat implements AppendTo, Serializable, Supplier<String> {
 	private static final long serialVersionUID = 1L;
 	private final Object msg;
 	private final Object[] args;
@@ -31,6 +32,11 @@ public final class PlaceholderFormat implements AppendTo, Serializable {
 
 	public void appendTo(Appendable appendable) throws IOException {
 		FormatUtils.formatPlaceholder(appendable, msg, placeholder, args);
+	}
+	
+	@Override
+	public String get() {
+		return toString();
 	}
 
 	@Override

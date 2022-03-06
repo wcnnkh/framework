@@ -1,8 +1,11 @@
 package io.basc.framework.log4j2;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.config.Configurator;
+import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+
+import io.basc.framework.env.Sys;
+import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.logger.ILoggerFactory;
 import io.basc.framework.logger.Logger;
 
@@ -10,7 +13,11 @@ public class Log4j2LoggerFactory implements ILoggerFactory {
 
 	static {
 		LogManager.class.getName();
-		Configurator.initialize(null, "io/basc/framework/log4j2/configuration.xml");
+		try {
+			Log4j2Utils.defaultInit(Sys.env);
+		} catch (IOException e) {
+			throw new NotSupportedException(e);
+		}
 	}
 
 	public void destroy() {
