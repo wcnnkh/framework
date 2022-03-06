@@ -1,5 +1,6 @@
 package io.basc.framework.logger;
 
+import java.io.Closeable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,6 +35,10 @@ public class DynamicLoggerFactory extends JdkLoggerFactory {
 				}
 				
 				for (Entry<String, DynamicLogger> entry : loggerMap.entrySet()) {
+					Logger logger = entry.getValue().getSource();
+					if(logger instanceof Closeable) {
+						((Closeable) logger).close();
+					}
 					entry.getValue().setSource(loggerFactory.getLogger(entry.getKey()));
 				}
 				getLogger(DynamicLoggerFactory.class.getName()).info("Use logger factory [" + loggerFactory + "]");
