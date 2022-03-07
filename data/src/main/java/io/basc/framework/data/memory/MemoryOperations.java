@@ -4,12 +4,10 @@ import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.CAS;
+import io.basc.framework.data.CompleteOperations;
 import io.basc.framework.data.TemporaryCounter;
-import io.basc.framework.data.TemporaryStorageCasOperations;
-import io.basc.framework.data.template.TemporaryStorageTemplate;
 
-public final class MemoryOperations
-		implements TemporaryStorageCasOperations, TemporaryStorageTemplate, TemporaryCounter {
+public final class MemoryOperations implements CompleteOperations, TemporaryCounter {
 	private final MemoryDataManager memoryDataManager;
 
 	public MemoryOperations() {
@@ -148,5 +146,52 @@ public final class MemoryOperations
 		}
 		memoryData.setExpire(expUnit.toMillis(exp));
 		return true;
+	}
+
+	@Override
+	public boolean setIfPresent(String key, Object value, TypeDescriptor valueType) {
+		MemoryData memoryData = memoryDataManager.createDefaultMemoryCache(key);
+		if (!memoryData.setIfPresent(value)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public void set(String key, Object value, TypeDescriptor valueType) {
+		MemoryData memoryData = memoryDataManager.createDefaultMemoryCache(key);
+		memoryData.set(value);
+	}
+
+	@Override
+	public boolean setIfAbsent(String key, Object value, TypeDescriptor valueType) {
+		MemoryData memoryData = memoryDataManager.createDefaultMemoryCache(key);
+		if (!memoryData.setIfAbsent(value)) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public boolean cas(String key, Object value, TypeDescriptor valueType, long cas) {
+		MemoryData memoryData = memoryDataManager.createDefaultMemoryCache(key);
+		if (memoryData.set(new CAS<Object>(cas, value))) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public long incr(String key, long delta, long initialValue) {
+		MemoryData memoryData = memoryDataManager.createCounterMemoryCache(key);
+		long v = memoryData.incr(delta, initialValue);
+		return v;
+	}
+
+	@Override
+	public long decr(String key, long delta, long initialValue) {
+		MemoryData memoryData = memoryDataManager.createCounterMemoryCache(key);
+		long v = memoryData.decr(-delta, initialValue);
+		return v;
 	}
 }

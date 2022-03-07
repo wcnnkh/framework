@@ -17,4 +17,9 @@ public interface DataCasOperations<K>
 		return new CAS<T>(value.getCas(),
 				(T) getConversionService().convert(value.getValue(), TypeDescriptor.forObject(value.getValue()), type));
 	}
+
+	@Override
+	default boolean cas(K key, Object value, long cas) {
+		return cas(key, value, TypeDescriptor.forObject(value), cas);
+	}
 }

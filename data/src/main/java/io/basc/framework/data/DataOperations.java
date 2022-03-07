@@ -18,4 +18,19 @@ public interface DataOperations<K> extends KeyValueOperations<K, Object>, Object
 		Object value = get(key);
 		return (T) getConversionService().convert(value, TypeDescriptor.forObject(value), type);
 	}
+
+	@Override
+	default void set(K key, Object value) {
+		ObjectOperations.super.set(key, value);
+	}
+
+	@Override
+	default boolean setIfAbsent(K key, Object value) {
+		return ObjectOperations.super.setIfAbsent(key, value);
+	}
+
+	@Override
+	default boolean setIfPresent(K key, Object value) {
+		return ObjectOperations.super.setIfPresent(key, value);
+	}
 }

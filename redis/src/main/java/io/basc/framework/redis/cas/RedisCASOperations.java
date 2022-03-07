@@ -150,4 +150,28 @@ public class RedisCASOperations implements TemporaryStorageCasOperations {
 			client.eval(SET, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
 		}
 	}
+
+	@Override
+	public boolean setIfPresent(String key, Object value, TypeDescriptor valueType) {
+		Object v = client.eval(setIfPresent, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
+		return new AnyValue(v).getAsBooleanValue();
+	}
+
+	@Override
+	public void set(String key, Object value, TypeDescriptor valueType) {
+		client.eval(SET, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
+	}
+
+	@Override
+	public boolean setIfAbsent(String key, Object value, TypeDescriptor valueType) {
+		Object v = client.eval(ADD, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
+		return new AnyValue(v).getAsBooleanValue();
+	}
+
+	@Override
+	public boolean cas(String key, Object value, TypeDescriptor valueType, long cas) {
+		Object resposne = client.eval(CAS_SCRIPT, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + ""),
+				Arrays.asList(value));
+		return new AnyValue(resposne).getAsBooleanValue();
+	}
 }

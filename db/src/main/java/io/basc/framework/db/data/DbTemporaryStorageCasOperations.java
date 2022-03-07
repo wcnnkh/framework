@@ -6,8 +6,7 @@ import io.basc.framework.codec.support.Base64;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.CAS;
 import io.basc.framework.data.DataException;
-import io.basc.framework.data.TemporaryStorageCasOperations;
-import io.basc.framework.data.template.TemporaryStorageTemplate;
+import io.basc.framework.data.CompleteOperations;
 import io.basc.framework.db.DB;
 import io.basc.framework.io.JavaSerializer;
 import io.basc.framework.io.Serializer;
@@ -23,7 +22,7 @@ import io.basc.framework.util.Assert;
  * @author wcnnkh
  *
  */
-public class DbTemporaryStorageCasOperations implements TemporaryStorageCasOperations, TemporaryStorageTemplate {
+public class DbTemporaryStorageCasOperations implements CompleteOperations {
 	private final DB db;
 	private Serializer serializer = JavaSerializer.INSTANCE;
 	private final String tableName;
@@ -43,7 +42,8 @@ public class DbTemporaryStorageCasOperations implements TemporaryStorageCasOpera
 		this.keyColumnName = "`" + tableStructure.getByFieldName("key").getName() + "`";
 		this.touchTimeColumnName = "`" + tableStructure.getByFieldName("touchTime").getName() + "`";
 		this.expColumName = "`" + tableStructure.getByFieldName("exp").getName() + "`";
-		this.whereSql = keyColumnName + "=? and  (" + touchTimeColumnName + "+" + expColumName + ")<?";
+		this.whereSql = keyColumnName + "=? and (" + expColumName + "<=0 or (" + touchTimeColumnName + "+"
+				+ expColumName + ")<?)";
 	}
 
 	public Serializer getSerializer() {
@@ -186,4 +186,23 @@ public class DbTemporaryStorageCasOperations implements TemporaryStorageCasOpera
 		return db.update(sql) > 0;
 	}
 
+	@Override
+	public boolean setIfPresent(String key, Object value, TypeDescriptor valueType) {
+		return setIfPresent(key, value, valueType, 0, TimeUnit.MILLISECONDS);
+	}
+
+	@Override
+	public void set(String key, Object value, TypeDescriptor valueType) {
+		set(key, value, valueType, 0, TimeUnit.MILLISECONDS);
+	}
+
+	@Override
+	public boolean setIfAbsent(String key, Object value, TypeDescriptor valueType) {
+		return setIfAbsent(key, value, valueType, 0, TimeUnit.MILLISECONDS);
+	}
+
+	@Override
+	public boolean cas(String key, Object value, TypeDescriptor valueType, long cas) {
+		return cas(key, value, valueType, cas, 0, TimeUnit.MILLISECONDS);
+	}
 }

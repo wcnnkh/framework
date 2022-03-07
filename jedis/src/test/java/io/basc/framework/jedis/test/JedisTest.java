@@ -19,8 +19,9 @@ import redis.clients.jedis.Response;
 public class JedisTest {
 	public static void main(String[] args) {
 		JedisPool jedisPool = new JedisPool("localhost", 6379);
-		
+
 		Jedis jedis = jedisPool.getResource();
+
 		Pipeline pattern = jedis.pipelined();
 		Response<Long> res = pattern.incr("v");
 		List<Object> ress = pattern.syncAndReturnAll();
@@ -39,14 +40,14 @@ public class JedisTest {
 		System.out.println("----memoryUsage------");
 		System.out.println(redis.get("a"));
 		redis.del("a");
-		
+
 		for (int i = 0; i < 10; i++) {
 			System.out.println(redis.incr("v", 1, 10));
 		}
 
 		Long value = redis.del("v");
 		System.out.println("del:" + value);
-		
+
 		RedisConnection<String, String> connection = redis.getConnection();
 		RedisPipeline<String, String> pipeline = connection.pipelined();
 		RedisResponse<Long> response1 = pipeline.incr("v");
@@ -56,7 +57,7 @@ public class JedisTest {
 		System.out.println("pres2:" + response2.get());
 		System.out.println("press:" + pipelineResponses);
 		connection.close();
-		
+
 		new Thread(() -> {
 			while (true) {
 				try {

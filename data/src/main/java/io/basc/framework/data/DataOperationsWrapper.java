@@ -19,9 +19,24 @@ public interface DataOperationsWrapper<K>
 	default Codec<Object, Object> getValueFomatter() {
 		return KeyValueOperationsWrapper.super.getValueFomatter();
 	}
-	
+
 	@Override
 	default <T> T get(TypeDescriptor type, K key) {
 		return DataOperations.super.get(type, key);
+	}
+
+	@Override
+	default boolean setIfAbsent(K key, Object value) {
+		return DataOperations.super.setIfAbsent(key, value);
+	}
+
+	@Override
+	default boolean setIfPresent(K key, Object value) {
+		return DataOperations.super.setIfPresent(key, value);
+	}
+
+	@Override
+	default void set(K key, Object value) {
+		DataOperations.super.set(key, value);
 	}
 }

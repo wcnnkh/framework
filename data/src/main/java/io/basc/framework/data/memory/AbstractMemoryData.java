@@ -23,7 +23,7 @@ public abstract class AbstractMemoryData implements MemoryData {
 	}
 
 	public boolean isExpire() {
-		return exp <= 0 ? false : (System.currentTimeMillis() - lastTouch) > exp * 1000;
+		return exp <= 0 ? false : (System.currentTimeMillis() - lastTouch) > exp;
 	}
 
 	public boolean setIfAbsent(Object value) {

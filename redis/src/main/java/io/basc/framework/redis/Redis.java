@@ -11,20 +11,20 @@ import io.basc.framework.data.TemporaryStorageOperations;
 import io.basc.framework.data.geo.Lbs;
 import io.basc.framework.data.template.TemporaryStorageTemplate;
 import io.basc.framework.io.CrossLanguageSerializer;
-import io.basc.framework.io.JavaSerializer;
 import io.basc.framework.io.ResourceUtils;
+import io.basc.framework.io.SerializerUtils;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.redis.convert.DefaultConvertibleRedisClient;
 import io.basc.framework.util.Assert;
 import io.basc.framework.value.AnyValue;
 
 public class Redis extends DefaultConvertibleRedisClient<RedisClient<byte[], byte[]>, byte[], String, byte[], String>
-		implements TemporaryStorageOperations, TemporaryCounter, TemporaryStorageTemplate {
+		implements TemporaryStorageOperations, TemporaryStorageTemplate, TemporaryCounter {
 	private static final String INCR_AND_INIT_SCRIPT = ResourceUtils
 			.getContent(ResourceUtils.getSystemResource("/io/basc/framework/redis/incr.script"), Constants.UTF_8);
 	private static final String DECR_AND_INIT_SCRIPT = ResourceUtils
 			.getContent(ResourceUtils.getSystemResource("/io/basc/framework/redis/decr.script"), Constants.UTF_8);
-	private CrossLanguageSerializer serializer = JavaSerializer.INSTANCE;
+	private CrossLanguageSerializer serializer = SerializerUtils.getCrossLanguageSerializer();
 
 	public Redis(RedisClient<byte[], byte[]> source) {
 		super(source, CharsetCodec.DEFAULT, CharsetCodec.DEFAULT);
@@ -88,10 +88,30 @@ public class Redis extends DefaultConvertibleRedisClient<RedisClient<byte[], byt
 		byte[] value = getSourceRedisClient().get(getKeyCodec().encode(key));
 		return serializer.deserialize(value, type);
 	}
-	
+
 	@Override
 	public String get(String key) {
 		return super.get(key);
+	}
+
+	@Override
+	public void set(String key, Object value, TypeDescriptor valueType) {
+		byte[] target = serializer.serialize(value, valueType);
+		getSourceRedisClient().set(getKeyCodec().encode(key), target);
+	}
+
+	@Override
+	public boolean setIfAbsent(String key, Object value, TypeDescriptor valueType) {
+		byte[] target = serializer.serialize(value, valueType);
+		Boolean success = getSourceRedisClient().set(getKeyCodec().encode(key), target, null, 0, SetOption.NX);
+		return success == null ? false : success;
+	}
+
+	@Override
+	public boolean setIfPresent(String key, Object value, TypeDescriptor valueType) {
+		byte[] target = serializer.serialize(value, valueType);
+		Boolean success = getSourceRedisClient().set(getKeyCodec().encode(key), target, null, 0, SetOption.XX);
+		return success == null ? false : success;
 	}
 
 	@Override
@@ -136,5 +156,15 @@ public class Redis extends DefaultConvertibleRedisClient<RedisClient<byte[], byt
 	public boolean expire(String key, long exp, TimeUnit expUnit) {
 		Long value = pexpire(key, expUnit.toMillis(exp));
 		return value != null && value == 1;
+	}
+
+	@Override
+	public long decr(String key, long delta, long initialValue) {
+		return decr(key, delta, initialValue, 0, TimeUnit.MILLISECONDS);
+	}
+
+	@Override
+	public long incr(String key, long delta, long initialValue) {
+		return incr(key, delta, initialValue, 0, TimeUnit.MILLISECONDS);
 	}
 }

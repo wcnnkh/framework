@@ -1,5 +1,7 @@
 package io.basc.framework.data;
 
+import java.util.concurrent.TimeUnit;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.kv.TemporaryKeyValueCasOperationsWrapper;
 import io.basc.framework.data.object.TemporaryObjectCasOperationsWrapper;
@@ -38,5 +40,15 @@ public interface TemporaryDataCasOperationsWrapper<K>
 	@Override
 	default void set(K key, Object value, TypeDescriptor valueType) {
 		TemporaryDataOperationsWrapper.super.set(key, value, valueType);
+	}
+
+	@Override
+	default boolean cas(K key, Object value, long cas) {
+		return DataCasOperationsWrapper.super.cas(key, value, cas);
+	}
+
+	@Override
+	default boolean cas(K key, Object value, long cas, long exp, TimeUnit expUnit) {
+		return TemporaryObjectCasOperationsWrapper.super.cas(key, value, cas, exp, expUnit);
 	}
 }
