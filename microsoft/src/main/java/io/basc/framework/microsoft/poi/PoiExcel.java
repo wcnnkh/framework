@@ -1,13 +1,13 @@
 package io.basc.framework.microsoft.poi;
 
-import io.basc.framework.microsoft.Excel;
-import io.basc.framework.microsoft.WritableExcel;
-import io.basc.framework.microsoft.WritableSheet;
-
 import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.poi.ss.usermodel.Workbook;
+
+import io.basc.framework.microsoft.Excel;
+import io.basc.framework.microsoft.WritableExcel;
+import io.basc.framework.microsoft.WritableSheet;
 
 public class PoiExcel implements Excel, WritableExcel {
 	private final Workbook workbook;
@@ -23,7 +23,7 @@ public class PoiExcel implements Excel, WritableExcel {
 	}
 
 	public void close() throws IOException {
-		if(outputStream != null){
+		if (outputStream != null) {
 			workbook.write(outputStream);
 			outputStream.flush();
 		}
@@ -38,7 +38,7 @@ public class PoiExcel implements Excel, WritableExcel {
 		if (sheetIndex >= workbook.getNumberOfSheets()) {
 			return null;
 		}
-		
+
 		org.apache.poi.ss.usermodel.Sheet sheet = workbook.getSheetAt(sheetIndex);
 		if (sheet == null) {
 			return null;

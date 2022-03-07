@@ -4,7 +4,7 @@ import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.data.Counter;
 import io.basc.framework.data.generator.SequenceId;
 import io.basc.framework.data.generator.SequenceIdGenerator;
-import io.basc.framework.data.memory.MemoryDataOperations;
+import io.basc.framework.data.memory.MemoryOperations;
 import io.basc.framework.env.Sys;
 import io.basc.framework.locks.LockFactory;
 import io.basc.framework.locks.ReentrantLockFactory;
@@ -33,7 +33,7 @@ public class DefaultGeneratorProcessor implements GeneratorProcessor {
 	private final MaxValueFactory maxValueFactory;
 
 	public DefaultGeneratorProcessor(ObjectRelationalMapping objectRelationalMapping, MaxValueFactory maxValueFactory) {
-		this(objectRelationalMapping, maxValueFactory, new SequenceIdGenerator(), new MemoryDataOperations(),
+		this(objectRelationalMapping, maxValueFactory, new SequenceIdGenerator(), new MemoryOperations(),
 				new ReentrantLockFactory());
 	}
 
@@ -104,12 +104,12 @@ public class DefaultGeneratorProcessor implements GeneratorProcessor {
 
 	public <T> Number generateNumber(Class<? extends T> entityClass, Object entity, Field field) {
 		String key = getCacheKey(entityClass, entity, field);
-		if (!counter.isExist(key)) {
+		if (!counter.exists(key)) {
 			// 不存在
 			Lock lock = lockFactory.getLock(key + "&lock");
 			try {
 				lock.lock();
-				if (!counter.isExist(key)) {
+				if (!counter.exists(key)) {
 					Number maxId = getMaxId(entityClass, entity, field);
 					return counter.incr(key, 1, maxId.longValue() + 1);
 				}

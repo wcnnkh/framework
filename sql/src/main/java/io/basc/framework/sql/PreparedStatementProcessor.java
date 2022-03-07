@@ -61,4 +61,8 @@ public class PreparedStatementProcessor implements SqlProcessor<PreparedStatemen
 	public int update() throws SqlException {
 		return process((ps) -> (int) ps.executeUpdate());
 	}
+
+	public long largeUpdate() throws SqlException, UnsupportedOperationException {
+		return process((ps) -> (long) ps.executeLargeUpdate());
+	}
 }

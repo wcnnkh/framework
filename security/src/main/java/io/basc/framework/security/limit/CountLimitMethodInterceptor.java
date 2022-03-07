@@ -50,8 +50,7 @@ public final class CountLimitMethodInterceptor implements MethodInterceptor, Met
 		TemporaryCounter temporaryCounter = instanceFactory.getInstance(countLimitSecurity.counter());
 		CountLimitFactory countLimitFactory = instanceFactory.getInstance(countLimitSecurity.factory());
 		String key = countLimitFactory.getKey(countLimitSecurity, invoker, args);
-		int exp = (int) countLimitSecurity.timeUnit().toSeconds(countLimitSecurity.period());
-		long count = temporaryCounter.incr(key, 1, 1, exp);
+		long count = temporaryCounter.incr(key, 1, 1, countLimitSecurity.period(), countLimitSecurity.timeUnit());
 		if (logger.isDebugEnabled()) {
 			logger.debug("count limit key={}, method={}, max={}, count={}", key, invoker.getMethod(),
 					countLimitSecurity.maxCount(), count);

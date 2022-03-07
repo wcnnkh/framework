@@ -2,11 +2,20 @@ package io.basc.framework.factory.support;
 
 import io.basc.framework.factory.AbstractServiceLoaderFactory;
 import io.basc.framework.factory.NoArgsInstanceFactory;
+import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.value.ValueFactory;
+import io.basc.framework.value.support.SystemPropertyFactory;
 
 public class DefaultServiceLoaderFactory extends AbstractServiceLoaderFactory {
+
+	public static final ServiceLoaderFactory INSTANCE = new DefaultServiceLoaderFactory();
+
 	private final NoArgsInstanceFactory instanceFactory;
 	private final ValueFactory<String> configFactory;
+
+	public DefaultServiceLoaderFactory() {
+		this(SystemPropertyFactory.INSTANCE);
+	}
 
 	/**
 	 * @param configFactory
@@ -22,6 +31,7 @@ public class DefaultServiceLoaderFactory extends AbstractServiceLoaderFactory {
 	public DefaultServiceLoaderFactory(NoArgsInstanceFactory instanceFactory, ValueFactory<String> configFactory) {
 		this.instanceFactory = instanceFactory;
 		this.configFactory = configFactory;
+		setForceSpi(true);
 	}
 
 	@Override

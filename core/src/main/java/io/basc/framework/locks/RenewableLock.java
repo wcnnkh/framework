@@ -39,6 +39,14 @@ public abstract class RenewableLock extends AbstractLock {
 		this.timeUnit = timeUnit;
 	}
 
+	public final TimeUnit getTimeUnit() {
+		return timeUnit;
+	}
+
+	public final long getTimeout() {
+		return timeout;
+	}
+
 	public long getTimeout(TimeUnit timeUnit) {
 		return timeUnit.convert(this.timeout, this.timeUnit);
 	}

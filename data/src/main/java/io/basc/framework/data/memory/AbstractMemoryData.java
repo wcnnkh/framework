@@ -1,6 +1,6 @@
 package io.basc.framework.data.memory;
 
-import io.basc.framework.data.cas.CAS;
+import io.basc.framework.data.CAS;
 import io.basc.framework.io.SerializerUtils;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -23,10 +23,25 @@ public abstract class AbstractMemoryData implements MemoryData {
 	}
 
 	public boolean isExpire() {
-		return exp <= 0 ? false : (System.currentTimeMillis() - lastTouch) > exp * 1000;
+		return exp <= 0 ? false : (System.currentTimeMillis() - lastTouch) > exp;
 	}
 
 	public boolean setIfAbsent(Object value) {
+		if (cas.get() == 0) {// 第一次set数据
+			set(value);
+			return true;
+		}
+
+		if (!isExpire()) {
+			return false;
+		}
+
+		set(value);
+		return true;
+	}
+	
+	@Override
+	public boolean setIfPresent(Object value) {
 		if (cas.get() == 0) {// 第一次set数据
 			set(value);
 			return true;

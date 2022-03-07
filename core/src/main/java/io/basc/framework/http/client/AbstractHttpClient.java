@@ -10,13 +10,16 @@ import java.util.Map;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.message.convert.MessageConverter;
 import io.basc.framework.net.uri.DefaultUriTemplateHandler;
 import io.basc.framework.net.uri.UriTemplateHandler;
+import io.basc.framework.retry.RetryOperations;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Pair;
 
 public abstract class AbstractHttpClient implements HttpClient, Configurable {
 	private ClientHttpRequestFactory requestFactory;
@@ -27,6 +30,7 @@ public abstract class AbstractHttpClient implements HttpClient, Configurable {
 	private ClientHttpResponseErrorHandler responseErrorHandler;
 	private ClientHttpRequestInterceptor interceptor;
 	private MessageConverter messageConverter;
+	private RetryOperations retryOperations;
 
 	public AbstractHttpClient(ClientHttpRequestFactory requestFactory) {
 		this.requestFactory = requestFactory;
@@ -51,6 +55,15 @@ public abstract class AbstractHttpClient implements HttpClient, Configurable {
 		this.cloneBeforeSet = cloneBeforeSet;
 	}
 
+	@Nullable
+	public RetryOperations getRetryOperations() {
+		return retryOperations;
+	}
+
+	public void setRetryOperations(RetryOperations retryOperations) {
+		this.retryOperations = retryOperations;
+	}
+
 	public abstract AbstractHttpClient clone();
 
 	@Override
@@ -73,6 +86,10 @@ public abstract class AbstractHttpClient implements HttpClient, Configurable {
 
 		if (serviceLoaderFactory.isInstance(ClientHttpResponseErrorHandler.class)) {
 			this.responseErrorHandler = serviceLoaderFactory.getInstance(ClientHttpResponseErrorHandler.class);
+		}
+
+		if (serviceLoaderFactory.isInstance(RetryOperations.class)) {
+			this.retryOperations = serviceLoaderFactory.getInstance(RetryOperations.class);
 		}
 	}
 
@@ -230,31 +247,58 @@ public abstract class AbstractHttpClient implements HttpClient, Configurable {
 				responseExtractor, responseType, 0);
 	}
 
-	protected <T> HttpResponseEntity<T> execute(URI uri, String httpMethod, ClientHttpRequestFactory requestFactory,
+	private <T> HttpResponseEntity<T> execute(URI uri, String httpMethod, ClientHttpRequestFactory requestFactory,
 			CookieHandler cookieHandler, ClientHttpRequestCallback requestCallback, RedirectManager redirectManager,
 			ClientHttpResponseExtractor<T> responseExtractor, TypeDescriptor responseType, long deep) {
-		HttpResponseEntity<T> responseEntity;
-		ClientHttpRequest request;
-		try {
-			request = requestFactory.createRequest(uri, httpMethod);
-			request = requestCallback(request, requestCallback);
-			responseEntity = execute(request, cookieHandler, responseExtractor, responseType);
-		} catch (IOException ex) {
-			throw new HttpClientResourceAccessException(
-					"I/O error on " + httpMethod + " request for \"" + uri + "\": " + ex.getMessage(), ex);
+		Pair<HttpRequest, HttpResponseEntity<T>> response;
+		RetryOperations retryOperations = getRetryOperations();
+		if (retryOperations == null) {
+			response = executeInternal(uri, httpMethod, requestFactory, cookieHandler, requestCallback,
+					responseExtractor, responseType);
+		} else {
+			// 支持重试
+			response = retryOperations.execute((context) -> {
+				try {
+					return executeInternal(uri, httpMethod, requestFactory, cookieHandler, requestCallback,
+							responseExtractor, responseType);
+				} catch (HttpClientErrorException e) {
+					// 只有出现客户端异常时才重试
+					throw e;
+				} catch (Throwable e) {
+					// 其他异常不再重试，结束
+					context.setExhaustedOnly();
+					throw e;
+				}
+			});
 		}
 
 		if (redirectManager == null) {
-			return responseEntity;
+			return response.getValue();
 		}
 
-		URI redirectUri = redirectManager.getRedirect(request, responseEntity, deep);
+		URI redirectUri = redirectManager.getRedirect(response.getKey(), response.getValue(), deep);
 		if (redirectUri == null) {
-			return responseEntity;
+			return response.getValue();
 		}
 
 		return execute(redirectUri, httpMethod, requestFactory, cookieHandler, requestCallback, redirectManager,
 				responseExtractor, responseType, deep + 1);
+	}
+
+	private <T> Pair<HttpRequest, HttpResponseEntity<T>> executeInternal(URI uri, String httpMethod,
+			ClientHttpRequestFactory requestFactory, CookieHandler cookieHandler,
+			ClientHttpRequestCallback requestCallback, ClientHttpResponseExtractor<T> responseExtractor,
+			TypeDescriptor responseType) throws HttpClientException {
+		ClientHttpRequest request;
+		try {
+			request = requestFactory.createRequest(uri, httpMethod);
+			request = requestCallback(request, requestCallback);
+			HttpResponseEntity<T> responseEntity = execute(request, cookieHandler, responseExtractor, responseType);
+			return new Pair<>(request, responseEntity);
+		} catch (IOException e) {
+			throw new HttpClientResourceAccessException(
+					"I/O error on " + httpMethod + " request for \"" + uri + "\": " + e.getMessage(), e);
+		}
 	}
 
 	protected ClientHttpRequest requestCallback(ClientHttpRequest request, ClientHttpRequestCallback requestCallback)

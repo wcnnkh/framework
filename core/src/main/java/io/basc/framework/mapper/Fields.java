@@ -69,15 +69,6 @@ public interface Fields extends Pageables<Class<?>, Field> {
 	}
 
 	/**
-	 * 去重
-	 * 
-	 * @return
-	 */
-	default Fields distinct() {
-		return new StreamFields(getCursorId(), this, () -> stream().distinct());
-	}
-
-	/**
 	 * 支持getter的
 	 * 
 	 * @return
@@ -139,7 +130,7 @@ public interface Fields extends Pageables<Class<?>, Field> {
 	}
 
 	default Fields accept(Accept<Field> accept) {
-		return new AcceptFields(this, accept);
+		return new MapFields(this, (stream) -> stream.filter(accept));
 	}
 
 	/**

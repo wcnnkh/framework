@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -175,12 +176,29 @@ public final class XUtils {
 	/**
 	 * 将一次迭代变为操作流
 	 * 
-	 * @param <T>
+	 * @param          <T>
 	 * @param iterator
 	 * @return
 	 */
 	public static <T> Stream<T> stream(Iterator<T> iterator) {
 		Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
 		return StreamSupport.stream(spliterator, false);
+	}
+
+	public static Object toString(Supplier<String> supplier) {
+		return new StringObject(supplier);
+	}
+
+	private static class StringObject {
+		private final Supplier<String> msg;
+
+		public StringObject(Supplier<String> msg) {
+			this.msg = msg;
+		}
+
+		@Override
+		public String toString() {
+			return msg.get();
+		}
 	}
 }

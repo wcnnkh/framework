@@ -1,12 +1,15 @@
 package io.basc.framework.security.session;
 
 import java.util.HashSet;
+import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
+import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.Order;
-import io.basc.framework.data.TemporaryStorage;
-import io.basc.framework.data.memory.MemoryDataOperations;
+import io.basc.framework.data.TemporaryStorageOperations;
+import io.basc.framework.data.memory.MemoryOperations;
 import io.basc.framework.env.Sys;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -20,27 +23,27 @@ public class DefaultUserSessionFactory implements UserSessionFactory {
 			StringUtils.replace(UserSessionFactory.class.getPackage().getName(), '.', ':') + ":user:");
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultUserSessionFactory.class);
-	private final TemporaryStorage temporaryCache;
-	private final SessionFactory sessionFactory;
+	private final TemporaryStorageOperations storageOperations;
+	private final SessionFactory sessionFactory; 
 	private String prefix = USER_SESSION_PREFIX;
 
 	public DefaultUserSessionFactory() {
-		this(new MemoryDataOperations());
-		logger.info("Using memory {}", getTemporaryCache());
+		this(new MemoryOperations());
+		logger.info("Using memory {}", getSessionFactory());
 	}
 
-	public DefaultUserSessionFactory(TemporaryStorage temporaryCache) {
-		this(86400 * 7, temporaryCache);
+	public DefaultUserSessionFactory(TemporaryStorageOperations storageOperations) {
+		this(86400 * 7, storageOperations);
 	}
 
 	@Order
-	public DefaultUserSessionFactory(int maxInactiveInterval, TemporaryStorage temporaryCache) {
-		this(temporaryCache, new DefaultSessionFactory(maxInactiveInterval, temporaryCache));
+	public DefaultUserSessionFactory(int maxInactiveInterval, TemporaryStorageOperations storageOperations) {
+		this(storageOperations, new DefaultSessionFactory(maxInactiveInterval, storageOperations));
 	}
 
-	public DefaultUserSessionFactory(TemporaryStorage temporaryCache, SessionFactory sessionFactory) {
+	public DefaultUserSessionFactory(TemporaryStorageOperations storageOperations, SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
-		this.temporaryCache = temporaryCache;
+		this.storageOperations = storageOperations;
 	}
 
 	public String getPrefix() {
@@ -52,8 +55,8 @@ public class DefaultUserSessionFactory implements UserSessionFactory {
 		this.prefix = prefix;
 	}
 
-	public TemporaryStorage getTemporaryCache() {
-		return temporaryCache;
+	public TemporaryStorageOperations getStorageOperations() {
+		return storageOperations;
 	}
 
 	public SessionFactory getSessionFactory() {
@@ -82,17 +85,22 @@ public class DefaultUserSessionFactory implements UserSessionFactory {
 
 	public <T> SessionIds<T> getSessionIds(T uid, boolean create) {
 		String key = getUidToSessionIdsKey(uid);
-		SessionIds<T> ids = temporaryCache.getAndTouch(key, sessionFactory.getMaxInactiveInterval());
+		TypeDescriptor typeDescriptor = TypeDescriptor
+				.valueOf(ResolvableType.forClassWithGenerics(SessionIds.class, uid.getClass()));
+		SessionIds<T> ids = storageOperations.getAndTouch(typeDescriptor, key, sessionFactory.getMaxInactiveInterval(),
+				TimeUnit.SECONDS);
 		if (ids == null) {
 			if (create) {
 				while (true) {
-					ids = temporaryCache.getAndTouch(key, sessionFactory.getMaxInactiveInterval());
+					ids = storageOperations.getAndTouch(typeDescriptor, key, sessionFactory.getMaxInactiveInterval(),
+							TimeUnit.SECONDS);
 					if (ids != null) {
 						break;
 					}
 
 					ids = new SessionIds<T>(sessionFactory.getMaxInactiveInterval());
-					if (temporaryCache.add(key, sessionFactory.getMaxInactiveInterval(), ids)) {
+					if (storageOperations.setIfAbsent(key, ids, sessionFactory.getMaxInactiveInterval(),
+							TimeUnit.SECONDS)) {
 						break;
 					}
 				}
@@ -103,21 +111,23 @@ public class DefaultUserSessionFactory implements UserSessionFactory {
 
 	public <T> void updateSessionIds(T uid, SessionIds<T> sessionIds) {
 		String key = getUidToSessionIdsKey(uid);
-		temporaryCache.set(key, sessionIds.getMaxInactiveInterval(), sessionIds);
+		storageOperations.set(key, sessionIds, sessionIds.getMaxInactiveInterval(), TimeUnit.SECONDS);
 	}
 
 	protected <T> void createUserSession(T uid, String sessionId) {
 		String key = getUidToSessionIdsKey(uid);
-		SessionIds<T> ids = temporaryCache.get(key);
+		TypeDescriptor typeDescriptor = TypeDescriptor
+				.valueOf(ResolvableType.forClassWithGenerics(SessionIds.class, uid.getClass()));
+		SessionIds<T> ids = storageOperations.get(typeDescriptor, key);
 		if (ids == null) {
 			ids = new SessionIds<T>(sessionFactory.getMaxInactiveInterval());
 			ids.add(sessionId);
-			if (!temporaryCache.add(key, sessionFactory.getMaxInactiveInterval(), ids)) {
+			if (!storageOperations.setIfAbsent(key, ids, sessionFactory.getMaxInactiveInterval(), TimeUnit.SECONDS)) {
 				createUserSession(uid, sessionId);
 			}
 		} else {
 			ids.add(sessionId);
-			temporaryCache.set(key, ids);
+			storageOperations.set(key, ids);
 		}
 	}
 

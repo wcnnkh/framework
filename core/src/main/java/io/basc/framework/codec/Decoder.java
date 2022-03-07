@@ -1,13 +1,13 @@
 package io.basc.framework.codec;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.CollectionUtils;
-
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import io.basc.framework.convert.Converter;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.CollectionUtils;
 
 /**
  * 解码器<br/>
@@ -33,11 +33,7 @@ public interface Decoder<E, D> {
 			return Collections.emptyList();
 		}
 
-		List<D> list = new ArrayList<D>(sources.size());
-		for (E source : sources) {
-			list.add(decode(source));
-		}
-		return list;
+		return sources.stream().map((e) -> decode(e)).collect(Collectors.toList());
 	}
 
 	@Nullable

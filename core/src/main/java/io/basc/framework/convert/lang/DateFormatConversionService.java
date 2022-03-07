@@ -4,14 +4,13 @@ import java.util.Date;
 
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionFailedException;
-import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.annotation.DateFormat;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.TimeUtils;
 import io.basc.framework.value.AnyValue;
 
-public class DateFormatConversionService implements ConversionService {
+public class DateFormatConversionService extends AbstractConversionService {
 
 	private boolean canConvert(Class<?> type) {
 		return type == String.class || Date.class.isAssignableFrom(type) || NumberUtils.isNumber(type);
@@ -23,8 +22,8 @@ public class DateFormatConversionService implements ConversionService {
 			return false;
 		}
 
-		return targetType.isAnnotationPresent(DateFormat.class) && canConvert(sourceType.getType())
-				&& canConvert(targetType.getType());
+		return (targetType.isAnnotationPresent(DateFormat.class) || sourceType.isAnnotationPresent(DateFormat.class))
+				&& canConvert(sourceType.getType()) && canConvert(targetType.getType());
 	}
 
 	@Override
@@ -68,15 +67,30 @@ public class DateFormatConversionService implements ConversionService {
 			}
 		}
 
-		throw new ConversionFailedException(sourceType, targetType, source, null);
+		if(!getConversionService().canConvert(sourceType, TypeDescriptor.valueOf(Date.class))) {
+			throw new ConversionFailedException(sourceType, targetType, source, null);
+		}
+		
+		Date date = (Date) getConversionService().convert(source, sourceType, TypeDescriptor.valueOf(Date.class));
+		return convert(date, sourceType.narrow(date), targetType);
 	}
 
 	private Date stringToDate(String source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		DateFormat dateFormat = sourceType.getAnnotation(DateFormat.class);
-		if (dateFormat == null) {
-			return TimeUtils.parse(source);
+		DateFormat sourceFormat = sourceType.getAnnotation(DateFormat.class);
+		DateFormat targetFormat = targetType.getAnnotation(DateFormat.class);
+		if (sourceFormat == null) {
+			if (targetFormat == null) {
+				return TimeUtils.parse(source);
+			} else {
+				return TimeUtils.parse(source, targetFormat.value());
+			}
 		} else {
-			return TimeUtils.parse(source, dateFormat.value());
+			if (targetFormat == null) {
+				return TimeUtils.parse(source, sourceFormat.value());
+			} else {
+				source = TimeUtils.format(TimeUtils.parse(source, sourceFormat.value()), sourceFormat.value());
+				return TimeUtils.parse(source, targetFormat.value());
+			}
 		}
 	}
 
@@ -86,11 +100,19 @@ public class DateFormatConversionService implements ConversionService {
 	}
 
 	private String dateToString(Date source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		DateFormat dateFormat = targetType.getAnnotation(DateFormat.class);
-		if (dateFormat == null) {
-			return String.valueOf(source);
+		DateFormat sourceFormat = sourceType.getAnnotation(DateFormat.class);
+		DateFormat targetFormat = targetType.getAnnotation(DateFormat.class);
+		if (targetFormat == null) {
+			if (sourceFormat == null) {
+				return String.valueOf(source);
+			} else {
+				return TimeUtils.format(source, sourceFormat.value());
+			}
 		} else {
-			return TimeUtils.format(source, dateFormat.value());
+			if (sourceFormat != null) {
+				source = TimeUtils.parse(TimeUtils.format(source, sourceFormat.value()), sourceFormat.value());
+			}
+			return TimeUtils.format(source, targetFormat.value());
 		}
 	}
 
@@ -106,11 +128,21 @@ public class DateFormatConversionService implements ConversionService {
 
 	private String numberToString(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		Date date = numberToDate(source, sourceType, targetType);
-		DateFormat dateFormat = targetType.getAnnotation(DateFormat.class);
-		if (dateFormat == null) {
-			return String.valueOf(date);
+		DateFormat sourceFormat = sourceType.getAnnotation(DateFormat.class);
+		DateFormat targetFormat = targetType.getAnnotation(DateFormat.class);
+		if (targetFormat == null) {
+			if (sourceFormat == null) {
+				return String.valueOf(date);
+			} else {
+				return TimeUtils.format(date, sourceFormat.value());
+			}
 		} else {
-			return TimeUtils.format(date, dateFormat.value());
+			if (sourceFormat == null) {
+				return TimeUtils.format(date, targetFormat.value());
+			} else {
+				date = TimeUtils.parse(TimeUtils.format(date, sourceFormat.value()), sourceFormat.value());
+				return TimeUtils.format(date, targetFormat.value());
+			}
 		}
 	}
 }

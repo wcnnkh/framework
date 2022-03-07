@@ -1,23 +1,31 @@
 package io.basc.framework.microsoft.poi;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.microsoft.ExcelException;
-import io.basc.framework.microsoft.Sheet;
-import io.basc.framework.microsoft.WritableSheet;
-
 import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.microsoft.ExcelException;
+import io.basc.framework.microsoft.Sheet;
+import io.basc.framework.microsoft.WritableSheet;
+
 public class PoiSheet implements Sheet, WritableSheet {
 	private static Logger logger = LoggerFactory.getLogger(PoiSheet.class);
 	private final org.apache.poi.ss.usermodel.Sheet sheet;
+	private final long cursorId;
+	private final long count;
 
 	public PoiSheet(org.apache.poi.ss.usermodel.Sheet sheet) {
+		this(sheet, 0, Long.MAX_VALUE);
+	}
+
+	public PoiSheet(org.apache.poi.ss.usermodel.Sheet sheet, long cursorId, long count) {
 		this.sheet = sheet;
+		this.cursorId = cursorId;
+		this.count = count;
 	}
 
 	public org.apache.poi.ss.usermodel.Sheet getSheet() {
@@ -55,7 +63,8 @@ public class PoiSheet implements Sheet, WritableSheet {
 				value = cell.getStringCellValue();
 				break;
 			default:
-				logger.warn("Unable to read this cell rowIndex[{}] colIndex[{}] cellType[{}]", rowIndex, i, cell.getCellType());
+				logger.warn("Unable to read this cell rowIndex[{}] colIndex[{}] cellType[{}]", rowIndex, i,
+						cell.getCellType());
 				break;
 			}
 			values[index] = value == null ? null : value.toString();
@@ -77,8 +86,14 @@ public class PoiSheet implements Sheet, WritableSheet {
 		return cell.getStringCellValue();
 	}
 
-	public int getRows() {
+	@Override
+	public long getTotal() {
 		return sheet.getPhysicalNumberOfRows();
+	}
+
+	@Override
+	public long getCount() {
+		return count;
 	}
 
 	public void write(int rowIndex, Collection<String> contents) throws ExcelException {
@@ -100,5 +115,15 @@ public class PoiSheet implements Sheet, WritableSheet {
 			cell = row.createCell(colIndex);
 		}
 		cell.setCellValue(content);
+	}
+
+	@Override
+	public Long getCursorId() {
+		return cursorId;
+	}
+
+	@Override
+	public Sheet jumpTo(Long cursorId, long count) {
+		return new PoiSheet(this.sheet, cursorId, count);
 	}
 }

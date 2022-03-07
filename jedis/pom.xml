@@ -31,5 +31,11 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>testing</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>log4j2</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

@@ -3,6 +3,8 @@ package io.basc.framework.redis;
 import java.util.List;
 import java.util.Map;
 
+import io.basc.framework.lang.Nullable;
+
 @SuppressWarnings("unchecked")
 public interface RedisStringCommands<K, V> {
 	/**
@@ -269,7 +271,7 @@ public interface RedisStringCommands<K, V> {
 	 *         or XX option but the condition was not met, or if the user specified
 	 *         the GET option and there was no previous value for the key.
 	 */
-	Boolean set(K key, V value, ExpireOption option, long time, SetOption setOption);
+	Boolean set(K key, V value, ExpireOption option, long time, @Nullable SetOption setOption);
 
 	/**
 	 * https://redis.io/commands/setbit<br/>

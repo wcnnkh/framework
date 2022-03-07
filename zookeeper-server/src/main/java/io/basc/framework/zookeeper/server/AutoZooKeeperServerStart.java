@@ -8,10 +8,9 @@ import io.basc.framework.context.annotation.Provider;
 public final class AutoZooKeeperServerStart implements ApplicationPostProcessor {
 	private static final String DEFAULT_ZOOKEEPER_CONFIG = "zookeeper.properties";
 
-	public void postProcessApplication(ConfigurableApplication application)
-			throws Throwable {
+	public void postProcessApplication(ConfigurableApplication application) throws Throwable {
 		ZooKeeperServerStart start = null;
-		if(application.getEnvironment().exists(DEFAULT_ZOOKEEPER_CONFIG)) {
+		if (application.getEnvironment().exists(DEFAULT_ZOOKEEPER_CONFIG)) {
 			start = new ZooKeeperServerStart(
 					application.getEnvironment().getProperties(DEFAULT_ZOOKEEPER_CONFIG).get());
 		} else {

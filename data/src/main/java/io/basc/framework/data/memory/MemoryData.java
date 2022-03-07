@@ -1,6 +1,6 @@
 package io.basc.framework.data.memory;
 
-import io.basc.framework.data.cas.CAS;
+import io.basc.framework.data.CAS;
 
 public interface MemoryData {
 	long incr(long delta);
@@ -28,6 +28,8 @@ public interface MemoryData {
 	 * @return
 	 */
 	boolean setIfAbsent(Object value);
+	
+	boolean setIfPresent(Object value);
 
 	/**
 	 * 判断cas是否匹配

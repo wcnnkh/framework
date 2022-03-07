@@ -5,38 +5,24 @@ import io.basc.framework.io.Serializer;
 import io.basc.framework.io.SerializerUtils;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 public class AutoRefreshDirectoryStorage extends DirectoryStorage {
 	private final Converter<String, ?> converter;
 
-	/**
-	 * @param period    单位:秒
-	 * @param converter
-	 */
-	protected AutoRefreshDirectoryStorage(long period, Converter<String, ?> converter) {
-		super(period);
+	protected AutoRefreshDirectoryStorage(long period, TimeUnit periodUnit, Converter<String, ?> converter) {
+		super(period, periodUnit);
 		this.converter = converter;
 	}
 
-	/**
-	 * @param period         单位:秒
-	 * @param cacheDirectory
-	 * @param converter
-	 */
-	public AutoRefreshDirectoryStorage(long period, String cacheDirectory, Converter<String, ?> converter) {
-		this(period, SerializerUtils.getSerializer(), cacheDirectory, converter);
+	public AutoRefreshDirectoryStorage(long period, TimeUnit periodUnit, String cacheDirectory,
+			Converter<String, ?> converter) {
+		this(period, periodUnit, SerializerUtils.getSerializer(), cacheDirectory, converter);
 	}
 
-	/**
-	 * @param period         单位:秒
-	 * @param serializer
-	 * @param charsetName
-	 * @param cacheDirectory
-	 * @param converter
-	 */
-	public AutoRefreshDirectoryStorage(long period, Serializer serializer, String cacheDirectory,
+	public AutoRefreshDirectoryStorage(long period, TimeUnit periodUnit, Serializer serializer, String cacheDirectory,
 			Converter<String, ?> converter) {
-		super(period, serializer, cacheDirectory);
+		super(period, periodUnit, serializer, cacheDirectory);
 		this.converter = converter;
 	}
 

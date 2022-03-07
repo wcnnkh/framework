@@ -38,7 +38,7 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor,
 	 * @return
 	 * @throws SqlException
 	 */
-	default int update(Sql sql) throws SqlException {
+	default long update(Sql sql) throws SqlException {
 		return prepare(sql).update();
 	}
 

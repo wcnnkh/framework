@@ -1,13 +1,15 @@
 package io.basc.framework.security.session;
 
-import io.basc.framework.data.TemporaryStorage;
+import java.util.concurrent.TimeUnit;
+
+import io.basc.framework.data.TemporaryStorageOperations;
 
 public class DefaultSessionFactory extends AbstractSessionFactory {
-	private TemporaryStorage temporaryCache;
+	private final TemporaryStorageOperations storageOperations;
 
-	public DefaultSessionFactory(int defaultMaxInactiveInterval, TemporaryStorage temporaryCache) {
+	public DefaultSessionFactory(int defaultMaxInactiveInterval, TemporaryStorageOperations storageOperations) {
 		super(defaultMaxInactiveInterval);
-		this.temporaryCache = temporaryCache;
+		this.storageOperations = storageOperations;
 	}
 
 	protected String getKey(String sessionId) {
@@ -16,17 +18,18 @@ public class DefaultSessionFactory extends AbstractSessionFactory {
 
 	@Override
 	public SessionData getSessionData(String sessionId) {
-		return (SessionData) temporaryCache.get(getKey(sessionId));
+		return storageOperations.get(SessionData.class, getKey(sessionId));
 	}
 
 	@Override
 	public void setSessionData(SessionData sessionData) {
-		temporaryCache.set(getKey(sessionData.getSessionId()), sessionData.getMaxInactiveInterval(), sessionData);
+		storageOperations.set(getKey(sessionData.getSessionId()), sessionData, sessionData.getMaxInactiveInterval(),
+				TimeUnit.SECONDS);
 	}
 
 	@Override
 	public void invalidate(String sessionId) {
-		temporaryCache.delete(getKey(sessionId));
+		storageOperations.delete(getKey(sessionId));
 	}
 
 }

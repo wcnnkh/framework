@@ -1,13 +1,15 @@
 package io.basc.framework.log4j;
 
+import java.util.function.Supplier;
+import java.util.logging.Level;
+
+import org.apache.log4j.Logger;
+
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.CustomLogger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.PlaceholderFormat;
-
-import java.util.logging.Level;
-
-import org.apache.log4j.Logger;
+import io.basc.framework.util.XUtils;
 
 public class Log4jLogger extends CustomLogger {
 	private final Logger logger;
@@ -84,7 +86,7 @@ public class Log4jLogger extends CustomLogger {
 	}
 
 	private static org.apache.log4j.Level parse(Level level) {
-		if(level == null){
+		if (level == null) {
 			return org.apache.log4j.Level.INFO;
 		}
 		return org.apache.log4j.Level.toLevel(level.getName(), new CustomLog4jLevel(level));
@@ -98,6 +100,14 @@ public class Log4jLogger extends CustomLogger {
 		org.apache.log4j.Level lv = parse(level);
 		if (logger.isEnabledFor(lv)) {
 			logger.log(lv, new PlaceholderFormat(format, placeholder, args), e);
+		}
+	}
+
+	@Override
+	public void log(Level level, Throwable e, Supplier<String> msg, Object... args) {
+		org.apache.log4j.Level lv = parse(level);
+		if (logger.isEnabledFor(lv)) {
+			logger.log(lv, XUtils.toString(() -> new PlaceholderFormat(msg.get(), placeholder, args).toString()), e);
 		}
 	}
 }

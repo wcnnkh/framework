@@ -12,8 +12,9 @@ import java.util.List;
 import io.basc.framework.beans.annotation.Value;
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.data.ResourceStorageService;
-import io.basc.framework.data.StorageException;
+import io.basc.framework.data.DataException;
+import io.basc.framework.data.resource.ResourceUploadPolicy;
+import io.basc.framework.data.resource.ResourceStorageService;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.HttpStatus;
@@ -63,7 +64,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	}
 
 	@Override
-	public Resource get(String key) throws StorageException, IOException {
+	public Resource get(String key) throws DataException, IOException {
 		String cleanKey = cleanPath(key);
 		File file = new File(directory, Assert.secureFilePathArgument(key, "key"));
 		StringBuilder sb = new StringBuilder();
@@ -74,7 +75,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	}
 
 	@Override
-	public boolean put(String key, InputMessage input) throws StorageException, IOException {
+	public boolean put(String key, InputMessage input) throws DataException, IOException {
 		logger.info("put [{}]", key);
 		File file = new File(directory, Assert.secureFilePathArgument(key, "key"));
 		InputStream is = null;
@@ -88,14 +89,14 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	}
 
 	@Override
-	public boolean delete(String key) throws StorageException {
+	public boolean delete(String key) throws DataException {
 		logger.info("delete [{}]", key);
 		File file = new File(directory, Assert.secureFilePathArgument(key, "key"));
 		return file.delete();
 	}
 
 	@Override
-	public boolean delete(URI uri) throws StorageException {
+	public boolean delete(URI uri) throws DataException {
 		logger.info("delete [{}]", uri);
 		String str = uri.toString();
 		str = cleanPath(str);
@@ -156,7 +157,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 		return new DefaultStatus<>(false, "签名错误");
 	}
 
-	public Status<String> upload(ServerHttpRequest request) throws StorageException, IOException {
+	public Status<String> upload(ServerHttpRequest request) throws DataException, IOException {
 		if (!(request instanceof MultiPartServerHttpRequest)) {
 			return new DefaultStatus<String>(false, "无法解析的文件上传请求");
 		}
@@ -184,14 +185,14 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	}
 
 	@Override
-	public UploadPolicy generatePolicy(String key, Date expiration) throws StorageException {
+	public ResourceUploadPolicy generatePolicy(String key, Date expiration) throws DataException {
 		String sign = getSign(key, expiration);
 		String baseUrl = cleanPath((StringUtils.isEmpty(getBaseUrl()) ? "" : getBaseUrl()) + getController());
 		URI uri = UriComponentsBuilder.fromUriString(baseUrl).queryParam("key", key).queryParam("sign", sign)
 				.queryParam("expiration", expiration.getTime()).build().toUri();
 		HttpRequestEntity<?> requestEntity = HttpRequestEntity.post(uri).contentType(MediaType.MULTIPART_FORM_DATA)
 				.build();
-		return new UploadPolicy(StringUtils.cleanPath(baseUrl + "/" + key), requestEntity);
+		return new ResourceUploadPolicy(StringUtils.cleanPath(baseUrl + "/" + key), requestEntity);
 	}
 
 	@Override
@@ -219,7 +220,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	}
 
 	@Override
-	public List<Resource> list(String keyPrefix, String marker, int limit) throws StorageException, IOException {
+	public List<Resource> list(String keyPrefix, String marker, int limit) throws DataException, IOException {
 		String prefix = StringUtils.isEmpty(keyPrefix) ? "" : cleanPath(keyPrefix);
 		File file;
 		if (StringUtils.isEmpty(prefix)) {
@@ -294,7 +295,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	}
 
 	private void appendFile(FileFilter fileFilter, File directory, List<Resource> list)
-			throws StorageException, IOException {
+			throws DataException, IOException {
 		for (File fileToUse : directory.listFiles()) {
 			if (fileToUse.isDirectory()) {
 				appendFile(fileFilter, directory, list);

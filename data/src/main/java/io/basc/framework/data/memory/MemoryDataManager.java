@@ -6,7 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.basc.framework.data.cas.CAS;
+import io.basc.framework.data.CAS;
 import io.basc.framework.env.Sys;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;

@@ -1,19 +1,19 @@
 package io.basc.framework.redis.cas;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.data.cas.CAS;
-import io.basc.framework.data.cas.CASOperations;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.CAS;
+import io.basc.framework.data.TemporaryStorageCasOperations;
+import io.basc.framework.io.SerializerUtils;
+import io.basc.framework.redis.Redis;
 import io.basc.framework.redis.RedisClient;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.value.AnyValue;
 
-public class RedisCASOperations implements CASOperations {
+public class RedisCASOperations implements TemporaryStorageCasOperations {
 	private static final String CAS_IS_NULL = "if (" + isNullScript("cas") + ") then cas = 0 end";
 
 	private static final String CAS_KEY_PREFIX = "cas_";
@@ -25,8 +25,7 @@ public class RedisCASOperations implements CASOperations {
 			+ ") then redis.call('set', KEYS[1], ARGV[1]) redis.call('incr', KEYS[2]) return 1 else return 0 end";
 	private static final String CAS_DELETE = "local cas = redis.call('get', KEYS[2]) " + CAS_IS_NULL + " if ("
 			+ notNullScript("(ARGV[2] == cas)")
-			+ ") then redis.call('del', KEYS[1]) redis.call('del', KEYS[2])  return 1 else return 0 end";
-	private static final String DELETE = "redis.call('del', KEYS[1]) redis.call('del', KEYS[2])";
+			+ ") then redis.call('del', KEYS[2]) return redis.call('del', KEYS[1]) else return 0 end";
 	private static final String CAS_GET = "if redis.call('exists', KEYS[1]) == 1 then local cas = redis.call('get', KEYS[2]) "
 			+ CAS_IS_NULL
 			+ " local res = {} res[1] = redis.call('get', KEYS[1]) res[2] = cas return res else return nil end";
@@ -34,6 +33,8 @@ public class RedisCASOperations implements CASOperations {
 	private static final String ADD = "if redis.call('exists', KEYS[1]) == 1 then return 0 else redis.call('set', KEYS[1], ARGV[1]) redis.call('incr', KEYS[2], 1) return 0  end";
 	private static final String SET_EXP = "redis.call('set', KEYS[1], ARGV[1], 'EX', KEYS[3]) if redis.call('exists', KEYS[2]) == 1 then redis.call('incr', KEYS[2]) else redis.call('set', KEYS[2], 1, 'EX', KEYS[3]) end";
 	private static final String SET = "redis.call('set', KEYS[1], ARGV[1]) redis.call('incr', KEYS[2], 1) end";
+	private static final String setIfPresent_EXP = "if redis.call('exists', KEYS[1]) == 0 then return 0 else redis.call('set', KEYS[1], ARGV[1], 'EX', KEYS[3]) if redis.call('exists', KEYS[2]) == 1 then redis.call('incr', KEYS[2]) else redis.call('set', KEYS[2], 1, 'EX', KEYS[3]) end return 0  end";
+	private static final String setIfPresent = "if redis.call('exists', KEYS[1]) == 0 then return 0 else redis.call('set', KEYS[1], ARGV[1]) redis.call('incr', KEYS[2], 1) return 0  end";
 
 	private static String notNullScript(String name) {
 		StringBuilder sb = new StringBuilder();
@@ -51,11 +52,16 @@ public class RedisCASOperations implements CASOperations {
 
 	private RedisClient<String, Object> client;
 
+	public RedisCASOperations(Redis redis) {
+		this(redis.to(SerializerUtils.getSerializer()));
+	}
+
 	public RedisCASOperations(RedisClient<String, Object> client) {
 		this.client = client;
 	}
 
-	public boolean cas(String key, Object value, int exp, long cas) {
+	@Override
+	public boolean cas(String key, Object value, TypeDescriptor valueType, long cas, long exp, TimeUnit expUnit) {
 		Object resposne;
 		if (exp > 0) {
 			resposne = client.eval(CAS_EXP_SCRIPT, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + "", exp + ""),
@@ -72,57 +78,100 @@ public class RedisCASOperations implements CASOperations {
 		return new AnyValue(v).getAsBooleanValue();
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> CAS<T> get(String key) {
+	public CAS<Object> gets(String key) {
 		List<Object> values = client.eval(CAS_GET, Arrays.asList(key, CAS_KEY_PREFIX + key), null);
 		if (CollectionUtils.isEmpty(values) || values.size() != 2) {
 			return null;
 		}
 
-		T value = (T) values.get(0);
+		Object value = values.get(0);
 		long verion = new AnyValue(values.get(1)).getAsLongValue();
-		return new CAS<T>(verion, value);
-	}
-
-	public void set(String key, Object value, int exp) {
-		if (exp > 0) {
-			client.eval(SET_EXP, Arrays.asList(key, CAS_KEY_PREFIX + key, exp + ""), Arrays.asList(value));
-		} else {
-			client.eval(SET, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
-		}
+		return new CAS<>(verion, value);
 	}
 
 	public boolean delete(String key) {
-		client.eval(DELETE, Arrays.asList(key, CAS_KEY_PREFIX + key), null);
-		return true;
+		Long value = client.del(key, CAS_KEY_PREFIX + key);
+		return value != null && value >= 1;
 	}
 
-	public boolean add(String key, Object value, int exp) {
+	@Override
+	public Object get(String key) {
+		return client.get(key);
+	}
+
+	@Override
+	public boolean exists(String key) {
+		Long value = client.exists(key);
+		return value != null && value == 1;
+	}
+
+	@Override
+	public boolean touch(String key, long exp, TimeUnit expUnit) {
+		client.touch(key, CAS_KEY_PREFIX + key);
+		return expire(key, exp, expUnit);
+	}
+
+	@Override
+	public boolean expire(String key, long exp, TimeUnit expUnit) {
+		Long value = client.expire(Arrays.asList(key, CAS_KEY_PREFIX + key), exp, expUnit);
+		return value != null && value >= 1;
+	}
+
+	@Override
+	public boolean setIfAbsent(String key, Object value, TypeDescriptor valueType, long exp, TimeUnit expUnit) {
 		Object v;
 		if (exp > 0) {
-			v = client.eval(ADD_EXP, Arrays.asList(key, CAS_KEY_PREFIX + key, exp + ""), Arrays.asList(value));
+			v = client.eval(ADD_EXP, Arrays.asList(key, CAS_KEY_PREFIX + key, expUnit.toMillis(exp) + ""),
+					Arrays.asList(value));
 		} else {
 			v = client.eval(ADD, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
 		}
 		return new AnyValue(v).getAsBooleanValue();
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> Map<String, CAS<T>> get(Collection<String> keys) {
-		if (CollectionUtils.isEmpty(keys)) {
-			return Collections.EMPTY_MAP;
+	@Override
+	public boolean setIfPresent(String key, Object value, TypeDescriptor valueType, long exp, TimeUnit expUnit) {
+		Object v;
+		if (exp > 0) {
+			v = client.eval(setIfPresent_EXP, Arrays.asList(key, CAS_KEY_PREFIX + key, expUnit.toMillis(exp) + ""),
+					Arrays.asList(value));
+		} else {
+			v = client.eval(setIfPresent, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
 		}
-
-		Map<String, CAS<T>> map = new LinkedHashMap<String, CAS<T>>(keys.size());
-		for (String key : keys) {
-			CAS<T> v = get(key);
-			if (v == null) {
-				continue;
-			}
-
-			map.put(key, v);
-		}
-		return map;
+		return new AnyValue(v).getAsBooleanValue();
 	}
 
+	@Override
+	public void set(String key, Object value, TypeDescriptor valueType, long exp, TimeUnit expUnit) {
+		if (exp > 0) {
+			client.eval(SET_EXP, Arrays.asList(key, CAS_KEY_PREFIX + key, expUnit.toMillis(exp) + ""),
+					Arrays.asList(value));
+		} else {
+			client.eval(SET, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
+		}
+	}
+
+	@Override
+	public boolean setIfPresent(String key, Object value, TypeDescriptor valueType) {
+		Object v = client.eval(setIfPresent, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
+		return new AnyValue(v).getAsBooleanValue();
+	}
+
+	@Override
+	public void set(String key, Object value, TypeDescriptor valueType) {
+		client.eval(SET, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
+	}
+
+	@Override
+	public boolean setIfAbsent(String key, Object value, TypeDescriptor valueType) {
+		Object v = client.eval(ADD, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
+		return new AnyValue(v).getAsBooleanValue();
+	}
+
+	@Override
+	public boolean cas(String key, Object value, TypeDescriptor valueType, long cas) {
+		Object resposne = client.eval(CAS_SCRIPT, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + ""),
+				Arrays.asList(value));
+		return new AnyValue(resposne).getAsBooleanValue();
+	}
 }

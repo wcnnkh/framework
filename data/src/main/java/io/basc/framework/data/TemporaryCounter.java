@@ -1,8 +1,12 @@
 package io.basc.framework.data;
 
-public interface TemporaryCounter extends Counter {
+import java.util.concurrent.TimeUnit;
 
-	long incr(String key, long delta, long initialValue, long exp);
+import io.basc.framework.data.kv.TemporaryKeyOperations;
 
-	long decr(String key, long delta, long initialValue, long exp);
+public interface TemporaryCounter extends Counter, TemporaryKeyOperations<String> {
+
+	long incr(String key, long delta, long initialValue, long exp, TimeUnit expUnit);
+
+	long decr(String key, long delta, long initialValue, long exp, TimeUnit expUnit);
 }

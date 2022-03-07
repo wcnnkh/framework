@@ -1,6 +1,14 @@
 package io.basc.framework.data.file;
 
-import io.basc.framework.data.Storage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
+
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.template.TemporaryStorageTemplate;
+import io.basc.framework.io.CrossLanguageSerializer;
 import io.basc.framework.io.FileUtils;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.io.SerializerUtils;
@@ -9,64 +17,42 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-
-@SuppressWarnings("unchecked")
-public class DirectoryStorage extends TimerTask implements Storage {
+public class DirectoryStorage extends TimerTask implements TemporaryStorageTemplate {
 	private static Logger logger = LoggerFactory.getLogger(DirectoryStorage.class);
 	// 守望线程，自动退出
 	private static final Timer TIMER = new Timer(DirectoryStorage.class.getSimpleName(), true);
-	private final long exp;// 0表示不过期
+	private final long exp;
 	private final Serializer serializer;
 	private final File directory;
 
-	/**
-	 * @param exp 单位:秒
-	 */
-	protected DirectoryStorage(long exp) {
-		this(exp, SerializerUtils.getSerializer(), FileUtils.getTempDirectory() + File.separator + "file_cache_" + exp);
+	protected DirectoryStorage(long exp, TimeUnit expUnit) {
+		this(exp, expUnit, SerializerUtils.getSerializer(),
+				FileUtils.getTempDirectory() + File.separator + "file_cache_" + expUnit.toMillis(exp));
 	}
 
-	/**
-	 * @param exp            单位:秒
-	 * @param cacheDirectory
-	 */
-	public DirectoryStorage(long exp, String cacheDirectory) {
-		this(exp, SerializerUtils.getSerializer(), cacheDirectory);
+	public DirectoryStorage(long exp, TimeUnit expUnit, String cacheDirectory) {
+		this(exp, expUnit, SerializerUtils.getSerializer(), cacheDirectory);
 	}
 
-	public DirectoryStorage(long exp, Serializer serializer, String directory) {
-		this(exp, SerializerUtils.getSerializer(), new File(Assert.secureFilePathArgument(directory, "directory")));
+	public DirectoryStorage(long exp, TimeUnit expUnit, Serializer serializer, String directory) {
+		this(exp, expUnit, SerializerUtils.getSerializer(),
+				new File(Assert.secureFilePathArgument(directory, "directory")));
 	}
 
-	/**
-	 * @param exp         单位:秒
-	 * @param serializer
-	 * @param charsetName
-	 * @param directory
-	 */
-	public DirectoryStorage(long exp, Serializer serializer, File directory) {
+	public DirectoryStorage(long exp, TimeUnit expUnit, Serializer serializer, File directory) {
 		Assert.requiredArgument(serializer != null, "serializer");
 		Assert.requiredArgument(directory != null, "directory");
-		this.exp = exp;
+		this.exp = expUnit.toMillis(exp);
 		this.serializer = serializer;
 		this.directory = directory;
 		logger.info("{} exp is {}s use cache directory: {}", getClass().getName(), exp, this.directory);
 		if (exp > 0) {
-			TIMER.schedule(this, exp * 1000L, exp * 1000L);
+			TIMER.schedule(this, expUnit.toMillis(exp), expUnit.toMillis(exp));
 		}
 	}
 
-	public final Serializer getSerializer() {
+	public final CrossLanguageSerializer getSerializer() {
 		return serializer;
 	}
 
@@ -105,9 +91,9 @@ public class DirectoryStorage extends TimerTask implements Storage {
 		return null;
 	}
 
-	protected final void writeObject(File file, Object value, boolean touch) {
+	protected final void writeObject(File file, Object value, TypeDescriptor valueType, boolean touch) {
 		try {
-			FileUtils.writeByteArrayToFile(file, serializer.serialize(value));
+			FileUtils.writeByteArrayToFile(file, serializer.serialize(value, valueType));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -124,7 +110,7 @@ public class DirectoryStorage extends TimerTask implements Storage {
 	}
 
 	protected final boolean isExpire(File file) {
-		if (exp <= 0) {
+		if (exp < 0) {
 			return false;
 		}
 
@@ -147,36 +133,49 @@ public class DirectoryStorage extends TimerTask implements Storage {
 		return null;
 	}
 
-	public <T> T get(String key) {
+	@Override
+	public Object get(String key) {
 		File file = getNotExpireFile(key);
 		if (file == null) {
-			return (T) getNotFound(key);
+			return getNotFound(key);
 		}
 
-		return (T) readObject(file);
+		return readObject(file);
 	}
 
-	public <T> T getAndTouch(String key) {
+	@Override
+	public void set(String key, Object value, TypeDescriptor valueType) {
+		File file = getNotExpireFile(key);
+		writeObject(getFile(key), value, valueType, file == null);
+	}
+
+	@Override
+	public boolean setIfAbsent(String key, Object value, TypeDescriptor valueType) {
 		File file = getNotExpireFile(key);
 		if (file == null) {
-			return (T) getNotFound(key);
+			writeObject(getFile(key), value, valueType, true);
+		}
+		return false;
+	}
+
+	@Override
+	public boolean setIfPresent(String key, Object value, TypeDescriptor valueType) {
+		File file = getNotExpireFile(key);
+		if (file == null) {
+			return false;
+		}
+		writeObject(getFile(key), value, valueType, true);
+		return true;
+	}
+
+	public Object getAndTouch(String key) {
+		File file = getNotExpireFile(key);
+		if (file == null) {
+			return getNotFound(key);
 		}
 
 		touchFile(file);
-		return (T) readObject(file);
-	}
-
-	public void set(String key, Object value) {
-		File file = getNotExpireFile(key);
-		writeObject(getFile(key), value, file == null);
-	}
-
-	public boolean add(String key, Object value) {
-		File file = getNotExpireFile(key);
-		if (file == null) {
-			writeObject(getFile(key), value, true);
-		}
-		return false;
+		return readObject(file);
 	}
 
 	public boolean touch(String key) {
@@ -197,25 +196,8 @@ public class DirectoryStorage extends TimerTask implements Storage {
 		return false;
 	}
 
-	public boolean isExist(String key) {
+	public boolean exists(String key) {
 		return getNotExpireFile(key) != null;
-	}
-
-	public <T> Map<String, T> get(Collection<String> keyCollections) {
-		if (CollectionUtils.isEmpty(keyCollections)) {
-			return Collections.EMPTY_MAP;
-		}
-
-		Map<String, T> map = new HashMap<String, T>(keyCollections.size());
-		for (String key : keyCollections) {
-			T value = get(key);
-			if (value == null) {
-				continue;
-			}
-
-			map.put(key, value);
-		}
-		return map;
 	}
 
 	/**
@@ -266,21 +248,11 @@ public class DirectoryStorage extends TimerTask implements Storage {
 		}
 	}
 
-	public void delete(Collection<String> keys) {
-		if (CollectionUtils.isEmpty(keys)) {
-			return;
-		}
-
-		for (String key : keys) {
-			delete(key);
-		}
-	}
-
 	public long getMaxExpirationDate() {
 		return exp;
 	}
 
-	public static DirectoryStorage create(String cacheDirectorySuffix, int exp) {
-		return new DirectoryStorage(exp, FileUtils.getTempDirectory() + File.separator + cacheDirectorySuffix);
+	public static DirectoryStorage create(String cacheDirectorySuffix, long exp, TimeUnit expUnit) {
+		return new DirectoryStorage(exp, expUnit, FileUtils.getTempDirectory() + File.separator + cacheDirectorySuffix);
 	}
 }

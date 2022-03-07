@@ -1,10 +1,10 @@
 package io.basc.framework.memcached.locks;
 
-import io.basc.framework.data.cas.CAS;
+import java.util.concurrent.TimeUnit;
+
+import io.basc.framework.data.CAS;
 import io.basc.framework.locks.RenewableLock;
 import io.basc.framework.memcached.Memcached;
-
-import java.util.concurrent.TimeUnit;
 
 public final class MemcachedLock extends RenewableLock {
 	private final Memcached memcached;
@@ -19,7 +19,7 @@ public final class MemcachedLock extends RenewableLock {
 	}
 
 	public boolean tryLock() {
-		boolean b = memcached.add(key, (int) getTimeout(TimeUnit.SECONDS), id);
+		boolean b = memcached.setIfAbsent(key, id, getTimeout(), getTimeUnit());
 		if (b) {
 			autoRenewal();
 		}
@@ -28,17 +28,17 @@ public final class MemcachedLock extends RenewableLock {
 
 	public void unlock() {
 		cancelAutoRenewal();
-		CAS<String> cas = memcached.getCASOperations().get(key);
+		CAS<Object> cas = memcached.gets(key);
 		if (id.equals(cas.getValue())) {
-			memcached.getCASOperations().delete(key, cas.getCas());
+			memcached.delete(key, cas.getCas());
 		}
 	}
 
 	public boolean renewal(long time, TimeUnit unit) {
-		CAS<String> cas = memcached.getCASOperations().get(key);
+		CAS<Object> cas = memcached.gets(key);
 		if (!id.equals(cas.getValue())) {
 			return false;
 		}
-		return memcached.getCASOperations().cas(key, id, (int) unit.toSeconds(time), cas.getCas());
+		return memcached.cas(key, id, cas.getCas(), time, unit);
 	}
 }

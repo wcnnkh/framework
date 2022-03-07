@@ -15,6 +15,11 @@ import io.basc.framework.retry.TerminatedRetryException;
 import io.basc.framework.retry.policy.SimpleRetryPolicy;
 
 public class RetryTemplate implements RetryOperations {
+	/**
+	 * 默认的重试操作
+	 */
+	public static final RetryOperations DEFAULT = new RetryTemplate();
+
 	private static Logger logger = LoggerFactory.getLogger(RetryTemplate.class);
 	private volatile RetryListener[] listeners = new RetryListener[0];
 	private final RetryPolicy retryPolicy;

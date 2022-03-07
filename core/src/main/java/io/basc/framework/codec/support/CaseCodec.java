@@ -10,7 +10,7 @@ import io.basc.framework.lang.Nullable;
 /**
  * 大小写转换,默认是小写->大写
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class CaseCodec implements Codec<String, String> {

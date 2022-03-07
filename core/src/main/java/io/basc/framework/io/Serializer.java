@@ -9,6 +9,7 @@ import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.codec.support.SerializerCodec;
 import io.basc.framework.codec.support.ToBytesCodec;
+import io.basc.framework.convert.TypeDescriptor;
 
 /**
  * 序列化与反序列化
@@ -16,9 +17,24 @@ import io.basc.framework.codec.support.ToBytesCodec;
  * @author wcnnkh
  *
  */
-public interface Serializer extends ToBytesCodec<Object> {
+public interface Serializer extends ToBytesCodec<Object>, CrossLanguageSerializer {
 
 	void serialize(Object source, OutputStream target) throws IOException;
+
+	@Override
+	default void serialize(Object source, TypeDescriptor sourceTypeDescriptor, OutputStream target) throws IOException {
+		serialize(source, target);
+	}
+
+	@Override
+	default <T> T deserialize(InputStream source, TypeDescriptor targetTypeDescriptor)
+			throws IOException, DecodeException {
+		try {
+			return deserialize(source);
+		} catch (ClassNotFoundException e) {
+			throw new DecodeException(e);
+		}
+	}
 
 	@Override
 	default void encode(Object source, OutputStream target) throws IOException, EncodeException {

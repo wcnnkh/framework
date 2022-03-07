@@ -29,21 +29,17 @@ public class ZooKeeperServerStart extends Thread {
 		this.serverConfig = parse(properties);
 	}
 
-	public ZooKeeperServerStart(Properties properties) throws IOException,
-			ConfigException {
+	public ZooKeeperServerStart(Properties properties) throws IOException, ConfigException {
 		this.serverConfig = parse(properties);
 	}
 
-	protected ServerConfig parse(Properties properties) throws IOException,
-			ConfigException {
+	protected ServerConfig parse(Properties properties) throws IOException, ConfigException {
 		if (!properties.containsKey(DATA_DIR)) {
-			properties.setProperty(DATA_DIR, Sys
-					.env.getWorkPath() + File.separator + "zk_data");
+			properties.setProperty(DATA_DIR, Sys.env.getWorkPath() + File.separator + "zk_data");
 		}
 
 		if (!properties.containsKey(DATA_LOG_DIR)) {
-			properties.setProperty(DATA_LOG_DIR, Sys
-					.env.getWorkPath() + File.separator + "zk_logs");
+			properties.setProperty(DATA_LOG_DIR, Sys.env.getWorkPath() + File.separator + "zk_logs");
 		}
 
 		if (!properties.containsKey(CLIENT_PORT)) {
@@ -68,8 +64,7 @@ public class ZooKeeperServerStart extends Thread {
 		try {
 			zooKeeperServerMain.runFromConfig(serverConfig);
 		} catch (Exception e) {
-			logger.error(e, "start zookeeper server error: {}",
-					JSONUtils.getJsonSupport().toJSONString(serverConfig));
+			logger.error(e, "start zookeeper server error: {}", JSONUtils.getJsonSupport().toJSONString(serverConfig));
 		}
 		super.run();
 	}
