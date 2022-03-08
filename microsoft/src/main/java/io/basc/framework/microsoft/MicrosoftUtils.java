@@ -98,6 +98,13 @@ public final class MicrosoftUtils {
 		return list;
 	}
 
+	/**
+	 * @see ExcelReader#read(Object)
+	 * @param <T>
+	 * @param type
+	 * @param source
+	 * @return
+	 */
 	public static <T> Stream<T> read(Class<T> type, Object source) {
 		return getExcelResolver().read(getExcelOperations(), type, source);
 	}
@@ -111,6 +118,15 @@ public final class MicrosoftUtils {
 		export(source, target, null);
 	}
 
+	/**
+	 * @see ExcelOperations#createExcelExport(Object, ExcelVersion)
+	 * @param <T>
+	 * @param source
+	 * @param target
+	 * @param excelVersion
+	 * @throws ExcelException
+	 * @throws IOException
+	 */
 	public static <T> void export(Stream<? extends T> source, Object target, @Nullable ExcelVersion excelVersion)
 			throws ExcelException, IOException {
 		ExcelExport export = getExcelOperations().createExcelExport(target, excelVersion);
@@ -119,9 +135,19 @@ public final class MicrosoftUtils {
 		} finally {
 			export.close();
 		}
-		
+
 	}
 
+	/**
+	 * @see ExcelOperations#createExcelExport(Object, ExcelVersion)
+	 * @param <T>
+	 * @param type
+	 * @param source
+	 * @param target
+	 * @param excelVersion
+	 * @throws ExcelException
+	 * @throws IOException
+	 */
 	public static <T> void export(Class<T> type, Stream<? extends T> source, Object target,
 			@Nullable ExcelVersion excelVersion) throws ExcelException, IOException {
 		ExcelExport export = getExcelOperations().createExcelExport(target, excelVersion);
@@ -130,6 +156,6 @@ public final class MicrosoftUtils {
 		} finally {
 			export.close();
 		}
-		
+
 	}
 }

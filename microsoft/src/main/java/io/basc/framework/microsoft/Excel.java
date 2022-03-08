@@ -47,6 +47,11 @@ public interface Excel extends Closeable {
 		return sheets;
 	}
 
+	/**
+	 * 所有数据
+	 * 
+	 * @return
+	 */
 	default Cursor<String[]> stream() {
 		Stream<String[]> stream = StreamProcessorSupport
 				.concat(Arrays.asList(getSheets()).stream().map((e) -> e.stream()).iterator());
