@@ -18,7 +18,8 @@ import io.basc.framework.redis.convert.DefaultConvertibleRedisClient;
 import io.basc.framework.util.Assert;
 import io.basc.framework.value.AnyValue;
 
-public class Redis extends DefaultConvertibleRedisClient<RedisClient<byte[], byte[]>, byte[], String, byte[], String>
+public final class Redis
+		extends DefaultConvertibleRedisClient<RedisClient<byte[], byte[]>, byte[], String, byte[], String, Redis>
 		implements TemporaryStorageOperations, TemporaryStorageTemplate, TemporaryCounter {
 	private static final String INCR_AND_INIT_SCRIPT = ResourceUtils
 			.getContent(ResourceUtils.getSystemResource("/io/basc/framework/redis/incr.script"), Constants.UTF_8);
@@ -42,9 +43,15 @@ public class Redis extends DefaultConvertibleRedisClient<RedisClient<byte[], byt
 		return getSourceRedisClient().to(getKeyCodec(), codec);
 	}
 
-	public void setSerializer(CrossLanguageSerializer serializer) {
+	/**
+	 * @param serializer
+	 * @return 返回一个新的
+	 */
+	public Redis setSerializer(CrossLanguageSerializer serializer) {
 		Assert.requiredArgument(serializer != null, "serializer");
-		this.serializer = serializer;
+		Redis redis = clone();
+		redis.serializer = serializer;
+		return redis;
 	}
 
 	private long toLongValue(Object value) {

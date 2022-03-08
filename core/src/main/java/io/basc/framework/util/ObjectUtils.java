@@ -306,6 +306,10 @@ public abstract class ObjectUtils {
 	 * 以下情况会进行克隆：<br/>
 	 * 实现{@link Cloneable}接口 是一个数组
 	 * 
+	 * <br/>
+	 * 不可以在{@link Cloneable#clone()}中调用此方法(当deep=false时),
+	 * 因为会尝试调用clone方法来完成克隆，这会造成死循环
+	 * 
 	 * @see Cloneable
 	 * @see ArrayUtils#clone(Object, boolean)
 	 * @see CollectionFactory#clone(Collection, boolean)
@@ -341,6 +345,17 @@ public abstract class ObjectUtils {
 
 		if (source instanceof Map) {
 			return (T) CollectionFactory.clone((Map<?, ?>) source, deep);
+		}
+
+		if (!deep) {
+			try {
+				T target = ReflectionUtils.invokeCloneMethod(source);
+				if (target != null) {
+					return target;
+				}
+			} catch (StackOverflowError e) {
+				// 忽略此异常，这可能是在clone()方法中调用造成的
+			}
 		}
 
 		// 是否可以直接return source, 应该这样吗？

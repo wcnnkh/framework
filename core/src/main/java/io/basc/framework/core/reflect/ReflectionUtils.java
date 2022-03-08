@@ -1286,12 +1286,6 @@ public abstract class ReflectionUtils {
 			return null;
 		}
 
-		if (!deep) {
-			T target = invokeCloneMethod(source);
-			if (target != null) {
-				return target;
-			}
-		}
 		return clone(getDeclaredFields(source.getClass()).withAll(), source, deep);
 	}
 
