@@ -1,18 +1,19 @@
 package io.basc.framework.test;
 
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.util.CollectionFactory;
-import io.basc.framework.util.XUtils;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.basc.framework.io.SerializerException;
+import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.CollectionFactory;
+import io.basc.framework.util.XUtils;
+
 public class CollectionFactoryTest {
 	@Test
-	public void list() {
+	public void list() throws ClassNotFoundException, SerializerException {
 		TestList bean = new TestList();
 		bean.add(XUtils.getUUID());
 		bean.setV(XUtils.getUUID());

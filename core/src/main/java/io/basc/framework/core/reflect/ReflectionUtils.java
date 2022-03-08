@@ -44,10 +44,9 @@ public abstract class ReflectionUtils {
 	}).toArray(Method[]::new);
 
 	/**
-	 * 实体成员，忽略静态的和transient修饰的
+	 * 实体成员，忽略静态的
 	 */
-	public static final Predicate<Member> ENTITY_MEMBER = (m) -> !Modifier.isStatic(m.getModifiers())
-			&& !Modifier.isTransient(m.getModifiers());
+	public static final Predicate<Member> ENTITY_MEMBER = (m) -> !Modifier.isStatic(m.getModifiers());
 
 	/**
 	 * 作用域比较
@@ -1305,12 +1304,6 @@ public abstract class ReflectionUtils {
 		return null;
 	}
 
-	/**
-	 * 浅克隆(如果对象实现了Cloneable接口,那么会调用clone方法)
-	 * 
-	 * @param source
-	 * @return
-	 */
 	public static <T> T clone(T source) {
 		return clone(source, false);
 	}

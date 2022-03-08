@@ -446,9 +446,9 @@ public final class CollectionFactory {
 	/**
 	 * 克隆一个{@link Map}
 	 * 
-	 * @param     <M>
-	 * @param     <K>
-	 * @param     <V>
+	 * @param <M>
+	 * @param <K>
+	 * @param <V>
 	 * @param map
 	 * @return
 	 */
@@ -460,9 +460,9 @@ public final class CollectionFactory {
 	/**
 	 * 克隆一个{@link Map}
 	 * 
-	 * @param      <M>
-	 * @param      <K>
-	 * @param      <V>
+	 * @param <M>
+	 * @param <K>
+	 * @param <V>
 	 * @param map
 	 * @param deep {@link ObjectUtils#clone(Object, boolean)}
 	 * @return
@@ -471,8 +471,13 @@ public final class CollectionFactory {
 	public static <M extends Map<K, V>, K, V> M clone(M map, boolean deep) {
 		Assert.requiredArgument(map != null, "map");
 		if (!deep) {
-			return ReflectionUtils.clone(map);
+			M m = ReflectionUtils.invokeCloneMethod(map);
+			if (m != null) {
+				return m;
+			}
+			return ReflectionUtils.clone(m);
 		}
+
 		Class<?> mapType = map.getClass();
 		M cloneMap;
 		if (mapType == TreeMap.class) {
@@ -509,8 +514,8 @@ public final class CollectionFactory {
 	/**
 	 * 克隆一个{@link Collection}
 	 * 
-	 * @param            <C>
-	 * @param            <E>
+	 * @param <C>
+	 * @param <E>
 	 * @param collection
 	 * @return
 	 */
@@ -521,8 +526,8 @@ public final class CollectionFactory {
 	/**
 	 * 克隆一个{@link Collection}
 	 * 
-	 * @param            <C>
-	 * @param            <E>
+	 * @param <C>
+	 * @param <E>
 	 * @param collection
 	 * @param deep
 	 * @return
@@ -531,6 +536,10 @@ public final class CollectionFactory {
 	public static <C extends Collection<E>, E> C clone(C collection, boolean deep) {
 		Assert.requiredArgument(collection != null, "collection");
 		if (!deep) {
+			C value = ReflectionUtils.invokeCloneMethod(collection);
+			if (value != null) {
+				return value;
+			}
 			return ReflectionUtils.clone(collection);
 		}
 
