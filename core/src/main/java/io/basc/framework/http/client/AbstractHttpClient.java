@@ -25,7 +25,7 @@ public abstract class AbstractHttpClient implements HttpClient, Configurable {
 	private ClientHttpRequestFactory requestFactory;
 	private CookieHandler cookieHandler;
 	private RedirectManager redirectManager;
-	private boolean cloneBeforeSet;
+	private boolean cloneBeforeSet = true;
 	private UriTemplateHandler uriTemplateHandler;
 	private ClientHttpResponseErrorHandler responseErrorHandler;
 	private ClientHttpRequestInterceptor interceptor;

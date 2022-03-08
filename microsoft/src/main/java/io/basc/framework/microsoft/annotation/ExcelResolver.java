@@ -67,11 +67,29 @@ public class ExcelResolver extends DefaultObjectRelationalMapping {
 		return excelColumn.value();
 	}
 
+	/**
+	 * @see ExcelReader#read(Object)
+	 * @param <T>
+	 * @param reader
+	 * @param structure
+	 * @param source
+	 * @return
+	 * @throws ExcelException
+	 */
 	public final <T> Stream<T> read(ExcelReader reader, EntityStructure<? extends Property> structure, Object source)
 			throws ExcelException {
 		return read(reader, getConversionService(), structure, source);
 	}
 
+	/**
+	 * @see ExcelReader#read(Object)
+	 * @param <T>
+	 * @param reader
+	 * @param type
+	 * @param source
+	 * @return
+	 * @throws ExcelException
+	 */
 	public final <T> Stream<T> read(ExcelReader reader, Class<T> type, Object source) throws ExcelException {
 		return read(reader, getStructure(type), source);
 	}

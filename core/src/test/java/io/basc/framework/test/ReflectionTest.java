@@ -10,6 +10,7 @@ import org.junit.Test;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.io.ClassPathResource;
 import io.basc.framework.util.CollectionFactory;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 
 public class ReflectionTest {
@@ -37,6 +38,15 @@ public class ReflectionTest {
 				null, ClassPathResource.class) != null);
 	}
 
+	@Test
+	public void cloneA() {
+		CloneA cloneA = new CloneA();
+		cloneA.a = XUtils.getUUID();
+
+		CloneA c = cloneA.clone();
+		assertTrue(StringUtils.equals(cloneA.a, c.a));
+	}
+
 	public static class ParentBean {
 		public String pa;
 		public transient String pc;
@@ -55,6 +65,15 @@ public class ReflectionTest {
 
 		public String toString() {
 			return ReflectionUtils.toString(this);
+		}
+	}
+
+	private static class CloneA implements Cloneable {
+		private String a;
+
+		@Override
+		public CloneA clone() {
+			return ReflectionUtils.clone(this);
 		}
 	}
 }

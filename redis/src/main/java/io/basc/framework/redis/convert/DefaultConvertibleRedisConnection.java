@@ -3,8 +3,8 @@ package io.basc.framework.redis.convert;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.redis.RedisConnection;
 
-public class DefaultConvertibleRedisConnection<C extends RedisConnection<SK, SV>, SK, K, SV, V>
-		extends RedisCodecAccess<SK, K, SV, V> implements ConvertibleRedisConnection<SK, K, SV, V> {
+public class DefaultConvertibleRedisConnection<C extends RedisConnection<SK, SV>, SK, K, SV, V, T extends DefaultConvertibleRedisConnection<C, SK, K, SV, V, T>>
+		extends RedisCodecAccess<SK, K, SV, V, T> implements ConvertibleRedisConnection<SK, K, SV, V> {
 	protected final C connection;
 
 	public DefaultConvertibleRedisConnection(C connection, Codec<K, SK> keyCodec, Codec<V, SV> valueCodec) {
