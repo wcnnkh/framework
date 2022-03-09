@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="INFO">
 	<Properties>
-		<Property name="logPattern">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{1.} - %msg%n</Property>
+		<Property name="fileName">log</Property>
+		<Property name="logPattern">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %level %logger{1.} - %msg%n</Property>
 	</Properties>
 
 	<Appenders>
@@ -9,11 +10,10 @@
 			<PatternLayout pattern="${logPattern}" />
 		</Console>
 
-		<RollingFile name="RollingFile" fileName="logs/log.log"
-			filePattern="logs/log-%d{yyyy-MM-dd}.log">
+		<RollingFile name="RollingFile" fileName="logs/${fileName}.log"
+			filePattern="logs/${fileName}-%d{yyyy-MM-dd}.log">
 			<!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch） -->
-			<ThresholdFilter level="info" onMatch="ACCEPT"
-				onMismatch="DENY" />
+			<!-- <ThresholdFilter level="ALL" onMatch="ACCEPT" onMismatch="DENY" /> -->
 			<PatternLayout pattern="${logPattern}" />
 			<Policies>
 				<TimeBasedTriggeringPolicy />
@@ -22,7 +22,7 @@
 	</Appenders>
 
 	<Loggers>
-		<Root level="info">
+		<Root level="INFO">
 			<AppenderRef ref="Console" />
 			<AppenderRef ref="RollingFile" />
 		</Root>
