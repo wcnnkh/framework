@@ -91,10 +91,10 @@
 			<artifactId>rpc</artifactId>
 			<scope>test</scope>
 		</dependency>
-
+		
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>log4j2</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
