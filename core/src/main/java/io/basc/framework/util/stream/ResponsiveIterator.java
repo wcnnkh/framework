@@ -19,6 +19,7 @@ import java.util.function.Supplier;
  * @param <E>
  */
 public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
+	private static final int DEFAULT_CAPACITY = Integer.getInteger("io.basc.framework.util.stream.ResponsiveIterator.capacity", 128);
 	private final AtomicBoolean closed = new AtomicBoolean(false);
 	private final BlockingQueue<ResponsiveMessage<E>> queue;
 	private volatile Supplier<E> valueSupplier;
@@ -27,7 +28,7 @@ public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
 	 * 默认缓存16条消息
 	 */
 	public ResponsiveIterator() {
-		this(16);
+		this(DEFAULT_CAPACITY);
 	}
 
 	/**
