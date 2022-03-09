@@ -12,15 +12,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 /**
- * 响应式迭代
- * 
- * @author shuchaowen
+ * 响应式迭代<br/>
+ * @author wcnnkh
  *
  * @param <E>
  */
 public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
 	private static final int DEFAULT_CAPACITY = Integer.getInteger("io.basc.framework.util.stream.ResponsiveIterator.capacity", 128);
 	private final AtomicBoolean closed = new AtomicBoolean(false);
+	private final AtomicBoolean readClosed = new AtomicBoolean(false);
 	private final BlockingQueue<ResponsiveMessage<E>> queue;
 	private volatile Supplier<E> valueSupplier;
 
@@ -36,6 +36,10 @@ public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
 	 */
 	public ResponsiveIterator(int capacity) {
 		this.queue = new ArrayBlockingQueue<>(capacity);
+	}
+	
+	public boolean isClosed() {
+		return closed.get();
 	}
 
 	@Override
@@ -53,6 +57,10 @@ public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
 	 * @throws InterruptedException
 	 */
 	public void put(E message) throws InterruptedException {
+		if(isClosed()) {
+			return ;
+		}
+		
 		queue.put(new ResponsiveMessage<>(0, message));
 	}
 
@@ -62,6 +70,10 @@ public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
 	 * @return
 	 */
 	public boolean offer(E message) {
+		if(isClosed()) {
+			return false;
+		}
+		
 		return queue.offer(new ResponsiveMessage<>(0, message));
 	}
 
@@ -74,6 +86,10 @@ public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
 	 * @throws InterruptedException
 	 */
 	public boolean offer(E message, long timeout, TimeUnit unit) throws InterruptedException {
+		if(isClosed()) {
+			return false;
+		}
+		
 		return queue.offer(new ResponsiveMessage<>(0, message), timeout, unit);
 	}
 
@@ -84,10 +100,18 @@ public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
 	 */
 	@Override
 	public boolean hasNext() {
+		if(readClosed.get()) {
+			return false;
+		}
+		
 		if (valueSupplier == null) {
 			synchronized (this) {
+				if(readClosed.get()) {
+					return false;
+				}
+				
 				if (valueSupplier == null) {
-					if (closed.get() && queue.isEmpty()) {
+					if (isClosed() && queue.isEmpty()) {
 						// 已经关闭且没消息了
 						return false;
 					}
@@ -96,6 +120,9 @@ public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
 						ResponsiveMessage<E> message = queue.take();
 						if (message.type == 1) {
 							// 关闭消息
+							if(readClosed.compareAndSet(false, true)) {
+								queue.clear();
+							}
 							return false;
 						}
 						this.valueSupplier = new StaticSupplier<E>(message.value);
@@ -118,8 +145,16 @@ public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
 	 * @return
 	 */
 	public boolean hasNext(long timeout, TimeUnit unit) {
+		if(readClosed.get()) {
+			return false;
+		}
+		
 		if (valueSupplier == null) {
 			synchronized (this) {
+				if(readClosed.get()) {
+					return false;
+				}
+				
 				if (valueSupplier == null) {
 					if (closed.get() && queue.isEmpty()) {
 						// 已经关闭且没消息了
@@ -135,6 +170,9 @@ public class ResponsiveIterator<E> implements Iterator<E>, AutoCloseable {
 
 						if (message.type == 1) {
 							// 关闭消息
+							if(readClosed.compareAndSet(false, true)) {
+								queue.clear();
+							}
 							return false;
 						}
 						this.valueSupplier = new StaticSupplier<E>(message.value);
