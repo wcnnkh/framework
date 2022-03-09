@@ -109,6 +109,13 @@ public class LevelRegistry extends TreeMap<String, Level> implements EventDispat
 		return false;
 	}
 
+	/**
+	 * 如果没有注册过会返回空
+	 * 
+	 * @param name
+	 * @return
+	 */
+	@Nullable
 	public Level getLevel(String name) {
 		Level level = get(name);
 		if (level != null) {
