@@ -10,9 +10,9 @@ import io.basc.framework.util.XUtils;
 public class Slf4jToLog4j2Test {
 	@Test
 	public void test() {
-		Log4j2Utils.defaultInit();
+		Log4j2Utils.reconfigure();
 		Logger logger = LoggerFactory.getLogger(Slf4jToLog4j2Test.class);
-		//assertTrue(logger.isInfoEnabled());
+		// assertTrue(logger.isInfoEnabled());
 		logger.info(XUtils.getUUID());
 		logger.debug(XUtils.getUUID());
 		logger.warn(XUtils.getUUID());

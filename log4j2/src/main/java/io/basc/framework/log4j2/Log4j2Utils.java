@@ -1,47 +1,37 @@
 package io.basc.framework.log4j2;
 
-import java.io.IOException;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
-import io.basc.framework.env.Environment;
-import io.basc.framework.env.Sys;
 import io.basc.framework.io.Resource;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.io.ResourceUtils;
 
 public class Log4j2Utils {
+	private static Logger logger = LogManager.getLogger(Log4j2Utils.class);
 	private static final String DEFAULT_CONFIG_LOCATION = "io/basc/framework/log4j2/configuration.xml";
 	private static final String CONFIG_LOCATION = "log4j2.xml";
-	
-	public static void defaultInit() {
+
+	public static void reconfigure() {
+		Resource resource = ResourceUtils.getSystemResource(CONFIG_LOCATION);
+		if (resource != null && resource.exists()) {
+			reconfigure(resource);
+			return;
+		}
+
+		resource = ResourceUtils.getSystemResource(DEFAULT_CONFIG_LOCATION);
+		reconfigure(resource);
+	}
+
+	public static void reconfigure(Resource resource) {
+		if (resource == null || !resource.exists()) {
+			return;
+		}
+
 		try {
-			defaultInit(Sys.env);
-		} catch (IOException e) {
-			throw new NotSupportedException(e);
+			Configurator.reconfigure(resource.getURI());
+		} catch (Throwable e) {
+			logger.error(resource.getDescription(), e);
 		}
-	}
-
-	public static void defaultInit(Environment environment) throws IOException {
-
-		Resource resource = environment.getResource(CONFIG_LOCATION);
-		if (resource.exists()) {
-			init(environment, resource);
-			return;
-		}
-
-		resource = environment.getResource(DEFAULT_CONFIG_LOCATION);
-		init(environment, resource);
-	}
-
-	public static void init(Environment environment, String configLocation) throws IOException {
-		init(environment, environment.getResource(configLocation));
-	}
-
-	public static void init(Environment environment, Resource resource) throws IOException {
-		if (!resource.exists()) {
-			return;
-		}
-
-		Configurator.reconfigure(resource.getURI());
 	}
 }

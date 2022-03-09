@@ -40,7 +40,7 @@ public final class Sys extends DefaultEnvironment implements ServiceLoaderFactor
 	private Sys() {
 	}
 
-	private final DefaultInstanceFactory instanceFactory = new DefaultInstanceFactory(env);
+	private final DefaultInstanceFactory instanceFactory = new DefaultInstanceFactory(this);
 
 	private void load() {
 		/**

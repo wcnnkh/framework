@@ -8,11 +8,7 @@ import io.basc.framework.logger.Logger;
 public class Log4j2LoggerFactory implements ILoggerFactory {
 
 	static {
-		Log4j2Utils.defaultInit();
-	}
-
-	public void destroy() {
-		LogManager.shutdown();
+		Log4j2Utils.reconfigure();
 	}
 
 	public Logger getLogger(String name) {
