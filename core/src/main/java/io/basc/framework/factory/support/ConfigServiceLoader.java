@@ -2,6 +2,7 @@ package io.basc.framework.factory.support;
 
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.factory.ServiceLoader;
+import io.basc.framework.util.Assert;
 import io.basc.framework.value.Value;
 import io.basc.framework.value.ValueFactory;
 
@@ -16,6 +17,9 @@ public class ConfigServiceLoader<S> implements ServiceLoader<S> {
 
 	public ConfigServiceLoader(Class<S> serviceClass, ValueFactory<String> configFactory,
 			NoArgsInstanceFactory instanceFactory) {
+		Assert.requiredArgument(serviceClass != null, "serviceClass");
+		Assert.requiredArgument(configFactory != null, "configFactory");
+		Assert.requiredArgument(instanceFactory != null, "instanceFactory");
 		this.serviceClass = serviceClass;
 		this.configFactory = configFactory;
 		this.instanceFactory = instanceFactory;

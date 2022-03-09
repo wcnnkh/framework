@@ -34,18 +34,27 @@ public class DynamicLoggerFactory extends JdkLoggerFactory {
 					return null;
 				}
 
+				Logger logger = getLogger(DynamicLoggerFactory.class.getName());
+				logger.info("Use logger factory [" + loggerFactory + "]");
 				for (Entry<String, DynamicLogger> entry : loggerMap.entrySet()) {
-					Logger logger = entry.getValue().getSource();
-					if (logger instanceof Closeable) {
-						((Closeable) logger).close();
+					Logger oldLogger = entry.getValue().getSource();
+					try {
+						entry.getValue().setSource(loggerFactory.getLogger(entry.getKey()));
+						if (oldLogger instanceof Closeable) {
+							((Closeable) oldLogger).close();
+						}
+					} catch (Throwable e) {
+						logger.error(e, "name={}, logger={}", entry.getKey(), oldLogger);
 					}
-					entry.getValue().setSource(loggerFactory.getLogger(entry.getKey()));
 				}
-				getLogger(DynamicLoggerFactory.class.getName()).info("Use logger factory [" + loggerFactory + "]");
 			} catch (Throwable e) {
 				getRootLogger().log(CustomLevel.DEBUG, e, () -> "Failed to load " + loggerName);
 			}
 		}
+		return loggerFactory;
+	}
+
+	public ILoggerFactory getILoggerFactory() {
 		return loggerFactory;
 	}
 

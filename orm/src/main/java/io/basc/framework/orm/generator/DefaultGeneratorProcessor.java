@@ -1,5 +1,9 @@
 package io.basc.framework.orm.generator;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.locks.Lock;
+
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.data.Counter;
 import io.basc.framework.data.generator.SequenceId;
@@ -19,10 +23,6 @@ import io.basc.framework.orm.generator.annotation.Generator;
 import io.basc.framework.orm.generator.annotation.UUID;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.XUtils;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.locks.Lock;
 
 public class DefaultGeneratorProcessor implements GeneratorProcessor {
 	private static Logger logger = LoggerFactory.getLogger(DefaultGeneratorProcessor.class);
@@ -72,7 +72,7 @@ public class DefaultGeneratorProcessor implements GeneratorProcessor {
 			Map<Object, Object> contextMap) {
 		Object time = contextMap.get(CreateTime.class);
 		if (time == null) {
-			time = Sys.currentTimeMillis();
+			time = System.currentTimeMillis();
 			contextMap.put(CreateTime.class, time);
 		}
 		return (long) time;

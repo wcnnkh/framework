@@ -3,7 +3,7 @@ package io.basc.framework.codec.support;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.DecodeException;
 
-public class Base64 implements Codec<byte[], String>{
+public class Base64 implements Codec<byte[], String> {
 	static private final int BASELENGTH = 128;
 
 	static private final int LOOKUPLENGTH = 64;
@@ -57,7 +57,7 @@ public class Base64 implements Codec<byte[], String>{
 		lookUpBase64Alphabet[63] = (char) '/';
 
 	}
-	
+
 	public static final Base64 DEFAULT = new Base64();
 
 	private static boolean isWhiteSpace(char octect) {
@@ -75,8 +75,7 @@ public class Base64 implements Codec<byte[], String>{
 	/**
 	 * remove WhiteSpace from MIME containing encoded Base64 data.
 	 * 
-	 * @param data
-	 *            the byte array of base64 data (with WS)
+	 * @param data the byte array of base64 data (with WS)
 	 * @return the new length
 	 */
 	private static int removeWhiteSpace(char[] data) {
@@ -94,16 +93,14 @@ public class Base64 implements Codec<byte[], String>{
 		}
 		return newSize;
 	}
-	
+
 	/**
 	 * Encodes hex octects into Base64
 	 * 
-	 * @param binaryData
-	 *            Array containing binaryData
+	 * @param binaryData Array containing binaryData
 	 * @return Encoded Base64 array
 	 */
 	public String encode(byte[] binaryData) {
-
 		if (binaryData == null) {
 			return null;
 		}
@@ -115,8 +112,7 @@ public class Base64 implements Codec<byte[], String>{
 
 		int fewerThan24bits = lengthDataBits % TWENTYFOURBITGROUP;
 		int numberTriplets = lengthDataBits / TWENTYFOURBITGROUP;
-		int numberQuartet = fewerThan24bits != 0 ? numberTriplets + 1
-				: numberTriplets;
+		int numberQuartet = fewerThan24bits != 0 ? numberTriplets + 1 : numberTriplets;
 		char encodedData[] = null;
 
 		encodedData = new char[numberQuartet * 4];
@@ -133,12 +129,9 @@ public class Base64 implements Codec<byte[], String>{
 			l = (byte) (b2 & 0x0f);
 			k = (byte) (b1 & 0x03);
 
-			byte val1 = ((b1 & SIGN) == 0) ? (byte) (b1 >> 2)
-					: (byte) ((b1) >> 2 ^ 0xc0);
-			byte val2 = ((b2 & SIGN) == 0) ? (byte) (b2 >> 4)
-					: (byte) ((b2) >> 4 ^ 0xf0);
-			byte val3 = ((b3 & SIGN) == 0) ? (byte) (b3 >> 6)
-					: (byte) ((b3) >> 6 ^ 0xfc);
+			byte val1 = ((b1 & SIGN) == 0) ? (byte) (b1 >> 2) : (byte) ((b1) >> 2 ^ 0xc0);
+			byte val2 = ((b2 & SIGN) == 0) ? (byte) (b2 >> 4) : (byte) ((b2) >> 4 ^ 0xf0);
+			byte val3 = ((b3 & SIGN) == 0) ? (byte) (b3 >> 6) : (byte) ((b3) >> 6 ^ 0xfc);
 
 			encodedData[encodedIndex++] = lookUpBase64Alphabet[val1];
 			encodedData[encodedIndex++] = lookUpBase64Alphabet[val2 | (k << 4)];
@@ -150,8 +143,7 @@ public class Base64 implements Codec<byte[], String>{
 		if (fewerThan24bits == EIGHTBIT) {
 			b1 = binaryData[dataIndex];
 			k = (byte) (b1 & 0x03);
-			byte val1 = ((b1 & SIGN) == 0) ? (byte) (b1 >> 2)
-					: (byte) ((b1) >> 2 ^ 0xc0);
+			byte val1 = ((b1 & SIGN) == 0) ? (byte) (b1 >> 2) : (byte) ((b1) >> 2 ^ 0xc0);
 			encodedData[encodedIndex++] = lookUpBase64Alphabet[val1];
 			encodedData[encodedIndex++] = lookUpBase64Alphabet[k << 4];
 			encodedData[encodedIndex++] = PAD;
@@ -162,10 +154,8 @@ public class Base64 implements Codec<byte[], String>{
 			l = (byte) (b2 & 0x0f);
 			k = (byte) (b1 & 0x03);
 
-			byte val1 = ((b1 & SIGN) == 0) ? (byte) (b1 >> 2)
-					: (byte) ((b1) >> 2 ^ 0xc0);
-			byte val2 = ((b2 & SIGN) == 0) ? (byte) (b2 >> 4)
-					: (byte) ((b2) >> 4 ^ 0xf0);
+			byte val1 = ((b1 & SIGN) == 0) ? (byte) (b1 >> 2) : (byte) ((b1) >> 2 ^ 0xc0);
+			byte val2 = ((b2 & SIGN) == 0) ? (byte) (b2 >> 4) : (byte) ((b2) >> 4 ^ 0xf0);
 
 			encodedData[encodedIndex++] = lookUpBase64Alphabet[val1];
 			encodedData[encodedIndex++] = lookUpBase64Alphabet[val2 | (k << 4)];
@@ -179,12 +169,10 @@ public class Base64 implements Codec<byte[], String>{
 	/**
 	 * Decodes Base64 data into octects
 	 * 
-	 * @param encoded
-	 *            string containing Base64 data
+	 * @param encoded string containing Base64 data
 	 * @return Array containind decoded data.
 	 */
 	public byte[] decode(String encoded) {
-
 		if (encoded == null) {
 			return null;
 		}
@@ -214,12 +202,10 @@ public class Base64 implements Codec<byte[], String>{
 
 		for (; i < numberQuadruple - 1; i++) {
 
-			if (!isData((d1 = base64Data[dataIndex++]))
-					|| !isData((d2 = base64Data[dataIndex++]))
-					|| !isData((d3 = base64Data[dataIndex++]))
-					|| !isData((d4 = base64Data[dataIndex++]))) {
+			if (!isData((d1 = base64Data[dataIndex++])) || !isData((d2 = base64Data[dataIndex++]))
+					|| !isData((d3 = base64Data[dataIndex++])) || !isData((d4 = base64Data[dataIndex++]))) {
 				return null;
-			}// if found "no data" just return null
+			} // if found "no data" just return null
 
 			b1 = base64Alphabet[d1];
 			b2 = base64Alphabet[d2];
@@ -231,8 +217,7 @@ public class Base64 implements Codec<byte[], String>{
 			decodedData[encodedIndex++] = (byte) (b3 << 6 | b4);
 		}
 
-		if (!isData((d1 = base64Data[dataIndex++]))
-				|| !isData((d2 = base64Data[dataIndex++]))) {
+		if (!isData((d1 = base64Data[dataIndex++])) || !isData((d2 = base64Data[dataIndex++]))) {
 			return null;// if found "no data" just return null
 		}
 

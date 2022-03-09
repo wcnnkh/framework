@@ -38,7 +38,7 @@ public class DefaultApplication extends XmlBeanFactory
 	private volatile boolean initialized;
 
 	public DefaultApplication() {
-		this.createTime = Sys.currentTimeMillis();
+		this.createTime = System.currentTimeMillis();
 		registerSingleton(Application.class.getName(), this);
 		getLifecycleDispatcher().registerListener(this);
 	}
@@ -120,8 +120,8 @@ public class DefaultApplication extends XmlBeanFactory
 				postProcessApplication(postProcessor);
 			}
 
-			getLogger().info(
-					new SplitLine("Start up complete in " + (Sys.currentTimeMillis() - createTime) + "ms").toString());
+			getLogger().info(new SplitLine("Start up complete in " + (System.currentTimeMillis() - createTime) + "ms")
+					.toString());
 			initialized = true;
 		}
 	}
