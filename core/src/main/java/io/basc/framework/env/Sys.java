@@ -12,7 +12,6 @@ import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.factory.support.DefaultInstanceFactory;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.Clock;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.MultiIterator;
 import io.basc.framework.util.XUtils;
@@ -32,18 +31,16 @@ public final class Sys extends DefaultEnvironment implements ServiceLoaderFactor
 	public static final String WEB_ROOT_PROPERTY = "web.root";
 
 	private static Logger logger = LoggerFactory.getLogger(Sys.class);
+
 	public static final Sys env = new Sys();
-	private static DefaultInstanceFactory instanceFactory = new DefaultInstanceFactory(env);
-
-	private static Clock clock;
-
 	static {
 		env.load();
-		clock = env.getServiceLoader(Clock.class).first();
-		if (clock == null) {
-			clock = Clock.SYSTEM;
-		}
 	}
+
+	private Sys() {
+	}
+
+	private final DefaultInstanceFactory instanceFactory = new DefaultInstanceFactory(env);
 
 	private void load() {
 		/**
@@ -52,7 +49,7 @@ public final class Sys extends DefaultEnvironment implements ServiceLoaderFactor
 		loadProperties("system.properties");
 		loadProperties(getValue("io.basc.framework.properties", String.class, "/private.properties"));
 
-		// 初始化日志管理器
+		// 初始化日志等级管理器
 		Observable<Properties> observable = getProperties(
 				getValue("io.basc.framework.logger.level.properties", String.class, "/logger-level.properties"));
 		LoggerFactory.getLevelManager().combine(observable);
@@ -63,26 +60,11 @@ public final class Sys extends DefaultEnvironment implements ServiceLoaderFactor
 		configure(instanceFactory);
 	}
 
-	public static Clock getClock() {
-		return clock;
-	}
-
-	/**
-	 * @see Clock#currentTimeMillis()
-	 * @return
-	 */
-	public static long currentTimeMillis() {
-		return clock.currentTimeMillis();
-	}
-
 	public Iterator<String> iterator() {
 		return new MultiIterator<String>(super.iterator(),
 				CollectionUtils
 						.toIterator(ConvertibleEnumeration.convertToStringEnumeration(System.getProperties().keys())),
 				System.getenv().keySet().iterator());
-	}
-
-	private Sys() {
 	}
 
 	public Value getValue(String key) {
