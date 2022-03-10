@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 
 import io.basc.framework.context.ClassesLoader;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassLoaderProvider;
@@ -63,16 +62,8 @@ public abstract class AbstractClassesLoader implements ClassesLoader, ClassLoade
 	 */
 	public Set<Class<?>> getClasses(ClassLoader classLoader) {
 		return load(classLoader).filter((c) -> {
-			return ClassUtils.isAvailable(c) && ReflectionUtils.isAvailable(c, (e) -> {
-				if (logger.isTraceEnabled()) {
-					logger.trace(e, "This class[{}] cannot be included because:", c.getName());
-				} else if (logger.isDebugEnabled()) {
-					logger.debug("This class[{}] cannot be included because {}: {}", c.getName(),
-							NestedExceptionUtils.getMostSpecificCause(e).getClass(),
-							NestedExceptionUtils.getNonEmptyMessage(e, false));
-				}
-				return false;
-			}) && (predicate == null || predicate.test(c));
+			return ClassUtils.isAvailable(c) && ReflectionUtils.isAvailable(c, logger)
+					&& (predicate == null || predicate.test(c));
 		}).collect(Collectors.toSet());
 	}
 

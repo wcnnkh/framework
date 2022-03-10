@@ -25,13 +25,16 @@ import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Accept;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.stream.CallableProcessor;
+import io.basc.framework.util.stream.ConsumerProcessor;
 import io.basc.framework.util.stream.Processor;
 
 public abstract class ReflectionUtils {
@@ -75,7 +78,7 @@ public abstract class ReflectionUtils {
 	 * 
 	 * @see #makeAccessible(Constructor)
 	 * @see Class#getDeclaredConstructor(Class...)
-	 * @param <T>
+	 * @param      <T>
 	 * @param type
 	 * @return
 	 */
@@ -110,7 +113,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * @see Class#getConstructor(Class...)
 	 * @see #getDeclaredConstructor(Class)
-	 * @param <T>
+	 * @param      <T>
 	 * @param type
 	 * @return
 	 */
@@ -121,7 +124,7 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see Class#getConstructor(Class...)
-	 * @param <T>
+	 * @param                <T>
 	 * @param type
 	 * @param parameterTypes
 	 * @return
@@ -144,7 +147,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * @see ClassUtils#getClass(String, ClassLoader)
 	 * @see #getConstructor(Class, Class...)
-	 * @param <T>
+	 * @param                <T>
 	 * @param className
 	 * @param classLoader
 	 * @param parameterTypes
@@ -164,7 +167,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * @see ClassUtils#getClass(String, ClassLoader)
 	 * @see #getDeclaredConstructor(Class, Class...)
-	 * @param <T>
+	 * @param                <T>
 	 * @param className
 	 * @param classLoader
 	 * @param parameterTypes
@@ -183,7 +186,7 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see Class#getDeclaredConstructor(Class...)
-	 * @param <T>
+	 * @param                <T>
 	 * @param type
 	 * @param parameterTypes
 	 * @return
@@ -219,20 +222,62 @@ public abstract class ReflectionUtils {
 	 * @param clazz
 	 * @param accept
 	 * @return
+	 * @throws E
 	 */
-	public static boolean isAvailable(Class<?> clazz, @Nullable Accept<Throwable> accept) {
+	public static <E extends Throwable> boolean isAvailable(Class<?> clazz,
+			@Nullable ConsumerProcessor<Throwable, E> accept) throws E {
 		try {
 			for (Method method : CLASS_PRESENT_METHODS) {
 				method.invoke(clazz);
 			}
 		} catch (Throwable e) {
-			return accept == null ? false : accept.accept(e);
+			if (accept != null) {
+				accept.process(e);
+			}
+			return false;
 		}
 		return true;
 	}
 
+	private static void isAvailableLogger(Class<?> clazz, Logger logger, Throwable e) {
+		if (logger.isTraceEnabled()) {
+			logger.trace(e, "This class[{}] cannot be included because:", clazz.getName());
+		} else if (logger.isDebugEnabled()) {
+			logger.debug("This class[{}] cannot be included because {}: {}", clazz.getName(),
+					NestedExceptionUtils.getRootCause(e).getClass(), NestedExceptionUtils.getNonEmptyMessage(e, false));
+		}
+	}
+
+	public static <E extends Throwable> boolean isAvailable(Class<?> clazz,
+			@Nullable CallableProcessor<Logger, E> loggerSupplier) throws E {
+		return isAvailable(clazz, loggerSupplier == null ? null : (e) -> {
+			Logger logger = loggerSupplier.process();
+			if (logger == null) {
+				logger = getLogger();
+			}
+			isAvailableLogger(clazz, logger, e);
+		});
+	}
+
+	public static boolean isAvailable(Class<?> clazz, @Nullable Logger logger) {
+		return isAvailable(clazz, logger == null ? null : (e) -> isAvailableLogger(clazz, logger, e));
+	}
+
+	private static volatile Logger logger;
+
+	private static Logger getLogger() {
+		if (logger == null) {
+			synchronized (ReflectionUtils.class) {
+				if (logger == null) {
+					logger = LoggerFactory.getLogger(ReflectionUtils.class);
+				}
+			}
+		}
+		return logger;
+	}
+
 	public static boolean isAvailable(Class<?> clazz) {
-		return isAvailable(clazz, null);
+		return isAvailable(clazz, () -> getLogger());
 	}
 
 	public static boolean isCloneable(Object source) {
@@ -281,7 +326,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * 使用反射查找无参的构造方法(包含未公开的构造方法)
 	 * 
-	 * @param <T>
+	 * @param       <T>
 	 * @param clazz
 	 * @return
 	 * @throws NotSupportedException 不存在无参构造方法
@@ -303,7 +348,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * 使用空值构造实体
 	 * 
-	 * @param <T>
+	 * @param             <T>
 	 * @param entityClass
 	 * @return
 	 * @throws NotSupportedException
@@ -328,7 +373,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * 根据参数来构造实体
 	 * 
-	 * @param <T>
+	 * @param             <T>
 	 * @param entityClass
 	 * @param params
 	 * @return
@@ -619,7 +664,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * 通过参数获取可以调用的{@link java.lang.reflect.Executable}
 	 * 
-	 * @param <T>
+	 * @param              <T>
 	 * @param sourceStream
 	 * @param strict       true表示严格的验证参数(包含有效长度、类型等)
 	 * @param params
@@ -642,7 +687,7 @@ public abstract class ReflectionUtils {
 	 * 通过参数获取可以调用的{@link java.lang.reflect.Executable}
 	 * 
 	 * @see #matchParams(Stream, boolean, Object...)
-	 * @param <T>
+	 * @param              <T>
 	 * @param sourceStream
 	 * @param strict       true表示严格的验证参数(包含有效长度、类型等)
 	 * @param params
@@ -663,7 +708,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * 获取重载的方法
 	 * 
-	 * @param <T>
+	 * @param             <T>
 	 * @param sourceClass
 	 * @param methodName
 	 * @param strict      {@link #findByParams(Stream, boolean, Object...)}
@@ -719,7 +764,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * 根据参数调用构造方法
 	 * 
-	 * @param <T>
+	 * @param             <T>
 	 * @param sourceClass
 	 * @param strict      {@link #findByParams(Stream, boolean, Object...)}
 	 * @param args
@@ -1262,7 +1307,7 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see ReflectionApi#newInstance(Class)
-	 * @param <T>
+	 * @param         <T>
 	 * @param members
 	 * @param source
 	 * @param deep    对集合的操作
@@ -1400,8 +1445,8 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see #ENTITY_MEMBER
-	 * @param <T>
-	 * @param <E>
+	 * @param         <T>
+	 * @param         <E>
 	 * @param members
 	 * @param left
 	 * @param right
@@ -1459,7 +1504,7 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see #ENTITY_MEMBER
-	 * @param <E>
+	 * @param         <E>
 	 * @param members
 	 * @param entity
 	 * @param deep
