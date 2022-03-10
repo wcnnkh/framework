@@ -2,7 +2,7 @@ package io.basc.framework.security.login;
 
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.data.TemporaryStorageOperations;
+import io.basc.framework.data.TemporaryDataOperations;
 import io.basc.framework.data.memory.MemoryOperations;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -16,19 +16,19 @@ public class DefaultLoginService<T> extends AbstractLoginService<T> {
 
 	public DefaultLoginService() {
 		this(new MemoryOperations());
-		logger.info("Using memory {}", getStorageOperations());
+		logger.info("Using memory {}", getDataOperations());
 	}
 
-	public DefaultLoginService(TemporaryStorageOperations storageOperations) {
-		this(storageOperations, 7 * 24 * 60 * 60);
+	public DefaultLoginService(TemporaryDataOperations dataOperations) {
+		this(dataOperations, 7 * 24 * 60 * 60);
 	}
 
-	public DefaultLoginService(TemporaryStorageOperations storageOperations, int exp) {
-		this(storageOperations, exp, DEFAULT_PREFIX);
+	public DefaultLoginService(TemporaryDataOperations dataOperations, int exp) {
+		this(dataOperations, exp, DEFAULT_PREFIX);
 	}
 
-	public DefaultLoginService(TemporaryStorageOperations storageOperations, int exp, String prefix) {
-		super(storageOperations, exp);
+	public DefaultLoginService(TemporaryDataOperations dataOperations, int exp, String prefix) {
+		super(dataOperations, exp);
 		this.prefix = StringUtils.isEmpty(prefix) ? DEFAULT_PREFIX : prefix;
 	}
 

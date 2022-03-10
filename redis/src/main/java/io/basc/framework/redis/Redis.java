@@ -6,10 +6,10 @@ import java.util.concurrent.TimeUnit;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.DataStorage;
 import io.basc.framework.data.TemporaryCounter;
-import io.basc.framework.data.TemporaryStorageOperations;
+import io.basc.framework.data.TemporaryDataOperations;
 import io.basc.framework.data.geo.Lbs;
-import io.basc.framework.data.template.TemporaryStorageTemplate;
 import io.basc.framework.io.CrossLanguageSerializer;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.SerializerUtils;
@@ -20,7 +20,7 @@ import io.basc.framework.value.AnyValue;
 
 public final class Redis
 		extends DefaultConvertibleRedisClient<RedisClient<byte[], byte[]>, byte[], String, byte[], String, Redis>
-		implements TemporaryStorageOperations, TemporaryStorageTemplate, TemporaryCounter {
+		implements TemporaryDataOperations, DataStorage, TemporaryCounter {
 	private static final String INCR_AND_INIT_SCRIPT = ResourceUtils
 			.getContent(ResourceUtils.getSystemResource("/io/basc/framework/redis/incr.script"), Constants.UTF_8);
 	private static final String DECR_AND_INIT_SCRIPT = ResourceUtils

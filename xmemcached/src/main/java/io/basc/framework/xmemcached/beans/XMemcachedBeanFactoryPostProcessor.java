@@ -1,5 +1,7 @@
 package io.basc.framework.xmemcached.beans;
 
+import java.io.IOException;
+
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactoryPostProcessor;
 import io.basc.framework.beans.BeansException;
@@ -7,15 +9,11 @@ import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.io.SerializerUtils;
-import io.basc.framework.net.InetUtils;
 import io.basc.framework.xmemcached.MyTranscoder;
-
-import java.io.IOException;
-
+import io.basc.framework.xmemcached.XMemcached;
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.MemcachedClientBuilder;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
-import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.transcoders.Transcoder;
 
 @Provider
@@ -85,18 +83,12 @@ public class XMemcachedBeanFactoryPostProcessor implements BeanFactoryPostProces
 		}
 
 		public Object create() throws BeansException {
-			XMemcachedClientBuilder builder = new XMemcachedClientBuilder(
-					InetUtils.parseInetSocketAddressList(getHosts()));
+			XMemcachedClientBuilder builder = XMemcached.builder(getHosts());
 			builderDefault(builder);
 			return builder;
 		}
 
 		private void builderDefault(XMemcachedClientBuilder builder) {
-			// 宕机报警
-			builder.setFailureMode(true);
-			// 使用二进制文件
-			builder.setCommandFactory(new BinaryCommandFactory());
-
 			if (beanFactory.isInstance(Transcoder.class)) {
 				builder.setTranscoder(beanFactory.getInstance(Transcoder.class));
 			} else {

@@ -4,13 +4,11 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
@@ -57,20 +55,20 @@ public final class InetUtils {
 		return MULTIPART_MESSAGE_RESOLVER;
 	}
 
-	public static List<InetSocketAddress> parseInetSocketAddressList(String address) {
-		List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
-		String[] arr = StringUtils.splitToArray(address);
-		for (String a : arr) {
-			String[] vs = a.split(":");
-			String h = vs[0];
-			int port = 11211;
-			if (vs.length == 2) {
-				port = Integer.parseInt(vs[1]);
-			}
-
-			addresses.add(new InetSocketAddress(h, port));
+	public static BalancedInetSocketAddress parseInetSocketAddress(String addressTemplate, int defaultPort) {
+		Assert.requiredArgument(StringUtils.hasText(addressTemplate), "addressTemplate");
+		String[] vs = StringUtils.splitToArray(addressTemplate, ":");
+		String h = vs[0];
+		int port = defaultPort;
+		if (vs.length == 2) {
+			port = Integer.parseInt(vs[1]);
 		}
-		return addresses;
+
+		if (vs.length == 3) {
+			return new BalancedInetSocketAddress(h, port, Integer.parseInt(vs[2]));
+		} else {
+			return new BalancedInetSocketAddress(h, port);
+		}
 	}
 
 	public static void writeHeader(Message inputMessage, OutputMessage outputMessage) throws IOException {
@@ -268,10 +266,10 @@ public final class InetUtils {
 	 * @return
 	 */
 	public static boolean isAvailablePort(int port) {
-		if(port < 0 || port > 65535) {
+		if (port < 0 || port > 65535) {
 			return false;
 		}
-		
+
 		ServerSocket socket = null;
 		try {
 			socket = new ServerSocket(port);

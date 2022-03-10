@@ -16,8 +16,7 @@ import io.basc.framework.util.CollectionUtils;
  * @param <V>
  */
 
-public interface KeyValueCasOperations<K, V>
-		extends KeyValueOperations<K, V>, KeyCasOperations<K>, ValueCasOperations<K, V> {
+public interface KeyValueCasOperations<K, V> extends KeyValueOperations<K, V>, KeyCasOperations<K> {
 	CAS<V> gets(K key);
 
 	default Map<K, CAS<V>> gets(Collection<K> keys) {
@@ -35,4 +34,6 @@ public interface KeyValueCasOperations<K, V>
 		}
 		return map;
 	}
+
+	boolean cas(K key, V value, long cas);
 }

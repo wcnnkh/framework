@@ -6,7 +6,8 @@ import io.basc.framework.codec.support.Base64;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.CAS;
 import io.basc.framework.data.DataException;
-import io.basc.framework.data.CompleteOperations;
+import io.basc.framework.data.DataStorage;
+import io.basc.framework.data.TemporaryDataCasOperations;
 import io.basc.framework.db.DB;
 import io.basc.framework.io.JavaSerializer;
 import io.basc.framework.io.Serializer;
@@ -22,7 +23,7 @@ import io.basc.framework.util.Assert;
  * @author wcnnkh
  *
  */
-public class DbTemporaryStorageCasOperations implements CompleteOperations {
+public class DbTemporaryStorageCasOperations implements TemporaryDataCasOperations, DataStorage {
 	private final DB db;
 	private Serializer serializer = JavaSerializer.INSTANCE;
 	private final String tableName;
@@ -97,6 +98,21 @@ public class DbTemporaryStorageCasOperations implements CompleteOperations {
 		}
 
 		return readValue(temporaryData);
+	}
+
+	@Override
+	public Long ttl(String key) {
+		TemporaryData temporaryData = db.getById(tableName, TemporaryData.class, key);
+		if (temporaryData == null) {
+			return null;
+		}
+
+		long exp = temporaryData.getExp();
+		if (exp <= 0) {
+			return -1L;
+		}
+
+		return exp - (System.currentTimeMillis() - temporaryData.getTouchTime());
 	}
 
 	@Override

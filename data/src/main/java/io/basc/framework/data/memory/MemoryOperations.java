@@ -4,10 +4,10 @@ import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.CAS;
-import io.basc.framework.data.CompleteOperations;
 import io.basc.framework.data.TemporaryCounter;
+import io.basc.framework.data.TemporaryDataCasOperations;
 
-public final class MemoryOperations implements CompleteOperations, TemporaryCounter {
+public final class MemoryOperations implements TemporaryDataCasOperations, TemporaryCounter {
 	private final MemoryDataManager memoryDataManager;
 
 	public MemoryOperations() {

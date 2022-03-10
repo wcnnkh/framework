@@ -1,15 +1,15 @@
 package io.basc.framework.timer.support;
 
 import io.basc.framework.data.CAS;
-import io.basc.framework.data.StorageCasOperations;
+import io.basc.framework.data.DataCasOperations;
 import io.basc.framework.locks.AbstractLock;
 
 public class CASTaskLock extends AbstractLock {
-	private final StorageCasOperations casOperations;
+	private final DataCasOperations casOperations;
 	private final long executionTime;
 	private final String taskId;
 
-	public CASTaskLock(StorageCasOperations casOperations, String taskId, long executionTime) {
+	public CASTaskLock(DataCasOperations casOperations, String taskId, long executionTime) {
 		this.casOperations = casOperations;
 		this.executionTime = executionTime;
 		this.taskId = taskId;
