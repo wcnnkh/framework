@@ -40,22 +40,50 @@ public class SqlExcelExport implements ExcelExport {
 	}
 
 	@Override
-	public void append(Collection<String> contents) throws IOException {
+	public SqlExcelExport append(Collection<String> contents) throws IOException {
 		excelExport.append(contents);
+		return this;
 	}
 
-	public void append(SqlOperations sqlOperations, Sql sql,
+	public ExcelExport append(SqlOperations sqlOperations, Sql sql,
 			Processor<ResultSet, String[], SQLException> sqlExportRowMapping) throws ExcelException, IOException {
-		sqlOperations.query(sql, sqlExportRowMapping).forEach((contents) -> {
-			try {
-				excelExport.append(contents);
-			} catch (IOException e) {
-				throw new ExcelException(e);
-			}
-		});
-		excelExport.flush();
+		try {
+			sqlOperations.query(sql, sqlExportRowMapping).forEach((contents) -> {
+				try {
+					excelExport.append(contents);
+				} catch (IOException e) {
+					throw new ExcelException(e);
+				}
+			});
+			excelExport.flush();
+		} catch (ExcelException | IOException e) {
+			close();
+			throw e;
+		} catch (Throwable e) {
+			close();
+			throw new ExcelException(e);
+		}
+		return this;
 	}
 
+	public SqlExcelExport export(SqlOperations sqlOperations, Collection<? extends Sql> sqls,
+			Processor<ResultSet, String[], SQLException> sqlExportRowMapping) throws ExcelException, IOException {
+		for (Sql sql : sqls) {
+			append(sqlOperations, sql, sqlExportRowMapping);
+		}
+		return this;
+	}
+
+	/**
+	 * 导出并关闭
+	 * 
+	 * @param titles
+	 * @param sqlOperations
+	 * @param sqls
+	 * @param sqlExportRowMapping
+	 * @throws ExcelException
+	 * @throws IOException
+	 */
 	public void export(String[] titles, SqlOperations sqlOperations, Collection<? extends Sql> sqls,
 			Processor<ResultSet, String[], SQLException> sqlExportRowMapping) throws ExcelException, IOException {
 		try {
@@ -68,13 +96,61 @@ public class SqlExcelExport implements ExcelExport {
 		}
 	}
 
+	/**
+	 * 导出并关闭
+	 * 
+	 * @param titles
+	 * @param sqlOperations
+	 * @param sql
+	 * @param sqlExportRowMapping
+	 * @throws ExcelException
+	 * @throws IOException
+	 */
 	public void export(String[] titles, SqlOperations sqlOperations, Sql sql,
 			Processor<ResultSet, String[], SQLException> sqlExportRowMapping) throws ExcelException, IOException {
 		export(titles, sqlOperations, Arrays.asList(sql), sqlExportRowMapping);
 	}
 
+	/**
+	 * 导出并关闭
+	 * 
+	 * @param titles
+	 * @param sqlOperations
+	 * @param sqls
+	 * @throws ExcelException
+	 * @throws IOException
+	 */
 	public void export(String[] titles, SqlOperations sqlOperations, Sql... sqls) throws ExcelException, IOException {
 		export(titles, sqlOperations, Arrays.asList(sqls), new SimpleSqlExportRowMapping(titles.length));
+	}
+
+	public SqlExcelExport export(SqlOperations sqlOperations, Sql sql, Converter<Object, String> toString) throws IOException {
+		Assert.requiredArgument(sqlOperations != null, "sqlOperations");
+		Assert.requiredArgument(sql != null, "sql");
+		Assert.requiredArgument(toString != null, "toString");
+		AtomicBoolean first = new AtomicBoolean(!isEmpty());
+		try {
+			sqlOperations.query(sql, (rs) -> {
+				ResultSetMetaData rsmd = rs.getMetaData();
+				int count = rsmd.getColumnCount();
+				if (count == 0) {
+					return null;
+				}
+
+				if (first.compareAndSet(false, true)) {
+					append(SqlUtils.getColumnNames(rsmd, count));
+				}
+
+				Object[] values = SqlUtils.getRowValues(rs, count);
+				String[] columns = toString.convert(values);
+				append(columns);
+				return columns;
+			});
+		} catch (RuntimeException e) {
+			close();
+			throw e;
+		}
+		return this;
 	}
 
 	@Override
@@ -82,53 +158,26 @@ public class SqlExcelExport implements ExcelExport {
 		return excelExport.isEmpty();
 	}
 
-	public static SqlExcelExport create(ExcelExport excelExport) {
+	public static SqlExcelExport wrap(ExcelExport excelExport) {
 		return new SqlExcelExport(excelExport);
 	}
 
-	public static void export(SqlOperations sqlOperations, Sql sql, ExcelExport export,
-			Converter<Object, String> toString) {
-		Assert.requiredArgument(sqlOperations != null, "sqlOperations");
-		Assert.requiredArgument(sql != null, "sql");
-		Assert.requiredArgument(export != null, "export");
-		Assert.requiredArgument(toString != null, "toString");
-		AtomicBoolean first = new AtomicBoolean(!export.isEmpty());
-		sqlOperations.query(sql, (rs) -> {
-			ResultSetMetaData rsmd = rs.getMetaData();
-			int count = rsmd.getColumnCount();
-			if (count == 0) {
-				return null;
-			}
-
-			if (first.compareAndSet(false, true)) {
-				export.append(SqlUtils.getColumnNames(rsmd, count));
-			}
-
-			Object[] values = SqlUtils.getRowValues(rs, count);
-			String[] columns = toString.convert(values);
-			export.append(columns);
-			return columns;
-		});
+	public static SqlExcelExport create(HttpOutputMessage outputMessage, String fileName)
+			throws ExcelException, IOException {
+		return create(outputMessage, fileName, null);
 	}
 
-	public static void export(SqlOperations sqlOperations, Sql sql, Object target, @Nullable ExcelVersion version,
-			Converter<Object, String> toString) throws IOException {
-		Assert.requiredArgument(target != null, "target");
-		ExcelExport export = MicrosoftUtils.getExcelOperations().createExcelExport(target, version);
-		try {
-			export(sqlOperations, sql, export, toString);
-		} finally {
-			export.close();
-		}
+	public static SqlExcelExport create(HttpOutputMessage outputMessage, String fileName, @Nullable Charset charset)
+			throws ExcelException, IOException {
+		return wrap(MicrosoftUtils.createExcelExport(outputMessage, fileName, charset));
 	}
 
-	public static void export(SqlOperations sqlOperations, Sql sql, HttpOutputMessage outputMessage, String fileName,
-			@Nullable Charset charset, Converter<Object, String> toString) throws IOException {
-		ExcelExport export = MicrosoftUtils.createExcelExport(outputMessage, fileName, charset);
-		try {
-			export(sqlOperations, sql, export, toString);
-		} finally {
-			export.close();
-		}
+	public static SqlExcelExport create(Object target) throws ExcelException, IOException {
+		return create(target, null);
+	}
+
+	public static SqlExcelExport create(Object target, @Nullable ExcelVersion version)
+			throws ExcelException, IOException {
+		return wrap(MicrosoftUtils.getExcelOperations().createExcelExport(target, version));
 	}
 }

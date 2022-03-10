@@ -18,57 +18,83 @@ import io.basc.framework.util.stream.Processor;
 
 public interface ExcelExport extends Flushable, Closeable {
 	boolean isEmpty();
-	
-	void append(Collection<String> contents) throws IOException;
 
-	default void append(String... contents) throws IOException {
-		append(Arrays.asList(contents));
-	}
+	ExcelExport append(Collection<String> contents) throws IOException;
 
-	default <T, E extends Throwable> void appendAll(Collection<? extends T> rows,
-			Processor<T, Collection<?>, E> processor) throws IOException, E {
-		for (T obj : rows) {
-			Collection<?> cols = processor.process(obj);
-			if (cols == null) {
-				continue;
-			}
-
-			List<String> values = cols.stream().map((v) -> v == null ? null : String.valueOf(v))
-					.collect(Collectors.toList());
-			append(values);
+	default ExcelExport append(String... contents) throws ExcelException, IOException {
+		try {
+			return append(Arrays.asList(contents));
+		} catch (RuntimeException | IOException e) {
+			close();
+			throw e;
+		} catch (Throwable e) {
+			close();
+			throw new ExcelException(e);
 		}
-		flush();
 	}
 
-	default <T, E extends Throwable, C, P extends Pageables<C, T>> void appendAll(P pages,
+	default <T, E extends Throwable> ExcelExport appendAll(Collection<? extends T> rows,
+			Processor<T, Collection<?>, E> processor) throws IOException, E {
+		try {
+			for (T obj : rows) {
+				Collection<?> cols = processor.process(obj);
+				if (cols == null) {
+					continue;
+				}
+
+				List<String> values = cols.stream().map((v) -> v == null ? null : String.valueOf(v))
+						.collect(Collectors.toList());
+				append(values);
+			}
+			flush();
+			return this;
+		} catch (RuntimeException | IOException e) {
+			close();
+			throw e;
+		} catch (Throwable e) {
+			close();
+			throw e;
+		}
+	}
+
+	default <T, E extends Throwable, C, P extends Pageables<C, T>> ExcelExport appendAll(P pages,
 			Processor<T, Collection<?>, E> rowsProcessor) throws IOException, E {
-		appendAll(pages, rowsProcessor, null);
+		return appendAll(pages, rowsProcessor, null);
 	}
 
 	/**
-	 * @param <T>
-	 * @param <E>
+	 * @param               <T>
+	 * @param               <E>
 	 * @param pages
 	 * @param rowsProcessor
 	 * @param afterProcess  写入成功后执行
 	 * @throws IOException
 	 * @throws E
 	 */
-	default <T, E extends Throwable, C, P extends Pageables<C, T>> void appendAll(P pages,
+	default <T, E extends Throwable, C, P extends Pageables<C, T>> ExcelExport appendAll(P pages,
 			Processor<T, Collection<?>, E> rowsProcessor, @Nullable ConsumerProcessor<Pageable<C, T>, E> afterProcess)
 			throws IOException, E {
-		Stream<? extends Pageable<C, T>> stream = pages.pages();
 		try {
-			Iterator<? extends Pageable<C, T>> iterator = stream.iterator();
-			while (iterator.hasNext()) {
-				Pageable<C, T> page = iterator.next();
-				appendAll(page.getList(), rowsProcessor);
-				if (afterProcess != null) {
-					afterProcess.process(page);
+			Stream<? extends Pageable<C, T>> stream = pages.pages();
+			try {
+				Iterator<? extends Pageable<C, T>> iterator = stream.iterator();
+				while (iterator.hasNext()) {
+					Pageable<C, T> page = iterator.next();
+					appendAll(page.getList(), rowsProcessor);
+					if (afterProcess != null) {
+						afterProcess.process(page);
+					}
 				}
+			} finally {
+				stream.close();
 			}
-		} finally {
-			stream.close();
+			return this;
+		} catch (RuntimeException | IOException e) {
+			close();
+			throw e;
+		} catch (Throwable e) {
+			close();
+			throw e;
 		}
 	}
 }
