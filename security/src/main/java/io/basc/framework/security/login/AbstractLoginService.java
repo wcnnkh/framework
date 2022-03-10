@@ -2,23 +2,23 @@ package io.basc.framework.security.login;
 
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.data.TemporaryStorageOperations;
+import io.basc.framework.data.TemporaryDataOperations;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 
 public abstract class AbstractLoginService<T> implements LoginService<T> {
-	private final TemporaryStorageOperations storageOperations;
+	private final TemporaryDataOperations dataOperations;
 	private final int exp;
 
-	public AbstractLoginService(TemporaryStorageOperations storageOperations, int exp) {
-		this.storageOperations = storageOperations;
+	public AbstractLoginService(TemporaryDataOperations dataOperations, int exp) {
+		this.dataOperations = dataOperations;
 		this.exp = exp;
 	}
 
-	public TemporaryStorageOperations getStorageOperations() {
-		return storageOperations;
+	public TemporaryDataOperations getDataOperations() {
+		return dataOperations;
 	}
 
 	public int getExp() {
@@ -39,11 +39,11 @@ public abstract class AbstractLoginService<T> implements LoginService<T> {
 			return null;
 		}
 
-		T uid = (T) storageOperations.getAndTouch(token, exp, TimeUnit.SECONDS);
+		T uid = (T) dataOperations.getAndTouch(token, exp, TimeUnit.SECONDS);
 		if (uid == null) {
 			return null;
 		}
-		storageOperations.touch(formatUid(uid), exp, TimeUnit.SECONDS);
+		dataOperations.touch(formatUid(uid), exp, TimeUnit.SECONDS);
 		return new UserToken<T>(token, uid);
 	}
 
@@ -52,12 +52,12 @@ public abstract class AbstractLoginService<T> implements LoginService<T> {
 			return null;
 		}
 
-		String token = storageOperations.getAndTouch(String.class, formatUid(uid), exp, TimeUnit.SECONDS);
+		String token = dataOperations.getAndTouch(String.class, formatUid(uid), exp, TimeUnit.SECONDS);
 		if (token == null) {
 			return null;
 		}
 
-		storageOperations.touch(token, exp, TimeUnit.SECONDS);
+		dataOperations.touch(token, exp, TimeUnit.SECONDS);
 		return new UserToken<T>(token, uid);
 	}
 
@@ -67,11 +67,11 @@ public abstract class AbstractLoginService<T> implements LoginService<T> {
 			return false;
 		}
 
-		T uid = (T) storageOperations.get(token);
+		T uid = (T) dataOperations.get(token);
 		if (uid != null) {
-			storageOperations.delete(formatUid(uid));
+			dataOperations.delete(formatUid(uid));
 		}
-		return storageOperations.delete(token);
+		return dataOperations.delete(token);
 	}
 
 	public boolean cancelLoginByUid(T uid) {
@@ -79,24 +79,24 @@ public abstract class AbstractLoginService<T> implements LoginService<T> {
 			return false;
 		}
 
-		String token = storageOperations.get(String.class, formatUid(uid));
+		String token = dataOperations.get(String.class, formatUid(uid));
 		if (token != null) {
-			storageOperations.delete(token);
+			dataOperations.delete(token);
 		}
-		return storageOperations.delete(formatUid(uid));
+		return dataOperations.delete(formatUid(uid));
 	}
 
 	public UserToken<T> login(T uid) {
 		Assert.notNull(uid);
 
-		String oldToken = storageOperations.get(String.class, formatUid(uid));
+		String oldToken = dataOperations.get(String.class, formatUid(uid));
 		if (oldToken != null) {
-			storageOperations.delete(oldToken);
+			dataOperations.delete(oldToken);
 		}
 
 		String token = generatorToken(uid);
-		storageOperations.set(token, uid, exp, TimeUnit.SECONDS);
-		storageOperations.set(formatUid(uid), token, exp, TimeUnit.SECONDS);
+		dataOperations.set(token, uid, exp, TimeUnit.SECONDS);
+		dataOperations.set(formatUid(uid), token, exp, TimeUnit.SECONDS);
 		return new UserToken<T>(token, uid);
 	}
 

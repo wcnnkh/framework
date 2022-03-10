@@ -8,7 +8,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.Order;
-import io.basc.framework.data.TemporaryStorageOperations;
+import io.basc.framework.data.TemporaryDataOperations;
 import io.basc.framework.data.memory.MemoryOperations;
 import io.basc.framework.env.Sys;
 import io.basc.framework.logger.Logger;
@@ -23,8 +23,8 @@ public class DefaultUserSessionFactory implements UserSessionFactory {
 			StringUtils.replace(UserSessionFactory.class.getPackage().getName(), '.', ':') + ":user:");
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultUserSessionFactory.class);
-	private final TemporaryStorageOperations storageOperations;
-	private final SessionFactory sessionFactory; 
+	private final TemporaryDataOperations dataOperations;
+	private final SessionFactory sessionFactory;
 	private String prefix = USER_SESSION_PREFIX;
 
 	public DefaultUserSessionFactory() {
@@ -32,18 +32,18 @@ public class DefaultUserSessionFactory implements UserSessionFactory {
 		logger.info("Using memory {}", getSessionFactory());
 	}
 
-	public DefaultUserSessionFactory(TemporaryStorageOperations storageOperations) {
-		this(86400 * 7, storageOperations);
+	public DefaultUserSessionFactory(TemporaryDataOperations dataOperations) {
+		this(86400 * 7, dataOperations);
 	}
 
 	@Order
-	public DefaultUserSessionFactory(int maxInactiveInterval, TemporaryStorageOperations storageOperations) {
-		this(storageOperations, new DefaultSessionFactory(maxInactiveInterval, storageOperations));
+	public DefaultUserSessionFactory(int maxInactiveInterval, TemporaryDataOperations dataOperations) {
+		this(dataOperations, new DefaultSessionFactory(maxInactiveInterval, dataOperations));
 	}
 
-	public DefaultUserSessionFactory(TemporaryStorageOperations storageOperations, SessionFactory sessionFactory) {
+	public DefaultUserSessionFactory(TemporaryDataOperations dataOperations, SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
-		this.storageOperations = storageOperations;
+		this.dataOperations = dataOperations;
 	}
 
 	public String getPrefix() {
@@ -55,8 +55,8 @@ public class DefaultUserSessionFactory implements UserSessionFactory {
 		this.prefix = prefix;
 	}
 
-	public TemporaryStorageOperations getStorageOperations() {
-		return storageOperations;
+	public final TemporaryDataOperations getDataOperations() {
+		return dataOperations;
 	}
 
 	public SessionFactory getSessionFactory() {
@@ -87,19 +87,19 @@ public class DefaultUserSessionFactory implements UserSessionFactory {
 		String key = getUidToSessionIdsKey(uid);
 		TypeDescriptor typeDescriptor = TypeDescriptor
 				.valueOf(ResolvableType.forClassWithGenerics(SessionIds.class, uid.getClass()));
-		SessionIds<T> ids = storageOperations.getAndTouch(typeDescriptor, key, sessionFactory.getMaxInactiveInterval(),
+		SessionIds<T> ids = dataOperations.getAndTouch(typeDescriptor, key, sessionFactory.getMaxInactiveInterval(),
 				TimeUnit.SECONDS);
 		if (ids == null) {
 			if (create) {
 				while (true) {
-					ids = storageOperations.getAndTouch(typeDescriptor, key, sessionFactory.getMaxInactiveInterval(),
+					ids = dataOperations.getAndTouch(typeDescriptor, key, sessionFactory.getMaxInactiveInterval(),
 							TimeUnit.SECONDS);
 					if (ids != null) {
 						break;
 					}
 
 					ids = new SessionIds<T>(sessionFactory.getMaxInactiveInterval());
-					if (storageOperations.setIfAbsent(key, ids, sessionFactory.getMaxInactiveInterval(),
+					if (dataOperations.setIfAbsent(key, ids, sessionFactory.getMaxInactiveInterval(),
 							TimeUnit.SECONDS)) {
 						break;
 					}
@@ -111,23 +111,23 @@ public class DefaultUserSessionFactory implements UserSessionFactory {
 
 	public <T> void updateSessionIds(T uid, SessionIds<T> sessionIds) {
 		String key = getUidToSessionIdsKey(uid);
-		storageOperations.set(key, sessionIds, sessionIds.getMaxInactiveInterval(), TimeUnit.SECONDS);
+		dataOperations.set(key, sessionIds, sessionIds.getMaxInactiveInterval(), TimeUnit.SECONDS);
 	}
 
 	protected <T> void createUserSession(T uid, String sessionId) {
 		String key = getUidToSessionIdsKey(uid);
 		TypeDescriptor typeDescriptor = TypeDescriptor
 				.valueOf(ResolvableType.forClassWithGenerics(SessionIds.class, uid.getClass()));
-		SessionIds<T> ids = storageOperations.get(typeDescriptor, key);
+		SessionIds<T> ids = dataOperations.get(typeDescriptor, key);
 		if (ids == null) {
 			ids = new SessionIds<T>(sessionFactory.getMaxInactiveInterval());
 			ids.add(sessionId);
-			if (!storageOperations.setIfAbsent(key, ids, sessionFactory.getMaxInactiveInterval(), TimeUnit.SECONDS)) {
+			if (!dataOperations.setIfAbsent(key, ids, sessionFactory.getMaxInactiveInterval(), TimeUnit.SECONDS)) {
 				createUserSession(uid, sessionId);
 			}
 		} else {
 			ids.add(sessionId);
-			storageOperations.set(key, ids);
+			dataOperations.set(key, ids);
 		}
 	}
 

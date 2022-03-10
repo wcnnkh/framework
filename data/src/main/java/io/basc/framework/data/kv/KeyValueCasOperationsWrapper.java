@@ -7,11 +7,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import io.basc.framework.codec.Codec;
+import io.basc.framework.codec.Encoder;
 import io.basc.framework.data.CAS;
 import io.basc.framework.util.CollectionUtils;
 
-public interface KeyValueCasOperationsWrapper<K, V> extends KeyValueCasOperations<K, V>,
-		KeyValueOperationsWrapper<K, V>, KeyCasOperationsWrapper<K>, ValueCasOperationsWrapper<K, V> {
+public interface KeyValueCasOperationsWrapper<K, V>
+		extends KeyValueCasOperations<K, V>, KeyValueOperationsWrapper<K, V>, KeyCasOperationsWrapper<K> {
 	KeyValueCasOperations<K, V> getSourceOperations();
 
 	@Override
@@ -47,5 +48,13 @@ public interface KeyValueCasOperationsWrapper<K, V> extends KeyValueCasOperation
 					valueFomatter == null ? value : new CAS<>(value.getCas(), valueFomatter.decode(value.getValue())));
 		}
 		return targetMap;
+	}
+
+	@Override
+	default boolean cas(K key, V value, long cas) {
+		Encoder<K, K> keyFomatter = getKeyFomatter();
+		Encoder<V, V> valueFomatter = getValueFomatter();
+		return cas(keyFomatter == null ? key : keyFomatter.encode(key),
+				valueFomatter == null ? value : valueFomatter.encode(value), cas);
 	}
 }

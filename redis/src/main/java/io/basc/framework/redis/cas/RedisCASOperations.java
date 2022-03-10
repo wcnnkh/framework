@@ -6,14 +6,15 @@ import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.CAS;
-import io.basc.framework.data.TemporaryStorageCasOperations;
+import io.basc.framework.data.DataStorage;
+import io.basc.framework.data.TemporaryDataCasOperations;
 import io.basc.framework.io.SerializerUtils;
 import io.basc.framework.redis.Redis;
 import io.basc.framework.redis.RedisClient;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.value.AnyValue;
 
-public class RedisCASOperations implements TemporaryStorageCasOperations {
+public class RedisCASOperations implements TemporaryDataCasOperations, DataStorage {
 	private static final String CAS_IS_NULL = "if (" + isNullScript("cas") + ") then cas = 0 end";
 
 	private static final String CAS_KEY_PREFIX = "cas_";
@@ -112,6 +113,12 @@ public class RedisCASOperations implements TemporaryStorageCasOperations {
 	}
 
 	@Override
+	public boolean touch(String key) throws UnsupportedOperationException {
+		Long value = client.touch(key, CAS_KEY_PREFIX + key);
+		return value != null && value > 0;
+	}
+
+	@Override
 	public boolean expire(String key, long exp, TimeUnit expUnit) {
 		Long value = client.expire(Arrays.asList(key, CAS_KEY_PREFIX + key), exp, expUnit);
 		return value != null && value >= 1;
@@ -173,5 +180,10 @@ public class RedisCASOperations implements TemporaryStorageCasOperations {
 		Object resposne = client.eval(CAS_SCRIPT, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + ""),
 				Arrays.asList(value));
 		return new AnyValue(resposne).getAsBooleanValue();
+	}
+
+	@Override
+	public Long getRemainingSurvivalTime(String key) {
+		return client.pttl(key);
 	}
 }

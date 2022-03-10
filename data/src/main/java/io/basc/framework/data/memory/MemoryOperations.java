@@ -4,10 +4,11 @@ import java.util.concurrent.TimeUnit;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.CAS;
-import io.basc.framework.data.CompleteOperations;
+import io.basc.framework.data.DataStorage;
 import io.basc.framework.data.TemporaryCounter;
+import io.basc.framework.data.TemporaryDataCasOperations;
 
-public final class MemoryOperations implements CompleteOperations, TemporaryCounter {
+public final class MemoryOperations implements TemporaryDataCasOperations, DataStorage, TemporaryCounter {
 	private final MemoryDataManager memoryDataManager;
 
 	public MemoryOperations() {
@@ -125,6 +126,16 @@ public final class MemoryOperations implements CompleteOperations, TemporaryCoun
 
 		memoryData.touch();
 		return true;
+	}
+
+	@Override
+	public Long getRemainingSurvivalTime(String key) {
+		MemoryData memoryData = memoryDataManager.getMemoryCache(key);
+		if (memoryData == null) {
+			return null;
+		}
+
+		return memoryData.getRemainingSurvivalTime();
 	}
 
 	@Override

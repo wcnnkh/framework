@@ -1,8 +1,13 @@
 package io.basc.framework.xmemcached;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
@@ -12,16 +17,29 @@ import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.CAS;
 import io.basc.framework.memcached.Memcached;
+import io.basc.framework.net.BalancedInetSocketAddress;
+import io.basc.framework.net.InetUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
 import net.rubyeye.xmemcached.GetsResponse;
 import net.rubyeye.xmemcached.MemcachedClient;
+import net.rubyeye.xmemcached.XMemcachedClientBuilder;
+import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.exception.MemcachedException;
 
 @Provider
 public final class XMemcached implements Memcached {
 	private final MemcachedClient memcachedClient;
-	private volatile boolean isSupportTouch = true;// 是否支持touch协议
+
+	public XMemcached(String addressTemplate) throws io.basc.framework.memcached.MemcachedException {
+		XMemcachedClientBuilder builder = builder(addressTemplate);
+		try {
+			this.memcachedClient = builder.build();
+		} catch (IOException e) {
+			throw new io.basc.framework.memcached.MemcachedException(addressTemplate, e);
+		}
+	}
 
 	public XMemcached(MemcachedClient memcachedClient) {
 		this.memcachedClient = memcachedClient;
@@ -60,7 +78,7 @@ public final class XMemcached implements Memcached {
 
 	private int getExp(long exp, TimeUnit expUnit) {
 		long second = expUnit.toSeconds(exp);
-		Assert.requiredArgument(second >= 0 && second > Integer.MAX_VALUE,
+		Assert.requiredArgument(second >= 0 && second <= Integer.MAX_VALUE,
 				"exp should be less than or equal to " + Integer.MAX_VALUE);
 		if (exp > 0 && second == 0) {
 			// memcached过期时间的最小单位是秒
@@ -122,60 +140,21 @@ public final class XMemcached implements Memcached {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private <T> T privateGetAndTouch(String key, int newExp) {
-		Object v;
-		try {
-			v = memcachedClient.get(key);
-		} catch (TimeoutException | InterruptedException | MemcachedException e) {
-			throw new io.basc.framework.memcached.MemcachedException(key, e);
-		}
-
-		if (v == null) {
-			return null;
-		}
-
-		if (v != null) {
-			try {
-				memcachedClient.set(key, newExp, v);
-			} catch (TimeoutException | InterruptedException | MemcachedException e) {
-				throw new io.basc.framework.memcached.MemcachedException(key, e);
-			}
-		}
-		return (T) v;
-	}
-
 	public Object getAndTouch(String key, long newExp, TimeUnit expUnit) {
-		int exp = getExp(newExp, expUnit);
-		if (isSupportTouch) {
-			try {
-				return memcachedClient.getAndTouch(key, exp);
-			} catch (net.rubyeye.xmemcached.exception.MemcachedException e) {// 不支持touch协议
-				isSupportTouch = false;
-				return privateGetAndTouch(key, exp);
-			} catch (TimeoutException | InterruptedException e) {
-				throw new io.basc.framework.memcached.MemcachedException(key, e);
-			}
-		} else {
-			return privateGetAndTouch(key, exp);
+		try {
+			return memcachedClient.getAndTouch(key, getExp(newExp, expUnit));
+		} catch (TimeoutException | InterruptedException | net.rubyeye.xmemcached.exception.MemcachedException e) {
+			throw new io.basc.framework.memcached.MemcachedException(key, e);
 		}
 	}
 
 	@Override
 	public boolean touch(String key, long exp, TimeUnit expUnit) {
-		if (isSupportTouch) {
-			try {
-				return memcachedClient.touch(key, getExp(exp, expUnit));
-			} catch (net.rubyeye.xmemcached.exception.MemcachedException e) {// 不支持touch协议
-				isSupportTouch = false;
-				getAndTouch(key, exp, expUnit);
-			} catch (TimeoutException | InterruptedException e) {
-				throw new io.basc.framework.memcached.MemcachedException(key, e);
-			}
-		} else {
-			getAndTouch(key, exp, expUnit);
+		try {
+			return memcachedClient.touch(key, getExp(exp, expUnit));
+		} catch (TimeoutException | InterruptedException | net.rubyeye.xmemcached.exception.MemcachedException e) {
+			throw new io.basc.framework.memcached.MemcachedException(key, e);
 		}
-		return true;
 	}
 
 	@Override
@@ -300,5 +279,41 @@ public final class XMemcached implements Memcached {
 	@Override
 	public boolean cas(String key, Object value, TypeDescriptor valueType, long cas) {
 		return cas(key, value, valueType, cas, 0, TimeUnit.SECONDS);
+	}
+
+	public static XMemcachedClientBuilder builder(String addressTemplate) {
+		if (StringUtils.isEmpty(addressTemplate)) {
+			return new XMemcachedClientBuilder();
+		}
+
+		Map<InetSocketAddress, InetSocketAddress> addressMap = new LinkedHashMap<>();
+		List<Integer> weights = new ArrayList<Integer>();
+		StringUtils.split(addressTemplate).forEach((content) -> {
+			String[] array = StringUtils.splitToArray(content);
+			if (array.length == 0) {
+				return;
+			}
+
+			BalancedInetSocketAddress address1 = InetUtils.parseInetSocketAddress(array[0], 11211);
+			BalancedInetSocketAddress address2 = null;
+			if (array.length > 1) {
+				address2 = InetUtils.parseInetSocketAddress(array[1], 11211);
+			}
+
+			addressMap.put(address1, address2);
+			weights.add(address1.getWeight());
+		});
+		XMemcachedClientBuilder builder;
+		if (CollectionUtils.isEmpty(addressMap)) {
+			builder = new XMemcachedClientBuilder();
+		} else {
+			builder = new XMemcachedClientBuilder(addressMap, weights.stream().mapToInt((e) -> e).toArray());
+		}
+
+		// 宕机报警
+		builder.setFailureMode(true);
+		// 使用二进制文件
+		builder.setCommandFactory(new BinaryCommandFactory());
+		return builder;
 	}
 }

@@ -4,15 +4,15 @@ import java.util.concurrent.locks.Lock;
 
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.data.StorageCasOperations;
+import io.basc.framework.data.DataCasOperations;
 import io.basc.framework.timer.TaskConfig;
 import io.basc.framework.timer.TaskLockFactory;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class CASTaskLockFactory implements TaskLockFactory {
-	private StorageCasOperations casOperations;
+	private DataCasOperations casOperations;
 
-	public CASTaskLockFactory(StorageCasOperations casOperations) {
+	public CASTaskLockFactory(DataCasOperations casOperations) {
 		this.casOperations = casOperations;
 	}
 

@@ -7,7 +7,7 @@ import io.basc.framework.io.SerializerUtils;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
-public class AutoRefreshDirectoryStorage extends DirectoryStorage {
+public class AutoRefreshDirectoryStorage extends DiskStorage {
 	private final Converter<String, ?> converter;
 
 	protected AutoRefreshDirectoryStorage(long period, TimeUnit periodUnit, Converter<String, ?> converter) {

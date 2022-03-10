@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import io.basc.framework.codec.Codec;
+import io.basc.framework.codec.Encoder;
 import io.basc.framework.util.CollectionUtils;
 
-public interface KeyValueOperationsWrapper<K, V>
-		extends KeyValueOperations<K, V>, KeyOperationsWrapper<K>, ValueOperationsWrapper<K, V> {
+public interface KeyValueOperationsWrapper<K, V> extends KeyValueOperations<K, V>, KeyOperationsWrapper<K> {
 
 	KeyValueOperations<K, V> getSourceOperations();
 
@@ -19,7 +19,6 @@ public interface KeyValueOperationsWrapper<K, V>
 		return null;
 	}
 
-	@Override
 	default Codec<V, V> getValueFomatter() {
 		return null;
 	}
@@ -51,5 +50,29 @@ public interface KeyValueOperationsWrapper<K, V>
 					valueFomatter == null ? entry.getValue() : valueFomatter.decode(entry.getValue()));
 		}
 		return targetMap;
+	}
+
+	@Override
+	default void set(K key, V value) {
+		Encoder<K, K> keyFomatter = getKeyFomatter();
+		Encoder<V, V> valueFomatter = getValueFomatter();
+		getSourceOperations().set(keyFomatter == null ? key : keyFomatter.encode(key),
+				valueFomatter == null ? value : valueFomatter.encode(value));
+	}
+
+	@Override
+	default boolean setIfAbsent(K key, V value) {
+		Encoder<K, K> keyFomatter = getKeyFomatter();
+		Encoder<V, V> valueFomatter = getValueFomatter();
+		return getSourceOperations().setIfAbsent(keyFomatter == null ? key : keyFomatter.encode(key),
+				valueFomatter == null ? value : valueFomatter.encode(value));
+	}
+
+	@Override
+	default boolean setIfPresent(K key, V value) {
+		Encoder<K, K> keyFomatter = getKeyFomatter();
+		Encoder<V, V> valueFomatter = getValueFomatter();
+		return getSourceOperations().setIfPresent(keyFomatter == null ? key : keyFomatter.encode(key),
+				valueFomatter == null ? value : valueFomatter.encode(value));
 	}
 }
