@@ -34,6 +34,11 @@ public final class DefaultExcelExport extends WritableExcelWrapper implements Ex
 		this.rowIndex = beginRowIndex;
 	}
 
+	@Override
+	public boolean isEmpty() {
+		return rowIndex == 0 && sheetIndex == 0;
+	}
+
 	/**
 	 * 调用append时使用的sheetIndex
 	 * 

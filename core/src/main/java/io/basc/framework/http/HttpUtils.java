@@ -54,6 +54,10 @@ public final class HttpUtils {
 	 * @return
 	 */
 	public static boolean isSameOrigin(HttpRequest request) {
+		if(request == null) {
+			return false;
+		}
+		
 		HttpHeaders headers = request.getHeaders();
 		String origin = headers.getOrigin();
 		if (origin == null) {
@@ -127,12 +131,23 @@ public final class HttpUtils {
 	 */
 	public static void writeFileMessageHeaders(HttpOutputMessage outputMessage, String fileName,
 			@Nullable Charset charset) {
+		Assert.requiredArgument(outputMessage != null, "outputMessage");
+		Assert.requiredArgument(fileName != null, "fileName");
 		MimeType mimeType = FileMimeTypeUitls.getMimeType(fileName);
 		if (mimeType != null) {
 			outputMessage.setContentType(mimeType);
 		}
-		ContentDisposition contentDisposition = ContentDisposition.builder("attachment").filename(fileName, charset)
-				.build();
+
+		Charset charsetToUse = charset;
+		if (charsetToUse == null) {
+			String cName = outputMessage.getCharacterEncoding();
+			if (StringUtils.isNotEmpty(cName)) {
+				charsetToUse = Charset.forName(cName);
+			}
+		}
+
+		ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
+				.filename(fileName, charsetToUse).build();
 		outputMessage.getHeaders().setContentDisposition(contentDisposition);
 	}
 }

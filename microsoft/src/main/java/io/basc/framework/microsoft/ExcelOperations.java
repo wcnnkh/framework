@@ -7,6 +7,7 @@ import java.io.OutputStream;
 
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
 
 public interface ExcelOperations extends ExcelReader {
 	Excel create(InputStream inputStream) throws IOException, ExcelException;
@@ -20,6 +21,7 @@ public interface ExcelOperations extends ExcelReader {
 	WritableExcel createWritableExcel(File file) throws IOException, ExcelException;
 
 	default ExcelExport createExcelExport(OutputStream outputStream) throws IOException, ExcelException {
+		Assert.requiredArgument(outputStream != null, "outputStream");
 		return createExcelExport(outputStream, ExcelVersion.XLS);
 	}
 
@@ -29,7 +31,7 @@ public interface ExcelOperations extends ExcelReader {
 	ExcelExport createExcelExport(File file) throws IOException, ExcelException;
 
 	/**
-	 * @param target file or OutputStream
+	 * @param target       file or OutputStream
 	 * @param excelVersion
 	 * @return
 	 * @throws IOException
@@ -37,6 +39,7 @@ public interface ExcelOperations extends ExcelReader {
 	 */
 	default ExcelExport createExcelExport(Object target, @Nullable ExcelVersion excelVersion)
 			throws IOException, ExcelException {
+		Assert.requiredArgument(target != null, "target");
 		ExcelExport export;
 		if (target instanceof OutputStream) {
 			export = createExcelExport((OutputStream) target, excelVersion);

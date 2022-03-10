@@ -17,6 +17,8 @@ import io.basc.framework.util.stream.ConsumerProcessor;
 import io.basc.framework.util.stream.Processor;
 
 public interface ExcelExport extends Flushable, Closeable {
+	boolean isEmpty();
+	
 	void append(Collection<String> contents) throws IOException;
 
 	default void append(String... contents) throws IOException {

@@ -2,14 +2,18 @@ package io.basc.framework.microsoft;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
 import io.basc.framework.env.Sys;
+import io.basc.framework.http.HttpOutputMessage;
+import io.basc.framework.http.HttpUtils;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
+import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
@@ -100,7 +104,7 @@ public final class MicrosoftUtils {
 
 	/**
 	 * @see ExcelReader#read(Object)
-	 * @param <T>
+	 * @param        <T>
 	 * @param type
 	 * @param source
 	 * @return
@@ -120,7 +124,7 @@ public final class MicrosoftUtils {
 
 	/**
 	 * @see ExcelOperations#createExcelExport(Object, ExcelVersion)
-	 * @param <T>
+	 * @param              <T>
 	 * @param source
 	 * @param target
 	 * @param excelVersion
@@ -140,7 +144,7 @@ public final class MicrosoftUtils {
 
 	/**
 	 * @see ExcelOperations#createExcelExport(Object, ExcelVersion)
-	 * @param <T>
+	 * @param              <T>
 	 * @param type
 	 * @param source
 	 * @param target
@@ -156,6 +160,20 @@ public final class MicrosoftUtils {
 		} finally {
 			export.close();
 		}
+	}
 
+	public static ExcelExport createExcelExport(HttpOutputMessage outputMessage, String fileName)
+			throws IOException, ExcelException {
+		return createExcelExport(outputMessage, fileName, Constants.UTF_8);
+	}
+
+	public static ExcelExport createExcelExport(HttpOutputMessage outputMessage, String fileName,
+			@Nullable Charset charset) throws IOException, ExcelException {
+		HttpUtils.writeFileMessageHeaders(outputMessage, fileName, charset);
+		ExcelVersion excelVersion = ExcelVersion.forFileName(fileName);
+		if (excelVersion == null) {
+			excelVersion = ExcelVersion.XLS;
+		}
+		return MicrosoftUtils.getExcelOperations().createExcelExport(outputMessage.getOutputStream(), excelVersion);
 	}
 }
