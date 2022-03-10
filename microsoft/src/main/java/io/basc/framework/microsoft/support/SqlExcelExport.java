@@ -1,4 +1,4 @@
-package io.basc.framework.sql;
+package io.basc.framework.microsoft.support;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -8,6 +8,8 @@ import java.util.Collection;
 
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.ExcelExport;
+import io.basc.framework.sql.Sql;
+import io.basc.framework.sql.SqlOperations;
 import io.basc.framework.util.stream.Processor;
 
 public class SqlExcelExport implements ExcelExport {

@@ -1,11 +1,11 @@
-package io.basc.framework.mvc;
-
-import io.basc.framework.microsoft.ExcelExport;
-import io.basc.framework.mvc.view.View;
-import io.basc.framework.web.MicrosoftWebUtils;
+package io.basc.framework.microsoft.support;
 
 import java.io.IOException;
 import java.util.List;
+
+import io.basc.framework.microsoft.ExcelExport;
+import io.basc.framework.mvc.HttpChannel;
+import io.basc.framework.mvc.view.View;
 
 public class SimpleExportExcelView implements View {
 	private String fileName;

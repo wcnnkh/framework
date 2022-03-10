@@ -103,6 +103,14 @@ public final class SqlUtils {
 		}
 		return values;
 	}
+	
+	public static String[] getColumnNames(ResultSetMetaData rsmd, int size) throws SQLException {
+		String[] names = new String[size];
+		for(int i=1; i<=size; i++) {
+			names[i -1] = SqlUtils.lookupColumnName(rsmd, i);
+		}
+		return names;
+	}
 
 	public static String toLikeValue(String value) {
 		if (StringUtils.isEmpty(value)) {

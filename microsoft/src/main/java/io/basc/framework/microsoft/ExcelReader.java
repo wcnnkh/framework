@@ -5,9 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
-import javax.ws.rs.NotSupportedException;
-
 import io.basc.framework.io.Resource;
+import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.util.Assert;
 
 public interface ExcelReader {
