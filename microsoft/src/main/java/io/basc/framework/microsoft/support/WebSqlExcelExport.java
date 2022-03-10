@@ -1,11 +1,10 @@
-package io.basc.framework.web;
+package io.basc.framework.microsoft.support;
+
+import java.io.IOException;
 
 import io.basc.framework.http.HttpOutputMessage;
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.ExcelExport;
-import io.basc.framework.sql.SqlExcelExport;
-
-import java.io.IOException;
 
 public class WebSqlExcelExport extends SqlExcelExport {
 

@@ -1,4 +1,8 @@
-package io.basc.framework.web;
+package io.basc.framework.microsoft.support;
+
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.List;
 
 import io.basc.framework.http.HttpOutputMessage;
 import io.basc.framework.http.HttpUtils;
@@ -9,10 +13,6 @@ import io.basc.framework.microsoft.ExcelExport;
 import io.basc.framework.microsoft.ExcelVersion;
 import io.basc.framework.microsoft.MicrosoftUtils;
 import io.basc.framework.util.ArrayUtils;
-
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.List;
 
 public class MicrosoftWebUtils {
 	public static void exportExcel(HttpOutputMessage outputMessage,

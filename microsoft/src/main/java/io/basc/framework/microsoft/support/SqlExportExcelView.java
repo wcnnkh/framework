@@ -1,17 +1,15 @@
-package io.basc.framework.mvc;
-
-import io.basc.framework.microsoft.ExcelExport;
-import io.basc.framework.mvc.view.View;
-import io.basc.framework.sql.SimpleSqlExportRowMapping;
-import io.basc.framework.sql.Sql;
-import io.basc.framework.sql.SqlExcelExport;
-import io.basc.framework.sql.SqlOperations;
-import io.basc.framework.util.stream.Processor;
-import io.basc.framework.web.MicrosoftWebUtils;
+package io.basc.framework.microsoft.support;
 
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import io.basc.framework.microsoft.ExcelExport;
+import io.basc.framework.mvc.HttpChannel;
+import io.basc.framework.mvc.view.View;
+import io.basc.framework.sql.Sql;
+import io.basc.framework.sql.SqlOperations;
+import io.basc.framework.util.stream.Processor;
 
 public class SqlExportExcelView implements View {
 	private Sql sql;
