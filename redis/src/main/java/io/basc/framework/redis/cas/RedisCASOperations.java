@@ -183,7 +183,7 @@ public class RedisCASOperations implements TemporaryDataCasOperations, DataStora
 	}
 
 	@Override
-	public Long ttl(String key) {
-		return client.ttl(key);
+	public Long getRemainingSurvivalTime(String key) {
+		return client.pttl(key);
 	}
 }

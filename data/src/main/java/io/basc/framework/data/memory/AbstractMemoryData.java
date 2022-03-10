@@ -26,6 +26,11 @@ public abstract class AbstractMemoryData implements MemoryData {
 		return exp <= 0 ? false : (System.currentTimeMillis() - lastTouch) > exp;
 	}
 
+	@Override
+	public long getRemainingSurvivalTime() {
+		return exp <= 0 ? -1 : (exp - (System.currentTimeMillis() - lastTouch));
+	}
+
 	public boolean setIfAbsent(Object value) {
 		if (cas.get() == 0) {// 第一次set数据
 			set(value);
@@ -39,7 +44,7 @@ public abstract class AbstractMemoryData implements MemoryData {
 		set(value);
 		return true;
 	}
-	
+
 	@Override
 	public boolean setIfPresent(Object value) {
 		if (cas.get() == 0) {// 第一次set数据

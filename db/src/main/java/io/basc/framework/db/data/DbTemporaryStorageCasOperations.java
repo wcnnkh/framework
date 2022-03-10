@@ -101,7 +101,7 @@ public class DbTemporaryStorageCasOperations implements TemporaryDataCasOperatio
 	}
 
 	@Override
-	public Long ttl(String key) {
+	public Long getRemainingSurvivalTime(String key) {
 		TemporaryData temporaryData = db.getById(tableName, TemporaryData.class, key);
 		if (temporaryData == null) {
 			return null;

@@ -14,6 +14,8 @@ public interface MemoryData {
 	void setExpire(long exp);
 
 	boolean set(CAS<? extends Object> value);
+	
+	long getRemainingSurvivalTime();
 
 	void touch();
 

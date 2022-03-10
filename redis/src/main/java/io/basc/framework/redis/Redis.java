@@ -174,4 +174,9 @@ public final class Redis
 	public long incr(String key, long delta, long initialValue) {
 		return incr(key, delta, initialValue, 0, TimeUnit.MILLISECONDS);
 	}
+
+	@Override
+	public Long getRemainingSurvivalTime(String key) {
+		return pttl(key);
+	}
 }

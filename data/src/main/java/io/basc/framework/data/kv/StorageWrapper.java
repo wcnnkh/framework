@@ -8,9 +8,9 @@ public interface StorageWrapper<K, V> extends Storage<K, V>, KeyValueOperationsW
 	Storage<K, V> getSourceOperations();
 
 	@Override
-	default Long ttl(K key) {
+	default Long getRemainingSurvivalTime(K key) {
 		Encoder<K, K> keyFomatter = getKeyFomatter();
-		return getSourceOperations().ttl(keyFomatter == null ? key : keyFomatter.encode(key));
+		return getSourceOperations().getRemainingSurvivalTime(keyFomatter == null ? key : keyFomatter.encode(key));
 	}
 
 	@Override

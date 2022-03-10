@@ -116,7 +116,7 @@ public class DiskStorage extends TimerTask implements DataStorage {
 	}
 
 	@Override
-	public Long ttl(String key) {
+	public Long getRemainingSurvivalTime(String key) {
 		File file = getFile(key);
 		if (!file.exists()) {
 			return null;
