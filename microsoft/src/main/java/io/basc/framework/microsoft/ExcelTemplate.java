@@ -1,7 +1,8 @@
-package io.basc.framework.microsoft.mapper;
+package io.basc.framework.microsoft;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -9,55 +10,34 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.env.Sys;
-import io.basc.framework.microsoft.ExcelException;
-import io.basc.framework.microsoft.ExcelExport;
-import io.basc.framework.microsoft.ExcelOperations;
-import io.basc.framework.microsoft.MicrosoftUtils;
+import io.basc.framework.io.Resource;
+import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.orm.EntityStructure;
-import io.basc.framework.orm.ObjectRelationalMapping;
 import io.basc.framework.orm.transfer.ExportProcessor;
+import io.basc.framework.orm.transfer.TableTransfer;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.stream.Cursor;
+import io.basc.framework.util.stream.StreamProcessorSupport;
 
-public class ExcelExportProcessor<T> implements ExportProcessor<T> {
-	private ObjectRelationalMapping orm;
-	private ConversionService conversionService;
+public class ExcelTemplate extends TableTransfer implements ExportProcessor<Object> {
 	private ExcelOperations excelOperations;
+	private long readStart = 0;
+	private long readLimit = -1;
 
-	public ExcelExportProcessor() {
-		this.orm = ExcelMapping.INSTANCE;
-		this.conversionService = Sys.env.getConversionService();
+	public ExcelTemplate() {
 		this.excelOperations = MicrosoftUtils.getExcelOperations();
 	}
 
-	protected ExcelExportProcessor(ExcelExportProcessor<T> source) {
-		Assert.requiredArgument(source != null, "source");
-		this.orm = source.orm;
-		this.conversionService = source.conversionService;
+	protected ExcelTemplate(ExcelTemplate source) {
+		super(source);
 		this.excelOperations = source.excelOperations;
-	}
-
-	public ObjectRelationalMapping getOrm() {
-		return orm;
-	}
-
-	public void setOrm(ObjectRelationalMapping orm) {
-		Assert.requiredArgument(orm != null, "orm");
-		this.orm = orm;
-	}
-
-	public ConversionService getConversionService() {
-		return conversionService;
-	}
-
-	public void setConversionService(ConversionService conversionService) {
-		Assert.requiredArgument(conversionService != null, "conversionService");
-		this.conversionService = conversionService;
+		this.readStart = source.readStart;
+		this.readLimit = source.readLimit;
 	}
 
 	public ExcelOperations getExcelOperations() {
@@ -69,8 +49,24 @@ public class ExcelExportProcessor<T> implements ExportProcessor<T> {
 		this.excelOperations = excelOperations;
 	}
 
+	public long getReadStart() {
+		return readStart;
+	}
+
+	public void setReadStart(long readStart) {
+		this.readStart = readStart;
+	}
+
+	public long getReadLimit() {
+		return readLimit;
+	}
+
+	public void setReadLimit(long readLimit) {
+		this.readLimit = readLimit;
+	}
+
 	@Override
-	public final void process(Iterator<? extends T> source, File target) throws IOException {
+	public final void process(Iterator<? extends Object> source, File target) throws IOException {
 		ExcelExport export = getExcelOperations().createExcelExport(target);
 		try {
 			putAll(source, export);
@@ -79,7 +75,7 @@ public class ExcelExportProcessor<T> implements ExportProcessor<T> {
 		}
 	}
 
-	public final void putAll(Iterator<? extends T> source, ExcelExport export) throws IOException {
+	public final void putAll(Iterator<? extends Object> source, ExcelExport export) throws IOException {
 		while (source.hasNext()) {
 			put(source.next(), export);
 		}
@@ -109,7 +105,7 @@ public class ExcelExportProcessor<T> implements ExportProcessor<T> {
 		return name;
 	}
 
-	public final void put(T source, ExcelExport export) throws IOException {
+	public final void put(Object source, ExcelExport export) throws IOException {
 		// TODO 是否考虑移到单独的processor, 因为并不是所有的jvm都包含 java.sql.* 环境
 		if (source instanceof ResultSet) {
 			ResultSet rs = (ResultSet) source;
@@ -125,7 +121,7 @@ public class ExcelExportProcessor<T> implements ExportProcessor<T> {
 				}
 
 				Object[] values = getRowValues(rs, count);
-				String[] columns = (String[]) conversionService.convert(values, TypeDescriptor.forObject(values),
+				String[] columns = (String[]) getConversionService().convert(values, TypeDescriptor.forObject(values),
 						TypeDescriptor.valueOf(String[].class));
 				export.put(columns);
 				return;
@@ -141,12 +137,12 @@ public class ExcelExportProcessor<T> implements ExportProcessor<T> {
 		} else {
 			TypeDescriptor type = TypeDescriptor.forObject(source);
 			if (type.isCollection() || type.isArray()) {
-				String[] values = (String[]) conversionService.convert(source, type,
+				String[] values = (String[]) getConversionService().convert(source, type,
 						TypeDescriptor.valueOf(String[].class));
 				export.put(values);
 			} else {
 				// ORM
-				EntityStructure<?> structure = orm.getStructure(source.getClass());
+				EntityStructure<?> structure = getOrm().getStructure(source.getClass());
 				put(source, structure, export);
 			}
 		}
@@ -176,7 +172,7 @@ public class ExcelExportProcessor<T> implements ExportProcessor<T> {
 		titles(export, structure.columns().map((e) -> e.getName()).collect(Collectors.toList()));
 	}
 
-	public final void put(T source, EntityStructure<?> structure, ExcelExport export) throws IOException {
+	public final void put(Object source, EntityStructure<?> structure, ExcelExport export) throws IOException {
 		titles(export, structure);
 		List<String> values = structure.columns().map((property) -> {
 			if (!property.getField().isSupportGetter()) {
@@ -188,9 +184,25 @@ public class ExcelExportProcessor<T> implements ExportProcessor<T> {
 				return null;
 			}
 
-			return (String) conversionService.convert(value, new TypeDescriptor(property.getField().getGetter()),
+			return (String) getConversionService().convert(value, new TypeDescriptor(property.getField().getGetter()),
 					TypeDescriptor.valueOf(String.class));
 		}).collect(Collectors.toList());
 		export.put(values);
+	}
+
+	public Cursor<String[]> read(Object source) throws ExcelException, IOException {
+		Assert.requiredArgument(source != null, "source");
+		Assert.requiredArgument(source != null, "source");
+		Stream<String[]> stream;
+		if (source instanceof InputStream) {
+			stream = excelOperations.read((InputStream) source);
+		} else if (source instanceof File) {
+			stream = excelOperations.read((File) source);
+		} else if (source instanceof Resource) {
+			stream = ((Resource) source).read((input) -> excelOperations.read(input));
+		} else {
+			throw new NotSupportedException(source.getClass().getName());
+		}
+		return StreamProcessorSupport.cursor(stream).limit(readStart, readLimit);
 	}
 }

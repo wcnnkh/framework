@@ -64,12 +64,12 @@ public class Cursor<T> extends StreamMapWrapper<T, Cursor<T>> implements StreamP
 	public long getPosition() {
 		return cursorPosition.getPosition();
 	}
-	
+
 	/**
 	 * 限制
 	 * 
 	 * @param start
-	 * @param limit
+	 * @param limit 小于0代表不限制
 	 * @return
 	 */
 	public Cursor<T> limit(long start, long limit) {

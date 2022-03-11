@@ -1,4 +1,4 @@
-package io.basc.framework.microsoft.mapper;
+package io.basc.framework.microsoft;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -13,26 +13,24 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.microsoft.ExcelException;
-import io.basc.framework.microsoft.ExcelExport;
 import io.basc.framework.orm.EntityStructure;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.stream.RunnableProcessor;
 
-public class ExcelMappingExport extends ExcelExportProcessor<Object> implements AutoCloseable {
+public class ExcelMapper extends ExcelTemplate implements AutoCloseable {
 	private final ExcelExport export;
 	private AtomicBoolean closed;
 	private Map<String, Integer> columnIndexMap;
 
-	public ExcelMappingExport(ExcelExport export) {
+	public ExcelMapper(ExcelExport export) {
 		Assert.requiredArgument(export != null, "export");
 		this.export = export;
 		this.columnIndexMap = new LinkedHashMap<String, Integer>(8);
 		this.closed = new AtomicBoolean(false);
 	}
 
-	protected ExcelMappingExport(ExcelMappingExport source) {
+	protected ExcelMapper(ExcelMapper source) {
 		super(source);
 		this.export = source.export;
 		this.columnIndexMap = source.columnIndexMap;
@@ -50,7 +48,7 @@ public class ExcelMappingExport extends ExcelExportProcessor<Object> implements 
 		}
 	}
 
-	public <E extends IOException> ExcelMappingExport process(RunnableProcessor<E> process)
+	public <E extends IOException> ExcelMapper process(RunnableProcessor<E> process)
 			throws IOException, ExcelException {
 		try {
 			process.process();
@@ -64,7 +62,7 @@ public class ExcelMappingExport extends ExcelExportProcessor<Object> implements 
 		}
 	}
 
-	public final ExcelMappingExport titles(String... titles) throws ExcelException, IOException {
+	public final ExcelMapper titles(String... titles) throws ExcelException, IOException {
 		if (ArrayUtils.isEmpty(titles)) {
 			return this;
 		}
@@ -72,7 +70,7 @@ public class ExcelMappingExport extends ExcelExportProcessor<Object> implements 
 		return titles(Arrays.asList(titles));
 	}
 
-	public ExcelMappingExport titles(List<String> titles) throws ExcelException, IOException {
+	public ExcelMapper titles(List<String> titles) throws ExcelException, IOException {
 		if (!export.isEmpty()) {
 			return this;
 		}
@@ -87,7 +85,7 @@ public class ExcelMappingExport extends ExcelExportProcessor<Object> implements 
 		});
 	}
 
-	public final ExcelMappingExport titles(EntityStructure<?> structure) throws ExcelException, IOException {
+	public final ExcelMapper titles(EntityStructure<?> structure) throws ExcelException, IOException {
 		if (structure == null) {
 			return this;
 		}
@@ -96,7 +94,7 @@ public class ExcelMappingExport extends ExcelExportProcessor<Object> implements 
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public ExcelMappingExport put(Object row) throws ExcelException, IOException {
+	public ExcelMapper put(Object row) throws ExcelException, IOException {
 		if (row == null) {
 			return this;
 		}
@@ -136,7 +134,7 @@ public class ExcelMappingExport extends ExcelExportProcessor<Object> implements 
 		});
 	}
 
-	public ExcelMappingExport put(Object row, EntityStructure<?> structure) throws ExcelException, IOException {
+	public ExcelMapper put(Object row, EntityStructure<?> structure) throws ExcelException, IOException {
 		if (structure == null || row == null) {
 			return this;
 		}
@@ -160,7 +158,7 @@ public class ExcelMappingExport extends ExcelExportProcessor<Object> implements 
 		});
 	}
 
-	public final ExcelMappingExport putAll(Iterator<?> rows) throws ExcelException, IOException {
+	public final ExcelMapper putAll(Iterator<?> rows) throws ExcelException, IOException {
 		return process(() -> {
 			while (rows.hasNext()) {
 				put(rows.next());
@@ -168,7 +166,7 @@ public class ExcelMappingExport extends ExcelExportProcessor<Object> implements 
 		});
 	}
 
-	public final ExcelMappingExport putAll(Stream<?> rows) throws ExcelException, IOException {
+	public final ExcelMapper putAll(Stream<?> rows) throws ExcelException, IOException {
 		return process(() -> {
 			rows.forEach((e) -> {
 				try {
@@ -180,12 +178,11 @@ public class ExcelMappingExport extends ExcelExportProcessor<Object> implements 
 		});
 	}
 
-	public final ExcelMappingExport putAll(Iterable<?> rows) throws ExcelException, IOException {
+	public final ExcelMapper putAll(Iterable<?> rows) throws ExcelException, IOException {
 		return process(() -> putAll(rows.iterator()));
 	}
 
-	public final ExcelMappingExport putAll(Iterator<?> rows, EntityStructure<?> structure)
-			throws ExcelException, IOException {
+	public final ExcelMapper putAll(Iterator<?> rows, EntityStructure<?> structure) throws ExcelException, IOException {
 		if (structure == null || rows == null) {
 			return this;
 		}
@@ -197,8 +194,7 @@ public class ExcelMappingExport extends ExcelExportProcessor<Object> implements 
 		});
 	}
 
-	public final ExcelMappingExport putAll(Stream<?> rows, EntityStructure<?> structure)
-			throws ExcelException, IOException {
+	public final ExcelMapper putAll(Stream<?> rows, EntityStructure<?> structure) throws ExcelException, IOException {
 		if (structure == null || rows == null) {
 			return this;
 		}
@@ -214,8 +210,7 @@ public class ExcelMappingExport extends ExcelExportProcessor<Object> implements 
 		});
 	}
 
-	public final ExcelMappingExport putAll(Iterable<?> rows, EntityStructure<?> structure)
-			throws ExcelException, IOException {
+	public final ExcelMapper putAll(Iterable<?> rows, EntityStructure<?> structure) throws ExcelException, IOException {
 		if (structure == null || rows == null) {
 			return this;
 		}
@@ -223,8 +218,7 @@ public class ExcelMappingExport extends ExcelExportProcessor<Object> implements 
 		return process(() -> putAll(rows.iterator(), structure));
 	}
 
-	public final <T> ExcelMappingExport putAll(Iterator<? extends T> rows, Class<T> type)
-			throws ExcelException, IOException {
+	public final <T> ExcelMapper putAll(Iterator<? extends T> rows, Class<T> type) throws ExcelException, IOException {
 		if (type == null || rows == null) {
 			return this;
 		}
@@ -232,8 +226,7 @@ public class ExcelMappingExport extends ExcelExportProcessor<Object> implements 
 		return process(() -> putAll(rows, getOrm().getStructure(type)));
 	}
 
-	public final <T> ExcelMappingExport putAll(Stream<? extends T> rows, Class<T> type)
-			throws ExcelException, IOException {
+	public final <T> ExcelMapper putAll(Stream<? extends T> rows, Class<T> type) throws ExcelException, IOException {
 		if (type == null || rows == null) {
 			return this;
 		}
@@ -250,8 +243,7 @@ public class ExcelMappingExport extends ExcelExportProcessor<Object> implements 
 		});
 	}
 
-	public final <T> ExcelMappingExport putAll(Iterable<? extends T> rows, Class<T> type)
-			throws ExcelException, IOException {
+	public final <T> ExcelMapper putAll(Iterable<? extends T> rows, Class<T> type) throws ExcelException, IOException {
 		if (type == null || rows == null) {
 			return this;
 		}

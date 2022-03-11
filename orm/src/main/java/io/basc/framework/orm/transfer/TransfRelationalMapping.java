@@ -1,4 +1,4 @@
-package io.basc.framework.microsoft.mapper;
+package io.basc.framework.orm.transfer;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -8,18 +8,18 @@ import io.basc.framework.orm.ObjectRelationalMapping;
 import io.basc.framework.orm.support.DefaultObjectRelationalMapping;
 import io.basc.framework.util.StringUtils;
 
-public class ExcelMapping extends DefaultObjectRelationalMapping {
+public class TransfRelationalMapping extends DefaultObjectRelationalMapping {
 
-	public static final ObjectRelationalMapping INSTANCE = new ExcelMapping();
+	public static final ObjectRelationalMapping INSTANCE = new TransfRelationalMapping();
 
 	@Override
 	public Boolean isIgnore(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		return !fieldDescriptor.isAnnotationPresent(ExcelColumn.class);
+		return !fieldDescriptor.isAnnotationPresent(TransfColumn.class);
 	}
 
 	@Override
 	public Collection<String> getAliasNames(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		ExcelColumn excelColumn = fieldDescriptor.getAnnotation(ExcelColumn.class);
+		TransfColumn excelColumn = fieldDescriptor.getAnnotation(TransfColumn.class);
 		if (excelColumn == null) {
 			return super.getAliasNames(entityClass, fieldDescriptor);
 		}
@@ -34,7 +34,7 @@ public class ExcelMapping extends DefaultObjectRelationalMapping {
 
 	@Override
 	public String getName(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		ExcelColumn excelColumn = fieldDescriptor.getAnnotation(ExcelColumn.class);
+		TransfColumn excelColumn = fieldDescriptor.getAnnotation(TransfColumn.class);
 		if (excelColumn == null || StringUtils.isEmpty(excelColumn.value())) {
 			return super.getName(entityClass, fieldDescriptor);
 		}

@@ -16,8 +16,6 @@ import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.microsoft.mapper.ExcelMappingExport;
-import io.basc.framework.microsoft.mapper.ExcelMappingReader;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.stream.Cursor;
 
@@ -93,12 +91,11 @@ public final class MicrosoftUtils {
 		return list;
 	}
 
-	public static ExcelMappingExport export(Object target) throws ExcelException, IOException {
+	public static ExcelMapper export(Object target) throws ExcelException, IOException {
 		return export(target, null);
 	}
 
-	public static ExcelMappingExport export(Object target, @Nullable ExcelVersion version)
-			throws ExcelException, IOException {
+	public static ExcelMapper export(Object target, @Nullable ExcelVersion version) throws ExcelException, IOException {
 		Assert.requiredArgument(target != null, "target");
 		ExcelExport export;
 		if (target instanceof OutputStream) {
@@ -108,11 +105,11 @@ public final class MicrosoftUtils {
 		} else {
 			throw new NotSupportedException(target.toString());
 		}
-		return new ExcelMappingExport(export);
+		return new ExcelMapper(export);
 	}
 
 	public static Cursor<String[]> read(Object source) throws IOException, ExcelException {
-		ExcelMappingReader reader = new ExcelMappingReader(getExcelOperations());
+		ExcelTemplate reader = new ExcelTemplate();
 		return reader.read(source);
 	}
 
@@ -121,7 +118,7 @@ public final class MicrosoftUtils {
 	}
 
 	public static <T> Cursor<T> read(Object source, TypeDescriptor targetType) throws ExcelException, IOException {
-		ExcelMappingReader reader = new ExcelMappingReader(getExcelOperations());
+		ExcelTemplate reader = new ExcelTemplate();
 		return reader.read(source, targetType);
 	}
 }

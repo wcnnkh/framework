@@ -16,7 +16,7 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.ExcelVersion;
 import io.basc.framework.microsoft.MicrosoftUtils;
-import io.basc.framework.microsoft.mapper.ExcelColumn;
+import io.basc.framework.orm.transfer.TransfColumn;
 import io.basc.framework.util.RandomUtils;
 import io.basc.framework.util.XUtils;
 
@@ -38,11 +38,11 @@ public class ExcelResolverTest {
 	}
 
 	public static class TestBean {
-		@ExcelColumn
+		@TransfColumn
 		private String a;
-		@ExcelColumn
+		@TransfColumn
 		private int b;
-		@ExcelColumn
+		@TransfColumn
 		@DateFormat("yyyy-MM-dd HH:mm:ss,SSS")
 		private Date c;
 

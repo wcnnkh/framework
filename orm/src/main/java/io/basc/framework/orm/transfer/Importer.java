@@ -14,4 +14,8 @@ import io.basc.framework.convert.TypeDescriptor;
  */
 public interface Importer {
 	<T> Stream<T> read(File source, TypeDescriptor targetType) throws IOException;
+
+	default <T> Stream<T> read(File source, Class<? extends T> targetType) throws IOException {
+		return read(source, TypeDescriptor.valueOf(targetType));
+	}
 }
