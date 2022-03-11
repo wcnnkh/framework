@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import io.basc.framework.util.LimitIterator;
 import io.basc.framework.util.XUtils;
 
 /**
@@ -62,6 +63,17 @@ public class Cursor<T> extends StreamMapWrapper<T, Cursor<T>> implements StreamP
 
 	public long getPosition() {
 		return cursorPosition.getPosition();
+	}
+	
+	/**
+	 * 限制
+	 * 
+	 * @param start
+	 * @param limit
+	 * @return
+	 */
+	public Cursor<T> limit(long start, long limit) {
+		return new Cursor<T>(new LimitIterator<T>(iterator(), start, limit));
 	}
 
 	@Override

@@ -16,22 +16,23 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.ExcelVersion;
 import io.basc.framework.microsoft.MicrosoftUtils;
-import io.basc.framework.microsoft.annotation.ExcelColumn;
+import io.basc.framework.microsoft.mapper.ExcelColumn;
 import io.basc.framework.util.RandomUtils;
 import io.basc.framework.util.XUtils;
 
 public class ExcelResolverTest {
-	
+
 	@Test
 	public void test() throws ExcelException, IOException {
 		List<TestBean> exportList = new ArrayList<TestBean>();
-		for(int i=0; i<10; i++) {
+		for (int i = 0; i < 10; i++) {
 			exportList.add(new TestBean(XUtils.getUUID(), RandomUtils.random(0, i), new Date()));
 		}
 		File file = File.createTempFile("export", ExcelVersion.XLSX.getFileSuffixName());
-		MicrosoftUtils.export(exportList.stream(), file);
-		
-		List<TestBean> readList = MicrosoftUtils.read(TestBean.class, file).collect(Collectors.toList());
+
+		MicrosoftUtils.export(file).putAll(exportList).close();
+
+		List<TestBean> readList = MicrosoftUtils.read(file, TestBean.class).collect(Collectors.toList());
 		assertTrue(exportList.equals(readList));
 		file.delete();
 	}
@@ -44,7 +45,7 @@ public class ExcelResolverTest {
 		@ExcelColumn
 		@DateFormat("yyyy-MM-dd HH:mm:ss,SSS")
 		private Date c;
-		
+
 		public TestBean(String a, int b, Date c) {
 			this.a = a;
 			this.b = b;
@@ -74,12 +75,12 @@ public class ExcelResolverTest {
 		public void setC(Date c) {
 			this.c = c;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			return ReflectionUtils.hashCode(this);
 		}
-		
+
 		@Override
 		public boolean equals(Object obj) {
 			return ReflectionUtils.equals(this, obj);

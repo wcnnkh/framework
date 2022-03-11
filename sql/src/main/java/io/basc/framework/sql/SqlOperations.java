@@ -1,15 +1,18 @@
 package io.basc.framework.sql;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.mapper.MapProcessDecorator;
-import io.basc.framework.mapper.Mapper;
-import io.basc.framework.util.stream.Cursor;
-import io.basc.framework.util.stream.Processor;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Iterator;
+
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.mapper.MapProcessDecorator;
+import io.basc.framework.mapper.Mapper;
+import io.basc.framework.orm.transfer.ExportProcessor;
+import io.basc.framework.orm.transfer.Exporter;
+import io.basc.framework.util.stream.Cursor;
+import io.basc.framework.util.stream.Processor;
 
 public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor, MapProcessorFactory {
 
@@ -142,5 +145,21 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor,
 
 	default <T> Cursor<T> query(Class<? extends T> resultType, Sql sql) {
 		return query(sql, getMapProcessor(resultType));
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	default Exporter export(Sql sql, TypeDescriptor type, ExportProcessor<?> processor) {
+		return (file) -> {
+			Cursor<Object> cursor = query(type, sql);
+			try {
+				processor.process((Iterator) cursor.iterator(), file);
+			} finally {
+				cursor.close();
+			}
+		};
+	}
+
+	default <T> Exporter export(Sql sql, Class<T> type, ExportProcessor<? extends T> processor) {
+		return export(sql, TypeDescriptor.valueOf(type), processor);
 	}
 }

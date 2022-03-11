@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 
@@ -29,25 +28,4 @@ public interface ExcelOperations extends ExcelReader {
 			throws IOException, ExcelException;
 
 	ExcelExport createExcelExport(File file) throws IOException, ExcelException;
-
-	/**
-	 * @param target       file or OutputStream
-	 * @param excelVersion
-	 * @return
-	 * @throws IOException
-	 * @throws ExcelException
-	 */
-	default ExcelExport createExcelExport(Object target, @Nullable ExcelVersion excelVersion)
-			throws IOException, ExcelException {
-		Assert.requiredArgument(target != null, "target");
-		ExcelExport export;
-		if (target instanceof OutputStream) {
-			export = createExcelExport((OutputStream) target, excelVersion);
-		} else if (target instanceof File) {
-			export = createExcelExport((File) target);
-		} else {
-			throw new NotSupportedException(target.toString());
-		}
-		return export;
-	}
 }

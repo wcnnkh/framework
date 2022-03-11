@@ -1,24 +1,25 @@
 package io.basc.framework.microsoft;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
-import io.basc.framework.http.HttpOutputMessage;
-import io.basc.framework.http.HttpUtils;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
-import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.microsoft.annotation.ExcelResolver;
+import io.basc.framework.microsoft.mapper.ExcelMappingExport;
+import io.basc.framework.microsoft.mapper.ExcelMappingReader;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.stream.Cursor;
 
 public final class MicrosoftUtils {
 	private static Logger logger = LoggerFactory.getLogger(MicrosoftUtils.class);
@@ -29,9 +30,6 @@ public final class MicrosoftUtils {
 	private static final ExcelOperations EXCEL_OPERATIONS = Sys.env.getServiceLoader(ExcelOperations.class,
 			"io.basc.framework.microsoft.poi.PoiExcelOperations", "io.basc.framework.microsoft.jxl.JxlExcelOperations")
 			.first();
-
-	private static final ExcelResolver EXCEL_RESOLVER = Sys.env.getServiceLoader(ExcelResolver.class)
-			.first(() -> new ExcelResolver());
 
 	static {
 		if (EXCEL_OPERATIONS == null) {
@@ -46,13 +44,6 @@ public final class MicrosoftUtils {
 			throw new NotSupportedException("excel operations");
 		}
 		return EXCEL_OPERATIONS;
-	}
-
-	public static ExcelResolver getExcelResolver() {
-		if (EXCEL_RESOLVER == null) {
-			throw new NotSupportedException(ExcelResolver.class.getName());
-		}
-		return EXCEL_RESOLVER;
 	}
 
 	/**
@@ -102,78 +93,35 @@ public final class MicrosoftUtils {
 		return list;
 	}
 
-	/**
-	 * @see ExcelReader#read(Object)
-	 * @param        <T>
-	 * @param type
-	 * @param source
-	 * @return
-	 */
-	public static <T> Stream<T> read(Class<T> type, Object source) {
-		return getExcelResolver().read(getExcelOperations(), type, source);
+	public static ExcelMappingExport export(Object target) throws ExcelException, IOException {
+		return export(target, null);
 	}
 
-	public static <T> void export(Class<T> type, Stream<? extends T> source, Object target)
+	public static ExcelMappingExport export(Object target, @Nullable ExcelVersion version)
 			throws ExcelException, IOException {
-		export(type, source, target, null);
-	}
-
-	public static <T> void export(Stream<? extends T> source, Object target) throws ExcelException, IOException {
-		export(source, target, null);
-	}
-
-	/**
-	 * @see ExcelOperations#createExcelExport(Object, ExcelVersion)
-	 * @param              <T>
-	 * @param source
-	 * @param target
-	 * @param excelVersion
-	 * @throws ExcelException
-	 * @throws IOException
-	 */
-	public static <T> void export(Stream<? extends T> source, Object target, @Nullable ExcelVersion excelVersion)
-			throws ExcelException, IOException {
-		ExcelExport export = getExcelOperations().createExcelExport(target, excelVersion);
-		try {
-			getExcelResolver().export(export, source);
-		} finally {
-			export.close();
+		Assert.requiredArgument(target != null, "target");
+		ExcelExport export;
+		if (target instanceof OutputStream) {
+			export = getExcelOperations().createExcelExport((OutputStream) target, version);
+		} else if (target instanceof File) {
+			export = getExcelOperations().createExcelExport((File) target);
+		} else {
+			throw new NotSupportedException(target.toString());
 		}
-
+		return new ExcelMappingExport(export);
 	}
 
-	/**
-	 * @see ExcelOperations#createExcelExport(Object, ExcelVersion)
-	 * @param              <T>
-	 * @param type
-	 * @param source
-	 * @param target
-	 * @param excelVersion
-	 * @throws ExcelException
-	 * @throws IOException
-	 */
-	public static <T> void export(Class<T> type, Stream<? extends T> source, Object target,
-			@Nullable ExcelVersion excelVersion) throws ExcelException, IOException {
-		ExcelExport export = getExcelOperations().createExcelExport(target, excelVersion);
-		try {
-			getExcelResolver().export(export, type, source);
-		} finally {
-			export.close();
-		}
+	public static Cursor<String[]> read(Object source) throws IOException, ExcelException {
+		ExcelMappingReader reader = new ExcelMappingReader(getExcelOperations());
+		return reader.read(source);
 	}
 
-	public static ExcelExport createExcelExport(HttpOutputMessage outputMessage, String fileName)
-			throws IOException, ExcelException {
-		return createExcelExport(outputMessage, fileName, Constants.UTF_8);
+	public static <T> Cursor<T> read(Object source, Class<? extends T> targetType) throws ExcelException, IOException {
+		return read(source, TypeDescriptor.valueOf(targetType));
 	}
 
-	public static ExcelExport createExcelExport(HttpOutputMessage outputMessage, String fileName,
-			@Nullable Charset charset) throws IOException, ExcelException {
-		HttpUtils.writeFileMessageHeaders(outputMessage, fileName, charset);
-		ExcelVersion excelVersion = ExcelVersion.forFileName(fileName);
-		if (excelVersion == null) {
-			excelVersion = ExcelVersion.XLS;
-		}
-		return MicrosoftUtils.getExcelOperations().createExcelExport(outputMessage.getOutputStream(), excelVersion);
+	public static <T> Cursor<T> read(Object source, TypeDescriptor targetType) throws ExcelException, IOException {
+		ExcelMappingReader reader = new ExcelMappingReader(getExcelOperations());
+		return reader.read(source, targetType);
 	}
 }

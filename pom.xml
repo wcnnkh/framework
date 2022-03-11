@@ -723,6 +723,12 @@
 				<artifactId>validation</artifactId>
 				<version>1.8.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>io.basc.framework</groupId>
+				<artifactId>csv</artifactId>
+				<version>1.8.0</version>
+			</dependency>
 
 			<dependency>
 				<groupId>io.basc.framework</groupId>
@@ -989,5 +995,6 @@
 		<module>mongodb</module>
 		<module>console</module>
 		<module>logback</module>
+		<module>csv</module>
 	</modules>
 </project>

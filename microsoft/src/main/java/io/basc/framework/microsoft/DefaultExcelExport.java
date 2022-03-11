@@ -8,7 +8,7 @@ import java.util.Collection;
 /**
  * excel导出
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public final class DefaultExcelExport extends WritableExcelWrapper implements ExcelExport {
@@ -77,9 +77,9 @@ public final class DefaultExcelExport extends WritableExcelWrapper implements Ex
 		return maxColumns;
 	}
 
-	public ExcelExport append(Collection<String> contents) throws IOException {
+	public void put(Collection<String> contents) throws IOException {
 		if (CollectionUtils.isEmpty(contents)) {
-			return this;
+			return;
 		}
 
 		if (maxSheets > 0 && sheetIndex > maxSheets) {
@@ -107,7 +107,6 @@ public final class DefaultExcelExport extends WritableExcelWrapper implements Ex
 		if (rowIndex % 256 == 0) {
 			flush();
 		}
-		return this;
 	}
 
 	@Override
