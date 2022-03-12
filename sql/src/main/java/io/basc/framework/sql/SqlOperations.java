@@ -159,7 +159,7 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor,
 		};
 	}
 
-	default <T> Exporter export(Sql sql, Class<T> type, ExportProcessor<? extends T> processor) {
+	default <T> Exporter export(Sql sql, Class<T> type, ExportProcessor<? super T> processor) {
 		return export(sql, TypeDescriptor.valueOf(type), processor);
 	}
 }
