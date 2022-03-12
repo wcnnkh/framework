@@ -63,7 +63,7 @@ public class ExcelTemplate extends TableTransfer {
 	public final void process(Iterator<? extends Object> source, File target) throws IOException {
 		ExcelExport export = getExcelOperations().createExcelExport(target);
 		try {
-			putAll(source, export);
+			exportAll(source, (e) -> export.put(e));
 		} finally {
 			export.close();
 		}
@@ -76,8 +76,8 @@ public class ExcelTemplate extends TableTransfer {
 	}
 
 	public final void put(Object source, ExcelExport export) throws IOException {
-		TransfColumns<String, String> columns = mapToColumns(source);
-		if (columns.hasKeys()) {
+		TransfColumns<String, String> columns = mapColumns(source);
+		if (isHeader() && columns.hasKeys()) {
 			titles(export, columns.keys().collect(Collectors.toList()));
 		}
 		export.put(columns.values().collect(Collectors.toList()));
@@ -100,7 +100,6 @@ public class ExcelTemplate extends TableTransfer {
 	}
 
 	public Cursor<String[]> read(Object source) throws ExcelException, IOException {
-		Assert.requiredArgument(source != null, "source");
 		Assert.requiredArgument(source != null, "source");
 		Stream<String[]> stream;
 		if (source instanceof InputStream) {

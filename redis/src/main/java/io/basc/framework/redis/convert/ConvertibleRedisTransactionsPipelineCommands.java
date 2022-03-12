@@ -35,6 +35,6 @@ public interface ConvertibleRedisTransactionsPipelineCommands<SK, K, SV, V>
 
 	@Override
 	default RedisResponse<String> watch(K... keys) {
-		return getSourceRedisTransactionsCommands().watch(getKeyCodec().encode(keys));
+		return getSourceRedisTransactionsCommands().watch(getKeyCodec().encodeAll(keys));
 	}
 }

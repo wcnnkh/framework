@@ -30,7 +30,7 @@ public interface ConvertibleRedisPubSubCommands<SK, K, SV, V>
 
 	@Override
 	default void subscribe(MessageListener<K, V> listener, K... channels) {
-		SK[] ks = getKeyCodec().encode(channels);
+		SK[] ks = getKeyCodec().encodeAll(channels);
 		MessageListener<SK, SV> messageListener = new ConvertibleMessageListener<K, V, SK, SV>(listener,
 				getKeyCodec().toDecodeConverter(), getValueCodec().toDecodeConverter());
 		getSourceRedisPubSubCommands().subscribe(messageListener, ks);
@@ -38,7 +38,7 @@ public interface ConvertibleRedisPubSubCommands<SK, K, SV, V>
 
 	@Override
 	default void pSubscribe(MessageListener<K, V> listener, K... patterns) {
-		SK[] ks = getKeyCodec().encode(patterns);
+		SK[] ks = getKeyCodec().encodeAll(patterns);
 		MessageListener<SK, SV> messageListener = new ConvertibleMessageListener<K, V, SK, SV>(listener,
 				getKeyCodec().toDecodeConverter(), getValueCodec().toDecodeConverter());
 		getSourceRedisPubSubCommands().pSubscribe(messageListener, ks);

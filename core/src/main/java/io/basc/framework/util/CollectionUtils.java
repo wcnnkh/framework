@@ -623,25 +623,38 @@ public abstract class CollectionUtils {
 	}
 
 	/**
-	 * 判断两个集合内容是否相同，不用关心内容的顺序
+	 * 判断两个集合内容是否相同
 	 * 
 	 * @param left
 	 * @param right
 	 * @return
 	 */
 	public static boolean equals(Collection<?> left, Collection<?> right) {
-		return equals(left, right, (o1, o2) -> ObjectUtils.equals(o1, o2) ? 0 : 1);
+		return equals(left, right, true);
 	}
 
 	/**
-	 * 判断两个集合内容是否相同，不用关心内容的顺序
+	 * @param left
+	 * @param right
+	 * @param strict 是否关心顺序
+	 * @return
+	 */
+	public static boolean equals(Collection<?> left, Collection<?> right, boolean strict) {
+		return equals(left, right, strict, (o1, o2) -> ObjectUtils.equals(o1, o2) ? 0 : 1);
+	}
+
+	/**
+	 * 判断两个集合内容是否相同
 	 * 
 	 * @param left
 	 * @param right
+	 * @param strict     是否关心顺序
 	 * @param comparator 返回0就认为相等，忽略其他值
 	 * @return
 	 */
-	public static boolean equals(Collection<?> left, Collection<?> right, Comparator<Object> comparator) {
+	public static boolean equals(Collection<?> left, Collection<?> right, boolean strict,
+			Comparator<Object> comparator) {
+		Assert.requiredArgument(comparator != null, "comparator");
 		if (isEmpty(left)) {
 			return isEmpty(right);
 		}
@@ -652,6 +665,17 @@ public abstract class CollectionUtils {
 
 		if (left.size() != right.size()) {
 			return false;
+		}
+
+		if (strict) {
+			Iterator<?> iterator1 = left.iterator();
+			Iterator<?> iterator2 = right.iterator();
+			while (iterator1.hasNext() && iterator2.hasNext()) {
+				if (comparator.compare(iterator1.next(), iterator2.next()) != 0) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		List<?> leftValues = new ArrayList<>(left);

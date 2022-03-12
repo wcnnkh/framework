@@ -55,7 +55,7 @@ public interface Converter<S, T> {
 		};
 	}
 
-	default <TL extends Collection<T>> TL convert(Collection<? extends S> sourceList, TL targetList) {
+	default <TL extends Collection<T>> TL convertTo(Collection<? extends S> sourceList, TL targetList) {
 		if (sourceList == null) {
 			return targetList;
 		}
@@ -68,7 +68,7 @@ public interface Converter<S, T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	default <TL extends Collection<T>> TL convert(Collection<? extends S> sources) {
+	default <TL extends Collection<T>> TL convertAll(Collection<? extends S> sources) {
 		if (sources == null) {
 			return null;
 		}
@@ -88,18 +88,14 @@ public interface Converter<S, T> {
 
 	@Nullable
 	@SuppressWarnings("unchecked")
-	default T[] convert(S... sources) {
+	default T[] convertAll(S... sources) {
 		if (sources == null) {
 			return null;
 		}
 
-		Object array = null;
+		Object array = Array.newInstance(sources.getClass().getComponentType(), sources.length);
 		for (int i = 0; i < sources.length; i++) {
 			T target = convert(sources[i]);
-			if (target != null) {
-				array = Array.newInstance(target.getClass(), sources.length);
-			}
-
 			if (array != null) {
 				Array.set(array, i, target);
 			}
@@ -107,11 +103,11 @@ public interface Converter<S, T> {
 		return (T[]) array;
 	}
 
-	default void convert(S[] sources, T[] targets) {
-		convert(sources, 0, targets, 0);
+	default void convertTo(S[] sources, T[] targets) {
+		convertTo(sources, 0, targets, 0);
 	}
 
-	default void convert(S[] sources, int sourceIndex, T[] targets, int targetIndex) {
+	default void convertTo(S[] sources, int sourceIndex, T[] targets, int targetIndex) {
 		Assert.requiredArgument(sources != null, "sources");
 		Assert.requiredArgument(targets != null, "targets");
 

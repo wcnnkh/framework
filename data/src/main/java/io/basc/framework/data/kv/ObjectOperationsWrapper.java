@@ -57,7 +57,7 @@ public interface ObjectOperationsWrapper<K> extends ObjectOperations<K>, KeyValu
 		}
 
 		Codec<K, K> keyFomatter = getKeyFomatter();
-		Map<K, T> map = getSourceOperations().get(type, keyFomatter == null ? keys : keyFomatter.encode(keys));
+		Map<K, T> map = getSourceOperations().get(type, keyFomatter == null ? keys : keyFomatter.encodeAll(keys));
 		if (CollectionUtils.isEmpty(map)) {
 			return Collections.emptyMap();
 		}

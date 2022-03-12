@@ -11,13 +11,13 @@ import io.basc.framework.util.CollectionFactory;
 @SuppressWarnings("unchecked")
 public interface ConvertibleRedisHashesCommands<SK, K, SV, V>
 		extends RedisCodec<SK, K, SV, V>, RedisHashesCommands<K, V> {
-	
+
 	RedisHashesCommands<SK, SV> getSourceRedisHashesCommands();
 
 	@Override
 	default Long hdel(K key, K... fields) {
 		SK k = getKeyCodec().encode(key);
-		SK[] tfs = getKeyCodec().encode(fields);
+		SK[] tfs = getKeyCodec().encodeAll(fields);
 		return getSourceRedisHashesCommands().hdel(k, tfs);
 	}
 
@@ -62,7 +62,7 @@ public interface ConvertibleRedisHashesCommands<SK, K, SV, V>
 	default Set<K> hkeys(K key) {
 		SK k = getKeyCodec().encode(key);
 		Set<SK> tks = getSourceRedisHashesCommands().hkeys(k);
-		return getKeyCodec().toDecodeConverter().convert(tks, new LinkedHashSet<K>(tks.size()));
+		return getKeyCodec().toDecodeConverter().convertTo(tks, new LinkedHashSet<K>(tks.size()));
 	}
 
 	@Override
@@ -74,9 +74,9 @@ public interface ConvertibleRedisHashesCommands<SK, K, SV, V>
 	@Override
 	default List<V> hmget(K key, K... fields) {
 		SK k = getKeyCodec().encode(key);
-		SK[] tfs = getKeyCodec().encode(fields);
+		SK[] tfs = getKeyCodec().encodeAll(fields);
 		List<SV> values = getSourceRedisHashesCommands().hmget(k, tfs);
-		return getValueCodec().decode(values);
+		return getValueCodec().decodeAll(values);
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public interface ConvertibleRedisHashesCommands<SK, K, SV, V>
 	default List<K> hrandfield(K key, Integer count) {
 		SK k = getKeyCodec().encode(key);
 		List<SK> tks = getSourceRedisHashesCommands().hrandfield(k, count);
-		return getKeyCodec().decode(tks);
+		return getKeyCodec().decodeAll(tks);
 	}
 
 	@Override
@@ -128,6 +128,6 @@ public interface ConvertibleRedisHashesCommands<SK, K, SV, V>
 	default List<V> hvals(K key) {
 		SK k = getKeyCodec().encode(key);
 		List<SV> values = getSourceRedisHashesCommands().hvals(k);
-		return getValueCodec().decode(values);
+		return getValueCodec().decodeAll(values);
 	}
 }

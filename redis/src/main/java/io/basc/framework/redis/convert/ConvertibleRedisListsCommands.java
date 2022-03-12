@@ -22,16 +22,16 @@ public interface ConvertibleRedisListsCommands<SK, K, SV, V>
 
 	@Override
 	default List<V> blpop(double timeout, K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		List<SV> values = getSourceRedisListsCommands().blpop(timeout, ks);
-		return getValueCodec().decode(values);
+		return getValueCodec().decodeAll(values);
 	}
 
 	@Override
 	default List<V> brpop(double timeout, K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		List<SV> values = getSourceRedisListsCommands().brpop(timeout, ks);
-		return getValueCodec().decode(values);
+		return getValueCodec().decodeAll(values);
 	}
 
 	@Override
@@ -75,20 +75,20 @@ public interface ConvertibleRedisListsCommands<SK, K, SV, V>
 	default List<V> lpop(K key, int count) {
 		SK k = getKeyCodec().encode(key);
 		List<SV> values = getSourceRedisListsCommands().lpop(k, count);
-		return getValueCodec().decode(values);
+		return getValueCodec().decodeAll(values);
 	}
 
 	@Override
 	default Long lpush(K key, V... elements) {
 		SK k = getKeyCodec().encode(key);
-		SV[] vs = getValueCodec().encode(elements);
+		SV[] vs = getValueCodec().encodeAll(elements);
 		return getSourceRedisListsCommands().lpush(k, vs);
 	}
 
 	@Override
 	default Long lpushx(K key, V... elements) {
 		SK k = getKeyCodec().encode(key);
-		SV[] vs = getValueCodec().encode(elements);
+		SV[] vs = getValueCodec().encodeAll(elements);
 		return getSourceRedisListsCommands().lpushx(k, vs);
 	}
 
@@ -96,7 +96,7 @@ public interface ConvertibleRedisListsCommands<SK, K, SV, V>
 	default List<V> lrange(K key, long start, long stop) {
 		SK k = getKeyCodec().encode(key);
 		List<SV> values = getSourceRedisListsCommands().lrange(k, start, stop);
-		return getValueCodec().decode(values);
+		return getValueCodec().decodeAll(values);
 	}
 
 	@Override
@@ -123,7 +123,7 @@ public interface ConvertibleRedisListsCommands<SK, K, SV, V>
 	default List<V> rpop(K key, int count) {
 		SK k = getKeyCodec().encode(key);
 		List<SV> values = getSourceRedisListsCommands().rpop(k, count);
-		return getValueCodec().decode(values);
+		return getValueCodec().decodeAll(values);
 	}
 
 	@Override
@@ -137,14 +137,14 @@ public interface ConvertibleRedisListsCommands<SK, K, SV, V>
 	@Override
 	default Long rpush(K key, V... elements) {
 		SK k = getKeyCodec().encode(key);
-		SV[] vs = getValueCodec().encode(elements);
+		SV[] vs = getValueCodec().encodeAll(elements);
 		return getSourceRedisListsCommands().rpush(k, vs);
 	}
 
 	@Override
 	default Long rpushx(K key, V... elements) {
 		SK k = getKeyCodec().encode(key);
-		SV[] vs = getValueCodec().encode(elements);
+		SV[] vs = getValueCodec().encodeAll(elements);
 		return getSourceRedisListsCommands().rpushx(k, vs);
 	}
 }

@@ -44,14 +44,14 @@ public interface ConvertibleRedisGeoCommands<SK, K, SV, V> extends RedisCodec<SK
 	@Override
 	default List<String> geohash(K key, V... members) {
 		SK k = getKeyCodec().encode(key);
-		SV[] tms = getValueCodec().encode(members);
+		SV[] tms = getValueCodec().encodeAll(members);
 		return getSourceRedisGeoCommands().geohash(k, tms);
 	}
 
 	@Override
 	default List<Point> geopos(K key, V... members) {
 		SK k = getKeyCodec().encode(key);
-		SV[] tms = getValueCodec().encode(members);
+		SV[] tms = getValueCodec().encodeAll(members);
 		return getSourceRedisGeoCommands().geopos(k, tms);
 	}
 
@@ -60,7 +60,7 @@ public interface ConvertibleRedisGeoCommands<SK, K, SV, V> extends RedisCodec<SK
 		SK k = getKeyCodec().encode(key);
 		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec().toEncodeConverter());
 		Collection<SV> values = getSourceRedisGeoCommands().georadius(k, within, tArgs);
-		return getValueCodec().decode(values);
+		return getValueCodec().decodeAll(values);
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public interface ConvertibleRedisGeoCommands<SK, K, SV, V> extends RedisCodec<SK
 		SV tm = getValueCodec().encode(member);
 		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec().toEncodeConverter());
 		List<SV> values = getSourceRedisGeoCommands().georadiusbymember(k, tm, distance, tArgs);
-		return getValueCodec().decode(values);
+		return getValueCodec().decodeAll(values);
 	}
 
 	@Override

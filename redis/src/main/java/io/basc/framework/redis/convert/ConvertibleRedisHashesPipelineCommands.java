@@ -18,7 +18,7 @@ public interface ConvertibleRedisHashesPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Long> hdel(K key, K... fields) {
 		SK k = getKeyCodec().encode(key);
-		SK[] tfs = getKeyCodec().encode(fields);
+		SK[] tfs = getKeyCodec().encodeAll(fields);
 		return getSourceRedisHashesCommands().hdel(k, tfs);
 	}
 
@@ -61,7 +61,7 @@ public interface ConvertibleRedisHashesPipelineCommands<SK, K, SV, V>
 	default RedisResponse<Set<K>> hkeys(K key) {
 		SK k = getKeyCodec().encode(key);
 		return getSourceRedisHashesCommands().hkeys(k)
-				.map((tks) -> getKeyCodec().toDecodeConverter().convert(tks, new LinkedHashSet<K>(tks.size())));
+				.map((tks) -> getKeyCodec().toDecodeConverter().convertTo(tks, new LinkedHashSet<K>(tks.size())));
 	}
 
 	@Override
@@ -73,8 +73,8 @@ public interface ConvertibleRedisHashesPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<List<V>> hmget(K key, K... fields) {
 		SK k = getKeyCodec().encode(key);
-		SK[] tfs = getKeyCodec().encode(fields);
-		return getSourceRedisHashesCommands().hmget(k, tfs).map((values) -> getValueCodec().decode(values));
+		SK[] tfs = getKeyCodec().encodeAll(fields);
+		return getSourceRedisHashesCommands().hmget(k, tfs).map((values) -> getValueCodec().decodeAll(values));
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public interface ConvertibleRedisHashesPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<List<K>> hrandfield(K key, Integer count) {
 		SK k = getKeyCodec().encode(key);
-		return getSourceRedisHashesCommands().hrandfield(k, count).map((tks) -> getKeyCodec().decode(tks));
+		return getSourceRedisHashesCommands().hrandfield(k, count).map((tks) -> getKeyCodec().decodeAll(tks));
 	}
 
 	@Override
@@ -124,6 +124,6 @@ public interface ConvertibleRedisHashesPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<List<V>> hvals(K key) {
 		SK k = getKeyCodec().encode(key);
-		return getSourceRedisHashesCommands().hvals(k).map((values) -> getValueCodec().decode(values));
+		return getSourceRedisHashesCommands().hvals(k).map((values) -> getValueCodec().decodeAll(values));
 	}
 }

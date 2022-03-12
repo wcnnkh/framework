@@ -18,13 +18,13 @@ public interface ConvertibleRedisServerCommands<SK, K, SV, V>
 	@Override
 	default List<K> aclCat(K categoryname) {
 		List<SK> list = getSourceRedisServerCommands().aclCat(getKeyCodec().encode(categoryname));
-		return getKeyCodec().decode(list);
+		return getKeyCodec().decodeAll(list);
 	}
 
 	@Override
 	default Long aclDelUser(K username, K... usernames) {
 		return getSourceRedisServerCommands().aclDelUser(getKeyCodec().encode(username),
-				getKeyCodec().encode(usernames));
+				getKeyCodec().encodeAll(usernames));
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public interface ConvertibleRedisServerCommands<SK, K, SV, V>
 	@Override
 	default List<K> aclList() {
 		List<SK> list = getSourceRedisServerCommands().aclList();
-		return getKeyCodec().decode(list);
+		return getKeyCodec().decodeAll(list);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public interface ConvertibleRedisServerCommands<SK, K, SV, V>
 	@Override
 	default List<K> aclLog(Integer count) {
 		List<SK> list = getSourceRedisServerCommands().aclLog(count);
-		return getKeyCodec().decode(list);
+		return getKeyCodec().decodeAll(list);
 	}
 
 	@Override
@@ -61,13 +61,13 @@ public interface ConvertibleRedisServerCommands<SK, K, SV, V>
 
 	@Override
 	default String aclSetuser(K username, K... rules) {
-		return getSourceRedisServerCommands().aclSetuser(getKeyCodec().encode(username), getKeyCodec().encode(rules));
+		return getSourceRedisServerCommands().aclSetuser(getKeyCodec().encode(username), getKeyCodec().encodeAll(rules));
 	}
 
 	@Override
 	default List<K> aclUsers() {
 		List<SK> list = getSourceRedisServerCommands().aclUsers();
-		return getKeyCodec().decode(list);
+		return getKeyCodec().decodeAll(list);
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public interface ConvertibleRedisServerCommands<SK, K, SV, V>
 	@Override
 	default List<V> configGet(K parameter) {
 		List<SV> list = getSourceRedisServerCommands().configGet(getKeyCodec().encode(parameter));
-		return getValueCodec().decode(list);
+		return getValueCodec().decodeAll(list);
 	}
 
 	@Override

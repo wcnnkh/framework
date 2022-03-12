@@ -11,7 +11,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Iterator;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVFormat;
@@ -21,7 +21,6 @@ import org.apache.commons.csv.CSVPrinter;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.orm.transfer.TableTransfer;
-import io.basc.framework.orm.transfer.TransfColumns;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.stream.Cursor;
 import io.basc.framework.util.stream.StreamProcessorSupport;
@@ -51,17 +50,15 @@ public class CsvTemplate extends TableTransfer {
 	public void process(Iterator<? extends Object> source, OutputStream target) throws IOException {
 		OutputStreamWriter writer = new OutputStreamWriter(target, charset);
 		CSVPrinter printer = new CSVPrinter(writer, format);
+		AtomicLong count = new AtomicLong();
 		try {
-			long size = 0;
-			Iterator<TransfColumns<String, String>> iterator = exportAll(source);
-			while (iterator.hasNext()) {
-				TransfColumns<String, String> columns = iterator.next();
-				printer.printRecord(columns.values().collect(Collectors.toList()));
-				if (((size++) % 256) == 0) {
+			exportAll(source, (contents) -> {
+				printer.printRecord(contents);
+				if(count.getAndIncrement()%256 == 0) {
 					printer.flush();
 				}
-			}
-		} catch (IOException e) {
+			});
+		} finally {
 			try {
 				printer.flush();
 			} finally {
@@ -74,7 +71,7 @@ public class CsvTemplate extends TableTransfer {
 	public final void process(Iterator<? extends Object> source, File target) throws IOException {
 		FileOutputStream fos = new FileOutputStream(target);
 		try {
-			process(source, target);
+			process(source, fos);
 		} finally {
 			fos.close();
 		}

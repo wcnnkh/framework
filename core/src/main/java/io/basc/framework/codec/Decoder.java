@@ -28,7 +28,7 @@ public interface Decoder<E, D> {
 	 */
 	D decode(E source) throws DecodeException;
 
-	default List<D> decode(Collection<? extends E> sources) throws DecodeException {
+	default List<D> decodeAll(Collection<? extends E> sources) throws DecodeException {
 		if (CollectionUtils.isEmpty(sources)) {
 			return Collections.emptyList();
 		}
@@ -38,8 +38,8 @@ public interface Decoder<E, D> {
 
 	@Nullable
 	@SuppressWarnings("unchecked")
-	default D[] decode(E... sources) throws DecodeException {
-		return toDecodeConverter().convert(sources);
+	default D[] decodeAll(E... sources) throws DecodeException {
+		return toDecodeConverter().convertAll(sources);
 	}
 
 	/**

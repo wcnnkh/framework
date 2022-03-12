@@ -25,9 +25,9 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 
 	@Override
 	default List<V> bzpopmin(double timeout, K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		List<SV> vs = getSourceRedisSortedSetsCommands().bzpopmin(timeout, ks);
-		return getValueCodec().decode(vs);
+		return getValueCodec().decodeAll(vs);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 	@Override
 	default Long zdiffstore(K destinationKey, K... keys) {
 		SK dk = getKeyCodec().encode(destinationKey);
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisSortedSetsCommands().zdiffstore(dk, ks);
 	}
 
@@ -75,17 +75,17 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 
 	@Override
 	default Collection<V> zinter(InterArgs args, K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		Collection<SV> tvs = getSourceRedisSortedSetsCommands().zinter(args, ks);
 		if (CollectionUtils.isEmpty(tvs)) {
 			return Collections.emptyList();
 		}
-		return getValueCodec().toDecodeConverter().convert(tvs, new LinkedHashSet<V>(tvs.size()));
+		return getValueCodec().toDecodeConverter().convertTo(tvs, new LinkedHashSet<V>(tvs.size()));
 	}
 
 	@Override
 	default Collection<Tuple<V>> zinterWithScores(InterArgs args, K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		Collection<Tuple<SV>> values = getSourceRedisSortedSetsCommands().zinterWithScores(args, ks);
 		if (values == null) {
 			return Collections.emptyList();
@@ -98,7 +98,7 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 	@Override
 	default Long zinterstore(K destinationKey, InterArgs interArgs, K... keys) {
 		SK dk = getKeyCodec().encode(destinationKey);
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisSortedSetsCommands().zinterstore(dk, interArgs, ks);
 	}
 
@@ -112,7 +112,7 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 	@Override
 	default List<Double> zmscore(K key, V... members) {
 		SK k = getKeyCodec().encode(key);
-		SV[] ms = getValueCodec().encode(members);
+		SV[] ms = getValueCodec().encodeAll(members);
 		return getSourceRedisSortedSetsCommands().zmscore(k, ms);
 	}
 
@@ -144,7 +144,7 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 	default Collection<V> zrandmember(K key, int count) {
 		SK k = getKeyCodec().encode(key);
 		Collection<SV> tuples = getSourceRedisSortedSetsCommands().zrandmember(k, count);
-		return getValueCodec().decode(tuples);
+		return getValueCodec().decodeAll(tuples);
 	}
 
 	@Override
@@ -163,7 +163,7 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 	default Collection<V> zrange(K key, long start, long stop) {
 		SK k = getKeyCodec().encode(key);
 		Collection<SV> tuples = getSourceRedisSortedSetsCommands().zrange(k, start, stop);
-		return getValueCodec().decode(tuples);
+		return getValueCodec().decodeAll(tuples);
 	}
 
 	@Override
@@ -171,7 +171,7 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 		SK k = getKeyCodec().encode(key);
 		Collection<SV> tuples = getSourceRedisSortedSetsCommands().zrangeByLex(k,
 				range.convert(getValueCodec().toEncodeConverter()), offset, limit);
-		return getValueCodec().decode(tuples);
+		return getValueCodec().decodeAll(tuples);
 	}
 
 	@Override
@@ -179,7 +179,7 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 		SK k = getKeyCodec().encode(key);
 		Collection<SV> tuples = getSourceRedisSortedSetsCommands().zrangeByScore(k,
 				range.convert(getValueCodec().toEncodeConverter()), offset, limit);
-		return getValueCodec().decode(tuples);
+		return getValueCodec().decodeAll(tuples);
 	}
 
 	@Override
@@ -205,7 +205,7 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 	@Override
 	default Long zrem(K key, V... members) {
 		SK k = getKeyCodec().encode(key);
-		SV[] ms = getValueCodec().encode(members);
+		SV[] ms = getValueCodec().encodeAll(members);
 		return getSourceRedisSortedSetsCommands().zrem(k, ms);
 	}
 
@@ -229,21 +229,21 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 	@Override
 	default Collection<V> zrevrange(K key, long start, long stop) {
 		Collection<SV> values = getSourceRedisSortedSetsCommands().zrevrange(getKeyCodec().encode(key), start, stop);
-		return getValueCodec().toDecodeConverter().convert(values);
+		return getValueCodec().toDecodeConverter().convertAll(values);
 	}
 
 	@Override
 	default Collection<V> zrevrangebylex(K key, Range<V> range, int offset, int count) {
 		Collection<SV> values = getSourceRedisSortedSetsCommands().zrevrangebylex(getKeyCodec().encode(key),
 				range.convert(getValueCodec().toEncodeConverter()), offset, count);
-		return getValueCodec().toDecodeConverter().convert(values);
+		return getValueCodec().toDecodeConverter().convertAll(values);
 	}
 
 	@Override
 	default Collection<V> zrevrangebyscore(K key, Range<V> range, int offset, int count) {
 		Collection<SV> values = getSourceRedisSortedSetsCommands().zrevrangebyscore(getKeyCodec().encode(key),
 				range.convert(getValueCodec().toEncodeConverter()), offset, count);
-		return getValueCodec().toDecodeConverter().convert(values);
+		return getValueCodec().toDecodeConverter().convertAll(values);
 	}
 
 	@Override
@@ -270,14 +270,14 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 
 	@Override
 	default Collection<V> zunion(InterArgs interArgs, K... keys) {
-		Collection<SV> values = getSourceRedisSortedSetsCommands().zunion(interArgs, getKeyCodec().encode(keys));
-		return getValueCodec().toDecodeConverter().convert(values);
+		Collection<SV> values = getSourceRedisSortedSetsCommands().zunion(interArgs, getKeyCodec().encodeAll(keys));
+		return getValueCodec().toDecodeConverter().convertAll(values);
 	}
 
 	@Override
 	default Collection<Tuple<V>> zunionWithScores(InterArgs interArgs, K... keys) {
 		Collection<Tuple<SV>> values = getSourceRedisSortedSetsCommands().zunionWithScores(interArgs,
-				getKeyCodec().encode(keys));
+				getKeyCodec().encodeAll(keys));
 		if (values == null) {
 			return Collections.emptyList();
 		}
@@ -289,6 +289,6 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 	@Override
 	default Long zunionstore(K destinationKey, InterArgs interArgs, K... keys) {
 		return getSourceRedisSortedSetsCommands().zunionstore(getKeyCodec().encode(destinationKey), interArgs,
-				getKeyCodec().encode(keys));
+				getKeyCodec().encodeAll(keys));
 	}
 }

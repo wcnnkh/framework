@@ -67,7 +67,7 @@ public class RedisLbs<K, V> implements Lbs<V> {
 		}
 
 		return StreamProcessorSupport
-				.cursor(markerConvert.convert(collection, new ArrayList<Marker<V>>(collection.size())).stream());
+				.cursor(markerConvert.convertTo(collection, new ArrayList<Marker<V>>(collection.size())).stream());
 	}
 
 }

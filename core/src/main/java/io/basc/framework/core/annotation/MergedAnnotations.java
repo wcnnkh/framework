@@ -114,11 +114,11 @@ import io.basc.framework.util.Assert;
  *
  * <p>
  * <b>NOTE: The {@code MergedAnnotations} API and its underlying model have been
- * designed for composable annotations common component model, with
- * a focus on attribute aliasing and meta-annotation relationships.</b> There is
- * no support for retrieving plain Java annotations with this API; please use
- * standard Java reflection or {@link AnnotationUtils} for simple
- * annotation retrieval purposes.
+ * designed for composable annotations common component model, with a focus on
+ * attribute aliasing and meta-annotation relationships.</b> There is no support
+ * for retrieving plain Java annotations with this API; please use standard Java
+ * reflection or {@link AnnotationUtils} for simple annotation retrieval
+ * purposes.
  *
  * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/annotation/MergedAnnotations.java
  * @see MergedAnnotation
@@ -335,7 +335,6 @@ public interface MergedAnnotations extends Iterable<MergedAnnotation<Annotation>
 	 */
 	static MergedAnnotations from(AnnotatedElement element, SearchStrategy searchStrategy,
 			RepeatableContainers repeatableContainers) {
-
 		return from(element, searchStrategy, repeatableContainers, AnnotationFilter.PLAIN);
 	}
 

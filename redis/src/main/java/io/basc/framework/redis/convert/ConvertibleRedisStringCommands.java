@@ -27,7 +27,7 @@ public interface ConvertibleRedisStringCommands<SK, K, SV, V>
 
 	@Override
 	default Long bitop(BitOP op, K destkey, K... srcKeys) {
-		return getSourceRedisStringCommands().bitop(op, getKeyCodec().encode(destkey), getKeyCodec().encode(srcKeys));
+		return getSourceRedisStringCommands().bitop(op, getKeyCodec().encode(destkey), getKeyCodec().encodeAll(srcKeys));
 	}
 
 	@Override
@@ -97,8 +97,8 @@ public interface ConvertibleRedisStringCommands<SK, K, SV, V>
 
 	@Override
 	default List<V> mget(K... keys) {
-		List<SV> values = getSourceRedisStringCommands().mget(getKeyCodec().encode(keys));
-		return getValueCodec().decode(values);
+		List<SV> values = getSourceRedisStringCommands().mget(getKeyCodec().encodeAll(keys));
+		return getValueCodec().decodeAll(values);
 	}
 
 	@Override

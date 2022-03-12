@@ -22,14 +22,14 @@ public interface ConvertibleRedisListsPipelineCommands<SK, K, SV, V>
 
 	@Override
 	default RedisResponse<List<V>> blpop(double timeout, K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
-		return getSourceRedisListsCommands().blpop(timeout, ks).map((values) -> getValueCodec().decode(values));
+		SK[] ks = getKeyCodec().encodeAll(keys);
+		return getSourceRedisListsCommands().blpop(timeout, ks).map((values) -> getValueCodec().decodeAll(values));
 	}
 
 	@Override
 	default RedisResponse<List<V>> brpop(double timeout, K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
-		return getSourceRedisListsCommands().brpop(timeout, ks).map((values) -> getValueCodec().decode(values));
+		SK[] ks = getKeyCodec().encodeAll(keys);
+		return getSourceRedisListsCommands().brpop(timeout, ks).map((values) -> getValueCodec().decodeAll(values));
 	}
 
 	@Override
@@ -69,27 +69,27 @@ public interface ConvertibleRedisListsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<List<V>> lpop(K key, int count) {
 		SK k = getKeyCodec().encode(key);
-		return getSourceRedisListsCommands().lpop(k, count).map((values) -> getValueCodec().decode(values));
+		return getSourceRedisListsCommands().lpop(k, count).map((values) -> getValueCodec().decodeAll(values));
 	}
 
 	@Override
 	default RedisResponse<Long> lpush(K key, V... elements) {
 		SK k = getKeyCodec().encode(key);
-		SV[] vs = getValueCodec().encode(elements);
+		SV[] vs = getValueCodec().encodeAll(elements);
 		return getSourceRedisListsCommands().lpush(k, vs);
 	}
 
 	@Override
 	default RedisResponse<Long> lpushx(K key, V... elements) {
 		SK k = getKeyCodec().encode(key);
-		SV[] vs = getValueCodec().encode(elements);
+		SV[] vs = getValueCodec().encodeAll(elements);
 		return getSourceRedisListsCommands().lpushx(k, vs);
 	}
 
 	@Override
 	default RedisResponse<List<V>> lrange(K key, long start, long stop) {
 		SK k = getKeyCodec().encode(key);
-		return getSourceRedisListsCommands().lrange(k, start, stop).map((values) -> getValueCodec().decode(values));
+		return getSourceRedisListsCommands().lrange(k, start, stop).map((values) -> getValueCodec().decodeAll(values));
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public interface ConvertibleRedisListsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<List<V>> rpop(K key, int count) {
 		SK k = getKeyCodec().encode(key);
-		return getSourceRedisListsCommands().rpop(k, count).map((values) -> getValueCodec().decode(values));
+		return getSourceRedisListsCommands().rpop(k, count).map((values) -> getValueCodec().decodeAll(values));
 	}
 
 	@Override
@@ -128,14 +128,14 @@ public interface ConvertibleRedisListsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Long> rpush(K key, V... elements) {
 		SK k = getKeyCodec().encode(key);
-		SV[] vs = getValueCodec().encode(elements);
+		SV[] vs = getValueCodec().encodeAll(elements);
 		return getSourceRedisListsCommands().rpush(k, vs);
 	}
 
 	@Override
 	default RedisResponse<Long> rpushx(K key, V... elements) {
 		SK k = getKeyCodec().encode(key);
-		SV[] vs = getValueCodec().encode(elements);
+		SV[] vs = getValueCodec().encodeAll(elements);
 		return getSourceRedisListsCommands().rpushx(k, vs);
 	}
 }

@@ -4,6 +4,8 @@ import io.basc.framework.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TransfColumns<K, V> extends ArrayList<Pair<K, V>> {
@@ -46,5 +48,13 @@ public class TransfColumns<K, V> extends ArrayList<Pair<K, V>> {
 
 	public void addValue(V value) {
 		add(new Pair<K, V>(null, value));
+	}
+
+	public List<K> getKeys() {
+		return keys().collect(Collectors.toList());
+	}
+
+	public List<V> getValues() {
+		return values().collect(Collectors.toList());
 	}
 }

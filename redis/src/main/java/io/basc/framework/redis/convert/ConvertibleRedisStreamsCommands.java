@@ -14,18 +14,18 @@ public interface ConvertibleRedisStreamsCommands<SK, K, SV, V>
 	@Override
 	default Long xack(K key, K group, K... ids) {
 		return getSourceRedisStreamsCommands().xack(getKeyCodec().encode(key), getKeyCodec().encode(group),
-				getKeyCodec().encode(ids));
+				getKeyCodec().encodeAll(ids));
 	}
 
 	@Override
 	default List<V> xclaim(K key, K group, K consumer, long minIdleTime, ClaimArgs args, K... ids) {
 		List<SV> values = getSourceRedisStreamsCommands().xclaim(getKeyCodec().encode(key), getKeyCodec().encode(group),
-				getKeyCodec().encode(consumer), minIdleTime, args, getKeyCodec().encode(ids));
-		return getValueCodec().decode(values);
+				getKeyCodec().encode(consumer), minIdleTime, args, getKeyCodec().encodeAll(ids));
+		return getValueCodec().decodeAll(values);
 	}
 
 	@Override
 	default Long xdel(K key, K... ids) {
-		return getSourceRedisStreamsCommands().xdel(getKeyCodec().encode(key), getKeyCodec().encode(ids));
+		return getSourceRedisStreamsCommands().xdel(getKeyCodec().encode(key), getKeyCodec().encodeAll(ids));
 	}
 }

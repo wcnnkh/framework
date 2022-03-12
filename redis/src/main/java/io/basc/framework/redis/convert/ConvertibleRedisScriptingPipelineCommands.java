@@ -13,16 +13,16 @@ public interface ConvertibleRedisScriptingPipelineCommands<SK, K, SV, V>
 	@Override
 	default <T> RedisResponse<T> eval(K script, List<K> keys, List<V> args) {
 		SK k = getKeyCodec().encode(script);
-		List<SK> ks = getKeyCodec().encode(keys);
-		List<SV> vs = getValueCodec().encode(args);
+		List<SK> ks = getKeyCodec().encodeAll(keys);
+		List<SV> vs = getValueCodec().encodeAll(args);
 		return getSourceRedisScriptingCommands().eval(k, ks, vs);
 	}
 
 	@Override
 	default <T> RedisResponse<T> evalsha(K sha1, List<K> keys, List<V> args) {
 		SK k = getKeyCodec().encode(sha1);
-		List<SK> ks = getKeyCodec().encode(keys);
-		List<SV> vs = getValueCodec().encode(args);
+		List<SK> ks = getKeyCodec().encodeAll(keys);
+		List<SV> vs = getValueCodec().encodeAll(args);
 		return getSourceRedisScriptingCommands().evalsha(k, ks, vs);
 	}
 }
