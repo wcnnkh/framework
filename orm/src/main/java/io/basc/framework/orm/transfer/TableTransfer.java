@@ -39,7 +39,7 @@ import io.basc.framework.value.Value;
 public abstract class TableTransfer implements Importer, ExportProcessor<Object> {
 	private ObjectRelationalMapping orm;
 	private ConversionService conversionService;
-	private boolean header;
+	private boolean header = true;
 
 	public TableTransfer() {
 		this.orm = TransfRelationalMapping.INSTANCE;
