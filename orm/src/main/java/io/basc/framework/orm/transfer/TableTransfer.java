@@ -90,12 +90,10 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 		Assert.requiredArgument(targetType != null, "type");
 		Cursor<String[]> cursor = read(source);
 		if (Value.isBaseType(targetType.getType())) {
-			return cursor.filter((e) -> !(isHeader() && cursor.getPosition() == 0))
-					.map((values) -> ArrayUtils.isEmpty(values) ? null
-							: (T) conversionService.convert(values[0], TypeDescriptor.valueOf(String.class),
-									targetType));
+			return cursor.map((values) -> ArrayUtils.isEmpty(values) ? null
+					: (T) conversionService.convert(values[0], TypeDescriptor.valueOf(String.class), targetType));
 		} else if (targetType.isArray() || targetType.isCollection()) {
-			return cursor.filter((e) -> !(isHeader() && cursor.getPosition() == 0)).map((values) -> {
+			return cursor.map((values) -> {
 				return (T) conversionService.convert(values, TypeDescriptor.forObject(values), targetType);
 			});
 		} else if (targetType.isMap()) {
@@ -288,27 +286,38 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 		boolean writeHeader = false;
 		FileRecords<List<String>> tempRecords = new FileRecords<List<String>>(
 				new ListRecordCodec<String>(CharsetCodec.UTF_8));
-		while (iterator.hasNext()) {
-			TransfColumns<String, String> columns = iterator.next();
-			if (columns == null) {
-				continue;
-			}
-
-			if (!writeHeader && isHeader()) {
-				if (columns.hasKeys()) {
-					consumer.process(columns.getKeys());
-					// 将临时存储的记录推出去
-					tempRecords.consume(consumer);
-					consumer.process(columns.getValues());
-				} else {
-					// 如果在第一次插入的时候不存在, 先临时缓存起来
-					tempRecords.append(columns.getValues());
+		try {
+			while (iterator.hasNext()) {
+				TransfColumns<String, String> columns = iterator.next();
+				if (columns == null) {
+					continue;
 				}
-				writeHeader = true;
-				continue;
+
+				if (!writeHeader && isHeader()) {
+					if (columns.hasKeys()) {
+						consumer.process(columns.getKeys());
+						// 将临时存储的记录推出去
+						try {
+							tempRecords.consume(consumer);
+						} finally {
+							tempRecords.delete();
+						}
+						consumer.process(columns.getValues());
+						writeHeader = true;
+					} else {
+						// 如果在第一次插入的时候不存在, 先临时缓存起来
+						tempRecords.append(columns.getValues());
+					}
+					continue;
+				}
+				consumer.process(columns.getValues());
 			}
 
-			consumer.process(columns.getValues());
+			// 如果到结束时还存在数据，那么就推出去
+			tempRecords.consume(consumer);
+		} finally {
+			tempRecords.delete();
 		}
+
 	}
 }

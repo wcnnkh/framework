@@ -1,5 +1,6 @@
 package io.basc.framework.codec.support;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -20,20 +21,24 @@ public final class RecordCodec<D> implements ToBytesCodec<D> {
 	@Override
 	public void encode(D source, OutputStream target) throws IOException, EncodeException {
 		if (source == null) {
-			target.write(0);
-		} else {
-			byte[] value = codec.encode(source);
-			target.write(value == null ? 0 : value.length);
-			if (value != null && value.length != 0) {
-				target.write(value);
-			}
+			return;
+		}
+
+		byte[] value = codec.encode(source);
+		target.write(value == null ? 0 : value.length);
+		if (value != null && value.length != 0) {
+			target.write(value);
 		}
 	}
 
 	@Override
-	public D decode(InputStream source, int bufferSize) throws IOException, DecodeException {
+	public D decode(InputStream source, int bufferSize) throws IOException, DecodeException, EOFException {
 		int size = source.read();
-		if (size == 0) {
+		if (size == -1) {
+			throw new EOFException();
+		}
+		
+		if(size == 0) {
 			return null;
 		}
 

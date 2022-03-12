@@ -1,5 +1,6 @@
 package io.basc.framework.io;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,7 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 import io.basc.framework.codec.Codec;
-import io.basc.framework.codec.DecodeException;
+import io.basc.framework.codec.support.RecordCodec;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
@@ -34,7 +35,7 @@ public final class FileRecords<T> {
 	private static Logger logger = LoggerFactory.getLogger(FileRecords.class);
 	private final CallableProcessor<File, IOException> lazyCreator;
 	private volatile File file;
-	private final Codec<T, byte[]> codec;
+	private final RecordCodec<T> codec;
 
 	/**
 	 * 使用临时文件作为记录器
@@ -53,7 +54,7 @@ public final class FileRecords<T> {
 		Assert.requiredArgument(lazyCreator != null, "lazyCreator");
 		Assert.requiredArgument(codec != null, "codec");
 		this.lazyCreator = lazyCreator;
-		this.codec = codec;
+		this.codec = new RecordCodec<T>(codec);
 	}
 
 	public File getFile() throws IOException {
@@ -71,7 +72,12 @@ public final class FileRecords<T> {
 		if (file != null) {
 			synchronized (this) {
 				if (file != null) {
-					return file.delete();
+					try {
+						return file.delete();
+					} finally {
+						this.file = null;
+					}
+
 				}
 			}
 		}
@@ -116,15 +122,14 @@ public final class FileRecords<T> {
 				if (file != null) {
 					FileInputStream fis = new FileInputStream(file);
 					try {
-						int size = fis.read();
-						if (size == 0) {
-							throw new DecodeException("The number of records is 0");
+						while (true) {
+							try {
+								T v = codec.decode(fis);
+								consumer.process(v);
+							} catch (EOFException e) {
+								break;
+							}
 						}
-
-						byte[] buff = new byte[size];
-						fis.read(buff);
-						T value = codec.decode(buff);
-						consumer.process(value);
 					} finally {
 						fis.close();
 					}
@@ -138,16 +143,9 @@ public final class FileRecords<T> {
 			return;
 		}
 
-		byte[] data = codec.encode(record);
-		if (data == null || data.length == 0) {
-			return;
-		}
-
-		// 是否需要改为可复用的
 		FileOutputStream fos = new FileOutputStream(getFile(), true);
 		try {
-			fos.write(data.length);
-			fos.write(data);
+			codec.encode(record, fos);
 		} finally {
 			fos.close();
 		}

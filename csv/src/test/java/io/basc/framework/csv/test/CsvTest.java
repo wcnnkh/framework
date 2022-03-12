@@ -19,14 +19,16 @@ public class CsvTest {
 		CsvTemplate template = new CsvTemplate();
 
 		List<String> list = new ArrayList<String>();
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 3; i++) {
 			list.add(XUtils.getUUID());
 		}
 
+		System.out.println(list);
 		File file = File.createTempFile("test", ".csv");
 		try {
 			template.process(list, file);
 			List<String> readList = template.read(file, String.class).collect(Collectors.toList());
+			System.out.println(readList);
 			assertTrue(readList.equals(list));
 		} finally {
 			file.delete();

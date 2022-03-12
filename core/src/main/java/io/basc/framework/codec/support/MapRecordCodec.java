@@ -1,5 +1,6 @@
 package io.basc.framework.codec.support;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,20 +35,22 @@ public class MapRecordCodec<K, V> implements ToBytesCodec<Map<K, V>> {
 
 	@Override
 	public void encode(Map<K, V> source, OutputStream target) throws IOException, EncodeException {
-		if (source == null) {
-			return;
-		}
-
-		target.write(source.size());
-		for (Entry<K, V> entry : source.entrySet()) {
-			keyCodec.encode(entry.getKey(), target);
-			valueCodec.encode(entry.getValue(), target);
+		target.write(source == null ? 0 : source.size());
+		if (source != null) {
+			for (Entry<K, V> entry : source.entrySet()) {
+				keyCodec.encode(entry.getKey(), target);
+				valueCodec.encode(entry.getValue(), target);
+			}
 		}
 	}
 
 	@Override
 	public Map<K, V> decode(InputStream source, int bufferSize) throws IOException, DecodeException {
 		int size = source.read();
+		if (size == -1) {
+			throw new EOFException();
+		}
+
 		if (size == 0) {
 			return Collections.emptyMap();
 		}

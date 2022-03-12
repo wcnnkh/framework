@@ -1,5 +1,6 @@
 package io.basc.framework.codec.support;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -22,19 +23,21 @@ public class ListRecordCodec<D> implements ToBytesCodec<List<D>> {
 
 	@Override
 	public void encode(List<D> source, OutputStream target) throws IOException, EncodeException {
-		if (source == null) {
-			return;
-		}
-
-		target.write(source.size());
-		for (D d : source) {
-			codec.encode(d, target);
+		target.write(source == null ? 0 : source.size());
+		if (source != null) {
+			for (D d : source) {
+				codec.encode(d, target);
+			}
 		}
 	}
 
 	@Override
 	public List<D> decode(InputStream source, int bufferSize) throws IOException, DecodeException {
 		int size = source.read();
+		if (size == -1) {
+			throw new EOFException();
+		}
+
 		if (size == 0) {
 			return Collections.emptyList();
 		}
