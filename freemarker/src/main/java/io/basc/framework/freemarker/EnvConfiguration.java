@@ -17,6 +17,7 @@ import io.basc.framework.util.StringUtils;
 
 public class EnvConfiguration extends Configuration implements Configurable {
 	public static final String CONFIG_PROPERTY_PREFIX = "io.basc.freemarker.";
+
 	private final Environment env;
 
 	public EnvConfiguration() {

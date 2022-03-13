@@ -1,5 +1,10 @@
 package io.basc.framework.freemarker;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
+import freemarker.cache.TemplateLoader;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.io.ResourceUtils;
@@ -7,14 +12,9 @@ import io.basc.framework.io.UnsafeByteArrayInputStream;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-
-import freemarker.cache.TemplateLoader;
-
 public class DefaultTemplateLoader implements TemplateLoader {
 	private static Logger logger = LoggerFactory.getLogger(DefaultTemplateLoader.class);
+	
 	private final ResourceLoader resourceLoader;
 
 	public DefaultTemplateLoader(ResourceLoader resourceLoader) {
