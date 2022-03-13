@@ -81,18 +81,17 @@ public class PoiExcelOperations extends AbstractExcelReader implements ExcelOper
 
 	public WritableExcel createWritableExcel(File file) throws IOException, ExcelException {
 		if (file.length() == 0) {
+			if (SXSS_WORKBOOK_CLASS != null) {
+				Workbook workbook = Sys.env.getInstance(SXSS_WORKBOOK_CLASS);
+				return new PoiExcel(workbook, new FileOutputStream(file), true);
+			}
 			// 文件内容为空
 			ExcelVersion version = ExcelVersion.forFileName(file.getName());
 			return create(new FileOutputStream(file), version, true);
 		}
 
-		if (SXSS_WORKBOOK_CLASS == null) {
-			Workbook workbook = WorkbookFactory.create(file);
-			return new PoiExcel(workbook);
-		} else {
-			Workbook workbook = Sys.env.getInstance(SXSS_WORKBOOK_CLASS);
-			return new PoiExcel(workbook, new FileOutputStream(file), true);
-		}
+		Workbook workbook = WorkbookFactory.create(file);
+		return new PoiExcel(workbook);
 	}
 
 	@Override

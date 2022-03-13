@@ -26,10 +26,8 @@ public class PoiExcel implements WritableExcel {
 	public void close() throws IOException {
 		if (outputStream != null) {
 			try {
-				if (getNumberOfSheets() != 0) {
-					workbook.write(outputStream);
-					outputStream.flush();
-				}
+				workbook.write(outputStream);
+				outputStream.flush();
 			} finally {
 				if (closeStream) {
 					outputStream.close();
