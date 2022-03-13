@@ -38,7 +38,7 @@ public interface Encoder<D, E> extends Validator<D, E> {
 		return ObjectUtils.equals(this.encode(source), encode);
 	}
 
-	default List<E> encode(Collection<? extends D> sources) throws EncodeException {
+	default List<E> encodeAll(Collection<? extends D> sources) throws EncodeException {
 		if (CollectionUtils.isEmpty(sources)) {
 			return Collections.emptyList();
 		}
@@ -48,8 +48,8 @@ public interface Encoder<D, E> extends Validator<D, E> {
 
 	@Nullable
 	@SuppressWarnings("unchecked")
-	default E[] encode(D... sources) throws DecodeException {
-		return toEncodeConverter().convert(sources);
+	default E[] encodeAll(D... sources) throws DecodeException {
+		return toEncodeConverter().convertAll(sources);
 	}
 
 	/**

@@ -6,67 +6,57 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.page.Pageable;
-import io.basc.framework.util.page.Pageables;
-import io.basc.framework.util.stream.ConsumerProcessor;
-import io.basc.framework.util.stream.Processor;
-
 public interface ExcelExport extends Flushable, Closeable {
-	void append(Collection<String> contents) throws IOException;
+	boolean isEmpty();
 
-	default void append(String... contents) throws IOException {
-		append(Arrays.asList(contents));
-	}
+	/**
+	 * 添加一行数据
+	 * 
+	 * @param contents
+	 * @return this
+	 * @throws ExcelException
+	 * @throws IOException
+	 */
+	void put(Collection<String> contents) throws ExcelException, IOException;
 
-	default <T, E extends Throwable> void appendAll(Collection<? extends T> rows,
-			Processor<T, Collection<?>, E> processor) throws IOException, E {
-		for (T obj : rows) {
-			Collection<?> cols = processor.process(obj);
-			if (cols == null) {
-				continue;
-			}
-
-			List<String> values = cols.stream().map((v) -> v == null ? null : String.valueOf(v))
-					.collect(Collectors.toList());
-			append(values);
-		}
-		flush();
-	}
-
-	default <T, E extends Throwable, C, P extends Pageables<C, T>> void appendAll(P pages,
-			Processor<T, Collection<?>, E> rowsProcessor) throws IOException, E {
-		appendAll(pages, rowsProcessor, null);
+	/**
+	 * 添加一行数据
+	 * 
+	 * @param contents
+	 * @return this
+	 * @throws ExcelException
+	 * @throws IOException
+	 */
+	default void put(String... contents) throws ExcelException, IOException {
+		put(Arrays.asList(contents));
 	}
 
 	/**
-	 * @param <T>
-	 * @param <E>
-	 * @param pages
-	 * @param rowsProcessor
-	 * @param afterProcess  写入成功后执行
+	 * 添加一批数据
+	 * 
+	 * @param iterator
+	 * @return this
+	 * @throws ExcelException
 	 * @throws IOException
-	 * @throws E
 	 */
-	default <T, E extends Throwable, C, P extends Pageables<C, T>> void appendAll(P pages,
-			Processor<T, Collection<?>, E> rowsProcessor, @Nullable ConsumerProcessor<Pageable<C, T>, E> afterProcess)
-			throws IOException, E {
-		Stream<? extends Pageable<C, T>> stream = pages.pages();
-		try {
-			Iterator<? extends Pageable<C, T>> iterator = stream.iterator();
-			while (iterator.hasNext()) {
-				Pageable<C, T> page = iterator.next();
-				appendAll(page.getList(), rowsProcessor);
-				if (afterProcess != null) {
-					afterProcess.process(page);
-				}
-			}
-		} finally {
-			stream.close();
+	default void putAll(Iterator<? extends String[]> iterator) throws ExcelException, IOException {
+		while (iterator.hasNext()) {
+			String[] values = iterator.next();
+			put(values);
 		}
+	}
+
+	/**
+	 * 添加一批数据
+	 * 
+	 * @param stream
+	 * @return this
+	 * @throws ExcelException
+	 * @throws IOException
+	 */
+	default void putAll(Stream<? extends String[]> stream) throws ExcelException, IOException {
+		putAll(stream.iterator());
 	}
 }

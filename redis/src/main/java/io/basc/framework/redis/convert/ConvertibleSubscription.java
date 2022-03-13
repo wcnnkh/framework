@@ -24,14 +24,14 @@ public class ConvertibleSubscription<TK, TV, K, V> implements Subscription<K, V>
 
 	@Override
 	public void subscribe(K... channels) throws RedisInvalidSubscriptionException {
-		TK[] cs = keyCodec.encode(channels);
+		TK[] cs = keyCodec.encodeAll(channels);
 		subscription.subscribe(cs);
 		;
 	}
 
 	@Override
 	public void pSubscribe(K... patterns) throws RedisInvalidSubscriptionException {
-		TK[] cs = keyCodec.encode(patterns);
+		TK[] cs = keyCodec.encodeAll(patterns);
 		subscription.pSubscribe(cs);
 	}
 
@@ -42,7 +42,7 @@ public class ConvertibleSubscription<TK, TV, K, V> implements Subscription<K, V>
 
 	@Override
 	public void unsubscribe(K... channels) {
-		TK[] cs = keyCodec.encode(channels);
+		TK[] cs = keyCodec.encodeAll(channels);
 		subscription.unsubscribe(cs);
 	}
 
@@ -53,20 +53,20 @@ public class ConvertibleSubscription<TK, TV, K, V> implements Subscription<K, V>
 
 	@Override
 	public void pUnsubscribe(K... patterns) {
-		TK[] cs = keyCodec.encode(patterns);
+		TK[] cs = keyCodec.encodeAll(patterns);
 		subscription.pUnsubscribe(cs);
 	}
 
 	@Override
 	public Collection<K> getChannels() {
 		Collection<TK> ks = subscription.getChannels();
-		return keyCodec.toDecodeConverter().convert(ks, new LinkedHashSet<K>(ks.size()));
+		return keyCodec.toDecodeConverter().convertTo(ks, new LinkedHashSet<K>(ks.size()));
 	}
 
 	@Override
 	public Collection<K> getPatterns() {
 		Collection<TK> ks = subscription.getPatterns();
-		return keyCodec.toDecodeConverter().convert(ks, new LinkedHashSet<K>(ks.size()));
+		return keyCodec.toDecodeConverter().convertTo(ks, new LinkedHashSet<K>(ks.size()));
 	}
 
 	@Override

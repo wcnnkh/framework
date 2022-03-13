@@ -44,14 +44,14 @@ public interface ConvertibleRedisGeoPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<List<String>> geohash(K key, V... members) {
 		SK k = getKeyCodec().encode(key);
-		SV[] tms = getValueCodec().encode(members);
+		SV[] tms = getValueCodec().encodeAll(members);
 		return getSourceRedisGeoCommands().geohash(k, tms);
 	}
 
 	@Override
 	default RedisResponse<List<Point>> geopos(K key, V... members) {
 		SK k = getKeyCodec().encode(key);
-		SV[] tms = getValueCodec().encode(members);
+		SV[] tms = getValueCodec().encodeAll(members);
 		return getSourceRedisGeoCommands().geopos(k, tms);
 	}
 
@@ -59,7 +59,7 @@ public interface ConvertibleRedisGeoPipelineCommands<SK, K, SV, V>
 	default RedisResponse<Collection<V>> georadius(K key, Circle within, GeoRadiusArgs<K> args) {
 		SK k = getKeyCodec().encode(key);
 		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec().toEncodeConverter());
-		return getSourceRedisGeoCommands().georadius(k, within, tArgs).map((values) -> getValueCodec().decode(values));
+		return getSourceRedisGeoCommands().georadius(k, within, tArgs).map((values) -> getValueCodec().decodeAll(values));
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public interface ConvertibleRedisGeoPipelineCommands<SK, K, SV, V>
 		SV tm = getValueCodec().encode(member);
 		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec().toEncodeConverter());
 		return getSourceRedisGeoCommands().georadiusbymember(k, tm, distance, tArgs)
-				.map((values) -> getValueCodec().decode(values));
+				.map((values) -> getValueCodec().decodeAll(values));
 	}
 
 	@Override

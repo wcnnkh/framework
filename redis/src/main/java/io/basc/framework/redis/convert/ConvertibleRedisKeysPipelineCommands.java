@@ -27,7 +27,7 @@ public interface ConvertibleRedisKeysPipelineCommands<SK, K, SV, V>
 
 	@Override
 	default RedisResponse<Long> del(K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisKeysCommands().del(ks);
 	}
 
@@ -39,7 +39,7 @@ public interface ConvertibleRedisKeysPipelineCommands<SK, K, SV, V>
 
 	@Override
 	default RedisResponse<Long> exists(K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisKeysCommands().exists(ks);
 	}
 
@@ -59,12 +59,12 @@ public interface ConvertibleRedisKeysPipelineCommands<SK, K, SV, V>
 	default RedisResponse<Set<K>> keys(K pattern) {
 		SK k = getKeyCodec().encode(pattern);
 		return getSourceRedisKeysCommands().keys(k)
-				.map((tvs) -> getKeyCodec().toDecodeConverter().convert(tvs, new LinkedHashSet<K>(tvs.size())));
+				.map((tvs) -> getKeyCodec().toDecodeConverter().convertTo(tvs, new LinkedHashSet<K>(tvs.size())));
 	}
 
 	@Override
 	default RedisResponse<String> migrate(String host, int port, int timeout, MigrateParams option, K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisKeysCommands().migrate(host, port, timeout, option, ks);
 	}
 
@@ -149,7 +149,7 @@ public interface ConvertibleRedisKeysPipelineCommands<SK, K, SV, V>
 
 	@Override
 	default RedisResponse<Long> touch(K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisKeysCommands().touch(ks);
 	}
 
@@ -167,7 +167,7 @@ public interface ConvertibleRedisKeysPipelineCommands<SK, K, SV, V>
 
 	@Override
 	default RedisResponse<Long> unlink(K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisKeysCommands().unlink(ks);
 	}
 }

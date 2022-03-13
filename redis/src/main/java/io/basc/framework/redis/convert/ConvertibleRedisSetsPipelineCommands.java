@@ -16,7 +16,7 @@ public interface ConvertibleRedisSetsPipelineCommands<SK, K, SV, V>
 
 	@Override
 	default RedisResponse<Long> sadd(K key, V... members) {
-		return getSourceRedisSetsCommands().sadd(getKeyCodec().encode(key), getValueCodec().encode(members));
+		return getSourceRedisSetsCommands().sadd(getKeyCodec().encode(key), getValueCodec().encodeAll(members));
 	}
 
 	@Override
@@ -26,26 +26,26 @@ public interface ConvertibleRedisSetsPipelineCommands<SK, K, SV, V>
 
 	@Override
 	default RedisResponse<Set<V>> sdiff(K... keys) {
-		return getSourceRedisSetsCommands().sdiff(getKeyCodec().encode(keys))
-				.map((vs) -> getValueCodec().toDecodeConverter().convert(vs));
+		return getSourceRedisSetsCommands().sdiff(getKeyCodec().encodeAll(keys))
+				.map((vs) -> getValueCodec().toDecodeConverter().convertAll(vs));
 	}
 
 	@Override
 	default RedisResponse<Long> sdiffstore(K destinationKey, K... keys) {
 		return getSourceRedisSetsCommands().sdiffstore(getKeyCodec().encode(destinationKey),
-				getKeyCodec().encode(keys));
+				getKeyCodec().encodeAll(keys));
 	}
 
 	@Override
 	default RedisResponse<Set<V>> sinter(K... keys) {
-		return getSourceRedisSetsCommands().sinter(getKeyCodec().encode(keys))
-				.map((vs) -> getValueCodec().toDecodeConverter().convert(vs));
+		return getSourceRedisSetsCommands().sinter(getKeyCodec().encodeAll(keys))
+				.map((vs) -> getValueCodec().toDecodeConverter().convertAll(vs));
 	}
 
 	@Override
 	default RedisResponse<Long> sinterstore(K destinationKey, K... keys) {
 		return getSourceRedisSetsCommands().sinterstore(getKeyCodec().encode(destinationKey),
-				getKeyCodec().encode(keys));
+				getKeyCodec().encodeAll(keys));
 	}
 
 	@Override
@@ -56,12 +56,12 @@ public interface ConvertibleRedisSetsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Set<V>> smembers(K key) {
 		return getSourceRedisSetsCommands().smembers(getKeyCodec().encode(key))
-				.map((vs) -> getValueCodec().toDecodeConverter().convert(vs));
+				.map((vs) -> getValueCodec().toDecodeConverter().convertAll(vs));
 	}
 
 	@Override
 	default RedisResponse<List<Boolean>> smismember(K key, V... members) {
-		return getSourceRedisSetsCommands().smismember(getKeyCodec().encode(key), getValueCodec().encode(members));
+		return getSourceRedisSetsCommands().smismember(getKeyCodec().encode(key), getValueCodec().encodeAll(members));
 	}
 
 	@Override
@@ -73,30 +73,30 @@ public interface ConvertibleRedisSetsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Set<V>> spop(K key, int count) {
 		return getSourceRedisSetsCommands().spop(getKeyCodec().encode(key), count)
-				.map((vs) -> getValueCodec().toDecodeConverter().convert(vs));
+				.map((vs) -> getValueCodec().toDecodeConverter().convertAll(vs));
 	}
 
 	@Override
 	default RedisResponse<List<V>> srandmember(K key, int count) {
 		return getSourceRedisSetsCommands().srandmember(getKeyCodec().encode(key), count)
-				.map((vs) -> getValueCodec().decode(vs));
+				.map((vs) -> getValueCodec().decodeAll(vs));
 	}
 
 	@Override
 	default RedisResponse<Long> srem(K key, V... members) {
-		return getSourceRedisSetsCommands().srem(getKeyCodec().encode(key), getValueCodec().encode(members));
+		return getSourceRedisSetsCommands().srem(getKeyCodec().encode(key), getValueCodec().encodeAll(members));
 	}
 
 	@Override
 	default RedisResponse<Set<V>> sunion(K... keys) {
-		return getSourceRedisSetsCommands().sunion(getKeyCodec().encode(keys))
-				.map((vs) -> getValueCodec().toDecodeConverter().convert(vs));
+		return getSourceRedisSetsCommands().sunion(getKeyCodec().encodeAll(keys))
+				.map((vs) -> getValueCodec().toDecodeConverter().convertAll(vs));
 	}
 
 	@Override
 	default RedisResponse<Long> sunionstore(K destinationKey, K... keys) {
 		return getSourceRedisSetsCommands().sunionstore(getKeyCodec().encode(destinationKey),
-				getKeyCodec().encode(keys));
+				getKeyCodec().encodeAll(keys));
 	}
 
 	@Override

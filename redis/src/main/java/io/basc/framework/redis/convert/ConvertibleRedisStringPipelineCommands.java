@@ -28,7 +28,7 @@ public interface ConvertibleRedisStringPipelineCommands<SK, K, SV, V>
 
 	@Override
 	default RedisResponse<Long> bitop(BitOP op, K destkey, K... srcKeys) {
-		return getSourceRedisStringCommands().bitop(op, getKeyCodec().encode(destkey), getKeyCodec().encode(srcKeys));
+		return getSourceRedisStringCommands().bitop(op, getKeyCodec().encode(destkey), getKeyCodec().encodeAll(srcKeys));
 	}
 
 	@Override
@@ -96,8 +96,8 @@ public interface ConvertibleRedisStringPipelineCommands<SK, K, SV, V>
 
 	@Override
 	default RedisResponse<List<V>> mget(K... keys) {
-		return getSourceRedisStringCommands().mget(getKeyCodec().encode(keys))
-				.map((values) -> getValueCodec().decode(values));
+		return getSourceRedisStringCommands().mget(getKeyCodec().encodeAll(keys))
+				.map((values) -> getValueCodec().decodeAll(values));
 	}
 
 	@Override

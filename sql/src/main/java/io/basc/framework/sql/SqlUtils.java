@@ -107,7 +107,7 @@ public final class SqlUtils {
 	public static String[] getColumnNames(ResultSetMetaData rsmd, int size) throws SQLException {
 		String[] names = new String[size];
 		for(int i=1; i<=size; i++) {
-			names[i -1] = SqlUtils.lookupColumnName(rsmd, i);
+			names[i -1] = lookupColumnName(rsmd, i);
 		}
 		return names;
 	}

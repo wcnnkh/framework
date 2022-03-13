@@ -50,6 +50,10 @@ public class ResultSetMapProcessor<T> implements Processor<ResultSet, T, Throwab
 	@SuppressWarnings("unchecked")
 	@Override
 	public T process(ResultSet rs) throws Throwable {
+		if (ResultSet.class == typeDescriptor.getType()) {
+			return (T) rs;
+		}
+
 		if (typeDescriptor.isArray() || typeDescriptor.isCollection()) {
 			Object[] array = SqlUtils.getRowValues(rs, rs.getMetaData().getColumnCount());
 			return (T) conversionService.convert(array, TypeDescriptor.forObject(array), typeDescriptor);

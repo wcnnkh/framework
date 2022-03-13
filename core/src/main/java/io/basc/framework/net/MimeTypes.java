@@ -143,7 +143,7 @@ public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType>, Comp
 		}
 
 		if (obj instanceof MimeTypes) {
-			return CollectionUtils.equals(mimeTypes, ((MimeTypes) obj).mimeTypes);
+			return CollectionUtils.equals(mimeTypes, ((MimeTypes) obj).mimeTypes, false);
 		}
 		return false;
 	}

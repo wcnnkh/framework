@@ -42,7 +42,7 @@ public interface ObjectCasOperationsWrapper<K>
 		}
 
 		Codec<K, K> keyFomatter = getKeyFomatter();
-		Map<K, CAS<T>> map = getSourceOperations().gets(type, keyFomatter == null ? keys : keyFomatter.encode(keys));
+		Map<K, CAS<T>> map = getSourceOperations().gets(type, keyFomatter == null ? keys : keyFomatter.encodeAll(keys));
 		if (CollectionUtils.isEmpty(map)) {
 			return Collections.emptyMap();
 		}

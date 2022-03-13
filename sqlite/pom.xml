@@ -28,6 +28,12 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>testing</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>microsoft</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<!-- 测试 -->
 	</dependencies>
 </project>

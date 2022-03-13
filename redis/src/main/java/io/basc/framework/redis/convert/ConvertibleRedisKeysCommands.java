@@ -25,7 +25,7 @@ public interface ConvertibleRedisKeysCommands<SK, K, SV, V> extends RedisCodec<S
 
 	@Override
 	default Long del(K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisKeysCommands().del(ks);
 	}
 
@@ -38,7 +38,7 @@ public interface ConvertibleRedisKeysCommands<SK, K, SV, V> extends RedisCodec<S
 
 	@Override
 	default Long exists(K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisKeysCommands().exists(ks);
 	}
 
@@ -58,7 +58,7 @@ public interface ConvertibleRedisKeysCommands<SK, K, SV, V> extends RedisCodec<S
 	default Set<K> keys(K pattern) {
 		SK k = getKeyCodec().encode(pattern);
 		Set<SK> tvs = getSourceRedisKeysCommands().keys(k);
-		return getKeyCodec().toDecodeConverter().convert(tvs, new LinkedHashSet<K>(tvs.size()));
+		return getKeyCodec().toDecodeConverter().convertTo(tvs, new LinkedHashSet<K>(tvs.size()));
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public interface ConvertibleRedisKeysCommands<SK, K, SV, V> extends RedisCodec<S
 
 	@Override
 	default String migrate(String host, int port, int targetDB, int timeout, MigrateParams option, K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisKeysCommands().migrate(host, port, targetDB, timeout, option, ks);
 	}
 
@@ -161,7 +161,7 @@ public interface ConvertibleRedisKeysCommands<SK, K, SV, V> extends RedisCodec<S
 
 	@Override
 	default Long touch(K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisKeysCommands().touch(ks);
 	}
 
@@ -179,7 +179,7 @@ public interface ConvertibleRedisKeysCommands<SK, K, SV, V> extends RedisCodec<S
 
 	@Override
 	default Long unlink(K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisKeysCommands().unlink(ks);
 	}
 

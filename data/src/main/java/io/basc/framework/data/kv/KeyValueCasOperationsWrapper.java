@@ -31,7 +31,7 @@ public interface KeyValueCasOperationsWrapper<K, V>
 		}
 
 		Codec<K, K> keyFomatter = getKeyFomatter();
-		Map<K, CAS<V>> map = getSourceOperations().gets(keyFomatter == null ? keys : keyFomatter.encode(keys));
+		Map<K, CAS<V>> map = getSourceOperations().gets(keyFomatter == null ? keys : keyFomatter.encodeAll(keys));
 		if (CollectionUtils.isEmpty(map)) {
 			return Collections.emptyMap();
 		}

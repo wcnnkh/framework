@@ -12,20 +12,20 @@ public interface ConvertibleRedisHyperloglogPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Long> pfadd(K key, V... elements) {
 		SK k = getKeyCodec().encode(key);
-		SV[] tvs = getValueCodec().encode(elements);
+		SV[] tvs = getValueCodec().encodeAll(elements);
 		return getSourceRedisHyperloglogCommands().pfadd(k, tvs);
 	}
 
 	@Override
 	default RedisResponse<Long> pfcount(K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisHyperloglogCommands().pfcount(ks);
 	}
 
 	@Override
 	default RedisResponse<String> pfmerge(K destKey, K... sourceKeys) {
 		SK dk = getKeyCodec().encode(destKey);
-		SK[] sks = getKeyCodec().encode(sourceKeys);
+		SK[] sks = getKeyCodec().encodeAll(sourceKeys);
 		return getSourceRedisHyperloglogCommands().pfmerge(dk, sks);
 	}
 }

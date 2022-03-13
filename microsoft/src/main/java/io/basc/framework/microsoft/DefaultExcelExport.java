@@ -8,7 +8,7 @@ import java.util.Collection;
 /**
  * excel导出
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public final class DefaultExcelExport extends WritableExcelWrapper implements ExcelExport {
@@ -32,6 +32,11 @@ public final class DefaultExcelExport extends WritableExcelWrapper implements Ex
 		this.maxColumns = maxColumns;
 		this.sheetIndex = sheetIndex;
 		this.rowIndex = beginRowIndex;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return rowIndex == 0 && sheetIndex == 0;
 	}
 
 	/**
@@ -72,7 +77,7 @@ public final class DefaultExcelExport extends WritableExcelWrapper implements Ex
 		return maxColumns;
 	}
 
-	public void append(Collection<String> contents) throws IOException {
+	public void put(Collection<String> contents) throws IOException {
 		if (CollectionUtils.isEmpty(contents)) {
 			return;
 		}

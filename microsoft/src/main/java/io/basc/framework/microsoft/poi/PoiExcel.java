@@ -5,27 +5,35 @@ import java.io.OutputStream;
 
 import org.apache.poi.ss.usermodel.Workbook;
 
-import io.basc.framework.microsoft.Excel;
 import io.basc.framework.microsoft.WritableExcel;
 import io.basc.framework.microsoft.WritableSheet;
 
-public class PoiExcel implements Excel, WritableExcel {
+public class PoiExcel implements WritableExcel {
 	private final Workbook workbook;
 	private final OutputStream outputStream;
+	private final boolean closeStream;
 
 	public PoiExcel(Workbook workbook) {
-		this(workbook, null);
+		this(workbook, null, false);
 	}
 
-	PoiExcel(Workbook workbook, OutputStream outputStream) {
+	PoiExcel(Workbook workbook, OutputStream outputStream, boolean closeStream) {
 		this.workbook = workbook;
 		this.outputStream = outputStream;
+		this.closeStream = closeStream;
 	}
 
 	public void close() throws IOException {
 		if (outputStream != null) {
-			workbook.write(outputStream);
-			outputStream.flush();
+			try {
+				workbook.write(outputStream);
+				outputStream.flush();
+			} finally {
+				if (closeStream) {
+					outputStream.close();
+				}
+			}
+
 		}
 		workbook.close();
 	}

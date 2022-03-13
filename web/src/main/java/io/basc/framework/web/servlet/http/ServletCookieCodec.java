@@ -1,3 +1,4 @@
+
 package io.basc.framework.web.servlet.http;
 
 import java.net.HttpCookie;
@@ -18,12 +19,26 @@ public class ServletCookieCodec implements Codec<Cookie, HttpCookie> {
 		}
 
 		HttpCookie httpCookie = new HttpCookie(cookie.getName(), cookie.getValue());
-		httpCookie.setComment(cookie.getComment());
+
+		String comment = cookie.getComment();
+		if (comment != null) {
+			httpCookie.setComment(comment);
+		}
+
 		httpCookie.setSecure(cookie.getSecure());
 		httpCookie.setHttpOnly(cookie.isHttpOnly());
 		httpCookie.setMaxAge(cookie.getMaxAge());
-		httpCookie.setDomain(cookie.getDomain());
-		httpCookie.setPath(cookie.getPath());
+
+		String domain = cookie.getDomain();
+		if (domain != null) {
+			httpCookie.setDomain(domain);
+		}
+
+		String path = cookie.getPath();
+		if (path != null) {
+			httpCookie.setPath(path);
+		}
+
 		httpCookie.setVersion(cookie.getVersion());
 		return httpCookie;
 	}
@@ -35,12 +50,26 @@ public class ServletCookieCodec implements Codec<Cookie, HttpCookie> {
 		}
 
 		Cookie cookie = new Cookie(source.getName(), source.getValue());
-		cookie.setComment(source.getComment());
-		cookie.setDomain(source.getDomain());
+		
+		String comment = source.getComment();
+		if(comment != null) {
+			cookie.setComment(comment);
+		}
+		
+		String domain = source.getDomain();
+		if(domain != null) {
+			cookie.setDomain(domain);
+		}
+		
 		cookie.setHttpOnly(source.isHttpOnly());
 		// TODO 整形溢出?
 		cookie.setMaxAge((int) source.getMaxAge());
-		cookie.setPath(source.getPath());
+		
+		String path = source.getPath();
+		if(path != null) {
+			cookie.setPath(path);
+		}
+		
 		cookie.setSecure(source.getSecure());
 		cookie.setVersion(source.getVersion());
 		return cookie;

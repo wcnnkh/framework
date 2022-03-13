@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
 
 public interface ExcelOperations extends ExcelReader {
 	Excel create(InputStream inputStream) throws IOException, ExcelException;
@@ -19,32 +19,24 @@ public interface ExcelOperations extends ExcelReader {
 
 	WritableExcel createWritableExcel(File file) throws IOException, ExcelException;
 
-	default ExcelExport createExcelExport(OutputStream outputStream) throws IOException, ExcelException {
-		return createExcelExport(outputStream, ExcelVersion.XLS);
+	default ExcelExport createExport(OutputStream outputStream) throws IOException, ExcelException {
+		Assert.requiredArgument(outputStream != null, "outputStream");
+		return createExport(outputStream, ExcelVersion.XLS);
 	}
 
-	ExcelExport createExcelExport(OutputStream outputStream, @Nullable ExcelVersion excelVersion)
-			throws IOException, ExcelException;
-
-	ExcelExport createExcelExport(File file) throws IOException, ExcelException;
-
-	/**
-	 * @param target file or OutputStream
-	 * @param excelVersion
-	 * @return
-	 * @throws IOException
-	 * @throws ExcelException
-	 */
-	default ExcelExport createExcelExport(Object target, @Nullable ExcelVersion excelVersion)
+	default ExcelExport createExport(OutputStream outputStream, @Nullable ExcelVersion excelVersion)
 			throws IOException, ExcelException {
-		ExcelExport export;
-		if (target instanceof OutputStream) {
-			export = createExcelExport((OutputStream) target, excelVersion);
-		} else if (target instanceof File) {
-			export = createExcelExport((File) target);
-		} else {
-			throw new NotSupportedException(target.toString());
+		ExcelVersion excelVersionTouse = excelVersion == null ? ExcelVersion.XLS : excelVersion;
+		WritableExcel writableExcel = create(outputStream, excelVersionTouse);
+		return new DefaultExcelExport(writableExcel, excelVersionTouse, 0, 0);
+	}
+
+	default ExcelExport createExport(File file) throws IOException, ExcelException {
+		WritableExcel writableExcel = createWritableExcel(file);
+		ExcelVersion excelVersion = ExcelVersion.forFileName(file.getName());
+		if (excelVersion == null) {
+			excelVersion = ExcelVersion.XLS;
 		}
-		return export;
+		return new DefaultExcelExport(writableExcel, excelVersion, 0, 0);
 	}
 }

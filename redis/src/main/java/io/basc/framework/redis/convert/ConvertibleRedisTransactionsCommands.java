@@ -34,7 +34,7 @@ public interface ConvertibleRedisTransactionsCommands<SK, K, SV, V>
 
 	@Override
 	default String watch(K... keys) {
-		return getSourceRedisTransactionsCommands().watch(getKeyCodec().encode(keys));
+		return getSourceRedisTransactionsCommands().watch(getKeyCodec().encodeAll(keys));
 	}
 	
 	

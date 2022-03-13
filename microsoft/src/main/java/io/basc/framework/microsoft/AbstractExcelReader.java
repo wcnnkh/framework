@@ -1,6 +1,8 @@
 package io.basc.framework.microsoft;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
@@ -24,7 +26,34 @@ public abstract class AbstractExcelReader implements ExcelReader {
 	}
 
 	@Override
-	public Stream<String[]> read(Object source) throws IOException, ExcelException {
+	public Stream<String[]> read(File source) throws IOException, ExcelException {
+		ResponsiveIterator<String[]> iterator = new ResponsiveIterator<String[]>();
+		RowCallback callback = (sheetIndex, rowIndex, contents) -> {
+			try {
+				iterator.put(contents);
+			} catch (InterruptedException e) {
+				logger.error(e, "put sheetIndex={}, rowIndex={}, contents={} error", sheetIndex, rowIndex, contents);
+			}
+		};
+
+		READ_EXECUTOR.execute(() -> {
+			try {
+				read(source, callback);
+			} catch (Throwable e) {
+				logger.error(e, "read error");
+			} finally {
+				try {
+					iterator.close();
+				} catch (InterruptedException e) {
+					logger.error(e, "read thread error");
+				}
+			}
+		});
+		return XUtils.stream(iterator);
+	}
+
+	@Override
+	public Stream<String[]> read(InputStream source) throws IOException, ExcelException {
 		ResponsiveIterator<String[]> iterator = new ResponsiveIterator<String[]>();
 		RowCallback callback = (sheetIndex, rowIndex, contents) -> {
 			try {

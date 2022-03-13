@@ -16,7 +16,6 @@ import io.basc.framework.context.annotation.ProviderClassesLoader;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.factory.support.InstanceIterable;
-import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
@@ -96,20 +95,8 @@ public class LazyBeanDefinitionRegsitry extends DefaultBeanDefinitionRegistry {
 			return null;
 		}
 
-		if (clazz.isPrimitive() || clazz.isEnum() || clazz.isArray() || !ClassUtils.isAvailable(clazz)) {
-			return null;
-		}
-
-		if (!ReflectionUtils.isAvailable(clazz, (e) -> {
-			if (logger.isTraceEnabled()) {
-				logger.trace(e, "This class[{}] cannot be included because:", clazz.getName());
-			} else if (logger.isDebugEnabled()) {
-				logger.debug("This class[{}] cannot be included because {}: {}", clazz.getName(),
-						NestedExceptionUtils.getRootCause(e).getClass(),
-						NestedExceptionUtils.getNonEmptyMessage(e, false));
-			}
-			return false;
-		})) {
+		if (clazz.isPrimitive() || clazz.isEnum() || clazz.isArray() || !ClassUtils.isAvailable(clazz)
+				|| !ReflectionUtils.isAvailable(clazz, logger)) {
 			return null;
 		}
 

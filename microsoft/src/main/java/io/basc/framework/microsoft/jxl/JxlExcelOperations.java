@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.microsoft.AbstractExcelReader;
-import io.basc.framework.microsoft.DefaultExcelExport;
 import io.basc.framework.microsoft.Excel;
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.ExcelExport;
@@ -82,21 +81,12 @@ public class JxlExcelOperations extends AbstractExcelReader implements ExcelOper
 		return create(outputStream);
 	}
 
-	public ExcelExport createExcelExport(File file) throws IOException, ExcelException {
+	public ExcelExport createExport(File file) throws IOException, ExcelException {
 		ExcelVersion excelVersion = ExcelVersion.forFileName(file.getName());
 		if (excelVersion != null && excelVersion != ExcelVersion.XLS) {
 			throw new NotSupportedException("Support only xls");
 		}
 
-		excelVersion = excelVersion == null ? ExcelVersion.XLS : excelVersion;
-		WritableExcel writableExcel = createWritableExcel(file);
-		return new DefaultExcelExport(writableExcel, excelVersion, 0, 0);
-	}
-
-	public ExcelExport createExcelExport(OutputStream outputStream, ExcelVersion excelVersion)
-			throws IOException, ExcelException {
-		ExcelVersion excelVersionTouse = excelVersion == null ? ExcelVersion.XLS : excelVersion;
-		WritableExcel writableExcel = create(outputStream, excelVersionTouse);
-		return new DefaultExcelExport(writableExcel, excelVersionTouse, 0, 0);
+		return ExcelOperations.super.createExport(file);
 	}
 }

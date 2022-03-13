@@ -1,4 +1,4 @@
-package io.basc.framework.microsoft.annotation;
+package io.basc.framework.orm.transfer;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ExcelColumn {
+public @interface TransfColumn {
 	String value() default "";
 
 	String[] alias() default {};

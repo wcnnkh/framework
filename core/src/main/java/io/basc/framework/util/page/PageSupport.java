@@ -32,7 +32,7 @@ public class PageSupport {
 		Assert.isTrue(total >= 0, "required total >= 0");
 		Assert.isTrue(limit > 0, "required limit > 0");
 		Assert.isTrue(start >= 0, "required start >= 0");
-		return start + limit < total;
+		return (total - start) <= limit;
 	}
 
 	public static long getPages(long total, long limit) {
@@ -48,7 +48,7 @@ public class PageSupport {
 	public static long getNextStart(long start, long limit) {
 		Assert.isTrue(limit > 0, "required limit > 0");
 		Assert.isTrue(start >= 0, "required start >= 0");
-		return start + limit;
+		return Math.max(start, start + limit);
 	}
 
 	public static <T> Pagination<T> toPage(long total, long pageNumber, long limit, List<T> list) {

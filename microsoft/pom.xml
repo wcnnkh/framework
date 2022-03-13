@@ -1,6 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>io.basc.framework</groupId>
@@ -11,7 +9,6 @@
 	<properties>
 		<poi.version>4.1.2</poi.version>
 		<jxl.version>2.6.12</jxl.version>
-		<csv.version>1.9.0</csv.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -25,32 +22,14 @@
 			<version>${jxl.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-csv</artifactId>
-			<version>${csv.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
 			<version>${poi.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>testing</artifactId>
 		</dependency>
-		
-		<!-- Support -->
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>sql</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>mvc</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<!-- Support -->
 	</dependencies>
 </project>

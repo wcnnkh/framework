@@ -3,11 +3,14 @@ package io.basc.framework.freemarker;
 import java.util.Map;
 
 import freemarker.core.Environment;
+import freemarker.log.Logger;
 import freemarker.template.AdapterTemplateModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import freemarker.template.TemplateNumberModel;
 import freemarker.template.TemplateScalarModel;
+import io.basc.framework.env.Sys;
+import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.NumberUtils;
 
 /**
@@ -18,6 +21,15 @@ import io.basc.framework.util.NumberUtils;
  */
 public class FreemarkerUtils {
 	private static final String NOT_MATCH = "The '%s' parameter not a %s";
+	private static io.basc.framework.logger.Logger logger = LoggerFactory.getLogger(FreemarkerUtils.class);
+
+	public static void ensureLoggerLibrary() {
+		String library = Sys.env.getValue(Logger.SYSTEM_PROPERTY_NAME_LOGGER_LIBRARY, String.class,
+				Logger.LIBRARY_NAME_SLF4J);
+		logger.debug("use logger library {}", library);
+		// 默认选择使用slf4j
+		System.setProperty(Logger.SYSTEM_PROPERTY_NAME_LOGGER_LIBRARY, library);
+	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> T getObject(TemplateModel model, String name, Class<T> targetClass)

@@ -8,6 +8,7 @@ import java.util.Collection;
 import io.basc.framework.env.Sys;
 import io.basc.framework.http.client.DefaultHttpClient;
 import io.basc.framework.http.client.HttpClient;
+import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
@@ -54,6 +55,10 @@ public final class HttpUtils {
 	 * @return
 	 */
 	public static boolean isSameOrigin(HttpRequest request) {
+		if(request == null) {
+			return false;
+		}
+		
 		HttpHeaders headers = request.getHeaders();
 		String origin = headers.getOrigin();
 		if (origin == null) {
@@ -127,12 +132,24 @@ public final class HttpUtils {
 	 */
 	public static void writeFileMessageHeaders(HttpOutputMessage outputMessage, String fileName,
 			@Nullable Charset charset) {
+		Assert.requiredArgument(outputMessage != null, "outputMessage");
+		Assert.requiredArgument(fileName != null, "fileName");
 		MimeType mimeType = FileMimeTypeUitls.getMimeType(fileName);
 		if (mimeType != null) {
 			outputMessage.setContentType(mimeType);
 		}
-		ContentDisposition contentDisposition = ContentDisposition.builder("attachment").filename(fileName, charset)
-				.build();
+
+		Charset charsetToUse = charset;
+		if (charsetToUse == null) {
+			charsetToUse = outputMessage.getCharset();
+		}
+		
+		if(charsetToUse == null) {
+			charsetToUse = Constants.UTF_8;
+		}
+
+		ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
+				.filename(fileName, charsetToUse).build();
 		outputMessage.getHeaders().setContentDisposition(contentDisposition);
 	}
 }

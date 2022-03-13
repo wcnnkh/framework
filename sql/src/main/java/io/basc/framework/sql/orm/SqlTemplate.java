@@ -442,19 +442,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return cursor.first();
 	}
 
-	@Nullable
-	default <T> T queryFirst(Class<? extends T> resultType, Sql sql) {
-		Cursor<T> cursor = query(resultType, sql);
-		return cursor.first();
-	}
-
 	default <T> List<T> queryAll(TableStructure tableStructure, Sql sql) {
 		Cursor<T> cursor = query(tableStructure, sql);
-		return cursor.shared();
-	}
-
-	default <T> List<T> queryAll(Class<? extends T> resultType, Sql sql) {
-		Cursor<T> cursor = query(resultType, sql);
 		return cursor.shared();
 	}
 

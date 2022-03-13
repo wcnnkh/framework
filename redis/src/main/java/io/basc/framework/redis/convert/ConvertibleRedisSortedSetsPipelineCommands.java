@@ -24,8 +24,8 @@ public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>
 
 	@Override
 	default RedisResponse<List<V>> bzpopmin(double timeout, K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
-		return getSourceRedisSortedSetsCommands().bzpopmin(timeout, ks).map((vs) -> getValueCodec().decode(vs));
+		SK[] ks = getKeyCodec().encodeAll(keys);
+		return getSourceRedisSortedSetsCommands().bzpopmin(timeout, ks).map((vs) -> getValueCodec().decodeAll(vs));
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Long> zdiffstore(K destinationKey, K... keys) {
 		SK dk = getKeyCodec().encode(destinationKey);
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisSortedSetsCommands().zdiffstore(dk, ks);
 	}
 
@@ -73,14 +73,14 @@ public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>
 
 	@Override
 	default RedisResponse<Collection<V>> zinter(InterArgs args, K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisSortedSetsCommands().zinter(args, ks)
-				.map((tvs) -> getValueCodec().toDecodeConverter().convert(tvs, new LinkedHashSet<V>(tvs.size())));
+				.map((tvs) -> getValueCodec().toDecodeConverter().convertTo(tvs, new LinkedHashSet<V>(tvs.size())));
 	}
 
 	@Override
 	default RedisResponse<Collection<Tuple<V>>> zinterWithScores(InterArgs args, K... keys) {
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisSortedSetsCommands().zinterWithScores(args, ks)
 				.map((values) -> values.stream()
 						.map((o) -> new Tuple<V>(getValueCodec().decode(o.getValue()), o.getScore()))
@@ -90,7 +90,7 @@ public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Long> zinterstore(K destinationKey, InterArgs interArgs, K... keys) {
 		SK dk = getKeyCodec().encode(destinationKey);
-		SK[] ks = getKeyCodec().encode(keys);
+		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisSortedSetsCommands().zinterstore(dk, interArgs, ks);
 	}
 
@@ -104,7 +104,7 @@ public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<List<Double>> zmscore(K key, V... members) {
 		SK k = getKeyCodec().encode(key);
-		SV[] ms = getValueCodec().encode(members);
+		SV[] ms = getValueCodec().encodeAll(members);
 		return getSourceRedisSortedSetsCommands().zmscore(k, ms);
 	}
 
@@ -129,7 +129,8 @@ public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Collection<V>> zrandmember(K key, int count) {
 		SK k = getKeyCodec().encode(key);
-		return getSourceRedisSortedSetsCommands().zrandmember(k, count).map((tuples) -> getValueCodec().decode(tuples));
+		return getSourceRedisSortedSetsCommands().zrandmember(k, count)
+				.map((tuples) -> getValueCodec().decodeAll(tuples));
 	}
 
 	@Override
@@ -145,7 +146,7 @@ public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>
 	default RedisResponse<Collection<V>> zrange(K key, long start, long stop) {
 		SK k = getKeyCodec().encode(key);
 		return getSourceRedisSortedSetsCommands().zrange(k, start, stop)
-				.map((tuples) -> getValueCodec().decode(tuples));
+				.map((tuples) -> getValueCodec().decodeAll(tuples));
 	}
 
 	@Override
@@ -153,7 +154,7 @@ public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>
 		SK k = getKeyCodec().encode(key);
 		return getSourceRedisSortedSetsCommands()
 				.zrangeByLex(k, range.convert(getValueCodec().toEncodeConverter()), offset, limit)
-				.map((tuples) -> getValueCodec().decode(tuples));
+				.map((tuples) -> getValueCodec().decodeAll(tuples));
 	}
 
 	@Override
@@ -161,7 +162,7 @@ public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>
 		SK k = getKeyCodec().encode(key);
 		return getSourceRedisSortedSetsCommands()
 				.zrangeByScore(k, range.convert(getValueCodec().toEncodeConverter()), offset, limit)
-				.map((tuples) -> getValueCodec().decode(tuples));
+				.map((tuples) -> getValueCodec().decodeAll(tuples));
 	}
 
 	@Override
@@ -184,7 +185,7 @@ public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Long> zrem(K key, V... members) {
 		SK k = getKeyCodec().encode(key);
-		SV[] ms = getValueCodec().encode(members);
+		SV[] ms = getValueCodec().encodeAll(members);
 		return getSourceRedisSortedSetsCommands().zrem(k, ms);
 	}
 
@@ -208,21 +209,21 @@ public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Collection<V>> zrevrange(K key, long start, long stop) {
 		return getSourceRedisSortedSetsCommands().zrevrange(getKeyCodec().encode(key), start, stop)
-				.map((values) -> getValueCodec().toDecodeConverter().convert(values));
+				.map((values) -> getValueCodec().toDecodeConverter().convertAll(values));
 	}
 
 	@Override
 	default RedisResponse<Collection<V>> zrevrangebylex(K key, Range<V> range, int offset, int count) {
 		return getSourceRedisSortedSetsCommands().zrevrangebylex(getKeyCodec().encode(key),
 				range.convert(getValueCodec().toEncodeConverter()), offset, count)
-				.map((values) -> getValueCodec().toDecodeConverter().convert(values));
+				.map((values) -> getValueCodec().toDecodeConverter().convertAll(values));
 	}
 
 	@Override
 	default RedisResponse<Collection<V>> zrevrangebyscore(K key, Range<V> range, int offset, int count) {
 		return getSourceRedisSortedSetsCommands().zrevrangebyscore(getKeyCodec().encode(key),
 				range.convert(getValueCodec().toEncodeConverter()), offset, count)
-				.map((values) -> getValueCodec().toDecodeConverter().convert(values));
+				.map((values) -> getValueCodec().toDecodeConverter().convertAll(values));
 	}
 
 	@Override
@@ -248,13 +249,13 @@ public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>
 
 	@Override
 	default RedisResponse<Collection<V>> zunion(InterArgs interArgs, K... keys) {
-		return getSourceRedisSortedSetsCommands().zunion(interArgs, getKeyCodec().encode(keys))
-				.map((values) -> getValueCodec().toDecodeConverter().convert(values));
+		return getSourceRedisSortedSetsCommands().zunion(interArgs, getKeyCodec().encodeAll(keys))
+				.map((values) -> getValueCodec().toDecodeConverter().convertAll(values));
 	}
 
 	@Override
 	default RedisResponse<Collection<Tuple<V>>> zunionWithScores(InterArgs interArgs, K... keys) {
-		return getSourceRedisSortedSetsCommands().zunionWithScores(interArgs, getKeyCodec().encode(keys))
+		return getSourceRedisSortedSetsCommands().zunionWithScores(interArgs, getKeyCodec().encodeAll(keys))
 				.map((values) -> values.stream()
 						.map((o) -> new Tuple<V>(getValueCodec().decode(o.getValue()), o.getScore()))
 						.collect(Collectors.toList()));
@@ -263,6 +264,6 @@ public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Long> zunionstore(K destinationKey, InterArgs interArgs, K... keys) {
 		return getSourceRedisSortedSetsCommands().zunionstore(getKeyCodec().encode(destinationKey), interArgs,
-				getKeyCodec().encode(keys));
+				getKeyCodec().encodeAll(keys));
 	}
 }
