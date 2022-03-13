@@ -5,8 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.MapProcessDecorator;
 import io.basc.framework.mapper.Mapper;
 import io.basc.framework.orm.transfer.ExportProcessor;
@@ -29,8 +31,16 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor,
 		return prepare(connection, sql, this);
 	}
 
+	default PreparedStatementProcessor prepare(Connection connection, String sql, Object... sqlParams) {
+		return prepare(connection, new SimpleSql(sql, sqlParams));
+	}
+
 	default PreparedStatementProcessor prepare(Sql sql) {
 		return prepare(sql, this);
+	}
+
+	default PreparedStatementProcessor prepare(String sql, Object... sqlParams) {
+		return prepare(new SimpleSql(sql, sqlParams));
 	}
 
 	/**
@@ -45,6 +55,10 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor,
 		return prepare(sql).update();
 	}
 
+	default long update(String sql, Object... sqlParams) throws SqlException {
+		return update(sql, sqlParams);
+	}
+
 	/**
 	 * @see #prepare(Sql)
 	 * @return 返回结果并不代表是否执行成功，意义请参考jdk文档<br/>
@@ -54,6 +68,10 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor,
 	 */
 	default boolean execute(Sql sql) throws SqlException {
 		return prepare(sql).execute();
+	}
+
+	default boolean execute(String sql, Object... sqlParams) throws SqlException {
+		return execute(new SimpleSql(sql, sqlParams));
 	}
 
 	default <T> Cursor<T> query(Connection connection, Sql sql, SqlStatementProcessor statementProcessor,
@@ -122,12 +140,33 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor,
 		return prepare(connection, sql).query().stream(getMapProcessor(resultType));
 	}
 
+	default <T> Cursor<T> query(Connection connection, TypeDescriptor resultType, String sql, Object... sqlParams) {
+		return query(connection, resultType, new SimpleSql(sql, sqlParams));
+	}
+
 	default <T> Cursor<T> query(TypeDescriptor resultType, Sql sql, SqlStatementProcessor statementProcessor) {
 		return prepare(sql, statementProcessor).query().stream(getMapProcessor(resultType));
 	}
 
 	default <T> Cursor<T> query(TypeDescriptor resultType, Sql sql) {
 		return prepare(sql).query().stream(getMapProcessor(resultType));
+	}
+
+	default <T> List<T> queryAll(TypeDescriptor resultType, Sql sql) {
+		Cursor<T> cursor = query(resultType, sql);
+		try {
+			return cursor.shared();
+		} finally {
+			cursor.close();
+		}
+	}
+
+	default <T> List<T> queryAll(TypeDescriptor resultType, String sql, Object... sqlParams) {
+		return queryAll(resultType, new SimpleSql(sql, sqlParams));
+	}
+
+	default <T> Cursor<T> query(TypeDescriptor resultType, String sql, Object... sqlParams) {
+		return query(resultType, new SimpleSql(sql, sqlParams));
 	}
 
 	default <T> Cursor<T> query(Connection connection, Class<? extends T> resultType, Sql sql,
@@ -139,12 +178,20 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor,
 		return query(connection, sql, getMapProcessor(resultType));
 	}
 
+	default <T> Cursor<T> query(Connection connection, Class<? extends T> resultType, String sql, Object... sqlParams) {
+		return query(connection, resultType, new SimpleSql(sql, sqlParams));
+	}
+
 	default <T> Cursor<T> query(Class<? extends T> resultType, Sql sql, SqlStatementProcessor statementProcessor) {
 		return query(sql, statementProcessor, getMapProcessor(resultType));
 	}
 
 	default <T> Cursor<T> query(Class<? extends T> resultType, Sql sql) {
 		return query(sql, getMapProcessor(resultType));
+	}
+
+	default <T> Cursor<T> query(Class<? extends T> resultType, String sql, Object... sqlParams) {
+		return query(resultType, new SimpleSql(sql, sqlParams));
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -165,5 +212,25 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor,
 
 	default <T> Exporter export(Sql sql, ExportProcessor<? super ResultSet> processor) {
 		return export(sql, ResultSet.class, processor);
+	}
+
+	default <T> List<T> queryAll(Class<? extends T> resultType, Sql sql) {
+		Cursor<T> cursor = query(resultType, sql);
+		return cursor.shared();
+	}
+
+	default <T> List<T> queryAll(Class<? extends T> resultType, String sql, Object... sqlParams) {
+		return queryAll(resultType, new SimpleSql(sql, sqlParams));
+	}
+
+	@Nullable
+	default <T> T queryFirst(Class<? extends T> resultType, Sql sql) {
+		Cursor<T> cursor = query(resultType, sql);
+		return cursor.first();
+	}
+
+	@Nullable
+	default <T> T queryFirst(Class<? extends T> resultType, String sql, Object... sqlParams) {
+		return queryFirst(resultType, new SimpleSql(sql, sqlParams));
 	}
 }

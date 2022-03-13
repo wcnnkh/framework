@@ -99,9 +99,9 @@ public final class MicrosoftUtils {
 		Assert.requiredArgument(target != null, "target");
 		ExcelExport export;
 		if (target instanceof OutputStream) {
-			export = getExcelOperations().createExcelExport((OutputStream) target, version);
+			export = getExcelOperations().createExport((OutputStream) target, version);
 		} else if (target instanceof File) {
-			export = getExcelOperations().createExcelExport((File) target);
+			export = getExcelOperations().createExport((File) target);
 		} else {
 			throw new NotSupportedException(target.toString());
 		}

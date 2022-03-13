@@ -19,13 +19,24 @@ public interface ExcelOperations extends ExcelReader {
 
 	WritableExcel createWritableExcel(File file) throws IOException, ExcelException;
 
-	default ExcelExport createExcelExport(OutputStream outputStream) throws IOException, ExcelException {
+	default ExcelExport createExport(OutputStream outputStream) throws IOException, ExcelException {
 		Assert.requiredArgument(outputStream != null, "outputStream");
-		return createExcelExport(outputStream, ExcelVersion.XLS);
+		return createExport(outputStream, ExcelVersion.XLS);
 	}
 
-	ExcelExport createExcelExport(OutputStream outputStream, @Nullable ExcelVersion excelVersion)
-			throws IOException, ExcelException;
+	default ExcelExport createExport(OutputStream outputStream, @Nullable ExcelVersion excelVersion)
+			throws IOException, ExcelException {
+		ExcelVersion excelVersionTouse = excelVersion == null ? ExcelVersion.XLS : excelVersion;
+		WritableExcel writableExcel = create(outputStream, excelVersionTouse);
+		return new DefaultExcelExport(writableExcel, excelVersionTouse, 0, 0);
+	}
 
-	ExcelExport createExcelExport(File file) throws IOException, ExcelException;
+	default ExcelExport createExport(File file) throws IOException, ExcelException {
+		WritableExcel writableExcel = createWritableExcel(file);
+		ExcelVersion excelVersion = ExcelVersion.forFileName(file.getName());
+		if (excelVersion == null) {
+			excelVersion = ExcelVersion.XLS;
+		}
+		return new DefaultExcelExport(writableExcel, excelVersion, 0, 0);
+	}
 }

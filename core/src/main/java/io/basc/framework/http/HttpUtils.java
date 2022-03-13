@@ -8,6 +8,7 @@ import java.util.Collection;
 import io.basc.framework.env.Sys;
 import io.basc.framework.http.client.DefaultHttpClient;
 import io.basc.framework.http.client.HttpClient;
+import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
@@ -140,10 +141,11 @@ public final class HttpUtils {
 
 		Charset charsetToUse = charset;
 		if (charsetToUse == null) {
-			String cName = outputMessage.getCharacterEncoding();
-			if (StringUtils.isNotEmpty(cName)) {
-				charsetToUse = Charset.forName(cName);
-			}
+			charsetToUse = outputMessage.getCharset();
+		}
+		
+		if(charsetToUse == null) {
+			charsetToUse = Constants.UTF_8;
 		}
 
 		ContentDisposition contentDisposition = ContentDisposition.builder("attachment")

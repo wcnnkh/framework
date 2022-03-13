@@ -61,7 +61,11 @@ public class ExcelTemplate extends TableTransfer {
 
 	@Override
 	public final void process(Iterator<? extends Object> source, File target) throws IOException {
-		ExcelExport export = getExcelOperations().createExcelExport(target);
+		if(!source.hasNext()) {
+			return ;
+		}
+		
+		ExcelExport export = getExcelOperations().createExport(target);
 		try {
 			exportAll(source, (e) -> export.put(e));
 		} finally {
