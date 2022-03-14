@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
+import io.basc.framework.io.Bits;
 import io.basc.framework.util.Assert;
 
 public final class RecordCodec<D> implements ToBytesCodec<D> {
@@ -25,7 +26,7 @@ public final class RecordCodec<D> implements ToBytesCodec<D> {
 		}
 
 		byte[] value = codec.encode(source);
-		target.write(value == null ? 0 : value.length);
+		Bits.writeInt(value == null ? 0 : value.length, target);
 		if (value != null && value.length != 0) {
 			target.write(value);
 		}
@@ -33,17 +34,15 @@ public final class RecordCodec<D> implements ToBytesCodec<D> {
 
 	@Override
 	public D decode(InputStream source, int bufferSize) throws IOException, DecodeException, EOFException {
-		int size = source.read();
-		if (size == -1) {
-			throw new EOFException();
-		}
-		
-		if(size == 0) {
+		int size = Bits.readInt(source);
+		if (size == 0) {
 			return null;
 		}
 
 		byte[] buff = new byte[size];
-		source.read(buff);
+		if (source.read(buff) == -1) {
+			throw new EOFException();
+		}
 		return codec.decode(buff);
 	}
 
