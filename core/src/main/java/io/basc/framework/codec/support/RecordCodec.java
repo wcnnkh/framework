@@ -21,11 +21,7 @@ public final class RecordCodec<D> implements ToBytesCodec<D> {
 
 	@Override
 	public void encode(D source, OutputStream target) throws IOException, EncodeException {
-		if (source == null) {
-			return;
-		}
-
-		byte[] value = codec.encode(source);
+		byte[] value = source == null ? null : codec.encode(source);
 		Bits.writeInt(value == null ? 0 : value.length, target);
 		if (value != null && value.length != 0) {
 			target.write(value);
