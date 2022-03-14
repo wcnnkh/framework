@@ -169,14 +169,12 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 				}
 			}
 
+			List<Property> properties = structure.columns().filter((e) -> e.getField().isSupportSetter())
+					.collect(Collectors.toList());
 			// 映射
 			return StreamProcessorSupport.cursor(iterator).onClose(() -> source.close()).map((contents) -> {
 				T instance = (T) ReflectionApi.newInstance(structure.getEntityClass());
-				structure.columns().forEach((property) -> {
-					if (!property.getField().isSupportSetter()) {
-						return;
-					}
-
+				properties.forEach((property) -> {
 					Integer index = nameToIndexMap.get(property.getName());
 					if (index == null || index >= contents.length) {
 						for (String name : property.getAliasNames()) {

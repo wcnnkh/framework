@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.function.Consumer;
 
 import org.apache.poi.poifs.filesystem.FileMagic;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -17,8 +18,8 @@ import io.basc.framework.microsoft.Excel;
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.ExcelOperations;
 import io.basc.framework.microsoft.ExcelReader;
+import io.basc.framework.microsoft.ExcelRow;
 import io.basc.framework.microsoft.ExcelVersion;
-import io.basc.framework.microsoft.RowCallback;
 import io.basc.framework.microsoft.WritableExcel;
 import io.basc.framework.util.ClassUtils;
 
@@ -44,29 +45,29 @@ public class PoiExcelOperations extends AbstractExcelReader implements ExcelOper
 		return new PoiExcel(workbook);
 	}
 
-	public void read(InputStream inputStream, RowCallback rowCallback) throws IOException, ExcelException {
+	public void read(InputStream inputStream, Consumer<ExcelRow> consumer) throws IOException, ExcelException {
 		InputStream is = FileMagic.prepareToCheckMagic(inputStream);
 		FileMagic fm = FileMagic.valueOf(is);
 		switch (fm) {
 		case OLE2:
-			OLE2_READER.read(inputStream, rowCallback);
+			OLE2_READER.read(inputStream, consumer);
 			break;
 		case OOXML:
-			OOXML_READER.read(inputStream, rowCallback);
+			OOXML_READER.read(inputStream, consumer);
 			break;
 		default:
 			throw new IOException("Your InputStream was neither an OLE2 stream, nor an OOXML stream");
 		}
 	}
 
-	public void read(File file, RowCallback rowCallback) throws IOException, ExcelException {
+	public void read(File file, Consumer<ExcelRow> consumer) throws IOException, ExcelException {
 		FileMagic fm = FileMagic.valueOf(file);
 		switch (fm) {
 		case OLE2:
-			OLE2_READER.read(file, rowCallback);
+			OLE2_READER.read(file, consumer);
 			break;
 		case OOXML:
-			OOXML_READER.read(file, rowCallback);
+			OOXML_READER.read(file, consumer);
 			break;
 		default:
 			throw new IOException("Your InputStream was neither an OLE2 stream, nor an OOXML stream");

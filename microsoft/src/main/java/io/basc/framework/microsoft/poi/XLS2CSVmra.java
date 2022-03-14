@@ -17,13 +17,10 @@
 
 package io.basc.framework.microsoft.poi;
 
-import io.basc.framework.lang.RequiredJavaVersion;
-import io.basc.framework.microsoft.RowCallback;
-
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.apache.poi.hssf.eventusermodel.EventWorkbookBuilder.SheetRecordCollectingListener;
 import org.apache.poi.hssf.eventusermodel.FormatTrackingHSSFListener;
@@ -49,6 +46,9 @@ import org.apache.poi.hssf.record.StringRecord;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
+import io.basc.framework.lang.RequiredJavaVersion;
+import io.basc.framework.microsoft.ExcelRow;
+
 /**
  * A XLS -> CSV processor, that uses the MissingRecordAware EventModel code to
  * ensure it outputs all columns and rows.
@@ -56,12 +56,11 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
  */
 @RequiredJavaVersion(8)
 public class XLS2CSVmra implements HSSFListener {
-	private RowCallback rowCallback;
+	private Consumer<ExcelRow> consumer;
 	private final List<String> values = new ArrayList<String>(8);
 
 	private int minColumns;
 	private POIFSFileSystem fs;
-	private PrintStream output;
 
 	private int lastRowNumber;
 	private int lastColumnNumber;
@@ -87,24 +86,21 @@ public class XLS2CSVmra implements HSSFListener {
 	private int nextColumn;
 	private boolean outputNextStringRecord;
 
+	public XLS2CSVmra(POIFSFileSystem fs, Consumer<ExcelRow> consumer) {
+		this(fs, -1, consumer);
+	}
+
 	/**
 	 * Creates a new XLS -> CSV converter
 	 * 
-	 * @param fs
-	 *            The POIFSFileSystem to process
-	 * @param minColumns
-	 *            The minimum number of columns to output, or -1 for no minimum
+	 * @param fs         The POIFSFileSystem to process
+	 * @param minColumns The minimum number of columns to output, or -1 for no
+	 *                   minimum
 	 */
-	public XLS2CSVmra(POIFSFileSystem fs, RowCallback rowCallback, int minColumns) {
+	public XLS2CSVmra(POIFSFileSystem fs, int minColumns, Consumer<ExcelRow> consumer) {
 		this.fs = fs;
-		this.rowCallback = rowCallback;
 		this.minColumns = minColumns;
-	}
-
-	public XLS2CSVmra(POIFSFileSystem fs, PrintStream output, int minColumns) {
-		this.fs = fs;
-		this.output = output;
-		this.minColumns = minColumns;
+		this.consumer = consumer;
 	}
 
 	/**
@@ -128,8 +124,8 @@ public class XLS2CSVmra implements HSSFListener {
 	}
 
 	/**
-	 * Main HSSFListener method, processes events, and outputs the CSV as the
-	 * file is processed.
+	 * Main HSSFListener method, processes events, and outputs the CSV as the file
+	 * is processed.
 	 */
 	public void processRecord(org.apache.poi.hssf.record.Record record) {
 		int thisRow = -1;
@@ -155,11 +151,6 @@ public class XLS2CSVmra implements HSSFListener {
 				sheetIndex++;
 				if (orderedBSRs == null) {
 					orderedBSRs = BoundSheetRecord.orderByBofPosition(boundSheetRecords);
-				}
-
-				if (output != null) {
-					output.println();
-					output.println(orderedBSRs[sheetIndex].getSheetname() + " [" + (sheetIndex + 1) + "]:");
 				}
 			}
 			break;
@@ -200,7 +191,7 @@ public class XLS2CSVmra implements HSSFListener {
 					thisStr = formatListener.formatNumberDateCell(frec);
 				}
 			} else {
-				thisStr = '"' + HSSFFormulaParser.toFormulaString(stubWorkbook, frec.getParsedExpression()) + '"';
+				thisStr = HSSFFormulaParser.toFormulaString(stubWorkbook, frec.getParsedExpression());
 			}
 			break;
 		case StringRecord.sid:
@@ -219,7 +210,7 @@ public class XLS2CSVmra implements HSSFListener {
 
 			thisRow = lrec.getRow();
 			thisColumn = lrec.getColumn();
-			thisStr = '"' + lrec.getValue() + '"';
+			thisStr = lrec.getValue();
 			break;
 		case LabelSSTRecord.sid:
 			LabelSSTRecord lsrec = (LabelSSTRecord) record;
@@ -227,9 +218,9 @@ public class XLS2CSVmra implements HSSFListener {
 			thisRow = lsrec.getRow();
 			thisColumn = lsrec.getColumn();
 			if (sstRecord == null) {
-				thisStr = '"' + "(No SST Record, can't identify string)" + '"';
+				thisStr = "(No SST Record, can't identify string)";
 			} else {
-				thisStr = '"' + sstRecord.getString(lsrec.getSSTIndex()).toString() + '"';
+				thisStr = sstRecord.getString(lsrec.getSSTIndex()).toString();
 			}
 			break;
 		case NoteRecord.sid:
@@ -238,7 +229,7 @@ public class XLS2CSVmra implements HSSFListener {
 			thisRow = nrec.getRow();
 			thisColumn = nrec.getColumn();
 			// TODO: Find object to match nrec.getShapeId()
-			thisStr = '"' + "(TODO)" + '"';
+			thisStr = "(TODO)";
 			break;
 		case NumberRecord.sid:
 			NumberRecord numrec = (NumberRecord) record;
@@ -254,7 +245,7 @@ public class XLS2CSVmra implements HSSFListener {
 
 			thisRow = rkrec.getRow();
 			thisColumn = rkrec.getColumn();
-			thisStr = '"' + "(TODO)" + '"';
+			thisStr = "(TODO)";
 			break;
 		default:
 			break;
@@ -276,12 +267,6 @@ public class XLS2CSVmra implements HSSFListener {
 		// If we got something to print out, do so
 		if (thisStr != null) {
 			values.add(thisStr);
-			if (output != null) {
-				if (thisColumn > 0) {
-					output.print(',');
-				}
-				output.print(thisStr);
-			}
 		}
 
 		// Update column and row count
@@ -298,24 +283,14 @@ public class XLS2CSVmra implements HSSFListener {
 				if (lastColumnNumber == -1) {
 					lastColumnNumber = 0;
 				}
-				for (int i = lastColumnNumber; i < (minColumns); i++) {
-					if (output != null) {
-						output.print(',');
-					}
-				}
 			}
 
 			// We're onto a new row
 			lastColumnNumber = -1;
 
-			// End the row
-			if (output != null) {
-				output.println();
-			}
-			
-			if(rowCallback != null){
-				rowCallback.processRow(sheetIndex, lastRowNumber, values.toArray(new String[0]));
-			}
+			ExcelRow row = new ExcelRow(sheetIndex, orderedBSRs[sheetIndex].getSheetname(), lastRowNumber,
+					values.toArray(new String[0]));
+			consumer.accept(row);
 			values.clear();
 		}
 	}

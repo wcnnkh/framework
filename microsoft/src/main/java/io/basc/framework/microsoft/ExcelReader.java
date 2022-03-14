@@ -3,22 +3,54 @@ package io.basc.framework.microsoft;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+/**
+ * 逐行读取(内存消耗小)
+ * 
+ * @author wcnnkh
+ *
+ */
 public interface ExcelReader {
+
 	/**
-	 * 逐行读取(内存消耗小)
 	 * 
+	 * @param <E>
 	 * @param inputStream
-	 * @param rowCallback
+	 * @param consumer
+	 * @throws IOException
+	 * @throws ExcelException
+	 * @throws E
+	 */
+	void read(InputStream inputStream, Consumer<ExcelRow> consumer) throws IOException, ExcelException;
+
+	/**
+	 * 
+	 * @param <E>
+	 * @param file
+	 * @param consumer
+	 * @throws IOException
+	 * @throws ExcelException
+	 * @throws E
+	 */
+	void read(File file, Consumer<ExcelRow> consumer) throws IOException, ExcelException;
+
+	/**
+	 * 
+	 * @param source
+	 * @return
 	 * @throws IOException
 	 * @throws ExcelException
 	 */
-	void read(InputStream inputStream, RowCallback rowCallback) throws IOException, ExcelException;
+	Stream<ExcelRow> read(File source) throws IOException, ExcelException;
 
-	void read(File file, RowCallback rowCallback) throws IOException, ExcelException;
-
-	Stream<String[]> read(File source) throws IOException, ExcelException;
-
-	Stream<String[]> read(InputStream source) throws IOException, ExcelException;
+	/**
+	 * 
+	 * @param source
+	 * @return
+	 * @throws IOException
+	 * @throws ExcelException
+	 */
+	Stream<ExcelRow> read(InputStream source) throws IOException, ExcelException;
 }
