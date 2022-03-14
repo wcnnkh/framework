@@ -3,6 +3,7 @@ package io.basc.framework.microsoft.poi;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.function.Consumer;
 
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
@@ -10,29 +11,29 @@ import io.basc.framework.lang.RequiredJavaVersion;
 import io.basc.framework.microsoft.AbstractExcelReader;
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.ExcelReader;
-import io.basc.framework.microsoft.RowCallback;
+import io.basc.framework.microsoft.ExcelRow;
 
 @RequiredJavaVersion(8)
 public class HSSFExcelReader extends AbstractExcelReader implements ExcelReader {
 
-	public void read(POIFSFileSystem poifsFileSystem, RowCallback rowCallback) throws IOException, ExcelException {
-		XLS2CSVmra hssfReader = new XLS2CSVmra(poifsFileSystem, rowCallback, -1);
+	public void read(POIFSFileSystem poifsFileSystem, Consumer<ExcelRow> consumer) throws IOException, ExcelException {
+		XLS2CSVmra hssfReader = new XLS2CSVmra(poifsFileSystem, consumer);
 		hssfReader.process();
 	}
-	
-	public void read(InputStream inputStream, RowCallback rowCallback) throws IOException, ExcelException {
+
+	public void read(InputStream inputStream, Consumer<ExcelRow> consumer) throws IOException, ExcelException {
 		POIFSFileSystem poifsFileSystem = new POIFSFileSystem(inputStream);
 		try {
-			read(poifsFileSystem, rowCallback);
+			read(poifsFileSystem, consumer);
 		} finally {
 			poifsFileSystem.close();
 		}
 	}
 
-	public void read(File file, RowCallback rowCallback) throws IOException, ExcelException {
+	public void read(File file, Consumer<ExcelRow> consumer) throws IOException, ExcelException {
 		POIFSFileSystem poifsFileSystem = new POIFSFileSystem(file, true);
 		try {
-			read(poifsFileSystem, rowCallback);
+			read(poifsFileSystem, consumer);
 		} finally {
 			poifsFileSystem.close();
 		}

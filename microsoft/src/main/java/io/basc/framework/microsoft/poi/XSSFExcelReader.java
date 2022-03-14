@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.xml.XMLConstants;
 
@@ -14,6 +14,7 @@ import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackageAccess;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
+import org.apache.poi.xssf.eventusermodel.XSSFReader.SheetIterator;
 import org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler;
 import org.apache.poi.xssf.eventusermodel.XSSFSheetXMLHandler.SheetContentsHandler;
 import org.apache.poi.xssf.model.SharedStringsTable;
@@ -28,7 +29,7 @@ import io.basc.framework.lang.RequiredJavaVersion;
 import io.basc.framework.microsoft.AbstractExcelReader;
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.ExcelReader;
-import io.basc.framework.microsoft.RowCallback;
+import io.basc.framework.microsoft.ExcelRow;
 
 @RequiredJavaVersion(8)
 public class XSSFExcelReader extends AbstractExcelReader implements ExcelReader {
@@ -42,14 +43,14 @@ public class XSSFExcelReader extends AbstractExcelReader implements ExcelReader 
 	public boolean isFormulasNotResults() {
 		return formulasNotResults;
 	}
-	
+
 	public XMLReader createReader() throws SAXException {
 		XMLReader xmlReader = XMLReaderFactory.createXMLReader();
 		xmlReader.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 		return xmlReader;
 	}
 
-	public void read(OPCPackage opcPackage, RowCallback rowCallback) throws IOException, ExcelException {
+	public void read(OPCPackage opcPackage, Consumer<ExcelRow> consumer) throws IOException, ExcelException {
 		XSSFReader reader;
 		SharedStringsTable sst = null;
 		XMLReader xmlReader;
@@ -57,15 +58,16 @@ public class XSSFExcelReader extends AbstractExcelReader implements ExcelReader 
 			xmlReader = createReader();
 			reader = new XSSFReader(opcPackage);
 			sst = reader.getSharedStringsTable();
-			XssfSheetContentsHandler contentsHandler = new XssfSheetContentsHandler(rowCallback, 0);
+			XssfSheetContentsHandler contentsHandler = new XssfSheetContentsHandler(consumer);
 			XSSFSheetXMLHandler handler = new XSSFSheetXMLHandler(reader.getStylesTable(), sst, contentsHandler,
 					formulasNotResults);
 			xmlReader.setContentHandler(handler);
-			Iterator<InputStream> iterator = reader.getSheetsData();
+			SheetIterator iterator = (SheetIterator) reader.getSheetsData();
 			while (iterator.hasNext()) {
 				InputStream inputStream = null;
 				try {
 					inputStream = iterator.next();
+					contentsHandler.setSheetName(iterator.getSheetName());
 					InputSource sheetSource = new InputSource(inputStream);
 					xmlReader.parse(sheetSource);
 					contentsHandler.setSheetIndex(contentsHandler.getSheetIndex() + 1);
@@ -86,13 +88,13 @@ public class XSSFExcelReader extends AbstractExcelReader implements ExcelReader 
 	}
 
 	private static class XssfSheetContentsHandler implements SheetContentsHandler {
-		private RowCallback rowCallback;
+		private Consumer<ExcelRow> consumer;
 		private List<String> contents = new ArrayList<String>();
-		private int sheetIndex;
+		private int sheetIndex = 0;
+		private String sheetName;
 
-		public XssfSheetContentsHandler(RowCallback rowCallback, int sheetIndex) {
-			this.rowCallback = rowCallback;
-			this.sheetIndex = sheetIndex;
+		public XssfSheetContentsHandler(Consumer<ExcelRow> consumer) {
+			this.consumer = consumer;
 		}
 
 		public int getSheetIndex() {
@@ -103,11 +105,15 @@ public class XSSFExcelReader extends AbstractExcelReader implements ExcelReader 
 			this.sheetIndex = sheetIndex;
 		}
 
+		public void setSheetName(String sheetName) {
+			this.sheetName = sheetName;
+		}
+
 		public void startRow(int rowNum) {
 		}
 
 		public void endRow(int rowNum) {
-			rowCallback.processRow(sheetIndex, rowNum, contents.toArray(new String[0]));
+			consumer.accept(new ExcelRow(sheetIndex, sheetName, rowNum, contents.toArray(new String[0])));
 			contents.clear();
 		}
 
@@ -116,11 +122,11 @@ public class XSSFExcelReader extends AbstractExcelReader implements ExcelReader 
 		}
 	}
 
-	public void read(InputStream input, RowCallback rowCallback) throws IOException {
+	public void read(InputStream input, Consumer<ExcelRow> consumer) throws IOException {
 		OPCPackage opcPackage = null;
 		try {
 			opcPackage = OPCPackage.open(input);
-			read(opcPackage, rowCallback);
+			read(opcPackage, consumer);
 		} catch (InvalidFormatException e) {
 			throw new ExcelException(e);
 		} finally {
@@ -128,11 +134,11 @@ public class XSSFExcelReader extends AbstractExcelReader implements ExcelReader 
 		}
 	}
 
-	public void read(File file, RowCallback rowCallback) throws IOException, ExcelException {
+	public void read(File file, Consumer<ExcelRow> consumer) throws IOException, ExcelException {
 		OPCPackage opcPackage = null;
 		try {
 			opcPackage = OPCPackage.open(file, PackageAccess.READ);
-			read(opcPackage, rowCallback);
+			read(opcPackage, consumer);
 		} catch (InvalidFormatException e) {
 			throw new ExcelException(e);
 		} finally {

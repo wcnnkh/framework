@@ -61,10 +61,10 @@ public class ExcelTemplate extends TableTransfer {
 
 	@Override
 	public final void process(Iterator<? extends Object> source, File target) throws IOException {
-		if(!source.hasNext()) {
-			return ;
+		if (!source.hasNext()) {
+			return;
 		}
-		
+
 		ExcelExport export = getExcelOperations().createExport(target);
 		try {
 			exportAll(source, (e) -> export.put(e));
@@ -105,7 +105,7 @@ public class ExcelTemplate extends TableTransfer {
 
 	public Cursor<String[]> read(Object source) throws ExcelException, IOException {
 		Assert.requiredArgument(source != null, "source");
-		Stream<String[]> stream;
+		Stream<ExcelRow> stream;
 		if (source instanceof InputStream) {
 			stream = excelOperations.read((InputStream) source);
 		} else if (source instanceof File) {
@@ -115,6 +115,6 @@ public class ExcelTemplate extends TableTransfer {
 		} else {
 			throw new NotSupportedException(source.getClass().getName());
 		}
-		return StreamProcessorSupport.cursor(stream).limit(readStart, readLimit);
+		return StreamProcessorSupport.cursor(stream).limit(readStart, readLimit).map((e) -> e.getValues());
 	}
 }

@@ -26,19 +26,17 @@ public abstract class AbstractExcelReader implements ExcelReader {
 	}
 
 	@Override
-	public Stream<String[]> read(File source) throws IOException, ExcelException {
-		ResponsiveIterator<String[]> iterator = new ResponsiveIterator<String[]>();
-		RowCallback callback = (sheetIndex, rowIndex, contents) -> {
-			try {
-				iterator.put(contents);
-			} catch (InterruptedException e) {
-				logger.error(e, "put sheetIndex={}, rowIndex={}, contents={} error", sheetIndex, rowIndex, contents);
-			}
-		};
-
+	public Stream<ExcelRow> read(File source) throws IOException, ExcelException {
+		ResponsiveIterator<ExcelRow> iterator = new ResponsiveIterator<>();
 		READ_EXECUTOR.execute(() -> {
 			try {
-				read(source, callback);
+				read(source, (row) -> {
+					try {
+						iterator.put(row);
+					} catch (InterruptedException e) {
+						logger.error(e, "put row: {}", row);
+					}
+				});
 			} catch (Throwable e) {
 				logger.error(e, "read error");
 			} finally {
@@ -53,19 +51,17 @@ public abstract class AbstractExcelReader implements ExcelReader {
 	}
 
 	@Override
-	public Stream<String[]> read(InputStream source) throws IOException, ExcelException {
-		ResponsiveIterator<String[]> iterator = new ResponsiveIterator<String[]>();
-		RowCallback callback = (sheetIndex, rowIndex, contents) -> {
-			try {
-				iterator.put(contents);
-			} catch (InterruptedException e) {
-				logger.error(e, "put sheetIndex={}, rowIndex={}, contents={} error", sheetIndex, rowIndex, contents);
-			}
-		};
-
+	public Stream<ExcelRow> read(InputStream source) throws IOException, ExcelException {
+		ResponsiveIterator<ExcelRow> iterator = new ResponsiveIterator<>();
 		READ_EXECUTOR.execute(() -> {
 			try {
-				read(source, callback);
+				read(source, (row) -> {
+					try {
+						iterator.put(row);
+					} catch (InterruptedException e) {
+						logger.error(e, "put row: {}", row);
+					}
+				});
 			} catch (Throwable e) {
 				logger.error(e, "read error");
 			} finally {
