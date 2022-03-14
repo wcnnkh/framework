@@ -4,6 +4,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 /**
  * 取自jdk的实现 Utility methods for packing/unpacking primitive values in/out of
@@ -42,8 +43,9 @@ public final class Bits {
 
 	public static short readShort(InputStream source) throws EOFException, IOException {
 		byte[] buff = new byte[2];
-		if (source.read(buff) == -1) {
-			throw new EOFException();
+		int size = source.read(buff);
+		if (size != buff.length) {
+			throw new EOFException("read buff=" + Arrays.toString(buff) + ", size=" + size);
 		}
 		return getShort(buff, 0);
 	}
@@ -54,8 +56,9 @@ public final class Bits {
 
 	public static int readInt(InputStream source) throws IOException {
 		byte[] buff = new byte[4];
-		if (source.read(buff) == -1) {
-			throw new EOFException();
+		int size = source.read(buff);
+		if (size != buff.length) {
+			throw new EOFException("read buff=" + Arrays.toString(buff) + ", size=" + size);
 		}
 		return getInt(buff, 0);
 	}
@@ -72,8 +75,9 @@ public final class Bits {
 
 	public static long readLong(InputStream source) throws IOException {
 		byte[] buff = new byte[8];
-		if (source.read(buff) == -1) {
-			throw new EOFException();
+		int size = source.read(buff);
+		if (size != buff.length) {
+			throw new EOFException("read buff=" + Arrays.toString(buff) + ", size=" + size);
 		}
 		return getLong(buff, 0);
 	}

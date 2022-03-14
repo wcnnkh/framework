@@ -9,6 +9,7 @@ import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
 import io.basc.framework.io.Bits;
+import io.basc.framework.io.IOUtils;
 import io.basc.framework.util.Assert;
 
 public final class RecordCodec<D> implements ToBytesCodec<D> {
@@ -36,9 +37,7 @@ public final class RecordCodec<D> implements ToBytesCodec<D> {
 		}
 
 		byte[] buff = new byte[size];
-		if (source.read(buff) == -1) {
-			throw new EOFException();
-		}
+		IOUtils.readFully(source, buff);
 		return codec.decode(buff);
 	}
 
