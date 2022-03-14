@@ -1,20 +1,3 @@
-/* ====================================================================
-   Licensed to the Apache Software Foundation (ASF) under one or more
-   contributor license agreements.  See the NOTICE file distributed with
-   this work for additional information regarding copyright ownership.
-   The ASF licenses this file to You under the Apache License, Version 2.0
-   (the "License"); you may not use this file except in compliance with
-   the License.  You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-==================================================================== */
-
 package io.basc.framework.microsoft.poi;
 
 import java.io.IOException;
@@ -49,18 +32,13 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import io.basc.framework.lang.RequiredJavaVersion;
 import io.basc.framework.microsoft.ExcelRow;
 
-/**
- * A XLS -> CSV processor, that uses the MissingRecordAware EventModel code to
- * ensure it outputs all columns and rows.
- * 
- */
 @RequiredJavaVersion(8)
-public class XLS2CSVmra implements HSSFListener {
-	private Consumer<ExcelRow> consumer;
+public class DefaultHSSFListener implements HSSFListener {
+	private final Consumer<ExcelRow> consumer;
 	private final List<String> values = new ArrayList<String>(8);
 
-	private int minColumns;
-	private POIFSFileSystem fs;
+	private final int minColumns;
+	private final POIFSFileSystem fs;
 
 	private int lastRowNumber;
 	private int lastColumnNumber;
@@ -86,7 +64,7 @@ public class XLS2CSVmra implements HSSFListener {
 	private int nextColumn;
 	private boolean outputNextStringRecord;
 
-	public XLS2CSVmra(POIFSFileSystem fs, Consumer<ExcelRow> consumer) {
+	public DefaultHSSFListener(POIFSFileSystem fs, Consumer<ExcelRow> consumer) {
 		this(fs, -1, consumer);
 	}
 
@@ -97,10 +75,18 @@ public class XLS2CSVmra implements HSSFListener {
 	 * @param minColumns The minimum number of columns to output, or -1 for no
 	 *                   minimum
 	 */
-	public XLS2CSVmra(POIFSFileSystem fs, int minColumns, Consumer<ExcelRow> consumer) {
+	public DefaultHSSFListener(POIFSFileSystem fs, int minColumns, Consumer<ExcelRow> consumer) {
 		this.fs = fs;
 		this.minColumns = minColumns;
 		this.consumer = consumer;
+	}
+
+	public boolean isOutputFormulaValues() {
+		return outputFormulaValues;
+	}
+
+	public void setOutputFormulaValues(boolean outputFormulaValues) {
+		this.outputFormulaValues = outputFormulaValues;
 	}
 
 	/**

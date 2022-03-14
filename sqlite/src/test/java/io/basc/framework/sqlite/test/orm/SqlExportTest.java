@@ -41,6 +41,7 @@ public class SqlExportTest {
 		List<SqlExportTestTable> list = db.queryAll(SqlExportTestTable.class, sql);
 		List<SqlExportTestTable> fileRecords = template.read(file, SqlExportTestTable.class).collect(Collectors.toList());
 		assertTrue(CollectionUtils.equals(list, fileRecords));
+		file.delete();
 	}
 
 	@Entity

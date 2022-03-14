@@ -17,7 +17,7 @@ import io.basc.framework.microsoft.ExcelRow;
 public class HSSFExcelReader extends AbstractExcelReader implements ExcelReader {
 
 	public void read(POIFSFileSystem poifsFileSystem, Consumer<ExcelRow> consumer) throws IOException, ExcelException {
-		XLS2CSVmra hssfReader = new XLS2CSVmra(poifsFileSystem, consumer);
+		DefaultHSSFListener hssfReader = new DefaultHSSFListener(poifsFileSystem, consumer);
 		hssfReader.process();
 	}
 
