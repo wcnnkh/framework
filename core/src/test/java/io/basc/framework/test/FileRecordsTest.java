@@ -20,11 +20,17 @@ public class FileRecordsTest {
 		try {
 			List<String> list = new ArrayList<String>();
 			for (int i = 0; i < 10; i++) {
-				list.add(XUtils.getUUID());
+				StringBuilder sb = new StringBuilder();
+				for (int a = 0; a < 10; a++) {
+					sb.append(XUtils.getUUID());
+				}
+				list.add(sb.toString());
 				records.append(list.get(i));
 			}
 
+			System.out.println(list);
 			List<String> readList = records.stream().collect(Collectors.toList());
+			System.out.println(readList);
 			assertTrue(readList.equals(list));
 		} finally {
 			records.delete();
