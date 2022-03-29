@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.TimeUtils;
 
 public class TimerServerSupplier<T> extends TimerTask implements ServerSupplier<T> {
 	private static final Timer TIMER = new Timer(TimerServerSupplier.class.getName(), true);
@@ -28,7 +27,7 @@ public class TimerServerSupplier<T> extends TimerTask implements ServerSupplier<
 	 * @param serverSupplier
 	 */
 	public TimerServerSupplier(ServerSupplier<T> serverSupplier) {
-		this(serverSupplier, 1 * TimeUtils.ONE_MINUTE);
+		this(serverSupplier, 60000L);
 	}
 
 	/**

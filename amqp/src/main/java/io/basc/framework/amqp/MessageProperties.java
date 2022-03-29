@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import io.basc.framework.math.NumberHolder;
 import io.basc.framework.script.MathScriptEngine;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.TimeUtils;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
 
@@ -338,7 +337,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	 */
 	public long getTransactionMessageConfirmDelay() {
 		Value value = getHeaderValue(TRANSACTION_MESSAGE_CONFIRM_DELAY_KEY);
-		return (value == null || value.isEmpty()) ? (TimeUtils.ONE_MINUTE * 10) : value.getAsLongValue();
+		return (value == null || value.isEmpty()) ? TimeUnit.MINUTES.toMillis(10) : value.getAsLongValue();
 	}
 
 	/**

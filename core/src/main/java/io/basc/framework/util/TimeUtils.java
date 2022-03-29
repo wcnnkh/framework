@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -13,278 +14,224 @@ import java.util.TimeZone;
 import io.basc.framework.convert.ConversionException;
 
 public class TimeUtils {
-	private TimeUtils() {
-	};
+	public static final TimeUtils YEAR = new TimeUtils(Calendar.DAY_OF_YEAR, "yyyy");
+	public static final TimeUtils MONTH = new TimeUtils(Calendar.DAY_OF_MONTH, "yyyy-MM");
+	public static final TimeUtils WEEK = new TimeUtils(Calendar.DAY_OF_WEEK, "yyyy-MM-dd E");
+	public static final TimeUtils DAY = new TimeUtils(Calendar.HOUR_OF_DAY, "yyyy-MM-dd");
+	public static final TimeUtils HOUR = new TimeUtils(Calendar.MINUTE, "yyyy-MM-dd HH");
+	public static final TimeUtils MINUTE = new TimeUtils(Calendar.SECOND, "yyyy-MM-dd HH:mm");
+	public static final TimeUtils SECOND = new TimeUtils(Calendar.MILLISECOND, "yyyy-MM-dd HH:mm:ss");
+	public static final TimeUtils MILLISECOND = new TimeUtils(-1, "yyyy-MM-dd HH:mm:ss,SSS");
 
-	/**
-	 * 一天的毫秒数
-	 */
-	public static final long ONE_DAY = 86400000;
-	/**
-	 * 一小时的毫秒数
-	 */
-	public static final long ONE_HOUR = 3600000;
-	/**
-	 * 一分钟的毫秒数
-	 */
-	public static final long ONE_MINUTE = 60000;
-	/**
-	 * 一秒的毫秒数
-	 */
-	public static final long ONE_SECOND = 1000;
+	private final int field;
+	private final String pattern;
 
-	/**
-	 * 日期格式yyyy-MM-dd
-	 */
-	public static final String DATE_PATTERN = "yyyy-MM-dd";
-
-	/**
-	 * 时间格式 yyyy-MM-dd HH:mm:ss
-	 */
-	public static final String TIME_PATTERN = DATE_PATTERN + " HH:mm:ss";
-
-	/**
-	 * 时间戳格式 yyyy-MM-dd HH:mm:ss,SSS
-	 */
-	public static final String TIME_MILLIS_PATTERN = TIME_PATTERN + ",SSS";
-
-	/**
-	 * 将字符串转换为时间
-	 * 
-	 * @see DateFormat#parse(String)
-	 * @param date
-	 * @return
-	 * @throws ConversionException
-	 */
-	public static Date parse(String date) throws ConversionException {
-		if (StringUtils.isEmpty(date)) {
-			return null;
-		}
-
-		try {
-			return new SimpleDateFormat().parse(date);
-		} catch (ParseException e) {
-			throw new ConversionException(date, e);
-		}
+	public TimeUtils(int field, String pattern) {
+		this.field = field;
+		this.pattern = pattern;
 	}
 
-	/**
-	 * 将字符串转换为时间
-	 * 
-	 * @see DateFormat#parse(String)
-	 * @param date
-	 * @param pattern
-	 * @return
-	 * @throws ConversionException
-	 */
-	public static Date parse(String date, String pattern) throws ConversionException {
-		if (StringUtils.isEmpty(date)) {
-			return null;
-		}
-
-		Assert.requiredArgument(StringUtils.hasText(pattern), "pattern");
-		try {
-			return new SimpleDateFormat(pattern).parse(date);
-		} catch (ParseException e) {
-			throw new ConversionException("date=" + date + ", pattern=" + pattern, e);
-		}
+	public int getField() {
+		return this.field;
 	}
 
-	/**
-	 * 将时间格式化为字符串
-	 * 
-	 * @see DateFormat#format(Date)
-	 * @param date
-	 * @return
-	 */
-	public static String format(Date date) {
-		if (date == null) {
-			return null;
-		}
-
-		return new SimpleDateFormat().format(date);
+	public String getPattern() {
+		return this.pattern;
 	}
 
-	/**
-	 * 将时间格式化为字符串
-	 * 
-	 * @see DateFormat#format(Date)
-	 * @param date
-	 * @param pattern
-	 * @return
-	 */
-	public static String format(Date date, String pattern) {
-		if (date == null) {
-			return null;
-		}
-
-		Assert.requiredArgument(StringUtils.hasText(pattern), "pattern");
-		return new SimpleDateFormat(pattern).format(date);
+	public void setMin(Calendar calendar) {
+		setTimeBoundary(calendar, field, true);
 	}
 
-	/**
-	 * 获取一个月的第一天
-	 * 
-	 * @param millis 0表示当前时间
-	 * @return
-	 */
-	public static Calendar getMonthBeginCalendar(long millis) {
+	public void setMax(Calendar calendar) {
+		setTimeBoundary(calendar, field, false);
+	}
+
+	public Calendar getMinCalendar(long source) {
 		Calendar calendar = Calendar.getInstance();
-		if (millis > 0) {
-			calendar.setTimeInMillis(millis);
-		}
-		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
-		calendar.set(Calendar.HOUR_OF_DAY, calendar.getActualMinimum(Calendar.HOUR_OF_DAY));
-		calendar.set(Calendar.MINUTE, calendar.getActualMinimum(Calendar.MINUTE));
-		calendar.set(Calendar.SECOND, calendar.getActualMinimum(Calendar.SECOND));
-		calendar.set(Calendar.MILLISECOND, calendar.getActualMinimum(Calendar.MILLISECOND));
+		calendar.setTimeInMillis(source);
+		setMin(calendar);
 		return calendar;
 	}
 
-	/**
-	 * 获取一个月的最后一天
-	 * 
-	 * @param millis 0表示当前时间
-	 * @return
-	 */
-	public static Calendar getMonthEndCalendar(long millis) {
+	public Calendar getMaxCalendar(long source) {
 		Calendar calendar = Calendar.getInstance();
-		if (millis > 0) {
-			calendar.setTimeInMillis(millis);
-		}
-		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-		calendar.set(Calendar.HOUR_OF_DAY, calendar.getActualMaximum(Calendar.HOUR_OF_DAY));
-		calendar.set(Calendar.MINUTE, calendar.getActualMaximum(Calendar.MINUTE));
-		calendar.set(Calendar.SECOND, calendar.getActualMaximum(Calendar.SECOND));
-		calendar.set(Calendar.MILLISECOND, calendar.getActualMaximum(Calendar.MILLISECOND));
+		calendar.setTimeInMillis(source);
+		setMax(calendar);
 		return calendar;
 	}
 
-	/**
-	 * 获取一年的第一天
-	 * 
-	 * @param millis 0表示当前时间
-	 * @return
-	 */
-	public static Calendar getYearBeginCalendar(long millis) {
+	public Date getMinDate(long source) {
+		return getMinCalendar(source).getTime();
+	}
+
+	public Date getMaxDate(long source) {
+		return getMaxCalendar(source).getTime();
+	}
+
+	public long getMinTime(long source) {
+		return getMinDate(source).getTime();
+	}
+
+	public long getMaxTime(long source) {
+		return getMinDate(source).getTime();
+	}
+
+	public Calendar getMinCalendar() {
 		Calendar calendar = Calendar.getInstance();
-		if (millis > 0) {
-			calendar.setTimeInMillis(millis);
-		}
-		calendar.set(Calendar.DAY_OF_YEAR, calendar.getActualMinimum(Calendar.DAY_OF_YEAR));
-		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
-		calendar.set(Calendar.HOUR_OF_DAY, calendar.getActualMinimum(Calendar.HOUR_OF_DAY));
-		calendar.set(Calendar.MINUTE, calendar.getActualMinimum(Calendar.MINUTE));
-		calendar.set(Calendar.SECOND, calendar.getActualMinimum(Calendar.SECOND));
-		calendar.set(Calendar.MILLISECOND, calendar.getActualMinimum(Calendar.MILLISECOND));
+		setMin(calendar);
 		return calendar;
 	}
 
-	/**
-	 * 获取一年的最后一天
-	 * 
-	 * @param millis
-	 * @return
-	 */
-	public static Calendar getYearEndCalendar(long millis) {
+	public Calendar getMaxCalendar() {
 		Calendar calendar = Calendar.getInstance();
-		if (millis > 0) {
-			calendar.setTimeInMillis(millis);
-		}
-		calendar.set(Calendar.DAY_OF_YEAR, calendar.getActualMaximum(Calendar.DAY_OF_YEAR));
-		calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-		calendar.set(Calendar.HOUR_OF_DAY, calendar.getActualMaximum(Calendar.HOUR_OF_DAY));
-		calendar.set(Calendar.MINUTE, calendar.getActualMaximum(Calendar.MINUTE));
-		calendar.set(Calendar.SECOND, calendar.getActualMaximum(Calendar.SECOND));
-		calendar.set(Calendar.MILLISECOND, calendar.getActualMaximum(Calendar.MILLISECOND));
+		setMax(calendar);
 		return calendar;
 	}
 
-	/**
-	 * 获取一天凌晨时间
-	 * 
-	 * @param timeInMillis 0表示当前时间
-	 * @return
-	 */
-	public static Calendar getDayBeginCalendar(long millis) {
-		Calendar calendar = Calendar.getInstance();
-		if (millis > 0) {
-			calendar.setTimeInMillis(millis);
-		}
-		calendar.set(Calendar.HOUR_OF_DAY, calendar.getActualMinimum(Calendar.HOUR_OF_DAY));
-		calendar.set(Calendar.MINUTE, calendar.getActualMinimum(Calendar.MINUTE));
-		calendar.set(Calendar.SECOND, calendar.getActualMinimum(Calendar.SECOND));
-		calendar.set(Calendar.MILLISECOND, calendar.getActualMinimum(Calendar.MILLISECOND));
-		return calendar;
+	public Date getMinDate() {
+		return getMinCalendar().getTime();
 	}
 
-	/**
-	 * 获取一天结束时间
-	 * 
-	 * @param timeInMillis 0表示当前时间
-	 * @return
-	 */
-	public static Calendar getDayEndCalendar(long millis) {
-		Calendar calendar = Calendar.getInstance();
-		if (millis > 0) {
-			calendar.setTimeInMillis(millis);
-		}
-
-		calendar.set(Calendar.HOUR_OF_DAY, calendar.getActualMaximum(Calendar.HOUR_OF_DAY));
-		calendar.set(Calendar.MINUTE, calendar.getActualMaximum(Calendar.MINUTE));
-		calendar.set(Calendar.SECOND, calendar.getActualMaximum(Calendar.SECOND));
-		calendar.set(Calendar.MILLISECOND, calendar.getActualMaximum(Calendar.MILLISECOND));
-		return calendar;
+	public Date getMaxDate() {
+		return getMaxCalendar().getTime();
 	}
 
-	/**
-	 * 获取今日的凌晨0:00
-	 * 
-	 * @return
-	 */
-	public static long getTodayBeginTime() {
-		return getDayBeginCalendar(0).getTimeInMillis();
+	public long getMinTime() {
+		return getMinDate().getTime();
 	}
 
-	/**
-	 * 判断是否是今天
-	 */
-	public static boolean isToday(long time) {
-		return isSameDay(time, System.currentTimeMillis());
+	public long getMaxTime() {
+		return getMinDate().getTime();
 	}
 
-	/**
-	 * 判断是否是同一天
-	 */
-	public static boolean isSameDay(long d1, long d2) {
-		SimpleDateFormat sdf = new SimpleDateFormat(DATE_PATTERN);
-		String date1 = sdf.format(new Date(d1));
-		String date2 = sdf.format(new Date(d2));
+	public Date parse(String source) {
+		return parse(source, this.pattern);
+	}
+
+	public long getTime(String source) {
+		return getTime(source, this.pattern);
+	}
+
+	public String format(Date source) {
+		return format(source, pattern);
+	}
+
+	public String format(long source) {
+		return format(source, pattern);
+	}
+
+	public boolean contains(Date source, Date target) {
+		Assert.requiredArgument(source != null, "source");
+		Assert.requiredArgument(target != null, "target");
+		SimpleDateFormat sdf = new SimpleDateFormat(this.pattern);
+		String date1 = sdf.format(source);
+		String date2 = sdf.format(target);
 		return date1.equals(date2);
+	}
+
+	public boolean contains(long source, long target) {
+		return contains(new Date(source), new Date(target));
+	}
+
+	/**
+	 * 进行默认转换，会对多种格式进行尝试
+	 * 
+	 * @param source
+	 * @return
+	 */
+	public static Date convert(String source) {
+		return parse(source, new String[0]);
+	}
+
+	public static String toString(Date source) {
+		if (source == null) {
+			return null;
+		}
+
+		return new SimpleDateFormat().format(source);
+	}
+
+	public static Date parse(String source, String... patterns) throws ConversionException {
+		if (StringUtils.isEmpty(source)) {
+			return null;
+		}
+
+		if (ArrayUtils.isEmpty(patterns)) {
+			SimpleDateFormat format = new SimpleDateFormat();
+			try {
+				return format.parse(source);
+			} catch (ParseException e) {
+				for (TimeUtils util : Arrays.asList(MILLISECOND, SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR)) {
+					try {
+						return util.parse(source);
+					} catch (ConversionException e1) {
+					}
+				}
+			}
+			throw new ConversionException(source);
+		} else if (patterns.length == 1) {
+			try {
+				return new SimpleDateFormat(patterns[0]).parse(source);
+			} catch (ParseException e) {
+				throw new ConversionException("source=" + source + ", pattern=" + patterns[0], e);
+			}
+		} else {
+			Throwable error = null;
+			for (String pattern : patterns) {
+				try {
+					return new SimpleDateFormat(pattern).parse(source);
+				} catch (ParseException e) {
+					if (error == null) {
+						error = e;
+					} else {
+						error.addSuppressed(e);
+					}
+				}
+			}
+			throw new ConversionException("source=" + source + ", patterns=" + Arrays.toString(patterns), error);
+		}
+	}
+
+	/**
+	 * 将时间格式化为字符串
+	 * 
+	 * @see DateFormat#format(Date)
+	 * @param date
+	 * @param pattern
+	 * @return
+	 */
+	public static String format(Date source, String pattern) {
+		if (source == null) {
+			return null;
+		}
+
+		Assert.requiredArgument(StringUtils.hasText(pattern), "pattern");
+		return new SimpleDateFormat(pattern).format(source);
 	}
 
 	/**
 	 * 将时间戳转换为指定格式的字符串
 	 * 
-	 * @param time
+	 * @param source
 	 * @param pattern
 	 * @return
 	 */
-	public static String format(long time, String pattern) {
+	public static String format(long source, String pattern) {
 		Date d = new Date();
-		d.setTime(time);
+		d.setTime(source);
 		return format(d, pattern);
 	}
 
 	/**
 	 * 将指定格式的字段串转换为时间戳
 	 * 
-	 * @param time
-	 * @param pattern
+	 * @param source
+	 * @param patterns
 	 * @return
 	 */
-	public static long getTime(String time, String pattern) throws ConversionException {
-		Date date = parse(time, pattern);
+	public static long getTime(String source, String... patterns) throws ConversionException {
+		Date date = parse(source, patterns);
 		return date == null ? 0L : date.getTime();
 	}
 
@@ -319,5 +266,59 @@ public class TimeUtils {
 	public static Instant toInstant(LocalDateTime localDateTime) {
 		Assert.requiredArgument(localDateTime != null, "localDateTime");
 		return localDateTime.toInstant(OffsetDateTime.now().getOffset());
+	}
+
+	/**
+	 * 设置边界时间
+	 * 
+	 * @param calendar
+	 * @param field
+	 * @param min      是否是边界的最小时间 true为最小 false为最大
+	 */
+	public static void setTimeBoundary(Calendar calendar, int field, boolean min) {
+		if (field < Calendar.ERA) {
+			return;
+		}
+
+		Assert.isTrue(field <= Calendar.MILLISECOND, "field needs to be less than Calendar#MILLISECOND");
+		for (int i = Calendar.MILLISECOND; i >= field && i >= Calendar.MINUTE; i--) {
+			setTimeBoundaryActual(calendar, i, min);
+		}
+
+		if (field <= Calendar.DAY_OF_WEEK_IN_MONTH) {
+			setTimeBoundaryActual(calendar, Calendar.HOUR_OF_DAY, min);
+		}
+
+		if (field <= Calendar.MONTH) {
+			setTimeBoundaryActual(calendar, Calendar.DAY_OF_MONTH, min);
+		}
+
+		if (field <= Calendar.YEAR) {
+			setTimeBoundaryActual(calendar, Calendar.MONTH, min);
+		}
+
+		if (field < Calendar.MINUTE) {
+			setTimeBoundaryActual(calendar, field, min);
+		}
+	}
+
+	private static void setTimeBoundaryActual(Calendar calendar, int field, boolean min) {
+		calendar.set(field, min ? calendar.getActualMinimum(field) : calendar.getActualMaximum(field));
+	}
+
+	/**
+	 * 获取今日的凌晨0:00
+	 * 
+	 * @return
+	 */
+	public static long getTodayBeginTime() {
+		return DAY.getMinTime();
+	}
+
+	/**
+	 * 判断是否是今天
+	 */
+	public static boolean isToday(long source) {
+		return DAY.contains(System.currentTimeMillis(), source);
 	}
 }

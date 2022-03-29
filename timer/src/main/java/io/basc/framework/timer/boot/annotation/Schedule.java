@@ -19,7 +19,7 @@ public @interface Schedule {
 	public Class<? extends Delayed> delay() default Delayed.class;
 
 	/**
-	 * 如果为-1就不坎周期执行
+	 * 如果为-1就不看周期执行
 	 * @return
 	 */
 	public long period();

@@ -24,7 +24,6 @@ import io.basc.framework.timer.TaskLockFactory;
 import io.basc.framework.util.StringMatcher;
 import io.basc.framework.util.StringMatchers;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.TimeUtils;
 
 /**
  * 默认的Timer实现
@@ -55,9 +54,9 @@ public final class DefaultTimer implements io.basc.framework.timer.Timer, Destro
 		calendar.add(Calendar.MINUTE, 1);
 		calendar.set(Calendar.SECOND, 0);
 		calendar.set(Calendar.MILLISECOND, 0);
-		timer.schedule(new CrontabTimerTask(), new Date(calendar.getTimeInMillis()), TimeUtils.ONE_MINUTE);
+		timer.schedule(new CrontabTimerTask(), new Date(calendar.getTimeInMillis()), 60000L);
 		timer.schedule(new ScanningTaskConfigTask(), 0, 1);
-		timer.schedule(new PurgeTimerTask(), TimeUtils.ONE_MINUTE, TimeUtils.ONE_MINUTE);
+		timer.schedule(new PurgeTimerTask(), 60000L, 60000L);
 	}
 
 	protected Timer createTimer() {
