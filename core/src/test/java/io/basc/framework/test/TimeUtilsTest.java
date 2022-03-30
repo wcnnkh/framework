@@ -2,6 +2,9 @@ package io.basc.framework.test;
 
 import static org.junit.Assert.assertTrue;
 
+import java.text.ParseException;
+import java.util.Date;
+
 import org.junit.Test;
 
 import io.basc.framework.util.TimeUtils;
@@ -9,7 +12,7 @@ import io.basc.framework.util.TimeUtils;
 public class TimeUtilsTest {
 
 	@Test
-	public void test() {
+	public void test() throws ParseException {
 		long time = System.currentTimeMillis();
 		test(TimeUtils.YEAR, time);
 		test(TimeUtils.MONTH, time);
@@ -19,9 +22,12 @@ public class TimeUtilsTest {
 		test(TimeUtils.SECOND, time);
 		test(TimeUtils.MILLISECOND, time);
 
+		String str = new Date(time).toString();
+		assertTrue(time / 1000 == TimeUtils.convert(str).getTime() / 1000);
 	}
 
 	private void test(TimeUtils timeUtils, long time) {
-		assertTrue(timeUtils.getMinTime(time) == timeUtils.getTime(timeUtils.format(time)));
+		assertTrue(timeUtils.getMinTime(time) == timeUtils.parse(timeUtils.format(time)));
+		assertTrue(timeUtils.getMinTime(time) == TimeUtils.convert(timeUtils.format(time)).getTime());
 	}
 }

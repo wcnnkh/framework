@@ -1,19 +1,23 @@
 package io.basc.framework.util;
 
 import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.text.DateFormatSymbols;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
+import io.basc.framework.codec.DecodeException;
+import io.basc.framework.codec.Decoder;
+import io.basc.framework.codec.support.DateCodec;
 import io.basc.framework.convert.ConversionException;
+import io.basc.framework.lang.Nullable;
 
-public class TimeUtils {
+public class TimeUtils extends DateCodec {
 	public static final TimeUtils YEAR = new TimeUtils(Calendar.DAY_OF_YEAR, "yyyy");
 	public static final TimeUtils MONTH = new TimeUtils(Calendar.DAY_OF_MONTH, "yyyy-MM");
 	public static final TimeUtils WEEK = new TimeUtils(Calendar.DAY_OF_WEEK, "yyyy-MM-dd E");
@@ -23,20 +27,41 @@ public class TimeUtils {
 	public static final TimeUtils SECOND = new TimeUtils(Calendar.MILLISECOND, "yyyy-MM-dd HH:mm:ss");
 	public static final TimeUtils MILLISECOND = new TimeUtils(-1, "yyyy-MM-dd HH:mm:ss,SSS");
 
+	/**
+	 * 日期类的默认实现，会丢弃毫秒
+	 * 
+	 * @see Date#parse(String)
+	 * @see Date#toString()
+	 */
+	public static final TimeUtils DATE = new TimeUtils(-1, "EEE MMM dd HH:mm:ss zzz yyyy", null, Locale.US, null);
+
+	/**
+	 * -1表示无效的字段
+	 */
 	private final int field;
-	private final String pattern;
 
 	public TimeUtils(int field, String pattern) {
+		super(pattern);
 		this.field = field;
-		this.pattern = pattern;
 	}
 
+	/**
+	 * @param field             -1表示无效的字段
+	 * @param pattern
+	 * @param timeZone
+	 * @param locale
+	 * @param dateFormatSymbols
+	 */
+	public TimeUtils(int field, String pattern, TimeZone timeZone, Locale locale, DateFormatSymbols dateFormatSymbols) {
+		super(pattern, timeZone, locale, dateFormatSymbols);
+		this.field = field;
+	}
+
+	/**
+	 * @return -1表示无效的字段
+	 */
 	public int getField() {
 		return this.field;
-	}
-
-	public String getPattern() {
-		return this.pattern;
 	}
 
 	public void setMin(Calendar calendar) {
@@ -48,14 +73,14 @@ public class TimeUtils {
 	}
 
 	public Calendar getMinCalendar(long source) {
-		Calendar calendar = Calendar.getInstance();
+		Calendar calendar = getCalendar(getTimeZone(), getLocale());
 		calendar.setTimeInMillis(source);
 		setMin(calendar);
 		return calendar;
 	}
 
 	public Calendar getMaxCalendar(long source) {
-		Calendar calendar = Calendar.getInstance();
+		Calendar calendar = getCalendar(getTimeZone(), getLocale());
 		calendar.setTimeInMillis(source);
 		setMax(calendar);
 		return calendar;
@@ -78,13 +103,13 @@ public class TimeUtils {
 	}
 
 	public Calendar getMinCalendar() {
-		Calendar calendar = Calendar.getInstance();
+		Calendar calendar = getCalendar(getTimeZone(), getLocale());
 		setMin(calendar);
 		return calendar;
 	}
 
 	public Calendar getMaxCalendar() {
-		Calendar calendar = Calendar.getInstance();
+		Calendar calendar = getCalendar(getTimeZone(), getLocale());
 		setMax(calendar);
 		return calendar;
 	}
@@ -105,33 +130,20 @@ public class TimeUtils {
 		return getMinDate().getTime();
 	}
 
-	public Date parse(String source) {
-		return parse(source, this.pattern);
-	}
-
-	public long getTime(String source) {
-		return getTime(source, this.pattern);
-	}
-
-	public String format(Date source) {
-		return format(source, pattern);
-	}
-
-	public String format(long source) {
-		return format(source, pattern);
-	}
-
-	public boolean contains(Date source, Date target) {
-		Assert.requiredArgument(source != null, "source");
-		Assert.requiredArgument(target != null, "target");
-		SimpleDateFormat sdf = new SimpleDateFormat(this.pattern);
-		String date1 = sdf.format(source);
-		String date2 = sdf.format(target);
-		return date1.equals(date2);
-	}
-
-	public boolean contains(long source, long target) {
-		return contains(new Date(source), new Date(target));
+	public static Calendar getCalendar(@Nullable TimeZone zone, @Nullable Locale locale) {
+		if (zone == null) {
+			if (locale == null) {
+				return Calendar.getInstance();
+			} else {
+				return Calendar.getInstance(locale);
+			}
+		} else {
+			if (locale == null) {
+				return Calendar.getInstance(zone);
+			} else {
+				return Calendar.getInstance(zone, locale);
+			}
+		}
 	}
 
 	/**
@@ -140,48 +152,54 @@ public class TimeUtils {
 	 * @param source
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static Date convert(String source) {
-		return parse(source, new String[0]);
+		return convert(source, new Decoder[0]);
 	}
 
-	public static String toString(Date source) {
-		if (source == null) {
-			return null;
+	@SafeVarargs
+	public static Date convert(String source, Decoder<String, ? extends Date>... decoders) {
+		if (decoders == null || decoders.length == 0) {
+			return convert(source, DATE, MILLISECOND, SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR);
+		} else if (decoders.length == 1) {
+			return decoders[0].decode(source);
+		} else {
+			DecodeException error = null;
+			for (Decoder<String, ? extends Date> decoder : decoders) {
+				try {
+					return decoder.decode(source);
+				} catch (DecodeException e) {
+					if (error == null) {
+						error = e;
+					} else {
+						error.addSuppressed(e);
+					}
+				}
+			}
+			throw new DecodeException(source, error);
 		}
-
-		return new SimpleDateFormat().format(source);
 	}
 
 	public static Date parse(String source, String... patterns) throws ConversionException {
+		return parse(source, null, null, patterns);
+	}
+
+	public static Date parse(String source, @Nullable TimeZone timeZone, @Nullable Locale locale, String... patterns)
+			throws DecodeException {
 		if (StringUtils.isEmpty(source)) {
 			return null;
 		}
 
 		if (ArrayUtils.isEmpty(patterns)) {
-			SimpleDateFormat format = new SimpleDateFormat();
-			try {
-				return format.parse(source);
-			} catch (ParseException e) {
-				for (TimeUtils util : Arrays.asList(MILLISECOND, SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, YEAR)) {
-					try {
-						return util.parse(source);
-					} catch (ConversionException e1) {
-					}
-				}
-			}
-			throw new ConversionException(source);
+			return convert(source);
 		} else if (patterns.length == 1) {
-			try {
-				return new SimpleDateFormat(patterns[0]).parse(source);
-			} catch (ParseException e) {
-				throw new ConversionException("source=" + source + ", pattern=" + patterns[0], e);
-			}
+			return new DateCodec(patterns[0], timeZone, locale, null).decode(source);
 		} else {
-			Throwable error = null;
+			DecodeException error = null;
 			for (String pattern : patterns) {
 				try {
-					return new SimpleDateFormat(pattern).parse(source);
-				} catch (ParseException e) {
+					return new DateCodec(pattern, timeZone, locale, null).decode(source);
+				} catch (DecodeException e) {
 					if (error == null) {
 						error = e;
 					} else {
@@ -202,12 +220,15 @@ public class TimeUtils {
 	 * @return
 	 */
 	public static String format(Date source, String pattern) {
+		return format(source, null, null, pattern);
+	}
+
+	public static String format(Date source, @Nullable TimeZone zone, @Nullable Locale locale, String pattern) {
 		if (source == null) {
 			return null;
 		}
 
-		Assert.requiredArgument(StringUtils.hasText(pattern), "pattern");
-		return new SimpleDateFormat(pattern).format(source);
+		return new DateCodec(pattern, zone, locale, null).encode(source);
 	}
 
 	/**
@@ -223,6 +244,12 @@ public class TimeUtils {
 		return format(d, pattern);
 	}
 
+	public static String format(long source, @Nullable TimeZone zone, @Nullable Locale locale, String pattern) {
+		Date d = new Date();
+		d.setTime(source);
+		return format(d, zone, locale, pattern);
+	}
+
 	/**
 	 * 将指定格式的字段串转换为时间戳
 	 * 
@@ -231,7 +258,11 @@ public class TimeUtils {
 	 * @return
 	 */
 	public static long getTime(String source, String... patterns) throws ConversionException {
-		Date date = parse(source, patterns);
+		return getTime(source, null, null, patterns);
+	}
+
+	public static long getTime(String source, @Nullable TimeZone zone, @Nullable Locale locale, String... patterns) {
+		Date date = parse(source, zone, locale, patterns);
 		return date == null ? 0L : date.getTime();
 	}
 
