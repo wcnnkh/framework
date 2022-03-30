@@ -26,7 +26,7 @@ public class CustomFormatter extends Formatter {
 		}
 
 		StringBuilder sb = new StringBuilder();
-		sb.append(TimeUtils.format(record.getMillis(), TimeUtils.TIME_MILLIS_PATTERN));
+		sb.append(TimeUtils.MILLISECOND.format(record.getMillis()));
 		sb.append(" ");
 		sb.append(record.getLevel().getName());
 		String name = record.getLoggerName();

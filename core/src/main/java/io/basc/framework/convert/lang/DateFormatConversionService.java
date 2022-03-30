@@ -80,7 +80,7 @@ public class DateFormatConversionService extends AbstractConversionService {
 		DateFormat targetFormat = targetType.getAnnotation(DateFormat.class);
 		if (sourceFormat == null) {
 			if (targetFormat == null) {
-				return TimeUtils.parse(source);
+				return TimeUtils.convert(source);
 			} else {
 				return TimeUtils.parse(source, targetFormat.value());
 			}

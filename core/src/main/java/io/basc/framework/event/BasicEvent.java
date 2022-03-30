@@ -26,6 +26,6 @@ public class BasicEvent implements Event, Serializable {
 	}
 
 	public String toString() {
-		return TimeUtils.format(createTime, TimeUtils.TIME_MILLIS_PATTERN) + " <" + ReflectionUtils.toString(this) + ">";
+		return TimeUtils.MILLISECOND.format(createTime) + " <" + ReflectionUtils.toString(this) + ">";
 	};
 }

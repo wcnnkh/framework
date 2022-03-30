@@ -1,20 +1,20 @@
 package io.basc.framework.netflix.eureka.server;
 
-import io.basc.framework.beans.annotation.Autowired;
-import io.basc.framework.beans.annotation.ConfigurationProperties;
-import io.basc.framework.env.Environment;
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.util.TimeUtils;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import com.netflix.eureka.EurekaServerConfig;
 import com.netflix.eureka.aws.AwsBindingStrategy;
+
+import io.basc.framework.beans.annotation.Autowired;
+import io.basc.framework.beans.annotation.ConfigurationProperties;
+import io.basc.framework.env.Environment;
+import io.basc.framework.mapper.MapperUtils;
 
 @ConfigurationProperties(EurekaServerConfigBean.PREFIX)
 public class EurekaServerConfigBean implements EurekaServerConfig {
@@ -33,23 +33,23 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 
 	private int eIPBindRebindRetries = 3;
 
-	private int eIPBindingRetryIntervalMs = (int)(5 * TimeUtils.ONE_MINUTE);
+	private int eIPBindingRetryIntervalMs = (int) TimeUnit.MINUTES.toMillis(5);
 
-	private int eIPBindingRetryIntervalMsWhenUnbound = (int) (1 * TimeUtils.ONE_MINUTE);
+	private int eIPBindingRetryIntervalMsWhenUnbound = (int) TimeUnit.MINUTES.toMillis(1);
 
 	private boolean enableSelfPreservation = true;
 
 	private double renewalPercentThreshold = 0.85;
 
-	private int renewalThresholdUpdateIntervalMs = (int) (15 * TimeUtils.ONE_MINUTE);
+	private int renewalThresholdUpdateIntervalMs = (int) TimeUnit.MINUTES.toMillis(15);
 
-	private int peerEurekaNodesUpdateIntervalMs = (int) (10 * TimeUtils.ONE_MINUTE);
+	private int peerEurekaNodesUpdateIntervalMs = (int) TimeUnit.MINUTES.toMillis(10);
 
 	private int numberOfReplicationRetries = 5;
 
 	private int peerEurekaStatusRefreshTimeIntervalMs = 30 * 1000;
 
-	private int waitTimeInMsWhenSyncEmpty = (int) (5 * TimeUtils.ONE_MINUTE);
+	private int waitTimeInMsWhenSyncEmpty = (int) TimeUnit.MINUTES.toMillis(5);
 
 	private int peerNodeConnectTimeoutMs = 200;
 
@@ -61,7 +61,7 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 
 	private int peerNodeConnectionIdleTimeoutSeconds = 30;
 
-	private long retentionTimeInMSInDeltaQueue = 3 * TimeUtils.ONE_MINUTE;
+	private long retentionTimeInMSInDeltaQueue = TimeUnit.MINUTES.toMillis(3);
 
 	private long deltaRetentionTimerIntervalInMs = 30 * 1000;
 
@@ -69,10 +69,10 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 
 	private int aSGQueryTimeoutMs = 300;
 
-	private long aSGUpdateIntervalMs = 5 * TimeUtils.ONE_MINUTE;
+	private long aSGUpdateIntervalMs = TimeUnit.MINUTES.toMillis(5);
 
-	private long aSGCacheExpiryTimeoutMs = 10 * TimeUtils.ONE_MINUTE; // defaults to longer
-															// than the
+	private long aSGCacheExpiryTimeoutMs = TimeUnit.MINUTES.toMillis(10); // defaults to longer
+	// than the
 
 	// asg update interval
 
@@ -166,7 +166,7 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 
 	private int route53BindRebindRetries = 3;
 
-	private int route53BindingRetryIntervalMs = (int) (5 * TimeUtils.ONE_MINUTE);
+	private int route53BindingRetryIntervalMs = (int) TimeUnit.MINUTES.toMillis(5);
 
 	private long route53DomainTTL = 30;
 
@@ -972,8 +972,8 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 				&& peerNodeTotalConnections == that.peerNodeTotalConnections
 				&& peerNodeTotalConnectionsPerHost == that.peerNodeTotalConnectionsPerHost
 				&& primeAwsReplicaConnections == that.primeAwsReplicaConnections
-				&& Objects.equals(environment, that.environment)
-				&& rateLimiterBurstSize == that.rateLimiterBurstSize && rateLimiterEnabled == that.rateLimiterEnabled
+				&& Objects.equals(environment, that.environment) && rateLimiterBurstSize == that.rateLimiterBurstSize
+				&& rateLimiterEnabled == that.rateLimiterEnabled
 				&& rateLimiterFullFetchAverageRate == that.rateLimiterFullFetchAverageRate
 				&& Objects.equals(rateLimiterPrivilegedClients, that.rateLimiterPrivilegedClients)
 				&& rateLimiterRegistryFetchAverageRate == that.rateLimiterRegistryFetchAverageRate

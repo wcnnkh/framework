@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
 import io.basc.framework.codec.support.URLCodec;
@@ -21,7 +22,6 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.TimeUtils;
 import io.basc.framework.util.comparator.CompareUtils;
 
 public class FileCompensatePolicy extends StorageCompensatePolicy {
@@ -39,7 +39,7 @@ public class FileCompensatePolicy extends StorageCompensatePolicy {
 	public File getDirectory() {
 		return directory;
 	}
-	
+
 	@Override
 	public Lock getLock(String group, String id) {
 		checkParameter(group, id);
@@ -56,7 +56,8 @@ public class FileCompensatePolicy extends StorageCompensatePolicy {
 
 			@Override
 			public boolean accept(File pathname) {
-				return pathname.isFile() && pathname.getName().endsWith(SUFFIX) && pathname.lastModified() < (t - TimeUtils.ONE_MINUTE * getCompenstBeforeMinute());
+				return pathname.isFile() && pathname.getName().endsWith(SUFFIX)
+						&& pathname.lastModified() < (t - TimeUnit.MINUTES.toMillis(getCompenstBeforeMinute()));
 			}
 		});
 
@@ -68,17 +69,14 @@ public class FileCompensatePolicy extends StorageCompensatePolicy {
 
 			@Override
 			public int compare(File o1, File o2) {
-				return CompareUtils.compare(o1.lastModified(),
-						o2.lastModified(), true);
+				return CompareUtils.compare(o1.lastModified(), o2.lastModified(), true);
 			}
 		});
 
 		HashSet<String> sets = new LinkedHashSet<String>();
 		for (File file : files) {
-			String name = file.getName().substring(0,
-					file.getName().length() - SUFFIX.length());
-			Pair<String, String> pair = StringUtils.parseKV(name,
-					CONNECTOR);
+			String name = file.getName().substring(0, file.getName().length() - SUFFIX.length());
+			Pair<String, String> pair = StringUtils.parseKV(name, CONNECTOR);
 			sets.add(URLCodec.UTF_8.decode(pair.getKey()));
 		}
 		return CollectionUtils.toEnumeration(sets.iterator());
@@ -104,23 +102,20 @@ public class FileCompensatePolicy extends StorageCompensatePolicy {
 
 			@Override
 			public int compare(File o1, File o2) {
-				return CompareUtils.compare(o1.lastModified(),
-						o2.lastModified(), true);
+				return CompareUtils.compare(o1.lastModified(), o2.lastModified(), true);
 			}
 		});
 
 		File file = files[0];
-		String name = file.getName().substring(0,
-				file.getName().length() - SUFFIX.length());
-		Pair<String, String> pair = StringUtils
-				.parseKV(name, CONNECTOR);
+		String name = file.getName().substring(0, file.getName().length() - SUFFIX.length());
+		Pair<String, String> pair = StringUtils.parseKV(name, CONNECTOR);
 		return URLCodec.UTF_8.decode(pair.getValue());
 	}
 
 	@Override
 	public boolean add(String group, String id, Runnable runnable) {
 		checkParameter(group, id);
-		
+
 		File file = getFile(group, id);
 		if (file.exists()) {
 			return false;
@@ -148,14 +143,13 @@ public class FileCompensatePolicy extends StorageCompensatePolicy {
 	}
 
 	private File getFile(String group, String id) {
-		return new File(directory, URLCodec.UTF_8.encode(group) + CONNECTOR
-				+ URLCodec.UTF_8.encode(id) + SUFFIX);
+		return new File(directory, URLCodec.UTF_8.encode(group) + CONNECTOR + URLCodec.UTF_8.encode(id) + SUFFIX);
 	}
 
 	@Override
 	protected Runnable getRunnable(String group, String id) {
 		checkParameter(group, id);
-		
+
 		File file = getFile(group, id);
 		if (file.exists()) {
 			try {
@@ -171,7 +165,7 @@ public class FileCompensatePolicy extends StorageCompensatePolicy {
 	@Override
 	public boolean exists(String group, String id) {
 		checkParameter(group, id);
-		
+
 		File file = getFile(group, id);
 		return file.exists();
 	}
@@ -179,7 +173,7 @@ public class FileCompensatePolicy extends StorageCompensatePolicy {
 	@Override
 	public boolean remove(String group, String id) {
 		checkParameter(group, id);
-		
+
 		File file = getFile(group, id);
 		return file.delete();
 	}

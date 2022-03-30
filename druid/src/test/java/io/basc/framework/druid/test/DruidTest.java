@@ -9,6 +9,6 @@ import io.basc.framework.util.TimeUtils;
 public class DruidTest {
 	public static void main(String[] args) throws InterruptedException, ExecutionException {
 		Application application = MainApplication.run(DruidTest.class, args).get();
-		System.out.println(TimeUtils.format(application.getCreateTime(), TimeUtils.TIME_MILLIS_PATTERN));
+		System.out.println(TimeUtils.MILLISECOND.format(application.getCreateTime()));
 	}
 }

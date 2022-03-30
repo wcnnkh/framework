@@ -14,7 +14,6 @@ import io.basc.framework.io.AbstractResource;
 import io.basc.framework.io.Resource;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.TimeUtils;
 
 public class SimpleResourceEventDispatcher extends SimpleEventDispatcher<ChangeEvent<Resource>> {
 	private static Logger logger = LoggerFactory.getLogger(SimpleResourceEventDispatcher.class);
@@ -33,12 +32,12 @@ public class SimpleResourceEventDispatcher extends SimpleEventDispatcher<ChangeE
 
 	/**
 	 * @param resource
-	 * @param period   不能小于1000ms
+	 * @param period
 	 */
 	public SimpleResourceEventDispatcher(AbstractResource resource, long period) {
 		super(true);
 		this.resource = resource;
-		this.period = period < TimeUtils.ONE_SECOND ? LISTENER_PERIOD : period;
+		this.period = Math.max(LISTENER_PERIOD, period);
 	}
 
 	private volatile TimerTask timerTask;
