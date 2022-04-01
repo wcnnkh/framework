@@ -25,10 +25,6 @@ public class MessageConverterClientHttpRequestCallback implements ClientHttpRequ
 			clientRequest.getHeaders().putAll(httpEntity.getHeaders());
 		}
 
-		if (httpEntity.hasBody()) {
-
-		}
-
 		if (httpEntity.hasBody() && clientRequest.getMethod().hasRequestBody()) {
 			if (messageConverter == null || !messageConverter.canWrite(httpEntity.getTypeDescriptor(),
 					httpEntity.getBody(), httpEntity.getContentType())) {
