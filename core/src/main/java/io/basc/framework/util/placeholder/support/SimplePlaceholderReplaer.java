@@ -34,7 +34,8 @@ public class SimplePlaceholderReplaer implements PlaceholderReplacer {
 		return suffix;
 	}
 
-	public String replacePlaceholders(String text, PlaceholderResolver placeholderResolver) {
+	public String replacePlaceholders(String text, PlaceholderResolver placeholderResolver,
+			boolean ignoreUnresolvablePlaceholders) {
 		if (StringUtils.isEmpty(text)) {
 			return text;
 		}
@@ -74,6 +75,17 @@ public class SimplePlaceholderReplaer implements PlaceholderReplacer {
 			}
 		}
 		return sb.toString();
+	}
+
+	@Override
+	public String replacePlaceholders(String value, PlaceholderResolver placeholderResolver) {
+		return replacePlaceholders(value, placeholderResolver, this.ignoreUnresolvablePlaceholders);
+	}
+
+	@Override
+	public String replaceRequiredPlaceholders(String value, PlaceholderResolver placeholderResolver)
+			throws IllegalArgumentException {
+		return replacePlaceholders(value, placeholderResolver, false);
 	}
 
 	private boolean prefixEq(char[] chars, int begin) {

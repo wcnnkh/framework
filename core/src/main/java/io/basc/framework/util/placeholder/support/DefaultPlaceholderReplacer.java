@@ -44,18 +44,15 @@ public class DefaultPlaceholderReplacer implements ConfigurablePlaceholderReplac
 	public String replaceRequiredPlaceholders(String value, PlaceholderResolver placeholderResolver) {
 		String textToUse = value;
 		for (PlaceholderReplacer replacer : this) {
-			textToUse = replacer.replacePlaceholders(textToUse,
-					new RequiredPlaceholderResolver(textToUse, placeholderResolver));
+			textToUse = replacer.replaceRequiredPlaceholders(textToUse, placeholderResolver);
 		}
 
-		textToUse = SimplePlaceholderReplaer.NON_STRICT_REPLACER.replacePlaceholders(textToUse,
-				new RequiredPlaceholderResolver(textToUse, placeholderResolver));
-		textToUse = SmartPlaceholderReplacer.NON_STRICT_REPLACER.replacePlaceholders(textToUse,
-				new RequiredPlaceholderResolver(textToUse, placeholderResolver));
-		textToUse = DEFAULT_SIMPLE_REPLACER.replacePlaceholders(textToUse,
-				new RequiredPlaceholderResolver(textToUse, placeholderResolver));
-		textToUse = DEFAULT_SMART_REPLACER.replacePlaceholders(textToUse,
-				new RequiredPlaceholderResolver(textToUse, placeholderResolver));
+		textToUse = SimplePlaceholderReplaer.STRICT_REPLACER.replaceRequiredPlaceholders(textToUse,
+				placeholderResolver);
+		textToUse = SmartPlaceholderReplacer.STRICT_REPLACER.replaceRequiredPlaceholders(textToUse,
+				placeholderResolver);
+		textToUse = DEFAULT_SIMPLE_REPLACER.replaceRequiredPlaceholders(textToUse, placeholderResolver);
+		textToUse = DEFAULT_SMART_REPLACER.replaceRequiredPlaceholders(textToUse, placeholderResolver);
 		return textToUse;
 	}
 

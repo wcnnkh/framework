@@ -4,11 +4,11 @@ import io.basc.framework.util.placeholder.PlaceholderReplacer;
 import io.basc.framework.util.placeholder.PlaceholderResolver;
 import io.basc.framework.util.placeholder.PropertyResolver;
 
-public class TempPropertyResolver implements PropertyResolver {
+public class SimplePropertyResolver implements PropertyResolver {
 	private final PlaceholderReplacer placeholderReplacer;
 	private final PlaceholderResolver placeholderResolver;
 
-	public TempPropertyResolver(PlaceholderReplacer placeholderReplacer, PlaceholderResolver placeholderResolver) {
+	public SimplePropertyResolver(PlaceholderReplacer placeholderReplacer, PlaceholderResolver placeholderResolver) {
 		this.placeholderReplacer = placeholderReplacer;
 		this.placeholderResolver = placeholderResolver;
 	}
