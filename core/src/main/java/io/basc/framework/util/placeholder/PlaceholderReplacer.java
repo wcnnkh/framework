@@ -1,6 +1,6 @@
 package io.basc.framework.util.placeholder;
 
-import io.basc.framework.util.placeholder.support.RequiredPlaceholderResolver;
+import java.util.Map;
 
 /**
  * 占位符替换
@@ -15,10 +15,23 @@ public interface PlaceholderReplacer {
 	/** Suffix for system property placeholders: "}" */
 	public static final String PLACEHOLDER_SUFFIX = "}";
 
-	String replacePlaceholders(String value, PlaceholderResolver placeholderResolver);
-
-	default String replaceRequiredPlaceholders(String value, PlaceholderResolver placeholderResolver)
-			throws IllegalArgumentException {
-		return replacePlaceholders(value, new RequiredPlaceholderResolver(value, placeholderResolver));
+	default String replacePlaceholders(String source, Map<String, ?> properties) {
+		return replacePlaceholders(source, (key) -> {
+			Object v = properties.get(key);
+			return v == null ? null : v.toString();
+		});
 	}
+
+	default String replaceRequiredPlaceholders(String source, Map<String, ?> properties)
+			throws IllegalArgumentException {
+		return replaceRequiredPlaceholders(source, (key) -> {
+			Object v = properties.get(key);
+			return v == null ? null : v.toString();
+		});
+	}
+
+	String replacePlaceholders(String source, PlaceholderResolver placeholderResolver);
+
+	String replaceRequiredPlaceholders(String source, PlaceholderResolver placeholderResolver)
+			throws IllegalArgumentException;
 }

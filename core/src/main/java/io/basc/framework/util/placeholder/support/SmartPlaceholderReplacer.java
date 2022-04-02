@@ -91,12 +91,18 @@ public class SmartPlaceholderReplacer implements PlaceholderReplacer {
 
 	public String replacePlaceholders(String value, PlaceholderResolver placeholderResolver) {
 		Assert.notNull(value, "Argument 'value' must not be null.");
-		return parseStringValue(value, placeholderResolver, new HashSet<String>());
+		return parseStringValue(value, placeholderResolver, new HashSet<String>(), this.ignoreUnresolvablePlaceholders);
+	}
+
+	@Override
+	public String replaceRequiredPlaceholders(String value, PlaceholderResolver placeholderResolver)
+			throws IllegalArgumentException {
+		Assert.notNull(value, "Argument 'value' must not be null.");
+		return parseStringValue(value, placeholderResolver, new HashSet<String>(), false);
 	}
 
 	protected String parseStringValue(String strVal, PlaceholderResolver placeholderResolver,
-			Set<String> visitedPlaceholders) {
-
+			Set<String> visitedPlaceholders, boolean ignoreUnresolvablePlaceholders) {
 		StringBuilder buf = new StringBuilder(strVal);
 
 		int startIndex = strVal.indexOf(this.placeholderPrefix);
@@ -111,7 +117,8 @@ public class SmartPlaceholderReplacer implements PlaceholderReplacer {
 				}
 				// Recursive invocation, parsing placeholders contained in the
 				// placeholder key.
-				placeholder = parseStringValue(placeholder, placeholderResolver, visitedPlaceholders);
+				placeholder = parseStringValue(placeholder, placeholderResolver, visitedPlaceholders,
+						ignoreUnresolvablePlaceholders);
 				// Now obtain the value for the fully resolved key...
 				String propVal = placeholderResolver.resolvePlaceholder(placeholder);
 				if (propVal == null && this.valueSeparator != null) {
@@ -129,13 +136,13 @@ public class SmartPlaceholderReplacer implements PlaceholderReplacer {
 					// Recursive invocation, parsing placeholders contained in
 					// the
 					// previously resolved placeholder value.
-					propVal = parseStringValue(propVal, placeholderResolver, visitedPlaceholders);
+					propVal = parseStringValue(propVal, placeholderResolver, visitedPlaceholders, ignoreUnresolvablePlaceholders);
 					buf.replace(startIndex, endIndex + this.placeholderSuffix.length(), propVal);
 					if (logger.isTraceEnabled()) {
 						logger.trace("Resolved placeholder '" + placeholder + "'");
 					}
 					startIndex = buf.indexOf(this.placeholderPrefix, startIndex + propVal.length());
-				} else if (this.ignoreUnresolvablePlaceholders) {
+				} else if (ignoreUnresolvablePlaceholders) {
 					// Proceed with unprocessed value.
 					startIndex = buf.indexOf(this.placeholderPrefix, endIndex + this.placeholderSuffix.length());
 				} else {
