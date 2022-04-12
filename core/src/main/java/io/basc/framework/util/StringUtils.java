@@ -1472,18 +1472,30 @@ public final class StringUtils {
 		return new String(chars, 0, chars.length);
 	}
 
+	/**
+	 * @see #trimAllWhitespace(CharSequence)
+	 * @param text
+	 * @param defaultValue
+	 * @return
+	 */
 	public static Boolean parseBoolean(String text, Boolean defaultValue) {
 		if (!hasText(text)) {
 			return defaultValue;
 		}
 
-		return parseBooleanValue(text);
+		return parseBooleanValue(trimAllWhitespace(text));
 	}
 
 	private static boolean parseBooleanValue(String text) {
 		return BOOLEANS.contains(text) || BOOLEANS.contains(text.toLowerCase());
 	}
 
+	/**
+	 * @see #trimAllWhitespace(CharSequence)
+	 * @param text
+	 * @param defaultValue
+	 * @return
+	 */
 	public static boolean parseBoolean(Object text, Boolean defaultValue) {
 		if (text == null) {
 			return defaultValue;
@@ -1492,14 +1504,31 @@ public final class StringUtils {
 		return parseBoolean(String.valueOf(text), defaultValue);
 	}
 
+	/**
+	 * @see #trimAllWhitespace(CharSequence)
+	 * @param text
+	 * @return
+	 */
 	public static boolean parseBoolean(Object text) {
 		return parseBoolean(text, false);
 	}
 
+	/**
+	 * @see #trimAllWhitespace(CharSequence)
+	 * @param text
+	 * @return
+	 */
 	public static boolean parseBoolean(String text) {
 		return parseBoolean(text, false);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @param radix
+	 * @param defaultValue
+	 * @return
+	 */
 	public static Byte parseByte(String text, int radix, Byte defaultValue) {
 		String v = parseNumberText(text, radix);
 		if (isEmpty(v)) {
@@ -1508,6 +1537,13 @@ public final class StringUtils {
 		return Byte.parseByte(v, radix);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @param radix
+	 * @param defaultValue
+	 * @return
+	 */
 	public static byte parseByte(String text, int radix, byte defaultValue) {
 		String v = parseNumberText(text, radix);
 		if (isEmpty(v)) {
@@ -1516,22 +1552,51 @@ public final class StringUtils {
 		return Byte.parseByte(v, radix);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @return
+	 */
 	public static byte parseByte(String text) {
 		return parseByte(text, 10, (byte) 0);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @param defaultValue
+	 * @return
+	 */
 	public static Byte parseByte(String text, Byte defaultValue) {
 		return parseByte(text, 10, defaultValue);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @return
+	 */
 	public static short parseShort(String text) {
 		return parseShort(text, 10, (short) 0);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @param defaultValue
+	 * @return
+	 */
 	public static Short parseShort(String text, Short defaultValue) {
 		return parseShort(text, 10, defaultValue);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @param radix
+	 * @param defaultValue
+	 * @return
+	 */
 	public static Short parseShort(String text, int radix, Short defaultValue) {
 		String v = parseNumberText(text, radix);
 		if (isEmpty(v)) {
@@ -1540,6 +1605,13 @@ public final class StringUtils {
 		return Short.parseShort(v, radix);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @param radix
+	 * @param defaultValue
+	 * @return
+	 */
 	public static short parseShort(String text, int radix, short defaultValue) {
 		String v = parseNumberText(text, radix);
 		if (isEmpty(v)) {
@@ -1548,6 +1620,13 @@ public final class StringUtils {
 		return Short.parseShort(v, radix);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @param radix
+	 * @param defaultValue
+	 * @return
+	 */
 	public static Integer parseInt(String text, int radix, Integer defaultValue) {
 		String v = parseNumberText(text, radix);
 		if (isEmpty(v)) {
@@ -1556,6 +1635,13 @@ public final class StringUtils {
 		return Integer.parseInt(v, radix);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @param radix
+	 * @param defaultValue
+	 * @return
+	 */
 	public static int parseInt(String text, int radix, int defaultValue) {
 		String v = parseNumberText(text, radix);
 		if (isEmpty(v)) {
@@ -1564,18 +1650,42 @@ public final class StringUtils {
 		return Integer.parseInt(v, radix);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @param defaultValue
+	 * @return
+	 */
 	public static int parseInt(String text, int defaultValue) {
 		return parseInt(text, 10, defaultValue);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @return
+	 */
 	public static int parseInt(String text) {
 		return parseInt(text, 0);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @param defaultValue
+	 * @return
+	 */
 	public static Integer parseInt(String text, Integer defaultValue) {
 		return parseInt(text, 10, defaultValue);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @param radix
+	 * @param defaultValue
+	 * @return
+	 */
 	public static Long parseLong(String text, int radix, Long defaultValue) {
 		String v = parseNumberText(text, radix);
 		if (isEmpty(v)) {
@@ -1585,14 +1695,33 @@ public final class StringUtils {
 		return Long.parseLong(v, radix);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @param defaultValue
+	 * @return
+	 */
 	public static Long parseLong(String text, Long defaultValue) {
 		return parseLong(text, defaultValue);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @param defaultValue
+	 * @return
+	 */
 	public static long parseLong(String text, long defaultValue) {
 		return parseLong(text, 10, defaultValue);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @param radix
+	 * @param defaultValue
+	 * @return
+	 */
 	public static long parseLong(String text, int radix, long defaultValue) {
 		String v = parseNumberText(text, radix);
 		if (isEmpty(v)) {
@@ -1602,14 +1731,30 @@ public final class StringUtils {
 		return Long.parseLong(v, radix);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @return
+	 */
 	public static long parseLong(String text) {
 		return parseLong(text, 10, 0L);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence)
+	 * @param text
+	 * @return
+	 */
 	public static float parseFloat(String text) {
 		return parseFloat(text, 0f);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence)
+	 * @param text
+	 * @param defaultValue
+	 * @return
+	 */
 	public static Float parseFloat(String text, Float defaultValue) {
 		String v = parseNumberText(text);
 		if (isEmpty(v)) {
@@ -1618,6 +1763,12 @@ public final class StringUtils {
 		return Float.parseFloat(v);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence)
+	 * @param text
+	 * @param defaultValue
+	 * @return
+	 */
 	public static float parseFloat(String text, float defaultValue) {
 		String v = parseNumberText(text);
 		if (isEmpty(v)) {
@@ -1626,10 +1777,21 @@ public final class StringUtils {
 		return Float.parseFloat(v);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence)
+	 * @param text
+	 * @return
+	 */
 	public static double parseDouble(String text) {
 		return parseDouble(text, 0);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence)
+	 * @param text
+	 * @param defaultValue
+	 * @return
+	 */
 	public static Double parseDouble(String text, Double defaultValue) {
 		String v = parseNumberText(text);
 		if (isEmpty(v)) {
@@ -1639,6 +1801,12 @@ public final class StringUtils {
 		return Double.parseDouble(v);
 	}
 
+	/**
+	 * @see #parseNumberText(CharSequence)
+	 * @param text
+	 * @param defaultValue
+	 * @return
+	 */
 	public static double parseDouble(String text, double defaultValue) {
 		String v = parseNumberText(text);
 		if (isEmpty(v)) {
