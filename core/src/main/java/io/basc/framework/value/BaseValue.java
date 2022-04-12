@@ -12,7 +12,7 @@ public interface BaseValue extends Value {
 	}
 
 	default String getAsNumberString() {
-		return StringUtils.formatNumberText(getAsString());
+		return StringUtils.parseNumberText(getAsString(), getNumberRadix());
 	}
 
 	default Byte getAsByte() {
@@ -191,16 +191,14 @@ public interface BaseValue extends Value {
 			return false;
 		}
 
-		if (StringUtils.isNumeric(value)) {
+		if (StringUtils.isNumeric(value, getNumberRadix())) {
 			return true;
 		}
 
-		if (value.lastIndexOf('e') != -1 || value.lastIndexOf('E') != -1) {
-			try {
-				new BigDecimal(value);
-				return true;
-			} catch (NumberFormatException e) {
-			}
+		try {
+			new BigDecimal(value);
+			return true;
+		} catch (NumberFormatException e) {
 		}
 		return false;
 	}
