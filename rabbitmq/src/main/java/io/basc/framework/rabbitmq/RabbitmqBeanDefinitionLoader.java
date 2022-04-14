@@ -10,7 +10,6 @@ import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.io.ResourceUtils;
-import io.basc.framework.io.SerializerUtils;
 import io.basc.framework.orm.convert.MapToEntityConversionService;
 
 import java.io.IOException;
@@ -23,14 +22,17 @@ import com.rabbitmq.client.ConnectionFactoryConfigurator;
 
 @Provider
 public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
-	public static final String DEFAULT_CONFIG = ResourceUtils.CLASSPATH_URL_PREFIX + "/rabbitmq/rabbitmq.properties";
+	public static final String DEFAULT_CONFIG = ResourceUtils.CLASSPATH_URL_PREFIX
+			+ "/rabbitmq/rabbitmq.properties";
 
-	public BeanDefinition load(ConfigurableBeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
+	public BeanDefinition load(ConfigurableBeanFactory beanFactory,
+			Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
 		if (sourceClass == ConnectionFactory.class) {
 			return new ConnectionFactoryBeanBuilder(beanFactory, sourceClass);
 		} else if (sourceClass == Connection.class) {
 			return new ConnectionBeanBuilder(beanFactory, sourceClass);
-		} else if (Exchange.class == sourceClass || RabbitmqExchange.class == sourceClass) {
+		} else if (Exchange.class == sourceClass
+				|| RabbitmqExchange.class == sourceClass) {
 			return new ExchangeBeanBuilder(beanFactory, sourceClass);
 		} else if (sourceClass == ExchangeDeclare.class) {
 			return new ExchangeDeclareBeanBuilder(beanFactory, sourceClass);
@@ -40,7 +42,8 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	private static class ConnectionBeanBuilder extends DefaultBeanDefinition {
 
-		public ConnectionBeanBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
+		public ConnectionBeanBuilder(ConfigurableBeanFactory beanFactory,
+				Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 
@@ -50,7 +53,8 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 
 		public Object create() throws BeansException {
 			try {
-				return beanFactory.getInstance(ConnectionFactory.class).newConnection();
+				return beanFactory.getInstance(ConnectionFactory.class)
+						.newConnection();
 			} catch (IOException e) {
 				throw new BeansException(e);
 			} catch (TimeoutException e) {
@@ -71,9 +75,11 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 		}
 	}
 
-	private static class ConnectionFactoryBeanBuilder extends DefaultBeanDefinition {
+	private static class ConnectionFactoryBeanBuilder extends
+			DefaultBeanDefinition {
 
-		public ConnectionFactoryBeanBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
+		public ConnectionFactoryBeanBuilder(
+				ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 
@@ -83,8 +89,10 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 
 		public Object create() throws BeansException {
 			ConnectionFactory connectionFactory = new ConnectionFactory();
-			Properties properties = beanFactory.getEnvironment().getProperties(DEFAULT_CONFIG).get();
-			ConnectionFactoryConfigurator.load(connectionFactory, properties, null);
+			Properties properties = beanFactory.getEnvironment()
+					.getProperties(DEFAULT_CONFIG).get();
+			ConnectionFactoryConfigurator.load(connectionFactory, properties,
+					null);
 			ConnectionFactoryConfigurator.load(connectionFactory, properties);
 			return connectionFactory;
 		}
@@ -92,23 +100,28 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	private static class ExchangeBeanBuilder extends DefaultBeanDefinition {
 
-		public ExchangeBeanBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
+		public ExchangeBeanBuilder(ConfigurableBeanFactory beanFactory,
+				Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 
 		public boolean isInstance() {
-			return beanFactory.isInstance(Connection.class) && beanFactory.isInstance(ExchangeDeclare.class);
+			return beanFactory.isInstance(Connection.class)
+					&& beanFactory.isInstance(ExchangeDeclare.class);
 		}
 
 		public Object create() throws BeansException {
-			return new RabbitmqExchange(SerializerUtils.getSerializer(), beanFactory.getInstance(Connection.class),
+			return new RabbitmqExchange(
+					beanFactory.getInstance(Connection.class),
 					beanFactory.getInstance(ExchangeDeclare.class));
 		}
 	}
 
-	private final class ExchangeDeclareBeanBuilder extends DefaultBeanDefinition {
+	private final class ExchangeDeclareBeanBuilder extends
+			DefaultBeanDefinition {
 
-		public ExchangeDeclareBeanBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
+		public ExchangeDeclareBeanBuilder(ConfigurableBeanFactory beanFactory,
+				Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 
@@ -119,10 +132,12 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 
 		@Override
 		public Object create() throws BeansException {
-			Properties properties = beanFactory.getEnvironment().getProperties(DEFAULT_CONFIG).get();
+			Properties properties = beanFactory.getEnvironment()
+					.getProperties(DEFAULT_CONFIG).get();
 			ExchangeDeclare exchangeDeclare = new ExchangeDeclare(null);
 			MapToEntityConversionService configure = new MapToEntityConversionService();
-			configure.setConversionService(beanFactory.getEnvironment().getConversionService());
+			configure.setConversionService(beanFactory.getEnvironment()
+					.getConversionService());
 			configure.setPrefix("exchange");
 			configure.configurationProperties(properties, exchangeDeclare);
 			return exchangeDeclare;

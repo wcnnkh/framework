@@ -7,7 +7,6 @@ import io.basc.framework.amqp.MessageProperties;
 import io.basc.framework.amqp.QueueDeclare;
 import io.basc.framework.amqp.support.AbstractExchange;
 import io.basc.framework.context.Init;
-import io.basc.framework.io.Serializer;
 import io.basc.framework.json.JSONUtils;
 
 import java.io.IOException;
@@ -19,8 +18,8 @@ public abstract class AbstractRabbitmqExchange extends AbstractExchange implemen
 	static final String X_DEAD_LETTER_EXCHANGE = "x-dead-letter-exchange";
 	static final String DELAY_ROUTING_KEY = "io.basc.framework.delay.routingKey";
 
-	public AbstractRabbitmqExchange(Serializer serializer, ExchangeDeclare exchangeDeclare) {
-		super(serializer, exchangeDeclare);
+	public AbstractRabbitmqExchange(ExchangeDeclare exchangeDeclare) {
+		super(exchangeDeclare);
 		checkName(exchangeDeclare.getName());
 	}
 
