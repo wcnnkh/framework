@@ -21,8 +21,8 @@ class MethodInvokerMessageListener implements MessageListener {
 		for (int i = 0; i < invoker.getMethod().getParameterCount(); i++) {
 			TypeDescriptor typeDescriptor = new TypeDescriptor(
 					new MethodParameter(invoker.getMethod(), i));
-			if (MessageProperties.class.isAssignableFrom(typeDescriptor
-					.getType())) {
+			if (MessageProperties.class == typeDescriptor.getType()
+					|| Message.class == typeDescriptor.getType()) {
 				// 如果是messageProperties类型，忽略
 				continue;
 			}
@@ -41,7 +41,7 @@ class MethodInvokerMessageListener implements MessageListener {
 			args = new Object[invoker.getMethod().getParameterCount()];
 			for (int i = 0; i < args.length; i++) {
 				Class<?> type = types[i];
-				if (MessageProperties.class.isAssignableFrom(type)) {
+				if (MessageProperties.class == type || Message.class == type) {
 					args[i] = message;
 				}
 			}
