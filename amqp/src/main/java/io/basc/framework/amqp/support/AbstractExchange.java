@@ -1,16 +1,14 @@
 package io.basc.framework.amqp.support;
 
+import io.basc.framework.amqp.ArgsMessageCodec;
 import io.basc.framework.amqp.Exchange;
 import io.basc.framework.amqp.ExchangeDeclare;
 import io.basc.framework.amqp.ExchangeException;
 import io.basc.framework.amqp.Message;
 import io.basc.framework.amqp.MessageListener;
 import io.basc.framework.amqp.MessageProperties;
-import io.basc.framework.amqp.MethodMessage;
 import io.basc.framework.amqp.QueueDeclare;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.io.Serializer;
 import io.basc.framework.json.JSONUtils;
 import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.logger.Logger;
@@ -38,17 +36,15 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractExchange implements Exchange {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
-	private final Serializer serializer;
 	private final ExchangeDeclare exchangeDeclare;
 	private RetryOperations retryOperations = new RetryTemplate();
+	private ArgsMessageCodec messageCodec = new SerializerArgsMessageCodec();
 
 	/**
 	 * @param serializer
 	 * @param exchangeDeclare
 	 */
-	public AbstractExchange(Serializer serializer,
-			ExchangeDeclare exchangeDeclare) {
-		this.serializer = serializer;
+	public AbstractExchange(ExchangeDeclare exchangeDeclare) {
 		this.exchangeDeclare = exchangeDeclare;
 	}
 
@@ -61,17 +57,17 @@ public abstract class AbstractExchange implements Exchange {
 		this.retryOperations = retryOperations;
 	}
 
-	public final Serializer getSerializer() {
-		return serializer;
-	}
-
 	public final ExchangeDeclare getExchangeDeclare() {
 		return exchangeDeclare;
 	}
 
-	public final void bind(String routingKey, QueueDeclare queueDeclare,
-			MethodInvoker invoker) {
-		bind(routingKey, queueDeclare, new MethodMessageListener(invoker));
+	public ArgsMessageCodec getMessageCodec() {
+		return messageCodec;
+	}
+
+	public void setMessageCodec(ArgsMessageCodec messageCodec) {
+		Assert.requiredArgument(messageCodec != null, "messageCodec");
+		this.messageCodec = messageCodec;
 	}
 
 	public final void bind(String routingKey, QueueDeclare queueDeclare,
@@ -79,15 +75,14 @@ public abstract class AbstractExchange implements Exchange {
 		logger.info("add message listener：{}, routingKey={}, queueDeclare={}",
 				messageListener, routingKey, queueDeclare);
 		try {
-			bindInternal(routingKey, queueDeclare, new MessageListenerInternal(
-					messageListener));
+			retryOperations.execute((context) -> {
+				bindInternal(routingKey, queueDeclare,
+						new MessageListenerInternal(messageListener));
+				return null;
+			});
 		} catch (IOException e) {
-			logger.error(e, "bind error, Try again in 10 seconds");
-			try {
-				Thread.sleep(10000);
-				bind(routingKey, queueDeclare, messageListener);
-			} catch (InterruptedException e1) {
-			}
+			throw new ExchangeException("bind error routingKey=" + routingKey,
+					e);
 		}
 	}
 
@@ -95,72 +90,45 @@ public abstract class AbstractExchange implements Exchange {
 			QueueDeclare queueDeclare, MessageListener messageListener)
 			throws IOException;
 
-	public final void push(String routingKey, Message message) {
-		push(routingKey, message, message.getBody());
-	}
-
-	public final void push(String routingKey, MethodMessage methodMessage) {
-		byte[] body = serializer.serialize(methodMessage.getArgs());
-		push(routingKey, methodMessage, body);
-	}
-
 	public final void push(String routingKey,
 			MessageProperties messageProperties, byte[] body)
 			throws ExchangeException {
+		Assert.requiredArgument(routingKey != null, "routingKey");
+		Assert.requiredArgument(messageProperties != null, "messageProperties");
+		Assert.requiredArgument(body != null, "body");
 		Transaction transaction = TransactionUtils.getManager()
 				.getTransaction();
 		final PushRetryCallback retryCallback = new PushRetryCallback(
 				routingKey, messageProperties, body);
-		long transactionMessageConfirmDelay = messageProperties.getTransactionMessageConfirmDelay();
-		if(transaction != null && transactionMessageConfirmDelay > 0){
-			long delay = Math.max(0, messageProperties.getDelay()) + transactionMessageConfirmDelay;
+		long transactionMessageConfirmDelay = messageProperties
+				.getTransactionMessageConfirmDelay();
+		if (transaction != null && transactionMessageConfirmDelay > 0) {
+			long delay = Math.max(0, messageProperties.getDelay())
+					+ transactionMessageConfirmDelay;
 			MessageProperties confirmMessage = messageProperties.clone();
 			confirmMessage.setDelay(delay, TimeUnit.MILLISECONDS);
-			//发送延迟的确认消息
-			retryOperations.execute(new PushRetryCallback(
-				routingKey, confirmMessage, body));
-			//在事务提交后发送消息
-			transaction.addLifecycle(new DefaultTransactionLifecycle(){
+			// 发送延迟的确认消息
+			retryOperations.execute(new PushRetryCallback(routingKey,
+					confirmMessage, body));
+			// 在事务提交后发送消息
+			transaction.addLifecycle(new DefaultTransactionLifecycle() {
 				@Override
 				public int getOrder() {
 					return Ordered.LOWEST_PRECEDENCE;
 				}
-				
+
 				public void afterCommit() {
 					retryOperations.execute(retryCallback);
 				};
 			});
-		}else{
+		} else {
 			retryOperations.execute(retryCallback);
 		}
 	}
 
-	public abstract void basicPublish(String routingKey,
+	protected abstract void basicPublish(String routingKey,
 			MessageProperties messageProperties, byte[] body)
 			throws ExchangeException;
-
-	private final class MethodMessageListener implements MessageListener {
-		private MethodInvoker invoker;
-
-		public MethodMessageListener(MethodInvoker invoker) {
-			this.invoker = invoker;
-		}
-
-		public void onMessage(String exchange, String routingKey,
-				Message message) throws IOException {
-			try {
-				Object[] args = serializer.deserialize(message.getBody());
-				invoker.invoke(args);
-			} catch (Throwable e) {
-				throw new RuntimeException(e);
-			}
-		}
-
-		@Override
-		public String toString() {
-			return invoker.toString();
-		}
-	}
 
 	protected long getDefaultRetryDelay() {
 		return 10000;
@@ -216,12 +184,12 @@ public abstract class AbstractExchange implements Exchange {
 			}
 
 			if (message.getDelay() > 0) {
-				//这是一个延迟消息
+				// 这是一个延迟消息
 				if (logger.isDebugEnabled()) {
 					logger.debug(
 							"delay message forward exchange:{}, routingKey:{}, message:{}",
-							exchange, routingKey,
-							JSONUtils.getJsonSupport().toJSONString(message));
+							exchange, routingKey, JSONUtils.getJsonSupport()
+									.toJSONString(message));
 				}
 
 				message.setDelay(0, TimeUnit.SECONDS);
@@ -236,7 +204,8 @@ public abstract class AbstractExchange implements Exchange {
 				logger.error(
 						"retry delay: {}, Unable to consume exchange:{}, routingKey:{}, message:{}",
 						delayTimeUnit.toMillis(delay), exchange,
-						routingKeyToUse, JSONUtils.getJsonSupport().toJSONString(message));
+						routingKeyToUse, JSONUtils.getJsonSupport()
+								.toJSONString(message));
 				message.setDelay(delay, delayTimeUnit);
 				retryPush(routingKeyToUse, message, message.getBody());
 				return;
@@ -245,11 +214,11 @@ public abstract class AbstractExchange implements Exchange {
 			if (logger.isDebugEnabled()) {
 				logger.debug(
 						"handleDelivery exchange:{}, routingKey:{}, message:{}",
-						exchange, routingKeyToUse,
-						JSONUtils.getJsonSupport().toJSONString(message));
+						exchange, routingKeyToUse, JSONUtils.getJsonSupport()
+								.toJSONString(message));
 			}
 
-			//开始消费消息
+			// 开始消费消息
 			TransactionManager transactionManager = TransactionUtils
 					.getManager();
 			Transaction transaction = transactionManager
@@ -284,14 +253,14 @@ public abstract class AbstractExchange implements Exchange {
 					logger.error(
 							NestedExceptionUtils.getRootCause(e),
 							"Don't try again: exchange={}, routingKey={}, message={}",
-							exchange, routingKeyToUse,
-							JSONUtils.getJsonSupport().toJSONString(message));
+							exchange, routingKeyToUse, JSONUtils
+									.getJsonSupport().toJSONString(message));
 				} else {
 					logger.error(
 							NestedExceptionUtils.getRootCause(e),
 							"retry delay: {}, exchange={}, routingKey={}, message={}",
-							retryDelay, exchange, routingKeyToUse,
-							JSONUtils.getJsonSupport().toJSONString(message));
+							retryDelay, exchange, routingKeyToUse, JSONUtils
+									.getJsonSupport().toJSONString(message));
 					message.setDelay(retryDelay, TimeUnit.MILLISECONDS);
 					retryPush(routingKeyToUse, message, message.getBody());
 				}
