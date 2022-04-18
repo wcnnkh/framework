@@ -1742,6 +1742,10 @@ public final class StringUtils {
 		return parseInt(text, 0);
 	}
 
+	public static int parseUnsignedInt(String text) {
+		return parseUnsignedInt(text, 0);
+	}
+
 	/**
 	 * @see #parseNumberText(CharSequence, int)
 	 * @param text
