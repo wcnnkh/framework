@@ -1205,7 +1205,7 @@ public final class StringUtils {
 
 	@Nullable
 	public static String parseNumberText(@Nullable CharSequence source,
-			@Nullable IntPredicate filter) {
+			boolean unsigned, @Nullable IntPredicate filter) {
 		if (isEmpty(source)) {
 			return null;
 		}
@@ -1217,6 +1217,11 @@ public final class StringUtils {
 			char chr = source.charAt(i);
 			if (chr == '-' || chr == '+') {
 				if (pos == 0) {
+					// 无符号类型的不应该存在符号
+					if (unsigned && chr == '-') {
+						// 不支持解析？
+						return null;
+					}
 					chars[pos++] = chr;
 					continue;
 				}
@@ -1240,30 +1245,8 @@ public final class StringUtils {
 		return pos == 0 ? null : new String(chars, 0, pos);
 	}
 
-	/**
-	 * 转换为可解析的数字字符串, 不支持科学计数法
-	 * 
-	 * @param source
-	 * @param radix
-	 *            进制(小于等于0表示未知)
-	 * @return
-	 */
-	@Nullable
-	public static String parseNumberText(@Nullable CharSequence source,
-			int radix) {
-		return parseNumberText(
-				source,
-				(c) -> (radix > 10 || radix <= 0) ? Character
-						.isLetterOrDigit(c) : Character.isDigit(c));
-	}
-
-	@Nullable
-	public static String parseNumberText(@Nullable CharSequence source) {
-		return parseNumberText(source, 0);
-	}
-
 	public static boolean isNumeric(@Nullable CharSequence source,
-			@Nullable IntPredicate filter) {
+			boolean unsigned, @Nullable IntPredicate filter) {
 		if (isEmpty(source)) {
 			return false;
 		}
@@ -1274,6 +1257,11 @@ public final class StringUtils {
 			char chr = source.charAt(i);
 			if (chr == '-' || chr == '+') {
 				if (effectiveCount == 0) {
+					// 如果是无符号的
+					if (unsigned && chr == '-') {
+						return false;
+					}
+
 					effectiveCount++;
 					continue;
 				}
@@ -1300,6 +1288,48 @@ public final class StringUtils {
 	}
 
 	/**
+	 * 转换为可解析的数字字符串, 不支持科学计数法
+	 * 
+	 * @param source
+	 * @param radix
+	 *            进制(小于等于0表示未知)
+	 * @return
+	 */
+	@Nullable
+	public static String parseNumberText(@Nullable CharSequence source,
+			boolean unsigned, int radix) {
+		return parseNumberText(
+				source,
+				unsigned,
+				(c) -> (radix > 10 || radix <= 0) ? Character
+						.isLetterOrDigit(c) : Character.isDigit(c));
+	}
+
+	@Nullable
+	public static String parseNumberText(@Nullable CharSequence source,
+			boolean unsigned) {
+		return parseNumberText(source, unsigned, 0);
+	}
+
+	public static String parseNumberText(@Nullable CharSequence source,
+			int radix) {
+		return parseNumberText(source, false, radix);
+	}
+
+	public static String parseUnsignedNumberText(@Nullable CharSequence source,
+			int radix) {
+		return parseNumberText(source, true, radix);
+	}
+
+	public static String parseNumberText(@Nullable CharSequence source) {
+		return parseNumberText(source, false, 10);
+	}
+
+	public static String parseUnsignedNumberText(@Nullable CharSequence source) {
+		return parseNumberText(source, true, 10);
+	}
+
+	/**
 	 * 是否是可解析的数字字符串
 	 * 
 	 * @param source
@@ -1307,15 +1337,29 @@ public final class StringUtils {
 	 *            进制(小于等于0表示未知)
 	 * @return
 	 */
-	public static boolean isNumeric(CharSequence source, int radix) {
+	public static boolean isNumeric(CharSequence source, boolean unsigned,
+			int radix) {
 		return isNumeric(
 				source,
+				unsigned,
 				(c) -> (radix > 10 || radix <= 0) ? Character
 						.isLetterOrDigit(c) : Character.isDigit(c));
 	}
 
+	public static boolean isNumeric(CharSequence source, int radix) {
+		return isNumeric(source, false, radix);
+	}
+
+	public static boolean isUnsignedNumeric(CharSequence source, int radix) {
+		return isNumeric(source, true, radix);
+	}
+
 	public static boolean isNumeric(CharSequence source) {
-		return isNumeric(source, 0);
+		return isNumeric(source, false, 10);
+	}
+
+	public static boolean isUnsignedNumeric(CharSequence source) {
+		return isNumeric(source, true, 10);
 	}
 
 	public static String toUpperCase(String text, int begin, int end) {
@@ -1534,7 +1578,7 @@ public final class StringUtils {
 		if (isEmpty(v)) {
 			return defaultValue;
 		}
-		return Byte.parseByte(v, radix);
+		return Byte.valueOf(v, radix);
 	}
 
 	/**
@@ -1602,7 +1646,7 @@ public final class StringUtils {
 		if (isEmpty(v)) {
 			return defaultValue;
 		}
-		return Short.parseShort(v, radix);
+		return Short.valueOf(v, radix);
 	}
 
 	/**
@@ -1627,12 +1671,14 @@ public final class StringUtils {
 	 * @param defaultValue
 	 * @return
 	 */
-	public static Integer parseInt(String text, int radix, Integer defaultValue) {
-		String v = parseNumberText(text, radix);
+	public static Integer parseInt(String text, boolean unsigned, int radix,
+			Integer defaultValue) {
+		String v = parseNumberText(text, unsigned, radix);
 		if (isEmpty(v)) {
 			return defaultValue;
 		}
-		return Integer.parseInt(v, radix);
+		return unsigned ? Integer.valueOf(Integer.parseUnsignedInt(v, radix))
+				: Integer.valueOf(v, radix);
 	}
 
 	/**
@@ -1642,12 +1688,31 @@ public final class StringUtils {
 	 * @param defaultValue
 	 * @return
 	 */
-	public static int parseInt(String text, int radix, int defaultValue) {
-		String v = parseNumberText(text, radix);
+	public static int parseInt(String text, boolean unsigned, int radix,
+			int defaultValue) {
+		String v = parseNumberText(text, unsigned, radix);
 		if (isEmpty(v)) {
 			return defaultValue;
 		}
-		return Integer.parseInt(v, radix);
+		return unsigned ? Integer.parseUnsignedInt(v, radix) : Integer
+				.parseInt(v, radix);
+	}
+
+	public static Integer parseInt(String text, int radix, Integer defaultValue) {
+		return parseInt(text, false, radix, defaultValue);
+	}
+
+	public static int parseInt(String text, int radix, int defaultValue) {
+		return parseInt(text, false, radix, defaultValue);
+	}
+
+	public static Integer parseUnsignedInt(String text, int radix,
+			Integer defaultValue) {
+		return parseInt(text, true, radix, defaultValue);
+	}
+
+	public static int parseUnsignedInt(String text, int radix, int defaultValue) {
+		return parseInt(text, true, radix, defaultValue);
 	}
 
 	/**
@@ -1660,6 +1725,14 @@ public final class StringUtils {
 		return parseInt(text, 10, defaultValue);
 	}
 
+	public static Integer parseUnsignedInt(String text, Integer defaultValue) {
+		return parseInt(text, true, 10, defaultValue);
+	}
+
+	public static int parseUnsignedInt(String text, int defaultValue) {
+		return parseInt(text, true, 10, defaultValue);
+	}
+
 	/**
 	 * @see #parseNumberText(CharSequence, int)
 	 * @param text
@@ -1667,6 +1740,10 @@ public final class StringUtils {
 	 */
 	public static int parseInt(String text) {
 		return parseInt(text, 0);
+	}
+
+	public static int parseUnsignedInt(String text) {
+		return parseUnsignedInt(text, 0);
 	}
 
 	/**
@@ -1686,13 +1763,51 @@ public final class StringUtils {
 	 * @param defaultValue
 	 * @return
 	 */
-	public static Long parseLong(String text, int radix, Long defaultValue) {
-		String v = parseNumberText(text, radix);
+	public static Long parseLong(String text, boolean unsigned, int radix,
+			Long defaultValue) {
+		String v = parseNumberText(text, unsigned, radix);
 		if (isEmpty(v)) {
 			return defaultValue;
 		}
 
-		return Long.parseLong(v, radix);
+		return unsigned ? Long.valueOf(Long.parseUnsignedLong(v, radix)) : Long
+				.valueOf(v, radix);
+	}
+
+	/**
+	 * @see #parseNumberText(CharSequence, int)
+	 * @param text
+	 * @param radix
+	 * @param defaultValue
+	 * @return
+	 */
+	public static long parseLong(String text, boolean unsigned, int radix,
+			long defaultValue) {
+		String v = parseNumberText(text, unsigned, radix);
+		if (isEmpty(v)) {
+			return defaultValue;
+		}
+
+		return unsigned ? Long.parseUnsignedLong(v, radix) : Long.parseLong(v,
+				radix);
+	}
+
+	public static long parseLong(String text, int radix, long defaultValue) {
+		return parseLong(text, false, radix, defaultValue);
+	}
+
+	public static Long parseLong(String text, int radix, Long defaultValue) {
+		return parseLong(text, false, radix, defaultValue);
+	}
+
+	public static long parseUnsignedLong(String text, int radix,
+			long defaultValue) {
+		return parseLong(text, true, radix, defaultValue);
+	}
+
+	public static Long parseUnsignedLong(String text, int radix,
+			Long defaultValue) {
+		return parseLong(text, true, radix, defaultValue);
 	}
 
 	/**
@@ -1715,20 +1830,12 @@ public final class StringUtils {
 		return parseLong(text, 10, defaultValue);
 	}
 
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @param radix
-	 * @param defaultValue
-	 * @return
-	 */
-	public static long parseLong(String text, int radix, long defaultValue) {
-		String v = parseNumberText(text, radix);
-		if (isEmpty(v)) {
-			return defaultValue;
-		}
+	public static long parseUnsignedLong(String text, long defaultValue) {
+		return parseLong(text, true, 10, defaultValue);
+	}
 
-		return Long.parseLong(v, radix);
+	public static Long parseUnsignedLong(String text, Long defaultValue) {
+		return parseLong(text, true, 10, defaultValue);
 	}
 
 	/**
@@ -1738,6 +1845,10 @@ public final class StringUtils {
 	 */
 	public static long parseLong(String text) {
 		return parseLong(text, 10, 0L);
+	}
+
+	public static long parseUnsignedLong(String text) {
+		return parseLong(text, true, 10, 0L);
 	}
 
 	/**
@@ -1760,7 +1871,7 @@ public final class StringUtils {
 		if (isEmpty(v)) {
 			return defaultValue;
 		}
-		return Float.parseFloat(v);
+		return Float.valueOf(v);
 	}
 
 	/**
@@ -1798,7 +1909,7 @@ public final class StringUtils {
 			return defaultValue;
 		}
 
-		return Double.parseDouble(v);
+		return Double.valueOf(v);
 	}
 
 	/**
