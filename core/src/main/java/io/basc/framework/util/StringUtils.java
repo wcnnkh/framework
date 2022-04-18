@@ -1218,7 +1218,7 @@ public final class StringUtils {
 			if (chr == '-' || chr == '+') {
 				if (pos == 0) {
 					// 无符号类型的不应该存在符号
-					if (unsigned) {
+					if (unsigned && chr == '-') {
 						// 不支持解析？
 						return null;
 					}
@@ -1243,6 +1243,48 @@ public final class StringUtils {
 			}
 		}
 		return pos == 0 ? null : new String(chars, 0, pos);
+	}
+
+	public static boolean isNumeric(@Nullable CharSequence source,
+			boolean unsigned, @Nullable IntPredicate filter) {
+		if (isEmpty(source)) {
+			return false;
+		}
+
+		boolean findPoint = false;
+		int effectiveCount = 0;
+		for (int i = 0, len = source.length(); i < len; i++) {
+			char chr = source.charAt(i);
+			if (chr == '-' || chr == '+') {
+				if (effectiveCount == 0) {
+					// 如果是无符号的
+					if (unsigned && chr == '-') {
+						return false;
+					}
+
+					effectiveCount++;
+					continue;
+				}
+
+				return false;
+			}
+
+			if (chr == '.') {
+				if (findPoint) {
+					return false;
+				}
+
+				findPoint = true;
+				effectiveCount++;
+				continue;
+			}
+
+			if (filter != null && !filter.test(chr)) {
+				return false;
+			}
+			effectiveCount++;
+		}
+		return true;
 	}
 
 	/**
@@ -1280,53 +1322,11 @@ public final class StringUtils {
 	}
 
 	public static String parseNumberText(@Nullable CharSequence source) {
-		return parseNumberText(source, false, 0);
+		return parseNumberText(source, false, 10);
 	}
 
 	public static String parseUnsignedNumberText(@Nullable CharSequence source) {
-		return parseNumberText(source, true, 0);
-	}
-
-	public static boolean isNumeric(@Nullable CharSequence source,
-			boolean unsigned, @Nullable IntPredicate filter) {
-		if (isEmpty(source)) {
-			return false;
-		}
-
-		boolean findPoint = false;
-		int effectiveCount = 0;
-		for (int i = 0, len = source.length(); i < len; i++) {
-			char chr = source.charAt(i);
-			if (chr == '-' || chr == '+') {
-				if (effectiveCount == 0) {
-					// 如果是无符号的
-					if (unsigned) {
-						return false;
-					}
-
-					effectiveCount++;
-					continue;
-				}
-
-				return false;
-			}
-
-			if (chr == '.') {
-				if (findPoint) {
-					return false;
-				}
-
-				findPoint = true;
-				effectiveCount++;
-				continue;
-			}
-
-			if (filter != null && !filter.test(chr)) {
-				return false;
-			}
-			effectiveCount++;
-		}
-		return true;
+		return parseNumberText(source, true, 10);
 	}
 
 	/**
@@ -1355,11 +1355,11 @@ public final class StringUtils {
 	}
 
 	public static boolean isNumeric(CharSequence source) {
-		return isNumeric(source, false, 0);
+		return isNumeric(source, false, 10);
 	}
 
 	public static boolean isUnsignedNumeric(CharSequence source) {
-		return isNumeric(source, true, 0);
+		return isNumeric(source, true, 10);
 	}
 
 	public static String toUpperCase(String text, int begin, int end) {
