@@ -16,7 +16,7 @@ import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.util.Accept;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.placeholder.PropertyResolver;
+import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.value.StringValue;
 
 public final class DomUtils {
@@ -227,7 +227,7 @@ public final class DomUtils {
 		return properties;
 	}
 
-	public static String formatNodeValue(PropertyResolver propertyResolver, Node node, String value) {
+	public static String formatNodeValue(PlaceholderFormat placeholderFormat, Node node, String value) {
 		if (StringUtils.isEmpty(value)) {
 			return value;
 		}
@@ -236,38 +236,38 @@ public final class DomUtils {
 			return value;
 		}
 
-		return propertyResolver.resolvePlaceholders(value);
+		return placeholderFormat.formatPlaceholders(value);
 	}
 
-	public static String getNodeAttributeValue(PropertyResolver propertyResolver, Node node, String name) {
+	public static String getNodeAttributeValue(PlaceholderFormat placeholderFormat, Node node, String name) {
 		String value = getNodeAttributeValue(node, name);
 		if (value == null || value.length() == 0) {
 			return value;
 		}
 
-		return formatNodeValue(propertyResolver, node, value);
+		return formatNodeValue(placeholderFormat, node, value);
 	}
 
-	public static String getNodeAttributeValueOrNodeContent(PropertyResolver propertyResolver, Node node, String name) {
+	public static String getNodeAttributeValueOrNodeContent(PlaceholderFormat placeholderFormat, Node node, String name) {
 		String value = getNodeAttributeValueOrNodeContent(node, name);
 		if (StringUtils.isEmpty(value)) {
 			return null;
 		}
 
-		return formatNodeValue(propertyResolver, node, value);
+		return formatNodeValue(placeholderFormat, node, value);
 	}
 
-	public static String getRequireNodeAttributeValueOrNodeContent(PropertyResolver propertyResolver, Node node,
+	public static String getRequireNodeAttributeValueOrNodeContent(PlaceholderFormat placeholderFormat, Node node,
 			String name) {
 		String value = getNodeAttributeValueOrNodeContent(node, name);
 		if (StringUtils.isEmpty(value)) {
 			throw new NotFoundException("not found attribute " + name);
 		}
-		return formatNodeValue(propertyResolver, node, value);
+		return formatNodeValue(placeholderFormat, node, value);
 	}
 
-	public static String getRequireNodeAttributeValue(PropertyResolver propertyResolver, Node node, String name) {
-		String value = getNodeAttributeValue(propertyResolver, node, name);
+	public static String getRequireNodeAttributeValue(PlaceholderFormat placeholderFormat, Node node, String name) {
+		String value = getNodeAttributeValue(placeholderFormat, node, name);
 		if (StringUtils.isEmpty(value)) {
 			throw new NotFoundException("not found attribute " + name);
 		}

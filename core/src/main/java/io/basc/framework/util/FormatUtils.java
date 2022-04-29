@@ -1,13 +1,13 @@
 package io.basc.framework.util;
 
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.placeholder.PlaceholderFormat;
+
 import java.io.IOException;
 import java.nio.CharBuffer;
 import java.text.DecimalFormat;
 import java.util.Map.Entry;
 import java.util.Properties;
-
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.placeholder.PropertyResolver;
 
 public final class FormatUtils {
 	private static final String DEFAULT_PLACEHOLDER = "{}";
@@ -15,7 +15,8 @@ public final class FormatUtils {
 	private FormatUtils() {
 	};
 
-	public static String formatPlaceholder(Object text, String placeholder, Object... args) {
+	public static String formatPlaceholder(Object text, String placeholder,
+			Object... args) {
 		StringBuilder sb = new StringBuilder();
 		try {
 			formatPlaceholder(sb, text, placeholder, args);
@@ -25,15 +26,16 @@ public final class FormatUtils {
 		return sb.toString();
 	}
 
-	public static void formatPlaceholder(Appendable appendable, Object format, @Nullable String placeholder,
-			Object... args) throws IOException {
+	public static void formatPlaceholder(Appendable appendable, Object format,
+			@Nullable String placeholder, Object... args) throws IOException {
 		String text = format == null ? null : format.toString();
 		if (StringUtils.isEmpty(text) || ArrayUtils.isEmpty(args)) {
 			appendable.append(text);
 			return;
 		}
 
-		String findText = StringUtils.isEmpty(placeholder) ? DEFAULT_PLACEHOLDER : placeholder;
+		String findText = StringUtils.isEmpty(placeholder) ? DEFAULT_PLACEHOLDER
+				: placeholder;
 		int lastFind = 0;
 		for (int i = 0; i < args.length; i++) {
 			int index = text.indexOf(findText, lastFind);
@@ -66,7 +68,8 @@ public final class FormatUtils {
 	 * 保留小数点精度
 	 * 
 	 * @param number
-	 * @param len    保留多少位
+	 * @param len
+	 *            保留多少位
 	 * @return
 	 */
 	public static String formatNumberPrecision(double number, int len) {
@@ -96,7 +99,8 @@ public final class FormatUtils {
 		return new DecimalFormat(new String(charBuffer.array())).format(number);
 	}
 
-	public static Properties format(Properties properties, PropertyResolver propertyResolver) {
+	public static Properties format(Properties properties,
+			PlaceholderFormat placeholderFormat) {
 		if (properties == null || properties.isEmpty()) {
 			return properties;
 		}
@@ -109,7 +113,8 @@ public final class FormatUtils {
 			}
 
 			if (value instanceof String) {
-				props.put(entry.getKey(), propertyResolver.resolvePlaceholders((String) value));
+				props.put(entry.getKey(),
+						placeholderFormat.formatPlaceholders((String) value));
 			} else {
 				props.put(entry.getKey(), entry.getValue());
 			}

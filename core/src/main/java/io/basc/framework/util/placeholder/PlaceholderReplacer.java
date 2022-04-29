@@ -22,16 +22,18 @@ public interface PlaceholderReplacer {
 		});
 	}
 
-	default String replaceRequiredPlaceholders(String source, Map<String, ?> properties)
-			throws IllegalArgumentException {
+	default String replaceRequiredPlaceholders(String source,
+			Map<String, ?> properties) throws IllegalArgumentException {
 		return replaceRequiredPlaceholders(source, (key) -> {
 			Object v = properties.get(key);
 			return v == null ? null : v.toString();
 		});
 	}
 
-	String replacePlaceholders(String source, PlaceholderResolver placeholderResolver);
+	String replacePlaceholders(String source,
+			PlaceholderResolver placeholderResolver);
 
-	String replaceRequiredPlaceholders(String source, PlaceholderResolver placeholderResolver)
+	String replaceRequiredPlaceholders(String source,
+			PlaceholderResolver placeholderResolver)
 			throws IllegalArgumentException;
 }

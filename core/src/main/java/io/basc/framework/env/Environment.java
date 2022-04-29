@@ -18,10 +18,11 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.placeholder.PlaceholderReplacer;
-import io.basc.framework.util.placeholder.PropertyResolver;
+import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.value.PropertyFactory;
 
-public interface Environment extends EnvironmentResourceLoader, PropertyFactory, PropertyResolver {
+public interface Environment extends EnvironmentResourceLoader,
+		PropertyFactory, PlaceholderFormat {
 	public static final String CHARSET_PROPERTY = "io.basc.framework.charset.name";
 	public static final String WORK_PATH_PROPERTY = "io.basc.framework.work.path";
 
@@ -38,7 +39,8 @@ public interface Environment extends EnvironmentResourceLoader, PropertyFactory,
 	}
 
 	default Observable<String> getObservableCharsetName() {
-		return getObservableValue(CHARSET_PROPERTY, String.class, Constants.UTF_8_NAME);
+		return getObservableValue(CHARSET_PROPERTY, String.class,
+				Constants.UTF_8_NAME);
 	}
 
 	default Charset getCharset() {
@@ -46,7 +48,8 @@ public interface Environment extends EnvironmentResourceLoader, PropertyFactory,
 	}
 
 	default Observable<Charset> getObservableCharset() {
-		return getObservableValue(CHARSET_PROPERTY, Charset.class, Constants.UTF_8);
+		return getObservableValue(CHARSET_PROPERTY, Charset.class,
+				Constants.UTF_8);
 	}
 
 	default Object resolveResource(String location, TypeDescriptor targetType) {
@@ -62,25 +65,33 @@ public interface Environment extends EnvironmentResourceLoader, PropertyFactory,
 		return getProperties(getPropertiesResolver(), location);
 	}
 
-	default Observable<Properties> getProperties(String location, @Nullable String charsetName) {
+	default Observable<Properties> getProperties(String location,
+			@Nullable String charsetName) {
 		return getProperties(getPropertiesResolver(), location, charsetName);
 	}
 
-	default Observable<Properties> getProperties(String location, @Nullable Charset charset) {
+	default Observable<Properties> getProperties(String location,
+			@Nullable Charset charset) {
 		return getProperties(getPropertiesResolver(), location, charset);
 	}
 
-	default Observable<Properties> getProperties(PropertiesResolver propertiesResolver, String location) {
+	default Observable<Properties> getProperties(
+			PropertiesResolver propertiesResolver, String location) {
 		return getProperties(propertiesResolver, location, (String) null);
 	}
 
-	default Observable<Properties> getProperties(PropertiesResolver propertiesResolver, String location,
+	default Observable<Properties> getProperties(
+			PropertiesResolver propertiesResolver, String location,
 			@Nullable String charsetName) {
-		return getProperties(propertiesResolver, location,
-				StringUtils.isEmpty(charsetName) ? null : Charset.forName(charsetName));
+		return getProperties(
+				propertiesResolver,
+				location,
+				StringUtils.isEmpty(charsetName) ? null : Charset
+						.forName(charsetName));
 	}
 
-	default Observable<Properties> getProperties(PropertiesResolver propertiesResolver, String location,
+	default Observable<Properties> getProperties(
+			PropertiesResolver propertiesResolver, String location,
 			@Nullable Charset charset) {
 		Resource[] resources = getResources(location);
 		if (ArrayUtils.isEmpty(resources)) {
@@ -88,17 +99,21 @@ public interface Environment extends EnvironmentResourceLoader, PropertyFactory,
 		}
 
 		// 颠倒一下，优先级高的覆盖优先级低的
-		return toObservableProperties(propertiesResolver, charset, (Resource[]) ArrayUtils.reversal(resources));
+		return toObservableProperties(propertiesResolver, charset,
+				(Resource[]) ArrayUtils.reversal(resources));
 	}
 
 	default Observable<Properties> toObservableProperties(Resource... resources) {
-		return toObservableProperties(getPropertiesResolver(), getCharset(), resources);
+		return toObservableProperties(getPropertiesResolver(), getCharset(),
+				resources);
 	}
 
-	default Observable<Properties> toObservableProperties(PropertiesResolver propertiesResolver,
-			@Nullable Charset charset, Resource... resources) {
+	default Observable<Properties> toObservableProperties(
+			PropertiesResolver propertiesResolver, @Nullable Charset charset,
+			Resource... resources) {
 		ObservableProperties properties = new ObservableProperties();
-		Converter<Resource, Properties> converter = ResourceUtils.toPropertiesConverter(propertiesResolver, charset);
+		Converter<Resource, Properties> converter = ResourceUtils
+				.toPropertiesConverter(propertiesResolver, charset);
 		for (Resource resource : resources) {
 			properties.combine(resource, converter);
 		}
@@ -109,13 +124,16 @@ public interface Environment extends EnvironmentResourceLoader, PropertyFactory,
 	 * 解析并替换文本
 	 */
 	@Override
-	default String resolvePlaceholders(String text) {
-		return getPlaceholderReplacer().replacePlaceholders(text, (name) -> getString(name));
+	default String formatPlaceholders(String text) {
+		return getPlaceholderReplacer().replacePlaceholders(text,
+				(name) -> getString(name));
 	}
 
 	@Override
-	default String resolveRequiredPlaceholders(String text) throws IllegalArgumentException {
-		return getPlaceholderReplacer().replaceRequiredPlaceholders(text, (name) -> getString(name));
+	default String formatRequiredPlaceholders(String text)
+			throws IllegalArgumentException {
+		return getPlaceholderReplacer().replaceRequiredPlaceholders(text,
+				(name) -> getString(name));
 	}
 
 	PlaceholderReplacer getPlaceholderReplacer();

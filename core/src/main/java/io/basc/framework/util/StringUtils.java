@@ -1,7 +1,7 @@
 package io.basc.framework.util;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.placeholder.PropertyResolver;
+import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.util.stream.StreamProcessorSupport;
 
 import java.nio.CharBuffer;
@@ -606,15 +606,15 @@ public final class StringUtils {
 	 * @return
 	 */
 	public static String mergePaths(Collection<String> paths,
-			@Nullable PropertyResolver propertyResolver) {
+			@Nullable PlaceholderFormat placeholderFormat) {
 		StringBuilder sb = new StringBuilder();
 		for (String path : paths) {
 			if (StringUtils.isEmpty(path)) {
 				continue;
 			}
 
-			if (propertyResolver != null) {
-				path = propertyResolver.resolvePlaceholders(path);
+			if (placeholderFormat != null) {
+				path = placeholderFormat.formatPlaceholders(path);
 			}
 
 			path = StringUtils.cleanPath(path);
@@ -1203,9 +1203,13 @@ public final class StringUtils {
 		return pos == 0 ? null : new String(chars, 0, pos);
 	}
 
+	private static boolean isNumberSign(char chr) {
+		return chr == '-' || chr == '+';
+	}
+
 	@Nullable
 	public static String parseNumberText(@Nullable CharSequence source,
-			boolean unsigned, @Nullable IntPredicate filter) {
+			boolean unsigned, int radix, @Nullable IntPredicate filter) {
 		if (isEmpty(source)) {
 			return null;
 		}
@@ -1215,7 +1219,7 @@ public final class StringUtils {
 		boolean findPoint = false;
 		for (int i = 0, len = source.length(); i < len; i++) {
 			char chr = source.charAt(i);
-			if (chr == '-' || chr == '+') {
+			if (isNumberSign(chr)) {
 				if (pos == 0) {
 					// 无符号类型的不应该存在符号
 					if (unsigned && chr == '-') {
@@ -1226,6 +1230,14 @@ public final class StringUtils {
 					continue;
 				}
 				continue;
+			}
+
+			if (radix > 10) {
+				if (chr == '#' && !findPoint
+						&& (pos == 0 || (pos == 1 && isNumberSign(chars[0])))) {
+					chars[pos++] = chr;
+					continue;
+				}
 			}
 
 			if (chr == '.') {
@@ -1246,27 +1258,39 @@ public final class StringUtils {
 	}
 
 	public static boolean isNumeric(@Nullable CharSequence source,
-			boolean unsigned, @Nullable IntPredicate filter) {
+			boolean unsigned, int radix, @Nullable IntPredicate filter) {
 		if (isEmpty(source)) {
 			return false;
 		}
 
 		boolean findPoint = false;
-		int effectiveCount = 0;
+		char[] chars = new char[source.length()];
+		int pos = 0;
 		for (int i = 0, len = source.length(); i < len; i++) {
 			char chr = source.charAt(i);
 			if (chr == '-' || chr == '+') {
-				if (effectiveCount == 0) {
+				if (pos == 0) {
 					// 如果是无符号的
 					if (unsigned && chr == '-') {
 						return false;
 					}
 
-					effectiveCount++;
+					pos++;
 					continue;
 				}
 
 				return false;
+			}
+
+			if (radix > 10) {
+				if (chr == '#') {
+					if (!findPoint
+							&& (pos == 0 || (pos == 1 && isNumberSign(chars[0])))) {
+						chars[pos++] = chr;
+						continue;
+					}
+					return false;
+				}
 			}
 
 			if (chr == '.') {
@@ -1275,14 +1299,14 @@ public final class StringUtils {
 				}
 
 				findPoint = true;
-				effectiveCount++;
+				pos++;
 				continue;
 			}
 
 			if (filter != null && !filter.test(chr)) {
 				return false;
 			}
-			effectiveCount++;
+			pos++;
 		}
 		return true;
 	}
@@ -1301,6 +1325,7 @@ public final class StringUtils {
 		return parseNumberText(
 				source,
 				unsigned,
+				radix,
 				(c) -> (radix > 10 || radix <= 0) ? Character
 						.isLetterOrDigit(c) : Character.isDigit(c));
 	}
@@ -1342,6 +1367,7 @@ public final class StringUtils {
 		return isNumeric(
 				source,
 				unsigned,
+				radix,
 				(c) -> (radix > 10 || radix <= 0) ? Character
 						.isLetterOrDigit(c) : Character.isDigit(c));
 	}

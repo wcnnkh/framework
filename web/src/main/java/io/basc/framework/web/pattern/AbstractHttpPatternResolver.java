@@ -7,19 +7,20 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.env.Sys;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.placeholder.PropertyResolver;
-import io.basc.framework.util.placeholder.PropertyResolverAware;
+import io.basc.framework.util.placeholder.PlaceholderFormat;
+import io.basc.framework.util.placeholder.PlaceholderFormatAware;
 
-public abstract class AbstractHttpPatternResolver implements HttpPatternResolver, PropertyResolverAware {
-	private PropertyResolver propertyResolver;
+public abstract class AbstractHttpPatternResolver implements
+		HttpPatternResolver, PlaceholderFormatAware {
+	private PlaceholderFormat placeholderFormat;
 
 	@Override
-	public void setPropertyResolver(PropertyResolver propertyResolver) {
-		this.propertyResolver = propertyResolver;
+	public void setPlaceholderFormat(PlaceholderFormat placeholderFormat) {
+		this.placeholderFormat = placeholderFormat;
 	}
 
-	public PropertyResolver getPropertyResolver() {
-		return propertyResolver == null ? Sys.env : propertyResolver;
+	public PlaceholderFormat getPlaceholderFormat() {
+		return placeholderFormat == null ? Sys.env : placeholderFormat;
 	}
 
 	@Override
@@ -29,10 +30,14 @@ public abstract class AbstractHttpPatternResolver implements HttpPatternResolver
 			return Collections.emptyList();
 		}
 
-		return sourcePatterns.stream().map((pattern) -> {
-			return new HttpPattern(getPropertyResolver().resolvePlaceholders(pattern.getPath()), pattern.getMethod(),
-					pattern.getConsumes(), pattern.getProduces());
-		}).collect(Collectors.toList());
+		return sourcePatterns
+				.stream()
+				.map((pattern) -> {
+					return new HttpPattern(getPlaceholderFormat()
+							.formatPlaceholders(pattern.getPath()), pattern
+							.getMethod(), pattern.getConsumes(), pattern
+							.getProduces());
+				}).collect(Collectors.toList());
 	}
 
 	protected abstract Collection<HttpPattern> resolveInternal(Method method);
@@ -44,10 +49,14 @@ public abstract class AbstractHttpPatternResolver implements HttpPatternResolver
 			return Collections.emptyList();
 		}
 
-		return sourcePatterns.stream().map((pattern) -> {
-			return new HttpPattern(getPropertyResolver().resolvePlaceholders(pattern.getPath()), pattern.getMethod(),
-					pattern.getConsumes(), pattern.getProduces());
-		}).collect(Collectors.toList());
+		return sourcePatterns
+				.stream()
+				.map((pattern) -> {
+					return new HttpPattern(getPlaceholderFormat()
+							.formatPlaceholders(pattern.getPath()), pattern
+							.getMethod(), pattern.getConsumes(), pattern
+							.getProduces());
+				}).collect(Collectors.toList());
 	}
 
 	protected abstract Collection<HttpPattern> resolveInternal(Class<?> clazz);

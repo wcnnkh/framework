@@ -16,13 +16,14 @@
 
 package io.basc.framework.util;
 
+import io.basc.framework.convert.Converter;
+import io.basc.framework.lang.ParameterException;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
-
-import io.basc.framework.lang.ParameterException;
 
 /**
  * Miscellaneous utility methods for number conversion and parsing. Mainly for
@@ -30,7 +31,6 @@ import io.basc.framework.lang.ParameterException;
  * comprehensive suite of string utilities.
  */
 public abstract class NumberUtils {
-
 	/**
 	 * 把一个number转换成基本数据类型
 	 * 
@@ -64,15 +64,17 @@ public abstract class NumberUtils {
 	}
 
 	/**
-	 * 注意，boolean不是number类型 Convert the given number into an instance of the given
-	 * target class.
+	 * 注意，boolean不是number类型 Convert the given number into an instance of the
+	 * given target class.
 	 * 
-	 * @param number      the number to convert
-	 * @param targetClass the target class to convert to
+	 * @param number
+	 *            the number to convert
+	 * @param targetClass
+	 *            the target class to convert to
 	 * @return the converted number
-	 * @throws IllegalArgumentException if the target class is not supported (i.e.
-	 *                                  not a standard Number subclass as included
-	 *                                  in the JDK)
+	 * @throws IllegalArgumentException
+	 *             if the target class is not supported (i.e. not a standard
+	 *             Number subclass as included in the JDK)
 	 * @see java.lang.Byte
 	 * @see java.lang.Short
 	 * @see java.lang.Integer
@@ -83,7 +85,8 @@ public abstract class NumberUtils {
 	 * @see java.math.BigDecimal
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends Number> T convertNumberToTargetClass(Number number, Class<T> targetClass)
+	public static <T extends Number> T convertNumberToTargetClass(
+			Number number, Class<T> targetClass)
 			throws IllegalArgumentException {
 
 		Assert.notNull(number, "Number must not be null");
@@ -130,36 +133,43 @@ public abstract class NumberUtils {
 			// (see BigDecimal javadoc for details)
 			return (T) new BigDecimal(number.toString());
 		} else {
-			throw new IllegalArgumentException("Could not convert number [" + number + "] of type ["
-					+ number.getClass().getName() + "] to unknown target class [" + targetClass.getName() + "]");
+			throw new IllegalArgumentException("Could not convert number ["
+					+ number + "] of type [" + number.getClass().getName()
+					+ "] to unknown target class [" + targetClass.getName()
+					+ "]");
 		}
 	}
 
 	/**
 	 * Raise an overflow exception for the given number and target class.
 	 * 
-	 * @param number      the number we tried to convert
-	 * @param targetClass the target class we tried to convert to
+	 * @param number
+	 *            the number we tried to convert
+	 * @param targetClass
+	 *            the target class we tried to convert to
 	 */
 	@SuppressWarnings("rawtypes")
 	private static void raiseOverflowException(Number number, Class targetClass) {
-		throw new IllegalArgumentException("Could not convert number [" + number + "] of type ["
-				+ number.getClass().getName() + "] to target class [" + targetClass.getName() + "]: overflow");
+		throw new IllegalArgumentException("Could not convert number ["
+				+ number + "] of type [" + number.getClass().getName()
+				+ "] to target class [" + targetClass.getName() + "]: overflow");
 	}
 
 	/**
-	 * Parse the given text into a number instance of the given target class, using
-	 * the corresponding {@code decode} / {@code valueOf} methods.
+	 * Parse the given text into a number instance of the given target class,
+	 * using the corresponding {@code decode} / {@code valueOf} methods.
 	 * <p>
 	 * Trims the input {@code String} before attempting to parse the number.
 	 * Supports numbers in hex format (with leading "0x", "0X" or "#") as well.
 	 * 
-	 * @param text        the text to convert
-	 * @param targetClass the target class to parse into
+	 * @param text
+	 *            the text to convert
+	 * @param targetClass
+	 *            the target class to parse into
 	 * @return the parsed number
-	 * @throws IllegalArgumentException if the target class is not supported (i.e.
-	 *                                  not a standard Number subclass as included
-	 *                                  in the JDK)
+	 * @throws IllegalArgumentException
+	 *             if the target class is not supported (i.e. not a standard
+	 *             Number subclass as included in the JDK)
 	 * @see Byte#decode
 	 * @see Short#decode
 	 * @see Integer#decode
@@ -170,57 +180,68 @@ public abstract class NumberUtils {
 	 * @see java.math.BigDecimal#BigDecimal(String)
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends Number> T parseNumber(String text, Class<T> targetClass) {
+	public static <T extends Number> T parseNumber(String text,
+			Class<T> targetClass) {
 		Assert.notNull(text, "Text must not be null");
 		Assert.notNull(targetClass, "Target class must not be null");
 		String trimmed = text.trim();
 
 		if (targetClass.equals(Byte.class)) {
-			return (T) (isHexNumber(trimmed) ? Byte.decode(trimmed) : Byte.valueOf(trimmed));
+			return (T) (isHexNumber(trimmed) ? Byte.decode(trimmed) : Byte
+					.valueOf(trimmed));
 		} else if (targetClass.equals(Short.class)) {
-			return (T) (isHexNumber(trimmed) ? Short.decode(trimmed) : Short.valueOf(trimmed));
+			return (T) (isHexNumber(trimmed) ? Short.decode(trimmed) : Short
+					.valueOf(trimmed));
 		} else if (targetClass.equals(Integer.class)) {
-			return (T) (isHexNumber(trimmed) ? Integer.decode(trimmed) : Integer.valueOf(trimmed));
+			return (T) (isHexNumber(trimmed) ? Integer.decode(trimmed)
+					: Integer.valueOf(trimmed));
 		} else if (targetClass.equals(Long.class)) {
-			return (T) (isHexNumber(trimmed) ? Long.decode(trimmed) : Long.valueOf(trimmed));
+			return (T) (isHexNumber(trimmed) ? Long.decode(trimmed) : Long
+					.valueOf(trimmed));
 		} else if (targetClass.equals(BigInteger.class)) {
-			return (T) (isHexNumber(trimmed) ? decodeBigInteger(trimmed) : new BigInteger(trimmed));
+			return (T) (isHexNumber(trimmed) ? decodeBigInteger(trimmed)
+					: new BigInteger(trimmed));
 		} else if (targetClass.equals(Float.class)) {
 			return (T) Float.valueOf(trimmed);
 		} else if (targetClass.equals(Double.class)) {
 			return (T) Double.valueOf(trimmed);
-		} else if (targetClass.equals(BigDecimal.class) || targetClass.equals(Number.class)) {
+		} else if (targetClass.equals(BigDecimal.class)
+				|| targetClass.equals(Number.class)) {
 			return (T) new BigDecimal(trimmed);
 		} else {
-			throw new IllegalArgumentException(
-					"Cannot convert String [" + text + "] to target class [" + targetClass.getName() + "]");
+			throw new IllegalArgumentException("Cannot convert String [" + text
+					+ "] to target class [" + targetClass.getName() + "]");
 		}
 	}
 
 	public static boolean isNumber(Class<?> type) {
-		return type == long.class || type == int.class || type == byte.class || type == short.class
-				|| type == float.class || type == double.class || Number.class.isAssignableFrom(type);
+		return type == long.class || type == int.class || type == byte.class
+				|| type == short.class || type == float.class
+				|| type == double.class || Number.class.isAssignableFrom(type);
 	}
 
 	/**
-	 * Parse the given text into a number instance of the given target class, using
-	 * the given NumberFormat. Trims the input {@code String} before attempting to
-	 * parse the number.
+	 * Parse the given text into a number instance of the given target class,
+	 * using the given NumberFormat. Trims the input {@code String} before
+	 * attempting to parse the number.
 	 * 
-	 * @param text         the text to convert
-	 * @param targetClass  the target class to parse into
-	 * @param numberFormat the NumberFormat to use for parsing (if {@code null},
-	 *                     this method falls back to
-	 *                     {@code parseNumber(String, Class)})
+	 * @param text
+	 *            the text to convert
+	 * @param targetClass
+	 *            the target class to parse into
+	 * @param numberFormat
+	 *            the NumberFormat to use for parsing (if {@code null}, this
+	 *            method falls back to {@code parseNumber(String, Class)})
 	 * @return the parsed number
-	 * @throws IllegalArgumentException if the target class is not supported (i.e.
-	 *                                  not a standard Number subclass as included
-	 *                                  in the JDK)
+	 * @throws IllegalArgumentException
+	 *             if the target class is not supported (i.e. not a standard
+	 *             Number subclass as included in the JDK)
 	 * @see java.text.NumberFormat#parse
 	 * @see #convertNumberToTargetClass
 	 * @see #parseNumber(String, Class)
 	 */
-	public static <T extends Number> T parseNumber(String text, Class<T> targetClass, NumberFormat numberFormat) {
+	public static <T extends Number> T parseNumber(String text,
+			Class<T> targetClass, NumberFormat numberFormat) {
 		if (numberFormat != null) {
 			Assert.notNull(text, "Text must not be null");
 			Assert.notNull(targetClass, "Target class must not be null");
@@ -228,7 +249,8 @@ public abstract class NumberUtils {
 			boolean resetBigDecimal = false;
 			if (numberFormat instanceof DecimalFormat) {
 				decimalFormat = (DecimalFormat) numberFormat;
-				if (BigDecimal.class.equals(targetClass) && !decimalFormat.isParseBigDecimal()) {
+				if (BigDecimal.class.equals(targetClass)
+						&& !decimalFormat.isParseBigDecimal()) {
 					decimalFormat.setParseBigDecimal(true);
 					resetBigDecimal = true;
 				}
@@ -237,7 +259,8 @@ public abstract class NumberUtils {
 				Number number = numberFormat.parse(text.trim());
 				return convertNumberToTargetClass(number, targetClass);
 			} catch (ParseException ex) {
-				throw new IllegalArgumentException("Could not parse number: " + ex.getMessage());
+				throw new IllegalArgumentException("Could not parse number: "
+						+ ex.getMessage());
 			} finally {
 				if (resetBigDecimal) {
 					decimalFormat.setParseBigDecimal(false);
@@ -249,18 +272,19 @@ public abstract class NumberUtils {
 	}
 
 	/**
-	 * Determine whether the given value String indicates a hex number, i.e. needs
-	 * to be passed into {@code Integer.decode} instead of {@code Integer.valueOf}
-	 * (etc).
+	 * Determine whether the given value String indicates a hex number, i.e.
+	 * needs to be passed into {@code Integer.decode} instead of
+	 * {@code Integer.valueOf} (etc).
 	 */
 	private static boolean isHexNumber(String value) {
 		int index = (value.startsWith("-") ? 1 : 0);
-		return (value.startsWith("0x", index) || value.startsWith("0X", index) || value.startsWith("#", index));
+		return (value.startsWith("0x", index) || value.startsWith("0X", index) || value
+				.startsWith("#", index));
 	}
 
 	/**
-	 * Decode a {@link java.math.BigInteger} from a {@link String} value. Supports
-	 * decimal, hex and octal notation.
+	 * Decode a {@link java.math.BigInteger} from a {@link String} value.
+	 * Supports decimal, hex and octal notation.
 	 * 
 	 * @see BigInteger#BigInteger(String, int)
 	 */
@@ -291,4 +315,138 @@ public abstract class NumberUtils {
 		return (negative ? result.negate() : result);
 	}
 
+	/**
+	 * 是否是整数
+	 * 
+	 * @param number
+	 * @return
+	 */
+	public static boolean isInteger(BigDecimal number) {
+		return number.signum() == 0 || number.scale() <= 0
+				|| number.stripTrailingZeros().scale() <= 0;
+	}
+
+	/**
+	 * 清除无用的0
+	 * 
+	 * @see BigDecimal#stripTrailingZeros()
+	 * @See {@link BigDecimal#setScale(int)}
+	 * @param number
+	 * @return
+	 */
+	public static BigDecimal stripTrailingZeros(BigDecimal number) {
+		if (number.signum() == 0 || number.scale() <= 0) {
+			return number;
+		}
+
+		// 存在小数
+		BigDecimal target = number.stripTrailingZeros();
+		if (target.scale() <= 0) {
+			return number.setScale(0);
+		}
+		return number;
+	}
+
+	public static String format(BigDecimal number, NumberUnit... units) {
+		return format(number, (e) -> stripTrailingZeros(e).toPlainString(),
+				units);
+	}
+
+	public static BigDecimal parse(String source, NumberUnit... units) {
+		return parse(source, (e) -> new BigDecimal(e), units);
+	}
+
+	/**
+	 * 通过数字单位格式化数字(忽略正负符号)
+	 * 
+	 * @param number
+	 * @param toString
+	 * @param units
+	 * @return
+	 */
+	public static String format(BigDecimal number,
+			Converter<BigDecimal, String> toString, NumberUnit... units) {
+		Assert.requiredArgument(number != null, "number");
+		Assert.requiredArgument(toString != null, "toString");
+		if (units == null || units.length == 0
+				|| number.compareTo(BigDecimal.ZERO) == 0) {
+			return toString.convert(number.abs());
+		}
+
+		StringBuilder sb = new StringBuilder();
+		format(sb, number.abs(), toString, 0, units.length, units);
+		return sb.toString();
+	}
+
+	protected static void format(StringBuilder sb, BigDecimal number,
+			Converter<BigDecimal, String> toString, int startUnitsIndex,
+			int endUnitsIndex, NumberUnit... units) {
+		BigDecimal surplus = number;
+		for (int i = startUnitsIndex; i < Math.min(endUnitsIndex, units.length); i++) {
+			NumberUnit unit = units[i];
+			if (unit.getRadix().compareTo(surplus) > 0) {
+				continue;
+			}
+
+			BigDecimal[] decimals = surplus.divideAndRemainder(unit.getRadix());
+			// 是否是最后一个
+			boolean last = true;
+			for (NumberUnit u : units) {
+				if (decimals[1].compareTo(u.getRadix()) >= 0) {
+					last = false;
+					break;
+				}
+			}
+
+			if (last) {
+				decimals[0] = surplus.divide(unit.getRadix());
+				decimals[1] = BigDecimal.ZERO;
+			}
+
+			// 是否嵌套
+			boolean notNested = last
+					|| decimals[1].compareTo(BigDecimal.ZERO) == 0
+					// 如果小于1那个取模就会越来越大
+					|| unit.getRadix().compareTo(BigDecimal.ONE) < 0;
+			if (notNested) {
+				sb.append(toString.convert(decimals[0]));
+			} else {
+				format(sb, decimals[0], toString, i, units.length - 1, units);
+			}
+
+			sb.append(unit.getName());
+			if (!notNested
+					&& i < units.length - 1
+					&& decimals[1].divideToIntegralValue(
+							units[i + 1].getRadix()).compareTo(BigDecimal.ZERO) == 0) {
+				sb.append(toString.convert(BigDecimal.ZERO));
+			}
+			surplus = decimals[1];
+		}
+
+		if (surplus.compareTo(BigDecimal.ZERO) > 0) {
+			sb.append(toString.convert(surplus));
+		}
+	}
+
+	public static BigDecimal parse(String source,
+			Converter<String, BigDecimal> converter, NumberUnit... units) {
+		for (NumberUnit unit : units) {
+			int index = source.indexOf(unit.getName());
+			if (index == -1) {
+				continue;
+			}
+
+			String left = source.substring(0, index);
+			BigDecimal value = parse(left, converter, units).multiply(
+					unit.getRadix());
+			if (index < source.length() - unit.getName().length()) {
+				String right = source
+						.substring(index + unit.getName().length());
+				value = value.add(parse(right, converter, units));
+			}
+			return value;
+		}
+		return converter.convert(source);
+	}
 }
