@@ -28,9 +28,11 @@ public class HttpPatternResolvers extends
 
 	@Override
 	protected void aware(HttpPatternResolver service) {
-		if (service instanceof PlaceholderFormatAware) {
-			((PlaceholderFormatAware) service)
-					.setPlaceholderFormat(placeholderFormat);
+		if (placeholderFormat != null) {
+			if (service instanceof PlaceholderFormatAware) {
+				((PlaceholderFormatAware) service)
+						.setPlaceholderFormat(placeholderFormat);
+			}
 		}
 		super.aware(service);
 	}
