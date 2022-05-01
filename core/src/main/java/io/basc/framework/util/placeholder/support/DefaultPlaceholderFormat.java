@@ -1,10 +1,9 @@
 package io.basc.framework.util.placeholder.support;
 
-import io.basc.framework.util.placeholder.ConfigurablePlaceholderFormat;
+import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.util.placeholder.PlaceholderResolver;
 
-public class DefaultPlaceholderFormat extends DefaultPlaceholderReplacer
-		implements ConfigurablePlaceholderFormat {
+public class DefaultPlaceholderFormat extends DefaultPlaceholderReplacer implements PlaceholderFormat {
 	private PlaceholderResolver placeholderResolver;
 
 	public DefaultPlaceholderFormat(PlaceholderResolver placeholderResolver) {
@@ -12,13 +11,12 @@ public class DefaultPlaceholderFormat extends DefaultPlaceholderReplacer
 	}
 
 	@Override
-	public String formatPlaceholders(String source) {
+	public String replacePlaceholders(String source) {
 		return replacePlaceholders(source, placeholderResolver);
 	}
 
 	@Override
-	public String formatRequiredPlaceholders(String source)
-			throws IllegalArgumentException {
+	public String replaceRequiredPlaceholders(String source) throws IllegalArgumentException {
 		return replaceRequiredPlaceholders(source, placeholderResolver);
 	}
 }

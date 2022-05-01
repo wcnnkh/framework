@@ -10,8 +10,7 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.util.placeholder.PlaceholderFormatAware;
 
-public abstract class AbstractHttpPatternResolver implements
-		HttpPatternResolver, PlaceholderFormatAware {
+public abstract class AbstractHttpPatternResolver implements HttpPatternResolver, PlaceholderFormatAware {
 	private PlaceholderFormat placeholderFormat;
 
 	@Override
@@ -30,14 +29,10 @@ public abstract class AbstractHttpPatternResolver implements
 			return Collections.emptyList();
 		}
 
-		return sourcePatterns
-				.stream()
-				.map((pattern) -> {
-					return new HttpPattern(getPlaceholderFormat()
-							.formatPlaceholders(pattern.getPath()), pattern
-							.getMethod(), pattern.getConsumes(), pattern
-							.getProduces());
-				}).collect(Collectors.toList());
+		return sourcePatterns.stream().map((pattern) -> {
+			return new HttpPattern(getPlaceholderFormat().replacePlaceholders(pattern.getPath()), pattern.getMethod(),
+					pattern.getConsumes(), pattern.getProduces());
+		}).collect(Collectors.toList());
 	}
 
 	protected abstract Collection<HttpPattern> resolveInternal(Method method);
@@ -49,14 +44,10 @@ public abstract class AbstractHttpPatternResolver implements
 			return Collections.emptyList();
 		}
 
-		return sourcePatterns
-				.stream()
-				.map((pattern) -> {
-					return new HttpPattern(getPlaceholderFormat()
-							.formatPlaceholders(pattern.getPath()), pattern
-							.getMethod(), pattern.getConsumes(), pattern
-							.getProduces());
-				}).collect(Collectors.toList());
+		return sourcePatterns.stream().map((pattern) -> {
+			return new HttpPattern(getPlaceholderFormat().replacePlaceholders(pattern.getPath()), pattern.getMethod(),
+					pattern.getConsumes(), pattern.getProduces());
+		}).collect(Collectors.toList());
 	}
 
 	protected abstract Collection<HttpPattern> resolveInternal(Class<?> clazz);

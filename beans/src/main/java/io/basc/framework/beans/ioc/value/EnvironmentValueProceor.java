@@ -38,7 +38,7 @@ public class EnvironmentValueProceor extends AbstractValueProcessor {
 		}
 
 		if (isEnvironment(name)) {
-			String v = beanFactory.getEnvironment().formatPlaceholders(name);
+			String v = beanFactory.getEnvironment().replacePlaceholders(name);
 			set(beanFactory.getEnvironment().getConversionService(), bean,
 					field, name, v);
 			return;

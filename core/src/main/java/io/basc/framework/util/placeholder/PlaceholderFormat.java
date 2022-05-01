@@ -7,14 +7,12 @@ public interface PlaceholderFormat {
 	 * Unresolvable placeholders with no default value are ignored and passed
 	 * through unchanged.
 	 * 
-	 * @param source
-	 *            the String to resolve
+	 * @param source the String to resolve
 	 * @return the resolved String (never {@code null})
-	 * @throws IllegalArgumentException
-	 *             if given text is {@code null}
+	 * @throws IllegalArgumentException if given text is {@code null}
 	 * @see #resolveRequiredPlaceholders
 	 */
-	String formatPlaceholders(String source);
+	String replacePlaceholders(String source);
 
 	/**
 	 * Resolve ${...} placeholders in the given text, replacing them with
@@ -22,13 +20,10 @@ public interface PlaceholderFormat {
 	 * Unresolvable placeholders with no default value will cause an
 	 * IllegalArgumentException to be thrown.
 	 * 
-	 * @param source
-	 *            the String to resolve
+	 * @param source the String to resolve
 	 * @return the resolved String (never {@code null})
-	 * @throws IllegalArgumentException
-	 *             if given text is {@code null} or if any placeholders are
-	 *             unresolvable
+	 * @throws IllegalArgumentException if given text is {@code null} or if any
+	 *                                  placeholders are unresolvable
 	 */
-	String formatRequiredPlaceholders(String source)
-			throws IllegalArgumentException;
+	String replaceRequiredPlaceholders(String source) throws IllegalArgumentException;
 }

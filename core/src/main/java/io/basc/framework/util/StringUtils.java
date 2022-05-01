@@ -614,7 +614,7 @@ public final class StringUtils {
 			}
 
 			if (placeholderFormat != null) {
-				path = placeholderFormat.formatPlaceholders(path);
+				path = placeholderFormat.replacePlaceholders(path);
 			}
 
 			path = StringUtils.cleanPath(path);

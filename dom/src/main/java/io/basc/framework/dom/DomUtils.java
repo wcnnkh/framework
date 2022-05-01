@@ -236,7 +236,7 @@ public final class DomUtils {
 			return value;
 		}
 
-		return placeholderFormat.formatPlaceholders(value);
+		return placeholderFormat.replacePlaceholders(value);
 	}
 
 	public static String getNodeAttributeValue(PlaceholderFormat placeholderFormat, Node node, String name) {
@@ -248,7 +248,8 @@ public final class DomUtils {
 		return formatNodeValue(placeholderFormat, node, value);
 	}
 
-	public static String getNodeAttributeValueOrNodeContent(PlaceholderFormat placeholderFormat, Node node, String name) {
+	public static String getNodeAttributeValueOrNodeContent(PlaceholderFormat placeholderFormat, Node node,
+			String name) {
 		String value = getNodeAttributeValueOrNodeContent(node, name);
 		if (StringUtils.isEmpty(value)) {
 			return null;

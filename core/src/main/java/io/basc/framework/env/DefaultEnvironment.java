@@ -120,7 +120,7 @@ public class DefaultEnvironment extends DefaultPropertyFactory
 
 		@Override
 		public String getAsString() {
-			return formatPlaceholders(super.getAsString());
+			return replacePlaceholders(super.getAsString());
 		}
 	}
 
@@ -132,7 +132,7 @@ public class DefaultEnvironment extends DefaultPropertyFactory
 		}
 
 		public String getAsString() {
-			return formatPlaceholders(super.getAsString());
+			return replacePlaceholders(super.getAsString());
 		};
 	}
 

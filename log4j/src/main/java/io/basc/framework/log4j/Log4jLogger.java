@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.CustomLogger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.PlaceholderFormat;
+import io.basc.framework.util.PlaceholderMessage;
 import io.basc.framework.util.XUtils;
 
 public class Log4jLogger extends CustomLogger {
@@ -42,7 +42,7 @@ public class Log4jLogger extends CustomLogger {
 
 	@Override
 	public void trace(Throwable e, String msg, Object... args) {
-		logger.trace(new PlaceholderFormat(msg, placeholder, args), e);
+		logger.trace(new PlaceholderMessage(msg, placeholder, args), e);
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class Log4jLogger extends CustomLogger {
 
 	@Override
 	public void debug(Throwable e, String msg, Object... args) {
-		logger.debug(new PlaceholderFormat(msg, placeholder, args), e);
+		logger.debug(new PlaceholderMessage(msg, placeholder, args), e);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class Log4jLogger extends CustomLogger {
 
 	@Override
 	public void info(Throwable e, String msg, Object... args) {
-		logger.info(new PlaceholderFormat(msg, placeholder, args), e);
+		logger.info(new PlaceholderMessage(msg, placeholder, args), e);
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class Log4jLogger extends CustomLogger {
 
 	@Override
 	public void warn(Throwable e, String msg, Object... args) {
-		logger.warn(new PlaceholderFormat(msg, placeholder, args), e);
+		logger.warn(new PlaceholderMessage(msg, placeholder, args), e);
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class Log4jLogger extends CustomLogger {
 
 	@Override
 	public void error(Throwable e, String msg, Object... args) {
-		logger.error(new PlaceholderFormat(msg, placeholder, args), e);
+		logger.error(new PlaceholderMessage(msg, placeholder, args), e);
 	}
 
 	private static org.apache.log4j.Level parse(Level level) {
@@ -99,7 +99,7 @@ public class Log4jLogger extends CustomLogger {
 	public void log(Level level, Throwable e, String format, Object... args) {
 		org.apache.log4j.Level lv = parse(level);
 		if (logger.isEnabledFor(lv)) {
-			logger.log(lv, new PlaceholderFormat(format, placeholder, args), e);
+			logger.log(lv, new PlaceholderMessage(format, placeholder, args), e);
 		}
 	}
 
@@ -107,7 +107,7 @@ public class Log4jLogger extends CustomLogger {
 	public void log(Level level, Throwable e, Supplier<String> msg, Object... args) {
 		org.apache.log4j.Level lv = parse(level);
 		if (logger.isEnabledFor(lv)) {
-			logger.log(lv, XUtils.toString(() -> new PlaceholderFormat(msg.get(), placeholder, args).toString()), e);
+			logger.log(lv, XUtils.toString(() -> new PlaceholderMessage(msg.get(), placeholder, args).toString()), e);
 		}
 	}
 }

@@ -21,6 +21,7 @@ import io.basc.framework.lang.ParameterException;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.CharBuffer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -448,5 +449,41 @@ public abstract class NumberUtils {
 			return value;
 		}
 		return converter.convert(source);
+	}
+	
+	/**
+	 * 保留小数点精度
+	 * 
+	 * @param number
+	 * @param len
+	 *            保留多少位
+	 * @return
+	 * @see 
+	 */
+	public static String formatPrecision(double number, int len) {
+		if (len < 0) {
+			throw new IllegalStateException("len < 0");
+		}
+
+		if (len == 0) {
+			return ((long) number) + "";
+		}
+
+		if (number == 0) {
+			CharBuffer charBuffer = CharBuffer.allocate(len + 2);
+			charBuffer.put('0');
+			charBuffer.put('.');
+			for (int i = 0; i < len; i++) {
+				charBuffer.put('0');
+			}
+			return new String(charBuffer.array());
+		}
+
+		CharBuffer charBuffer = CharBuffer.allocate(len + 3);
+		charBuffer.put("#0.");
+		for (int i = 0; i < len; i++) {
+			charBuffer.put("0");
+		}
+		return new DecimalFormat(new String(charBuffer.array())).format(number);
 	}
 }

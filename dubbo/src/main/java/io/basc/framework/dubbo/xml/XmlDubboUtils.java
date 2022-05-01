@@ -229,7 +229,7 @@ public final class XmlDubboUtils {
 				continue;
 			}
 
-			value = environment.formatPlaceholders(value);
+			value = environment.replacePlaceholders(value);
 			Field field = fields.findSetter(name, null);
 			if (field == null) {
 				logger.warn("{} ignore attribute name={}, value={}", instance.getClass(), name, value);

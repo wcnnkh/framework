@@ -69,7 +69,7 @@ public final class IdUtils {
 	 * @return A unique id that can be used to uniquely identify a service
 	 */
 	public static String getResolvedServiceId(Environment environment) {
-		return environment.formatPlaceholders(getUnresolvedServiceId());
+		return environment.replacePlaceholders(getUnresolvedServiceId());
 	}
 
 	/**

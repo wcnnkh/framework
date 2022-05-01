@@ -1,13 +1,11 @@
 package io.basc.framework.util;
 
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.placeholder.PlaceholderFormat;
-
 import java.io.IOException;
-import java.nio.CharBuffer;
-import java.text.DecimalFormat;
 import java.util.Map.Entry;
 import java.util.Properties;
+
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.placeholder.PlaceholderFormat;
 
 public final class FormatUtils {
 	private static final String DEFAULT_PLACEHOLDER = "{}";
@@ -64,41 +62,6 @@ public final class FormatUtils {
 		}
 	}
 
-	/**
-	 * 保留小数点精度
-	 * 
-	 * @param number
-	 * @param len
-	 *            保留多少位
-	 * @return
-	 */
-	public static String formatNumberPrecision(double number, int len) {
-		if (len < 0) {
-			throw new IllegalStateException("len < 0");
-		}
-
-		if (len == 0) {
-			return ((long) number) + "";
-		}
-
-		if (number == 0) {
-			CharBuffer charBuffer = CharBuffer.allocate(len + 2);
-			charBuffer.put('0');
-			charBuffer.put('.');
-			for (int i = 0; i < len; i++) {
-				charBuffer.put('0');
-			}
-			return new String(charBuffer.array());
-		}
-
-		CharBuffer charBuffer = CharBuffer.allocate(len + 3);
-		charBuffer.put("#0.");
-		for (int i = 0; i < len; i++) {
-			charBuffer.put("0");
-		}
-		return new DecimalFormat(new String(charBuffer.array())).format(number);
-	}
-
 	public static Properties format(Properties properties,
 			PlaceholderFormat placeholderFormat) {
 		if (properties == null || properties.isEmpty()) {
@@ -114,46 +77,11 @@ public final class FormatUtils {
 
 			if (value instanceof String) {
 				props.put(entry.getKey(),
-						placeholderFormat.formatPlaceholders((String) value));
+						placeholderFormat.replacePlaceholders((String) value));
 			} else {
 				props.put(entry.getKey(), entry.getValue());
 			}
 		}
 		return props;
-	}
-
-	/**
-	 * 1M = 1024K
-	 * 
-	 * @param size
-	 * @param toSuffix
-	 * @return
-	 */
-	public static double parseDiskSize(String size, String toSuffix) {
-		int len = size.length();
-		double oldSize;
-		if (size.endsWith("GB") || size.endsWith("G")) {
-			oldSize = Double.parseDouble(size.substring(0, len - 2)) * 1024 * 1024 * 1024;
-		} else if (size.endsWith("MB") || size.endsWith("M")) {
-			oldSize = Double.parseDouble(size.substring(0, len - 2)) * 1024 * 1024;
-		} else if (size.endsWith("KB") || size.endsWith("K")) {
-			oldSize = Double.parseDouble(size.substring(0, len - 2)) * 1024;
-		} else if (size.endsWith("B")) {
-			oldSize = Double.parseDouble(size.substring(0, len - 1));
-		} else {
-			oldSize = Double.parseDouble(size);
-		}
-
-		if ("GB".equals(toSuffix) || "G".equals(toSuffix)) {
-			return oldSize / (1024 * 1024 * 1024);
-		} else if ("MB".equals(toSuffix) || "M".equals(toSuffix)) {
-			return oldSize / (1024 * 1024);
-		} else if ("KB".equals(toSuffix) || "K".equals(toSuffix)) {
-			return oldSize / (1024);
-		} else if ("B".equals(toSuffix)) {
-			return oldSize;
-		} else {
-			return oldSize;
-		}
 	}
 }
