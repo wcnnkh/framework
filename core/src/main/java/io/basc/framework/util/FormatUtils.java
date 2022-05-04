@@ -64,6 +64,10 @@ public final class FormatUtils {
 
 	public static Properties format(Properties properties,
 			PlaceholderFormat placeholderFormat) {
+		if(placeholderFormat == null) {
+			return properties;
+		}
+		
 		if (properties == null || properties.isEmpty()) {
 			return properties;
 		}

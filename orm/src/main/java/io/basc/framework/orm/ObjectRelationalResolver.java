@@ -2,31 +2,31 @@ package io.basc.framework.orm;
 
 import java.util.Collection;
 
+import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.data.domain.Range;
-import io.basc.framework.mapper.FieldDescriptor;
 
 public interface ObjectRelationalResolver {
 	Boolean isIgnore(Class<?> entityClass);
 
-	Boolean isIgnore(Class<?> entityClass, FieldDescriptor fieldDescriptor);
+	Boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor);
 
-	String getName(Class<?> entityClass, FieldDescriptor fieldDescriptor);
+	String getName(Class<?> entityClass, ParameterDescriptor descriptor);
 
-	Collection<String> getAliasNames(Class<?> entityClass, FieldDescriptor fieldDescriptor);
+	Collection<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	String getName(Class<?> entityClass);
 
 	Collection<String> getAliasNames(Class<?> entityClass);
 
-	Boolean isPrimaryKey(Class<?> entityClass, FieldDescriptor fieldDescriptor);
+	Boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor);
 
-	Boolean isNullable(Class<?> entityClass, FieldDescriptor fieldDescriptor);
+	Boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor);
 
-	Boolean isEntity(Class<?> entityClass, FieldDescriptor fieldDescriptor);
+	Boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	Boolean isEntity(Class<?> entityClass);
 
-	Boolean isVersionField(Class<?> entityClass, FieldDescriptor fieldDescriptor);
+	Boolean isVersionField(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	/**
 	 * 获取值的范围
@@ -35,33 +35,33 @@ public interface ObjectRelationalResolver {
 	 * @param descriptor
 	 * @return
 	 */
-	Collection<Range<Double>> getNumberRanges(Class<?> entityClass, FieldDescriptor fieldDescriptor);
+	Collection<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	/**
 	 * 是否自增
 	 * 
 	 * @param entityClass
-	 * @param fieldDescriptor
+	 * @param descriptor
 	 * @return
 	 */
-	Boolean isAutoIncrement(Class<?> entityClass, FieldDescriptor fieldDescriptor);
+	Boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	String getComment(Class<?> entityClass);
 
-	String getComment(Class<?> entityClass, FieldDescriptor fieldDescriptor);
+	String getComment(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	String getCharsetName(Class<?> entityClass);
 
-	String getCharsetName(Class<?> entityClass, FieldDescriptor fieldDescriptor);
+	String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor);
 
-	Boolean isUnique(Class<?> entityClass, FieldDescriptor fieldDescriptor);
+	Boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	/**
 	 * 是否应该是增量操作 value = value + ?
 	 * 
 	 * @param entityClass
-	 * @param fieldDescriptor
+	 * @param descriptor
 	 * @return
 	 */
-	Boolean isIncrement(Class<?> entityClass, FieldDescriptor fieldDescriptor);
+	Boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor);
 }

@@ -2,6 +2,12 @@ package io.basc.framework.env;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
 
+/**
+ * 1.使用反射重写equals hashCode toString方法
+ * 
+ * @author wcnnkh
+ *
+ */
 public class BascObject extends Object {
 
 	@Override

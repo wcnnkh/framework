@@ -1,15 +1,18 @@
 package io.basc.framework.util.stream;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.util.Pair;
 import io.basc.framework.util.XUtils;
 
 public final class StreamProcessorSupport {
@@ -73,7 +76,7 @@ public final class StreamProcessorSupport {
 	 * 使用静态代理而不动态代理的原因是考虑性能
 	 * 虽然可以自动关闭，并并非所有情况都适用，例如调用iterator/spliterator方法或获取到此对象后未调用任何方法
 	 * 
-	 * @param <T>
+	 * @param        <T>
 	 * @param stream
 	 * @return
 	 */
@@ -88,7 +91,7 @@ public final class StreamProcessorSupport {
 	 * 使用静态代理而不动态代理的原因是考虑性能
 	 * 虽然可以自动关闭，并并非所有情况都适用，例如调用iterator/spliterator方法或获取到此对象后未调用任何方法
 	 * 
-	 * @param <T>
+	 * @param          <T>
 	 * @param iterator
 	 * @return
 	 */
@@ -102,7 +105,7 @@ public final class StreamProcessorSupport {
 
 	/**
 	 * @see Cursor
-	 * @param <T>
+	 * @param        <T>
 	 * @param stream
 	 * @return
 	 */
@@ -157,5 +160,50 @@ public final class StreamProcessorSupport {
 			stream = Stream.concat(stream, streams.next());
 		}
 		return stream;
+	}
+
+	public static <K, V, E extends Throwable> Pair<K, V> process(Iterable<? extends K> keys,
+			Processor<K, V, E> processor, Predicate<Pair<K, V>> returnTest) throws E {
+		return process(keys == null ? Collections.emptyIterator() : keys.iterator(), processor, returnTest);
+	}
+
+	public static <K, V, E extends Throwable> Pair<K, V> process(Iterator<? extends K> keys,
+			Processor<K, V, E> processor, Predicate<Pair<K, V>> returnTest) throws E {
+		if (keys == null) {
+			return null;
+		}
+
+		while (keys.hasNext()) {
+			K key = keys.next();
+			V value = processor.process(key);
+			Pair<K, V> pair = new Pair<K, V>(key, value);
+			if (returnTest.test(pair)) {
+				return pair;
+			}
+		}
+		return null;
+	}
+
+	public static <K, V, E extends Throwable> List<Pair<K, V>> processAll(Iterable<? extends K> keys,
+			Processor<K, V, E> processor, Predicate<Pair<K, V>> predicate) throws E {
+		return processAll(keys == null ? Collections.emptyIterator() : keys.iterator(), processor, predicate);
+	}
+
+	public static <K, V, E extends Throwable> List<Pair<K, V>> processAll(Iterator<? extends K> keys,
+			Processor<K, V, E> processor, Predicate<Pair<K, V>> predicate) throws E {
+		if (keys == null) {
+			return Collections.emptyList();
+		}
+
+		List<Pair<K, V>> list = new ArrayList<>();
+		while (keys.hasNext()) {
+			K key = keys.next();
+			V value = processor.process(key);
+			Pair<K, V> pair = new Pair<K, V>(key, value);
+			if (predicate.test(pair)) {
+				list.add(pair);
+			}
+		}
+		return list.isEmpty() ? Collections.emptyList() : list;
 	}
 }

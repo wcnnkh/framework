@@ -1,15 +1,15 @@
 package io.basc.framework.orm.support;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
+
 import io.basc.framework.aop.support.ProxyUtils;
+import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.factory.ConfigurableServices;
-import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.orm.ObjectRelationalResolver;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
-
-import java.util.Collection;
-import java.util.LinkedHashSet;
 
 public class DefaultObjectRelationalResolver extends ConfigurableServices<ObjectRelationalResolverExtend>
 		implements ObjectRelationalResolver {
@@ -32,20 +32,20 @@ public class DefaultObjectRelationalResolver extends ConfigurableServices<Object
 	}
 
 	@Override
-	public Boolean isIgnore(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isIgnore(entityClass, fieldDescriptor);
+	public Boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor) {
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isIgnore(entityClass, descriptor);
 		return v == null ? false : v;
 	}
 
-	private String getDefaultName(FieldDescriptor fieldDescriptor) {
-		return humpNamingReplacement ? StringUtils.humpNamingReplacement(fieldDescriptor.getName(), "_")
-				: fieldDescriptor.getName();
+	private String getDefaultName(ParameterDescriptor descriptor) {
+		return humpNamingReplacement ? StringUtils.humpNamingReplacement(descriptor.getName(), "_")
+				: descriptor.getName();
 	}
 
 	@Override
-	public String getName(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		String name = ObjectRelationalResolverExtendChain.build(iterator()).getName(entityClass, fieldDescriptor);
-		return StringUtils.isEmpty(name) ? getDefaultName(fieldDescriptor) : name;
+	public String getName(Class<?> entityClass, ParameterDescriptor descriptor) {
+		String name = ObjectRelationalResolverExtendChain.build(iterator()).getName(entityClass, descriptor);
+		return StringUtils.isEmpty(name) ? getDefaultName(descriptor) : name;
 	}
 
 	private void appendDefaultAliasNames(Collection<String> names, String name) {
@@ -61,18 +61,18 @@ public class DefaultObjectRelationalResolver extends ConfigurableServices<Object
 	}
 
 	@Override
-	public Collection<String> getAliasNames(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
+	public Collection<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor) {
 		Collection<String> names = ObjectRelationalResolverExtendChain.build(iterator()).getAliasNames(entityClass,
-				fieldDescriptor);
+				descriptor);
 		if (CollectionUtils.isEmpty(names)) {
 			names = new LinkedHashSet<String>();
-			String defaultName = getName(entityClass, fieldDescriptor);
+			String defaultName = getName(entityClass, descriptor);
 			names.add(defaultName);
 			appendDefaultAliasNames(names, defaultName);
 		}
 
-		if (isEntity(entityClass, fieldDescriptor)) {
-			names.addAll(getAliasNames(fieldDescriptor.getType()));
+		if (isEntity(entityClass, descriptor)) {
+			names.addAll(getAliasNames(descriptor.getType()));
 		}
 		return names;
 	}
@@ -105,21 +105,21 @@ public class DefaultObjectRelationalResolver extends ConfigurableServices<Object
 	}
 
 	@Override
-	public Boolean isPrimaryKey(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isPrimaryKey(entityClass, fieldDescriptor);
+	public Boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor) {
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isPrimaryKey(entityClass, descriptor);
 		return v == null ? false : v;
 	}
 
 	@Override
-	public Boolean isNullable(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isNullable(entityClass, fieldDescriptor);
-		return v == null ? !isPrimaryKey(entityClass, fieldDescriptor) : v;
+	public Boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor) {
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isNullable(entityClass, descriptor);
+		return v == null ? !isPrimaryKey(entityClass, descriptor) : v;
 	}
 
 	@Override
-	public Boolean isEntity(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isEntity(entityClass, fieldDescriptor);
-		return v == null ? isEntity(fieldDescriptor.getType()) : v;
+	public Boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isEntity(entityClass, descriptor);
+		return v == null ? isEntity(descriptor.getType()) : v;
 	}
 
 	@Override
@@ -129,19 +129,19 @@ public class DefaultObjectRelationalResolver extends ConfigurableServices<Object
 	}
 
 	@Override
-	public Boolean isVersionField(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isVersionField(entityClass, fieldDescriptor);
+	public Boolean isVersionField(Class<?> entityClass, ParameterDescriptor descriptor) {
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isVersionField(entityClass, descriptor);
 		return v == null ? false : v;
 	}
 
 	@Override
-	public Collection<Range<Double>> getNumberRanges(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		return ObjectRelationalResolverExtendChain.build(iterator()).getNumberRanges(entityClass, fieldDescriptor);
+	public Collection<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(iterator()).getNumberRanges(entityClass, descriptor);
 	}
 
 	@Override
-	public Boolean isAutoIncrement(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isAutoIncrement(entityClass, fieldDescriptor);
+	public Boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor) {
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isAutoIncrement(entityClass, descriptor);
 		return v == null ? false : v;
 	}
 
@@ -157,8 +157,8 @@ public class DefaultObjectRelationalResolver extends ConfigurableServices<Object
 	}
 
 	@Override
-	public String getComment(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		return ObjectRelationalResolverExtendChain.build(iterator()).getComment(entityClass, fieldDescriptor);
+	public String getComment(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(iterator()).getComment(entityClass, descriptor);
 	}
 
 	@Override
@@ -167,19 +167,19 @@ public class DefaultObjectRelationalResolver extends ConfigurableServices<Object
 	}
 
 	@Override
-	public String getCharsetName(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		return ObjectRelationalResolverExtendChain.build(iterator()).getCharsetName(entityClass, fieldDescriptor);
+	public String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(iterator()).getCharsetName(entityClass, descriptor);
 	}
 
 	@Override
-	public Boolean isUnique(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isUnique(entityClass, fieldDescriptor);
+	public Boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor) {
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isUnique(entityClass, descriptor);
 		return v == null ? false : v;
 	}
 
 	@Override
-	public Boolean isIncrement(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isIncrement(entityClass, fieldDescriptor);
+	public Boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor) {
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isIncrement(entityClass, descriptor);
 		return v == null ? false : v;
 	}
 }

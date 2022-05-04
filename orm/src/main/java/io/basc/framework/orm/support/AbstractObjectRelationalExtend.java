@@ -2,26 +2,26 @@ package io.basc.framework.orm.support;
 
 import java.util.Collection;
 
+import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.data.domain.Range;
-import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.orm.ObjectRelationalResolver;
 
 public class AbstractObjectRelationalExtend implements ObjectRelationalResolverExtend {
 
 	@Override
-	public Boolean isIgnore(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain) {
-		return chain.isIgnore(entityClass, fieldDescriptor);
+	public Boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.isIgnore(entityClass, descriptor);
 	}
 
 	@Override
-	public String getName(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain) {
-		return chain.getName(entityClass, fieldDescriptor);
+	public String getName(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.getName(entityClass, descriptor);
 	}
 
 	@Override
-	public Collection<String> getAliasNames(Class<?> entityClass, FieldDescriptor fieldDescriptor,
+	public Collection<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor,
 			ObjectRelationalResolver chain) {
-		return chain.getAliasNames(entityClass, fieldDescriptor);
+		return chain.getAliasNames(entityClass, descriptor);
 	}
 
 	@Override
@@ -35,18 +35,18 @@ public class AbstractObjectRelationalExtend implements ObjectRelationalResolverE
 	}
 
 	@Override
-	public Boolean isPrimaryKey(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain) {
-		return chain.isPrimaryKey(entityClass, fieldDescriptor);
+	public Boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.isPrimaryKey(entityClass, descriptor);
 	}
 
 	@Override
-	public Boolean isNullable(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain) {
-		return chain.isNullable(entityClass, fieldDescriptor);
+	public Boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.isNullable(entityClass, descriptor);
 	}
 
 	@Override
-	public Boolean isEntity(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain) {
-		return chain.isEntity(entityClass, fieldDescriptor);
+	public Boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.isEntity(entityClass, descriptor);
 	}
 
 	@Override
@@ -55,21 +55,21 @@ public class AbstractObjectRelationalExtend implements ObjectRelationalResolverE
 	}
 
 	@Override
-	public Boolean isVersionField(Class<?> entityClass, FieldDescriptor fieldDescriptor,
+	public Boolean isVersionField(Class<?> entityClass, ParameterDescriptor descriptor,
 			ObjectRelationalResolver chain) {
-		return chain.isVersionField(entityClass, fieldDescriptor);
+		return chain.isVersionField(entityClass, descriptor);
 	}
 
 	@Override
-	public Collection<Range<Double>> getNumberRanges(Class<?> entityClass, FieldDescriptor fieldDescriptor,
+	public Collection<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor,
 			ObjectRelationalResolver chain) {
-		return chain.getNumberRanges(entityClass, fieldDescriptor);
+		return chain.getNumberRanges(entityClass, descriptor);
 	}
 
 	@Override
-	public Boolean isAutoIncrement(Class<?> entityClass, FieldDescriptor fieldDescriptor,
+	public Boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor,
 			ObjectRelationalResolver chain) {
-		return chain.isAutoIncrement(entityClass, fieldDescriptor);
+		return chain.isAutoIncrement(entityClass, descriptor);
 	}
 
 	@Override
@@ -83,8 +83,8 @@ public class AbstractObjectRelationalExtend implements ObjectRelationalResolverE
 	}
 
 	@Override
-	public String getComment(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain) {
-		return chain.getComment(entityClass, fieldDescriptor);
+	public String getComment(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.getComment(entityClass, descriptor);
 	}
 
 	@Override
@@ -93,19 +93,19 @@ public class AbstractObjectRelationalExtend implements ObjectRelationalResolverE
 	}
 
 	@Override
-	public String getCharsetName(Class<?> entityClass, FieldDescriptor fieldDescriptor,
+	public String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor,
 			ObjectRelationalResolver chain) {
-		return chain.getCharsetName(entityClass, fieldDescriptor);
+		return chain.getCharsetName(entityClass, descriptor);
 	}
 
 	@Override
-	public Boolean isUnique(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain) {
-		return chain.isUnique(entityClass, fieldDescriptor);
+	public Boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.isUnique(entityClass, descriptor);
 	}
 
 	@Override
-	public Boolean isIncrement(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain) {
-		return chain.isIncrement(entityClass, fieldDescriptor);
+	public Boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.isIncrement(entityClass, descriptor);
 	}
 
 }
