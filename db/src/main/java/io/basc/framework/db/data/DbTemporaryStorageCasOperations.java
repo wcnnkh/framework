@@ -23,7 +23,8 @@ import io.basc.framework.util.Assert;
  * @author wcnnkh
  *
  */
-public class DbTemporaryStorageCasOperations implements TemporaryDataCasOperations, DataStorage {
+public class DbTemporaryStorageCasOperations implements
+		TemporaryDataCasOperations, DataStorage {
 	private final DB db;
 	private Serializer serializer = JavaSerializer.INSTANCE;
 	private final String tableName;
@@ -39,12 +40,16 @@ public class DbTemporaryStorageCasOperations implements TemporaryDataCasOperatio
 		this.tableName = tableName;
 		db.createTable(TemporaryData.class, tableName);
 		this.tableStructure = db.getTableStructure(TemporaryData.class);
-		this.casColumnName = "`" + tableStructure.getByFieldName("cas").getName() + "`";
-		this.keyColumnName = "`" + tableStructure.getByFieldName("key").getName() + "`";
-		this.touchTimeColumnName = "`" + tableStructure.getByFieldName("touchTime").getName() + "`";
-		this.expColumName = "`" + tableStructure.getByFieldName("exp").getName() + "`";
-		this.whereSql = keyColumnName + "=? and (" + expColumName + "<=0 or (" + touchTimeColumnName + "+"
-				+ expColumName + ")<?)";
+		this.casColumnName = "`" + tableStructure.getByName("cas").getName()
+				+ "`";
+		this.keyColumnName = "`" + tableStructure.getByName("key").getName()
+				+ "`";
+		this.touchTimeColumnName = "`"
+				+ tableStructure.getByName("touchTime").getName() + "`";
+		this.expColumName = "`" + tableStructure.getByName("exp").getName()
+				+ "`";
+		this.whereSql = keyColumnName + "=? and (" + expColumName + "<=0 or ("
+				+ touchTimeColumnName + "+" + expColumName + ")<?)";
 	}
 
 	public Serializer getSerializer() {
@@ -62,7 +67,8 @@ public class DbTemporaryStorageCasOperations implements TemporaryDataCasOperatio
 		}
 
 		if (temporaryData.getExp() > 0
-				&& (temporaryData.getTouchTime() + temporaryData.getExp()) < System.currentTimeMillis()) {
+				&& (temporaryData.getTouchTime() + temporaryData.getExp()) < System
+						.currentTimeMillis()) {
 			return null;
 		}
 
@@ -81,7 +87,8 @@ public class DbTemporaryStorageCasOperations implements TemporaryDataCasOperatio
 
 	@Override
 	public CAS<Object> gets(String key) {
-		TemporaryData temporaryData = db.getById(tableName, TemporaryData.class, key);
+		TemporaryData temporaryData = db.getById(tableName,
+				TemporaryData.class, key);
 		if (temporaryData == null) {
 			return null;
 		}
@@ -92,7 +99,8 @@ public class DbTemporaryStorageCasOperations implements TemporaryDataCasOperatio
 
 	@Override
 	public Object get(String key) {
-		TemporaryData temporaryData = db.getById(tableName, TemporaryData.class, key);
+		TemporaryData temporaryData = db.getById(tableName,
+				TemporaryData.class, key);
 		if (temporaryData == null) {
 			return null;
 		}
@@ -102,7 +110,8 @@ public class DbTemporaryStorageCasOperations implements TemporaryDataCasOperatio
 
 	@Override
 	public Long getRemainingSurvivalTime(String key) {
-		TemporaryData temporaryData = db.getById(tableName, TemporaryData.class, key);
+		TemporaryData temporaryData = db.getById(tableName,
+				TemporaryData.class, key);
 		if (temporaryData == null) {
 			return null;
 		}
@@ -112,13 +121,14 @@ public class DbTemporaryStorageCasOperations implements TemporaryDataCasOperatio
 			return -1L;
 		}
 
-		return exp - (System.currentTimeMillis() - temporaryData.getTouchTime());
+		return exp
+				- (System.currentTimeMillis() - temporaryData.getTouchTime());
 	}
 
 	@Override
 	public boolean exists(String key) {
-		Sql sql = new SimpleSql("select count(*) from `" + tableName + "` where " + whereSql, key,
-				System.currentTimeMillis());
+		Sql sql = new SimpleSql("select count(*) from `" + tableName
+				+ "` where " + whereSql, key, System.currentTimeMillis());
 		return db.queryFirst(long.class, sql) > 0;
 	}
 
@@ -129,44 +139,51 @@ public class DbTemporaryStorageCasOperations implements TemporaryDataCasOperatio
 
 	@Override
 	public boolean delete(String key, long cas) {
-		Sql sql = new SimpleSql("delete from `" + tableName + "` where " + whereSql + " and " + casColumnName + "=?",
-				key, System.currentTimeMillis(), cas);
+		Sql sql = new SimpleSql("delete from `" + tableName + "` where "
+				+ whereSql + " and " + casColumnName + "=?", key,
+				System.currentTimeMillis(), cas);
 		return db.update(sql) > 0;
 	}
 
 	@Override
 	public boolean touch(String key) {
 		long currentTime = System.currentTimeMillis();
-		Sql sql = new SimpleSql("update `" + tableName + "` set " + touchTimeColumnName + "=? where " + whereSql,
-				currentTime, key, currentTime);
+		Sql sql = new SimpleSql("update `" + tableName + "` set "
+				+ touchTimeColumnName + "=? where " + whereSql, currentTime,
+				key, currentTime);
 		return db.update(sql) > 0;
 	}
 
 	@Override
 	public boolean touch(String key, long exp, TimeUnit expUnit) {
 		long currentTime = System.currentTimeMillis();
-		Sql sql = new SimpleSql("update `" + tableName + "` set " + touchTimeColumnName + "=?, " + expColumName
-				+ "=? where " + whereSql, currentTime, Math.max(0, expUnit.toMillis(exp)), key, currentTime);
+		Sql sql = new SimpleSql("update `" + tableName + "` set "
+				+ touchTimeColumnName + "=?, " + expColumName + "=? where "
+				+ whereSql, currentTime, Math.max(0, expUnit.toMillis(exp)),
+				key, currentTime);
 		return db.update(sql) > 0;
 	}
 
 	@Override
 	public boolean expire(String key, long exp, TimeUnit expUnit) {
 		long currentTime = System.currentTimeMillis();
-		Sql sql = new SimpleSql("update `" + tableName + "` set " + expColumName + "=? where " + whereSql,
-				Math.max(0, expUnit.toMillis(exp)), key, currentTime);
+		Sql sql = new SimpleSql("update `" + tableName + "` set "
+				+ expColumName + "=? where " + whereSql, Math.max(0,
+				expUnit.toMillis(exp)), key, currentTime);
 		return db.update(sql) > 0;
 	}
 
 	@Override
-	public void set(String key, Object value, TypeDescriptor valueType, long exp, TimeUnit expUnit) {
+	public void set(String key, Object value, TypeDescriptor valueType,
+			long exp, TimeUnit expUnit) {
 		if (setIfAbsent(key, value, valueType, exp, expUnit)) {
 			setIfPresent(key, value, valueType, exp, expUnit);
 		}
 	}
 
 	@Override
-	public boolean setIfAbsent(String key, Object value, TypeDescriptor valueType, long exp, TimeUnit expUnit) {
+	public boolean setIfAbsent(String key, Object value,
+			TypeDescriptor valueType, long exp, TimeUnit expUnit) {
 		byte[] binaryValue = serializer.serialize(value, valueType);
 		String base64Value = Base64.DEFAULT.encode(binaryValue);
 		TemporaryData temporaryData = new TemporaryData();
@@ -179,31 +196,38 @@ public class DbTemporaryStorageCasOperations implements TemporaryDataCasOperatio
 	}
 
 	@Override
-	public boolean setIfPresent(String key, Object value, TypeDescriptor valueType, long exp, TimeUnit expUnit) {
+	public boolean setIfPresent(String key, Object value,
+			TypeDescriptor valueType, long exp, TimeUnit expUnit) {
 		byte[] binaryValue = serializer.serialize(value, valueType);
 		String base64Value = Base64.DEFAULT.encode(binaryValue);
 		long currentTime = System.currentTimeMillis();
-		Sql sql = new SimpleSql("update `" + tableName + "` set " + expColumName + "=?, "
-				+ tableStructure.getByFieldName("value").getName() + "=?," + casColumnName + "=" + casColumnName
-				+ " + 1 where " + whereSql, Math.max(0, expUnit.toMillis(exp)), base64Value, key, currentTime);
+		Sql sql = new SimpleSql("update `" + tableName + "` set "
+				+ expColumName + "=?, "
+				+ tableStructure.getByName("value").getName() + "=?,"
+				+ casColumnName + "=" + casColumnName + " + 1 where "
+				+ whereSql, Math.max(0, expUnit.toMillis(exp)), base64Value,
+				key, currentTime);
 		return db.update(sql) > 0;
 	}
 
 	@Override
-	public boolean cas(String key, Object value, TypeDescriptor valueType, long cas, long exp, TimeUnit expUnit) {
+	public boolean cas(String key, Object value, TypeDescriptor valueType,
+			long cas, long exp, TimeUnit expUnit) {
 		byte[] binaryValue = serializer.serialize(value, valueType);
 		String base64Value = Base64.DEFAULT.encode(binaryValue);
 		long currentTime = System.currentTimeMillis();
-		Sql sql = new SimpleSql(
-				"update `" + tableName + "` set " + expColumName + "=?, `"
-						+ tableStructure.getByFieldName("value").getName() + "`=?," + casColumnName + "'='"
-						+ casColumnName + " + 1 where " + whereSql + " and " + casColumnName + "=?",
-				Math.max(0, expUnit.toMillis(exp)), base64Value, key, currentTime, cas);
+		Sql sql = new SimpleSql("update `" + tableName + "` set "
+				+ expColumName + "=?, `"
+				+ tableStructure.getByName("value").getName() + "`=?,"
+				+ casColumnName + "'='" + casColumnName + " + 1 where "
+				+ whereSql + " and " + casColumnName + "=?", Math.max(0,
+				expUnit.toMillis(exp)), base64Value, key, currentTime, cas);
 		return db.update(sql) > 0;
 	}
 
 	@Override
-	public boolean setIfPresent(String key, Object value, TypeDescriptor valueType) {
+	public boolean setIfPresent(String key, Object value,
+			TypeDescriptor valueType) {
 		return setIfPresent(key, value, valueType, 0, TimeUnit.MILLISECONDS);
 	}
 
@@ -213,12 +237,14 @@ public class DbTemporaryStorageCasOperations implements TemporaryDataCasOperatio
 	}
 
 	@Override
-	public boolean setIfAbsent(String key, Object value, TypeDescriptor valueType) {
+	public boolean setIfAbsent(String key, Object value,
+			TypeDescriptor valueType) {
 		return setIfAbsent(key, value, valueType, 0, TimeUnit.MILLISECONDS);
 	}
 
 	@Override
-	public boolean cas(String key, Object value, TypeDescriptor valueType, long cas) {
+	public boolean cas(String key, Object value, TypeDescriptor valueType,
+			long cas) {
 		return cas(key, value, valueType, cas, 0, TimeUnit.MILLISECONDS);
 	}
 }

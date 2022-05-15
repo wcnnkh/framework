@@ -9,7 +9,8 @@ import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.orm.ObjectRelationalMapping;
 import io.basc.framework.orm.annotation.AnnotationObjectRelationalResolverExtend;
 
-public class DefaultObjectRelationalMapping extends DefaultObjectRelationalResolver implements ObjectRelationalMapping {
+public class DefaultObjectRelationalMapping extends
+		DefaultObjectRelationalResolver implements ObjectRelationalMapping {
 	private FieldFactory fieldFactory;
 
 	public DefaultObjectRelationalMapping() {
@@ -17,7 +18,8 @@ public class DefaultObjectRelationalMapping extends DefaultObjectRelationalResol
 	}
 
 	public FieldFactory getFieldFactory() {
-		return fieldFactory == null ? MapperUtils.getFieldFactory() : fieldFactory;
+		return fieldFactory == null ? MapperUtils.getFieldFactory()
+				: fieldFactory;
 	}
 
 	public void setFieldFactory(FieldFactory fieldFactory) {
@@ -31,10 +33,15 @@ public class DefaultObjectRelationalMapping extends DefaultObjectRelationalResol
 
 	@Override
 	public Fields getFields(Class<?> entityClass, Field parentField) {
-		Fields fields = getFieldFactory().getFields(entityClass, parentField).accept(FieldFeature.IGNORE_STATIC)
+		Fields fields = getFieldFactory().getFields(entityClass, parentField)
+				.accept(FieldFeature.IGNORE_STATIC)
 				.accept((f) -> f.isSupportGetter() || f.isSupportSetter());
-		return new MapFields(fields, (stream) -> stream.map((field) -> new Field(field.getParentField(),
-				!field.isSupportGetter() || isIgnore(entityClass, field.getGetter()) ? null : field.getGetter(),
-				!field.isSupportSetter() || isIgnore(entityClass, field.getSetter()) ? null : field.getSetter())));
+		return new MapFields(fields,
+				(stream) -> stream.map((field) -> new Field(field
+						.getParentField(), !field.isSupportGetter()
+						|| isIgnore(entityClass, field.getGetter()) ? null
+						: field.getGetter(), !field.isSupportSetter()
+						|| isIgnore(entityClass, field.getSetter()) ? null
+						: field.getSetter())));
 	}
 }

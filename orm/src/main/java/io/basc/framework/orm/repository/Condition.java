@@ -1,4 +1,4 @@
-package io.basc.framework.data.repository;
+package io.basc.framework.orm.repository;
 
 import java.io.Serializable;
 

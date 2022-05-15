@@ -215,10 +215,28 @@ public abstract class NumberUtils {
 		}
 	}
 
+	/**
+	 * 是否是数字类型
+	 * 
+	 * @param type
+	 * @return
+	 */
 	public static boolean isNumber(Class<?> type) {
 		return type == long.class || type == int.class || type == byte.class
 				|| type == short.class || type == float.class
 				|| type == double.class || Number.class.isAssignableFrom(type);
+	}
+
+	/**
+	 * 是否是整数类型
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static boolean isInteger(Class<?> type) {
+		return type == long.class || type == int.class || type == byte.class
+				|| type == short.class
+				|| BigInteger.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -450,7 +468,7 @@ public abstract class NumberUtils {
 		}
 		return converter.convert(source);
 	}
-	
+
 	/**
 	 * 保留小数点精度
 	 * 
@@ -458,7 +476,7 @@ public abstract class NumberUtils {
 	 * @param len
 	 *            保留多少位
 	 * @return
-	 * @see 
+	 * @see
 	 */
 	public static String formatPrecision(double number, int len) {
 		if (len < 0) {

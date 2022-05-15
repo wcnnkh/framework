@@ -1,7 +1,7 @@
 package io.basc.framework.lucene.annotation;
 
+import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.lucene.SimpleFieldResolver;
-import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.value.Value;
 
 import java.util.Arrays;
@@ -15,8 +15,9 @@ import org.apache.lucene.document.TextField;
 
 public class AnnotationFieldResolver extends SimpleFieldResolver {
 	@Override
-	protected boolean isStored(FieldDescriptor field) {
-		io.basc.framework.lucene.annotation.LuceneField annotation = field.getAnnotation(io.basc.framework.lucene.annotation.LuceneField.class);
+	protected boolean isStored(ParameterDescriptor descriptor) {
+		io.basc.framework.lucene.annotation.LuceneField annotation = descriptor
+				.getAnnotation(io.basc.framework.lucene.annotation.LuceneField.class);
 		if (annotation != null) {
 			return annotation.stored();
 		}
@@ -24,23 +25,27 @@ public class AnnotationFieldResolver extends SimpleFieldResolver {
 	}
 
 	@Override
-	protected Collection<Field> resolveNonBasicType(FieldDescriptor fieldDescriptor, Value value) {
-		io.basc.framework.lucene.annotation.LuceneField annotation = fieldDescriptor
+	protected Collection<Field> resolveNonBasicType(
+			ParameterDescriptor descriptor, Value value) {
+		io.basc.framework.lucene.annotation.LuceneField annotation = descriptor
 				.getAnnotation(io.basc.framework.lucene.annotation.LuceneField.class);
 		if (annotation == null) {
-			return super.resolveNonBasicType(fieldDescriptor, value);
+			return super.resolveNonBasicType(descriptor, value);
 		}
 
 		if (annotation.indexed()) {
 			if (annotation.tokenized()) {
-				return Arrays.asList(new TextField(fieldDescriptor.getName(), value.getAsString(),
-						annotation.stored() ? Store.YES : Store.NO));
+				return Arrays.asList(new TextField(descriptor.getName(), value
+						.getAsString(), annotation.stored() ? Store.YES
+						: Store.NO));
 			} else {
-				return Arrays.asList(new StringField(fieldDescriptor.getName(), value.getAsString(),
-						annotation.stored() ? Store.YES : Store.NO));
+				return Arrays.asList(new StringField(descriptor.getName(),
+						value.getAsString(), annotation.stored() ? Store.YES
+								: Store.NO));
 			}
 		} else {
-			return Arrays.asList(new StoredField(fieldDescriptor.getName(), value.getAsString()));
+			return Arrays.asList(new StoredField(descriptor.getName(), value
+					.getAsString()));
 		}
 	}
 }

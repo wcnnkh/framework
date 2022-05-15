@@ -1,6 +1,5 @@
 package io.basc.framework.lang;
 
-import io.basc.framework.convert.ConversionException;
 import io.basc.framework.util.ObjectUtils;
 
 import java.util.LinkedList;
@@ -25,7 +24,7 @@ public class LinkedThreadLocal<E> {
 
 		E nesting = list.getLast();
 		if (!ObjectUtils.equals(element, nesting)) {
-			throw new ConversionException("remove nesting [" + nesting + "] conversion service [" + element + "]");
+			throw new IllegalStateException("remove nesting [" + nesting + "] conversion service [" + element + "]");
 		}
 
 		list.removeLast();

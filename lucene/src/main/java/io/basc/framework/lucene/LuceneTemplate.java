@@ -1,16 +1,34 @@
 package io.basc.framework.lucene;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.env.Sys;
+import io.basc.framework.data.domain.PageRequest;
+import io.basc.framework.lucene.annotation.LuceneField;
 import io.basc.framework.mapper.Fields;
 import io.basc.framework.mapper.MapProcessDecorator;
 import io.basc.framework.mapper.Mapper;
 import io.basc.framework.orm.EntityStructure;
+import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
+import io.basc.framework.orm.repository.Conditions;
+import io.basc.framework.orm.repository.OrderColumn;
+import io.basc.framework.orm.repository.Repository;
+import io.basc.framework.orm.repository.RepositoryColumn;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.page.Paginations;
+import io.basc.framework.util.stream.Cursor;
 import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.stream.StreamProcessorSupport;
+import io.basc.framework.value.Value;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.stream.Stream;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
@@ -19,41 +37,67 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TermQuery;
 
-public interface LuceneTemplate {
+public interface LuceneTemplate extends Repository {
 	Mapper<Document, LuceneException> getMapper();
 
 	default Document createDocument(Object instance) {
 		return wrap(new Document(), instance);
 	}
 
-	default <T> T parse(Document document, Class<? extends T> type) {
-		return mapping(document, Sys.env.getInstance(type));
+	default void save(Object entity) throws LuceneWriteException {
+		Assert.requiredArgument(entity != null, "entity");
+		if (entity instanceof Document) {
+			// 同步
+			try {
+				write(
+						(indexWriter) -> indexWriter
+								.addDocument((Document) entity)).get();
+			} catch (InterruptedException | ExecutionException e) {
+				throw new LuceneException(e);
+			}
+		} else {
+			Repository.super.save(entity);
+		}
 	}
 
-	default Future<Long> save(Object doc) throws LuceneWriteException {
-		return write((indexWriter) -> {
-			if (doc == null) {
-				return 0L;
+	@Override
+	default boolean delete(Object entity) {
+		Assert.requiredArgument(entity != null, "entity");
+		if (entity instanceof Query) {
+			// TODO 应该支持这个吗，有点违背本意, 应该是删除单个
+			try {
+				write(
+						(indexWriter) -> indexWriter
+								.deleteDocuments((Query) entity)).get();
+			} catch (InterruptedException | ExecutionException e) {
+				throw new LuceneException(e);
 			}
+		} else if (entity instanceof Term) {
+			// 同步
+			try {
+				write(
+						(indexWriter) -> indexWriter
+								.deleteDocuments((Term) entity)).get();
+			} catch (InterruptedException | ExecutionException e) {
+				throw new LuceneException(e);
+			}
+		}
+		return Repository.super.delete(entity);
+	}
 
-			Document document;
-			if (doc instanceof Document) {
-				document = (Document) doc;
-			} else {
-				document = createDocument(doc);
-			}
-
-			if (document == null) {
-				return 0L;
-			}
-			return indexWriter.addDocument(document);
-		});
+	default Future<Long> delete(Query query) throws LuceneWriteException {
+		return write((writer) -> writer.deleteDocuments(query));
 	}
 
 	default Future<Long> delete(Query... queries) throws LuceneWriteException {
 		return write((writer) -> writer.deleteDocuments(queries));
+	}
+
+	default Future<Long> delete(Term term) throws LuceneWriteException {
+		return write((writer) -> writer.deleteDocuments(term));
 	}
 
 	default Future<Long> delete(Term... terms) throws LuceneWriteException {
@@ -228,11 +272,18 @@ public interface LuceneTemplate {
 								.getEntityClass()));
 	}
 
-	<T> T mapping(Document document, T instance);
-
-	<T> T mapping(Document document, T instance, Fields fields);
-
-	Document wrap(Document document, Object instance);
+	default Document wrap(Document document, Object instance) {
+		return wrap(
+				document,
+				instance,
+				getMapping()
+						.getFields(instance.getClass())
+						.accept((field) -> {
+							return field.isAnnotationPresent(LuceneField.class)
+									|| Value.isBaseType(field.getGetter()
+											.getType());
+						}).all());
+	}
 
 	Document wrap(Document document, Object instance, Fields fields);
 
@@ -244,4 +295,126 @@ public interface LuceneTemplate {
 
 	Document wrap(Document document,
 			EntityStructure<? extends Property> structure, Object instance);
+
+	default Future<Long> deleteAll() {
+		return write((e) -> e.deleteAll());
+	}
+
+	@Override
+	default long save(Class<?> entityClass,
+			Collection<? extends RepositoryColumn> columns) throws OrmException {
+		List<RepositoryColumn> list = getMapping().open(entityClass, columns,
+				null);
+		if (CollectionUtils.isEmpty(list)) {
+			return 0L;
+		}
+
+		try {
+			return write((indexWriter) -> {
+				Document document = new Document();
+				wrap(document, list);
+				return indexWriter.addDocument(document);
+			}).get();
+		} catch (LuceneWriteException | InterruptedException
+				| ExecutionException e) {
+			throw new LuceneException(e);
+		}
+	}
+
+	Query parseQuery(Conditions conditions);
+
+	Query parseQuery(Document document);
+
+	@Override
+	default long update(Class<?> entityClass,
+			Collection<? extends RepositoryColumn> columns,
+			Conditions conditions) throws OrmException {
+		List<RepositoryColumn> columnsToUse = getMapping().open(entityClass,
+				columns, null);
+		if (CollectionUtils.isEmpty(columnsToUse)) {
+			return 0L;
+		}
+
+		Query query = parseQuery(getMapping().open(entityClass, conditions,
+				null));
+		try {
+			return write(
+					(writer) -> {
+						SearchResults<Document> searchResults = search(
+								new SearchParameters(query, 100), (e) -> e);
+						Stream<Document> stream = searchResults.streamAll();
+						try {
+							Iterator<Document> iterator = stream.iterator();
+							while (iterator.hasNext()) {
+								// 使用先删除或添加的方式完成更新
+								Document document = iterator.next();
+								Query documentQuery = parseQuery(document);
+								writer.deleteDocuments(documentQuery);
+								wrap(document, columnsToUse);
+								writer.addDocument(document);
+								writer.commit();
+							}
+						} finally {
+							stream.close();
+						}
+						return searchResults.getTotal();
+					}).get();
+		} catch (LuceneSearchException | LuceneWriteException
+				| InterruptedException | ExecutionException e) {
+			throw new LuceneException(e);
+		}
+	}
+
+	@Override
+	default long delete(Class<?> entityClass, Conditions conditions)
+			throws OrmException {
+		Query query = parseQuery(getMapping().open(entityClass, conditions,
+				null));
+		try {
+			return delete(query).get();
+		} catch (LuceneWriteException | InterruptedException
+				| ExecutionException e) {
+			throw new LuceneException(e);
+		}
+	}
+
+	Sort parseSort(EntityStructure<? extends Property> structure,
+			List<? extends OrderColumn> orders);
+
+	default <T> SearchResults<T> search(TypeDescriptor resultsTypeDescriptor,
+			Class<?> entityClass, Conditions conditions,
+			List<? extends OrderColumn> orders, int top) {
+		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>();
+		if (orders != null) {
+			orderColumns.addAll(orders);
+		}
+		Query query = parseQuery(getMapping().open(entityClass, conditions,
+				orderColumns));
+		Sort sort = parseSort(getMapping().getStructure(entityClass),
+				orderColumns);
+		SearchParameters parameters = new SearchParameters(query, top);
+		parameters.setSort(sort);
+		return search(parameters, resultsTypeDescriptor);
+	}
+
+	@Override
+	default <T> Cursor<T> query(TypeDescriptor resultsTypeDescriptor,
+			Class<?> entityClass, Conditions conditions,
+			List<? extends OrderColumn> orders) throws OrmException {
+		SearchResults<T> results = search(resultsTypeDescriptor, entityClass,
+				conditions, orders, 1000);
+		return StreamProcessorSupport.cursor(results.streamAll());
+	}
+
+	@Override
+	default <T> Paginations<T> pagingQuery(
+			TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
+			Conditions conditions, List<? extends OrderColumn> orders,
+			PageRequest pageRequest) throws OrmException {
+		SearchResults<T> results = search(resultsTypeDescriptor, entityClass,
+				conditions, orders,
+				(int) (pageRequest.getStart() + pageRequest.getPageNum()));
+		return results.toPaginations(pageRequest.getStart(),
+				pageRequest.getPageSize());
+	}
 }

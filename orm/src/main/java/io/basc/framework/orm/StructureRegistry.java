@@ -15,5 +15,10 @@ public interface StructureRegistry<S extends EntityStructure<? extends Property>
 	@Nullable
 	S getStructure(Class<?> entityClass);
 
+	/**
+	 * @see #getStructure(Class)
+	 * @param entityClass
+	 * @param structure
+	 */
 	void register(Class<?> entityClass, S structure);
 }

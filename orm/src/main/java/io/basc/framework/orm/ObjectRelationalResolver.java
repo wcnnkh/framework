@@ -4,6 +4,8 @@ import java.util.Collection;
 
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.data.domain.Range;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.comparator.Sort;
 
 public interface ObjectRelationalResolver {
 	Boolean isIgnore(Class<?> entityClass);
@@ -12,7 +14,8 @@ public interface ObjectRelationalResolver {
 
 	String getName(Class<?> entityClass, ParameterDescriptor descriptor);
 
-	Collection<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor);
+	Collection<String> getAliasNames(Class<?> entityClass,
+			ParameterDescriptor descriptor);
 
 	String getName(Class<?> entityClass);
 
@@ -35,7 +38,8 @@ public interface ObjectRelationalResolver {
 	 * @param descriptor
 	 * @return
 	 */
-	Collection<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor);
+	Collection<Range<Double>> getNumberRanges(Class<?> entityClass,
+			ParameterDescriptor descriptor);
 
 	/**
 	 * 是否自增
@@ -64,4 +68,7 @@ public interface ObjectRelationalResolver {
 	 * @return
 	 */
 	Boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor);
+
+	@Nullable
+	Sort getSort(Class<?> entityClass, ParameterDescriptor descriptor);
 }

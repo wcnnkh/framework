@@ -19,6 +19,26 @@ public interface EntityOperations {
 	}
 
 	/**
+	 * 判断是否存在，只判断主键
+	 * 
+	 * @see #getById(Class, Object...)
+	 * @see #isPresent(Class, Object...)
+	 * @param entityClass
+	 * @param entity
+	 * @return
+	 */
+	<T> boolean isPresent(Class<? extends T> entityClass, T entity);
+
+	/**
+	 * 判断是否存在
+	 * 
+	 * @param entityClass
+	 * @param ids
+	 * @return
+	 */
+	boolean isPresent(Class<?> entityClass, Object... ids);
+
+	/**
 	 * 保存
 	 * 
 	 * @param entityClass
@@ -43,9 +63,17 @@ public interface EntityOperations {
 	 * @param entity
 	 * @return 如果实体已经存在返回false
 	 */
-	<T> boolean saveIfAbsent(Class<? extends T> entityClass, T entity);
+	default <T> boolean saveIfAbsent(Class<? extends T> entityClass, T entity) {
+		// 这种实现线程安全，如果能实现原子性的实现更好
+		if (isPresent(entityClass, entity)) {
+			return false;
+		}
+		save(entityClass, entity);
+		return true;
+	}
 
 	/**
+	 * @see #deleteById(Class, Object...)
 	 * @see #delete(Class, Object)
 	 * @param entity
 	 * @return
@@ -59,7 +87,9 @@ public interface EntityOperations {
 	}
 
 	/**
-	 * 删除数据
+	 * 删除数据,根据主键删除
+	 * 
+	 * @see #deleteById(Class, Object...)
 	 * 
 	 * @param entityClass
 	 * @param entity

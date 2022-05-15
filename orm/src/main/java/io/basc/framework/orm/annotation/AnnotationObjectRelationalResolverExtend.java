@@ -1,9 +1,5 @@
 package io.basc.framework.orm.annotation;
 
-import java.lang.reflect.AnnotatedElement;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.annotation.AnnotationAttributes;
 import io.basc.framework.core.parameter.ParameterDescriptor;
@@ -13,8 +9,14 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.orm.ObjectRelationalResolver;
 import io.basc.framework.orm.support.ObjectRelationalResolverExtend;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.comparator.Sort;
 
-public class AnnotationObjectRelationalResolverExtend implements ObjectRelationalResolverExtend {
+import java.lang.reflect.AnnotatedElement;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+
+public class AnnotationObjectRelationalResolverExtend implements
+		ObjectRelationalResolverExtend {
 
 	@Override
 	public Boolean isIgnore(Class<?> entityClass, ObjectRelationalResolver chain) {
@@ -26,7 +28,8 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 	}
 
 	@Override
-	public Boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+	public Boolean isIgnore(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
 		Ignore ignore = descriptor.getAnnotation(Ignore.class);
 		if (ignore == null) {
 			return chain.isIgnore(entityClass, descriptor);
@@ -46,7 +49,8 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 	}
 
 	@Override
-	public String getName(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+	public String getName(Class<?> entityClass, ParameterDescriptor descriptor,
+			ObjectRelationalResolver chain) {
 		String name = getAnnotationFeldName(descriptor);
 		if (StringUtils.isEmpty(name)) {
 			return chain.getName(entityClass, descriptor);
@@ -55,13 +59,14 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 	}
 
 	private String[] getAnnotatedAlias(AnnotatedElement annotatedElement) {
-		Alias alias = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, Alias.class);
+		Alias alias = AnnotatedElementUtils.getMergedAnnotation(
+				annotatedElement, Alias.class);
 		return alias == null ? null : alias.value();
 	}
 
 	@Override
-	public Collection<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor,
-			ObjectRelationalResolver chain) {
+	public Collection<String> getAliasNames(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
 		Collection<String> names = chain.getAliasNames(entityClass, descriptor);
 		if (names == null) {
 			names = new LinkedHashSet<String>();
@@ -84,8 +89,8 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 
 	@Override
 	public String getName(Class<?> entityClass, ObjectRelationalResolver chain) {
-		AnnotationAttributes annotationAttributes = AnnotatedElementUtils.getMergedAnnotationAttributes(entityClass,
-				Entity.class);
+		AnnotationAttributes annotationAttributes = AnnotatedElementUtils
+				.getMergedAnnotationAttributes(entityClass, Entity.class);
 		if (annotationAttributes == null) {
 			return chain.getName(entityClass);
 		}
@@ -97,7 +102,8 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 		return name;
 	}
 
-	private String getEntityNameByAnnotatedElement(AnnotatedElement annotatedElement) {
+	private String getEntityNameByAnnotatedElement(
+			AnnotatedElement annotatedElement) {
 		AnnotationAttributes annotationAttributes = AnnotatedElementUtils
 				.getMergedAnnotationAttributes(annotatedElement, Entity.class);
 		if (annotationAttributes == null) {
@@ -112,7 +118,8 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 	}
 
 	@Override
-	public Collection<String> getAliasNames(Class<?> entityClass, ObjectRelationalResolver chain) {
+	public Collection<String> getAliasNames(Class<?> entityClass,
+			ObjectRelationalResolver chain) {
 		Collection<String> list = chain.getAliasNames(entityClass);
 		if (list == null) {
 			list = new LinkedHashSet<String>(8);
@@ -134,14 +141,16 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 	}
 
 	@Override
-	public Boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+	public Boolean isPrimaryKey(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
 		if (AnnotatedElementUtils.isAnnotated(descriptor, PrimaryKey.class)) {
 			return true;
 		}
 
 		Class<?> clazz = entityClass;
 		while (clazz != null && clazz != Object.class) {
-			Entity entity = AnnotatedElementUtils.getMergedAnnotation(clazz, Entity.class);
+			Entity entity = AnnotatedElementUtils.getMergedAnnotation(clazz,
+					Entity.class);
 			if (entity != null) {
 				for (String name : entity.primaryKeys()) {
 					if (descriptor.getName().equals(name)) {
@@ -155,8 +164,10 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 	}
 
 	@Override
-	public Boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
-		Nullable nullable = AnnotatedElementUtils.getMergedAnnotation(descriptor, Nullable.class);
+	public Boolean isNullable(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		Nullable nullable = AnnotatedElementUtils.getMergedAnnotation(
+				descriptor, Nullable.class);
 		if (nullable == null) {
 			return chain.isNullable(entityClass, descriptor);
 		}
@@ -164,7 +175,8 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 	}
 
 	@Override
-	public Boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+	public Boolean isEntity(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
 		if (AnnotatedElementUtils.isAnnotated(descriptor, Entity.class)) {
 			return true;
 		}
@@ -184,8 +196,8 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 	}
 
 	@Override
-	public Boolean isVersionField(Class<?> entityClass, ParameterDescriptor descriptor,
-			ObjectRelationalResolver chain) {
+	public Boolean isVersionField(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
 		if (AnnotatedElementUtils.isAnnotated(descriptor, Version.class)) {
 			return true;
 		}
@@ -193,10 +205,12 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 	}
 
 	@Override
-	public Collection<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor,
-			ObjectRelationalResolver chain) {
-		Collection<Range<Double>> ranges = chain.getNumberRanges(entityClass, descriptor);
-		NumberRange range = AnnotatedElementUtils.getMergedAnnotation(descriptor, NumberRange.class);
+	public Collection<Range<Double>> getNumberRanges(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		Collection<Range<Double>> ranges = chain.getNumberRanges(entityClass,
+				descriptor);
+		NumberRange range = AnnotatedElementUtils.getMergedAnnotation(
+				descriptor, NumberRange.class);
 		if (range != null) {
 			if (ranges == null) {
 				ranges = new LinkedHashSet<>(4);
@@ -207,9 +221,10 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 	}
 
 	@Override
-	public Boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor,
-			ObjectRelationalResolver chain) {
-		if (AnnotatedElementUtils.hasAnnotation(descriptor, AutoIncrement.class)) {
+	public Boolean isAutoIncrement(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		if (AnnotatedElementUtils
+				.hasAnnotation(descriptor, AutoIncrement.class)) {
 			return true;
 		}
 
@@ -217,13 +232,16 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 	}
 
 	@Override
-	public String getComment(Class<?> entityClass, ObjectRelationalResolver chain) {
-		Entity entity = AnnotatedElementUtils.getMergedAnnotation(entityClass, Entity.class);
+	public String getComment(Class<?> entityClass,
+			ObjectRelationalResolver chain) {
+		Entity entity = AnnotatedElementUtils.getMergedAnnotation(entityClass,
+				Entity.class);
 		if (entity != null && StringUtils.hasText(entity.comment())) {
 			return entity.comment();
 		}
 
-		Comment comment = AnnotatedElementUtils.getMergedAnnotation(entityClass, Comment.class);
+		Comment comment = AnnotatedElementUtils.getMergedAnnotation(
+				entityClass, Comment.class);
 		if (comment != null && StringUtils.hasText(comment.value())) {
 			return comment.value();
 		}
@@ -231,8 +249,10 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 	}
 
 	@Override
-	public String getComment(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
-		Comment comment = AnnotatedElementUtils.getMergedAnnotation(descriptor, Comment.class);
+	public String getComment(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		Comment comment = AnnotatedElementUtils.getMergedAnnotation(descriptor,
+				Comment.class);
 		if (comment != null && StringUtils.hasText(comment.value())) {
 			return comment.value();
 		}
@@ -240,19 +260,22 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 	}
 
 	@Override
-	public String getCharsetName(Class<?> entityClass, ObjectRelationalResolver chain) {
-		return AnnotatedElementUtils.getCharsetName(entityClass, () -> chain.getCharsetName(entityClass));
+	public String getCharsetName(Class<?> entityClass,
+			ObjectRelationalResolver chain) {
+		return AnnotatedElementUtils.getCharsetName(entityClass,
+				() -> chain.getCharsetName(entityClass));
 	}
 
 	@Override
-	public String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor,
-			ObjectRelationalResolver chain) {
+	public String getCharsetName(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
 		return AnnotatedElementUtils.getCharsetName(descriptor,
 				() -> chain.getCharsetName(entityClass, descriptor));
 	}
 
 	@Override
-	public Boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+	public Boolean isUnique(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
 		if (AnnotatedElementUtils.hasAnnotation(descriptor, Unique.class)) {
 			return true;
 		}
@@ -260,10 +283,20 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 	}
 
 	@Override
-	public Boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+	public Boolean isIncrement(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
 		if (AnnotatedElementUtils.hasAnnotation(descriptor, Increment.class)) {
 			return true;
 		}
 		return chain.isUnique(entityClass, descriptor);
+	}
+
+	@Override
+	public Sort getSort(Class<?> entityClass, ParameterDescriptor descriptor,
+			ObjectRelationalResolver chain) {
+		SortType sortType = AnnotatedElementUtils.getMergedAnnotation(
+				descriptor, SortType.class);
+		return sortType == null ? chain.getSort(entityClass, descriptor)
+				: sortType.value();
 	}
 }
