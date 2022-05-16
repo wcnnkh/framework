@@ -5,11 +5,17 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
+import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.ParameterException;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.orm.repository.Condition;
+import io.basc.framework.orm.repository.ConditionKeywords;
+import io.basc.framework.orm.repository.Conditions;
+import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.RepositoryColumn;
+import io.basc.framework.orm.repository.WithCondition;
 import io.basc.framework.sql.EditableSql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
@@ -679,5 +685,213 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements
 		sql.append(values);
 		sql.append(")");
 		return new SimpleSql(sql.toString(), params.toArray());
+	}
+
+	protected void appendWhere(Conditions conditions, StringBuilder sb,
+			List<Object> params) {
+		appendWhere(conditions.getCondition(), sb, params);
+		List<WithCondition> withConditions = conditions.getWiths();
+		if (CollectionUtils.isEmpty(withConditions)) {
+			return;
+		}
+
+		for (WithCondition withCondition : withConditions) {
+			if (getRelationshipKeywords().getAndKeywords().exists(
+					withCondition.getWith())) {
+				sb.append(" and ");
+				appendWhere(withCondition.getCondition(), sb, params);
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	protected void appendWhere(Condition condition, StringBuilder sb,
+			List<Object> params) {
+		ConditionKeywords conditionKeywords = getConditionKeywords();
+		if (conditionKeywords.getEqualKeywords().exists(
+				condition.getCondition())) {
+			keywordProcessing(sb, condition.getColumn().getName());
+			sb.append("=?");
+			params.add(toDataBaseValue(condition.getColumn().getValue(),
+					condition.getColumn().getValueTypeDescriptor()));
+		} else if (conditionKeywords.getEndWithKeywords().exists(
+				condition.getCondition())) {
+			keywordProcessing(sb, condition.getColumn().getName());
+			sb.append(" like %?");
+			params.add(toDataBaseValue(condition.getColumn().getValue(),
+					condition.getColumn().getValueTypeDescriptor()));
+		} else if (conditionKeywords.getEqualOrGreaterThanKeywords().exists(
+				condition.getCondition())) {
+			keywordProcessing(sb, condition.getColumn().getName());
+			sb.append(" >= ?");
+			params.add(toDataBaseValue(condition.getColumn().getValue(),
+					condition.getColumn().getValueTypeDescriptor()));
+		} else if (conditionKeywords.getEqualOrLessThanKeywords().exists(
+				condition.getCondition())) {
+			keywordProcessing(sb, condition.getColumn().getName());
+			sb.append(" <= ?");
+			params.add(toDataBaseValue(condition.getColumn().getValue(),
+					condition.getColumn().getValueTypeDescriptor()));
+		} else if (conditionKeywords.getGreaterThanKeywords().exists(
+				condition.getCondition())) {
+			keywordProcessing(sb, condition.getColumn().getName());
+			sb.append(" > ?");
+			params.add(toDataBaseValue(condition.getColumn().getValue(),
+					condition.getColumn().getValueTypeDescriptor()));
+		} else if (conditionKeywords.getInKeywords().exists(
+				condition.getCondition())) {
+			if (condition.getColumn().getValue() == null) {
+				return;
+			}
+
+			List<Object> list;
+			TypeDescriptor typeDescriptor = condition.getColumn()
+					.getValueTypeDescriptor();
+			if (typeDescriptor.isArray() || typeDescriptor.isCollection()) {
+				list = (List<Object>) getEnvironment().getConversionService()
+						.convert(
+								condition.getColumn().getValue(),
+								typeDescriptor,
+								TypeDescriptor.collection(List.class,
+										typeDescriptor
+												.getElementTypeDescriptor()));
+				typeDescriptor = typeDescriptor.getElementTypeDescriptor();
+			} else {
+				list = Arrays.asList(condition.getColumn().getValue());
+			}
+
+			if (list == null || list.isEmpty()) {
+				return;
+			}
+
+			keywordProcessing(sb, condition.getColumn().getName());
+			Iterator<Object> iterator = list.iterator();
+			sb.append("(");
+			while (iterator.hasNext()) {
+				sb.append("?");
+				params.add(toDataBaseValue(iterator.next(), typeDescriptor));
+				if (iterator.hasNext()) {
+					sb.append(",");
+				}
+			}
+			sb.append(")");
+		} else if (conditionKeywords.getLessThanKeywords().exists(
+				condition.getCondition())) {
+			keywordProcessing(sb, condition.getColumn().getName());
+			sb.append(" < ?");
+			params.add(toDataBaseValue(condition.getColumn().getValue(),
+					condition.getColumn().getValueTypeDescriptor()));
+		} else if (conditionKeywords.getLikeKeywords().exists(
+				condition.getCondition())) {
+			keywordProcessing(sb, condition.getColumn().getName());
+			sb.append(" like %?%");
+			params.add(toDataBaseValue(condition.getColumn().getValue(),
+					condition.getColumn().getValueTypeDescriptor()));
+		} else if (conditionKeywords.getNotEqualKeywords().exists(
+				condition.getCondition())) {
+			keywordProcessing(sb, condition.getColumn().getName());
+			sb.append(" is not ?");
+			params.add(toDataBaseValue(condition.getColumn().getValue(),
+					condition.getColumn().getValueTypeDescriptor()));
+		} else if (conditionKeywords.getSearchKeywords().exists(
+				condition.getCondition())) {
+			keywordProcessing(sb, condition.getColumn().getName());
+			sb.append(" like "
+					+ SqlUtils.toLikeValue((String) getEnvironment()
+							.getConversionService().convert(
+									condition.getColumn().getValue(),
+									condition.getColumn()
+											.getValueTypeDescriptor(),
+									TypeDescriptor.valueOf(String.class))));
+		} else if (conditionKeywords.getStartWithKeywords().exists(
+				condition.getCondition())) {
+			keywordProcessing(sb, condition.getColumn().getName());
+			sb.append(" like ?%");
+			params.add(toDataBaseValue(condition.getColumn().getValue(),
+					condition.getColumn().getValueTypeDescriptor()));
+		}
+		throw new NotSupportedException(condition.toString());
+	}
+
+	@Override
+	public Sql toUpdateSql(TableStructure structure,
+			Collection<? extends RepositoryColumn> columns,
+			Conditions conditions) {
+		StringBuilder sb = new StringBuilder(512);
+		sb.append(UPDATE_PREFIX);
+		keywordProcessing(sb, structure.getName());
+		sb.append(SET);
+		List<Object> params = new ArrayList<Object>();
+		Iterator<? extends RepositoryColumn> iterator = columns.iterator();
+		while (iterator.hasNext()) {
+			RepositoryColumn column = iterator.next();
+			keywordProcessing(sb, column.getName());
+			sb.append("=?");
+			params.add(toDataBaseValue(column.getValue(),
+					column.getValueTypeDescriptor()));
+			if (iterator.hasNext()) {
+				sb.append(",");
+			}
+		}
+
+		sb.append(WHERE);
+		appendWhere(conditions, sb, params);
+		return new SimpleSql(sb.toString(), params.toArray());
+	}
+
+	@Override
+	public Sql toDeleteSql(TableStructure structure, Conditions conditions) {
+		List<Object> params = new ArrayList<Object>();
+		StringBuilder sql = new StringBuilder();
+		sql.append(DELETE_PREFIX);
+		keywordProcessing(sql, structure.getName());
+
+		if (conditions != null) {
+			sql.append(WHERE);
+			appendWhere(conditions, sql, params);
+		}
+		return new SimpleSql(sql.toString(), params.toArray());
+	}
+
+	protected void appendOrders(List<? extends OrderColumn> orders,
+			StringBuilder sb) {
+		Iterator<? extends OrderColumn> iterator = orders.iterator();
+		while (iterator.hasNext()) {
+			OrderColumn orderColumn = iterator.next();
+			keywordProcessing(sb, orderColumn.getName());
+			if (orderColumn.getSort() != null) {
+				sb.append(" " + orderColumn.getSort());
+			}
+
+			// 不做嵌套
+			List<OrderColumn> orderColumns = orderColumn.getWithOrders();
+			if (!CollectionUtils.isEmpty(orderColumns)) {
+				sb.append(", ");
+				appendOrders(orderColumns, sb);
+			}
+
+			if (iterator.hasNext()) {
+				sb.append(",");
+			}
+		}
+	}
+
+	@Override
+	public Sql toSelectSql(TableStructure structure, Conditions conditions,
+			List<? extends OrderColumn> orders) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(SELECT_ALL_PREFIX);
+		keywordProcessing(sb, structure.getName());
+		List<Object> params = new ArrayList<Object>();
+		if (conditions != null) {
+			sb.append(WHERE);
+			appendWhere(conditions, sb, params);
+		}
+
+		if (!CollectionUtils.isEmpty(orders)) {
+			sb.append(" order by ");
+			appendOrders(orders, sb);
+		}
+		return new SimpleSql(sb.toString(), params);
 	}
 }
