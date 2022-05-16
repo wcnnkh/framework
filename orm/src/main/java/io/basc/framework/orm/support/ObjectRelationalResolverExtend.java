@@ -79,4 +79,10 @@ public interface ObjectRelationalResolverExtend {
 	@Nullable
 	Sort getSort(Class<?> entityClass, ParameterDescriptor descriptor,
 			ObjectRelationalResolver chain);
+
+	String getCondition(Class<?> entityClass, ParameterDescriptor descriptor,
+			ObjectRelationalResolver chain);
+
+	String getRelationship(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain);
 }

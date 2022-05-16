@@ -299,4 +299,23 @@ public class AnnotationObjectRelationalResolverExtend implements
 		return sortType == null ? chain.getSort(entityClass, descriptor)
 				: sortType.value();
 	}
+
+	@Override
+	public String getCondition(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		Condition condition = AnnotatedElementUtils.getMergedAnnotation(
+				descriptor, Condition.class);
+		return (condition == null || StringUtils.isEmpty(condition.value())) ? chain
+				.getCondition(entityClass, descriptor) : condition.value();
+	}
+
+	@Override
+	public String getRelationship(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		Relationship relationship = AnnotatedElementUtils.getMergedAnnotation(
+				descriptor, Relationship.class);
+		return (relationship == null || StringUtils.isEmpty(relationship
+				.value())) ? chain.getRelationship(entityClass, descriptor)
+				: relationship.value();
+	}
 }

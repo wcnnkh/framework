@@ -96,19 +96,18 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 		save(entityClass, entity, null);
 	}
 
-	default <T> long save(Class<? extends T> entityClass, T entity,
+	default <T> void save(Class<? extends T> entityClass, T entity,
 			@Nullable String tableName) {
 		Assert.requiredArgument(entityClass != null, "entityClass");
-		return save(getMapping().getStructure(entityClass, entity, tableName),
-				entity);
+		save(getMapping().getStructure(entityClass, entity, tableName), entity);
 	}
 
-	default <T> long save(TableStructure tableStructure, T entity) {
+	default <T> void save(TableStructure tableStructure, T entity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
 
 		Sql sql = getMapping().toSaveSql(tableStructure, entity);
-		return prepare(sql).process(
+		prepare(sql).process(
 				(ps) -> {
 					long updateCount = ps.executeUpdate();
 					setAutoIncrementLastId(ps.getConnection(), tableStructure,
@@ -118,17 +117,17 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	}
 
 	default <T> boolean saveIfAbsent(Class<? extends T> entityClass, T entity) {
-		return saveIfAbsent(entityClass, entity, null) > 0;
+		return saveIfAbsent(entityClass, entity, null);
 	}
 
-	default <T> long saveIfAbsent(Class<? extends T> entityClass, T entity,
+	default <T> boolean saveIfAbsent(Class<? extends T> entityClass, T entity,
 			@Nullable String tableName) {
 		return saveIfAbsent(
 				getMapping().getStructure(entityClass, entity, tableName),
 				entity);
 	}
 
-	default <T> long saveIfAbsent(TableStructure tableStructure, T entity) {
+	default <T> boolean saveIfAbsent(TableStructure tableStructure, T entity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
 		Sql sql = getMapping().toSaveIfAbsentSql(tableStructure, entity);
@@ -138,25 +137,30 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 					setAutoIncrementLastId(ps.getConnection(), tableStructure,
 							entity, updateCount);
 					return updateCount;
-				});
+				}) > 0;
 	}
 
 	@Override
 	default <T> boolean delete(Class<? extends T> entityClass, T entity) {
-		return delete(entityClass, entity, null) > 0;
+		return delete(entityClass, entity, null);
 	}
 
-	default <T> long delete(Class<? extends T> entityClass, T entity,
+	default <T> boolean delete(Class<? extends T> entityClass, T entity,
 			@Nullable String tableName) {
 		return delete(
 				getMapping().getStructure(entityClass, entity, tableName),
 				entity);
 	}
 
-	default <T> long delete(TableStructure tableStructure, T entity) {
+	default <T> boolean delete(TableStructure tableStructure, T entity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
 		Sql sql = getMapping().toDeleteSql(tableStructure, entity);
+		return update(sql) > 0;
+	}
+
+	default <T> long deleteAll(TableStructure structure, T conditions) {
+		Sql sql = getMapping().toDeleteSql(structure, conditions);
 		return update(sql);
 	}
 
@@ -205,10 +209,10 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 
 	@Override
 	default <T> boolean update(Class<? extends T> entityClass, T entity) {
-		return update(entityClass, entity, null) > 0;
+		return update(entityClass, entity, null);
 	}
 
-	default <T> long update(Class<? extends T> entityClass, T entity,
+	default <T> boolean update(Class<? extends T> entityClass, T entity,
 			@Nullable String tableName) {
 		return update(
 				getMapping().getStructure(entityClass, entity, tableName),
@@ -223,11 +227,11 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	 * @param entity
 	 * @return
 	 */
-	default <T> long update(TableStructure tableStructure, T entity) {
+	default <T> boolean update(TableStructure tableStructure, T entity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
 		Sql sql = getMapping().toUpdateSql(tableStructure, entity);
-		return update(sql);
+		return update(sql) > 0;
 	}
 
 	@Override
@@ -254,7 +258,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 
 	@Override
 	default <T> boolean saveOrUpdate(Class<? extends T> entityClass, T entity) {
-		return saveOrUpdate(entityClass, entity, null) > 0;
+		return saveOrUpdate(entityClass, entity, null);
 	}
 
 	/**
@@ -265,19 +269,17 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	 * @param tableName
 	 * @return
 	 */
-	default <T> long saveOrUpdate(Class<? extends T> entityClass, T entity,
+	default <T> boolean saveOrUpdate(Class<? extends T> entityClass, T entity,
 			@Nullable String tableName) {
 		return saveOrUpdate(
 				getMapping().getStructure(entityClass, entity, tableName),
 				entity);
 	}
 
-	default <T> long saveOrUpdate(TableStructure tableStructure, T entity) {
-		long count = saveIfAbsent(tableStructure, entity);
-		if (count > 0) {
-			return count;
+	default <T> boolean saveOrUpdate(TableStructure tableStructure, T entity) {
+		if (saveIfAbsent(tableStructure, entity)) {
+			return true;
 		}
-
 		return update(tableStructure, entity);
 	}
 

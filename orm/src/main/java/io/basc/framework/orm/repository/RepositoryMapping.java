@@ -3,12 +3,14 @@ package io.basc.framework.orm.repository;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.orm.ObjectRelationalMapping;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.comparator.Sort;
 import io.basc.framework.util.stream.Processor;
@@ -42,7 +44,7 @@ public interface RepositoryMapping extends ObjectRelationalMapping {
 	 */
 	default List<RepositoryColumn> open(Class<?> entityClass,
 			Collection<? extends RepositoryColumn> columns,
-			List<? extends OrderColumn> appendableOrders) {
+			List<OrderColumn> appendableOrders) {
 		if (CollectionUtils.isEmpty(columns)) {
 			return Collections.emptyList();
 		}
@@ -58,6 +60,14 @@ public interface RepositoryMapping extends ObjectRelationalMapping {
 			// 如果是entity将对象内容展开
 			getStructure(column.getType())
 					.columns()
+					.filter((e) -> {
+						resolveOrders(column.getType(), e.getField()
+								.getGetter(), appendableOrders);
+						return true;
+					})
+					.filter((e) -> !e.isAutoIncrement()
+							|| MapperUtils.isExistValue(e.getField(),
+									column.getValue()))
 					.forEach(
 							(c) -> {
 								Object value = c.getField().getGetter()
@@ -97,6 +107,8 @@ public interface RepositoryMapping extends ObjectRelationalMapping {
 					condition.getColumn().getType()).columns().iterator();
 			while (iterator.hasNext()) {
 				Property property = iterator.next();
+				resolveOrders(entityClass, property.getField().getGetter(),
+						appendableOrders);
 				Object value = property.getField().getGetter()
 						.get(condition.getColumn().getValue());
 				RepositoryColumn repositoryColumn = new RepositoryColumn(
@@ -163,10 +175,21 @@ public interface RepositoryMapping extends ObjectRelationalMapping {
 		ConditionKeywords conditionKeywords = getConditionKeywords();
 		return Conditions.build(XUtils
 				.stream(iterator)
-				.map((column) -> new Pair<String, Condition>(
-						relationshipKeywords.getKey(column), new Condition(
-								conditionKeywords.getKey(column), column)))
-				.iterator());
+				.map((column) -> {
+					String relationship = getRelationship(entityClass, column);
+					if (StringUtils.isEmpty(relationship)) {
+						relationship = relationshipKeywords.getAndKeywords()
+								.getFirst();
+					}
+
+					String condition = getCondition(entityClass, column);
+					if (StringUtils.isEmpty(condition)) {
+						condition = conditionKeywords.getEqualKeywords()
+								.getFirst();
+					}
+					return new Pair<String, Condition>(relationship,
+							new Condition(condition, column));
+				}).iterator());
 	}
 
 	default <T, P extends Property> Conditions parseConditions(

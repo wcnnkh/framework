@@ -1,13 +1,5 @@
 package io.basc.framework.sql.orm.support;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import io.basc.framework.aop.support.FieldSetterListen;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.Range;
@@ -17,6 +9,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.ParameterException;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.orm.repository.RepositoryColumn;
 import io.basc.framework.sql.EditableSql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
@@ -34,13 +27,22 @@ import io.basc.framework.util.XUtils;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 /**
  * 标准的sql方言
  * 
  * @author shuchaowen
  *
  */
-public abstract class StandardSqlDialect extends DefaultTableMapping implements SqlDialect {
+public abstract class StandardSqlDialect extends DefaultTableMapping implements
+		SqlDialect {
 	protected static final String UPDATE_PREFIX = "update ";
 	protected static final String DELETE_PREFIX = "delete from ";
 	protected static final String SELECT_ALL_PREFIX = "select * from ";
@@ -69,7 +71,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	}
 
 	public Object getDataBaseValue(Object entity, Field field) {
-		return toDataBaseValue(field.get(entity), new TypeDescriptor(field.getGetter()));
+		return toDataBaseValue(field.get(entity),
+				new TypeDescriptor(field.getGetter()));
 	}
 
 	public Object toDataBaseValue(Object value) {
@@ -86,8 +89,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 			return value;
 		}
 
-		return getEnvironment().getConversionService().convert(value, sourceType,
-				TypeDescriptor.valueOf(sqlType.getType()));
+		return getEnvironment().getConversionService().convert(value,
+				sourceType, TypeDescriptor.valueOf(sqlType.getType()));
 	}
 
 	public String getEscapeCharacter() {
@@ -99,13 +102,17 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	}
 
 	public void keywordProcessing(StringBuilder sb, String column) {
-		sb.append(getEscapeCharacter()).append(column).append(getEscapeCharacter());
+		sb.append(getEscapeCharacter()).append(column)
+				.append(getEscapeCharacter());
 	}
 
-	public void keywordProcessing(StringBuilder sb, String tableName, String column) {
-		sb.append(getEscapeCharacter()).append(tableName).append(getEscapeCharacter());
+	public void keywordProcessing(StringBuilder sb, String tableName,
+			String column) {
+		sb.append(getEscapeCharacter()).append(tableName)
+				.append(getEscapeCharacter());
 		sb.append(POINT);
-		sb.append(getEscapeCharacter()).append(column).append(getEscapeCharacter());
+		sb.append(getEscapeCharacter()).append(column)
+				.append(getEscapeCharacter());
 	}
 
 	public String getSqlName(String tableName, String column) {
@@ -121,10 +128,12 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	// --------------以下为标准实现-----------------
 
 	@Override
-	public Sql toSelectByIdsSql(TableStructure tableStructure, Object... ids) throws SqlDialectException {
+	public Sql toSelectByIdsSql(TableStructure tableStructure, Object... ids)
+			throws SqlDialectException {
 		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
 		if (ids.length > primaryKeys.size()) {
-			throw new SqlDialectException("Wrong number of primary key parameters");
+			throw new SqlDialectException(
+					"Wrong number of primary key parameters");
 		}
 
 		StringBuilder sb = new StringBuilder();
@@ -141,7 +150,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		while (iterator.hasNext() && valueIterator.hasNext()) {
 			Column column = iterator.next();
 			Object value = valueIterator.next();
-			params[i++] = toDataBaseValue(value, TypeDescriptor.forObject(value));
+			params[i++] = toDataBaseValue(value,
+					TypeDescriptor.forObject(value));
 			keywordProcessing(sb, column.getName());
 			sb.append("=?");
 			if (iterator.hasNext() && valueIterator.hasNext()) {
@@ -152,7 +162,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	}
 
 	@Override
-	public Sql toInsertSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
+	public Sql toInsertSql(TableStructure tableStructure, Object entity)
+			throws SqlDialectException {
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		StringBuilder sql = new StringBuilder();
@@ -160,7 +171,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
+			if (column.isAutoIncrement()
+					&& !MapperUtils.isExistValue(column.getField(), entity)) {
 				continue;
 			}
 
@@ -186,7 +198,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	}
 
 	@Override
-	public Sql toDeleteSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
+	public Sql toDeleteSql(TableStructure tableStructure, Object entity)
+			throws SqlDialectException {
 		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
@@ -222,7 +235,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	}
 
 	@Override
-	public Sql toDeleteByIdSql(TableStructure tableStructure, Object... ids) throws SqlDialectException {
+	public Sql toDeleteByIdSql(TableStructure tableStructure, Object... ids)
+			throws SqlDialectException {
 		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
@@ -254,19 +268,22 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	}
 
 	@Override
-	public Sql getInIds(TableStructure tableStructure, Object[] primaryKeys, Collection<?> inPrimaryKeys)
-			throws SqlDialectException {
+	public Sql getInIds(TableStructure tableStructure, Object[] primaryKeys,
+			Collection<?> inPrimaryKeys) throws SqlDialectException {
 		if (CollectionUtils.isEmpty(inPrimaryKeys)) {
 			throw new SqlDialectException("in 语句至少要有一个in条件");
 		}
 
 		List<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
-		int whereSize = ArrayUtils.isEmpty(primaryKeys) ? 0 : primaryKeys.length;
+		int whereSize = ArrayUtils.isEmpty(primaryKeys) ? 0
+				: primaryKeys.length;
 		if (whereSize > primaryKeyColumns.size()) {
-			throw new NullPointerException("primaryKeys length  greater than primary key lenght");
+			throw new NullPointerException(
+					"primaryKeys length  greater than primary key lenght");
 		}
 
-		List<Object> params = new ArrayList<Object>(inPrimaryKeys.size() + whereSize);
+		List<Object> params = new ArrayList<Object>(inPrimaryKeys.size()
+				+ whereSize);
 		StringBuilder sb = new StringBuilder();
 		Iterator<Column> iterator = primaryKeyColumns.iterator();
 		if (whereSize > 0) {
@@ -309,7 +326,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	}
 
 	@Override
-	public Sql toMaxIdSql(TableStructure tableStructure, Field field) throws SqlDialectException {
+	public Sql toMaxIdSql(TableStructure tableStructure, Field field)
+			throws SqlDialectException {
 		Column column = tableStructure.find(field);
 		if (column == null) {
 			throw new SqlDialectException("not found " + field);
@@ -327,7 +345,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	}
 
 	@Nullable
-	protected Map<String, Object> getChangeMap(Object entity) throws SqlDialectException {
+	protected Map<String, Object> getChangeMap(Object entity)
+			throws SqlDialectException {
 		Map<String, Object> changeMap = null;
 		if (entity instanceof FieldSetterListen) {
 			changeMap = ((FieldSetterListen) entity)._getFieldSetterMap();
@@ -338,11 +357,13 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		return changeMap;
 	}
 
-	protected Sql toUpdateSql(TableStructure tableStructure, Object entity, Map<String, Object> changeMap,
-			Accept<Column> accept) throws SqlDialectException {
+	protected Sql toUpdateSql(TableStructure tableStructure, Object entity,
+			Map<String, Object> changeMap, Accept<Column> accept)
+			throws SqlDialectException {
 		List<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
 		if (primaryKeyColumns.size() == 0) {
-			throw new SqlDialectException(tableStructure.getName() + " not found primary key");
+			throw new SqlDialectException(tableStructure.getName()
+					+ " not found primary key");
 		}
 
 		List<Column> notPrimaryKeys = tableStructure.getNotPrimaryKeys();
@@ -354,7 +375,9 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		Iterator<Column> iterator = notPrimaryKeys.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (changeMap != null && !changeMap.containsKey(column.getField().getSetter().getName())) {
+			if (changeMap != null
+					&& !changeMap.containsKey(column.getField().getSetter()
+							.getName())) {
 				// 忽略没有变化的字段
 				continue;
 			}
@@ -394,8 +417,9 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
 
-	protected void appendExtendWhere(Column column, StringBuilder sb, Collection<Object> params,
-			Map<String, Object> changeMap, Object entity) {
+	protected void appendExtendWhere(Column column, StringBuilder sb,
+			Collection<Object> params, Map<String, Object> changeMap,
+			Object entity) {
 		Collection<Range<Double>> numberRanges = column.getNumberRanges();
 		if (!CollectionUtils.isEmpty(numberRanges)) {
 			for (Range<Double> range : numberRanges) {
@@ -403,12 +427,15 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 					sb.append(AND);
 					keywordProcessing(sb, column.getName());
 					if (column.isIncrement()) {
-						AnyValue newValue = new AnyValue(getDataBaseValue(entity, column.getField()));
+						AnyValue newValue = new AnyValue(getDataBaseValue(
+								entity, column.getField()));
 						AnyValue oldValue = changeMap == null ? null
-								: new AnyValue(changeMap.get(column.getField().getSetter().getName()));
+								: new AnyValue(changeMap.get(column.getField()
+										.getSetter().getName()));
 						if (oldValue != null) {
 							sb.append("+");
-							sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
+							sb.append(newValue.getAsDoubleValue()
+									- oldValue.getAsByteValue());
 						}
 					}
 					sb.append(">");
@@ -422,12 +449,15 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 					sb.append(AND);
 					keywordProcessing(sb, column.getName());
 					if (column.isIncrement()) {
-						AnyValue newValue = new AnyValue(getDataBaseValue(entity, column.getField()));
+						AnyValue newValue = new AnyValue(getDataBaseValue(
+								entity, column.getField()));
 						AnyValue oldValue = changeMap == null ? null
-								: new AnyValue(changeMap.get(column.getField().getSetter().getName()));
+								: new AnyValue(changeMap.get(column.getField()
+										.getSetter().getName()));
 						if (oldValue != null) {
 							sb.append("+");
-							sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
+							sb.append(newValue.getAsDoubleValue()
+									- oldValue.getAsByteValue());
 						}
 					}
 					sb.append("<");
@@ -441,8 +471,11 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 
 		if (column.isVersion()) {
 			AnyValue oldVersion = null;
-			if (changeMap != null && changeMap.containsKey(column.getField().getSetter().getName())) {
-				oldVersion = new AnyValue(changeMap.get(column.getField().getSetter().getName()));
+			if (changeMap != null
+					&& changeMap.containsKey(column.getField().getSetter()
+							.getName())) {
+				oldVersion = new AnyValue(changeMap.get(column.getField()
+						.getSetter().getName()));
 				if (oldVersion.getAsDoubleValue() == 0) {
 					// 如果存在变更但版本号为0就忽略此条件
 					return;
@@ -455,35 +488,47 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 			sb.append("=?");
 
 			// 如果存在旧值就使用旧值
-			params.add(oldVersion == null ? getDataBaseValue(entity, column.getField())
-					: toDataBaseValue(oldVersion.getAsLongValue()));
+			params.add(oldVersion == null ? getDataBaseValue(entity,
+					column.getField()) : toDataBaseValue(oldVersion
+					.getAsLongValue()));
 		}
 	}
 
 	@Override
-	public Sql toUpdatePartSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
+	public Sql toUpdatePartSql(TableStructure tableStructure, Object entity)
+			throws SqlDialectException {
 		Map<String, Object> changeMap = getChangeMap(entity);
-		return toUpdateSql(tableStructure, entity, changeMap, (column) -> {
-			if (changeMap != null && !changeMap.containsKey(column.getField().getSetter().getName())) {
-				return false;
-			}
+		return toUpdateSql(
+				tableStructure,
+				entity,
+				changeMap,
+				(column) -> {
+					if (changeMap != null
+							&& !changeMap.containsKey(column.getField()
+									.getSetter().getName())) {
+						return false;
+					}
 
-			// 如果字段不能为空，且实体字段没有值就忽略
-			if (!column.isNullable() && !MapperUtils.isExistDefaultValue(column.getField(), entity)) {
-				return false;
-			}
-			return true;
-		});
+					// 如果字段不能为空，且实体字段没有值就忽略
+					if (!column.isNullable()
+							&& !MapperUtils.isExistDefaultValue(
+									column.getField(), entity)) {
+						return false;
+					}
+					return true;
+				});
 	}
 
 	@Override
-	public Sql toUpdateSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
+	public Sql toUpdateSql(TableStructure tableStructure, Object entity)
+			throws SqlDialectException {
 		Map<String, Object> changeMap = getChangeMap(entity);
 		return toUpdateSql(tableStructure, entity, changeMap, (column) -> true);
 	}
 
 	@Override
-	public <T> Sql toUpdateSql(TableStructure tableStructure, T entity, T condition) throws SqlDialectException {
+	public <T> Sql toUpdateSql(TableStructure tableStructure, T entity,
+			T condition) throws SqlDialectException {
 		Map<String, Object> changeMap = new HashMap<String, Object>();
 		tableStructure.columns().forEach((column) -> {
 			Object value = column.getField().get(condition);
@@ -496,16 +541,19 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		return toUpdateSql(tableStructure, entity, changeMap, (col) -> true);
 	}
 
-	protected final void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Column column,
+	protected final void appendUpdateValue(StringBuilder sb,
+			List<Object> params, Object entity, Column column,
 			Map<String, Object> changeMap) {
-		AnyValue newValue = new AnyValue(getDataBaseValue(entity, column.getField()));
-		AnyValue oldValue = changeMap == null ? null
-				: new AnyValue(changeMap.get(column.getField().getSetter().getName()));
+		AnyValue newValue = new AnyValue(getDataBaseValue(entity,
+				column.getField()));
+		AnyValue oldValue = changeMap == null ? null : new AnyValue(
+				changeMap.get(column.getField().getSetter().getName()));
 		appendUpdateValue(sb, params, entity, column, oldValue, newValue);
 	}
 
-	protected void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Column column,
-			@Nullable Value oldValue, Value newValue) {
+	protected void appendUpdateValue(StringBuilder sb, List<Object> params,
+			Object entity, Column column, @Nullable Value oldValue,
+			Value newValue) {
 		if (column.isIncrement() && oldValue != null) {
 			keywordProcessing(sb, column.getName());
 			sb.append("+");
@@ -517,17 +565,21 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	}
 
 	@Override
-	public Sql toQuerySqlByPrimaryKeys(TableStructure tableStructure, Object query) {
+	public Sql toQuerySqlByPrimaryKeys(TableStructure tableStructure,
+			Object query) {
 		StringBuilder sb = new StringBuilder(SELECT_ALL_PREFIX);
 		keywordProcessing(sb, tableStructure.getName());
 		StringBuilder whereSql = new StringBuilder();
 		List<Object> whereParams = new ArrayList<Object>(8);
-		and(whereSql, whereParams, query, tableStructure.columns().filter((col) -> col.isPrimaryKey()).iterator());
+		and(whereSql, whereParams, query,
+				tableStructure.columns().filter((col) -> col.isPrimaryKey())
+						.iterator());
 		Sql where = new SimpleSql(whereSql.toString(), whereParams.toArray());
 		if (StringUtils.isEmpty(where.getSql())) {
 			return new SimpleSql(sb.toString());
 		}
-		return new SimpleSql(sb.append(" where ").append(where.getSql()).toString(), where.getParams());
+		return new SimpleSql(sb.append(" where ").append(where.getSql())
+				.toString(), where.getParams());
 	}
 
 	@Override
@@ -536,12 +588,15 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		keywordProcessing(sb, tableStructure.getName());
 		StringBuilder whereSql = new StringBuilder();
 		List<Object> whereParams = new ArrayList<Object>(8);
-		and(whereSql, whereParams, query, tableStructure.columns().filter((col) -> col.hasIndex()).iterator());
+		and(whereSql, whereParams, query,
+				tableStructure.columns().filter((col) -> col.hasIndex())
+						.iterator());
 		Sql where = new SimpleSql(whereSql.toString(), whereParams.toArray());
 		if (StringUtils.isEmpty(where.getSql())) {
 			return new SimpleSql(sb.toString());
 		}
-		return new SimpleSql(sb.append(" where ").append(where.getSql()).toString(), where.getParams());
+		return new SimpleSql(sb.append(" where ").append(where.getSql())
+				.toString(), where.getParams());
 	}
 
 	@Override
@@ -555,10 +610,12 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 			return new SimpleSql(sb.toString());
 		}
 		Sql where = new SimpleSql(whereSql.toString(), whereParams.toArray());
-		return new SimpleSql(sb.append(" where ").append(where.getSql()).toString(), where.getParams());
+		return new SimpleSql(sb.append(" where ").append(where.getSql())
+				.toString(), where.getParams());
 	}
 
-	private void and(StringBuilder sb, List<Object> params, Object entity, Iterator<Column> columns) {
+	private void and(StringBuilder sb, List<Object> params, Object entity,
+			Iterator<Column> columns) {
 		while (columns.hasNext()) {
 			Column column = columns.next();
 			Object value = getDataBaseValue(entity, column.getField());
@@ -590,5 +647,37 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		}
 		countSql.append(") as count_" + XUtils.getUUID());
 		return countSql;
+	}
+
+	@Override
+	public Sql toSaveSql(TableStructure structure,
+			Collection<? extends RepositoryColumn> columns) {
+		StringBuilder cols = new StringBuilder();
+		StringBuilder values = new StringBuilder();
+		StringBuilder sql = new StringBuilder();
+		List<Object> params = new ArrayList<Object>();
+		Iterator<? extends RepositoryColumn> iterator = columns.iterator();
+		while (iterator.hasNext()) {
+			RepositoryColumn column = iterator.next();
+			if (cols.length() > 0) {
+				cols.append(",");
+				values.append(",");
+			}
+
+			keywordProcessing(cols, column.getName());
+			values.append("?");
+			params.add(toDataBaseValue(column.getValue(),
+					column.getValueTypeDescriptor()));
+		}
+		sql.append(INSERT_INTO_PREFIX);
+		keywordProcessing(sql, structure.getName());
+		sql.append("(");
+		sql.append(cols);
+		sql.append(")");
+		sql.append(VALUES);
+		sql.append("(");
+		sql.append(values);
+		sql.append(")");
+		return new SimpleSql(sql.toString(), params.toArray());
 	}
 }

@@ -1175,6 +1175,23 @@ public final class StringUtils {
 		return equals(a, b, false);
 	}
 
+	public static boolean equals(boolean ignoreCase, String a, String... array) {
+		if (array == null) {
+			return false;
+		}
+
+		for (String b : array) {
+			if (equals(a, b, ignoreCase)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean equals(String a, String... array) {
+		return equals(false, a, array);
+	}
+
 	/**
 	 * 过滤
 	 * 

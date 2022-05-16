@@ -218,4 +218,18 @@ public class DefaultObjectRelationalResolver extends
 		return ObjectRelationalResolverExtendChain.build(iterator()).getSort(
 				entityClass, descriptor);
 	}
+
+	@Override
+	public String getCondition(Class<?> entityClass,
+			ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(iterator())
+				.getCondition(entityClass, descriptor);
+	}
+
+	@Override
+	public String getRelationship(Class<?> entityClass,
+			ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(iterator())
+				.getRelationship(entityClass, descriptor);
+	}
 }

@@ -34,6 +34,15 @@ public class ConditionKeywords implements Predicate<String>, Cloneable {
 	private static final Keywords IN_KEYWORDS = new Keywords(Keywords.HUMP,
 			"In");
 
+	private static final Keywords SEARCH_KEYWORDS = new Keywords(Keywords.HUMP,
+			"search");
+	private static final Keywords START_WITH_KEYWORDS = new Keywords(
+			Keywords.HUMP, "startWith");
+	private static final Keywords END_WITH_KEYWORDS = new Keywords(
+			Keywords.HUMP, "endWith");
+	private static final Keywords LIKE_KEYWORDS = new Keywords(Keywords.HUMP,
+			"like");
+
 	private final Keywords equalKeywords;
 	private final Keywords notEqualKeywords;
 	private final Keywords lessThanKeywords;
@@ -41,6 +50,10 @@ public class ConditionKeywords implements Predicate<String>, Cloneable {
 	private final Keywords greaterThanKeywords;
 	private final Keywords equalOrGreaterThanKeywords;
 	private final Keywords inKeywords;
+	private final Keywords searchKeywords;
+	private final Keywords startWithKeywords;
+	private final Keywords endWithKeywords;
+	private final Keywords likeKeywords;
 
 	public ConditionKeywords() {
 		this(new Keywords(EQU_KEYWORDS, Keywords.HUMP), new Keywords(
@@ -48,13 +61,19 @@ public class ConditionKeywords implements Predicate<String>, Cloneable {
 				Keywords.HUMP), new Keywords(LEQ_KEYWORDS, Keywords.HUMP),
 				new Keywords(GTR_KEYWORDS, Keywords.HUMP), new Keywords(
 						GEQ_KEYWORDS, Keywords.HUMP), new Keywords(IN_KEYWORDS,
+						Keywords.HUMP), new Keywords(SEARCH_KEYWORDS,
+						Keywords.HUMP), new Keywords(START_WITH_KEYWORDS,
+						Keywords.HUMP), new Keywords(END_WITH_KEYWORDS,
+						Keywords.HUMP), new Keywords(LIKE_KEYWORDS,
 						Keywords.HUMP));
 	}
 
 	public ConditionKeywords(Keywords equalKeywords, Keywords notEqualKeywords,
 			Keywords lessThanKeywords, Keywords equalOrLessThanKeywords,
 			Keywords greaterThanKeywords, Keywords equalOrGreaterThanKeywords,
-			Keywords inKeywords) {
+			Keywords inKeywords, Keywords searchKeywords,
+			Keywords startWithKeywords, Keywords endWithKeywords,
+			Keywords likeKeywords) {
 		this.equalKeywords = aware(equalKeywords);
 		this.notEqualKeywords = aware(notEqualKeywords);
 		this.lessThanKeywords = aware(lessThanKeywords);
@@ -62,6 +81,10 @@ public class ConditionKeywords implements Predicate<String>, Cloneable {
 		this.greaterThanKeywords = aware(greaterThanKeywords);
 		this.equalOrGreaterThanKeywords = aware(equalOrGreaterThanKeywords);
 		this.inKeywords = aware(inKeywords);
+		this.searchKeywords = aware(searchKeywords);
+		this.startWithKeywords = aware(startWithKeywords);
+		this.endWithKeywords = aware(endWithKeywords);
+		this.likeKeywords = aware(likeKeywords);
 	}
 
 	@Override
@@ -69,7 +92,9 @@ public class ConditionKeywords implements Predicate<String>, Cloneable {
 		return new ConditionKeywords(equalKeywords.clone(),
 				notEqualKeywords.clone(), lessThanKeywords.clone(),
 				equalOrLessThanKeywords.clone(), greaterThanKeywords.clone(),
-				equalOrGreaterThanKeywords.clone(), inKeywords.clone());
+				equalOrGreaterThanKeywords.clone(), inKeywords.clone(),
+				searchKeywords.clone(), startWithKeywords.clone(),
+				endWithKeywords.clone(), likeKeywords.clone());
 	}
 
 	private Keywords aware(Keywords keywords) {
@@ -90,7 +115,9 @@ public class ConditionKeywords implements Predicate<String>, Cloneable {
 				&& lessThanKeywords.test(key)
 				&& equalOrLessThanKeywords.test(key)
 				&& greaterThanKeywords.test(key)
-				&& equalOrGreaterThanKeywords.test(key) && inKeywords.test(key);
+				&& equalOrGreaterThanKeywords.test(key) && inKeywords.test(key)
+				&& searchKeywords.test(key) && startWithKeywords.test(key)
+				&& endWithKeywords.test(key) && likeKeywords.test(key);
 	}
 
 	public Pair<String, Integer> indexOf(String express) {
@@ -99,7 +126,9 @@ public class ConditionKeywords implements Predicate<String>, Cloneable {
 						Arrays.asList(equalKeywords, notEqualKeywords,
 								lessThanKeywords, equalOrLessThanKeywords,
 								greaterThanKeywords,
-								equalOrGreaterThanKeywords, inKeywords),
+								equalOrGreaterThanKeywords, inKeywords,
+								searchKeywords, startWithKeywords,
+								endWithKeywords, likeKeywords),
 						(e) -> e.indexOf(express), (e) -> e.getValue() != null)
 				.map((e) -> e.getValue()).orElse(null);
 	}
@@ -132,7 +161,19 @@ public class ConditionKeywords implements Predicate<String>, Cloneable {
 		return inKeywords;
 	}
 
-	public String getKey(RepositoryColumn column) {
-		return getEqualKeywords().getFirst();
+	public Keywords getSearchKeywords() {
+		return searchKeywords;
+	}
+
+	public Keywords getStartWithKeywords() {
+		return startWithKeywords;
+	}
+
+	public Keywords getEndWithKeywords() {
+		return endWithKeywords;
+	}
+
+	public Keywords getLikeKeywords() {
+		return likeKeywords;
 	}
 }

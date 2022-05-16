@@ -71,4 +71,8 @@ public interface ObjectRelationalResolver {
 
 	@Nullable
 	Sort getSort(Class<?> entityClass, ParameterDescriptor descriptor);
+	
+	String getCondition(Class<?> entityClass, ParameterDescriptor descriptor);
+	
+	String getRelationship(Class<?> entityClass, ParameterDescriptor descriptor);
 }

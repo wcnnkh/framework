@@ -127,4 +127,16 @@ public class AbstractObjectRelationalExtend implements
 		return chain.getSort(entityClass, descriptor);
 	}
 
+	@Override
+	public String getCondition(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.getCondition(entityClass, descriptor);
+	}
+
+	@Override
+	public String getRelationship(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.getRelationship(entityClass, descriptor);
+	}
+
 }

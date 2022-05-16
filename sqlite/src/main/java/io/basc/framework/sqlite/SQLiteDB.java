@@ -23,7 +23,7 @@ public class SQLiteDB extends DefaultDB implements Configurable {
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		((Configurable) getSqlDialect()).configure(serviceLoaderFactory);
+		((Configurable) getMapping()).configure(serviceLoaderFactory);
 	}
 
 	/**

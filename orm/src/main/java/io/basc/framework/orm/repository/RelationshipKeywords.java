@@ -71,8 +71,4 @@ public class RelationshipKeywords implements Predicate<String>, Cloneable,
 						(e) -> e.indexOf(express), (e) -> e.getValue() != null)
 				.map((e) -> e.getValue()).orElse(null);
 	}
-
-	public String getKey(RepositoryColumn column) {
-		return getAndKeywords().getFirst();
-	}
 }
