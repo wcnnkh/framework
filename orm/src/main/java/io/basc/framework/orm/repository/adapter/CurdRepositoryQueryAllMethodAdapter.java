@@ -20,6 +20,10 @@ public final class CurdRepositoryQueryAllMethodAdapter extends
 			Object[] args, Class<?> entityClass,
 			TypeDescriptor resultsTypeDescriptor, String methodName)
 			throws Throwable {
+		if (args != null && args.length == 1) {
+			return repository.queryAll(resultsTypeDescriptor, entityClass,
+					args[0]);
+		}
 		return repository.queryAll(resultsTypeDescriptor, entityClass);
 	}
 }

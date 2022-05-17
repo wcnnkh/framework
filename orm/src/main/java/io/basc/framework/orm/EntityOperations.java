@@ -5,17 +5,52 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 
 public interface EntityOperations {
-	default Class<?> getUserClass(Class<?> entityClass) {
-		return ProxyUtils.getFactory().getUserClass(entityClass);
+	/**
+	 * 删除数据,根据主键删除
+	 * 
+	 * @see #deleteById(Class, Object...)
+	 * 
+	 * @param entityClass
+	 * @param entity
+	 * @return 如果数据不存在返回false
+	 */
+	<T> boolean delete(Class<? extends T> entityClass, T entity);
+
+	/**
+	 * @see #deleteById(Class, Object...)
+	 * @see #delete(Class, Object)
+	 * @param entity
+	 * @return
+	 */
+	default boolean delete(Object entity) {
+		if (entity == null) {
+			return false;
+		}
+
+		return delete(getUserClass(entity.getClass()), entity);
 	}
 
 	/**
-	 * @see #save(Class, Object)
-	 * @param entity
+	 * 删除数据
+	 * 
+	 * @param entityClass
+	 * @param ids
+	 * @return 如果数据不存在就返回false
 	 */
-	default void save(Object entity) {
-		Assert.requiredArgument(entity != null, "entity");
-		save(getUserClass(entity.getClass()), entity);
+	boolean deleteById(Class<?> entityClass, Object... ids);
+
+	/**
+	 * 获取数据
+	 * 
+	 * @param entityClass
+	 * @param ids
+	 * @return
+	 */
+	@Nullable
+	<T> T getById(Class<? extends T> entityClass, Object... ids);
+
+	default Class<?> getUserClass(Class<?> entityClass) {
+		return ProxyUtils.getFactory().getUserClass(entityClass);
 	}
 
 	/**
@@ -47,13 +82,12 @@ public interface EntityOperations {
 	<T> void save(Class<? extends T> entityClass, T entity);
 
 	/**
-	 * @see #saveIfAbsent(Class, Object)
+	 * @see #save(Class, Object)
 	 * @param entity
-	 * @return
 	 */
-	default boolean saveIfAbsent(Object entity) {
+	default void save(Object entity) {
 		Assert.requiredArgument(entity != null, "entity");
-		return saveIfAbsent(getUserClass(entity.getClass()), entity);
+		save(getUserClass(entity.getClass()), entity);
 	}
 
 	/**
@@ -73,71 +107,13 @@ public interface EntityOperations {
 	}
 
 	/**
-	 * @see #deleteById(Class, Object...)
-	 * @see #delete(Class, Object)
+	 * @see #saveIfAbsent(Class, Object)
 	 * @param entity
 	 * @return
 	 */
-	default boolean delete(Object entity) {
-		if (entity == null) {
-			return false;
-		}
-
-		return delete(getUserClass(entity.getClass()), entity);
-	}
-
-	/**
-	 * 删除数据,根据主键删除
-	 * 
-	 * @see #deleteById(Class, Object...)
-	 * 
-	 * @param entityClass
-	 * @param entity
-	 * @return 如果数据不存在返回false
-	 */
-	<T> boolean delete(Class<? extends T> entityClass, T entity);
-
-	/**
-	 * 删除数据
-	 * 
-	 * @param entityClass
-	 * @param ids
-	 * @return 如果数据不存在就返回false
-	 */
-	boolean deleteById(Class<?> entityClass, Object... ids);
-
-	/**
-	 * 更新数据
-	 * 
-	 * @see #update(Class, Object)
-	 * @param entity
-	 * @return
-	 */
-	default boolean update(Object entity) {
-		if (entity == null) {
-			return false;
-		}
-
-		return update(getUserClass(entity.getClass()), entity);
-	}
-
-	/**
-	 * 更新
-	 * 
-	 * @param entityClass
-	 * @param entity
-	 * @return 如果数据不存在就返回false
-	 */
-	<T> boolean update(Class<? extends T> entityClass, T entity);
-
-	/**
-	 * @see #saveOrUpdate(Class, Object)
-	 * @param entity
-	 * @return
-	 */
-	default boolean saveOrUpdate(Object entity) {
+	default boolean saveIfAbsent(Object entity) {
 		Assert.requiredArgument(entity != null, "entity");
-		return saveOrUpdate(getUserClass(entity.getClass()), entity);
+		return saveIfAbsent(getUserClass(entity.getClass()), entity);
 	}
 
 	/**
@@ -155,12 +131,36 @@ public interface EntityOperations {
 	}
 
 	/**
-	 * 获取数据
-	 * 
-	 * @param entityClass
-	 * @param ids
+	 * @see #saveOrUpdate(Class, Object)
+	 * @param entity
 	 * @return
 	 */
-	@Nullable
-	<T> T getById(Class<? extends T> entityClass, Object... ids);
+	default boolean saveOrUpdate(Object entity) {
+		Assert.requiredArgument(entity != null, "entity");
+		return saveOrUpdate(getUserClass(entity.getClass()), entity);
+	}
+
+	/**
+	 * 更新
+	 * 
+	 * @param entityClass
+	 * @param entity
+	 * @return 如果数据不存在就返回false
+	 */
+	<T> boolean update(Class<? extends T> entityClass, T entity);
+
+	/**
+	 * 更新数据
+	 * 
+	 * @see #update(Class, Object)
+	 * @param entity
+	 * @return
+	 */
+	default boolean update(Object entity) {
+		if (entity == null) {
+			return false;
+		}
+
+		return update(getUserClass(entity.getClass()), entity);
+	}
 }

@@ -2,6 +2,7 @@ package io.basc.framework.orm.repository.adapter;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.MethodInvoker;
+import io.basc.framework.data.domain.PageRequest;
 import io.basc.framework.orm.repository.Repository;
 
 import java.lang.reflect.Method;
@@ -20,6 +21,7 @@ public final class CurdRepositoryQueryMethodAdapter extends
 			Object[] args, Class<?> entityClass,
 			TypeDescriptor resultsTypeDescriptor, String methodName)
 			throws Throwable {
-		return repository.query(resultsTypeDescriptor, entityClass, args[0]);
+		return repository.query(resultsTypeDescriptor, entityClass, args[0],
+				(PageRequest) args[1]);
 	}
 }

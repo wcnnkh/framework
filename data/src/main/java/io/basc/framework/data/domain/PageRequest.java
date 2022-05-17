@@ -8,7 +8,6 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.page.PageSupport;
 
 import java.io.Serializable;
-import java.util.Optional;
 
 /**
  * 分页请求
@@ -24,8 +23,8 @@ public class PageRequest extends BascObject implements Serializable {
 	private static final ThreadLocal<PageRequest> LOCAL = new NamedThreadLocal<PageRequest>(
 			PageRequest.class.getName());
 
-	public static Optional<PageRequest> getPageRequest() {
-		return Optional.ofNullable(LOCAL.get());
+	public static PageRequest getPageRequest() {
+		return LOCAL.get();
 	}
 
 	public static void startPageRequest(PageRequest request) {

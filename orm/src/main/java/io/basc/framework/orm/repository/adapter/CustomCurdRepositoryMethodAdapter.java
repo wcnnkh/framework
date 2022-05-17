@@ -207,11 +207,12 @@ public class CustomCurdRepositoryMethodAdapter extends
 						conditions, orders, pageRequest);
 			} else if (responseTypeDescriptor.getType() == Stream.class
 					|| responseTypeDescriptor.getType() == Cursor.class) {
-				return repository.query(responseTypeDescriptor.getGeneric(0),
-						entityClass, conditions, orders);
+				return repository.queryAll(
+						responseTypeDescriptor.getGeneric(0), entityClass,
+						conditions, orders);
 			} else if (responseTypeDescriptor.isArray()
 					|| responseTypeDescriptor.isCollection()) {
-				Cursor<?> cursor = repository.query(
+				Cursor<?> cursor = repository.queryAll(
 						responseTypeDescriptor.getElementTypeDescriptor(),
 						entityClass, conditions, orders);
 				if (responseTypeDescriptor.isArray()) {
@@ -220,7 +221,7 @@ public class CustomCurdRepositoryMethodAdapter extends
 					return cursor.collect(Collectors.toList());
 				}
 			} else {
-				Cursor<?> cursor = repository.query(responseTypeDescriptor,
+				Cursor<?> cursor = repository.queryAll(responseTypeDescriptor,
 						entityClass, conditions, orders);
 				return cursor.first();
 			}

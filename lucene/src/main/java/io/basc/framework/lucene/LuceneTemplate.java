@@ -397,12 +397,34 @@ public interface LuceneTemplate extends Repository {
 		return search(parameters, resultsTypeDescriptor);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default <T> Cursor<T> query(TypeDescriptor resultsTypeDescriptor,
 			Class<?> entityClass, Conditions conditions,
+			List<? extends OrderColumn> orders, PageRequest pageRequest)
+			throws OrmException {
+		PageRequest request = pageRequest;
+		if (request == null) {
+			request = PageRequest.getPageRequest();
+		}
+
+		if (request == null) {
+			return queryAll(resultsTypeDescriptor, entityClass, conditions,
+					orders);
+		}
+
+		Cursor<T> cursor = (Cursor<T>) StreamProcessorSupport.cursor(search(
+				resultsTypeDescriptor, entityClass, conditions, orders,
+				(int) pageRequest.getPageSize()).streamAll());
+		return cursor.limit(request.getStart(), request.getPageSize());
+	}
+
+	@Override
+	default <T> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor,
+			Class<?> entityClass, Conditions conditions,
 			List<? extends OrderColumn> orders) throws OrmException {
 		SearchResults<T> results = search(resultsTypeDescriptor, entityClass,
-				conditions, orders, 1000);
+				conditions, orders, 100);
 		return StreamProcessorSupport.cursor(results.streamAll());
 	}
 
@@ -411,10 +433,17 @@ public interface LuceneTemplate extends Repository {
 			TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
 			Conditions conditions, List<? extends OrderColumn> orders,
 			PageRequest pageRequest) throws OrmException {
+		PageRequest request = pageRequest;
+		if (request == null) {
+			request = PageRequest.getPageRequest();
+		}
+
+		if (request == null) {
+			request = new PageRequest();
+		}
+
 		SearchResults<T> results = search(resultsTypeDescriptor, entityClass,
-				conditions, orders,
-				(int) (pageRequest.getStart() + pageRequest.getPageNum()));
-		return results.toPaginations(pageRequest.getStart(),
-				pageRequest.getPageSize());
+				conditions, orders, (int) request.getPageSize());
+		return results.toPaginations(request.getStart(), request.getPageSize());
 	}
 }

@@ -16,7 +16,9 @@ public interface CurdRepository<V> {
 
 	boolean isPresentAny(V conditions);
 
-	Cursor<V> query(V conditions);
+	Cursor<V> query(V conditions, PageRequest request);
+
+	Cursor<V> queryAll(V conditions);
 
 	Cursor<V> queryAll();
 

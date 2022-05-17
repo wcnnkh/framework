@@ -26,8 +26,51 @@ import java.util.stream.Collectors;
  *
  */
 public interface Repository extends EntityOperations {
-	default RepositoryMapping getMapping() {
-		return DefaultRepositoryMapping.DEFAULT;
+	default <T> boolean delete(Class<? extends T> entityClass, T entity)
+			throws OrmException {
+		Conditions conditionsToUse = getMapping().parseConditions(
+				entityClass,
+				getMapping().getStructure(entityClass).getPrimaryKeys()
+						.iterator(), null, (e) -> e.getField().get(entity),
+				null);
+		return delete(entityClass, conditionsToUse) > 0;
+	}
+
+	long delete(Class<?> entityClass, @Nullable Conditions conditions)
+			throws OrmException;
+
+	default <T> long deleteAll(Class<? extends T> entityClass, T conditions) {
+		Conditions conditionsToUse = getMapping().parseConditions(entityClass,
+				getMapping().getStructure(entityClass).columns().iterator(),
+				null, (e) -> e.getField().get(conditions),
+				(e) -> !StringUtils.isEmpty(e));
+		return delete(entityClass, conditionsToUse);
+	}
+
+	default long deleteAll(Class<?> entityClass) {
+		return delete(entityClass, null);
+	}
+
+	@Override
+	default boolean deleteById(Class<?> entityClass, Object... entityIds)
+			throws OrmException {
+		EntityStructure<? extends Property> entityStructure = getMapping()
+				.getStructure(entityClass);
+		List<? extends Property> list = entityStructure.getPrimaryKeys();
+		if (list.size() != entityIds.length) {
+			throw new OrmException("Inconsistent number of primary keys");
+		}
+
+		AtomicInteger index = new AtomicInteger();
+		Conditions conditionsToUse = getMapping().parseConditions(entityClass,
+				list.iterator(), null,
+				(e) -> entityIds[index.getAndIncrement()], null);
+		return delete(entityClass, conditionsToUse) > 0;
+	}
+
+	@Override
+	default <T> T getById(Class<? extends T> entityClass, Object... ids) {
+		return getById(TypeDescriptor.valueOf(entityClass), entityClass, ids);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -46,79 +89,6 @@ public interface Repository extends EntityOperations {
 				(e) -> entityIds[index.getAndIncrement()], null);
 		return (T) query(resultsTypeDescriptor, entityClass, conditions, null)
 				.first();
-	}
-
-	@SuppressWarnings("unchecked")
-	default <T, E> List<T> queryList(TypeDescriptor resultsTypeDescriptor,
-			Class<? extends E> entityClass, E conditions) throws OrmException {
-		return (List<T>) query(resultsTypeDescriptor, entityClass, conditions)
-				.collect(Collectors.toList());
-	}
-
-	@Override
-	default <T> T getById(Class<? extends T> entityClass, Object... ids) {
-		return getById(TypeDescriptor.valueOf(entityClass), entityClass, ids);
-	}
-
-	@Override
-	default <T> boolean isPresent(Class<? extends T> entityClass, T conditions) {
-		return query(
-				TypeDescriptor.valueOf(entityClass),
-				entityClass,
-				getMapping().parseConditions(
-						entityClass,
-						getMapping().getStructure(entityClass).getPrimaryKeys()
-								.iterator(), null,
-						(e) -> e.getField().get(conditions), null)).findAny()
-				.isPresent();
-	}
-
-	@Override
-	default boolean isPresent(Class<?> entityClass, Object... ids) {
-		AtomicInteger index = new AtomicInteger();
-		return query(
-				TypeDescriptor.valueOf(entityClass),
-				entityClass,
-				getMapping().parseConditions(
-						entityClass,
-						getMapping().getStructure(entityClass).getPrimaryKeys()
-								.iterator(), null,
-						(e) -> ids[index.getAndIncrement()], null)).findAny()
-				.isPresent();
-	}
-
-	default <T> boolean isPresentAny(Class<? extends T> entityClass,
-			T conditions) {
-		return query(
-				TypeDescriptor.valueOf(entityClass),
-				entityClass,
-				getMapping().parseConditions(
-						entityClass,
-						getMapping().getStructure(entityClass).columns()
-								.iterator(), null,
-						(e) -> e.getField().get(conditions),
-						(e) -> !StringUtils.isEmpty(e.getValue()))).findAny()
-				.isPresent();
-	}
-
-	default <T, E> Cursor<T> query(TypeDescriptor resultsTypeDescriptor,
-			Class<? extends E> entityClass, E conditions) throws OrmException {
-		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
-		return query(
-				resultsTypeDescriptor,
-				entityClass,
-				getMapping().parseConditions(
-						entityClass,
-						getMapping().getStructure(entityClass).columns()
-								.iterator(), orderColumns,
-						(e) -> e.getField().get(conditions),
-						(e) -> !StringUtils.isEmpty(e.getValue())),
-				orderColumns);
-	}
-
-	default <T> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor,
-			Class<?> entityClass) throws OrmException {
-		return query(resultsTypeDescriptor, entityClass, null, null);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -157,6 +127,51 @@ public interface Repository extends EntityOperations {
 				null).collect(Collectors.toList());
 	}
 
+	default RepositoryMapping getMapping() {
+		return DefaultRepositoryMapping.DEFAULT;
+	}
+
+	@Override
+	default <T> boolean isPresent(Class<? extends T> entityClass, T conditions) {
+		return query(
+				TypeDescriptor.valueOf(entityClass),
+				entityClass,
+				getMapping().parseConditions(
+						entityClass,
+						getMapping().getStructure(entityClass).getPrimaryKeys()
+								.iterator(), null,
+						(e) -> e.getField().get(conditions), null), null,
+				new PageRequest(1, 1)).findAny().isPresent();
+	}
+
+	@Override
+	default boolean isPresent(Class<?> entityClass, Object... ids) {
+		AtomicInteger index = new AtomicInteger();
+		return query(
+				TypeDescriptor.valueOf(entityClass),
+				entityClass,
+				getMapping().parseConditions(
+						entityClass,
+						getMapping().getStructure(entityClass).getPrimaryKeys()
+								.iterator(), null,
+						(e) -> ids[index.getAndIncrement()], null), null,
+				new PageRequest(1, 1)).findAny().isPresent();
+	}
+
+	default <T> boolean isPresentAny(Class<? extends T> entityClass,
+			T conditions) {
+		return query(
+				TypeDescriptor.valueOf(entityClass),
+				entityClass,
+				getMapping().parseConditions(
+						entityClass,
+						getMapping().getStructure(entityClass).columns()
+								.iterator(), null,
+						(e) -> e.getField().get(conditions),
+						(e) -> !StringUtils.isEmpty(e.getValue())), null,
+				new PageRequest(1, 1)).findAny().isPresent();
+	}
+
 	default <T, E> Paginations<T> pagingQuery(
 			TypeDescriptor resultsTypeDescriptor,
 			Class<? extends E> entityClass, E conditions, PageRequest request)
@@ -170,6 +185,59 @@ public interface Repository extends EntityOperations {
 				orderColumns, request);
 	}
 
+	<T> Paginations<T> pagingQuery(TypeDescriptor resultsTypeDescriptor,
+			Class<?> entityClass, @Nullable Conditions conditions,
+			List<? extends OrderColumn> orders,
+			@Nullable PageRequest pageRequest) throws OrmException;
+
+	default <T, E> Cursor<T> query(TypeDescriptor resultsTypeDescriptor,
+			Class<? extends E> entityClass, E conditions, PageRequest request)
+			throws OrmException {
+		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
+		Conditions conditionsToUse = getMapping().parseConditions(entityClass,
+				getMapping().getStructure(entityClass).columns().iterator(),
+				orderColumns, (e) -> e.getField().get(conditions),
+				(e) -> !StringUtils.isEmpty(e));
+		return query(resultsTypeDescriptor, entityClass, conditionsToUse,
+				orderColumns, request);
+	}
+
+	<T> Cursor<T> query(TypeDescriptor resultsTypeDescriptor,
+			Class<?> entityClass, @Nullable Conditions conditions,
+			List<? extends OrderColumn> orders, PageRequest pageRequest)
+			throws OrmException;
+
+	default <T, E> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor,
+			Class<? extends E> entityClass, E conditions) throws OrmException {
+		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
+		return queryAll(
+				resultsTypeDescriptor,
+				entityClass,
+				getMapping().parseConditions(
+						entityClass,
+						getMapping().getStructure(entityClass).columns()
+								.iterator(), orderColumns,
+						(e) -> e.getField().get(conditions),
+						(e) -> !StringUtils.isEmpty(e.getValue())),
+				orderColumns);
+	}
+
+	default <T> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor,
+			Class<?> entityClass) throws OrmException {
+		return queryAll(resultsTypeDescriptor, entityClass, null, null);
+	}
+
+	<T> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor,
+			Class<?> entityClass, @Nullable Conditions conditions,
+			List<? extends OrderColumn> orders) throws OrmException;
+
+	@SuppressWarnings("unchecked")
+	default <T, E> List<T> queryList(TypeDescriptor resultsTypeDescriptor,
+			Class<? extends E> entityClass, E conditions) throws OrmException {
+		return (List<T>) queryAll(resultsTypeDescriptor, entityClass,
+				conditions).collect(Collectors.toList());
+	}
+
 	default <T> void save(Class<? extends T> entityClass, T entity)
 			throws OrmException {
 		List<RepositoryColumn> columns = getMapping().parseColumns(entityClass,
@@ -179,22 +247,8 @@ public interface Repository extends EntityOperations {
 		save(entityClass, columns);
 	}
 
-	default <T> long updateAll(Class<? extends T> entityClass, T entity,
-			T conditions) {
-		EntityStructure<? extends Property> entityStructure = getMapping()
-				.getStructure(entityClass);
-		List<RepositoryColumn> columns = getMapping()
-				.parseColumns(entityClass,
-						entityStructure.columns().iterator(), null,
-						(e) -> e.getField().get(entity),
-						(e) -> !StringUtils.isEmpty(e)).collect(
-						Collectors.toList());
-		Conditions conditionsToUse = getMapping().parseConditions(entityClass,
-				entityStructure.columns().iterator(), null,
-				(e) -> e.getField().get(conditions),
-				(e) -> !StringUtils.isEmpty(e));
-		return update(entityClass, columns, conditionsToUse);
-	}
+	long save(Class<?> entityClass,
+			Collection<? extends RepositoryColumn> columns) throws OrmException;
 
 	@Override
 	default <T> boolean update(Class<? extends T> entityClass, T entity)
@@ -213,61 +267,24 @@ public interface Repository extends EntityOperations {
 		return update(entityClass, columns, conditionsToUse) > 0;
 	}
 
-	default long deleteAll(Class<?> entityClass) {
-		return delete(entityClass, null);
-	}
-
-	default <T> long deleteAll(Class<? extends T> entityClass, T conditions) {
-		Conditions conditionsToUse = getMapping().parseConditions(entityClass,
-				getMapping().getStructure(entityClass).columns().iterator(),
-				null, (e) -> e.getField().get(conditions),
-				(e) -> !StringUtils.isEmpty(e));
-		return delete(entityClass, conditionsToUse);
-	}
-
-	@Override
-	default boolean deleteById(Class<?> entityClass, Object... entityIds)
-			throws OrmException {
-		EntityStructure<? extends Property> entityStructure = getMapping()
-				.getStructure(entityClass);
-		List<? extends Property> list = entityStructure.getPrimaryKeys();
-		if (list.size() != entityIds.length) {
-			throw new OrmException("Inconsistent number of primary keys");
-		}
-
-		AtomicInteger index = new AtomicInteger();
-		Conditions conditionsToUse = getMapping().parseConditions(entityClass,
-				list.iterator(), null,
-				(e) -> entityIds[index.getAndIncrement()], null);
-		return delete(entityClass, conditionsToUse) > 0;
-	}
-
-	default <T> boolean delete(Class<? extends T> entityClass, T entity)
-			throws OrmException {
-		Conditions conditionsToUse = getMapping().parseConditions(
-				entityClass,
-				getMapping().getStructure(entityClass).getPrimaryKeys()
-						.iterator(), null, (e) -> e.getField().get(entity),
-				null);
-		return delete(entityClass, conditionsToUse) > 0;
-	}
-
-	long save(Class<?> entityClass,
-			Collection<? extends RepositoryColumn> columns) throws OrmException;
-
-	long delete(Class<?> entityClass, @Nullable Conditions conditions)
-			throws OrmException;
-
 	long update(Class<?> entityClass,
 			Collection<? extends RepositoryColumn> columns,
 			Conditions conditions) throws OrmException;
 
-	<T> Cursor<T> query(TypeDescriptor resultsTypeDescriptor,
-			Class<?> entityClass, @Nullable Conditions conditions,
-			List<? extends OrderColumn> orders) throws OrmException;
-
-	<T> Paginations<T> pagingQuery(TypeDescriptor resultsTypeDescriptor,
-			Class<?> entityClass, @Nullable Conditions conditions,
-			List<? extends OrderColumn> orders,
-			@Nullable PageRequest pageRequest) throws OrmException;
+	default <T> long updateAll(Class<? extends T> entityClass, T entity,
+			T conditions) {
+		EntityStructure<? extends Property> entityStructure = getMapping()
+				.getStructure(entityClass);
+		List<RepositoryColumn> columns = getMapping()
+				.parseColumns(entityClass,
+						entityStructure.columns().iterator(), null,
+						(e) -> e.getField().get(entity),
+						(e) -> !StringUtils.isEmpty(e)).collect(
+						Collectors.toList());
+		Conditions conditionsToUse = getMapping().parseConditions(entityClass,
+				entityStructure.columns().iterator(), null,
+				(e) -> e.getField().get(conditions),
+				(e) -> !StringUtils.isEmpty(e));
+		return update(entityClass, columns, conditionsToUse);
+	}
 }
