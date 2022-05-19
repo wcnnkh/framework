@@ -6,7 +6,7 @@ import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.orm.ObjectRelationalMapping;
+import io.basc.framework.orm.ObjectRelationalMapper;
 import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionFactory;
 
@@ -22,13 +22,13 @@ import org.w3c.dom.NodeList;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 class NodeListToMapConversionService extends ConditionalConversionService {
 	private static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
-	private ObjectRelationalMapping objectRelationalMapping;
+	private ObjectRelationalMapper objectRelationalMapping;
 
-	public ObjectRelationalMapping getObjectRelationalMapping() {
+	public ObjectRelationalMapper getObjectRelationalMapping() {
 		return objectRelationalMapping == null ? OrmUtils.getMapping() : objectRelationalMapping;
 	}
 
-	public void setObjectRelationalMapping(ObjectRelationalMapping objectRelationalMapping) {
+	public void setObjectRelationalMapping(ObjectRelationalMapper objectRelationalMapping) {
 		this.objectRelationalMapping = objectRelationalMapping;
 	}
 

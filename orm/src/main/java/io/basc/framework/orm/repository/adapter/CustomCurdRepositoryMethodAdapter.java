@@ -90,8 +90,8 @@ public class CustomCurdRepositoryMethodAdapter extends
 
 		express = express.substring(keywords.length());
 		return process(repository, keywords, express, invoker, args,
-				entityClass, resultsTypeDescriptor, repository.getMapping()
-						.getConditionKeywords(), repository.getMapping()
+				entityClass, resultsTypeDescriptor, repository.getMapper()
+						.getConditionKeywords(), repository.getMapper()
 						.getRelationshipKeywords());
 	}
 

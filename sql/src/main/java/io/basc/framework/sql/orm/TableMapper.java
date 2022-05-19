@@ -1,16 +1,20 @@
 package io.basc.framework.sql.orm;
 
+import java.sql.ResultSet;
+
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.mapper.Fields;
+import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.orm.StructureRegistry;
-import io.basc.framework.orm.repository.RepositoryMapping;
+import io.basc.framework.orm.repository.RepositoryMapper;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 
-public interface TableMapping extends TableStructureProcessor,
-		RepositoryMapping, TableResolver, StructureRegistry<TableStructure> {
+public interface TableMapper extends TableStructureProcessor, RepositoryMapper,
+		TableResolver, StructureRegistry<TableStructure>,
+		ObjectMapper<ResultSet, Throwable> {
 
 	@Override
 	default Column resolve(Class<?> entityClass, Field field) {

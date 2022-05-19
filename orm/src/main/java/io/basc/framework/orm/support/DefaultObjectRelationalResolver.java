@@ -1,16 +1,17 @@
 package io.basc.framework.orm.support;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-
 import io.basc.framework.aop.support.ProxyUtils;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.factory.ConfigurableServices;
+import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.orm.ObjectRelationalResolver;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.comparator.Sort;
+
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 public class DefaultObjectRelationalResolver extends
 		ConfigurableServices<ObjectRelationalResolverExtend> implements
@@ -231,5 +232,19 @@ public class DefaultObjectRelationalResolver extends
 			ParameterDescriptor descriptor) {
 		return ObjectRelationalResolverExtendChain.build(iterator())
 				.getRelationship(entityClass, descriptor);
+	}
+
+	@Override
+	public ForeignKey getForeignKey(Class<?> entityClass,
+			ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(iterator())
+				.getForeignKey(entityClass, descriptor);
+	}
+
+	@Override
+	public boolean isDisplay(Class<?> entityClass,
+			ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(iterator()).isDisplay(
+				entityClass, descriptor);
 	}
 }

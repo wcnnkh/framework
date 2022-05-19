@@ -6,14 +6,14 @@ import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.Fields;
 import io.basc.framework.mapper.MapFields;
 import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.orm.ObjectRelationalMapping;
+import io.basc.framework.orm.ObjectRelationalMapper;
 import io.basc.framework.orm.annotation.AnnotationObjectRelationalResolverExtend;
 
-public class DefaultObjectRelationalMapping extends
-		DefaultObjectRelationalResolver implements ObjectRelationalMapping {
+public class DefaultObjectRelationalMapper extends
+		DefaultObjectRelationalResolver implements ObjectRelationalMapper {
 	private FieldFactory fieldFactory;
 
-	public DefaultObjectRelationalMapping() {
+	public DefaultObjectRelationalMapper() {
 		addService(new AnnotationObjectRelationalResolverExtend());
 	}
 
@@ -28,7 +28,7 @@ public class DefaultObjectRelationalMapping extends
 
 	@Override
 	public final Fields getFields(Class<?> entityClass) {
-		return ObjectRelationalMapping.super.getFields(entityClass);
+		return ObjectRelationalMapper.super.getFields(entityClass);
 	}
 
 	@Override

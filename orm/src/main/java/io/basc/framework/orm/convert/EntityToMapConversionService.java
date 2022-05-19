@@ -7,18 +7,18 @@ import java.util.Set;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
-import io.basc.framework.orm.ObjectRelationalMapping;
+import io.basc.framework.orm.ObjectRelationalMapper;
 import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionFactory;
 
 class EntityToMapConversionService extends ConditionalConversionService {
-	private ObjectRelationalMapping objectRelationalMapping;
+	private ObjectRelationalMapper objectRelationalMapping;
 
-	public ObjectRelationalMapping getObjectRelationalMapping() {
+	public ObjectRelationalMapper getObjectRelationalMapping() {
 		return objectRelationalMapping == null ? OrmUtils.getMapping() : objectRelationalMapping;
 	}
 
-	public void setObjectRelationalMapping(ObjectRelationalMapping objectRelationalMapping) {
+	public void setObjectRelationalMapping(ObjectRelationalMapper objectRelationalMapping) {
 		this.objectRelationalMapping = objectRelationalMapping;
 	}
 

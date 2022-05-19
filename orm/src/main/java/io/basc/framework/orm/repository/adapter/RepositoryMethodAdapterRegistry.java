@@ -27,6 +27,7 @@ public class RepositoryMethodAdapterRegistry extends
 		addService(new CurdRepositorySaveMethodAdapter());
 		addService(new CurdRepositoryUpdateAllMethodAdapter());
 		addService(new CurdRepositoryUpdateMethodAdapter());
+		addService(new CurdRepositorySaveIfAbsentAdapter());
 		setAfterService(new CustomCurdRepositoryMethodAdapter());
 	}
 

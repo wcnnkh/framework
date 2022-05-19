@@ -3,7 +3,7 @@ package io.basc.framework.orm;
 import io.basc.framework.lang.Nullable;
 
 public interface StructureRegistry<S extends EntityStructure<? extends Property>> {
-	boolean isRegistry(Class<?> entityClass);
+	boolean isStructureRegistred(Class<?> entityClass);
 
 	/**
 	 * 获取对应的结构
@@ -20,5 +20,5 @@ public interface StructureRegistry<S extends EntityStructure<? extends Property>
 	 * @param entityClass
 	 * @param structure
 	 */
-	void register(Class<?> entityClass, S structure);
+	void registerStructure(Class<?> entityClass, S structure);
 }

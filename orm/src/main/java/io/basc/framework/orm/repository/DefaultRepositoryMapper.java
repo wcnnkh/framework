@@ -1,19 +1,18 @@
 package io.basc.framework.orm.repository;
 
 import io.basc.framework.env.Sys;
-import io.basc.framework.orm.support.DefaultObjectRelationalMapping;
+import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
 
-public class DefaultRepositoryMapping extends DefaultObjectRelationalMapping
-		implements RepositoryMapping {
-	public static final RepositoryMapping DEFAULT = Sys.env.getServiceLoader(
-			RepositoryMapping.class)
-			.first(() -> new DefaultRepositoryMapping());
+public class DefaultRepositoryMapper extends DefaultObjectRelationalMapper
+		implements RepositoryMapper {
+	public static final RepositoryMapper DEFAULT = Sys.env.getServiceLoader(
+			RepositoryMapper.class).first(() -> new DefaultRepositoryMapper());
 
 	private ConditionKeywords conditionKeywords;
 	private RelationshipKeywords relationshipKeywords;
 
 	public ConditionKeywords getConditionKeywords() {
-		return conditionKeywords == null ? RepositoryMapping.super
+		return conditionKeywords == null ? RepositoryMapper.super
 				.getConditionKeywords() : conditionKeywords;
 	}
 
@@ -22,7 +21,7 @@ public class DefaultRepositoryMapping extends DefaultObjectRelationalMapping
 	}
 
 	public RelationshipKeywords getRelationshipKeywords() {
-		return relationshipKeywords == null ? RepositoryMapping.super
+		return relationshipKeywords == null ? RepositoryMapper.super
 				.getRelationshipKeywords() : relationshipKeywords;
 	}
 

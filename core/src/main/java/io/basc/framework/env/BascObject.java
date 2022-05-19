@@ -1,6 +1,7 @@
 package io.basc.framework.env;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.lang.NotSupportedException;
 
 /**
  * 1.使用反射重写equals hashCode toString方法
@@ -8,7 +9,7 @@ import io.basc.framework.core.reflect.ReflectionUtils;
  * @author wcnnkh
  *
  */
-public class BascObject extends Object {
+public class BascObject extends Object implements Cloneable {
 
 	@Override
 	public boolean equals(Object obj) {
@@ -23,5 +24,14 @@ public class BascObject extends Object {
 	@Override
 	public String toString() {
 		return ReflectionUtils.toString(this);
+	}
+
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new NotSupportedException(toString());
+		}
 	}
 }

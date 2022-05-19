@@ -2,12 +2,14 @@ package io.basc.framework.mapper;
 
 import io.basc.framework.util.stream.Processor;
 
-public class MapProcessDecorator<S, T, E extends Throwable> implements Processor<S, T, E> {
-	private final Mapper<S, ? extends E> mapper;
+public class DecorateObjectMappingProcessor<S, T, E extends Throwable> implements
+		Processor<S, T, E> {
+	private final ObjectMapper<S, ? extends E> mapper;
 	private final Processor<S, ? extends T, ? extends E> processor;
 	private final Class<? extends T> type;
 
-	public MapProcessDecorator(Mapper<S, ? extends E> mapper, Processor<S, ? extends T, ? extends E> processor,
+	public DecorateObjectMappingProcessor(ObjectMapper<S, ? extends E> mapper,
+			Processor<S, ? extends T, ? extends E> processor,
 			Class<? extends T> type) {
 		this.mapper = mapper;
 		this.processor = processor;
@@ -16,7 +18,7 @@ public class MapProcessDecorator<S, T, E extends Throwable> implements Processor
 
 	@Override
 	public T process(S source) throws E {
-		if (mapper.isRegistred(type)) {
+		if (mapper.isMapperRegistred(type)) {
 			return mapper.process(type, source);
 		}
 		return processor.process(source);

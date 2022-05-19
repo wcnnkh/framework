@@ -7,10 +7,8 @@ import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.json.JSONUtils;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.lucene.annotation.AnnotationFieldResolver;
+import io.basc.framework.lucene.support.DefaultLuceneMapper;
 import io.basc.framework.mapper.Fields;
-import io.basc.framework.mapper.Mapper;
-import io.basc.framework.mapper.SimpleMapper;
 import io.basc.framework.orm.EntityStructure;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.repository.Condition;
@@ -20,7 +18,6 @@ import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.RelationshipKeywords;
 import io.basc.framework.orm.repository.RepositoryColumn;
 import io.basc.framework.orm.repository.WithCondition;
-import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.concurrent.AsyncExecutor;
@@ -68,9 +65,8 @@ public abstract class AbstractLuceneTemplate implements LuceneTemplate,
 		TASK_QUEUE.start();
 	}
 
-	private final Mapper<Document, LuceneException> mapper = new SimpleMapper<Document, LuceneException>();
+	private final DefaultLuceneMapper mapper = new DefaultLuceneMapper();
 	private ConversionService conversionService;
-	private FieldResolver fieldResolver = new AnnotationFieldResolver();
 	private final AsyncExecutor writeExecutor;// 写执行器
 	private final Executor searchExecutor;// 搜索执行器
 
@@ -89,7 +85,7 @@ public abstract class AbstractLuceneTemplate implements LuceneTemplate,
 	}
 
 	@Override
-	public Mapper<Document, LuceneException> getMapper() {
+	public DefaultLuceneMapper getMapper() {
 		return this.mapper;
 	}
 
@@ -100,15 +96,6 @@ public abstract class AbstractLuceneTemplate implements LuceneTemplate,
 
 	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
-	}
-
-	public final FieldResolver getFieldResolver() {
-		return fieldResolver;
-	}
-
-	public void setFieldResolver(FieldResolver fieldResolver) {
-		Assert.requiredArgument(fieldResolver != null, "fieldResolver");
-		this.fieldResolver = fieldResolver;
 	}
 
 	protected abstract IndexWriter getIndexWriter() throws IOException;
@@ -196,7 +183,7 @@ public abstract class AbstractLuceneTemplate implements LuceneTemplate,
 			v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
 		}
 
-		fieldResolver.resolve(descriptor, v).forEach((f) -> document.add(f));
+		getMapper().resolve(descriptor, v).forEach((f) -> document.add(f));
 	}
 
 	@Override
@@ -450,7 +437,7 @@ public abstract class AbstractLuceneTemplate implements LuceneTemplate,
 
 	@Override
 	public Query parseQuery(Conditions conditions) {
-		return parseQuery(conditions, getMapping().getRelationshipKeywords(),
-				getMapping().getConditionKeywords());
+		return parseQuery(conditions, getMapper().getRelationshipKeywords(),
+				getMapper().getConditionKeywords());
 	}
 }

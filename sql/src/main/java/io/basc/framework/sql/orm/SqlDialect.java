@@ -12,7 +12,7 @@ import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.RepositoryColumn;
 import io.basc.framework.sql.Sql;
 
-public interface SqlDialect extends TableMapping, EnvironmentAware {
+public interface SqlDialect extends TableMapper, EnvironmentAware {
 	SqlType getSqlType(Class<?> javaType);
 
 	Environment getEnvironment();

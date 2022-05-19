@@ -1,14 +1,14 @@
 package io.basc.framework.lucene;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.mapper.AbstractMapProcessor;
+import io.basc.framework.mapper.AbstractObjectMappingProcessor;
 import io.basc.framework.mapper.Field;
 
 import org.apache.lucene.document.Document;
 
-public class DefaultMapProcessor<T, E extends Throwable> extends AbstractMapProcessor<Document, T, E> {
+public class DefaultMappingProcessor<T, E extends Throwable> extends AbstractObjectMappingProcessor<Document, T, E> {
 
-	public DefaultMapProcessor(TypeDescriptor typeDescriptor) {
+	public DefaultMappingProcessor(TypeDescriptor typeDescriptor) {
 		super(typeDescriptor);
 	}
 

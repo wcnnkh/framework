@@ -4,7 +4,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.orm.ObjectRelationalMapping;
+import io.basc.framework.orm.ObjectRelationalMapper;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.ClassUtils;
@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public interface RepositoryMapping extends ObjectRelationalMapping {
+public interface RepositoryMapper extends ObjectRelationalMapper {
 	default ConditionKeywords getConditionKeywords() {
 		return ConditionKeywords.DEFAULT;
 	}

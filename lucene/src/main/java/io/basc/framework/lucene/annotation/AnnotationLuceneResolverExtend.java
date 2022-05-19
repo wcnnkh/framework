@@ -1,7 +1,7 @@
 package io.basc.framework.lucene.annotation;
 
 import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.lucene.SimpleFieldResolver;
+import io.basc.framework.lucene.support.SimpleLuceneResolverExtend;
 import io.basc.framework.value.Value;
 
 import java.util.Arrays;
@@ -13,7 +13,7 @@ import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 
-public class AnnotationFieldResolver extends SimpleFieldResolver {
+public class AnnotationLuceneResolverExtend extends SimpleLuceneResolverExtend {
 	@Override
 	protected boolean isStored(ParameterDescriptor descriptor) {
 		io.basc.framework.lucene.annotation.LuceneField annotation = descriptor

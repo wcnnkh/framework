@@ -39,4 +39,6 @@ public interface CurdRepository<V> {
 	boolean deleteById(Object... ids);
 
 	boolean delete(V entity);
+
+	boolean saveIfAbsent(V entity);
 }

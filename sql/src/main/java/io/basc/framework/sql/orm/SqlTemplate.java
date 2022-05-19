@@ -17,7 +17,7 @@ import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.SqlException;
 import io.basc.framework.sql.SqlOperations;
 import io.basc.framework.sql.orm.convert.EntityStructureMapProcessor;
-import io.basc.framework.sql.orm.convert.SmartMapProcessor;
+import io.basc.framework.sql.orm.convert.SmartResultSetMappingProcessor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.page.PageSupport;
 import io.basc.framework.util.page.Pagination;
@@ -48,7 +48,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	 * @return
 	 */
 	default long count(Sql sql) {
-		Sql countSql = getMapping().toCountSql(sql);
+		Sql countSql = getMapper().toCountSql(sql);
 		return queryFirst(long.class, countSql);
 	}
 
@@ -57,11 +57,11 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	}
 
 	default void createTable(Class<?> entityClass, @Nullable String tableName) {
-		createTable(getMapping().getStructure(entityClass, null, tableName));
+		createTable(getMapper().getStructure(entityClass, null, tableName));
 	}
 
 	default void createTable(TableStructure tableStructure) {
-		Collection<Sql> sqls = getMapping().createTable(tableStructure);
+		Collection<Sql> sqls = getMapper().createTable(tableStructure);
 		try {
 			process((conn) -> {
 				for (Sql sql : sqls) {
@@ -80,36 +80,32 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 
 	default <T> boolean delete(Class<? extends T> entityClass, T entity,
 			@Nullable String tableName) {
-		return delete(
-				getMapping().getStructure(entityClass, entity, tableName),
+		return delete(getMapper().getStructure(entityClass, entity, tableName),
 				entity);
 	}
 
 	@Override
 	default long delete(Class<?> entityClass, Conditions conditions)
 			throws OrmException {
-		return delete(getMapping().getStructure(entityClass), conditions);
+		return delete(getMapper().getStructure(entityClass), conditions);
 	}
 
 	default long delete(TableStructure structure, Conditions conditions)
 			throws OrmException {
-		Sql sql = getMapping()
-				.toDeleteSql(
-						structure,
-						getMapping().open(structure.getEntityClass(),
-								conditions, null));
+		Sql sql = getMapper().toDeleteSql(structure,
+				getMapper().open(structure.getEntityClass(), conditions, null));
 		return update(sql);
 	}
 
 	default <T> boolean delete(TableStructure tableStructure, T entity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
-		Sql sql = getMapping().toDeleteSql(tableStructure, entity);
+		Sql sql = getMapper().toDeleteSql(tableStructure, entity);
 		return update(sql) > 0;
 	}
 
 	default <T> long deleteAll(TableStructure structure, T conditions) {
-		Sql sql = getMapping().toDeleteSql(structure, conditions);
+		Sql sql = getMapper().toDeleteSql(structure, conditions);
 		return update(sql);
 	}
 
@@ -123,37 +119,37 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 		if (entityClass == null) {
 			return 0;
 		}
-		return deleteById(
-				getMapping().getStructure(entityClass, null, tableName), ids);
+		return deleteById(getMapper()
+				.getStructure(entityClass, null, tableName), ids);
 	}
 
 	default long deleteById(TableStructure tableStructure, Object... ids) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
-		Sql sql = getMapping().toDeleteByIdSql(tableStructure, ids);
+		Sql sql = getMapper().toDeleteByIdSql(tableStructure, ids);
 		return update(sql);
 	}
 
 	default Object getAutoIncrementLastId(Connection connection,
 			TableStructure tableStructure) {
-		Sql sql = getMapping().toLastInsertIdSql(tableStructure);
+		Sql sql = getMapper().toLastInsertIdSql(tableStructure);
 		return query(connection, Object.class, sql).first();
 	}
 
 	@Override
 	default <T> T getById(Class<? extends T> entityClass, Object... ids) {
-		return getById(getMapping().getStructure(entityClass), ids);
+		return getById(getMapper().getStructure(entityClass), ids);
 	}
 
 	@Nullable
 	default <T> T getById(@Nullable String tableName,
 			Class<? extends T> entityClass, Object... ids) {
-		return getById(getMapping().getStructure(entityClass, null, tableName),
+		return getById(getMapper().getStructure(entityClass, null, tableName),
 				ids);
 	}
 
 	@Nullable
 	default <T> T getById(TableStructure tableStructure, Object... ids) {
-		Sql sql = getMapping().toSelectByIdsSql(tableStructure, ids);
+		Sql sql = getMapper().toSelectByIdsSql(tableStructure, ids);
 		return queryFirst(tableStructure, sql);
 	}
 
@@ -165,12 +161,12 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	default <T> List<T> getByIdList(@Nullable String tableName,
 			Class<? extends T> entityClass, Object... ids) {
 		return getByIdList(
-				getMapping().getStructure(entityClass, null, tableName), ids);
+				getMapper().getStructure(entityClass, null, tableName), ids);
 	}
 
 	default <T> List<T> getByIdList(TableStructure tableStructure,
 			Object... ids) {
-		Sql sql = getMapping().toSelectByIdsSql(tableStructure, ids);
+		Sql sql = getMapper().toSelectByIdsSql(tableStructure, ids);
 		return queryAll(tableStructure, sql);
 	}
 
@@ -182,14 +178,13 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	default <K, V> Map<K, V> getInIds(@Nullable String tableName,
 			Class<? extends V> entityClass,
 			Collection<? extends K> inPrimaryKeys, Object... primaryKeys) {
-		return getInIds(
-				getMapping().getStructure(entityClass, null, tableName),
+		return getInIds(getMapper().getStructure(entityClass, null, tableName),
 				inPrimaryKeys, primaryKeys);
 	}
 
 	default <K, V> Map<K, V> getInIds(TableStructure tableStructure,
 			Collection<? extends K> inPrimaryKeys, Object... primaryKeys) {
-		Sql sql = getMapping().getInIds(tableStructure, primaryKeys,
+		Sql sql = getMapper().getInIds(tableStructure, primaryKeys,
 				inPrimaryKeys);
 		Cursor<V> cursor = query(tableStructure, sql);
 		List<V> list = cursor.shared();
@@ -207,21 +202,21 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 		return map;
 	}
 
-	SqlDialect getMapping();
+	SqlDialect getMapper();
 
 	@Override
 	public default <T> Processor<ResultSet, T, ? extends Throwable> getMapProcessor(
 			Class<? extends T> type) {
-		if (getMapping().isRegistry(type)) {
-			return getMapProcessor(getMapping().getStructure(type));
+		if (getMapper().isStructureRegistred(type)) {
+			return getMapProcessor(getMapper().getStructure(type));
 		}
 
-		if (getMapper().isRegistred(type)) {
-			return getMapper().getProcessor(type);
+		if (getMapper().isMapperRegistred(type)) {
+			return getMapper().getMappingProcessor(type);
 		}
 
-		if (getMapping().isEntity(type)) {
-			TableStructure tableStructure = getMapping().getStructure(type,
+		if (getMapper().isEntity(type)) {
+			TableStructure tableStructure = getMapper().getStructure(type,
 					null, null);
 			return getMapProcessor(tableStructure);
 		}
@@ -231,17 +226,17 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 
 	default <T> Processor<ResultSet, T, ? extends Throwable> getMapProcessor(
 			TableStructure structure) {
-		return new EntityStructureMapProcessor<T>(structure, getMapping()
+		return new EntityStructureMapProcessor<T>(structure, getMapper()
 				.getEnvironment().getConversionService());
 	}
 
 	@Override
 	default <T> Processor<ResultSet, T, Throwable> getMapProcessor(
 			TypeDescriptor type) {
-		SmartMapProcessor<T> processor = new SmartMapProcessor<T>(getMapping(),
-				getMapping().getEnvironment().getConversionService(), type);
+		SmartResultSetMappingProcessor<T> processor = new SmartResultSetMappingProcessor<T>(getMapper(),
+				getMapper().getEnvironment().getConversionService(), type);
 		processor.setMapper(getMapper());
-		processor.setStructureRegistry(getMapping());
+		processor.setStructureRegistry(getMapper());
 		return processor;
 	}
 
@@ -272,14 +267,13 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	@Nullable
 	default <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass,
 			@Nullable String tableName, Field field) {
-		return getMaxValue(
-				getMapping().getStructure(tableClass, null, tableName), type,
-				field);
+		return getMaxValue(getMapper()
+				.getStructure(tableClass, null, tableName), type, field);
 	}
 
 	default <T> T getMaxValue(TableStructure tableStructure,
 			Class<? extends T> type, Field field) {
-		Sql sql = getMapping().toMaxIdSql(tableStructure, field);
+		Sql sql = getMapper().toMaxIdSql(tableStructure, field);
 		return queryFirst(type, sql);
 	}
 
@@ -319,7 +313,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 
 	default <T> Paginations<T> getPages(Class<? extends T> queryClass, T query,
 			long getNumber, long limit) {
-		return getPages(getMapping().getStructure(queryClass, query, null),
+		return getPages(getMapper().getStructure(queryClass, query, null),
 				query, getNumber, limit);
 	}
 
@@ -337,7 +331,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 
 	default <T> Paginations<T> getPages(TableStructure tableStructure, T query,
 			long getNumber, long limit) {
-		Sql sql = getMapping().toQuerySql(tableStructure, query);
+		Sql sql = getMapper().toQuerySql(tableStructure, query);
 		return getPages(sql, getNumber, limit, getMapProcessor(tableStructure));
 	}
 
@@ -365,12 +359,12 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	 */
 	default TableChanges getTableChanges(Class<?> tableClass,
 			@Nullable String tableName) {
-		return getTableChanges(getMapping().getStructure(tableClass, null,
+		return getTableChanges(getMapper().getStructure(tableClass, null,
 				tableName));
 	}
 
 	default TableChanges getTableChanges(TableStructure tableStructure) {
-		TableStructureMapping tableStructureMapping = getMapping()
+		TableStructureMapping tableStructureMapping = getMapper()
 				.getTableStructureMapping(tableStructure);
 		List<ColumnMetadata> list = prepare(tableStructureMapping.getSql())
 				.query().process((rs, rowNum) -> {
@@ -378,7 +372,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 				});
 		HashSet<String> hashSet = new HashSet<String>();
 		List<String> deleteList = new ArrayList<String>();
-		Fields fields = getMapping().getFields(tableStructure.getEntityClass());
+		Fields fields = getMapper().getFields(tableStructure.getEntityClass());
 		for (ColumnMetadata columnDescriptor : list) {
 			hashSet.add(columnDescriptor.getName());
 			Field column = fields.find(columnDescriptor.getName(), null);
@@ -388,9 +382,9 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 		}
 
 		List<Field> addList = new ArrayList<Field>();
-		for (Field column : getMapping().getFields(
+		for (Field column : getMapper().getFields(
 				tableStructure.getEntityClass())) {
-			String name = getMapping().getName(tableStructure.getEntityClass(),
+			String name = getMapper().getName(tableStructure.getEntityClass(),
 					column.getGetter());
 			if (!hashSet.contains(name)) {// 在已有的数据库中不存在，应该添加
 				addList.add(column);
@@ -400,7 +394,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	}
 
 	default <T> boolean isPresentAny(TableStructure structure, T entity) {
-		Sql sql = getMapping().toQuerySql(structure, entity);
+		Sql sql = getMapper().toQuerySql(structure, entity);
 		return limit(structure, sql, 0, 1).findAny().isPresent();
 	}
 
@@ -411,7 +405,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 
 	default <T> Cursor<T> limit(Sql sql, long start, long limit,
 			Processor<ResultSet, ? extends T, ? extends Throwable> processor) {
-		Sql limitSql = getMapping().toLimitSql(sql, start, limit);
+		Sql limitSql = getMapper().toLimitSql(sql, start, limit);
 		return prepare(limitSql).query().stream(processor);
 	}
 
@@ -431,7 +425,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 			Conditions conditions, List<? extends OrderColumn> orders,
 			PageRequest pageRequest) throws OrmException {
 		return pagingQuery(resultsTypeDescriptor,
-				getMapping().getStructure(entityClass), conditions, orders,
+				getMapper().getStructure(entityClass), conditions, orders,
 				pageRequest);
 	}
 
@@ -453,16 +447,16 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 			request = new PageRequest();
 		}
 
-		Sql sql = getMapping().toSelectSql(
+		Sql sql = getMapper().toSelectSql(
 				structure,
-				getMapping().open(structure.getEntityClass(), conditions,
+				getMapper().open(structure.getEntityClass(), conditions,
 						orderColumns), orderColumns);
 		return getPages(resultsTypeDescriptor, sql, request.getPageNum(),
 				request.getPageSize());
 	}
 
 	default <T> Cursor<T> query(Class<? extends T> queryClass, T query) {
-		return query(getMapping().getStructure(queryClass, query, null), query);
+		return query(getMapper().getStructure(queryClass, query, null), query);
 	}
 
 	default <T> Cursor<T> query(TableStructure tableStructure, Sql sql) {
@@ -470,7 +464,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	}
 
 	default <T> Cursor<T> query(TableStructure tableStructure, T query) {
-		Sql sql = getMapping().toQuerySql(tableStructure, query);
+		Sql sql = getMapper().toQuerySql(tableStructure, query);
 		return query(tableStructure, sql);
 	}
 
@@ -480,7 +474,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 			List<? extends OrderColumn> orders, PageRequest pageRequest)
 			throws OrmException {
 		return query(resultsTypeDescriptor,
-				getMapping().getStructure(entityClass), conditions, orders,
+				getMapper().getStructure(entityClass), conditions, orders,
 				pageRequest);
 	}
 
@@ -492,9 +486,9 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 			orderColumns.addAll(orders);
 		}
 
-		Sql sql = getMapping().toSelectSql(
+		Sql sql = getMapper().toSelectSql(
 				structure,
-				getMapping().open(structure.getEntityClass(), conditions,
+				getMapper().open(structure.getEntityClass(), conditions,
 						orderColumns), orderColumns);
 		return query(resultsTypeDescriptor, sql);
 	}
@@ -513,9 +507,9 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 			request = PageRequest.getPageRequest();
 		}
 
-		Sql sql = getMapping().toSelectSql(
+		Sql sql = getMapper().toSelectSql(
 				structure,
-				getMapping().open(structure.getEntityClass(), conditions,
+				getMapper().open(structure.getEntityClass(), conditions,
 						orderColumns), orderColumns);
 		if (pageRequest == null) {
 			return query(resultsTypeDescriptor, sql);
@@ -534,29 +528,28 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 			Class<?> entityClass, Conditions conditions,
 			List<? extends OrderColumn> orderColumns) throws OrmException {
 		return query(resultsTypeDescriptor,
-				getMapping().getStructure(entityClass), conditions,
-				orderColumns);
+				getMapper().getStructure(entityClass), conditions, orderColumns);
 	}
 
 	default <T> Cursor<T> queryByIndexs(Class<? extends T> queryClass, T query) {
-		return queryByIndexs(
-				getMapping().getStructure(queryClass, query, null), query);
+		return queryByIndexs(getMapper().getStructure(queryClass, query, null),
+				query);
 	}
 
 	default <T> Cursor<T> queryByIndexs(TableStructure tableStructure, T query) {
-		Sql sql = getMapping().toQuerySqlByIndexs(tableStructure, query);
+		Sql sql = getMapper().toQuerySqlByIndexs(tableStructure, query);
 		return query(tableStructure, sql);
 	}
 
 	default <T> Cursor<T> queryByPrimaryKeys(Class<? extends T> queryClass,
 			T query) {
 		return queryByPrimaryKeys(
-				getMapping().getStructure(queryClass, query, null), query);
+				getMapper().getStructure(queryClass, query, null), query);
 	}
 
 	default <T> Cursor<T> queryByPrimaryKeys(TableStructure tableStructure,
 			T query) {
-		Sql sql = getMapping().toQuerySqlByPrimaryKeys(tableStructure, query);
+		Sql sql = getMapper().toQuerySqlByPrimaryKeys(tableStructure, query);
 		return query(tableStructure, sql);
 	}
 
@@ -574,21 +567,21 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	default <T> void save(Class<? extends T> entityClass, T entity,
 			@Nullable String tableName) {
 		Assert.requiredArgument(entityClass != null, "entityClass");
-		save(getMapping().getStructure(entityClass, entity, tableName), entity);
+		save(getMapper().getStructure(entityClass, entity, tableName), entity);
 	}
 
 	@Override
 	default long save(Class<?> entityClass,
 			Collection<? extends RepositoryColumn> columns) throws OrmException {
-		return save(getMapping().getStructure(entityClass), columns);
+		return save(getMapper().getStructure(entityClass), columns);
 	}
 
 	default long save(TableStructure structure,
 			Collection<? extends RepositoryColumn> requestColumns)
 			throws OrmException {
-		Sql sql = getMapping().toSaveSql(
+		Sql sql = getMapper().toSaveSql(
 				structure,
-				getMapping().open(structure.getEntityClass(), requestColumns,
+				getMapper().open(structure.getEntityClass(), requestColumns,
 						null));
 		return update(sql);
 	}
@@ -597,7 +590,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
 
-		Sql sql = getMapping().toSaveSql(tableStructure, entity);
+		Sql sql = getMapper().toSaveSql(tableStructure, entity);
 		prepare(sql).process(
 				(ps) -> {
 					long updateCount = ps.executeUpdate();
@@ -614,14 +607,14 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	default <T> boolean saveIfAbsent(Class<? extends T> entityClass, T entity,
 			@Nullable String tableName) {
 		return saveIfAbsent(
-				getMapping().getStructure(entityClass, entity, tableName),
+				getMapper().getStructure(entityClass, entity, tableName),
 				entity);
 	}
 
 	default <T> boolean saveIfAbsent(TableStructure tableStructure, T entity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
-		Sql sql = getMapping().toSaveIfAbsentSql(tableStructure, entity);
+		Sql sql = getMapper().toSaveIfAbsentSql(tableStructure, entity);
 		return prepare(sql).process(
 				(ps) -> {
 					long updateCount = ps.executeUpdate();
@@ -647,7 +640,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	default <T> boolean saveOrUpdate(Class<? extends T> entityClass, T entity,
 			@Nullable String tableName) {
 		return saveOrUpdate(
-				getMapping().getStructure(entityClass, entity, tableName),
+				getMapper().getStructure(entityClass, entity, tableName),
 				entity);
 	}
 
@@ -672,7 +665,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 						.getSetter()
 						.set(entity,
 								lastId,
-								getMapping().getEnvironment()
+								getMapper().getEnvironment()
 										.getConversionService());
 			}
 		}
@@ -685,8 +678,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 
 	default <T> boolean update(Class<? extends T> entityClass, T entity,
 			@Nullable String tableName) {
-		return update(
-				getMapping().getStructure(entityClass, entity, tableName),
+		return update(getMapper().getStructure(entityClass, entity, tableName),
 				entity);
 	}
 
@@ -694,7 +686,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	default long update(Class<?> entityClass,
 			Collection<? extends RepositoryColumn> columns,
 			Conditions conditions) throws OrmException {
-		return update(getMapping().getStructure(entityClass), columns,
+		return update(getMapper().getStructure(entityClass), columns,
 				conditions);
 	}
 
@@ -702,13 +694,9 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 			Collection<? extends RepositoryColumn> columns,
 			Conditions conditions) throws OrmException {
 		List<RepositoryColumn> repositoryColumns = new ArrayList<RepositoryColumn>();
-		getMapping().open(structure.getEntityClass(), repositoryColumns, null);
-		Sql sql = getMapping()
-				.toUpdateSql(
-						structure,
-						repositoryColumns,
-						getMapping().open(structure.getEntityClass(),
-								conditions, null));
+		getMapper().open(structure.getEntityClass(), repositoryColumns, null);
+		Sql sql = getMapper().toUpdateSql(structure, repositoryColumns,
+				getMapper().open(structure.getEntityClass(), conditions, null));
 		return update(sql);
 	}
 
@@ -723,7 +711,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	default <T> boolean update(TableStructure tableStructure, T entity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
-		Sql sql = getMapping().toUpdateSql(tableStructure, entity);
+		Sql sql = getMapper().toUpdateSql(tableStructure, entity);
 		return update(sql) > 0;
 	}
 
@@ -736,7 +724,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	default <T> long updateAll(Class<? extends T> entityClass, T entity,
 			T oldEntity, @Nullable String tableName) {
 		return updateAll(
-				getMapping().getStructure(entityClass, entity, tableName),
+				getMapper().getStructure(entityClass, entity, tableName),
 				entity, oldEntity);
 	}
 
@@ -745,7 +733,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
 		Assert.requiredArgument(oldEntity != null, "condition");
-		Sql sql = getMapping().toUpdateSql(tableStructure, entity, oldEntity);
+		Sql sql = getMapper().toUpdateSql(tableStructure, entity, oldEntity);
 		return update(sql);
 	}
 
@@ -756,7 +744,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	default <T> long updatePart(Class<? extends T> entityClass, T entity,
 			@Nullable String tableName) {
 		return updatePart(
-				getMapping().getStructure(entityClass, entity, tableName),
+				getMapper().getStructure(entityClass, entity, tableName),
 				entity);
 	}
 
@@ -768,7 +756,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations,
 	default long updatePart(TableStructure tableStructure, Object entity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");
-		Sql sql = getMapping().toUpdatePartSql(tableStructure, entity);
+		Sql sql = getMapper().toUpdatePartSql(tableStructure, entity);
 		return update(sql);
 	}
 }

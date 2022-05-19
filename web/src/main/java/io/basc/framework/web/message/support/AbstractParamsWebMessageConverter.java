@@ -10,7 +10,7 @@ import io.basc.framework.lang.Constants;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Fields;
 import io.basc.framework.net.uri.UriComponentsBuilder;
-import io.basc.framework.orm.ObjectRelationalMapping;
+import io.basc.framework.orm.ObjectRelationalMapper;
 import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebUtils;
@@ -21,13 +21,13 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 
 public abstract class AbstractParamsWebMessageConverter extends AbstractWebMessageConverter {
-	private static ObjectRelationalMapping objectRelationalMapping;
+	private static ObjectRelationalMapper objectRelationalMapping;
 
-	public static ObjectRelationalMapping getObjectRelationalMapping() {
+	public static ObjectRelationalMapper getObjectRelationalMapping() {
 		return objectRelationalMapping == null ? OrmUtils.getMapping() : objectRelationalMapping;
 	}
 
-	public static void setObjectRelationalMapping(ObjectRelationalMapping objectRelationalMapping) {
+	public static void setObjectRelationalMapping(ObjectRelationalMapper objectRelationalMapping) {
 		AbstractParamsWebMessageConverter.objectRelationalMapping = objectRelationalMapping;
 	}
 
@@ -60,7 +60,7 @@ public abstract class AbstractParamsWebMessageConverter extends AbstractWebMessa
 		AbstractBufferingClientHttpRequest bufferingClientHttpRequest = request instanceof AbstractBufferingClientHttpRequest
 				? (AbstractBufferingClientHttpRequest) request
 				: new BufferingClientHttpRequestWrapper(request);
-		ObjectRelationalMapping mapping = getObjectRelationalMapping();
+		ObjectRelationalMapper mapping = getObjectRelationalMapping();
 		Fields fields = mapping.getFields(parameterDescriptor.getType()).all();
 		for (Field field : fields) {
 			if (!field.isSupportGetter()) {
@@ -85,7 +85,7 @@ public abstract class AbstractParamsWebMessageConverter extends AbstractWebMessa
 	@Override
 	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
 			Object parameter) throws WebMessagelConverterException {
-		ObjectRelationalMapping mapping = getObjectRelationalMapping();
+		ObjectRelationalMapper mapping = getObjectRelationalMapping();
 		Fields fields = mapping.getFields(parameterDescriptor.getType()).all();
 		for (Field field : fields) {
 			if (!field.isSupportGetter()) {

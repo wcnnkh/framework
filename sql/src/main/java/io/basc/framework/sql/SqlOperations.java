@@ -9,8 +9,8 @@ import java.util.List;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.MapProcessDecorator;
-import io.basc.framework.mapper.Mapper;
+import io.basc.framework.mapper.DecorateObjectMappingProcessor;
+import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.orm.transfer.ExportProcessor;
 import io.basc.framework.orm.transfer.Exporter;
 import io.basc.framework.util.stream.Cursor;
@@ -75,12 +75,12 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor,
 		};
 	}
 
-	Mapper<ResultSet, ? extends Throwable> getMapper();
+	ObjectMapper<ResultSet, Throwable> getMapper();
 
 	@Override
 	public default <T> Processor<ResultSet, T, ? extends Throwable> getMapProcessor(Class<? extends T> type) {
-		if (getMapper().isRegistred(type)) {
-			return getMapper().getProcessor(type);
+		if (getMapper().isMapperRegistred(type)) {
+			return getMapper().getMappingProcessor(type);
 		}
 		return MapProcessorFactory.super.getMapProcessor(type);
 	}
@@ -88,7 +88,7 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor,
 	@SuppressWarnings("unchecked")
 	@Override
 	default <T> Processor<ResultSet, T, Throwable> getMapProcessor(TypeDescriptor type) {
-		return new MapProcessDecorator<>(getMapper(), new ResultSetMapProcessor<>(type), (Class<T>) type.getType());
+		return new DecorateObjectMappingProcessor<>(getMapper(), new ResultSetMapProcessor<>(type), (Class<T>) type.getType());
 	}
 
 	default PreparedStatementProcessor prepare(Connection connection, Sql sql) {

@@ -1,11 +1,11 @@
 package io.basc.framework.orm;
 
-import java.util.Collection;
-
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.comparator.Sort;
+
+import java.util.Collection;
 
 public interface ObjectRelationalResolver {
 	Boolean isIgnore(Class<?> entityClass);
@@ -71,8 +71,20 @@ public interface ObjectRelationalResolver {
 
 	@Nullable
 	Sort getSort(Class<?> entityClass, ParameterDescriptor descriptor);
-	
+
 	String getCondition(Class<?> entityClass, ParameterDescriptor descriptor);
-	
+
 	String getRelationship(Class<?> entityClass, ParameterDescriptor descriptor);
+
+	/**
+	 * 获取外键对应的实体类
+	 * 
+	 * @param entityClass
+	 * @param descriptor
+	 * @return
+	 */
+	ForeignKey getForeignKey(Class<?> entityClass,
+			ParameterDescriptor descriptor);
+
+	boolean isDisplay(Class<?> entityClass, ParameterDescriptor descriptor);
 }

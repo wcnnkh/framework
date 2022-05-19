@@ -16,9 +16,16 @@ public interface TableResolverExtend {
 	 * @param resolver
 	 * @return
 	 */
-	Collection<IndexInfo> getIndexs(Class<?> entityClass, FieldDescriptor descriptor, TableResolver chain);
+	default Collection<IndexInfo> getIndexs(Class<?> entityClass,
+			FieldDescriptor descriptor, TableResolver chain) {
+		return chain.getIndexs(entityClass, descriptor);
+	}
 
-	String getEngine(Class<?> entityClass, TableResolver chain);
+	default String getEngine(Class<?> entityClass, TableResolver chain) {
+		return chain.getEngine(entityClass);
+	}
 
-	String getRowFormat(Class<?> entityClass, TableResolver chain);
+	default String getRowFormat(Class<?> entityClass, TableResolver chain) {
+		return chain.getRowFormat(entityClass);
+	}
 }

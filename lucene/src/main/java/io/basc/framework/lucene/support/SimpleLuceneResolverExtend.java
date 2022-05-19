@@ -1,6 +1,7 @@
-package io.basc.framework.lucene;
+package io.basc.framework.lucene.support;
 
 import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.lucene.LuceneResolver;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.value.Value;
 
@@ -17,7 +18,7 @@ import org.apache.lucene.document.NumericDocValuesField;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 
-public class SimpleFieldResolver implements FieldResolver {
+public class SimpleLuceneResolverExtend implements LuceneResolverExtend {
 
 	protected boolean isStored(ParameterDescriptor descriptor) {
 		return true;
@@ -30,7 +31,8 @@ public class SimpleFieldResolver implements FieldResolver {
 	}
 
 	@Override
-	public Collection<Field> resolve(ParameterDescriptor descriptor, Value value) {
+	public Collection<Field> resolve(ParameterDescriptor descriptor,
+			Value value, LuceneResolver chain) {
 		List<Field> fields = new ArrayList<>(4);
 		if (ClassUtils.isLong(descriptor.getType())
 				|| ClassUtils.isInt(descriptor.getType())

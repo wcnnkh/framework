@@ -8,11 +8,12 @@ import io.basc.framework.util.Assert;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SimpleStructureRegistry<S extends EntityStructure<? extends Property>> implements StructureRegistry<S> {
+public class SimpleStructureRegistry<S extends EntityStructure<? extends Property>>
+		implements StructureRegistry<S> {
 	private Map<Class<?>, S> map = new ConcurrentHashMap<>();
 
 	@Override
-	public boolean isRegistry(Class<?> entityClass) {
+	public boolean isStructureRegistred(Class<?> entityClass) {
 		return map.containsKey(entityClass);
 	}
 
@@ -22,10 +23,9 @@ public class SimpleStructureRegistry<S extends EntityStructure<? extends Propert
 	}
 
 	@Override
-	public void register(Class<?> entityClass, S structure) {
+	public void registerStructure(Class<?> entityClass, S structure) {
 		Assert.requiredArgument(entityClass != null, "entityClass");
 		Assert.requiredArgument(structure != null, "structure");
 		map.put(entityClass, structure);
 	}
-
 }

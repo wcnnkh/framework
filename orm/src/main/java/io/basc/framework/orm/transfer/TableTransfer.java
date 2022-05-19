@@ -23,7 +23,7 @@ import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.env.Sys;
 import io.basc.framework.io.FileRecords;
 import io.basc.framework.orm.EntityStructure;
-import io.basc.framework.orm.ObjectRelationalMapping;
+import io.basc.framework.orm.ObjectRelationalMapper;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.ArrayUtils;
@@ -37,7 +37,7 @@ import io.basc.framework.util.stream.StreamProcessorSupport;
 import io.basc.framework.value.Value;
 
 public abstract class TableTransfer implements Importer, ExportProcessor<Object> {
-	private ObjectRelationalMapping orm;
+	private ObjectRelationalMapper orm;
 	private ConversionService conversionService;
 	private boolean header = true;
 
@@ -52,11 +52,11 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 		this.conversionService = source.conversionService;
 	}
 
-	public ObjectRelationalMapping getOrm() {
+	public ObjectRelationalMapper getOrm() {
 		return orm;
 	}
 
-	public void setOrm(ObjectRelationalMapping orm) {
+	public void setOrm(ObjectRelationalMapper orm) {
 		Assert.requiredArgument(orm != null, "orm");
 		this.orm = orm;
 	}

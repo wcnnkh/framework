@@ -3,10 +3,10 @@ package io.basc.framework.mapper;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.env.Sys;
 
-public class MapperConfigurator<S, E extends Throwable> implements FieldFactory {
+public class ObjectMapperConfigurator<S, E extends Throwable> implements FieldFactory {
 	private ConversionService conversionService;
 	private FieldFactory fieldFactory;
-	private final Mapper<S, E> mapper = new SimpleMapper<S, E>();
+	private final ObjectMapper<S, E> mapper = new SimpleObjectMapper<S, E>();
 
 	public ConversionService getConversionService() {
 		if (conversionService == null) {
@@ -31,7 +31,7 @@ public class MapperConfigurator<S, E extends Throwable> implements FieldFactory 
 		this.fieldFactory = fieldFactory;
 	}
 
-	public Mapper<S, E> getMapper() {
+	public ObjectMapper<S, E> getMapper() {
 		return mapper;
 	}
 

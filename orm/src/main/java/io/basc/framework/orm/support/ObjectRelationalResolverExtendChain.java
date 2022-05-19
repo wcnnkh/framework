@@ -3,6 +3,7 @@ package io.basc.framework.orm.support;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.orm.ObjectRelationalResolver;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.comparator.Sort;
@@ -229,5 +230,25 @@ public class ObjectRelationalResolverExtendChain implements
 		}
 		return nextChain == null ? null : nextChain.getRelationship(
 				entityClass, descriptor);
+	}
+
+	@Override
+	public ForeignKey getForeignKey(Class<?> entityClass,
+			ParameterDescriptor descriptor) {
+		if (iterator.hasNext()) {
+			return iterator.next().getForeignKey(entityClass, descriptor, this);
+		}
+		return nextChain == null ? null : nextChain.getForeignKey(entityClass,
+				descriptor);
+	}
+
+	@Override
+	public boolean isDisplay(Class<?> entityClass,
+			ParameterDescriptor descriptor) {
+		if (iterator.hasNext()) {
+			return iterator.next().isDisplay(entityClass, descriptor, this);
+		}
+		return nextChain == null ? false : nextChain.isDisplay(entityClass,
+				descriptor);
 	}
 }

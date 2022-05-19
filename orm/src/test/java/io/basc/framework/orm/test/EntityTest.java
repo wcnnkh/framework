@@ -4,15 +4,15 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import io.basc.framework.orm.ObjectRelationalMapping;
+import io.basc.framework.orm.ObjectRelationalMapper;
 import io.basc.framework.orm.annotation.Entity;
-import io.basc.framework.orm.support.DefaultObjectRelationalMapping;
+import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
 
 @Entity
 public class EntityTest {
 	@Test
 	public void test() {
-		ObjectRelationalMapping orm = new DefaultObjectRelationalMapping();
+		ObjectRelationalMapper orm = new DefaultObjectRelationalMapper();
 		assertTrue(orm.isEntity(EntityTest.class));
 	}
 }

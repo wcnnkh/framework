@@ -39,7 +39,7 @@ public class DbTemporaryStorageCasOperations implements
 		this.db = db;
 		this.tableName = tableName;
 		db.createTable(TemporaryData.class, tableName);
-		this.tableStructure = db.getMapping().getStructure(TemporaryData.class);
+		this.tableStructure = db.getMapper().getStructure(TemporaryData.class);
 		this.casColumnName = "`" + tableStructure.getByName("cas").getName()
 				+ "`";
 		this.keyColumnName = "`" + tableStructure.getByName("key").getName()

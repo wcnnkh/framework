@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
 public interface Repository extends EntityOperations {
 	default <T> boolean delete(Class<? extends T> entityClass, T entity)
 			throws OrmException {
-		Conditions conditionsToUse = getMapping().parseConditions(
+		Conditions conditionsToUse = getMapper().parseConditions(
 				entityClass,
-				getMapping().getStructure(entityClass).getPrimaryKeys()
+				getMapper().getStructure(entityClass).getPrimaryKeys()
 						.iterator(), null, (e) -> e.getField().get(entity),
 				null);
 		return delete(entityClass, conditionsToUse) > 0;
@@ -40,8 +40,8 @@ public interface Repository extends EntityOperations {
 			throws OrmException;
 
 	default <T> long deleteAll(Class<? extends T> entityClass, T conditions) {
-		Conditions conditionsToUse = getMapping().parseConditions(entityClass,
-				getMapping().getStructure(entityClass).columns().iterator(),
+		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
+				getMapper().getStructure(entityClass).columns().iterator(),
 				null, (e) -> e.getField().get(conditions),
 				(e) -> !StringUtils.isEmpty(e));
 		return delete(entityClass, conditionsToUse);
@@ -54,7 +54,7 @@ public interface Repository extends EntityOperations {
 	@Override
 	default boolean deleteById(Class<?> entityClass, Object... entityIds)
 			throws OrmException {
-		EntityStructure<? extends Property> entityStructure = getMapping()
+		EntityStructure<? extends Property> entityStructure = getMapper()
 				.getStructure(entityClass);
 		List<? extends Property> list = entityStructure.getPrimaryKeys();
 		if (list.size() != entityIds.length) {
@@ -62,7 +62,7 @@ public interface Repository extends EntityOperations {
 		}
 
 		AtomicInteger index = new AtomicInteger();
-		Conditions conditionsToUse = getMapping().parseConditions(entityClass,
+		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
 				list.iterator(), null,
 				(e) -> entityIds[index.getAndIncrement()], null);
 		return delete(entityClass, conditionsToUse) > 0;
@@ -76,7 +76,7 @@ public interface Repository extends EntityOperations {
 	@SuppressWarnings("unchecked")
 	default <T> T getById(TypeDescriptor resultsTypeDescriptor,
 			Class<?> entityClass, Object... entityIds) throws OrmException {
-		EntityStructure<? extends Property> structure = getMapping()
+		EntityStructure<? extends Property> structure = getMapper()
 				.getStructure(entityClass);
 		List<? extends Property> list = structure.getPrimaryKeys();
 		if (list.size() != entityIds.length) {
@@ -84,7 +84,7 @@ public interface Repository extends EntityOperations {
 		}
 
 		AtomicInteger index = new AtomicInteger();
-		Conditions conditions = getMapping().parseConditions(entityClass,
+		Conditions conditions = getMapper().parseConditions(entityClass,
 				list.iterator(), null,
 				(e) -> entityIds[index.getAndIncrement()], null);
 		return (T) query(resultsTypeDescriptor, entityClass, conditions, null)
@@ -95,12 +95,12 @@ public interface Repository extends EntityOperations {
 	default <T> List<T> getInIds(TypeDescriptor resultsTypeDescriptor,
 			Class<?> entityClass, List<?> entityInIds, Object... entityIds)
 			throws OrmException {
-		EntityStructure<? extends Property> entityStructure = getMapping()
+		EntityStructure<? extends Property> entityStructure = getMapper()
 				.getStructure(entityClass);
 		List<? extends Property> list = entityStructure.getPrimaryKeys();
-		RelationshipKeywords relationshipKeywords = getMapping()
+		RelationshipKeywords relationshipKeywords = getMapper()
 				.getRelationshipKeywords();
-		ConditionKeywords conditionKeywords = getMapping()
+		ConditionKeywords conditionKeywords = getMapper()
 				.getConditionKeywords();
 		Iterator<? extends Property> iterator = list.iterator();
 		List<Pair<String, Condition>> pairs = new ArrayList<Pair<String, Condition>>();
@@ -108,7 +108,7 @@ public interface Repository extends EntityOperations {
 		while (iterator.hasNext()) {
 			Property property = iterator.next();
 			Object value = entityIds[i++];
-			RepositoryColumn column = getMapping().parseColumn(entityClass,
+			RepositoryColumn column = getMapper().parseColumn(entityClass,
 					property, value);
 			Condition condition = new Condition(conditionKeywords
 					.getEqualKeywords().getFirst(), column);
@@ -117,7 +117,7 @@ public interface Repository extends EntityOperations {
 		}
 
 		Property property = iterator.next();
-		RepositoryColumn column = getMapping().parseColumn(entityClass,
+		RepositoryColumn column = getMapper().parseColumn(entityClass,
 				property, entityInIds);
 		pairs.add(new Pair<String, Condition>(relationshipKeywords
 				.getAndKeywords().getFirst(), new Condition(conditionKeywords
@@ -127,8 +127,8 @@ public interface Repository extends EntityOperations {
 				null).collect(Collectors.toList());
 	}
 
-	default RepositoryMapping getMapping() {
-		return DefaultRepositoryMapping.DEFAULT;
+	default RepositoryMapper getMapper() {
+		return DefaultRepositoryMapper.DEFAULT;
 	}
 
 	@Override
@@ -136,9 +136,9 @@ public interface Repository extends EntityOperations {
 		return query(
 				TypeDescriptor.valueOf(entityClass),
 				entityClass,
-				getMapping().parseConditions(
+				getMapper().parseConditions(
 						entityClass,
-						getMapping().getStructure(entityClass).getPrimaryKeys()
+						getMapper().getStructure(entityClass).getPrimaryKeys()
 								.iterator(), null,
 						(e) -> e.getField().get(conditions), null), null,
 				new PageRequest(1, 1)).findAny().isPresent();
@@ -150,9 +150,9 @@ public interface Repository extends EntityOperations {
 		return query(
 				TypeDescriptor.valueOf(entityClass),
 				entityClass,
-				getMapping().parseConditions(
+				getMapper().parseConditions(
 						entityClass,
-						getMapping().getStructure(entityClass).getPrimaryKeys()
+						getMapper().getStructure(entityClass).getPrimaryKeys()
 								.iterator(), null,
 						(e) -> ids[index.getAndIncrement()], null), null,
 				new PageRequest(1, 1)).findAny().isPresent();
@@ -163,9 +163,9 @@ public interface Repository extends EntityOperations {
 		return query(
 				TypeDescriptor.valueOf(entityClass),
 				entityClass,
-				getMapping().parseConditions(
+				getMapper().parseConditions(
 						entityClass,
-						getMapping().getStructure(entityClass).columns()
+						getMapper().getStructure(entityClass).columns()
 								.iterator(), null,
 						(e) -> e.getField().get(conditions),
 						(e) -> !StringUtils.isEmpty(e.getValue())), null,
@@ -177,8 +177,8 @@ public interface Repository extends EntityOperations {
 			Class<? extends E> entityClass, E conditions, PageRequest request)
 			throws OrmException {
 		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
-		Conditions conditionsToUse = getMapping().parseConditions(entityClass,
-				getMapping().getStructure(entityClass).columns().iterator(),
+		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
+				getMapper().getStructure(entityClass).columns().iterator(),
 				orderColumns, (e) -> e.getField().get(conditions),
 				(e) -> !StringUtils.isEmpty(e));
 		return pagingQuery(resultsTypeDescriptor, entityClass, conditionsToUse,
@@ -194,8 +194,8 @@ public interface Repository extends EntityOperations {
 			Class<? extends E> entityClass, E conditions, PageRequest request)
 			throws OrmException {
 		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
-		Conditions conditionsToUse = getMapping().parseConditions(entityClass,
-				getMapping().getStructure(entityClass).columns().iterator(),
+		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
+				getMapper().getStructure(entityClass).columns().iterator(),
 				orderColumns, (e) -> e.getField().get(conditions),
 				(e) -> !StringUtils.isEmpty(e));
 		return query(resultsTypeDescriptor, entityClass, conditionsToUse,
@@ -213,9 +213,9 @@ public interface Repository extends EntityOperations {
 		return queryAll(
 				resultsTypeDescriptor,
 				entityClass,
-				getMapping().parseConditions(
+				getMapper().parseConditions(
 						entityClass,
-						getMapping().getStructure(entityClass).columns()
+						getMapper().getStructure(entityClass).columns()
 								.iterator(), orderColumns,
 						(e) -> e.getField().get(conditions),
 						(e) -> !StringUtils.isEmpty(e.getValue())),
@@ -240,8 +240,8 @@ public interface Repository extends EntityOperations {
 
 	default <T> void save(Class<? extends T> entityClass, T entity)
 			throws OrmException {
-		List<RepositoryColumn> columns = getMapping().parseColumns(entityClass,
-				getMapping().getStructure(entityClass).columns().iterator(),
+		List<RepositoryColumn> columns = getMapper().parseColumns(entityClass,
+				getMapper().getStructure(entityClass).columns().iterator(),
 				null, (e) -> e.getField().get(entity), null).collect(
 				Collectors.toList());
 		save(entityClass, columns);
@@ -253,15 +253,15 @@ public interface Repository extends EntityOperations {
 	@Override
 	default <T> boolean update(Class<? extends T> entityClass, T entity)
 			throws OrmException {
-		EntityStructure<? extends Property> entityStructure = getMapping()
+		EntityStructure<? extends Property> entityStructure = getMapper()
 				.getStructure(entityClass);
-		List<RepositoryColumn> columns = getMapping()
+		List<RepositoryColumn> columns = getMapper()
 				.parseColumns(entityClass,
 						entityStructure.columns().iterator(), null,
 						(e) -> e.getField().get(entity),
 						(e) -> !StringUtils.isEmpty(e)).collect(
 						Collectors.toList());
-		Conditions conditionsToUse = getMapping().parseConditions(entityClass,
+		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
 				entityStructure.getPrimaryKeys().iterator(), null,
 				(e) -> e.getField().get(entity), null);
 		return update(entityClass, columns, conditionsToUse) > 0;
@@ -273,15 +273,15 @@ public interface Repository extends EntityOperations {
 
 	default <T> long updateAll(Class<? extends T> entityClass, T entity,
 			T conditions) {
-		EntityStructure<? extends Property> entityStructure = getMapping()
+		EntityStructure<? extends Property> entityStructure = getMapper()
 				.getStructure(entityClass);
-		List<RepositoryColumn> columns = getMapping()
+		List<RepositoryColumn> columns = getMapper()
 				.parseColumns(entityClass,
 						entityStructure.columns().iterator(), null,
 						(e) -> e.getField().get(entity),
 						(e) -> !StringUtils.isEmpty(e)).collect(
 						Collectors.toList());
-		Conditions conditionsToUse = getMapping().parseConditions(entityClass,
+		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
 				entityStructure.columns().iterator(), null,
 				(e) -> e.getField().get(conditions),
 				(e) -> !StringUtils.isEmpty(e));

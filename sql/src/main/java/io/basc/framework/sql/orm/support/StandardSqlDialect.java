@@ -47,7 +47,7 @@ import java.util.Map;
  * @author shuchaowen
  *
  */
-public abstract class StandardSqlDialect extends DefaultTableMapping implements
+public abstract class StandardSqlDialect extends DefaultTableMapper implements
 		SqlDialect {
 	protected static final String UPDATE_PREFIX = "update ";
 	protected static final String DELETE_PREFIX = "delete from ";

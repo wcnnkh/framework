@@ -318,4 +318,36 @@ public class AnnotationObjectRelationalResolverExtend implements
 				.value())) ? chain.getRelationship(entityClass, descriptor)
 				: relationship.value();
 	}
+
+	@Override
+	public boolean isDisplay(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		Display display = AnnotatedElementUtils.getMergedAnnotation(
+				entityClass, Display.class);
+		if (display != null
+				&& StringUtils.equals(display.name(), descriptor.getName())) {
+			return true;
+		}
+
+		display = AnnotatedElementUtils.getMergedAnnotation(descriptor,
+				Display.class);
+		if (display != null) {
+			return true;
+		}
+		return ObjectRelationalResolverExtend.super.isDisplay(entityClass,
+				descriptor, chain);
+	}
+
+	@Override
+	public io.basc.framework.orm.ForeignKey getForeignKey(Class<?> entityClass,
+			ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		ForeignKey foreignKey = AnnotatedElementUtils.getMergedAnnotation(
+				descriptor, ForeignKey.class);
+		if (foreignKey != null) {
+			return new io.basc.framework.orm.ForeignKey(foreignKey.entity(),
+					foreignKey.name());
+		}
+		return ObjectRelationalResolverExtend.super.getForeignKey(entityClass,
+				descriptor, chain);
+	}
 }

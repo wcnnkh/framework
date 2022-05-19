@@ -11,7 +11,8 @@ import io.basc.framework.mapper.Fields;
  * @author shuchaowen
  *
  */
-public interface ObjectRelationalMapping extends ObjectRelationalResolver, ObjectRelationalProcessor, FieldFactory {
+public interface ObjectRelationalMapper extends ObjectRelationalResolver,
+		ObjectRelationalProcessor, FieldFactory {
 
 	@Override
 	default EntityMetadata resolveMetadata(Class<?> entityClass) {
@@ -19,7 +20,8 @@ public interface ObjectRelationalMapping extends ObjectRelationalResolver, Objec
 	}
 
 	@Override
-	default PropertyMetadata resolveMetadata(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
+	default PropertyMetadata resolveMetadata(Class<?> entityClass,
+			FieldDescriptor fieldDescriptor) {
 		return new DefaultPropertyMetadata(this, entityClass, fieldDescriptor);
 	}
 
@@ -28,15 +30,19 @@ public interface ObjectRelationalMapping extends ObjectRelationalResolver, Objec
 		return new DefaultProperty(this, entityClass, field);
 	}
 
-	default EntityStructure<? extends Property> getStructure(Class<?> entityClass, Fields fields) {
+	default EntityStructure<? extends Property> getStructure(
+			Class<?> entityClass, Fields fields) {
 		return new DefaultEntityStructure(this, this, entityClass, fields);
 	}
 
-	default EntityStructure<? extends Property> getStructure(Class<?> entityClass) {
+	default EntityStructure<? extends Property> getStructure(
+			Class<?> entityClass) {
 		return getStructure(entityClass, getFields(entityClass).all());
 	}
 
-	default EntityStructure<? extends Property> getStructure(Class<?> entityClass, Field parentField) {
-		return getStructure(entityClass, getFields(entityClass, parentField).all());
+	default EntityStructure<? extends Property> getStructure(
+			Class<?> entityClass, Field parentField) {
+		return getStructure(entityClass, getFields(entityClass, parentField)
+				.all());
 	}
 }

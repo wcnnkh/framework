@@ -3,7 +3,7 @@ package io.basc.framework.sql.orm.support;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.orm.support.StandardEntityStructure;
 import io.basc.framework.sql.orm.Column;
-import io.basc.framework.sql.orm.TableMapping;
+import io.basc.framework.sql.orm.TableMapper;
 import io.basc.framework.sql.orm.TableMetadata;
 import io.basc.framework.sql.orm.TableStructure;
 
@@ -35,14 +35,14 @@ public class StandardTableStructure extends StandardEntityStructure<Column> impl
 		this.rowFormat = rowFormat;
 	}
 
-	public static StandardTableStructure init(TableMapping tableMapping, Class<?> entityClass) {
+	public static StandardTableStructure init(TableMapper tableMapping, Class<?> entityClass) {
 		TableMetadata tableMetadata = tableMapping.resolveMetadata(entityClass);
 		StandardTableStructure standardTableStructure = new StandardTableStructure(tableMetadata);
 		standardTableStructure.setEntityClass(entityClass);
 		return standardTableStructure;
 	}
 
-	private static void append(TableMapping tableMapping, StandardTableStructure tableStructure, Class<?> entityClass,
+	private static void append(TableMapper tableMapping, StandardTableStructure tableStructure, Class<?> entityClass,
 			Field parentField) {
 		for (Field field : tableMapping.getFields(entityClass, parentField).all()) {
 			if (!field.isSupportGetter()) {
@@ -68,7 +68,7 @@ public class StandardTableStructure extends StandardEntityStructure<Column> impl
 		}
 	}
 
-	public static StandardTableStructure resolveAll(TableMapping tableMapping, Class<?> entityClass) {
+	public static StandardTableStructure resolveAll(TableMapper tableMapping, Class<?> entityClass) {
 		StandardTableStructure standardTableStructure = init(tableMapping, entityClass);
 		append(tableMapping, standardTableStructure, entityClass, null);
 		return standardTableStructure;

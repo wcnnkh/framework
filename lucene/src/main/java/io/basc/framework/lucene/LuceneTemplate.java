@@ -3,9 +3,8 @@ package io.basc.framework.lucene;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.PageRequest;
 import io.basc.framework.lucene.annotation.LuceneField;
+import io.basc.framework.mapper.DecorateObjectMappingProcessor;
 import io.basc.framework.mapper.Fields;
-import io.basc.framework.mapper.MapProcessDecorator;
-import io.basc.framework.mapper.Mapper;
 import io.basc.framework.orm.EntityStructure;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
@@ -41,7 +40,7 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TermQuery;
 
 public interface LuceneTemplate extends Repository {
-	Mapper<Document, LuceneException> getMapper();
+	LuceneMapper getMapper();
 
 	default Document createDocument(Object instance) {
 		return wrap(new Document(), instance);
@@ -218,8 +217,8 @@ public interface LuceneTemplate extends Repository {
 	@SuppressWarnings("unchecked")
 	default <T> Processor<Document, T, LuceneException> getMapProcessor(
 			TypeDescriptor type) {
-		return new MapProcessDecorator<>(getMapper(),
-				new DefaultMapProcessor<T, LuceneException>(type),
+		return new DecorateObjectMappingProcessor<>(getMapper(),
+				new DefaultMappingProcessor<T, LuceneException>(type),
 				(Class<T>) type.getType());
 	}
 
@@ -252,7 +251,7 @@ public interface LuceneTemplate extends Repository {
 			throws LuceneSearchException {
 		return search(
 				parameters,
-				new MapProcessDecorator<>(getMapper(),
+				new DecorateObjectMappingProcessor<>(getMapper(),
 						new DefaultStructureMapProcessor<T, LuceneException>(
 								structure), (Class<T>) structure
 								.getEntityClass()));
@@ -266,7 +265,7 @@ public interface LuceneTemplate extends Repository {
 		return searchAfter(
 				after,
 				parameters,
-				new MapProcessDecorator<>(getMapper(),
+				new DecorateObjectMappingProcessor<>(getMapper(),
 						new DefaultStructureMapProcessor<T, LuceneException>(
 								structure), (Class<T>) structure
 								.getEntityClass()));
@@ -276,7 +275,7 @@ public interface LuceneTemplate extends Repository {
 		return wrap(
 				document,
 				instance,
-				getMapping()
+				getMapper()
 						.getFields(instance.getClass())
 						.accept((field) -> {
 							return field.isAnnotationPresent(LuceneField.class)
@@ -303,7 +302,7 @@ public interface LuceneTemplate extends Repository {
 	@Override
 	default long save(Class<?> entityClass,
 			Collection<? extends RepositoryColumn> columns) throws OrmException {
-		List<RepositoryColumn> list = getMapping().open(entityClass, columns,
+		List<RepositoryColumn> list = getMapper().open(entityClass, columns,
 				null);
 		if (CollectionUtils.isEmpty(list)) {
 			return 0L;
@@ -329,14 +328,14 @@ public interface LuceneTemplate extends Repository {
 	default long update(Class<?> entityClass,
 			Collection<? extends RepositoryColumn> columns,
 			Conditions conditions) throws OrmException {
-		List<RepositoryColumn> columnsToUse = getMapping().open(entityClass,
+		List<RepositoryColumn> columnsToUse = getMapper().open(entityClass,
 				columns, null);
 		if (CollectionUtils.isEmpty(columnsToUse)) {
 			return 0L;
 		}
 
-		Query query = parseQuery(getMapping().open(entityClass, conditions,
-				null));
+		Query query = parseQuery(getMapper()
+				.open(entityClass, conditions, null));
 		try {
 			return write(
 					(writer) -> {
@@ -368,8 +367,8 @@ public interface LuceneTemplate extends Repository {
 	@Override
 	default long delete(Class<?> entityClass, Conditions conditions)
 			throws OrmException {
-		Query query = parseQuery(getMapping().open(entityClass, conditions,
-				null));
+		Query query = parseQuery(getMapper()
+				.open(entityClass, conditions, null));
 		try {
 			return delete(query).get();
 		} catch (LuceneWriteException | InterruptedException
@@ -388,9 +387,9 @@ public interface LuceneTemplate extends Repository {
 		if (orders != null) {
 			orderColumns.addAll(orders);
 		}
-		Query query = parseQuery(getMapping().open(entityClass, conditions,
+		Query query = parseQuery(getMapper().open(entityClass, conditions,
 				orderColumns));
-		Sort sort = parseSort(getMapping().getStructure(entityClass),
+		Sort sort = parseSort(getMapper().getStructure(entityClass),
 				orderColumns);
 		SearchParameters parameters = new SearchParameters(query, top);
 		parameters.setSort(sort);

@@ -5,24 +5,29 @@ import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.mapper.Fields;
+import io.basc.framework.mapper.ObjectMapper;
+import io.basc.framework.mapper.SimpleObjectMapper;
 import io.basc.framework.orm.StructureRegistry;
-import io.basc.framework.orm.repository.DefaultRepositoryMapping;
+import io.basc.framework.orm.repository.DefaultRepositoryMapper;
 import io.basc.framework.orm.support.SimpleStructureRegistry;
 import io.basc.framework.sql.orm.IndexInfo;
-import io.basc.framework.sql.orm.TableMapping;
+import io.basc.framework.sql.orm.TableMapper;
 import io.basc.framework.sql.orm.TableStructure;
 import io.basc.framework.sql.orm.annotation.AnnotationTableResolverExtend;
+import io.basc.framework.util.stream.Processor;
 
+import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-public class DefaultTableMapping extends DefaultRepositoryMapping implements
-		TableMapping {
+public class DefaultTableMapper extends DefaultRepositoryMapper implements
+		TableMapper {
 	private final ConfigurableServices<TableResolverExtend> tableResolverExtends = new ConfigurableServices<>(
 			TableResolverExtend.class);
 	private final StructureRegistry<TableStructure> registry = new SimpleStructureRegistry<TableStructure>();
+	private ObjectMapper<ResultSet, Throwable> mapper = new SimpleObjectMapper<ResultSet, Throwable>();
 
-	public DefaultTableMapping() {
+	public DefaultTableMapper() {
 		AnnotationTableResolverExtend tableResolverExtend = new AnnotationTableResolverExtend();
 		addService(tableResolverExtend);
 		tableResolverExtends.addService(tableResolverExtend);
@@ -68,20 +73,37 @@ public class DefaultTableMapping extends DefaultRepositoryMapping implements
 	}
 
 	@Override
-	public boolean isRegistry(Class<?> entityClass) {
-		return registry.isRegistry(entityClass);
+	public boolean isStructureRegistred(Class<?> entityClass) {
+		return registry.isStructureRegistred(entityClass);
 	}
 
 	@Override
 	public TableStructure getStructure(Class<?> entityClass) {
-		if (registry.isRegistry(entityClass)) {
+		if (registry.isStructureRegistred(entityClass)) {
 			return registry.getStructure(entityClass);
 		}
-		return TableMapping.super.getStructure(entityClass);
+		return TableMapper.super.getStructure(entityClass);
 	}
 
 	@Override
-	public void register(Class<?> entityClass, TableStructure structure) {
-		registry.register(entityClass, structure);
+	public void registerStructure(Class<?> entityClass, TableStructure structure) {
+		registry.registerStructure(entityClass, structure);
+	}
+
+	@Override
+	public boolean isMapperRegistred(Class<?> type) {
+		return mapper.isMapperRegistred(type);
+	}
+
+	@Override
+	public <T> Processor<ResultSet, T, Throwable> getMappingProcessor(
+			Class<? extends T> type) {
+		return mapper.getMappingProcessor(type);
+	}
+
+	@Override
+	public <T> void registerMapper(Class<T> type,
+			Processor<ResultSet, ? extends T, ? extends Throwable> processor) {
+		mapper.registerMapper(type, processor);
 	}
 }

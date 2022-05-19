@@ -21,7 +21,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements
 
 	public DefaultSqlTemplate(ConnectionFactory connectionFactory,
 			SqlDialect sqlDialect) {
-		super(connectionFactory);
+		super(connectionFactory, sqlDialect);
 		this.generatorProcessor = new DefaultGeneratorProcessor(sqlDialect,
 				this);
 		this.sqlDialect = sqlDialect;
@@ -36,7 +36,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements
 		this.objectKeyFormat = objectKeyFormat;
 	}
 
-	public SqlDialect getMapping() {
+	public SqlDialect getMapper() {
 		return sqlDialect;
 	}
 
