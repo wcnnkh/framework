@@ -38,12 +38,10 @@ public interface RepositoryMapper extends ObjectRelationalMapper {
 	 * 
 	 * @param entityClass
 	 * @param columns
-	 * @param appendableOrders
-	 *            追加
+	 * @param appendableOrders 追加
 	 * @return
 	 */
-	default List<RepositoryColumn> open(Class<?> entityClass,
-			Collection<? extends RepositoryColumn> columns,
+	default List<RepositoryColumn> open(Class<?> entityClass, Collection<? extends RepositoryColumn> columns,
 			List<OrderColumn> appendableOrders) {
 		if (CollectionUtils.isEmpty(columns)) {
 			return Collections.emptyList();
@@ -51,32 +49,22 @@ public interface RepositoryMapper extends ObjectRelationalMapper {
 
 		List<RepositoryColumn> list = new ArrayList<RepositoryColumn>();
 		for (RepositoryColumn column : columns) {
-			if (column.getValue() == null
-					|| !isEntity(column.getType(), column)) {
+			if (column.getValue() == null || !isEntity(column.getType(), column)) {
 				list.add(column);
 				continue;
 			}
 
 			// 如果是entity将对象内容展开
-			getStructure(column.getType())
-					.columns()
-					.filter((e) -> {
-						resolveOrders(column.getType(), e.getField()
-								.getGetter(), appendableOrders);
-						return true;
-					})
-					.filter((e) -> !e.isAutoIncrement()
-							|| MapperUtils.isExistValue(e.getField(),
-									column.getValue()))
-					.forEach(
-							(c) -> {
-								Object value = c.getField().getGetter()
-										.get(column.getValue());
-								RepositoryColumn repositoryColumn = new RepositoryColumn(
-										c.getName(), value, new TypeDescriptor(
-												c.getField().getGetter()));
-								list.add(repositoryColumn);
-							});
+			getStructure(column.getType()).columns().filter((e) -> {
+				resolveOrders(column.getType(), e.getField().getGetter(), appendableOrders);
+				return true;
+			}).filter((e) -> !e.isAutoIncrement() || MapperUtils.isExistValue(e.getField(), column.getValue()))
+					.forEach((c) -> {
+						Object value = c.getField().getGetter().get(column.getValue());
+						RepositoryColumn repositoryColumn = new RepositoryColumn(c.getName(), value,
+								new TypeDescriptor(c.getField().getGetter()));
+						list.add(repositoryColumn);
+					});
 
 		}
 		return list;
@@ -88,62 +76,45 @@ public interface RepositoryMapper extends ObjectRelationalMapper {
 	 * @param entityClass
 	 * @param mapping
 	 * @param conditions
-	 * @param appendableOrders
-	 *            追加
+	 * @param appendableOrders 追加
 	 * @return
 	 */
-	default Conditions open(Class<?> entityClass, Conditions conditions,
-			List<OrderColumn> appendableOrders) {
+	default Conditions open(Class<?> entityClass, Conditions conditions, List<OrderColumn> appendableOrders) {
 		if (conditions == null) {
 			return null;
 		}
 
 		Condition condition = conditions.getCondition();
-		List<WithCondition> withConditions = new ArrayList<WithCondition>(
-				conditions.getWiths());
+		List<WithCondition> withConditions = new ArrayList<WithCondition>(conditions.getWiths());
 		if (isEntity(entityClass, condition.getColumn())) {
 			// 如果是entity将对象内容展开
-			Iterator<? extends Property> iterator = getStructure(
-					condition.getColumn().getType()).columns().iterator();
+			Iterator<? extends Property> iterator = getStructure(condition.getColumn().getType()).columns().iterator();
 			while (iterator.hasNext()) {
 				Property property = iterator.next();
-				resolveOrders(entityClass, property.getField().getGetter(),
-						appendableOrders);
-				Object value = property.getField().getGetter()
-						.get(condition.getColumn().getValue());
-				RepositoryColumn repositoryColumn = new RepositoryColumn(
-						property.getName(), value, new TypeDescriptor(property
-								.getField().getGetter()));
-				Condition newCondition = new Condition(
-						condition.getCondition(), repositoryColumn);
-				withConditions.add(new WithCondition("and", new Conditions(
-						newCondition, null)));
+				resolveOrders(entityClass, property.getField().getGetter(), appendableOrders);
+				Object value = property.getField().getGetter().get(condition.getColumn().getValue());
+				RepositoryColumn repositoryColumn = new RepositoryColumn(property.getName(), value,
+						new TypeDescriptor(property.getField().getGetter()));
+				Condition newCondition = new Condition(condition.getCondition(), repositoryColumn);
+				withConditions.add(new WithCondition("and", new Conditions(newCondition, null)));
 			}
 		}
 
-		withConditions = withConditions
-				.stream()
-				.map((e) -> new WithCondition(e.getWith(), open(entityClass,
-						e.getCondition(), appendableOrders)))
+		withConditions = withConditions.stream()
+				.map((e) -> new WithCondition(e.getWith(), open(entityClass, e.getCondition(), appendableOrders)))
 				.collect(Collectors.toList());
 		return new Conditions(condition, withConditions);
 	}
 
-	default RepositoryColumn parseColumn(Class<?> entityClass,
-			Property property, @Nullable Object value) {
-		TypeDescriptor valueTypeDescriptor = new TypeDescriptor(property
-				.getField().getGetter());
-		if (value != null
-				&& !ClassUtils.isAssignableValue(valueTypeDescriptor.getType(),
-						value)) {
+	default RepositoryColumn parseColumn(Class<?> entityClass, Property property, @Nullable Object value) {
+		TypeDescriptor valueTypeDescriptor = new TypeDescriptor(property.getField().getGetter());
+		if (value != null && !ClassUtils.isAssignableValue(valueTypeDescriptor.getType(), value)) {
 			valueTypeDescriptor = valueTypeDescriptor.narrow(value);
 		}
-		return new RepositoryColumn(property.getName(), value,
-				valueTypeDescriptor);
+		return new RepositoryColumn(property.getName(), value, valueTypeDescriptor);
 	}
 
-	default void resolveOrders(Class<?> entityClass,
-			ParameterDescriptor descriptor, List<OrderColumn> appendable) {
+	default void resolveOrders(Class<?> entityClass, ParameterDescriptor descriptor, List<OrderColumn> appendable) {
 		if (appendable == null) {
 			return;
 		}
@@ -156,11 +127,10 @@ public interface RepositoryMapper extends ObjectRelationalMapper {
 		appendable.add(new OrderColumn(descriptor.getName(), sort, null));
 	}
 
-	default <T, P extends Property> Stream<RepositoryColumn> parseColumns(
-			Class<?> entityClass, Iterator<? extends P> properties,
-			@Nullable List<OrderColumn> orders,
-			Processor<P, Object, OrmException> valueProcessor,
-			@Nullable Predicate<Pair<P, Object>> predicate) throws OrmException {
+	default <T, P extends Property> Stream<RepositoryColumn> parseColumns(Class<?> entityClass,
+			Iterator<? extends P> properties, @Nullable List<OrderColumn> orders,
+			Processor<P, Object, OrmException> valueProcessor, @Nullable Predicate<Pair<P, Object>> predicate)
+			throws OrmException {
 		return XUtils.stream(properties).filter((e) -> {
 			resolveOrders(entityClass, e.getField().getGetter(), orders);
 			return true;
@@ -169,36 +139,27 @@ public interface RepositoryMapper extends ObjectRelationalMapper {
 				.map((e) -> parseColumn(entityClass, e.getKey(), e.getValue()));
 	}
 
-	default Conditions parseConditions(Class<?> entityClass,
-			Iterator<? extends RepositoryColumn> iterator) {
+	default Conditions parseConditions(Class<?> entityClass, Iterator<? extends RepositoryColumn> iterator) {
 		RelationshipKeywords relationshipKeywords = getRelationshipKeywords();
 		ConditionKeywords conditionKeywords = getConditionKeywords();
-		return Conditions.build(XUtils
-				.stream(iterator)
-				.map((column) -> {
-					String relationship = getRelationship(entityClass, column);
-					if (StringUtils.isEmpty(relationship)) {
-						relationship = relationshipKeywords.getAndKeywords()
-								.getFirst();
-					}
+		return Conditions.build(XUtils.stream(iterator).map((column) -> {
+			String relationship = getRelationship(entityClass, column);
+			if (StringUtils.isEmpty(relationship)) {
+				relationship = relationshipKeywords.getAndKeywords().getFirst();
+			}
 
-					String condition = getCondition(entityClass, column);
-					if (StringUtils.isEmpty(condition)) {
-						condition = conditionKeywords.getEqualKeywords()
-								.getFirst();
-					}
-					return new Pair<String, Condition>(relationship,
-							new Condition(condition, column));
-				}).iterator());
+			String condition = getCondition(entityClass, column);
+			if (StringUtils.isEmpty(condition)) {
+				condition = conditionKeywords.getEqualKeywords().getFirst();
+			}
+			return new Pair<String, Condition>(relationship, new Condition(condition, column));
+		}).iterator());
 	}
 
-	default <T, P extends Property> Conditions parseConditions(
-			Class<?> entityClass, Iterator<? extends P> properties,
-			@Nullable List<OrderColumn> orders,
-			Processor<P, Object, OrmException> valueProcessor,
+	default <T, P extends Property> Conditions parseConditions(Class<?> entityClass, Iterator<? extends P> properties,
+			@Nullable List<OrderColumn> orders, Processor<P, Object, OrmException> valueProcessor,
 			@Nullable Predicate<Pair<P, Object>> predicate) throws OrmException {
-		Stream<RepositoryColumn> stream = parseColumns(entityClass, properties,
-				orders, valueProcessor, predicate);
+		Stream<RepositoryColumn> stream = parseColumns(entityClass, properties, orders, valueProcessor, predicate);
 		try {
 			return parseConditions(entityClass, stream.iterator());
 		} finally {

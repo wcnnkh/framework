@@ -13,9 +13,8 @@ import io.basc.framework.util.comparator.Sort;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-public class DefaultObjectRelationalResolver extends
-		ConfigurableServices<ObjectRelationalResolverExtend> implements
-		ObjectRelationalResolver {
+public class DefaultObjectRelationalResolver extends ConfigurableServices<ObjectRelationalResolverExtend>
+		implements ObjectRelationalResolver {
 
 	public DefaultObjectRelationalResolver() {
 		super(ObjectRelationalResolverExtend.class);
@@ -36,20 +35,18 @@ public class DefaultObjectRelationalResolver extends
 
 	@Override
 	public Boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator())
-				.isIgnore(entityClass, descriptor);
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isIgnore(entityClass, descriptor);
 		return v == null ? false : v;
 	}
 
 	private String getDefaultName(ParameterDescriptor descriptor) {
-		return humpNamingReplacement ? StringUtils.humpNamingReplacement(
-				descriptor.getName(), "_") : descriptor.getName();
+		return humpNamingReplacement ? StringUtils.humpNamingReplacement(descriptor.getName(), "_")
+				: descriptor.getName();
 	}
 
 	@Override
 	public String getName(Class<?> entityClass, ParameterDescriptor descriptor) {
-		String name = ObjectRelationalResolverExtendChain.build(iterator())
-				.getName(entityClass, descriptor);
+		String name = ObjectRelationalResolverExtendChain.build(iterator()).getName(entityClass, descriptor);
 		return StringUtils.isEmpty(name) ? getDefaultName(descriptor) : name;
 	}
 
@@ -66,10 +63,9 @@ public class DefaultObjectRelationalResolver extends
 	}
 
 	@Override
-	public Collection<String> getAliasNames(Class<?> entityClass,
-			ParameterDescriptor descriptor) {
-		Collection<String> names = ObjectRelationalResolverExtendChain.build(
-				iterator()).getAliasNames(entityClass, descriptor);
+	public Collection<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor) {
+		Collection<String> names = ObjectRelationalResolverExtendChain.build(iterator()).getAliasNames(entityClass,
+				descriptor);
 		if (CollectionUtils.isEmpty(names)) {
 			names = new LinkedHashSet<String>();
 			String defaultName = getName(entityClass, descriptor);
@@ -84,15 +80,13 @@ public class DefaultObjectRelationalResolver extends
 	}
 
 	private String getDefaultEntityName(Class<?> entityClass) {
-		String className = ProxyUtils.getFactory().getUserClass(entityClass)
-				.getSimpleName();
+		String className = ProxyUtils.getFactory().getUserClass(entityClass).getSimpleName();
 		return StringUtils.humpNamingReplacement(className, "_");
 	}
 
 	@Override
 	public String getName(Class<?> entityClass) {
-		String name = ObjectRelationalResolverExtendChain.build(iterator())
-				.getName(entityClass);
+		String name = ObjectRelationalResolverExtendChain.build(iterator()).getName(entityClass);
 		if (StringUtils.isEmpty(name)) {
 			name = getDefaultEntityName(entityClass);
 		}
@@ -101,8 +95,7 @@ public class DefaultObjectRelationalResolver extends
 
 	@Override
 	public Collection<String> getAliasNames(Class<?> entityClass) {
-		Collection<String> names = ObjectRelationalResolverExtendChain.build(
-				iterator()).getAliasNames(entityClass);
+		Collection<String> names = ObjectRelationalResolverExtendChain.build(iterator()).getAliasNames(entityClass);
 		if (CollectionUtils.isEmpty(names)) {
 			names = new LinkedHashSet<String>(8);
 			// 如果没有使用过别名，那就设置默认名称
@@ -114,137 +107,106 @@ public class DefaultObjectRelationalResolver extends
 	}
 
 	@Override
-	public Boolean isPrimaryKey(Class<?> entityClass,
-			ParameterDescriptor descriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator())
-				.isPrimaryKey(entityClass, descriptor);
+	public Boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor) {
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isPrimaryKey(entityClass, descriptor);
 		return v == null ? false : v;
 	}
 
 	@Override
-	public Boolean isNullable(Class<?> entityClass,
-			ParameterDescriptor descriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator())
-				.isNullable(entityClass, descriptor);
+	public Boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor) {
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isNullable(entityClass, descriptor);
 		return v == null ? !isPrimaryKey(entityClass, descriptor) : v;
 	}
 
 	@Override
 	public Boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator())
-				.isEntity(entityClass, descriptor);
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isEntity(entityClass, descriptor);
 		return v == null ? isEntity(descriptor.getType()) : v;
 	}
 
 	@Override
 	public Boolean isEntity(Class<?> entityClass) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator())
-				.isEntity(entityClass);
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isEntity(entityClass);
 		return v == null ? false : v;
 	}
 
 	@Override
-	public Boolean isVersionField(Class<?> entityClass,
-			ParameterDescriptor descriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator())
-				.isVersionField(entityClass, descriptor);
+	public Boolean isVersionField(Class<?> entityClass, ParameterDescriptor descriptor) {
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isVersionField(entityClass, descriptor);
 		return v == null ? false : v;
 	}
 
 	@Override
-	public Collection<Range<Double>> getNumberRanges(Class<?> entityClass,
-			ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(iterator())
-				.getNumberRanges(entityClass, descriptor);
+	public Collection<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(iterator()).getNumberRanges(entityClass, descriptor);
 	}
 
 	@Override
-	public Boolean isAutoIncrement(Class<?> entityClass,
-			ParameterDescriptor descriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator())
-				.isAutoIncrement(entityClass, descriptor);
+	public Boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor) {
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isAutoIncrement(entityClass, descriptor);
 		return v == null ? false : v;
 	}
 
 	@Override
 	public Boolean isIgnore(Class<?> entityClass) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator())
-				.isIgnore(entityClass);
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isIgnore(entityClass);
 		return v == null ? false : v;
 	}
 
 	@Override
 	public String getComment(Class<?> entityClass) {
-		return ObjectRelationalResolverExtendChain.build(iterator())
-				.getComment(entityClass);
+		return ObjectRelationalResolverExtendChain.build(iterator()).getComment(entityClass);
 	}
 
 	@Override
-	public String getComment(Class<?> entityClass,
-			ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(iterator())
-				.getComment(entityClass, descriptor);
+	public String getComment(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(iterator()).getComment(entityClass, descriptor);
 	}
 
 	@Override
 	public String getCharsetName(Class<?> entityClass) {
-		return ObjectRelationalResolverExtendChain.build(iterator())
-				.getCharsetName(entityClass);
+		return ObjectRelationalResolverExtendChain.build(iterator()).getCharsetName(entityClass);
 	}
 
 	@Override
-	public String getCharsetName(Class<?> entityClass,
-			ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(iterator())
-				.getCharsetName(entityClass, descriptor);
+	public String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(iterator()).getCharsetName(entityClass, descriptor);
 	}
 
 	@Override
 	public Boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator())
-				.isUnique(entityClass, descriptor);
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isUnique(entityClass, descriptor);
 		return v == null ? false : v;
 	}
 
 	@Override
-	public Boolean isIncrement(Class<?> entityClass,
-			ParameterDescriptor descriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(iterator())
-				.isIncrement(entityClass, descriptor);
+	public Boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor) {
+		Boolean v = ObjectRelationalResolverExtendChain.build(iterator()).isIncrement(entityClass, descriptor);
 		return v == null ? false : v;
 	}
 
 	@Override
 	public Sort getSort(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(iterator()).getSort(
-				entityClass, descriptor);
+		return ObjectRelationalResolverExtendChain.build(iterator()).getSort(entityClass, descriptor);
 	}
 
 	@Override
-	public String getCondition(Class<?> entityClass,
-			ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(iterator())
-				.getCondition(entityClass, descriptor);
+	public String getCondition(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(iterator()).getCondition(entityClass, descriptor);
 	}
 
 	@Override
-	public String getRelationship(Class<?> entityClass,
-			ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(iterator())
-				.getRelationship(entityClass, descriptor);
+	public String getRelationship(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(iterator()).getRelationship(entityClass, descriptor);
 	}
 
 	@Override
-	public ForeignKey getForeignKey(Class<?> entityClass,
-			ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(iterator())
-				.getForeignKey(entityClass, descriptor);
+	public ForeignKey getForeignKey(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(iterator()).getForeignKey(entityClass, descriptor);
 	}
 
 	@Override
-	public boolean isDisplay(Class<?> entityClass,
-			ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(iterator()).isDisplay(
-				entityClass, descriptor);
+	public boolean isDisplay(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(iterator()).isDisplay(entityClass, descriptor);
 	}
 }

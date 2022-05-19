@@ -19,8 +19,7 @@ import java.util.Collection;
 
 import org.apache.lucene.document.Document;
 
-public class DefaultLuceneMapper extends DefaultRepositoryMapper implements
-		LuceneMapper {
+public class DefaultLuceneMapper extends DefaultRepositoryMapper implements LuceneMapper {
 	private final ObjectMapper<Document, LuceneException> objectMapper = new SimpleObjectMapper<Document, LuceneException>();
 	private final StructureRegistry<EntityStructure<? extends Property>> structureRegistry = new SimpleStructureRegistry<EntityStructure<? extends Property>>();
 	private final ConfigurableServices<LuceneResolverExtend> luceneResolverExtends = new ConfigurableServices<LuceneResolverExtend>(
@@ -43,8 +42,7 @@ public class DefaultLuceneMapper extends DefaultRepositoryMapper implements
 
 	@Override
 	public EntityStructure<? extends Property> getStructure(Class<?> entityClass) {
-		EntityStructure<? extends Property> structure = structureRegistry
-				.getStructure(entityClass);
+		EntityStructure<? extends Property> structure = structureRegistry.getStructure(entityClass);
 		if (structure == null) {
 			return super.getStructure(entityClass);
 		}
@@ -52,8 +50,7 @@ public class DefaultLuceneMapper extends DefaultRepositoryMapper implements
 	}
 
 	@Override
-	public void registerStructure(Class<?> entityClass,
-			EntityStructure<? extends Property> structure) {
+	public void registerStructure(Class<?> entityClass, EntityStructure<? extends Property> structure) {
 		structureRegistry.registerStructure(entityClass, structure);
 	}
 
@@ -63,24 +60,19 @@ public class DefaultLuceneMapper extends DefaultRepositoryMapper implements
 	}
 
 	@Override
-	public <T> Processor<Document, T, LuceneException> getMappingProcessor(
-			Class<? extends T> type) {
+	public <T> Processor<Document, T, LuceneException> getMappingProcessor(Class<? extends T> type) {
 		return objectMapper.getMappingProcessor(type);
 	}
 
 	@Override
-	public <T> void registerMapper(
-			Class<T> type,
+	public <T> void registerMapper(Class<T> type,
 			Processor<Document, ? extends T, ? extends LuceneException> processor) {
 		objectMapper.registerMapper(type, processor);
 	}
 
 	@Override
-	public Collection<org.apache.lucene.document.Field> resolve(
-			ParameterDescriptor descriptor, Value value) {
-		return LuceneResolverExtendChain
-				.build(luceneResolverExtends.iterator()).resolve(descriptor,
-						value);
+	public Collection<org.apache.lucene.document.Field> resolve(ParameterDescriptor descriptor, Value value) {
+		return LuceneResolverExtendChain.build(luceneResolverExtends.iterator()).resolve(descriptor, value);
 	}
 
 }

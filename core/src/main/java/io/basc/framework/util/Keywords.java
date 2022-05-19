@@ -11,12 +11,10 @@ import java.util.LinkedList;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public final class Keywords extends BascObject implements Predicate<String>,
-		Iterable<String>, Cloneable, Serializable {
+public final class Keywords extends BascObject implements Predicate<String>, Iterable<String>, Cloneable, Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private static final LinkedThreadLocal<Object> NESTED = new LinkedThreadLocal<Object>(
-			Keywords.class.getName());
+	private static final LinkedThreadLocal<Object> NESTED = new LinkedThreadLocal<Object>(Keywords.class.getName());
 
 	/**
 	 * 驼峰命名策略
@@ -25,8 +23,7 @@ public final class Keywords extends BascObject implements Predicate<String>,
 	/**
 	 * 原始的策略，不做任何处理
 	 */
-	public static final KeywordStrategy ORIGINAL = new OriginalKeywordStrategy(
-			false);
+	public static final KeywordStrategy ORIGINAL = new OriginalKeywordStrategy(false);
 
 	private final KeywordStrategy strategy;
 	private final LinkedList<String> keywords = new LinkedList<>();
@@ -45,8 +42,7 @@ public final class Keywords extends BascObject implements Predicate<String>,
 		this(null, strategy, keywords);
 	}
 
-	public Keywords(Keywords parent, KeywordStrategy strategy,
-			String... keywords) {
+	public Keywords(Keywords parent, KeywordStrategy strategy, String... keywords) {
 		this.strategy = strategy;
 		this.parent = parent;
 		if (keywords != null && keywords.length != 0) {
@@ -62,8 +58,7 @@ public final class Keywords extends BascObject implements Predicate<String>,
 	}
 
 	public Keywords clone(boolean cloneParent) {
-		Keywords keywords = new Keywords(cloneParent ? parent.clone() : parent,
-				strategy);
+		Keywords keywords = new Keywords(cloneParent ? parent.clone() : parent, strategy);
 		keywords.keywords.addAll(this.keywords);
 		keywords.predicate = this.predicate;
 		return keywords;
@@ -135,9 +130,8 @@ public final class Keywords extends BascObject implements Predicate<String>,
 
 	@Override
 	public boolean test(String key) {
-		if (this.keywords.stream()
-				.filter((e) -> strategy.test(e, key) || strategy.test(key, e))
-				.findAny().isPresent()) {
+		if (this.keywords.stream().filter((e) -> strategy.test(e, key) || strategy.test(key, e)).findAny()
+				.isPresent()) {
 			return false;
 		}
 
@@ -161,15 +155,12 @@ public final class Keywords extends BascObject implements Predicate<String>,
 
 	public boolean exists(String key) {
 		return (parent != null && parent.exists(key))
-				&& this.keywords.stream()
-						.filter((e) -> strategy.exists(e, key)).findAny()
-						.isPresent();
+				|| this.keywords.stream().filter((e) -> strategy.exists(e, key)).findAny().isPresent();
 	}
 
 	public Pair<String, Integer> indexOf(String express) {
-		Pair<String, Integer> index = StreamProcessorSupport.process(
-				this.keywords, (e) -> express.indexOf(e),
-				(e) -> e.getValue() != -1).orElse(null);
+		Pair<String, Integer> index = StreamProcessorSupport
+				.process(this.keywords, (e) -> express.indexOf(e), (e) -> e.getValue() != -1).orElse(null);
 		if (index == null && parent != null) {
 			return parent.indexOf(express);
 		}
@@ -177,10 +168,17 @@ public final class Keywords extends BascObject implements Predicate<String>,
 	}
 
 	public String getFirst() {
+		if (parent != null) {
+			return parent.getFirst();
+		}
+
 		return this.keywords.getFirst();
 	}
 
 	public String getLast() {
+		if (keywords.isEmpty() && parent != null) {
+			return parent.getLast();
+		}
 		return this.keywords.getLast();
 	}
 
@@ -212,8 +210,7 @@ public final class Keywords extends BascObject implements Predicate<String>,
 		}
 	}
 
-	private static class OriginalKeywordStrategy extends
-			AbstractKeywordStrategy {
+	private static class OriginalKeywordStrategy extends AbstractKeywordStrategy {
 		private static final long serialVersionUID = 1L;
 
 		public OriginalKeywordStrategy(boolean ignoreCase) {
@@ -231,8 +228,7 @@ public final class Keywords extends BascObject implements Predicate<String>,
 		}
 	}
 
-	public static abstract class AbstractKeywordStrategy implements
-			KeywordStrategy, Serializable {
+	public static abstract class AbstractKeywordStrategy implements KeywordStrategy, Serializable {
 		private static final long serialVersionUID = 1L;
 		private final boolean ignoreCase;
 

@@ -24,38 +24,29 @@ public class SimpleLuceneResolverExtend implements LuceneResolverExtend {
 		return true;
 	}
 
-	protected Collection<Field> resolveNonBasicType(
-			ParameterDescriptor descriptor, Value value) {
-		return Arrays.asList(new StringField(descriptor.getName(), value
-				.getAsString(), isStored(descriptor) ? Store.YES : Store.NO));
+	protected Collection<Field> resolveNonBasicType(ParameterDescriptor descriptor, Value value) {
+		return Arrays.asList(new StringField(descriptor.getName(), value.getAsString(),
+				isStored(descriptor) ? Store.YES : Store.NO));
 	}
 
 	@Override
-	public Collection<Field> resolve(ParameterDescriptor descriptor,
-			Value value, LuceneResolver chain) {
+	public Collection<Field> resolve(ParameterDescriptor descriptor, Value value, LuceneResolver chain) {
 		List<Field> fields = new ArrayList<>(4);
-		if (ClassUtils.isLong(descriptor.getType())
-				|| ClassUtils.isInt(descriptor.getType())
+		if (ClassUtils.isLong(descriptor.getType()) || ClassUtils.isInt(descriptor.getType())
 				|| ClassUtils.isShort(descriptor.getType())) {
-			fields.add(new NumericDocValuesField(descriptor.getName(), value
-					.getAsLong()));
+			fields.add(new NumericDocValuesField(descriptor.getName(), value.getAsLong()));
 			if (isStored(descriptor)) {
-				fields.add(new StoredField(descriptor.getName(), value
-						.getAsString()));
+				fields.add(new StoredField(descriptor.getName(), value.getAsString()));
 			}
 		} else if (ClassUtils.isDouble(descriptor.getType())) {
-			fields.add(new DoubleDocValuesField(descriptor.getName(), value
-					.getAsDoubleValue()));
+			fields.add(new DoubleDocValuesField(descriptor.getName(), value.getAsDoubleValue()));
 			if (isStored(descriptor)) {
-				fields.add(new StoredField(descriptor.getName(), value
-						.getAsString()));
+				fields.add(new StoredField(descriptor.getName(), value.getAsString()));
 			}
 		} else if (ClassUtils.isFloat(descriptor.getType())) {
-			fields.add(new FloatDocValuesField(descriptor.getName(), value
-					.getAsFloatValue()));
+			fields.add(new FloatDocValuesField(descriptor.getName(), value.getAsFloatValue()));
 			if (isStored(descriptor)) {
-				fields.add(new StoredField(descriptor.getName(), value
-						.getAsString()));
+				fields.add(new StoredField(descriptor.getName(), value.getAsString()));
 			}
 		} else {
 			fields.addAll(resolveNonBasicType(descriptor, value));

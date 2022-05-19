@@ -8,13 +8,11 @@ import io.basc.framework.orm.repository.RepositoryMapper;
 
 import org.apache.lucene.document.Document;
 
-public interface LuceneMapper extends RepositoryMapper, LuceneResolver,
-		ObjectMapper<Document, LuceneException>,
+public interface LuceneMapper extends RepositoryMapper, LuceneResolver, ObjectMapper<Document, LuceneException>,
 		StructureRegistry<EntityStructure<? extends Property>> {
 
 	@Override
-	public default EntityStructure<? extends Property> getStructure(
-			Class<?> entityClass) {
+	public default EntityStructure<? extends Property> getStructure(Class<?> entityClass) {
 		return RepositoryMapper.super.getStructure(entityClass);
 	}
 }

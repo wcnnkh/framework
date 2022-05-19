@@ -88,7 +88,8 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor,
 	@SuppressWarnings("unchecked")
 	@Override
 	default <T> Processor<ResultSet, T, Throwable> getMapProcessor(TypeDescriptor type) {
-		return new DecorateObjectMappingProcessor<>(getMapper(), new ResultSetMapProcessor<>(type), (Class<T>) type.getType());
+		return new DecorateObjectMappingProcessor<>(getMapper(), new ResultSetMapProcessor<>(type),
+				(Class<T>) type.getType());
 	}
 
 	default PreparedStatementProcessor prepare(Connection connection, Sql sql) {

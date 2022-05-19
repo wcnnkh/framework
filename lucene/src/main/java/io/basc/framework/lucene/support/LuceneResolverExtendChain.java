@@ -20,8 +20,7 @@ public class LuceneResolverExtendChain implements LuceneResolver {
 		this(iterator, null);
 	}
 
-	public LuceneResolverExtendChain(Iterator<LuceneResolverExtend> iterator,
-			@Nullable LuceneResolver nextChain) {
+	public LuceneResolverExtendChain(Iterator<LuceneResolverExtend> iterator, @Nullable LuceneResolver nextChain) {
 		Assert.requiredArgument(iterator != null, "iterator");
 		this.iterator = iterator;
 		this.nextChain = nextChain;
@@ -36,7 +35,6 @@ public class LuceneResolverExtendChain implements LuceneResolver {
 		if (iterator.hasNext()) {
 			return iterator.next().resolve(descriptor, value, this);
 		}
-		return nextChain == null ? Collections.emptyList() : nextChain.resolve(
-				descriptor, value);
+		return nextChain == null ? Collections.emptyList() : nextChain.resolve(descriptor, value);
 	}
 }

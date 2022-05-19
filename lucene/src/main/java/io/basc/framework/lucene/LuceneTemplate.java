@@ -51,9 +51,7 @@ public interface LuceneTemplate extends Repository {
 		if (entity instanceof Document) {
 			// 同步
 			try {
-				write(
-						(indexWriter) -> indexWriter
-								.addDocument((Document) entity)).get();
+				write((indexWriter) -> indexWriter.addDocument((Document) entity)).get();
 			} catch (InterruptedException | ExecutionException e) {
 				throw new LuceneException(e);
 			}
@@ -68,18 +66,14 @@ public interface LuceneTemplate extends Repository {
 		if (entity instanceof Query) {
 			// TODO 应该支持这个吗，有点违背本意, 应该是删除单个
 			try {
-				write(
-						(indexWriter) -> indexWriter
-								.deleteDocuments((Query) entity)).get();
+				write((indexWriter) -> indexWriter.deleteDocuments((Query) entity)).get();
 			} catch (InterruptedException | ExecutionException e) {
 				throw new LuceneException(e);
 			}
 		} else if (entity instanceof Term) {
 			// 同步
 			try {
-				write(
-						(indexWriter) -> indexWriter
-								.deleteDocuments((Term) entity)).get();
+				write((indexWriter) -> indexWriter.deleteDocuments((Term) entity)).get();
 			} catch (InterruptedException | ExecutionException e) {
 				throw new LuceneException(e);
 			}
@@ -110,12 +104,11 @@ public interface LuceneTemplate extends Repository {
 	 * @return
 	 */
 	default boolean isPresent(Term term) {
-		return search(new SearchParameters(new TermQuery(term), 1),
-				(search, d) -> d.doc).streamAll().findFirst().isPresent();
+		return search(new SearchParameters(new TermQuery(term), 1), (search, d) -> d.doc).streamAll().findFirst()
+				.isPresent();
 	}
 
-	default Future<Long> saveOrUpdate(Term term, Object doc)
-			throws LuceneWriteException {
+	default Future<Long> saveOrUpdate(Term term, Object doc) throws LuceneWriteException {
 		return write((writer) -> {
 			if (doc == null) {
 				return 0L;
@@ -139,8 +132,7 @@ public interface LuceneTemplate extends Repository {
 		});
 	}
 
-	default Future<Long> update(Term term, Object doc)
-			throws LuceneWriteException {
+	default Future<Long> update(Term term, Object doc) throws LuceneWriteException {
 		return write((writer) -> {
 			if (doc == null) {
 				return 0L;
@@ -159,8 +151,7 @@ public interface LuceneTemplate extends Repository {
 		});
 	}
 
-	default <T, E extends Exception> T search(
-			Processor<IndexSearcher, T, ? extends E> processor)
+	default <T, E extends Exception> T search(Processor<IndexSearcher, T, ? extends E> processor)
 			throws LuceneSearchException {
 		try {
 			return read((reader) -> {
@@ -174,40 +165,34 @@ public interface LuceneTemplate extends Repository {
 		}
 	}
 
-	default <T> SearchResults<T> search(SearchParameters parameters,
-			ScoreDocMapper<T> rowMapper) throws LuceneSearchException {
+	default <T> SearchResults<T> search(SearchParameters parameters, ScoreDocMapper<T> rowMapper)
+			throws LuceneSearchException {
 		return search(new SearchProcessor<>(this, null, parameters, rowMapper));
 	}
 
-	default <T> SearchResults<T> searchAfter(ScoreDoc after,
-			SearchParameters parameters, ScoreDocMapper<T> rowMapper)
+	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters, ScoreDocMapper<T> rowMapper)
 			throws LuceneSearchException {
 		return search(new SearchProcessor<>(this, after, parameters, rowMapper));
 	}
 
 	default <T> SearchResults<T> search(SearchParameters parameters,
-			Processor<Document, T, LuceneException> mapProcessor)
-			throws LuceneSearchException {
+			Processor<Document, T, LuceneException> mapProcessor) throws LuceneSearchException {
 		return search(parameters, new ScoreDocMapper<T>() {
 
 			@Override
-			public T map(IndexSearcher indexSearcher, ScoreDoc scoreDoc)
-					throws IOException {
+			public T map(IndexSearcher indexSearcher, ScoreDoc scoreDoc) throws IOException {
 				Document document = indexSearcher.doc(scoreDoc.doc);
 				return mapProcessor.process(document);
 			}
 		});
 	}
 
-	default <T> SearchResults<T> searchAfter(ScoreDoc after,
-			SearchParameters parameters,
-			Processor<Document, T, LuceneException> mapProcessor)
-			throws LuceneSearchException {
+	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters,
+			Processor<Document, T, LuceneException> mapProcessor) throws LuceneSearchException {
 		return searchAfter(after, parameters, new ScoreDocMapper<T>() {
 
 			@Override
-			public T map(IndexSearcher indexSearcher, ScoreDoc scoreDoc)
-					throws IOException {
+			public T map(IndexSearcher indexSearcher, ScoreDoc scoreDoc) throws IOException {
 				Document document = indexSearcher.doc(scoreDoc.doc);
 				return mapProcessor.process(document);
 			}
@@ -215,95 +200,70 @@ public interface LuceneTemplate extends Repository {
 	}
 
 	@SuppressWarnings("unchecked")
-	default <T> Processor<Document, T, LuceneException> getMapProcessor(
-			TypeDescriptor type) {
-		return new DecorateObjectMappingProcessor<>(getMapper(),
-				new DefaultMappingProcessor<T, LuceneException>(type),
+	default <T> Processor<Document, T, LuceneException> getMapProcessor(TypeDescriptor type) {
+		return new DecorateObjectMappingProcessor<>(getMapper(), new DefaultMappingProcessor<T, LuceneException>(type),
 				(Class<T>) type.getType());
 	}
 
-	default <T> SearchResults<T> search(SearchParameters parameters,
-			TypeDescriptor resultType) throws LuceneSearchException {
+	default <T> SearchResults<T> search(SearchParameters parameters, TypeDescriptor resultType)
+			throws LuceneSearchException {
 		return search(parameters, getMapProcessor(resultType));
 	}
 
-	default <T> SearchResults<T> search(SearchParameters parameters,
-			Class<? extends T> resultType) throws LuceneSearchException {
+	default <T> SearchResults<T> search(SearchParameters parameters, Class<? extends T> resultType)
+			throws LuceneSearchException {
 		return search(parameters, TypeDescriptor.valueOf(resultType));
 	}
 
-	default <T> SearchResults<T> searchAfter(ScoreDoc after,
-			SearchParameters parameters, TypeDescriptor resultType)
+	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters, TypeDescriptor resultType)
 			throws LuceneSearchException {
 		return searchAfter(after, parameters, getMapProcessor(resultType));
 	}
 
-	default <T> SearchResults<T> searchAfter(ScoreDoc after,
-			SearchParameters parameters, Class<? extends T> resultType)
+	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters, Class<? extends T> resultType)
 			throws LuceneSearchException {
+		return searchAfter(after, parameters, TypeDescriptor.valueOf(resultType));
+	}
+
+	@SuppressWarnings("unchecked")
+	default <T> SearchResults<T> search(SearchParameters parameters, EntityStructure<? extends Property> structure)
+			throws LuceneSearchException {
+		return search(parameters,
+				new DecorateObjectMappingProcessor<>(getMapper(),
+						new DefaultStructureMapProcessor<T, LuceneException>(structure),
+						(Class<T>) structure.getEntityClass()));
+	}
+
+	@SuppressWarnings("unchecked")
+	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters,
+			EntityStructure<? extends Property> structure) throws LuceneSearchException {
 		return searchAfter(after, parameters,
-				TypeDescriptor.valueOf(resultType));
-	}
-
-	@SuppressWarnings("unchecked")
-	default <T> SearchResults<T> search(SearchParameters parameters,
-			EntityStructure<? extends Property> structure)
-			throws LuceneSearchException {
-		return search(
-				parameters,
 				new DecorateObjectMappingProcessor<>(getMapper(),
-						new DefaultStructureMapProcessor<T, LuceneException>(
-								structure), (Class<T>) structure
-								.getEntityClass()));
-	}
-
-	@SuppressWarnings("unchecked")
-	default <T> SearchResults<T> searchAfter(ScoreDoc after,
-			SearchParameters parameters,
-			EntityStructure<? extends Property> structure)
-			throws LuceneSearchException {
-		return searchAfter(
-				after,
-				parameters,
-				new DecorateObjectMappingProcessor<>(getMapper(),
-						new DefaultStructureMapProcessor<T, LuceneException>(
-								structure), (Class<T>) structure
-								.getEntityClass()));
+						new DefaultStructureMapProcessor<T, LuceneException>(structure),
+						(Class<T>) structure.getEntityClass()));
 	}
 
 	default Document wrap(Document document, Object instance) {
-		return wrap(
-				document,
-				instance,
-				getMapper()
-						.getFields(instance.getClass())
-						.accept((field) -> {
-							return field.isAnnotationPresent(LuceneField.class)
-									|| Value.isBaseType(field.getGetter()
-											.getType());
-						}).all());
+		return wrap(document, instance, getMapper().getFields(instance.getClass()).accept((field) -> {
+			return field.isAnnotationPresent(LuceneField.class) || Value.isBaseType(field.getGetter().getType());
+		}).all());
 	}
 
 	Document wrap(Document document, Object instance, Fields fields);
 
-	<T, E extends Exception> Future<T> write(
-			Processor<IndexWriter, T, E> processor) throws LuceneWriteException;
+	<T, E extends Exception> Future<T> write(Processor<IndexWriter, T, E> processor) throws LuceneWriteException;
 
-	<T, E extends Exception> T read(Processor<IndexReader, T, E> processor)
-			throws LuceneReadException;
+	<T, E extends Exception> T read(Processor<IndexReader, T, E> processor) throws LuceneReadException;
 
-	Document wrap(Document document,
-			EntityStructure<? extends Property> structure, Object instance);
+	Document wrap(Document document, EntityStructure<? extends Property> structure, Object instance);
 
 	default Future<Long> deleteAll() {
 		return write((e) -> e.deleteAll());
 	}
 
 	@Override
-	default long save(Class<?> entityClass,
-			Collection<? extends RepositoryColumn> columns) throws OrmException {
-		List<RepositoryColumn> list = getMapper().open(entityClass, columns,
-				null);
+	default long save(Class<?> entityClass, Collection<? extends RepositoryColumn> columns) throws OrmException {
+		List<RepositoryColumn> list = getMapper().open(entityClass, columns, null);
 		if (CollectionUtils.isEmpty(list)) {
 			return 0L;
 		}
@@ -314,8 +274,7 @@ public interface LuceneTemplate extends Repository {
 				wrap(document, list);
 				return indexWriter.addDocument(document);
 			}).get();
-		} catch (LuceneWriteException | InterruptedException
-				| ExecutionException e) {
+		} catch (LuceneWriteException | InterruptedException | ExecutionException e) {
 			throw new LuceneException(e);
 		}
 	}
@@ -325,72 +284,59 @@ public interface LuceneTemplate extends Repository {
 	Query parseQuery(Document document);
 
 	@Override
-	default long update(Class<?> entityClass,
-			Collection<? extends RepositoryColumn> columns,
-			Conditions conditions) throws OrmException {
-		List<RepositoryColumn> columnsToUse = getMapper().open(entityClass,
-				columns, null);
+	default long update(Class<?> entityClass, Collection<? extends RepositoryColumn> columns, Conditions conditions)
+			throws OrmException {
+		List<RepositoryColumn> columnsToUse = getMapper().open(entityClass, columns, null);
 		if (CollectionUtils.isEmpty(columnsToUse)) {
 			return 0L;
 		}
 
-		Query query = parseQuery(getMapper()
-				.open(entityClass, conditions, null));
+		Query query = parseQuery(getMapper().open(entityClass, conditions, null));
 		try {
-			return write(
-					(writer) -> {
-						SearchResults<Document> searchResults = search(
-								new SearchParameters(query, 100), (e) -> e);
-						Stream<Document> stream = searchResults.streamAll();
-						try {
-							Iterator<Document> iterator = stream.iterator();
-							while (iterator.hasNext()) {
-								// 使用先删除或添加的方式完成更新
-								Document document = iterator.next();
-								Query documentQuery = parseQuery(document);
-								writer.deleteDocuments(documentQuery);
-								wrap(document, columnsToUse);
-								writer.addDocument(document);
-								writer.commit();
-							}
-						} finally {
-							stream.close();
-						}
-						return searchResults.getTotal();
-					}).get();
-		} catch (LuceneSearchException | LuceneWriteException
-				| InterruptedException | ExecutionException e) {
+			return write((writer) -> {
+				SearchResults<Document> searchResults = search(new SearchParameters(query, 100), (e) -> e);
+				Stream<Document> stream = searchResults.streamAll();
+				try {
+					Iterator<Document> iterator = stream.iterator();
+					while (iterator.hasNext()) {
+						// 使用先删除或添加的方式完成更新
+						Document document = iterator.next();
+						Query documentQuery = parseQuery(document);
+						writer.deleteDocuments(documentQuery);
+						wrap(document, columnsToUse);
+						writer.addDocument(document);
+						writer.commit();
+					}
+				} finally {
+					stream.close();
+				}
+				return searchResults.getTotal();
+			}).get();
+		} catch (LuceneSearchException | LuceneWriteException | InterruptedException | ExecutionException e) {
 			throw new LuceneException(e);
 		}
 	}
 
 	@Override
-	default long delete(Class<?> entityClass, Conditions conditions)
-			throws OrmException {
-		Query query = parseQuery(getMapper()
-				.open(entityClass, conditions, null));
+	default long delete(Class<?> entityClass, Conditions conditions) throws OrmException {
+		Query query = parseQuery(getMapper().open(entityClass, conditions, null));
 		try {
 			return delete(query).get();
-		} catch (LuceneWriteException | InterruptedException
-				| ExecutionException e) {
+		} catch (LuceneWriteException | InterruptedException | ExecutionException e) {
 			throw new LuceneException(e);
 		}
 	}
 
-	Sort parseSort(EntityStructure<? extends Property> structure,
-			List<? extends OrderColumn> orders);
+	Sort parseSort(EntityStructure<? extends Property> structure, List<? extends OrderColumn> orders);
 
-	default <T> SearchResults<T> search(TypeDescriptor resultsTypeDescriptor,
-			Class<?> entityClass, Conditions conditions,
-			List<? extends OrderColumn> orders, int top) {
+	default <T> SearchResults<T> search(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
+			Conditions conditions, List<? extends OrderColumn> orders, int top) {
 		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>();
 		if (orders != null) {
 			orderColumns.addAll(orders);
 		}
-		Query query = parseQuery(getMapper().open(entityClass, conditions,
-				orderColumns));
-		Sort sort = parseSort(getMapper().getStructure(entityClass),
-				orderColumns);
+		Query query = parseQuery(getMapper().open(entityClass, conditions, orderColumns));
+		Sort sort = parseSort(getMapper().getStructure(entityClass), orderColumns);
 		SearchParameters parameters = new SearchParameters(query, top);
 		parameters.setSort(sort);
 		return search(parameters, resultsTypeDescriptor);
@@ -398,40 +344,33 @@ public interface LuceneTemplate extends Repository {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default <T> Cursor<T> query(TypeDescriptor resultsTypeDescriptor,
-			Class<?> entityClass, Conditions conditions,
-			List<? extends OrderColumn> orders, PageRequest pageRequest)
-			throws OrmException {
+	default <T> Cursor<T> query(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass, Conditions conditions,
+			List<? extends OrderColumn> orders, PageRequest pageRequest) throws OrmException {
 		PageRequest request = pageRequest;
 		if (request == null) {
 			request = PageRequest.getPageRequest();
 		}
 
 		if (request == null) {
-			return queryAll(resultsTypeDescriptor, entityClass, conditions,
-					orders);
+			return queryAll(resultsTypeDescriptor, entityClass, conditions, orders);
 		}
 
-		Cursor<T> cursor = (Cursor<T>) StreamProcessorSupport.cursor(search(
-				resultsTypeDescriptor, entityClass, conditions, orders,
-				(int) pageRequest.getPageSize()).streamAll());
+		Cursor<T> cursor = (Cursor<T>) StreamProcessorSupport
+				.cursor(search(resultsTypeDescriptor, entityClass, conditions, orders, (int) pageRequest.getPageSize())
+						.streamAll());
 		return cursor.limit(request.getStart(), request.getPageSize());
 	}
 
 	@Override
-	default <T> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor,
-			Class<?> entityClass, Conditions conditions,
+	default <T> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass, Conditions conditions,
 			List<? extends OrderColumn> orders) throws OrmException {
-		SearchResults<T> results = search(resultsTypeDescriptor, entityClass,
-				conditions, orders, 100);
+		SearchResults<T> results = search(resultsTypeDescriptor, entityClass, conditions, orders, 100);
 		return StreamProcessorSupport.cursor(results.streamAll());
 	}
 
 	@Override
-	default <T> Paginations<T> pagingQuery(
-			TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
-			Conditions conditions, List<? extends OrderColumn> orders,
-			PageRequest pageRequest) throws OrmException {
+	default <T> Paginations<T> pagingQuery(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
+			Conditions conditions, List<? extends OrderColumn> orders, PageRequest pageRequest) throws OrmException {
 		PageRequest request = pageRequest;
 		if (request == null) {
 			request = PageRequest.getPageRequest();
@@ -441,8 +380,8 @@ public interface LuceneTemplate extends Repository {
 			request = new PageRequest();
 		}
 
-		SearchResults<T> results = search(resultsTypeDescriptor, entityClass,
-				conditions, orders, (int) request.getPageSize());
+		SearchResults<T> results = search(resultsTypeDescriptor, entityClass, conditions, orders,
+				(int) request.getPageSize());
 		return results.toPaginations(request.getStart(), request.getPageSize());
 	}
 }
