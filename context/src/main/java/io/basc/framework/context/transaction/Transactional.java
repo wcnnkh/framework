@@ -20,4 +20,6 @@ public @interface Transactional {
 	public Isolation isolation() default Isolation.DEFAULT;
 
 	public int timeout() default -1;
+	
+	public Class<? extends Throwable> rollbackFor() default Throwable.class;
 }

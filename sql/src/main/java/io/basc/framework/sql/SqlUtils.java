@@ -1,5 +1,20 @@
 package io.basc.framework.sql;
 
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Accept;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.LinkedMultiValueMap;
+import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.Pair;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.XUtils;
+import io.basc.framework.util.stream.ConsumerProcessor;
+import io.basc.framework.util.stream.Cursor;
+import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.stream.StreamProcessor;
+import io.basc.framework.util.stream.StreamProcessorSupport;
+
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.sql.Array;
@@ -27,21 +42,6 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Accept;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.LinkedMultiValueMap;
-import io.basc.framework.util.MultiValueMap;
-import io.basc.framework.util.Pair;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
-import io.basc.framework.util.stream.ConsumerProcessor;
-import io.basc.framework.util.stream.Cursor;
-import io.basc.framework.util.stream.Processor;
-import io.basc.framework.util.stream.StreamProcessor;
-import io.basc.framework.util.stream.StreamProcessorSupport;
 
 public final class SqlUtils {
 	private static final String PATTERN = "(|_([a-zA-Z0-9]_?)*$)|(^[a-zA-Z](_?[a-zA-Z0-9])*_?$)";
@@ -110,20 +110,6 @@ public final class SqlUtils {
 			names[i -1] = lookupColumnName(rsmd, i);
 		}
 		return names;
-	}
-
-	public static String toLikeValue(String value) {
-		if (StringUtils.isEmpty(value)) {
-			return "%";
-		}
-
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < value.length(); i++) {
-			sb.append("%");
-			sb.append(value.charAt(i));
-		}
-		sb.append("%");
-		return sb.toString();
 	}
 
 	public static boolean isDataBaseType(Class<?> type) {

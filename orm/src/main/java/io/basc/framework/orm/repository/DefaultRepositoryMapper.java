@@ -1,7 +1,9 @@
 package io.basc.framework.orm.repository;
 
+import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
+import io.basc.framework.util.StringUtils;
 
 public class DefaultRepositoryMapper extends DefaultObjectRelationalMapper
 		implements RepositoryMapper {
@@ -28,5 +30,25 @@ public class DefaultRepositoryMapper extends DefaultObjectRelationalMapper
 	public void setRelationshipKeywords(
 			RelationshipKeywords relationshipKeywords) {
 		this.relationshipKeywords = relationshipKeywords;
+	}
+	
+	@Override
+	public String getRelationship(Class<?> entityClass,
+			ParameterDescriptor descriptor) {
+		String relationship = RepositorySetting.getLocalRelationship().get(descriptor.getName());
+		if(StringUtils.isNotEmpty(relationship)){
+			return relationship;
+		}
+		return super.getRelationship(entityClass, descriptor);
+	}
+	
+	@Override
+	public String getCondition(Class<?> entityClass,
+			ParameterDescriptor descriptor) {
+		String condition = RepositorySetting.getLocalConditions().get(descriptor.getName());
+		if(StringUtils.isNotEmpty(condition)){
+			return condition;
+		}
+		return super.getCondition(entityClass, descriptor);
 	}
 }

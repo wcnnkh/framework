@@ -16,16 +16,16 @@ import java.util.function.Predicate;
  */
 public class ConditionKeywords implements Predicate<String>, Cloneable {
 	private static final Keywords END_WITH_KEYWORDS = new Keywords(Keywords.HUMP, "endWith");
-	private static final Keywords EQU_KEYWORDS = new Keywords(Keywords.HUMP, "Equ");
-	private static final Keywords GEQ_KEYWORDS = new Keywords(Keywords.HUMP, "Geq");
-	private static final Keywords GTR_KEYWORDS = new Keywords(Keywords.HUMP, "Gtr");
-	private static final Keywords IN_KEYWORDS = new Keywords(Keywords.HUMP, "In");
-	private static final Keywords LEQ_KEYWORDS = new Keywords(Keywords.HUMP, "Leq");
+	private static final Keywords EQU_KEYWORDS = new Keywords(Keywords.HUMP, "equ");
+	private static final Keywords GEQ_KEYWORDS = new Keywords(Keywords.HUMP, "geq");
+	private static final Keywords GTR_KEYWORDS = new Keywords(Keywords.HUMP, "gtr");
+	private static final Keywords IN_KEYWORDS = new Keywords(Keywords.HUMP, "in");
+	private static final Keywords LEQ_KEYWORDS = new Keywords(Keywords.HUMP, "leq");
 
 	private static final Keywords LIKE_KEYWORDS = new Keywords(Keywords.HUMP, "like");
 
-	private static final Keywords LSS_KEYWORDS = new Keywords(Keywords.HUMP, "Lss");
-	private static final Keywords NEQ_KEYWORDS = new Keywords(Keywords.HUMP, "Neq");
+	private static final Keywords LSS_KEYWORDS = new Keywords(Keywords.HUMP, "lss");
+	private static final Keywords NEQ_KEYWORDS = new Keywords(Keywords.HUMP, "neq");
 	private static final Keywords SEARCH_KEYWORDS = new Keywords(Keywords.HUMP, "search");
 	private static final Keywords START_WITH_KEYWORDS = new Keywords(Keywords.HUMP, "startWith");
 

@@ -654,7 +654,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		} else if (conditionKeywords.getEndWithKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getColumn().getName());
-			sb.append(" like %?");
+			sb.append(" like concat(%,?)");
 			params.add(
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		} else if (conditionKeywords.getEqualOrGreaterThanKeywords().exists(condition.getCondition())) {
@@ -710,7 +710,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		} else if (conditionKeywords.getLikeKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getColumn().getName());
-			sb.append(" like %?%");
+			sb.append(" like concat(%,?,%)");
 			params.add(
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		} else if (conditionKeywords.getNotEqualKeywords().exists(condition.getCondition())) {
@@ -719,13 +719,21 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			params.add(
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		} else if (conditionKeywords.getSearchKeywords().exists(condition.getCondition())) {
+			String value = (String) getEnvironment().getConversionService().convert(condition.getColumn().getValue(),
+					condition.getColumn().getValueTypeDescriptor(), TypeDescriptor.valueOf(String.class));
+			if(StringUtils.isEmpty(value)){
+				return ;
+			}
+			
 			keywordProcessing(sb, condition.getColumn().getName());
-			sb.append(" like " + SqlUtils.toLikeValue(
-					(String) getEnvironment().getConversionService().convert(condition.getColumn().getValue(),
-							condition.getColumn().getValueTypeDescriptor(), TypeDescriptor.valueOf(String.class))));
+			sb.append(" like %");
+			for(int i=0; i<value.length(); i++){
+				sb.append(value.charAt(i));
+				sb.append("%");
+			}
 		} else if (conditionKeywords.getStartWithKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getColumn().getName());
-			sb.append(" like ?%");
+			sb.append(" like concat(?,%)");
 			params.add(
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		} else {
