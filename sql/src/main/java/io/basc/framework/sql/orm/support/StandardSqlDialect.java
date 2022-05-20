@@ -654,7 +654,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		} else if (conditionKeywords.getEndWithKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getColumn().getName());
-			sb.append(" like concat(%,?)");
+			sb.append(" like concat('%',?)");
 			params.add(
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		} else if (conditionKeywords.getEqualOrGreaterThanKeywords().exists(condition.getCondition())) {
@@ -710,7 +710,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		} else if (conditionKeywords.getLikeKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getColumn().getName());
-			sb.append(" like concat(%,?,%)");
+			sb.append(" like concat('%',?,'%')");
 			params.add(
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		} else if (conditionKeywords.getNotEqualKeywords().exists(condition.getCondition())) {
@@ -726,14 +726,15 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			}
 			
 			keywordProcessing(sb, condition.getColumn().getName());
-			sb.append(" like %");
+			sb.append(" like '%");
 			for(int i=0; i<value.length(); i++){
 				sb.append(value.charAt(i));
 				sb.append("%");
 			}
+			sb.append("'");
 		} else if (conditionKeywords.getStartWithKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getColumn().getName());
-			sb.append(" like concat(?,%)");
+			sb.append(" like concat(?,'%')");
 			params.add(
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		} else {
