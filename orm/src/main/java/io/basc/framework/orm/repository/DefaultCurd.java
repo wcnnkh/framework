@@ -2,17 +2,17 @@ package io.basc.framework.orm.repository;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.PageRequest;
+import io.basc.framework.orm.OrmException;
 import io.basc.framework.util.page.Paginations;
 import io.basc.framework.util.stream.Cursor;
 
 import java.util.List;
 
-public class DefaultCurdRepository<V> implements CurdRepository<V> {
+public class DefaultCurd<V> implements Curd<V> {
 	private final Class<? extends V> entityClass;
-	private final Repository repository;
+	private final CurdRepository repository;
 
-	public DefaultCurdRepository(Class<? extends V> entityClass,
-			Repository repository) {
+	public DefaultCurd(Class<? extends V> entityClass, CurdRepository repository) {
 		this.entityClass = entityClass;
 		this.repository = repository;
 	}
@@ -106,5 +106,51 @@ public class DefaultCurdRepository<V> implements CurdRepository<V> {
 	@Override
 	public boolean saveIfAbsent(V entity) {
 		return repository.saveIfAbsent(entityClass, entity);
+	}
+
+	@Override
+	public <T> T getById(TypeDescriptor resultsTypeDescriptor,
+			Object... entityIds) throws OrmException {
+		return repository
+				.getById(resultsTypeDescriptor, entityClass, entityIds);
+	}
+
+	@Override
+	public <T> List<T> getInIds(TypeDescriptor resultsTypeDescriptor,
+			List<?> entityInIds, Object... entityIds) throws OrmException {
+		return repository.getInIds(resultsTypeDescriptor, entityClass,
+				entityInIds, entityIds);
+	}
+
+	@Override
+	public <T> Paginations<T> pagingQuery(TypeDescriptor resultsTypeDescriptor,
+			V conditions, PageRequest request) throws OrmException {
+		return repository.pagingQuery(resultsTypeDescriptor, entityClass,
+				conditions, request);
+	}
+
+	@Override
+	public <T> Cursor<T> query(TypeDescriptor resultsTypeDescriptor,
+			V conditions, PageRequest request) throws OrmException {
+		return repository.query(resultsTypeDescriptor, entityClass, conditions,
+				request);
+	}
+
+	@Override
+	public <T> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor)
+			throws OrmException {
+		return repository.queryAll(resultsTypeDescriptor, entityClass);
+	}
+
+	@Override
+	public <T> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor,
+			V conditions) throws OrmException {
+		return repository.queryAll(resultsTypeDescriptor, entityClass,
+				conditions);
+	}
+
+	@Override
+	public boolean isPresentById(Object... ids) {
+		return repository.isPresentById(entityClass, ids);
 	}
 }

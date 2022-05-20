@@ -82,7 +82,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	@Override
-	default long delete(Class<?> entityClass, Conditions conditions) throws OrmException {
+	default <E> long delete(Class<? extends E> entityClass, Conditions conditions) throws OrmException {
 		return delete(getMapper().getStructure(entityClass), conditions);
 	}
 
@@ -104,7 +104,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	@Override
-	default boolean deleteById(Class<?> entityClass, Object... ids) {
+	default <E> boolean deleteById(Class<? extends E> entityClass, Object... ids) {
 		return deleteById(null, entityClass, ids) > 0;
 	}
 
@@ -373,7 +373,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	@Override
-	default <T> Paginations<T> pagingQuery(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
+	default <T, E> Paginations<T> pagingQuery(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
 			Conditions conditions, List<? extends OrderColumn> orders, PageRequest pageRequest) throws OrmException {
 		return pagingQuery(resultsTypeDescriptor, getMapper().getStructure(entityClass), conditions, orders,
 				pageRequest);
@@ -457,7 +457,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	@Override
-	default <T> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass, Conditions conditions,
+	default <T, E> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass, Conditions conditions,
 			List<? extends OrderColumn> orderColumns) throws OrmException {
 		return query(resultsTypeDescriptor, getMapper().getStructure(entityClass), conditions, orderColumns);
 	}
@@ -497,7 +497,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	@Override
-	default long save(Class<?> entityClass, Collection<? extends RepositoryColumn> columns) throws OrmException {
+	default <E> long save(Class<? extends E> entityClass, Collection<? extends RepositoryColumn> columns) throws OrmException {
 		return save(getMapper().getStructure(entityClass), columns);
 	}
 
@@ -586,7 +586,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	@Override
-	default long update(Class<?> entityClass, Collection<? extends RepositoryColumn> columns, Conditions conditions)
+	default <E> long update(Class<? extends E> entityClass, Collection<? extends RepositoryColumn> columns, Conditions conditions)
 			throws OrmException {
 		return update(getMapper().getStructure(entityClass), columns, conditions);
 	}

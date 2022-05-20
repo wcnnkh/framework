@@ -93,7 +93,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements
 	}
 
 	@Override
-	public boolean deleteById(Class<?> entityClass, Object... ids) {
+	public <E> boolean deleteById(Class<? extends E> entityClass, Object... ids) {
 		CacheManager cacheManager = getCacheManager();
 		if (cacheManager != null) {
 			cacheManager.deleteById(entityClass, ids);

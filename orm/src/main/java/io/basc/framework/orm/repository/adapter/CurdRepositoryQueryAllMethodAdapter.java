@@ -2,7 +2,7 @@ package io.basc.framework.orm.repository.adapter;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.orm.repository.Repository;
+import io.basc.framework.orm.repository.RepositoryTemplate;
 
 import java.lang.reflect.Method;
 
@@ -16,13 +16,13 @@ public final class CurdRepositoryQueryAllMethodAdapter extends
 	}
 
 	@Override
-	protected Object intercept(Repository repository, MethodInvoker invoker,
-			Object[] args, Class<?> entityClass,
+	protected Object intercept(RepositoryTemplate repository,
+			MethodInvoker invoker, Object[] args, Class<?> entityClass,
 			TypeDescriptor resultsTypeDescriptor, String methodName)
 			throws Throwable {
 		if (args != null && args.length == 1) {
-			return repository.queryAll(resultsTypeDescriptor, entityClass,
-					args[0]);
+			return repository.queryAll((TypeDescriptor) args[0], entityClass,
+					args[1]);
 		}
 		return repository.queryAll(resultsTypeDescriptor, entityClass);
 	}

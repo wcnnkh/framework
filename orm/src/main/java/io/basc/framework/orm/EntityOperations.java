@@ -22,7 +22,7 @@ public interface EntityOperations {
 	 * @param entity
 	 * @return
 	 */
-	default boolean delete(Object entity) {
+	default <T> boolean delete(T entity) {
 		if (entity == null) {
 			return false;
 		}
@@ -37,7 +37,7 @@ public interface EntityOperations {
 	 * @param ids
 	 * @return 如果数据不存在就返回false
 	 */
-	boolean deleteById(Class<?> entityClass, Object... ids);
+	<T> boolean deleteById(Class<? extends T> entityClass, Object... ids);
 
 	/**
 	 * 获取数据
@@ -71,7 +71,7 @@ public interface EntityOperations {
 	 * @param ids
 	 * @return
 	 */
-	boolean isPresent(Class<?> entityClass, Object... ids);
+	<T> boolean isPresentById(Class<? extends T> entityClass, Object... ids);
 
 	/**
 	 * 保存
@@ -85,7 +85,7 @@ public interface EntityOperations {
 	 * @see #save(Class, Object)
 	 * @param entity
 	 */
-	default void save(Object entity) {
+	default <T> void save(T entity) {
 		Assert.requiredArgument(entity != null, "entity");
 		save(getUserClass(entity.getClass()), entity);
 	}
@@ -135,7 +135,7 @@ public interface EntityOperations {
 	 * @param entity
 	 * @return
 	 */
-	default boolean saveOrUpdate(Object entity) {
+	default <T> boolean saveOrUpdate(T entity) {
 		Assert.requiredArgument(entity != null, "entity");
 		return saveOrUpdate(getUserClass(entity.getClass()), entity);
 	}
@@ -156,7 +156,7 @@ public interface EntityOperations {
 	 * @param entity
 	 * @return
 	 */
-	default boolean update(Object entity) {
+	default <T> boolean update(T entity) {
 		if (entity == null) {
 			return false;
 		}

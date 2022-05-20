@@ -2,7 +2,7 @@ package io.basc.framework.orm.repository.adapter;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.orm.repository.Repository;
+import io.basc.framework.orm.repository.RepositoryTemplate;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -18,11 +18,15 @@ public final class CurdRepositoryGetInIdsMethodAdapter extends
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	protected Object intercept(Repository repository, MethodInvoker invoker,
-			Object[] args, Class<?> entityClass,
+	protected Object intercept(RepositoryTemplate template,
+			MethodInvoker invoker, Object[] args, Class<?> entityClass,
 			TypeDescriptor resultsTypeDescriptor, String methodName)
 			throws Throwable {
-		return repository.getInIds(resultsTypeDescriptor, entityClass,
+		if (args.length == 3) {
+			return template.getInIds((TypeDescriptor) args[0], entityClass,
+					(List) args[1], args[2]);
+		}
+		return template.getInIds(resultsTypeDescriptor, entityClass,
 				(List) args[0], args[1]);
 	}
 }

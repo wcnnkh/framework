@@ -46,7 +46,7 @@ public interface LuceneTemplate extends Repository {
 		return wrap(new Document(), instance);
 	}
 
-	default void save(Object entity) throws LuceneWriteException {
+	default <T> void save(T entity) throws LuceneWriteException {
 		Assert.requiredArgument(entity != null, "entity");
 		if (entity instanceof Document) {
 			// 同步
@@ -59,9 +59,9 @@ public interface LuceneTemplate extends Repository {
 			Repository.super.save(entity);
 		}
 	}
-
+	
 	@Override
-	default boolean delete(Object entity) {
+	default <T> boolean delete(T entity) {
 		Assert.requiredArgument(entity != null, "entity");
 		if (entity instanceof Query) {
 			// TODO 应该支持这个吗，有点违背本意, 应该是删除单个
@@ -262,7 +262,7 @@ public interface LuceneTemplate extends Repository {
 	}
 
 	@Override
-	default long save(Class<?> entityClass, Collection<? extends RepositoryColumn> columns) throws OrmException {
+	default <E> long save(Class<? extends E> entityClass, Collection<? extends RepositoryColumn> columns) throws OrmException {
 		List<RepositoryColumn> list = getMapper().open(entityClass, columns, null);
 		if (CollectionUtils.isEmpty(list)) {
 			return 0L;
@@ -284,7 +284,7 @@ public interface LuceneTemplate extends Repository {
 	Query parseQuery(Document document);
 
 	@Override
-	default long update(Class<?> entityClass, Collection<? extends RepositoryColumn> columns, Conditions conditions)
+	default <E> long update(Class<? extends E> entityClass, Collection<? extends RepositoryColumn> columns, Conditions conditions)
 			throws OrmException {
 		List<RepositoryColumn> columnsToUse = getMapper().open(entityClass, columns, null);
 		if (CollectionUtils.isEmpty(columnsToUse)) {
@@ -318,7 +318,7 @@ public interface LuceneTemplate extends Repository {
 	}
 
 	@Override
-	default long delete(Class<?> entityClass, Conditions conditions) throws OrmException {
+	default <E> long delete(Class<? extends E> entityClass, Conditions conditions) throws OrmException {
 		Query query = parseQuery(getMapper().open(entityClass, conditions, null));
 		try {
 			return delete(query).get();
@@ -362,14 +362,14 @@ public interface LuceneTemplate extends Repository {
 	}
 
 	@Override
-	default <T> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass, Conditions conditions,
+	default <T, E> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass, Conditions conditions,
 			List<? extends OrderColumn> orders) throws OrmException {
 		SearchResults<T> results = search(resultsTypeDescriptor, entityClass, conditions, orders, 100);
 		return StreamProcessorSupport.cursor(results.streamAll());
 	}
 
 	@Override
-	default <T> Paginations<T> pagingQuery(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
+	default <T, E> Paginations<T> pagingQuery(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
 			Conditions conditions, List<? extends OrderColumn> orders, PageRequest pageRequest) throws OrmException {
 		PageRequest request = pageRequest;
 		if (request == null) {

@@ -2,7 +2,7 @@ package io.basc.framework.orm.repository.adapter;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.orm.repository.Repository;
+import io.basc.framework.orm.repository.RepositoryTemplate;
 
 import java.lang.reflect.Method;
 
@@ -16,12 +16,15 @@ public final class CurdRepositoryQueryListMethodAdapter extends
 	}
 
 	@Override
-	protected Object intercept(Repository repository, MethodInvoker invoker,
-			Object[] args, Class<?> entityClass,
+	protected Object intercept(RepositoryTemplate template,
+			MethodInvoker invoker, Object[] args, Class<?> entityClass,
 			TypeDescriptor resultsTypeDescriptor, String methodName)
 			throws Throwable {
-		return repository
-				.queryList(resultsTypeDescriptor, entityClass, args[0]);
+		if (args.length == 2) {
+			return template.queryList((TypeDescriptor) args[0], entityClass,
+					args[1]);
+		}
+		return template.queryList(resultsTypeDescriptor, entityClass, args[0]);
 	}
 
 }

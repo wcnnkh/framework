@@ -3,9 +3,7 @@ package io.basc.framework.orm.repository.adapter;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.lang.NotSupportedException;
-import io.basc.framework.orm.repository.Repository;
-
-import java.lang.reflect.Method;
+import io.basc.framework.orm.repository.RepositoryTemplate;
 
 public class RepositoryMethodAdapterRegistry extends
 		ConfigurableServices<RepositoryMethodAdapter> implements
@@ -28,13 +26,13 @@ public class RepositoryMethodAdapterRegistry extends
 		addService(new CurdRepositoryUpdateAllMethodAdapter());
 		addService(new CurdRepositoryUpdateMethodAdapter());
 		addService(new CurdRepositorySaveIfAbsentAdapter());
-		setAfterService(new CustomCurdRepositoryMethodAdapter());
+		setAfterService(new CustomRepositoryMethodAdapter());
 	}
 
 	@Override
-	public boolean test(Method method) {
+	public boolean test(MethodInvoker invoker) {
 		for (RepositoryMethodAdapter adapter : this) {
-			if (adapter.test(method)) {
+			if (adapter.test(invoker)) {
 				return true;
 			}
 		}
@@ -42,10 +40,10 @@ public class RepositoryMethodAdapterRegistry extends
 	}
 
 	@Override
-	public Object intercept(Repository repository, MethodInvoker invoker,
-			Object[] args) throws Throwable {
+	public Object intercept(RepositoryTemplate repository,
+			MethodInvoker invoker, Object[] args) throws Throwable {
 		for (RepositoryMethodAdapter adapter : this) {
-			if (adapter.test(invoker.getMethod())) {
+			if (adapter.test(invoker)) {
 				return adapter.intercept(repository, invoker, args);
 			}
 		}

@@ -2,7 +2,7 @@ package io.basc.framework.orm.repository.adapter;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.orm.repository.Repository;
+import io.basc.framework.orm.repository.RepositoryTemplate;
 
 import java.lang.reflect.Method;
 
@@ -16,10 +16,10 @@ public final class CurdRepositoryIsPresentMethodAdapter extends
 	}
 
 	@Override
-	protected Object intercept(Repository repository, MethodInvoker invoker,
-			Object[] args, Class<?> entityClass,
+	protected Object intercept(RepositoryTemplate template,
+			MethodInvoker invoker, Object[] args, Class<?> entityClass,
 			TypeDescriptor resultsTypeDescriptor, String methodName)
 			throws Throwable {
-		return repository.isPresent(entityClass, args[0]);
+		return template.isPresent(entityClass, args[0]);
 	}
 }

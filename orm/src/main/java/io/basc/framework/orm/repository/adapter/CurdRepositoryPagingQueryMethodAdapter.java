@@ -3,7 +3,7 @@ package io.basc.framework.orm.repository.adapter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.data.domain.PageRequest;
-import io.basc.framework.orm.repository.Repository;
+import io.basc.framework.orm.repository.RepositoryTemplate;
 
 import java.lang.reflect.Method;
 
@@ -17,11 +17,15 @@ public final class CurdRepositoryPagingQueryMethodAdapter extends
 	}
 
 	@Override
-	protected Object intercept(Repository repository, MethodInvoker invoker,
-			Object[] args, Class<?> entityClass,
+	protected Object intercept(RepositoryTemplate template,
+			MethodInvoker invoker, Object[] args, Class<?> entityClass,
 			TypeDescriptor resultsTypeDescriptor, String methodName)
 			throws Throwable {
-		return repository.pagingQuery(resultsTypeDescriptor, entityClass,
+		if (args.length == 3) {
+			return template.pagingQuery((TypeDescriptor) args[0], entityClass,
+					args[1], (PageRequest) args[2]);
+		}
+		return template.pagingQuery(resultsTypeDescriptor, entityClass,
 				args[0], (PageRequest) args[1]);
 	}
 }

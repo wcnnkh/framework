@@ -1,14 +1,11 @@
 package io.basc.framework.orm.repository.adapter;
 
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.orm.repository.Repository;
+import io.basc.framework.orm.repository.RepositoryTemplate;
 
-import java.lang.reflect.Method;
-import java.util.function.Predicate;
+public interface RepositoryMethodAdapter {
+	boolean test(MethodInvoker invoker);
 
-public interface RepositoryMethodAdapter extends Predicate<Method> {
-	boolean test(Method method);
-
-	Object intercept(Repository repository, MethodInvoker invoker, Object[] args)
-			throws Throwable;
+	Object intercept(RepositoryTemplate template, MethodInvoker invoker,
+			Object[] args) throws Throwable;
 }

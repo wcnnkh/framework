@@ -25,7 +25,8 @@ import org.apache.lucene.store.MMapDirectory;
 
 public class DefaultLuceneTemplate extends AbstractLuceneTemplate {
 	public static final String DIRECTORY_PREFIX = "lucene-documents";
-	private ThreadLocal<DirectoryReader> localReader = new NamedThreadLocal<>(DIRECTORY_PREFIX);
+	private ThreadLocal<DirectoryReader> localReader = new NamedThreadLocal<>(
+			DIRECTORY_PREFIX);
 	private final Directory directory;
 	private final Analyzer analyzer;
 
@@ -34,16 +35,18 @@ public class DefaultLuceneTemplate extends AbstractLuceneTemplate {
 	}
 
 	/**
-	 * @param more 注意此参数并不是一个路径，只是一个名称，使用的是workPath/{DIRECTORY_PREFIX}/{more}
-	 *             下此名称的目录
+	 * @param more
+	 *            注意此参数并不是一个路径，只是一个名称，使用的是workPath/{DIRECTORY_PREFIX}/{more}
+	 *            下此名称的目录
 	 * @see Paths#get(String, String...)
 	 * @see Sys#getWorkPath()
 	 * @throws LuceneException
 	 */
-	public DefaultLuceneTemplate(Analyzer analyzer, String... more) throws LuceneException {
-		this(analyzer,
-				Paths.get(Paths.get(new File(Sys.env.getWorkPath()).toPath().toString(), DIRECTORY_PREFIX).toString(),
-						checkAndReturnMore(more)));
+	public DefaultLuceneTemplate(Analyzer analyzer, String... more)
+			throws LuceneException {
+		this(analyzer, Paths.get(
+				Paths.get(new File(Sys.env.getWorkPath()).toPath().toString(),
+						DIRECTORY_PREFIX).toString(), checkAndReturnMore(more)));
 	}
 
 	private static String[] checkAndReturnMore(String... more) {
@@ -51,7 +54,8 @@ public class DefaultLuceneTemplate extends AbstractLuceneTemplate {
 		return more;
 	}
 
-	public DefaultLuceneTemplate(Analyzer analyzer, Path path) throws LuceneException {
+	public DefaultLuceneTemplate(Analyzer analyzer, Path path)
+			throws LuceneException {
 		super();
 		this.analyzer = analyzer;
 		try {
@@ -61,7 +65,8 @@ public class DefaultLuceneTemplate extends AbstractLuceneTemplate {
 		}
 	}
 
-	public DefaultLuceneTemplate(AsyncExecutor writeExecutor, Analyzer analyzer, Path path) throws LuceneException {
+	public DefaultLuceneTemplate(AsyncExecutor writeExecutor,
+			Analyzer analyzer, Path path) throws LuceneException {
 		super(writeExecutor);
 		this.analyzer = analyzer;
 		try {
@@ -77,13 +82,15 @@ public class DefaultLuceneTemplate extends AbstractLuceneTemplate {
 		this.analyzer = analyzer;
 	}
 
-	public DefaultLuceneTemplate(AsyncExecutor writeExecutor, Analyzer analyzer, Directory directory) {
+	public DefaultLuceneTemplate(AsyncExecutor writeExecutor,
+			Analyzer analyzer, Directory directory) {
 		super(writeExecutor);
 		this.directory = directory;
 		this.analyzer = analyzer;
 	}
 
-	public DefaultLuceneTemplate(AsyncExecutor writeExecutor, @Nullable Executor readExecutor, Analyzer analyzer,
+	public DefaultLuceneTemplate(AsyncExecutor writeExecutor,
+			@Nullable Executor readExecutor, Analyzer analyzer,
 			Directory directory) {
 		super(writeExecutor, readExecutor);
 		this.directory = directory;
@@ -144,8 +151,8 @@ public class DefaultLuceneTemplate extends AbstractLuceneTemplate {
 	}
 
 	@Override
-	public <T> SearchResults<T> search(SearchParameters parameters, ScoreDocMapper<T> rowMapper)
-			throws LuceneSearchException {
+	public <T> SearchResults<T> search(SearchParameters parameters,
+			ScoreDocMapper<T> rowMapper) throws LuceneSearchException {
 		if (!indexExists()) {
 			return new SearchResults<>(parameters, null, rowMapper, this);
 		}
@@ -160,7 +167,8 @@ public class DefaultLuceneTemplate extends AbstractLuceneTemplate {
 	}
 
 	@Override
-	public <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters, ScoreDocMapper<T> rowMapper)
+	public <T> SearchResults<T> searchAfter(ScoreDoc after,
+			SearchParameters parameters, ScoreDocMapper<T> rowMapper)
 			throws LuceneSearchException {
 		if (!indexExists()) {
 			return new SearchResults<>(parameters, null, rowMapper, this);

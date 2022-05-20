@@ -19,6 +19,7 @@ import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.RelationshipKeywords;
 import io.basc.framework.orm.repository.Repository;
 import io.basc.framework.orm.repository.RepositoryColumn;
+import io.basc.framework.orm.repository.RepositoryTemplate;
 import io.basc.framework.orm.repository.WithCondition;
 import io.basc.framework.util.CharSequenceSplitSegment;
 import io.basc.framework.util.Keywords;
@@ -35,7 +36,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CustomCurdRepositoryMethodAdapter extends
+public class CustomRepositoryMethodAdapter extends
 		CurdRepositoryMethodAdapter implements Ordered {
 	private static final Keywords ORDER_BY_KEYWORDS = new Keywords(
 			Keywords.HUMP, "orderBy");
@@ -78,8 +79,8 @@ public class CustomCurdRepositoryMethodAdapter extends
 	}
 
 	@Override
-	protected Object intercept(Repository repository, MethodInvoker invoker,
-			Object[] args, Class<?> entityClass,
+	protected Object intercept(RepositoryTemplate template,
+			MethodInvoker invoker, Object[] args, Class<?> entityClass,
 			TypeDescriptor resultsTypeDescriptor, String methodName)
 			throws Throwable {
 		String express = methodName;
@@ -89,10 +90,10 @@ public class CustomCurdRepositoryMethodAdapter extends
 		}
 
 		express = express.substring(keywords.length());
-		return process(repository, keywords, express, invoker, args,
-				entityClass, resultsTypeDescriptor, repository.getMapper()
-						.getConditionKeywords(), repository.getMapper()
-						.getRelationshipKeywords());
+		return process(template.getRepository(), keywords, express, invoker,
+				args, entityClass, resultsTypeDescriptor, template
+						.getRepository().getMapper().getConditionKeywords(),
+				template.getRepository().getMapper().getRelationshipKeywords());
 	}
 
 	private List<RepositoryColumn> parseColumns(MethodInvoker invoker,

@@ -10,7 +10,4 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Repository {
-	Class<? extends io.basc.framework.orm.repository.Repository> value() default io.basc.framework.orm.repository.Repository.class;
-
-	String name() default "";
 }

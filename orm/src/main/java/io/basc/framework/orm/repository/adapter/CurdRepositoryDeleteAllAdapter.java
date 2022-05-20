@@ -2,7 +2,7 @@ package io.basc.framework.orm.repository.adapter;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.orm.repository.Repository;
+import io.basc.framework.orm.repository.RepositoryTemplate;
 import io.basc.framework.util.ArrayUtils;
 
 import java.lang.reflect.Method;
@@ -17,11 +17,11 @@ public final class CurdRepositoryDeleteAllAdapter extends
 	}
 
 	@Override
-	protected Object intercept(Repository repository, MethodInvoker invoker,
-			Object[] args, Class<?> entityClass,
+	protected Object intercept(RepositoryTemplate repository,
+			MethodInvoker invoker, Object[] args, Class<?> entityClass,
 			TypeDescriptor resultsTypeDescriptor, String methodName)
 			throws Throwable {
-		if(ArrayUtils.isEmpty(args)){
+		if (ArrayUtils.isEmpty(args)) {
 			return repository.deleteAll(entityClass);
 		}
 		return repository.deleteAll(entityClass, args[0]);
