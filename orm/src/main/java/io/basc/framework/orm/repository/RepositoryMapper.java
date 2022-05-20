@@ -33,6 +33,19 @@ public interface RepositoryMapper extends ObjectRelationalMapper {
 		return RelationshipKeywords.DEFAULT;
 	}
 
+	default ConditionsBuilder conditionsBuilder() {
+		return new ConditionsBuilder(getRelationshipKeywords(), getConditionKeywords());
+	}
+
+	default ConditionsBuilder conditionsBuilder(Condition condition) {
+		return new ConditionsBuilder(getRelationshipKeywords(), getConditionKeywords(), condition);
+	}
+
+	default <E extends Throwable> ConditionsBuilder conditionsBuilder(
+			Processor<ConditionBuilder, Condition, E> conditionBuilder) throws E {
+		return new ConditionsBuilder(getRelationshipKeywords(), getConditionKeywords(), conditionBuilder);
+	}
+
 	/**
 	 * 将参数依据orm规则展开
 	 * 
@@ -142,7 +155,7 @@ public interface RepositoryMapper extends ObjectRelationalMapper {
 	default Conditions parseConditions(Class<?> entityClass, Iterator<? extends RepositoryColumn> iterator) {
 		RelationshipKeywords relationshipKeywords = getRelationshipKeywords();
 		ConditionKeywords conditionKeywords = getConditionKeywords();
-		return Conditions.build(XUtils.stream(iterator).map((column) -> {
+		return ConditionsBuilder.build(XUtils.stream(iterator).map((column) -> {
 			String relationship = getRelationship(entityClass, column);
 			if (StringUtils.isEmpty(relationship)) {
 				relationship = relationshipKeywords.getAndKeywords().getFirst();

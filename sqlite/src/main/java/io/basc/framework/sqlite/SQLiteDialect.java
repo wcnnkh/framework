@@ -228,4 +228,18 @@ public class SQLiteDialect extends StandardSqlDialect {
 		sql.append(")");
 		return new SimpleSql(sql.toString(), params.toArray());
 	}
+	
+	@Override
+	public void concat(StringBuilder sb, String... strs) {
+		if(strs == null || strs.length == 0) {
+			return ;
+		}
+		
+		for(int i=0; i<strs.length; i++) {
+			if(i != 0) {
+				sb.append("||");
+			}
+			sb.append(strs[i]);
+		}
+	}
 }

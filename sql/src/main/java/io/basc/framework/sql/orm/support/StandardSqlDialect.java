@@ -1,11 +1,18 @@
 package io.basc.framework.sql.orm.support;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import io.basc.framework.aop.support.FieldSetterListen;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
-import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.ParameterException;
 import io.basc.framework.mapper.Field;
@@ -32,14 +39,6 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 标准的sql方言
@@ -637,11 +636,37 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		}
 
 		for (WithCondition withCondition : withConditions) {
-			if (getRelationshipKeywords().getAndKeywords().exists(withCondition.getWith())) {
-				sb.append(" and ");
-				appendWhere(withCondition.getCondition(), sb, params);
+			boolean append = sb.length() > 0;
+			if (append) {
+				if (getRelationshipKeywords().getAndKeywords().exists(withCondition.getWith())) {
+					sb.append(" and ");
+				} else if (getRelationshipKeywords().getOrKeywords().exists(withCondition.getWith())) {
+					sb.append(" or ");
+				} else {
+					sb.append(" ").append(withCondition.getWith()).append(" ");
+				}
+				sb.append("(");
+			}
+			appendWhere(withCondition.getCondition(), sb, params);
+			if (append) {
+				sb.append(")");
 			}
 		}
+	}
+
+	public void concat(StringBuilder sb, String... strs) {
+		if (strs == null || strs.length == 0) {
+			return;
+		}
+
+		sb.append("concat(");
+		for (int i = 0; i < strs.length; i++) {
+			if (i != 0) {
+				sb.append(",");
+			}
+			sb.append(strs[i]);
+		}
+		sb.append(")");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -654,7 +679,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		} else if (conditionKeywords.getEndWithKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getColumn().getName());
-			sb.append(" like concat('%',?)");
+			sb.append(" like ");
+			concat(sb, "'%'", "?");
 			params.add(
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		} else if (conditionKeywords.getEqualOrGreaterThanKeywords().exists(condition.getCondition())) {
@@ -710,7 +736,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		} else if (conditionKeywords.getLikeKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getColumn().getName());
-			sb.append(" like concat('%',?,'%')");
+			sb.append(" like ");
+			concat(sb, "'%'", "?", "'%'");
 			params.add(
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		} else if (conditionKeywords.getNotEqualKeywords().exists(condition.getCondition())) {
@@ -721,24 +748,28 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		} else if (conditionKeywords.getSearchKeywords().exists(condition.getCondition())) {
 			String value = (String) getEnvironment().getConversionService().convert(condition.getColumn().getValue(),
 					condition.getColumn().getValueTypeDescriptor(), TypeDescriptor.valueOf(String.class));
-			if(StringUtils.isEmpty(value)){
-				return ;
+			if (StringUtils.isEmpty(value)) {
+				return;
 			}
-			
+
 			keywordProcessing(sb, condition.getColumn().getName());
 			sb.append(" like '%");
-			for(int i=0; i<value.length(); i++){
+			for (int i = 0; i < value.length(); i++) {
 				sb.append(value.charAt(i));
 				sb.append("%");
 			}
 			sb.append("'");
 		} else if (conditionKeywords.getStartWithKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getColumn().getName());
-			sb.append(" like concat(?,'%')");
+			sb.append(" like ");
+			concat(sb, "?", "'%'");
 			params.add(
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		} else {
-			throw new NotSupportedException(condition.toString());
+			keywordProcessing(sb, condition.getColumn().getName());
+			sb.append(" ").append(condition.getCondition()).append(" ?");
+			params.add(
+					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		}
 	}
 

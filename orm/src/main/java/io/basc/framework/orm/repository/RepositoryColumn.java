@@ -9,8 +9,9 @@ import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.env.BascObject;
 import io.basc.framework.lang.Nullable;
 
-public class RepositoryColumn extends BascObject implements Serializable,
-		ParameterDescriptor {
+public class RepositoryColumn extends BascObject implements Serializable, ParameterDescriptor {
+	public static final RepositoryColumn EMPTY = new RepositoryColumn(null, null);
+
 	private static final long serialVersionUID = 1L;
 	private final String name;
 	private final Object value;
@@ -20,8 +21,7 @@ public class RepositoryColumn extends BascObject implements Serializable,
 		this(name, value, null);
 	}
 
-	public RepositoryColumn(String name, Object value,
-			@Nullable TypeDescriptor valueTypeDescriptor) {
+	public RepositoryColumn(String name, Object value, @Nullable TypeDescriptor valueTypeDescriptor) {
 		this.name = name;
 		this.value = value;
 		this.valueTypeDescriptor = valueTypeDescriptor;
@@ -36,8 +36,7 @@ public class RepositoryColumn extends BascObject implements Serializable,
 	}
 
 	public TypeDescriptor getValueTypeDescriptor() {
-		return valueTypeDescriptor == null ? TypeDescriptor.forObject(value)
-				: valueTypeDescriptor;
+		return valueTypeDescriptor == null ? TypeDescriptor.forObject(value) : valueTypeDescriptor;
 	}
 
 	@Override
