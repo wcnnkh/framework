@@ -8,16 +8,16 @@ import io.basc.framework.orm.EntityStructure;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.stream.Processor;
 
-public abstract class EntityStructureMapProcessor<P extends Property, S, T, E extends Throwable>
+public abstract class EntityStructureMappintProcessor<P extends Property, S, T, E extends Throwable>
 		implements Processor<S, T, E> {
 	private final EntityStructure<? extends P> structore;
 	private final ConversionService conversionService;
 
-	public EntityStructureMapProcessor(EntityStructure<? extends P> structore) {
+	public EntityStructureMappintProcessor(EntityStructure<? extends P> structore) {
 		this(structore, Sys.env.getConversionService());
 	}
 
-	public EntityStructureMapProcessor(EntityStructure<? extends P> structore, ConversionService conversionService) {
+	public EntityStructureMappintProcessor(EntityStructure<? extends P> structore, ConversionService conversionService) {
 		this.structore = structore;
 		this.conversionService = conversionService;
 	}

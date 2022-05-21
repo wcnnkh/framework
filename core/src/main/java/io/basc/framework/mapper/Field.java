@@ -11,6 +11,7 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.EmptyValue;
 
 public final class Field extends FieldMetadata {
@@ -112,5 +113,22 @@ public final class Field extends FieldMetadata {
 			}
 		}
 		getSetter().set(parentValue, value, conversionService);
+	}
+
+	public <V, E extends Throwable> V getValueByNames(Processor<String, V, E> processor) throws E {
+		if (isSupportSetter()) {
+			V value = processor.process(getSetter().getName());
+			if (value != null) {
+				return value;
+			}
+		}
+
+		if (isSupportGetter()) {
+			V value = processor.process(getGetter().getName());
+			if (value != null) {
+				return value;
+			}
+		}
+		return null;
 	}
 }

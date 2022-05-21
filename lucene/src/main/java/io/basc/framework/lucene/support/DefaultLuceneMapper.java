@@ -354,4 +354,16 @@ public class DefaultLuceneMapper extends DefaultRepositoryMapper implements Luce
 		}
 		return document;
 	}
+
+	@Override
+	public <T> void mapping(Document document, EntityStructure<? extends Property> structure, T entity) {
+		structure.columns().filter((e) -> e.getField() != null && e.getField().isSupportSetter()).forEach((e) -> {
+			String value = e.getValueByNames((name) -> document.get(name));
+			if (value == null) {
+				return;
+			}
+
+			e.getField().set(entity, value, getConversionService());
+		});
+	}
 }

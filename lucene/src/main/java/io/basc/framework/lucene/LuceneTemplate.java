@@ -193,14 +193,14 @@ public interface LuceneTemplate extends Repository {
 	}
 
 	@SuppressWarnings("unchecked")
-	default <T> Processor<Document, T, LuceneException> getMapProcessor(TypeDescriptor type) {
+	default <T> Processor<Document, T, LuceneException> getMappingProcessor(TypeDescriptor type) {
 		return new DecorateObjectMappingProcessor<>(getMapper(), new DefaultMappingProcessor<T, LuceneException>(type),
 				(Class<T>) type.getType());
 	}
 
 	default <T> SearchResults<T> search(SearchParameters parameters, TypeDescriptor resultType)
 			throws LuceneSearchException {
-		return search(parameters, getMapProcessor(resultType));
+		return search(parameters, getMappingProcessor(resultType));
 	}
 
 	default <T> SearchResults<T> search(SearchParameters parameters, Class<? extends T> resultType)
@@ -210,7 +210,7 @@ public interface LuceneTemplate extends Repository {
 
 	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters, TypeDescriptor resultType)
 			throws LuceneSearchException {
-		return searchAfter(after, parameters, getMapProcessor(resultType));
+		return searchAfter(after, parameters, getMappingProcessor(resultType));
 	}
 
 	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters, Class<? extends T> resultType)
