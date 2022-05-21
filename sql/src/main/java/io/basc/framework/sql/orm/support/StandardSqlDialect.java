@@ -635,6 +635,10 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 	}
 
 	public Sql toString(Conditions conditions, AtomicInteger count) {
+		if(conditions == null) {
+			return null;
+		}
+		
 		StringBuilder sb = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
 		if (appendWhere(conditions.getCondition(), sb, params)) {
