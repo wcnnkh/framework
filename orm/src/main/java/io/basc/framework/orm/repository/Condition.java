@@ -3,6 +3,7 @@ package io.basc.framework.orm.repository;
 import java.io.Serializable;
 
 import io.basc.framework.env.BascObject;
+import io.basc.framework.util.StringUtils;
 
 /**
  * 条件
@@ -32,4 +33,7 @@ public class Condition extends BascObject implements Serializable {
 		return column;
 	}
 
+	public boolean isEmpty() {
+		return StringUtils.isEmpty(condition) || column.isEmpty();
+	}
 }

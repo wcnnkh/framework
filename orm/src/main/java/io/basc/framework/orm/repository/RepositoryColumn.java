@@ -8,6 +8,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.env.BascObject;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.StringUtils;
 
 public class RepositoryColumn extends BascObject implements Serializable, ParameterDescriptor {
 	public static final RepositoryColumn EMPTY = new RepositoryColumn(null, null);
@@ -67,5 +68,9 @@ public class RepositoryColumn extends BascObject implements Serializable, Parame
 	@Override
 	public ParameterDescriptor rename(String name) {
 		return new RepositoryColumn(name, this.value, this.valueTypeDescriptor);
+	}
+	
+	public boolean isEmpty() {
+		return StringUtils.isEmpty(name);
 	}
 }

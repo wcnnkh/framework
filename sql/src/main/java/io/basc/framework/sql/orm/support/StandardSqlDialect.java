@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.basc.framework.aop.support.FieldSetterListen;
 import io.basc.framework.convert.TypeDescriptor;
@@ -628,30 +629,58 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		return new SimpleSql(sql.toString(), params.toArray());
 	}
 
-	protected void appendWhere(Conditions conditions, StringBuilder sb, List<Object> params) {
-		appendWhere(conditions.getCondition(), sb, params);
-		List<WithCondition> withConditions = conditions.getWiths();
-		if (CollectionUtils.isEmpty(withConditions)) {
-			return;
+	@Override
+	public Sql toSql(Conditions conditions) {
+		return toString(conditions, new AtomicInteger());
+	}
+
+	public Sql toString(Conditions conditions, AtomicInteger count) {
+		StringBuilder sb = new StringBuilder();
+		List<Object> params = new ArrayList<Object>();
+		if (appendWhere(conditions.getCondition(), sb, params)) {
+			count.getAndIncrement();
 		}
 
-		for (WithCondition withCondition : withConditions) {
-			boolean append = sb.length() > 0;
-			if (append) {
-				if (getRelationshipKeywords().getAndKeywords().exists(withCondition.getWith())) {
-					sb.append(" and ");
-				} else if (getRelationshipKeywords().getOrKeywords().exists(withCondition.getWith())) {
-					sb.append(" or ");
-				} else {
-					sb.append(" ").append(withCondition.getWith()).append(" ");
+		List<WithCondition> withConditions = conditions.getWiths();
+		if (!CollectionUtils.isEmpty(withConditions)) {
+			for (WithCondition condition : withConditions) {
+				AtomicInteger withCount = new AtomicInteger();
+				Sql sql = toString(condition.getCondition(), withCount);
+				if (sql == null || withCount.get() == 0) {
+					continue;
 				}
-				sb.append("(");
-			}
-			appendWhere(withCondition.getCondition(), sb, params);
-			if (append) {
-				sb.append(")");
+
+				if(count.get() > 0) {
+					if (getRelationshipKeywords().getAndKeywords().exists(condition.getWith())) {
+						sb.append(" and ");
+					} else if (getRelationshipKeywords().getOrKeywords().exists(condition.getWith())) {
+						sb.append(" or ");
+					} else {
+						sb.append(" ").append(condition.getWith()).append(" ");
+					}
+				}
+				
+
+				if (withCount.get() > 1) {
+					sb.append("(");
+				}
+
+				sb.append(sql.getSql());
+				params.addAll(Arrays.asList(sql.getParams()));
+
+				if (withCount.get() > 1) {
+					sb.append(")");
+				}
+
+				count.getAndIncrement();
 			}
 		}
+
+		if (count.get() == 0) {
+			return null;
+		}
+
+		return new SimpleSql(sb.toString(), params.toArray());
 	}
 
 	public void concat(StringBuilder sb, String... strs) {
@@ -670,7 +699,11 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void appendWhere(Condition condition, StringBuilder sb, List<Object> params) {
+	protected boolean appendWhere(Condition condition, StringBuilder sb, List<Object> params) {
+		if (condition == null || condition.isEmpty()) {
+			return false;
+		}
+
 		ConditionKeywords conditionKeywords = getConditionKeywords();
 		if (conditionKeywords.getEqualKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getColumn().getName());
@@ -700,7 +733,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		} else if (conditionKeywords.getInKeywords().exists(condition.getCondition())) {
 			if (condition.getColumn().getValue() == null) {
-				return;
+				return false;
 			}
 
 			List<Object> list;
@@ -715,12 +748,12 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			}
 
 			if (list == null || list.isEmpty()) {
-				return;
+				return false;
 			}
 
 			keywordProcessing(sb, condition.getColumn().getName());
 			Iterator<Object> iterator = list.iterator();
-			sb.append("(");
+			sb.append(" in(");
 			while (iterator.hasNext()) {
 				sb.append("?");
 				params.add(toDataBaseValue(iterator.next(), typeDescriptor));
@@ -749,7 +782,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			String value = (String) getEnvironment().getConversionService().convert(condition.getColumn().getValue(),
 					condition.getColumn().getValueTypeDescriptor(), TypeDescriptor.valueOf(String.class));
 			if (StringUtils.isEmpty(value)) {
-				return;
+				return false;
 			}
 
 			keywordProcessing(sb, condition.getColumn().getName());
@@ -771,6 +804,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			params.add(
 					toDataBaseValue(condition.getColumn().getValue(), condition.getColumn().getValueTypeDescriptor()));
 		}
+		return true;
 	}
 
 	@Override
@@ -792,8 +826,12 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			}
 		}
 
-		sb.append(WHERE);
-		appendWhere(conditions, sb, params);
+		Sql conditionsSql = toSql(conditions);
+		if (conditionsSql != null) {
+			sb.append(WHERE);
+			sb.append(conditionsSql.getSql());
+			params.addAll(Arrays.asList(conditionsSql.getParams()));
+		}
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
 
@@ -804,9 +842,11 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		sql.append(DELETE_PREFIX);
 		keywordProcessing(sql, structure.getName());
 
-		if (conditions != null) {
+		Sql conditionsSql = toSql(conditions);
+		if (conditionsSql != null) {
 			sql.append(WHERE);
-			appendWhere(conditions, sql, params);
+			sql.append(conditionsSql.getSql());
+			params.addAll(Arrays.asList(conditionsSql.getParams()));
 		}
 		return new SimpleSql(sql.toString(), params.toArray());
 	}
@@ -839,9 +879,12 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		sb.append(SELECT_ALL_PREFIX);
 		keywordProcessing(sb, structure.getName());
 		List<Object> params = new ArrayList<Object>();
-		if (conditions != null) {
+
+		Sql conditionsSql = toSql(conditions);
+		if (conditionsSql != null) {
 			sb.append(WHERE);
-			appendWhere(conditions, sb, params);
+			sb.append(conditionsSql.getSql());
+			params.addAll(Arrays.asList(conditionsSql.getParams()));
 		}
 
 		if (!CollectionUtils.isEmpty(orders)) {

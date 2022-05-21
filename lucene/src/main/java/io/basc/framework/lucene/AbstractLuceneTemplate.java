@@ -367,17 +367,26 @@ public abstract class AbstractLuceneTemplate implements LuceneTemplate, Conversi
 
 	private Query parseQuery(Conditions conditions, RelationshipKeywords relationshipKeywords,
 			ConditionKeywords conditionKeywords) {
-		Query firstQuery = parseQuery(conditions.getCondition(), conditionKeywords);
+		Query firstQuery = null;
+		if (conditions.getCondition() != null && !conditions.getCondition().isEmpty()) {
+			firstQuery = parseQuery(conditions.getCondition(), conditionKeywords);
+		}
+
 		List<WithCondition> withConditions = conditions.getWiths();
 		if (CollectionUtils.isEmpty(withConditions)) {
 			return firstQuery;
 		}
 
 		BooleanQuery.Builder builder = new BooleanQuery.Builder();
-		builder.add(firstQuery, Occur.MUST);
+		if (firstQuery != null) {
+			builder.add(firstQuery, Occur.MUST);
+		}
 		for (WithCondition condition : withConditions) {
 			Occur occur = parseOccur(relationshipKeywords, condition.getWith());
 			Query query = parseQuery(condition.getCondition(), relationshipKeywords, conditionKeywords);
+			if (query == null) {
+				continue;
+			}
 			builder.add(query, occur);
 		}
 		return builder.build();

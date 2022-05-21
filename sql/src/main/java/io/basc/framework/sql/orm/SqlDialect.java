@@ -103,6 +103,8 @@ public interface SqlDialect extends TableMapper, EnvironmentAware {
 	 * @return
 	 */
 	Sql condition(Sql condition, Sql left, Sql right);
+	
+	Sql toSql(Conditions conditions);
 
 	Sql toSaveSql(TableStructure structure,
 			Collection<? extends RepositoryColumn> columns);
