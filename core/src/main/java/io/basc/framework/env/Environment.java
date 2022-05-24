@@ -2,6 +2,7 @@ package io.basc.framework.env;
 
 import java.nio.charset.Charset;
 import java.util.Properties;
+import java.util.function.Function;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
@@ -18,7 +19,6 @@ import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.util.placeholder.PlaceholderReplacer;
-import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.PropertyFactory;
 
 public interface Environment extends EnvironmentResourceLoader, PropertyFactory, PlaceholderFormat {
@@ -98,7 +98,7 @@ public interface Environment extends EnvironmentResourceLoader, PropertyFactory,
 	default Observable<Properties> toObservableProperties(PropertiesResolver propertiesResolver,
 			@Nullable Charset charset, Resource... resources) {
 		ObservableProperties properties = new ObservableProperties();
-		Processor<Resource, Properties, RuntimeException> converter = ResourceUtils.toPropertiesConverter(propertiesResolver, charset);
+		Function<Resource, Properties> converter = ResourceUtils.toPropertiesConverter(propertiesResolver, charset);
 		for (Resource resource : resources) {
 			properties.combine(resource, converter);
 		}

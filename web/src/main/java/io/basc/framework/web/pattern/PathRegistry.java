@@ -4,7 +4,7 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebException;
 
-public class PathRegistry extends ProcessorRegistry<String, WebException> {
+public class PathRegistry extends WebProcessorRegistry<String, WebException> {
 
 	public void add(String pattern, String location) {
 		add(pattern, new AbsolutePathProcessor(location));

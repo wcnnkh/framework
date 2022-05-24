@@ -75,4 +75,8 @@ public interface Encoder<D, E> extends Validator<D, E> {
 	default Processor<D, E, EncodeException> toEncodeProcessor() {
 		return (o) -> encode(o);
 	}
+
+	public static <R> Encoder<R, R> identity() {
+		return e -> e;
+	}
 }

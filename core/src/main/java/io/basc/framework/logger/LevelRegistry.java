@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.function.Function;
 import java.util.logging.Level;
 
 import io.basc.framework.event.ChangeEvent;
@@ -15,7 +16,6 @@ import io.basc.framework.event.EventRegistration;
 import io.basc.framework.event.EventType;
 import io.basc.framework.event.support.SimpleEventDispatcher;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.stream.Processor;
 
 public class LevelRegistry extends TreeMap<String, Level> implements EventDispatcher<ChangeEvent<LevelRegistry>> {
 	private static final long serialVersionUID = 1L;
@@ -30,10 +30,10 @@ public class LevelRegistry extends TreeMap<String, Level> implements EventDispat
 		};
 	};
 
-	public static final Processor<Properties, LevelRegistry, RuntimeException> CONVERTER = new Processor<Properties, LevelRegistry, RuntimeException>() {
+	public static final Function<Properties, LevelRegistry> CONVERTER = new Function<Properties, LevelRegistry>() {
 
 		@Override
-		public LevelRegistry process(Properties properties) throws RuntimeException{
+		public LevelRegistry apply(Properties properties) {
 			LevelRegistry levelFactory = new LevelRegistry();
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();

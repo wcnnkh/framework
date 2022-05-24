@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
@@ -38,9 +39,8 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.Processor;
 
-public class YamlProcessor implements Processor<Resource, Properties, RuntimeException>, PropertiesResolver {
+public class YamlProcessor implements Function<Resource, Properties>, PropertiesResolver {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private ResolutionMethod resolutionMethod = ResolutionMethod.OVERRIDE;
@@ -456,7 +456,7 @@ public class YamlProcessor implements Processor<Resource, Properties, RuntimeExc
 	}
 
 	@Override
-	public Properties process(Resource resource) {
+	public Properties apply(Resource resource) {
 		final Properties allProperties = new Properties();
 		process(new MatchCallback() {
 

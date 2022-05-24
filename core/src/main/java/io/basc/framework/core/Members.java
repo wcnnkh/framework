@@ -22,12 +22,12 @@ import io.basc.framework.util.stream.StreamProcessorSupport;
  * @param <T>
  */
 public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T> {
+	private final Function<Class<?>, ? extends Stream<T>> processor;
 	private final Class<?> sourceClass;
-	private final Processor<Class<?>, Stream<T>, ? extends RuntimeException> processor;
 	@Nullable
 	private Members<T> with;
 
-	public Members(Class<?> sourceClass, Processor<Class<?>, Stream<T>, ? extends RuntimeException> processor) {
+	public Members(Class<?> sourceClass, Function<Class<?>, ? extends Stream<T>> processor) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		Assert.requiredArgument(processor != null, "processor");
 		this.sourceClass = sourceClass;
@@ -35,33 +35,12 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	}
 
 	@Override
-	public Class<?> getCursorId() {
-		return sourceClass;
-	}
-
-	@Override
-	public List<T> getList() {
-		return stream().collect(Collectors.toList());
-	}
-
-	@Override
-	public Class<?> getNextCursorId() {
-		return with == null ? null : with.sourceClass;
-	}
-
-	@Override
-	public boolean hasNext() {
-		return with != null;
-	}
-
-	@Override
-	public Members<T> next() {
-		return with;
-	}
-
-	@Override
-	public Members<T> jumpTo(Class<?> cursorId) {
-		return new Members<>(sourceClass, this.processor);
+	public Members<T> clone() {
+		Members<T> clone = new Members<T>(this.sourceClass, this.processor);
+		if (this.with != null) {
+			clone.with = this.with.clone();
+		}
+		return clone;
 	}
 
 	/**
@@ -79,6 +58,65 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 		return mapProcessor((s) -> s == null ? s : s.filter(predicate));
 	}
 
+	/**
+	 * @see #streamAll()
+	 * @see Stream#findAny()
+	 * @return
+	 * @throws E
+	 */
+	public Optional<T> findAny() {
+		return streamAll().findAny();
+	}
+
+	/**
+	 * @see #streamAll()
+	 * @see Stream#findFirst()
+	 * @return
+	 */
+	public Optional<T> findFirst() {
+		return streamAll().findFirst();
+	}
+
+	/**
+	 * 获取第一个
+	 * 
+	 * @see #findFirst()
+	 */
+	@Nullable
+	@Override
+	public T get() {
+		return findFirst().orElse(null);
+	}
+
+	@Override
+	public Class<?> getCursorId() {
+		return sourceClass;
+	}
+
+	@Override
+	public List<T> getList() {
+		return stream().collect(Collectors.toList());
+	}
+
+	@Override
+	public Class<?> getNextCursorId() {
+		return with == null ? null : with.sourceClass;
+	}
+
+	public Class<?> getSourceClass() {
+		return sourceClass;
+	}
+
+	@Override
+	public boolean hasNext() {
+		return with != null;
+	}
+
+	@Override
+	public Members<T> jumpTo(Class<?> cursorId) {
+		return new Members<>(sourceClass, this.processor);
+	}
+
 	@Override
 	public <TT> Members<TT> map(Function<? super T, TT> map) {
 		return mapProcessor((s) -> s == null ? null : s.map(map));
@@ -90,16 +128,16 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	 * @param processor
 	 * @return 返回一个新的
 	 */
-	public <S> Members<S> mapProcessor(Processor<Stream<T>, Stream<S>, ? extends RuntimeException> processor) {
+	public <S> Members<S> mapProcessor(Function<Stream<T>, ? extends Stream<S>> processor) {
 		Assert.requiredArgument(processor != null, "processor");
-		return mapProcessor(processor, (e) -> processor.process(this.processor.process(e)), this.processor);
+		return mapProcessor(processor, (e) -> processor.apply(this.processor.apply(e)), this.processor);
 	}
 
-	private <S> Members<S> mapProcessor(Processor<Stream<T>, Stream<S>, ? extends RuntimeException> processor,
-			Processor<Class<?>, Stream<S>, ? extends RuntimeException> rootMapProcessor,
-			Processor<Class<?>, Stream<T>, ? extends RuntimeException> rootProcessor) {
-		Members<S> members = new Members<S>(this.sourceClass, this.processor == rootProcessor ? rootMapProcessor
-				: ((e) -> processor.process(this.processor.process(e))));
+	private <S> Members<S> mapProcessor(Function<Stream<T>, ? extends Stream<S>> processor,
+			Function<Class<?>, ? extends Stream<S>> rootMapProcessor,
+			Function<Class<?>, ? extends Stream<T>> rootProcessor) {
+		Members<S> members = new Members<S>(this.sourceClass,
+				this.processor == rootProcessor ? rootMapProcessor : ((e) -> processor.apply(this.processor.apply(e))));
 		if (this.with != null) {
 			members.with = this.with.mapProcessor(processor, rootMapProcessor, rootProcessor);
 		}
@@ -107,16 +145,8 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	}
 
 	@Override
-	public Members<T> clone() {
-		Members<T> clone = new Members<T>(this.sourceClass, this.processor);
-		if (this.with != null) {
-			clone.with = this.with.clone();
-		}
-		return clone;
-	}
-
-	public Class<?> getSourceClass() {
-		return sourceClass;
+	public Members<T> next() {
+		return with;
 	}
 
 	/**
@@ -125,7 +155,7 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	 * @return
 	 */
 	public Stream<T> stream() {
-		Stream<T> stream = this.processor.process(sourceClass);
+		Stream<T> stream = this.processor.apply(sourceClass);
 		if (stream == null) {
 			return StreamProcessorSupport.emptyStream();
 		}
@@ -142,15 +172,27 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	}
 
 	/**
-	 * 关联类
+	 * 关联所有(不关联父类接口)
 	 * 
-	 * @param sourceClass
-	 * @param processor
 	 * @return
 	 */
-	public Members<T> withClass(Class<?> sourceClass,
-			Processor<Class<?>, Stream<T>, ? extends RuntimeException> processor) {
-		return with(new Members<>(sourceClass, processor));
+	public Members<T> withAll() {
+		return withAll(null, this.processor);
+	}
+
+	/**
+	 * 关联所有的接口和父类(不关联父类接口)
+	 * 
+	 * @param predicate
+	 * @return
+	 */
+	public Members<T> withAll(@Nullable Predicate<Class<?>> predicate) {
+		return withInterfaces(predicate).withSuperclass(predicate);
+	}
+
+	public Members<T> withAll(@Nullable Predicate<Class<?>> predicate,
+			Function<Class<?>, ? extends Stream<T>> processor) {
+		return withInterfaces(predicate, processor).withSuperclass(predicate, processor);
 	}
 
 	/**
@@ -164,6 +206,38 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	}
 
 	/**
+	 * 关联类
+	 * 
+	 * @param sourceClass
+	 * @param processor
+	 * @return
+	 */
+	public Members<T> withClass(Class<?> sourceClass, Function<Class<?>, ? extends Stream<T>> processor) {
+		return with(new Members<>(sourceClass, processor));
+	}
+
+	/**
+	 * 该类上的所有接口(此方法不支持superclass的原因的，无法获取一个接口的父类，尝试获取一个接口的父类时始终为空)
+	 * 
+	 * @see Class#getInterfaces()
+	 * @see #withInterfaces(Processor)
+	 * @return
+	 */
+	public Members<T> withInterfaces() {
+		return withInterfaces(null, this.processor);
+	}
+
+	/**
+	 * 关联接口
+	 * 
+	 * @param predicate
+	 * @return
+	 */
+	public Members<T> withInterfaces(@Nullable Predicate<Class<?>> predicate) {
+		return withInterfaces(predicate, this.processor);
+	}
+
+	/**
 	 * 关联接口
 	 * 
 	 * @param predicate
@@ -171,7 +245,7 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	 * @return
 	 */
 	public Members<T> withInterfaces(@Nullable Predicate<Class<?>> predicate,
-			Processor<Class<?>, Stream<T>, ? extends RuntimeException> processor) {
+			Function<Class<?>, ? extends Stream<T>> processor) {
 		Assert.requiredArgument(processor != null, "processor");
 		Class<?>[] interfaces = this.sourceClass.getInterfaces();
 		if (interfaces == null || interfaces.length == 0) {
@@ -189,24 +263,33 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	}
 
 	/**
-	 * 关联接口
+	 * 关联所有父类(不关联父类接口)
 	 * 
-	 * @param predicate
 	 * @return
 	 */
-	public Members<T> withInterfaces(@Nullable Predicate<Class<?>> predicate) {
-		return withInterfaces(predicate, this.processor);
+	public Members<T> withSuperclass() {
+		return withSuperclass(false);
 	}
 
 	/**
-	 * 该类上的所有接口(此方法不支持superclass的原因的，无法获取一个接口的父类，尝试获取一个接口的父类时始终为空)
+	 * 关联所有父类
 	 * 
-	 * @see Class#getInterfaces()
-	 * @see #withInterfaces(Processor)
+	 * @param interfaces 是否关联父类的接口 {@link #withInterfaces(boolean)}
 	 * @return
 	 */
-	public Members<T> withInterfaces() {
-		return withInterfaces(null, this.processor);
+	public Members<T> withSuperclass(boolean interfaces) {
+		return withSuperclass(interfaces, null, this.processor);
+	}
+
+	/**
+	 * 关联父类
+	 * 
+	 * @param interfaces 是否也关联父类的接口
+	 * @param predicate
+	 * @return
+	 */
+	public Members<T> withSuperclass(boolean interfaces, @Nullable Predicate<Class<?>> predicate) {
+		return withSuperclass(interfaces, predicate, this.processor);
 	}
 
 	/**
@@ -218,7 +301,7 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	 * @return
 	 */
 	public Members<T> withSuperclass(boolean interfaces, @Nullable Predicate<Class<?>> predicate,
-			Processor<Class<?>, Stream<T>, ? extends RuntimeException> processor) {
+			Function<Class<?>, ? extends Stream<T>> processor) {
 		Assert.requiredArgument(processor != null, "processor");
 		Class<?> superclass = this.sourceClass.getSuperclass();
 		while (superclass != null) {
@@ -237,22 +320,6 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	}
 
 	/**
-	 * 关联父类
-	 * 
-	 * @param interfaces 是否也关联父类的接口
-	 * @param predicate
-	 * @return
-	 */
-	public Members<T> withSuperclass(boolean interfaces, @Nullable Predicate<Class<?>> predicate) {
-		return withSuperclass(interfaces, predicate, this.processor);
-	}
-
-	public Members<T> withSuperclass(@Nullable Predicate<Class<?>> predicate,
-			Processor<Class<?>, Stream<T>, ? extends RuntimeException> processor) {
-		return withSuperclass(false, predicate, processor);
-	}
-
-	/**
 	 * 关联父类(不关联父类接口)
 	 * 
 	 * @param predicate
@@ -262,76 +329,8 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 		return withSuperclass(false, predicate);
 	}
 
-	/**
-	 * 关联所有父类
-	 * 
-	 * @param interfaces 是否关联父类的接口 {@link #withInterfaces(boolean)}
-	 * @return
-	 */
-	public Members<T> withSuperclass(boolean interfaces) {
-		return withSuperclass(interfaces, null, this.processor);
-	}
-
-	/**
-	 * 关联所有父类(不关联父类接口)
-	 * 
-	 * @return
-	 */
-	public Members<T> withSuperclass() {
-		return withSuperclass(false);
-	}
-
-	public Members<T> withAll(@Nullable Predicate<Class<?>> predicate,
-			Processor<Class<?>, Stream<T>, ? extends RuntimeException> processor) {
-		return withInterfaces(predicate, processor).withSuperclass(predicate, processor);
-	}
-
-	/**
-	 * 关联所有的接口和父类(不关联父类接口)
-	 * 
-	 * @param predicate
-	 * @return
-	 */
-	public Members<T> withAll(@Nullable Predicate<Class<?>> predicate) {
-		return withInterfaces(predicate).withSuperclass(predicate);
-	}
-
-	/**
-	 * 关联所有(不关联父类接口)
-	 * 
-	 * @return
-	 */
-	public Members<T> withAll() {
-		return withAll(null, this.processor);
-	}
-
-	/**
-	 * @see #streamAll()
-	 * @see Stream#findFirst()
-	 * @return
-	 */
-	public Optional<T> findFirst() {
-		return streamAll().findFirst();
-	}
-
-	/**
-	 * @see #streamAll()
-	 * @see Stream#findAny()
-	 * @return
-	 * @throws E
-	 */
-	public Optional<T> findAny() {
-		return streamAll().findAny();
-	}
-
-	/**
-	 * 获取第一个
-	 * 
-	 * @see #findFirst()
-	 */
-	@Nullable
-	@Override
-	public T get() {
-		return findFirst().orElse(null);
+	public Members<T> withSuperclass(@Nullable Predicate<Class<?>> predicate,
+			Function<Class<?>, ? extends Stream<T>> processor) {
+		return withSuperclass(false, predicate, processor);
 	}
 }

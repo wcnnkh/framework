@@ -1,20 +1,19 @@
 package io.basc.framework.util.page;
 
 import java.util.List;
-
-import io.basc.framework.util.stream.Processor;
+import java.util.function.Function;
 
 public class StreamPageables<K, T> implements Pageables<K, T> {
 	private final Pageable<K, T> pageable;
-	private final Processor<K, Pageable<K, T>, RuntimeException> processor;
+	private final Function<K, ? extends Pageable<K, T>> processor;
 
-	public StreamPageables(Pageable<K, T> pageable, Processor<K, Pageable<K, T>, RuntimeException> processor) {
+	public StreamPageables(Pageable<K, T> pageable, Function<K, ? extends Pageable<K, T>> processor) {
 		this.pageable = pageable;
 		this.processor = processor;
 	}
 
-	public StreamPageables(K cursorId, Processor<K, Pageable<K, T>, RuntimeException> processor) {
-		this.pageable = processor.process(cursorId);
+	public StreamPageables(K cursorId, Function<K, ? extends Pageable<K, T>> processor) {
+		this.pageable = processor.apply(cursorId);
 		this.processor = processor;
 	}
 
@@ -35,7 +34,7 @@ public class StreamPageables<K, T> implements Pageables<K, T> {
 
 	@Override
 	public StreamPageables<K, T> jumpTo(K cursorId) {
-		Pageable<K, T> jumpTo = processor.process(cursorId);
+		Pageable<K, T> jumpTo = processor.apply(cursorId);
 		return new StreamPageables<>(jumpTo, processor);
 	}
 }

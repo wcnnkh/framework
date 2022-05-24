@@ -24,10 +24,10 @@ import io.basc.framework.util.stream.Processor;
  */
 public class ReflectionApi implements Supplier<Object> {
 	private final Class<?> declaringClass;
-	private final Processor<Class<?>, Object, Throwable> processor;
+	private final Processor<Class<?>, Object, ? extends Throwable> processor;
 
 	public ReflectionApi(@Nullable Class<?> declaringClass,
-			@Nullable Processor<Class<?>, Object, Throwable> processor) {
+			@Nullable Processor<Class<?>, Object, ? extends Throwable> processor) {
 		this.declaringClass = declaringClass;
 		this.processor = processor;
 	}

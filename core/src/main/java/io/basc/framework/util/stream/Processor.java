@@ -132,4 +132,7 @@ public interface Processor<S, T, E extends Throwable> {
 		}
 	}
 
+	public static <R, E extends Throwable> Processor<R, R, E> identity() {
+		return e -> e;
+	}
 }

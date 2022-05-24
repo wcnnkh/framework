@@ -1,17 +1,18 @@
 package io.basc.framework.io.event;
 
+import java.util.function.Function;
+
 import io.basc.framework.event.AbstractObservable;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventRegistration;
 import io.basc.framework.io.Resource;
-import io.basc.framework.util.stream.Processor;
 
 public class ObservableResource<T> extends AbstractObservable<T> implements AutoCloseable {
 	private final Resource resource;
-	private final Processor<Resource, T, ? extends RuntimeException> processor;
+	private final Function<Resource, ? extends T> processor;
 	private final EventRegistration eventRegistration;
 
-	public ObservableResource(Resource resource, Processor<Resource, T, ? extends RuntimeException> processor) {
+	public ObservableResource(Resource resource, Function<Resource, ? extends T> processor) {
 		this.resource = resource;
 		this.processor = processor;
 		this.eventRegistration = resource
@@ -23,7 +24,7 @@ public class ObservableResource<T> extends AbstractObservable<T> implements Auto
 	}
 
 	public T forceGet() {
-		return processor.process(resource);
+		return processor.apply(resource);
 	}
 
 	@Override

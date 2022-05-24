@@ -1,14 +1,13 @@
 package io.basc.framework.event;
 
-import io.basc.framework.util.stream.Processor;
+import java.util.function.Function;
 
 public class ConvertibleObservable<O, T> extends AbstractObservable<T> implements AutoCloseable {
 	private final Observable<O> observable;
-	private final Processor<O, ? extends T, ? extends RuntimeException> converter;
+	private final Function<O, ? extends T> converter;
 	private final EventRegistration eventRegistration;
 
-	public ConvertibleObservable(Observable<O> observable,
-			Processor<O, ? extends T, ? extends RuntimeException> converter) {
+	public ConvertibleObservable(Observable<O> observable, Function<O, ? extends T> converter) {
 		this.observable = observable;
 		this.converter = converter;
 		this.eventRegistration = observable.registerListener((event) -> ConvertibleObservable.this
@@ -26,6 +25,6 @@ public class ConvertibleObservable<O, T> extends AbstractObservable<T> implement
 
 	@Override
 	public T forceGet() {
-		return converter.process(observable.get());
+		return converter.apply(observable.get());
 	}
 }

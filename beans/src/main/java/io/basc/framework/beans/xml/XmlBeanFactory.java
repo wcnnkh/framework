@@ -23,7 +23,7 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 	private static final String TAG_NAME = "bean";
 	private Resource configurationFile;
 
-	public void readConfigurationFile(ConsumerProcessor<NodeList, Throwable> processor) {
+	public <E extends Throwable> void readConfigurationFile(ConsumerProcessor<NodeList, E> processor) throws E {
 		XmlBeanUtils.readResourceBeans(getEnvironment(), getConfigurationFile(), processor.toProcessor());
 	}
 

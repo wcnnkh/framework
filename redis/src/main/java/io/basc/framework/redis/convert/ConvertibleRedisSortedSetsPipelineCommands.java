@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.basc.framework.convert.IdentityConverter;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.redis.InterArgs;
 import io.basc.framework.redis.RedisResponse;
@@ -15,6 +14,7 @@ import io.basc.framework.redis.ScoreOption;
 import io.basc.framework.redis.SetOption;
 import io.basc.framework.redis.Tuple;
 import io.basc.framework.util.CollectionFactory;
+import io.basc.framework.util.stream.Processor;
 
 @SuppressWarnings("unchecked")
 public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>
@@ -33,7 +33,7 @@ public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>
 			Map<V, Double> memberScores) {
 		SK k = getKeyCodec().encode(key);
 		Map<SV, Double> ts = CollectionFactory.convert(memberScores, getValueCodec().toEncodeProcessor(),
-				new IdentityConverter<>());
+				Processor.identity());
 		return getSourceRedisSortedSetsCommands().zadd(k, setOption, scoreOption, changed, ts);
 	}
 

@@ -3,9 +3,9 @@ package io.basc.framework.io.event;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.function.Function;
 
 import io.basc.framework.convert.ConvertibleIterator;
-import io.basc.framework.convert.IdentityConverter;
 import io.basc.framework.convert.lang.ObjectToStringConverter;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
@@ -18,7 +18,7 @@ import io.basc.framework.value.Value;
 public class ObservableProperties extends ConvertibleObservableProperties<Properties> implements PropertyFactory {
 
 	public ObservableProperties() {
-		super(new IdentityConverter<>());
+		super(Function.identity());
 	}
 
 	@SafeVarargs

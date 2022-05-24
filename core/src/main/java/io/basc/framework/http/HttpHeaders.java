@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,7 +38,6 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringMatchers;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.Processor;
 
 /**
  * A data structure representing HTTP request or response headers, mapping
@@ -502,8 +502,8 @@ public class HttpHeaders extends Headers {
 
 	public static final String X_FORWARDED_FOR = "X-Forwarded-For";
 
-	private static final Processor<Properties, Map<String, String[]>, RuntimeException> CONVERTER = new Processor<Properties, Map<String, String[]>, RuntimeException>() {
-		public java.util.Map<String, String[]> process(Properties properties) throws RuntimeException {
+	private static final Function<Properties, Map<String, String[]>> CONVERTER = new Function<Properties, Map<String, String[]>>() {
+		public java.util.Map<String, String[]> apply(Properties properties) {
 			if (CollectionUtils.isEmpty(properties)) {
 				return Collections.emptyMap();
 			}

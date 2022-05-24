@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import io.basc.framework.core.type.classreading.MetadataReaderFactory;
@@ -27,7 +28,6 @@ import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.Processor;
 
 /**
  * 资源工具
@@ -754,21 +754,16 @@ public final class ResourceUtils {
 		return new UnsafeByteArrayInputStream(data);
 	}
 
-	public static <E extends Throwable> Processor<Resource, Properties, E> toPropertiesConverter(
-			PropertiesResolver propertiesResolver) {
+	public static Function<Resource, Properties> toPropertiesConverter(PropertiesResolver propertiesResolver) {
 		return toPropertiesConverter(propertiesResolver, null);
 	}
 
-	public static <E extends Throwable> Processor<Resource, Properties, E> toPropertiesConverter(
-			PropertiesResolver propertiesResolver, Charset charset) {
-		return new Processor<Resource, Properties, E>() {
-
-			@Override
-			public Properties process(Resource o) throws E {
-				Properties properties = new Properties();
-				propertiesResolver.resolveProperties(properties, o, charset);
-				return properties;
-			}
+	public static Function<Resource, Properties> toPropertiesConverter(PropertiesResolver propertiesResolver,
+			Charset charset) {
+		return (o) -> {
+			Properties properties = new Properties();
+			propertiesResolver.resolveProperties(properties, o, charset);
+			return properties;
 		};
 	}
 

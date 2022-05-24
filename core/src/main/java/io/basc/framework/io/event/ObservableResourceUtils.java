@@ -2,12 +2,12 @@ package io.basc.framework.io.event;
 
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.function.Function;
 
 import io.basc.framework.event.Observable;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.UnsafeByteArrayInputStream;
-import io.basc.framework.util.stream.Processor;
 
 public final class ObservableResourceUtils {
 	private ObservableResourceUtils() {
@@ -45,7 +45,7 @@ public final class ObservableResourceUtils {
 	}
 
 	public static <R> Observable<R> getObservableResource(final Resource resource,
-			final Processor<Resource, R, ? extends RuntimeException> processor) {
+			final Function<Resource, ? extends R> processor) {
 		return new ObservableResource<R>(resource, processor);
 	}
 }

@@ -65,4 +65,8 @@ public interface Decoder<E, D> {
 	default Processor<E, D, DecodeException> toDecodeProcessor() {
 		return (o) -> decode(o);
 	}
+	
+	public static <R> Decoder<R, R> identity() {
+		return e -> e;
+	}
 }
