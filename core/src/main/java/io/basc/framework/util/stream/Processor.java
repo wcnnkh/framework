@@ -25,7 +25,7 @@ public interface Processor<S, T, E extends Throwable> {
 	/**
 	 * 在执行外部嵌套一个执行器
 	 * 
-	 * @param                <B>
+	 * @param <B>
 	 * @param processor
 	 * @param closeProcessor
 	 * @return
@@ -38,7 +38,7 @@ public interface Processor<S, T, E extends Throwable> {
 	/**
 	 * 在执行内部嵌套一个执行器
 	 * 
-	 * @param                <A>
+	 * @param <A>
 	 * @param processor
 	 * @param closeProcessor
 	 * @return
@@ -104,10 +104,13 @@ public interface Processor<S, T, E extends Throwable> {
 			return null;
 		}
 
-		Object array = Array.newInstance(sources.getClass().getComponentType(), sources.length);
+		Object array = null;
 		for (int i = 0; i < sources.length; i++) {
 			T target = process(sources[i]);
-			if (array != null) {
+			if (target != null) {
+				if (array == null) {
+					array = Array.newInstance(target.getClass(), sources.length);
+				}
 				Array.set(array, i, target);
 			}
 		}

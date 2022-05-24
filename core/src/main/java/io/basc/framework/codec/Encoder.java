@@ -48,7 +48,7 @@ public interface Encoder<D, E> extends Validator<D, E> {
 
 	@Nullable
 	@SuppressWarnings("unchecked")
-	default E[] encodeAll(D... sources) throws DecodeException {
+	default E[] encodeAll(D... sources) throws EncodeException {
 		return toEncodeProcessor().processAll(sources);
 	}
 
