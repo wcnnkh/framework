@@ -1,8 +1,11 @@
 package io.basc.framework.convert;
 
-public class IdentityConverter<T> implements Converter<T, T> {
+import io.basc.framework.util.stream.Processor;
+
+public class IdentityConverter<T, E extends Throwable> implements Processor<T, T, E> {
+
 	@Override
-	public T convert(T o) {
-		return o;
+	public T process(T source) throws E {
+		return source;
 	}
 }

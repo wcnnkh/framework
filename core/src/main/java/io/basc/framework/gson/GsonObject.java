@@ -6,15 +6,13 @@ import java.util.Set;
 
 import com.google.gson.Gson;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.ConvertibleIterator;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
 import io.basc.framework.util.Pair;
 
-public final class GsonObject extends AbstractJson<String>
-		implements JsonObject, Converter<Entry<String, com.google.gson.JsonElement>, Pair<String, JsonElement>> {
+public final class GsonObject extends AbstractJson<String> implements JsonObject {
 	private com.google.gson.JsonObject gsonJsonObject;
 	private Gson gson;
 
@@ -85,6 +83,6 @@ public final class GsonObject extends AbstractJson<String>
 
 	public Iterator<Pair<String, JsonElement>> iterator() {
 		return new ConvertibleIterator<Entry<String, com.google.gson.JsonElement>, Pair<String, JsonElement>>(
-				gsonJsonObject.entrySet().iterator(), this);
+				gsonJsonObject.entrySet().iterator(), this::convert);
 	}
 }

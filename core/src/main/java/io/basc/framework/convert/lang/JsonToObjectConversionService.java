@@ -15,8 +15,9 @@ public class JsonToObjectConversionService extends AbstractConversionService {
 		return targetType.isAnnotationPresent(JSON.class);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public <R> R convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		String content = (String) getConversionService().convert(source, sourceType,
 				TypeDescriptor.valueOf(String.class));
@@ -24,6 +25,6 @@ public class JsonToObjectConversionService extends AbstractConversionService {
 			return null;
 		}
 
-		return getJsonSupport().parseJson(content).getAsObject(targetType);
+		return (R) getJsonSupport().parseJson(content).getAsObject(targetType);
 	}
 }

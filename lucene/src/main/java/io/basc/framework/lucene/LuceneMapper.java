@@ -8,8 +8,8 @@ import org.apache.lucene.search.Sort;
 
 import io.basc.framework.lucene.annotation.LuceneField;
 import io.basc.framework.mapper.Fields;
-import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.orm.EntityStructure;
+import io.basc.framework.orm.ObjectMapper;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.StructureRegistry;
 import io.basc.framework.orm.repository.Conditions;
@@ -43,11 +43,5 @@ public interface LuceneMapper extends RepositoryMapper, LuceneResolver, ObjectMa
 
 	default Document createDocument(Object instance) {
 		return wrap(new Document(), instance);
-	}
-
-	<T> void mapping(Document document, EntityStructure<? extends Property> structure, T entity);
-
-	default <T> void mapping(Document document, T instance) {
-		mapping(document, getStructure(instance.getClass()), instance);
 	}
 }

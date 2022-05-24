@@ -1,9 +1,9 @@
 package io.basc.framework.redis;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.util.comparator.Sort;
-
 import java.io.Serializable;
+
+import io.basc.framework.util.comparator.Sort;
+import io.basc.framework.util.stream.Processor;
 
 public class GeoRadiusArgs<K> implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -66,13 +66,13 @@ public class GeoRadiusArgs<K> implements Serializable {
 		return this;
 	}
 
-	public <T> GeoRadiusArgs<T> convert(Converter<K, T> convert) {
+	public <T, E extends Throwable> GeoRadiusArgs<T> convert(Processor<K, T, E> convert) throws E {
 		GeoRadiusArgs<T> geoRadiusArgs = new GeoRadiusArgs<T>();
 		geoRadiusArgs.count = count;
 		geoRadiusArgs.any = any;
 		geoRadiusArgs.sort = sort;
-		geoRadiusArgs.storeKey = convert.convert(storeKey);
-		geoRadiusArgs.storeDistKey = convert.convert(storeDistKey);
+		geoRadiusArgs.storeKey = convert.process(storeKey);
+		geoRadiusArgs.storeDistKey = convert.process(storeDistKey);
 		return geoRadiusArgs;
 	}
 }

@@ -588,7 +588,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	@Override
 	public List<String> geohash(byte[] key, byte[]... members) {
 		List<byte[]> list = jedis.geohash(key, members);
-		return JedisCodec.INSTANCE.toDecodeConverter().convertTo(list, new ArrayList<String>());
+		return JedisCodec.INSTANCE.toDecodeProcessor().processTo(list, new ArrayList<String>());
 	}
 
 	@Override

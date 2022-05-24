@@ -10,13 +10,13 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.util.Accept;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
+import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.StringValue;
 
 public final class DomUtils {
@@ -31,12 +31,7 @@ public final class DomUtils {
 	}
 
 	public static List<Object> toRecursionList(Node node) {
-		return toList(node, new Converter<Node, Object>() {
-
-			public Object convert(Node o) {
-				return toRecursionMap(o);
-			}
-		});
+		return toList(node, (o) -> toRecursionMap(o));
 	}
 
 	/**
@@ -47,29 +42,22 @@ public final class DomUtils {
 	 * @throws Exception
 	 */
 	public static Map<String, Object> toRecursionMap(Node node) {
-		return toMap(node, new Converter<Node, Pair<String, Object>>() {
+		return toMap(node, (n) -> {
+			NodeList nodeList = n.getChildNodes();
+			Object v;
+			if (nodeList == null || nodeList.getLength() == 0) {
+				v = n.getTextContent();
+			} else {
+				List<Object> list = toList(n, (k) -> toRecursionMap(k));
 
-			public Pair<String, Object> convert(Node n) {
-				NodeList nodeList = n.getChildNodes();
-				Object v;
-				if (nodeList == null || nodeList.getLength() == 0) {
-					v = n.getTextContent();
-				} else {
-					List<Object> list = toList(n, new Converter<Node, Object>() {
-
-						public Object convert(Node k) {
-							return toRecursionMap(k);
-						}
-					});
-
-					v = list == null ? n.getTextContent() : list;
-				}
-				return new Pair<String, Object>(n.getNodeName(), v);
+				v = list == null ? n.getTextContent() : list;
 			}
+			return new Pair<String, Object>(n.getNodeName(), v);
 		});
 	}
 
-	public static List<Object> toList(Node node, Converter<Node, Object> nodeConvert) {
+	public static <E extends Throwable> List<Object> toList(Node node, Processor<Node, Object, E> nodeConvert)
+			throws E {
 		if (ignoreNode(node)) {
 			return null;
 		}
@@ -91,7 +79,7 @@ public final class DomUtils {
 				continue;
 			}
 
-			Object v = nodeConvert.convert(n);
+			Object v = nodeConvert.process(n);
 			if (v == null) {
 				continue;
 			}
@@ -102,7 +90,8 @@ public final class DomUtils {
 		return list.isEmpty() ? null : list;
 	}
 
-	public static Map<String, Object> toMap(Node node, Converter<Node, Pair<String, Object>> nodeParse) {
+	public static <E extends Throwable> Map<String, Object> toMap(Node node,
+			Processor<Node, Pair<String, Object>, E> nodeParse) throws E {
 		if (ignoreNode(node)) {
 			return null;
 		}
@@ -124,7 +113,7 @@ public final class DomUtils {
 				continue;
 			}
 
-			Pair<String, Object> keyValuePair = nodeParse.convert(n);
+			Pair<String, Object> keyValuePair = nodeParse.process(n);
 			if (keyValuePair != null) {
 				map.put(keyValuePair.getKey(), keyValuePair.getValue());
 			}

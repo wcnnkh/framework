@@ -377,14 +377,15 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		}
 	}
 
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	@SuppressWarnings("unchecked")
+	public <R> R convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;
 		}
 
 		Object target = getInstanceFactory().getInstance(targetType.getType());
 		configurationProperties(source, sourceType, target, targetType);
-		return target;
+		return (R) target;
 	}
 
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {

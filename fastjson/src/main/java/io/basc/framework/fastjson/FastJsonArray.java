@@ -8,7 +8,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONAware;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.ConvertibleIterator;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonArray;
@@ -16,7 +15,7 @@ import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
 
 public final class FastJsonArray extends AbstractJson<Integer>
-		implements JsonArray, JSONAware, Serializable, Converter<Object, JsonElement> {
+		implements JsonArray, JSONAware, Serializable {
 	private static final long serialVersionUID = 1L;
 	private JSONArray jsonArray;
 
@@ -36,7 +35,7 @@ public final class FastJsonArray extends AbstractJson<Integer>
 	}
 
 	public Iterator<JsonElement> iterator() {
-		return new ConvertibleIterator<Object, JsonElement>(jsonArray.iterator(), this);
+		return new ConvertibleIterator<Object, JsonElement>(jsonArray.iterator(), this::convert);
 	}
 
 	public JsonElement getValue(Integer index) {

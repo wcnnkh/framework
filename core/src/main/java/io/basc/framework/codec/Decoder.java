@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.stream.Processor;
 
 /**
  * 解码器<br/>
@@ -39,7 +39,7 @@ public interface Decoder<E, D> {
 	@Nullable
 	@SuppressWarnings("unchecked")
 	default D[] decodeAll(E... sources) throws DecodeException {
-		return toDecodeConverter().convertAll(sources);
+		return toDecodeProcessor().processAll(sources);
 	}
 
 	/**
@@ -62,7 +62,7 @@ public interface Decoder<E, D> {
 		return new NestedDecoder<>(this, decoder);
 	}
 
-	default Converter<E, D> toDecodeConverter() {
+	default Processor<E, D, DecodeException> toDecodeProcessor() {
 		return (o) -> decode(o);
 	}
 }

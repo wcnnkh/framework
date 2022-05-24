@@ -3,15 +3,15 @@ package io.basc.framework.redis.convert;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.redis.RedisResponse;
 import io.basc.framework.redis.RedisSystemException;
+import io.basc.framework.util.stream.Processor;
 
 public class ConvertibleRedisResponse<SV, V> implements RedisResponse<V> {
 	private final RedisResponse<SV> source;
-	private final Converter<SV, V> converter;
+	private final Processor<SV, V, ? extends RedisSystemException> converter;
 
-	public ConvertibleRedisResponse(RedisResponse<SV> source, Converter<SV, V> converter) {
+	public ConvertibleRedisResponse(RedisResponse<SV> source, Processor<SV, V, ? extends RedisSystemException> converter) {
 		this.source = source;
 		this.converter = converter;
 	}
@@ -34,12 +34,12 @@ public class ConvertibleRedisResponse<SV, V> implements RedisResponse<V> {
 	@Override
 	public V get() throws RedisSystemException {
 		SV value = source.get();
-		return converter.convert(value);
+		return converter.process(value);
 	}
 
 	@Override
 	public V get(long timeout, TimeUnit unit) throws TimeoutException, RedisSystemException {
 		SV value = source.get(timeout, unit);
-		return converter.convert(value);
+		return converter.process(value);
 	}
 }

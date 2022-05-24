@@ -39,8 +39,8 @@ public interface ConvertibleRedisHashesPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Map<K, V>> hgetall(K key) {
 		SK k = getKeyCodec().encode(key);
-		return getSourceRedisHashesCommands().hgetall(k).map((valueMap) -> CollectionFactory.convert(valueMap,
-				getKeyCodec().toDecodeConverter(), getValueCodec().toDecodeConverter()));
+		return getSourceRedisHashesCommands().hgetall(k)
+				.map((valueMap) -> CollectionFactory.convert(valueMap, getKeyCodec()::decode, getValueCodec()::decode));
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public interface ConvertibleRedisHashesPipelineCommands<SK, K, SV, V>
 	default RedisResponse<Set<K>> hkeys(K key) {
 		SK k = getKeyCodec().encode(key);
 		return getSourceRedisHashesCommands().hkeys(k)
-				.map((tks) -> getKeyCodec().toDecodeConverter().convertTo(tks, new LinkedHashSet<K>(tks.size())));
+				.map((tks) -> getKeyCodec().toDecodeProcessor().processTo(tks, new LinkedHashSet<K>(tks.size())));
 	}
 
 	@Override
@@ -80,8 +80,8 @@ public interface ConvertibleRedisHashesPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<String> hmset(K key, Map<K, V> values) {
 		SK k = getKeyCodec().encode(key);
-		Map<SK, SV> tMap = CollectionFactory.convert(values, getKeyCodec().toEncodeConverter(),
-				getValueCodec().toEncodeConverter());
+		Map<SK, SV> tMap = CollectionFactory.convert(values, getKeyCodec().toEncodeProcessor(),
+				getValueCodec().toEncodeProcessor());
 		return getSourceRedisHashesCommands().hmset(k, tMap);
 	}
 
@@ -95,14 +95,14 @@ public interface ConvertibleRedisHashesPipelineCommands<SK, K, SV, V>
 	default RedisResponse<Map<K, V>> hrandfieldWithValue(K key, Integer count) {
 		SK k = getKeyCodec().encode(key);
 		return getSourceRedisHashesCommands().hrandfieldWithValue(k, count).map((tMap) -> CollectionFactory
-				.convert(tMap, getKeyCodec().toDecodeConverter(), getValueCodec().toDecodeConverter()));
+				.convert(tMap, getKeyCodec().toDecodeProcessor(), getValueCodec().toDecodeProcessor()));
 	}
 
 	@Override
 	default RedisResponse<Long> hset(K key, Map<K, V> values) {
 		SK k = getKeyCodec().encode(key);
-		Map<SK, SV> tMap = CollectionFactory.convert(values, getKeyCodec().toEncodeConverter(),
-				getValueCodec().toEncodeConverter());
+		Map<SK, SV> tMap = CollectionFactory.convert(values, getKeyCodec().toEncodeProcessor(),
+				getValueCodec().toEncodeProcessor());
 		return getSourceRedisHashesCommands().hset(k, tMap);
 	}
 

@@ -27,7 +27,8 @@ public interface ConvertibleRedisStringCommands<SK, K, SV, V>
 
 	@Override
 	default Long bitop(BitOP op, K destkey, K... srcKeys) {
-		return getSourceRedisStringCommands().bitop(op, getKeyCodec().encode(destkey), getKeyCodec().encodeAll(srcKeys));
+		return getSourceRedisStringCommands().bitop(op, getKeyCodec().encode(destkey),
+				getKeyCodec().encodeAll(srcKeys));
 	}
 
 	@Override
@@ -103,14 +104,14 @@ public interface ConvertibleRedisStringCommands<SK, K, SV, V>
 
 	@Override
 	default Boolean mset(Map<K, V> pairs) {
-		return getSourceRedisStringCommands().mset(CollectionFactory.convert(pairs, getKeyCodec().toEncodeConverter(),
-				getValueCodec().toEncodeConverter()));
+		return getSourceRedisStringCommands().mset(CollectionFactory.convert(pairs, getKeyCodec().toEncodeProcessor(),
+				getValueCodec().toEncodeProcessor()));
 	}
 
 	@Override
 	default Long msetnx(Map<K, V> pairs) {
-		return getSourceRedisStringCommands().msetnx(CollectionFactory.convert(pairs, getKeyCodec().toEncodeConverter(),
-				getValueCodec().toEncodeConverter()));
+		return getSourceRedisStringCommands().msetnx(CollectionFactory.convert(pairs, getKeyCodec().toEncodeProcessor(),
+				getValueCodec().toEncodeProcessor()));
 	}
 
 	@Override

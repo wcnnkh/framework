@@ -1,27 +1,27 @@
 package io.basc.framework.data.file;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.io.Serializer;
-import io.basc.framework.io.SerializerUtils;
-
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
-public class AutoRefreshDirectoryStorage extends DiskStorage {
-	private final Converter<String, ?> converter;
+import io.basc.framework.io.Serializer;
+import io.basc.framework.io.SerializerUtils;
+import io.basc.framework.util.stream.Processor;
 
-	protected AutoRefreshDirectoryStorage(long period, TimeUnit periodUnit, Converter<String, ?> converter) {
+public class AutoRefreshDirectoryStorage extends DiskStorage {
+	private final Processor<String, ?, RuntimeException> converter;
+
+	protected AutoRefreshDirectoryStorage(long period, TimeUnit periodUnit, Processor<String, ?, RuntimeException> converter) {
 		super(period, periodUnit);
 		this.converter = converter;
 	}
 
 	public AutoRefreshDirectoryStorage(long period, TimeUnit periodUnit, String cacheDirectory,
-			Converter<String, ?> converter) {
+			Processor<String, ?, RuntimeException> converter) {
 		this(period, periodUnit, SerializerUtils.getSerializer(), cacheDirectory, converter);
 	}
 
 	public AutoRefreshDirectoryStorage(long period, TimeUnit periodUnit, Serializer serializer, String cacheDirectory,
-			Converter<String, ?> converter) {
+			Processor<String, ?, RuntimeException> converter) {
 		super(period, periodUnit, serializer, cacheDirectory);
 		this.converter = converter;
 	}
@@ -33,7 +33,7 @@ public class AutoRefreshDirectoryStorage extends DiskStorage {
 	}
 
 	private Object refresh(String key) {
-		Object value = converter.convert(key);
+		Object value = converter.process(key);
 		if (value != null) {
 			set(key, value);
 		}

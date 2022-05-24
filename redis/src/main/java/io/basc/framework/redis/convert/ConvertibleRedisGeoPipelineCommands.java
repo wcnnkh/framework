@@ -58,24 +58,25 @@ public interface ConvertibleRedisGeoPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Collection<V>> georadius(K key, Circle within, GeoRadiusArgs<K> args) {
 		SK k = getKeyCodec().encode(key);
-		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec().toEncodeConverter());
-		return getSourceRedisGeoCommands().georadius(k, within, tArgs).map((values) -> getValueCodec().decodeAll(values));
+		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec()::encode);
+		return getSourceRedisGeoCommands().georadius(k, within, tArgs)
+				.map((values) -> getValueCodec().decodeAll(values));
 	}
 
 	@Override
 	default RedisResponse<List<GeoWithin<V>>> georadius(K key, Circle within, GeoRadiusWith with,
 			GeoRadiusArgs<K> args) {
 		SK k = getKeyCodec().encode(key);
-		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec().toEncodeConverter());
+		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec()::encode);
 		return getSourceRedisGeoCommands().georadius(k, within, with, tArgs).map((values) -> values.stream()
-				.map((e) -> e.convert(getValueCodec().toDecodeConverter())).collect(Collectors.toList()));
+				.map((e) -> e.convert(getValueCodec().toDecodeProcessor())).collect(Collectors.toList()));
 	}
 
 	@Override
 	default RedisResponse<List<V>> georadiusbymember(K key, V member, Distance distance, GeoRadiusArgs<K> args) {
 		SK k = getKeyCodec().encode(key);
 		SV tm = getValueCodec().encode(member);
-		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec().toEncodeConverter());
+		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec()::encode);
 		return getSourceRedisGeoCommands().georadiusbymember(k, tm, distance, tArgs)
 				.map((values) -> getValueCodec().decodeAll(values));
 	}
@@ -85,8 +86,8 @@ public interface ConvertibleRedisGeoPipelineCommands<SK, K, SV, V>
 			GeoRadiusArgs<K> args) {
 		SK k = getKeyCodec().encode(key);
 		SV tm = getValueCodec().encode(member);
-		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec().toEncodeConverter());
+		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec()::encode);
 		return getSourceRedisGeoCommands().georadiusbymember(k, tm, distance, with, tArgs).map((values) -> values
-				.stream().map((e) -> e.convert(getValueCodec().toDecodeConverter())).collect(Collectors.toList()));
+				.stream().map((e) -> e.convert(getValueCodec()::decode)).collect(Collectors.toList()));
 	}
 }

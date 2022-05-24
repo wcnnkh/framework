@@ -21,7 +21,6 @@ import org.apache.lucene.search.TermQuery;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.PageRequest;
-import io.basc.framework.mapper.DecorateObjectMappingProcessor;
 import io.basc.framework.orm.EntityStructure;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
@@ -192,15 +191,9 @@ public interface LuceneTemplate extends Repository {
 		});
 	}
 
-	@SuppressWarnings("unchecked")
-	default <T> Processor<Document, T, LuceneException> getMappingProcessor(TypeDescriptor type) {
-		return new DecorateObjectMappingProcessor<>(getMapper(), new DefaultMappingProcessor<T, LuceneException>(type),
-				(Class<T>) type.getType());
-	}
-
 	default <T> SearchResults<T> search(SearchParameters parameters, TypeDescriptor resultType)
 			throws LuceneSearchException {
-		return search(parameters, getMappingProcessor(resultType));
+		return search(parameters, (e) -> getMapper().convert(e, resultType));
 	}
 
 	default <T> SearchResults<T> search(SearchParameters parameters, Class<? extends T> resultType)
@@ -210,7 +203,7 @@ public interface LuceneTemplate extends Repository {
 
 	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters, TypeDescriptor resultType)
 			throws LuceneSearchException {
-		return searchAfter(after, parameters, getMappingProcessor(resultType));
+		return searchAfter(after, parameters, (e) -> getMapper().convert(e, resultType));
 	}
 
 	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters, Class<? extends T> resultType)
@@ -218,22 +211,14 @@ public interface LuceneTemplate extends Repository {
 		return searchAfter(after, parameters, TypeDescriptor.valueOf(resultType));
 	}
 
-	@SuppressWarnings("unchecked")
 	default <T> SearchResults<T> search(SearchParameters parameters, EntityStructure<? extends Property> structure)
 			throws LuceneSearchException {
-		return search(parameters,
-				new DecorateObjectMappingProcessor<>(getMapper(),
-						new DefaultStructureMapProcessor<T, LuceneException>(structure),
-						(Class<T>) structure.getEntityClass()));
+		return search(parameters, (e) -> getMapper().mapping(e, structure));
 	}
 
-	@SuppressWarnings("unchecked")
 	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters,
 			EntityStructure<? extends Property> structure) throws LuceneSearchException {
-		return searchAfter(after, parameters,
-				new DecorateObjectMappingProcessor<>(getMapper(),
-						new DefaultStructureMapProcessor<T, LuceneException>(structure),
-						(Class<T>) structure.getEntityClass()));
+		return searchAfter(after, parameters, (e) -> getMapper().mapping(e, structure));
 	}
 
 	<T, E extends Exception> Future<T> write(Processor<IndexWriter, T, E> processor) throws LuceneWriteException;

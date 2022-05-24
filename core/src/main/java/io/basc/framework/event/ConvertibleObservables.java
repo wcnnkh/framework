@@ -5,19 +5,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.core.OrderComparator;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Combiner;
+import io.basc.framework.util.stream.Processor;
 
 public class ConvertibleObservables<S, T> extends AbstractObservable<T> implements AutoCloseable {
 	private final Set<Observable<S>> observables;
-	private final Combiner<S> combiner;
-	private final Converter<S, T> converter;
+	private final Processor<List<S>, S, RuntimeException> combiner;
+	private final Processor<S, T, ? extends RuntimeException> converter;
 	private final List<EventRegistration> registrations;
 
-	public ConvertibleObservables(Converter<S, T> converter, Combiner<S> combiner) {
+	public ConvertibleObservables(Processor<S, T, ? extends RuntimeException> converter, Processor<List<S>, S, RuntimeException> combiner) {
 		this.converter = converter;
 		this.combiner = combiner;
 		this.observables = CollectionFactory.createSet(isConcurrent());
@@ -62,8 +61,8 @@ public class ConvertibleObservables<S, T> extends AbstractObservable<T> implemen
 				list.add(observable.get());
 			}
 		}
-		S value = combiner.combine(list);
-		return converter.convert(value);
+		S value = combiner.process(list);
+		return converter.process(value);
 	}
 
 	@Override

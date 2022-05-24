@@ -1,7 +1,7 @@
 package io.basc.framework.redis;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.stream.Processor;
 
 /**
  * Options to be used for with {@literal SCAN} commands.
@@ -20,8 +20,8 @@ public class ScanOptions<P> {
 		return new ScanOptionsBuilder<P>();
 	}
 
-	public <T> ScanOptions<T> convert(Converter<P, T> converter) {
-		return new ScanOptions<T>(count, converter.convert(pattern));
+	public <T, E extends Throwable> ScanOptions<T> convert(Processor<P, T, E> converter) throws E {
+		return new ScanOptions<T>(count, converter.process(pattern));
 	}
 
 	@Nullable

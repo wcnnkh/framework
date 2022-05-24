@@ -1,12 +1,11 @@
 package io.basc.framework.convert.lang;
 
-import io.basc.framework.convert.Converter;
-
 import java.util.Currency;
+import java.util.function.Function;
 
-public class StringToCurrencyConverter implements Converter<String, Currency> {
+public class StringToCurrencyConverter implements Function<String, Currency> {
 
-	public Currency convert(String source) {
+	public Currency apply(String source) {
 		return Currency.getInstance(source);
 	}
 

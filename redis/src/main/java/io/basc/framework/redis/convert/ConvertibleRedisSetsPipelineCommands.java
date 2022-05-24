@@ -27,7 +27,7 @@ public interface ConvertibleRedisSetsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Set<V>> sdiff(K... keys) {
 		return getSourceRedisSetsCommands().sdiff(getKeyCodec().encodeAll(keys))
-				.map((vs) -> getValueCodec().toDecodeConverter().convertAll(vs));
+				.map((vs) -> getValueCodec().toDecodeProcessor().processAll(vs));
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public interface ConvertibleRedisSetsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Set<V>> sinter(K... keys) {
 		return getSourceRedisSetsCommands().sinter(getKeyCodec().encodeAll(keys))
-				.map((vs) -> getValueCodec().toDecodeConverter().convertAll(vs));
+				.map((vs) -> getValueCodec().toDecodeProcessor().processAll(vs));
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public interface ConvertibleRedisSetsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Set<V>> smembers(K key) {
 		return getSourceRedisSetsCommands().smembers(getKeyCodec().encode(key))
-				.map((vs) -> getValueCodec().toDecodeConverter().convertAll(vs));
+				.map((vs) -> getValueCodec().toDecodeProcessor().processAll(vs));
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public interface ConvertibleRedisSetsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Set<V>> spop(K key, int count) {
 		return getSourceRedisSetsCommands().spop(getKeyCodec().encode(key), count)
-				.map((vs) -> getValueCodec().toDecodeConverter().convertAll(vs));
+				.map((vs) -> getValueCodec().toDecodeProcessor().processAll(vs));
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public interface ConvertibleRedisSetsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Set<V>> sunion(K... keys) {
 		return getSourceRedisSetsCommands().sunion(getKeyCodec().encodeAll(keys))
-				.map((vs) -> getValueCodec().toDecodeConverter().convertAll(vs));
+				.map((vs) -> getValueCodec().toDecodeProcessor().processAll(vs));
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public interface ConvertibleRedisSetsPipelineCommands<SK, K, SV, V>
 	@Override
 	default RedisResponse<Pageable<Long, K>> sScan(long cursorId, K key, ScanOptions<K> options) {
 		return getSourceRedisSetsCommands()
-				.sScan(cursorId, getKeyCodec().encode(key), options.convert(getKeyCodec().toEncodeConverter()))
+				.sScan(cursorId, getKeyCodec().encode(key), options.convert(getKeyCodec().toEncodeProcessor()))
 				.map((p) -> p.map((v) -> getKeyCodec().decode(v)));
 	}
 }

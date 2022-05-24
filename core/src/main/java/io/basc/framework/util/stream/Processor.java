@@ -1,7 +1,12 @@
 package io.basc.framework.util.stream;
 
-import io.basc.framework.convert.Converter;
+import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.function.Function;
+
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionFactory;
 
 /**
  * 一个处理者的定义
@@ -11,6 +16,7 @@ import io.basc.framework.lang.Nullable;
  * @param <S> 数据来源
  * @param <T> 返回的结果
  * @param <E> 异常
+ * @see Function
  */
 @FunctionalInterface
 public interface Processor<S, T, E extends Throwable> {
@@ -42,7 +48,7 @@ public interface Processor<S, T, E extends Throwable> {
 		return new NestingProcessor<S, T, A, E>(this, processor, closeProcessor);
 	}
 
-	default <X extends Throwable> Processor<S, T, X> exceptionConvert(Converter<Throwable, X> exceptionConverter) {
+	default <X extends Throwable> Processor<S, T, X> exceptionConvert(Processor<Throwable, X, X> exceptionConverter) {
 		return new Processor<S, T, X>() {
 
 			@Override
@@ -50,7 +56,7 @@ public interface Processor<S, T, E extends Throwable> {
 				try {
 					return Processor.this.process(source);
 				} catch (Throwable e) {
-					throw exceptionConverter.convert(e);
+					throw exceptionConverter.process(e);
 				}
 			}
 		};
@@ -59,4 +65,68 @@ public interface Processor<S, T, E extends Throwable> {
 	default Processor<S, T, E> caching() {
 		return new CachingProcessor<>(this);
 	}
+
+	default <TL extends Collection<T>> TL processTo(Collection<? extends S> sourceList, TL targetList) throws E {
+		if (sourceList == null) {
+			return targetList;
+		}
+
+		for (S source : sourceList) {
+			T target = process(source);
+			targetList.add(target);
+		}
+		return targetList;
+	}
+
+	@SuppressWarnings("unchecked")
+	default <TL extends Collection<T>> TL processAll(Collection<? extends S> sources) throws E {
+		if (sources == null) {
+			return null;
+		}
+
+		if (sources.isEmpty()) {
+			return CollectionFactory.empty(sources.getClass());
+		}
+
+		TL collection = (TL) CollectionFactory.createCollection(sources.getClass(),
+				CollectionFactory.getEnumSetElementType(sources), sources.size());
+		for (S source : sources) {
+			T target = process(source);
+			collection.add(target);
+		}
+		return collection;
+	}
+
+	@Nullable
+	@SuppressWarnings("unchecked")
+	default T[] processAll(S... sources) throws E {
+		if (sources == null) {
+			return null;
+		}
+
+		Object array = Array.newInstance(sources.getClass().getComponentType(), sources.length);
+		for (int i = 0; i < sources.length; i++) {
+			T target = process(sources[i]);
+			if (array != null) {
+				Array.set(array, i, target);
+			}
+		}
+		return (T[]) array;
+	}
+
+	default void processTo(S[] sources, T[] targets) throws E {
+		processTo(sources, 0, targets, 0);
+	}
+
+	default void processTo(S[] sources, int sourceIndex, T[] targets, int targetIndex) throws E {
+		Assert.requiredArgument(sources != null, "sources");
+		Assert.requiredArgument(targets != null, "targets");
+
+		for (int i = sourceIndex, insertIndex = targetIndex; sourceIndex < sources.length; i++, insertIndex++) {
+			S source = sources[i];
+			T target = process(source);
+			targets[insertIndex] = target;
+		}
+	}
+
 }

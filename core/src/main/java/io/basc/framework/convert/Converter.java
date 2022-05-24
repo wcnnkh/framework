@@ -1,120 +1,53 @@
 package io.basc.framework.convert;
 
-import java.lang.reflect.Array;
-import java.util.Collection;
-
-import io.basc.framework.codec.DecodeException;
-import io.basc.framework.codec.Decoder;
-import io.basc.framework.codec.EncodeException;
-import io.basc.framework.codec.Encoder;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionFactory;
 
-@FunctionalInterface
-public interface Converter<S, T> {
-	T convert(S o);
+public interface Converter<S, T, E extends Throwable> {
 
-	default <E> Converter<S, E> to(Converter<T, E> converter) {
-		return new Converter<S, E>() {
-
-			@Override
-			public E convert(S o) {
-				return converter.convert(Converter.this.convert(o));
-			}
-		};
+	default <R extends T> R convert(@Nullable S source, TypeDescriptor targetType) throws E {
+		return convert(source, TypeDescriptor.forObject(source), targetType);
 	}
 
-	default <F> Converter<F, T> from(Converter<F, S> converter) {
-		return new Converter<F, T>() {
-
-			@Override
-			public T convert(F o) {
-				return Converter.this.convert(converter.convert(o));
-			}
-		};
+	default <R extends T> R convert(@Nullable S source, Class<? extends R> targetType) throws E {
+		return convert(source, TypeDescriptor.forObject(source), targetType);
 	}
 
-	default Encoder<S, T> toEncoder() {
-		return new Encoder<S, T>() {
-
-			@Override
-			public T encode(S source) throws EncodeException {
-				return convert(source);
-			}
-		};
+	default <R extends T> R convert(@Nullable S source, @Nullable Class<? extends S> sourceType,
+			Class<? extends R> targetType) throws E {
+		return convert(source, TypeDescriptor.valueOf(sourceType), targetType);
 	}
 
-	default Decoder<S, T> toDecoder() {
-		return new Decoder<S, T>() {
-
-			@Override
-			public T decode(S source) throws DecodeException {
-				return convert(source);
-			}
-		};
+	default <R extends T> R convert(@Nullable S source, @Nullable Class<? extends S> sourceType,
+			TypeDescriptor targetType) throws E {
+		return convert(source, TypeDescriptor.valueOf(sourceType), targetType);
 	}
 
-	default <TL extends Collection<T>> TL convertTo(Collection<? extends S> sourceList, TL targetList) {
-		if (sourceList == null) {
-			return targetList;
-		}
-
-		for (S source : sourceList) {
-			T target = convert(source);
-			targetList.add(target);
-		}
-		return targetList;
+	default <R extends T> R convert(@Nullable S source, @Nullable TypeDescriptor sourceType,
+			Class<? extends R> targetType) throws E {
+		return convert(source, sourceType, TypeDescriptor.valueOf(targetType));
 	}
 
-	@SuppressWarnings("unchecked")
-	default <TL extends Collection<T>> TL convertAll(Collection<? extends S> sources) {
-		if (sources == null) {
-			return null;
-		}
-
-		if (sources.isEmpty()) {
-			return CollectionFactory.empty(sources.getClass());
-		}
-
-		TL collection = (TL) CollectionFactory.createCollection(sources.getClass(),
-				CollectionFactory.getEnumSetElementType(sources), sources.size());
-		for (S source : sources) {
-			T target = convert(source);
-			collection.add(target);
-		}
-		return collection;
-	}
-
-	@Nullable
-	@SuppressWarnings("unchecked")
-	default T[] convertAll(S... sources) {
-		if (sources == null) {
-			return null;
-		}
-
-		Object array = Array.newInstance(sources.getClass().getComponentType(), sources.length);
-		for (int i = 0; i < sources.length; i++) {
-			T target = convert(sources[i]);
-			if (array != null) {
-				Array.set(array, i, target);
-			}
-		}
-		return (T[]) array;
-	}
-
-	default void convertTo(S[] sources, T[] targets) {
-		convertTo(sources, 0, targets, 0);
-	}
-
-	default void convertTo(S[] sources, int sourceIndex, T[] targets, int targetIndex) {
-		Assert.requiredArgument(sources != null, "sources");
-		Assert.requiredArgument(targets != null, "targets");
-
-		for (int i = sourceIndex, insertIndex = targetIndex; sourceIndex < sources.length; i++, insertIndex++) {
-			S source = sources[i];
-			T target = convert(source);
-			targets[insertIndex] = target;
-		}
-	}
+	/*
+	 * Convert the given {@code source} to the specified {@code targetType}. The
+	 * TypeDescriptors provide additional context about the source and target
+	 * locations where conversion will occur, often object fields or property
+	 * locations.
+	 * 
+	 * @param source the source object to convert (may be {@code null})
+	 * 
+	 * @param sourceType context about the source type to convert from (may be
+	 * {@code null} if source is {@code null})
+	 * 
+	 * @param targetType context about the target type to convert to (required)
+	 * 
+	 * @return the converted object, an instance of {@link
+	 * TypeDescriptor#getObjectType() targetType}
+	 * 
+	 * @throws ConversionException if a conversion exception occurred
+	 * 
+	 * @throws IllegalArgumentException if targetType is {@code null}, or {@code
+	 * sourceType} is {@code null} but source is not {@code null}
+	 */
+	<R extends T> R convert(@Nullable S source, @Nullable TypeDescriptor sourceType, TypeDescriptor targetType)
+			throws E;
 }

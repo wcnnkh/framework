@@ -21,7 +21,6 @@ import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.util.BytesRef;
 
 import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.env.Sys;
@@ -31,19 +30,17 @@ import io.basc.framework.json.JSONUtils;
 import io.basc.framework.lucene.LuceneException;
 import io.basc.framework.lucene.LuceneMapper;
 import io.basc.framework.mapper.Fields;
-import io.basc.framework.mapper.ObjectMapper;
-import io.basc.framework.mapper.SimpleObjectMapper;
 import io.basc.framework.orm.EntityStructure;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.StructureRegistry;
 import io.basc.framework.orm.repository.Condition;
 import io.basc.framework.orm.repository.ConditionKeywords;
 import io.basc.framework.orm.repository.Conditions;
-import io.basc.framework.orm.repository.DefaultRepositoryMapper;
 import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.RelationshipKeywords;
 import io.basc.framework.orm.repository.RepositoryColumn;
 import io.basc.framework.orm.repository.WithCondition;
+import io.basc.framework.orm.support.AbstractObjectMapper;
 import io.basc.framework.orm.support.SimpleStructureRegistry;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.NumberUtils;
@@ -52,8 +49,7 @@ import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 
-public class DefaultLuceneMapper extends DefaultRepositoryMapper implements LuceneMapper, ConversionServiceAware {
-	private final ObjectMapper<Document, LuceneException> objectMapper = new SimpleObjectMapper<Document, LuceneException>();
+public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneException> implements LuceneMapper {
 	private final StructureRegistry<EntityStructure<? extends Property>> structureRegistry = new SimpleStructureRegistry<EntityStructure<? extends Property>>();
 	private final ConfigurableServices<LuceneResolverExtend> luceneResolverExtends = new ConfigurableServices<LuceneResolverExtend>(
 			LuceneResolverExtend.class);
@@ -95,22 +91,6 @@ public class DefaultLuceneMapper extends DefaultRepositoryMapper implements Luce
 	@Override
 	public void registerStructure(Class<?> entityClass, EntityStructure<? extends Property> structure) {
 		structureRegistry.registerStructure(entityClass, structure);
-	}
-
-	@Override
-	public boolean isMapperRegistred(Class<?> type) {
-		return objectMapper.isMapperRegistred(type);
-	}
-
-	@Override
-	public <T> Processor<Document, T, LuceneException> getMappingProcessor(Class<? extends T> type) {
-		return objectMapper.getMappingProcessor(type);
-	}
-
-	@Override
-	public <T> void registerMapper(Class<T> type,
-			Processor<Document, ? extends T, ? extends LuceneException> processor) {
-		objectMapper.registerMapper(type, processor);
 	}
 
 	@Override
@@ -356,14 +336,7 @@ public class DefaultLuceneMapper extends DefaultRepositoryMapper implements Luce
 	}
 
 	@Override
-	public <T> void mapping(Document document, EntityStructure<? extends Property> structure, T entity) {
-		structure.columns().filter((e) -> e.getField() != null && e.getField().isSupportSetter()).forEach((e) -> {
-			String value = e.getValueByNames((name) -> document.get(name));
-			if (value == null) {
-				return;
-			}
-
-			e.getField().set(entity, value, getConversionService());
-		});
+	protected Processor<String, Object, LuceneException> getValueProcessor(Document source, TypeDescriptor sourceType) {
+		return (name) -> source.get(name);
 	}
 }

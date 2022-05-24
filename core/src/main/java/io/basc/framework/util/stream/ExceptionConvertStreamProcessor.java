@@ -1,14 +1,12 @@
 package io.basc.framework.util.stream;
 
-import io.basc.framework.convert.Converter;
-
 public class ExceptionConvertStreamProcessor<SE extends Throwable, T, E extends Throwable>
 		implements StreamProcessor<T, E> {
 	private final StreamProcessor<T, SE> streamProcessor;
-	private final Converter<Throwable, E> excpetionConverter;
+	private final Processor<Throwable, E, ? extends E> excpetionConverter;
 
 	public ExceptionConvertStreamProcessor(StreamProcessor<T, SE> streamProcessor,
-			Converter<Throwable, E> excpetionConverter) {
+			Processor<Throwable, E, ? extends E> excpetionConverter) {
 		this.streamProcessor = streamProcessor;
 		this.excpetionConverter = excpetionConverter;
 	}
@@ -18,7 +16,7 @@ public class ExceptionConvertStreamProcessor<SE extends Throwable, T, E extends 
 		try {
 			return streamProcessor.process();
 		} catch (Throwable e) {
-			throw excpetionConverter.convert(e);
+			throw excpetionConverter.process(e);
 		}
 	}
 
@@ -39,7 +37,7 @@ public class ExceptionConvertStreamProcessor<SE extends Throwable, T, E extends 
 		try {
 			this.streamProcessor.close();
 		} catch (Throwable e) {
-			throw excpetionConverter.convert(e);
+			throw excpetionConverter.process(e);
 		}
 	}
 

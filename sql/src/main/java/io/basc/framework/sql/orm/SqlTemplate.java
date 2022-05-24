@@ -27,8 +27,6 @@ import io.basc.framework.orm.repository.RepositoryColumn;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.SqlException;
 import io.basc.framework.sql.SqlOperations;
-import io.basc.framework.sql.orm.convert.EntityStructureMapProcessor;
-import io.basc.framework.sql.orm.convert.SmartResultSetMappingProcessor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.page.PageSupport;
 import io.basc.framework.util.page.Pagination;
@@ -185,37 +183,6 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	SqlDialect getMapper();
 
-	@Override
-	public default <T> Processor<ResultSet, T, ? extends Throwable> getMapProcessor(Class<? extends T> type) {
-		if (getMapper().isStructureRegistred(type)) {
-			return getMapProcessor(getMapper().getStructure(type));
-		}
-
-		if (getMapper().isMapperRegistred(type)) {
-			return getMapper().getMappingProcessor(type);
-		}
-
-		if (getMapper().isEntity(type)) {
-			TableStructure tableStructure = getMapper().getStructure(type, null, null);
-			return getMapProcessor(tableStructure);
-		}
-
-		return SqlOperations.super.getMapProcessor(type);
-	}
-
-	default <T> Processor<ResultSet, T, ? extends Throwable> getMapProcessor(TableStructure structure) {
-		return new EntityStructureMapProcessor<T>(structure, getMapper().getEnvironment().getConversionService());
-	}
-
-	@Override
-	default <T> Processor<ResultSet, T, Throwable> getMapProcessor(TypeDescriptor type) {
-		SmartResultSetMappingProcessor<T> processor = new SmartResultSetMappingProcessor<T>(getMapper(),
-				getMapper().getEnvironment().getConversionService(), type);
-		processor.setMapper(getMapper());
-		processor.setStructureRegistry(getMapper());
-		return processor;
-	}
-
 	/**
 	 * 获取对象指定字段的最大值
 	 * 
@@ -252,7 +219,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	ObjectKeyFormat getObjectKeyFormat();
 
 	default <T> Pagination<T> getPage(Class<? extends T> resultType, Sql sql, long pageNumber, long limit) {
-		return getPage(sql, pageNumber, limit, getMapProcessor(resultType));
+		return getPage(sql, pageNumber, limit, (rs) -> getMapper().convert(rs, resultType));
 	}
 
 	default <T> Pagination<T> getPage(Sql sql, long pageNumber, long limit,
@@ -267,15 +234,15 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> Pagination<T> getPage(TableStructure tableStructure, Sql sql, long pageNumber, long limit) {
-		return getPage(sql, pageNumber, limit, getMapProcessor(tableStructure));
+		return getPage(sql, pageNumber, limit, (rs) -> getMapper().mapping(rs, tableStructure));
 	}
 
 	default <T> Pagination<T> getPage(TypeDescriptor resultType, Sql sql, long pageNumber, long limit) {
-		return getPage(sql, pageNumber, limit, getMapProcessor(resultType));
+		return getPage(sql, pageNumber, limit, (rs) -> getMapper().convert(rs, resultType));
 	}
 
 	default <T> Paginations<T> getPages(Class<? extends T> resultType, Sql sql, long pageNumber, int limit) {
-		return getPages(sql, pageNumber, limit, getMapProcessor(resultType));
+		return getPages(sql, pageNumber, limit, (rs) -> getMapper().convert(rs, resultType));
 	}
 
 	default <T> Paginations<T> getPages(Class<? extends T> queryClass, T query, long getNumber, long limit) {
@@ -295,11 +262,11 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	default <T> Paginations<T> getPages(TableStructure tableStructure, T query, long getNumber, long limit) {
 		Sql sql = getMapper().toQuerySql(tableStructure, query);
-		return getPages(sql, getNumber, limit, getMapProcessor(tableStructure));
+		return getPages(sql, getNumber, limit, (rs) -> getMapper().mapping(rs, tableStructure));
 	}
 
 	default <T> Paginations<T> getPages(TypeDescriptor resultType, Sql sql, long pageNumber, long limit) {
-		return getPages(sql, pageNumber, limit, getMapProcessor(resultType));
+		return getPages(sql, pageNumber, limit, (rs) -> getMapper().convert(rs, resultType));
 	}
 
 	/**
@@ -355,7 +322,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> Cursor<T> limit(Class<? extends T> type, Sql sql, long start, long limit) {
-		return limit(sql, start, limit, getMapProcessor(type));
+		return limit(sql, start, limit, (rs) -> getMapper().convert(rs, type));
 	}
 
 	default <T> Cursor<T> limit(Sql sql, long start, long limit,
@@ -365,11 +332,11 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> Cursor<T> limit(TableStructure structure, Sql sql, long start, long limit) {
-		return limit(sql, start, limit, getMapProcessor(structure));
+		return limit(sql, start, limit, (rs) -> getMapper().mapping(rs, structure));
 	}
 
 	default <T> Cursor<T> limit(TypeDescriptor resultsTypeDescriptor, Sql sql, long start, long limit) {
-		return limit(sql, start, limit, getMapProcessor(resultsTypeDescriptor));
+		return limit(sql, start, limit, (rs) -> getMapper().convert(rs, resultsTypeDescriptor));
 	}
 
 	@Override
@@ -405,7 +372,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> Cursor<T> query(TableStructure tableStructure, Sql sql) {
-		return query(sql, getMapProcessor(tableStructure));
+		return query(sql, (rs) -> getMapper().mapping(rs, tableStructure));
 	}
 
 	default <T> Cursor<T> query(TableStructure tableStructure, T query) {
@@ -457,8 +424,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	@Override
-	default <T, E> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass, Conditions conditions,
-			List<? extends OrderColumn> orderColumns) throws OrmException {
+	default <T, E> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
+			Conditions conditions, List<? extends OrderColumn> orderColumns) throws OrmException {
 		return query(resultsTypeDescriptor, getMapper().getStructure(entityClass), conditions, orderColumns);
 	}
 
@@ -497,7 +464,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	@Override
-	default <E> long save(Class<? extends E> entityClass, Collection<? extends RepositoryColumn> columns) throws OrmException {
+	default <E> long save(Class<? extends E> entityClass, Collection<? extends RepositoryColumn> columns)
+			throws OrmException {
 		return save(getMapper().getStructure(entityClass), columns);
 	}
 
@@ -586,8 +554,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	@Override
-	default <E> long update(Class<? extends E> entityClass, Collection<? extends RepositoryColumn> columns, Conditions conditions)
-			throws OrmException {
+	default <E> long update(Class<? extends E> entityClass, Collection<? extends RepositoryColumn> columns,
+			Conditions conditions) throws OrmException {
 		return update(getMapper().getStructure(entityClass), columns, conditions);
 	}
 

@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.ConvertibleIterator;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonElement;
@@ -24,7 +23,7 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
 
 public class JacksonJsonObject extends AbstractJson<String>
-		implements JsonObject, JsonSerializable, Converter<JsonNode, JsonElement> {
+		implements JsonObject, JsonSerializable{
 	private final ObjectNode objectNode;
 	private final ObjectMapper mapper;
 
@@ -52,13 +51,7 @@ public class JacksonJsonObject extends AbstractJson<String>
 	@Override
 	public Iterator<Pair<String, JsonElement>> iterator() {
 		return new ConvertibleIterator<Entry<String, JsonNode>, Pair<String, JsonElement>>(objectNode.fields(),
-				new Converter<Entry<String, JsonNode>, Pair<String, JsonElement>>() {
-
-					@Override
-					public Pair<String, JsonElement> convert(Entry<String, JsonNode> o) {
-						return new Pair<String, JsonElement>(o.getKey(), JacksonJsonObject.this.convert(o.getValue()));
-					}
-				});
+				(o) -> new Pair<String, JsonElement>(o.getKey(), JacksonJsonObject.this.convert(o.getValue())));
 	}
 
 	@Override
@@ -89,7 +82,6 @@ public class JacksonJsonObject extends AbstractJson<String>
 		objectNode.serializeWithType(gen, serializers, typeSer);
 	}
 
-	@Override
 	public JsonElement convert(JsonNode o) {
 		return new JacksonJsonElement(o, mapper);
 	}

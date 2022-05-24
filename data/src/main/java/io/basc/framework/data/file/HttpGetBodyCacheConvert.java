@@ -1,11 +1,11 @@
 package io.basc.framework.data.file;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.http.HttpUtils;
+import io.basc.framework.util.stream.Processor;
 
-public class HttpGetBodyCacheConvert implements Converter<String, String> {
+public class HttpGetBodyCacheConvert implements Processor<String, String, RuntimeException> {
 
-	public String convert(String url) {
+	public String process(String url) {
 		return HttpUtils.getHttpClient().get(String.class, url).getBody();
 	}
 }

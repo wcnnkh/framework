@@ -12,6 +12,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
+import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.stream.Processor;
 
@@ -221,6 +222,10 @@ public class ReflectionApi implements Supplier<Object> {
 			return false;
 		}
 		return true;
+	}
+	
+	public static <T> T newInstance(Class<T> type) throws NotSupportedException{
+		return newInstance(type, ObjectUtils.EMPTY_ARRAY);
 	}
 
 	/**

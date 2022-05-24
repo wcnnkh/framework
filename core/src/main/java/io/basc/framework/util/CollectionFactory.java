@@ -25,9 +25,9 @@ import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.stream.Processor;
 
 public final class CollectionFactory {
 	private static final Field KEY_TYPE_FIELD = ReflectionUtils.getDeclaredField(EnumMap.class, "keyType");
@@ -446,9 +446,9 @@ public final class CollectionFactory {
 	/**
 	 * 克隆一个{@link Map}
 	 * 
-	 * @param <M>
-	 * @param <K>
-	 * @param <V>
+	 * @param     <M>
+	 * @param     <K>
+	 * @param     <V>
 	 * @param map
 	 * @return
 	 */
@@ -460,9 +460,9 @@ public final class CollectionFactory {
 	/**
 	 * 克隆一个{@link Map}
 	 * 
-	 * @param <M>
-	 * @param <K>
-	 * @param <V>
+	 * @param      <M>
+	 * @param      <K>
+	 * @param      <V>
 	 * @param map
 	 * @param deep {@link ObjectUtils#clone(Object, boolean)}
 	 * @return
@@ -514,8 +514,8 @@ public final class CollectionFactory {
 	/**
 	 * 克隆一个{@link Collection}
 	 * 
-	 * @param <C>
-	 * @param <E>
+	 * @param            <C>
+	 * @param            <E>
 	 * @param collection
 	 * @return
 	 */
@@ -526,8 +526,8 @@ public final class CollectionFactory {
 	/**
 	 * 克隆一个{@link Collection}
 	 * 
-	 * @param <C>
-	 * @param <E>
+	 * @param            <C>
+	 * @param            <E>
 	 * @param collection
 	 * @param deep
 	 * @return
@@ -569,16 +569,16 @@ public final class CollectionFactory {
 
 	}
 
-	public static <K, V, SK, SV> Map<K, V> convert(Map<? extends SK, ? extends SV> sourceMap,
-			Converter<SK, K> keyConverter, Converter<SV, V> valueConverter) {
+	public static <K, V, SK, SV, E extends Throwable> Map<K, V> convert(Map<? extends SK, ? extends SV> sourceMap,
+			Processor<SK, K, E> keyConverter, Processor<SV, V, E> valueConverter) throws E {
 		if (CollectionUtils.isEmpty(sourceMap)) {
 			return Collections.emptyMap();
 		}
 
 		Map<K, V> targetMap = createMap(sourceMap.getClass(), getEnumMapKeyType(sourceMap), sourceMap.size());
 		for (Entry<? extends SK, ? extends SV> entry : sourceMap.entrySet()) {
-			K key = keyConverter.convert(entry.getKey());
-			V value = valueConverter.convert(entry.getValue());
+			K key = keyConverter.process(entry.getKey());
+			V value = valueConverter.process(entry.getValue());
 			targetMap.put(key, value);
 		}
 		return targetMap;

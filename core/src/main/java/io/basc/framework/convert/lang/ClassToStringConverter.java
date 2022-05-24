@@ -1,18 +1,18 @@
 package io.basc.framework.convert.lang;
 
-import io.basc.framework.convert.Converter;
+import java.io.Serializable;
+import java.util.function.Function;
+
 import io.basc.framework.lang.NotSupportedException;
 
-import java.io.Serializable;
-
-public class ClassToStringConverter implements Converter<Class<?>, String>, Serializable {
+public class ClassToStringConverter implements Function<Class<?>, String>, Serializable {
 	private static final long serialVersionUID = 1L;
-	public static final Converter<Class<?>, String> NAME = new ClassToStringConverter(1);
-	public static final Converter<Class<?>, String> SIMPLE_NAME = new ClassToStringConverter(2);
-	public static final Converter<Class<?>, String> CANONICAL_NAME = new ClassToStringConverter(3);
-	public static final Converter<Class<?>, String> TYPE_NAME = new ClassToStringConverter(4);
-	public static final Converter<Class<?>, String> GENERIC_STRING = new ClassToStringConverter(5);
-	public static final Converter<Class<?>, String> STRING = new ClassToStringConverter(6);
+	public static final Function<Class<?>, String> NAME = new ClassToStringConverter(1);
+	public static final Function<Class<?>, String> SIMPLE_NAME = new ClassToStringConverter(2);
+	public static final Function<Class<?>, String> CANONICAL_NAME = new ClassToStringConverter(3);
+	public static final Function<Class<?>, String> TYPE_NAME = new ClassToStringConverter(4);
+	public static final Function<Class<?>, String> GENERIC_STRING = new ClassToStringConverter(5);
+	public static final Function<Class<?>, String> STRING = new ClassToStringConverter(6);
 
 	private int type;
 
@@ -21,7 +21,7 @@ public class ClassToStringConverter implements Converter<Class<?>, String>, Seri
 	}
 
 	@Override
-	public String convert(Class<?> o) {
+	public String apply(Class<?> o) {
 		switch (type) {
 		case 1:
 			return o.getName();

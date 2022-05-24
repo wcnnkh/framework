@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
@@ -22,8 +23,7 @@ public final class StreamProcessorSupport {
 		throw new NotSupportedException(StreamProcessorSupport.class.getName());
 	}
 
-	public static <T, E extends Throwable> StreamProcessor<T, E> stream(
-			CallableProcessor<T, E> processor) {
+	public static <T, E extends Throwable> StreamProcessor<T, E> stream(CallableProcessor<T, E> processor) {
 		return new DefaultStreamProcessor<T, E>(processor);
 	}
 
@@ -79,7 +79,7 @@ public final class StreamProcessorSupport {
 	 * 使用静态代理而不动态代理的原因是考虑性能
 	 * 虽然可以自动关闭，并并非所有情况都适用，例如调用iterator/spliterator方法或获取到此对象后未调用任何方法
 	 * 
-	 * @param <T>
+	 * @param        <T>
 	 * @param stream
 	 * @return
 	 */
@@ -94,7 +94,7 @@ public final class StreamProcessorSupport {
 	 * 使用静态代理而不动态代理的原因是考虑性能
 	 * 虽然可以自动关闭，并并非所有情况都适用，例如调用iterator/spliterator方法或获取到此对象后未调用任何方法
 	 * 
-	 * @param <T>
+	 * @param          <T>
 	 * @param iterator
 	 * @return
 	 */
@@ -108,7 +108,7 @@ public final class StreamProcessorSupport {
 
 	/**
 	 * @see Cursor
-	 * @param <T>
+	 * @param        <T>
 	 * @param stream
 	 * @return
 	 */
@@ -165,17 +165,13 @@ public final class StreamProcessorSupport {
 		return stream;
 	}
 
-	public static <K, V, E extends Throwable> Optional<Pair<K, V>> process(
-			Iterable<? extends K> keys, Processor<K, V, E> processor,
-			Predicate<Pair<K, V>> returnTest) throws E {
-		return process(
-				keys == null ? Collections.emptyIterator() : keys.iterator(),
-				processor, returnTest);
+	public static <K, V, E extends Throwable> Optional<Pair<K, V>> process(Iterable<? extends K> keys,
+			Processor<K, V, E> processor, Predicate<Pair<K, V>> returnTest) throws E {
+		return process(keys == null ? Collections.emptyIterator() : keys.iterator(), processor, returnTest);
 	}
 
-	public static <K, V, E extends Throwable> Optional<Pair<K, V>> process(
-			Iterator<? extends K> keys, Processor<K, V, E> processor,
-			Predicate<Pair<K, V>> returnTest) throws E {
+	public static <K, V, E extends Throwable> Optional<Pair<K, V>> process(Iterator<? extends K> keys,
+			Processor<K, V, E> processor, Predicate<Pair<K, V>> returnTest) throws E {
 		Assert.requiredArgument(processor != null, "processor");
 		if (keys == null) {
 			return Optional.empty();
@@ -196,17 +192,13 @@ public final class StreamProcessorSupport {
 		return Optional.empty();
 	}
 
-	public static <K, V, E extends Throwable> List<Pair<K, V>> processAll(
-			Iterable<? extends K> keys, Processor<K, V, E> processor,
-			Predicate<Pair<K, V>> predicate) throws E {
-		return processAll(
-				keys == null ? Collections.emptyIterator() : keys.iterator(),
-				processor, predicate);
+	public static <K, V, E extends Throwable> List<Pair<K, V>> processAll(Iterable<? extends K> keys,
+			Processor<K, V, E> processor, Predicate<Pair<K, V>> predicate) throws E {
+		return processAll(keys == null ? Collections.emptyIterator() : keys.iterator(), processor, predicate);
 	}
 
-	public static <K, V, E extends Throwable> List<Pair<K, V>> processAll(
-			Iterator<? extends K> keys, Processor<K, V, E> processor,
-			Predicate<Pair<K, V>> predicate) throws E {
+	public static <K, V, E extends Throwable> List<Pair<K, V>> processAll(Iterator<? extends K> keys,
+			Processor<K, V, E> processor, Predicate<Pair<K, V>> predicate) throws E {
 		Assert.requiredArgument(processor != null, "processor");
 		Assert.requiredArgument(predicate != null, "predicate");
 		if (keys == null) {
@@ -223,5 +215,33 @@ public final class StreamProcessorSupport {
 			}
 		}
 		return list.isEmpty() ? Collections.emptyList() : list;
+	}
+
+	public static <S, T, TC extends Collection<T>, E extends Throwable> void transform(
+			Iterator<? extends S> sourceIterator, TC targetCollection, Processor<S, ? extends T, ? extends E> processor)
+			throws E {
+		if (sourceIterator == null) {
+			return;
+		}
+
+		while (sourceIterator.hasNext()) {
+			S source = sourceIterator.next();
+			T target = processor.process(source);
+			targetCollection.add(target);
+		}
+	}
+
+	public static <S, T, TC extends Collection<T>, E extends Throwable> void transform(
+			Iterable<? extends S> sourceIterable, TC targetCollection, Processor<S, ? extends T, ? extends E> processor)
+			throws E {
+		if (sourceIterable == null) {
+			return;
+		}
+
+		transform(sourceIterable.iterator(), targetCollection, processor);
+	}
+
+	public static <S, T, E extends Throwable> Processor<S, T, E> toProcessor(Function<S, ? extends T> function) {
+		return (s) -> function.apply(s);
 	}
 }

@@ -1,20 +1,20 @@
 package io.basc.framework.sql.orm;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.mapper.Fields;
-import io.basc.framework.mapper.ObjectMapper;
+import io.basc.framework.orm.ObjectMapper;
 import io.basc.framework.orm.StructureRegistry;
 import io.basc.framework.orm.repository.RepositoryMapper;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 
-public interface TableMapper extends TableStructureProcessor, RepositoryMapper,
-		TableResolver, StructureRegistry<TableStructure>,
-		ObjectMapper<ResultSet, Throwable> {
+public interface TableMapper extends TableStructureProcessor, RepositoryMapper, TableResolver,
+		StructureRegistry<TableStructure>, ObjectMapper<ResultSet, SQLException> {
 
 	@Override
 	default Column resolve(Class<?> entityClass, Field field) {
@@ -22,10 +22,8 @@ public interface TableMapper extends TableStructureProcessor, RepositoryMapper,
 	}
 
 	@Override
-	default ColumnMetadata resolveMetadata(Class<?> entityClass,
-			FieldDescriptor fieldDescriptor) {
-		return new DefaultColumnMetdata(this, entityClass, fieldDescriptor,
-				this);
+	default ColumnMetadata resolveMetadata(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
+		return new DefaultColumnMetdata(this, entityClass, fieldDescriptor, this);
 	}
 
 	@Override
@@ -40,8 +38,7 @@ public interface TableMapper extends TableStructureProcessor, RepositoryMapper,
 
 	@Override
 	default TableStructure getStructure(Class<?> entityClass, Field parentField) {
-		return getStructure(entityClass, getFields(entityClass, parentField)
-				.all());
+		return getStructure(entityClass, getFields(entityClass, parentField).all());
 	}
 
 	@Override
@@ -49,8 +46,8 @@ public interface TableMapper extends TableStructureProcessor, RepositoryMapper,
 		return new DefaultTableStructure(this, this, entityClass, fields);
 	}
 
-	default <T> TableStructure getStructure(Class<? extends T> entityClass,
-			@Nullable T entity, @Nullable String tableName) {
+	default <T> TableStructure getStructure(Class<? extends T> entityClass, @Nullable T entity,
+			@Nullable String tableName) {
 		Assert.requiredArgument(entityClass != null, "entityClass");
 		if (StringUtils.isNotEmpty(tableName)) {
 			return getStructure(entityClass).rename(tableName);

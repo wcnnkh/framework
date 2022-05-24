@@ -22,7 +22,8 @@ class EntityToMapConversionService extends ConditionalConversionService {
 		this.objectRelationalMapping = objectRelationalMapping;
 	}
 
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	@SuppressWarnings("unchecked")
+	public <R> R convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		Map<Object, Object> sourceMap = CollectionFactory.createMap(targetType.getType(),
 				targetType.getMapKeyTypeDescriptor().getType(), 16);
 		getObjectRelationalMapping().getStructure(sourceType.getType()).stream()
@@ -35,7 +36,7 @@ class EntityToMapConversionService extends ConditionalConversionService {
 							targetType.getMapKeyTypeDescriptor());
 					sourceMap.put(key, value);
 				});
-		return sourceMap;
+		return (R) sourceMap;
 	}
 
 	@Override

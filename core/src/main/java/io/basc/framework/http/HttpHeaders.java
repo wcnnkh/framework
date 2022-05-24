@@ -1,22 +1,5 @@
 package io.basc.framework.http;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.env.Sys;
-import io.basc.framework.io.event.ConvertibleObservableProperties;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.net.InetUtils;
-import io.basc.framework.net.MimeType;
-import io.basc.framework.net.MimeTypeUtils;
-import io.basc.framework.net.message.Headers;
-import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Pair;
-import io.basc.framework.util.StringMatchers;
-import io.basc.framework.util.StringUtils;
-
 import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
@@ -38,6 +21,23 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import io.basc.framework.env.Sys;
+import io.basc.framework.io.event.ConvertibleObservableProperties;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.net.InetUtils;
+import io.basc.framework.net.MimeType;
+import io.basc.framework.net.MimeTypeUtils;
+import io.basc.framework.net.message.Headers;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Pair;
+import io.basc.framework.util.StringMatchers;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.stream.Processor;
 
 /**
  * A data structure representing HTTP request or response headers, mapping
@@ -502,8 +502,8 @@ public class HttpHeaders extends Headers {
 
 	public static final String X_FORWARDED_FOR = "X-Forwarded-For";
 
-	private static final Converter<Properties, Map<String, String[]>> CONVERTER = new Converter<Properties, Map<String, String[]>>() {
-		public java.util.Map<String, String[]> convert(Properties properties) {
+	private static final Processor<Properties, Map<String, String[]>, RuntimeException> CONVERTER = new Processor<Properties, Map<String, String[]>, RuntimeException>() {
+		public java.util.Map<String, String[]> process(Properties properties) throws RuntimeException {
 			if (CollectionUtils.isEmpty(properties)) {
 				return Collections.emptyMap();
 			}

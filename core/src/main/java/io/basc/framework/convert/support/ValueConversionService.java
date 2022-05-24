@@ -12,6 +12,7 @@ class ValueConversionService implements ConversionService {
 		this.conversionService = conversionService;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		AnyValue value = new AnyValue(source, conversionService);
 		if (targetType.getType() == Value.class || targetType.getType() == AnyValue.class) {

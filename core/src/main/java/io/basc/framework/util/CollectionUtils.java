@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import io.basc.framework.convert.Converter;
+import io.basc.framework.util.stream.Processor;
 
 public abstract class CollectionUtils {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -697,7 +697,7 @@ public abstract class CollectionUtils {
 	}
 
 	public static <S, T> Iterator<T> iterator(Iterator<? extends S> iterator,
-			Converter<S, ? extends Iterator<? extends T>> converter) {
+			Processor<S, ? extends Iterator<? extends T>, ? extends RuntimeException> converter) {
 		Assert.requiredArgument(converter != null, "converter");
 		if (iterator == null) {
 			return Collections.emptyIterator();

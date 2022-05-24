@@ -1,6 +1,9 @@
 package io.basc.framework.redis;
 
-import io.basc.framework.convert.Converter;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
+
 import io.basc.framework.data.geo.Circle;
 import io.basc.framework.data.geo.Distance;
 import io.basc.framework.data.geo.Lbs;
@@ -10,10 +13,6 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.comparator.Sort;
 import io.basc.framework.util.stream.Cursor;
 import io.basc.framework.util.stream.StreamProcessorSupport;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class RedisLbs<K, V> implements Lbs<V> {
@@ -51,10 +50,9 @@ public class RedisLbs<K, V> implements Lbs<V> {
 		return factory.zrank(this.key, key) != null;
 	}
 
-	protected final Converter<GeoWithin<V>, Marker<V>> markerConvert = new Converter<GeoWithin<V>, Marker<V>>() {
-		public io.basc.framework.data.geo.Marker<V> convert(io.basc.framework.redis.GeoWithin<V> o) {
+	protected final Function<GeoWithin<V>, Marker<V>> markerConvert = new Function<GeoWithin<V>, Marker<V>>() {
+		public io.basc.framework.data.geo.Marker<V> apply(io.basc.framework.redis.GeoWithin<V> o) {
 			return new Marker<V>(o.getMember(), o.getCoordinates());
-
 		};
 	};
 
@@ -66,8 +64,7 @@ public class RedisLbs<K, V> implements Lbs<V> {
 			return StreamProcessorSupport.emptyCursor();
 		}
 
-		return StreamProcessorSupport
-				.cursor(markerConvert.convertTo(collection, new ArrayList<Marker<V>>(collection.size())).stream());
+		return StreamProcessorSupport.cursor(collection.stream().map(markerConvert));
 	}
 
 }

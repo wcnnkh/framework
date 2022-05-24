@@ -1,12 +1,13 @@
 package io.basc.framework.convert;
 
 import java.util.Enumeration;
+import java.util.function.Function;
 
 public class ConvertibleEnumeration<T, E> implements Enumeration<E> {
 	private Enumeration<? extends T> enumeration;
-	private Converter<T, E> converter;
+	private Function<T, E> converter;
 
-	public ConvertibleEnumeration(Enumeration<? extends T> enumeration, Converter<T, E> converter) {
+	public ConvertibleEnumeration(Enumeration<? extends T> enumeration, Function<T, E> converter) {
 		this.enumeration = enumeration;
 		this.converter = converter;
 	}
@@ -21,15 +22,10 @@ public class ConvertibleEnumeration<T, E> implements Enumeration<E> {
 			return null;
 		}
 
-		return converter.convert(v);
+		return converter.apply(v);
 	}
 
 	public static Enumeration<String> convertToStringEnumeration(Enumeration<?> enumeration) {
-		return new ConvertibleEnumeration<Object, String>(enumeration, new Converter<Object, String>() {
-
-			public String convert(Object k) {
-				return String.valueOf(k);
-			}
-		});
+		return new ConvertibleEnumeration<Object, String>(enumeration, (k) -> String.valueOf(k));
 	}
 }

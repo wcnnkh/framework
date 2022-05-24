@@ -25,7 +25,7 @@ public interface ConvertibleRedisSetsCommands<SK, K, SV, V> extends RedisCodec<S
 	@Override
 	default Set<V> sdiff(K... keys) {
 		Set<SV> vs = getSourceRedisSetsCommands().sdiff(getKeyCodec().encodeAll(keys));
-		return getValueCodec().toDecodeConverter().convertAll(vs);
+		return getValueCodec().toDecodeProcessor().processAll(vs);
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public interface ConvertibleRedisSetsCommands<SK, K, SV, V> extends RedisCodec<S
 	@Override
 	default Set<V> sinter(K... keys) {
 		Set<SV> vs = getSourceRedisSetsCommands().sinter(getKeyCodec().encodeAll(keys));
-		return getValueCodec().toDecodeConverter().convertAll(vs);
+		return getValueCodec().toDecodeProcessor().processAll(vs);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public interface ConvertibleRedisSetsCommands<SK, K, SV, V> extends RedisCodec<S
 	@Override
 	default Set<V> smembers(K key) {
 		Set<SV> vs = getSourceRedisSetsCommands().smembers(getKeyCodec().encode(key));
-		return getValueCodec().toDecodeConverter().convertAll(vs);
+		return getValueCodec().toDecodeProcessor().processAll(vs);
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public interface ConvertibleRedisSetsCommands<SK, K, SV, V> extends RedisCodec<S
 	@Override
 	default Set<V> spop(K key, int count) {
 		Set<SV> vs = getSourceRedisSetsCommands().spop(getKeyCodec().encode(key), count);
-		return getValueCodec().toDecodeConverter().convertAll(vs);
+		return getValueCodec().toDecodeProcessor().processAll(vs);
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public interface ConvertibleRedisSetsCommands<SK, K, SV, V> extends RedisCodec<S
 	@Override
 	default Set<V> sunion(K... keys) {
 		Set<SV> vs = getSourceRedisSetsCommands().sunion(getKeyCodec().encodeAll(keys));
-		return getValueCodec().toDecodeConverter().convertAll(vs);
+		return getValueCodec().toDecodeProcessor().processAll(vs);
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public interface ConvertibleRedisSetsCommands<SK, K, SV, V> extends RedisCodec<S
 	@Override
 	default Pageable<Long, K> sScan(long cursorId, K key, ScanOptions<K> options) {
 		return getSourceRedisSetsCommands()
-				.sScan(cursorId, getKeyCodec().encode(key), options.convert(getKeyCodec().toEncodeConverter()))
+				.sScan(cursorId, getKeyCodec().encode(key), options.convert(getKeyCodec().toEncodeProcessor()))
 				.map((v) -> getKeyCodec().decode(v));
 	}
 }

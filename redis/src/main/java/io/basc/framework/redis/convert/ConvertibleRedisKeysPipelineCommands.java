@@ -59,7 +59,7 @@ public interface ConvertibleRedisKeysPipelineCommands<SK, K, SV, V>
 	default RedisResponse<Set<K>> keys(K pattern) {
 		SK k = getKeyCodec().encode(pattern);
 		return getSourceRedisKeysCommands().keys(k)
-				.map((tvs) -> getKeyCodec().toDecodeConverter().convertTo(tvs, new LinkedHashSet<K>(tvs.size())));
+				.map((tvs) -> getKeyCodec().toDecodeProcessor().processTo(tvs, new LinkedHashSet<K>(tvs.size())));
 	}
 
 	@Override
@@ -143,7 +143,7 @@ public interface ConvertibleRedisKeysPipelineCommands<SK, K, SV, V>
 
 	@Override
 	default RedisResponse<Pageable<Long, K>> scan(long cursorId, ScanOptions<K> options) {
-		ScanOptions<SK> to = options.convert(getKeyCodec().toEncodeConverter());
+		ScanOptions<SK> to = options.convert(getKeyCodec().toEncodeProcessor());
 		return getSourceRedisKeysCommands().scan(cursorId, to).map((p) -> p.map((v) -> getKeyCodec().decode(v)));
 	}
 
