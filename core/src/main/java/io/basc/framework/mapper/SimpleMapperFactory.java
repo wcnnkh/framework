@@ -4,8 +4,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.basc.framework.convert.Converter;
-import io.basc.framework.mapper.SimpleConverterFactory;
-import io.basc.framework.mapper.Transformer;
 import io.basc.framework.util.Assert;
 
 public class SimpleMapperFactory<S, E extends Throwable> extends SimpleConverterFactory<S, E>
