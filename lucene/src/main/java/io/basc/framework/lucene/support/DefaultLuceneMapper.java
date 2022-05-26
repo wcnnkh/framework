@@ -22,10 +22,8 @@ import org.apache.lucene.util.BytesRef;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.env.Sys;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
-import io.basc.framework.json.JSONUtils;
 import io.basc.framework.lucene.LuceneException;
 import io.basc.framework.lucene.LuceneMapper;
 import io.basc.framework.orm.EntityStructure;
@@ -42,9 +40,6 @@ import io.basc.framework.orm.support.AbstractObjectMapper;
 import io.basc.framework.orm.support.SimpleStructureRegistry;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.NumberUtils;
-import io.basc.framework.util.stream.Processor;
-import io.basc.framework.value.AnyValue;
-import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 
 public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneException> implements LuceneMapper {
@@ -142,10 +137,10 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 				} else if (conditionKeywords.getEqualOrLessThanKeywords().exists(condition.getCondition())) {
 					min = Long.MIN_VALUE;
 					max = value;
-				} else if (conditionKeywords.getLessThanKeywords().equals(condition.getCondition())) {
+				} else if (conditionKeywords.getLessThanKeywords().exists(condition.getCondition())) {
 					min = Long.MIN_VALUE;
 					max = value - 1;
-				} else if (conditionKeywords.getNotEqualKeywords().equals(condition.getCondition())) {
+				} else if (conditionKeywords.getNotEqualKeywords().exists(condition.getCondition())) {
 					max = value + 1;
 					min = value - 1;
 				}
@@ -165,9 +160,9 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 				} else if (conditionKeywords.getEqualOrLessThanKeywords().exists(condition.getCondition())) {
 					max = value;
 					includeUpper = true;
-				} else if (conditionKeywords.getLessThanKeywords().equals(condition.getCondition())) {
+				} else if (conditionKeywords.getLessThanKeywords().exists(condition.getCondition())) {
 					max = value;
-				} else if (conditionKeywords.getNotEqualKeywords().equals(condition.getCondition())) {
+				} else if (conditionKeywords.getNotEqualKeywords().exists(condition.getCondition())) {
 					max = value;
 					min = value;
 				}
@@ -283,32 +278,5 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 			}
 			appendSort(structure, sortFields, column.getWithOrders());
 		}
-	}
-
-	@Override
-	public void write(Object parameter, ParameterDescriptor parameterDescriptor, Document target) {
-		target.removeField(parameterDescriptor.getName());
-		Value v;
-		if (Value.isBaseType(parameterDescriptor.getType())) {
-			v = new AnyValue(parameterDescriptor, Sys.env.getConversionService());
-		} else {
-			v = new StringValue(JSONUtils.getJsonSupport().toJSONString(parameter));
-		}
-		resolve(parameterDescriptor, v).forEach((f) -> target.add(f));
-	}
-
-	@Override
-	protected void writeValue(Object value, ParameterDescriptor descriptor, Document target) {
-		write(value, descriptor, target);
-	}
-
-	@Override
-	protected Processor<String, Object, LuceneException> getValueProcessor(Document source, TypeDescriptor sourceType) {
-		return (name) -> source.get(name);
-	}
-
-	@Override
-	public void reverseTransform(RepositoryColumn source, Document target) throws LuceneException {
-		write(source.getValue(), source, target);
 	}
 }

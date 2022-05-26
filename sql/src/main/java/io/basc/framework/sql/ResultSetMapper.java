@@ -7,6 +7,7 @@ import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.orm.Property;
 import io.basc.framework.orm.support.AbstractObjectMapper;
 import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.Value;
@@ -44,19 +45,23 @@ public class ResultSetMapper extends AbstractObjectMapper<ResultSet, SQLExceptio
 	}
 
 	@Override
-	protected Processor<String, Object, SQLException> getValueProcessor(ResultSet source, TypeDescriptor sourceType) {
-		return (name) -> {
-			try {
-				return source.getObject(name);
-			} catch (SQLException e) {
-				// 如果字段不存在就返回空
-				return null;
-			}
+	public Processor<Property, Object, SQLException> getValueProcessor(ResultSet source, TypeDescriptor sourceType)
+			throws SQLException {
+		return (property) -> {
+			return property.getValueByNames((name) -> {
+				try {
+					return source.getObject(name);
+				} catch (SQLException e) {
+					// 如果字段不存在就返回空
+					return null;
+				}
+			});
 		};
 	}
-	
+
 	@Override
-	protected void writeValue(Object value, ParameterDescriptor descriptor, ResultSet target) throws SQLException {
+	public void reverseTransform(Object value, ParameterDescriptor descriptor, ResultSet target,
+			TypeDescriptor targetType) throws SQLException {
 		target.updateObject(descriptor.getName(), value);
 	}
 }

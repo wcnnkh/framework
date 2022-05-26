@@ -7,7 +7,10 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.env.Sys;
+import io.basc.framework.json.JSONUtils;
 import io.basc.framework.orm.EntityStructure;
 import io.basc.framework.orm.ObjectMapper;
 import io.basc.framework.orm.Property;
@@ -16,6 +19,10 @@ import io.basc.framework.orm.repository.Conditions;
 import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.RepositoryColumn;
 import io.basc.framework.orm.repository.RepositoryMapper;
+import io.basc.framework.util.stream.Processor;
+import io.basc.framework.value.AnyValue;
+import io.basc.framework.value.StringValue;
+import io.basc.framework.value.Value;
 
 public interface LuceneMapper extends RepositoryMapper, LuceneResolver, ObjectMapper<Document, LuceneException>,
 		StructureRegistry<EntityStructure<? extends Property>> {
@@ -24,23 +31,43 @@ public interface LuceneMapper extends RepositoryMapper, LuceneResolver, ObjectMa
 	public default EntityStructure<? extends Property> getStructure(Class<?> entityClass) {
 		return RepositoryMapper.super.getStructure(entityClass);
 	}
-	
+
 	Query parseQuery(Conditions conditions);
 
 	Query parseQuery(Document document);
 
 	Sort parseSort(EntityStructure<? extends Property> structure, List<? extends OrderColumn> orders);
 
-	void write(Object parameter, ParameterDescriptor parameterDescriptor, Document target);
-	
-	void reverseTransform(RepositoryColumn source, org.apache.lucene.document.Document target) throws LuceneException;
+	@Override
+	default void reverseTransform(Object value, ParameterDescriptor descriptor, Document target,
+			TypeDescriptor targetType) throws LuceneException {
+		target.removeField(descriptor.getName());
+		Value v;
+		if (Value.isBaseType(descriptor.getType())) {
+			v = new AnyValue(descriptor, Sys.env.getConversionService());
+		} else {
+			v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
+		}
+		resolve(descriptor, v).forEach((f) -> target.add(f));
+	}
 
-	default void reverseTransform(Collection<? extends RepositoryColumn> source, org.apache.lucene.document.Document target) throws LuceneException{
-		for(RepositoryColumn column : source) {
+	@Override
+	default Processor<Property, Object, LuceneException> getValueProcessor(Document source, TypeDescriptor sourceType)
+			throws LuceneException {
+		return (e) -> e.getValueByNames((name) -> source.get(name));
+	}
+
+	default void reverseTransform(RepositoryColumn source, Document target) throws LuceneException {
+		reverseTransform(source.getValue(), source, target);
+	}
+
+	default void reverseTransform(Collection<? extends RepositoryColumn> source, Document target)
+			throws LuceneException {
+		for (RepositoryColumn column : source) {
 			reverseTransform(column, target);
 		}
 	}
-	
+
 	default Document createDocument(Object instance) {
 		return invert(instance, Document.class);
 	}

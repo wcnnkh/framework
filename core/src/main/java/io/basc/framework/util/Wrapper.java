@@ -7,6 +7,10 @@ public class Wrapper<W> implements Decorator {
 		Assert.requiredArgument(wrappedTarget != null, "wrappedTarget");
 		this.wrappedTarget = wrappedTarget;
 	}
+	
+	public W getDelegateSource() {
+		return wrappedTarget;
+	}
 
 	@Override
 	public <T> T getDelegate(Class<T> targetType) {
