@@ -1,7 +1,4 @@
-package io.basc.framework.mapper;
-
-import io.basc.framework.convert.ConverterNotFoundException;
-import io.basc.framework.convert.TypeDescriptor;
+package io.basc.framework.convert;
 
 public interface TransformerFactory<S, E extends Throwable> extends Transformer<S, Object, E> {
 

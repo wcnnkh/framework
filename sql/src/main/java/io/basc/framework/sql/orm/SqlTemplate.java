@@ -234,7 +234,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> Pagination<T> getPage(TableStructure tableStructure, Sql sql, long pageNumber, long limit) {
-		return getPage(sql, pageNumber, limit, (rs) -> getMapper().mapping(rs, tableStructure));
+		return getPage(sql, pageNumber, limit, (rs) -> getMapper().convert(rs, tableStructure));
 	}
 
 	default <T> Pagination<T> getPage(TypeDescriptor resultType, Sql sql, long pageNumber, long limit) {
@@ -262,7 +262,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	default <T> Paginations<T> getPages(TableStructure tableStructure, T query, long getNumber, long limit) {
 		Sql sql = getMapper().toQuerySql(tableStructure, query);
-		return getPages(sql, getNumber, limit, (rs) -> getMapper().mapping(rs, tableStructure));
+		return getPages(sql, getNumber, limit, (rs) -> getMapper().convert(rs, tableStructure));
 	}
 
 	default <T> Paginations<T> getPages(TypeDescriptor resultType, Sql sql, long pageNumber, long limit) {
@@ -332,7 +332,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> Cursor<T> limit(TableStructure structure, Sql sql, long start, long limit) {
-		return limit(sql, start, limit, (rs) -> getMapper().mapping(rs, structure));
+		return limit(sql, start, limit, (rs) -> getMapper().convert(rs, structure));
 	}
 
 	default <T> Cursor<T> limit(TypeDescriptor resultsTypeDescriptor, Sql sql, long start, long limit) {
@@ -372,7 +372,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> Cursor<T> query(TableStructure tableStructure, Sql sql) {
-		return query(sql, (rs) -> getMapper().mapping(rs, tableStructure));
+		return query(sql, (rs) -> getMapper().convert(rs, tableStructure));
 	}
 
 	default <T> Cursor<T> query(TableStructure tableStructure, T query) {

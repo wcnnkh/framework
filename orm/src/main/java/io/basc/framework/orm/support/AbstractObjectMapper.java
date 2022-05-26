@@ -4,23 +4,24 @@ import java.util.Iterator;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
-import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.env.Sys;
-import io.basc.framework.mapper.Mapper;
-import io.basc.framework.mapper.MapperFactory;
-import io.basc.framework.mapper.SimpleMapperFactory;
-import io.basc.framework.mapper.Transformer;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.mapper.ReversibleMapperFactory;
+import io.basc.framework.mapper.ReversibleMapperFactoryWrapper;
+import io.basc.framework.mapper.SimpleReverseMapperFactory;
 import io.basc.framework.orm.EntityStructure;
 import io.basc.framework.orm.ObjectMapper;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.repository.DefaultRepositoryMapper;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.stream.Processor;
 
 public abstract class AbstractObjectMapper<S, E extends Throwable> extends DefaultRepositoryMapper
-		implements ObjectMapper<S, E>, ConversionServiceAware {
-	private final MapperFactory<S, E> mapperFactory = new SimpleMapperFactory<>();
+		implements ObjectMapper<S, E>, ConversionServiceAware, ReversibleMapperFactoryWrapper<S, E> {
+	private ReversibleMapperFactory<S, E> sourceConverterFactory = new SimpleReverseMapperFactory<>();
 	private ConversionService conversionService;
 
 	public ConversionService getConversionService() {
@@ -28,53 +29,17 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Defau
 	}
 
 	@Override
-	public void setConversionService(ConversionService conversionService) {
+	public void setConversionService(@Nullable ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 
-	@Override
-	public boolean isConverterRegistred(Class<?> type) {
-		return mapperFactory.isConverterRegistred(type);
+	public ReversibleMapperFactory<S, E> getSourceConverterFactory() {
+		return sourceConverterFactory;
 	}
 
-	@Override
-	public <T> Converter<S, T, E> getConverter(Class<? extends T> type) {
-		return mapperFactory.getConverter(type);
-	}
-
-	@Override
-	public <T> void registerConverter(Class<T> type, Converter<S, ? extends T, ? extends E> converter) {
-		mapperFactory.registerConverter(type, converter);
-	}
-
-	@Override
-	public boolean isTransformerRegistred(Class<?> type) {
-		return mapperFactory.isTransformerRegistred(type);
-	}
-
-	@Override
-	public <T> Transformer<S, T, E> getTransformer(Class<? extends T> type) {
-		return mapperFactory.getTransformer(type);
-	}
-
-	@Override
-	public <T> void registerTransformer(Class<T> type, Transformer<S, ? extends T, ? extends E> transformer) {
-		mapperFactory.registerTransformer(type, transformer);
-	}
-
-	@Override
-	public boolean isMapperRegistred(Class<?> type) {
-		return mapperFactory.isMapperRegistred(type);
-	}
-
-	@Override
-	public <T> Mapper<S, T, E> getMapper(Class<? extends T> type) {
-		return mapperFactory.getMapper(type);
-	}
-
-	@Override
-	public <T> void registerMapper(Class<T> type, Mapper<S, ? extends T, ? extends E> mapper) {
-		mapperFactory.registerMapper(type, mapper);
+	public void setSourceConverterFactory(ReversibleMapperFactory<S, E> sourceConverterFactory) {
+		Assert.requiredArgument(sourceConverterFactory != null, "sourceConverterFactory");
+		this.sourceConverterFactory = sourceConverterFactory;
 	}
 
 	@Override
@@ -96,7 +61,7 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Defau
 		while (iterator.hasNext()) {
 			Property property = iterator.next();
 			if (property.isEntity()) {
-				Object entity = mapping(source, sourceType, new TypeDescriptor(property.getField().getSetter()),
+				Object entity = convert(source, sourceType, new TypeDescriptor(property.getField().getSetter()),
 						valueProcessor);
 				property.getField().set(target, entity, getConversionService());
 			} else {
@@ -122,19 +87,13 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Defau
 	public <R> R convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws E, ConverterNotFoundException {
 		if (!isConverterRegistred(targetType.getType())) {
-			return mapping(source, sourceType, targetType, getStructure(targetType.getType()));
+			return convert(source, sourceType, targetType, getStructure(targetType.getType()));
 		}
 		return ObjectMapper.super.convert(source, sourceType, targetType);
 	}
 
-	@Override
-	public <R> R mapping(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
-			EntityStructure<? extends Property> targetStructure) throws E {
-		return mapping(source, sourceType, targetType, targetStructure, getValueProcessor(source, sourceType));
-	}
-
 	@SuppressWarnings("unchecked")
-	public <R> R mapping(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
+	public <R> R convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
 			Processor<String, Object, E> valueProcessor) throws E, ConverterNotFoundException {
 		Object target = newInstance(targetType);
 		transform(source, sourceType, target, targetType, valueProcessor);
@@ -142,7 +101,7 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Defau
 	}
 
 	@SuppressWarnings("unchecked")
-	public <R> R mapping(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
+	public <R> R convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
 			EntityStructure<? extends Property> targetStructure, Processor<String, Object, E> valueProcessor)
 			throws E, ConverterNotFoundException {
 		Object target = newInstance(targetType);
@@ -154,5 +113,33 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Defau
 		return property.getValueByNames(valueProcessor);
 	}
 
-	protected abstract Processor<String, Object, E> getValueProcessor(S source, TypeDescriptor sourceType);
+	protected abstract Processor<String, Object, E> getValueProcessor(S source, TypeDescriptor sourceType) throws E;
+
+	protected abstract void writeValue(Object value, ParameterDescriptor descriptor, S target) throws E;
+
+	protected void writeValue(Object value, Property property, S target, TypeDescriptor targetType) throws E {
+		writeValue(value, property.getField().getGetter().rename(property.getName()), target);
+	}
+
+	@Override
+	public void reverseTransform(Object source, TypeDescriptor sourceType,
+			EntityStructure<? extends Property> sourceStructure, S target, TypeDescriptor targetType)
+			throws E, ConverterNotFoundException {
+		Iterator<? extends Property> iterator = sourceStructure.stream()
+				.filter((e) -> e.getField() != null && e.getField().isSupportGetter()).iterator();
+		while (iterator.hasNext()) {
+			Property property = iterator.next();
+			Object value = property.getField().get(source);
+			if (value == null) {
+				continue;
+			}
+
+			if (property.isEntity()) {
+				reverseTransform(value, new TypeDescriptor(property.getField().getGetter()), target, targetType);
+			} else {
+				writeValue(value, property, target, targetType);
+			}
+		}
+	}
+
 }

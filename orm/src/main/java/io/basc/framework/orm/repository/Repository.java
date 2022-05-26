@@ -192,9 +192,8 @@ public interface Repository extends CurdRepository {
 
 	@Override
 	default <T> void save(Class<? extends T> entityClass, T entity) throws OrmException {
-		List<RepositoryColumn> columns = getMapper().parseColumns(entityClass,
-				getMapper().getStructure(entityClass).columns().iterator(), null, (e) -> e.getField().get(entity), null)
-				.collect(Collectors.toList());
+		List<RepositoryColumn> columns = getMapper().parseValueColumns(entityClass, entity,
+				getMapper().getStructure(entityClass));
 		save(entityClass, columns);
 	}
 
@@ -204,9 +203,7 @@ public interface Repository extends CurdRepository {
 	@Override
 	default <T> boolean update(Class<? extends T> entityClass, T entity) throws OrmException {
 		EntityStructure<? extends Property> entityStructure = getMapper().getStructure(entityClass);
-		List<RepositoryColumn> columns = getMapper().parseColumns(entityClass, entityStructure.columns().iterator(),
-				null, (e) -> e.getField().get(entity), (e) -> StringUtils.isNotEmpty(e.getValue()))
-				.collect(Collectors.toList());
+		List<RepositoryColumn> columns = getMapper().parseValueColumns(entityClass, entity, entityStructure);
 		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
 				entityStructure.getPrimaryKeys().iterator(), null, (e) -> e.getField().get(entity), null);
 		return update(entityClass, columns, conditionsToUse) > 0;
@@ -215,11 +212,10 @@ public interface Repository extends CurdRepository {
 	@Override
 	default <T> long updateAll(Class<? extends T> entityClass, T entity, T conditions) {
 		EntityStructure<? extends Property> entityStructure = getMapper().getStructure(entityClass);
-		List<RepositoryColumn> columns = getMapper().parseColumns(entityClass, entityStructure.columns().iterator(),
-				null, (e) -> e.getField().get(entity), (e) -> StringUtils.isNotEmpty(e.getValue()))
-				.collect(Collectors.toList());
+		List<RepositoryColumn> columns = getMapper().parseValueColumns(entityClass, entity, entityStructure);
 		Conditions conditionsToUse = getMapper().parseConditions(entityClass, entityStructure.columns().iterator(),
-				null, (e) -> e.getField().get(conditions), (e) -> !StringUtils.isNotEmpty(e.getValue()));
+				null, (e) -> e.getField().get(conditions),
+				(e) -> e.getKey().isNullable() || StringUtils.isNotEmpty(e.getValue()));
 		return update(entityClass, columns, conditionsToUse);
 	}
 }

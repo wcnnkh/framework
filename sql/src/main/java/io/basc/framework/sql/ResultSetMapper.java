@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.orm.support.AbstractObjectMapper;
 import io.basc.framework.util.stream.Processor;
@@ -52,5 +53,10 @@ public class ResultSetMapper extends AbstractObjectMapper<ResultSet, SQLExceptio
 				return null;
 			}
 		};
+	}
+	
+	@Override
+	protected void writeValue(Object value, ParameterDescriptor descriptor, ResultSet target) throws SQLException {
+		target.updateObject(descriptor.getName(), value);
 	}
 }

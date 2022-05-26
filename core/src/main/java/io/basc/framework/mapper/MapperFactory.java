@@ -1,5 +1,7 @@
 package io.basc.framework.mapper;
 
+import io.basc.framework.convert.ConverterFactory;
+
 public interface MapperFactory<S, E extends Throwable> extends ConverterFactory<S, E>, Mapper<S, Object, E> {
 
 	boolean isMapperRegistred(Class<?> type);

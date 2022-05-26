@@ -20,7 +20,6 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.util.BytesRef;
 
-import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.env.Sys;
@@ -29,7 +28,6 @@ import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.json.JSONUtils;
 import io.basc.framework.lucene.LuceneException;
 import io.basc.framework.lucene.LuceneMapper;
-import io.basc.framework.mapper.Fields;
 import io.basc.framework.orm.EntityStructure;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.StructureRegistry;
@@ -53,16 +51,6 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 	private final StructureRegistry<EntityStructure<? extends Property>> structureRegistry = new SimpleStructureRegistry<EntityStructure<? extends Property>>();
 	private final ConfigurableServices<LuceneResolverExtend> luceneResolverExtends = new ConfigurableServices<LuceneResolverExtend>(
 			LuceneResolverExtend.class);
-	private ConversionService conversionService;
-
-	public ConversionService getConversionService() {
-		return conversionService == null ? Sys.env.getConversionService() : conversionService;
-	}
-
-	@Override
-	public void setConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
-	}
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
@@ -297,46 +285,30 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 		}
 	}
 
-	public void wrap(Document document, ParameterDescriptor descriptor, Object value) {
-		document.removeField(descriptor.getName());
+	@Override
+	public void write(Object parameter, ParameterDescriptor parameterDescriptor, Document target) {
+		target.removeField(parameterDescriptor.getName());
 		Value v;
-		if (Value.isBaseType(descriptor.getType())) {
-			v = new AnyValue(value, Sys.env.getConversionService());
+		if (Value.isBaseType(parameterDescriptor.getType())) {
+			v = new AnyValue(parameterDescriptor, Sys.env.getConversionService());
 		} else {
-			v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
+			v = new StringValue(JSONUtils.getJsonSupport().toJSONString(parameter));
 		}
-
-		resolve(descriptor, v).forEach((f) -> document.add(f));
+		resolve(parameterDescriptor, v).forEach((f) -> target.add(f));
 	}
 
 	@Override
-	public Document wrap(Document document, Object instance, Fields fields) {
-		for (io.basc.framework.mapper.Field field : fields) {
-			Object value = field.getGetter().get(instance);
-			if (value == null) {
-				continue;
-			}
-
-			wrap(document, field.getGetter(), value);
-		}
-		return document;
-	}
-
-	@Override
-	public Document wrap(Document document, EntityStructure<? extends Property> structure, Object instance) {
-		for (Property property : structure) {
-			Object value = property.getField().get(instance);
-			if (value == null) {
-				continue;
-			}
-
-			wrap(document, property.getField().getGetter(), value);
-		}
-		return document;
+	protected void writeValue(Object value, ParameterDescriptor descriptor, Document target) {
+		write(value, descriptor, target);
 	}
 
 	@Override
 	protected Processor<String, Object, LuceneException> getValueProcessor(Document source, TypeDescriptor sourceType) {
 		return (name) -> source.get(name);
+	}
+
+	@Override
+	public void reverseTransform(RepositoryColumn source, Document target) throws LuceneException {
+		write(source.getValue(), source, target);
 	}
 }

@@ -1,7 +1,5 @@
-package io.basc.framework.mapper;
+package io.basc.framework.convert;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.lang.Nullable;
 

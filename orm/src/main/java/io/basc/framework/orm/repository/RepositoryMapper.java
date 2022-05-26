@@ -4,6 +4,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.orm.EntityStructure;
 import io.basc.framework.orm.ObjectRelationalMapper;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
@@ -178,5 +179,11 @@ public interface RepositoryMapper extends ObjectRelationalMapper {
 		} finally {
 			stream.close();
 		}
+	}
+
+	default <T> List<RepositoryColumn> parseValueColumns(Class<? extends T> entityClass, T entity,
+			EntityStructure<? extends Property> entityStructure) {
+		return parseColumns(entityClass, entityStructure.columns().iterator(), null, (e) -> e.getField().get(entity),
+				(e) -> e.getKey().isNullable() || StringUtils.isNotEmpty(e.getValue())).collect(Collectors.toList());
 	}
 }

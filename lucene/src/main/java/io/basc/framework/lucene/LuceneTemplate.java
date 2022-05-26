@@ -213,12 +213,12 @@ public interface LuceneTemplate extends Repository {
 
 	default <T> SearchResults<T> search(SearchParameters parameters, EntityStructure<? extends Property> structure)
 			throws LuceneSearchException {
-		return search(parameters, (e) -> getMapper().mapping(e, structure));
+		return search(parameters, (e) -> getMapper().convert(e, structure));
 	}
 
 	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters,
 			EntityStructure<? extends Property> structure) throws LuceneSearchException {
-		return searchAfter(after, parameters, (e) -> getMapper().mapping(e, structure));
+		return searchAfter(after, parameters, (e) -> getMapper().convert(e, structure));
 	}
 
 	<T, E extends Exception> Future<T> write(Processor<IndexWriter, T, E> processor) throws LuceneWriteException;
@@ -240,7 +240,7 @@ public interface LuceneTemplate extends Repository {
 		try {
 			return write((indexWriter) -> {
 				Document document = new Document();
-				getMapper().wrap(document, list);
+				getMapper().reverseTransform(list, document);
 				return indexWriter.addDocument(document);
 			}).get();
 		} catch (LuceneWriteException | InterruptedException | ExecutionException e) {
@@ -268,7 +268,7 @@ public interface LuceneTemplate extends Repository {
 						Document document = iterator.next();
 						Query documentQuery = getMapper().parseQuery(document);
 						writer.deleteDocuments(documentQuery);
-						getMapper().wrap(document, columnsToUse);
+						getMapper().reverseTransform(columnsToUse, document);
 						writer.addDocument(document);
 						writer.commit();
 					}

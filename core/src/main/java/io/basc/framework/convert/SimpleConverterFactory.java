@@ -1,12 +1,11 @@
-package io.basc.framework.mapper;
+package io.basc.framework.convert;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.util.Assert;
 
-public class SimpleConverterFactory<S, E extends Throwable> extends SimpleTransformerFactory<S, E>
+public class SimpleConverterFactory<S, E extends Throwable> extends SimpleReversibleTransformerFactory<S, E>
 		implements ConverterFactory<S, E> {
 	private final Map<Class<?>, Converter<S, ?, ? extends E>> map = new ConcurrentHashMap<>();
 

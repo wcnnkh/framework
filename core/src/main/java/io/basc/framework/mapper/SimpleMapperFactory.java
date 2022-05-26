@@ -4,9 +4,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.basc.framework.convert.Converter;
+import io.basc.framework.convert.SimpleReversibleConverterFactory;
+import io.basc.framework.convert.Transformer;
 import io.basc.framework.util.Assert;
 
-public class SimpleMapperFactory<S, E extends Throwable> extends SimpleConverterFactory<S, E>
+public class SimpleMapperFactory<S, E extends Throwable> extends SimpleReversibleConverterFactory<S, E>
 		implements MapperFactory<S, E> {
 	private final Map<Class<?>, Mapper<S, ?, ? extends E>> map = new ConcurrentHashMap<>();
 

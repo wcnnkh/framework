@@ -1,6 +1,8 @@
-package io.basc.framework.mapper;
+package io.basc.framework.convert;
 
 import java.util.concurrent.ConcurrentHashMap;
+
+import io.basc.framework.util.Assert;
 
 public class SimpleTransformerFactory<S, E extends Throwable> implements TransformerFactory<S, E> {
 	private final ConcurrentHashMap<Class<?>, Transformer<S, ?, ? extends E>> map = new ConcurrentHashMap<>();
@@ -18,6 +20,8 @@ public class SimpleTransformerFactory<S, E extends Throwable> implements Transfo
 
 	@Override
 	public <T> void registerTransformer(Class<T> type, Transformer<S, ? extends T, ? extends E> transformer) {
+		Assert.requiredArgument(type != null, "type");
+		Assert.requiredArgument(transformer != null, "transformer");
 		map.put(type, transformer);
 	}
 
