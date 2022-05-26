@@ -2,6 +2,16 @@ package io.basc.framework.convert;
 
 import io.basc.framework.lang.Nullable;
 
+/**
+ * 和{@link Inverter}的行为相反
+ * 
+ * @see Inverter
+ * @author wcnnkh
+ *
+ * @param <S>
+ * @param <T>
+ * @param <E>
+ */
 public interface Converter<S, T, E extends Throwable> {
 
 	default <R extends T> R convert(@Nullable S source, Class<? extends R> targetType) throws E {

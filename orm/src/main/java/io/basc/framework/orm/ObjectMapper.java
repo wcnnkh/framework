@@ -25,9 +25,9 @@ public interface ObjectMapper<S, E extends Throwable> extends ObjectRelationalMa
 
 	void transform(S source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType,
 			EntityStructure<? extends Property> targetStructure) throws E;
-
+	
 	@SuppressWarnings("unchecked")
-	default <R extends S> R reverseConvert(Object source, TypeDescriptor sourceType,
+	default <R extends S> R invert(Object source, TypeDescriptor sourceType,
 			EntityStructure<? extends Property> sourceStructure, TypeDescriptor targetType) throws E {
 		R target = (R) newInstance(targetType);
 		reverseTransform(source, sourceType, sourceStructure, target, targetType);
