@@ -1,13 +1,13 @@
 package io.basc.framework.web.cors;
 
+import java.util.Arrays;
+
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.lang.NotSupportedException;
-import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.ServerHttpRequest;
-
-import java.util.Arrays;
 
 public class Cors {
 	private static final String[] DEFAULT_HEADERS = new String[] { HttpHeaders.X_REQUESTED_WITH,
@@ -157,6 +157,6 @@ public class Cors {
 
 	@Override
 	public String toString() {
-		return MapperUtils.toString(this);
+		return ReflectionUtils.toString(this);
 	}
 }

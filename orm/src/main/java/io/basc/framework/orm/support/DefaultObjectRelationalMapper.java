@@ -10,21 +10,11 @@ import io.basc.framework.orm.ObjectRelationalMapper;
 import io.basc.framework.orm.annotation.AnnotationObjectRelationalResolverExtend;
 
 public class DefaultObjectRelationalMapper extends DefaultObjectRelationalResolver implements ObjectRelationalMapper {
-	private FieldFactory fieldFactory;
 
 	public DefaultObjectRelationalMapper() {
 		addService(new AnnotationObjectRelationalResolverExtend());
 	}
-
-	public FieldFactory getFieldFactory() {
-		return fieldFactory == null ? MapperUtils.getFieldFactory() : fieldFactory;
-	}
-
-	public void setFieldFactory(FieldFactory fieldFactory) {
-		this.fieldFactory = fieldFactory;
-	}
-
-	@Override
+	
 	public final Fields getFields(Class<?> entityClass) {
 		return ObjectRelationalMapper.super.getFields(entityClass);
 	}

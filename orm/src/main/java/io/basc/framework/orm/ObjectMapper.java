@@ -89,11 +89,11 @@ public interface ObjectMapper<S, E extends Throwable> extends ObjectRelationalMa
 			if (property.isEntity()) {
 				Object entity = convert(source, sourceType, new TypeDescriptor(property.getField().getSetter()),
 						valueProcessor);
-				property.getField().set(target, entity, getConversionService());
+				property.getField().getSetter().set(target, entity, getConversionService());
 			} else {
 				Object value = valueProcessor.process(property);
 				if (value != null) {
-					property.getField().set(target, value, getConversionService());
+					property.getField().getSetter().set(target, value, getConversionService());
 				}
 			}
 		}
@@ -102,7 +102,7 @@ public interface ObjectMapper<S, E extends Throwable> extends ObjectRelationalMa
 	default <X extends Throwable> void transform(S source, TypeDescriptor sourceType, Object target,
 			TypeDescriptor targetType, EntityStructure<? extends Property> targetStructure,
 			Processor<Property, ? extends Object, X> valueProcessor) throws E, X {
-		transform(source, sourceType, targetStructure, targetType, targetStructure.stream().iterator(), valueProcessor);
+		transform(source, sourceType, target, targetType, targetStructure.stream().iterator(), valueProcessor);
 	}
 
 	Processor<Property, Object, E> getValueProcessor(S source, TypeDescriptor sourceType) throws E;

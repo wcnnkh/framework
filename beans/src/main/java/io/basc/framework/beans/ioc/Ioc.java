@@ -15,7 +15,7 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.mapper.Fields;
 import io.basc.framework.util.AbstractIterator;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 
@@ -41,7 +41,7 @@ public final class Ioc {
 					destroy.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
 				});
 
-		for (Field field : MapperUtils.getFields(targetClass).accept(FieldFeature.SUPPORT_SETTER)) {
+		for (Field field : Fields.getFields(targetClass).filter(FieldFeature.SUPPORT_SETTER)) {
 			AnnotatedElement annotatedElement = field.getSetter();
 			Autowired autowired = annotatedElement.getAnnotation(Autowired.class);
 			if (autowired != null) {

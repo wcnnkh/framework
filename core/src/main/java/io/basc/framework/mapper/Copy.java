@@ -17,8 +17,6 @@ import io.basc.framework.util.CollectionFactory;
 
 @SuppressWarnings("unchecked")
 public class Copy implements Cloneable {
-	private FieldFactory fieldFactory;
-
 	/**
 	 * 如果对象实现了java.lang.Cloneable 接口，是否反射调用clone方法
 	 */
@@ -55,20 +53,6 @@ public class Copy implements Cloneable {
 
 		Copy copy = clone();
 		copy.deepCopy = deepCopy;
-		return copy;
-	}
-
-	public FieldFactory getFieldFactory() {
-		return fieldFactory == null ? MapperUtils.getFieldFactory() : fieldFactory;
-	}
-
-	public Copy setFieldFactory(FieldFactory fieldFactory) {
-		if (this.fieldFactory == fieldFactory) {
-			return this;
-		}
-
-		Copy copy = clone();
-		copy.fieldFactory = fieldFactory;
 		return copy;
 	}
 
@@ -227,7 +211,7 @@ public class Copy implements Cloneable {
 	 * 复制，要求get和set都存在字段{@link java.lang.reflect.Field}
 	 * 
 	 * @see FieldFeature#EXISTING_FIELD
-	 * @param             <T>
+	 * @param <T>
 	 * @param entityClass
 	 * @param parentField
 	 * @param source
@@ -238,15 +222,14 @@ public class Copy implements Cloneable {
 		if (source == null || target == null) {
 			return;
 		}
-		copy(getFieldFactory().getFields(entityClass, parentField).accept(FieldFeature.EXISTING_FIELD).all(), source,
-				target);
+		copy(Fields.getFields(entityClass, parentField).filter(FieldFeature.EXISTING_FIELD).all(), source, target);
 	}
 
 	/**
 	 * 复制,要求sourceClass字段满足{@link FieldFeature#EXISTING_GETTER_FIELD }和targetClass字段满足{@link FieldFeature#EXISTING_SETTER_FIELD }
 	 * 
-	 * @param                   <T>
-	 * @param                   <S>
+	 * @param <T>
+	 * @param <S>
 	 * @param sourceClass
 	 * @param source
 	 * @param sourceParentField
@@ -265,10 +248,9 @@ public class Copy implements Cloneable {
 		if (sourceParentField == null && targetParentField == null && targetClass.isAssignableFrom(sourceClass)) {
 			copy(targetClass, sourceParentField == targetParentField ? targetParentField : null, source, target);
 		} else {
-			copy(getFieldFactory().getFields(sourceClass, sourceParentField).accept(FieldFeature.EXISTING_GETTER_FIELD)
-					.all(), source,
-					getFieldFactory().getFields(targetClass, targetParentField)
-							.accept(FieldFeature.EXISTING_SETTER_FIELD).all(),
+			copy(Fields.getFields(sourceClass, sourceParentField).filter(FieldFeature.EXISTING_GETTER_FIELD).all(),
+					source,
+					Fields.getFields(targetClass, targetParentField).filter(FieldFeature.EXISTING_SETTER_FIELD).all(),
 					target);
 		}
 	}
@@ -277,8 +259,8 @@ public class Copy implements Cloneable {
 	 * 创建实例并复制到对应的属性
 	 * 
 	 * @see #copy(Class, Object, Field, Class, Object, Field)
-	 * @param                   <T>
-	 * @param                   <S>
+	 * @param <T>
+	 * @param <S>
 	 * @param sourceType
 	 * @param source
 	 * @param sourceParentField
@@ -370,7 +352,7 @@ public class Copy implements Cloneable {
 	/**
 	 * 克隆一个实例
 	 * 
-	 * @param             <T>
+	 * @param <T>
 	 * @param source
 	 * @param parentField
 	 * @return
@@ -386,7 +368,7 @@ public class Copy implements Cloneable {
 	/**
 	 * 克隆一个实体，
 	 * 
-	 * @param             <T>
+	 * @param <T>
 	 * @param sourceType
 	 * @param source
 	 * @param parentField
@@ -455,7 +437,7 @@ public class Copy implements Cloneable {
 	 * 浅拷贝
 	 * 
 	 * @see #SHALLOW
-	 * @param             <T>
+	 * @param <T>
 	 * @param targetClass
 	 * @param source
 	 * @return
@@ -470,7 +452,7 @@ public class Copy implements Cloneable {
 	 * 浅拷贝
 	 * 
 	 * @see #SHALLOW
-	 * @param        <T>
+	 * @param <T>
 	 * @param source
 	 * @param target
 	 * @return
@@ -486,7 +468,7 @@ public class Copy implements Cloneable {
 	 * 拷贝(浅拷贝)一个对象并对对应的字段插入值
 	 * 
 	 * @see #copy(Object, Class)
-	 * @param             <T>
+	 * @param <T>
 	 * @param sourceClass
 	 * @param source
 	 * @param field

@@ -3,87 +3,67 @@ package io.basc.framework.mapper;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
+import io.basc.framework.core.Members;
+import io.basc.framework.core.MembersMapper;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Accept;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.LinkedMultiValueMap;
 import io.basc.framework.util.MultiValueMap;
-import io.basc.framework.util.page.Pageables;
 
-public interface Fields extends Pageables<Class<?>, Field> {
+public final class Fields extends MembersMapper<Field, Fields> {
+	public static final Function<Class<?>, Stream<FieldMetadata>> DEFAULT = new FieldFunction();
 
-	default Fields find(String name) {
+	public static Fields getFields(Class<?> sourceClass) {
+		return new Fields(sourceClass);
+	}
+
+	public static Fields getFields(Class<?> sourceClass, Field parentField) {
+		return new Fields(sourceClass, parentField);
+	}
+
+	private Field parentField;
+
+	public Fields(Class<?> sourceClass) {
+		this(sourceClass, null);
+	}
+
+	public Fields(Class<?> sourceClass, Field parentField) {
+		this(sourceClass, parentField, DEFAULT);
+	}
+
+	public Fields(Class<?> sourceClass, Field parentField,
+			Function<Class<?>, ? extends Stream<? extends FieldMetadata>> processor) {
+		super(sourceClass, processor.andThen((e) -> e.map((o) -> new Field(parentField, o))));
+		this.parentField = parentField;
+	}
+
+	protected Fields(Field parentField, Members<Field> members) {
+		super(members);
+		this.parentField = parentField;
+	}
+
+	public Fields byGetterName(String name, @Nullable Type type) {
+		return getters(new AcceptFieldDescriptor(name, type));
+	}
+
+	public Fields byName(String name) {
 		AcceptFieldDescriptor acceptFieldDescriptor = new AcceptFieldDescriptor(name, null);
-		return accept((e) -> (e.isSupportGetter() && acceptFieldDescriptor.accept(e.getGetter()))
+		return filter((e) -> (e.isSupportGetter() && acceptFieldDescriptor.accept(e.getGetter()))
 				|| (e.isSupportSetter() && acceptFieldDescriptor.accept(e.getSetter())));
 	}
 
-	@Nullable
-	default Field find(String name, @Nullable Type type) {
-		return accept(name, type).first();
-	}
-
-	@Nullable
-	default Field findGetter(String name, @Nullable Type type) {
-		return acceptGetter(name, type).first();
-	}
-
-	@Nullable
-	default Field findSetter(String name, @Nullable Type type) {
-		return acceptSetter(name, type).first();
-	}
-
-	default Fields acceptGetter(String name, @Nullable Type type) {
-		return acceptGetter(new AcceptFieldDescriptor(name, type));
-	}
-
-	default Fields acceptSetter(String name, @Nullable Type type) {
-		return acceptSetter(new AcceptFieldDescriptor(name, type));
-	}
-
-	default Fields accept(String name, @Nullable Type type) {
+	public Fields byName(String name, @Nullable Type type) {
 		AcceptFieldDescriptor acceptFieldDescriptor = new AcceptFieldDescriptor(name, type);
-		return accept((e) -> (e.isSupportGetter() && acceptFieldDescriptor.accept(e.getGetter()))
+		return filter((e) -> (e.isSupportGetter() && acceptFieldDescriptor.accept(e.getGetter()))
 				|| (e.isSupportSetter() && acceptFieldDescriptor.accept(e.getSetter())));
 	}
 
-	default Fields acceptGetter(Accept<FieldDescriptor> accept) {
-		if (accept == null) {
-			return this;
-		}
-
-		return accept((e) -> e.isSupportGetter() && accept.accept(e.getGetter()));
-	}
-
-	default Fields acceptSetter(Accept<FieldDescriptor> accept) {
-		if (accept == null) {
-			return this;
-		}
-
-		return accept((e) -> e.isSupportSetter() && accept.accept(e.getSetter()));
-	}
-
-	public default Fields shared() {
-		return new SharedFields(getCursorId(), this, getList());
-	}
-
-	/**
-	 * 支持getter的
-	 * 
-	 * @return
-	 */
-	default Fields getters() {
-		return accept(FieldFeature.SUPPORT_GETTER);
-	}
-
-	/**
-	 * 支持setter的
-	 * 
-	 * @return
-	 */
-	default Fields setters() {
-		return accept(FieldFeature.SUPPORT_SETTER);
+	public Fields bySetterName(String name, @Nullable Type type) {
+		return setters(new AcceptFieldDescriptor(name, type));
 	}
 
 	/**
@@ -94,43 +74,8 @@ public interface Fields extends Pageables<Class<?>, Field> {
 	 * @see #strict()
 	 * @return
 	 */
-	default Fields entity() {
+	public Fields entity() {
 		return ignoreStatic().ignoreTransient().strict();
-	}
-
-	/**
-	 * 忽略transient描述的字段
-	 * 
-	 * @return
-	 */
-	default Fields ignoreTransient() {
-		return accept(FieldFeature.IGNORE_TRANSIENT);
-	}
-
-	/**
-	 * 严格的，必须包含getter和setter
-	 * 
-	 * @return
-	 */
-	default Fields strict() {
-		return accept(FieldFeature.STRICT);
-	}
-
-	/**
-	 * 忽略常量
-	 * 
-	 * @return
-	 */
-	default Fields ignoreFinal() {
-		return accept(FieldFeature.IGNORE_FINAL);
-	}
-
-	default Fields ignoreStatic() {
-		return accept(FieldFeature.IGNORE_STATIC);
-	}
-
-	default Fields accept(Accept<Field> accept) {
-		return new MapFields(this, (stream) -> stream.filter(accept));
 	}
 
 	/**
@@ -139,12 +84,12 @@ public interface Fields extends Pageables<Class<?>, Field> {
 	 * @param accept
 	 * @return
 	 */
-	default Fields exclude(Accept<Field> accept) {
+	public Fields exclude(Accept<Field> accept) {
 		if (accept == null) {
 			return this;
 		}
 
-		return accept(accept.negate());
+		return filter(accept.negate());
 	}
 
 	/**
@@ -153,7 +98,7 @@ public interface Fields extends Pageables<Class<?>, Field> {
 	 * @param names
 	 * @return
 	 */
-	default Fields exclude(Collection<String> names) {
+	public Fields exclude(Collection<String> names) {
 		if (CollectionUtils.isEmpty(names)) {
 			return this;
 		}
@@ -162,13 +107,28 @@ public interface Fields extends Pageables<Class<?>, Field> {
 				|| (e.isSupportSetter() && names.contains(e.getSetter().getName())));
 	}
 
+	@Nullable
+	public Field getByGetterName(String name, @Nullable Type type) {
+		return byGetterName(name, type).first();
+	}
+
+	@Nullable
+	public Field getByName(String name, @Nullable Type type) {
+		return byName(name, type).first();
+	}
+
+	@Nullable
+	public Field getBySetterName(String name, @Nullable Type type) {
+		return bySetterName(name, type).first();
+	}
+
 	/**
 	 * 获取字段的值
 	 * 
 	 * @param instance
 	 * @return 子类和父类可能存在相同的字段名
 	 */
-	default MultiValueMap<String, Object> getMultiValueMap(Object instance) {
+	public MultiValueMap<String, Object> getMultiValueMap(Object instance) {
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 		for (Field field : this) {
 			if (!field.isSupportGetter()) {
@@ -185,44 +145,99 @@ public interface Fields extends Pageables<Class<?>, Field> {
 		return map;
 	}
 
-	default Map<String, Object> getValueMap(Object instance) {
-		return getMultiValueMap(instance).toSingleValueMap();
-	}
-
-	@Override
-	default boolean hasNext() {
-		Class<?> next = getNextCursorId();
-		return next != null && next != Object.class;
-	}
-
-	@Override
-	default Class<?> getNextCursorId() {
-		return getCursorId().getSuperclass();
+	public Field getParentField() {
+		return parentField;
 	}
 
 	/**
-	 * 获取全部字段
+	 * 支持getter的
 	 * 
-	 * @see StreamFields
-	 * @see Fields#streamAll()
 	 * @return
 	 */
-	default Fields all() {
-		if (hasNext()) {
-			return new StreamFields(getCursorId(), null, this, () -> streamAll());
+	public Fields getters() {
+		return filter(FieldFeature.SUPPORT_GETTER);
+	}
+
+	public Fields getters(Accept<FieldDescriptor> accept) {
+		if (accept == null) {
+			return this;
 		}
-		return this;
+
+		return filter((e) -> e.isSupportGetter() && accept.accept(e.getGetter()));
 	}
 
-	default Fields merge(Fields fields) {
-		return new MergeFields(this, fields);
+	public Map<String, Object> getValueMap(Object instance) {
+		return getMultiValueMap(instance).toSingleValueMap();
+	}
+
+	/**
+	 * 忽略常量
+	 * 
+	 * @return
+	 */
+	public Fields ignoreFinal() {
+		return filter(FieldFeature.IGNORE_FINAL);
+	}
+
+	public Fields ignoreStatic() {
+		return filter(FieldFeature.IGNORE_STATIC);
+	}
+
+	/**
+	 * 忽略transient描述的字段
+	 * 
+	 * @return
+	 */
+	public Fields ignoreTransient() {
+		return filter(FieldFeature.IGNORE_TRANSIENT);
 	}
 
 	@Override
-	public default Fields next() {
-		return jumpTo(getNextCursorId());
+	protected Fields map(Members<Field> members) {
+		if (members instanceof Fields) {
+			return (Fields) members;
+		}
+		return new Fields(parentField, members);
 	}
 
-	@Override
-	Fields jumpTo(Class<?> cursorId);
+	/**
+	 * 返回一个新的
+	 * 
+	 * @param parentField
+	 * @return
+	 */
+	public Fields setParentField(Field parentField) {
+		Members<Field> members = map((e) -> e.setParentField(parentField));
+		return new Fields(parentField, members);
+	}
+
+	public Fields jumpTo(Class<?> cursorId, Field parentField) {
+		return jumpTo(cursorId).setParentField(parentField);
+	}
+
+	/**
+	 * 支持setter的
+	 * 
+	 * @return
+	 */
+	public Fields setters() {
+		return filter(FieldFeature.SUPPORT_SETTER);
+	}
+
+	public Fields setters(Accept<FieldDescriptor> accept) {
+		if (accept == null) {
+			return this;
+		}
+
+		return filter((e) -> e.isSupportSetter() && accept.accept(e.getSetter()));
+	}
+
+	/**
+	 * 严格的，必须包含getter和setter
+	 * 
+	 * @return
+	 */
+	public Fields strict() {
+		return filter(FieldFeature.STRICT);
+	}
 }

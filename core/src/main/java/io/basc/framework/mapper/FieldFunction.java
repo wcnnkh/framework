@@ -1,23 +1,35 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.StringUtils;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
-public class DefaultMetadataFactory implements FieldMetadataFactory {
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ConcurrentReferenceHashMap;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.stream.StreamProcessorSupport;
+
+public class FieldFunction implements Function<Class<?>, Stream<FieldMetadata>> {
+	private final ConcurrentReferenceHashMap<Class<?>, FieldMetadata[]> cacheMap = new ConcurrentReferenceHashMap<>();
 	private final String[] getterMethodPrefixs;
 	private final String[] setterMethodPrefixs;
 
-	public DefaultMetadataFactory(String[] getterMethodPrefixs, String[] setterMethodPrefixs) {
+	public FieldFunction() {
+		this(new String[] { Getter.BOOLEAN_GETTER_METHOD_PREFIX, Getter.DEFAULT_GETTER_METHOD_PREFIX },
+				new String[] { Setter.DEFAULT_SETTER_METHOD_PREFIX });
+	}
+
+	public FieldFunction(String[] getterMethodPrefixs, String[] setterMethodPrefixs) {
 		this.getterMethodPrefixs = getterMethodPrefixs == null ? new String[0] : getterMethodPrefixs.clone();
 		this.setterMethodPrefixs = setterMethodPrefixs == null ? new String[0] : setterMethodPrefixs.clone();
 	}
@@ -29,7 +41,8 @@ public class DefaultMetadataFactory implements FieldMetadataFactory {
 				continue;
 			}
 
-			Method getterMethod = ReflectionUtils.getDeclaredMethod(currentClass, MapperUtils.getGetterMethodName(field));
+			Method getterMethod = ReflectionUtils.getDeclaredMethod(currentClass,
+					MapperUtils.getGetterMethodName(field));
 			if (getterMethod != null && Modifier.isStatic(getterMethod.getModifiers())
 					&& !Modifier.isStatic(field.getModifiers())) {
 				// 如果是静态方法但字段是非静态字段， 那么是不成立的
@@ -66,8 +79,8 @@ public class DefaultMetadataFactory implements FieldMetadataFactory {
 				continue;
 			}
 
-			Method setterMethod = ReflectionUtils.getDeclaredMethod(currentClass, MapperUtils.getSetterMethodName(field),
-					field.getType());
+			Method setterMethod = ReflectionUtils.getDeclaredMethod(currentClass,
+					MapperUtils.getSetterMethodName(field), field.getType());
 			if (setterMethod != null && Modifier.isStatic(setterMethod.getModifiers())
 					&& !Modifier.isStatic(field.getModifiers())) {
 				// 如果是静态方法但字段是非静态字段， 那么是不成立的
@@ -148,32 +161,21 @@ public class DefaultMetadataFactory implements FieldMetadataFactory {
 		return toFieldMetadatas(getters, setters);
 	}
 
-	public FieldMetadatas getFieldMetadatas(Class<?> clazz) {
-		return new DefaultFieldMetadatas(clazz);
-	}
-
-	private class DefaultFieldMetadatas implements FieldMetadatas {
-		private final Class<?> cursorId;
-		private final List<FieldMetadata> list;
-
-		public DefaultFieldMetadatas(Class<?> cursorId) {
-			this.cursorId = cursorId;
-			this.list = getFieldMetadataList(cursorId);
+	@Override
+	public Stream<FieldMetadata> apply(Class<?> sourceClass) {
+		FieldMetadata[] metadatas = cacheMap.get(sourceClass);
+		if (metadatas == null) {
+			List<FieldMetadata> list = getFieldMetadataList(sourceClass);
+			if (CollectionUtils.isEmpty(list)) {
+				return StreamProcessorSupport.emptyStream();
+			}
+			metadatas = list.toArray(new FieldMetadata[0]);
+			FieldMetadata[] old = cacheMap.putIfAbsent(sourceClass, metadatas);
+			if (old != null) {
+				cacheMap.purgeUnreferencedEntries();
+				metadatas = old;
+			}
 		}
-
-		@Override
-		public Class<?> getCursorId() {
-			return cursorId;
-		}
-
-		@Override
-		public List<FieldMetadata> getList() {
-			return list;
-		}
-
-		@Override
-		public FieldMetadatas jumpTo(Class<?> cursorId) {
-			return getFieldMetadatas(cursorId);
-		}
+		return Arrays.asList(metadatas).stream();
 	}
 }

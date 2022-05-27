@@ -1,5 +1,6 @@
 package io.basc.framework.core;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -23,7 +24,12 @@ import io.basc.framework.util.stream.StreamProcessorSupport;
  */
 public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T> {
 	private final Function<Class<?>, ? extends Stream<T>> processor;
+	@Nullable
+	private List<T> shared;
 	private final Class<?> sourceClass;
+	@Nullable
+	private Stream<T> stream;
+
 	@Nullable
 	private Members<T> with;
 
@@ -34,11 +40,38 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 		this.processor = processor;
 	}
 
+	public Members(Members<T> members) {
+		Assert.requiredArgument(members != null, "members");
+		this.sourceClass = members.sourceClass;
+		this.processor = members.processor;
+		this.stream = members.stream;
+		this.with = members.with;
+	}
+
+	@Override
+	public Members<T> all() {
+		Members<T> members = clone();
+		members.withStream(streamAll());
+		return members;
+	}
+
+	public Function<Class<?>, ? extends Stream<T>> getProcessor() {
+		return processor;
+	}
+
 	@Override
 	public Members<T> clone() {
 		Members<T> clone = new Members<T>(this.sourceClass, this.processor);
 		if (this.with != null) {
 			clone.with = this.with.clone();
+		}
+
+		if (this.with != null) {
+			clone.stream = this.stream;
+		}
+
+		if (this.shared != null) {
+			clone.shared = this.shared;
 		}
 		return clone;
 	}
@@ -56,6 +89,20 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 			return this;
 		}
 		return mapProcessor((s) -> s == null ? s : s.filter(predicate));
+	}
+
+	/**
+	 * 排除
+	 * 
+	 * @param predicate
+	 * @return
+	 */
+	public Members<T> exclude(Predicate<? super T> predicate) {
+		if (predicate == null) {
+			return this;
+		}
+
+		return filter(predicate.negate());
 	}
 
 	/**
@@ -95,6 +142,10 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 
 	@Override
 	public List<T> getList() {
+		if (this.shared != null) {
+			return Collections.unmodifiableList(this.shared);
+		}
+
 		return stream().collect(Collectors.toList());
 	}
 
@@ -141,6 +192,14 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 		if (this.with != null) {
 			members.with = this.with.mapProcessor(processor, rootMapProcessor, rootProcessor);
 		}
+
+		if (this.stream != null) {
+			members.stream = processor.apply(this.stream);
+		}
+
+		if (this.shared != null) {
+			members.shared = processor.apply(this.shared.stream()).collect(Collectors.toList());
+		}
 		return members;
 	}
 
@@ -149,17 +208,42 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 		return with;
 	}
 
+	public Members<T> shared() {
+		Members<T> members = clone();
+		if (members.shared != null) {
+			members.shared = members.getList();
+		}
+
+		if (members.with != null) {
+			members.with = members.with.shared();
+		}
+		return members;
+	}
+
 	/**
 	 * 只获取当前的操作流
 	 * 
 	 * @return
 	 */
 	public Stream<T> stream() {
+		if (shared != null) {
+			return shared.stream();
+		}
+
 		Stream<T> stream = this.processor.apply(sourceClass);
 		if (stream == null) {
-			return StreamProcessorSupport.emptyStream();
+			if (this.stream == null) {
+				return StreamProcessorSupport.emptyStream();
+			} else {
+				return stream;
+			}
+		} else {
+			if (this.stream == null) {
+				return stream;
+			} else {
+				return Stream.concat(stream, this.stream);
+			}
 		}
-		return stream;
 	}
 
 	public Members<T> with(Members<T> with) {
@@ -258,6 +342,15 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 			} else {
 				break;
 			}
+		}
+		return this;
+	}
+
+	public Members<T> withStream(Stream<T> stream) {
+		if (this.stream == null) {
+			this.stream = stream;
+		} else {
+			this.stream = Stream.concat(this.stream, stream);
 		}
 		return this;
 	}

@@ -1,8 +1,5 @@
 package io.basc.framework.lucene;
 
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.util.page.Pages;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -14,6 +11,9 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.search.TotalHits;
 import org.apache.lucene.search.TotalHits.Relation;
+
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.util.page.Pages;
 
 public class SearchResults<T> extends TopFieldDocs implements
 		Pages<ScoreDoc, T> {
@@ -117,7 +117,7 @@ public class SearchResults<T> extends TopFieldDocs implements
 
 	@Override
 	public String toString() {
-		return MapperUtils.toString(this);
+		return ReflectionUtils.toString(this);
 	}
 
 	@Override

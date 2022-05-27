@@ -1,6 +1,6 @@
 package io.basc.framework.orm.support;
 
-import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.orm.PropertyMetadata;
 
 public class StandardPropertyMetadata implements PropertyMetadata {
@@ -83,6 +83,6 @@ public class StandardPropertyMetadata implements PropertyMetadata {
 
 	@Override
 	public String toString() {
-		return MapperUtils.toString(this);
+		return ReflectionUtils.toString(this);
 	}
 }

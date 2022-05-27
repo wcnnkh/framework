@@ -52,6 +52,16 @@ public final class Field extends FieldMetadata {
 		return parentField != null;
 	}
 
+	/**
+	 * 返回一个新的Field并设置父级字段
+	 * 
+	 * @param parentField
+	 * @return
+	 */
+	public Field setParentField(Field parentField) {
+		return new Field(parentField, this);
+	}
+
 	public Object get(Object instance) {
 		if (parentField == null) {
 			return getGetter().get(instance);

@@ -12,6 +12,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.orm.ObjectMapper;
 import io.basc.framework.orm.transfer.ExportProcessor;
 import io.basc.framework.orm.transfer.Exporter;
+import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.stream.Cursor;
 import io.basc.framework.util.stream.Processor;
 
@@ -173,6 +174,10 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor 
 	default <T> List<T> queryAll(Class<? extends T> resultType, Sql sql) {
 		Cursor<T> cursor = query(resultType, sql);
 		return cursor.shared();
+	}
+	
+	default <T> List<T> queryAll(Class<? extends T> resultType, String sql) {
+		return queryAll(resultType, sql, ObjectUtils.EMPTY_ARRAY);
 	}
 
 	default <T> List<T> queryAll(Class<? extends T> resultType, String sql, Object... sqlParams) {

@@ -13,8 +13,8 @@ import com.netflix.eureka.aws.AwsBindingStrategy;
 
 import io.basc.framework.beans.annotation.Autowired;
 import io.basc.framework.beans.annotation.ConfigurationProperties;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Environment;
-import io.basc.framework.mapper.MapperUtils;
 
 @ConfigurationProperties(EurekaServerConfigBean.PREFIX)
 public class EurekaServerConfigBean implements EurekaServerConfig {
@@ -1039,7 +1039,7 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 
 	@Override
 	public String toString() {
-		return MapperUtils.toString(this);
+		return ReflectionUtils.toString(this);
 	}
 
 }

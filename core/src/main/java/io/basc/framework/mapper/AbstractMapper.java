@@ -9,7 +9,6 @@ import io.basc.framework.value.Value;
 public abstract class AbstractMapper<S, T, E extends Throwable> implements Mapper<S, T, E> {
 	private ConversionService conversionService = Sys.env.getConversionService();
 	private final TypeDescriptor typeDescriptor;
-	private FieldFactory fieldFactory = MapperUtils.getFieldFactory();
 
 	public AbstractMapper(TypeDescriptor typeDescriptor) {
 		this.typeDescriptor = typeDescriptor;
@@ -21,14 +20,6 @@ public abstract class AbstractMapper<S, T, E extends Throwable> implements Mappe
 
 	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
-	}
-
-	public FieldFactory getFieldFactory() {
-		return fieldFactory;
-	}
-
-	public void setFieldFactory(FieldFactory fieldFactory) {
-		this.fieldFactory = fieldFactory;
 	}
 
 	public TypeDescriptor getTypeDescriptor() {
@@ -58,7 +49,7 @@ public abstract class AbstractMapper<S, T, E extends Throwable> implements Mappe
 
 	public void transform(S source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType,
 			Field parentField) throws E {
-		for (Field field : fieldFactory.getFields(targetType.getType(), parentField).entity().all()) {
+		for (Field field : Fields.getFields(targetType.getType(), parentField).entity().all()) {
 			Object value;
 			if (isEntity(field.getSetter().getType())) {
 				value = convert(source, sourceType, new TypeDescriptor(field.getSetter()), field);

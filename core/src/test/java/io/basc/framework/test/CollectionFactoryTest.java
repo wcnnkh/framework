@@ -6,8 +6,8 @@ import java.util.LinkedList;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.io.SerializerException;
-import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.XUtils;
 
@@ -46,7 +46,7 @@ public class CollectionFactoryTest {
 
 		@Override
 		public String toString() {
-			return MapperUtils.toString(this);
+			return ReflectionUtils.toString(this);
 		}
 	}
 
@@ -64,7 +64,7 @@ public class CollectionFactoryTest {
 
 		@Override
 		public String toString() {
-			return MapperUtils.toString(this);
+			return ReflectionUtils.toString(this);
 		}
 	}
 }

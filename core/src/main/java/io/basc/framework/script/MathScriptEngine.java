@@ -1,23 +1,22 @@
 package io.basc.framework.script;
 
-import io.basc.framework.env.Sys;
-import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.mapper.Fields;
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.math.BigDecimalHolder;
-import io.basc.framework.math.Calculator;
-import io.basc.framework.math.Calculators;
-import io.basc.framework.math.NumberHolder;
-import io.basc.framework.util.Pair;
-import io.basc.framework.util.StringUtils;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import io.basc.framework.env.Sys;
+import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.FieldFeature;
+import io.basc.framework.mapper.Fields;
+import io.basc.framework.math.BigDecimalHolder;
+import io.basc.framework.math.Calculator;
+import io.basc.framework.math.Calculators;
+import io.basc.framework.math.NumberHolder;
+import io.basc.framework.util.Pair;
+import io.basc.framework.util.StringUtils;
 
 /**
  * 实现单简单的数学计算(并不成熟，不推荐进行复杂计算)
@@ -40,11 +39,9 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 		FUNCTIONS = functions.toArray(new MathScriptFunction[0]);
 	}
 
-	private void resolve(Collection<Fragment> fragments, String script,
-			Calculator lastOperator) {
+	private void resolve(Collection<Fragment> fragments, String script, Calculator lastOperator) {
 		for (MathScriptFunction function : FUNCTIONS) {
-			Pair<Integer, Integer> indexPair = StringUtils.indexOf(script,
-					function.getPrefix(), function.getSuffix());
+			Pair<Integer, Integer> indexPair = StringUtils.indexOf(script, function.getPrefix(), function.getSuffix());
 			if (indexPair == null) {
 				continue;
 			}
@@ -55,10 +52,9 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 			int suffixLength = function.getSuffix().length();
 			int scriptLength = script.length();
 			String left = begin == 0 ? null : script.substring(0, begin);
-			String center = script.substring(begin + prefixLength, end
-					- suffixLength + 1);
-			String right = end == (scriptLength - suffixLength) ? null : script
-					.substring(end + suffixLength, scriptLength);
+			String center = script.substring(begin + prefixLength, end - suffixLength + 1);
+			String right = end == (scriptLength - suffixLength) ? null
+					: script.substring(end + suffixLength, scriptLength);
 			if (left != null) {
 				Calculator leftOperator = null;
 				for (Calculator[] operators : Calculators.GROUPS) {
@@ -74,8 +70,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 					throw new ScriptException(script);
 				}
 
-				left = left.substring(0, left.length()
-						- leftOperator.getOperator().length());
+				left = left.substring(0, left.length() - leftOperator.getOperator().length());
 				resolve(fragments, left, leftOperator);
 			}
 
@@ -99,8 +94,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 				centerOperator = rightOperator;
 			}
 
-			Fragment centerFragment = new ValueFragment(function.eval(this,
-					center));
+			Fragment centerFragment = new ValueFragment(function.eval(this, center));
 			if (centerOperator != null) {
 				centerFragment.setOperator(centerOperator);
 				fragments.add(centerFragment);
@@ -121,8 +115,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 				if (index != -1) {
 					String s = script.substring(0, index);
 					resolve(fragments, s, operator);
-					String right = script.substring(index
-							+ operator.getOperator().length());
+					String right = script.substring(index + operator.getOperator().length());
 					if (StringUtils.isNotEmpty(right)) {
 						resolve(fragments, right, lastOperator);
 					}
@@ -135,8 +128,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	}
 
 	private Fragment operator(Fragment left, Fragment right) {
-		NumberHolder value = left.getOperator().eval(left.getValue(),
-				right.getValue());
+		NumberHolder value = left.getOperator().eval(left.getValue(), right.getValue());
 		Fragment valueFragment = new ValueFragment(value);
 		valueFragment.setOperator(right.getOperator());
 		return valueFragment;
@@ -147,9 +139,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 		int index = 0;
 		while (iterator.hasNext()) {
 			Fragment fragment = iterator.next();
-			if (iterator.hasNext()
-					&& fragment.getOperator().getOperator()
-							.equals(operator.getOperator())) {// 不是最后一个
+			if (iterator.hasNext() && fragment.getOperator().getOperator().equals(operator.getOperator())) {// 不是最后一个
 				return index;
 			}
 			index++;
@@ -216,17 +206,14 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	@Override
 	protected NumberHolder evalInternal(String script) throws ScriptException {
 		for (MathScriptFunction function : FUNCTIONS) {
-			Pair<Integer, Integer> indexPair = StringUtils.indexOf(script,
-					function.getPrefix(), function.getSuffix());
+			Pair<Integer, Integer> indexPair = StringUtils.indexOf(script, function.getPrefix(), function.getSuffix());
 			if (indexPair == null) {
 				continue;
 			}
 
-			if (indexPair.getKey() == 0
-					&& indexPair.getValue() == script.length() - 1) {
-				String scriptToUse = script.substring(function.getPrefix()
-						.length(), script.length()
-						- function.getSuffix().length());
+			if (indexPair.getKey() == 0 && indexPair.getValue() == script.length() - 1) {
+				String scriptToUse = script.substring(function.getPrefix().length(),
+						script.length() - function.getSuffix().length());
 				return function.eval(this, scriptToUse);
 			}
 		}
@@ -237,7 +224,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 			return super.evalInternal(script);
 		}
 
-		//如果解析出来只有一个节点并且内容和源script相同，说明无法解析
+		// 如果解析出来只有一个节点并且内容和源script相同，说明无法解析
 		if (fragments.size() == 1) {
 			Fragment fragment = fragments.get(0);
 			if (fragment instanceof ScriptFragment) {
@@ -256,16 +243,14 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	 * @author shuchaowen
 	 *
 	 */
-	public static final class ObjectFieldScriptResolver implements
-			ScriptResolver<NumberHolder> {
+	public static final class ObjectFieldScriptResolver implements ScriptResolver<NumberHolder> {
 		private Object instance;
 		private Fields fields;
 
 		public ObjectFieldScriptResolver(Object instance) {
 			this.instance = instance;
-			this.fields = instance == null ? null : MapperUtils
-					.getFields(instance.getClass()).all()
-					.accept(FieldFeature.SUPPORT_GETTER);
+			this.fields = instance == null ? null
+					: Fields.getFields(instance.getClass()).all().filter(FieldFeature.SUPPORT_GETTER).shared();
 		}
 
 		public boolean isSupport(String script) {
@@ -277,11 +262,10 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 		}
 
 		public Field getField(final String name) {
-			return fields == null ? null : fields.find(name, null);
+			return fields == null ? null : fields.getByName(name, null);
 		}
 
-		public NumberHolder eval(ScriptEngine<NumberHolder> engine,
-				String script) throws ScriptException {
+		public NumberHolder eval(ScriptEngine<NumberHolder> engine, String script) throws ScriptException {
 			Field field = getField(script);
 			Object value = field.getGetter().get(instance);
 			if (value == null) {
@@ -326,10 +310,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 
 		@Override
 		public String toString() {
-			return "("
-					+ script
-					+ ")"
-					+ (getOperator() == null ? "" : getOperator().getOperator());
+			return "(" + script + ")" + (getOperator() == null ? "" : getOperator().getOperator());
 		}
 	}
 
@@ -347,9 +328,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 
 		@Override
 		public String toString() {
-			return "("
-					+ (value == null ? null : value.toString())
-					+ ")"
+			return "(" + (value == null ? null : value.toString()) + ")"
 					+ (getOperator() == null ? "" : getOperator().getOperator());
 		}
 	}
@@ -371,8 +350,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 			return suffix;
 		}
 
-		public NumberHolder eval(ScriptEngine<NumberHolder> engine,
-				String script) throws ScriptException {
+		public NumberHolder eval(ScriptEngine<NumberHolder> engine, String script) throws ScriptException {
 			return engine.eval(script);
 		}
 	}
@@ -387,8 +365,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 			return "|";
 		}
 
-		public NumberHolder eval(ScriptEngine<NumberHolder> engine,
-				String script) throws ScriptException {
+		public NumberHolder eval(ScriptEngine<NumberHolder> engine, String script) throws ScriptException {
 			NumberHolder value = engine.eval(script);
 			return value.abs();
 		}
@@ -404,8 +381,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 			return ")";
 		}
 
-		public NumberHolder eval(ScriptEngine<NumberHolder> engine,
-				String script) throws ScriptException {
+		public NumberHolder eval(ScriptEngine<NumberHolder> engine, String script) throws ScriptException {
 			int index = script.indexOf(",");
 			if (index == -1) {
 				throw new ScriptException(script);
@@ -430,8 +406,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 			return ")";
 		}
 
-		public NumberHolder eval(ScriptEngine<NumberHolder> engine,
-				String script) throws ScriptException {
+		public NumberHolder eval(ScriptEngine<NumberHolder> engine, String script) throws ScriptException {
 			int index = script.indexOf(",");
 			if (index == -1) {
 				throw new ScriptException(script);

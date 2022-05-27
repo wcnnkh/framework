@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  *
  * @param <T>
  */
-public interface EntityStructure<T extends Property> extends
+public class EntityStructure<T extends Property> extends
 		EntityDescriptor<T>, Iterable<T> {
 	Class<?> getEntityClass();
 

@@ -6,13 +6,14 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Fields;
 import io.basc.framework.mapper.MapperUtils;
 
 public class MapperTest {
 	@Test
 	public void util() {
 		A entity = new A();
-		Field field = MapperUtils.getFields(A.class).find("v").first();
+		Field field = Fields.getFields(A.class).byName("v").first();
 		assertTrue(MapperUtils.isExistDefaultValue(field, entity));
 		assertFalse(MapperUtils.isExistValue(field, entity));
 	}

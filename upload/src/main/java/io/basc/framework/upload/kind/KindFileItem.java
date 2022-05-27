@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.TimeUtils;
 
 public class KindFileItem implements Serializable {
@@ -87,6 +87,6 @@ public class KindFileItem implements Serializable {
 
 	@Override
 	public String toString() {
-		return MapperUtils.toString(this);
+		return ReflectionUtils.toString(this);
 	}
 }

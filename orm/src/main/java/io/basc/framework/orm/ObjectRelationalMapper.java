@@ -2,7 +2,6 @@ package io.basc.framework.orm;
 
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
-import io.basc.framework.mapper.FieldFactory;
 import io.basc.framework.mapper.Fields;
 
 /**
@@ -11,7 +10,7 @@ import io.basc.framework.mapper.Fields;
  * @author shuchaowen
  *
  */
-public interface ObjectRelationalMapper extends ObjectRelationalResolver, ObjectRelationalProcessor, FieldFactory {
+public interface ObjectRelationalMapper extends ObjectRelationalResolver, ObjectRelationalProcessor {
 
 	@Override
 	default EntityMetadata resolveMetadata(Class<?> entityClass) {

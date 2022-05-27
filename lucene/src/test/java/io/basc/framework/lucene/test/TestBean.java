@@ -1,6 +1,6 @@
 package io.basc.framework.lucene.test;
 
-import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.core.reflect.ReflectionUtils;
 
 public class TestBean {
 	private String name;
@@ -24,6 +24,6 @@ public class TestBean {
 	
 	@Override
 	public String toString() {
-		return MapperUtils.toString(this);
+		return ReflectionUtils.toString(this);
 	}
 }

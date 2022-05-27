@@ -1,9 +1,9 @@
 package io.basc.framework.mvc.view;
 
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.mvc.HttpChannel;
-
 import java.io.IOException;
+
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.mvc.HttpChannel;
 
 public class HttpCode implements View {
 	private int status;
@@ -20,6 +20,6 @@ public class HttpCode implements View {
 
 	@Override
 	public String toString() {
-		return MapperUtils.toString(this);
+		return ReflectionUtils.toString(this);
 	}
 }

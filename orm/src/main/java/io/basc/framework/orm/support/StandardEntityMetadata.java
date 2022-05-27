@@ -1,6 +1,6 @@
 package io.basc.framework.orm.support;
 
-import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.orm.EntityMetadata;
 
 public class StandardEntityMetadata implements EntityMetadata {
@@ -43,6 +43,6 @@ public class StandardEntityMetadata implements EntityMetadata {
 
 	@Override
 	public String toString() {
-		return MapperUtils.toString(this);
+		return ReflectionUtils.toString(this);
 	}
 }

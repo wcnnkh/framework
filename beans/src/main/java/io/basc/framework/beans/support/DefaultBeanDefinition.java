@@ -20,12 +20,12 @@ import io.basc.framework.beans.annotation.Bean;
 import io.basc.framework.beans.ioc.Ioc;
 import io.basc.framework.context.support.LifecycleAuxiliary;
 import io.basc.framework.core.parameter.ParameterDescriptors;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Sys;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.support.DefaultInstanceDefinition;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.StringUtils;
 
@@ -250,7 +250,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition implements 
 	}
 
 	protected String getStringDescribe() {
-		return MapperUtils.toString(this);
+		return ReflectionUtils.toString(this);
 	}
 
 	/**

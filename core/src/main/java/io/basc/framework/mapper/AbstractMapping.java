@@ -1,10 +1,10 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.env.Sys;
-import io.basc.framework.util.ClassUtils;
-
 import java.util.LinkedList;
 import java.util.ListIterator;
+
+import io.basc.framework.env.Sys;
+import io.basc.framework.util.ClassUtils;
 
 public abstract class AbstractMapping implements Mapping {
 
@@ -12,12 +12,12 @@ public abstract class AbstractMapping implements Mapping {
 		return Sys.env.getInstance(type);
 	}
 
-	public <T> T mapping(Class<T> entityClass, Fields fields, FieldFactory fieldFactory) {
+	public <T> T mapping(Class<T> entityClass, Fields fields) {
 		T entity = newInstance(entityClass);
 		for (Field field : fields) {
 			Object value;
 			if (isNesting(field.getSetter())) {
-				value = MapperUtils.mapping(fieldFactory, field.getSetter().getType(), field, this);
+				value = mapping(field.getSetter().getType(), fields.jumpTo(field.getSetter().getType(), field));
 			} else {
 				value = getValue(field);
 			}
