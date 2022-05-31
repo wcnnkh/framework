@@ -5,18 +5,10 @@ import io.basc.framework.core.reflect.FieldHolder;
 import io.basc.framework.core.reflect.MethodHolder;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
-public interface FieldDescriptor extends ParameterDescriptor, MethodHolder, FieldHolder {
-	int getModifiers();
-
-	/**
-	 * 来源类(不一定是声明类)
-	 * 
-	 * @return
-	 */
-	Class<?> getSourceClass();
-
+public interface FieldDescriptor extends ParameterDescriptor, MethodHolder, FieldHolder, Member {
 	/**
 	 * 可能返回空, 但field和method必定存在一个
 	 * 

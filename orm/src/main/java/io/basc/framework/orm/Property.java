@@ -2,77 +2,52 @@ package io.basc.framework.orm;
 
 import java.util.Collection;
 
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Named;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.stream.Processor;
 
-public class Property implements Named, Cloneable {
-	private Collection<String> aliasNames;
-	private Boolean autoIncrement;
-	private String charsetName;
-	private String comment;
-	private ParameterDescriptor descriptor;
+public class Property extends Field {
+	protected Boolean autoIncrement;
+	protected String charsetName;
+	protected String comment;
+	protected Boolean entity;
+	protected Boolean increment;
+	protected String name;
+	protected Boolean nullable;
+	protected Collection<Range<Double>> numberRanges;
+	protected ObjectRelationalResolver objectRelationalResolver;
+	protected Boolean primaryKey;
+	protected Boolean unique;
+	protected Boolean version;
 
-	private Boolean entity;
-	private Field field;
-	private Boolean increment;
-	private String name;
-	private Boolean nullable;
-	private Collection<Range<Double>> numberRanges;
-	private ObjectRelationalResolver objectRelationalResolver;
-	private Property parentProperty;
-	private Boolean primaryKey;
-	private Class<?> sourceClass;
-	private Boolean unique;
-	private Boolean version;
+	public Property() {
+	}
 
 	public Property(Property property) {
-		this(property.parentProperty, property.objectRelationalResolver, property.name, property.aliasNames,
-				property.numberRanges, property.version, property.increment, property.entity, property.autoIncrement,
-				property.primaryKey, property.nullable, property.charsetName, property.comment, property.unique,
-				property.field, property.descriptor, property.sourceClass);
+		super(property);
+		this.autoIncrement = property.autoIncrement;
+		this.charsetName = property.charsetName;
+		this.comment = property.comment;
+		this.entity = property.entity;
+		this.increment = property.increment;
+		this.name = property.name;
+		this.nullable = property.nullable;
+		this.numberRanges = property.numberRanges;
+		this.objectRelationalResolver = property.objectRelationalResolver;
+		this.primaryKey = property.primaryKey;
+		this.unique = property.unique;
+		this.version = property.version;
 	}
 
-	protected Property(Property parentProperty, ObjectRelationalResolver objectRelationalResolver, String name,
-			Collection<String> aliasNames, Collection<Range<Double>> numberRanges, Boolean version, Boolean increment,
-			Boolean entity, Boolean autoIncrement, Boolean primaryKey, Boolean nullable, String charsetName,
-			String comment, Boolean unique, Field field, ParameterDescriptor descriptor, Class<?> sourceClass) {
-		this.parentProperty = parentProperty;
+	public Property(Field field, ObjectRelationalResolver objectRelationalResolver) {
+		super(field);
 		this.objectRelationalResolver = objectRelationalResolver;
-		this.name = name;
-		this.aliasNames = aliasNames;
-		this.numberRanges = numberRanges;
-		this.version = version;
-		this.increment = increment;
-		this.entity = entity;
-		this.autoIncrement = autoIncrement;
-		this.primaryKey = primaryKey;
-		this.nullable = nullable;
-		this.charsetName = charsetName;
-		this.comment = comment;
-		this.unique = unique;
-		this.field = field;
-		this.descriptor = descriptor;
-		this.sourceClass = sourceClass;
 	}
 
-	public Property(ObjectRelationalResolver objectRelationalResolver, ParameterDescriptor descriptor, Field field) {
-		this(objectRelationalResolver, descriptor, field, null);
-	}
-
-	public Property(ObjectRelationalResolver objectRelationalResolver, ParameterDescriptor descriptor, Field field,
-			String name) {
-		Assert.isTrue(descriptor != null && objectRelationalResolver != null,
-				"descriptor and objectRelationalResolver cannot both be empty");
-		this.field = field;
-		this.descriptor = descriptor;
-		this.objectRelationalResolver = objectRelationalResolver;
-		this.name = name;
+	public Property(Field field) {
+		super(field);
 	}
 
 	@Override
@@ -81,66 +56,88 @@ public class Property implements Named, Cloneable {
 	}
 
 	public Collection<String> getAliasNames() {
-		if (aliasNames == null) {
-			return getObjectRelationalResolver().getAliasNames(getSourceClass(), getDescriptor());
+		if (aliasNames == null && objectRelationalResolver != null) {
+			if (isSupportSetter()) {
+				return objectRelationalResolver.getAliasNames(getDeclaringClass(), getSetter());
+			}
+
+			if (isSupportSetter()) {
+				return objectRelationalResolver.getAliasNames(getDeclaringClass(), getGetter());
+			}
 		}
-		return aliasNames;
+		return super.getAliasNames();
 	}
 
 	public String getCharsetName() {
-		if (charsetName == null) {
-			return getObjectRelationalResolver().getCharsetName(getSourceClass(), getDescriptor());
+		if (charsetName == null && objectRelationalResolver != null) {
+			if (isSupportGetter()) {
+				return objectRelationalResolver.getCharsetName(getDeclaringClass(), getGetter());
+			}
+
+			if (isSupportSetter()) {
+				return objectRelationalResolver.getCharsetName(getDeclaringClass(), getSetter());
+			}
 		}
 		return charsetName;
 	}
 
 	public String getComment() {
-		if (comment == null) {
-			return getObjectRelationalResolver().getComment(getSourceClass(), getDescriptor());
+		if (comment == null && objectRelationalResolver != null) {
+			if (isSupportGetter()) {
+				return objectRelationalResolver.getComment(getDeclaringClass(), getGetter());
+			}
+
+			if (isSupportSetter()) {
+				return objectRelationalResolver.getComment(getDeclaringClass(), getSetter());
+			}
 		}
 		return comment;
 	}
 
-	public ParameterDescriptor getDescriptor() {
-		if (descriptor == null) {
-			return field.isSupportGetter() ? field.getGetter() : field.getSetter();
-		}
-		return descriptor;
+	@Override
+	public Property getParent() {
+		return (Property) super.getParent();
 	}
 
-	/**
-	 * 对应的字段
-	 * 
-	 * @return
-	 */
-	public Field getField() {
-		return field;
+	@Override
+	public void setParent(Field parent) {
+		Property property = parent instanceof Property ? (Property) parent
+				: new Property(parent, this.objectRelationalResolver);
+		setParent(property);
+	}
+
+	public void setParent(Property parent) {
+		super.setParent(parent);
 	}
 
 	public String getName() {
-		if (StringUtils.isEmpty(name)) {
-			return getObjectRelationalResolver().getName(getSourceClass(), getDescriptor());
+		if (StringUtils.isEmpty(name) && objectRelationalResolver != null) {
+			if (isSupportGetter()) {
+				return objectRelationalResolver.getName(getDeclaringClass(), getGetter());
+			}
+
+			if (isSupportSetter()) {
+				return objectRelationalResolver.getName(getDeclaringClass(), getSetter());
+			}
 		}
-		return name;
+		return super.getName();
 	}
 
 	public Collection<Range<Double>> getNumberRanges() {
-		if (numberRanges == null) {
-			return getObjectRelationalResolver().getNumberRanges(getSourceClass(), getDescriptor());
+		if (numberRanges == null && objectRelationalResolver != null) {
+			if (isSupportSetter()) {
+				return objectRelationalResolver.getNumberRanges(getDeclaringClass(), getSetter());
+			}
+
+			if (isSupportGetter()) {
+				return objectRelationalResolver.getNumberRanges(getDeclaringClass(), getGetter());
+			}
 		}
 		return numberRanges;
 	}
 
 	public ObjectRelationalResolver getObjectRelationalResolver() {
 		return objectRelationalResolver;
-	}
-
-	public Property getParentProperty() {
-		return parentProperty;
-	}
-
-	public Class<?> getSourceClass() {
-		return sourceClass;
 	}
 
 	public <V, E extends Throwable> V getValueByNames(Processor<String, V, E> processor) throws E {
@@ -159,70 +156,109 @@ public class Property implements Named, Cloneable {
 			}
 		}
 
-		Field field = getField();
-		if (field != null) {
-			value = field.getValueByNames(processor);
-			if (value != null) {
-				return value;
-			}
+		value = super.getValueByNames(processor);
+		if (value != null) {
+			return value;
 		}
 		return null;
 	}
 
 	public boolean isAutoIncrement() {
-		if (autoIncrement == null) {
-			Boolean b = getObjectRelationalResolver().isAutoIncrement(getSourceClass(), getDescriptor());
-			return b == null ? false : b;
+		if (autoIncrement == null && objectRelationalResolver != null) {
+			if (isSupportSetter()) {
+				Boolean b = getObjectRelationalResolver().isAutoIncrement(getDeclaringClass(), getSetter());
+				return b == null ? false : b;
+			}
+
+			if (isSupportGetter()) {
+				Boolean b = getObjectRelationalResolver().isAutoIncrement(getDeclaringClass(), getGetter());
+				return b == null ? false : b;
+			}
 		}
 		return autoIncrement;
 	}
 
 	public boolean isEntity() {
-		if (entity == null) {
-			Boolean b = getObjectRelationalResolver().isEntity(getSourceClass(), getDescriptor());
-			return b == null ? false : b;
+		if (entity == null && objectRelationalResolver != null) {
+			return (isSupportGetter() && objectRelationalResolver.isEntity(getDeclaringClass(), getGetter()))
+					|| (isSupportSetter() && objectRelationalResolver.isEntity(getDeclaringClass(), getSetter()));
 		}
 		return entity;
 	}
 
 	public boolean isIncrement() {
-		if (increment == null) {
-			Boolean b = getObjectRelationalResolver().isIncrement(getSourceClass(), getDescriptor());
-			return b == null ? false : b;
+		if (increment == null && objectRelationalResolver != null) {
+			if (isSupportSetter()) {
+				Boolean b = objectRelationalResolver.isIncrement(getDeclaringClass(), getSetter());
+				return b == null ? false : b;
+			}
+
+			if (isSupportGetter()) {
+				Boolean b = objectRelationalResolver.isIncrement(getDeclaringClass(), getGetter());
+				return b == null ? false : b;
+			}
 		}
-		return increment;
+		return increment == null ? false : increment;
 	}
 
 	public boolean isNullable() {
-		if (primaryKey == null) {
-			Boolean b = getObjectRelationalResolver().isNullable(getSourceClass(), getDescriptor());
-			return b == null ? true : b;
+		if (nullable == null && objectRelationalResolver != null) {
+			if (isSupportSetter()) {
+				Boolean b = objectRelationalResolver.isIncrement(getDeclaringClass(), getSetter());
+				return b == null ? false : b;
+			}
+
+			if (isSupportGetter()) {
+				Boolean b = objectRelationalResolver.isIncrement(getDeclaringClass(), getGetter());
+				return b == null ? false : b;
+			}
 		}
-		return primaryKey;
+		return nullable == null ? false : nullable;
 	}
 
 	public boolean isPrimaryKey() {
-		if (primaryKey == null) {
-			Boolean b = getObjectRelationalResolver().isPrimaryKey(getSourceClass(), getDescriptor());
-			return b == null ? false : b;
+		if (primaryKey == null && objectRelationalResolver != null) {
+			if (isSupportGetter()) {
+				Boolean b = objectRelationalResolver.isPrimaryKey(getDeclaringClass(), getGetter());
+				return b == null ? false : b;
+			}
+
+			if (isSupportSetter()) {
+				Boolean b = objectRelationalResolver.isPrimaryKey(getDeclaringClass(), getSetter());
+				return b == null ? false : b;
+			}
 		}
-		return primaryKey;
+		return primaryKey == null ? false : primaryKey;
 	}
 
 	public boolean isUnique() {
-		if (unique == null) {
-			Boolean b = getObjectRelationalResolver().isUnique(getSourceClass(), getDescriptor());
-			return b == null ? false : b;
+		if (unique == null && objectRelationalResolver != null) {
+			if (isSupportGetter()) {
+				Boolean b = objectRelationalResolver.isUnique(getDeclaringClass(), getGetter());
+				return b == null ? false : b;
+			}
+
+			if (isSupportSetter()) {
+				Boolean b = objectRelationalResolver.isUnique(getDeclaringClass(), getSetter());
+				return b == null ? false : b;
+			}
 		}
-		return unique;
+		return unique == null ? false : unique;
 	}
 
 	public boolean isVersion() {
 		if (version == null) {
-			Boolean b = getObjectRelationalResolver().isVersionField(getSourceClass(), getDescriptor());
-			return b == null ? false : b;
+			if (isSupportSetter()) {
+				Boolean b = objectRelationalResolver.isVersionField(getDeclaringClass(), getSetter());
+				return b == null ? false : b;
+			}
+
+			if (isSupportGetter()) {
+				Boolean b = objectRelationalResolver.isVersionField(getDeclaringClass(), getGetter());
+				return b == null ? false : b;
+			}
 		}
-		return version;
+		return version == null ? false : version;
 	}
 
 	public void setAliasNames(Collection<String> aliasNames) {
@@ -241,26 +277,12 @@ public class Property implements Named, Cloneable {
 		this.comment = comment;
 	}
 
-	public void setDescriptor(ParameterDescriptor descriptor) {
-		this.descriptor = descriptor;
-	}
-
 	public void setEntity(Boolean entity) {
 		this.entity = entity;
 	}
 
-	public void setField(Field field) {
-		this.field = field;
-	}
-
 	public void setIncrement(Boolean increment) {
 		this.increment = increment;
-	}
-
-	public void setName(String name) {
-		Assert.isTrue(StringUtils.isNotEmpty(name) || getDescriptor() != null,
-				"Name and Descriptor cannot both be empty");
-		this.name = name;
 	}
 
 	public void setNullable(Boolean nullable) {
@@ -275,16 +297,8 @@ public class Property implements Named, Cloneable {
 		this.objectRelationalResolver = objectRelationalResolver;
 	}
 
-	public void setParentProperty(Property parentProperty) {
-		this.parentProperty = parentProperty;
-	}
-
 	public void setPrimaryKey(Boolean primaryKey) {
 		this.primaryKey = primaryKey;
-	}
-
-	public void setSourceClass(Class<?> sourceClass) {
-		this.sourceClass = sourceClass;
 	}
 
 	public void setUnique(Boolean unique) {
@@ -293,5 +307,34 @@ public class Property implements Named, Cloneable {
 
 	public void setVersion(Boolean version) {
 		this.version = version;
+	}
+
+	@Override
+	public boolean isSupportGetter() {
+		if (objectRelationalResolver != null && super.isSupportGetter()
+				&& objectRelationalResolver.isIgnore(getDeclaringClass(), super.getGetter())) {
+			return false;
+		}
+		return super.isSupportGetter();
+	}
+
+	@Override
+	public boolean isSupportSetter() {
+		if (objectRelationalResolver != null && super.isSupportSetter()
+				&& objectRelationalResolver.isIgnore(getDeclaringClass(), super.getSetter())) {
+			return false;
+		}
+		return super.isSupportSetter();
+	}
+
+	@Override
+	public Property rename(String name) {
+		if (StringUtils.isEmpty(name)) {
+			return this;
+		}
+
+		Property property = clone();
+		property.setName(name);
+		return property;
 	}
 }

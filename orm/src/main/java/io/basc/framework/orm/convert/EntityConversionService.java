@@ -19,17 +19,17 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.FieldFactory;
 import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.mapper.Fields;
+import io.basc.framework.mapper.Structure;
 import io.basc.framework.orm.ObjectRelationalMapper;
+import io.basc.framework.orm.Property;
 import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConfigurableAccept;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.alias.AliasRegistry;
 
-public abstract class EntityConversionService extends ConditionalConversionService implements FieldFactory {
+public abstract class EntityConversionService extends ConditionalConversionService {
 	private static Logger logger = LoggerFactory.getLogger(EntityConversionService.class);
 	private AliasRegistry aliasRegistry;
 	private final ConfigurableAccept<Field> fieldAccept = new ConfigurableAccept<Field>();
@@ -38,7 +38,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	private boolean strict = false;
 	private NoArgsInstanceFactory instanceFactory;
 	private Level loggerLevel = io.basc.framework.logger.Levels.DEBUG.getValue();
-	private ObjectRelationalMapper objectRelationalMapping;
+	private ObjectRelationalMapper mapper;
 	private Field parentField;
 	// 是否先检查key存在
 	private boolean checkKeyExists = false;
@@ -69,12 +69,12 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		this.parentField = parentField;
 	}
 
-	public ObjectRelationalMapper getObjectRelationalMapping() {
-		return objectRelationalMapping == null ? OrmUtils.getMapping() : objectRelationalMapping;
+	public ObjectRelationalMapper getMapper() {
+		return mapper == null ? OrmUtils.getMapper() : mapper;
 	}
 
-	public void setObjectRelationalMapping(ObjectRelationalMapper objectRelationalMapping) {
-		this.objectRelationalMapping = objectRelationalMapping;
+	public void setMapper(ObjectRelationalMapper mapper) {
+		this.mapper = mapper;
 	}
 
 	public NoArgsInstanceFactory getInstanceFactory() {
@@ -216,14 +216,14 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		return true;
 	}
 
-	public Fields getFields(Class<?> type, Field parentField) {
-		Fields fields = getObjectRelationalMapping().getFields(type, parentField).accept(FieldFeature.SUPPORT_SETTER)
-				.accept((f) -> canSetType(TypeDescriptor.valueOf(f.getSetter().getGenericType())))
-				.accept(getFieldAccept());
+	public Structure<? extends Property> getStructure(Class<?> type, Field parentField) {
+		Structure<? extends Property> structure = getMapper().getStructure(type).filter(FieldFeature.SUPPORT_SETTER)
+				.filter((f) -> canSetType(TypeDescriptor.valueOf(f.getSetter().getGenericType())))
+				.filter(getFieldAccept()).setParentField(parentField);
 		if (isUseSuperClass()) {
-			fields = fields.all();
+			structure = structure.all();
 		}
-		return fields;
+		return structure;
 	}
 
 	private void setValue(Field field, Object value, TypeDescriptor sourceType, Object target) {
@@ -242,7 +242,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 
 	private Collection<String> getUseSetterNames(AliasRegistry aliasRegistry, Class<?> entityClass, Field field) {
 		List<String> useNames = new ArrayList<String>(8);
-		Collection<String> names = getObjectRelationalMapping().getAliasNames(entityClass, field.getSetter());
+		Collection<String> names = getMapper().getAliasNames(entityClass, field.getSetter());
 		for (String name : names) {
 			useNames.add(name);
 			if (aliasRegistry != null) {
@@ -274,10 +274,10 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 
 	private void appendNames(Class<?> entityClass, @Nullable AliasRegistry aliasRegistry, List<String> names,
 			String parentName, Field field) {
-		Field parent = field.getParentField();
+		Field parent = field.getParent();
 		if (parent == null) {
 			// 最顶层的字段
-			Collection<String> aliasNames = getObjectRelationalMapping().getAliasNames(entityClass, field.getSetter());
+			Collection<String> aliasNames = getMapper().getAliasNames(entityClass, field.getSetter());
 			for (String name : aliasNames) {
 				names.add(toUseName(parentName, name));
 				if (aliasRegistry != null) {
@@ -288,7 +288,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 			}
 
 			// 该字段的声明类
-			for (String entityName : getObjectRelationalMapping().getAliasNames(field.getSetter().getSourceClass())) {
+			for (String entityName : getMapper().getAliasNames(field.getSetter().getDeclaringClass())) {
 				for (String alias : aliasNames) {
 					names.add(toUseName(parentName, entityName + connector + alias));
 					if (aliasRegistry != null) {
@@ -301,8 +301,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		} else {
 			for (String name : getUseSetterNames(aliasRegistry, entityClass, parent)) {
 				appendNames(entityClass, aliasRegistry, names,
-						parentName == null ? (name + connector) : (name + connector + parentName),
-						field.getParentField());
+						parentName == null ? (name + connector) : (name + connector + parentName), field.getParent());
 			}
 		}
 	}
@@ -321,7 +320,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 
 		String prefix = getPrefix();
 		prefix = StringUtils.isEmpty(prefix) ? "" : (prefix + connector);
-		Fields targetFields = getFields(targetType.getType(), parentField);
+		Structure<? extends Property> targetFields = getStructure(targetType.getType(), parentField);
 		if (isStrict()) {
 			strictConfiguration(targetFields, source, sourceType, target);
 		} else {
@@ -329,15 +328,15 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		}
 	}
 
-	private void noStrictConfiguration(Class<?> clazz, Fields fields, Object source, TypeDescriptor sourceType,
-			Object target) {
+	private void noStrictConfiguration(Class<?> clazz, Structure<? extends Field> fields, Object source,
+			TypeDescriptor sourceType, Object target) {
 		for (Field field : fields) {
 			Object value = null;
-			if (getObjectRelationalMapping().isEntity(clazz, field.getSetter())) {
+			if (getMapper().isEntity(clazz, field.getSetter())) {
 				// 如果是一个实体
 				Class<?> entityClass = field.getSetter().getType();
 				value = getInstanceFactory().getInstance(entityClass);
-				noStrictConfiguration(entityClass, getFields(entityClass, field), source, sourceType, value);
+				noStrictConfiguration(entityClass, getStructure(entityClass, field), source, sourceType, value);
 			} else {
 				value = getProperty(source, field);
 			}
@@ -347,7 +346,8 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		}
 	}
 
-	private void strictConfiguration(Fields fields, Object source, TypeDescriptor sourceType, Object target) {
+	private void strictConfiguration(Structure<? extends Field> fields, Object source, TypeDescriptor sourceType,
+			Object target) {
 		Enumeration<String> keys = keys(source);
 		while (keys.hasMoreElements()) {
 			String originKey = keys.nextElement();
@@ -356,10 +356,10 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 				name = name.substring(prefix.length());
 			}
 
-			Field field = fields.find(name, null);
+			Field field = fields.getByName(name, null);
 			if (field == null && aliasRegistry != null) {
 				for (String alias : aliasRegistry.getAliases(name)) {
-					field = fields.find(alias, null);
+					field = fields.getByName(alias, null);
 					if (field != null) {
 						break;
 					}

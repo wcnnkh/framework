@@ -1,10 +1,19 @@
 package io.basc.framework.orm.repository;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.orm.EntityStructure;
+import io.basc.framework.mapper.Structure;
 import io.basc.framework.orm.ObjectRelationalMapper;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
@@ -15,15 +24,6 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.comparator.Sort;
 import io.basc.framework.util.stream.Processor;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public interface RepositoryMapper extends ObjectRelationalMapper {
 	default ConditionKeywords getConditionKeywords() {
@@ -70,15 +70,14 @@ public interface RepositoryMapper extends ObjectRelationalMapper {
 
 			// 如果是entity将对象内容展开
 			getStructure(column.getType()).columns().filter((e) -> {
-				resolveOrders(column.getType(), e.getField().getGetter(), appendableOrders);
+				resolveOrders(column.getType(), e.getGetter(), appendableOrders);
 				return true;
-			}).filter((e) -> !e.isAutoIncrement() || MapperUtils.isExistValue(e.getField(), column.getValue()))
-					.forEach((c) -> {
-						Object value = c.getField().getGetter().get(column.getValue());
-						RepositoryColumn repositoryColumn = new RepositoryColumn(c.getName(), value,
-								new TypeDescriptor(c.getField().getGetter()));
-						list.add(repositoryColumn);
-					});
+			}).filter((e) -> !e.isAutoIncrement() || MapperUtils.isExistValue(e, column.getValue())).forEach((c) -> {
+				Object value = c.getGetter().get(column.getValue());
+				RepositoryColumn repositoryColumn = new RepositoryColumn(c.getName(), value,
+						new TypeDescriptor(c.getGetter()));
+				list.add(repositoryColumn);
+			});
 
 		}
 		return list;
@@ -105,10 +104,10 @@ public interface RepositoryMapper extends ObjectRelationalMapper {
 			Iterator<? extends Property> iterator = getStructure(condition.getColumn().getType()).columns().iterator();
 			while (iterator.hasNext()) {
 				Property property = iterator.next();
-				resolveOrders(entityClass, property.getField().getGetter(), appendableOrders);
-				Object value = property.getField().getGetter().get(condition.getColumn().getValue());
+				resolveOrders(entityClass, property.getGetter(), appendableOrders);
+				Object value = property.getGetter().get(condition.getColumn().getValue());
 				RepositoryColumn repositoryColumn = new RepositoryColumn(property.getName(), value,
-						new TypeDescriptor(property.getField().getGetter()));
+						new TypeDescriptor(property.getGetter()));
 				Condition newCondition = new Condition(condition.getCondition(), repositoryColumn);
 				withConditions.add(new WithCondition("and", new Conditions(newCondition, null)));
 			}
@@ -121,7 +120,7 @@ public interface RepositoryMapper extends ObjectRelationalMapper {
 	}
 
 	default RepositoryColumn parseColumn(Class<?> entityClass, Property property, @Nullable Object value) {
-		TypeDescriptor valueTypeDescriptor = new TypeDescriptor(property.getField().getGetter());
+		TypeDescriptor valueTypeDescriptor = new TypeDescriptor(property.getGetter());
 		if (value != null && !ClassUtils.isAssignableValue(valueTypeDescriptor.getType(), value)) {
 			valueTypeDescriptor = valueTypeDescriptor.narrow(value);
 		}
@@ -146,7 +145,7 @@ public interface RepositoryMapper extends ObjectRelationalMapper {
 			Processor<P, Object, OrmException> valueProcessor, @Nullable Predicate<Pair<P, Object>> predicate)
 			throws OrmException {
 		return XUtils.stream(properties).filter((e) -> {
-			resolveOrders(entityClass, e.getField().getGetter(), orders);
+			resolveOrders(entityClass, e.getGetter(), orders);
 			return true;
 		}).map((e) -> new Pair<P, Object>(e, valueProcessor.process(e)))
 				.filter((e) -> predicate == null || predicate.test(e))
@@ -182,8 +181,9 @@ public interface RepositoryMapper extends ObjectRelationalMapper {
 	}
 
 	default <T> List<RepositoryColumn> parseValueColumns(Class<? extends T> entityClass, T entity,
-			EntityStructure<? extends Property> entityStructure) {
-		return parseColumns(entityClass, entityStructure.columns().iterator(), null, (e) -> e.getField().get(entity),
-				(e) -> e.getKey().isNullable() || StringUtils.isNotEmpty(e.getValue())).collect(Collectors.toList());
+			Structure<? extends Property> structure) {
+		return parseColumns(entityClass, structure.stream().filter((e) -> !e.isEntity()).iterator(), null,
+				(e) -> e.get(entity), (e) -> e.getKey().isNullable() || StringUtils.isNotEmpty(e.getValue()))
+						.collect(Collectors.toList());
 	}
 }

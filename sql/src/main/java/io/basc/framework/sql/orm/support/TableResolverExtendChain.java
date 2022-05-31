@@ -50,4 +50,11 @@ public class TableResolverExtendChain implements TableResolver {
 		}
 		return nextChain == null ? null : nextChain.getRowFormat(entityClass);
 	}
+
+	public Boolean isAutoCreate(Class<?> entityClass) {
+		if (iterator.hasNext()) {
+			return iterator.next().isAutoCreate(entityClass, this);
+		}
+		return nextChain == null ? null : nextChain.isAutoCreate(entityClass);
+	}
 }

@@ -1,15 +1,11 @@
-package io.basc.framework.orm.support;
-
-import io.basc.framework.orm.EntityStructure;
-import io.basc.framework.orm.Property;
-import io.basc.framework.orm.StructureRegistry;
-import io.basc.framework.util.Assert;
+package io.basc.framework.mapper;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SimpleStructureRegistry<S extends EntityStructure<? extends Property>>
-		implements StructureRegistry<S> {
+import io.basc.framework.util.Assert;
+
+public class SimpleStructureFactory<S extends Structure<? extends Field>> implements StructureFactory<S> {
 	private Map<Class<?>, S> map = new ConcurrentHashMap<>();
 
 	@Override

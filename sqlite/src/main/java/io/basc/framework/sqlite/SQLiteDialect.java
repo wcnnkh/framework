@@ -14,12 +14,10 @@ import io.basc.framework.sql.EditableSql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.orm.Column;
-import io.basc.framework.sql.orm.ColumnMetadata;
 import io.basc.framework.sql.orm.SqlDialectException;
 import io.basc.framework.sql.orm.SqlType;
 import io.basc.framework.sql.orm.TableStructure;
 import io.basc.framework.sql.orm.TableStructureMapping;
-import io.basc.framework.sql.orm.support.StandardColumnMetdata;
 import io.basc.framework.sql.orm.support.StandardSqlDialect;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.NumberUtils;
@@ -56,7 +54,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 			Column col = iterator.next();
 			keywordProcessing(sb, col.getName());
 			sb.append(" ");
-			io.basc.framework.sql.orm.SqlType sqlType = getSqlType(col.getField().getGetter().getType());
+			io.basc.framework.sql.orm.SqlType sqlType = getSqlType(col.getGetter().getType());
 			sb.append(sqlType.getName());
 			if (sqlType.getLength() > 0) {
 				sb.append("(" + sqlType.getLength() + ")");
@@ -122,10 +120,11 @@ public class SQLiteDialect extends StandardSqlDialect {
 				return new SimpleSql("pragma table_info(" + tableStructure.getName() + ")");
 			}
 
-			public ColumnMetadata getName(ResultSet resultSet) throws SQLException {
-				StandardColumnMetdata descriptor = new StandardColumnMetdata();
-				descriptor.setName(resultSet.getString("name"));
-				return descriptor;
+			public Column getName(ResultSet resultSet) throws SQLException {
+				Column column = new Column();
+				column.setObjectRelationalResolver(SQLiteDialect.this);
+				column.setName(resultSet.getString("name"));
+				return column;
 			}
 		};
 	}
@@ -163,7 +162,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
+			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column, entity)) {
 				continue;
 			}
 
@@ -174,7 +173,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 
 			keywordProcessing(cols, column.getName());
 			values.append("?");
-			params.add(getDataBaseValue(entity, column.getField()));
+			params.add(getDataBaseValue(entity, column));
 		}
 		sql.append("insert or ignore into ");
 		keywordProcessing(sql, tableStructure.getName());
@@ -204,7 +203,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
+			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column, entity)) {
 				continue;
 			}
 
@@ -215,7 +214,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 
 			keywordProcessing(cols, column.getName());
 			values.append("?");
-			params.add(getDataBaseValue(entity, column.getField()));
+			params.add(getDataBaseValue(entity, column));
 		}
 		sql.append("replace into ");
 		keywordProcessing(sql, tableStructure.getName());
@@ -228,15 +227,15 @@ public class SQLiteDialect extends StandardSqlDialect {
 		sql.append(")");
 		return new SimpleSql(sql.toString(), params.toArray());
 	}
-	
+
 	@Override
 	public void concat(StringBuilder sb, String... strs) {
-		if(strs == null || strs.length == 0) {
-			return ;
+		if (strs == null || strs.length == 0) {
+			return;
 		}
-		
-		for(int i=0; i<strs.length; i++) {
-			if(i != 0) {
+
+		for (int i = 0; i < strs.length; i++) {
+			if (i != 0) {
 				sb.append("||");
 			}
 			sb.append(strs[i]);

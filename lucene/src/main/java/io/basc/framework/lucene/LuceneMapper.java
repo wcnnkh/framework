@@ -11,10 +11,11 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.json.JSONUtils;
-import io.basc.framework.orm.EntityStructure;
+import io.basc.framework.mapper.Structure;
+import io.basc.framework.mapper.StructureFactory;
 import io.basc.framework.orm.ObjectMapper;
+import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.orm.Property;
-import io.basc.framework.orm.StructureRegistry;
 import io.basc.framework.orm.repository.Conditions;
 import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.RepositoryColumn;
@@ -25,10 +26,10 @@ import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 
 public interface LuceneMapper extends RepositoryMapper, LuceneResolver, ObjectMapper<Document, LuceneException>,
-		StructureRegistry<EntityStructure<? extends Property>> {
+		StructureFactory<ObjectRelational<? extends Property>> {
 
 	@Override
-	public default EntityStructure<? extends Property> getStructure(Class<?> entityClass) {
+	public default ObjectRelational<? extends Property> getStructure(Class<?> entityClass) {
 		return RepositoryMapper.super.getStructure(entityClass);
 	}
 
@@ -36,7 +37,7 @@ public interface LuceneMapper extends RepositoryMapper, LuceneResolver, ObjectMa
 
 	Query parseQuery(Document document);
 
-	Sort parseSort(EntityStructure<? extends Property> structure, List<? extends OrderColumn> orders);
+	Sort parseSort(Structure<? extends Property> structure, List<? extends OrderColumn> orders);
 
 	@Override
 	default void reverseTransform(Object value, ParameterDescriptor descriptor, Document target,

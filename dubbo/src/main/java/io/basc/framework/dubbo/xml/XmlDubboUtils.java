@@ -216,7 +216,7 @@ public final class XmlDubboUtils {
 
 	private static <T> void loader(Object instance, Environment environment, Node node) {
 		NamedNodeMap namedNodeMap = node.getAttributes();
-		Fields fields = MapperUtils.getFields(instance.getClass()).all().accept(FieldFeature.SETTER);
+		Fields fields = Fields.getFields(instance.getClass()).all().filter(FieldFeature.SETTER);
 		for (int i = 0, len = namedNodeMap.getLength(); i < len; i++) {
 			Node n = namedNodeMap.item(i);
 			String name = n.getNodeName();
@@ -230,7 +230,7 @@ public final class XmlDubboUtils {
 			}
 
 			value = environment.replacePlaceholders(value);
-			Field field = fields.findSetter(name, null);
+			Field field = fields.getBySetterName(name, null);
 			if (field == null) {
 				logger.warn("{} ignore attribute name={}, value={}", instance.getClass(), name, value);
 				continue;

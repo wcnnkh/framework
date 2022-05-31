@@ -26,7 +26,6 @@ import io.basc.framework.sql.orm.SqlDialectException;
 import io.basc.framework.sql.orm.SqlType;
 import io.basc.framework.sql.orm.TableStructure;
 import io.basc.framework.sql.orm.TableStructureMapping;
-import io.basc.framework.sql.orm.support.StandardColumnMetdata;
 import io.basc.framework.sql.orm.support.StandardSqlDialect;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
@@ -86,13 +85,13 @@ public class MysqlDialect extends StandardSqlDialect {
 		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
+			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column, entity)) {
 				continue;
 			}
 
 			keywordProcessing(cols, column.getName());
 			values.append("?");
-			params.add(getDataBaseValue(entity, column.getField()));
+			params.add(getDataBaseValue(entity, column));
 
 			if (iterator.hasNext()) {
 				cols.append(",");
@@ -114,13 +113,13 @@ public class MysqlDialect extends StandardSqlDialect {
 		iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
+			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column, entity)) {
 				continue;
 			}
 
 			keywordProcessing(sb, column.getName());
 			sb.append("=?");
-			params.add(getDataBaseValue(entity, column.getField()));
+			params.add(getDataBaseValue(entity, column));
 			if (iterator.hasNext()) {
 				sb.append(",");
 			}
@@ -140,7 +139,7 @@ public class MysqlDialect extends StandardSqlDialect {
 		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
 			Column col = iterator.next();
-			SqlType sqlType = getSqlType(col.getField().getGetter().getType());
+			SqlType sqlType = getSqlType(col.getGetter().getType());
 			keywordProcessing(sb, col.getName());
 
 			sb.append(" ");
@@ -263,10 +262,11 @@ public class MysqlDialect extends StandardSqlDialect {
 						tableStructure.getName());
 			}
 
-			public StandardColumnMetdata getName(ResultSet resultSet) throws SQLException {
-				StandardColumnMetdata descriptor = new StandardColumnMetdata();
-				descriptor.setName(resultSet.getString("COLUMN_NAME"));
-				return descriptor;
+			public Column getName(ResultSet resultSet) throws SQLException {
+				Column column = new Column();
+				column.setName(resultSet.getString("COLUMN_NAME"));
+				column.setObjectRelationalResolver(MysqlDialect.this);
+				return column;
 			}
 		};
 	}
@@ -293,7 +293,7 @@ public class MysqlDialect extends StandardSqlDialect {
 		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
+			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column, entity)) {
 				continue;
 			}
 
@@ -304,7 +304,7 @@ public class MysqlDialect extends StandardSqlDialect {
 
 			keywordProcessing(cols, column.getName());
 			values.append("?");
-			params.add(getDataBaseValue(entity, column.getField()));
+			params.add(getDataBaseValue(entity, column));
 		}
 		sql.append("insert ignore into ");
 		keywordProcessing(sql, tableStructure.getName());

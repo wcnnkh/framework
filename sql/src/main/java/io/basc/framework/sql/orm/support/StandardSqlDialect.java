@@ -167,7 +167,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
+			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column, entity)) {
 				continue;
 			}
 
@@ -178,7 +178,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 
 			keywordProcessing(cols, column.getName());
 			values.append("?");
-			params.add(getDataBaseValue(entity, column.getField()));
+			params.add(getDataBaseValue(entity, column));
 		}
 		sql.append(INSERT_INTO_PREFIX);
 		keywordProcessing(sql, tableStructure.getName());
@@ -209,7 +209,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			Column column = iterator.next();
 			keywordProcessing(sql, column.getName());
 			sql.append("=?");
-			params.add(getDataBaseValue(entity, column.getField()));
+			params.add(getDataBaseValue(entity, column));
 			if (iterator.hasNext()) {
 				sql.append(AND);
 			}
@@ -222,7 +222,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 				sql.append(AND);
 				keywordProcessing(sql, column.getName());
 				sql.append("=?");
-				params.add(getDataBaseValue(entity, column.getField()));
+				params.add(getDataBaseValue(entity, column));
 			}
 		});
 		return new SimpleSql(sql.toString(), params.toArray());
@@ -317,7 +317,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 
 	@Override
 	public Sql toMaxIdSql(TableStructure tableStructure, Field field) throws SqlDialectException {
-		Column column = tableStructure.find(field);
+		Column column = tableStructure.getByName(field.getName());
 		if (column == null) {
 			throw new SqlDialectException("not found " + field);
 		}
@@ -361,7 +361,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		Iterator<Column> iterator = notPrimaryKeys.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (changeMap != null && !changeMap.containsKey(column.getField().getSetter().getName())) {
+			if (changeMap != null && !changeMap.containsKey(column.getSetter().getName())) {
 				// 忽略没有变化的字段
 				continue;
 			}
@@ -384,7 +384,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			Column column = iterator.next();
 			keywordProcessing(sb, column.getName());
 			sb.append("=?");
-			params.add(getDataBaseValue(entity, column.getField()));
+			params.add(getDataBaseValue(entity, column));
 			if (iterator.hasNext()) {
 				sb.append(AND);
 			}
@@ -410,9 +410,9 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 					sb.append(AND);
 					keywordProcessing(sb, column.getName());
 					if (column.isIncrement()) {
-						AnyValue newValue = new AnyValue(getDataBaseValue(entity, column.getField()));
+						AnyValue newValue = new AnyValue(getDataBaseValue(entity, column));
 						AnyValue oldValue = changeMap == null ? null
-								: new AnyValue(changeMap.get(column.getField().getSetter().getName()));
+								: new AnyValue(changeMap.get(column.getSetter().getName()));
 						if (oldValue != null) {
 							sb.append("+");
 							sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
@@ -429,9 +429,9 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 					sb.append(AND);
 					keywordProcessing(sb, column.getName());
 					if (column.isIncrement()) {
-						AnyValue newValue = new AnyValue(getDataBaseValue(entity, column.getField()));
+						AnyValue newValue = new AnyValue(getDataBaseValue(entity, column));
 						AnyValue oldValue = changeMap == null ? null
-								: new AnyValue(changeMap.get(column.getField().getSetter().getName()));
+								: new AnyValue(changeMap.get(column.getSetter().getName()));
 						if (oldValue != null) {
 							sb.append("+");
 							sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
@@ -448,8 +448,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 
 		if (column.isVersion()) {
 			AnyValue oldVersion = null;
-			if (changeMap != null && changeMap.containsKey(column.getField().getSetter().getName())) {
-				oldVersion = new AnyValue(changeMap.get(column.getField().getSetter().getName()));
+			if (changeMap != null && changeMap.containsKey(column.getSetter().getName())) {
+				oldVersion = new AnyValue(changeMap.get(column.getSetter().getName()));
 				if (oldVersion.getAsDoubleValue() == 0) {
 					// 如果存在变更但版本号为0就忽略此条件
 					return;
@@ -462,7 +462,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			sb.append("=?");
 
 			// 如果存在旧值就使用旧值
-			params.add(oldVersion == null ? getDataBaseValue(entity, column.getField())
+			params.add(oldVersion == null ? getDataBaseValue(entity, column)
 					: toDataBaseValue(oldVersion.getAsLongValue()));
 		}
 	}
@@ -471,12 +471,12 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 	public Sql toUpdatePartSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
 		Map<String, Object> changeMap = getChangeMap(entity);
 		return toUpdateSql(tableStructure, entity, changeMap, (column) -> {
-			if (changeMap != null && !changeMap.containsKey(column.getField().getSetter().getName())) {
+			if (changeMap != null && !changeMap.containsKey(column.getSetter().getName())) {
 				return false;
 			}
 
 			// 如果字段不能为空，且实体字段没有值就忽略
-			if (!column.isNullable() && !MapperUtils.isExistDefaultValue(column.getField(), entity)) {
+			if (!column.isNullable() && !MapperUtils.isExistDefaultValue(column, entity)) {
 				return false;
 			}
 			return true;
@@ -493,21 +493,20 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 	public <T> Sql toUpdateSql(TableStructure tableStructure, T entity, T condition) throws SqlDialectException {
 		Map<String, Object> changeMap = new HashMap<String, Object>();
 		tableStructure.columns().forEach((column) -> {
-			Object value = column.getField().get(condition);
+			Object value = column.getGetter().get(condition);
 			if (value == null && column.isNullable()) {
 				return;
 			}
 
-			changeMap.put(column.getField().getSetter().getName(), value);
+			changeMap.put(column.getSetter().getName(), value);
 		});
 		return toUpdateSql(tableStructure, entity, changeMap, (col) -> true);
 	}
 
 	protected final void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Column column,
 			Map<String, Object> changeMap) {
-		AnyValue newValue = new AnyValue(getDataBaseValue(entity, column.getField()));
-		AnyValue oldValue = changeMap == null ? null
-				: new AnyValue(changeMap.get(column.getField().getSetter().getName()));
+		AnyValue newValue = new AnyValue(getDataBaseValue(entity, column));
+		AnyValue oldValue = changeMap == null ? null : new AnyValue(changeMap.get(column.getSetter().getName()));
 		appendUpdateValue(sb, params, entity, column, oldValue, newValue);
 	}
 
@@ -568,7 +567,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 	private void and(StringBuilder sb, List<Object> params, Object entity, Iterator<Column> columns) {
 		while (columns.hasNext()) {
 			Column column = columns.next();
-			Object value = getDataBaseValue(entity, column.getField());
+			Object value = getDataBaseValue(entity, column);
 			if (StringUtils.isEmpty(value)) {
 				continue;
 			}
@@ -635,10 +634,10 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 	}
 
 	public Sql toString(Conditions conditions, AtomicInteger count) {
-		if(conditions == null) {
+		if (conditions == null) {
 			return null;
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
 		if (appendWhere(conditions.getCondition(), sb, params)) {
@@ -654,7 +653,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 					continue;
 				}
 
-				if(count.get() > 0) {
+				if (count.get() > 0) {
 					if (getRelationshipKeywords().getAndKeywords().exists(condition.getWith())) {
 						sb.append(" and ");
 					} else if (getRelationshipKeywords().getOrKeywords().exists(condition.getWith())) {
@@ -663,7 +662,6 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 						sb.append(" ").append(condition.getWith()).append(" ");
 					}
 				}
-				
 
 				if (withCount.get() > 1) {
 					sb.append("(");

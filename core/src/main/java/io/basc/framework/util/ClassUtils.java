@@ -1116,6 +1116,22 @@ public final class ClassUtils {
 		}
 	}
 
+	public static boolean sameName(Class<?> left, Class<?> right) {
+		if (left == right) {
+			return true;
+		}
+
+		if (left == null) {
+			return right == null;
+		}
+
+		if (right == null) {
+			return left == null;
+		}
+
+		return StringUtils.equals(left.getName(), right.getName());
+	}
+
 	/**
 	 * Register the given common classes with the ClassUtils cache.
 	 */

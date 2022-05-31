@@ -26,9 +26,11 @@ import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.lucene.LuceneException;
 import io.basc.framework.lucene.LuceneMapper;
-import io.basc.framework.orm.EntityStructure;
+import io.basc.framework.mapper.SimpleStructureFactory;
+import io.basc.framework.mapper.Structure;
+import io.basc.framework.mapper.StructureFactory;
+import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.orm.Property;
-import io.basc.framework.orm.StructureRegistry;
 import io.basc.framework.orm.repository.Condition;
 import io.basc.framework.orm.repository.ConditionKeywords;
 import io.basc.framework.orm.repository.Conditions;
@@ -37,13 +39,12 @@ import io.basc.framework.orm.repository.RelationshipKeywords;
 import io.basc.framework.orm.repository.RepositoryColumn;
 import io.basc.framework.orm.repository.WithCondition;
 import io.basc.framework.orm.support.AbstractObjectMapper;
-import io.basc.framework.orm.support.SimpleStructureRegistry;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.value.Value;
 
 public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneException> implements LuceneMapper {
-	private final StructureRegistry<EntityStructure<? extends Property>> structureRegistry = new SimpleStructureRegistry<EntityStructure<? extends Property>>();
+	private final StructureFactory<ObjectRelational<? extends Property>> structureRegistry = new SimpleStructureFactory<ObjectRelational<? extends Property>>();
 	private final ConfigurableServices<LuceneResolverExtend> luceneResolverExtends = new ConfigurableServices<LuceneResolverExtend>(
 			LuceneResolverExtend.class);
 
@@ -63,8 +64,8 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 	}
 
 	@Override
-	public EntityStructure<? extends Property> getStructure(Class<?> entityClass) {
-		EntityStructure<? extends Property> structure = structureRegistry.getStructure(entityClass);
+	public ObjectRelational<? extends Property> getStructure(Class<?> entityClass) {
+		ObjectRelational<? extends Property> structure = structureRegistry.getStructure(entityClass);
 		if (structure == null) {
 			return super.getStructure(entityClass);
 		}
@@ -72,7 +73,7 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 	}
 
 	@Override
-	public void registerStructure(Class<?> entityClass, EntityStructure<? extends Property> structure) {
+	public void registerStructure(Class<?> entityClass, ObjectRelational<? extends Property> structure) {
 		structureRegistry.registerStructure(entityClass, structure);
 	}
 
@@ -246,7 +247,7 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 	}
 
 	@Override
-	public Sort parseSort(EntityStructure<? extends Property> structure, List<? extends OrderColumn> orders) {
+	public Sort parseSort(Structure<? extends Property> structure, List<? extends OrderColumn> orders) {
 		if (CollectionUtils.isEmpty(orders)) {
 			return null;
 		}
@@ -256,7 +257,7 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 		return new Sort(sortFields.toArray(new SortField[0]));
 	}
 
-	private void appendSort(EntityStructure<? extends Property> structure, List<SortField> sortFields,
+	private void appendSort(Structure<? extends Property> structure, List<SortField> sortFields,
 			List<? extends OrderColumn> orders) {
 		if (CollectionUtils.isEmpty(orders)) {
 			return;
@@ -264,8 +265,8 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 
 		for (OrderColumn column : orders) {
 			Property property = structure.getByName(column.getName());
-			if (NumberUtils.isNumber(property.getField().getGetter().getType())) {
-				if (NumberUtils.isInteger(property.getField().getGetter().getType())) {
+			if (NumberUtils.isNumber(property.getGetter().getType())) {
+				if (NumberUtils.isInteger(property.getGetter().getType())) {
 					sortFields.add(new SortField(column.getName(), Type.LONG,
 							column.getSort() == io.basc.framework.util.comparator.Sort.ASC));
 				} else {

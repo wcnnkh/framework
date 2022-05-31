@@ -17,7 +17,7 @@ public abstract class AbstractMapping implements Mapping {
 		for (Field field : fields) {
 			Object value;
 			if (isNesting(field.getSetter())) {
-				value = mapping(field.getSetter().getType(), fields.jumpTo(field.getSetter().getType(), field));
+				value = mapping(field.getSetter().getType(), Fields.getFields(field.getSetter().getType(), field));
 			} else {
 				value = getValue(field);
 			}
@@ -41,7 +41,7 @@ public abstract class AbstractMapping implements Mapping {
 	protected abstract Object getValue(Field field);
 
 	protected final String getNestingDisplayName(Field field) {
-		if (field.getParentField() == null) {
+		if (field.getParent() == null) {
 			return field.getSetter().getName();
 		}
 
@@ -49,7 +49,7 @@ public abstract class AbstractMapping implements Mapping {
 		Field parent = field;
 		while (parent != null) {
 			fieldMetadatas.add(parent.getSetter());
-			parent = parent.getParentField();
+			parent = parent.getParent();
 		}
 
 		StringBuilder sb = new StringBuilder();

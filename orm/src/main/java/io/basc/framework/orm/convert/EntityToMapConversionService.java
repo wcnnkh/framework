@@ -12,24 +12,24 @@ import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionFactory;
 
 class EntityToMapConversionService extends ConditionalConversionService {
-	private ObjectRelationalMapper objectRelationalMapping;
+	private ObjectRelationalMapper mapper;
 
-	public ObjectRelationalMapper getObjectRelationalMapping() {
-		return objectRelationalMapping == null ? OrmUtils.getMapping() : objectRelationalMapping;
+	public ObjectRelationalMapper getMapper() {
+		return mapper == null ? OrmUtils.getMapper() : mapper;
 	}
 
-	public void setObjectRelationalMapping(ObjectRelationalMapper objectRelationalMapping) {
-		this.objectRelationalMapping = objectRelationalMapping;
+	public void setMapper(ObjectRelationalMapper mapper) {
+		this.mapper = mapper;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <R> R convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		Map<Object, Object> sourceMap = CollectionFactory.createMap(targetType.getType(),
 				targetType.getMapKeyTypeDescriptor().getType(), 16);
-		getObjectRelationalMapping().getStructure(sourceType.getType()).stream()
-				.filter((p) -> p.getField().isSupportGetter()).forEach((property) -> {
-					Object value = property.getField().getGetter().get(source);
-					TypeDescriptor valuetype = new TypeDescriptor(property.getField().getGetter());
+		getMapper().getStructure(sourceType.getType()).stream().filter((p) -> p.isSupportGetter())
+				.forEach((property) -> {
+					Object value = property.getGetter().get(source);
+					TypeDescriptor valuetype = new TypeDescriptor(property.getGetter());
 					value = getConversionService().convert(value, valuetype, targetType.getMapValueTypeDescriptor());
 					Object key = property.getName();
 					key = getConversionService().convert(key, TypeDescriptor.valueOf(String.class),
@@ -41,7 +41,7 @@ class EntityToMapConversionService extends ConditionalConversionService {
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return super.canConvert(sourceType, targetType) && OrmUtils.getMapping().isEntity(sourceType.getType());
+		return super.canConvert(sourceType, targetType) && OrmUtils.getMapper().isEntity(sourceType.getType());
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {

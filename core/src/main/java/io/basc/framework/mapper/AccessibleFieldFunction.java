@@ -19,17 +19,17 @@ import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.stream.StreamProcessorSupport;
 
-public class FieldFunction implements Function<Class<?>, Stream<FieldMetadata>> {
-	private final ConcurrentReferenceHashMap<Class<?>, FieldMetadata[]> cacheMap = new ConcurrentReferenceHashMap<>();
+public class AccessibleFieldFunction implements Function<Class<?>, Stream<AccessibleField>> {
+	private final ConcurrentReferenceHashMap<Class<?>, AccessibleField[]> cacheMap = new ConcurrentReferenceHashMap<>();
 	private final String[] getterMethodPrefixs;
 	private final String[] setterMethodPrefixs;
 
-	public FieldFunction() {
+	public AccessibleFieldFunction() {
 		this(new String[] { Getter.BOOLEAN_GETTER_METHOD_PREFIX, Getter.DEFAULT_GETTER_METHOD_PREFIX },
 				new String[] { Setter.DEFAULT_SETTER_METHOD_PREFIX });
 	}
 
-	public FieldFunction(String[] getterMethodPrefixs, String[] setterMethodPrefixs) {
+	public AccessibleFieldFunction(String[] getterMethodPrefixs, String[] setterMethodPrefixs) {
 		this.getterMethodPrefixs = getterMethodPrefixs == null ? new String[0] : getterMethodPrefixs.clone();
 		this.setterMethodPrefixs = setterMethodPrefixs == null ? new String[0] : setterMethodPrefixs.clone();
 	}
@@ -132,14 +132,14 @@ public class FieldFunction implements Function<Class<?>, Stream<FieldMetadata>> 
 		return null;
 	}
 
-	protected List<FieldMetadata> toFieldMetadatas(Collection<Getter> getters, Collection<Setter> setters) {
-		List<FieldMetadata> fields = new LinkedList<FieldMetadata>();
+	protected List<AccessibleField> toFieldMetadatas(Collection<Getter> getters, Collection<Setter> setters) {
+		List<AccessibleField> fields = new LinkedList<AccessibleField>();
 		Iterator<Getter> getterIterator = getters.iterator();
 		Iterator<Setter> setterIterator;
 		while (getterIterator.hasNext()) {
 			Getter getter = getterIterator.next();
 			Setter setter = metadataFindAndRemove(getter, setters);
-			FieldMetadata fieldMetadata = new FieldMetadata(getter, setter);
+			AccessibleField fieldMetadata = new AccessibleField(getter, setter);
 			fields.add(fieldMetadata);
 		}
 
@@ -147,13 +147,13 @@ public class FieldFunction implements Function<Class<?>, Stream<FieldMetadata>> 
 		while (setterIterator.hasNext()) {
 			Setter setter = setterIterator.next();
 			Getter getter = metadataFindAndRemove(setter, getters);
-			FieldMetadata fieldMetadata = new FieldMetadata(getter, setter);
+			AccessibleField fieldMetadata = new AccessibleField(getter, setter);
 			fields.add(fieldMetadata);
 		}
 		return fields;
 	}
 
-	public List<FieldMetadata> getFieldMetadataList(Class<?> clazz) {
+	public List<AccessibleField> getFieldMetadataList(Class<?> clazz) {
 		Field[] fields = clazz.getDeclaredFields();
 		Method[] methods = clazz.getDeclaredMethods();
 		Collection<Getter> getters = getGetters(clazz, fields, methods);
@@ -162,15 +162,15 @@ public class FieldFunction implements Function<Class<?>, Stream<FieldMetadata>> 
 	}
 
 	@Override
-	public Stream<FieldMetadata> apply(Class<?> sourceClass) {
-		FieldMetadata[] metadatas = cacheMap.get(sourceClass);
+	public Stream<AccessibleField> apply(Class<?> sourceClass) {
+		AccessibleField[] metadatas = cacheMap.get(sourceClass);
 		if (metadatas == null) {
-			List<FieldMetadata> list = getFieldMetadataList(sourceClass);
+			List<AccessibleField> list = getFieldMetadataList(sourceClass);
 			if (CollectionUtils.isEmpty(list)) {
 				return StreamProcessorSupport.emptyStream();
 			}
-			metadatas = list.toArray(new FieldMetadata[0]);
-			FieldMetadata[] old = cacheMap.putIfAbsent(sourceClass, metadatas);
+			metadatas = list.toArray(new AccessibleField[0]);
+			AccessibleField[] old = cacheMap.putIfAbsent(sourceClass, metadatas);
 			if (old != null) {
 				cacheMap.purgeUnreferencedEntries();
 				metadatas = old;

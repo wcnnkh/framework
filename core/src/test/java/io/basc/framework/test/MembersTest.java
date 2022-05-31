@@ -1,7 +1,6 @@
 package io.basc.framework.test;
 
-import static org.junit.Assert.assertTrue;
-
+import org.junit.Assert;
 import org.junit.Test;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
@@ -10,8 +9,9 @@ public class MembersTest {
 
 	@Test
 	public void test() {
-		assertTrue(ReflectionUtils.getDeclaredFields(B.class).withAll().filter((e) -> e.getName().equals("a"))
-				.streamAll().count() == 2);
+		System.out.println(ReflectionUtils.getDeclaredFields(B.class).withAll().withAll().streamAll().count());
+		Assert.assertTrue(ReflectionUtils.getDeclaredFields(B.class).withAll().withAll()
+				.filter((e) -> e.getName().equals("a")).streamAll().count() == 2);
 	}
 
 	public static class A {

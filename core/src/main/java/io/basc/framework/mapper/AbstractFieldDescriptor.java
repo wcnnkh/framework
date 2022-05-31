@@ -24,6 +24,11 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 		this.field = field;
 		this.method = method;
 	}
+	
+	@Override
+	public Class<?> getDeclaringClass() {
+		return sourceClass;
+	}
 
 	public java.lang.reflect.Field getField() {
 		return field;
@@ -31,6 +36,23 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 
 	public Method getMethod() {
 		return method;
+	}
+	
+	@Override
+	public boolean isSynthetic() {
+		Method method = getMethod();
+		if (method != null && field != null) {
+			return method.isSynthetic() || field.isSynthetic();
+		}
+
+		if (method != null) {
+			return method.isSynthetic();
+		}
+
+		if (field != null) {
+			return field.isSynthetic();
+		}
+		return false;
 	}
 
 	public int getModifiers() {
@@ -47,7 +69,7 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 		if (field != null) {
 			return field.getModifiers();
 		}
-		throw createNotSupportException();
+		return 0;
 	}
 
 	protected NotSupportedException createNotSupportException() {

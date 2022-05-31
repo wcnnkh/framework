@@ -5,11 +5,9 @@ import java.util.LinkedHashSet;
 
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
-import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
-import io.basc.framework.mapper.Fields;
-import io.basc.framework.orm.StructureRegistry;
-import io.basc.framework.orm.support.SimpleStructureRegistry;
+import io.basc.framework.mapper.SimpleStructureFactory;
+import io.basc.framework.mapper.StructureFactory;
 import io.basc.framework.sql.ResultSetMapper;
 import io.basc.framework.sql.orm.IndexInfo;
 import io.basc.framework.sql.orm.TableMapper;
@@ -19,7 +17,7 @@ import io.basc.framework.sql.orm.annotation.AnnotationTableResolverExtend;
 public class DefaultTableMapper extends ResultSetMapper implements TableMapper {
 	private final ConfigurableServices<TableResolverExtend> tableResolverExtends = new ConfigurableServices<>(
 			TableResolverExtend.class);
-	private final StructureRegistry<TableStructure> registry = new SimpleStructureRegistry<TableStructure>();
+	private final StructureFactory<TableStructure> registry = new SimpleStructureFactory<TableStructure>();
 
 	public DefaultTableMapper() {
 		AnnotationTableResolverExtend tableResolverExtend = new AnnotationTableResolverExtend();
@@ -58,8 +56,8 @@ public class DefaultTableMapper extends ResultSetMapper implements TableMapper {
 	}
 
 	@Override
-	public Fields getFields(Class<?> entityClass, Field parentField) {
-		return super.getFields(entityClass, parentField).entity();
+	public Boolean isAutoCreate(Class<?> entityClass) {
+		return TableResolverExtendChain.build(tableResolverExtends.iterator()).isAutoCreate(entityClass);
 	}
 
 	@Override
@@ -79,4 +77,5 @@ public class DefaultTableMapper extends ResultSetMapper implements TableMapper {
 	public void registerStructure(Class<?> entityClass, TableStructure structure) {
 		registry.registerStructure(entityClass, structure);
 	}
+
 }

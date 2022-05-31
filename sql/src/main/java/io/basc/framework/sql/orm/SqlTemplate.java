@@ -15,7 +15,6 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.PageRequest;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.Fields;
 import io.basc.framework.orm.EntityOperations;
 import io.basc.framework.orm.MaxValueFactory;
 import io.basc.framework.orm.ObjectKeyFormat;
@@ -66,7 +65,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 				}
 			});
 		} catch (SQLException e) {
-			throw new SqlException(tableStructure.getEntityClass().getName(), e);
+			throw new SqlException(tableStructure.getSourceClass().getName(), e);
 		}
 	}
 
@@ -85,7 +84,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default long delete(TableStructure structure, Conditions conditions) throws OrmException {
-		Sql sql = getMapper().toDeleteSql(structure, getMapper().open(structure.getEntityClass(), conditions, null));
+		Sql sql = getMapper().toDeleteSql(structure, getMapper().open(structure.getSourceClass(), conditions, null));
 		return update(sql);
 	}
 
@@ -292,23 +291,23 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	default TableChanges getTableChanges(TableStructure tableStructure) {
 		TableStructureMapping tableStructureMapping = getMapper().getTableStructureMapping(tableStructure);
-		List<ColumnMetadata> list = prepare(tableStructureMapping.getSql()).query().process((rs, rowNum) -> {
+		List<Column> list = prepare(tableStructureMapping.getSql()).query().process((rs, rowNum) -> {
 			return tableStructureMapping.getName(rs);
 		});
 		HashSet<String> hashSet = new HashSet<String>();
 		List<String> deleteList = new ArrayList<String>();
-		Fields fields = getMapper().getFields(tableStructure.getEntityClass());
-		for (ColumnMetadata columnDescriptor : list) {
-			hashSet.add(columnDescriptor.getName());
-			Field column = fields.find(columnDescriptor.getName(), null);
-			if (column == null) {// 在现在的表结构中不存在，应该删除
-				deleteList.add(columnDescriptor.getName());
+		TableStructure oldStructure = getMapper().getStructure(tableStructure.getSourceClass());
+		for (Column column : list) {
+			hashSet.add(column.getName());
+			Column oldName = oldStructure.getByName(column.getName(), null);
+			if (oldName == null) {// 在现在的表结构中不存在，应该删除
+				deleteList.add(column.getName());
 			}
 		}
 
 		List<Field> addList = new ArrayList<Field>();
-		for (Field column : getMapper().getFields(tableStructure.getEntityClass())) {
-			String name = getMapper().getName(tableStructure.getEntityClass(), column.getGetter());
+		for (Field column : getMapper().getStructure(tableStructure.getSourceClass())) {
+			String name = getMapper().getName(tableStructure.getSourceClass(), column.getGetter());
 			if (!hashSet.contains(name)) {// 在已有的数据库中不存在，应该添加
 				addList.add(column);
 			}
@@ -363,7 +362,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		}
 
 		Sql sql = getMapper().toSelectSql(structure,
-				getMapper().open(structure.getEntityClass(), conditions, orderColumns), orderColumns);
+				getMapper().open(structure.getSourceClass(), conditions, orderColumns), orderColumns);
 		return getPages(resultsTypeDescriptor, sql, request.getPageNum(), request.getPageSize());
 	}
 
@@ -394,7 +393,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		}
 
 		Sql sql = getMapper().toSelectSql(structure,
-				getMapper().open(structure.getEntityClass(), conditions, orderColumns), orderColumns);
+				getMapper().open(structure.getSourceClass(), conditions, orderColumns), orderColumns);
 		return query(resultsTypeDescriptor, sql);
 	}
 
@@ -411,7 +410,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		}
 
 		Sql sql = getMapper().toSelectSql(structure,
-				getMapper().open(structure.getEntityClass(), conditions, orderColumns), orderColumns);
+				getMapper().open(structure.getSourceClass(), conditions, orderColumns), orderColumns);
 		if (pageRequest == null) {
 			return query(resultsTypeDescriptor, sql);
 		}
@@ -471,7 +470,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	default long save(TableStructure structure, Collection<? extends RepositoryColumn> requestColumns)
 			throws OrmException {
-		Sql sql = getMapper().toSaveSql(structure, getMapper().open(structure.getEntityClass(), requestColumns, null));
+		Sql sql = getMapper().toSaveSql(structure, getMapper().open(structure.getSourceClass(), requestColumns, null));
 		return update(sql);
 	}
 
@@ -537,9 +536,9 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		}
 
 		for (Column column : tableStructure) {
-			if (column.isAutoIncrement() && column.getField() != null) {
+			if (column.isAutoIncrement() && column.isSupportSetter()) {
 				Object lastId = getAutoIncrementLastId(connection, tableStructure);
-				column.getField().getSetter().set(entity, lastId, getMapper().getEnvironment().getConversionService());
+				column.getSetter().set(entity, lastId, getMapper().getEnvironment().getConversionService());
 			}
 		}
 	}
@@ -562,9 +561,9 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	default long update(TableStructure structure, Collection<? extends RepositoryColumn> columns, Conditions conditions)
 			throws OrmException {
 		List<RepositoryColumn> repositoryColumns = new ArrayList<RepositoryColumn>();
-		getMapper().open(structure.getEntityClass(), repositoryColumns, null);
+		getMapper().open(structure.getSourceClass(), repositoryColumns, null);
 		Sql sql = getMapper().toUpdateSql(structure, repositoryColumns,
-				getMapper().open(structure.getEntityClass(), conditions, null));
+				getMapper().open(structure.getSourceClass(), conditions, null));
 		return update(sql);
 	}
 

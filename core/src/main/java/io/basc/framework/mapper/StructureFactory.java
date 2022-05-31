@@ -1,8 +1,8 @@
-package io.basc.framework.orm;
+package io.basc.framework.mapper;
 
 import io.basc.framework.lang.Nullable;
 
-public interface StructureRegistry<S extends EntityStructure<? extends Property>> {
+public interface StructureFactory<S extends Structure<? extends Field>> {
 	boolean isStructureRegistred(Class<?> entityClass);
 
 	/**

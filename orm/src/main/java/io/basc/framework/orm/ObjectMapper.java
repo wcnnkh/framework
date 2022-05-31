@@ -9,6 +9,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.mapper.ReversibleMapperFactory;
+import io.basc.framework.mapper.Structure;
 import io.basc.framework.util.stream.Processor;
 
 public interface ObjectMapper<S, E extends Throwable> extends ObjectRelationalMapper, ReversibleMapperFactory<S, E> {
@@ -36,20 +37,20 @@ public interface ObjectMapper<S, E extends Throwable> extends ObjectRelationalMa
 		transform(source, sourceType, target, targetType, getStructure(targetType.getType()));
 	}
 
-	default <R> R convert(S source, EntityStructure<? extends Property> targetStructure) throws E {
+	default <R> R convert(S source, Structure<? extends Property> targetStructure) throws E {
 		return convert(source, TypeDescriptor.forObject(source),
-				TypeDescriptor.valueOf(targetStructure.getEntityClass()), targetStructure);
+				TypeDescriptor.valueOf(targetStructure.getSourceClass()), targetStructure);
 	}
 
 	@SuppressWarnings("unchecked")
 	default <R> R convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
-			EntityStructure<? extends Property> targetStructure) throws E {
+			Structure<? extends Property> targetStructure) throws E {
 		R target = (R) newInstance(targetType);
 		transform(source, sourceType, target, targetType, targetStructure);
 		return target;
 	}
 
-	default void transform(S source, Object target, EntityStructure<? extends Property> targetStructure) throws E {
+	default void transform(S source, Object target, Structure<? extends Property> targetStructure) throws E {
 		transform(source, TypeDescriptor.forObject(source), target, TypeDescriptor.forObject(target), targetStructure);
 	}
 
@@ -67,7 +68,7 @@ public interface ObjectMapper<S, E extends Throwable> extends ObjectRelationalMa
 	}
 
 	default void transform(S source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType,
-			EntityStructure<? extends Property> targetStructure) throws E {
+			Structure<? extends Property> targetStructure) throws E {
 		transform(source, sourceType, target, targetType, targetStructure, getValueProcessor(source, sourceType));
 	}
 
@@ -82,25 +83,24 @@ public interface ObjectMapper<S, E extends Throwable> extends ObjectRelationalMa
 			Processor<Property, ? extends Object, X> valueProcessor) throws E, X {
 		while (properties.hasNext()) {
 			Property property = properties.next();
-			if (property.getField() == null || !property.getField().isSupportSetter()) {
+			if (property == null || !property.isSupportSetter()) {
 				continue;
 			}
 
 			if (property.isEntity()) {
-				Object entity = convert(source, sourceType, new TypeDescriptor(property.getField().getSetter()),
-						valueProcessor);
-				property.getField().getSetter().set(target, entity, getConversionService());
+				Object entity = convert(source, sourceType, new TypeDescriptor(property.getSetter()), valueProcessor);
+				property.getSetter().set(target, entity, getConversionService());
 			} else {
 				Object value = valueProcessor.process(property);
 				if (value != null) {
-					property.getField().getSetter().set(target, value, getConversionService());
+					property.getSetter().set(target, value, getConversionService());
 				}
 			}
 		}
 	}
 
 	default <X extends Throwable> void transform(S source, TypeDescriptor sourceType, Object target,
-			TypeDescriptor targetType, EntityStructure<? extends Property> targetStructure,
+			TypeDescriptor targetType, Structure<? extends Property> targetStructure,
 			Processor<Property, ? extends Object, X> valueProcessor) throws E, X {
 		transform(source, sourceType, target, targetType, targetStructure.stream().iterator(), valueProcessor);
 	}
@@ -109,20 +109,20 @@ public interface ObjectMapper<S, E extends Throwable> extends ObjectRelationalMa
 
 	@SuppressWarnings("unchecked")
 	default <R extends S> R invert(Object source, TypeDescriptor sourceType,
-			EntityStructure<? extends Property> sourceStructure, TypeDescriptor targetType) throws E {
+			Structure<? extends Property> sourceStructure, TypeDescriptor targetType) throws E {
 		R target = (R) newInstance(targetType);
 		reverseTransform(source, sourceType, sourceStructure, target, targetType);
 		return target;
 	}
 
-	default void reverseTransform(Object source, EntityStructure<? extends Property> sourceStructure, S target)
+	default void reverseTransform(Object source, Structure<? extends Property> sourceStructure, S target)
 			throws E, ConverterNotFoundException {
 		reverseTransform(source, TypeDescriptor.forObject(source), sourceStructure, target,
 				TypeDescriptor.forObject(target));
 	}
 
 	default void reverseTransform(Object source, TypeDescriptor sourceType,
-			EntityStructure<? extends Property> sourceStructure, S target, TypeDescriptor targetType)
+			Structure<? extends Property> sourceStructure, S target, TypeDescriptor targetType)
 			throws E, ConverterNotFoundException {
 		reverseTransform(sourceStructure, sourceType, sourceStructure.stream().iterator(), target, targetType);
 	}
@@ -137,22 +137,22 @@ public interface ObjectMapper<S, E extends Throwable> extends ObjectRelationalMa
 			S target, TypeDescriptor targetType) throws E, ConverterNotFoundException {
 		while (properties.hasNext()) {
 			Property property = properties.next();
-			if (property.getField() == null || !property.getField().isSupportGetter()) {
+			if (property == null || !property.isSupportGetter()) {
 				continue;
 			}
-			reverseTransform(property.getField().get(source), property, target, targetType);
+			reverseTransform(property.getGetter().get(source), property, target, targetType);
 		}
 	}
 
 	default void reverseTransform(Object value, Property property, S target, TypeDescriptor targetType) throws E {
 		if (property.isEntity()) {
-			reverseTransform(value, new TypeDescriptor(property.getField().getGetter()), target, targetType);
+			reverseTransform(value, new TypeDescriptor(property.getGetter()), target, targetType);
 		} else {
-			reverseTransform(value, property.getField().getGetter().rename(property.getName()), target, targetType);
+			reverseTransform(value, property.getGetter().rename(property.getName()), target, targetType);
 		}
 	}
-	
-	default void reverseTransform(Object value, ParameterDescriptor descriptor, S target) throws E{
+
+	default void reverseTransform(Object value, ParameterDescriptor descriptor, S target) throws E {
 		reverseTransform(value, descriptor, target, TypeDescriptor.forObject(target));
 	}
 

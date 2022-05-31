@@ -1,13 +1,13 @@
 package io.basc.framework.orm;
 
-import io.basc.framework.mapper.Field;
-import io.basc.framework.util.Pair;
-import io.basc.framework.util.StringUtils;
-
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
+import java.lang.reflect.Modifier;
+import java.util.function.Function;
 import java.util.stream.Stream;
+
+import io.basc.framework.core.Members;
+import io.basc.framework.mapper.AccessibleField;
+import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Fields;
 
 /**
  * 实体结构
@@ -16,65 +16,65 @@ import java.util.stream.Stream;
  *
  * @param <T>
  */
-public class EntityStructure<T extends Property> extends
-		EntityDescriptor<T>, Iterable<T> {
-	Class<?> getEntityClass();
+public final class EntityStructure extends ObjectRelationalDecorator<Property, EntityStructure> {
 
-	Collection<String> getAliasNames();
-
-	default EntityStructure<T> rename(String name) {
-		return new EntityStructureWrapper<EntityStructure<T>, T>(this) {
-
-			@Override
-			public String getName() {
-				return name;
-			}
-		};
+	public EntityStructure(Class<?> sourceClass) {
+		this(sourceClass, null, null);
 	}
 
-	default T find(Field field) {
-		return stream().filter((column) -> field.equals(column.getField()))
-				.findFirst().orElse(null);
+	public EntityStructure(Class<?> sourceClass, ObjectRelationalResolver objectRelationalResolver, Property parent) {
+		this(sourceClass, objectRelationalResolver, parent, Fields.DEFAULT);
 	}
 
-	default Stream<T> byName(String name) {
-		return stream()
-				.map((e) -> {
-					if (StringUtils.equals(e.getName(), name)) {
-						return new Pair<>(e, 1);
-					} else if (e.getAliasNames() != null
-							|| e.getAliasNames().contains(name)) {
-						return new Pair<>(e, 2);
-					} else if (e.getField() != null
-							&& e.getField().isSupportGetter()
-							&& e.getField().getGetter().getName().equals(name)) {
-						return new Pair<>(e, 3);
-					} else if (e.getField() != null
-							&& e.getField().isSupportSetter()
-							&& e.getField().getSetter().getName().equals(name)) {
-						return new Pair<>(e, 4);
-					}
-					return null;
-				}).filter((e) -> e != null)
-				.sorted(Comparator.comparingInt(Pair::getValue))
-				.map((e) -> e.getKey());
+	public EntityStructure(Class<?> sourceClass, ObjectRelationalResolver objectRelationalResolver, Property parent,
+			Function<Class<?>, ? extends Stream<? extends AccessibleField>> processor) {
+		super(sourceClass, objectRelationalResolver, (e) -> processor.apply(e)
+				.filter((o) -> (o.isSupportGetter() && !Modifier.isStatic(o.getGetter().getModifiers()))
+						|| (o.isSupportSetter() && !Modifier.isStatic(o.getSetter().getModifiers())))
+				.map((o) -> new Field(parent, sourceClass, o)).map((o) -> new Property(o, objectRelationalResolver)));
 	}
 
-	default T getByName(String name) throws NoSuchElementException {
-		return byName(name).findFirst().get();
+	public EntityStructure(ObjectRelational<Property> members) {
+		super(members);
 	}
 
-	default Field getFieldByName(String name) throws NoSuchElementException {
-		return byName(name).filter((e) -> e.getField() != null).findFirst()
-				.get().getField();
+	@Override
+	public EntityStructure setParentField(Field field) {
+		if (field instanceof Property) {
+			return setParent((Property) field);
+		}
+		return super.setParentField(new Property(field, this.objectRelationalResolver));
 	}
 
-	/**
-	 * 获取所有的列(排除实体字段)
-	 * 
-	 * @return
-	 */
-	default Stream<T> columns() {
-		return stream().filter((c) -> !c.isEntity());
+	@Override
+	public EntityStructure jumpTo(Class<?> cursorId) {
+		if (objectRelationalResolver != null && objectRelationalResolver instanceof ObjectRelationalMapper) {
+			ObjectRelational<? extends Property> objectRelational = ((ObjectRelationalMapper) objectRelationalResolver)
+					.getStructure(cursorId);
+			Members<Property> use = objectRelational.map((e) -> (Property) e);
+			return decorate(decorate(decorate(use)));
+		}
+		return super.jumpTo(cursorId);
+	}
+
+	@Override
+	protected EntityStructure decorate(ObjectRelational<Property> structure) {
+		if (structure instanceof EntityStructure) {
+			return (EntityStructure) structure;
+		}
+
+		EntityStructure entityStructure = new EntityStructure(structure);
+		entityStructure.objectRelationalResolver = this.objectRelationalResolver;
+		return entityStructure;
+	}
+
+	@Override
+	protected Property clone(Property source) {
+		return source.clone();
+	}
+
+	@Override
+	public ObjectRelational<Property> setParentProperty(Property parent) {
+		return setParent(parent);
 	}
 }

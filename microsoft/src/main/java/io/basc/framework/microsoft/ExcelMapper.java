@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.orm.EntityStructure;
+import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.stream.RunnableProcessor;
@@ -85,7 +85,7 @@ public class ExcelMapper extends ExcelTemplate implements AutoCloseable {
 		});
 	}
 
-	public final ExcelMapper titles(EntityStructure<?> structure) throws ExcelException, IOException {
+	public final ExcelMapper titles(ObjectRelational<?> structure) throws ExcelException, IOException {
 		if (structure == null) {
 			return this;
 		}
@@ -134,7 +134,7 @@ public class ExcelMapper extends ExcelTemplate implements AutoCloseable {
 		});
 	}
 
-	public ExcelMapper put(Object row, EntityStructure<?> structure) throws ExcelException, IOException {
+	public ExcelMapper put(Object row, ObjectRelational<?> structure) throws ExcelException, IOException {
 		if (structure == null || row == null) {
 			return this;
 		}
@@ -142,17 +142,17 @@ public class ExcelMapper extends ExcelTemplate implements AutoCloseable {
 		return process(() -> {
 			titles(structure);
 			List<String> values = structure.columns().map((property) -> {
-				if (!property.getField().isSupportGetter()) {
+				if (!property.isSupportGetter()) {
 					return null;
 				}
 
-				Object value = property.getField().getGetter().get(row);
+				Object value = property.getGetter().get(row);
 				if (value == null) {
 					return null;
 				}
 
-				return (String) getConversionService().convert(value,
-						new TypeDescriptor(property.getField().getGetter()), TypeDescriptor.valueOf(String.class));
+				return (String) getConversionService().convert(value, new TypeDescriptor(property.getGetter()),
+						TypeDescriptor.valueOf(String.class));
 			}).collect(Collectors.toList());
 			export.put(values);
 		});
@@ -182,7 +182,8 @@ public class ExcelMapper extends ExcelTemplate implements AutoCloseable {
 		return process(() -> putAll(rows.iterator()));
 	}
 
-	public final ExcelMapper putAll(Iterator<?> rows, EntityStructure<?> structure) throws ExcelException, IOException {
+	public final ExcelMapper putAll(Iterator<?> rows, ObjectRelational<?> structure)
+			throws ExcelException, IOException {
 		if (structure == null || rows == null) {
 			return this;
 		}
@@ -194,7 +195,7 @@ public class ExcelMapper extends ExcelTemplate implements AutoCloseable {
 		});
 	}
 
-	public final ExcelMapper putAll(Stream<?> rows, EntityStructure<?> structure) throws ExcelException, IOException {
+	public final ExcelMapper putAll(Stream<?> rows, ObjectRelational<?> structure) throws ExcelException, IOException {
 		if (structure == null || rows == null) {
 			return this;
 		}
@@ -210,7 +211,8 @@ public class ExcelMapper extends ExcelTemplate implements AutoCloseable {
 		});
 	}
 
-	public final ExcelMapper putAll(Iterable<?> rows, EntityStructure<?> structure) throws ExcelException, IOException {
+	public final ExcelMapper putAll(Iterable<?> rows, ObjectRelational<?> structure)
+			throws ExcelException, IOException {
 		if (structure == null || rows == null) {
 			return this;
 		}
@@ -223,7 +225,7 @@ public class ExcelMapper extends ExcelTemplate implements AutoCloseable {
 			return this;
 		}
 
-		return process(() -> putAll(rows, getOrm().getStructure(type)));
+		return process(() -> putAll(rows, getMapper().getStructure(type)));
 	}
 
 	public final <T> ExcelMapper putAll(Stream<? extends T> rows, Class<T> type) throws ExcelException, IOException {
@@ -232,7 +234,7 @@ public class ExcelMapper extends ExcelTemplate implements AutoCloseable {
 		}
 
 		return process(() -> {
-			EntityStructure<?> structure = getOrm().getStructure(type);
+			ObjectRelational<?> structure = getMapper().getStructure(type);
 			rows.forEach((e) -> {
 				try {
 					put(e, structure);
@@ -248,6 +250,6 @@ public class ExcelMapper extends ExcelTemplate implements AutoCloseable {
 			return this;
 		}
 
-		return process(() -> putAll(rows, getOrm().getStructure(type)));
+		return process(() -> putAll(rows, getMapper().getStructure(type)));
 	}
 }

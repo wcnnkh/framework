@@ -28,4 +28,8 @@ public interface TableResolverExtend {
 	default String getRowFormat(Class<?> entityClass, TableResolver chain) {
 		return chain.getRowFormat(entityClass);
 	}
+	
+	default Boolean isAutoCreate(Class<?> entityClass, TableResolver chain) {
+		return chain.isAutoCreate(entityClass);
+	}
 }

@@ -1,22 +1,22 @@
 package io.basc.framework.orm.repository;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.domain.PageRequest;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.orm.EntityStructure;
-import io.basc.framework.orm.OrmException;
-import io.basc.framework.orm.Property;
-import io.basc.framework.util.Pair;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.page.Paginations;
-import io.basc.framework.util.stream.Cursor;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.domain.PageRequest;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.orm.ObjectRelational;
+import io.basc.framework.orm.OrmException;
+import io.basc.framework.orm.Property;
+import io.basc.framework.util.Pair;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.page.Paginations;
+import io.basc.framework.util.stream.Cursor;
 
 /**
  * 存储库
@@ -30,8 +30,7 @@ public interface Repository extends CurdRepository {
 	@Override
 	default <T> boolean delete(Class<? extends T> entityClass, T entity) throws OrmException {
 		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
-				getMapper().getStructure(entityClass).getPrimaryKeys().iterator(), null,
-				(e) -> e.getField().get(entity), null);
+				getMapper().getStructure(entityClass).getPrimaryKeys().iterator(), null, (e) -> e.get(entity), null);
 		return delete(entityClass, conditionsToUse) > 0;
 	}
 
@@ -43,14 +42,14 @@ public interface Repository extends CurdRepository {
 	@Override
 	default <T> long deleteAll(Class<? extends T> entityClass, T conditions) {
 		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
-				getMapper().getStructure(entityClass).columns().iterator(), null, (e) -> e.getField().get(conditions),
+				getMapper().getStructure(entityClass).columns().iterator(), null, (e) -> e.get(conditions),
 				(e) -> !StringUtils.isEmpty(e));
 		return delete(entityClass, conditionsToUse);
 	}
 
 	@Override
 	default <E> boolean deleteById(Class<? extends E> entityClass, Object... entityIds) throws OrmException {
-		EntityStructure<? extends Property> entityStructure = getMapper().getStructure(entityClass);
+		ObjectRelational<? extends Property> entityStructure = getMapper().getStructure(entityClass);
 		List<? extends Property> list = entityStructure.getPrimaryKeys();
 		if (list.size() != entityIds.length) {
 			throw new OrmException("Inconsistent number of primary keys");
@@ -67,7 +66,7 @@ public interface Repository extends CurdRepository {
 	@Nullable
 	public default <T, E> T getById(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
 			Object... entityIds) throws OrmException {
-		EntityStructure<? extends Property> structure = getMapper().getStructure(entityClass);
+		ObjectRelational<? extends Property> structure = getMapper().getStructure(entityClass);
 		List<? extends Property> list = structure.getPrimaryKeys();
 		if (list.size() != entityIds.length) {
 			throw new OrmException("Inconsistent number of primary keys");
@@ -83,7 +82,7 @@ public interface Repository extends CurdRepository {
 	@SuppressWarnings("unchecked")
 	default <T, E> List<T> getInIds(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
 			List<?> entityInIds, Object... entityIds) throws OrmException {
-		EntityStructure<? extends Property> entityStructure = getMapper().getStructure(entityClass);
+		ObjectRelational<? extends Property> entityStructure = getMapper().getStructure(entityClass);
 		List<? extends Property> list = entityStructure.getPrimaryKeys();
 		RelationshipKeywords relationshipKeywords = getMapper().getRelationshipKeywords();
 		ConditionKeywords conditionKeywords = getMapper().getConditionKeywords();
@@ -115,7 +114,7 @@ public interface Repository extends CurdRepository {
 		return query(TypeDescriptor.valueOf(entityClass), entityClass,
 				getMapper().parseConditions(entityClass,
 						getMapper().getStructure(entityClass).getPrimaryKeys().iterator(), null,
-						(e) -> e.getField().get(conditions), null),
+						(e) -> e.getGetter().get(conditions), null),
 				null, new PageRequest(1, 1)).findAny().isPresent();
 	}
 
@@ -123,7 +122,7 @@ public interface Repository extends CurdRepository {
 	default <T> boolean isPresentAny(Class<? extends T> entityClass, T conditions) {
 		return query(TypeDescriptor.valueOf(entityClass), entityClass,
 				getMapper().parseConditions(entityClass, getMapper().getStructure(entityClass).columns().iterator(),
-						null, (e) -> e.getField().get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue())),
+						null, (e) -> e.getGetter().get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue())),
 				null, new PageRequest(1, 1)).findAny().isPresent();
 	}
 
@@ -152,7 +151,7 @@ public interface Repository extends CurdRepository {
 		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
 		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
 				getMapper().getStructure(entityClass).columns().iterator(), orderColumns,
-				(e) -> e.getField().get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue()));
+				(e) -> e.getGetter().get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue()));
 		return pagingQuery(resultsTypeDescriptor, entityClass, conditionsToUse, orderColumns, request);
 	}
 
@@ -162,7 +161,7 @@ public interface Repository extends CurdRepository {
 		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
 		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
 				getMapper().getStructure(entityClass).columns().iterator(), orderColumns,
-				(e) -> e.getField().get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue()));
+				(e) -> e.getGetter().get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue()));
 		return query(resultsTypeDescriptor, entityClass, conditionsToUse, orderColumns, request);
 	}
 
@@ -184,7 +183,8 @@ public interface Repository extends CurdRepository {
 		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
 		return queryAll(resultsTypeDescriptor, entityClass,
 				getMapper().parseConditions(entityClass, getMapper().getStructure(entityClass).columns().iterator(),
-						orderColumns, (e) -> e.getField().get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue())),
+						orderColumns, (e) -> e.getGetter().get(conditions),
+						(e) -> StringUtils.isNotEmpty(e.getValue())),
 				orderColumns);
 	}
 
@@ -202,19 +202,19 @@ public interface Repository extends CurdRepository {
 
 	@Override
 	default <T> boolean update(Class<? extends T> entityClass, T entity) throws OrmException {
-		EntityStructure<? extends Property> entityStructure = getMapper().getStructure(entityClass);
+		ObjectRelational<? extends Property> entityStructure = getMapper().getStructure(entityClass).all();
 		List<RepositoryColumn> columns = getMapper().parseValueColumns(entityClass, entity, entityStructure);
 		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
-				entityStructure.getPrimaryKeys().iterator(), null, (e) -> e.getField().get(entity), null);
+				entityStructure.getPrimaryKeys().iterator(), null, (e) -> e.getGetter().get(entity), null);
 		return update(entityClass, columns, conditionsToUse) > 0;
 	}
 
 	@Override
 	default <T> long updateAll(Class<? extends T> entityClass, T entity, T conditions) {
-		EntityStructure<? extends Property> entityStructure = getMapper().getStructure(entityClass);
+		ObjectRelational<? extends Property> entityStructure = getMapper().getStructure(entityClass);
 		List<RepositoryColumn> columns = getMapper().parseValueColumns(entityClass, entity, entityStructure);
 		Conditions conditionsToUse = getMapper().parseConditions(entityClass, entityStructure.columns().iterator(),
-				null, (e) -> e.getField().get(conditions),
+				null, (e) -> e.getGetter().get(conditions),
 				(e) -> e.getKey().isNullable() || StringUtils.isNotEmpty(e.getValue()));
 		return update(entityClass, columns, conditionsToUse);
 	}

@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.page.Pageables;
 import io.basc.framework.util.stream.Processor;
 import io.basc.framework.util.stream.StreamProcessorSupport;
@@ -23,15 +24,31 @@ import io.basc.framework.util.stream.StreamProcessorSupport;
  * @param <T>
  */
 public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T> {
-	private final Function<Class<?>, ? extends Stream<T>> processor;
+	/**
+	 * 直接关联不做任何限制
+	 */
+	public static final WithMethod DIRECT = new Direct();
+	/**
+	 * 忽略相同的sourceClass(默认的方法)
+	 */
+	public static final WithMethod REFUSE = new Refuse();
+
+	/**
+	 * 相同的sourceClass进行覆盖(代价较高)
+	 */
+	public static final WithMethod COVER = new Cover();
+
 	@Nullable
-	private List<T> shared;
-	private final Class<?> sourceClass;
+	private List<T> members;
+	private Function<Class<?>, ? extends Stream<T>> processor;
+	private Class<?> sourceClass;
 	@Nullable
-	private Stream<T> stream;
+	private Supplier<? extends Stream<T>> streamSupplier;
 
 	@Nullable
 	private Members<T> with;
+
+	private WithMethod withMethod = REFUSE;
 
 	public Members(Class<?> sourceClass, Function<Class<?>, ? extends Stream<T>> processor) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
@@ -40,23 +57,29 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 		this.processor = processor;
 	}
 
-	public Members(Members<T> members) {
+	@SuppressWarnings("unchecked")
+	public Members(Members<? extends T> members) {
 		Assert.requiredArgument(members != null, "members");
 		this.sourceClass = members.sourceClass;
-		this.processor = members.processor;
-		this.stream = members.stream;
-		this.with = members.with;
+		this.processor = (Function<Class<?>, ? extends Stream<T>>) members.processor;
+		this.streamSupplier = (Supplier<? extends Stream<T>>) members.streamSupplier;
+		this.with = (Members<T>) members.with;
+		this.members = (List<T>) members.members;
+		this.withMethod = members.withMethod;
+	}
+
+	public Members<T> withMethod(WithMethod method) {
+		Assert.requiredArgument(method != null, "method");
+		Members<T> members = clone();
+		members.withMethod = method;
+		return members;
 	}
 
 	@Override
 	public Members<T> all() {
-		Members<T> members = clone();
-		members.withStream(streamAll());
+		Members<T> members = new Members<T>(this.sourceClass, this.processor);
+		members.streamSupplier = () -> streamAll();
 		return members;
-	}
-
-	public Function<Class<?>, ? extends Stream<T>> getProcessor() {
-		return processor;
 	}
 
 	@Override
@@ -66,14 +89,77 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 			clone.with = this.with.clone();
 		}
 
-		if (this.with != null) {
-			clone.stream = this.stream;
+		if (this.streamSupplier != null) {
+			clone.streamSupplier = this.streamSupplier;
 		}
 
-		if (this.shared != null) {
-			clone.shared = this.shared;
+		if (this.members != null) {
+			clone.members = this.members;
 		}
+
+		clone.withMethod = this.withMethod;
 		return clone;
+	}
+
+	public final boolean contains(Class<?> sourceClass) {
+		if (sourceClass == null) {
+			return false;
+		}
+
+		Members<T> members = this;
+		while (members != null) {
+			if (ClassUtils.sameName(members.sourceClass, sourceClass)) {
+				return true;
+			}
+			members = members.with;
+		}
+		return false;
+	}
+
+	/**
+	 * 代价较高
+	 * 
+	 * @see #all()
+	 * @return
+	 */
+	public Members<T> distinctAll() {
+		Members<T> members = new Members<T>(this.sourceClass, this.processor);
+		members.streamSupplier = () -> streamAll().distinct();
+		return members;
+	}
+
+	/**
+	 * 去除重复的类
+	 * 
+	 * @return
+	 */
+	public Members<T> distinctMembers() {
+		Members<T> members = new Members<T>(this.sourceClass, this.processor);
+		members.streamSupplier = this.streamSupplier;
+		members.members = this.members;
+
+		Members<T> with = this.with;
+		while (with != null) {
+			if (!members.contains(with.sourceClass)) {
+				DIRECT.with(with, members);
+			}
+			with = members.with;
+		}
+		return members;
+	}
+
+	/**
+	 * 排除
+	 * 
+	 * @param predicate
+	 * @return
+	 */
+	public Members<T> exclude(Predicate<? super T> predicate) {
+		if (predicate == null) {
+			return this;
+		}
+
+		return filter(predicate.negate());
 	}
 
 	/**
@@ -92,26 +178,12 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	}
 
 	/**
-	 * 排除
-	 * 
-	 * @param predicate
-	 * @return
-	 */
-	public Members<T> exclude(Predicate<? super T> predicate) {
-		if (predicate == null) {
-			return this;
-		}
-
-		return filter(predicate.negate());
-	}
-
-	/**
 	 * @see #streamAll()
 	 * @see Stream#findAny()
 	 * @return
 	 * @throws E
 	 */
-	public Optional<T> findAny() {
+	public final Optional<T> findAny() {
 		return streamAll().findAny();
 	}
 
@@ -120,46 +192,45 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	 * @see Stream#findFirst()
 	 * @return
 	 */
-	public Optional<T> findFirst() {
+	public final Optional<T> findFirst() {
 		return streamAll().findFirst();
 	}
 
-	/**
-	 * 获取第一个
-	 * 
-	 * @see #findFirst()
-	 */
 	@Nullable
 	@Override
-	public T get() {
-		return findFirst().orElse(null);
+	public final T get() {
+		return findAny().orElse(null);
 	}
 
 	@Override
-	public Class<?> getCursorId() {
+	public final Class<?> getCursorId() {
 		return sourceClass;
 	}
 
 	@Override
 	public List<T> getList() {
-		if (this.shared != null) {
-			return Collections.unmodifiableList(this.shared);
+		if (this.members != null) {
+			return Collections.unmodifiableList(this.members);
 		}
 
 		return stream().collect(Collectors.toList());
 	}
 
 	@Override
-	public Class<?> getNextCursorId() {
+	public final Class<?> getNextCursorId() {
 		return with == null ? null : with.sourceClass;
 	}
 
-	public Class<?> getSourceClass() {
+	public Function<Class<?>, ? extends Stream<T>> getProcessor() {
+		return processor;
+	}
+
+	public final Class<?> getSourceClass() {
 		return sourceClass;
 	}
 
 	@Override
-	public boolean hasNext() {
+	public final boolean hasNext() {
 		return with != null;
 	}
 
@@ -193,12 +264,12 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 			members.with = this.with.mapProcessor(processor, rootMapProcessor, rootProcessor);
 		}
 
-		if (this.stream != null) {
-			members.stream = processor.apply(this.stream);
+		if (this.streamSupplier != null) {
+			members.streamSupplier = () -> (processor.apply(this.streamSupplier.get()));
 		}
 
-		if (this.shared != null) {
-			members.shared = processor.apply(this.shared.stream()).collect(Collectors.toList());
+		if (this.members != null) {
+			members.members = processor.apply(this.members.stream()).collect(Collectors.toList());
 		}
 		return members;
 	}
@@ -208,10 +279,19 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 		return with;
 	}
 
+	/**
+	 * 直接设置当前的members
+	 * 
+	 * @param members
+	 */
+	public void setMembers(List<T> members) {
+		this.members = members;
+	}
+
 	public Members<T> shared() {
 		Members<T> members = clone();
-		if (members.shared != null) {
-			members.shared = members.getList();
+		if (members.members != null) {
+			members.members = members.getList();
 		}
 
 		if (members.with != null) {
@@ -226,32 +306,32 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	 * @return
 	 */
 	public Stream<T> stream() {
-		if (shared != null) {
-			return shared.stream();
+		if (members != null) {
+			return members.stream();
 		}
 
 		Stream<T> stream = this.processor.apply(sourceClass);
 		if (stream == null) {
-			if (this.stream == null) {
+			if (this.streamSupplier == null) {
 				return StreamProcessorSupport.emptyStream();
 			} else {
-				return stream;
+				return this.streamSupplier.get();
 			}
 		} else {
-			if (this.stream == null) {
+			if (this.streamSupplier == null) {
 				return stream;
 			} else {
-				return Stream.concat(stream, this.stream);
+				return Stream.concat(stream, this.streamSupplier.get());
 			}
 		}
 	}
 
 	public Members<T> with(Members<T> with) {
-		if (this.with == null) {
-			this.with = with;
-		} else {
-			this.with.with(with);
+		if (with == null) {
+			return this;
 		}
+
+		withMethod.with(with, this);
 		return this;
 	}
 
@@ -286,7 +366,7 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	 * @return
 	 */
 	public Members<T> withClass(Class<?> sourceClass) {
-		return withClass(sourceClass, this.processor);
+		return with(new Members<T>(sourceClass, this.processor));
 	}
 
 	/**
@@ -296,8 +376,10 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	 * @param processor
 	 * @return
 	 */
-	public Members<T> withClass(Class<?> sourceClass, Function<Class<?>, ? extends Stream<T>> processor) {
-		return with(new Members<>(sourceClass, processor));
+	public Members<T> withClass(Class<?> sourceClass, Predicate<? super T> predicate) {
+		Members<T> members = new Members<T>(sourceClass,
+				this.processor.andThen((e) -> e == null ? e : e.filter(predicate)));
+		return with(members);
 	}
 
 	/**
@@ -336,21 +418,22 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 			return this;
 		}
 
+		Members<T> members = this;
 		for (Class<?> interfaceClass : interfaces) {
 			if (predicate == null || predicate.test(interfaceClass)) {
-				withClass(interfaceClass, processor);
+				members = members.with(new Members<T>(interfaceClass, processor));
 			} else {
 				break;
 			}
 		}
-		return this;
+		return members;
 	}
 
-	public Members<T> withStream(Stream<T> stream) {
-		if (this.stream == null) {
-			this.stream = stream;
+	public Members<T> withStream(Supplier<? extends Stream<T>> streamSupplier) {
+		if (this.streamSupplier == null) {
+			this.streamSupplier = streamSupplier;
 		} else {
-			this.stream = Stream.concat(this.stream, stream);
+			this.streamSupplier = () -> Stream.concat(this.streamSupplier.get(), streamSupplier.get());
 		}
 		return this;
 	}
@@ -397,19 +480,19 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 			Function<Class<?>, ? extends Stream<T>> processor) {
 		Assert.requiredArgument(processor != null, "processor");
 		Class<?> superclass = this.sourceClass.getSuperclass();
+		Members<T> members = this;
 		while (superclass != null) {
 			if (predicate == null || predicate.test(superclass)) {
+				members = members.with(new Members<T>(superclass, processor));
 				if (interfaces) {
-					withClass(superclass, processor).withInterfaces(predicate, processor);
-				} else {
-					withClass(superclass, processor);
+					members = members.withInterfaces(predicate, processor);
 				}
 			} else {
 				break;
 			}
 			superclass = superclass.getSuperclass();
 		}
-		return this;
+		return members;
 	}
 
 	/**
@@ -425,5 +508,80 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	public Members<T> withSuperclass(@Nullable Predicate<Class<?>> predicate,
 			Function<Class<?>, ? extends Stream<T>> processor) {
 		return withSuperclass(false, predicate, processor);
+	}
+
+	public static interface WithMethod {
+		<T> void with(Members<T> source, Members<T> target);
+	}
+
+	private static class Direct implements WithMethod {
+
+		@Override
+		public <T> void with(Members<T> source, Members<T> target) {
+			if (source == null) {
+				return;
+			}
+
+			// 使用循环而不使用递归
+			Members<T> with = target;
+			while (with.with != null) {
+				with = with.with;
+			}
+			with.with = source;
+		}
+	}
+
+	private static class Refuse extends Direct {
+		@Override
+		public <T> void with(Members<T> source, Members<T> target) {
+			if (source == null) {
+				return;
+			}
+
+			if (target.contains(source.sourceClass)) {
+				with(source.with, target);
+				return;
+			}
+			super.with(source, target);
+		}
+	}
+
+	private static class Cover implements WithMethod {
+		@Override
+		public <T> void with(Members<T> source, Members<T> target) {
+			if (source == null) {
+				return;
+			}
+
+			Members<T> with = source;
+			while (with != null) {
+				Members<T> item = with.clone();
+				item.with = null;
+
+				boolean use = false;
+				Members<T> targetWith = target;
+				while (targetWith != null) {
+					if (ClassUtils.sameName(item.sourceClass, targetWith.sourceClass)) {
+						use = true;
+						if (targetWith == target) {
+							// 如果是父级，不能替换
+							targetWith.members = item.getList();
+						} else {
+							targetWith.sourceClass = item.sourceClass;
+							targetWith.members = item.members;
+							targetWith.processor = item.processor;
+							targetWith.streamSupplier = item.streamSupplier;
+						}
+						break;
+					}
+					targetWith = targetWith.with;
+				}
+
+				if (!use) {
+					targetWith.with = item;
+				}
+				with = with.with;
+			}
+		}
 	}
 }
