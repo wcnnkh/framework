@@ -11,6 +11,8 @@ public class MysqlTest {
 	@Test
 	public void sqlTest() {
 		SqlDialect mapper = new MysqlDialect();
+		mapper.getStructure(MysqlTest.class);
+		
 		ConditionsBuilder builder = mapper
 				.conditionsBuilder((e) -> e.name("permissionGroupId").greaterThan().value(0).build());
 		builder.and((e) -> e.name("permissionGroupId").in().value(1).build());
