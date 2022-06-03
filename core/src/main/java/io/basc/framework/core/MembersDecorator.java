@@ -11,7 +11,7 @@ public abstract class MembersDecorator<S, T extends Members<S>> extends Members<
 		super(sourceClass, processor);
 	}
 
-	public MembersDecorator(Members<? extends S> members) {
+	public MembersDecorator(Members<S> members) {
 		super(members);
 	}
 

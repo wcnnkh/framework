@@ -10,6 +10,7 @@ import java.util.List;
 
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.annotation.MultiAnnotatedElement;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
 
@@ -92,18 +93,7 @@ public class AccessibleField implements AnnotatedElement, Cloneable {
 
 	@Override
 	public String toString() {
-		if (isSupportGetter() && isSupportSetter()) {
-			return "getter {" + getter + "} setter {" + setter + "}";
-		}
-
-		if (isSupportGetter()) {
-			return "getter {" + getter + "}";
-		}
-
-		if (isSupportSetter()) {
-			return "setter {" + setter + "}";
-		}
-		return super.toString();
+		return ReflectionUtils.toString(this);
 	}
 
 	@Override

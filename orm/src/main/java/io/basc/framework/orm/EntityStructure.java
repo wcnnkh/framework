@@ -43,7 +43,9 @@ public final class EntityStructure extends ObjectRelationalDecorator<Property, E
 		if (field instanceof Property) {
 			return setParent((Property) field);
 		}
-		return super.setParentField(new Property(field, this.objectRelationalResolver));
+
+		Property property = field == null ? null : new Property(field, this.objectRelationalResolver);
+		return super.setParentField(property);
 	}
 
 	@Override
@@ -71,10 +73,5 @@ public final class EntityStructure extends ObjectRelationalDecorator<Property, E
 	@Override
 	protected Property clone(Property source) {
 		return source.clone();
-	}
-
-	@Override
-	public ObjectRelational<Property> setParentProperty(Property parent) {
-		return setParent(parent);
 	}
 }

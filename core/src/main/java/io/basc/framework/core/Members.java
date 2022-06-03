@@ -1,5 +1,6 @@
 package io.basc.framework.core;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -57,14 +58,13 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 		this.processor = processor;
 	}
 
-	@SuppressWarnings("unchecked")
-	public Members(Members<? extends T> members) {
+	public Members(Members<T> members) {
 		Assert.requiredArgument(members != null, "members");
 		this.sourceClass = members.sourceClass;
-		this.processor = (Function<Class<?>, ? extends Stream<T>>) members.processor;
-		this.streamSupplier = (Supplier<? extends Stream<T>>) members.streamSupplier;
-		this.with = (Members<T>) members.with;
-		this.members = (List<T>) members.members;
+		this.processor = members.processor;
+		this.streamSupplier = members.streamSupplier;
+		this.with = members.with;
+		this.members = members.members == null ? null : new ArrayList<T>(members.members);
 		this.withMethod = members.withMethod;
 	}
 

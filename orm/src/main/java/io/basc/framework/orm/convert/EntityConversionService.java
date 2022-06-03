@@ -159,7 +159,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	}
 
 	@Nullable
-	private Object getProperty(Object source, Field field) {
+	private Object getProperty(Object source, Property field) {
 		Collection<String> names = getSetterNames(source.getClass(), field);
 		if (logger.isTraceEnabled()) {
 			logger.trace(field + " - " + names);
@@ -242,7 +242,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 
 	private Collection<String> getUseSetterNames(AliasRegistry aliasRegistry, Class<?> entityClass, Field field) {
 		List<String> useNames = new ArrayList<String>(8);
-		Collection<String> names = getMapper().getAliasNames(entityClass, field.getSetter());
+		Collection<String> names = field.getAliasNames();
 		for (String name : names) {
 			useNames.add(name);
 			if (aliasRegistry != null) {
@@ -273,11 +273,11 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	}
 
 	private void appendNames(Class<?> entityClass, @Nullable AliasRegistry aliasRegistry, List<String> names,
-			String parentName, Field field) {
+			String parentName, Property field) {
 		Field parent = field.getParent();
 		if (parent == null) {
 			// 最顶层的字段
-			Collection<String> aliasNames = getMapper().getAliasNames(entityClass, field.getSetter());
+			Collection<String> aliasNames = field.getAliasNames();
 			for (String name : aliasNames) {
 				names.add(toUseName(parentName, name));
 				if (aliasRegistry != null) {
@@ -306,7 +306,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		}
 	}
 
-	private Collection<String> getSetterNames(Class<?> entityClass, Field field) {
+	private Collection<String> getSetterNames(Class<?> entityClass, Property field) {
 		List<String> names = new ArrayList<String>(8);
 		appendNames(entityClass, getAliasRegistry(), names, null, field);
 		return names;
@@ -328,11 +328,15 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		}
 	}
 
-	private void noStrictConfiguration(Class<?> clazz, Structure<? extends Field> fields, Object source,
+	private void noStrictConfiguration(Class<?> clazz, Structure<? extends Property> structure, Object source,
 			TypeDescriptor sourceType, Object target) {
-		for (Field field : fields) {
+		for (Property field : structure) {
+			if (!field.isSupportSetter()) {
+				continue;
+			}
+
 			Object value = null;
-			if (getMapper().isEntity(clazz, field.getSetter())) {
+			if (field.isEntity()) {
 				// 如果是一个实体
 				Class<?> entityClass = field.getSetter().getType();
 				value = getInstanceFactory().getInstance(entityClass);

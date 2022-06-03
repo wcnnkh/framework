@@ -16,7 +16,7 @@ public abstract class StructureDecorator<S extends Field, T extends StructureDec
 		super(sourceClass, processor);
 	}
 
-	public StructureDecorator(Structure<? extends S> members) {
+	public StructureDecorator(Structure<S> members) {
 		super(members);
 	}
 	

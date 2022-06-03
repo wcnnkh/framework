@@ -21,6 +21,26 @@ public class Column extends Property {
 		this.indexs = column.indexs;
 	}
 
+	@Override
+	public void setParent(Property parent) {
+		if (parent instanceof Column) {
+			setParent((Column) parent);
+			return;
+		}
+
+		Column column = parent == null ? null : new Column(parent);
+		setParent(column);
+	}
+
+	@Override
+	public Column getParent() {
+		return (Column) super.getParent();
+	}
+
+	public void setParent(Column column) {
+		super.setParent(column);
+	}
+
 	public Collection<IndexInfo> getIndexs() {
 		if (indexs == null && objectRelationalResolver != null) {
 			if (objectRelationalResolver instanceof TableResolver) {
@@ -48,5 +68,12 @@ public class Column extends Property {
 	@Override
 	public Column clone() {
 		return new Column(this);
+	}
+
+	@Override
+	public Column rename(String name) {
+		Column column = clone();
+		column.setName(name);
+		return column;
 	}
 }

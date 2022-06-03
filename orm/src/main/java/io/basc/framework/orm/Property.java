@@ -101,8 +101,12 @@ public class Property extends Field {
 
 	@Override
 	public void setParent(Field parent) {
-		Property property = parent instanceof Property ? (Property) parent
-				: new Property(parent, this.objectRelationalResolver);
+		if (parent instanceof Property) {
+			setParent((Property) parent);
+			return;
+		}
+
+		Property property = parent == null ? null : new Property(parent, this.objectRelationalResolver);
 		setParent(property);
 	}
 
@@ -329,10 +333,6 @@ public class Property extends Field {
 
 	@Override
 	public Property rename(String name) {
-		if (StringUtils.isEmpty(name)) {
-			return this;
-		}
-
 		Property property = clone();
 		property.setName(name);
 		return property;

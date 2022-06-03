@@ -237,12 +237,9 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 	}
 
 	public Field rename(String name) {
-		if (StringUtils.isEmpty(name)) {
-			return this;
-		}
-
 		Field field = clone();
 		field.setName(name);
 		return field;
 	}
+
 }

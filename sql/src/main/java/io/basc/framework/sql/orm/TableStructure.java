@@ -33,7 +33,7 @@ public final class TableStructure extends ObjectRelationalDecorator<Column, Tabl
 		super(sourceClass, objectRelationalResolver,
 				(e) -> processor.apply(e)
 						.filter((o) -> (o.isSupportGetter() && !Modifier.isStatic(o.getGetter().getModifiers()))
-								|| (o.isSupportSetter() && !Modifier.isStatic(o.getSetter().getModifiers())))
+								&& (o.isSupportSetter() && !Modifier.isStatic(o.getSetter().getModifiers())))
 						.map((o) -> new Field(parent, sourceClass, o))
 						.map((o) -> new Property(o, objectRelationalResolver)).map((o) -> new Column(o)));
 	}

@@ -68,7 +68,7 @@ public class DefaultTableMapper extends ResultSetMapper implements TableMapper {
 	@Override
 	public TableStructure getStructure(Class<?> entityClass) {
 		if (registry.isStructureRegistred(entityClass)) {
-			return registry.getStructure(entityClass);
+			return registry.getStructure(entityClass).clone();
 		}
 		return TableMapper.super.getStructure(entityClass);
 	}

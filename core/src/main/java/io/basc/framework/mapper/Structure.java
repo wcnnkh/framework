@@ -37,7 +37,7 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 		super(sourceClass, processor);
 	}
 
-	public Structure(Structure<? extends T> members) {
+	public Structure(Structure<T> members) {
 		super(members);
 		this.parent = members.parent;
 		this.aliasNames = members.aliasNames;

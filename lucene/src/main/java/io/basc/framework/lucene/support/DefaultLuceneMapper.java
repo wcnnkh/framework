@@ -69,7 +69,7 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 		if (structure == null) {
 			return super.getStructure(entityClass);
 		}
-		return structure;
+		return structure.clone();
 	}
 
 	@Override
