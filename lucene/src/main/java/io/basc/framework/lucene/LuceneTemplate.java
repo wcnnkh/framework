@@ -21,7 +21,7 @@ import org.apache.lucene.search.TermQuery;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.PageRequest;
-import io.basc.framework.mapper.Structure;
+import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.repository.Conditions;
@@ -211,13 +211,13 @@ public interface LuceneTemplate extends Repository {
 		return searchAfter(after, parameters, TypeDescriptor.valueOf(resultType));
 	}
 
-	default <T> SearchResults<T> search(SearchParameters parameters, Structure<? extends Property> structure)
+	default <T> SearchResults<T> search(SearchParameters parameters, ObjectRelational<? extends Property> structure)
 			throws LuceneSearchException {
 		return search(parameters, (e) -> getMapper().convert(e, structure));
 	}
 
 	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters,
-			Structure<? extends Property> structure) throws LuceneSearchException {
+			ObjectRelational<? extends Property> structure) throws LuceneSearchException {
 		return searchAfter(after, parameters, (e) -> getMapper().convert(e, structure));
 	}
 
