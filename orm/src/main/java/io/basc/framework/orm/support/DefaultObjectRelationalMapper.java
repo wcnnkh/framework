@@ -1,11 +1,17 @@
 package io.basc.framework.orm.support;
 
-import io.basc.framework.orm.ObjectRelationalMapper;
-import io.basc.framework.orm.annotation.AnnotationObjectRelationalResolverExtend;
+import java.util.Map;
 
-public class DefaultObjectRelationalMapper extends DefaultObjectRelationalResolver implements ObjectRelationalMapper {
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.mapper.MapAccess;
+import io.basc.framework.mapper.ObjectAccess;
+import io.basc.framework.orm.OrmException;
 
-	public DefaultObjectRelationalMapper() {
-		addService(new AnnotationObjectRelationalResolverExtend());
+public class DefaultObjectRelationalMapper extends AbstractObjectRelationalMapper<Map<String, Object>, OrmException> {
+
+	@Override
+	public ObjectAccess<OrmException> getObjectAccess(Map<String, Object> source, TypeDescriptor sourceType) {
+		return new MapAccess<OrmException>(source);
 	}
+
 }

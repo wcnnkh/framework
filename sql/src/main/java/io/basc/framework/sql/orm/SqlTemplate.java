@@ -15,6 +15,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.PageRequest;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.orm.EntityOperations;
 import io.basc.framework.orm.MaxValueFactory;
 import io.basc.framework.orm.ObjectKeyFormat;
@@ -22,7 +23,6 @@ import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.repository.Conditions;
 import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.Repository;
-import io.basc.framework.orm.repository.RepositoryColumn;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.SqlException;
 import io.basc.framework.sql.SqlOperations;
@@ -463,12 +463,12 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	@Override
-	default <E> long save(Class<? extends E> entityClass, Collection<? extends RepositoryColumn> columns)
+	default <E> long save(Class<? extends E> entityClass, Collection<? extends Parameter> columns)
 			throws OrmException {
 		return save(getMapper().getStructure(entityClass), columns);
 	}
 
-	default long save(TableStructure structure, Collection<? extends RepositoryColumn> requestColumns)
+	default long save(TableStructure structure, Collection<? extends Parameter> requestColumns)
 			throws OrmException {
 		Sql sql = getMapper().toSaveSql(structure, getMapper().open(structure.getSourceClass(), requestColumns, null));
 		return update(sql);
@@ -553,14 +553,14 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	@Override
-	default <E> long update(Class<? extends E> entityClass, Collection<? extends RepositoryColumn> columns,
+	default <E> long update(Class<? extends E> entityClass, Collection<? extends Parameter> columns,
 			Conditions conditions) throws OrmException {
 		return update(getMapper().getStructure(entityClass), columns, conditions);
 	}
 
-	default long update(TableStructure structure, Collection<? extends RepositoryColumn> columns, Conditions conditions)
+	default long update(TableStructure structure, Collection<? extends Parameter> columns, Conditions conditions)
 			throws OrmException {
-		List<RepositoryColumn> repositoryColumns = new ArrayList<RepositoryColumn>();
+		List<Parameter> repositoryColumns = new ArrayList<Parameter>();
 		getMapper().open(structure.getSourceClass(), repositoryColumns, null);
 		Sql sql = getMapper().toUpdateSql(structure, repositoryColumns,
 				getMapper().open(structure.getSourceClass(), conditions, null));

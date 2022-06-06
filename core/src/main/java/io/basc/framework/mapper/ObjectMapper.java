@@ -2,46 +2,19 @@ package io.basc.framework.mapper;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map;
 
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
 
-public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFactory<S, E> {
+public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFactory<S, E>, StructureFactory {
 
-	default Structure<? extends Field> getStructure(Class<?> entityClass) {
-		return Fields.getFields(entityClass);
-	}
-
-	void registerStructure(Class<?> entityClass, Structure<? extends Field> structure);
-
-	@Nullable
-	default Boolean isEntity(Class<?> type) {
-		return !Value.isBaseType(type) && type != Object.class && ReflectionApi.isInstance(type)
-				&& !Map.class.isAssignableFrom(type) && !Collection.class.isAssignableFrom(type);
-	}
-
-	default boolean isEntity(Class<?> entityClass, Field field) {
-		if (field.isSupportSetter()) {
-			Boolean b = isEntity(field.getSetter().getType());
-			if (b != null) {
-				return b;
-			}
-		}
-
-		if (field.isSupportGetter()) {
-			Boolean b = isEntity(field.getGetter().getType());
-			if (b != null) {
-				return b;
-			}
-		}
-		return false;
+	default Boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return isEntity(descriptor.getType());
 	}
 
 	@Override
@@ -70,8 +43,7 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 
 	default <R> R convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
 			Structure<? extends Field> targetStructure) throws E {
-		return convert(source, sourceType, targetType, targetStructure,
-				getValueProcessor(source, sourceType, targetType));
+		return convert(source, sourceType, targetType, targetStructure, getValueProcessor(source, sourceType));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -102,8 +74,7 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 
 	default void transform(S source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType,
 			Structure<? extends Field> targetStructure) throws E {
-		transform(source, sourceType, target, targetType, targetStructure,
-				getValueProcessor(source, sourceType, targetType));
+		transform(source, sourceType, target, targetType, targetStructure, getValueProcessor(source, sourceType));
 	}
 
 	default <X extends Throwable> void transform(S source, TypeDescriptor sourceType, Object target,
@@ -122,12 +93,12 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 			}
 
 			Value value = null;
-			if (isEntity(targetType.getType(), property)) {
+			if (isEntity(targetType.getType(), property.getSetter())) {
 				TypeDescriptor valueTypeDescriptor = new TypeDescriptor(property.getSetter());
 				Object entity = convert(source, sourceType, valueTypeDescriptor,
 						getStructure(valueTypeDescriptor.getType()).setParentField(property), valueProcessor);
 				if (entity != null) {
-					value = new AnyValue(entity, valueTypeDescriptor, null);
+					value = new AnyValue(entity, valueTypeDescriptor);
 				}
 			} else {
 				value = valueProcessor.process(property);
@@ -145,8 +116,11 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 		transform(source, sourceType, target, targetType, targetStructure.stream().iterator(), valueProcessor);
 	}
 
-	Processor<Field, Value, E> getValueProcessor(S source, TypeDescriptor sourceType, TypeDescriptor targetType)
-			throws E;
+	default Processor<Field, Value, E> getValueProcessor(S source) throws E {
+		return getValueProcessor(source, TypeDescriptor.forObject(source));
+	}
+
+	Processor<Field, Value, E> getValueProcessor(S source, TypeDescriptor sourceType) throws E;
 
 	@SuppressWarnings("unchecked")
 	default <R extends S> R invert(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
@@ -180,23 +154,23 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 			if (property == null || !property.isSupportGetter()) {
 				continue;
 			}
-			reverseTransform(sourceType, property.getGetter().get(source), property, target, targetType);
+			reverseTransform(sourceType, property.getParameter(source), property, target, targetType);
 		}
 	}
 
-	default void reverseTransform(TypeDescriptor sourceType, Object value, Field property, S target,
+	default void reverseTransform(TypeDescriptor sourceType, Parameter sourceParameter, Field parameterField, S target,
 			TypeDescriptor targetType) throws E {
-		if (isEntity(sourceType.getType(), property)) {
-			reverseTransform(value, new TypeDescriptor(property.getGetter()),
-					getStructure(sourceType.getType()).setParentField(property), target, targetType);
+		if (isEntity(sourceType.getType(), sourceParameter)) {
+			reverseTransform(sourceParameter.getValue(), sourceParameter.getTypeDescriptor(),
+					getStructure(sourceParameter.getType()).setParentField(parameterField), target, targetType);
 		} else {
-			reverseTransform(value, property.getGetter().rename(property.getName()), target, targetType);
+			reverseTransform(sourceParameter, target, targetType);
 		}
 	}
 
-	default void reverseTransform(Object value, ParameterDescriptor descriptor, S target) throws E {
-		reverseTransform(value, descriptor, target, TypeDescriptor.forObject(target));
+	default void reverseTransform(Parameter sourceParameter, S target) throws E {
+		reverseTransform(sourceParameter, target, TypeDescriptor.forObject(target));
 	}
 
-	void reverseTransform(Object value, ParameterDescriptor descriptor, S target, TypeDescriptor targetType) throws E;
+	void reverseTransform(Parameter sourceParameter, S target, TypeDescriptor targetType) throws E;
 }

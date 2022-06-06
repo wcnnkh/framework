@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.stream.Processor;
@@ -336,5 +337,10 @@ public class Property extends Field {
 		Property property = clone();
 		property.setName(name);
 		return property;
+	}
+
+	@Override
+	public Parameter getParameter(Object instance) {
+		return getGetter().getParameter(instance).rename(getName());
 	}
 }

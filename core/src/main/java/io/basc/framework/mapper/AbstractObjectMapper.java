@@ -143,7 +143,12 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 		}
 	}
 
-	private void appendNames(Class<?> entityClass, String prefix, Field field, Collection<String> names, boolean root) {
+	@Override
+	public boolean isStructureRegistred(Class<?> entityClass) {
+		return map.containsKey(entityClass);
+	}
+
+	private void appendNames(String prefix, Field field, Collection<String> names, boolean root) {
 		Field parent = field.getParent();
 		if (parent == null || !root || !nameNesting) {
 			names.add(prefix == null ? field.getName() : (prefix + field.getName()));
@@ -156,42 +161,40 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 
 			if (field.isSupportSetter() && root) {
 				Structure<? extends Field> entityStructure = getStructure(field.getSetter().getDeclaringClass());
-				appendNames(entityClass, prefix == null ? (entityStructure.getName() + nameConnector)
+				appendNames(prefix == null ? (entityStructure.getName() + nameConnector)
 						: (prefix + entityStructure.getName() + nameConnector), field, names, false);
 				Collection<String> entityAliasNames = entityStructure.getAliasNames();
 				if (entityAliasNames != null) {
 					for (String name : entityAliasNames) {
-						appendNames(entityClass,
-								prefix == null ? (name + nameConnector) : (prefix + name + nameConnector), field, names,
-								false);
+						appendNames(prefix == null ? (name + nameConnector) : (prefix + name + nameConnector), field,
+								names, false);
 					}
 				}
 			}
 		} else {
-			for (String name : getNames(entityClass, parent)) {
-				appendNames(entityClass, name + nameConnector, field, names, false);
+			for (String name : getNames(parent)) {
+				appendNames(name + nameConnector, field, names, false);
 			}
 		}
 	}
 
-	public Collection<String> getNames(Class<?> entityClass, Field field) {
+	public Collection<String> getNames(Field field) {
 		Set<String> names = new LinkedHashSet<String>(8);
-		appendNames(entityClass, namePrefix, field, names, true);
+		appendNames(namePrefix, field, names, true);
 		return names;
 	}
 
 	@Override
-	public Processor<Field, Value, E> getValueProcessor(S source, TypeDescriptor sourceType, TypeDescriptor targetType)
-			throws E {
-		Processor<String, Value, E> processor = getValueByNameProcessor(source, sourceType, targetType);
+	public Processor<Field, Value, E> getValueProcessor(S source, TypeDescriptor sourceType) throws E {
+		ObjectAccess<E> objectAccess = getObjectAccess(source, sourceType);
 		return (p) -> {
-			Collection<String> names = getNames(targetType.getType(), p);
+			Collection<String> names = getNames(p);
 			if (logger.isTraceEnabled()) {
 				logger.trace(p + " - " + names);
 			}
 
 			for (String name : names) {
-				Value value = processor.process(name);
+				Value value = objectAccess.get(name);
 				if (value == null || value.isNull()) {
 					continue;
 				}
@@ -201,7 +204,7 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 			if (Map.class.isAssignableFrom(p.getSetter().getType())) {
 				Map<String, Object> valueMap = new LinkedHashMap<String, Object>();
 				for (String name : names) {
-					appendMapProperty(valueMap, source, name + nameConnector, processor);
+					appendMapProperty(valueMap, source, sourceType, name + nameConnector, objectAccess);
 				}
 				if (!CollectionUtils.isEmpty(valueMap)) {
 					return new AnyValue(valueMap, TypeDescriptor.map(LinkedHashMap.class, String.class, Object.class),
@@ -212,14 +215,11 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 		};
 	}
 
-	public abstract Enumeration<String> keys(S source);
+	public abstract ObjectAccess<E> getObjectAccess(S source, TypeDescriptor sourceType);
 
-	public abstract Processor<String, Value, E> getValueByNameProcessor(S source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) throws E;
-
-	protected void appendMapProperty(Map<String, Object> valueMap, S source, String prefix,
-			Processor<String, ? extends Value, E> processor) throws E {
-		Enumeration<String> keys = keys(source);
+	protected void appendMapProperty(Map<String, Object> valueMap, S source, TypeDescriptor sourceType, String prefix,
+			ObjectAccess<E> objectAccess) throws E {
+		Enumeration<String> keys = objectAccess.keys();
 		while (keys.hasMoreElements()) {
 			String key = keys.nextElement();
 			if (StringUtils.isNotEmpty(prefix) && (key.equals(prefix) || valueMap.containsKey(key))) {
@@ -227,7 +227,7 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 			}
 
 			if (key.startsWith(prefix)) {
-				Value value = processor.process(key);
+				Value value = objectAccess.get(key);
 				if (value == null) {
 					continue;
 				}
@@ -258,5 +258,11 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 					value);
 		}
 		targetField.getSetter().set(target, value);
+	}
+
+	@Override
+	public void reverseTransform(Parameter parameter, S target, TypeDescriptor targetType) throws E {
+		ObjectAccess<E> objectAccess = getObjectAccess(target, targetType);
+		objectAccess.set(parameter.getName(), parameter.getValue());
 	}
 }

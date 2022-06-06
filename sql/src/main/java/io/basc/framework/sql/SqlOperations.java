@@ -9,7 +9,7 @@ import java.util.List;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.orm.ObjectMapper;
+import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.orm.transfer.ExportProcessor;
 import io.basc.framework.orm.transfer.Exporter;
 import io.basc.framework.util.ObjectUtils;
@@ -175,7 +175,7 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor 
 		Cursor<T> cursor = query(resultType, sql);
 		return cursor.shared();
 	}
-	
+
 	default <T> List<T> queryAll(Class<? extends T> resultType, String sql) {
 		return queryAll(resultType, sql, ObjectUtils.EMPTY_ARRAY);
 	}

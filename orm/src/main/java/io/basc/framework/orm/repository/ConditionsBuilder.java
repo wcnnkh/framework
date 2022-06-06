@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.stream.Processor;
@@ -17,7 +17,7 @@ public final class ConditionsBuilder {
 
 	public ConditionsBuilder(RelationshipKeywords relationshipKeywords, ConditionKeywords conditionKeywords) {
 		this(relationshipKeywords, conditionKeywords,
-				new Condition(conditionKeywords.getEqualKeywords().getFirst(), RepositoryColumn.EMPTY));
+				new Condition(conditionKeywords.getEqualKeywords().getFirst(), Parameter.INVALID));
 	}
 
 	public ConditionsBuilder(RelationshipKeywords relationshipKeywords, ConditionKeywords conditionKeywords,
@@ -95,9 +95,8 @@ public final class ConditionsBuilder {
 		return withCondition(relationship, conditionBuilder.process(new ConditionBuilder(this.conditionKeywords)));
 	}
 
-	public ConditionsBuilder with(String relationship, String name, String condition, Object value,
-			TypeDescriptor valueTypeDescriptor) {
-		return withCondition(relationship, new Condition(name, new RepositoryColumn(name, value, valueTypeDescriptor)));
+	public ConditionsBuilder with(String relationship, String name, String condition, Object value) {
+		return withCondition(relationship, new Condition(name, new Parameter(name, value)));
 	}
 
 	public ConditionsBuilder and(Condition condition) {
@@ -118,12 +117,12 @@ public final class ConditionsBuilder {
 		return or(conditionBuilder.process(new ConditionBuilder(this.conditionKeywords)));
 	}
 
-	public ConditionsBuilder and(String name, String condition, Object value, TypeDescriptor valueTypeDescriptor) {
-		return and(new Condition(name, new RepositoryColumn(name, value, valueTypeDescriptor)));
+	public ConditionsBuilder and(String name, String condition, Object value) {
+		return and(new Condition(name, new Parameter(name, value)));
 	}
 
-	public ConditionsBuilder or(String name, String condition, Object value, TypeDescriptor valueTypeDescriptor) {
-		return or(new Condition(name, new RepositoryColumn(name, value, valueTypeDescriptor)));
+	public ConditionsBuilder or(String name, String condition, Object value) {
+		return or(new Condition(name, new Parameter(name, value)));
 	}
 
 	public Conditions build() {

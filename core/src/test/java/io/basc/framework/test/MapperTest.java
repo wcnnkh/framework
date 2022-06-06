@@ -11,7 +11,7 @@ import org.junit.Test;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Fields;
-import io.basc.framework.mapper.MapToObjectMapper;
+import io.basc.framework.mapper.DefaultObjectMapper;
 import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.XUtils;
 
@@ -29,7 +29,7 @@ public class MapperTest {
 		map.put("bk", "bk");
 		map.put("s.a", XUtils.getUUID());
 		map.put("s.b", XUtils.getUUID());
-		MapToObjectMapper mapper = new MapToObjectMapper();
+		DefaultObjectMapper mapper = new DefaultObjectMapper();
 		A a = mapper.convert(map, A.class);
 		assertTrue(map.get("k").equals(a.getK()));
 		assertTrue(map.get("b.bk").equals(a.getB().getBk()));

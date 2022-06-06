@@ -5,14 +5,12 @@ import java.sql.SQLException;
 
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.orm.Property;
-import io.basc.framework.orm.support.AbstractObjectMapper;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.mapper.ObjectAccess;
+import io.basc.framework.orm.support.AbstractObjectRelationalMapper;
 import io.basc.framework.value.Value;
 
-public class ResultSetMapper extends AbstractObjectMapper<ResultSet, SQLException> {
+public class ResultSetMapper extends AbstractObjectRelationalMapper<ResultSet, SQLException> {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -45,23 +43,7 @@ public class ResultSetMapper extends AbstractObjectMapper<ResultSet, SQLExceptio
 	}
 
 	@Override
-	public Processor<Property, Object, SQLException> getValueProcessor(ResultSet source, TypeDescriptor sourceType)
-			throws SQLException {
-		return (property) -> {
-			return property.getValueByNames((name) -> {
-				try {
-					return source.getObject(name);
-				} catch (SQLException e) {
-					// 如果字段不存在就返回空
-					return null;
-				}
-			});
-		};
-	}
-
-	@Override
-	public void reverseTransform(Object value, ParameterDescriptor descriptor, ResultSet target,
-			TypeDescriptor targetType) throws SQLException {
-		target.updateObject(descriptor.getName(), value);
+	public ObjectAccess<SQLException> getObjectAccess(ResultSet source, TypeDescriptor sourceType) {
+		return new ResultSetAccess(source);
 	}
 }

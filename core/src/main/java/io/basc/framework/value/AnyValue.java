@@ -7,7 +7,7 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Map;
 
-import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
@@ -15,7 +15,7 @@ import io.basc.framework.util.ObjectUtils;
 
 public class AnyValue extends AbstractValue implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private transient ConversionService conversionService;
+	private final transient Converter<? super Object, ? extends Object, ? extends RuntimeException> converter;
 	private final Object value;
 	private final TypeDescriptor valueTypeDescriptor;
 
@@ -23,8 +23,9 @@ public class AnyValue extends AbstractValue implements Serializable {
 		this(value, null, null);
 	}
 
-	public AnyValue(Object value, @Nullable ConversionService conversionService) {
-		this(value, null, conversionService);
+	public AnyValue(Object value,
+			@Nullable Converter<? super Object, ? extends Object, ? extends RuntimeException> converter) {
+		this(value, null, converter);
 	}
 
 	public AnyValue(Object value, @Nullable TypeDescriptor typeDescriptor) {
@@ -32,19 +33,32 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public AnyValue(Object value, @Nullable TypeDescriptor valueTypeDescriptor,
-			@Nullable ConversionService conversionService) {
+			@Nullable Converter<? super Object, ? extends Object, ? extends RuntimeException> converter) {
 		this.value = value;
 		this.valueTypeDescriptor = valueTypeDescriptor;
-		this.conversionService = conversionService;
+		this.converter = converter;
+	}
+
+	public AnyValue(AnyValue value) {
+		this.value = value.value;
+		this.valueTypeDescriptor = value.valueTypeDescriptor;
+		this.converter = value.converter;
 	}
 
 	@Override
 	public TypeDescriptor getTypeDescriptor() {
-		return valueTypeDescriptor == null ? TypeDescriptor.forObject(value) : valueTypeDescriptor;
+		if (valueTypeDescriptor != null) {
+			return valueTypeDescriptor;
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getTypeDescriptor();
+		}
+		return TypeDescriptor.forObject(value);
 	}
 
-	public ConversionService getConversionService() {
-		return conversionService == null ? Sys.env.getConversionService() : conversionService;
+	public Converter<? super Object, ? extends Object, ? extends RuntimeException> getConverter() {
+		return converter == null ? Sys.env.getConversionService() : converter;
 	}
 
 	public String getAsString() {
@@ -469,7 +483,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 		if (value instanceof Value) {
 			return ((Value) value).getAsObject(type);
 		}
-		return getConversionService().convert(get(), getTypeDescriptor(), type);
+		return getConverter().convert(get(), getTypeDescriptor(), type);
 	}
 
 	@Override

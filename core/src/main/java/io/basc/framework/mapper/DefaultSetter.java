@@ -1,9 +1,11 @@
 package io.basc.framework.mapper;
 
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.parameter.DefaultParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.value.Value;
 
 import java.lang.annotation.Annotation;
@@ -76,5 +78,15 @@ public class DefaultSetter extends AbstractFieldDescriptor implements Setter {
 			return field.getGenericType();
 		}
 		throw createNotSupportException();
+	}
+
+	@Override
+	public void set(Object instance, Object value) {
+		if (value != null && value instanceof Value && getType() != Value.class
+				&& !ClassUtils.isAssignableValue(getType(), value)) {
+			super.set(instance, ((Value) value).getAsObject(new TypeDescriptor(this)));
+			return;
+		}
+		super.set(instance, value);
 	}
 }

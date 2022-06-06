@@ -103,11 +103,15 @@ public final class SqlUtils {
 		}
 		return values;
 	}
-	
+
+	public static String[] getColumnNames(ResultSetMetaData rsmd) throws SQLException {
+		return getColumnNames(rsmd, rsmd.getColumnCount());
+	}
+
 	public static String[] getColumnNames(ResultSetMetaData rsmd, int size) throws SQLException {
 		String[] names = new String[size];
-		for(int i=1; i<=size; i++) {
-			names[i -1] = lookupColumnName(rsmd, i);
+		for (int i = 1; i <= size; i++) {
+			names[i - 1] = lookupColumnName(rsmd, i);
 		}
 		return names;
 	}

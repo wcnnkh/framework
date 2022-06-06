@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import io.basc.framework.orm.ObjectMapper;
+import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.sql.transaction.SqlTransactionUtils;
 import io.basc.framework.util.Assert;
 

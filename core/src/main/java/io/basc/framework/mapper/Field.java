@@ -242,4 +242,15 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 		return field;
 	}
 
+	/**
+	 * 需要支持getter
+	 * 
+	 * @see #isSupportGetter()
+	 * @param instance
+	 * @return
+	 */
+	public Parameter getParameter(Object instance) {
+		return getGetter().getParameter(instance).rename(getName());
+	}
+
 }

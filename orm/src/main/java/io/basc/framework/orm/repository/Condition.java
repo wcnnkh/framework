@@ -3,6 +3,7 @@ package io.basc.framework.orm.repository;
 import java.io.Serializable;
 
 import io.basc.framework.env.BascObject;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.StringUtils;
 
 /**
@@ -14,26 +15,26 @@ import io.basc.framework.util.StringUtils;
 public class Condition extends BascObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final String condition;
-	private final RepositoryColumn column;
+	private final Parameter parameter;
 
 	/**
 	 * @param condition = > < any with startWith endWith ...
-	 * @param column
+	 * @param parameter
 	 */
-	public Condition(String condition, RepositoryColumn column) {
+	public Condition(String condition, Parameter parameter) {
 		this.condition = condition;
-		this.column = column;
+		this.parameter = parameter;
 	}
 
 	public String getCondition() {
 		return condition;
 	}
 
-	public RepositoryColumn getColumn() {
-		return column;
+	public Parameter getParameter() {
+		return parameter;
 	}
 
-	public boolean isEmpty() {
-		return StringUtils.isEmpty(condition) || column.isEmpty();
+	public boolean isInvalid() {
+		return StringUtils.isEmpty(condition) || parameter.isInvalid();
 	}
 }

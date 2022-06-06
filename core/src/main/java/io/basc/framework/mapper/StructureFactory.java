@@ -1,8 +1,14 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.lang.Nullable;
+import java.util.Collection;
+import java.util.Map;
 
-public interface StructureFactory<S extends Structure<? extends Field>> {
+import io.basc.framework.core.reflect.ReflectionApi;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.value.Value;
+
+public interface StructureFactory {
+
 	boolean isStructureRegistred(Class<?> entityClass);
 
 	/**
@@ -13,12 +19,19 @@ public interface StructureFactory<S extends Structure<? extends Field>> {
 	 * @return
 	 */
 	@Nullable
-	S getStructure(Class<?> entityClass);
+	default Structure<? extends Field> getStructure(Class<?> entityClass) {
+		return Fields.getFields(entityClass);
+	}
 
 	/**
 	 * @see #getStructure(Class)
 	 * @param entityClass
 	 * @param structure
 	 */
-	void registerStructure(Class<?> entityClass, S structure);
+	void registerStructure(Class<?> entityClass, Structure<? extends Field> structure);
+
+	default Boolean isEntity(Class<?> type) {
+		return !Value.isBaseType(type) && type != Object.class && ReflectionApi.isInstance(type)
+				&& !Map.class.isAssignableFrom(type) && !Collection.class.isAssignableFrom(type);
+	}
 }

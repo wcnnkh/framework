@@ -157,6 +157,11 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 				|| (e.isSupportSetter() && names.contains(e.getSetter().getName())));
 	}
 
+	public <R extends T> Structure<R> mapStructure(Function<? super T, R> map) {
+		Members<R> members = map(map);
+		return new Structure<R>(members);
+	}
+
 	@Nullable
 	public T getByGetterName(String name, @Nullable Type type) {
 		return byGetterName(name, type).first();

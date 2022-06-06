@@ -36,6 +36,12 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 	}
 
 	@Override
+	public <R extends T> ObjectRelational<R> mapStructure(Function<? super T, R> map) {
+		Structure<R> relational = super.mapStructure(map);
+		return new ObjectRelational<R>(relational);
+	}
+
+	@Override
 	protected ObjectRelational<T> decorate(Structure<T> structure) {
 		ObjectRelational<T> objectRelational = new ObjectRelational<T>(structure);
 		objectRelational.objectRelationalResolver = this.objectRelationalResolver;

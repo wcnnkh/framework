@@ -1,21 +1,18 @@
 package io.basc.framework.orm.repository;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.lang.Nullable;
+import io.basc.framework.mapper.Parameter;
 
 public final class ConditionBuilder {
 	private final ConditionKeywords conditionKeywords;
 	private String condition;
-	private String name;
-	private Object value;
-	private TypeDescriptor valueTypeDescriptor;
+	private Parameter parameter;
 
 	public ConditionBuilder(ConditionKeywords conditionKeywords) {
 		this.conditionKeywords = conditionKeywords;
 	}
 
 	public Condition build() {
-		return new Condition(this.condition, new RepositoryColumn(this.name, this.value, this.valueTypeDescriptor));
+		return new Condition(this.condition, this.parameter);
 	}
 
 	public ConditionBuilder with(String condition) {
@@ -23,19 +20,13 @@ public final class ConditionBuilder {
 		return this;
 	}
 
-	public ConditionBuilder value(Object value, @Nullable TypeDescriptor valueTypeDescriptor) {
-		this.value = value;
-		this.valueTypeDescriptor = valueTypeDescriptor;
+	public ConditionBuilder parameter(Parameter parameter) {
+		this.parameter = parameter;
 		return this;
 	}
 
-	public ConditionBuilder value(Object value) {
-		return value(value, null);
-	}
-
-	public ConditionBuilder name(String name) {
-		this.name = name;
-		return this;
+	public ConditionBuilder parameter(String name, Object value) {
+		return parameter(new Parameter(name, value));
 	}
 
 	public ConditionBuilder equal() {

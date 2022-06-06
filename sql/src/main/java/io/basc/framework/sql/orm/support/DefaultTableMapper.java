@@ -6,8 +6,6 @@ import java.util.LinkedHashSet;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.mapper.FieldDescriptor;
-import io.basc.framework.mapper.SimpleStructureFactory;
-import io.basc.framework.mapper.StructureFactory;
 import io.basc.framework.sql.ResultSetMapper;
 import io.basc.framework.sql.orm.IndexInfo;
 import io.basc.framework.sql.orm.TableMapper;
@@ -17,11 +15,10 @@ import io.basc.framework.sql.orm.annotation.AnnotationTableResolverExtend;
 public class DefaultTableMapper extends ResultSetMapper implements TableMapper {
 	private final ConfigurableServices<TableResolverExtend> tableResolverExtends = new ConfigurableServices<>(
 			TableResolverExtend.class);
-	private final StructureFactory<TableStructure> registry = new SimpleStructureFactory<TableStructure>();
 
 	public DefaultTableMapper() {
 		AnnotationTableResolverExtend tableResolverExtend = new AnnotationTableResolverExtend();
-		addService(tableResolverExtend);
+		getObjectRelationalResolverExtendServices().addService(tableResolverExtend);
 		tableResolverExtends.addService(tableResolverExtend);
 	}
 
@@ -61,21 +58,7 @@ public class DefaultTableMapper extends ResultSetMapper implements TableMapper {
 	}
 
 	@Override
-	public boolean isStructureRegistred(Class<?> entityClass) {
-		return registry.isStructureRegistred(entityClass);
-	}
-
-	@Override
 	public TableStructure getStructure(Class<?> entityClass) {
-		if (registry.isStructureRegistred(entityClass)) {
-			return registry.getStructure(entityClass).clone();
-		}
 		return TableMapper.super.getStructure(entityClass);
 	}
-
-	@Override
-	public void registerStructure(Class<?> entityClass, TableStructure structure) {
-		registry.registerStructure(entityClass, structure);
-	}
-
 }

@@ -3,15 +3,24 @@ package io.basc.framework.sql.orm;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.StructureFactory;
-import io.basc.framework.orm.ObjectMapper;
+import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.orm.repository.RepositoryMapper;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 
-public interface TableMapper extends RepositoryMapper, TableResolver, StructureFactory<TableStructure>,
-		ObjectMapper<ResultSet, SQLException> {
+public interface TableMapper extends RepositoryMapper, TableResolver, ObjectMapper<ResultSet, SQLException> {
+
+	@Override
+	default Boolean isEntity(Class<?> entityClass) {
+		return RepositoryMapper.super.isEntity(entityClass);
+	}
+
+	@Override
+	default Boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectMapper.super.isEntity(entityClass, descriptor);
+	}
 
 	@Override
 	default TableStructure getStructure(Class<?> entityClass) {

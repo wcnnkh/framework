@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.PageRequest;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
@@ -92,22 +93,20 @@ public interface Repository extends CurdRepository {
 		while (iterator.hasNext()) {
 			Property property = iterator.next();
 			Object value = entityIds[i++];
-			RepositoryColumn column = getMapper().parseColumn(entityClass, property, value);
+			Parameter column = getMapper().parseParameter(entityClass, property, value);
 			Condition condition = new Condition(conditionKeywords.getEqualKeywords().getFirst(), column);
 			pairs.add(new Pair<String, Condition>(relationshipKeywords.getAndKeywords().getFirst(), condition));
 		}
 
 		Property property = iterator.next();
-		RepositoryColumn column = getMapper().parseColumn(entityClass, property, entityInIds);
+		Parameter column = getMapper().parseParameter(entityClass, property, entityInIds);
 		pairs.add(new Pair<String, Condition>(relationshipKeywords.getAndKeywords().getFirst(),
 				new Condition(conditionKeywords.getInKeywords().getFirst(), column)));
 		Conditions conditions = ConditionsBuilder.build(pairs);
 		return (List<T>) query(resultsTypeDescriptor, entityClass, conditions, null).collect(Collectors.toList());
 	}
 
-	default RepositoryMapper getMapper() {
-		return DefaultRepositoryMapper.DEFAULT;
-	}
+	RepositoryMapper getMapper();
 
 	@Override
 	default <T> boolean isPresent(Class<? extends T> entityClass, T conditions) {
@@ -188,22 +187,21 @@ public interface Repository extends CurdRepository {
 				orderColumns);
 	}
 
-	<E> long save(Class<? extends E> entityClass, Collection<? extends RepositoryColumn> columns) throws OrmException;
+	<E> long save(Class<? extends E> entityClass, Collection<? extends Parameter> columns) throws OrmException;
 
 	@Override
 	default <T> void save(Class<? extends T> entityClass, T entity) throws OrmException {
-		List<RepositoryColumn> columns = getMapper().parseValueColumns(entityClass, entity,
-				getMapper().getStructure(entityClass));
+		List<Parameter> columns = getMapper().parseValues(entityClass, entity, getMapper().getStructure(entityClass));
 		save(entityClass, columns);
 	}
 
-	<E> long update(Class<? extends E> entityClass, Collection<? extends RepositoryColumn> columns,
-			Conditions conditions) throws OrmException;
+	<E> long update(Class<? extends E> entityClass, Collection<? extends Parameter> columns, Conditions conditions)
+			throws OrmException;
 
 	@Override
 	default <T> boolean update(Class<? extends T> entityClass, T entity) throws OrmException {
 		ObjectRelational<? extends Property> entityStructure = getMapper().getStructure(entityClass).all();
-		List<RepositoryColumn> columns = getMapper().parseValueColumns(entityClass, entity, entityStructure);
+		List<Parameter> columns = getMapper().parseValues(entityClass, entity, entityStructure);
 		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
 				entityStructure.getPrimaryKeys().iterator(), null, (e) -> e.getGetter().get(entity), null);
 		return update(entityClass, columns, conditionsToUse) > 0;
@@ -212,7 +210,7 @@ public interface Repository extends CurdRepository {
 	@Override
 	default <T> long updateAll(Class<? extends T> entityClass, T entity, T conditions) {
 		ObjectRelational<? extends Property> entityStructure = getMapper().getStructure(entityClass);
-		List<RepositoryColumn> columns = getMapper().parseValueColumns(entityClass, entity, entityStructure);
+		List<Parameter> columns = getMapper().parseValues(entityClass, entity, entityStructure);
 		Conditions conditionsToUse = getMapper().parseConditions(entityClass, entityStructure.columns().iterator(),
 				null, (e) -> e.getGetter().get(conditions),
 				(e) -> e.getKey().isNullable() || StringUtils.isNotEmpty(e.getValue()));
