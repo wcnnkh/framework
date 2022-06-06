@@ -21,8 +21,13 @@ public class ValueWrapper<V extends Value> implements Value, Serializable {
 	}
 
 	@Override
-	public Object getSourceValue() {
-		return targetValue.getSourceValue();
+	public TypeDescriptor getTypeDescriptor() {
+		return targetValue.getTypeDescriptor();
+	}
+
+	@Override
+	public Object get() {
+		return targetValue.get();
 	}
 
 	public Object getAsObject(TypeDescriptor type) {

@@ -3,12 +3,13 @@ package io.basc.framework.value;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.function.Supplier;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 
-public interface Value {
+public interface Value extends Supplier<Object> {
 	final Value[] EMPTY_ARRAY = new Value[0];
 
 	/**
@@ -17,7 +18,15 @@ public interface Value {
 	 * @return
 	 */
 	@Nullable
-	Object getSourceValue();
+	Object get();
+
+	default TypeDescriptor getTypeDescriptor() {
+		Object value = get();
+		if (value instanceof Value) {
+			return ((Value) value).getTypeDescriptor();
+		}
+		return TypeDescriptor.forObject(value);
+	}
 
 	@Nullable
 	<T> T getAsObject(Class<T> type);
@@ -89,6 +98,10 @@ public interface Value {
 	boolean isNumber();
 
 	boolean isEmpty();
+
+	default boolean isNull() {
+		return get() == null;
+	}
 
 	@Nullable
 	Class<?> getAsClass();

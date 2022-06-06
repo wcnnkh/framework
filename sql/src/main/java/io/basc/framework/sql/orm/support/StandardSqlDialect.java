@@ -518,7 +518,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
 		} else {
 			sb.append("?");
-			params.add(newValue.getSourceValue());
+			params.add(newValue.get());
 		}
 	}
 

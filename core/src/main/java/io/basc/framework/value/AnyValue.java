@@ -17,14 +17,30 @@ public class AnyValue extends AbstractValue implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private transient ConversionService conversionService;
 	private final Object value;
+	private final TypeDescriptor valueTypeDescriptor;
 
 	public AnyValue(Object value) {
-		this(value, null);
+		this(value, null, null);
 	}
 
 	public AnyValue(Object value, @Nullable ConversionService conversionService) {
+		this(value, null, conversionService);
+	}
+
+	public AnyValue(Object value, @Nullable TypeDescriptor typeDescriptor) {
+		this(value, typeDescriptor, null);
+	}
+
+	public AnyValue(Object value, @Nullable TypeDescriptor valueTypeDescriptor,
+			@Nullable ConversionService conversionService) {
 		this.value = value;
+		this.valueTypeDescriptor = valueTypeDescriptor;
 		this.conversionService = conversionService;
+	}
+
+	@Override
+	public TypeDescriptor getTypeDescriptor() {
+		return valueTypeDescriptor == null ? TypeDescriptor.forObject(value) : valueTypeDescriptor;
 	}
 
 	public ConversionService getConversionService() {
@@ -453,7 +469,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 		if (value instanceof Value) {
 			return ((Value) value).getAsObject(type);
 		}
-		return getConversionService().convert(value, TypeDescriptor.forObject(value), type);
+		return getConversionService().convert(get(), getTypeDescriptor(), type);
 	}
 
 	@Override
@@ -522,13 +538,13 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	@Override
-	public Object getSourceValue() {
+	public Object get() {
 		if (value == null) {
 			return null;
 		}
 
 		if (value instanceof Value) {
-			return ((Value) value).getSourceValue();
+			return ((Value) value).get();
 		}
 		return value;
 	}

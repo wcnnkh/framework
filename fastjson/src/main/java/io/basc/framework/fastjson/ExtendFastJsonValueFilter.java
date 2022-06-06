@@ -25,7 +25,7 @@ public class ExtendFastJsonValueFilter implements ValueFilter {
 		}
 
 		if (value instanceof Value) {
-			return ((Value) value).getSourceValue();
+			return ((Value) value).get();
 		}
 
 		// 这是应该还想办法屏蔽Gson的Factory对象
