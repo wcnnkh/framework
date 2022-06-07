@@ -218,15 +218,19 @@ public class Property extends Field {
 		if (nullable == null && objectRelationalResolver != null) {
 			if (isSupportSetter()) {
 				Boolean b = objectRelationalResolver.isIncrement(getDeclaringClass(), getSetter());
-				return b == null ? false : b;
+				if (b != null) {
+					return b;
+				}
 			}
 
 			if (isSupportGetter()) {
 				Boolean b = objectRelationalResolver.isIncrement(getDeclaringClass(), getGetter());
-				return b == null ? false : b;
+				if (b != null) {
+					return b;
+				}
 			}
 		}
-		return nullable == null ? false : nullable;
+		return nullable == null ? true : nullable;
 	}
 
 	public boolean isPrimaryKey() {

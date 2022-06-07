@@ -76,16 +76,16 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 	}
 
 	public Object toDataBaseValue(Value value) {
-		if (value == null) {
+		if (value == null || value.isNull()) {
 			return null;
 		}
 
-		SqlType sqlType = getSqlType(value.getClass());
+		SqlType sqlType = getSqlType(value.getTypeDescriptor().getType());
 		if (sqlType == null) {
 			return value;
 		}
 
-		return getEnvironment().getConversionService().convert(value, value.getTypeDescriptor(),
+		return getEnvironment().getConversionService().convert(value.get(), value.getTypeDescriptor(),
 				TypeDescriptor.valueOf(sqlType.getType()));
 	}
 

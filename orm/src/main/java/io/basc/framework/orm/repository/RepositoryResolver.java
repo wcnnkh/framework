@@ -64,10 +64,10 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 
 		List<Parameter> list = new ArrayList<Parameter>();
 		for (Parameter column : columns) {
-			if(column == null || column.isInvalid()) {
+			if (column == null || column.isInvalid()) {
 				continue;
 			}
-			
+
 			if (column.isNull() || !isEntity(column.getType(), column)) {
 				list.add(column);
 				continue;

@@ -22,6 +22,10 @@ public interface Value extends Supplier<Object> {
 
 	default TypeDescriptor getTypeDescriptor() {
 		Object value = get();
+		if (value == null) {
+			return TypeDescriptor.valueOf(Object.class);
+		}
+
 		if (value instanceof Value) {
 			return ((Value) value).getTypeDescriptor();
 		}
