@@ -192,7 +192,7 @@ public class ObjectRelationalResolverExtendChain implements ObjectRelationalReso
 	@Override
 	public String getRelationship(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
-			return iterator.next().getCondition(entityClass, descriptor, this);
+			return iterator.next().getRelationship(entityClass, descriptor, this);
 		}
 		return nextChain == null ? null : nextChain.getRelationship(entityClass, descriptor);
 	}
