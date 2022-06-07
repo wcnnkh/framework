@@ -50,8 +50,8 @@ public final class EntityStructure extends ObjectRelationalDecorator<Property, E
 
 	@Override
 	public EntityStructure jumpTo(Class<?> cursorId) {
-		if (objectRelationalResolver != null && objectRelationalResolver instanceof ObjectRelationalMapper) {
-			ObjectRelational<? extends Property> objectRelational = ((ObjectRelationalMapper) objectRelationalResolver)
+		if (objectRelationalResolver != null && objectRelationalResolver instanceof ObjectRelationalFactory) {
+			ObjectRelational<? extends Property> objectRelational = ((ObjectRelationalFactory) objectRelationalResolver)
 					.getStructure(cursorId);
 			Members<Property> use = objectRelational.map((e) -> (Property) e);
 			return decorate(decorate(decorate(use)));

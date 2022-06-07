@@ -1,21 +1,12 @@
 package io.basc.framework.orm;
 
-import io.basc.framework.mapper.StructureFactory;
+import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.mapper.ObjectMapper;
 
-/**
- * 对象映射关系
- * 
- * @author shuchaowen
- *
- */
-public interface ObjectRelationalMapper extends ObjectRelationalResolver, StructureFactory {
+public interface ObjectRelationalMapper<S, E extends Throwable> extends ObjectRelationalFactory, ObjectMapper<S, E> {
 
 	@Override
-	default Boolean isEntity(Class<?> entityClass) {
-		return StructureFactory.super.isEntity(entityClass);
-	}
-
-	default ObjectRelational<? extends Property> getStructure(Class<?> entityClass) {
-		return new EntityStructure(entityClass, this, null).withSuperclass().clone();
+	default Boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectMapper.super.isEntity(entityClass, descriptor);
 	}
 }

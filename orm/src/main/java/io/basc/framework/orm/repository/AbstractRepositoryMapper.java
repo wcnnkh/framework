@@ -5,7 +5,7 @@ import io.basc.framework.orm.support.AbstractObjectRelationalMapper;
 import io.basc.framework.util.StringUtils;
 
 public abstract class AbstractRepositoryMapper<S, E extends Throwable> extends AbstractObjectRelationalMapper<S, E>
-		implements RepositoryMapper {
+		implements RepositoryMapper<S, E> {
 	private ConditionKeywords conditionKeywords;
 	private RelationshipKeywords relationshipKeywords;
 

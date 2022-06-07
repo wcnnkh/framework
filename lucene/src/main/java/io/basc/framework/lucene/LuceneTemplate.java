@@ -21,13 +21,13 @@ import org.apache.lucene.search.TermQuery;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.PageRequest;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.repository.Conditions;
 import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.Repository;
-import io.basc.framework.orm.repository.RepositoryColumn;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.page.Paginations;
@@ -230,9 +230,8 @@ public interface LuceneTemplate extends Repository {
 	}
 
 	@Override
-	default <E> long save(Class<? extends E> entityClass, Collection<? extends RepositoryColumn> columns)
-			throws OrmException {
-		List<RepositoryColumn> list = getMapper().open(entityClass, columns, null);
+	default <E> long save(Class<? extends E> entityClass, Collection<? extends Parameter> columns) throws OrmException {
+		List<Parameter> list = getMapper().open(entityClass, columns, null);
 		if (CollectionUtils.isEmpty(list)) {
 			return 0L;
 		}
@@ -249,9 +248,9 @@ public interface LuceneTemplate extends Repository {
 	}
 
 	@Override
-	default <E> long update(Class<? extends E> entityClass, Collection<? extends RepositoryColumn> columns,
+	default <E> long update(Class<? extends E> entityClass, Collection<? extends Parameter> columns,
 			Conditions conditions) throws OrmException {
-		List<RepositoryColumn> columnsToUse = getMapper().open(entityClass, columns, null);
+		List<Parameter> columnsToUse = getMapper().open(entityClass, columns, null);
 		if (CollectionUtils.isEmpty(columnsToUse)) {
 			return 0L;
 		}

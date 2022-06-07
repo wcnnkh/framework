@@ -126,7 +126,7 @@ public abstract class FieldsDecorator<S extends Field, T extends FieldsDecorator
 				continue;
 			}
 
-			Object value = field.getValue(instance);
+			Object value = field.get(instance);
 			if (value == null) {
 				continue;
 			}

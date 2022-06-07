@@ -21,30 +21,27 @@ import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.util.BytesRef;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.lucene.DocumentAccess;
 import io.basc.framework.lucene.LuceneException;
 import io.basc.framework.lucene.LuceneMapper;
-import io.basc.framework.mapper.SimpleStructureFactory;
+import io.basc.framework.mapper.ObjectAccess;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.Structure;
-import io.basc.framework.mapper.StructureFactory;
-import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.repository.Condition;
 import io.basc.framework.orm.repository.ConditionKeywords;
 import io.basc.framework.orm.repository.Conditions;
 import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.RelationshipKeywords;
-import io.basc.framework.orm.repository.RepositoryColumn;
 import io.basc.framework.orm.repository.WithCondition;
-import io.basc.framework.orm.support.AbstractObjectMapper;
+import io.basc.framework.orm.support.AbstractObjectRelationalMapper;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.NumberUtils;
-import io.basc.framework.value.Value;
 
-public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneException> implements LuceneMapper {
-	private final StructureFactory<ObjectRelational<? extends Property>> structureRegistry = new SimpleStructureFactory<ObjectRelational<? extends Property>>();
+public class DefaultLuceneMapper extends AbstractObjectRelationalMapper<Document, LuceneException>
+		implements LuceneMapper {
 	private final ConfigurableServices<LuceneResolverExtend> luceneResolverExtends = new ConfigurableServices<LuceneResolverExtend>(
 			LuceneResolverExtend.class);
 
@@ -59,32 +56,13 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 	}
 
 	@Override
-	public boolean isStructureRegistred(Class<?> entityClass) {
-		return structureRegistry.isStructureRegistred(entityClass);
-	}
-
-	@Override
-	public ObjectRelational<? extends Property> getStructure(Class<?> entityClass) {
-		ObjectRelational<? extends Property> structure = structureRegistry.getStructure(entityClass);
-		if (structure == null) {
-			return super.getStructure(entityClass);
-		}
-		return structure.clone();
-	}
-
-	@Override
-	public void registerStructure(Class<?> entityClass, ObjectRelational<? extends Property> structure) {
-		structureRegistry.registerStructure(entityClass, structure);
-	}
-
-	@Override
-	public Collection<org.apache.lucene.document.Field> resolve(ParameterDescriptor descriptor, Value value) {
-		return LuceneResolverExtendChain.build(luceneResolverExtends.iterator()).resolve(descriptor, value);
+	public Collection<org.apache.lucene.document.Field> resolve(Parameter parameter) {
+		return LuceneResolverExtendChain.build(luceneResolverExtends.iterator()).resolve(parameter);
 	}
 
 	private Query parseQuery(Condition condition, ConditionKeywords conditionKeywords) {
-		RepositoryColumn column = condition.getColumn();
-		if (column.getValue() == null) {
+		Parameter column = condition.getParameter();
+		if (column == null || column.isNull()) {
 			return null;
 		}
 
@@ -95,20 +73,20 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 				term = new Term(column.getName(), new BytesRef((byte[]) column.getValue()));
 			} else {
 				term = new Term(column.getName(), (String) getConversionService().convert(column.getValue(),
-						column.getValueTypeDescriptor(), TypeDescriptor.valueOf(String.class)));
+						column.getTypeDescriptor(), TypeDescriptor.valueOf(String.class)));
 			}
 			return new TermQuery(term);
 		} else if (conditionKeywords.getInKeywords().exists(condition.getCondition())) {
 			BooleanQuery.Builder builder = new BooleanQuery.Builder();
 			List<?> list;
 			TypeDescriptor elementTypeDescriptor;
-			if (column.getValueTypeDescriptor().isArray() || column.getValueTypeDescriptor().isCollection()) {
-				elementTypeDescriptor = column.getValueTypeDescriptor().getElementTypeDescriptor();
-				list = (List<?>) getConversionService().convert(column.getValue(), column.getValueTypeDescriptor(),
+			if (column.getTypeDescriptor().isArray() || column.getTypeDescriptor().isCollection()) {
+				elementTypeDescriptor = column.getTypeDescriptor().getElementTypeDescriptor();
+				list = (List<?>) getConversionService().convert(column.getValue(), column.getTypeDescriptor(),
 						TypeDescriptor.collection(List.class, elementTypeDescriptor));
 			} else {
 				list = Arrays.asList(column.getValue());
-				elementTypeDescriptor = column.getValueTypeDescriptor();
+				elementTypeDescriptor = column.getTypeDescriptor();
 			}
 
 			for (Object value : list) {
@@ -127,7 +105,7 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 			if (NumberUtils.isInteger(column.getType())) {
 				long min = 0;
 				long max = 0;
-				Long value = (Long) getConversionService().convert(column.getValue(), column.getValueTypeDescriptor(),
+				Long value = (Long) getConversionService().convert(column.getValue(), column.getTypeDescriptor(),
 						TypeDescriptor.valueOf(Long.class));
 				if (conditionKeywords.getEqualOrGreaterThanKeywords().exists(condition.getCondition())) {
 					max = Long.MAX_VALUE;
@@ -147,8 +125,8 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 				}
 				return LongPoint.newRangeQuery(column.getName(), min, max);
 			} else {
-				String value = (String) getConversionService().convert(column.getValue(),
-						column.getValueTypeDescriptor(), TypeDescriptor.valueOf(String.class));
+				String value = (String) getConversionService().convert(column.getValue(), column.getTypeDescriptor(),
+						TypeDescriptor.valueOf(String.class));
 				String max = null;
 				String min = null;
 				boolean includeLower = false;
@@ -180,7 +158,7 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 		}
 
 		Query firstQuery = null;
-		if (conditions.getCondition() != null && !conditions.getCondition().isEmpty()) {
+		if (conditions.getCondition() != null && !conditions.getCondition().isInvalid()) {
 			firstQuery = parseQuery(conditions.getCondition(), conditionKeywords);
 		}
 
@@ -279,5 +257,10 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 			}
 			appendSort(structure, sortFields, column.getWithOrders());
 		}
+	}
+
+	@Override
+	public ObjectAccess<LuceneException> getObjectAccess(Document source, TypeDescriptor sourceType) {
+		return new DocumentAccess(source, this);
 	}
 }

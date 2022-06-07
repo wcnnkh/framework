@@ -1,9 +1,5 @@
 package io.basc.framework.lucene.annotation;
 
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.lucene.support.SimpleLuceneResolverExtend;
-import io.basc.framework.value.Value;
-
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -12,6 +8,10 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
+
+import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.lucene.support.SimpleLuceneResolverExtend;
+import io.basc.framework.mapper.Parameter;
 
 public class AnnotationLuceneResolverExtend extends SimpleLuceneResolverExtend {
 	@Override
@@ -25,27 +25,23 @@ public class AnnotationLuceneResolverExtend extends SimpleLuceneResolverExtend {
 	}
 
 	@Override
-	protected Collection<Field> resolveNonBasicType(
-			ParameterDescriptor descriptor, Value value) {
-		io.basc.framework.lucene.annotation.LuceneField annotation = descriptor
+	protected Collection<Field> resolveNonBasicType(Parameter parameter) {
+		io.basc.framework.lucene.annotation.LuceneField annotation = parameter
 				.getAnnotation(io.basc.framework.lucene.annotation.LuceneField.class);
 		if (annotation == null) {
-			return super.resolveNonBasicType(descriptor, value);
+			return super.resolveNonBasicType(parameter);
 		}
 
 		if (annotation.indexed()) {
 			if (annotation.tokenized()) {
-				return Arrays.asList(new TextField(descriptor.getName(), value
-						.getAsString(), annotation.stored() ? Store.YES
-						: Store.NO));
+				return Arrays.asList(new TextField(parameter.getName(), parameter.getAsString(),
+						annotation.stored() ? Store.YES : Store.NO));
 			} else {
-				return Arrays.asList(new StringField(descriptor.getName(),
-						value.getAsString(), annotation.stored() ? Store.YES
-								: Store.NO));
+				return Arrays.asList(new StringField(parameter.getName(), parameter.getAsString(),
+						annotation.stored() ? Store.YES : Store.NO));
 			}
 		} else {
-			return Arrays.asList(new StoredField(descriptor.getName(), value
-					.getAsString()));
+			return Arrays.asList(new StoredField(parameter.getName(), parameter.getAsString()));
 		}
 	}
 }

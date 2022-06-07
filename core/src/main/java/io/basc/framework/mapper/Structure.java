@@ -198,7 +198,7 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 				continue;
 			}
 
-			Object value = field.getValue(instance);
+			Object value = field.get(instance);
 			if (value == null) {
 				continue;
 			}

@@ -14,8 +14,7 @@ public interface ObjectRelationalResolver {
 
 	String getName(Class<?> entityClass, ParameterDescriptor descriptor);
 
-	Collection<String> getAliasNames(Class<?> entityClass,
-			ParameterDescriptor descriptor);
+	Collection<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	String getName(Class<?> entityClass);
 
@@ -38,8 +37,7 @@ public interface ObjectRelationalResolver {
 	 * @param descriptor
 	 * @return
 	 */
-	Collection<Range<Double>> getNumberRanges(Class<?> entityClass,
-			ParameterDescriptor descriptor);
+	Collection<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	/**
 	 * 是否自增
@@ -83,8 +81,7 @@ public interface ObjectRelationalResolver {
 	 * @param descriptor
 	 * @return
 	 */
-	ForeignKey getForeignKey(Class<?> entityClass,
-			ParameterDescriptor descriptor);
+	ForeignKey getForeignKey(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	boolean isDisplay(Class<?> entityClass, ParameterDescriptor descriptor);
 }

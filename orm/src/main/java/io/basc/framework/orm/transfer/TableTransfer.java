@@ -24,7 +24,7 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.io.FileRecords;
 import io.basc.framework.mapper.Structure;
 import io.basc.framework.orm.ObjectRelational;
-import io.basc.framework.orm.ObjectRelationalMapper;
+import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.ArrayUtils;
@@ -38,7 +38,7 @@ import io.basc.framework.util.stream.StreamProcessorSupport;
 import io.basc.framework.value.Value;
 
 public abstract class TableTransfer implements Importer, ExportProcessor<Object> {
-	private ObjectRelationalMapper mapper;
+	private ObjectRelationalFactory mapper;
 	private ConversionService conversionService;
 	private boolean header = true;
 
@@ -53,11 +53,11 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 		this.conversionService = source.conversionService;
 	}
 
-	public ObjectRelationalMapper getMapper() {
+	public ObjectRelationalFactory getMapper() {
 		return mapper;
 	}
 
-	public void setOrm(ObjectRelationalMapper mapper) {
+	public void setOrm(ObjectRelationalFactory mapper) {
 		Assert.requiredArgument(mapper != null, "mapper");
 		this.mapper = mapper;
 	}

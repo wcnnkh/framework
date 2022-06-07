@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.orm.ObjectRelationalMapper;
+import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
 import io.basc.framework.util.StringUtils;
 
 public class TransfRelationalMapping extends DefaultObjectRelationalMapper {
 
-	public static final ObjectRelationalMapper INSTANCE = new TransfRelationalMapping();
+	public static final ObjectRelationalFactory INSTANCE = new TransfRelationalMapping();
 
 	@Override
 	public Boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor) {

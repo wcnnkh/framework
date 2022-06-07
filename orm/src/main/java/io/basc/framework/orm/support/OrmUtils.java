@@ -6,7 +6,7 @@ import java.util.List;
 import io.basc.framework.data.domain.Tree;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.NotSupportedException;
-import io.basc.framework.orm.ObjectRelationalMapper;
+import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
@@ -17,10 +17,10 @@ public final class OrmUtils {
 		throw new NotSupportedException(getClass().getName());
 	}
 
-	private static final ObjectRelationalMapper MAPPER = Sys.env
-			.getServiceLoader(ObjectRelationalMapper.class, DefaultObjectRelationalMapper.class).first();
+	private static final ObjectRelationalFactory MAPPER = Sys.env
+			.getServiceLoader(ObjectRelationalFactory.class, DefaultObjectRelationalMapper.class).first();
 
-	public static ObjectRelationalMapper getMapper() {
+	public static ObjectRelationalFactory getMapper() {
 		return MAPPER;
 	}
 

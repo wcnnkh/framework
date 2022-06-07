@@ -1,16 +1,15 @@
 package io.basc.framework.lucene.support;
 
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.lucene.LuceneResolver;
-import io.basc.framework.util.Assert;
-import io.basc.framework.value.Value;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
 import org.apache.lucene.document.Field;
+
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.lucene.LuceneResolver;
+import io.basc.framework.mapper.Parameter;
+import io.basc.framework.util.Assert;
 
 public class LuceneResolverExtendChain implements LuceneResolver {
 	private final Iterator<LuceneResolverExtend> iterator;
@@ -31,10 +30,10 @@ public class LuceneResolverExtendChain implements LuceneResolver {
 	}
 
 	@Override
-	public Collection<Field> resolve(ParameterDescriptor descriptor, Value value) {
+	public Collection<Field> resolve(Parameter parameter) {
 		if (iterator.hasNext()) {
-			return iterator.next().resolve(descriptor, value, this);
+			return iterator.next().resolve(parameter, this);
 		}
-		return nextChain == null ? Collections.emptyList() : nextChain.resolve(descriptor, value);
+		return nextChain == null ? Collections.emptyList() : nextChain.resolve(parameter);
 	}
 }

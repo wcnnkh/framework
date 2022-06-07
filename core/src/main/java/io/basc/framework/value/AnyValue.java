@@ -13,11 +13,11 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
 
-public class AnyValue extends AbstractValue implements Serializable {
+public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
-	private final transient Converter<? super Object, ? extends Object, ? extends RuntimeException> converter;
-	private final Object value;
-	private final TypeDescriptor valueTypeDescriptor;
+	private transient Converter<? super Object, ? extends Object, ? extends RuntimeException> converter;
+	private Object value;
+	private TypeDescriptor typeDescriptor;
 
 	public AnyValue(Object value) {
 		this(value, null, null);
@@ -32,23 +32,23 @@ public class AnyValue extends AbstractValue implements Serializable {
 		this(value, typeDescriptor, null);
 	}
 
-	public AnyValue(Object value, @Nullable TypeDescriptor valueTypeDescriptor,
+	public AnyValue(Object value, @Nullable TypeDescriptor typeDescriptor,
 			@Nullable Converter<? super Object, ? extends Object, ? extends RuntimeException> converter) {
 		this.value = value;
-		this.valueTypeDescriptor = valueTypeDescriptor;
+		this.typeDescriptor = typeDescriptor;
 		this.converter = converter;
 	}
 
 	public AnyValue(AnyValue value) {
 		this.value = value.value;
-		this.valueTypeDescriptor = value.valueTypeDescriptor;
+		this.typeDescriptor = value.typeDescriptor;
 		this.converter = value.converter;
 	}
 
 	@Override
 	public TypeDescriptor getTypeDescriptor() {
-		if (valueTypeDescriptor != null) {
-			return valueTypeDescriptor;
+		if (typeDescriptor != null) {
+			return typeDescriptor;
 		}
 
 		if (value instanceof Value) {
@@ -483,7 +483,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 		if (value instanceof Value) {
 			return ((Value) value).getAsObject(type);
 		}
-		return getConverter().convert(get(), getTypeDescriptor(), type);
+		return getConverter().convert(getValue(), getTypeDescriptor(), type);
 	}
 
 	@Override
@@ -557,9 +557,34 @@ public class AnyValue extends AbstractValue implements Serializable {
 			return null;
 		}
 
+		if (typeDescriptor != null && Value.class.isAssignableFrom(typeDescriptor.getType())) {
+			return value;
+		}
+
 		if (value instanceof Value) {
 			return ((Value) value).get();
 		}
 		return value;
+	}
+
+	public Object getValue() {
+		return value;
+	}
+
+	@Override
+	public AnyValue clone() {
+		return new AnyValue(this);
+	}
+
+	public void setValue(Object value) {
+		this.value = value;
+	}
+
+	public void setConverter(Converter<? super Object, ? extends Object, ? extends RuntimeException> converter) {
+		this.converter = converter;
+	}
+
+	public void setTypeDescriptor(TypeDescriptor typeDescriptor) {
+		this.typeDescriptor = typeDescriptor;
 	}
 }

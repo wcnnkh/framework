@@ -91,7 +91,7 @@ public class MysqlDialect extends StandardSqlDialect {
 
 			keywordProcessing(cols, column.getName());
 			values.append("?");
-			params.add(getDataBaseValue(entity, column));
+			params.add(toDataBaseValue(column.getParameter(entity)));
 
 			if (iterator.hasNext()) {
 				cols.append(",");
@@ -119,7 +119,7 @@ public class MysqlDialect extends StandardSqlDialect {
 
 			keywordProcessing(sb, column.getName());
 			sb.append("=?");
-			params.add(getDataBaseValue(entity, column));
+			params.add(toDataBaseValue(column.getParameter(entity)));
 			if (iterator.hasNext()) {
 				sb.append(",");
 			}
@@ -304,7 +304,7 @@ public class MysqlDialect extends StandardSqlDialect {
 
 			keywordProcessing(cols, column.getName());
 			values.append("?");
-			params.add(getDataBaseValue(entity, column));
+			params.add(toDataBaseValue(column.getParameter(entity)));
 		}
 		sql.append("insert ignore into ");
 		keywordProcessing(sql, tableStructure.getName());

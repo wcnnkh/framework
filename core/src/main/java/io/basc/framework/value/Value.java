@@ -13,7 +13,7 @@ public interface Value extends Supplier<Object> {
 	final Value[] EMPTY_ARRAY = new Value[0];
 
 	/**
-	 * 获取来源值
+	 * 获取原始值
 	 * 
 	 * @return
 	 */

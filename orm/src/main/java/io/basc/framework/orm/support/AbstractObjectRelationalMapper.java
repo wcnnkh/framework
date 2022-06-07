@@ -10,7 +10,6 @@ import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.mapper.AbstractObjectMapper;
-import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.orm.ObjectRelationalMapper;
@@ -21,7 +20,7 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.comparator.Sort;
 
 public abstract class AbstractObjectRelationalMapper<S, E extends Throwable> extends AbstractObjectMapper<S, E>
-		implements ObjectRelationalMapper, ObjectMapper<S, E>, Configurable {
+		implements ObjectRelationalMapper<S, E>, Configurable {
 	private final ConfigurableServices<ObjectRelationalResolverExtend> objectRelationalResolverExtendServices = new ConfigurableServices<ObjectRelationalResolverExtend>(
 			ObjectRelationalResolverExtend.class);
 

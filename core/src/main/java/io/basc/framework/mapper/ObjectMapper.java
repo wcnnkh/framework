@@ -7,6 +7,7 @@ import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
@@ -155,6 +156,21 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 				continue;
 			}
 			reverseTransform(sourceType, property.getParameter(source), property, target, targetType);
+		}
+	}
+
+	default void reverseTransform(Collection<? extends Parameter> sourceParameters, S target) throws E {
+		reverseTransform(sourceParameters, target, TypeDescriptor.forObject(target));
+	}
+
+	default void reverseTransform(Collection<? extends Parameter> sourceParameters, S target, TypeDescriptor targetType)
+			throws E {
+		if (CollectionUtils.isEmpty(sourceParameters)) {
+			return;
+		}
+
+		for (Parameter parameter : sourceParameters) {
+			reverseTransform(parameter, target, targetType);
 		}
 	}
 

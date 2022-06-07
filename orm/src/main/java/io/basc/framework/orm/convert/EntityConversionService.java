@@ -21,7 +21,7 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.Structure;
-import io.basc.framework.orm.ObjectRelationalMapper;
+import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionUtils;
@@ -38,7 +38,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	private boolean strict = false;
 	private NoArgsInstanceFactory instanceFactory;
 	private Level loggerLevel = io.basc.framework.logger.Levels.DEBUG.getValue();
-	private ObjectRelationalMapper mapper;
+	private ObjectRelationalFactory mapper;
 	private Field parentField;
 	// 是否先检查key存在
 	private boolean checkKeyExists = false;
@@ -69,11 +69,11 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		this.parentField = parentField;
 	}
 
-	public ObjectRelationalMapper getMapper() {
+	public ObjectRelationalFactory getMapper() {
 		return mapper == null ? OrmUtils.getMapper() : mapper;
 	}
 
-	public void setMapper(ObjectRelationalMapper mapper) {
+	public void setMapper(ObjectRelationalFactory mapper) {
 		this.mapper = mapper;
 	}
 

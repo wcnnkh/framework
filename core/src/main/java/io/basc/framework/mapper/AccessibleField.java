@@ -141,8 +141,7 @@ public class AccessibleField implements AnnotatedElement, Cloneable {
 		return AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT.getDeclaredAnnotations();
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T getValue(Object instance) {
+	public Object get(Object instance) {
 		if (!isSupportGetter()) {
 			return null;
 		}
@@ -151,9 +150,10 @@ public class AccessibleField implements AnnotatedElement, Cloneable {
 			// 非静态字段的调用实例不应该为空
 			return null;
 		}
-		return (T) getGetter().get(instance);
+		return getGetter().get(instance);
 	}
 
+	@SuppressWarnings("unchecked")
 	public <T> List<T> getValues(Collection<?> instances, boolean nullable) {
 		if (CollectionUtils.isEmpty(instances)) {
 			return Collections.emptyList();
@@ -165,12 +165,12 @@ public class AccessibleField implements AnnotatedElement, Cloneable {
 
 		List<T> list = new ArrayList<T>(instances.size());
 		for (Object entity : instances) {
-			T value = getValue(entity);
+			Object value = get(entity);
 			if (value == null && !nullable) {
 				continue;
 			}
 
-			list.add(value);
+			list.add((T) value);
 		}
 		return list;
 	}

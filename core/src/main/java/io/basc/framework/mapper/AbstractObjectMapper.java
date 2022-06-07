@@ -263,6 +263,6 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 	@Override
 	public void reverseTransform(Parameter parameter, S target, TypeDescriptor targetType) throws E {
 		ObjectAccess<E> objectAccess = getObjectAccess(target, targetType);
-		objectAccess.set(parameter.getName(), parameter.getValue());
+		objectAccess.set(parameter.getName(), parameter);
 	}
 }

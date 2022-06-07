@@ -7,10 +7,10 @@ import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.mapper.ObjectAccess;
-import io.basc.framework.orm.support.AbstractObjectRelationalMapper;
+import io.basc.framework.orm.repository.AbstractRepositoryMapper;
 import io.basc.framework.value.Value;
 
-public class ResultSetMapper extends AbstractObjectRelationalMapper<ResultSet, SQLException> {
+public class ResultSetMapper extends AbstractRepositoryMapper<ResultSet, SQLException> {
 
 	@SuppressWarnings("unchecked")
 	@Override

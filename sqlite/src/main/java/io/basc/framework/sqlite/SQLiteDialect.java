@@ -173,7 +173,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 
 			keywordProcessing(cols, column.getName());
 			values.append("?");
-			params.add(getDataBaseValue(entity, column));
+			params.add(toDataBaseValue(column.getParameter(entity)));
 		}
 		sql.append("insert or ignore into ");
 		keywordProcessing(sql, tableStructure.getName());
@@ -214,7 +214,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 
 			keywordProcessing(cols, column.getName());
 			values.append("?");
-			params.add(getDataBaseValue(entity, column));
+			params.add(toDataBaseValue(column.getParameter(column)));
 		}
 		sql.append("replace into ");
 		keywordProcessing(sql, tableStructure.getName());

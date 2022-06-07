@@ -606,7 +606,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 
 			keywordProcessing(cols, column.getName());
 			values.append("?");
-			params.add(toDataBaseValue(column.getValue()));
+			params.add(toDataBaseValue(column));
 		}
 		sql.append(INSERT_INTO_PREFIX);
 		keywordProcessing(sql, structure.getName());
@@ -702,24 +702,24 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		if (conditionKeywords.getEqualKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getParameter().getName());
 			sb.append("=?");
-			params.add(toDataBaseValue(condition.getParameter().getValue()));
+			params.add(toDataBaseValue(condition.getParameter()));
 		} else if (conditionKeywords.getEndWithKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getParameter().getName());
 			sb.append(" like ");
 			concat(sb, "'%'", "?");
-			params.add(toDataBaseValue(condition.getParameter().getValue()));
+			params.add(toDataBaseValue(condition.getParameter()));
 		} else if (conditionKeywords.getEqualOrGreaterThanKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getParameter().getName());
 			sb.append(" >= ?");
-			params.add(toDataBaseValue(condition.getParameter().getValue()));
+			params.add(toDataBaseValue(condition.getParameter()));
 		} else if (conditionKeywords.getEqualOrLessThanKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getParameter().getName());
 			sb.append(" <= ?");
-			params.add(toDataBaseValue(condition.getParameter().getValue()));
+			params.add(toDataBaseValue(condition.getParameter()));
 		} else if (conditionKeywords.getGreaterThanKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getParameter().getName());
 			sb.append(" > ?");
-			params.add(toDataBaseValue(condition.getParameter().getValue()));
+			params.add(toDataBaseValue(condition.getParameter()));
 		} else if (conditionKeywords.getInKeywords().exists(condition.getCondition())) {
 			if (condition.getParameter().getValue() == null) {
 				return false;
@@ -754,18 +754,18 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		} else if (conditionKeywords.getLessThanKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getParameter().getName());
 			sb.append(" < ?");
-			params.add(toDataBaseValue(condition.getParameter().getValue()));
+			params.add(toDataBaseValue(condition.getParameter()));
 		} else if (conditionKeywords.getLikeKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getParameter().getName());
 			sb.append(" like ");
 			concat(sb, "'%'", "?", "'%'");
-			params.add(toDataBaseValue(condition.getParameter().getValue()));
+			params.add(toDataBaseValue(condition.getParameter()));
 		} else if (conditionKeywords.getNotEqualKeywords().exists(condition.getCondition())) {
 			keywordProcessing(sb, condition.getParameter().getName());
 			sb.append(" is not ?");
-			params.add(toDataBaseValue(condition.getParameter().getValue()));
+			params.add(toDataBaseValue(condition.getParameter()));
 		} else if (conditionKeywords.getSearchKeywords().exists(condition.getCondition())) {
-			String value = (String) getEnvironment().getConversionService().convert(condition.getParameter().getValue(),
+			String value = (String) getEnvironment().getConversionService().convert(condition.getParameter().get(),
 					condition.getParameter().getTypeDescriptor(), TypeDescriptor.valueOf(String.class));
 			if (StringUtils.isEmpty(value)) {
 				return false;
@@ -782,11 +782,11 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			keywordProcessing(sb, condition.getParameter().getName());
 			sb.append(" like ");
 			concat(sb, "?", "'%'");
-			params.add(toDataBaseValue(condition.getParameter().getValue()));
+			params.add(toDataBaseValue(condition.getParameter()));
 		} else {
 			keywordProcessing(sb, condition.getParameter().getName());
 			sb.append(" ").append(condition.getCondition()).append(" ?");
-			params.add(toDataBaseValue(condition.getParameter().getValue()));
+			params.add(toDataBaseValue(condition.getParameter()));
 		}
 		return true;
 	}
@@ -803,7 +803,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			Parameter column = iterator.next();
 			keywordProcessing(sb, column.getName());
 			sb.append("=?");
-			params.add(toDataBaseValue(column.getValue()));
+			params.add(toDataBaseValue(column));
 			if (iterator.hasNext()) {
 				sb.append(",");
 			}

@@ -106,7 +106,7 @@ public interface Repository extends CurdRepository {
 		return (List<T>) query(resultsTypeDescriptor, entityClass, conditions, null).collect(Collectors.toList());
 	}
 
-	RepositoryMapper getMapper();
+	RepositoryResolver getMapper();
 
 	@Override
 	default <T> boolean isPresent(Class<? extends T> entityClass, T conditions) {
