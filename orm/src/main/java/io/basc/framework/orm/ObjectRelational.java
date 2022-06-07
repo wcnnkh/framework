@@ -65,15 +65,15 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 
 	protected ObjectRelational<T> decorate(Structure<T> structure) {
 		ObjectRelational<T> objectRelational = new ObjectRelational<T>(structure);
-		if (objectRelational.objectRelationalResolver != null) {
+		if (objectRelational.objectRelationalResolver == null) {
 			objectRelational.objectRelationalResolver = this.objectRelationalResolver;
 		}
 
-		if (objectRelational.comment != null) {
+		if (objectRelational.comment == null) {
 			objectRelational.comment = this.comment;
 		}
 
-		if (objectRelational.charsetName != null) {
+		if (objectRelational.charsetName == null) {
 			objectRelational.charsetName = this.charsetName;
 		}
 		return objectRelational;

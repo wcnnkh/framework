@@ -15,12 +15,12 @@ public class Parameter extends AnyValue implements ParameterDescriptor {
 	/**
 	 * 无效的
 	 */
-	public static final Parameter INVALID = new Parameter(null, null);
+	public static final Parameter INVALID = new Parameter(null);
 
 	private final String name;
 
 	public Parameter(String name) {
-		this(name, null);
+		this(name, null, null);
 	}
 
 	public Parameter(String name, Object value) {

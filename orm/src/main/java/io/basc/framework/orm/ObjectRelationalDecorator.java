@@ -72,13 +72,8 @@ public abstract class ObjectRelationalDecorator<S extends Property, T extends Ob
 	}
 
 	@Override
-	public T distinctAll() {
-		return decorate(super.distinctAll());
-	}
-
-	@Override
-	public T distinctMembers() {
-		return decorate(super.distinctMembers());
+	public T distinct() {
+		return decorate(super.distinct());
 	}
 
 	public T entity() {

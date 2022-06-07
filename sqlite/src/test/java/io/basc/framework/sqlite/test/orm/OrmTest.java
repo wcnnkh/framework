@@ -42,8 +42,10 @@ public class OrmTest {
 			table1.setId(i);
 			table1.setKey(XUtils.getUUID());
 			table1.setValue(i);
-			db.saveOrUpdate(table1);
+			boolean b = db.saveOrUpdate(table1);
+			System.out.println(b);
 			TestTable1 query = db.getById(TestTable1.class, i);
+			System.out.println(query);
 			assertTrue(query.getKey().equals(table1.getKey()));
 		}
 	}

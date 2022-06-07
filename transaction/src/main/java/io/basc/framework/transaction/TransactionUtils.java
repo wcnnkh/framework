@@ -13,7 +13,7 @@ public final class TransactionUtils {
 	 */
 	private static final TransactionManager DEFAULT = Sys.env
 			.getServiceLoader(TransactionManager.class, ThreadLocalTransactionManager.class).first();
-	private static ThreadLocal<TransactionManager> LOCAL = new NamedThreadLocal<TransactionManager>(
+	private static final ThreadLocal<TransactionManager> LOCAL = new NamedThreadLocal<TransactionManager>(
 			TransactionManager.class.getSimpleName());
 
 	/**

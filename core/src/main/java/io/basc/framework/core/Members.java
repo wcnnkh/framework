@@ -47,6 +47,8 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	private Supplier<? extends Stream<T>> streamSupplier;
 
 	@Nullable
+	private Supplier<? extends Stream<T>> withStreamSupplier;
+	@Nullable
 	private Members<T> with;
 
 	private WithMethod withMethod = REFUSE;
@@ -63,6 +65,7 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 		this.sourceClass = members.sourceClass;
 		this.processor = members.processor;
 		this.streamSupplier = members.streamSupplier;
+		this.withStreamSupplier = members.withStreamSupplier;
 		this.with = members.with;
 		this.members = members.members == null ? null : new ArrayList<T>(members.members);
 		this.withMethod = members.withMethod;
@@ -93,6 +96,10 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 			clone.streamSupplier = this.streamSupplier;
 		}
 
+		if (this.withStreamSupplier != null) {
+			clone.withStreamSupplier = this.withStreamSupplier;
+		}
+
 		if (this.members != null) {
 			clone.members = this.members;
 		}
@@ -117,33 +124,15 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	}
 
 	/**
-	 * 代价较高
-	 * 
-	 * @see #all()
-	 * @return
-	 */
-	public Members<T> distinctAll() {
-		Members<T> members = new Members<T>(this.sourceClass, this.processor);
-		members.streamSupplier = () -> streamAll().distinct();
-		return members;
-	}
-
-	/**
-	 * 去除重复的类
+	 * 去重
 	 * 
 	 * @return
 	 */
-	public Members<T> distinctMembers() {
+	public Members<T> distinct() {
 		Members<T> members = new Members<T>(this.sourceClass, this.processor);
-		members.streamSupplier = this.streamSupplier;
-		members.members = this.members;
-
-		Members<T> with = this.with;
-		while (with != null) {
-			if (!members.contains(with.sourceClass)) {
-				DIRECT.with(with, members);
-			}
-			with = members.with;
+		members.streamSupplier = () -> stream().distinct();
+		if (members.with != null) {
+			members.with = this.with.distinct();
 		}
 		return members;
 	}
@@ -310,18 +299,24 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 			return members.stream();
 		}
 
-		Stream<T> stream = this.processor.apply(sourceClass);
+		Stream<T> stream;
+		if (streamSupplier == null) {
+			stream = this.processor.apply(sourceClass);
+		} else {
+			stream = streamSupplier.get();
+		}
+
 		if (stream == null) {
-			if (this.streamSupplier == null) {
+			if (this.withStreamSupplier == null) {
 				return StreamProcessorSupport.emptyStream();
 			} else {
-				return this.streamSupplier.get();
+				return this.withStreamSupplier.get();
 			}
 		} else {
-			if (this.streamSupplier == null) {
+			if (this.withStreamSupplier == null) {
 				return stream;
 			} else {
-				return Stream.concat(stream, this.streamSupplier.get());
+				return Stream.concat(stream, this.withStreamSupplier.get());
 			}
 		}
 	}
@@ -430,10 +425,10 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	}
 
 	public Members<T> withStream(Supplier<? extends Stream<T>> streamSupplier) {
-		if (this.streamSupplier == null) {
-			this.streamSupplier = streamSupplier;
+		if (this.withStreamSupplier == null) {
+			this.withStreamSupplier = streamSupplier;
 		} else {
-			this.streamSupplier = () -> Stream.concat(this.streamSupplier.get(), streamSupplier.get());
+			this.withStreamSupplier = () -> Stream.concat(this.withStreamSupplier.get(), streamSupplier.get());
 		}
 		return this;
 	}
@@ -571,6 +566,7 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 							targetWith.members = item.members;
 							targetWith.processor = item.processor;
 							targetWith.streamSupplier = item.streamSupplier;
+							targetWith.withStreamSupplier = item.withStreamSupplier;
 						}
 						break;
 					}

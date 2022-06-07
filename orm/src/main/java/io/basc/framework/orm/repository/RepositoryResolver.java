@@ -64,7 +64,11 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 
 		List<Parameter> list = new ArrayList<Parameter>();
 		for (Parameter column : columns) {
-			if (column.getValue() == null || !isEntity(column.getType(), column)) {
+			if(column == null || column.isInvalid()) {
+				continue;
+			}
+			
+			if (column.isNull() || !isEntity(column.getType(), column)) {
 				list.add(column);
 				continue;
 			}
@@ -73,8 +77,8 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 			getStructure(column.getType()).columns().filter((e) -> {
 				resolveOrders(column.getType(), e.getGetter(), appendableOrders);
 				return true;
-			}).filter((e) -> !e.isAutoIncrement() || MapperUtils.isExistValue(e, column.getValue())).forEach((c) -> {
-				Parameter repositoryColumn = c.getParameter(column.getValue());
+			}).filter((e) -> !e.isAutoIncrement() || MapperUtils.isExistValue(e, column.get())).forEach((c) -> {
+				Parameter repositoryColumn = c.getParameter(column.get());
 				list.add(repositoryColumn);
 			});
 

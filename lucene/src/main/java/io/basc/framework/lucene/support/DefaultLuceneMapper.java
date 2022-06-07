@@ -70,9 +70,9 @@ public class DefaultLuceneMapper extends AbstractObjectRelationalMapper<Document
 			// =
 			Term term;
 			if (column.getType() == byte[].class) {
-				term = new Term(column.getName(), new BytesRef((byte[]) column.getValue()));
+				term = new Term(column.getName(), new BytesRef((byte[]) column.get()));
 			} else {
-				term = new Term(column.getName(), (String) getConversionService().convert(column.getValue(),
+				term = new Term(column.getName(), (String) getConversionService().convert(column.get(),
 						column.getTypeDescriptor(), TypeDescriptor.valueOf(String.class)));
 			}
 			return new TermQuery(term);
@@ -82,10 +82,10 @@ public class DefaultLuceneMapper extends AbstractObjectRelationalMapper<Document
 			TypeDescriptor elementTypeDescriptor;
 			if (column.getTypeDescriptor().isArray() || column.getTypeDescriptor().isCollection()) {
 				elementTypeDescriptor = column.getTypeDescriptor().getElementTypeDescriptor();
-				list = (List<?>) getConversionService().convert(column.getValue(), column.getTypeDescriptor(),
+				list = (List<?>) getConversionService().convert(column.get(), column.getTypeDescriptor(),
 						TypeDescriptor.collection(List.class, elementTypeDescriptor));
 			} else {
-				list = Arrays.asList(column.getValue());
+				list = Arrays.asList(column.get());
 				elementTypeDescriptor = column.getTypeDescriptor();
 			}
 

@@ -694,7 +694,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 
 	@SuppressWarnings("unchecked")
 	protected boolean appendWhere(Condition condition, StringBuilder sb, List<Object> params) {
-		if (condition == null || condition.isInvalid()) {
+		if (condition == null || condition.isInvalid() || condition.getParameter() == null) {
 			return false;
 		}
 
@@ -721,19 +721,19 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			sb.append(" > ?");
 			params.add(toDataBaseValue(condition.getParameter()));
 		} else if (conditionKeywords.getInKeywords().exists(condition.getCondition())) {
-			if (condition.getParameter().getValue() == null) {
+			if (condition.getParameter().isNull()) {
 				return false;
 			}
 
 			List<Object> list;
 			TypeDescriptor typeDescriptor = condition.getParameter().getTypeDescriptor();
 			if (typeDescriptor.isArray() || typeDescriptor.isCollection()) {
-				list = (List<Object>) getEnvironment().getConversionService().convert(
-						condition.getParameter().getValue(), typeDescriptor,
+				list = (List<Object>) getEnvironment().getConversionService().convert(condition.getParameter().get(),
+						typeDescriptor,
 						TypeDescriptor.collection(List.class, typeDescriptor.getElementTypeDescriptor()));
 				typeDescriptor = typeDescriptor.getElementTypeDescriptor();
 			} else {
-				list = Arrays.asList(condition.getParameter().getValue());
+				list = Arrays.asList(condition.getParameter().get());
 			}
 
 			if (list == null || list.isEmpty()) {

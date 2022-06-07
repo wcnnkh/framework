@@ -177,7 +177,7 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 	default void reverseTransform(TypeDescriptor sourceType, Parameter sourceParameter, Field parameterField, S target,
 			TypeDescriptor targetType) throws E {
 		if (isEntity(sourceType.getType(), sourceParameter)) {
-			reverseTransform(sourceParameter.getValue(), sourceParameter.getTypeDescriptor(),
+			reverseTransform(sourceParameter.get(), sourceParameter.getTypeDescriptor(),
 					getStructure(sourceParameter.getType()).setParentField(parameterField), target, targetType);
 		} else {
 			reverseTransform(sourceParameter, target, targetType);

@@ -68,13 +68,8 @@ public abstract class StructureDecorator<S extends Field, T extends StructureDec
 	protected abstract T decorate(Structure<S> structure);
 
 	@Override
-	public T distinctAll() {
-		return decorate(super.distinctAll());
-	}
-
-	@Override
-	public T distinctMembers() {
-		return decorate(super.distinctMembers());
+	public T distinct() {
+		return decorate(super.distinct());
 	}
 
 	public T entity() {

@@ -28,13 +28,8 @@ public abstract class MembersDecorator<S, T extends Members<S>> extends Members<
 	protected abstract T decorate(Members<S> members);
 
 	@Override
-	public T distinctAll() {
-		return decorate(super.distinctAll());
-	}
-
-	@Override
-	public T distinctMembers() {
-		return decorate(super.distinctMembers());
+	public T distinct() {
+		return decorate(super.distinct());
 	}
 
 	@Override
@@ -86,12 +81,12 @@ public abstract class MembersDecorator<S, T extends Members<S>> extends Members<
 	public T withClass(Class<?> sourceClass) {
 		return decorate(super.withClass(sourceClass));
 	}
-	
+
 	@Override
 	public T withClass(Class<?> sourceClass, Predicate<? super S> predicate) {
 		return decorate(super.withClass(sourceClass, predicate));
 	}
-	
+
 	@Override
 	public T withMethod(WithMethod method) {
 		return decorate(super.withMethod(method));

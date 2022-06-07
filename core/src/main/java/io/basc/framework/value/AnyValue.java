@@ -40,9 +40,11 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public AnyValue(AnyValue value) {
-		this.value = value.value;
-		this.typeDescriptor = value.typeDescriptor;
-		this.converter = value.converter;
+		if(value != null) {
+			this.value = value.value;
+			this.typeDescriptor = value.typeDescriptor;
+			this.converter = value.converter;
+		}
 	}
 
 	@Override
@@ -483,7 +485,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 		if (value instanceof Value) {
 			return ((Value) value).getAsObject(type);
 		}
-		return getConverter().convert(getValue(), getTypeDescriptor(), type);
+		return getConverter().convert(get(), getTypeDescriptor(), type);
 	}
 
 	@Override

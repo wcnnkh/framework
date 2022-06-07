@@ -190,7 +190,7 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 		return (p) -> {
 			Collection<String> names = getNames(p);
 			if (logger.isTraceEnabled()) {
-				logger.trace(p + " - " + names);
+				logger.trace(p.getName() + " - " + names);
 			}
 
 			for (String name : names) {

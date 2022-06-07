@@ -214,7 +214,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 
 			keywordProcessing(cols, column.getName());
 			values.append("?");
-			params.add(toDataBaseValue(column.getParameter(column)));
+			params.add(toDataBaseValue(column.getParameter(entity)));
 		}
 		sql.append("replace into ");
 		keywordProcessing(sql, tableStructure.getName());
