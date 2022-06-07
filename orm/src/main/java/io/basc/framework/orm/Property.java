@@ -217,20 +217,20 @@ public class Property extends Field {
 	public boolean isNullable() {
 		if (nullable == null && objectRelationalResolver != null) {
 			if (isSupportSetter()) {
-				Boolean b = objectRelationalResolver.isIncrement(getDeclaringClass(), getSetter());
+				Boolean b = objectRelationalResolver.isNullable(getDeclaringClass(), getSetter());
 				if (b != null) {
 					return b;
 				}
 			}
 
 			if (isSupportGetter()) {
-				Boolean b = objectRelationalResolver.isIncrement(getDeclaringClass(), getGetter());
+				Boolean b = objectRelationalResolver.isNullable(getDeclaringClass(), getGetter());
 				if (b != null) {
 					return b;
 				}
 			}
 		}
-		return nullable == null ? true : nullable;
+		return nullable == null ? !isPrimaryKey() : nullable;
 	}
 
 	public boolean isPrimaryKey() {

@@ -45,7 +45,7 @@ public class OrmTest {
 			table1.setValue(i);
 			db.saveOrUpdate(table1);
 			// 使用queryAll的原因是为了测试全部
-			TestTable1 query = db.queryAll(TestTable1.class).filter((e) -> e.getId() == table1.getId()).first();
+			TestTable1 query = db.getById(TestTable1.class, i);
 			assertTrue(query.getKey().equals(table1.getKey()));
 		}
 	}
