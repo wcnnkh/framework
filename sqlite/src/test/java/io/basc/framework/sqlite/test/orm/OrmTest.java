@@ -25,6 +25,7 @@ public class OrmTest {
 	}
 
 	private static void initData() {
+		db.deleteAll(TestTable1.class);
 		for (int i = 0; i < 5; i++) {
 			TestTable1 table1 = new TestTable1();
 			table1.setId(i);
@@ -42,10 +43,9 @@ public class OrmTest {
 			table1.setId(i);
 			table1.setKey(XUtils.getUUID());
 			table1.setValue(i);
-			boolean b = db.saveOrUpdate(table1);
-			System.out.println(b);
-			TestTable1 query = db.getById(TestTable1.class, i);
-			System.out.println(query);
+			db.saveOrUpdate(table1);
+			// 使用queryAll的原因是为了测试全部
+			TestTable1 query = db.queryAll(TestTable1.class).filter((e) -> e.getId() == table1.getId()).first();
 			assertTrue(query.getKey().equals(table1.getKey()));
 		}
 	}

@@ -19,7 +19,7 @@ public class AutoIncrementTest {
 	public void test() {
 		LoggerFactory.getLevelManager().getCustomLevelRegistry().put("io.basc.framework.sql", Levels.DEBUG.getValue());
 		db.createTable(AutoIncrementTestBean.class);
-		db.update(new SimpleSql("delete from auto_increment_test_bean"));
+		db.deleteAll(AutoIncrementTestBean.class);
 		int size = 2;
 		for (int x = 0; x < 2; x++) {
 			for (int i = 1; i <= size; i++) {
