@@ -10,6 +10,9 @@ import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.mapper.AbstractObjectMapper;
+import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Structure;
+import io.basc.framework.orm.EntityStructure;
 import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.orm.ObjectRelationalMapper;
@@ -30,7 +33,16 @@ public abstract class AbstractObjectRelationalMapper<S, E extends Throwable> ext
 
 	@Override
 	public ObjectRelational<? extends Property> getStructure(Class<?> entityClass) {
-		return ObjectRelationalMapper.super.getStructure(entityClass);
+		if (!isStructureRegistred(entityClass)) {
+			return ObjectRelationalMapper.super.getStructure(entityClass);
+		}
+
+		Structure<? extends Field> structure = super.getStructure(entityClass);
+		if (structure instanceof EntityStructure) {
+			return (EntityStructure) structure;
+		}
+
+		return new EntityStructure(structure, (e) -> new Property(e, this));
 	}
 
 	public final ConfigurableServices<ObjectRelationalResolverExtend> getObjectRelationalResolverExtendServices() {

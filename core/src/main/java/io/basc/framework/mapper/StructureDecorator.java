@@ -12,14 +12,18 @@ import io.basc.framework.lang.Nullable;
 
 public abstract class StructureDecorator<S extends Field, T extends StructureDecorator<S, T>> extends Structure<S> {
 
-	public StructureDecorator(Class<?> sourceClass, Function<Class<?>, ? extends Stream<S>> processor) {
-		super(sourceClass, processor);
+	public StructureDecorator(Class<?> sourceClass, S parent, Function<Class<?>, ? extends Stream<S>> processor) {
+		super(sourceClass, parent, processor);
 	}
 
-	public StructureDecorator(Structure<S> members) {
+	public StructureDecorator(Members<S> members) {
 		super(members);
 	}
-	
+
+	public StructureDecorator(Members<? extends Field> members, Function<? super Field, ? extends S> map) {
+		super(members, map);
+	}
+
 	@Override
 	public T clone() {
 		return decorate(super.clone());
@@ -178,7 +182,7 @@ public abstract class StructureDecorator<S extends Field, T extends StructureDec
 	public T withClass(Class<?> sourceClass, Predicate<? super S> predicate) {
 		return decorate(super.withClass(sourceClass, predicate));
 	}
-	
+
 	@Override
 	public T withMethod(WithMethod method) {
 		return decorate(super.withMethod(method));
@@ -234,7 +238,7 @@ public abstract class StructureDecorator<S extends Field, T extends StructureDec
 	public T withSuperclass(Predicate<Class<?>> predicate, Function<Class<?>, ? extends Stream<S>> processor) {
 		return decorate(super.withSuperclass(predicate, processor));
 	}
-	
+
 	@Override
 	public T rename(String name) {
 		return decorate(super.rename(name));

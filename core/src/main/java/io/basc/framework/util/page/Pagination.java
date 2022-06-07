@@ -45,7 +45,7 @@ public interface Pagination<T> extends Page<Long, T> {
 	}
 
 	@Override
-	default <TT> Pagination<TT> map(Function<? super T, TT> map) {
+	default <TT> Pagination<TT> map(Function<? super T, ? extends TT> map) {
 		return new MapPagination<>(this, map);
 	}
 }

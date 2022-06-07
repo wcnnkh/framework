@@ -97,7 +97,15 @@ public class Property extends Field {
 
 	@Override
 	public Property getParent() {
-		return (Property) super.getParent();
+		Field field = super.getParent();
+		if (field == null) {
+			return null;
+		}
+
+		if (field instanceof Property) {
+			return (Property) field;
+		}
+		return new Property(field, this.objectRelationalResolver);
 	}
 
 	@Override

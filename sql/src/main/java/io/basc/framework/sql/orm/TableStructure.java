@@ -1,6 +1,5 @@
 package io.basc.framework.sql.orm;
 
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -9,6 +8,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import io.basc.framework.core.Members;
 import io.basc.framework.mapper.AccessibleField;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Fields;
@@ -30,16 +30,35 @@ public final class TableStructure extends ObjectRelationalDecorator<Column, Tabl
 
 	public TableStructure(Class<?> sourceClass, ObjectRelationalResolver objectRelationalResolver, Column parent,
 			Function<Class<?>, ? extends Stream<? extends AccessibleField>> processor) {
-		super(sourceClass, objectRelationalResolver,
-				(e) -> processor.apply(e)
-						.filter((o) -> (o.isSupportGetter() && !Modifier.isStatic(o.getGetter().getModifiers()))
-								&& (o.isSupportSetter() && !Modifier.isStatic(o.getSetter().getModifiers())))
-						.map((o) -> new Field(parent, sourceClass, o))
-						.map((o) -> new Property(o, objectRelationalResolver)).map((o) -> new Column(o)));
+		super(sourceClass, objectRelationalResolver, parent,
+				new ColumnsFunction(objectRelationalResolver, parent, processor));
 	}
 
-	public TableStructure(ObjectRelational<Column> members) {
+	public TableStructure(Members<Column> members) {
 		super(members);
+		if (members instanceof TableStructure) {
+			this.engine = ((TableStructure) members).engine;
+			this.rowFormat = ((TableStructure) members).rowFormat;
+			this.autoCreate = ((TableStructure) members).autoCreate;
+		}
+	}
+
+	public TableStructure(Members<? extends Field> members, Function<? super Field, ? extends Column> map) {
+		super(members, (e) -> {
+			if (e == null) {
+				return null;
+			}
+
+			if (e instanceof Column) {
+				return (Column) e;
+			}
+			return map.apply(e);
+		});
+		if (members instanceof TableStructure) {
+			this.engine = ((TableStructure) members).engine;
+			this.rowFormat = ((TableStructure) members).rowFormat;
+			this.autoCreate = ((TableStructure) members).autoCreate;
+		}
 	}
 
 	public Map<IndexInfo, List<Column>> getIndexGroups() {
@@ -121,11 +140,16 @@ public final class TableStructure extends ObjectRelationalDecorator<Column, Tabl
 		if (autoCreate == null && objectRelationalResolver != null) {
 			if (objectRelationalResolver instanceof TableResolver) {
 				Boolean v = ((TableResolver) objectRelationalResolver).isAutoCreate(getSourceClass());
-				if(v != null) {
+				if (v != null) {
 					return v;
 				}
 			}
 		}
 		return autoCreate == null ? false : true;
+	}
+
+	@Override
+	protected Column clone(Column source) {
+		return source.clone();
 	}
 }

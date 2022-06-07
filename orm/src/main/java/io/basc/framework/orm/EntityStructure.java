@@ -1,6 +1,5 @@
 package io.basc.framework.orm;
 
-import java.lang.reflect.Modifier;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -28,14 +27,26 @@ public final class EntityStructure extends ObjectRelationalDecorator<Property, E
 
 	public EntityStructure(Class<?> sourceClass, ObjectRelationalResolver objectRelationalResolver, Property parent,
 			Function<Class<?>, ? extends Stream<? extends AccessibleField>> processor) {
-		super(sourceClass, objectRelationalResolver, (e) -> processor.apply(e)
-				.filter((o) -> (o.isSupportGetter() && !Modifier.isStatic(o.getGetter().getModifiers()))
-						|| (o.isSupportSetter() && !Modifier.isStatic(o.getSetter().getModifiers())))
-				.map((o) -> new Field(parent, sourceClass, o)).map((o) -> new Property(o, objectRelationalResolver)));
+		super(sourceClass, objectRelationalResolver, parent,
+				new PropertiesFunction(objectRelationalResolver, parent, processor));
 	}
 
-	public EntityStructure(ObjectRelational<Property> members) {
+	public EntityStructure(Members<Property> members) {
 		super(members);
+	}
+
+	public EntityStructure(Members<? extends Field> members, Function<? super Field, ? extends Property> map) {
+		super(members, (e) -> {
+			if (e == null) {
+				return null;
+			}
+
+			if (e instanceof Property) {
+				return (Property) e;
+			}
+
+			return new Property(e);
+		});
 	}
 
 	@Override

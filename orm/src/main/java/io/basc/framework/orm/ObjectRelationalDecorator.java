@@ -11,22 +11,21 @@ import io.basc.framework.core.Members;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
-import io.basc.framework.mapper.Structure;
 
 public abstract class ObjectRelationalDecorator<S extends Property, T extends ObjectRelationalDecorator<S, T>>
 		extends ObjectRelational<S> {
 
-	public ObjectRelationalDecorator(Class<?> sourceClass, ObjectRelationalResolver objectRelationalResolver,
+	public ObjectRelationalDecorator(Class<?> sourceClass, ObjectRelationalResolver objectRelationalResolver, S parent,
 			Function<Class<?>, ? extends Stream<S>> processor) {
-		super(sourceClass, objectRelationalResolver, processor);
+		super(sourceClass, objectRelationalResolver, parent, processor);
 	}
 
-	public ObjectRelationalDecorator(ObjectRelational<S> members) {
+	public ObjectRelationalDecorator(Members<S> members) {
 		super(members);
 	}
 
-	public ObjectRelationalDecorator(Structure<S> members) {
-		super(members);
+	public ObjectRelationalDecorator(Members<? extends Field> members, Function<? super Field, ? extends S> map) {
+		super(members, map);
 	}
 
 	@Override

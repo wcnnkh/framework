@@ -446,9 +446,9 @@ public final class CollectionFactory {
 	/**
 	 * 克隆一个{@link Map}
 	 * 
-	 * @param     <M>
-	 * @param     <K>
-	 * @param     <V>
+	 * @param <M>
+	 * @param <K>
+	 * @param <V>
 	 * @param map
 	 * @return
 	 */
@@ -460,9 +460,9 @@ public final class CollectionFactory {
 	/**
 	 * 克隆一个{@link Map}
 	 * 
-	 * @param      <M>
-	 * @param      <K>
-	 * @param      <V>
+	 * @param <M>
+	 * @param <K>
+	 * @param <V>
 	 * @param map
 	 * @param deep {@link ObjectUtils#clone(Object, boolean)}
 	 * @return
@@ -514,8 +514,8 @@ public final class CollectionFactory {
 	/**
 	 * 克隆一个{@link Collection}
 	 * 
-	 * @param            <C>
-	 * @param            <E>
+	 * @param <C>
+	 * @param <E>
 	 * @param collection
 	 * @return
 	 */
@@ -526,8 +526,8 @@ public final class CollectionFactory {
 	/**
 	 * 克隆一个{@link Collection}
 	 * 
-	 * @param            <C>
-	 * @param            <E>
+	 * @param <C>
+	 * @param <E>
 	 * @param collection
 	 * @param deep
 	 * @return

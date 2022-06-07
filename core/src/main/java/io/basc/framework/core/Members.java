@@ -240,7 +240,7 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	}
 
 	@Override
-	public <TT> Members<TT> map(Function<? super T, TT> map) {
+	public <TT> Members<TT> map(Function<? super T, ? extends TT> map) {
 		return mapProcessor((s) -> s == null ? null : s.map(map));
 	}
 

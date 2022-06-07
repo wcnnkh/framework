@@ -7,10 +7,10 @@ import java.util.stream.Stream;
 
 public class MapPageable<M extends Pageable<SK, ST>, SK, ST, K, T> implements Pageable<K, T> {
 	protected final M source;
-	private final Function<? super SK, K> keyMap;
-	private final Function<? super ST, T> valueMap;
+	private final Function<? super SK, ? extends K> keyMap;
+	private final Function<? super ST, ? extends T> valueMap;
 
-	public MapPageable(M source, Function<? super SK, K> keyMap, Function<? super ST, T> valueMap) {
+	public MapPageable(M source, Function<? super SK, ? extends K> keyMap, Function<? super ST, ? extends T> valueMap) {
 		this.source = source;
 		this.keyMap = keyMap;
 		this.valueMap = valueMap;

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.core.Members;
+import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Structure;
 import io.basc.framework.mapper.StructureDecorator;
 import io.basc.framework.util.StringUtils;
@@ -16,19 +17,29 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 	protected String comment;
 	protected String charsetName;
 
-	public ObjectRelational(Class<?> sourceClass, ObjectRelationalResolver objectRelationalResolver,
+	public ObjectRelational(Class<?> sourceClass, ObjectRelationalResolver objectRelationalResolver, T parent,
 			Function<Class<?>, ? extends Stream<T>> processor) {
-		super(sourceClass, processor.andThen((e) -> e.filter((o) -> o.isSupportGetter() || o.isSupportSetter())));
+		super(sourceClass, parent,
+				processor.andThen((e) -> e.filter((o) -> o.isSupportGetter() || o.isSupportSetter())));
 		this.objectRelationalResolver = objectRelationalResolver;
 	}
 
-	public ObjectRelational(ObjectRelational<T> members) {
+	public ObjectRelational(Members<T> members) {
 		super(members);
-		this.objectRelationalResolver = members.objectRelationalResolver;
+		if (members instanceof ObjectRelational) {
+			this.comment = ((ObjectRelational<?>) members).comment;
+			this.charsetName = ((ObjectRelational<?>) members).charsetName;
+			this.objectRelationalResolver = ((ObjectRelational<?>) members).objectRelationalResolver;
+		}
 	}
 
-	public ObjectRelational(Structure<T> members) {
-		super(members);
+	public ObjectRelational(Members<? extends Field> members, Function<? super Field, ? extends T> map) {
+		super(members, map);
+		if (members instanceof ObjectRelational) {
+			this.comment = ((ObjectRelational<?>) members).comment;
+			this.charsetName = ((ObjectRelational<?>) members).charsetName;
+			this.objectRelationalResolver = ((ObjectRelational<?>) members).objectRelationalResolver;
+		}
 	}
 
 	public ObjectRelationalResolver getObjectRelationalResolver() {
@@ -36,16 +47,35 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 	}
 
 	@Override
-	public <R extends T> ObjectRelational<R> mapStructure(Function<? super T, R> map) {
-		Structure<R> relational = super.mapStructure(map);
-		return new ObjectRelational<R>(relational);
+	protected T map(T source) {
+		T t = super.map(source);
+		if (t == null) {
+			return t;
+		}
+
+		if (this.objectRelationalResolver != null && t.objectRelationalResolver == null) {
+			if (t == source) {
+				t = clone(t);
+			}
+
+			t.objectRelationalResolver = this.objectRelationalResolver;
+		}
+		return t;
 	}
 
-	@Override
 	protected ObjectRelational<T> decorate(Structure<T> structure) {
 		ObjectRelational<T> objectRelational = new ObjectRelational<T>(structure);
-		objectRelational.objectRelationalResolver = this.objectRelationalResolver;
-		objectRelational.comment = this.comment;
+		if (objectRelational.objectRelationalResolver != null) {
+			objectRelational.objectRelationalResolver = this.objectRelationalResolver;
+		}
+
+		if (objectRelational.comment != null) {
+			objectRelational.comment = this.comment;
+		}
+
+		if (objectRelational.charsetName != null) {
+			objectRelational.charsetName = this.charsetName;
+		}
 		return objectRelational;
 	}
 

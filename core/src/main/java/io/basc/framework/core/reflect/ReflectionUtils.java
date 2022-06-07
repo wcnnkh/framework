@@ -95,6 +95,13 @@ public abstract class ReflectionUtils {
 		return target;
 	}
 
+	/**
+	 * @param <T>
+	 * @param members {@link Members#streamAll()}
+	 * @param source
+	 * @param target
+	 * @param deep
+	 */
 	public static <T> void clone(Members<Field> members, T source, T target, boolean deep) {
 		Assert.requiredArgument(members != null, "members");
 		if (source == null || target == null) {

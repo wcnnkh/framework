@@ -71,11 +71,11 @@ public interface Pageable<K, T> extends Iterable<T> {
 		return new SharedPageable<>(this);
 	}
 
-	default <TT> Pageable<K, TT> map(Function<? super T, TT> map) {
+	default <TT> Pageable<K, TT> map(Function<? super T, ? extends TT> map) {
 		return map(Function.identity(), map);
 	}
 
-	default <TK, TT> Pageable<TK, TT> map(Function<? super K, TK> keyMap, Function<? super T, TT> valueMap) {
+	default <TK, TT> Pageable<TK, TT> map(Function<? super K, ? extends  TK> keyMap, Function<? super T, ? extends TT> valueMap) {
 		return new MapPageable<>(this, keyMap, valueMap);
 	}
 }

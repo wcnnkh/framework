@@ -3,6 +3,8 @@ package io.basc.framework.sql.orm;
 import java.util.Collection;
 import java.util.Collections;
 
+import io.basc.framework.mapper.Field;
+import io.basc.framework.orm.ObjectRelationalResolver;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.CollectionUtils;
 
@@ -14,6 +16,10 @@ public class Column extends Property {
 
 	public Column(Property property) {
 		super(property);
+	}
+
+	public Column(Field property, ObjectRelationalResolver objectRelationalResolver) {
+		super(property, objectRelationalResolver);
 	}
 
 	public Column(Column column) {
@@ -34,7 +40,15 @@ public class Column extends Property {
 
 	@Override
 	public Column getParent() {
-		return (Column) super.getParent();
+		Property property = super.getParent();
+		if (property == null) {
+			return null;
+		}
+
+		if (property instanceof Column) {
+			return (Column) property;
+		}
+		return new Column(property);
 	}
 
 	public void setParent(Column column) {

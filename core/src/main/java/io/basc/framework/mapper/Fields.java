@@ -14,8 +14,6 @@ public final class Fields extends StructureDecorator<Field, Fields> {
 		return new Fields(sourceClass, parentField).withSuperclass();
 	}
 
-	protected Field parent;
-
 	public Fields(Class<?> sourceClass) {
 		this(sourceClass, null);
 	}
@@ -26,8 +24,7 @@ public final class Fields extends StructureDecorator<Field, Fields> {
 
 	public Fields(Class<?> sourceClass, Field parent,
 			Function<Class<?>, ? extends Stream<? extends AccessibleField>> processor) {
-		super(sourceClass, processor.andThen((e) -> e.map((o) -> new Field(parent, sourceClass, o))));
-		this.parent = parent;
+		super(sourceClass, parent, processor.andThen((e) -> e.map((o) -> new Field(parent, sourceClass, o))));
 	}
 
 	public Fields(Structure<Field> members) {
@@ -41,7 +38,7 @@ public final class Fields extends StructureDecorator<Field, Fields> {
 		}
 		return new Fields(structure);
 	}
-	
+
 	@Override
 	protected Field clone(Field source) {
 		return source.clone();

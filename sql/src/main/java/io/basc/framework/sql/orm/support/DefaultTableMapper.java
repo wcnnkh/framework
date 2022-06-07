@@ -6,7 +6,10 @@ import java.util.LinkedHashSet;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.mapper.FieldDescriptor;
+import io.basc.framework.orm.ObjectRelational;
+import io.basc.framework.orm.Property;
 import io.basc.framework.sql.ResultSetMapper;
+import io.basc.framework.sql.orm.Column;
 import io.basc.framework.sql.orm.IndexInfo;
 import io.basc.framework.sql.orm.TableMapper;
 import io.basc.framework.sql.orm.TableStructure;
@@ -59,6 +62,15 @@ public class DefaultTableMapper extends ResultSetMapper implements TableMapper {
 
 	@Override
 	public TableStructure getStructure(Class<?> entityClass) {
-		return TableMapper.super.getStructure(entityClass);
+		if (!isStructureRegistred(entityClass)) {
+			return TableMapper.super.getStructure(entityClass);
+		}
+
+		ObjectRelational<? extends Property> objectRelational = super.getStructure(entityClass);
+		if (objectRelational instanceof TableStructure) {
+			return (TableStructure) objectRelational;
+		}
+
+		return new TableStructure(objectRelational, (e) -> new Column(e, this));
 	}
 }

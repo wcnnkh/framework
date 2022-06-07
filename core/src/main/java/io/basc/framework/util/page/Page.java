@@ -22,12 +22,12 @@ public interface Page<K, T> extends Pageable<K, T> {
 	}
 
 	@Override
-	default <TT> Page<K, TT> map(Function<? super T, TT> map) {
+	default <TT> Page<K, TT> map(Function<? super T, ? extends TT> map) {
 		return map(Function.identity(), map);
 	}
 
 	@Override
-	default <TK, TT> Page<TK, TT> map(Function<? super K, TK> keyMap, Function<? super T, TT> valueMap) {
+	default <TK, TT> Page<TK, TT> map(Function<? super K, ? extends TK> keyMap, Function<? super T, ? extends TT> valueMap) {
 		return new MapPage<>(this, keyMap, valueMap);
 	}
 }

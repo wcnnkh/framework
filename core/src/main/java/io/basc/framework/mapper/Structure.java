@@ -29,19 +29,57 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 	protected Collection<String> aliasNames;
 	private T parent;
 
+	/**
+	 * @param members 支持Structure入参
+	 */
 	public Structure(Members<T> members) {
 		super(members);
+		if (members instanceof Structure) {
+			this.name = ((Structure<?>) members).name;
+			this.aliasNames = ((Structure<?>) members).aliasNames;
+			this.parent = ((Structure<T>) members).parent;
+		}
 	}
 
-	public Structure(Class<?> sourceClass, Function<Class<?>, ? extends Stream<T>> processor) {
+	public Structure(Class<?> sourceClass, T parent, Function<Class<?>, ? extends Stream<T>> processor) {
 		super(sourceClass, processor);
+		this.parent = parent;
 	}
 
-	public Structure(Structure<T> members) {
-		super(members);
-		this.parent = members.parent;
-		this.aliasNames = members.aliasNames;
-		this.name = members.name;
+	/**
+	 * @param members 支持Structure入参
+	 * @param map
+	 */
+	public Structure(Members<? extends Field> members, Function<? super Field, ? extends T> map) {
+		super(members.map(map));
+		if (members instanceof Structure) {
+			this.name = ((Structure<?>) members).name;
+			this.aliasNames = ((Structure<?>) members).aliasNames;
+			this.parent = map(map.apply(((Structure<?>) members).parent));
+		}
+	}
+
+	protected T map(T source) {
+		if (this.parent == null) {
+			return source;
+		}
+
+		if (source == null) {
+			return source;
+		}
+
+		if (source.hasParent()) {
+			return source;
+		}
+
+		T t = clone(source);
+		t.setParent(this.parent);
+		return t;
+	}
+
+	@Override
+	public <S> Members<S> mapProcessor(Function<Stream<T>, ? extends Stream<S>> processor) {
+		return super.mapProcessor((s) -> processor.apply(s.map((e) -> map(e))));
 	}
 
 	@Override
@@ -155,11 +193,6 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 	public Structure<T> exclude(Collection<String> names) {
 		return exclude((e) -> (e.isSupportGetter() && names.contains(e.getGetter().getName()))
 				|| (e.isSupportSetter() && names.contains(e.getSetter().getName())));
-	}
-
-	public <R extends T> Structure<R> mapStructure(Function<? super T, R> map) {
-		Members<R> members = map(map);
-		return new Structure<R>(members);
 	}
 
 	@Nullable
