@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 
 import io.basc.framework.aop.support.ProxyUtils;
 import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
@@ -68,10 +69,9 @@ public abstract class AbstractObjectRelationalMapper<S, E extends Throwable> ext
 	}
 
 	@Override
-	public Boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+	public boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isIgnore(entityClass, descriptor);
-		return v == null ? false : v;
 	}
 
 	private String getDefaultName(ParameterDescriptor descriptor) {
@@ -145,38 +145,34 @@ public abstract class AbstractObjectRelationalMapper<S, E extends Throwable> ext
 	}
 
 	@Override
-	public Boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+	public boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isPrimaryKey(entityClass, descriptor);
-		return v == null ? false : v;
 	}
 
 	@Override
-	public Boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
-				.isNullable(entityClass, descriptor);
-		return v == null ? !isPrimaryKey(entityClass, descriptor) : v;
+	public boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return !isPrimaryKey(entityClass, descriptor) && ObjectRelationalResolverExtendChain
+				.build(objectRelationalResolverExtendServices.iterator()).isNullable(entityClass, descriptor);
 	}
 
 	@Override
-	public Boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
-				.isEntity(entityClass, descriptor);
-		return v == null ? isEntity(descriptor.getType()) : v;
+	public boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return super.isEntity(entityClass, descriptor) || ObjectRelationalResolverExtendChain
+				.build(objectRelationalResolverExtendServices.iterator()).isEntity(entityClass, descriptor);
 	}
 
 	@Override
-	public Boolean isEntity(Class<?> entityClass) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
-				.isEntity(entityClass);
-		return v == null ? false : v;
+	public boolean isEntity(Class<?> entityClass) {
+		return (super.isEntity(entityClass) && ReflectionUtils.getConstructor(entityClass) != null)
+				|| ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+						.isEntity(entityClass);
 	}
 
 	@Override
-	public Boolean isVersionField(Class<?> entityClass, ParameterDescriptor descriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+	public boolean isVersionField(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isVersionField(entityClass, descriptor);
-		return v == null ? false : v;
 	}
 
 	@Override
@@ -186,17 +182,15 @@ public abstract class AbstractObjectRelationalMapper<S, E extends Throwable> ext
 	}
 
 	@Override
-	public Boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+	public boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isAutoIncrement(entityClass, descriptor);
-		return v == null ? false : v;
 	}
 
 	@Override
-	public Boolean isIgnore(Class<?> entityClass) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+	public boolean isIgnore(Class<?> entityClass) {
+		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isIgnore(entityClass);
-		return v == null ? false : v;
 	}
 
 	@Override
@@ -224,17 +218,15 @@ public abstract class AbstractObjectRelationalMapper<S, E extends Throwable> ext
 	}
 
 	@Override
-	public Boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+	public boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isUnique(entityClass, descriptor);
-		return v == null ? false : v;
 	}
 
 	@Override
-	public Boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor) {
-		Boolean v = ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+	public boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor) {
+		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isIncrement(entityClass, descriptor);
-		return v == null ? false : v;
 	}
 
 	@Override

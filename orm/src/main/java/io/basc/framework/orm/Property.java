@@ -179,13 +179,11 @@ public class Property extends Field {
 	public boolean isAutoIncrement() {
 		if (autoIncrement == null && objectRelationalResolver != null) {
 			if (isSupportSetter()) {
-				Boolean b = getObjectRelationalResolver().isAutoIncrement(getDeclaringClass(), getSetter());
-				return b == null ? false : b;
+				return getObjectRelationalResolver().isAutoIncrement(getDeclaringClass(), getSetter());
 			}
 
 			if (isSupportGetter()) {
-				Boolean b = getObjectRelationalResolver().isAutoIncrement(getDeclaringClass(), getGetter());
-				return b == null ? false : b;
+				return getObjectRelationalResolver().isAutoIncrement(getDeclaringClass(), getGetter());
 			}
 		}
 		return autoIncrement;
@@ -202,13 +200,11 @@ public class Property extends Field {
 	public boolean isIncrement() {
 		if (increment == null && objectRelationalResolver != null) {
 			if (isSupportSetter()) {
-				Boolean b = objectRelationalResolver.isIncrement(getDeclaringClass(), getSetter());
-				return b == null ? false : b;
+				return objectRelationalResolver.isIncrement(getDeclaringClass(), getSetter());
 			}
 
 			if (isSupportGetter()) {
-				Boolean b = objectRelationalResolver.isIncrement(getDeclaringClass(), getGetter());
-				return b == null ? false : b;
+				return objectRelationalResolver.isIncrement(getDeclaringClass(), getGetter());
 			}
 		}
 		return increment == null ? false : increment;
@@ -217,17 +213,11 @@ public class Property extends Field {
 	public boolean isNullable() {
 		if (nullable == null && objectRelationalResolver != null) {
 			if (isSupportSetter()) {
-				Boolean b = objectRelationalResolver.isNullable(getDeclaringClass(), getSetter());
-				if (b != null) {
-					return b;
-				}
+				return objectRelationalResolver.isNullable(getDeclaringClass(), getSetter());
 			}
 
 			if (isSupportGetter()) {
-				Boolean b = objectRelationalResolver.isNullable(getDeclaringClass(), getGetter());
-				if (b != null) {
-					return b;
-				}
+				return objectRelationalResolver.isNullable(getDeclaringClass(), getGetter());
 			}
 		}
 		return nullable == null ? !isPrimaryKey() : nullable;
@@ -236,13 +226,11 @@ public class Property extends Field {
 	public boolean isPrimaryKey() {
 		if (primaryKey == null && objectRelationalResolver != null) {
 			if (isSupportGetter()) {
-				Boolean b = objectRelationalResolver.isPrimaryKey(getDeclaringClass(), getGetter());
-				return b == null ? false : b;
+				return objectRelationalResolver.isPrimaryKey(getDeclaringClass(), getGetter());
 			}
 
 			if (isSupportSetter()) {
-				Boolean b = objectRelationalResolver.isPrimaryKey(getDeclaringClass(), getSetter());
-				return b == null ? false : b;
+				return objectRelationalResolver.isPrimaryKey(getDeclaringClass(), getSetter());
 			}
 		}
 		return primaryKey == null ? false : primaryKey;
@@ -251,13 +239,11 @@ public class Property extends Field {
 	public boolean isUnique() {
 		if (unique == null && objectRelationalResolver != null) {
 			if (isSupportGetter()) {
-				Boolean b = objectRelationalResolver.isUnique(getDeclaringClass(), getGetter());
-				return b == null ? false : b;
+				return objectRelationalResolver.isUnique(getDeclaringClass(), getGetter());
 			}
 
 			if (isSupportSetter()) {
-				Boolean b = objectRelationalResolver.isUnique(getDeclaringClass(), getSetter());
-				return b == null ? false : b;
+				return objectRelationalResolver.isUnique(getDeclaringClass(), getSetter());
 			}
 		}
 		return unique == null ? false : unique;
@@ -266,13 +252,11 @@ public class Property extends Field {
 	public boolean isVersion() {
 		if (version == null) {
 			if (isSupportSetter()) {
-				Boolean b = objectRelationalResolver.isVersionField(getDeclaringClass(), getSetter());
-				return b == null ? false : b;
+				return objectRelationalResolver.isVersionField(getDeclaringClass(), getSetter());
 			}
 
 			if (isSupportGetter()) {
-				Boolean b = objectRelationalResolver.isVersionField(getDeclaringClass(), getGetter());
-				return b == null ? false : b;
+				return objectRelationalResolver.isVersionField(getDeclaringClass(), getGetter());
 			}
 		}
 		return version == null ? false : version;

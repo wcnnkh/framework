@@ -11,7 +11,7 @@ import io.basc.framework.mapper.StructureFactory;
 public interface ObjectRelationalFactory extends ObjectRelationalResolver, StructureFactory {
 
 	@Override
-	default Boolean isEntity(Class<?> entityClass) {
+	default boolean isEntity(Class<?> entityClass) {
 		return StructureFactory.super.isEntity(entityClass);
 	}
 

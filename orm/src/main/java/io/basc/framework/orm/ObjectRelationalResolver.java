@@ -8,9 +8,9 @@ import io.basc.framework.util.comparator.Sort;
 import java.util.Collection;
 
 public interface ObjectRelationalResolver {
-	Boolean isIgnore(Class<?> entityClass);
+	boolean isIgnore(Class<?> entityClass);
 
-	Boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor);
+	boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	String getName(Class<?> entityClass, ParameterDescriptor descriptor);
 
@@ -20,15 +20,15 @@ public interface ObjectRelationalResolver {
 
 	Collection<String> getAliasNames(Class<?> entityClass);
 
-	Boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor);
+	boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor);
 
-	Boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor);
+	boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor);
 
-	Boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor);
+	boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor);
 
-	Boolean isEntity(Class<?> entityClass);
+	boolean isEntity(Class<?> entityClass);
 
-	Boolean isVersionField(Class<?> entityClass, ParameterDescriptor descriptor);
+	boolean isVersionField(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	/**
 	 * 获取值的范围
@@ -46,7 +46,7 @@ public interface ObjectRelationalResolver {
 	 * @param descriptor
 	 * @return
 	 */
-	Boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor);
+	boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	String getComment(Class<?> entityClass);
 
@@ -56,7 +56,7 @@ public interface ObjectRelationalResolver {
 
 	String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor);
 
-	Boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor);
+	boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	/**
 	 * 是否应该是增量操作 value = value + ?
@@ -65,7 +65,7 @@ public interface ObjectRelationalResolver {
 	 * @param descriptor
 	 * @return
 	 */
-	Boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor);
+	boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	@Nullable
 	Sort getSort(Class<?> entityClass, ParameterDescriptor descriptor);

@@ -13,7 +13,7 @@ public class TransfRelationalMapping extends DefaultObjectRelationalMapper {
 	public static final ObjectRelationalFactory INSTANCE = new TransfRelationalMapping();
 
 	@Override
-	public Boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor) {
+	public boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor) {
 		return !descriptor.isAnnotationPresent(TransfColumn.class);
 	}
 

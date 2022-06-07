@@ -14,7 +14,7 @@ import io.basc.framework.value.Value;
 
 public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFactory<S, E>, StructureFactory {
 
-	default Boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
+	default boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
 		return isEntity(descriptor.getType());
 	}
 
@@ -62,7 +62,7 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 
 	default <R, X extends Throwable> R convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
 			Processor<Field, ? extends Value, X> valueProcessor) throws E, X {
-		if (Boolean.TRUE.equals(isEntity(targetType.getType()))) {
+		if (isEntity(targetType.getType())) {
 			return convert(source, sourceType, targetType, getStructure(targetType.getType()), valueProcessor);
 		}
 		return convert(source, sourceType, targetType);

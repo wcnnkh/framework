@@ -30,7 +30,7 @@ public interface StructureFactory {
 	 */
 	void registerStructure(Class<?> entityClass, Structure<? extends Field> structure);
 
-	default Boolean isEntity(Class<?> type) {
+	default boolean isEntity(Class<?> type) {
 		return !Value.isBaseType(type) && type != Object.class && ReflectionApi.isInstance(type)
 				&& !Map.class.isAssignableFrom(type) && !Collection.class.isAssignableFrom(type);
 	}
