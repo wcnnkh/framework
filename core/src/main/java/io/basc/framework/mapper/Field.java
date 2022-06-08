@@ -264,4 +264,46 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 		sb.append(super.toString());
 		return sb.toString();
 	}
+
+	/**
+	 * @param structure
+	 * @param strategyType 1是 getter 2是setter 其他是自由选择
+	 * @return
+	 */
+	public <T extends Field> Structure<T> withEntityTo(Structure<T> structure, int strategyType) {
+		Structure<T> entity;
+		if (strategyType == 1) {
+			if (!isSupportGetter()) {
+				return structure;
+			}
+
+			entity = structure.jumpTo(getGetter().getType());
+		} else if (strategyType == 2) {
+			if (!isSupportSetter()) {
+				return structure;
+			}
+
+			entity = structure.jumpTo(getSetter().getType());
+		} else {
+			if (isSupportSetter()) {
+				entity = structure.jumpTo(getSetter().getType());
+			} else if (isSupportGetter()) {
+				entity = structure.jumpTo(getGetter().getType());
+			} else {
+				return structure;
+			}
+		}
+
+		entity = entity.setParentField(this);
+		return structure.with(entity);
+	}
+
+	public <T extends Field> Structure<T> withGetterEntityTo(Structure<T> structure) {
+		if (!isSupportGetter()) {
+			return structure;
+		}
+
+		Structure<T> entity = structure.jumpTo(getGetter().getType()).setParentField(this);
+		return structure.with(entity);
+	}
 }
