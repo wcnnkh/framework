@@ -72,8 +72,7 @@ public class DefaultLuceneMapper extends AbstractObjectRelationalMapper<Document
 			if (column.getType() == byte[].class) {
 				term = new Term(column.getName(), new BytesRef((byte[]) column.get()));
 			} else {
-				term = new Term(column.getName(), (String) getConversionService().convert(column.get(),
-						column.getTypeDescriptor(), TypeDescriptor.valueOf(String.class)));
+				term = new Term(column.getName(), column.convert(String.class, getConversionService()));
 			}
 			return new TermQuery(term);
 		} else if (conditionKeywords.getInKeywords().exists(condition.getCondition())) {
@@ -105,8 +104,7 @@ public class DefaultLuceneMapper extends AbstractObjectRelationalMapper<Document
 			if (NumberUtils.isInteger(column.getType())) {
 				long min = 0;
 				long max = 0;
-				Long value = (Long) getConversionService().convert(column.getValue(), column.getTypeDescriptor(),
-						TypeDescriptor.valueOf(Long.class));
+				Long value = column.getAsLong();
 				if (conditionKeywords.getEqualOrGreaterThanKeywords().exists(condition.getCondition())) {
 					max = Long.MAX_VALUE;
 					min = value;
@@ -125,8 +123,7 @@ public class DefaultLuceneMapper extends AbstractObjectRelationalMapper<Document
 				}
 				return LongPoint.newRangeQuery(column.getName(), min, max);
 			} else {
-				String value = (String) getConversionService().convert(column.getValue(), column.getTypeDescriptor(),
-						TypeDescriptor.valueOf(String.class));
+				String value = column.convert(String.class, getConversionService());
 				String max = null;
 				String min = null;
 				boolean includeLower = false;

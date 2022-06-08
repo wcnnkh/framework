@@ -6,17 +6,20 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.StaticSupplier;
 
 public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private transient Converter<? super Object, ? extends Object, ? extends RuntimeException> converter;
-	private Object value;
+	private Supplier<? extends Object> valueSupplier;
 	private TypeDescriptor typeDescriptor;
 
 	public AnyValue(Object value) {
@@ -34,21 +37,34 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 
 	public AnyValue(Object value, @Nullable TypeDescriptor typeDescriptor,
 			@Nullable Converter<? super Object, ? extends Object, ? extends RuntimeException> converter) {
-		this.value = value;
+		this(new StaticSupplier<>(value), typeDescriptor, converter);
+	}
+
+	public AnyValue(Supplier<? extends Object> valueSupplier, @Nullable TypeDescriptor typeDescriptor,
+			@Nullable Converter<? super Object, ? extends Object, ? extends RuntimeException> converter) {
+		this.valueSupplier = valueSupplier;
 		this.typeDescriptor = typeDescriptor;
 		this.converter = converter;
 	}
 
 	public AnyValue(AnyValue value) {
 		if (value != null) {
-			this.value = value.value;
+			this.valueSupplier = value.valueSupplier;
 			this.typeDescriptor = value.typeDescriptor;
 			this.converter = value.converter;
 		}
 	}
 
 	@Override
-	public TypeDescriptor getTypeDescriptor() {
+	public final TypeDescriptor getTypeDescriptor() {
+		if (typeDescriptor != null) {
+			return typeDescriptor;
+		}
+
+		return getTypeDescriptor(get());
+	}
+
+	protected TypeDescriptor getTypeDescriptor(Object value) {
 		if (typeDescriptor != null) {
 			return typeDescriptor;
 		}
@@ -68,6 +84,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public String getAsString() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -88,6 +105,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public Byte getAsByte() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -107,6 +125,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public byte getAsByteValue() {
+		Object value = get();
 		if (value == null) {
 			return 0;
 		}
@@ -126,6 +145,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public Short getAsShort() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -145,6 +165,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public short getAsShortValue() {
+		Object value = get();
 		if (value == null) {
 			return 0;
 		}
@@ -164,6 +185,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public Integer getAsInteger() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -183,6 +205,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public int getAsIntValue() {
+		Object value = get();
 		if (value == null) {
 			return 0;
 		}
@@ -202,6 +225,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public Long getAsLong() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -221,6 +245,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public long getAsLongValue() {
+		Object value = get();
 		if (value == null) {
 			return 0;
 		}
@@ -240,6 +265,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public Boolean getAsBoolean() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -259,6 +285,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public boolean getAsBooleanValue() {
+		Object value = get();
 		if (value == null) {
 			return false;
 		}
@@ -278,6 +305,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public Float getAsFloat() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -297,6 +325,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public float getAsFloatValue() {
+		Object value = get();
 		if (value == null) {
 			return 0;
 		}
@@ -316,6 +345,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public Double getAsDouble() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -335,6 +365,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public double getAsDoubleValue() {
+		Object value = get();
 		if (value == null) {
 			return 0;
 		}
@@ -354,6 +385,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public char getAsChar() {
+		Object value = get();
 		if (value == null) {
 			return 0;
 		}
@@ -369,6 +401,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public Character getAsCharacter() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -384,6 +417,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public BigInteger getAsBigInteger() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -403,6 +437,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public BigDecimal getAsBigDecimal() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -426,6 +461,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public Number getAsNumber() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -441,6 +477,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public Class<?> getAsClass() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -456,6 +493,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public Enum<?> getAsEnum(Class<?> enumType) {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -473,6 +511,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 
 	@Override
 	protected Object getAsNonBaseType(TypeDescriptor type) {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -489,16 +528,37 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 		if (value instanceof Value) {
 			return ((Value) value).getAsObject(type);
 		}
-		return getConverter().convert(get(), getTypeDescriptor(), type);
+		return getConverter().convert(value, getTypeDescriptor(value), type);
+	}
+
+	@Override
+	public <E extends Throwable> Object convert(TypeDescriptor targetType,
+			Converter<? super Object, ? extends Object, E> converter) throws E {
+		Object value = get();
+		if (value == null) {
+			return null;
+		}
+
+		Class<?> rawClass = targetType.getType();
+		if (rawClass == Object.class || rawClass == null) {
+			return value;
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).convert(targetType, converter);
+		}
+		return converter.convert(value, getTypeDescriptor(value), targetType);
 	}
 
 	@Override
 	public int hashCode() {
+		Object value = get();
 		return value == null ? super.hashCode() : value.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
+		Object value = get();
 		if (value == null) {
 			return false;
 		}
@@ -508,7 +568,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 		}
 
 		if (obj instanceof AnyValue) {
-			return ObjectUtils.equals(value, ((AnyValue) obj).value);
+			return ObjectUtils.equals(value, ((AnyValue) obj).get());
 		}
 
 		return false;
@@ -516,6 +576,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 
 	@SuppressWarnings("rawtypes")
 	public boolean isEmpty() {
+		Object value = get();
 		if (value == null) {
 			return true;
 		}
@@ -547,6 +608,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 			return false;
 		}
 
+		Object value = get();
 		if (value instanceof Number) {
 			return true;
 		}
@@ -559,11 +621,16 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 
 	@Override
 	public Object get() {
+		if (valueSupplier == null) {
+			return null;
+		}
+
+		Object value = valueSupplier.get();
 		if (value == null) {
 			return null;
 		}
 
-		if (typeDescriptor != null && Value.class.isAssignableFrom(typeDescriptor.getType())) {
+		if (typeDescriptor != null && ClassUtils.isAssignableValue(typeDescriptor.getType(), value)) {
 			return value;
 		}
 
@@ -573,17 +640,17 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 		return value;
 	}
 
-	public Object getValue() {
-		return value;
-	}
-
 	@Override
 	public AnyValue clone() {
 		return new AnyValue(this);
 	}
 
 	public void setValue(Object value) {
-		this.value = value;
+		setValueSupplier(new StaticSupplier<Object>(value));
+	}
+
+	public void setValueSupplier(Supplier<? extends Object> valueSupplier) {
+		this.valueSupplier = valueSupplier;
 	}
 
 	public void setConverter(Converter<? super Object, ? extends Object, ? extends RuntimeException> converter) {

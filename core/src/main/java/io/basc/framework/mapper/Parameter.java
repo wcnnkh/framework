@@ -2,9 +2,11 @@ package io.basc.framework.mapper;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.function.Supplier;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.AnyValue;
@@ -27,8 +29,13 @@ public class Parameter extends AnyValue implements ParameterDescriptor {
 		this(name, value, null);
 	}
 
-	public Parameter(String name, Object value, TypeDescriptor typeDescriptor) {
+	public Parameter(String name, Object value, @Nullable TypeDescriptor typeDescriptor) {
 		super(value, typeDescriptor);
+		this.name = name;
+	}
+
+	public Parameter(String name, Supplier<? extends Object> valueSupplier, @Nullable TypeDescriptor typeDescriptor) {
+		super(valueSupplier, typeDescriptor);
 		this.name = name;
 	}
 
