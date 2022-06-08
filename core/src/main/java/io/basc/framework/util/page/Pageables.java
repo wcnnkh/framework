@@ -1,10 +1,17 @@
 package io.basc.framework.util.page;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
 import io.basc.framework.util.XUtils;
+import io.basc.framework.util.stream.Processor;
 
 public interface Pageables<K, T> extends Pageable<K, T> {
 	Pageables<K, T> jumpTo(K cursorId);
@@ -41,5 +48,27 @@ public interface Pageables<K, T> extends Pageable<K, T> {
 
 	default Pageable<K, T> all() {
 		return new StreamPageable<K, T>(getCursorId(), () -> streamAll(), null);
+	}
+
+	default <V> List<Future<V>> invokeAll(ExecutorService executorService, long timeout, TimeUnit timeUnit,
+			Processor<? super Pageable<K, T>, ? extends V, ? extends Exception> processor) throws InterruptedException {
+		return executorService.invokeAll(PageSupport.toGroupTasks(this, processor), timeout, timeUnit);
+	}
+
+	default <V> V invokeAny(ExecutorService executorService, long timeout, TimeUnit timeUnit,
+			Processor<? super Pageable<K, T>, ? extends V, ? extends Exception> processor)
+			throws InterruptedException, ExecutionException, TimeoutException {
+		return executorService.invokeAny(PageSupport.toGroupTasks(this, processor), timeout, timeUnit);
+	}
+
+	default <V> List<Future<V>> invokeAll(ExecutorService executorService,
+			Processor<? super Pageable<K, T>, ? extends V, ? extends Exception> processor) throws InterruptedException {
+		return executorService.invokeAll(PageSupport.toGroupTasks(this, processor));
+	}
+
+	default <V> V invokeAny(ExecutorService executorService,
+			Processor<? super Pageable<K, T>, ? extends V, ? extends Exception> processor)
+			throws InterruptedException, ExecutionException {
+		return executorService.invokeAny(PageSupport.toGroupTasks(this, processor));
 	}
 }

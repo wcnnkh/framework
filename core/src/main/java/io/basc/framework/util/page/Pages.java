@@ -29,8 +29,7 @@ public interface Pages<K, T> extends Page<K, T>, Pageables<K, T> {
 
 	@Override
 	default Page<K, T> all() {
-		return new StreamPage<K, T>(getCursorId(), () -> streamAll(), null,
-				getTotal(), getTotal());
+		return new StreamPage<K, T>(getCursorId(), () -> streamAll(), null, getTotal(), getTotal());
 	}
 
 	Pages<K, T> jumpTo(K cursorId, long count);
@@ -44,7 +43,6 @@ public interface Pages<K, T> extends Page<K, T>, Pageables<K, T> {
 	 */
 	default Paginations<T> toPaginations(long start, long limit) {
 		return new StreamPaginations<T>(getTotal(), start, limit,
-				(s, count) -> StreamProcessorSupport.cursor(
-						Pages.this.streamAll()).limit(s, count));
+				(s, count) -> StreamProcessorSupport.cursor(Pages.this.streamAll()).limit(s, count));
 	}
 }
