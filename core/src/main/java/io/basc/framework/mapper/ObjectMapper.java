@@ -30,7 +30,7 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 	default void transform(S source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType)
 			throws E, ConverterNotFoundException {
 		if (isTransformerRegistred(targetType.getType())) {
-			ReversibleMapperFactory.super.convert(source, sourceType, targetType);
+			ReversibleMapperFactory.super.transform(source, sourceType, target, targetType);
 			return;
 		}
 
@@ -123,12 +123,31 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 
 	Processor<Field, Value, E> getValueProcessor(S source, TypeDescriptor sourceType) throws E;
 
+	@Override
+	default <R extends S> R invert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
+		if (isInverterRegistred(sourceType.getType())) {
+			return ReversibleMapperFactory.super.invert(source, sourceType, targetType);
+		}
+
+		return invert(source, sourceType, getStructure(sourceType.getType()), targetType);
+	}
+
 	@SuppressWarnings("unchecked")
 	default <R extends S> R invert(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
 			TypeDescriptor targetType) throws E {
 		R target = (R) newInstance(targetType);
 		reverseTransform(source, sourceType, sourceStructure, target, targetType);
 		return target;
+	}
+
+	@Override
+	default void reverseTransform(Object source, TypeDescriptor sourceType, S target, TypeDescriptor targetType)
+			throws E {
+		if (isReverseTransformerRegistred(sourceType.getType())) {
+			ReversibleMapperFactory.super.reverseTransform(source, sourceType, target, targetType);
+			return;
+		}
+		reverseTransform(source, sourceType, getStructure(sourceType.getType()), target, targetType);
 	}
 
 	default void reverseTransform(Object source, Structure<? extends Field> sourceStructure, S target)
@@ -139,7 +158,7 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 
 	default void reverseTransform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
 			S target, TypeDescriptor targetType) throws E, ConverterNotFoundException {
-		reverseTransform(sourceStructure, sourceType, sourceStructure.stream().iterator(), target, targetType);
+		reverseTransform(source, sourceType, sourceStructure.stream().iterator(), target, targetType);
 	}
 
 	default void reverseTransform(Object source, Collection<? extends Field> properties, S target)

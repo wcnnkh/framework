@@ -70,6 +70,6 @@ public class SimpleReverseMapperFactory<S, E extends Throwable> extends SimpleMa
 			return transformer;
 		}
 
-		return getReversibleTransformer(type);
+		return getReversibleMapper(type);
 	}
 }

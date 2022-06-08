@@ -22,13 +22,23 @@ class ValueConversionService implements ConversionService {
 		return value.getAsObject(targetType);
 	}
 
+	private boolean isValueType(Class<?> type, boolean isAssignableFrom) {
+		if (Value.isBaseType(type)) {
+			return true;
+		}
+
+		if (isAssignableFrom) {
+			return Value.class.isAssignableFrom(type);
+		} else {
+			return Value.class == type || AnyValue.class == type;
+		}
+	}
+
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (sourceType == null || targetType == null) {
 			return false;
 		}
 
-		return Value.isBaseType(sourceType.getType()) || Value.class.isAssignableFrom(sourceType.getType())
-				|| Value.isBaseType(targetType.getType()) || targetType.getType() == Value.class
-				|| AnyValue.class == targetType.getType();
+		return isValueType(sourceType.getType(), true) || isValueType(targetType.getType(), false);
 	}
 }

@@ -105,7 +105,22 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 
 	@Override
 	public String toString() {
-		return ReflectionUtils.toString(this);
+		if(field == null && method == null){
+			return "declaringClass [" + getDeclaringClass() + "] name [" + getName() + "]";
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		if(field != null){
+			sb.append("field[").append(field).append("]");
+		}
+		
+		if(method != null){
+			if(sb.length() != 0){
+				sb.append(" ");
+			}
+			sb.append("method[").append(method).append("]");
+		}
+		return sb.toString();
 	}
 
 	public Object get(Object instance) {
@@ -144,7 +159,7 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 			return;
 		}
 
-		java.lang.reflect.Field field = getField();
+		Field field = getField();
 		if (field != null) {
 			ReflectionUtils.makeAccessible(field);
 			try {
