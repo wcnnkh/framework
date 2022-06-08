@@ -91,6 +91,10 @@ public final class JedisUtils {
 
 	public static GeoAddParams toGeoAddParams(GeoaddOption option) {
 		GeoAddParams params = new GeoAddParams();
+		if(option == null) {
+			return params;
+		}
+		
 		switch (option) {
 		case CH:
 			params.ch();
