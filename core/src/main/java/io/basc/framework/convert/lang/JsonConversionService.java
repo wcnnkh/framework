@@ -19,10 +19,11 @@ public class JsonConversionService extends AbstractConversionService {
 		return isJsonType(sourceType.getType()) || isJsonType(targetType.getType());
 	}
 
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	@SuppressWarnings("unchecked")
+	public <R> R convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (isJsonType(sourceType.getType())) {
 			JsonElement jsonElement = (JsonElement) source;
-			return jsonElement.getAsObject(targetType.getResolvableType().getType());
+			return (R) jsonElement.getAsObject(targetType.getResolvableType().getType());
 		} else {
 			String text = (String) getConversionService().convert(source, sourceType,
 					TypeDescriptor.valueOf(String.class));

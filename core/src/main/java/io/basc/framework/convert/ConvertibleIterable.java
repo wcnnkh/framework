@@ -2,12 +2,13 @@ package io.basc.framework.convert;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.function.Function;
 
 public class ConvertibleIterable<T, V> implements Iterable<V> {
 	private final Iterable<? extends T> iterable;
-	private final Converter<T, V> converter;
+	private final Function<T, V> converter;
 
-	public ConvertibleIterable(Iterable<? extends T> iterable, Converter<T, V> converter) {
+	public ConvertibleIterable(Iterable<? extends T> iterable, Function<T, V> converter) {
 		this.iterable = iterable;
 		this.converter = converter;
 	}

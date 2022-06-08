@@ -6,29 +6,33 @@ import java.util.LinkedHashSet;
 
 import io.basc.framework.env.Sys;
 import io.basc.framework.factory.ConfigurableServices;
-import io.basc.framework.util.placeholder.PropertyResolver;
-import io.basc.framework.util.placeholder.PropertyResolverAware;
+import io.basc.framework.util.placeholder.PlaceholderFormat;
+import io.basc.framework.util.placeholder.PlaceholderFormatAware;
 
-public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolver>
-		implements HttpPatternResolver, PropertyResolverAware {
-	private PropertyResolver propertyResolver;
+public class HttpPatternResolvers extends
+		ConfigurableServices<HttpPatternResolver> implements
+		HttpPatternResolver, PlaceholderFormatAware {
+	private PlaceholderFormat placeholderFormat;
 
 	public HttpPatternResolvers() {
 		super(HttpPatternResolver.class);
 	}
 
-	public PropertyResolver getPropertyResolver() {
-		return propertyResolver == null ? Sys.env : propertyResolver;
+	public PlaceholderFormat getPlaceholderFormat() {
+		return placeholderFormat == null ? Sys.env : placeholderFormat;
 	}
 
-	public void setPropertyResolver(PropertyResolver propertyResolver) {
-		this.propertyResolver = propertyResolver;
+	public void setPlaceholderFormat(PlaceholderFormat placeholderFormat) {
+		this.placeholderFormat = placeholderFormat;
 	}
 
 	@Override
 	protected void aware(HttpPatternResolver service) {
-		if (service instanceof PropertyResolverAware) {
-			((PropertyResolverAware) service).setPropertyResolver(propertyResolver);
+		if (placeholderFormat != null) {
+			if (service instanceof PlaceholderFormatAware) {
+				((PlaceholderFormatAware) service)
+						.setPlaceholderFormat(placeholderFormat);
+			}
 		}
 		super.aware(service);
 	}

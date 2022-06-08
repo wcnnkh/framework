@@ -1,6 +1,5 @@
 package io.basc.framework.util.stream;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.util.Wrapper;
 
 public class StreamProcessorWrapper<W extends StreamProcessor<T, E>, T, E extends Throwable> extends Wrapper<W>
@@ -31,7 +30,7 @@ public class StreamProcessorWrapper<W extends StreamProcessor<T, E>, T, E extend
 	}
 
 	@Override
-	public <TE extends Throwable> StreamProcessor<T, TE> exceptionConvert(Converter<Throwable, TE> exceptionConverter) {
+	public <TE extends Throwable> StreamProcessor<T, TE> exceptionConvert(Processor<Throwable, TE, ? extends TE> exceptionConverter) {
 		return wrappedTarget.exceptionConvert(exceptionConverter);
 	}
 

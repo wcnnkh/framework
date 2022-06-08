@@ -25,12 +25,34 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 		this.method = method;
 	}
 
+	@Override
+	public Class<?> getDeclaringClass() {
+		return sourceClass;
+	}
+
 	public java.lang.reflect.Field getField() {
 		return field;
 	}
 
 	public Method getMethod() {
 		return method;
+	}
+
+	@Override
+	public boolean isSynthetic() {
+		Method method = getMethod();
+		if (method != null && field != null) {
+			return method.isSynthetic() || field.isSynthetic();
+		}
+
+		if (method != null) {
+			return method.isSynthetic();
+		}
+
+		if (field != null) {
+			return field.isSynthetic();
+		}
+		return false;
 	}
 
 	public int getModifiers() {
@@ -47,7 +69,7 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 		if (field != null) {
 			return field.getModifiers();
 		}
-		throw createNotSupportException();
+		return 0;
 	}
 
 	protected NotSupportedException createNotSupportException() {
@@ -83,22 +105,7 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 
 	@Override
 	public String toString() {
-		if (field == null && method == null) {
-			return "declaringClass [" + sourceClass + "] name [" + getName() + "]";
-		}
-
-		StringBuilder sb = new StringBuilder();
-		if (field != null) {
-			sb.append("field[").append(field).append("]");
-		}
-
-		if (method != null) {
-			if (sb.length() != 0) {
-				sb.append(" ");
-			}
-			sb.append("method[").append(method).append("]");
-		}
-		return sb.toString();
+		return ReflectionUtils.toString(this);
 	}
 
 	public Object get(Object instance) {

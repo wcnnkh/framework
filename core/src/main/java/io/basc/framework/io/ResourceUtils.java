@@ -15,9 +15,9 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.core.type.classreading.MetadataReaderFactory;
 import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.io.resolver.PropertiesResolver;
@@ -754,20 +754,16 @@ public final class ResourceUtils {
 		return new UnsafeByteArrayInputStream(data);
 	}
 
-	public static Converter<Resource, Properties> toPropertiesConverter(PropertiesResolver propertiesResolver) {
+	public static Function<Resource, Properties> toPropertiesConverter(PropertiesResolver propertiesResolver) {
 		return toPropertiesConverter(propertiesResolver, null);
 	}
 
-	public static Converter<Resource, Properties> toPropertiesConverter(PropertiesResolver propertiesResolver,
+	public static Function<Resource, Properties> toPropertiesConverter(PropertiesResolver propertiesResolver,
 			Charset charset) {
-		return new Converter<Resource, Properties>() {
-
-			@Override
-			public Properties convert(Resource o) {
-				Properties properties = new Properties();
-				propertiesResolver.resolveProperties(properties, o, charset);
-				return properties;
-			}
+		return (o) -> {
+			Properties properties = new Properties();
+			propertiesResolver.resolveProperties(properties, o, charset);
+			return properties;
 		};
 	}
 

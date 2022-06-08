@@ -8,7 +8,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.CustomLogger;
-import io.basc.framework.util.PlaceholderFormat;
+import io.basc.framework.util.PlaceholderMessage;
 import io.basc.framework.util.XUtils;
 
 public class Log4j2Logger extends CustomLogger {
@@ -66,7 +66,7 @@ public class Log4j2Logger extends CustomLogger {
 	public void log(Level level, Throwable e, String format, Object... args) {
 		org.apache.logging.log4j.Level lv = LevelCodec.INSTANCE.encode(level);
 		if (logger.isEnabled(lv)) {
-			logger.log(lv, new PlaceholderFormat(format, placeholder, args), e);
+			logger.log(lv, new PlaceholderMessage(format, placeholder, args), e);
 		}
 	}
 
@@ -74,7 +74,7 @@ public class Log4j2Logger extends CustomLogger {
 	public void log(Level level, Throwable e, Supplier<String> msg, Object... args) {
 		org.apache.logging.log4j.Level lv = LevelCodec.INSTANCE.encode(level);
 		if (logger.isEnabled(lv)) {
-			logger.log(lv, XUtils.toString(() -> new PlaceholderFormat(msg.get(), placeholder, args).toString()), e);
+			logger.log(lv, XUtils.toString(() -> new PlaceholderMessage(msg.get(), placeholder, args).toString()), e);
 		}
 	}
 }

@@ -1,20 +1,7 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.lang.NotSupportedException;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.convert.Converter;
+import io.basc.framework.convert.Transformer;
 
-public interface Mapper<S, E extends Throwable> {
-	boolean isRegistred(Class<?> type);
-
-	<T> Processor<S, T, E> getProcessor(Class<? extends T> type);
-
-	<T> void register(Class<T> type, Processor<S, ? extends T, ? extends E> processor);
-
-	default <T> T process(Class<T> type, S source) throws E {
-		Processor<S, T, E> processor = getProcessor(type);
-		if (processor == null) {
-			throw new NotSupportedException(type.getName());
-		}
-		return processor.process(source);
-	}
+public interface Mapper<S, T, E extends Throwable> extends Converter<S, T, E>, Transformer<S, T, E> {
 }

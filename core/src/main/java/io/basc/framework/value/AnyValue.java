@@ -6,32 +6,85 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Supplier;
 
-import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.StaticSupplier;
 
-public class AnyValue extends AbstractValue implements Serializable {
+public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
-	private transient ConversionService conversionService;
-	private final Object value;
+	private transient Converter<? super Object, ? extends Object, ? extends RuntimeException> converter;
+	private Supplier<? extends Object> valueSupplier;
+	private TypeDescriptor typeDescriptor;
 
 	public AnyValue(Object value) {
-		this(value, null);
+		this(value, null, null);
 	}
 
-	public AnyValue(Object value, @Nullable ConversionService conversionService) {
-		this.value = value;
-		this.conversionService = conversionService;
+	public AnyValue(Object value,
+			@Nullable Converter<? super Object, ? extends Object, ? extends RuntimeException> converter) {
+		this(value, null, converter);
 	}
 
-	public ConversionService getConversionService() {
-		return conversionService == null ? Sys.env.getConversionService() : conversionService;
+	public AnyValue(Object value, @Nullable TypeDescriptor typeDescriptor) {
+		this(value, typeDescriptor, null);
+	}
+
+	public AnyValue(Object value, @Nullable TypeDescriptor typeDescriptor,
+			@Nullable Converter<? super Object, ? extends Object, ? extends RuntimeException> converter) {
+		this(new StaticSupplier<>(value), typeDescriptor, converter);
+	}
+
+	public AnyValue(Supplier<? extends Object> valueSupplier, @Nullable TypeDescriptor typeDescriptor,
+			@Nullable Converter<? super Object, ? extends Object, ? extends RuntimeException> converter) {
+		this.valueSupplier = valueSupplier;
+		this.typeDescriptor = typeDescriptor;
+		this.converter = converter;
+	}
+
+	public AnyValue(AnyValue value) {
+		if (value != null) {
+			this.valueSupplier = value.valueSupplier;
+			this.typeDescriptor = value.typeDescriptor;
+			this.converter = value.converter;
+		}
+	}
+
+	@Override
+	public final TypeDescriptor getTypeDescriptor() {
+		if (typeDescriptor != null) {
+			return typeDescriptor;
+		}
+
+		return getTypeDescriptor(get());
+	}
+
+	protected TypeDescriptor getTypeDescriptor(Object value) {
+		if (typeDescriptor != null) {
+			return typeDescriptor;
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getTypeDescriptor();
+		}
+
+		if (value == null) {
+			return TypeDescriptor.valueOf(Object.class);
+		}
+		return TypeDescriptor.forObject(value);
+	}
+
+	public Converter<? super Object, ? extends Object, ? extends RuntimeException> getConverter() {
+		return converter == null ? Sys.env.getConversionService() : converter;
 	}
 
 	public String getAsString() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -52,6 +105,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public Byte getAsByte() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -71,6 +125,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public byte getAsByteValue() {
+		Object value = get();
 		if (value == null) {
 			return 0;
 		}
@@ -90,6 +145,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public Short getAsShort() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -109,6 +165,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public short getAsShortValue() {
+		Object value = get();
 		if (value == null) {
 			return 0;
 		}
@@ -128,6 +185,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public Integer getAsInteger() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -147,6 +205,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public int getAsIntValue() {
+		Object value = get();
 		if (value == null) {
 			return 0;
 		}
@@ -166,6 +225,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public Long getAsLong() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -185,6 +245,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public long getAsLongValue() {
+		Object value = get();
 		if (value == null) {
 			return 0;
 		}
@@ -204,6 +265,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public Boolean getAsBoolean() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -223,6 +285,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public boolean getAsBooleanValue() {
+		Object value = get();
 		if (value == null) {
 			return false;
 		}
@@ -242,6 +305,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public Float getAsFloat() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -261,6 +325,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public float getAsFloatValue() {
+		Object value = get();
 		if (value == null) {
 			return 0;
 		}
@@ -280,6 +345,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public Double getAsDouble() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -299,6 +365,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public double getAsDoubleValue() {
+		Object value = get();
 		if (value == null) {
 			return 0;
 		}
@@ -318,6 +385,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public char getAsChar() {
+		Object value = get();
 		if (value == null) {
 			return 0;
 		}
@@ -333,6 +401,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public Character getAsCharacter() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -348,6 +417,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public BigInteger getAsBigInteger() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -367,6 +437,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public BigDecimal getAsBigDecimal() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -390,6 +461,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public Number getAsNumber() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -405,6 +477,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public Class<?> getAsClass() {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -420,6 +493,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	public Enum<?> getAsEnum(Class<?> enumType) {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -437,6 +511,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 
 	@Override
 	protected Object getAsNonBaseType(TypeDescriptor type) {
+		Object value = get();
 		if (value == null) {
 			return null;
 		}
@@ -453,16 +528,37 @@ public class AnyValue extends AbstractValue implements Serializable {
 		if (value instanceof Value) {
 			return ((Value) value).getAsObject(type);
 		}
-		return getConversionService().convert(value, TypeDescriptor.forObject(value), type);
+		return getConverter().convert(value, getTypeDescriptor(value), type);
+	}
+
+	@Override
+	public <E extends Throwable> Object convert(TypeDescriptor targetType,
+			Converter<? super Object, ? extends Object, E> converter) throws E {
+		Object value = get();
+		if (value == null) {
+			return null;
+		}
+
+		Class<?> rawClass = targetType.getType();
+		if (rawClass == Object.class || rawClass == null) {
+			return value;
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).convert(targetType, converter);
+		}
+		return converter.convert(value, getTypeDescriptor(value), targetType);
 	}
 
 	@Override
 	public int hashCode() {
+		Object value = get();
 		return value == null ? super.hashCode() : value.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
+		Object value = get();
 		if (value == null) {
 			return false;
 		}
@@ -472,7 +568,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 		}
 
 		if (obj instanceof AnyValue) {
-			return ObjectUtils.equals(value, ((AnyValue) obj).value);
+			return ObjectUtils.equals(value, ((AnyValue) obj).get());
 		}
 
 		return false;
@@ -480,6 +576,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 
 	@SuppressWarnings("rawtypes")
 	public boolean isEmpty() {
+		Object value = get();
 		if (value == null) {
 			return true;
 		}
@@ -511,6 +608,7 @@ public class AnyValue extends AbstractValue implements Serializable {
 			return false;
 		}
 
+		Object value = get();
 		if (value instanceof Number) {
 			return true;
 		}
@@ -522,14 +620,44 @@ public class AnyValue extends AbstractValue implements Serializable {
 	}
 
 	@Override
-	public Object getSourceValue() {
+	public Object get() {
+		if (valueSupplier == null) {
+			return null;
+		}
+
+		Object value = valueSupplier.get();
 		if (value == null) {
 			return null;
 		}
 
+		if (typeDescriptor != null && ClassUtils.isAssignableValue(typeDescriptor.getType(), value)) {
+			return value;
+		}
+
 		if (value instanceof Value) {
-			return ((Value) value).getSourceValue();
+			return ((Value) value).get();
 		}
 		return value;
+	}
+
+	@Override
+	public AnyValue clone() {
+		return new AnyValue(this);
+	}
+
+	public void setValue(Object value) {
+		setValueSupplier(new StaticSupplier<Object>(value));
+	}
+
+	public void setValueSupplier(Supplier<? extends Object> valueSupplier) {
+		this.valueSupplier = valueSupplier;
+	}
+
+	public void setConverter(Converter<? super Object, ? extends Object, ? extends RuntimeException> converter) {
+		this.converter = converter;
+	}
+
+	public void setTypeDescriptor(TypeDescriptor typeDescriptor) {
+		this.typeDescriptor = typeDescriptor;
 	}
 }

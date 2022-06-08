@@ -1,12 +1,11 @@
 package io.basc.framework.convert.lang;
 
-import io.basc.framework.convert.Converter;
-
 import java.nio.charset.Charset;
+import java.util.function.Function;
 
-public class StringToCharsetConverter implements Converter<String, Charset> {
+public class StringToCharsetConverter implements Function<String, Charset> {
 
-	public Charset convert(String source) {
+	public Charset apply(String source) {
 		return Charset.forName(source);
 	}
 

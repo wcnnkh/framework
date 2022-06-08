@@ -20,18 +20,22 @@ import io.basc.framework.transaction.TransactionUtils;
  */
 @Provider(order = Ordered.HIGHEST_PRECEDENCE)
 public final class TransactionMethodInterceptor implements MethodInterceptor {
-	private static Logger logger = LoggerFactory.getLogger(TransactionMethodInterceptor.class);
+	private static Logger logger = LoggerFactory
+			.getLogger(TransactionMethodInterceptor.class);
 	private TransactionDefinition transactionDefinition;
 
 	public TransactionDefinition getTransactionDefinition() {
-		return transactionDefinition == null ? TransactionDefinition.DEFAULT : transactionDefinition;
+		return transactionDefinition == null ? TransactionDefinition.DEFAULT
+				: transactionDefinition;
 	}
 
-	public void setTransactionDefinition(TransactionDefinition transactionDefinition) {
+	public void setTransactionDefinition(
+			TransactionDefinition transactionDefinition) {
 		this.transactionDefinition = transactionDefinition;
 	}
 
-	private void invokerAfter(Transaction transaction, Object rtn, MethodInvoker invoker) {
+	private void invokerAfter(Transaction transaction, Object rtn,
+			MethodInvoker invoker) {
 		if (rtn != null && (rtn instanceof RollbackOnlyResult)) {
 			RollbackOnlyResult result = (RollbackOnlyResult) rtn;
 			if (result.isRollbackOnly()) {
@@ -43,10 +47,11 @@ public final class TransactionMethodInterceptor implements MethodInterceptor {
 		}
 	}
 
-	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
+	public Object intercept(MethodInvoker invoker, Object[] args)
+			throws Throwable {
 		TransactionManager transactionManager = TransactionUtils.getManager();
-		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, invoker.getSourceClass(),
-				invoker.getMethod());
+		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class,
+				invoker.getSourceClass(), invoker.getMethod());
 		if (tx == null && transactionManager.hasTransaction()) {
 			Object rtn = invoker.invoke(args);
 			invokerAfter(transactionManager.getTransaction(), rtn, invoker);
@@ -55,7 +60,8 @@ public final class TransactionMethodInterceptor implements MethodInterceptor {
 
 		TransactionDefinition transactionDefinition = tx == null ? getTransactionDefinition()
 				: new AnnotationTransactionDefinition(tx);
-		Transaction transaction = transactionManager.getTransaction(transactionDefinition);
+		Transaction transaction = transactionManager
+				.getTransaction(transactionDefinition);
 		Object v;
 		try {
 			v = invoker.invoke(args);
@@ -63,7 +69,12 @@ public final class TransactionMethodInterceptor implements MethodInterceptor {
 			transactionManager.commit(transaction);
 			return v;
 		} catch (Throwable e) {
-			transactionManager.rollback(transaction);
+			if (tx == null || tx.rollbackFor().isAssignableFrom(e.getClass())) {
+				transactionManager.rollback(transaction);
+			} else {
+				// 重复的commit会直接调用关闭
+				transactionManager.commit(transaction);
+			}
 			throw e;
 		}
 	}

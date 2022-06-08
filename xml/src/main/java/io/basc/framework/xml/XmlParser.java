@@ -99,6 +99,10 @@ public class XmlParser implements DocumentParser {
 			throws IOException, DomException, E {
 		return resource.read((is) -> {
 			Document document = parse(is);
+			if(document == null) {
+				return null;
+			}
+			
 			try {
 				return processor.process(document);
 			} catch (Throwable e) {

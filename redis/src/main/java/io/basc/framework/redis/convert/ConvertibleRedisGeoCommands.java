@@ -58,7 +58,7 @@ public interface ConvertibleRedisGeoCommands<SK, K, SV, V> extends RedisCodec<SK
 	@Override
 	default Collection<V> georadius(K key, Circle within, GeoRadiusArgs<K> args) {
 		SK k = getKeyCodec().encode(key);
-		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec().toEncodeConverter());
+		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec()::encode);
 		Collection<SV> values = getSourceRedisGeoCommands().georadius(k, within, tArgs);
 		return getValueCodec().decodeAll(values);
 	}
@@ -66,20 +66,21 @@ public interface ConvertibleRedisGeoCommands<SK, K, SV, V> extends RedisCodec<SK
 	@Override
 	default List<GeoWithin<V>> georadius(K key, Circle within, GeoRadiusWith with, GeoRadiusArgs<K> args) {
 		SK k = getKeyCodec().encode(key);
-		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec().toEncodeConverter());
+		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec()::encode);
 		Collection<GeoWithin<SV>> values = getSourceRedisGeoCommands().georadius(k, within, with, tArgs);
 		if (values == null) {
 			return Collections.emptyList();
 		}
 
-		return values.stream().map((e) -> e.convert(getValueCodec().toDecodeConverter())).collect(Collectors.toList());
+		return values.stream().map((e) -> e.convert(getValueCodec().toDecodeProcessor()::process))
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	default List<V> georadiusbymember(K key, V member, Distance distance, GeoRadiusArgs<K> args) {
 		SK k = getKeyCodec().encode(key);
 		SV tm = getValueCodec().encode(member);
-		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec().toEncodeConverter());
+		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec()::encode);
 		List<SV> values = getSourceRedisGeoCommands().georadiusbymember(k, tm, distance, tArgs);
 		return getValueCodec().decodeAll(values);
 	}
@@ -89,12 +90,13 @@ public interface ConvertibleRedisGeoCommands<SK, K, SV, V> extends RedisCodec<SK
 			GeoRadiusArgs<K> args) {
 		SK k = getKeyCodec().encode(key);
 		SV tm = getValueCodec().encode(member);
-		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec().toEncodeConverter());
+		GeoRadiusArgs<SK> tArgs = args.convert(getKeyCodec()::encode);
 		Collection<GeoWithin<SV>> values = getSourceRedisGeoCommands().georadiusbymember(k, tm, distance, with, tArgs);
 		if (values == null) {
 			return Collections.emptyList();
 		}
 
-		return values.stream().map((e) -> e.convert(getValueCodec().toDecodeConverter())).collect(Collectors.toList());
+		return values.stream().map((e) -> e.convert(getValueCodec().toDecodeProcessor()::process))
+				.collect(Collectors.toList());
 	}
 }

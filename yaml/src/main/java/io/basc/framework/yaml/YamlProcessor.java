@@ -1,20 +1,5 @@
 package io.basc.framework.yaml;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.io.IOUtils;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.WritableResource;
-import io.basc.framework.io.resolver.PropertiesResolver;
-import io.basc.framework.lang.NestedRuntimeException;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionFactory;
-import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.StringUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
@@ -40,7 +26,21 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.reader.UnicodeReader;
 import org.yaml.snakeyaml.representer.Representer;
 
-public class YamlProcessor implements Converter<Resource, Properties>, PropertiesResolver {
+import io.basc.framework.io.IOUtils;
+import io.basc.framework.io.Resource;
+import io.basc.framework.io.WritableResource;
+import io.basc.framework.io.resolver.PropertiesResolver;
+import io.basc.framework.lang.NestedRuntimeException;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionFactory;
+import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.StringUtils;
+
+public class YamlProcessor implements Function<Resource, Properties>, PropertiesResolver {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private ResolutionMethod resolutionMethod = ResolutionMethod.OVERRIDE;
@@ -456,7 +456,7 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 	}
 
 	@Override
-	public Properties convert(Resource resource) {
+	public Properties apply(Resource resource) {
 		final Properties allProperties = new Properties();
 		process(new MatchCallback() {
 

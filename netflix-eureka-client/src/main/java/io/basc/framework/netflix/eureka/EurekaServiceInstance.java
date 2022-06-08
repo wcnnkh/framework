@@ -1,15 +1,16 @@
 package io.basc.framework.netflix.eureka;
 
 import static com.netflix.appinfo.InstanceInfo.PortType.SECURE;
-import io.basc.framework.cloud.ServiceInstance;
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.util.Assert;
 
 import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
 
 import com.netflix.appinfo.InstanceInfo;
+
+import io.basc.framework.cloud.ServiceInstance;
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.util.Assert;
 
 /**
  * An Eureka-specific {@link ServiceInstance} implementation.
@@ -82,6 +83,6 @@ public class EurekaServiceInstance implements ServiceInstance {
 
 	@Override
 	public String toString() {
-		return MapperUtils.toString(this);
+		return ReflectionUtils.toString(this);
 	}
 }

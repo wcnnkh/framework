@@ -17,8 +17,6 @@ import io.basc.framework.util.CollectionFactory;
 
 @SuppressWarnings("unchecked")
 public class Copy implements Cloneable {
-	private FieldFactory fieldFactory;
-
 	/**
 	 * 如果对象实现了java.lang.Cloneable 接口，是否反射调用clone方法
 	 */
@@ -55,20 +53,6 @@ public class Copy implements Cloneable {
 
 		Copy copy = clone();
 		copy.deepCopy = deepCopy;
-		return copy;
-	}
-
-	public FieldFactory getFieldFactory() {
-		return fieldFactory == null ? MapperUtils.getFieldFactory() : fieldFactory;
-	}
-
-	public Copy setFieldFactory(FieldFactory fieldFactory) {
-		if (this.fieldFactory == fieldFactory) {
-			return this;
-		}
-
-		Copy copy = clone();
-		copy.fieldFactory = fieldFactory;
 		return copy;
 	}
 
@@ -238,8 +222,8 @@ public class Copy implements Cloneable {
 		if (source == null || target == null) {
 			return;
 		}
-		copy(getFieldFactory().getFields(entityClass, parentField).accept(FieldFeature.EXISTING_FIELD).all(), source,
-				target);
+		copy(Fields.getFields(entityClass, parentField).filter(FieldFeature.EXISTING_FIELD).withSuperclass().all(),
+				source, target);
 	}
 
 	/**
@@ -265,10 +249,10 @@ public class Copy implements Cloneable {
 		if (sourceParentField == null && targetParentField == null && targetClass.isAssignableFrom(sourceClass)) {
 			copy(targetClass, sourceParentField == targetParentField ? targetParentField : null, source, target);
 		} else {
-			copy(getFieldFactory().getFields(sourceClass, sourceParentField).accept(FieldFeature.EXISTING_GETTER_FIELD)
-					.all(), source,
-					getFieldFactory().getFields(targetClass, targetParentField)
-							.accept(FieldFeature.EXISTING_SETTER_FIELD).all(),
+			copy(Fields.getFields(sourceClass, sourceParentField).filter(FieldFeature.EXISTING_GETTER_FIELD)
+					.withSuperclass().all(), source,
+					Fields.getFields(targetClass, targetParentField).filter(FieldFeature.EXISTING_SETTER_FIELD)
+							.withSuperclass().all(),
 					target);
 		}
 	}

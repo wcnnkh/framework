@@ -16,10 +16,11 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Copy;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.Fields;
+import io.basc.framework.orm.ObjectRelational;
+import io.basc.framework.orm.Property;
+import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.message.annotation.QueryParams;
-import io.basc.framework.web.message.support.AbstractParamsWebMessageConverter;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.core.util.ParameterProcessor;
 import io.swagger.v3.jaxrs2.ResolvedParameter;
@@ -61,8 +62,8 @@ public class BascOpenAPIExtendsion extends AbstractOpenAPIExtension {
 	public void resoleQueryParams(List<Parameter> parameters, List<Parameter> formParameters, final Type type,
 			Set<Type> typesToSkip, javax.ws.rs.Consumes classConsumes, javax.ws.rs.Consumes methodConsumes,
 			Components components, boolean includeRequestBody, JsonView jsonViewAnnotation) {
-		Fields fields = AbstractParamsWebMessageConverter.getObjectRelationalMapping()
-				.getFields(constructType(type).getRawClass()).all();
+		ObjectRelational<? extends Property> fields = OrmUtils.getMapper()
+				.getStructure(constructType(type).getRawClass()).all();
 		for (final Field field : fields) {
 			final Iterator<OpenAPIExtension> extensions = OpenAPIExtensions.chain();
 			// skip hidden properties

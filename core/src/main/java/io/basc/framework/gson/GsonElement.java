@@ -18,7 +18,7 @@ public final class GsonElement extends AbstractJsonElement {
 	}
 
 	@Override
-	public Object getSourceValue() {
+	public Object get() {
 		return gsonJsonElement;
 	}
 

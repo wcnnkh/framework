@@ -182,8 +182,8 @@ public final class XmlBeanUtils {
 		return ClassUtils.forName(className, classLoader);
 	}
 
-	public static <T> T readResourceBeans(ResourceLoader resourceLoader, Resource resource,
-			Processor<NodeList, T, Throwable> processor) {
+	public static <T, E extends Throwable> T readResourceBeans(ResourceLoader resourceLoader, Resource resource,
+			Processor<NodeList, T, E> processor) throws E {
 		return XmlUtils.getTemplate().parse(resource, (document) -> {
 			Node node = document.getDocumentElement();
 			if (!"beans".equals(node.getNodeName())) {

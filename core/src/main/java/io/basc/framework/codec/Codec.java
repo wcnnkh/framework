@@ -40,4 +40,8 @@ public interface Codec<D, E> extends Encoder<D, E>, Decoder<E, D> {
 	default Codec<E, D> reversal() {
 		return new ReversalCodec<E, D>(this);
 	}
+
+	public static <R> Codec<R, R> identity() {
+		return new IdentityCodec<>();
+	}
 }

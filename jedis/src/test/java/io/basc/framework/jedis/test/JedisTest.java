@@ -2,12 +2,14 @@ package io.basc.framework.jedis.test;
 
 import java.util.List;
 
+import io.basc.framework.data.geo.Marker;
 import io.basc.framework.jedis.JedisClient;
 import io.basc.framework.redis.Message;
 import io.basc.framework.redis.MessageListener;
 import io.basc.framework.redis.Redis;
 import io.basc.framework.redis.RedisClient;
 import io.basc.framework.redis.RedisConnection;
+import io.basc.framework.redis.RedisLbs;
 import io.basc.framework.redis.RedisPipeline;
 import io.basc.framework.redis.RedisResponse;
 import io.basc.framework.util.XUtils;
@@ -56,6 +58,11 @@ public class JedisTest {
 		System.out.println("pres1:" + response1.get());
 		System.out.println("pres2:" + response2.get());
 		System.out.println("press:" + pipelineResponses);
+
+		RedisLbs<String, String> lbs = new RedisLbs<String, String>(redis, "aaa");
+		lbs.report(new Marker<String>("a", 1, 1));
+		Marker<String> marker = lbs.getMarker("a");
+		System.out.println(marker);
 		connection.close();
 
 		new Thread(() -> {

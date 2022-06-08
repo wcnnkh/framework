@@ -16,6 +16,7 @@ public class ResourceResolverConversionService extends ConditionalConversionServ
 		this.resourceResolver = resourceResolver;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		return resourceResolver.resolveResource((Resource) source, targetType);

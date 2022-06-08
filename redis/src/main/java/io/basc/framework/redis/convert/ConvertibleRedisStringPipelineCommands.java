@@ -102,14 +102,14 @@ public interface ConvertibleRedisStringPipelineCommands<SK, K, SV, V>
 
 	@Override
 	default RedisResponse<String> mset(Map<K, V> pairs) {
-		return getSourceRedisStringCommands().mset(CollectionFactory.convert(pairs, getKeyCodec().toEncodeConverter(),
-				getValueCodec().toEncodeConverter()));
+		return getSourceRedisStringCommands().mset(CollectionFactory.convert(pairs, getKeyCodec().toEncodeProcessor(),
+				getValueCodec().toEncodeProcessor()));
 	}
 
 	@Override
 	default RedisResponse<Long> msetnx(Map<K, V> pairs) {
-		return getSourceRedisStringCommands().msetnx(CollectionFactory.convert(pairs, getKeyCodec().toEncodeConverter(),
-				getValueCodec().toEncodeConverter()));
+		return getSourceRedisStringCommands().msetnx(CollectionFactory.convert(pairs, getKeyCodec().toEncodeProcessor(),
+				getValueCodec().toEncodeProcessor()));
 	}
 
 	@Override

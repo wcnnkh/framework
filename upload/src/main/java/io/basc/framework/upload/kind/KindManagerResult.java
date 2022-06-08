@@ -1,17 +1,17 @@
 package io.basc.framework.upload.kind;
 
-import io.basc.framework.http.MediaType;
-import io.basc.framework.json.JSONUtils;
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.net.MimeType;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.web.message.model.Text;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.http.MediaType;
+import io.basc.framework.json.JSONUtils;
+import io.basc.framework.net.MimeType;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.web.message.model.Text;
 
 public class KindManagerResult implements Serializable, Text {
 	private static final long serialVersionUID = 1L;
@@ -83,6 +83,6 @@ public class KindManagerResult implements Serializable, Text {
 	
 	@Override
 	public String toString() {
-		return MapperUtils.toString(this);
+		return ReflectionUtils.toString(this);
 	}
 }

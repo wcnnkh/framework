@@ -21,6 +21,7 @@ import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.ContextLoader;
 import io.basc.framework.beans.SingletonBeanRegistry;
 import io.basc.framework.beans.ioc.Ioc;
+import io.basc.framework.beans.repository.RepositoryBeanFactoryPostProcessor;
 import io.basc.framework.context.Destroy;
 import io.basc.framework.context.Init;
 import io.basc.framework.context.support.AbstractConfigurableContext;
@@ -340,6 +341,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 			ContextLoader.bindBeanFactory(this);
 			postProcessBeanFactory(new MethodBeanFactoryPostProcessor());
 			postProcessBeanFactory(new ServiceBeanFactoryPostProcessor());
+			postProcessBeanFactory(new RepositoryBeanFactoryPostProcessor());
 			postProcessBeanFactory(new ExecutorBeanFactoryPostProcessor());
 
 			for (BeanFactoryPostProcessor processor : getServiceLoader(BeanFactoryPostProcessor.class)) {

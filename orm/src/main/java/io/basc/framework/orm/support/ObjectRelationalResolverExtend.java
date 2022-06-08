@@ -1,34 +1,60 @@
 package io.basc.framework.orm.support;
 
+import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.data.domain.Range;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.orm.ForeignKey;
+import io.basc.framework.orm.ObjectRelationalResolver;
+import io.basc.framework.util.comparator.Sort;
+
 import java.util.Collection;
 
-import io.basc.framework.data.domain.Range;
-import io.basc.framework.mapper.FieldDescriptor;
-import io.basc.framework.orm.ObjectRelationalResolver;
-
 public interface ObjectRelationalResolverExtend {
-	Boolean isIgnore(Class<?> entityClass, ObjectRelationalResolver chain);
+	default boolean isIgnore(Class<?> entityClass, ObjectRelationalResolver chain) {
+		return chain.isIgnore(entityClass);
+	}
 
-	Boolean isIgnore(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain);
+	default boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.isIgnore(entityClass, descriptor);
+	}
 
-	String getName(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain);
+	default String getName(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.getName(entityClass, descriptor);
+	}
 
-	Collection<String> getAliasNames(Class<?> entityClass, FieldDescriptor fieldDescriptor,
-			ObjectRelationalResolver chain);
+	default Collection<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor,
+			ObjectRelationalResolver chain) {
+		return chain.getAliasNames(entityClass, descriptor);
+	}
 
-	String getName(Class<?> entityClass, ObjectRelationalResolver chain);
+	default String getName(Class<?> entityClass, ObjectRelationalResolver chain) {
+		return chain.getName(entityClass);
+	}
 
-	Collection<String> getAliasNames(Class<?> entityClass, ObjectRelationalResolver chain);
+	default Collection<String> getAliasNames(Class<?> entityClass, ObjectRelationalResolver chain) {
+		return chain.getAliasNames(entityClass);
+	}
 
-	Boolean isPrimaryKey(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain);
+	default boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.isPrimaryKey(entityClass, descriptor);
+	}
 
-	Boolean isNullable(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain);
+	default boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.isNullable(entityClass, descriptor);
+	}
 
-	Boolean isEntity(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain);
+	default boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.isEntity(entityClass, descriptor);
+	}
 
-	Boolean isEntity(Class<?> entityClass, ObjectRelationalResolver chain);
+	default boolean isEntity(Class<?> entityClass, ObjectRelationalResolver chain) {
+		return chain.isEntity(entityClass);
+	}
 
-	Boolean isVersionField(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain);
+	default boolean isVersionField(Class<?> entityClass, ParameterDescriptor descriptor,
+			ObjectRelationalResolver chain) {
+		return chain.isVersionField(entityClass, descriptor);
+	}
 
 	/**
 	 * 获取值的范围
@@ -37,28 +63,69 @@ public interface ObjectRelationalResolverExtend {
 	 * @param descriptor
 	 * @return
 	 */
-	Collection<Range<Double>> getNumberRanges(Class<?> entityClass, FieldDescriptor fieldDescriptor,
-			ObjectRelationalResolver chain);
+	default Collection<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor,
+			ObjectRelationalResolver chain) {
+		return chain.getNumberRanges(entityClass, descriptor);
+	}
 
 	/**
 	 * 是否自增
 	 * 
 	 * @param entityClass
-	 * @param fieldDescriptor
+	 * @param descriptor
 	 * @param chain
 	 * @return
 	 */
-	Boolean isAutoIncrement(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain);
+	default boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor,
+			ObjectRelationalResolver chain) {
+		return chain.isAutoIncrement(entityClass, descriptor);
+	}
 
-	String getComment(Class<?> entityClass, ObjectRelationalResolver chain);
+	default String getComment(Class<?> entityClass, ObjectRelationalResolver chain) {
+		return chain.getComment(entityClass);
+	}
 
-	String getComment(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain);
+	default String getComment(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.getComment(entityClass, descriptor);
+	}
 
-	String getCharsetName(Class<?> entityClass, ObjectRelationalResolver chain);
+	default String getCharsetName(Class<?> entityClass, ObjectRelationalResolver chain) {
+		return chain.getCharsetName(entityClass);
+	}
 
-	String getCharsetName(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain);
+	default String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor,
+			ObjectRelationalResolver chain) {
+		return chain.getCharsetName(entityClass, descriptor);
+	}
 
-	Boolean isUnique(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain);
+	default boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.isUnique(entityClass, descriptor);
+	}
 
-	Boolean isIncrement(Class<?> entityClass, FieldDescriptor fieldDescriptor, ObjectRelationalResolver chain);
+	default boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.isIncrement(entityClass, descriptor);
+	}
+
+	@Nullable
+	default Sort getSort(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.getSort(entityClass, descriptor);
+	}
+
+	default String getCondition(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.getCondition(entityClass, descriptor);
+	}
+
+	default String getRelationship(Class<?> entityClass, ParameterDescriptor descriptor,
+			ObjectRelationalResolver chain) {
+		return chain.getRelationship(entityClass, descriptor);
+	}
+
+	default ForeignKey getForeignKey(Class<?> entityClass, ParameterDescriptor descriptor,
+			ObjectRelationalResolver chain) {
+		return chain.getForeignKey(entityClass, descriptor);
+	}
+
+	default boolean isDisplay(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
+		return chain.isDisplay(entityClass, descriptor);
+	}
 }

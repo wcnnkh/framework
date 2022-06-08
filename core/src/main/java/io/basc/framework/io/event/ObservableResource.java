@@ -1,27 +1,22 @@
 package io.basc.framework.io.event;
 
-import io.basc.framework.convert.Converter;
+import java.util.function.Function;
+
 import io.basc.framework.event.AbstractObservable;
 import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
 import io.basc.framework.io.Resource;
 
 public class ObservableResource<T> extends AbstractObservable<T> implements AutoCloseable {
 	private final Resource resource;
-	private final Converter<Resource, T> converter;
+	private final Function<Resource, ? extends T> processor;
 	private final EventRegistration eventRegistration;
 
-	public ObservableResource(Resource resource, Converter<Resource, T> converter) {
+	public ObservableResource(Resource resource, Function<Resource, ? extends T> processor) {
 		this.resource = resource;
-		this.converter = converter;
-		this.eventRegistration = resource.registerListener(new EventListener<ChangeEvent<Resource>>() {
-
-			@Override
-			public void onEvent(ChangeEvent<Resource> event) {
-				publishEvent(new ChangeEvent<T>(event.getEventType(), forceGet()));
-			}
-		});
+		this.processor = processor;
+		this.eventRegistration = resource
+				.registerListener((event) -> publishEvent(new ChangeEvent<T>(event.getEventType(), forceGet())));
 	}
 
 	public Resource getResource() {
@@ -29,7 +24,7 @@ public class ObservableResource<T> extends AbstractObservable<T> implements Auto
 	}
 
 	public T forceGet() {
-		return converter.convert(resource);
+		return processor.apply(resource);
 	}
 
 	@Override

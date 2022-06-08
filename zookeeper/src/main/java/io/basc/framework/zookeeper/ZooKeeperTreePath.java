@@ -1,9 +1,9 @@
 package io.basc.framework.zookeeper;
 
-import io.basc.framework.mapper.MapperUtils;
-
 import java.io.Serializable;
 import java.util.List;
+
+import io.basc.framework.core.reflect.ReflectionUtils;
 
 public class ZooKeeperTreePath implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -28,6 +28,6 @@ public class ZooKeeperTreePath implements Serializable {
 
 	@Override
 	public String toString() {
-		return MapperUtils.toString(this);
+		return ReflectionUtils.toString(this);
 	}
 }

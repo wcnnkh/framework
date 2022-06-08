@@ -4,14 +4,12 @@ import java.util.Iterator;
 
 import com.google.gson.Gson;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.ConvertibleIterator;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 
-public final class GsonArray extends AbstractJson<Integer>
-		implements JsonArray, Converter<com.google.gson.JsonElement, JsonElement> {
+public final class GsonArray extends AbstractJson<Integer> implements JsonArray {
 	private com.google.gson.JsonArray gsonJsonArray;
 	private Gson gson;
 
@@ -25,7 +23,8 @@ public final class GsonArray extends AbstractJson<Integer>
 	}
 
 	public Iterator<io.basc.framework.json.JsonElement> iterator() {
-		return new ConvertibleIterator<com.google.gson.JsonElement, JsonElement>(gsonJsonArray.iterator(), this);
+		return new ConvertibleIterator<com.google.gson.JsonElement, JsonElement>(gsonJsonArray.iterator(),
+				this::convert);
 	}
 
 	public JsonElement getValue(Integer index) {

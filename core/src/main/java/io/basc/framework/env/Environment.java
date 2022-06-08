@@ -2,9 +2,9 @@ package io.basc.framework.env;
 
 import java.nio.charset.Charset;
 import java.util.Properties;
+import java.util.function.Function;
 
 import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.resolve.ResourceResolver;
 import io.basc.framework.event.EmptyObservable;
@@ -17,11 +17,11 @@ import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.util.placeholder.PlaceholderReplacer;
-import io.basc.framework.util.placeholder.PropertyResolver;
 import io.basc.framework.value.PropertyFactory;
 
-public interface Environment extends EnvironmentResourceLoader, PropertyFactory, PropertyResolver {
+public interface Environment extends EnvironmentResourceLoader, PropertyFactory, PlaceholderFormat {
 	public static final String CHARSET_PROPERTY = "io.basc.framework.charset.name";
 	public static final String WORK_PATH_PROPERTY = "io.basc.framework.work.path";
 
@@ -98,7 +98,7 @@ public interface Environment extends EnvironmentResourceLoader, PropertyFactory,
 	default Observable<Properties> toObservableProperties(PropertiesResolver propertiesResolver,
 			@Nullable Charset charset, Resource... resources) {
 		ObservableProperties properties = new ObservableProperties();
-		Converter<Resource, Properties> converter = ResourceUtils.toPropertiesConverter(propertiesResolver, charset);
+		Function<Resource, Properties> converter = ResourceUtils.toPropertiesConverter(propertiesResolver, charset);
 		for (Resource resource : resources) {
 			properties.combine(resource, converter);
 		}
@@ -109,12 +109,12 @@ public interface Environment extends EnvironmentResourceLoader, PropertyFactory,
 	 * 解析并替换文本
 	 */
 	@Override
-	default String resolvePlaceholders(String text) {
+	default String replacePlaceholders(String text) {
 		return getPlaceholderReplacer().replacePlaceholders(text, (name) -> getString(name));
 	}
 
 	@Override
-	default String resolveRequiredPlaceholders(String text) throws IllegalArgumentException {
+	default String replaceRequiredPlaceholders(String text) throws IllegalArgumentException {
 		return getPlaceholderReplacer().replaceRequiredPlaceholders(text, (name) -> getString(name));
 	}
 

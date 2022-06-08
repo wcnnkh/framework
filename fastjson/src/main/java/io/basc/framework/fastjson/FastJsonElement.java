@@ -36,7 +36,7 @@ public final class FastJsonElement extends AbstractJsonElement implements JSONAw
 	}
 
 	@Override
-	public Object getSourceValue() {
+	public Object get() {
 		return text;
 	}
 

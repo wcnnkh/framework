@@ -1,7 +1,7 @@
 package io.basc.framework.cloud.loadbalancer;
 
 import io.basc.framework.cloud.ServiceInstance;
-import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.core.reflect.ReflectionUtils;
 
 public class ServiceInstanceServer implements Server<ServiceInstance> {
 	private final ServiceInstance serviceInstance;
@@ -26,6 +26,6 @@ public class ServiceInstanceServer implements Server<ServiceInstance> {
 
 	@Override
 	public String toString() {
-		return MapperUtils.toString(this);
+		return ReflectionUtils.toString(this);
 	}
 }

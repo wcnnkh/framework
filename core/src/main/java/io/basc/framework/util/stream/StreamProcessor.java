@@ -1,6 +1,5 @@
 package io.basc.framework.util.stream;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.lang.Nullable;
 
 /**
@@ -30,7 +29,7 @@ public interface StreamProcessor<T, E extends Throwable> extends CallableProcess
 	boolean isClosed();
 
 	default <TE extends Throwable> StreamProcessor<T, TE> exceptionConvert(
-			Converter<Throwable, TE> exceptionConverter) {
+			Processor<Throwable, TE, ? extends TE> exceptionConverter) {
 		return new ExceptionConvertStreamProcessor<>(this, exceptionConverter);
 	}
 }

@@ -2,7 +2,7 @@ package io.basc.framework.test;
 
 import org.junit.Test;
 
-import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.XUtils;
 
 public class ToStringTest {
@@ -46,7 +46,7 @@ public class ToStringTest {
 
 		@Override
 		public String toString() {
-			return MapperUtils.toString(this);
+			return ReflectionUtils.toString(this);
 		}
 	}
 }

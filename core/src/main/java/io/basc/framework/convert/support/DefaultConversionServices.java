@@ -24,6 +24,7 @@ import io.basc.framework.convert.resolve.ResourceResolverConversionService;
 import io.basc.framework.convert.resolve.ResourceResolvers;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.io.Resource;
+import io.basc.framework.util.stream.StreamProcessorSupport;
 
 public class DefaultConversionServices extends ConversionServices {
 	private final ResourceResolvers resourceResolvers;
@@ -57,18 +58,22 @@ public class DefaultConversionServices extends ConversionServices {
 		addService(new JsonConversionService());
 		addService(new JsonToObjectConversionService());
 
-		addService(new ConverterConversionService(String.class, Charset.class, new StringToCharsetConverter()));
-		addService(new ConverterConversionService(String.class, Locale.class, new StringToLocaleConverter()));
-		addService(new ConverterConversionService(String.class, TimeZone.class, new StringToTimeZoneConverter()));
-		addService(new ConverterConversionService(String.class, Currency.class, new StringToCurrencyConverter()));
+		addService(new ConverterConversionService(String.class, Charset.class,
+				StreamProcessorSupport.toProcessor(new StringToCharsetConverter())));
+		addService(new ConverterConversionService(String.class, Locale.class,
+				StreamProcessorSupport.toProcessor(new StringToLocaleConverter())));
+		addService(new ConverterConversionService(String.class, TimeZone.class,
+				StreamProcessorSupport.toProcessor(new StringToTimeZoneConverter())));
+		addService(new ConverterConversionService(String.class, Currency.class,
+				StreamProcessorSupport.toProcessor(new StringToCurrencyConverter())));
 		addService(new ConverterConversionService(Reader.class, String.class, new ReaderToStringConverter()));
 
 		addService(new ObjectToArrayConversionService(this));
 		addService(new ObjectToCollectionConversionService(this));
 		addService(new ObjectToStringConverter());
 
-		addService(new ConverterConversionService(Resource.class, Properties.class,
-				new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers())));
+		addService(new ConverterConversionService(Resource.class, Properties.class, StreamProcessorSupport
+				.toProcessor(new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers()))));
 		addService(new ResourceResolverConversionService(resourceResolvers));
 		addService(new ResourceToStringConversionService());
 	}

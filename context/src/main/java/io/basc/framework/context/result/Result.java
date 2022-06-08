@@ -1,10 +1,10 @@
 package io.basc.framework.context.result;
 
-import io.basc.framework.context.transaction.RollbackOnlyResult;
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.util.Status;
-
 import java.io.Serializable;
+
+import io.basc.framework.context.transaction.RollbackOnlyResult;
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.util.Status;
 
 public class Result implements Status<Long>, ResultMsgCode, RollbackOnlyResult, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -94,7 +94,7 @@ public class Result implements Status<Long>, ResultMsgCode, RollbackOnlyResult, 
 
 	@Override
 	public String toString() {
-		return MapperUtils.toString(this);
+		return ReflectionUtils.toString(this);
 	}
 
 	public static Result success(long code) {

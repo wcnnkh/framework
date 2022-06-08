@@ -5,7 +5,7 @@ import java.util.function.Function;
 public class MapPagination<M extends Pagination<ST>, ST, T> extends MapPage<M, Long, ST, Long, T>
 		implements Pagination<T> {
 
-	public MapPagination(M source, Function<? super ST, T> valueMap) {
+	public MapPagination(M source, Function<? super ST, ? extends T> valueMap) {
 		super(source, Function.identity(), valueMap);
 	}
 

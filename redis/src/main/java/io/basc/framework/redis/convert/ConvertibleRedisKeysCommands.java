@@ -58,7 +58,7 @@ public interface ConvertibleRedisKeysCommands<SK, K, SV, V> extends RedisCodec<S
 	default Set<K> keys(K pattern) {
 		SK k = getKeyCodec().encode(pattern);
 		Set<SK> tvs = getSourceRedisKeysCommands().keys(k);
-		return getKeyCodec().toDecodeConverter().convertTo(tvs, new LinkedHashSet<K>(tvs.size()));
+		return getKeyCodec().toDecodeProcessor().processTo(tvs, new LinkedHashSet<K>(tvs.size()));
 	}
 
 	@Override
@@ -155,7 +155,7 @@ public interface ConvertibleRedisKeysCommands<SK, K, SV, V> extends RedisCodec<S
 
 	@Override
 	default Pageable<Long, K> scan(long cursorId, ScanOptions<K> options) {
-		ScanOptions<SK> to = options.convert(getKeyCodec().toEncodeConverter());
+		ScanOptions<SK> to = options.convert(getKeyCodec()::encode);
 		return getSourceRedisKeysCommands().scan(cursorId, to).map((v) -> getKeyCodec().decode(v));
 	}
 

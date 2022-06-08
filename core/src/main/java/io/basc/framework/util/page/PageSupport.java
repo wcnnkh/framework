@@ -1,9 +1,13 @@
 package io.basc.framework.util.page;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.stream.Processor;
 
 public class PageSupport {
 	private PageSupport() {
@@ -77,5 +81,18 @@ public class PageSupport {
 
 	public static <T> Paginations<T> emptyPaginations(long start, long count) {
 		return new SharedPaginations<T>(emptyPagination(start, count), null);
+	}
+
+	public static <K, T, V> Collection<? extends Callable<V>> toGroupTasks(Pageables<K, T> pageables,
+			Processor<? super Pageable<K, T>, ? extends V, ? extends Exception> processor) {
+		return pageables.pages().map((e) -> {
+			return new Callable<V>() {
+
+				@Override
+				public V call() throws Exception {
+					return processor.process(e);
+				}
+			};
+		}).collect(Collectors.toList());
 	}
 }

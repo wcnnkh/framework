@@ -13,6 +13,7 @@ import io.basc.framework.io.Resource;
 
 public class ResourceToStringConversionService extends ConditionalConversionService {
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public String convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {

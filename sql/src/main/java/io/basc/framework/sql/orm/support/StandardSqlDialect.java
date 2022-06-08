@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.basc.framework.aop.support.FieldSetterListen;
 import io.basc.framework.convert.TypeDescriptor;
@@ -17,6 +18,12 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.ParameterException;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.mapper.Parameter;
+import io.basc.framework.orm.repository.Condition;
+import io.basc.framework.orm.repository.ConditionKeywords;
+import io.basc.framework.orm.repository.Conditions;
+import io.basc.framework.orm.repository.OrderColumn;
+import io.basc.framework.orm.repository.WithCondition;
 import io.basc.framework.sql.EditableSql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
@@ -40,7 +47,7 @@ import io.basc.framework.value.Value;
  * @author shuchaowen
  *
  */
-public abstract class StandardSqlDialect extends DefaultTableMapping implements SqlDialect {
+public abstract class StandardSqlDialect extends DefaultTableMapper implements SqlDialect {
 	protected static final String UPDATE_PREFIX = "update ";
 	protected static final String DELETE_PREFIX = "delete from ";
 	protected static final String SELECT_ALL_PREFIX = "select * from ";
@@ -68,25 +75,17 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		this.environment = environment;
 	}
 
-	public Object getDataBaseValue(Object entity, Field field) {
-		return toDataBaseValue(field.get(entity), new TypeDescriptor(field.getGetter()));
-	}
-
-	public Object toDataBaseValue(Object value) {
-		return toDataBaseValue(value, TypeDescriptor.forObject(value));
-	}
-
-	public Object toDataBaseValue(Object value, TypeDescriptor sourceType) {
-		if (value == null) {
+	public Object toDataBaseValue(Value value) {
+		if (value == null || value.isNull()) {
 			return null;
 		}
 
-		SqlType sqlType = getSqlType(value.getClass());
+		SqlType sqlType = getSqlType(value.getTypeDescriptor().getType());
 		if (sqlType == null) {
 			return value;
 		}
 
-		return getEnvironment().getConversionService().convert(value, sourceType,
+		return getEnvironment().getConversionService().convert(value.get(), value.getTypeDescriptor(),
 				TypeDescriptor.valueOf(sqlType.getType()));
 	}
 
@@ -141,7 +140,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		while (iterator.hasNext() && valueIterator.hasNext()) {
 			Column column = iterator.next();
 			Object value = valueIterator.next();
-			params[i++] = toDataBaseValue(value, TypeDescriptor.forObject(value));
+			params[i++] = toDataBaseValue(new AnyValue(value, getConversionService()));
 			keywordProcessing(sb, column.getName());
 			sb.append("=?");
 			if (iterator.hasNext() && valueIterator.hasNext()) {
@@ -160,7 +159,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column.getField(), entity)) {
+			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column, entity)) {
 				continue;
 			}
 
@@ -171,7 +170,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 
 			keywordProcessing(cols, column.getName());
 			values.append("?");
-			params.add(getDataBaseValue(entity, column.getField()));
+			params.add(toDataBaseValue(column.getGetter().getValue(entity)));
 		}
 		sql.append(INSERT_INTO_PREFIX);
 		keywordProcessing(sql, tableStructure.getName());
@@ -202,7 +201,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 			Column column = iterator.next();
 			keywordProcessing(sql, column.getName());
 			sql.append("=?");
-			params.add(getDataBaseValue(entity, column.getField()));
+			params.add(toDataBaseValue(column.getGetter().getValue(entity)));
 			if (iterator.hasNext()) {
 				sql.append(AND);
 			}
@@ -215,7 +214,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 				sql.append(AND);
 				keywordProcessing(sql, column.getName());
 				sql.append("=?");
-				params.add(getDataBaseValue(entity, column.getField()));
+				params.add(toDataBaseValue(column.getGetter().getValue(entity)));
 			}
 		});
 		return new SimpleSql(sql.toString(), params.toArray());
@@ -244,7 +243,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 			Column column = iterator.next();
 			keywordProcessing(sql, column.getName());
 			sql.append("=?");
-			params[i] = toDataBaseValue(ids[i]);
+			params[i] = toDataBaseValue(new AnyValue(ids[i]));
 			i++;
 			if (iterator.hasNext()) {
 				sql.append(AND);
@@ -278,7 +277,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 				Column column = iterator.next();
 				keywordProcessing(sb, column.getName());
 				sb.append("=?");
-				params.add(toDataBaseValue(primaryKeys[i]));
+				params.add(toDataBaseValue(new AnyValue(primaryKeys[i])));
 			}
 		}
 
@@ -291,7 +290,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 			sb.append(IN);
 			Iterator<?> valueIterator = inPrimaryKeys.iterator();
 			while (valueIterator.hasNext()) {
-				params.add(toDataBaseValue(valueIterator.next()));
+				params.add(toDataBaseValue(new AnyValue(valueIterator.next())));
 				sb.append("?");
 				if (valueIterator.hasNext()) {
 					sb.append(",");
@@ -310,7 +309,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 
 	@Override
 	public Sql toMaxIdSql(TableStructure tableStructure, Field field) throws SqlDialectException {
-		Column column = tableStructure.find(field);
+		Column column = tableStructure.getByName(field.getName());
 		if (column == null) {
 			throw new SqlDialectException("not found " + field);
 		}
@@ -354,7 +353,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		Iterator<Column> iterator = notPrimaryKeys.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (changeMap != null && !changeMap.containsKey(column.getField().getSetter().getName())) {
+			if (changeMap != null && !changeMap.containsKey(column.getSetter().getName())) {
 				// 忽略没有变化的字段
 				continue;
 			}
@@ -377,7 +376,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 			Column column = iterator.next();
 			keywordProcessing(sb, column.getName());
 			sb.append("=?");
-			params.add(getDataBaseValue(entity, column.getField()));
+			params.add(toDataBaseValue(column.getGetter().getValue(entity)));
 			if (iterator.hasNext()) {
 				sb.append(AND);
 			}
@@ -403,9 +402,9 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 					sb.append(AND);
 					keywordProcessing(sb, column.getName());
 					if (column.isIncrement()) {
-						AnyValue newValue = new AnyValue(getDataBaseValue(entity, column.getField()));
+						AnyValue newValue = new AnyValue(toDataBaseValue(column.getGetter().getValue(entity)));
 						AnyValue oldValue = changeMap == null ? null
-								: new AnyValue(changeMap.get(column.getField().getSetter().getName()));
+								: new AnyValue(changeMap.get(column.getSetter().getName()));
 						if (oldValue != null) {
 							sb.append("+");
 							sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
@@ -422,9 +421,9 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 					sb.append(AND);
 					keywordProcessing(sb, column.getName());
 					if (column.isIncrement()) {
-						AnyValue newValue = new AnyValue(getDataBaseValue(entity, column.getField()));
+						AnyValue newValue = new AnyValue(toDataBaseValue(column.getGetter().getValue(entity)));
 						AnyValue oldValue = changeMap == null ? null
-								: new AnyValue(changeMap.get(column.getField().getSetter().getName()));
+								: new AnyValue(changeMap.get(column.getSetter().getName()));
 						if (oldValue != null) {
 							sb.append("+");
 							sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
@@ -441,8 +440,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 
 		if (column.isVersion()) {
 			AnyValue oldVersion = null;
-			if (changeMap != null && changeMap.containsKey(column.getField().getSetter().getName())) {
-				oldVersion = new AnyValue(changeMap.get(column.getField().getSetter().getName()));
+			if (changeMap != null && changeMap.containsKey(column.getSetter().getName())) {
+				oldVersion = new AnyValue(changeMap.get(column.getSetter().getName()));
 				if (oldVersion.getAsDoubleValue() == 0) {
 					// 如果存在变更但版本号为0就忽略此条件
 					return;
@@ -455,8 +454,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 			sb.append("=?");
 
 			// 如果存在旧值就使用旧值
-			params.add(oldVersion == null ? getDataBaseValue(entity, column.getField())
-					: toDataBaseValue(oldVersion.getAsLongValue()));
+			params.add(oldVersion == null ? toDataBaseValue(column.getGetter().getValue(entity))
+					: toDataBaseValue(new AnyValue(oldVersion.getAsLongValue())));
 		}
 	}
 
@@ -464,12 +463,12 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	public Sql toUpdatePartSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
 		Map<String, Object> changeMap = getChangeMap(entity);
 		return toUpdateSql(tableStructure, entity, changeMap, (column) -> {
-			if (changeMap != null && !changeMap.containsKey(column.getField().getSetter().getName())) {
+			if (changeMap != null && !changeMap.containsKey(column.getSetter().getName())) {
 				return false;
 			}
 
 			// 如果字段不能为空，且实体字段没有值就忽略
-			if (!column.isNullable() && !MapperUtils.isExistDefaultValue(column.getField(), entity)) {
+			if (!column.isNullable() && !MapperUtils.isExistDefaultValue(column, entity)) {
 				return false;
 			}
 			return true;
@@ -486,21 +485,20 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	public <T> Sql toUpdateSql(TableStructure tableStructure, T entity, T condition) throws SqlDialectException {
 		Map<String, Object> changeMap = new HashMap<String, Object>();
 		tableStructure.columns().forEach((column) -> {
-			Object value = column.getField().get(condition);
+			Object value = column.getGetter().get(condition);
 			if (value == null && column.isNullable()) {
 				return;
 			}
 
-			changeMap.put(column.getField().getSetter().getName(), value);
+			changeMap.put(column.getSetter().getName(), value);
 		});
 		return toUpdateSql(tableStructure, entity, changeMap, (col) -> true);
 	}
 
 	protected final void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Column column,
 			Map<String, Object> changeMap) {
-		AnyValue newValue = new AnyValue(getDataBaseValue(entity, column.getField()));
-		AnyValue oldValue = changeMap == null ? null
-				: new AnyValue(changeMap.get(column.getField().getSetter().getName()));
+		AnyValue newValue = new AnyValue(toDataBaseValue(column.getGetter().getValue(entity)));
+		AnyValue oldValue = changeMap == null ? null : new AnyValue(changeMap.get(column.getSetter().getName()));
 		appendUpdateValue(sb, params, entity, column, oldValue, newValue);
 	}
 
@@ -512,7 +510,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 			sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
 		} else {
 			sb.append("?");
-			params.add(newValue.getSourceValue());
+			params.add(newValue.get());
 		}
 	}
 
@@ -561,7 +559,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 	private void and(StringBuilder sb, List<Object> params, Object entity, Iterator<Column> columns) {
 		while (columns.hasNext()) {
 			Column column = columns.next();
-			Object value = getDataBaseValue(entity, column.getField());
+			Object value = toDataBaseValue(column.getGetter().getValue(entity));
 			if (StringUtils.isEmpty(value)) {
 				continue;
 			}
@@ -590,5 +588,292 @@ public abstract class StandardSqlDialect extends DefaultTableMapping implements 
 		}
 		countSql.append(") as count_" + XUtils.getUUID());
 		return countSql;
+	}
+
+	@Override
+	public Sql toSaveSql(TableStructure structure, Collection<? extends Parameter> columns) {
+		StringBuilder cols = new StringBuilder();
+		StringBuilder values = new StringBuilder();
+		StringBuilder sql = new StringBuilder();
+		List<Object> params = new ArrayList<Object>();
+		Iterator<? extends Parameter> iterator = columns.iterator();
+		while (iterator.hasNext()) {
+			Parameter column = iterator.next();
+			if (cols.length() > 0) {
+				cols.append(",");
+				values.append(",");
+			}
+
+			keywordProcessing(cols, column.getName());
+			values.append("?");
+			params.add(toDataBaseValue(column));
+		}
+		sql.append(INSERT_INTO_PREFIX);
+		keywordProcessing(sql, structure.getName());
+		sql.append("(");
+		sql.append(cols);
+		sql.append(")");
+		sql.append(VALUES);
+		sql.append("(");
+		sql.append(values);
+		sql.append(")");
+		return new SimpleSql(sql.toString(), params.toArray());
+	}
+
+	@Override
+	public Sql toSql(Conditions conditions) {
+		return toString(conditions, new AtomicInteger());
+	}
+
+	public Sql toString(Conditions conditions, AtomicInteger count) {
+		if (conditions == null) {
+			return null;
+		}
+
+		StringBuilder sb = new StringBuilder();
+		List<Object> params = new ArrayList<Object>();
+		if (appendWhere(conditions.getCondition(), sb, params)) {
+			count.getAndIncrement();
+		}
+
+		List<WithCondition> withConditions = conditions.getWiths();
+		if (!CollectionUtils.isEmpty(withConditions)) {
+			for (WithCondition condition : withConditions) {
+				AtomicInteger withCount = new AtomicInteger();
+				Sql sql = toString(condition.getCondition(), withCount);
+				if (sql == null || withCount.get() == 0) {
+					continue;
+				}
+
+				if (count.get() > 0) {
+					if (getRelationshipKeywords().getAndKeywords().exists(condition.getWith())) {
+						sb.append(" and ");
+					} else if (getRelationshipKeywords().getOrKeywords().exists(condition.getWith())) {
+						sb.append(" or ");
+					} else {
+						sb.append(" ").append(condition.getWith()).append(" ");
+					}
+				}
+
+				if (withCount.get() > 1) {
+					sb.append("(");
+				}
+
+				sb.append(sql.getSql());
+				params.addAll(Arrays.asList(sql.getParams()));
+
+				if (withCount.get() > 1) {
+					sb.append(")");
+				}
+
+				count.getAndIncrement();
+			}
+		}
+
+		if (count.get() == 0) {
+			return null;
+		}
+
+		return new SimpleSql(sb.toString(), params.toArray());
+	}
+
+	public void concat(StringBuilder sb, String... strs) {
+		if (strs == null || strs.length == 0) {
+			return;
+		}
+
+		sb.append("concat(");
+		for (int i = 0; i < strs.length; i++) {
+			if (i != 0) {
+				sb.append(",");
+			}
+			sb.append(strs[i]);
+		}
+		sb.append(")");
+	}
+
+	@SuppressWarnings("unchecked")
+	protected boolean appendWhere(Condition condition, StringBuilder sb, List<Object> params) {
+		if (condition == null || condition.isInvalid() || condition.getParameter() == null) {
+			return false;
+		}
+
+		ConditionKeywords conditionKeywords = getConditionKeywords();
+		if (conditionKeywords.getEqualKeywords().exists(condition.getCondition())) {
+			keywordProcessing(sb, condition.getParameter().getName());
+			sb.append("=?");
+			params.add(toDataBaseValue(condition.getParameter()));
+		} else if (conditionKeywords.getEndWithKeywords().exists(condition.getCondition())) {
+			keywordProcessing(sb, condition.getParameter().getName());
+			sb.append(" like ");
+			concat(sb, "'%'", "?");
+			params.add(toDataBaseValue(condition.getParameter()));
+		} else if (conditionKeywords.getEqualOrGreaterThanKeywords().exists(condition.getCondition())) {
+			keywordProcessing(sb, condition.getParameter().getName());
+			sb.append(" >= ?");
+			params.add(toDataBaseValue(condition.getParameter()));
+		} else if (conditionKeywords.getEqualOrLessThanKeywords().exists(condition.getCondition())) {
+			keywordProcessing(sb, condition.getParameter().getName());
+			sb.append(" <= ?");
+			params.add(toDataBaseValue(condition.getParameter()));
+		} else if (conditionKeywords.getGreaterThanKeywords().exists(condition.getCondition())) {
+			keywordProcessing(sb, condition.getParameter().getName());
+			sb.append(" > ?");
+			params.add(toDataBaseValue(condition.getParameter()));
+		} else if (conditionKeywords.getInKeywords().exists(condition.getCondition())) {
+			if (condition.getParameter().isNull()) {
+				return false;
+			}
+
+			List<Object> list;
+			TypeDescriptor typeDescriptor = condition.getParameter().getTypeDescriptor();
+			if (typeDescriptor.isArray() || typeDescriptor.isCollection()) {
+				list = (List<Object>) getEnvironment().getConversionService().convert(condition.getParameter().get(),
+						typeDescriptor,
+						TypeDescriptor.collection(List.class, typeDescriptor.getElementTypeDescriptor()));
+				typeDescriptor = typeDescriptor.getElementTypeDescriptor();
+			} else {
+				list = Arrays.asList(condition.getParameter().get());
+			}
+
+			if (list == null || list.isEmpty()) {
+				return false;
+			}
+
+			keywordProcessing(sb, condition.getParameter().getName());
+			Iterator<Object> iterator = list.iterator();
+			sb.append(" in(");
+			while (iterator.hasNext()) {
+				sb.append("?");
+				params.add(toDataBaseValue(new AnyValue(iterator.next(), typeDescriptor)));
+				if (iterator.hasNext()) {
+					sb.append(",");
+				}
+			}
+			sb.append(")");
+		} else if (conditionKeywords.getLessThanKeywords().exists(condition.getCondition())) {
+			keywordProcessing(sb, condition.getParameter().getName());
+			sb.append(" < ?");
+			params.add(toDataBaseValue(condition.getParameter()));
+		} else if (conditionKeywords.getLikeKeywords().exists(condition.getCondition())) {
+			keywordProcessing(sb, condition.getParameter().getName());
+			sb.append(" like ");
+			concat(sb, "'%'", "?", "'%'");
+			params.add(toDataBaseValue(condition.getParameter()));
+		} else if (conditionKeywords.getNotEqualKeywords().exists(condition.getCondition())) {
+			keywordProcessing(sb, condition.getParameter().getName());
+			sb.append(" is not ?");
+			params.add(toDataBaseValue(condition.getParameter()));
+		} else if (conditionKeywords.getSearchKeywords().exists(condition.getCondition())) {
+			String value = (String) getEnvironment().getConversionService().convert(condition.getParameter().get(),
+					condition.getParameter().getTypeDescriptor(), TypeDescriptor.valueOf(String.class));
+			if (StringUtils.isEmpty(value)) {
+				return false;
+			}
+
+			keywordProcessing(sb, condition.getParameter().getName());
+			sb.append(" like '%");
+			for (int i = 0; i < value.length(); i++) {
+				sb.append(value.charAt(i));
+				sb.append("%");
+			}
+			sb.append("'");
+		} else if (conditionKeywords.getStartWithKeywords().exists(condition.getCondition())) {
+			keywordProcessing(sb, condition.getParameter().getName());
+			sb.append(" like ");
+			concat(sb, "?", "'%'");
+			params.add(toDataBaseValue(condition.getParameter()));
+		} else {
+			keywordProcessing(sb, condition.getParameter().getName());
+			sb.append(" ").append(condition.getCondition()).append(" ?");
+			params.add(toDataBaseValue(condition.getParameter()));
+		}
+		return true;
+	}
+
+	@Override
+	public Sql toUpdateSql(TableStructure structure, Collection<? extends Parameter> columns, Conditions conditions) {
+		StringBuilder sb = new StringBuilder(512);
+		sb.append(UPDATE_PREFIX);
+		keywordProcessing(sb, structure.getName());
+		sb.append(SET);
+		List<Object> params = new ArrayList<Object>();
+		Iterator<? extends Parameter> iterator = columns.iterator();
+		while (iterator.hasNext()) {
+			Parameter column = iterator.next();
+			keywordProcessing(sb, column.getName());
+			sb.append("=?");
+			params.add(toDataBaseValue(column));
+			if (iterator.hasNext()) {
+				sb.append(",");
+			}
+		}
+
+		Sql conditionsSql = toSql(conditions);
+		if (conditionsSql != null) {
+			sb.append(WHERE);
+			sb.append(conditionsSql.getSql());
+			params.addAll(Arrays.asList(conditionsSql.getParams()));
+		}
+		return new SimpleSql(sb.toString(), params.toArray());
+	}
+
+	@Override
+	public Sql toDeleteSql(TableStructure structure, Conditions conditions) {
+		List<Object> params = new ArrayList<Object>();
+		StringBuilder sql = new StringBuilder();
+		sql.append(DELETE_PREFIX);
+		keywordProcessing(sql, structure.getName());
+
+		Sql conditionsSql = toSql(conditions);
+		if (conditionsSql != null) {
+			sql.append(WHERE);
+			sql.append(conditionsSql.getSql());
+			params.addAll(Arrays.asList(conditionsSql.getParams()));
+		}
+		return new SimpleSql(sql.toString(), params.toArray());
+	}
+
+	protected void appendOrders(List<? extends OrderColumn> orders, StringBuilder sb) {
+		Iterator<? extends OrderColumn> iterator = orders.iterator();
+		while (iterator.hasNext()) {
+			OrderColumn orderColumn = iterator.next();
+			keywordProcessing(sb, orderColumn.getName());
+			if (orderColumn.getSort() != null) {
+				sb.append(" " + orderColumn.getSort());
+			}
+
+			// 不做嵌套
+			List<OrderColumn> orderColumns = orderColumn.getWithOrders();
+			if (!CollectionUtils.isEmpty(orderColumns)) {
+				sb.append(", ");
+				appendOrders(orderColumns, sb);
+			}
+
+			if (iterator.hasNext()) {
+				sb.append(",");
+			}
+		}
+	}
+
+	@Override
+	public Sql toSelectSql(TableStructure structure, Conditions conditions, List<? extends OrderColumn> orders) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(SELECT_ALL_PREFIX);
+		keywordProcessing(sb, structure.getName());
+		List<Object> params = new ArrayList<Object>();
+
+		Sql conditionsSql = toSql(conditions);
+		if (conditionsSql != null) {
+			sb.append(WHERE);
+			sb.append(conditionsSql.getSql());
+			params.addAll(Arrays.asList(conditionsSql.getParams()));
+		}
+
+		if (!CollectionUtils.isEmpty(orders)) {
+			sb.append(" order by ");
+			appendOrders(orders, sb);
+		}
+		return new SimpleSql(sb.toString(), params.toArray());
 	}
 }

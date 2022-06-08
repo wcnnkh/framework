@@ -15,16 +15,19 @@ import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 
 class NodeToObjectConversionService extends ConditionalConversionService {
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public <R> R convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;
 		}
 
 		if (Document.class.isAssignableFrom(sourceType.getType())) {
 			Node node = ((Document) source).getDocumentElement();
-			return convert(node, TypeDescriptor.valueOf(NodeList.class), targetType);
+			return (R) convert(node, TypeDescriptor.valueOf(NodeList.class), targetType);
 		} else {
-			return convert((Node) source, sourceType, targetType);
+			return (R) convert((Node) source, sourceType, targetType);
 		}
 	}
 

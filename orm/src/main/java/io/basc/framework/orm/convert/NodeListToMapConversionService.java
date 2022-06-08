@@ -1,15 +1,5 @@
 package io.basc.framework.orm.convert;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.ConditionalConversionService;
-import io.basc.framework.convert.lang.ConvertiblePair;
-import io.basc.framework.dom.DomUtils;
-import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.orm.ObjectRelationalMapping;
-import io.basc.framework.orm.support.OrmUtils;
-import io.basc.framework.util.CollectionFactory;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -19,23 +9,31 @@ import java.util.Set;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.ConditionalConversionService;
+import io.basc.framework.convert.lang.ConvertiblePair;
+import io.basc.framework.dom.DomUtils;
+import io.basc.framework.mapper.FieldFeature;
+import io.basc.framework.orm.ObjectRelationalFactory;
+import io.basc.framework.orm.support.OrmUtils;
+import io.basc.framework.util.CollectionFactory;
+
 @SuppressWarnings({ "unchecked", "rawtypes" })
 class NodeListToMapConversionService extends ConditionalConversionService {
 	private static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
-	private ObjectRelationalMapping objectRelationalMapping;
+	private ObjectRelationalFactory mapper;
 
-	public ObjectRelationalMapping getObjectRelationalMapping() {
-		return objectRelationalMapping == null ? OrmUtils.getMapping() : objectRelationalMapping;
+	public ObjectRelationalFactory getMapper() {
+		return mapper == null ? OrmUtils.getMapper() : mapper;
 	}
 
-	public void setObjectRelationalMapping(ObjectRelationalMapping objectRelationalMapping) {
-		this.objectRelationalMapping = objectRelationalMapping;
+	public void setObjectRelationalMapping(ObjectRelationalFactory objectRelationalMapping) {
+		this.mapper = objectRelationalMapping;
 	}
 
 	public boolean hasPrimaryKeys(Class<?> entityClass) {
-		return MapperUtils.getFields(entityClass).accept(FieldFeature.SUPPORT_GETTER).streamAll()
-				.filter((field) -> getObjectRelationalMapping().isPrimaryKey(entityClass, field.getGetter())).findAny()
-				.isPresent();
+		return getMapper().getStructure(entityClass).filter(FieldFeature.SUPPORT_GETTER).withAll().streamAll()
+				.filter((field) -> getMapper().isPrimaryKey(entityClass, field.getGetter())).findAny().isPresent();
 	}
 
 	@Override

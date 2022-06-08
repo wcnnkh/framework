@@ -2,15 +2,15 @@ package io.basc.framework.convert.lang;
 
 import java.nio.charset.Charset;
 import java.util.Properties;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.PropertiesResolver;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.StaticSupplier;
 
-public class ResourceToPropertiesConverter implements Converter<Resource, Properties> {
+public class ResourceToPropertiesConverter implements Function<Resource, Properties> {
 	private final PropertiesResolver propertiesResolver;
 	private final Supplier<Charset> charset;
 
@@ -27,7 +27,7 @@ public class ResourceToPropertiesConverter implements Converter<Resource, Proper
 		this.charset = charset;
 	}
 
-	public Properties convert(Resource resource) {
+	public Properties apply(Resource resource) {
 		Properties properties = new Properties();
 		if (resource.exists()) {
 			return properties;

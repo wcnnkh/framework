@@ -6,6 +6,7 @@ import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.db.Configurable;
 import io.basc.framework.db.DB;
+import io.basc.framework.orm.repository.Repository;
 
 @Provider
 public class DataBaseBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
@@ -18,6 +19,11 @@ public class DataBaseBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 
 		if (!beanFactory.containsDefinition(Configurable.class.getName())) {
 			beanFactory.registerDefinition(new ConfigurableDefinition(beanFactory));
+		}
+
+		if (!beanFactory.containsDefinition(Repository.class.getName())
+				&& !beanFactory.isAlias(Repository.class.getName())) {
+			beanFactory.registerAlias(Repository.class.getName(), DB.class.getName());
 		}
 	}
 

@@ -1,23 +1,30 @@
 package io.basc.framework.sql;
 
-import io.basc.framework.mapper.Mapper;
-import io.basc.framework.mapper.SimpleMapper;
-import io.basc.framework.sql.transaction.SqlTransactionUtils;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import io.basc.framework.mapper.ObjectMapper;
+import io.basc.framework.sql.transaction.SqlTransactionUtils;
+import io.basc.framework.util.Assert;
+
 public class DefaultSqlOperations extends DefaultSqlStatementProcessor implements SqlOperations {
 	private ConnectionFactory connectionFactory;
-	private final Mapper<ResultSet, Throwable> mapper = new SimpleMapper<>();
+	private final ObjectMapper<ResultSet, SQLException> mapper;
 
 	public DefaultSqlOperations(ConnectionFactory connectionFactory) {
+		this(connectionFactory, new ResultSetMapper());
+	}
+
+	public DefaultSqlOperations(ConnectionFactory connectionFactory, ObjectMapper<ResultSet, SQLException> mapper) {
+		Assert.requiredArgument(connectionFactory != null, "connectionFactory");
+		Assert.requiredArgument(mapper != null, "mapper");
 		this.connectionFactory = connectionFactory;
+		this.mapper = mapper;
 	}
 
 	@Override
-	public Mapper<ResultSet, Throwable> getMapper() {
+	public ObjectMapper<ResultSet, SQLException> getMapper() {
 		return mapper;
 	}
 

@@ -1,23 +1,23 @@
 package io.basc.framework.sql.orm;
 
 import java.util.Collection;
+import java.util.List;
 
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.Parameter;
+import io.basc.framework.orm.repository.Conditions;
+import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.sql.Sql;
+import io.basc.framework.value.Value;
 
-public interface SqlDialect extends TableMapping, EnvironmentAware {
+public interface SqlDialect extends TableMapper, EnvironmentAware {
 	SqlType getSqlType(Class<?> javaType);
 
 	Environment getEnvironment();
 
-	default Object toDataBaseValue(Object value) {
-		return toDataBaseValue(value, TypeDescriptor.forObject(value));
-	}
-
-	Object toDataBaseValue(Object value, TypeDescriptor sourceType);
+	Object toDataBaseValue(Value value);
 
 	Collection<Sql> createTable(TableStructure tableStructure) throws SqlDialectException;
 
@@ -87,4 +87,14 @@ public interface SqlDialect extends TableMapping, EnvironmentAware {
 	 * @return
 	 */
 	Sql condition(Sql condition, Sql left, Sql right);
+
+	Sql toSql(Conditions conditions);
+
+	Sql toSaveSql(TableStructure structure, Collection<? extends Parameter> columns);
+
+	Sql toDeleteSql(TableStructure structure, Conditions conditions);
+
+	Sql toUpdateSql(TableStructure structure, Collection<? extends Parameter> columns, Conditions conditions);
+
+	Sql toSelectSql(TableStructure structure, Conditions conditions, List<? extends OrderColumn> orders);
 }

@@ -29,7 +29,7 @@ public class JacksonJsonElement extends AbstractJsonElement implements JsonSeria
 	}
 
 	@Override
-	public Object getSourceValue() {
+	public Object get() {
 		return jsonNode;
 	}
 

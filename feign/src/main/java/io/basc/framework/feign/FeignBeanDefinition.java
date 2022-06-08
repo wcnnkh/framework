@@ -24,7 +24,7 @@ public class FeignBeanDefinition extends DefaultBeanDefinition {
 		if (StringUtils.isEmpty(host)) {
 			host = beanFactory.getEnvironment().getString("feign.host");
 		} else {
-			host = beanFactory.getEnvironment().resolvePlaceholders(host);
+			host = beanFactory.getEnvironment().replacePlaceholders(host);
 		}
 		return host;
 	}

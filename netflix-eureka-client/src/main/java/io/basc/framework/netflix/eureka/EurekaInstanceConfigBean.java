@@ -1,14 +1,5 @@
 package io.basc.framework.netflix.eureka;
 
-import io.basc.framework.beans.annotation.Autowired;
-import io.basc.framework.beans.annotation.ConfigurationProperties;
-import io.basc.framework.boot.support.ApplicationUtils;
-import io.basc.framework.cloud.commons.util.InetUtils;
-import io.basc.framework.cloud.commons.util.InetUtils.HostInfo;
-import io.basc.framework.env.Environment;
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.util.StringUtils;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +8,15 @@ import java.util.Objects;
 import com.netflix.appinfo.DataCenterInfo;
 import com.netflix.appinfo.InstanceInfo.InstanceStatus;
 import com.netflix.appinfo.MyDataCenterInfo;
+
+import io.basc.framework.beans.annotation.Autowired;
+import io.basc.framework.beans.annotation.ConfigurationProperties;
+import io.basc.framework.boot.support.ApplicationUtils;
+import io.basc.framework.cloud.commons.util.InetUtils;
+import io.basc.framework.cloud.commons.util.InetUtils.HostInfo;
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.env.Environment;
+import io.basc.framework.util.StringUtils;
 
 @ConfigurationProperties("eureka.instance")
 public class EurekaInstanceConfigBean implements CloudEurekaInstanceConfig {
@@ -587,7 +587,7 @@ public class EurekaInstanceConfigBean implements CloudEurekaInstanceConfig {
 
 	@Override
 	public String toString() {
-		return MapperUtils.toString(this);
+		return ReflectionUtils.toString(this);
 	}
 
 }

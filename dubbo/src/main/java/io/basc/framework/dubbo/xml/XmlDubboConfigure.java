@@ -39,7 +39,7 @@ public class XmlDubboConfigure implements DubboConfigure {
 		return environment;
 	}
 
-	public <T> T read(Processor<NodeList, T, Throwable> processor) {
+	public <T, E extends Throwable> T read(Processor<NodeList, T, E> processor) throws E {
 		return XmlBeanUtils.readResourceBeans(environment, resource, processor);
 	}
 

@@ -3,21 +3,59 @@ package io.basc.framework.value;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.function.Supplier;
 
+import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 
-public interface Value {
+public interface Value extends Supplier<Object> {
 	final Value[] EMPTY_ARRAY = new Value[0];
 
 	/**
-	 * 获取来源值
+	 * 获取原始值
 	 * 
 	 * @return
 	 */
 	@Nullable
-	Object getSourceValue();
+	Object get();
+
+	default TypeDescriptor getTypeDescriptor() {
+		Object value = get();
+		if (value == null) {
+			return TypeDescriptor.valueOf(Object.class);
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getTypeDescriptor();
+		}
+		return TypeDescriptor.forObject(value);
+	}
+
+	@SuppressWarnings("unchecked")
+	default <T, E extends Throwable> T convert(Class<? extends T> targetType,
+			Converter<? super Object, ? extends Object, E> converter) throws E {
+		return (T) convert(TypeDescriptor.valueOf(targetType), converter);
+	}
+
+	default <E extends Throwable> Object convert(TypeDescriptor targetType,
+			Converter<? super Object, ? extends Object, E> converter) throws E {
+		Object value = get();
+		if (value == null) {
+			return null;
+		}
+
+		Class<?> rawClass = targetType.getType();
+		if (rawClass == Object.class || rawClass == null) {
+			return value;
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).convert(targetType, converter);
+		}
+		return converter.convert(value, getTypeDescriptor(), targetType);
+	}
 
 	@Nullable
 	<T> T getAsObject(Class<T> type);
@@ -89,6 +127,10 @@ public interface Value {
 	boolean isNumber();
 
 	boolean isEmpty();
+
+	default boolean isNull() {
+		return get() == null;
+	}
 
 	@Nullable
 	Class<?> getAsClass();

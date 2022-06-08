@@ -20,7 +20,12 @@ public class EmptyValue extends AbstractValue implements Value, Serializable {
 	}
 
 	@Override
-	public Object getSourceValue() {
+	public Object get() {
 		return null;
+	}
+
+	@Override
+	public TypeDescriptor getTypeDescriptor() {
+		return TypeDescriptor.valueOf(Object.class);
 	}
 }

@@ -1,15 +1,16 @@
 package io.basc.framework.convert;
 
+import java.util.Iterator;
+import java.util.function.Function;
+
 import io.basc.framework.util.AbstractIterator;
 import io.basc.framework.util.Assert;
 
-import java.util.Iterator;
-
 public class ConvertibleIterator<T, V> extends AbstractIterator<V> {
 	private Iterator<? extends T> iterator;
-	private Converter<T, V> converter;
+	private Function<T, V> converter;
 
-	public ConvertibleIterator(Iterator<? extends T> iterator, Converter<T, V> converter) {
+	public ConvertibleIterator(Iterator<? extends T> iterator, Function<T, V> converter) {
 		Assert.requiredArgument(iterator != null, "iterator");
 		Assert.requiredArgument(converter != null, "converter");
 		this.iterator = iterator;
@@ -21,6 +22,6 @@ public class ConvertibleIterator<T, V> extends AbstractIterator<V> {
 	}
 
 	public V next() {
-		return converter.convert(iterator.next());
+		return converter.apply(iterator.next());
 	}
 }

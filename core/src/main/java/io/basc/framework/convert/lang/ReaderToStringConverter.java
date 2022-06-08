@@ -1,21 +1,15 @@
 package io.basc.framework.convert.lang;
 
-import io.basc.framework.convert.ConversionException;
-import io.basc.framework.convert.Converter;
-import io.basc.framework.io.IOUtils;
-
 import java.io.IOException;
 import java.io.Reader;
 
-public class ReaderToStringConverter implements Converter<Reader, String> {
+import io.basc.framework.io.IOUtils;
+import io.basc.framework.util.stream.Processor;
+
+public class ReaderToStringConverter implements Processor<Reader, String, IOException> {
 
 	@Override
-	public String convert(Reader reader) {
-		try {
-			return IOUtils.read(reader);
-		} catch (IOException e) {
-			throw new ConversionException("reader -> string", e);
-		}
+	public String process(Reader reader) throws IOException {
+		return IOUtils.read(reader);
 	}
-
 }

@@ -2,7 +2,6 @@ package io.basc.framework.util.stream;
 
 import java.util.function.Supplier;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 
@@ -71,7 +70,7 @@ public class CachingProcessor<S, T, E extends Throwable> implements Processor<S,
 	}
 
 	@Override
-	public <X extends Throwable> Processor<S, T, X> exceptionConvert(Converter<Throwable, X> exceptionConverter) {
+	public <X extends Throwable> Processor<S, T, X> exceptionConvert(Processor<Throwable, X, X> exceptionConverter) {
 		Processor<S, T, X> p = this.processor.exceptionConvert(exceptionConverter);
 		if (p instanceof CachingProcessor) {
 			return p;

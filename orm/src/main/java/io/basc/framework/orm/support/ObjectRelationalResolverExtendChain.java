@@ -1,10 +1,12 @@
 package io.basc.framework.orm.support;
 
+import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.FieldDescriptor;
+import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.orm.ObjectRelationalResolver;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.comparator.Sort;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -29,25 +31,25 @@ public class ObjectRelationalResolverExtendChain implements ObjectRelationalReso
 		this.nextChain = nextChain;
 	}
 
-	public Boolean isIgnore(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
+	public boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
-			return iterator.next().isIgnore(entityClass, fieldDescriptor, this);
+			return iterator.next().isIgnore(entityClass, descriptor, this);
 		}
-		return nextChain == null ? null : nextChain.isIgnore(entityClass, fieldDescriptor);
+		return nextChain == null ? false : nextChain.isIgnore(entityClass, descriptor);
 	}
 
-	public String getName(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
+	public String getName(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
-			return iterator.next().getName(entityClass, fieldDescriptor, this);
+			return iterator.next().getName(entityClass, descriptor, this);
 		}
-		return nextChain == null ? null : nextChain.getName(entityClass, fieldDescriptor);
+		return nextChain == null ? null : nextChain.getName(entityClass, descriptor);
 	}
 
-	public Collection<String> getAliasNames(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
+	public Collection<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
-			return iterator.next().getAliasNames(entityClass, fieldDescriptor, this);
+			return iterator.next().getAliasNames(entityClass, descriptor, this);
 		}
-		return nextChain == null ? null : nextChain.getAliasNames(entityClass, fieldDescriptor);
+		return nextChain == null ? null : nextChain.getAliasNames(entityClass, descriptor);
 	}
 
 	public String getName(Class<?> entityClass) {
@@ -64,55 +66,55 @@ public class ObjectRelationalResolverExtendChain implements ObjectRelationalReso
 		return nextChain == null ? null : nextChain.getAliasNames(entityClass);
 	}
 
-	public Boolean isPrimaryKey(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
+	public boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
-			return iterator.next().isPrimaryKey(entityClass, fieldDescriptor, this);
+			return iterator.next().isPrimaryKey(entityClass, descriptor, this);
 		}
-		return nextChain == null ? null : nextChain.isPrimaryKey(entityClass, fieldDescriptor);
+		return nextChain == null ? false : nextChain.isPrimaryKey(entityClass, descriptor);
 	}
 
-	public Boolean isNullable(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
+	public boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
-			return iterator.next().isNullable(entityClass, fieldDescriptor, this);
+			return iterator.next().isNullable(entityClass, descriptor, this);
 		}
-		return nextChain == null ? null : nextChain.isNullable(entityClass, fieldDescriptor);
+		return nextChain == null ? true : nextChain.isNullable(entityClass, descriptor);
 	}
 
-	public Boolean isEntity(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
+	public boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
-			return iterator.next().isEntity(entityClass, fieldDescriptor, this);
+			return iterator.next().isEntity(entityClass, descriptor, this);
 		}
-		return nextChain == null ? null : nextChain.isEntity(entityClass, fieldDescriptor);
+		return nextChain == null ? false : nextChain.isEntity(entityClass, descriptor);
 	}
 
-	public Boolean isEntity(Class<?> entityClass) {
+	public boolean isEntity(Class<?> entityClass) {
 		if (iterator.hasNext()) {
 			return iterator.next().isEntity(entityClass, this);
 		}
-		return nextChain == null ? null : nextChain.isEntity(entityClass);
+		return nextChain == null ? false : nextChain.isEntity(entityClass);
 	}
 
-	public Boolean isVersionField(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
+	public boolean isVersionField(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
-			return iterator.next().isVersionField(entityClass, fieldDescriptor, this);
+			return iterator.next().isVersionField(entityClass, descriptor, this);
 		}
-		return nextChain == null ? null : nextChain.isVersionField(entityClass, fieldDescriptor);
-	}
-
-	@Override
-	public Collection<Range<Double>> getNumberRanges(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
-		if (iterator.hasNext()) {
-			return iterator.next().getNumberRanges(entityClass, fieldDescriptor, this);
-		}
-		return nextChain == null ? null : nextChain.getNumberRanges(entityClass, fieldDescriptor);
+		return nextChain == null ? false : nextChain.isVersionField(entityClass, descriptor);
 	}
 
 	@Override
-	public Boolean isAutoIncrement(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
+	public Collection<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
-			return iterator.next().isAutoIncrement(entityClass, fieldDescriptor, this);
+			return iterator.next().getNumberRanges(entityClass, descriptor, this);
 		}
-		return nextChain == null ? null : nextChain.isAutoIncrement(entityClass, fieldDescriptor);
+		return nextChain == null ? null : nextChain.getNumberRanges(entityClass, descriptor);
+	}
+
+	@Override
+	public boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor) {
+		if (iterator.hasNext()) {
+			return iterator.next().isAutoIncrement(entityClass, descriptor, this);
+		}
+		return nextChain == null ? false : nextChain.isAutoIncrement(entityClass, descriptor);
 	}
 
 	@Override
@@ -124,19 +126,19 @@ public class ObjectRelationalResolverExtendChain implements ObjectRelationalReso
 	}
 
 	@Override
-	public String getComment(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
+	public String getComment(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
-			return iterator.next().getComment(entityClass, fieldDescriptor, this);
+			return iterator.next().getComment(entityClass, descriptor, this);
 		}
-		return nextChain == null ? null : nextChain.getComment(entityClass, fieldDescriptor);
+		return nextChain == null ? null : nextChain.getComment(entityClass, descriptor);
 	}
 
 	@Override
-	public Boolean isIgnore(Class<?> entityClass) {
+	public boolean isIgnore(Class<?> entityClass) {
 		if (iterator.hasNext()) {
 			return iterator.next().isIgnore(entityClass, this);
 		}
-		return nextChain == null ? null : nextChain.isIgnore(entityClass);
+		return nextChain == null ? false : nextChain.isIgnore(entityClass);
 	}
 
 	@Override
@@ -148,26 +150,66 @@ public class ObjectRelationalResolverExtendChain implements ObjectRelationalReso
 	}
 
 	@Override
-	public String getCharsetName(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
+	public String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
-			return iterator.next().getCharsetName(entityClass, fieldDescriptor, this);
+			return iterator.next().getCharsetName(entityClass, descriptor, this);
 		}
-		return nextChain == null ? null : nextChain.getCharsetName(entityClass, fieldDescriptor);
+		return nextChain == null ? null : nextChain.getCharsetName(entityClass, descriptor);
 	}
 
 	@Override
-	public Boolean isUnique(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
+	public boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
-			return iterator.next().isUnique(entityClass, fieldDescriptor, this);
+			return iterator.next().isUnique(entityClass, descriptor, this);
 		}
-		return nextChain == null ? null : nextChain.isUnique(entityClass, fieldDescriptor);
+		return nextChain == null ? false : nextChain.isUnique(entityClass, descriptor);
 	}
 
 	@Override
-	public Boolean isIncrement(Class<?> entityClass, FieldDescriptor fieldDescriptor) {
+	public boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
-			return iterator.next().isIncrement(entityClass, fieldDescriptor, this);
+			return iterator.next().isIncrement(entityClass, descriptor, this);
 		}
-		return nextChain == null ? null : nextChain.isIncrement(entityClass, fieldDescriptor);
+		return nextChain == null ? false : nextChain.isIncrement(entityClass, descriptor);
+	}
+
+	@Override
+	public Sort getSort(Class<?> entityClass, ParameterDescriptor descriptor) {
+		if (iterator.hasNext()) {
+			return iterator.next().getSort(entityClass, descriptor, this);
+		}
+		return nextChain == null ? null : nextChain.getSort(entityClass, descriptor);
+	}
+
+	@Override
+	public String getCondition(Class<?> entityClass, ParameterDescriptor descriptor) {
+		if (iterator.hasNext()) {
+			return iterator.next().getCondition(entityClass, descriptor, this);
+		}
+		return nextChain == null ? null : nextChain.getCondition(entityClass, descriptor);
+	}
+
+	@Override
+	public String getRelationship(Class<?> entityClass, ParameterDescriptor descriptor) {
+		if (iterator.hasNext()) {
+			return iterator.next().getRelationship(entityClass, descriptor, this);
+		}
+		return nextChain == null ? null : nextChain.getRelationship(entityClass, descriptor);
+	}
+
+	@Override
+	public ForeignKey getForeignKey(Class<?> entityClass, ParameterDescriptor descriptor) {
+		if (iterator.hasNext()) {
+			return iterator.next().getForeignKey(entityClass, descriptor, this);
+		}
+		return nextChain == null ? null : nextChain.getForeignKey(entityClass, descriptor);
+	}
+
+	@Override
+	public boolean isDisplay(Class<?> entityClass, ParameterDescriptor descriptor) {
+		if (iterator.hasNext()) {
+			return iterator.next().isDisplay(entityClass, descriptor, this);
+		}
+		return nextChain == null ? false : nextChain.isDisplay(entityClass, descriptor);
 	}
 }

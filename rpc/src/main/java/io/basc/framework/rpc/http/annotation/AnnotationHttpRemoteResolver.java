@@ -19,7 +19,7 @@ public class AnnotationHttpRemoteResolver implements HttpRemoteResolver {
 		HttpRemote httpRemote = annotatedElement.getAnnotation(HttpRemote.class);
 		String url = httpRemote.value();
 		if (environment != null) {
-			url = environment.resolvePlaceholders(url);
+			url = environment.replacePlaceholders(url);
 		}
 		return UriUtils.toUri(url);
 	}

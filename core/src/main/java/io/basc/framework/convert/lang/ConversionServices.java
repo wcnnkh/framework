@@ -44,7 +44,8 @@ public class ConversionServices extends ConfigurableServices<ConversionService>
 		return canDirectlyConvert(sourceType, targetType);
 	}
 
-	public final Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	@SuppressWarnings("unchecked")
+	public final <R> R convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		TypeDescriptor sourceTypeToUse = sourceType;
 		if (sourceType == null && source != null) {
 			sourceTypeToUse = TypeDescriptor.forObject(source);
@@ -66,12 +67,12 @@ public class ConversionServices extends ConfigurableServices<ConversionService>
 		}
 
 		if (canDirectlyConvert(sourceTypeToUse, targetType)) {
-			return source;
+			return (R) source;
 		}
 
 		if (sourceTypeToUse == null) {
 			Object value = EmptyValue.INSTANCE.getAsObject(targetType);
-			return value;
+			return (R) value;
 		}
 
 		throw new ConverterNotFoundException(sourceTypeToUse, targetType);

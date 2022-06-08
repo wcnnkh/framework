@@ -8,8 +8,8 @@ import java.util.List;
 import org.junit.Test;
 
 import io.basc.framework.core.ResolvableType;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.mapper.Copy;
-import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.StopWatch;
 
 public class CopyTest {
@@ -63,7 +63,7 @@ public class CopyTest {
 
 		@Override
 		public String toString() {
-			return MapperUtils.toString(this);
+			return ReflectionUtils.toString(this);
 		}
 	}
 
@@ -80,7 +80,7 @@ public class CopyTest {
 
 		@Override
 		public String toString() {
-			return MapperUtils.toString(this);
+			return ReflectionUtils.toString(this);
 		}
 	}
 }

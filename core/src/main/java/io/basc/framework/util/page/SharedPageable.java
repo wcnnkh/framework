@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.core.reflect.ReflectionUtils;
 
 public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -75,6 +75,6 @@ public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 
 	@Override
 	public String toString() {
-		return MapperUtils.toString(this);
+		return ReflectionUtils.toString(this);
 	}
 }

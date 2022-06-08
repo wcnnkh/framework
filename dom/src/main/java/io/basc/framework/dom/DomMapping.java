@@ -3,7 +3,7 @@ package io.basc.framework.dom;
 import io.basc.framework.mapper.AbstractMapping;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
-import io.basc.framework.util.placeholder.PropertyResolver;
+import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.value.StringValue;
 
 import java.util.Map;
@@ -11,11 +11,11 @@ import java.util.Map;
 import org.w3c.dom.Node;
 
 public class DomMapping extends AbstractMapping {
-	private final PropertyResolver propertyResolver;
+	private final PlaceholderFormat placeholderFormat;
 	private final Map<String, Node> nodeMap;
 
-	public DomMapping(PropertyResolver propertyResolver, Map<String, Node> nodeMap) {
-		this.propertyResolver = propertyResolver;
+	public DomMapping(PlaceholderFormat placeholderFormat, Map<String, Node> nodeMap) {
+		this.placeholderFormat = placeholderFormat;
 		this.nodeMap = nodeMap;
 	}
 
@@ -32,7 +32,7 @@ public class DomMapping extends AbstractMapping {
 			return null;
 		}
 
-		String value = DomUtils.formatNodeValue(propertyResolver, node, node.getNodeValue());
+		String value = DomUtils.formatNodeValue(placeholderFormat, node, node.getNodeValue());
 		if (value == null) {
 			return null;
 		}

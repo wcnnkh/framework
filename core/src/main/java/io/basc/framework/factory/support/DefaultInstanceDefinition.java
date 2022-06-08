@@ -1,9 +1,5 @@
 package io.basc.framework.factory.support;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
-import java.util.Iterator;
-
 import io.basc.framework.core.parameter.ExecutableParameterDescriptorsIterator;
 import io.basc.framework.core.parameter.ParameterDescriptors;
 import io.basc.framework.core.parameter.ParameterFactory;
@@ -20,14 +16,21 @@ import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.NotSupportedException;
 
-public class DefaultInstanceDefinition extends InstanceParametersFactory implements InstanceDefinition {
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+import java.util.Iterator;
+
+public class DefaultInstanceDefinition extends InstanceParametersFactory
+		implements InstanceDefinition {
 	private Class<?> targetClass;
 	@SuppressWarnings("rawtypes")
 	private ServiceLoader serviceLoader;
 	private final ServiceLoaderFactory serviceLoaderFactory;
 
-	public DefaultInstanceDefinition(NoArgsInstanceFactory instanceFactory, Environment environment,
-			Class<?> targetClass, ServiceLoaderFactory serviceLoaderFactory, ParameterFactory defaultValueFactory) {
+	public DefaultInstanceDefinition(NoArgsInstanceFactory instanceFactory,
+			Environment environment, Class<?> targetClass,
+			ServiceLoaderFactory serviceLoaderFactory,
+			ParameterFactory defaultValueFactory) {
 		super(instanceFactory, environment, defaultValueFactory);
 		this.targetClass = targetClass;
 		this.serviceLoaderFactory = serviceLoaderFactory;
@@ -47,12 +50,15 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 		}
 
 		if (instance instanceof DefaultValueFactoryAware) {
-			((DefaultValueFactoryAware) instance).setDefaultValueFactory(getDefaultValueFactory());
+			((DefaultValueFactoryAware) instance)
+					.setDefaultValueFactory(getDefaultValueFactory());
 		}
 	}
 
-	protected Object createInternal(Class<?> targetClass, ParameterDescriptors parameterDescriptors, Object[] params) {
-		Constructor<?> constructor = ReflectionUtils.getDeclaredConstructor(targetClass, parameterDescriptors.getTypes());
+	protected Object createInternal(Class<?> targetClass,
+			ParameterDescriptors parameterDescriptors, Object[] params) {
+		Constructor<?> constructor = ReflectionUtils.getDeclaredConstructor(
+				targetClass, parameterDescriptors.getTypes());
 		Object instance = ReflectionUtils.newInstance(constructor, params);
 		configurable(instance);
 		return instance;
@@ -79,9 +85,11 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 		return createInternal(getTargetClass(), parameterDescriptors, params);
 	}
 
-	protected ParameterDescriptors getParameterDescriptors(Class<?>[] parameterTypes) {
+	protected ParameterDescriptors getParameterDescriptors(
+			Class<?>[] parameterTypes) {
 		for (ParameterDescriptors parameterDescriptors : this) {
-			if (ParameterUtils.isisAssignable(parameterDescriptors, parameterTypes)) {
+			if (ParameterUtils.isisAssignable(parameterDescriptors,
+					parameterTypes)) {
 				return parameterDescriptors;
 			}
 		}
@@ -92,7 +100,8 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 		return getParameterDescriptors(parameterTypes) != null;
 	}
 
-	public Object create(Class<?>[] parameterTypes, Object[] params) throws InstanceException {
+	public Object create(Class<?>[] parameterTypes, Object[] params)
+			throws InstanceException {
 		ParameterDescriptors parameterDescriptors = getParameterDescriptors(parameterTypes);
 		if (parameterDescriptors == null) {
 			throw new NotFoundException(getTargetClass() + "找不到指定的构造方法");
@@ -140,14 +149,15 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 
 	public boolean isInstance(boolean supportAbstract) {
 		if (serviceLoader == null) {
-			serviceLoader = getServiceLoader(targetClass);
+			serviceLoader = getServiceLoader(getTargetClass());
 		}
 
 		if (serviceLoader.iterator().hasNext()) {
 			return true;
 		}
 
-		if (!supportAbstract && Modifier.isAbstract(getTargetClass().getModifiers())) {
+		if (!supportAbstract
+				&& Modifier.isAbstract(getTargetClass().getModifiers())) {
 			return false;
 		}
 		return getParameterDescriptors() != null;
@@ -174,6 +184,7 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 		}
 
 		ParameterDescriptors parameterDescriptors = getParameterDescriptors();
-		return createInternal(getTargetClass(), parameterDescriptors, getParameters(parameterDescriptors));
+		return createInternal(getTargetClass(), parameterDescriptors,
+				getParameters(parameterDescriptors));
 	}
 }

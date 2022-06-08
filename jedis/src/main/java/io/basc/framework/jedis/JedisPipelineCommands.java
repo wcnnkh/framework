@@ -75,7 +75,7 @@ public class JedisPipelineCommands<P extends PipelineBinaryCommands> implements 
 	public RedisResponse<List<String>> geohash(byte[] key, byte[]... members) {
 		Response<List<byte[]>> response = commands.geohash(key, members);
 		return new JedisRedisResponse<>(
-				() -> JedisCodec.INSTANCE.toDecodeConverter().convertTo(response.get(), new ArrayList<String>()));
+				() -> JedisCodec.INSTANCE.toDecodeProcessor().processTo(response.get(), new ArrayList<String>()));
 	}
 
 	@Override
@@ -198,7 +198,7 @@ public class JedisPipelineCommands<P extends PipelineBinaryCommands> implements 
 	@Override
 	public RedisResponse<Boolean> hsetnx(byte[] key, byte[] field, byte[] value) {
 		Response<Long> response = commands.hsetnx(key, field, value);
-		return new JedisRedisResponse<Boolean>(() -> NumberToBooleanConverter.DEFAULT.convert(response.get()));
+		return new JedisRedisResponse<Boolean>(() -> NumberToBooleanConverter.DEFAULT.apply(response.get()));
 	}
 
 	@Override
@@ -1067,8 +1067,8 @@ public class JedisPipelineCommands<P extends PipelineBinaryCommands> implements 
 				throw new RedisSystemException("Thread[" + Thread.currentThread().getId() + "]["
 						+ Thread.currentThread().getName() + "] interrupt", e);
 			}
-			
-			if(isCancelled()){
+
+			if (isCancelled()) {
 				throw new RedisSystemException("It has been cancelled");
 			}
 
@@ -1087,8 +1087,8 @@ public class JedisPipelineCommands<P extends PipelineBinaryCommands> implements 
 				throw new RedisSystemException("Thread[" + Thread.currentThread().getId() + "]["
 						+ Thread.currentThread().getName() + "] interrupt", e);
 			}
-			
-			if(isCancelled()){
+
+			if (isCancelled()) {
 				throw new RedisSystemException("It has been cancelled");
 			}
 
@@ -1105,7 +1105,7 @@ public class JedisPipelineCommands<P extends PipelineBinaryCommands> implements 
 
 		@Override
 		public boolean cancel(boolean mayInterruptIfRunning) {
-			if(cancelled.compareAndSet(false, true)){
+			if (cancelled.compareAndSet(false, true)) {
 				countDownLatch.countDown();
 				return true;
 			}

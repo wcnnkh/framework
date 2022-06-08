@@ -17,7 +17,7 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.orm.MaxValueFactory;
-import io.basc.framework.orm.ObjectRelationalMapping;
+import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.generator.annotation.CreateTime;
 import io.basc.framework.orm.generator.annotation.Generator;
 import io.basc.framework.orm.generator.annotation.UUID;
@@ -26,18 +26,18 @@ import io.basc.framework.util.XUtils;
 
 public class DefaultGeneratorProcessor implements GeneratorProcessor {
 	private static Logger logger = LoggerFactory.getLogger(DefaultGeneratorProcessor.class);
-	private final ObjectRelationalMapping objectRelationalMapping;
+	private final ObjectRelationalFactory objectRelationalMapping;
 	private final SequenceIdGenerator sequeueIdGenerator;
 	private final Counter counter;
 	private final LockFactory lockFactory;
 	private final MaxValueFactory maxValueFactory;
 
-	public DefaultGeneratorProcessor(ObjectRelationalMapping objectRelationalMapping, MaxValueFactory maxValueFactory) {
+	public DefaultGeneratorProcessor(ObjectRelationalFactory objectRelationalMapping, MaxValueFactory maxValueFactory) {
 		this(objectRelationalMapping, maxValueFactory, new SequenceIdGenerator(), new MemoryOperations(),
 				new ReentrantLockFactory());
 	}
 
-	public DefaultGeneratorProcessor(ObjectRelationalMapping objectRelationalMapping, MaxValueFactory maxValueFactory,
+	public DefaultGeneratorProcessor(ObjectRelationalFactory objectRelationalMapping, MaxValueFactory maxValueFactory,
 			SequenceIdGenerator sequeueIdGenerator, Counter counter, LockFactory lockFactory) {
 		this.objectRelationalMapping = objectRelationalMapping;
 		this.maxValueFactory = maxValueFactory;
@@ -49,7 +49,7 @@ public class DefaultGeneratorProcessor implements GeneratorProcessor {
 	@Override
 	public <T> void process(Class<? extends T> entityClass, Object entity) {
 		Map<Object, Object> contextMap = new HashMap<Object, Object>();
-		for (Field field : objectRelationalMapping.getFields(entityClass)) {
+		for (Field field : objectRelationalMapping.getStructure(entityClass)) {
 			if (MapperUtils.isExistValue(field, entity)) {
 				// 存在默认值 ，忽略
 				continue;

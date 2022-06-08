@@ -12,6 +12,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
+import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.stream.Processor;
 
@@ -23,10 +24,10 @@ import io.basc.framework.util.stream.Processor;
  */
 public class ReflectionApi implements Supplier<Object> {
 	private final Class<?> declaringClass;
-	private final Processor<Class<?>, Object, Throwable> processor;
+	private final Processor<Class<?>, Object, ? extends Throwable> processor;
 
 	public ReflectionApi(@Nullable Class<?> declaringClass,
-			@Nullable Processor<Class<?>, Object, Throwable> processor) {
+			@Nullable Processor<Class<?>, Object, ? extends Throwable> processor) {
 		this.declaringClass = declaringClass;
 		this.processor = processor;
 	}
@@ -221,6 +222,10 @@ public class ReflectionApi implements Supplier<Object> {
 			return false;
 		}
 		return true;
+	}
+	
+	public static <T> T newInstance(Class<T> type) throws NotSupportedException{
+		return newInstance(type, ObjectUtils.EMPTY_ARRAY);
 	}
 
 	/**

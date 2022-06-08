@@ -16,7 +16,7 @@ import io.basc.framework.orm.annotation.PrimaryKey;
 
 public class XmlResolverTest {
 	private static Logger logger = LoggerFactory.getLogger(XmlResolverTest.class);
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
@@ -33,8 +33,8 @@ public class XmlResolverTest {
 
 		TypeDescriptor nestedType2 = TypeDescriptor.map(Map.class, String.class, TestBean2.class);
 		TypeDescriptor mapType2 = TypeDescriptor.map(Map.class, TypeDescriptor.valueOf(String.class), nestedType2);
-		Map<String, Map<String, TestBean>> map2 = (Map<String, Map<String, TestBean>>) Sys.env.getResourceResolver().resolveResource(resource,
-				mapType2);
+		Map<String, Map<String, TestBean>> map2 = (Map<String, Map<String, TestBean>>) Sys.env.getResourceResolver()
+				.resolveResource(resource, mapType2);
 		logger.info(map2.toString());
 		assertTrue(map2.size() == 3);
 	}

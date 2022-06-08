@@ -3,14 +3,15 @@ package io.basc.framework.util;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import io.basc.framework.convert.Converter;
+import io.basc.framework.util.stream.Processor;
 
 public class IterationIterator<S, T> implements Iterator<T> {
 	private final Iterator<? extends S> iterator;
-	private final Converter<S, ? extends Iterator<? extends T>> converter;
+	private final Processor<S, ? extends Iterator<? extends T>, ? extends RuntimeException> converter;
 	private Iterator<? extends T> valueIterator;
 
-	public IterationIterator(Iterator<? extends S> iterator, Converter<S, ? extends Iterator<? extends T>> converter) {
+	public IterationIterator(Iterator<? extends S> iterator,
+			Processor<S, ? extends Iterator<? extends T>, ? extends RuntimeException> converter) {
 		Assert.requiredArgument(iterator != null, "iterator");
 		Assert.requiredArgument(converter != null, "converter");
 		this.iterator = iterator;
@@ -24,7 +25,7 @@ public class IterationIterator<S, T> implements Iterator<T> {
 				return false;
 			}
 			S s = iterator.next();
-			valueIterator = converter.convert(s);
+			valueIterator = converter.process(s);
 		}
 
 		if (valueIterator.hasNext()) {

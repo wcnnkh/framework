@@ -1,7 +1,7 @@
 package io.basc.framework.redis;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.data.geo.Point;
+import io.basc.framework.util.stream.Processor;
 
 /**
  * Geo element within a certain radius. Contains:
@@ -68,8 +68,8 @@ public class GeoWithin<V> {
 		return coordinates;
 	}
 
-	public <T> GeoWithin<T> convert(Converter<V, T> converter) {
-		return new GeoWithin<T>(converter.convert(member), distance, geohash, coordinates);
+	public <T, E extends Throwable> GeoWithin<T> convert(Processor<V, T, E> converter) throws E {
+		return new GeoWithin<T>(converter.process(member), distance, geohash, coordinates);
 	}
 
 	@Override

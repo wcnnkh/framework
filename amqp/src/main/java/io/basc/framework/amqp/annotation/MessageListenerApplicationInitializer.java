@@ -26,7 +26,7 @@ public final class MessageListenerApplicationInitializer implements ApplicationP
 				}
 			}
 
-			ReflectionUtils.getDeclaredMethods(clazz).streamAll()
+			ReflectionUtils.getDeclaredMethods(clazz).withAll().streamAll()
 					.filter((e) -> e.isAnnotationPresent(MessageListener.class)).forEach((method) -> {
 						MessageListener messageListener = method.getAnnotation(MessageListener.class);
 						Exchange exchange = application.getBeanFactory().getInstance(messageListener.exchange());

@@ -2,7 +2,7 @@ package io.basc.framework.slf4j;
 
 import io.basc.framework.logger.CustomLevel;
 import io.basc.framework.logger.CustomLogger;
-import io.basc.framework.util.PlaceholderFormat;
+import io.basc.framework.util.PlaceholderMessage;
 
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -49,7 +49,7 @@ public class Slf4jLogger extends CustomLogger {
 
 	@Override
 	public void log(Level level, Throwable e, String msg, Object... args) {
-		PlaceholderFormat message = new PlaceholderFormat(msg, placeholder, args);
+		PlaceholderMessage message = new PlaceholderMessage(msg, placeholder, args);
 		if (level.getName().equalsIgnoreCase(Level.INFO.getName())) {
 			if (e == null) {
 				logger.info(FORMAT, message);

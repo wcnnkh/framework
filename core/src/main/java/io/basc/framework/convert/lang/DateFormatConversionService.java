@@ -26,8 +26,9 @@ public class DateFormatConversionService extends AbstractConversionService {
 				&& canConvert(sourceType.getType()) && canConvert(targetType.getType());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public <R> R convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		if (source == null || sourceType == null) {
 			return null;
@@ -35,42 +36,42 @@ public class DateFormatConversionService extends AbstractConversionService {
 
 		if (sourceType.getType() == String.class) {
 			if (targetType.getType() == Date.class) {
-				return stringToDate((String) source, sourceType, targetType);
+				return (R) stringToDate((String) source, sourceType, targetType);
 			}
 
 			if (NumberUtils.isNumber(targetType.getType())) {
-				return stringToNumber((String) source, sourceType, targetType);
+				return (R) stringToNumber((String) source, sourceType, targetType);
 			}
 		}
 
 		if (sourceType.getType() == Date.class) {
 			if (targetType.getType() == String.class) {
-				return dateToString((Date) source, sourceType, targetType);
+				return (R) dateToString((Date) source, sourceType, targetType);
 			}
 
 			if (NumberUtils.isNumber(targetType.getType())) {
-				return dateToNumber((Date) source, sourceType, targetType);
+				return (R) dateToNumber((Date) source, sourceType, targetType);
 			}
 		}
 
 		if (NumberUtils.isNumber(sourceType.getType())) {
 			if (targetType.getType() == String.class) {
-				return numberToString(source, sourceType, targetType);
+				return (R) numberToString(source, sourceType, targetType);
 			}
 
 			if (targetType.getType() == Date.class) {
-				return numberToString(source, sourceType, targetType);
+				return (R) numberToString(source, sourceType, targetType);
 			}
 
 			if (NumberUtils.isNumber(targetType.getType())) {
-				return new AnyValue(source).getAsObject(targetType);
+				return (R) new AnyValue(source).getAsObject(targetType);
 			}
 		}
 
-		if(!getConversionService().canConvert(sourceType, TypeDescriptor.valueOf(Date.class))) {
+		if (!getConversionService().canConvert(sourceType, TypeDescriptor.valueOf(Date.class))) {
 			throw new ConversionFailedException(sourceType, targetType, source, null);
 		}
-		
+
 		Date date = (Date) getConversionService().convert(source, sourceType, TypeDescriptor.valueOf(Date.class));
 		return convert(date, sourceType.narrow(date), targetType);
 	}

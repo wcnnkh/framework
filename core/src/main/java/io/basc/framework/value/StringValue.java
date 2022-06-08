@@ -12,11 +12,22 @@ import java.lang.reflect.Type;
 
 public class StringValue extends AbstractValue implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private String value;
+	private final String value;
+	private final TypeDescriptor valueTypeDescriptor;
 	private transient JSONSupport jsonSupport;
 
 	public StringValue(String value) {
+		this(value, null);
+	}
+
+	public StringValue(String value, TypeDescriptor valueTypeDescriptor) {
 		this.value = value;
+		this.valueTypeDescriptor = valueTypeDescriptor;
+	}
+
+	@Override
+	public TypeDescriptor getTypeDescriptor() {
+		return valueTypeDescriptor == null ? TypeDescriptor.valueOf(String.class) : valueTypeDescriptor;
 	}
 
 	public JSONSupport getJsonSupport() {
@@ -28,7 +39,7 @@ public class StringValue extends AbstractValue implements Serializable {
 	}
 
 	@Override
-	public Object getSourceValue() {
+	public String get() {
 		return value;
 	}
 

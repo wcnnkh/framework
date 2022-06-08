@@ -23,6 +23,11 @@ public class OverrideParameterDescriptor extends ParameterDescriptorWrapper<Para
 	}
 
 	@Override
+	public ParameterDescriptor rename(String name) {
+		return new OverrideParameterDescriptor(getDelegateSource(), name);
+	}
+
+	@Override
 	public String getName() {
 		return name == null ? super.getName() : name;
 	}

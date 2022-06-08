@@ -27,6 +27,11 @@ public class CharSequenceSplitSegment implements CharSequence {
 		return source;
 	}
 
+	/**
+	 * {@link CharSequenceSplitIterator} 最后一个为空
+	 * 
+	 * @return
+	 */
 	@Nullable
 	public CharSequence getSeparator() {
 		return separator;

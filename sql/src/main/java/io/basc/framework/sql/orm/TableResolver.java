@@ -18,4 +18,6 @@ public interface TableResolver {
 	String getEngine(Class<?> entityClass);
 
 	String getRowFormat(Class<?> entityClass);
+	
+	Boolean isAutoCreate(Class<?> entityClass);
 }

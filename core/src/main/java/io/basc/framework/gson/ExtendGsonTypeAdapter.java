@@ -55,7 +55,7 @@ public class ExtendGsonTypeAdapter extends TypeAdapter<Object> {
 		}
 
 		if (value instanceof Value) {
-			Object valueToUse = ((Value) value).getSourceValue();
+			Object valueToUse = ((Value) value).get();
 			if (valueToUse == null) {
 				out.nullValue();
 				return;

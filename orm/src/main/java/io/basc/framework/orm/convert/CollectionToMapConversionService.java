@@ -13,23 +13,21 @@ import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.mapper.Fields;
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.orm.ObjectRelationalMapping;
+import io.basc.framework.orm.ObjectRelationalFactory;
+import io.basc.framework.orm.Property;
 import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionFactory;
 
 public class CollectionToMapConversionService extends ConditionalConversionService {
 	public static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
-	private ObjectRelationalMapping objectRelationalMapping;
+	private ObjectRelationalFactory mapper;
 
-	public ObjectRelationalMapping getObjectRelationalMapping() {
-		return objectRelationalMapping == null ? OrmUtils.getMapping() : objectRelationalMapping;
+	public ObjectRelationalFactory getMapper() {
+		return mapper == null ? OrmUtils.getMapper() : mapper;
 	}
 
-	public void setObjectRelationalMapping(ObjectRelationalMapping objectRelationalMapping) {
-		this.objectRelationalMapping = objectRelationalMapping;
+	public void setMapper(ObjectRelationalFactory mapper) {
+		this.mapper = mapper;
 	}
 
 	@Override
@@ -63,11 +61,8 @@ public class CollectionToMapConversionService extends ConditionalConversionServi
 			}
 
 			Object value = getConversionService().convert(item, sourceType.narrow(item), itemType);
-			Fields primaryKeyFields = MapperUtils.getFields(itemType.getType()).all()
-					.accept(FieldFeature.SUPPORT_GETTER)
-					.accept((field) -> getObjectRelationalMapping().isPrimaryKey(itemType.getType(), field.getGetter()))
-					.shared();
-			Iterator<Field> primaryKeyIterator = primaryKeyFields.iterator();
+			List<? extends Property> primaryKeys = getMapper().getStructure(itemType.getType()).getPrimaryKeys();
+			Iterator<? extends Property> primaryKeyIterator = primaryKeys.iterator();
 			Map nestMap = map;
 			TypeDescriptor keyType = targetType.getMapKeyTypeDescriptor();
 			TypeDescriptor valueType = targetType.getMapValueTypeDescriptor();

@@ -5,14 +5,14 @@ import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.ioc.AbstractFieldIocProcessor;
 import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.mapper.Fields;
 
 public class XmlPropertiesIocProcessor extends AbstractFieldIocProcessor {
 	private XmlBeanParameter xmlBeanParameter;
 
 	public XmlPropertiesIocProcessor(Class<?> targetClass, XmlBeanParameter xmlBeanParameter) {
-		super(MapperUtils.getFields(targetClass).all().accept(FieldFeature.SUPPORT_SETTER)
-				.find(xmlBeanParameter.getName(), null));
+		super(Fields.getFields(targetClass).all().filter(FieldFeature.SUPPORT_SETTER)
+				.getByName(xmlBeanParameter.getName(), null));
 		this.xmlBeanParameter = xmlBeanParameter;
 	}
 

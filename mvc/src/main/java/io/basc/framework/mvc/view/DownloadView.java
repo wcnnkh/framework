@@ -5,10 +5,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
-import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.mvc.HttpChannel;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
@@ -52,6 +52,6 @@ public final class DownloadView implements View {
 	
 	@Override
 	public String toString() {
-		return MapperUtils.toString(this);
+		return ReflectionUtils.toString(this);
 	}
 }

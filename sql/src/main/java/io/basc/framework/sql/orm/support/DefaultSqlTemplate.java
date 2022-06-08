@@ -6,24 +6,24 @@ import io.basc.framework.orm.cache.CacheManager;
 import io.basc.framework.orm.generator.DefaultGeneratorProcessor;
 import io.basc.framework.orm.generator.GeneratorProcessor;
 import io.basc.framework.orm.support.DefaultObjectKeyFormat;
-import io.basc.framework.orm.support.SimpleStructureRegistry;
 import io.basc.framework.sql.ConnectionFactory;
 import io.basc.framework.sql.DefaultSqlOperations;
 import io.basc.framework.sql.orm.SqlDialect;
 import io.basc.framework.sql.orm.SqlTemplate;
-import io.basc.framework.sql.orm.TableStructure;
 import io.basc.framework.util.Assert;
 
-public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTemplate {
+public class DefaultSqlTemplate extends DefaultSqlOperations implements
+		SqlTemplate {
 	private final SqlDialect sqlDialect;
 	private GeneratorProcessor generatorProcessor;
 	private CacheManager cacheManager;
-	private final SimpleStructureRegistry<TableStructure> structureRegistry = new SimpleStructureRegistry<TableStructure>();
 	private ObjectKeyFormat objectKeyFormat = new DefaultObjectKeyFormat();
 
-	public DefaultSqlTemplate(ConnectionFactory connectionFactory, SqlDialect sqlDialect) {
-		super(connectionFactory);
-		this.generatorProcessor = new DefaultGeneratorProcessor(sqlDialect, this);
+	public DefaultSqlTemplate(ConnectionFactory connectionFactory,
+			SqlDialect sqlDialect) {
+		super(connectionFactory, sqlDialect);
+		this.generatorProcessor = new DefaultGeneratorProcessor(sqlDialect,
+				this);
 		this.sqlDialect = sqlDialect;
 	}
 
@@ -36,11 +36,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 		this.objectKeyFormat = objectKeyFormat;
 	}
 
-	public SimpleStructureRegistry<TableStructure> getStructureRegistry() {
-		return structureRegistry;
-	}
-
-	public SqlDialect getSqlDialect() {
+	public SqlDialect getMapper() {
 		return sqlDialect;
 	}
 
@@ -58,7 +54,8 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	}
 
 	public void setGeneratorProcessor(GeneratorProcessor generatorProcessor) {
-		Assert.requiredArgument(generatorProcessor != null, "generatorProcessor");
+		Assert.requiredArgument(generatorProcessor != null,
+				"generatorProcessor");
 		this.generatorProcessor = generatorProcessor;
 	}
 
@@ -96,7 +93,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	}
 
 	@Override
-	public boolean deleteById(Class<?> entityClass, Object... ids) {
+	public <E> boolean deleteById(Class<? extends E> entityClass, Object... ids) {
 		CacheManager cacheManager = getCacheManager();
 		if (cacheManager != null) {
 			cacheManager.deleteById(entityClass, ids);
@@ -137,7 +134,9 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 			value = cacheManager.getById(entityClass, ids);
 		}
 
-		if (cacheManager == null || (value == null && cacheManager.isKeepLooking(entityClass, ids))) {
+		if (cacheManager == null
+				|| (value == null && cacheManager.isKeepLooking(entityClass,
+						ids))) {
 			value = SqlTemplate.super.getById(entityClass, ids);
 			if (value != null && cacheManager != null) {
 				cacheManager.save(value);
@@ -149,18 +148,6 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	@Override
 	public <T> boolean updatePart(Class<? extends T> entityClass, T entity) {
 		if (SqlTemplate.super.updatePart(entityClass, entity)) {
-			CacheManager cacheManager = getCacheManager();
-			if (cacheManager != null) {
-				cacheManager.delete(entityClass, entity);
-			}
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public <T> boolean update(Class<? extends T> entityClass, T entity, T condition) {
-		if (SqlTemplate.super.update(entityClass, entity, condition)) {
 			CacheManager cacheManager = getCacheManager();
 			if (cacheManager != null) {
 				cacheManager.delete(entityClass, entity);

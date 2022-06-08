@@ -18,11 +18,13 @@ package io.basc.framework.util;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.CharBuffer;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
 import io.basc.framework.lang.ParameterException;
+import io.basc.framework.util.stream.Processor;
 
 /**
  * Miscellaneous utility methods for number conversion and parsing. Mainly for
@@ -30,7 +32,6 @@ import io.basc.framework.lang.ParameterException;
  * comprehensive suite of string utilities.
  */
 public abstract class NumberUtils {
-
 	/**
 	 * 把一个number转换成基本数据类型
 	 * 
@@ -197,9 +198,26 @@ public abstract class NumberUtils {
 		}
 	}
 
+	/**
+	 * 是否是数字类型
+	 * 
+	 * @param type
+	 * @return
+	 */
 	public static boolean isNumber(Class<?> type) {
 		return type == long.class || type == int.class || type == byte.class || type == short.class
 				|| type == float.class || type == double.class || Number.class.isAssignableFrom(type);
+	}
+
+	/**
+	 * 是否是整数类型
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static boolean isInteger(Class<?> type) {
+		return type == long.class || type == int.class || type == byte.class || type == short.class
+				|| BigInteger.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -291,4 +309,165 @@ public abstract class NumberUtils {
 		return (negative ? result.negate() : result);
 	}
 
+	/**
+	 * 是否是整数
+	 * 
+	 * @param number
+	 * @return
+	 */
+	public static boolean isInteger(BigDecimal number) {
+		return number.signum() == 0 || number.scale() <= 0 || number.stripTrailingZeros().scale() <= 0;
+	}
+
+	/**
+	 * 清除无用的0
+	 * 
+	 * @see BigDecimal#stripTrailingZeros()
+	 * @See {@link BigDecimal#setScale(int)}
+	 * @param number
+	 * @return
+	 */
+	public static BigDecimal stripTrailingZeros(BigDecimal number) {
+		if (number.signum() == 0 || number.scale() <= 0) {
+			return number;
+		}
+
+		// 存在小数
+		BigDecimal target = number.stripTrailingZeros();
+		if (target.scale() <= 0) {
+			return number.setScale(0);
+		}
+		return number;
+	}
+
+	public static String format(BigDecimal number, NumberUnit... units) {
+		return format(number, (e) -> stripTrailingZeros(e).toPlainString(), units);
+	}
+
+	public static BigDecimal parse(String source, NumberUnit... units) {
+		return parse(source, (e) -> new BigDecimal(e), units);
+	}
+
+	/**
+	 * 通过数字单位格式化数字(忽略正负符号)
+	 * 
+	 * @param number
+	 * @param toString
+	 * @param units
+	 * @return
+	 */
+	public static <E extends Throwable> String format(BigDecimal number, Processor<BigDecimal, String, E> toString,
+			NumberUnit... units) throws E {
+		Assert.requiredArgument(number != null, "number");
+		Assert.requiredArgument(toString != null, "toString");
+		if (units == null || units.length == 0 || number.compareTo(BigDecimal.ZERO) == 0) {
+			return toString.process(number.abs());
+		}
+
+		StringBuilder sb = new StringBuilder();
+		format(sb, number.abs(), toString, 0, units.length, units);
+		return sb.toString();
+	}
+
+	protected static <E extends Throwable> void format(StringBuilder sb, BigDecimal number,
+			Processor<BigDecimal, String, E> toString, int startUnitsIndex, int endUnitsIndex, NumberUnit... units)
+			throws E {
+		BigDecimal surplus = number;
+		for (int i = startUnitsIndex; i < Math.min(endUnitsIndex, units.length); i++) {
+			NumberUnit unit = units[i];
+			if (unit.getRadix().compareTo(surplus) > 0) {
+				continue;
+			}
+
+			BigDecimal[] decimals = surplus.divideAndRemainder(unit.getRadix());
+			// 是否是最后一个
+			boolean last = true;
+			for (NumberUnit u : units) {
+				if (decimals[1].compareTo(u.getRadix()) >= 0) {
+					last = false;
+					break;
+				}
+			}
+
+			if (last) {
+				decimals[0] = surplus.divide(unit.getRadix());
+				decimals[1] = BigDecimal.ZERO;
+			}
+
+			// 是否嵌套
+			boolean notNested = last || decimals[1].compareTo(BigDecimal.ZERO) == 0
+			// 如果小于1那个取模就会越来越大
+					|| unit.getRadix().compareTo(BigDecimal.ONE) < 0;
+			if (notNested) {
+				sb.append(toString.process(decimals[0]));
+			} else {
+				format(sb, decimals[0], toString, i, units.length - 1, units);
+			}
+
+			sb.append(unit.getName());
+			if (!notNested && i < units.length - 1
+					&& decimals[1].divideToIntegralValue(units[i + 1].getRadix()).compareTo(BigDecimal.ZERO) == 0) {
+				sb.append(toString.process(BigDecimal.ZERO));
+			}
+			surplus = decimals[1];
+		}
+
+		if (surplus.compareTo(BigDecimal.ZERO) > 0) {
+			sb.append(toString.process(surplus));
+		}
+	}
+
+	public static <E extends Throwable> BigDecimal parse(String source, Processor<String, BigDecimal, E> converter,
+			NumberUnit... units) throws E {
+		for (NumberUnit unit : units) {
+			int index = source.indexOf(unit.getName());
+			if (index == -1) {
+				continue;
+			}
+
+			String left = source.substring(0, index);
+			BigDecimal value = parse(left, converter, units).multiply(unit.getRadix());
+			if (index < source.length() - unit.getName().length()) {
+				String right = source.substring(index + unit.getName().length());
+				value = value.add(parse(right, converter, units));
+			}
+			return value;
+		}
+		return converter.process(source);
+	}
+
+	/**
+	 * 保留小数点精度
+	 * 
+	 * @param number
+	 * @param len    保留多少位
+	 * @return
+	 * @see
+	 */
+	public static String formatPrecision(double number, int len) {
+		if (len < 0) {
+			throw new IllegalStateException("len < 0");
+		}
+
+		if (len == 0) {
+			return ((long) number) + "";
+		}
+
+		if (number == 0) {
+			CharBuffer charBuffer = CharBuffer.allocate(len + 2);
+			charBuffer.put('0');
+			charBuffer.put('.');
+			for (int i = 0; i < len; i++) {
+				charBuffer.put('0');
+			}
+			return new String(charBuffer.array());
+		}
+
+		CharBuffer charBuffer = CharBuffer.allocate(len + 3);
+		charBuffer.put("#0.");
+		for (int i = 0; i < len; i++) {
+			charBuffer.put("0");
+		}
+		return new DecimalFormat(new String(charBuffer.array())).format(number);
+	}
 }

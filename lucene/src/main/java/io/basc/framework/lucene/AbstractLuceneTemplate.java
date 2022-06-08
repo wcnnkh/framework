@@ -5,30 +5,18 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 
-import io.basc.framework.json.JSONUtils;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.lucene.annotation.AnnotationFieldResolver;
-import io.basc.framework.lucene.annotation.LuceneField;
-import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.Fields;
-import io.basc.framework.mapper.MapperConfigurator;
-import io.basc.framework.orm.EntityStructure;
-import io.basc.framework.orm.Property;
-import io.basc.framework.util.Assert;
+import io.basc.framework.lucene.support.DefaultLuceneMapper;
 import io.basc.framework.util.concurrent.AsyncExecutor;
 import io.basc.framework.util.concurrent.TaskQueue;
 import io.basc.framework.util.stream.Processor;
-import io.basc.framework.value.AnyValue;
-import io.basc.framework.value.StringValue;
-import io.basc.framework.value.Value;
 
-public abstract class AbstractLuceneTemplate extends MapperConfigurator<Document, LuceneException>
-		implements LuceneTemplate {
+public abstract class AbstractLuceneTemplate implements LuceneTemplate {
+
 	// 默认的写操作队列, 所有的写都排队处理
 	protected static final TaskQueue TASK_QUEUE = new TaskQueue();
 
@@ -38,7 +26,7 @@ public abstract class AbstractLuceneTemplate extends MapperConfigurator<Document
 		TASK_QUEUE.start();
 	}
 
-	private FieldResolver fieldResolver = new AnnotationFieldResolver();
+	private LuceneMapper mapper = new DefaultLuceneMapper();
 	private final AsyncExecutor writeExecutor;// 写执行器
 	private final Executor searchExecutor;// 搜索执行器
 
@@ -55,13 +43,13 @@ public abstract class AbstractLuceneTemplate extends MapperConfigurator<Document
 		this.searchExecutor = searchExecutor;
 	}
 
-	public final FieldResolver getFieldResolver() {
-		return fieldResolver;
+	@Override
+	public LuceneMapper getMapper() {
+		return this.mapper;
 	}
 
-	public void setFieldResolver(FieldResolver fieldResolver) {
-		Assert.requiredArgument(fieldResolver != null, "fieldResolver");
-		this.fieldResolver = fieldResolver;
+	public void setMapper(LuceneMapper mapper) {
+		this.mapper = mapper;
 	}
 
 	protected abstract IndexWriter getIndexWriter() throws IOException;
@@ -134,75 +122,5 @@ public abstract class AbstractLuceneTemplate extends MapperConfigurator<Document
 		} catch (Throwable e) {
 			throw new LuceneSearchException(e);
 		}
-	}
-
-	@Override
-	public Fields getFields(Class<?> entityClass, Field parentField) {
-		return super.getFields(entityClass, parentField).entity().all();
-	}
-
-	@Override
-	public <T> T mapping(Document document, T instance) {
-		return mapping(document, instance, getFields(instance.getClass()));
-	}
-
-	@Override
-	public <T> T mapping(Document document, T instance, Fields fields) {
-		for (io.basc.framework.mapper.Field javaField : fields) {
-			String value = document.get(javaField.getSetter().getName());
-			if (value == null) {
-				continue;
-			}
-
-			javaField.set(instance, value, getConversionService());
-		}
-		return instance;
-	}
-
-	@Override
-	public Document wrap(Document document, Object instance) {
-		return wrap(document, instance, getFields(instance.getClass()).accept((field) -> {
-			return field.isAnnotationPresent(LuceneField.class) || Value.isBaseType(field.getGetter().getType());
-		}).all());
-	}
-
-	@Override
-	public Document wrap(Document document, Object instance, Fields fields) {
-		for (io.basc.framework.mapper.Field field : fields) {
-			Object value = field.getGetter().get(instance);
-			if (value == null) {
-				continue;
-			}
-
-			Value v;
-			if (Value.isBaseType(field.getGetter().getType())) {
-				v = new AnyValue(value, getConversionService());
-			} else {
-				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
-			}
-
-			fieldResolver.resolve(field.getGetter(), v).forEach((f) -> document.add(f));
-		}
-		return document;
-	}
-
-	@Override
-	public Document wrap(Document document, EntityStructure<? extends Property> structure, Object instance) {
-		for (Property property : structure) {
-			Object value = property.getField().get(instance);
-			if (value == null) {
-				continue;
-			}
-
-			Value v;
-			if (Value.isBaseType(property.getField().getGetter().getType())) {
-				v = new AnyValue(value, getConversionService());
-			} else {
-				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
-			}
-
-			fieldResolver.resolve(property.getField().getGetter(), v).forEach((f) -> document.add(f));
-		}
-		return document;
 	}
 }

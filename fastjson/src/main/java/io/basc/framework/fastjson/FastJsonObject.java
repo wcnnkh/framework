@@ -10,7 +10,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONAware;
 import com.alibaba.fastjson.JSONObject;
 
-import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.ConvertibleIterator;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonArray;
@@ -18,8 +17,7 @@ import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
 import io.basc.framework.util.Pair;
 
-public final class FastJsonObject extends AbstractJson<String>
-		implements JsonObject, JSONAware, Serializable, Converter<Entry<String, Object>, Pair<String, JsonElement>> {
+public final class FastJsonObject extends AbstractJson<String> implements JsonObject, JSONAware, Serializable {
 	private static final long serialVersionUID = 1L;
 	private JSONObject jsonObject;
 
@@ -103,7 +101,7 @@ public final class FastJsonObject extends AbstractJson<String>
 
 	public Iterator<Pair<String, JsonElement>> iterator() {
 		return new ConvertibleIterator<Entry<String, Object>, Pair<String, JsonElement>>(
-				jsonObject.entrySet().iterator(), this);
+				jsonObject.entrySet().iterator(), this::convert);
 	}
 
 	public Pair<String, JsonElement> convert(Entry<String, Object> k) {

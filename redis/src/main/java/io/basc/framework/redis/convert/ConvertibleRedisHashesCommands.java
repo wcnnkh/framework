@@ -40,8 +40,7 @@ public interface ConvertibleRedisHashesCommands<SK, K, SV, V>
 	default Map<K, V> hgetall(K key) {
 		SK k = getKeyCodec().encode(key);
 		Map<SK, SV> valueMap = getSourceRedisHashesCommands().hgetall(k);
-		return CollectionFactory.convert(valueMap, getKeyCodec().toDecodeConverter(),
-				getValueCodec().toDecodeConverter());
+		return CollectionFactory.convert(valueMap, getKeyCodec()::decode, getValueCodec()::decode);
 	}
 
 	@Override
@@ -62,7 +61,7 @@ public interface ConvertibleRedisHashesCommands<SK, K, SV, V>
 	default Set<K> hkeys(K key) {
 		SK k = getKeyCodec().encode(key);
 		Set<SK> tks = getSourceRedisHashesCommands().hkeys(k);
-		return getKeyCodec().toDecodeConverter().convertTo(tks, new LinkedHashSet<K>(tks.size()));
+		return getKeyCodec().toDecodeProcessor().processTo(tks, new LinkedHashSet<K>(tks.size()));
 	}
 
 	@Override
@@ -82,8 +81,7 @@ public interface ConvertibleRedisHashesCommands<SK, K, SV, V>
 	@Override
 	default String hmset(K key, Map<K, V> values) {
 		SK k = getKeyCodec().encode(key);
-		Map<SK, SV> tMap = CollectionFactory.convert(values, getKeyCodec().toEncodeConverter(),
-				getValueCodec().toEncodeConverter());
+		Map<SK, SV> tMap = CollectionFactory.convert(values, getKeyCodec()::encode, getValueCodec()::encode);
 		return getSourceRedisHashesCommands().hmset(k, tMap);
 	}
 
@@ -98,14 +96,13 @@ public interface ConvertibleRedisHashesCommands<SK, K, SV, V>
 	default Map<K, V> hrandfieldWithValue(K key, Integer count) {
 		SK k = getKeyCodec().encode(key);
 		Map<SK, SV> tMap = getSourceRedisHashesCommands().hrandfieldWithValue(k, count);
-		return CollectionFactory.convert(tMap, getKeyCodec().toDecodeConverter(), getValueCodec().toDecodeConverter());
+		return CollectionFactory.convert(tMap, getKeyCodec()::decode, getValueCodec()::decode);
 	}
 
 	@Override
 	default Long hset(K key, Map<K, V> values) {
 		SK k = getKeyCodec().encode(key);
-		Map<SK, SV> tMap = CollectionFactory.convert(values, getKeyCodec().toEncodeConverter(),
-				getValueCodec().toEncodeConverter());
+		Map<SK, SV> tMap = CollectionFactory.convert(values, getKeyCodec()::encode, getValueCodec()::encode);
 		return getSourceRedisHashesCommands().hset(k, tMap);
 	}
 

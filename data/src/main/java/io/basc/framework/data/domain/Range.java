@@ -1,10 +1,10 @@
 package io.basc.framework.data.domain;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.util.Assert;
-
 import java.util.Comparator;
 import java.util.Optional;
+
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.stream.Processor;
 
 public class Range<T> {
 	private final static Range<?> UNBOUNDED = Range.of(Bound.unbounded(), Bound.UNBOUNDED);
@@ -24,7 +24,7 @@ public class Range<T> {
 		this.upperBound = upperBound;
 	}
 
-	public <V> Range<V> convert(Converter<T, V> converter) {
+	public <V, E extends Throwable> Range<V> convert(Processor<T, V, E> converter) throws E {
 		return new Range<V>(lowerBound.convert(converter), upperBound.convert(converter));
 	}
 
@@ -49,7 +49,7 @@ public class Range<T> {
 	/**
 	 * Creates a new {@link Range} with inclusive bounds for both values.
 	 *
-	 * @param <T>
+	 * @param      <T>
 	 * @param from must not be {@literal null}.
 	 * @param to   must not be {@literal null}.
 	 * @return
@@ -61,7 +61,7 @@ public class Range<T> {
 	/**
 	 * Creates a new {@link Range} with exclusive bounds for both values.
 	 *
-	 * @param <T>
+	 * @param      <T>
 	 * @param from must not be {@literal null}.
 	 * @param to   must not be {@literal null}.
 	 * @return
@@ -73,7 +73,7 @@ public class Range<T> {
 	/**
 	 * Creates a new left-open {@link Range}, i.e. left exclusive, right inclusive.
 	 *
-	 * @param <T>
+	 * @param      <T>
 	 * @param from must not be {@literal null}.
 	 * @param to   must not be {@literal null}.
 	 * @return
@@ -85,7 +85,7 @@ public class Range<T> {
 	/**
 	 * Creates a new right-open {@link Range}, i.e. left inclusive, right exclusive.
 	 *
-	 * @param <T>
+	 * @param      <T>
 	 * @param from must not be {@literal null}.
 	 * @param to   must not be {@literal null}.
 	 * @return
@@ -98,8 +98,8 @@ public class Range<T> {
 	 * Creates a left-unbounded {@link Range} (the left bound set to
 	 * {@link Bound#unbounded()}) with the given right bound.
 	 *
-	 * @param <T>
-	 * @param to  the right {@link Bound}, must not be {@literal null}.
+	 * @param    <T>
+	 * @param to the right {@link Bound}, must not be {@literal null}.
 	 * @return
 	 */
 	public static <T> Range<T> leftUnbounded(Bound<T> to) {
@@ -110,7 +110,7 @@ public class Range<T> {
 	 * Creates a right-unbounded {@link Range} (the right bound set to
 	 * {@link Bound#unbounded()}) with the given left bound.
 	 *
-	 * @param <T>
+	 * @param      <T>
 	 * @param from the left {@link Bound}, must not be {@literal null}.
 	 * @return
 	 */
@@ -145,7 +145,7 @@ public class Range<T> {
 	/**
 	 * Creates a new Range with the given value as sole member.
 	 *
-	 * @param <T>
+	 * @param       <T>
 	 * @param value must not be {@literal null}.
 	 * @return
 	 */
@@ -206,8 +206,8 @@ public class Range<T> {
 			return inclusive;
 		}
 
-		public <V> Bound<V> convert(Converter<T, V> converter) {
-			return new Bound<V>(Optional.of(converter.convert(value.get())), inclusive);
+		public <V, E extends Throwable> Bound<V> convert(Processor<T, V, E> converter) throws E {
+			return new Bound<V>(Optional.of(converter.process(value.get())), inclusive);
 		}
 
 		/**
