@@ -69,4 +69,8 @@ public class ConvertiblePair extends TypeComparator implements Comparable<Conver
 			return 0;
 		}
 	}
+
+	public static boolean test(Class<?> sourceType, Class<?> targetType, boolean isAssignableFrom) {
+		return isAssignableFrom ? sourceType.isAssignableFrom(targetType) : (sourceType == targetType);
+	}
 }

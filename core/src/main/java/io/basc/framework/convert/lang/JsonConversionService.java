@@ -7,8 +7,13 @@ import io.basc.framework.json.JsonObject;
 
 public class JsonConversionService extends AbstractConversionService {
 
-	private boolean isJsonType(Class<?> type) {
-		return JsonElement.class.isAssignableFrom(type) || JsonArray.class == type || JsonObject.class == type;
+	private boolean isJsonType(Class<?> type, boolean isAssignableFrom) {
+		if (isAssignableFrom) {
+			return JsonElement.class.isAssignableFrom(type) || JsonArray.class.isAssignableFrom(type)
+					|| JsonObject.class.isAssignableFrom(type);
+		} else {
+			return JsonElement.class == type || JsonArray.class == type || JsonObject.class == type;
+		}
 	}
 
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
@@ -16,12 +21,12 @@ public class JsonConversionService extends AbstractConversionService {
 			return false;
 		}
 
-		return isJsonType(sourceType.getType()) || isJsonType(targetType.getType());
+		return isJsonType(sourceType.getType(), true) || isJsonType(targetType.getType(), false);
 	}
 
 	@SuppressWarnings("unchecked")
 	public <R> R convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (isJsonType(sourceType.getType())) {
+		if (isJsonType(sourceType.getType(), true)) {
 			JsonElement jsonElement = (JsonElement) source;
 			return (R) jsonElement.getAsObject(targetType.getResolvableType().getType());
 		} else {
