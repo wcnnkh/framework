@@ -43,7 +43,7 @@ public class ResultSetMapper extends AbstractRepositoryMapper<ResultSet, SQLExce
 	}
 
 	@Override
-	public ObjectAccess<SQLException> getObjectAccess(ResultSet source, TypeDescriptor sourceType) {
+	public ObjectAccess<SQLException> getObjectAccess(ResultSet source, TypeDescriptor sourceType) throws SQLException {
 		return new ResultSetAccess(source);
 	}
 }

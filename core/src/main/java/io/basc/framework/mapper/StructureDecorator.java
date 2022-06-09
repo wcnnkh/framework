@@ -238,4 +238,14 @@ public abstract class StructureDecorator<S extends Field, T extends StructureDec
 	public T rename(String name) {
 		return decorate(super.rename(name));
 	}
+
+	@Override
+	public T setNameNestingConnector(String nameNestingConnector) {
+		return decorate(super.setNameNestingConnector(nameNestingConnector));
+	}
+
+	@Override
+	public T setNameNestingDepth(int nameNestingDepth) {
+		return decorate(super.setNameNestingDepth(nameNestingDepth));
+	}
 }

@@ -1,6 +1,7 @@
 package io.basc.framework.orm;
 
 import java.util.Collection;
+import java.util.Enumeration;
 
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.mapper.Field;
@@ -124,12 +125,31 @@ public class Property extends Field {
 
 	public String getName() {
 		if (StringUtils.isEmpty(name) && objectRelationalResolver != null) {
+			String name = null;
 			if (isSupportGetter()) {
-				return objectRelationalResolver.getName(getDeclaringClass(), getGetter());
+				name = objectRelationalResolver.getName(getDeclaringClass(), getGetter());
 			}
 
 			if (isSupportSetter()) {
-				return objectRelationalResolver.getName(getDeclaringClass(), getSetter());
+				name = objectRelationalResolver.getName(getDeclaringClass(), getSetter());
+			}
+
+			if (StringUtils.isNotEmpty(name)) {
+				if (hasParent() && this.nameNestingDepth > 0) {
+					StringBuilder sb = new StringBuilder();
+					Enumeration<Field> parents = parents();
+					int i = 0;
+					while (parents.hasMoreElements() && (i++ < this.nameNestingDepth)) {
+						Field parent = parents.nextElement();
+						sb.append(parent.getName());
+						sb.append(this.nameNestingConnector);
+					}
+
+					sb.append(name);
+					return sb.toString();
+				}
+
+				return name;
 			}
 		}
 		return super.getName();

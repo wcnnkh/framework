@@ -215,7 +215,7 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 		};
 	}
 
-	public abstract ObjectAccess<E> getObjectAccess(S source, TypeDescriptor sourceType);
+	public abstract ObjectAccess<E> getObjectAccess(S source, TypeDescriptor sourceType) throws E;
 
 	protected void appendMapProperty(Map<String, Object> valueMap, S source, TypeDescriptor sourceType, String prefix,
 			ObjectAccess<E> objectAccess) throws E {

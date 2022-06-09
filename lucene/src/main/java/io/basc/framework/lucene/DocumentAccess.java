@@ -27,6 +27,9 @@ public class DocumentAccess implements ObjectAccess<LuceneException> {
 	@Override
 	public Value get(String name) throws LuceneException {
 		String value = document.get(name);
+		if (value == null) {
+			return null;
+		}
 		return new StringValue(value);
 	}
 

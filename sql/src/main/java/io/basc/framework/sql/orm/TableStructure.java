@@ -14,6 +14,7 @@ import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Fields;
 import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.orm.ObjectRelationalDecorator;
+import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.ObjectRelationalResolver;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.CollectionUtils;
@@ -86,6 +87,20 @@ public final class TableStructure extends ObjectRelationalDecorator<Column, Tabl
 			}
 		}
 		return this.engine;
+	}
+
+	@Override
+	public TableStructure jumpTo(Class<?> cursorId) {
+		if (objectRelationalResolver != null && objectRelationalResolver instanceof TableMapper) {
+			return ((TableMapper) objectRelationalResolver).getStructure(cursorId);
+		}
+
+		if (objectRelationalResolver != null && objectRelationalResolver instanceof ObjectRelationalFactory) {
+			ObjectRelational<? extends Property> objectRelational = ((ObjectRelationalFactory) objectRelationalResolver)
+					.getStructure(cursorId);
+			return new TableStructure(objectRelational, (e) -> new Column((Property) e));
+		}
+		return super.jumpTo(cursorId);
 	}
 
 	public String getRowFormat() {

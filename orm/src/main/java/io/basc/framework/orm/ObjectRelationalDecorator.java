@@ -245,7 +245,29 @@ public abstract class ObjectRelationalDecorator<S extends Property, T extends Ob
 	}
 
 	@Override
-	public <E extends Throwable> T withEntitys(Processor<S, ObjectRelational<S>, E> processor) throws E {
+	public <E extends Throwable> T withEntitys(
+			Processor<? super S, ? extends ObjectRelational<S>, ? extends E> processor) throws E {
 		return decorate(super.withEntitys(processor));
+	}
+
+	@Override
+	public T setNameNestingConnector(String nameNestingConnector) {
+		return decorate(super.setNameNestingConnector(nameNestingConnector));
+	}
+
+	@Override
+	public T setNameNestingDepth(int nameNestingDepth) {
+		return decorate(super.setNameNestingDepth(nameNestingDepth));
+	}
+
+	@Override
+	public <E extends Throwable> T withEntitysAfter(
+			Processor<? super ObjectRelational<S>, ? extends ObjectRelational<S>, E> processor) throws E {
+		return decorate(super.withEntitysAfter(processor));
+	}
+
+	@Override
+	public <E extends Throwable> T withEntitys() {
+		return decorate(super.withEntitys());
 	}
 }
