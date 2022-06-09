@@ -163,6 +163,10 @@ public class AccessibleFieldFunction implements Function<Class<?>, Stream<Access
 
 	@Override
 	public Stream<AccessibleField> apply(Class<?> sourceClass) {
+		if (sourceClass == null || sourceClass == Object.class) {
+			return StreamProcessorSupport.emptyStream();
+		}
+
 		AccessibleField[] metadatas = cacheMap.get(sourceClass);
 		if (metadatas == null) {
 			List<AccessibleField> list = getFieldMetadataList(sourceClass);

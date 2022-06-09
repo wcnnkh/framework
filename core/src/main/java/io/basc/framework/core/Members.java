@@ -78,6 +78,10 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 		return members;
 	}
 
+	public WithMethod getWithMethod() {
+		return withMethod;
+	}
+
 	@Override
 	public Members<T> all() {
 		Members<T> members = new Members<T>(this.sourceClass, this.processor);
@@ -306,17 +310,18 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 			stream = streamSupplier.get();
 		}
 
+		Stream<T> withStream = this.withStreamSupplier == null ? null : this.withStreamSupplier.get();
 		if (stream == null) {
-			if (this.withStreamSupplier == null) {
+			if (withStream == null) {
 				return StreamProcessorSupport.emptyStream();
 			} else {
-				return this.withStreamSupplier.get();
+				return withStream;
 			}
 		} else {
-			if (this.withStreamSupplier == null) {
+			if (withStream == null) {
 				return stream;
 			} else {
-				return Stream.concat(stream, this.withStreamSupplier.get());
+				return Stream.concat(stream, withStream);
 			}
 		}
 	}
@@ -425,12 +430,33 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	}
 
 	public Members<T> withStream(Supplier<? extends Stream<T>> streamSupplier) {
-		if (this.withStreamSupplier == null) {
-			this.withStreamSupplier = streamSupplier;
-		} else {
-			this.withStreamSupplier = () -> Stream.concat(this.withStreamSupplier.get(), streamSupplier.get());
+		if (streamSupplier == null) {
+			return this;
 		}
-		return this;
+
+		Members<T> members = clone();
+		if (members.withStreamSupplier == null) {
+			members.withStreamSupplier = streamSupplier;
+		} else {
+			members.withStreamSupplier = () -> {
+				Stream<T> stream = members.withStreamSupplier.get();
+				Stream<T> withStream = streamSupplier.get();
+				if (stream == null) {
+					if (withStream == null) {
+						return StreamProcessorSupport.emptyStream();
+					} else {
+						return withStream;
+					}
+				} else {
+					if (withStream == null) {
+						return stream;
+					} else {
+						return Stream.concat(stream, withStream);
+					}
+				}
+			};
+		}
+		return members;
 	}
 
 	/**

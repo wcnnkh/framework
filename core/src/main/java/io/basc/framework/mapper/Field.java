@@ -24,6 +24,8 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 	protected Integer modifiers;
 	protected Boolean synthetic;
 	protected String name;
+	protected int nameNestingDepth;
+	protected String nameNestingConnector = "_";
 
 	public Field() {
 	}
@@ -56,7 +58,25 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 			this.modifiers = field.modifiers;
 			this.synthetic = field.synthetic;
 			this.name = field.name;
+			this.nameNestingDepth = field.nameNestingDepth;
+			this.nameNestingConnector = field.nameNestingConnector;
 		}
+	}
+
+	public final int getNameNestingDepth() {
+		return nameNestingDepth;
+	}
+
+	public void setNameNestingDepth(int nameNestingDepth) {
+		this.nameNestingDepth = nameNestingDepth;
+	}
+
+	public final String getNameNestingConnector() {
+		return nameNestingConnector;
+	}
+
+	public void setNameNestingConnector(String nameNestingConnector) {
+		this.nameNestingConnector = nameNestingConnector;
 	}
 
 	public Field clone() {
@@ -90,6 +110,10 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 				// 如果是静态方法
 				parentValue = null;
 			} else {
+				if (!ClassUtils.isAssignableValue(parentField.getDeclaringClass(), parentValue)) {
+					break;
+				}
+
 				parentValue = parentField.getGetter().get(parentValue);
 				// 如果不是静态的，但获取到的是空就不用再向下获取了
 				if (parentValue == null) {
@@ -169,12 +193,7 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 		return this.declaringClass;
 	}
 
-	@Override
-	public String getName() {
-		if (StringUtils.isNotEmpty(name)) {
-			return name;
-		}
-
+	private String resolveName() {
 		if (isSupportGetter()) {
 			return getGetter().getName();
 		}
@@ -183,6 +202,33 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 			return getSetter().getName();
 		}
 		return null;
+	}
+
+	@Override
+	public String getName() {
+		if (StringUtils.isNotEmpty(name)) {
+			return name;
+		}
+
+		String name = resolveName();
+		if (StringUtils.isEmpty(name)) {
+			return null;
+		}
+
+		if (hasParent() && this.nameNestingDepth > 0) {
+			StringBuilder sb = new StringBuilder();
+			Enumeration<Field> parents = parents();
+			int i = 0;
+			while (parents.hasMoreElements() && (i++ < this.nameNestingDepth)) {
+				Field parent = parents.nextElement();
+				sb.append(parent.getName());
+				sb.append(this.nameNestingConnector);
+			}
+
+			sb.append(name);
+			return sb.toString();
+		}
+		return name;
 	}
 
 	public Collection<String> getAliasNames() {
@@ -297,6 +343,7 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 			return structure;
 		}
 
-		return structure.with(entity).setParentField(this);
+		entity = entity.setParentField(this);
+		return structure.with(entity);
 	}
 }

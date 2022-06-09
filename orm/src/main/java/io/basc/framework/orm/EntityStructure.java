@@ -56,7 +56,7 @@ public final class EntityStructure extends ObjectRelationalDecorator<Property, E
 		}
 
 		Property property = field == null ? null : new Property(field, this.objectRelationalResolver);
-		return super.setParentField(property);
+		return setParent(property);
 	}
 
 	@Override
@@ -64,8 +64,7 @@ public final class EntityStructure extends ObjectRelationalDecorator<Property, E
 		if (objectRelationalResolver != null && objectRelationalResolver instanceof ObjectRelationalFactory) {
 			ObjectRelational<? extends Property> objectRelational = ((ObjectRelationalFactory) objectRelationalResolver)
 					.getStructure(cursorId);
-			Members<Property> use = objectRelational.map((e) -> (Property) e);
-			return decorate(decorate(decorate(use)));
+			return new EntityStructure(objectRelational, (e) -> (Property) e);
 		}
 		return super.jumpTo(cursorId);
 	}

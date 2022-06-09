@@ -166,12 +166,37 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 		this.charsetName = charsetName;
 	}
 
-	public <E extends Throwable> ObjectRelational<T> withEntitys(Processor<T, ObjectRelational<T>, E> processor)
-			throws E {
+	public <E extends Throwable> ObjectRelational<T> withEntitys() {
+		return withEntitysAfter((e) -> e);
+	}
+
+	public <E extends Throwable> ObjectRelational<T> withEntitysAfter(
+			Processor<? super ObjectRelational<T>, ? extends ObjectRelational<T>, E> processor) throws E {
 		if (processor == null) {
 			return this;
 		}
 
+		return withEntitys((e) -> {
+			if (!e.isSupportSetter()) {
+				return null;
+			}
+
+			ObjectRelational<T> objectRelational = jumpTo(e.getSetter().getType());
+			if (objectRelational == null) {
+				return null;
+			}
+
+			return processor.process(objectRelational);
+		});
+	}
+
+	public <E extends Throwable> ObjectRelational<T> withEntitys(
+			Processor<? super T, ? extends ObjectRelational<T>, ? extends E> processor) throws E {
+		if (processor == null) {
+			return this;
+		}
+
+		// 因为可能存在相同的类，作用实际名称又不一样，所以这里设置为添加任意
 		ObjectRelational<T> objectRelational = this;
 		Iterator<T> iterator = stream().filter((e) -> e.isEntity()).iterator();
 		while (iterator.hasNext()) {
@@ -186,8 +211,8 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 					continue;
 				}
 
-				with = with.withEntitys(processor);
-				objectRelational = objectRelational.with(with).setParent(property);
+				with = with.setParent(property).withEntitys(processor);
+				objectRelational = objectRelational.with(with);
 			}
 		}
 		return objectRelational;

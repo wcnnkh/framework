@@ -28,6 +28,8 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 	protected String name;
 	protected Collection<String> aliasNames;
 	private T parent;
+	private int nameNestingDepth;
+	private String nameNestingConnector = "_";
 
 	/**
 	 * @param members 支持Structure入参
@@ -38,6 +40,8 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 			this.name = ((Structure<?>) members).name;
 			this.aliasNames = ((Structure<?>) members).aliasNames;
 			this.parent = ((Structure<T>) members).parent;
+			this.nameNestingConnector = ((Structure<T>) members).nameNestingConnector;
+			this.nameNestingDepth = ((Structure<T>) members).nameNestingDepth;
 		}
 	}
 
@@ -56,6 +60,8 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 			this.name = ((Structure<?>) members).name;
 			this.aliasNames = ((Structure<?>) members).aliasNames;
 			this.parent = map(map.apply(((Structure<?>) members).parent));
+			this.nameNestingConnector = ((Structure<?>) members).nameNestingConnector;
+			this.nameNestingDepth = ((Structure<?>) members).nameNestingDepth;
 		}
 	}
 
@@ -113,9 +119,55 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 			t.setParent(parent);
 			return t;
 		});
-		return decorate(members);
+		Structure<T> structure = decorate(members);
+		structure.parent = parent;
+		return structure;
 	}
 
+	public Structure<T> setNameNestingDepth(int nameNestingDepth) {
+		if (this.nameNestingDepth == nameNestingDepth) {
+			return decorate(this);
+		}
+
+		Members<T> members = map((e) -> {
+			T t = clone(e);
+			t.setNameNestingDepth(nameNestingDepth);
+			return t;
+		});
+		Structure<T> structure = decorate(members);
+		structure.nameNestingDepth = nameNestingDepth;
+		return structure;
+	}
+
+	public int getNameNestingDepth() {
+		return nameNestingDepth;
+	}
+
+	public String getNameNestingConnector() {
+		return nameNestingConnector;
+	}
+
+	public Structure<T> setNameNestingConnector(String nameNestingConnector) {
+		if (StringUtils.equals(this.nameNestingConnector, nameNestingConnector)) {
+			return decorate(this);
+		}
+
+		Members<T> members = map((e) -> {
+			T t = clone(e);
+			t.setNameNestingDepth(nameNestingDepth);
+			return t;
+		});
+		Structure<T> structure = decorate(members);
+		structure.nameNestingConnector = nameNestingConnector;
+		return structure;
+	}
+
+	/**
+	 * 默认的实现会出现getParent()为空
+	 * 
+	 * @param parent
+	 * @return
+	 */
 	public Structure<T> setParentField(Field parent) {
 		if (this.parent == parent) {
 			return decorate(this);
@@ -126,7 +178,8 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 			t.setParent(parent);
 			return t;
 		});
-		return decorate(members);
+		Structure<T> structure = decorate(members);
+		return structure;
 	}
 
 	public String getName() {
