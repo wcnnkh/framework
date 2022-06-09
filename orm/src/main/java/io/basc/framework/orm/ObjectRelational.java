@@ -1,9 +1,10 @@
 package io.basc.framework.orm;
 
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -12,7 +13,6 @@ import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Structure;
 import io.basc.framework.mapper.StructureDecorator;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.Processor;
 
 public class ObjectRelational<T extends Property> extends StructureDecorator<T, ObjectRelational<T>> {
 	protected ObjectRelationalResolver objectRelationalResolver;
@@ -170,8 +170,8 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 		return withEntitysAfter((e) -> e);
 	}
 
-	public <E extends Throwable> ObjectRelational<T> withEntitysAfter(
-			Processor<? super ObjectRelational<T>, ? extends ObjectRelational<T>, E> processor) throws E {
+	public ObjectRelational<T> withEntitysAfter(
+			Function<? super ObjectRelational<T>, ? extends ObjectRelational<T>> processor) {
 		if (processor == null) {
 			return this;
 		}
@@ -186,34 +186,35 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 				return null;
 			}
 
-			return processor.process(objectRelational);
+			return processor.apply(objectRelational);
 		});
 	}
 
-	public <E extends Throwable> ObjectRelational<T> withEntitys(
-			Processor<? super T, ? extends ObjectRelational<T>, ? extends E> processor) throws E {
+	public ObjectRelational<T> withEntitys(Function<? super T, ? extends ObjectRelational<T>> processor) {
 		if (processor == null) {
 			return this;
 		}
 
-		// 因为可能存在相同的类，作用实际名称又不一样，所以这里设置为添加任意
-		ObjectRelational<T> objectRelational = this;
-		Iterator<T> iterator = stream().filter((e) -> e.isEntity()).iterator();
-		while (iterator.hasNext()) {
-			T property = iterator.next();
+		List<Supplier<ObjectRelational<T>>> withs = new LinkedList<>();
+		ObjectRelational<T> objectRelational = this.filter((property) -> {
 			if (property == null || !property.isEntity()) {
-				continue;
+				return true;
 			}
 
 			if (property.isSupportGetter() || property.isSupportSetter()) {
-				ObjectRelational<T> with = processor.process(property);
+				ObjectRelational<T> with = processor.apply(property);
 				if (with == null) {
-					continue;
+					return true;
 				}
 
-				with = with.setParent(property).withEntitys(processor);
-				objectRelational = objectRelational.with(with);
+				withs.add(() -> with.setParent(property).withEntitys(processor));
+				return false;
 			}
+			return true;
+		});
+
+		for (Supplier<ObjectRelational<T>> with : withs) {
+			objectRelational = objectRelational.with(with.get());
 		}
 		return objectRelational;
 	}

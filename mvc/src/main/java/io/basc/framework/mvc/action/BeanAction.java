@@ -3,6 +3,7 @@ package io.basc.framework.mvc.action;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
+import java.util.function.Supplier;
 
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactory;
@@ -13,7 +14,6 @@ import io.basc.framework.factory.support.InstanceIterable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mvc.annotation.ActionInterceptors;
-import io.basc.framework.util.Supplier;
 import io.basc.framework.web.pattern.HttpPatternResolver;
 
 public class BeanAction extends AbstractAction {

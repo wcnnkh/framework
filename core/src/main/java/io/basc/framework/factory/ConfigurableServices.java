@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import io.basc.framework.core.OrderComparator;
 import io.basc.framework.lang.Nullable;
@@ -15,7 +16,6 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.MultiIterator;
-import io.basc.framework.util.Supplier;
 
 public class ConfigurableServices<T> implements Configurable, Iterable<T> {
 	private static Logger LOGGER = LoggerFactory.getLogger(ConfigurableServices.class);

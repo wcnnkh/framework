@@ -1,6 +1,6 @@
 package io.basc.framework.factory;
 
-import io.basc.framework.util.Supplier;
+import java.util.function.Supplier;
 
 public interface InstanceFactory extends NoArgsInstanceFactory, DefinitionFactory {
 	boolean isInstance(String name, Object... params);

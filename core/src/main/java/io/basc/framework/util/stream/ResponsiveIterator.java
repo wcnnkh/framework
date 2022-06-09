@@ -1,8 +1,5 @@
 package io.basc.framework.util.stream;
 
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.StaticSupplier;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -10,6 +7,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
+
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.StaticSupplier;
 
 /**
  * 响应式迭代<br/>

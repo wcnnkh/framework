@@ -1,5 +1,11 @@
 package io.basc.framework.activemq;
 
+import java.util.Properties;
+
+import javax.jms.ConnectionFactory;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
+
 import io.basc.framework.beans.BeanFactoryPostProcessor;
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.ConfigurableBeanFactory;
@@ -7,12 +13,6 @@ import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.orm.convert.MapToEntityConversionService;
-
-import java.util.Properties;
-
-import javax.jms.ConnectionFactory;
-
-import org.apache.activemq.ActiveMQConnectionFactory;
 
 @Provider
 public class ActivemqBeanFactoryPostProcessor implements BeanFactoryPostProcessor {

@@ -1,5 +1,7 @@
 package io.basc.framework.amqp.annotation;
 
+import java.util.function.Supplier;
+
 import io.basc.framework.amqp.Exchange;
 import io.basc.framework.amqp.QueueDeclare;
 import io.basc.framework.boot.ApplicationPostProcessor;
@@ -8,7 +10,6 @@ import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.supplier.NameInstanceSupplier;
-import io.basc.framework.util.Supplier;
 
 @Provider
 public final class MessageListenerApplicationInitializer implements ApplicationPostProcessor {

@@ -2,6 +2,7 @@ package io.basc.framework.util;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.Supplier;
 
 public class AcceptIterator<E> extends AbstractIterator<E> {
 	private final Iterator<E> iterator;

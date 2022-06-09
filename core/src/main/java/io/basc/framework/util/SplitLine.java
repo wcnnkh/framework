@@ -1,8 +1,9 @@
 package io.basc.framework.util;
 
-import io.basc.framework.lang.Nullable;
-
 import java.io.Serializable;
+import java.util.function.Supplier;
+
+import io.basc.framework.lang.Nullable;
 
 public class SplitLine implements Supplier<String>, Serializable {
 	private static final long serialVersionUID = 1L;

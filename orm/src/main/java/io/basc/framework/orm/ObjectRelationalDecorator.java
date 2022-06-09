@@ -11,7 +11,6 @@ import io.basc.framework.core.Members;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
-import io.basc.framework.util.stream.Processor;
 
 public abstract class ObjectRelationalDecorator<S extends Property, T extends ObjectRelationalDecorator<S, T>>
 		extends ObjectRelational<S> {
@@ -245,8 +244,7 @@ public abstract class ObjectRelationalDecorator<S extends Property, T extends Ob
 	}
 
 	@Override
-	public <E extends Throwable> T withEntitys(
-			Processor<? super S, ? extends ObjectRelational<S>, ? extends E> processor) throws E {
+	public T withEntitys(Function<? super S, ? extends ObjectRelational<S>> processor) {
 		return decorate(super.withEntitys(processor));
 	}
 
@@ -261,8 +259,7 @@ public abstract class ObjectRelationalDecorator<S extends Property, T extends Ob
 	}
 
 	@Override
-	public <E extends Throwable> T withEntitysAfter(
-			Processor<? super ObjectRelational<S>, ? extends ObjectRelational<S>, E> processor) throws E {
+	public T withEntitysAfter(Function<? super ObjectRelational<S>, ? extends ObjectRelational<S>> processor) {
 		return decorate(super.withEntitysAfter(processor));
 	}
 

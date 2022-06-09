@@ -2,6 +2,7 @@ package io.basc.framework.util;
 
 import java.util.Collection;
 import java.util.NoSuchElementException;
+import java.util.function.Supplier;
 
 /**
  * 迭代分割字符串

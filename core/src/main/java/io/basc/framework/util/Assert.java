@@ -2,6 +2,7 @@ package io.basc.framework.util;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import io.basc.framework.io.FilenameUtils;
 

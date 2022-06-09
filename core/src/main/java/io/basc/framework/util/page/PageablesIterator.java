@@ -1,8 +1,9 @@
 package io.basc.framework.util.page;
 
+import java.util.function.Supplier;
+
 import io.basc.framework.util.AbstractIterator;
 import io.basc.framework.util.StaticSupplier;
-import io.basc.framework.util.Supplier;
 
 final class PageablesIterator<K, T> extends AbstractIterator<Pageables<K, T>> {
 	private Pageables<K, T> pageables;

@@ -1,7 +1,8 @@
 package io.basc.framework.factory.supplier;
 
+import java.util.function.Supplier;
+
 import io.basc.framework.factory.NoArgsInstanceFactory;
-import io.basc.framework.util.Supplier;
 
 public class ClassInstanceSupplier<T> implements Supplier<T> {
 	private final NoArgsInstanceFactory instanceFactory;
