@@ -1,7 +1,9 @@
 package io.basc.framework.util;
 
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public interface ParentDiscover<T extends ParentDiscover<T>> {
@@ -16,8 +18,16 @@ public interface ParentDiscover<T extends ParentDiscover<T>> {
 	 * 
 	 * @return
 	 */
-	default List<T> getParents() {
+	default Enumeration<T> parents() {
 		Iterator<T> iterator = new ParentIterator<>(ParentDiscover.this);
-		return CollectionUtils.reversal(Collections.list(CollectionUtils.toEnumeration(iterator)));
+		if (!iterator.hasNext()) {
+			return Collections.emptyEnumeration();
+		}
+
+		List<T> list = new LinkedList<T>();
+		while (iterator.hasNext()) {
+			list.add(iterator.next());
+		}
+		return CollectionUtils.toEnumeration(CollectionUtils.getIterator(list, true));
 	}
 }

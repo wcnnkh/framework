@@ -146,7 +146,7 @@ public class ExcelMapper extends ExcelTemplate implements AutoCloseable {
 					return null;
 				}
 
-				Object value = property.getGetter().get(row);
+				Object value = property.get(row);
 				if (value == null) {
 					return null;
 				}

@@ -6,11 +6,12 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.env.Sys;
-import io.basc.framework.factory.NoArgsInstanceFactory;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.reflect.ReflectionApi;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ParentDiscover;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.stream.Processor;
@@ -52,6 +53,9 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 			this.parent = field.parent;
 			this.declaringClass = field.declaringClass;
 			this.aliasNames = field.aliasNames;
+			this.modifiers = field.modifiers;
+			this.synthetic = field.synthetic;
+			this.name = field.name;
 		}
 	}
 
@@ -67,13 +71,16 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 		this.parent = parent;
 	}
 
+	@Override
 	public Object get(Object instance) {
 		if (parent == null) {
 			return getGetter().get(instance);
 		}
 
 		Object parentValue = instance;
-		for (Field parentField : getParents()) {
+		Enumeration<Field> enumeration = parents();
+		while (enumeration.hasMoreElements()) {
+			Field parentField = enumeration.nextElement();
 			if (!parentField.isSupportGetter()) {
 				return EmptyValue.INSTANCE.getAsObject(getGetter().getType());
 			}
@@ -90,44 +97,54 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 				}
 			}
 		}
-		return getGetter().get(parentValue);
+
+		if (ClassUtils.isAssignableValue(getDeclaringClass(), parentValue)) {
+			return getGetter().get(parentValue);
+		} else {
+			return getGetter().get(instance);
+		}
 	}
 
-	public void set(Object instance, Object value, ConversionService conversionService) {
-		set(instance, value, Sys.env, conversionService);
-	}
-
-	public void set(Object instance, Object value, NoArgsInstanceFactory instanceFactory,
-			ConversionService conversionService) {
+	@Override
+	public void set(Object instance, Object value) {
 		if (parent == null) {
-			getSetter().set(instance, value, conversionService);
+			getSetter().set(instance, value);
+			return;
+		}
+
+		if (ClassUtils.isAssignableValue(getDeclaringClass(), instance)) {
+			getSetter().set(instance, value);
 			return;
 		}
 
 		Object parentValue = instance;
-		for (Field parentField : getParents()) {
+		Enumeration<Field> enumeration = parents();
+		while (enumeration.hasMoreElements()) {
+			Field parentField = enumeration.nextElement();
 			boolean isStatic = Modifier.isStatic(parentField.getGetter().getModifiers());
 			if (isStatic) {
 				// 如果是静态方法
 				parentValue = null;
 			} else {
-				Object target = parentField.getGetter().get(parentValue);
+				Object target = parentField.isSupportGetter() ? parentField.getGetter().get(parentValue) : null;
 				if (target == null) {
 					if (value == null) {
 						return;
 					}
 
-					if (!instanceFactory.isInstance(parentField.getSetter().getType())) {
-						throw new NotSupportedException(parentField.toString());
-					}
-
-					target = instanceFactory.getInstance(parentField.getSetter().getType());
+					// 不可以不支持Setter
+					target = ReflectionApi.newInstance(parentField.getSetter().getType());
 					parentField.getSetter().set(parentValue, target);
 				}
 				parentValue = target;
 			}
 		}
-		getSetter().set(parentValue, value, conversionService);
+
+		if (ClassUtils.isAssignableValue(getDeclaringClass(), parentValue)) {
+			getSetter().set(parentValue, value);
+		} else {
+			getSetter().set(instance, value);
+		}
 	}
 
 	public <V, E extends Throwable> V getValueByNames(Processor<String, V, E> processor) throws E {
@@ -250,7 +267,7 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 	 * @return
 	 */
 	public Parameter getParameter(Object instance) {
-		return getGetter().getParameter(instance).rename(getName());
+		return new Parameter(getName(), get(instance), new TypeDescriptor(getGetter()));
 	}
 
 	@Override
@@ -263,5 +280,23 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 		sb.append("parent[").append(parent).append("] ");
 		sb.append(super.toString());
 		return sb.toString();
+	}
+
+	/**
+	 * @param structure
+	 * @return
+	 */
+	public <T extends Field, E extends Throwable> Structure<T> withEntityTo(Structure<T> structure,
+			@Nullable Processor<Field, Structure<T>, E> processor) throws E {
+		if (processor == null) {
+			return structure;
+		}
+
+		Structure<T> entity = processor.process(this);
+		if (entity == null) {
+			return structure;
+		}
+
+		return structure.with(entity).setParentField(this);
 	}
 }

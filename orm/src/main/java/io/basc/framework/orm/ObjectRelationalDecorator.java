@@ -11,6 +11,7 @@ import io.basc.framework.core.Members;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
+import io.basc.framework.util.stream.Processor;
 
 public abstract class ObjectRelationalDecorator<S extends Property, T extends ObjectRelationalDecorator<S, T>>
 		extends ObjectRelational<S> {
@@ -241,5 +242,10 @@ public abstract class ObjectRelationalDecorator<S extends Property, T extends Ob
 	@Override
 	public T rename(String name) {
 		return decorate(super.rename(name));
+	}
+
+	@Override
+	public <E extends Throwable> T withEntitys(Processor<S, ObjectRelational<S>, E> processor) throws E {
+		return decorate(super.withEntitys(processor));
 	}
 }

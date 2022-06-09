@@ -259,7 +259,7 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 	public final TransfColumns<String, String> mapColumns(Object source,
 			Structure<? extends Property> structure) {
 		return structure.stream().filter((e) -> e.isSupportGetter()).map((property) -> {
-			Object value = property.getGetter().get(source);
+			Object value = property.get(source);
 			if (value == null) {
 				return new Pair<String, String>(property.getName(), null);
 			}

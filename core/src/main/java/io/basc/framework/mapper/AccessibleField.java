@@ -163,6 +163,19 @@ public class AccessibleField implements AnnotatedElement, Cloneable {
 		return getGetter().get(instance);
 	}
 
+	public void set(Object instance, Object value) {
+		if (!isSupportSetter()) {
+			return;
+		}
+
+		if (instance == null && !Modifier.isStatic(getGetter().getModifiers())) {
+			// 非静态字段的调用实例不应该为空
+			return;
+		}
+
+		getSetter().set(instance, value);
+	}
+
 	@SuppressWarnings("unchecked")
 	public <T> List<T> getValues(Collection<?> instances, boolean nullable) {
 		if (CollectionUtils.isEmpty(instances)) {

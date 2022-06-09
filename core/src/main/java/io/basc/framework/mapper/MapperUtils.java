@@ -74,7 +74,18 @@ public class MapperUtils {
 			return false;
 		}
 
-		return isExistValue(field.getGetter(), instance);
+		if (!field.isSupportGetter()) {
+			return false;
+		}
+
+		if (field.getGetter().getType().isPrimitive()) {
+			Object value = field.get(instance);
+			if (value != null && value instanceof Number) {
+				return ((Number) value).doubleValue() != 0;
+			}
+			return false;
+		}
+		return field.get(instance) != null;
 	}
 
 	/**
@@ -87,7 +98,15 @@ public class MapperUtils {
 			return false;
 		}
 
-		return isExistDefaultValue(field.getGetter(), instance);
+		if (!field.isSupportGetter()) {
+			return false;
+		}
+
+		if (field.getGetter().getType().isPrimitive()) {
+			return true;
+		}
+
+		return field.get(instance) != null;
 	}
 
 	/**

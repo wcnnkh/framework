@@ -14,9 +14,20 @@ class ValueConversionService implements ConversionService {
 
 	@SuppressWarnings("unchecked")
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		AnyValue value = new AnyValue(source, conversionService);
-		if (targetType.getType() == Value.class || targetType.getType() == AnyValue.class) {
+		Value value = new AnyValue(source, conversionService);
+//		if (source instanceof Value) {
+//			value = (Value) source;
+//		} else {
+//			value = new AnyValue(source, sourceType, conversionService);
+//		}
+		
+		if(targetType.getType() == Value.class) {
 			return value;
+		}
+
+		if (targetType.getType() == AnyValue.class) {
+			return value;
+			//new AnyValue(value);
 		}
 
 		return value.getAsObject(targetType);

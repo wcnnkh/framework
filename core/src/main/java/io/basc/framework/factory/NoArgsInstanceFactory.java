@@ -5,6 +5,11 @@ import io.basc.framework.util.ClassUtils;
 
 public interface NoArgsInstanceFactory extends ClassLoaderProvider {
 
+	@Override
+	default ClassLoader getClassLoader() {
+		return ClassUtils.getDefaultClassLoader();
+	}
+
 	/**
 	 * 根据名称获取一个实例
 	 * 

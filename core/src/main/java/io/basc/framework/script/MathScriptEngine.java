@@ -267,7 +267,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 
 		public NumberHolder eval(ScriptEngine<NumberHolder> engine, String script) throws ScriptException {
 			Field field = getField(script);
-			Object value = field.getGetter().get(instance);
+			Object value = field.get(instance);
 			if (value == null) {
 				throw new ScriptException(script);
 			}

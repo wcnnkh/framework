@@ -68,7 +68,7 @@ public class CollectionToMapConversionService extends ConditionalConversionServi
 			TypeDescriptor valueType = targetType.getMapValueTypeDescriptor();
 			while (primaryKeyIterator.hasNext()) {
 				Field primaryKeyField = primaryKeyIterator.next();
-				Object key = primaryKeyField.getGetter().get(value);
+				Object key = primaryKeyField.get(value);
 
 				key = getConversionService().convert(key, new TypeDescriptor(primaryKeyField.getGetter()), keyType);
 				if (primaryKeyIterator.hasNext()) {

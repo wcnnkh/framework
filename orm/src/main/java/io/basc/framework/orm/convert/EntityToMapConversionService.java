@@ -28,7 +28,7 @@ class EntityToMapConversionService extends ConditionalConversionService {
 				targetType.getMapKeyTypeDescriptor().getType(), 16);
 		getMapper().getStructure(sourceType.getType()).stream().filter((p) -> p.isSupportGetter())
 				.forEach((property) -> {
-					Object value = property.getGetter().get(source);
+					Object value = property.get(source);
 					TypeDescriptor valuetype = new TypeDescriptor(property.getGetter());
 					value = getConversionService().convert(value, valuetype, targetType.getMapValueTypeDescriptor());
 					Object key = property.getName();
