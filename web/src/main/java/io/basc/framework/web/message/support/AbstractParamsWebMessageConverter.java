@@ -69,7 +69,7 @@ public abstract class AbstractParamsWebMessageConverter extends AbstractWebMessa
 			}
 
 			String name = mapping.getName(parameterDescriptor.getType(), field.getGetter());
-			Object fieldValue = field.getGetter().get(parameter);
+			Object fieldValue = field.get(parameter);
 			String value = (String) getConversionService().convert(fieldValue, new TypeDescriptor(field.getGetter()),
 					TypeDescriptor.valueOf(String.class));
 			if (bufferingClientHttpRequest.getBufferedOutput().size() != 0) {
@@ -94,7 +94,7 @@ public abstract class AbstractParamsWebMessageConverter extends AbstractWebMessa
 			}
 
 			String name = mapping.getName(parameterDescriptor.getType(), field.getGetter());
-			Object fieldValue = field.getGetter().get(parameter);
+			Object fieldValue = field.get(parameter);
 			String value = (String) getConversionService().convert(fieldValue, new TypeDescriptor(field.getGetter()),
 					TypeDescriptor.valueOf(String.class));
 			builder.queryParam(name, value);

@@ -485,7 +485,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 	public <T> Sql toUpdateSql(TableStructure tableStructure, T entity, T condition) throws SqlDialectException {
 		Map<String, Object> changeMap = new HashMap<String, Object>();
 		tableStructure.columns().forEach((column) -> {
-			Object value = column.getGetter().get(condition);
+			Object value = column.get(condition);
 			if (value == null && column.isNullable()) {
 				return;
 			}

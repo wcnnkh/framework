@@ -113,7 +113,7 @@ public interface Repository extends CurdRepository {
 		return query(TypeDescriptor.valueOf(entityClass), entityClass,
 				getMapper().parseConditions(entityClass,
 						getMapper().getStructure(entityClass).getPrimaryKeys().iterator(), null,
-						(e) -> e.getGetter().get(conditions), null),
+						(e) -> e.get(conditions), null),
 				null, new PageRequest(1, 1)).findAny().isPresent();
 	}
 
@@ -121,7 +121,7 @@ public interface Repository extends CurdRepository {
 	default <T> boolean isPresentAny(Class<? extends T> entityClass, T conditions) {
 		return query(TypeDescriptor.valueOf(entityClass), entityClass,
 				getMapper().parseConditions(entityClass, getMapper().getStructure(entityClass).columns().iterator(),
-						null, (e) -> e.getGetter().get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue())),
+						null, (e) -> e.get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue())),
 				null, new PageRequest(1, 1)).findAny().isPresent();
 	}
 
@@ -150,7 +150,7 @@ public interface Repository extends CurdRepository {
 		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
 		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
 				getMapper().getStructure(entityClass).columns().iterator(), orderColumns,
-				(e) -> e.getGetter().get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue()));
+				(e) -> e.get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue()));
 		return pagingQuery(resultsTypeDescriptor, entityClass, conditionsToUse, orderColumns, request);
 	}
 
@@ -160,7 +160,7 @@ public interface Repository extends CurdRepository {
 		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
 		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
 				getMapper().getStructure(entityClass).columns().iterator(), orderColumns,
-				(e) -> e.getGetter().get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue()));
+				(e) -> e.get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue()));
 		return query(resultsTypeDescriptor, entityClass, conditionsToUse, orderColumns, request);
 	}
 
@@ -182,7 +182,7 @@ public interface Repository extends CurdRepository {
 		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
 		return queryAll(resultsTypeDescriptor, entityClass,
 				getMapper().parseConditions(entityClass, getMapper().getStructure(entityClass).columns().iterator(),
-						orderColumns, (e) -> e.getGetter().get(conditions),
+						orderColumns, (e) -> e.get(conditions),
 						(e) -> StringUtils.isNotEmpty(e.getValue())),
 				orderColumns);
 	}
@@ -203,7 +203,7 @@ public interface Repository extends CurdRepository {
 		ObjectRelational<? extends Property> entityStructure = getMapper().getStructure(entityClass).all();
 		List<Parameter> columns = getMapper().parseValues(entityClass, entity, entityStructure);
 		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
-				entityStructure.getPrimaryKeys().iterator(), null, (e) -> e.getGetter().get(entity), null);
+				entityStructure.getPrimaryKeys().iterator(), null, (e) -> e.get(entity), null);
 		return update(entityClass, columns, conditionsToUse) > 0;
 	}
 
@@ -212,7 +212,7 @@ public interface Repository extends CurdRepository {
 		ObjectRelational<? extends Property> entityStructure = getMapper().getStructure(entityClass);
 		List<Parameter> columns = getMapper().parseValues(entityClass, entity, entityStructure);
 		Conditions conditionsToUse = getMapper().parseConditions(entityClass, entityStructure.columns().iterator(),
-				null, (e) -> e.getGetter().get(conditions),
+				null, (e) -> e.get(conditions),
 				(e) -> e.getKey().isNullable() || StringUtils.isNotEmpty(e.getValue()));
 		return update(entityClass, columns, conditionsToUse);
 	}

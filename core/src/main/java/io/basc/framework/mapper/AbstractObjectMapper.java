@@ -257,7 +257,7 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 			logger.log(loggerLevel, "Property {} on target {} set value {}", targetField.getSetter().getName(), target,
 					value);
 		}
-		targetField.getSetter().set(target, value);
+		targetField.set(target, value);
 	}
 
 	@Override

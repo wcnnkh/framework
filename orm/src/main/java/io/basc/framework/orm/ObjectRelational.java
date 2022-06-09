@@ -1,6 +1,7 @@
 package io.basc.framework.orm;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Structure;
 import io.basc.framework.mapper.StructureDecorator;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.stream.Processor;
 
 public class ObjectRelational<T extends Property> extends StructureDecorator<T, ObjectRelational<T>> {
 	protected ObjectRelationalResolver objectRelationalResolver;
@@ -162,5 +164,32 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 
 	public void setCharsetName(String charsetName) {
 		this.charsetName = charsetName;
+	}
+
+	public <E extends Throwable> ObjectRelational<T> withEntitys(Processor<T, ObjectRelational<T>, E> processor)
+			throws E {
+		if (processor == null) {
+			return this;
+		}
+
+		ObjectRelational<T> objectRelational = this;
+		Iterator<T> iterator = stream().filter((e) -> e.isEntity()).iterator();
+		while (iterator.hasNext()) {
+			T property = iterator.next();
+			if (property == null || !property.isEntity()) {
+				continue;
+			}
+
+			if (property.isSupportGetter() || property.isSupportSetter()) {
+				ObjectRelational<T> with = processor.process(property);
+				if (with == null) {
+					continue;
+				}
+
+				with = with.withEntitys(processor);
+				objectRelational = objectRelational.with(with).setParent(property);
+			}
+		}
+		return objectRelational;
 	}
 }
