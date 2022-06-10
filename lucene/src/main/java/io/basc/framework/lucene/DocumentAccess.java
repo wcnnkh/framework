@@ -7,8 +7,6 @@ import org.apache.lucene.document.Document;
 import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.value.StringValue;
-import io.basc.framework.value.Value;
 
 public class DocumentAccess implements ObjectAccess<LuceneException> {
 	private final Document document;
@@ -25,18 +23,18 @@ public class DocumentAccess implements ObjectAccess<LuceneException> {
 	}
 
 	@Override
-	public Value get(String name) throws LuceneException {
+	public Parameter get(String name) throws LuceneException {
 		String value = document.get(name);
 		if (value == null) {
 			return null;
 		}
-		return new StringValue(value);
+		return new Parameter(name, value);
 	}
 
 	@Override
-	public void set(String name, Value value) throws LuceneException {
-		document.removeField(name);
-		luceneResolver.resolve(new Parameter(name, value)).forEach(document::add);
+	public void set(Parameter parameter) throws LuceneException {
+		document.removeField(parameter.getName());
+		luceneResolver.resolve(parameter).forEach(document::add);
 	}
 
 }
