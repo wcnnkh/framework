@@ -18,8 +18,13 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 		return isEntity(descriptor.getType());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default <R> R convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
+		if (canDirectlyConvert(sourceType, targetType)) {
+			return (R) source;
+		}
+
 		if (isConverterRegistred(targetType.getType())) {
 			return ReversibleMapperFactory.super.convert(source, sourceType, targetType);
 		}
@@ -123,8 +128,13 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 
 	Processor<Field, Value, E> getValueProcessor(S source, TypeDescriptor sourceType) throws E;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default <R extends S> R invert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
+		if (canDirectlyConvert(sourceType, targetType)) {
+			return (R) source;
+		}
+
 		if (isInverterRegistred(sourceType.getType())) {
 			return ReversibleMapperFactory.super.invert(source, sourceType, targetType);
 		}

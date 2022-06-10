@@ -9,12 +9,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.core.Members;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Structure;
 import io.basc.framework.mapper.StructureDecorator;
 import io.basc.framework.util.StringUtils;
 
 public class ObjectRelational<T extends Property> extends StructureDecorator<T, ObjectRelational<T>> {
+	private static Logger logger = LoggerFactory.getLogger(ObjectRelational.class);
+
 	protected ObjectRelationalResolver objectRelationalResolver;
 	protected String comment;
 	protected String charsetName;
@@ -201,21 +205,22 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 				return true;
 			}
 
-			if (property.isSupportGetter() || property.isSupportSetter()) {
-				ObjectRelational<T> with = processor.apply(property);
-				if (with == null) {
-					return true;
-				}
-
-				withs.add(() -> with.setParent(property).withEntitys(processor));
-				return false;
+			ObjectRelational<T> with = processor.apply(property);
+			if (with == null) {
+				return true;
 			}
-			return true;
-		});
+
+			if (logger.isTraceEnabled()) {
+				logger.trace("with entity[{}] for property[]", property.getDeclaringClass(), property.getName());
+			}
+			withs.add(() -> with.setParent(property).withEntitys(processor));
+			return false;
+		}).shared();// 此处因为在filter中进行了逻辑处理，所以此处需要执行shared防止重复执行
 
 		for (Supplier<ObjectRelational<T>> with : withs) {
 			objectRelational = objectRelational.with(with.get());
 		}
+
 		return objectRelational;
 	}
 }

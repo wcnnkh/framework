@@ -150,25 +150,12 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 
 	private void appendNames(String prefix, Field field, Collection<String> names, boolean root) {
 		Field parent = field.getParent();
-		if (parent == null || !root || !nameNesting) {
+		if (parent == null || !root || !nameNesting || field.getNameNestingDepth() > 0) {
 			names.add(prefix == null ? field.getName() : (prefix + field.getName()));
 			Collection<String> aliasNames = field.getAliasNames();
 			if (aliasNames != null) {
 				for (String name : aliasNames) {
 					names.add(prefix == null ? name : (prefix + name));
-				}
-			}
-
-			if (field.isSupportSetter() && root) {
-				Structure<? extends Field> entityStructure = getStructure(field.getSetter().getDeclaringClass());
-				appendNames(prefix == null ? (entityStructure.getName() + nameConnector)
-						: (prefix + entityStructure.getName() + nameConnector), field, names, false);
-				Collection<String> entityAliasNames = entityStructure.getAliasNames();
-				if (entityAliasNames != null) {
-					for (String name : entityAliasNames) {
-						appendNames(prefix == null ? (name + nameConnector) : (prefix + name + nameConnector), field,
-								names, false);
-					}
 				}
 			}
 		} else {
@@ -180,6 +167,9 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 
 	public Collection<String> getNames(Field field) {
 		Set<String> names = new LinkedHashSet<String>(8);
+		if (field.getNameNestingDepth() == 0) {
+			names.add(namePrefix == null ? field.getName() : (namePrefix + field.getName()));
+		}
 		appendNames(namePrefix, field, names, true);
 		return names;
 	}

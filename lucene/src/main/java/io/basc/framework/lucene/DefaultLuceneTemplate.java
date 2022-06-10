@@ -106,7 +106,7 @@ public class DefaultLuceneTemplate extends AbstractLuceneTemplate {
 	}
 
 	@Override
-	public IndexWriter getIndexWriter() throws IOException {
+	protected IndexWriter getIndexWriter() throws IOException {
 		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
 		return new IndexWriter(getDirectory(), indexWriterConfig);
 	}

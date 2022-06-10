@@ -36,7 +36,7 @@ public class DocumentAccess implements ObjectAccess<LuceneException> {
 	@Override
 	public void set(String name, Value value) throws LuceneException {
 		document.removeField(name);
-		luceneResolver.resolve(new Parameter(name, value)).forEach((e) -> document.add(e));
+		luceneResolver.resolve(new Parameter(name, value)).forEach(document::add);
 	}
 
 }

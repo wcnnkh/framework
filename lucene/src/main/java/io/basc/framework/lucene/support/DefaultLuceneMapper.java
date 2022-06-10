@@ -3,6 +3,7 @@ package io.basc.framework.lucene.support;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
@@ -26,6 +27,7 @@ import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.lucene.DocumentAccess;
 import io.basc.framework.lucene.LuceneException;
 import io.basc.framework.lucene.LuceneMapper;
+import io.basc.framework.lucene.annotation.AnnotationLuceneResolverExtend;
 import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.Structure;
@@ -45,6 +47,10 @@ public class DefaultLuceneMapper extends AbstractObjectRelationalMapper<Document
 	private final ConfigurableServices<LuceneResolverExtend> luceneResolverExtends = new ConfigurableServices<LuceneResolverExtend>(
 			LuceneResolverExtend.class);
 
+	public DefaultLuceneMapper() {
+		luceneResolverExtends.addService(new AnnotationLuceneResolverExtend());
+	}
+
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		luceneResolverExtends.configure(serviceLoaderFactory);
@@ -57,6 +63,10 @@ public class DefaultLuceneMapper extends AbstractObjectRelationalMapper<Document
 
 	@Override
 	public Collection<org.apache.lucene.document.Field> resolve(Parameter parameter) {
+		if (parameter == null || parameter.isNull()) {
+			return Collections.emptyList();
+		}
+
 		return LuceneResolverExtendChain.build(luceneResolverExtends.iterator()).resolve(parameter);
 	}
 
