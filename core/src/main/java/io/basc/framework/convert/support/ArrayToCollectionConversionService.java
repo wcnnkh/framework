@@ -7,11 +7,12 @@ import java.util.Set;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.util.CollectionFactory;
 
-class ArrayToCollectionConversionService extends ConditionalConversionService {
+class ArrayToCollectionConversionService extends AbstractConversionService implements ConditionalConversionService {
 	public ArrayToCollectionConversionService(ConversionService conversionService) {
 		setConversionService(conversionService);
 	}

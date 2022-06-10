@@ -1,15 +1,16 @@
 package io.basc.framework.convert.support;
 
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.ConditionalConversionService;
-import io.basc.framework.convert.lang.ConvertiblePair;
-
 import java.lang.reflect.Array;
 import java.util.Collections;
 import java.util.Set;
 
-class ArrayToArrayConversionService extends ConditionalConversionService {
+import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.AbstractConversionService;
+import io.basc.framework.convert.lang.ConditionalConversionService;
+import io.basc.framework.convert.lang.ConvertiblePair;
+
+class ArrayToArrayConversionService extends AbstractConversionService implements ConditionalConversionService {
 
 	public ArrayToArrayConversionService(ConversionService conversionService) {
 		setConversionService(conversionService);

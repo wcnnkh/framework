@@ -10,6 +10,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.dom.DomUtils;
@@ -19,7 +20,7 @@ import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionFactory;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-class NodeListToMapConversionService extends ConditionalConversionService {
+class NodeListToMapConversionService extends AbstractConversionService implements ConditionalConversionService {
 	private static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
 	private ObjectRelationalFactory mapper;
 
@@ -38,7 +39,7 @@ class NodeListToMapConversionService extends ConditionalConversionService {
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return super.canConvert(sourceType, targetType)
+		return ConditionalConversionService.super.canConvert(sourceType, targetType)
 				&& getConversionService().canConvert(sourceType, COLLECTION_TYPE);
 	}
 

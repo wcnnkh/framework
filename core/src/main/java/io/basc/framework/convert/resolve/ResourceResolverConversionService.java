@@ -9,7 +9,7 @@ import io.basc.framework.io.Resource;
 import java.util.Collections;
 import java.util.Set;
 
-public class ResourceResolverConversionService extends ConditionalConversionService {
+public class ResourceResolverConversionService implements ConditionalConversionService {
 	private final ResourceResolver resourceResolver;
 
 	public ResourceResolverConversionService(ResourceResolver resourceResolver) {

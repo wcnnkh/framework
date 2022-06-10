@@ -14,6 +14,10 @@ public class ConversionException extends NestedRuntimeException {
 		super(message);
 	}
 
+	public ConversionException(Throwable cause) {
+		super(cause);
+	}
+
 	/**
 	 * Construct a new conversion exception.
 	 * 

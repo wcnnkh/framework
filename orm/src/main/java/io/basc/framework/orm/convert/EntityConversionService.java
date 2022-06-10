@@ -11,6 +11,7 @@ import java.util.logging.Level;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.env.Sys;
 import io.basc.framework.factory.NoArgsInstanceFactory;
@@ -29,7 +30,8 @@ import io.basc.framework.util.ConfigurableAccept;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.alias.AliasRegistry;
 
-public abstract class EntityConversionService extends ConditionalConversionService {
+public abstract class EntityConversionService extends AbstractConversionService
+		implements ConditionalConversionService {
 	private static Logger logger = LoggerFactory.getLogger(EntityConversionService.class);
 	private AliasRegistry aliasRegistry;
 	private final ConfigurableAccept<Field> fieldAccept = new ConfigurableAccept<Field>();
@@ -393,7 +395,8 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	}
 
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return !canDirectlyConvert(sourceType, targetType) && super.canConvert(sourceType, targetType)
+		return !canDirectlyConvert(sourceType, targetType)
+				&& ConditionalConversionService.super.canConvert(sourceType, targetType)
 				&& getInstanceFactory().isInstance(targetType.getType());
 	}
 }

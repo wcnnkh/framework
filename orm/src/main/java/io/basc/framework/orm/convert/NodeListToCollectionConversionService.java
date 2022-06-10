@@ -8,13 +8,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.util.CollectionFactory;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-class NodeListToCollectionConversionService extends ConditionalConversionService {
+class NodeListToCollectionConversionService extends AbstractConversionService implements ConditionalConversionService {
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(NodeList.class, Collection.class));
