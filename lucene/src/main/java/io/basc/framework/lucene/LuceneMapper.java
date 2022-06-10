@@ -7,14 +7,12 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 
 import io.basc.framework.mapper.Structure;
-import io.basc.framework.orm.ObjectRelationalMapper;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.repository.Conditions;
 import io.basc.framework.orm.repository.OrderColumn;
-import io.basc.framework.orm.repository.RepositoryResolver;
+import io.basc.framework.orm.repository.RepositoryMapper;
 
-public interface LuceneMapper
-		extends RepositoryResolver, LuceneResolver, ObjectRelationalMapper<Document, LuceneException> {
+public interface LuceneMapper extends RepositoryMapper<Document, LuceneException>, LuceneResolver {
 
 	Query parseQuery(Conditions conditions);
 

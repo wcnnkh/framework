@@ -2,30 +2,25 @@ package io.basc.framework.orm.support;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import io.basc.framework.data.domain.Tree;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.orm.ObjectRelationalMapper;
-import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.stream.Processor;
 
 public final class OrmUtils {
-	private static final DefaultObjectRelationalMapper MAPPER = new DefaultObjectRelationalMapper();
-
-	static {
-		MAPPER.configure(Sys.env);
-	}
+	private static final ObjectRelationalMapper MAPPER = Sys.env.getServiceLoader(ObjectRelationalMapper.class)
+			.first(() -> new DefaultObjectRelationalMapper());
 
 	private OrmUtils() {
 		throw new NotSupportedException(getClass().getName());
 	}
 
-	public static ObjectRelationalMapper<Map<String, Object>, OrmException> getMapper() {
+	public static ObjectRelationalMapper getMapper() {
 		return MAPPER;
 	}
 

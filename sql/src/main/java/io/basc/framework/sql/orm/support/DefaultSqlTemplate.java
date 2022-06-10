@@ -12,18 +12,15 @@ import io.basc.framework.sql.orm.SqlDialect;
 import io.basc.framework.sql.orm.SqlTemplate;
 import io.basc.framework.util.Assert;
 
-public class DefaultSqlTemplate extends DefaultSqlOperations implements
-		SqlTemplate {
+public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTemplate {
 	private final SqlDialect sqlDialect;
 	private GeneratorProcessor generatorProcessor;
 	private CacheManager cacheManager;
 	private ObjectKeyFormat objectKeyFormat = new DefaultObjectKeyFormat();
 
-	public DefaultSqlTemplate(ConnectionFactory connectionFactory,
-			SqlDialect sqlDialect) {
+	public DefaultSqlTemplate(ConnectionFactory connectionFactory, SqlDialect sqlDialect) {
 		super(connectionFactory, sqlDialect);
-		this.generatorProcessor = new DefaultGeneratorProcessor(sqlDialect,
-				this);
+		this.generatorProcessor = new DefaultGeneratorProcessor(sqlDialect, this);
 		this.sqlDialect = sqlDialect;
 	}
 
@@ -54,8 +51,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements
 	}
 
 	public void setGeneratorProcessor(GeneratorProcessor generatorProcessor) {
-		Assert.requiredArgument(generatorProcessor != null,
-				"generatorProcessor");
+		Assert.requiredArgument(generatorProcessor != null, "generatorProcessor");
 		this.generatorProcessor = generatorProcessor;
 	}
 
@@ -134,9 +130,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements
 			value = cacheManager.getById(entityClass, ids);
 		}
 
-		if (cacheManager == null
-				|| (value == null && cacheManager.isKeepLooking(entityClass,
-						ids))) {
+		if (cacheManager == null || (value == null && cacheManager.isKeepLooking(entityClass, ids))) {
 			value = SqlTemplate.super.getById(entityClass, ids);
 			if (value != null && cacheManager != null) {
 				cacheManager.save(value);

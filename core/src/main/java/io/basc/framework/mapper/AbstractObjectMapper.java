@@ -3,9 +3,7 @@ package io.basc.framework.mapper;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -24,7 +22,7 @@ import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
 
 public abstract class AbstractObjectMapper<S, E extends Throwable> extends SimpleReverseMapperFactory<S, E>
-		implements ObjectMapper<S, E>, ConversionServiceAware {
+		implements ObjectMapper<S, E>, ConversionServiceAware, ObjectAccessFactory<S, E> {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final Map<Class<?>, Structure<? extends Field>> map = new ConcurrentHashMap<>();
 	private String namePrefix;
@@ -148,30 +146,8 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 		return map.containsKey(entityClass);
 	}
 
-	private void appendNames(String prefix, Field field, Collection<String> names, boolean root) {
-		Field parent = field.getParent();
-		if (parent == null || !root || !nameNesting || field.getNameNestingDepth() > 0) {
-			names.add(prefix == null ? field.getName() : (prefix + field.getName()));
-			Collection<String> aliasNames = field.getAliasNames();
-			if (aliasNames != null) {
-				for (String name : aliasNames) {
-					names.add(prefix == null ? name : (prefix + name));
-				}
-			}
-		} else {
-			for (String name : getNames(parent)) {
-				appendNames(name + nameConnector, field, names, false);
-			}
-		}
-	}
-
 	public Collection<String> getNames(Field field) {
-		Set<String> names = new LinkedHashSet<String>(8);
-		if (field.getNameNestingDepth() == 0) {
-			names.add(namePrefix == null ? field.getName() : (namePrefix + field.getName()));
-		}
-		appendNames(namePrefix, field, names, true);
-		return names;
+		return field.getNames(nameNesting, namePrefix, nameConnector);
 	}
 
 	@Override
@@ -204,8 +180,6 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 			return null;
 		};
 	}
-
-	public abstract ObjectAccess<E> getObjectAccess(S source, TypeDescriptor sourceType) throws E;
 
 	protected void appendMapProperty(Map<String, Object> valueMap, S source, TypeDescriptor sourceType, String prefix,
 			ObjectAccess<E> objectAccess) throws E {

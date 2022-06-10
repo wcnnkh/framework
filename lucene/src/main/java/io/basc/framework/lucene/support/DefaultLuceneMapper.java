@@ -38,11 +38,11 @@ import io.basc.framework.orm.repository.Conditions;
 import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.RelationshipKeywords;
 import io.basc.framework.orm.repository.WithCondition;
-import io.basc.framework.orm.support.AbstractObjectRelationalMapper;
+import io.basc.framework.orm.support.AbstractObjectMapper;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.NumberUtils;
 
-public class DefaultLuceneMapper extends AbstractObjectRelationalMapper<Document, LuceneException>
+public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneException>
 		implements LuceneMapper {
 	private final ConfigurableServices<LuceneResolverExtend> luceneResolverExtends = new ConfigurableServices<LuceneResolverExtend>(
 			LuceneResolverExtend.class);

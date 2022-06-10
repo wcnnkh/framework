@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionApi;
@@ -345,5 +347,41 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 
 		entity = entity.setParentField(this);
 		return structure.with(entity);
+	}
+
+	private static void appendNames(String prefix, Field field, Collection<String> names, boolean root,
+			String nameConnector, boolean nameNesting) {
+		io.basc.framework.mapper.Field parent = field.getParent();
+		if (parent == null || !root || !nameNesting || field.nameNestingDepth > 0) {
+			names.add(prefix == null ? field.getName() : (prefix + field.getName()));
+			Collection<String> aliasNames = field.getAliasNames();
+			if (aliasNames != null) {
+				for (String name : aliasNames) {
+					names.add(prefix == null ? name : (prefix + name));
+				}
+			}
+		} else {
+			for (String name : parent.getNames(nameNesting, prefix, nameConnector)) {
+				appendNames(nameConnector == null ? name : (name + nameConnector), field, names, false, nameConnector,
+						nameNesting);
+			}
+		}
+	}
+
+	/**
+	 * 获取插入时所有可以使用的名称
+	 * 
+	 * @param nameNesting   如果存在parent是否进行嵌套
+	 * @param prefix        前缀
+	 * @param nameConnector 发生嵌套时名称之间的连接符
+	 * @return
+	 */
+	public Collection<String> getNames(boolean nameNesting, @Nullable String prefix, @Nullable String nameConnector) {
+		Set<String> names = new LinkedHashSet<String>(8);
+		if (this.nameNestingDepth == 0) {
+			names.add(prefix == null ? getName() : (prefix + getName()));
+		}
+		appendNames(prefix, this, names, true, nameConnector, nameNesting);
+		return names;
 	}
 }
