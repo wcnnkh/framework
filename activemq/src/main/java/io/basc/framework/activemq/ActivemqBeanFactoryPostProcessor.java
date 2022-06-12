@@ -1,18 +1,19 @@
 package io.basc.framework.activemq;
 
+import java.util.Map;
+import java.util.Properties;
+
+import javax.jms.ConnectionFactory;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
+
 import io.basc.framework.beans.BeanFactoryPostProcessor;
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.io.ResourceUtils;
-import io.basc.framework.orm.convert.MapToEntityConversionService;
-
-import java.util.Properties;
-
-import javax.jms.ConnectionFactory;
-
-import org.apache.activemq.ActiveMQConnectionFactory;
+import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
 
 @Provider
 public class ActivemqBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
@@ -41,9 +42,10 @@ public class ActivemqBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 		public Object create() throws BeansException {
 			Properties properties = beanFactory.getEnvironment().getProperties(DEFAULT_CONFIG).get();
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
-			MapToEntityConversionService conversionService = new MapToEntityConversionService();
-			conversionService.setConversionService(beanFactory.getEnvironment().getConversionService());
-			conversionService.configurationProperties(properties, connectionFactory);
+			DefaultObjectRelationalMapper mapper = new DefaultObjectRelationalMapper();
+			mapper.configure(beanFactory);
+			mapper.setConversionService(beanFactory.getEnvironment().getConversionService());
+			mapper.transform(properties, Map.class, connectionFactory);
 			return connectionFactory;
 		}
 	}

@@ -9,11 +9,12 @@ import java.util.Set;
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.lang.NotSupportedException;
 
-public class DateConversionService extends ConditionalConversionService {
+public class DateConversionService extends AbstractConversionService implements ConditionalConversionService {
 	private static final Set<ConvertiblePair> CONVERIBLE_PAIRS = new HashSet<ConvertiblePair>(8);
 
 	static {
@@ -38,7 +39,7 @@ public class DateConversionService extends ConditionalConversionService {
 		if (source instanceof java.sql.Date) {
 			return (R) sqlDateToObject((java.sql.Date) source, targetType.getType());
 		}
-		
+
 		if (source instanceof Date) {
 			return (R) javaDateToObject((Date) source, targetType.getType());
 		}

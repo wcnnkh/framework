@@ -4,9 +4,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
 
-import io.basc.framework.value.AnyValue;
-import io.basc.framework.value.Value;
-
 public class MapAccess<E extends Throwable> implements ObjectAccess<E> {
 	private final Map<String, Object> sourceMap;
 
@@ -20,14 +17,14 @@ public class MapAccess<E extends Throwable> implements ObjectAccess<E> {
 	}
 
 	@Override
-	public Value get(String name) throws E {
+	public Parameter get(String name) throws E {
 		Object value = sourceMap.get(name);
-		return value == null ? null : new AnyValue(value);
+		return value == null ? null : new Parameter(name, value);
 	}
 
 	@Override
-	public void set(String name, Value value) throws E {
-		sourceMap.put(name, value.get());
+	public void set(Parameter parameter) throws E {
+		sourceMap.put(parameter.getName(), parameter.get());
 	}
 
 }

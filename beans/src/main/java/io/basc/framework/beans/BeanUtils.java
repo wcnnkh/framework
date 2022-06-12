@@ -4,16 +4,13 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Modifier;
 import java.util.List;
-import java.util.Map;
 
 import io.basc.framework.aop.support.ProxyUtils;
 import io.basc.framework.beans.annotation.AopEnable;
 import io.basc.framework.beans.annotation.ConfigurationProperties;
 import io.basc.framework.beans.annotation.IgnoreConfigurationProperty;
 import io.basc.framework.beans.annotation.Service;
-import io.basc.framework.beans.annotation.Singleton;
 import io.basc.framework.context.ContextAware;
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.env.Sys;
@@ -23,14 +20,10 @@ import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.orm.convert.EntityConversionService;
-import io.basc.framework.orm.convert.PropertyFactoryToEntityConversionService;
+import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
 import io.basc.framework.util.Accept;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.StringMatchers;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.PropertyFactory;
-import io.basc.framework.value.Value;
 
 public final class BeanUtils {
 	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = Sys.env.getServiceLoader(AopEnableSpi.class).toList();
@@ -38,21 +31,6 @@ public final class BeanUtils {
 
 	private BeanUtils() {
 	};
-
-	public static boolean isSingleton(Class<?> type, AnnotatedElement annotatedElement) {
-		Singleton singleton = annotatedElement.getAnnotation(Singleton.class);
-		if (singleton != null) {
-			return singleton.value();
-		}
-
-		for (Class<?> interfaceClass : type.getInterfaces()) {
-			if (!isSingleton(interfaceClass, annotatedElement)) {
-				return false;
-			}
-		}
-		// 默认是单例
-		return true;
-	}
 
 	public static Class<?> getServiceInterface(Class<?> clazz) {
 		return ClassUtils.getInterfaces(clazz).streamAll().filter((i) -> {
@@ -194,10 +172,8 @@ public final class BeanUtils {
 			while (configurationPropertiesClass != null && configurationPropertiesClass != Object.class) {
 				configurationProperties = configurationPropertiesClass.getAnnotation(ConfigurationProperties.class);
 				if (configurationProperties != null) {
-					EntityConversionService entityConversionService = createEntityConversionService(environment,
+					DefaultObjectRelationalMapper entityConversionService = createMapper(environment,
 							configurationProperties);
-					configurationMap(getPrefix(configurationProperties), instance, environment,
-							entityConversionService);
 					configurationProperties(configurationProperties, instance, configurationPropertiesClass,
 							environment, entityConversionService);
 					break;
@@ -205,20 +181,17 @@ public final class BeanUtils {
 				configurationPropertiesClass = configurationPropertiesClass.getSuperclass();
 			}
 		} else {
-			EntityConversionService entityConversionService = createEntityConversionService(environment,
-					configurationProperties);
-			configurationMap(getPrefix(configurationProperties), instance, environment, entityConversionService);
+			DefaultObjectRelationalMapper entityConversionService = createMapper(environment, configurationProperties);
 			configurationProperties(configurationProperties, instance, configurationPropertiesClass, environment,
 					entityConversionService);
 		}
 	}
 
-	public static EntityConversionService createEntityConversionService(Environment environment,
-			ConfigurationProperties configurationProperties) {
-		PropertyFactoryToEntityConversionService entityConversionService = new PropertyFactoryToEntityConversionService();
-		entityConversionService.setConversionService(environment.getConversionService());
-		entityConversionService.setStrict(false);
-		entityConversionService.getFieldAccept().add(new Accept<Field>() {
+	public static DefaultObjectRelationalMapper createMapper(Environment environment,
+			@Nullable ConfigurationProperties configurationProperties) {
+		DefaultObjectRelationalMapper objectRelationalMapper = new DefaultObjectRelationalMapper();
+		objectRelationalMapper.setConversionService(environment.getConversionService());
+		objectRelationalMapper.addFilter(new Accept<Field>() {
 
 			public boolean accept(Field field) {
 				IgnoreConfigurationProperty ignore = field.getAnnotation(IgnoreConfigurationProperty.class);
@@ -236,55 +209,34 @@ public final class BeanUtils {
 			}
 		});
 		if (configurationProperties != null) {
-			entityConversionService.setPrefix(getPrefix(configurationProperties));
-			entityConversionService.setLoggerLevel(configurationProperties.loggerLevel().getValue());
+			objectRelationalMapper.setNamePrefix(getPrefix(configurationProperties));
+			objectRelationalMapper.setLoggerLevel(configurationProperties.loggerLevel().getValue());
 		}
-		entityConversionService.setUseSuperClass(false);
-		return entityConversionService;
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static void configurationMap(String prefix, Object instance, Environment environment,
-			EntityConversionService conversionService) {
-		if (!(instance instanceof Map)) {
-			return;
-		}
-
-		Map properties = (Map) instance;
-		TypeDescriptor descriptor = TypeDescriptor.forObject(instance);
-		environment.stream(prefix, StringMatchers.PREFIX).forEach((key) -> {
-			Value value = environment.getValue(key);
-			if (value == null) {
-				return;
-			}
-
-			String targetKey = StringUtils.isEmpty(prefix) ? key
-					: key.substring(prefix.length() + conversionService.getConnector().length());
-			Object mapKey = environment.getConversionService().convert(targetKey, TypeDescriptor.forObject(targetKey),
-					descriptor.getMapKeyTypeDescriptor());
-			Object mapValue = environment.getConversionService().convert(value, TypeDescriptor.forObject(value),
-					descriptor.getMapValueTypeDescriptor());
-			properties.put(mapKey, mapValue);
-		});
+		objectRelationalMapper.setTransformSuperclass(false);
+		return objectRelationalMapper;
 	}
 
 	private static String getPrefix(ConfigurationProperties configurationProperties) {
-		return StringUtils.IS_EMPTY.negate().first(configurationProperties.prefix(), configurationProperties.value());
+		String prefix = StringUtils.IS_EMPTY.negate().first(configurationProperties.prefix(),
+				configurationProperties.value());
+		if (StringUtils.isNotEmpty(prefix)) {
+			prefix = prefix + ".";
+		}
+		return prefix;
 	}
 
 	private static void configurationProperties(ConfigurationProperties configurationProperties, Object instance,
-			Class<?> configClass, Environment environment, EntityConversionService entityConversionService) {
+			Class<?> configClass, Environment environment, DefaultObjectRelationalMapper mapper) {
 		Class<?> clazz = configClass;
 		while (clazz != null && clazz != Object.class) {
 			ConfigurationProperties configuration = configurationProperties == null
 					? clazz.getAnnotation(ConfigurationProperties.class)
 					: configurationProperties;
 			if (configuration != null) {
-				entityConversionService.setPrefix(getPrefix(configuration));
-				entityConversionService.setLoggerLevel(configuration.loggerLevel().getValue());
+				mapper.setNamePrefix(getPrefix(configuration));
+				mapper.setLoggerLevel(configuration.loggerLevel().getValue());
 			}
-			entityConversionService.configurationProperties(environment, TypeDescriptor.valueOf(PropertyFactory.class),
-					instance, TypeDescriptor.valueOf(clazz));
+			mapper.transform(environment, instance);
 			clazz = clazz.getSuperclass();
 		}
 	}

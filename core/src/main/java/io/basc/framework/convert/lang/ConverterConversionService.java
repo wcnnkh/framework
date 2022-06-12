@@ -8,11 +8,11 @@ import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.stream.Processor;
 
-public class ConverterConversionService extends ConditionalConversionService {
+public class ConverterConversionService implements ConditionalConversionService {
 	@SuppressWarnings("rawtypes")
 	private final Processor converter;
 	private final Set<ConvertiblePair> convertibleTypes;
-	
+
 	public <S, T> ConverterConversionService(Class<S> sourceType, Class<T> targetType,
 			Processor<S, ? extends T, ? extends Throwable> converter) {
 		this.convertibleTypes = Collections.singleton(new ConvertiblePair(sourceType, targetType));

@@ -1,14 +1,14 @@
 package io.basc.framework.sql;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.StaticSupplier;
-import io.basc.framework.util.Supplier;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.Supplier;
+
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.StaticSupplier;
 
 public class ResultSetIterator implements Iterator<ResultSet> {
 	private static Logger logger = LoggerFactory.getLogger(ResultSetIterator.class);

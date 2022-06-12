@@ -26,9 +26,4 @@ public class SimpleInverterFactory<R, E extends Throwable> extends SimpleConvert
 		Assert.requiredArgument(inverter != null, "inverter");
 		map.put(type, inverter);
 	}
-
-	@Override
-	public Object newInstance(TypeDescriptor type) {
-		return super.newInstance(type);
-	}
 }

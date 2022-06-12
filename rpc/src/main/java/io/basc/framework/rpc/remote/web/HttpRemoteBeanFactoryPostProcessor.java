@@ -1,5 +1,7 @@
 package io.basc.framework.rpc.remote.web;
 
+import java.util.function.Supplier;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -21,7 +23,6 @@ import io.basc.framework.rpc.remote.SignerRemoteMessageCodec;
 import io.basc.framework.rpc.support.RemoteCallableBeanDefinition;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.Supplier;
 
 @Provider
 public class HttpRemoteBeanFactoryPostProcessor implements BeanFactoryPostProcessor {

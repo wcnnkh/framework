@@ -1,6 +1,6 @@
 package io.basc.framework.factory.supplier;
 
-import io.basc.framework.util.Supplier;
+import java.util.function.Supplier;
 
 public class SimpleInstanceSupplier<T> implements Supplier<T> {
 	private T instance;

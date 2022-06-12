@@ -10,32 +10,33 @@ import io.basc.framework.data.domain.Range;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
-import io.basc.framework.mapper.AbstractObjectMapper;
 import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.mapper.Structure;
 import io.basc.framework.orm.EntityStructure;
 import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.orm.ObjectRelational;
-import io.basc.framework.orm.ObjectRelationalMapper;
+import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.annotation.AnnotationObjectRelationalResolverExtend;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.comparator.Sort;
 
-public abstract class AbstractObjectRelationalMapper<S, E extends Throwable> extends AbstractObjectMapper<S, E>
-		implements ObjectRelationalMapper<S, E>, Configurable {
+public abstract class AbstractObjectMapper<S, E extends Throwable>
+		extends io.basc.framework.mapper.AbstractObjectMapper<S, E>
+		implements Configurable, ObjectRelationalFactory, ObjectMapper<S, E> {
 	private final ConfigurableServices<ObjectRelationalResolverExtend> objectRelationalResolverExtendServices = new ConfigurableServices<ObjectRelationalResolverExtend>(
 			ObjectRelationalResolverExtend.class);
 
-	public AbstractObjectRelationalMapper() {
+	public AbstractObjectMapper() {
 		objectRelationalResolverExtendServices.addService(new AnnotationObjectRelationalResolverExtend());
 	}
 
 	@Override
 	public ObjectRelational<? extends Property> getStructure(Class<?> entityClass) {
 		if (!isStructureRegistred(entityClass)) {
-			return ObjectRelationalMapper.super.getStructure(entityClass);
+			return ObjectRelationalFactory.super.getStructure(entityClass);
 		}
 
 		Structure<? extends Field> structure = super.getStructure(entityClass);
@@ -158,13 +159,13 @@ public abstract class AbstractObjectRelationalMapper<S, E extends Throwable> ext
 
 	@Override
 	public boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return super.isEntity(entityClass, descriptor) || ObjectRelationalResolverExtendChain
+		return isEntity(descriptor.getType()) || ObjectRelationalResolverExtendChain
 				.build(objectRelationalResolverExtendServices.iterator()).isEntity(entityClass, descriptor);
 	}
 
 	@Override
 	public boolean isEntity(Class<?> entityClass) {
-		return (super.isEntity(entityClass) && ReflectionUtils.getConstructor(entityClass) != null)
+		return (super.isEntity(entityClass) && ReflectionUtils.getDeclaredConstructor(entityClass) != null)
 				|| ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 						.isEntity(entityClass);
 	}

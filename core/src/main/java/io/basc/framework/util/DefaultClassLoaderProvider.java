@@ -1,5 +1,7 @@
 package io.basc.framework.util;
 
+import java.util.function.Supplier;
+
 import io.basc.framework.lang.Nullable;
 
 public final class DefaultClassLoaderProvider implements ClassLoaderProvider {

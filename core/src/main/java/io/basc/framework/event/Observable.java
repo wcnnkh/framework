@@ -1,6 +1,6 @@
 package io.basc.framework.event;
 
-import io.basc.framework.util.Supplier;
+import java.util.function.Supplier;
 
 public interface Observable<T> extends Supplier<T>, EventRegistry<ChangeEvent<T>> {
 }

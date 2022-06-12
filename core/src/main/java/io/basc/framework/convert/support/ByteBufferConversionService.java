@@ -1,18 +1,19 @@
 package io.basc.framework.convert.support;
 
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.ConditionalConversionService;
-import io.basc.framework.convert.lang.ConvertiblePair;
-import io.basc.framework.lang.Nullable;
-
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-class ByteBufferConversionService extends ConditionalConversionService {
+import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.AbstractConversionService;
+import io.basc.framework.convert.lang.ConditionalConversionService;
+import io.basc.framework.convert.lang.ConvertiblePair;
+import io.basc.framework.lang.Nullable;
+
+class ByteBufferConversionService extends AbstractConversionService implements ConditionalConversionService {
 
 	private static final TypeDescriptor BYTE_BUFFER_TYPE = TypeDescriptor.valueOf(ByteBuffer.class);
 

@@ -1,20 +1,21 @@
 package io.basc.framework.convert.support;
 
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.ConditionalConversionService;
-import io.basc.framework.convert.lang.ConvertiblePair;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.CollectionFactory;
-import io.basc.framework.util.Pair;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-class MapToMapConversionService extends ConditionalConversionService {
+import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.AbstractConversionService;
+import io.basc.framework.convert.lang.ConditionalConversionService;
+import io.basc.framework.convert.lang.ConvertiblePair;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.CollectionFactory;
+import io.basc.framework.util.Pair;
+
+class MapToMapConversionService extends AbstractConversionService implements ConditionalConversionService {
 
 	public MapToMapConversionService(ConversionService conversionService) {
 		setConversionService(conversionService);

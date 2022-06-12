@@ -5,13 +5,14 @@ import java.util.Map;
 import java.util.Set;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionFactory;
 
-class EntityToMapConversionService extends ConditionalConversionService {
+class EntityToMapConversionService extends AbstractConversionService implements ConditionalConversionService {
 	private ObjectRelationalFactory mapper;
 
 	public ObjectRelationalFactory getMapper() {
@@ -41,7 +42,7 @@ class EntityToMapConversionService extends ConditionalConversionService {
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return super.canConvert(sourceType, targetType) && OrmUtils.getMapper().isEntity(sourceType.getType());
+		return ConditionalConversionService.super.canConvert(sourceType, targetType) && OrmUtils.getMapper().isEntity(sourceType.getType());
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {

@@ -9,6 +9,7 @@ import java.util.Set;
 
 import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.lang.AlreadyExistsException;
@@ -18,7 +19,8 @@ import io.basc.framework.orm.Property;
 import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionFactory;
 
-public class CollectionToMapConversionService extends ConditionalConversionService {
+public class CollectionToMapConversionService extends AbstractConversionService
+		implements ConditionalConversionService {
 	public static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
 	private ObjectRelationalFactory mapper;
 

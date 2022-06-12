@@ -1,6 +1,7 @@
 package io.basc.framework.util;
 
 import java.io.Serializable;
+import java.util.function.Supplier;
 
 public final class StaticSupplier<T> implements Supplier<T>, Serializable {
 	private static final long serialVersionUID = 1L;

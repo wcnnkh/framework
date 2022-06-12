@@ -16,11 +16,10 @@ import io.basc.framework.core.parameter.ParameterDescriptors;
 import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.orm.convert.EntityConversionService;
+import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
 import io.basc.framework.util.Accept;
 import io.basc.framework.util.DefaultStatus;
 import io.basc.framework.util.Status;
-import io.basc.framework.value.support.MapPropertyFactory;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.message.WebMessageConverter;
@@ -81,11 +80,11 @@ public class RequestBeanFactory extends RequestParameterFactory
 				}
 
 				if (result != null && result.isActive()) {
-					EntityConversionService conversionService = BeanUtils.createEntityConversionService(
-							beanFactory.getEnvironment(),
+					DefaultObjectRelationalMapper mapper = BeanUtils.createMapper(beanFactory.getEnvironment(),
 							beanDefinition.getAnnotatedElement().getAnnotation(ConfigurationProperties.class));
-					conversionService.setUseSuperClass(true);
-					conversionService.getFieldAccept().add(new Accept<Field>() {
+					mapper.configure(beanFactory);
+					mapper.setTransformSuperclass(true);
+					mapper.addFilter(new Accept<Field>() {
 
 						@Override
 						public boolean accept(Field field) {
@@ -107,7 +106,7 @@ public class RequestBeanFactory extends RequestParameterFactory
 
 					Map<String, Object> parameterMap = (Map<String, Object>) beanFactory.getEnvironment()
 							.getConversionService().convert(body, TypeDescriptor.forObject(body), REQUEST_BODY_TYPE);
-					conversionService.configurationProperties(new MapPropertyFactory(parameterMap), result.get());
+					mapper.transform(parameterMap, result.get());
 				}
 				break;
 			}

@@ -3,9 +3,7 @@ package io.basc.framework.mapper;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -19,12 +17,13 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.alias.AliasRegistry;
 import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
 
 public abstract class AbstractObjectMapper<S, E extends Throwable> extends SimpleReverseMapperFactory<S, E>
-		implements ObjectMapper<S, E>, ConversionServiceAware {
+		implements ObjectMapper<S, E>, ConversionServiceAware, ObjectAccessFactory<S, E> {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 	private final Map<Class<?>, Structure<? extends Field>> map = new ConcurrentHashMap<>();
 	private String namePrefix;
@@ -32,8 +31,9 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 	private boolean transformSuperclass = true;
 	private ConversionService conversionService;
 	private Level loggerLevel = io.basc.framework.logger.Levels.DEBUG.getValue();
-	private Predicate<? super Field> filter;
+	private Predicate<Field> filter;
 	private Field parentField;
+	private AliasRegistry aliasRegistry;
 
 	/**
 	 * 名称嵌套解析
@@ -113,11 +113,23 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 		this.loggerLevel = loggerLevel;
 	}
 
-	public final Predicate<? super Field> getFilter() {
+	public final Predicate<Field> getFilter() {
 		return filter;
 	}
 
-	public void setFilter(Predicate<? super Field> filter) {
+	public final void addFilter(Predicate<Field> filter) {
+		if (filter == null) {
+			return;
+		}
+
+		if (this.filter == null) {
+			this.filter = filter;
+		} else {
+			this.filter = this.filter.and(filter);
+		}
+	}
+
+	public void setFilter(Predicate<Field> filter) {
 		this.filter = filter;
 	}
 
@@ -143,49 +155,25 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 		}
 	}
 
+	public AliasRegistry getAliasRegistry() {
+		return aliasRegistry;
+	}
+
+	public void setAliasRegistry(AliasRegistry aliasRegistry) {
+		this.aliasRegistry = aliasRegistry;
+	}
+
 	@Override
 	public boolean isStructureRegistred(Class<?> entityClass) {
 		return map.containsKey(entityClass);
 	}
 
-	private void appendNames(String prefix, Field field, Collection<String> names, boolean root) {
-		Field parent = field.getParent();
-		if (parent == null || !root || !nameNesting) {
-			names.add(prefix == null ? field.getName() : (prefix + field.getName()));
-			Collection<String> aliasNames = field.getAliasNames();
-			if (aliasNames != null) {
-				for (String name : aliasNames) {
-					names.add(prefix == null ? name : (prefix + name));
-				}
-			}
-
-			if (field.isSupportSetter() && root) {
-				Structure<? extends Field> entityStructure = getStructure(field.getSetter().getDeclaringClass());
-				appendNames(prefix == null ? (entityStructure.getName() + nameConnector)
-						: (prefix + entityStructure.getName() + nameConnector), field, names, false);
-				Collection<String> entityAliasNames = entityStructure.getAliasNames();
-				if (entityAliasNames != null) {
-					for (String name : entityAliasNames) {
-						appendNames(prefix == null ? (name + nameConnector) : (prefix + name + nameConnector), field,
-								names, false);
-					}
-				}
-			}
-		} else {
-			for (String name : getNames(parent)) {
-				appendNames(name + nameConnector, field, names, false);
-			}
-		}
-	}
-
 	public Collection<String> getNames(Field field) {
-		Set<String> names = new LinkedHashSet<String>(8);
-		appendNames(namePrefix, field, names, true);
-		return names;
+		return field.getNames(nameNesting, getAliasRegistry(), namePrefix, nameConnector);
 	}
 
 	@Override
-	public Processor<Field, Value, E> getValueProcessor(S source, TypeDescriptor sourceType) throws E {
+	public Processor<Field, Parameter, E> getValueProcessor(S source, TypeDescriptor sourceType) throws E {
 		ObjectAccess<E> objectAccess = getObjectAccess(source, sourceType);
 		return (p) -> {
 			Collection<String> names = getNames(p);
@@ -194,7 +182,7 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 			}
 
 			for (String name : names) {
-				Value value = objectAccess.get(name);
+				Parameter value = objectAccess.get(name);
 				if (value == null || value.isNull()) {
 					continue;
 				}
@@ -207,15 +195,14 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 					appendMapProperty(valueMap, source, sourceType, name + nameConnector, objectAccess);
 				}
 				if (!CollectionUtils.isEmpty(valueMap)) {
-					return new AnyValue(valueMap, TypeDescriptor.map(LinkedHashMap.class, String.class, Object.class),
-							null);
+					Value value = new AnyValue(valueMap,
+							TypeDescriptor.map(LinkedHashMap.class, String.class, Object.class));
+					return new Parameter(namePrefix == null ? p.getName() : (namePrefix + p.getName()), value);
 				}
 			}
 			return null;
 		};
 	}
-
-	public abstract ObjectAccess<E> getObjectAccess(S source, TypeDescriptor sourceType) throws E;
 
 	protected void appendMapProperty(Map<String, Object> valueMap, S source, TypeDescriptor sourceType, String prefix,
 			ObjectAccess<E> objectAccess) throws E {
@@ -261,8 +248,22 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 	}
 
 	@Override
-	public void reverseTransform(Parameter parameter, S target, TypeDescriptor targetType) throws E {
-		ObjectAccess<E> objectAccess = getObjectAccess(target, targetType);
-		objectAccess.set(parameter.getName(), parameter);
+	public void transform(S source, TypeDescriptor sourceType, ObjectAccess<? extends E> targetAccess) throws E {
+		transform(source, sourceType, targetAccess, (key) -> {
+			if (namePrefix == null || key.startsWith(namePrefix)) {
+				return key.substring(namePrefix.length());
+			}
+			return null;
+		});
+	}
+
+	@Override
+	public void reverseTransform(ObjectAccess<? extends E> sourceAccess, S target, TypeDescriptor targetType) throws E {
+		reverseTransform(sourceAccess, target, targetType, (key) -> {
+			if (namePrefix == null || key.startsWith(namePrefix)) {
+				return key.substring(namePrefix.length());
+			}
+			return null;
+		});
 	}
 }

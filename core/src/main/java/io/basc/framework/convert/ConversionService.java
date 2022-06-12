@@ -61,22 +61,4 @@ public interface ConversionService extends Converter<Object, Object, ConversionE
 	 * @throws IllegalArgumentException if {@code targetType} is {@code null}
 	 */
 	boolean canConvert(@Nullable TypeDescriptor sourceType, TypeDescriptor targetType);
-
-	/**
-	 * 是否能直接转换
-	 * 
-	 * @param sourceType
-	 * @param targetType
-	 * @return
-	 */
-	default boolean canDirectlyConvert(@Nullable TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (sourceType != null && targetType != null && targetType.isAssignableTo(sourceType)) {
-			return true;
-		}
-
-		if (targetType.getType() == Object.class) {
-			return true;
-		}
-		return false;
-	}
 }

@@ -1,10 +1,10 @@
 package io.basc.framework.orm.repository;
 
 import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.orm.support.AbstractObjectRelationalMapper;
+import io.basc.framework.orm.support.AbstractObjectMapper;
 import io.basc.framework.util.StringUtils;
 
-public abstract class AbstractRepositoryMapper<S, E extends Throwable> extends AbstractObjectRelationalMapper<S, E>
+public abstract class AbstractRepositoryObjectMapper<S, E extends Throwable> extends AbstractObjectMapper<S, E>
 		implements RepositoryMapper<S, E> {
 	private ConditionKeywords conditionKeywords;
 	private RelationshipKeywords relationshipKeywords;

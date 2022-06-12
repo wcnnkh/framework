@@ -1,16 +1,16 @@
 package io.basc.framework.factory;
 
-import io.basc.framework.core.OrderComparator;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Supplier;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceConfigurationError;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import io.basc.framework.core.OrderComparator;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.CollectionUtils;
 
 /**
  * A simple service-provider loading facility.

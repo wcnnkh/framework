@@ -8,8 +8,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 
 import io.basc.framework.mapper.ObjectAccess;
-import io.basc.framework.value.AnyValue;
-import io.basc.framework.value.Value;
+import io.basc.framework.mapper.Parameter;
 
 public class ResultSetAccess implements ObjectAccess<SQLException> {
 	private final ResultSet resultSet;
@@ -26,9 +25,9 @@ public class ResultSetAccess implements ObjectAccess<SQLException> {
 	}
 
 	@Override
-	public Value get(String name) throws SQLException {
+	public Parameter get(String name) throws SQLException {
 		try {
-			return new AnyValue(resultSet.getObject(name));
+			return new Parameter(name, resultSet.getObject(name));
 		} catch (SQLException e) {
 			// 如果字段不存在就返回空
 			return null;
@@ -36,8 +35,8 @@ public class ResultSetAccess implements ObjectAccess<SQLException> {
 	}
 
 	@Override
-	public void set(String name, Value value) throws SQLException {
-		resultSet.updateObject(name, value.get());
+	public void set(Parameter parameter) throws SQLException {
+		resultSet.updateObject(parameter.getName(), parameter.get());
 	}
 
 }

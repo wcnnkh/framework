@@ -2,6 +2,7 @@ package io.basc.framework.core;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -199,6 +200,11 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	public final Class<?> getCursorId() {
 		return sourceClass;
 	}
+	
+	@Override
+	public Iterator<T> iterator() {
+		return stream().iterator();
+	}
 
 	@Override
 	public List<T> getList() {
@@ -283,7 +289,7 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 
 	public Members<T> shared() {
 		Members<T> members = clone();
-		if (members.members != null) {
+		if (members.members == null) {
 			members.members = members.getList();
 		}
 

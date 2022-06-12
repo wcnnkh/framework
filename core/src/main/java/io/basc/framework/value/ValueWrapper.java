@@ -1,5 +1,6 @@
 package io.basc.framework.value;
 
+import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.ObjectUtils;
 
@@ -130,12 +131,29 @@ public class ValueWrapper<V extends Value> implements Value, Serializable {
 		return targetValue.isNumber();
 	}
 
+	@Override
+	public boolean isNull() {
+		return targetValue.isNull();
+	}
+
 	public Class<?> getAsClass() {
 		return targetValue.getAsClass();
 	}
 
 	public Enum<?> getAsEnum(Class<?> enumType) {
 		return targetValue.getAsEnum(enumType);
+	}
+
+	@Override
+	public <T, E extends Throwable> T convert(Class<? extends T> targetType,
+			Converter<? super Object, ? extends Object, E> converter) throws E {
+		return targetValue.convert(targetType, converter);
+	}
+
+	@Override
+	public <E extends Throwable> Object convert(TypeDescriptor targetType,
+			Converter<? super Object, ? extends Object, E> converter) throws E {
+		return targetValue.convert(targetType, converter);
 	}
 
 	@Override

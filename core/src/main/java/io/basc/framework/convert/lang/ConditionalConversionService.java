@@ -4,10 +4,10 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.ClassUtils;
 
-public abstract class ConditionalConversionService extends AbstractConversionService
-		implements ConversionService, ConvertibleConditional {
+public interface ConditionalConversionService extends ConversionService, ConvertibleConditional {
 
-	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+	@Override
+	default boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (sourceType == null || targetType == null) {
 			return false;
 		}

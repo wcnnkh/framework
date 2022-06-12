@@ -6,12 +6,13 @@ import java.util.Set;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 
-class ObjectToArrayConversionService extends ConditionalConversionService {
+class ObjectToArrayConversionService extends AbstractConversionService implements ConditionalConversionService {
 	public ObjectToArrayConversionService(ConversionService conversionService) {
 		setConversionService(conversionService);
 	}

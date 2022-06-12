@@ -1,16 +1,18 @@
 package io.basc.framework.convert.support;
 
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.ConditionalConversionService;
-import io.basc.framework.convert.lang.ConvertiblePair;
-import io.basc.framework.util.CollectionFactory;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-class CollectionToCollectionConversionService extends ConditionalConversionService {
+import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.AbstractConversionService;
+import io.basc.framework.convert.lang.ConditionalConversionService;
+import io.basc.framework.convert.lang.ConvertiblePair;
+import io.basc.framework.util.CollectionFactory;
+
+class CollectionToCollectionConversionService extends AbstractConversionService
+		implements ConditionalConversionService {
 
 	public CollectionToCollectionConversionService(ConversionService conversionService) {
 		setConversionService(conversionService);

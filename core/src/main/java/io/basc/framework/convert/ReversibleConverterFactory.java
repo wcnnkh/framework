@@ -8,9 +8,4 @@ public interface ReversibleConverterFactory<S, E extends Throwable>
 	<T> ReversibleConverter<S, T, E> getReversibleConverter(Class<? extends T> type);
 
 	<T> void registerReversibleConverter(Class<T> type, ReversibleConverter<S, ? extends T, ? extends E> converter);
-	
-	@Override
-	default Object newInstance(TypeDescriptor type) {
-		return ConverterFactory.super.newInstance(type);
-	}
 }

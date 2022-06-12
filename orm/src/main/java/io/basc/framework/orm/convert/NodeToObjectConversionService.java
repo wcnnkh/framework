@@ -8,14 +8,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 
-class NodeToObjectConversionService extends ConditionalConversionService {
-	
+class NodeToObjectConversionService extends AbstractConversionService implements ConditionalConversionService {
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <R> R convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {

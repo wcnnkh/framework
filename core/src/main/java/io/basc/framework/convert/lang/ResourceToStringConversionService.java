@@ -11,7 +11,7 @@ import io.basc.framework.core.annotation.CharsetName;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
 
-public class ResourceToStringConversionService extends ConditionalConversionService {
+public class ResourceToStringConversionService implements ConditionalConversionService {
 
 	@SuppressWarnings("unchecked")
 	@Override

@@ -1,5 +1,7 @@
 package io.basc.framework.util;
 
+import java.util.function.Supplier;
+
 public class CacheableSupplier<T> implements Supplier<T> {
 	private final java.util.function.Supplier<T> supplier;
 	private volatile java.util.function.Supplier<T> cache;

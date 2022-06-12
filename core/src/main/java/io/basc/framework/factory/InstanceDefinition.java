@@ -16,4 +16,6 @@ public interface InstanceDefinition extends Iterable<ParameterDescriptors>, Inst
 	boolean isInstance(Class<?>[] parameterTypes);
 
 	Iterator<ParameterDescriptors> iterator();
+	
+	boolean isSingleton();
 }

@@ -1,9 +1,9 @@
 package io.basc.framework.redis;
 
 import java.io.Serializable;
+import java.util.function.Supplier;
 
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.Supplier;
 
 public class Tuple<V> implements Supplier<V>, Serializable {
 	private static final long serialVersionUID = 1L;
