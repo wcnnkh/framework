@@ -2,15 +2,16 @@ package io.basc.framework.web;
 
 import java.io.IOException;
 import java.net.HttpCookie;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.w3c.dom.Document;
-
+import io.basc.framework.codec.Decoder;
 import io.basc.framework.codec.support.CharsetCodec;
+import io.basc.framework.codec.support.URLCodec;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpStatus;
@@ -29,7 +30,9 @@ import io.basc.framework.net.MimeType;
 import io.basc.framework.net.message.Message;
 import io.basc.framework.net.message.multipart.MultipartMessage;
 import io.basc.framework.net.message.multipart.MultipartMessageResolver;
+import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.value.AnyValue;
@@ -347,41 +350,81 @@ public final class WebUtils {
 		return new CharsetCodec(request.getCharacterEncoding()).decode(CharsetCodec.ISO_8859_1.encode(value));
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> Map<String, T> getParameterMap(ServerHttpRequest request, String appendValueChars) {
+	public static Map<String, Object> getParameterMap(ServerHttpRequest request, String appendValueChars) {
+		return toSingleValueMap(request.getParameterMap(), appendValueChars,
+				(value) -> decodeGETParameter(request, value));
+	}
+
+	public static Map<String, Object> toSingleValueMap(Map<String, ? extends Collection<String>> map,
+			@Nullable String appendValueChars, @Nullable Decoder<String, String> decoder) {
 		Map<String, Object> parameterMap = new LinkedHashMap<String, Object>();
-		for (Entry<String, List<String>> entry : request.getParameterMap().entrySet()) {
-			List<String> values = entry.getValue();
+		for (Entry<String, ? extends Collection<String>> entry : map.entrySet()) {
+			Collection<String> values = entry.getValue();
 			if (CollectionUtils.isEmpty(values)) {
 				continue;
 			}
 
-			List<String> arrays = new ArrayList<String>(values.size());
-			for (String value : values) {
-				arrays.add(decodeGETParameter(request, value));
+			String[] arrays = values.toArray(new String[0]);
+			if (decoder != null) {
+				for (int i = 0; i < values.size(); i++) {
+					arrays[i] = decoder.decode(arrays[i]);
+				}
 			}
 
 			if (appendValueChars == null) {
-				if (arrays.size() == 1) {
-					parameterMap.put(entry.getKey(), arrays.get(0));
+				if (arrays.length == 1) {
+					parameterMap.put(entry.getKey(), arrays[0]);
 				} else {
 					parameterMap.put(entry.getKey(), arrays);
 				}
 			} else {
-				parameterMap.put(entry.getKey(), StringUtils.collectionToDelimitedString(arrays, appendValueChars));
+				parameterMap.put(entry.getKey(),
+						StringUtils.collectionToDelimitedString(Arrays.asList(arrays), appendValueChars));
 			}
 		}
-		return (Map<String, T>) parameterMap;
+		return parameterMap;
 	}
 
 	public static Object getRequestBody(ServerHttpRequest request) throws IOException {
 		if (request.getHeaders().isJsonContentType()) {
-			return JSONUtils.getJsonSupport().parseJson(request.getReader());
+			return JSONUtils.parseJson(request.getReader());
 		} else if (request.getHeaders().isXmlContentType()) {
-			Document document = XmlUtils.getTemplate().getParser().parse(request.getReader());
-			return document;
-		} else {
+			return XmlUtils.getTemplate().getParser().parse(request.getReader());
+		} else if (request.getHeaders().isFormContentType()) {
 			return WebUtils.getParameterMap(request, null);
+		} else {
+			if (request.getMethod().hasRequestBody()) {
+				String content = IOUtils.read(request.getReader());
+				if (StringUtils.isEmpty(content)) {
+					return null;
+				}
+
+				try {
+					JsonElement jsonElement = JSONUtils.parseJson(content);
+					if (jsonElement.isJsonArray() || jsonElement.isJsonObject()) {
+						return jsonElement;
+					}
+				} catch (Exception e) {
+					logger.trace(e, request.toString());
+				}
+
+				try {
+					return XmlUtils.getTemplate().getParser().parse(content);
+				} catch (Exception e) {
+					logger.trace(e, request.toString());
+				}
+
+				try {
+					MultiValueMap<String, String> valueMap = UriComponentsBuilder.newInstance().query(content).build()
+							.getQueryParams();
+					return WebUtils.toSingleValueMap(valueMap, null, new URLCodec(request.getCharacterEncoding()));
+				} catch (Exception e) {
+					logger.trace(e, request.toString());
+				}
+				return content;
+			} else {
+				return WebUtils.getParameterMap(request, null);
+			}
 		}
 	}
 
