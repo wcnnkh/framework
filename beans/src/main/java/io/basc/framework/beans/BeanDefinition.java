@@ -10,8 +10,6 @@ public interface BeanDefinition extends InstanceDefinition {
 
 	Collection<String> getNames();
 
-	boolean isSingleton();
-
 	AnnotatedElement getAnnotatedElement();
 
 	void dependence(Object instance) throws BeansException;

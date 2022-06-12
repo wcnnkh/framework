@@ -1,19 +1,31 @@
 package io.basc.framework.orm.support;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import io.basc.framework.mapper.ObjectAccessFactory;
 import io.basc.framework.mapper.ObjectAccessFactoryRegistry;
 import io.basc.framework.orm.repository.AbstractRepositoryObjectMapper;
+import io.basc.framework.util.ClassUtils;
 
 public class DefaultObjectMapper<E extends Throwable> extends AbstractRepositoryObjectMapper<Object, E>
 		implements ObjectAccessFactoryRegistry<E> {
-	private final Map<Class<?>, ObjectAccessFactory<?, ? extends E>> map = new ConcurrentHashMap<Class<?>, ObjectAccessFactory<?, ? extends E>>();
+	private final Map<Class<?>, ObjectAccessFactory<?, ? extends E>> map = new TreeMap<>(
+			(o1, o2) -> o1 == o2 ? 0 : (ClassUtils.isAssignable(o1, o2) ? 1 : -1));
 
 	@Override
 	public boolean isObjectAccessFactoryRegistred(Class<?> type) {
-		return map.containsKey(type);
+		if (map.containsKey(type)) {
+			return true;
+		}
+
+		for (Class<?> key : map.keySet()) {
+			if (ClassUtils.isAssignable(key, type)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
@@ -24,6 +36,15 @@ public class DefaultObjectMapper<E extends Throwable> extends AbstractRepository
 	@SuppressWarnings("unchecked")
 	@Override
 	public <S> ObjectAccessFactory<S, E> getObjectAccessFactory(Class<? extends S> type) {
-		return (ObjectAccessFactory<S, E>) map.get(type);
+		Object object = map.get(type);
+		if (object == null) {
+			for (Entry<Class<?>, ObjectAccessFactory<?, ? extends E>> entry : map.entrySet()) {
+				if (ClassUtils.isAssignable(entry.getKey(), type)) {
+					object = entry.getValue();
+					break;
+				}
+			}
+		}
+		return (ObjectAccessFactory<S, E>) object;
 	}
 }

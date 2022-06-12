@@ -1,17 +1,15 @@
 package io.basc.framework.db;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.env.Sys;
-import io.basc.framework.logger.Levels;
-import io.basc.framework.orm.convert.EntityConversionService;
-import io.basc.framework.orm.convert.PropertyFactoryToEntityConversionService;
-import io.basc.framework.util.alias.DefaultAliasRegistry;
-import io.basc.framework.value.PropertyFactory;
-
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
+
+import io.basc.framework.env.Sys;
+import io.basc.framework.logger.Levels;
+import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
+import io.basc.framework.util.alias.DefaultAliasRegistry;
+import io.basc.framework.value.PropertyFactory;
 
 public final class DBUtils {
 	public static final String DEFAULT_CONFIGURATION = "/db/db.properties";
@@ -40,13 +38,11 @@ public final class DBUtils {
 	}
 
 	public static void loadProperties(Object instance, PropertyFactory propertyFactory) {
-		EntityConversionService configure = new PropertyFactoryToEntityConversionService();
+		DefaultObjectRelationalMapper configure = new DefaultObjectRelationalMapper();
 		configure.setConversionService(Sys.env.getConversionService());
 		configure.setAliasRegistry(getCommonPropertiesAliasRegistry());
-		configure.setStrict(true);
 		configure.setLoggerLevel(Levels.INFO.getValue());
-		configure.configurationProperties(propertyFactory, TypeDescriptor.forObject(propertyFactory), instance,
-				TypeDescriptor.forObject(instance));
+		configure.transform(propertyFactory, instance);
 	}
 
 	public static void deregisterDriver() {

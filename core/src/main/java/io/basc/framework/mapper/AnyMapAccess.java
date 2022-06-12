@@ -1,4 +1,4 @@
-package io.basc.framework.orm.convert;
+package io.basc.framework.mapper;
 
 import java.util.Collections;
 import java.util.Enumeration;
@@ -10,14 +10,15 @@ import io.basc.framework.convert.ConvertibleEnumeration;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.Parameter;
+import io.basc.framework.util.CollectionFactory;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class MapAccess implements ObjectAccess<ConversionException> {
+public class AnyMapAccess<E extends Throwable> implements ObjectAccess<E> {
 	private final ConversionService conversionService;
-	private final Map map;
+	private Map map;
 	private final TypeDescriptor mapType;
 
-	public MapAccess(Map map, TypeDescriptor mapType, ConversionService conversionService) {
+	public AnyMapAccess(Map map, TypeDescriptor mapType, ConversionService conversionService) {
 		this.map = map;
 		this.mapType = mapType;
 		this.conversionService = conversionService;
@@ -35,6 +36,10 @@ public class MapAccess implements ObjectAccess<ConversionException> {
 
 	@Override
 	public Parameter get(String name) throws ConversionException {
+		if (map == null) {
+			return null;
+		}
+
 		Object value = map.get(name);
 		if (value == null) {
 			return null;
@@ -44,6 +49,10 @@ public class MapAccess implements ObjectAccess<ConversionException> {
 
 	@Override
 	public void set(Parameter parameter) throws ConversionException {
+		if (map == null) {
+			map = CollectionFactory.createMap(mapType.getType(), mapType.getMapKeyTypeDescriptor().getType(), 16);
+		}
+
 		Object key = parameter.getName();
 		key = conversionService.convert(key, mapType.getMapKeyTypeDescriptor());
 		map.put(key, parameter.convert(mapType.getMapValueTypeDescriptor(), conversionService));

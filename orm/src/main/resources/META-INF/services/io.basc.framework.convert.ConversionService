@@ -1,6 +1,5 @@
 ## SQL TYPE ##
 io.basc.framework.orm.convert.DateConversionService
-io.basc.framework.orm.convert.ResultSetRowToEntityConversionService
 ## SQL TYPE ##
 
 ## DOM ##
@@ -12,6 +11,4 @@ io.basc.framework.orm.convert.NodeListToEntityConversionService
 ## DOM ##
 
 io.basc.framework.orm.convert.CollectionToMapConversionService
-io.basc.framework.orm.convert.PropertyFactoryToEntityConversionService
-io.basc.framework.orm.convert.MapToEntityConversionService
-io.basc.framework.orm.convert.EntityToMapConversionService
+io.basc.framework.orm.support.DefaultObjectRelationalMapper

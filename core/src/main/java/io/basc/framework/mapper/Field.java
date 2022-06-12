@@ -16,6 +16,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ParentDiscover;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.alias.AliasRegistry;
 import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.EmptyValue;
 
@@ -26,7 +27,7 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 	protected Integer modifiers;
 	protected Boolean synthetic;
 	protected String name;
-	protected int nameNestingDepth;
+	protected int nameNestingDepth = -1;
 	protected String nameNestingConnector = "_";
 
 	public Field() {
@@ -345,25 +346,36 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 			return structure;
 		}
 
-		entity = entity.setParentField(this);
+		entity = entity.setParentField(this).filter((e) -> {
+			e.nameNestingDepth = 0;
+			return true;
+		});
 		return structure.with(entity);
 	}
 
 	private static void appendNames(String prefix, Field field, Collection<String> names, boolean root,
-			String nameConnector, boolean nameNesting) {
+			String nameConnector, boolean nameNesting, AliasRegistry aliasRegistry) {
 		io.basc.framework.mapper.Field parent = field.getParent();
-		if (parent == null || !root || !nameNesting || field.nameNestingDepth > 0) {
+		if (parent == null || !root || !nameNesting || field.nameNestingDepth >= 0) {
 			names.add(prefix == null ? field.getName() : (prefix + field.getName()));
 			Collection<String> aliasNames = field.getAliasNames();
 			if (aliasNames != null) {
 				for (String name : aliasNames) {
 					names.add(prefix == null ? name : (prefix + name));
+					if (aliasRegistry != null && aliasRegistry.isAlias(name)) {
+						String[] aliasArray = aliasRegistry.getAliases(name);
+						if (aliasArray != null) {
+							for (String alias : aliasArray) {
+								names.add(prefix == null ? alias : (prefix + alias));
+							}
+						}
+					}
 				}
 			}
 		} else {
-			for (String name : parent.getNames(nameNesting, prefix, nameConnector)) {
+			for (String name : parent.getNames(nameNesting, aliasRegistry, prefix, nameConnector)) {
 				appendNames(nameConnector == null ? name : (name + nameConnector), field, names, false, nameConnector,
-						nameNesting);
+						nameNesting, aliasRegistry);
 			}
 		}
 	}
@@ -376,12 +388,10 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 	 * @param nameConnector 发生嵌套时名称之间的连接符
 	 * @return
 	 */
-	public Collection<String> getNames(boolean nameNesting, @Nullable String prefix, @Nullable String nameConnector) {
+	public Collection<String> getNames(boolean nameNesting, @Nullable AliasRegistry aliasRegistry,
+			@Nullable String prefix, @Nullable String nameConnector) {
 		Set<String> names = new LinkedHashSet<String>(8);
-		if (this.nameNestingDepth == 0) {
-			names.add(prefix == null ? getName() : (prefix + getName()));
-		}
-		appendNames(prefix, this, names, true, nameConnector, nameNesting);
+		appendNames(prefix, this, names, true, nameConnector, nameNesting, aliasRegistry);
 		return names;
 	}
 }

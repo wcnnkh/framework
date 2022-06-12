@@ -14,7 +14,7 @@ import io.basc.framework.value.Value;
 
 public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFactory<S, E>, StructureFactory {
 
-	default boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
+	default boolean isEntity(Class<?> entityClass, Field field, ParameterDescriptor descriptor) {
 		return isEntity(descriptor.getType());
 	}
 
@@ -99,7 +99,7 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 			}
 
 			Value value = null;
-			if (isEntity(targetType.getType(), property.getSetter())) {
+			if (isEntity(targetType.getType(), property, property.getSetter())) {
 				TypeDescriptor valueTypeDescriptor = new TypeDescriptor(property.getSetter());
 				Object entity = convert(source, sourceType, valueTypeDescriptor,
 						getStructure(valueTypeDescriptor.getType()).setParentField(property), valueProcessor);
@@ -205,7 +205,7 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 
 	default void reverseTransform(TypeDescriptor sourceType, Parameter sourceParameter, Field parameterField, S target,
 			TypeDescriptor targetType) throws E {
-		if (isEntity(sourceType.getType(), sourceParameter)) {
+		if (isEntity(sourceType.getType(), parameterField, sourceParameter)) {
 			reverseTransform(sourceParameter.get(), sourceParameter.getTypeDescriptor(),
 					getStructure(sourceParameter.getType()).setParentField(parameterField), target, targetType);
 		} else {

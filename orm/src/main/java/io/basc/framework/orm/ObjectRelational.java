@@ -213,7 +213,10 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 			if (logger.isTraceEnabled()) {
 				logger.trace("with entity[{}] for property[]", property.getDeclaringClass(), property.getName());
 			}
-			withs.add(() -> with.setParent(property).withEntitys(processor));
+			withs.add(() -> with.setParent(property).filter((e) -> {
+				e.setNameNestingDepth(0);
+				return true;
+			}).withEntitys(processor));
 			return false;
 		}).shared();// 此处因为在filter中进行了逻辑处理，所以此处需要执行shared防止重复执行
 

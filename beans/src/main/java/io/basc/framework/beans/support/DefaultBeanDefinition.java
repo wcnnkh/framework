@@ -151,7 +151,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition implements 
 	}
 
 	public boolean isSingleton() {
-		return BeanUtils.isSingleton(getTargetClass(), getAnnotatedElement());
+		return isSingleton(getTargetClass(), getAnnotatedElement());
 	}
 
 	public AnnotatedElement getAnnotatedElement() {

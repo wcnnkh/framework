@@ -13,9 +13,11 @@ import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.factory.annotation.Singleton;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.NotSupportedException;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
@@ -186,5 +188,25 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory
 		ParameterDescriptors parameterDescriptors = getParameterDescriptors();
 		return createInternal(getTargetClass(), parameterDescriptors,
 				getParameters(parameterDescriptors));
+	}
+
+	@Override
+	public boolean isSingleton() {
+		return isSingleton(targetClass, targetClass);
+	}
+	
+	public boolean isSingleton(Class<?> type, AnnotatedElement annotatedElement) {
+		Singleton singleton = annotatedElement.getAnnotation(Singleton.class);
+		if (singleton != null) {
+			return singleton.value();
+		}
+
+		for (Class<?> interfaceClass : type.getInterfaces()) {
+			if (!isSingleton(interfaceClass, annotatedElement)) {
+				return false;
+			}
+		}
+		// 默认是单例
+		return true;
 	}
 }

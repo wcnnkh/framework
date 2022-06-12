@@ -159,13 +159,13 @@ public abstract class AbstractObjectMapper<S, E extends Throwable>
 
 	@Override
 	public boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return super.isEntity(entityClass, descriptor) || ObjectRelationalResolverExtendChain
+		return isEntity(descriptor.getType()) || ObjectRelationalResolverExtendChain
 				.build(objectRelationalResolverExtendServices.iterator()).isEntity(entityClass, descriptor);
 	}
 
 	@Override
 	public boolean isEntity(Class<?> entityClass) {
-		return (super.isEntity(entityClass) && ReflectionUtils.getConstructor(entityClass) != null)
+		return (super.isEntity(entityClass) && ReflectionUtils.getDeclaredConstructor(entityClass) != null)
 				|| ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 						.isEntity(entityClass);
 	}

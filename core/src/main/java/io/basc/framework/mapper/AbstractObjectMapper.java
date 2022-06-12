@@ -17,6 +17,7 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.alias.AliasRegistry;
 import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
@@ -30,8 +31,9 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 	private boolean transformSuperclass = true;
 	private ConversionService conversionService;
 	private Level loggerLevel = io.basc.framework.logger.Levels.DEBUG.getValue();
-	private Predicate<? super Field> filter;
+	private Predicate<Field> filter;
 	private Field parentField;
+	private AliasRegistry aliasRegistry;
 
 	/**
 	 * 名称嵌套解析
@@ -111,11 +113,19 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 		this.loggerLevel = loggerLevel;
 	}
 
-	public final Predicate<? super Field> getFilter() {
+	public final Predicate<Field> getFilter() {
 		return filter;
 	}
 
-	public void setFilter(Predicate<? super Field> filter) {
+	public final void addFilter(Predicate<Field> filter) {
+		if (filter == null) {
+			this.filter = filter;
+		} else {
+			this.filter.and(filter);
+		}
+	}
+
+	public void setFilter(Predicate<Field> filter) {
 		this.filter = filter;
 	}
 
@@ -141,13 +151,21 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 		}
 	}
 
+	public AliasRegistry getAliasRegistry() {
+		return aliasRegistry;
+	}
+
+	public void setAliasRegistry(AliasRegistry aliasRegistry) {
+		this.aliasRegistry = aliasRegistry;
+	}
+
 	@Override
 	public boolean isStructureRegistred(Class<?> entityClass) {
 		return map.containsKey(entityClass);
 	}
 
 	public Collection<String> getNames(Field field) {
-		return field.getNames(nameNesting, namePrefix, nameConnector);
+		return field.getNames(nameNesting, getAliasRegistry(), namePrefix, nameConnector);
 	}
 
 	@Override
