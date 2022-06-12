@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import io.basc.framework.convert.ConverterNotFoundException;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.ObjectAccessFactory;
 import io.basc.framework.mapper.ObjectAccessFactoryRegistry;
 import io.basc.framework.orm.repository.AbstractRepositoryObjectMapper;
@@ -46,5 +48,26 @@ public class DefaultObjectMapper<E extends Throwable> extends AbstractRepository
 			}
 		}
 		return (ObjectAccessFactory<S, E>) object;
+	}
+
+	@Override
+	public void transform(Object source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType)
+			throws E, ConverterNotFoundException {
+		if (!isTransformerRegistred(targetType.getType()) && isObjectAccessFactoryRegistred(targetType.getType())) {
+			transform(source, sourceType, getObjectAccess(target, targetType));
+			return;
+		}
+		super.transform(source, sourceType, target, targetType);
+	}
+
+	@Override
+	public void reverseTransform(Object source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType)
+			throws E {
+		if (!isReverseTransformerRegistred(sourceType.getType())
+				&& isObjectAccessFactoryRegistred(sourceType.getType())) {
+			reverseTransform(getObjectAccess(source, sourceType), target, targetType);
+			return;
+		}
+		super.reverseTransform(source, sourceType, target, targetType);
 	}
 }

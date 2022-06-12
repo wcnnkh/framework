@@ -119,9 +119,13 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 
 	public final void addFilter(Predicate<Field> filter) {
 		if (filter == null) {
+			return;
+		}
+
+		if (this.filter == null) {
 			this.filter = filter;
 		} else {
-			this.filter.and(filter);
+			this.filter = this.filter.and(filter);
 		}
 	}
 
@@ -169,7 +173,7 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 	}
 
 	@Override
-	public Processor<Field, Value, E> getValueProcessor(S source, TypeDescriptor sourceType) throws E {
+	public Processor<Field, Parameter, E> getValueProcessor(S source, TypeDescriptor sourceType) throws E {
 		ObjectAccess<E> objectAccess = getObjectAccess(source, sourceType);
 		return (p) -> {
 			Collection<String> names = getNames(p);
@@ -178,7 +182,7 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 			}
 
 			for (String name : names) {
-				Value value = objectAccess.get(name);
+				Parameter value = objectAccess.get(name);
 				if (value == null || value.isNull()) {
 					continue;
 				}
@@ -191,8 +195,9 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 					appendMapProperty(valueMap, source, sourceType, name + nameConnector, objectAccess);
 				}
 				if (!CollectionUtils.isEmpty(valueMap)) {
-					return new AnyValue(valueMap, TypeDescriptor.map(LinkedHashMap.class, String.class, Object.class),
-							null);
+					Value value = new AnyValue(valueMap,
+							TypeDescriptor.map(LinkedHashMap.class, String.class, Object.class));
+					return new Parameter(namePrefix == null ? p.getName() : (namePrefix + p.getName()), value);
 				}
 			}
 			return null;
@@ -243,8 +248,22 @@ public abstract class AbstractObjectMapper<S, E extends Throwable> extends Simpl
 	}
 
 	@Override
-	public void reverseTransform(Parameter parameter, S target, TypeDescriptor targetType) throws E {
-		ObjectAccess<E> objectAccess = getObjectAccess(target, targetType);
-		objectAccess.set(parameter);
+	public void transform(S source, TypeDescriptor sourceType, ObjectAccess<? extends E> targetAccess) throws E {
+		transform(source, sourceType, targetAccess, (key) -> {
+			if (namePrefix == null || key.startsWith(namePrefix)) {
+				return key.substring(namePrefix.length());
+			}
+			return null;
+		});
+	}
+
+	@Override
+	public void reverseTransform(ObjectAccess<? extends E> sourceAccess, S target, TypeDescriptor targetType) throws E {
+		reverseTransform(sourceAccess, target, targetType, (key) -> {
+			if (namePrefix == null || key.startsWith(namePrefix)) {
+				return key.substring(namePrefix.length());
+			}
+			return null;
+		});
 	}
 }

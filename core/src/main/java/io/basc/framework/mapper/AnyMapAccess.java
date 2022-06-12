@@ -49,12 +49,20 @@ public class AnyMapAccess<E extends Throwable> implements ObjectAccess<E> {
 
 	@Override
 	public void set(Parameter parameter) throws ConversionException {
+		if(parameter == null || parameter.isEmpty()) {
+			return ;
+		}
+		
 		if (map == null) {
 			map = CollectionFactory.createMap(mapType.getType(), mapType.getMapKeyTypeDescriptor().getType(), 16);
 		}
 
 		Object key = parameter.getName();
 		key = conversionService.convert(key, mapType.getMapKeyTypeDescriptor());
-		map.put(key, parameter.convert(mapType.getMapValueTypeDescriptor(), conversionService));
+		if(parameter.isNull()) {
+			map.remove(key);
+		}else {
+			map.put(key, parameter.convert(mapType.getMapValueTypeDescriptor(), conversionService));
+		}
 	}
 }

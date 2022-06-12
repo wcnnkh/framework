@@ -188,10 +188,10 @@ public final class BeanUtils {
 	}
 
 	public static DefaultObjectRelationalMapper createMapper(Environment environment,
-			ConfigurationProperties configurationProperties) {
+			@Nullable ConfigurationProperties configurationProperties) {
 		DefaultObjectRelationalMapper objectRelationalMapper = new DefaultObjectRelationalMapper();
 		objectRelationalMapper.setConversionService(environment.getConversionService());
-		objectRelationalMapper.setFilter(new Accept<Field>() {
+		objectRelationalMapper.addFilter(new Accept<Field>() {
 
 			public boolean accept(Field field) {
 				IgnoreConfigurationProperty ignore = field.getAnnotation(IgnoreConfigurationProperty.class);

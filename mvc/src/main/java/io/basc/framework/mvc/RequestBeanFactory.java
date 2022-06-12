@@ -82,6 +82,7 @@ public class RequestBeanFactory extends RequestParameterFactory
 				if (result != null && result.isActive()) {
 					DefaultObjectRelationalMapper mapper = BeanUtils.createMapper(beanFactory.getEnvironment(),
 							beanDefinition.getAnnotatedElement().getAnnotation(ConfigurationProperties.class));
+					mapper.configure(beanFactory);
 					mapper.setTransformSuperclass(true);
 					mapper.addFilter(new Accept<Field>() {
 

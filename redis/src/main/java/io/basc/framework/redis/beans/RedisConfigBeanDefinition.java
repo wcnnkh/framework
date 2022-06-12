@@ -33,6 +33,7 @@ public class RedisConfigBeanDefinition extends DefaultBeanDefinition {
 		io.basc.framework.event.Observable<Properties> observable = beanFactory.getEnvironment()
 				.getProperties(DEFAULT_CONFIGURATION);
 		DefaultObjectRelationalMapper mapper = new DefaultObjectRelationalMapper();
+		mapper.configure(beanFactory);
 		mapper.setConversionService(beanFactory.getEnvironment().getConversionService());
 		PropertyFactory properties = new PropertiesPropertyFactory(observable.get());
 		mapper.transform(properties, redisConfiguration);

@@ -28,20 +28,6 @@ public class DefaultObjectRelationalMapper extends DefaultObjectMapper<Conversio
 	}
 
 	@Override
-	public <R> R convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
-			throws ConversionException {
-		if (isConverterRegistred(targetType.getType())) {
-			return super.convert(source, sourceType, targetType);
-		}
-
-		if (isObjectAccessFactoryRegistred(targetType.getType())) {
-			return invert(source, sourceType, targetType);
-		}
-
-		return super.convert(source, sourceType, targetType);
-	}
-
-	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (sourceType == null || targetType == null) {
 			return false;

@@ -1,18 +1,24 @@
 package io.basc.framework.mapper;
 
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.function.Function;
 
+import io.basc.framework.convert.ConversionException;
+import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
 
-public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFactory<S, E>, StructureFactory {
+public interface ObjectMapper<S, E extends Throwable>
+		extends ReversibleMapperFactory<S, E>, StructureFactory, ObjectAccessFactory<S, E> {
 
 	default boolean isEntity(Class<?> entityClass, Field field, ParameterDescriptor descriptor) {
 		return isEntity(descriptor.getType());
@@ -83,6 +89,45 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 		transform(source, sourceType, target, targetType, targetStructure, getValueProcessor(source, sourceType));
 	}
 
+	default void transform(S source, TypeDescriptor sourceType, ObjectAccess<? extends E> targetAccess) throws E {
+		transform(source, sourceType, targetAccess, Function.identity());
+	}
+
+	default void transform(S source, TypeDescriptor sourceType, ObjectAccess<? extends E> targetAccess,
+			@Nullable Function<String, String> keyFunction) throws E {
+		if (source == null) {
+			return;
+		}
+
+		ObjectAccess<E> sourceAccess = getObjectAccess(source, sourceType);
+		if (sourceAccess == null) {
+			throw new ConversionException(sourceType.toString());
+		}
+
+		Enumeration<String> keys = sourceAccess.keys();
+		if (keys == null) {
+			return;
+		}
+
+		while (keys.hasMoreElements()) {
+			String key = keys.nextElement();
+			if (key == null) {
+				continue;
+			}
+
+			String useKey = keyFunction == null ? key : keyFunction.apply(key);
+			if (useKey == null) {
+				continue;
+			}
+
+			Parameter parameter = sourceAccess.get(key);
+			if (!StringUtils.equals(key, useKey)) {
+				parameter = parameter.rename(useKey);
+			}
+			targetAccess.set(parameter);
+		}
+	}
+
 	default <X extends Throwable> void transform(S source, TypeDescriptor sourceType, Object target,
 			TypeDescriptor targetType, Collection<? extends Field> fields,
 			Processor<Field, ? extends Value, X> valueProcessor) throws E, X {
@@ -122,11 +167,11 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 		transform(source, sourceType, target, targetType, targetStructure.stream().iterator(), valueProcessor);
 	}
 
-	default Processor<Field, Value, E> getValueProcessor(S source) throws E {
+	default Processor<Field, Parameter, E> getValueProcessor(S source) throws E {
 		return getValueProcessor(source, TypeDescriptor.forObject(source));
 	}
 
-	Processor<Field, Value, E> getValueProcessor(S source, TypeDescriptor sourceType) throws E;
+	Processor<Field, Parameter, E> getValueProcessor(S source, TypeDescriptor sourceType) throws E;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -158,6 +203,46 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 			return;
 		}
 		reverseTransform(source, sourceType, getStructure(sourceType.getType()), target, targetType);
+	}
+
+	default void reverseTransform(ObjectAccess<? extends E> sourceAccess, S target, TypeDescriptor targetType)
+			throws E {
+		reverseTransform(sourceAccess, target, targetType, Function.identity());
+	}
+
+	default void reverseTransform(ObjectAccess<? extends E> sourceAccess, S target, TypeDescriptor targetType,
+			@Nullable Function<String, String> keyFunction) throws E {
+		if (target == null) {
+			return;
+		}
+
+		ObjectAccess<E> targetAccess = getObjectAccess(target, targetType);
+		if (targetAccess == null) {
+			throw new ConversionException(targetType.toString());
+		}
+
+		Enumeration<String> keys = targetAccess.keys();
+		if (keys == null) {
+			return;
+		}
+
+		while (keys.hasMoreElements()) {
+			String key = keys.nextElement();
+			if (key == null) {
+				continue;
+			}
+
+			String useKey = keyFunction == null ? key : keyFunction.apply(key);
+			if (useKey == null) {
+				continue;
+			}
+
+			Parameter parameter = targetAccess.get(key);
+			if (!StringUtils.equals(key, useKey)) {
+				parameter = parameter.rename(useKey);
+			}
+			sourceAccess.set(parameter);
+		}
 	}
 
 	default void reverseTransform(Object source, Structure<? extends Field> sourceStructure, S target)
@@ -203,13 +288,13 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 		}
 	}
 
-	default void reverseTransform(TypeDescriptor sourceType, Parameter sourceParameter, Field parameterField, S target,
+	default void reverseTransform(TypeDescriptor sourceType, Parameter parameter, Field parameterField, S target,
 			TypeDescriptor targetType) throws E {
-		if (isEntity(sourceType.getType(), parameterField, sourceParameter)) {
-			reverseTransform(sourceParameter.get(), sourceParameter.getTypeDescriptor(),
-					getStructure(sourceParameter.getType()).setParentField(parameterField), target, targetType);
+		if (isEntity(sourceType.getType(), parameterField, parameter)) {
+			reverseTransform(parameter.get(), parameter.getTypeDescriptor(),
+					getStructure(parameter.getType()).setParentField(parameterField), target, targetType);
 		} else {
-			reverseTransform(sourceParameter, target, targetType);
+			reverseTransform(parameter, target, targetType);
 		}
 	}
 
@@ -217,5 +302,11 @@ public interface ObjectMapper<S, E extends Throwable> extends ReversibleMapperFa
 		reverseTransform(sourceParameter, target, TypeDescriptor.forObject(target));
 	}
 
-	void reverseTransform(Parameter sourceParameter, S target, TypeDescriptor targetType) throws E;
+	default void reverseTransform(Parameter parameter, S target, TypeDescriptor targetType) throws E {
+		ObjectAccess<E> objectAccess = getObjectAccess(target, targetType);
+		if (objectAccess == null) {
+			throw new ConversionFailedException(parameter.getTypeDescriptor(), targetType, parameter.get(), null);
+		}
+		objectAccess.set(parameter);
+	}
 }

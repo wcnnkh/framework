@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import io.basc.framework.orm.convert.MapToEntityConversionService;
+import io.basc.framework.orm.support.OrmUtils;
 
 public class EntityConversionTest {
 	@Test
@@ -15,9 +15,8 @@ public class EntityConversionTest {
 		Map<String, Object> map = new HashMap<>();
 		map.put("a", 1);
 		map.put("b", 2);
-		MapToEntityConversionService conversionService = new MapToEntityConversionService();
 		TestnEntity entity = new TestnEntity();
-		conversionService.configurationProperties(map, entity);
+		OrmUtils.getMapper().transform(map, entity);
 		assertTrue(entity.getA() == 1);
 		assertTrue(entity.getB() == 2);
 	}

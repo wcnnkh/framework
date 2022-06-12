@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
 
-import io.basc.framework.env.Sys;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
 import io.basc.framework.util.alias.DefaultAliasRegistry;
@@ -39,7 +38,6 @@ public final class DBUtils {
 
 	public static void loadProperties(Object instance, PropertyFactory propertyFactory) {
 		DefaultObjectRelationalMapper configure = new DefaultObjectRelationalMapper();
-		configure.setConversionService(Sys.env.getConversionService());
 		configure.setAliasRegistry(getCommonPropertiesAliasRegistry());
 		configure.setLoggerLevel(Levels.INFO.getValue());
 		configure.transform(propertyFactory, instance);
