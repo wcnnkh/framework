@@ -221,9 +221,9 @@ public interface LuceneTemplate extends Repository {
 		return searchAfter(after, parameters, (e) -> getMapper().convert(e, structure));
 	}
 
-	<T, E extends Exception> Future<T> write(Processor<IndexWriter, T, E> processor) throws LuceneWriteException;
+	<T> Future<T> write(Processor<IndexWriter, T, ? extends Exception> processor) throws LuceneWriteException;
 
-	<T, E extends Exception> T read(Processor<IndexReader, T, E> processor) throws LuceneReadException;
+	<T, E extends Throwable> T read(Processor<IndexReader, T, E> processor) throws LuceneReadException, E;
 
 	default Future<Long> deleteAll() {
 		return write((e) -> e.deleteAll());

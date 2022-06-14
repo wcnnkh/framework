@@ -171,7 +171,7 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 	}
 
 	public <E extends Throwable> ObjectRelational<T> withEntitys() {
-		return withEntitysAfter((e) -> e);
+		return withEntitysAfter((e) -> e.withSuperclass().all());
 	}
 
 	public ObjectRelational<T> withEntitysAfter(
@@ -223,7 +223,6 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 		for (Supplier<ObjectRelational<T>> with : withs) {
 			objectRelational = objectRelational.with(with.get());
 		}
-
 		return objectRelational;
 	}
 }

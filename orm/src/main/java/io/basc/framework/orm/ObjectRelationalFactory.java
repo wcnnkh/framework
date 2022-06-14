@@ -16,6 +16,6 @@ public interface ObjectRelationalFactory extends ObjectRelationalResolver, Struc
 	}
 
 	default ObjectRelational<? extends Property> getStructure(Class<?> entityClass) {
-		return new EntityStructure(entityClass, this, null).withSuperclass().all().clone();
+		return new EntityStructure(entityClass, this, null).withSuperclass();
 	}
 }
