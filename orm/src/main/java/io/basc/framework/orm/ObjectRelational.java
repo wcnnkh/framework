@@ -199,7 +199,7 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 			return this;
 		}
 
-		List<Supplier<ObjectRelational<T>>> withs = new LinkedList<>();
+		List<Supplier<Stream<T>>> withs = new LinkedList<>();
 		ObjectRelational<T> objectRelational = this.filter((property) -> {
 			if (property == null || !property.isEntity()) {
 				return true;
@@ -216,12 +216,12 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 			withs.add(() -> with.setParent(property).filter((e) -> {
 				e.setNameNestingDepth(0);
 				return true;
-			}).withEntitys(processor));
+			}).withEntitys(processor).stream());
 			return false;
 		}).shared();// 此处因为在filter中进行了逻辑处理，所以此处需要执行shared防止重复执行
 
-		for (Supplier<ObjectRelational<T>> with : withs) {
-			objectRelational = objectRelational.with(with.get());
+		for (Supplier<Stream<T>> with : withs) {
+			objectRelational = objectRelational.withStream(with.get());
 		}
 		return objectRelational;
 	}
