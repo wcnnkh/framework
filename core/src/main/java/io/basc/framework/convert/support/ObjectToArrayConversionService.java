@@ -21,7 +21,6 @@ class ObjectToArrayConversionService extends AbstractConversionService implement
 		return Collections.singleton(new ConvertiblePair(Object.class, Object[].class));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Nullable
 	public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {

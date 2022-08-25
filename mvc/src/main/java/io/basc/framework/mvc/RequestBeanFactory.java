@@ -5,9 +5,8 @@ import java.util.Map;
 
 import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.beans.BeanUtils;
 import io.basc.framework.beans.SingletonBeanRegistry;
-import io.basc.framework.beans.annotation.ConfigurationProperties;
+import io.basc.framework.beans.support.BeanConfigurator;
 import io.basc.framework.beans.support.DefaultSingletonBeanRegistry;
 import io.basc.framework.context.Destroy;
 import io.basc.framework.convert.TypeDescriptor;
@@ -16,7 +15,6 @@ import io.basc.framework.core.parameter.ParameterDescriptors;
 import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
 import io.basc.framework.util.Accept;
 import io.basc.framework.util.DefaultStatus;
 import io.basc.framework.util.Status;
@@ -80,11 +78,9 @@ public class RequestBeanFactory extends RequestParameterFactory
 				}
 
 				if (result != null && result.isActive()) {
-					DefaultObjectRelationalMapper mapper = BeanUtils.createMapper(beanFactory.getEnvironment(),
-							beanDefinition.getAnnotatedElement().getAnnotation(ConfigurationProperties.class));
-					mapper.configure(beanFactory);
-					mapper.setTransformSuperclass(true);
-					mapper.addFilter(new Accept<Field>() {
+					BeanConfigurator beanConfigurator = new BeanConfigurator(beanFactory.getEnvironment());
+					beanConfigurator.configurationProperties(beanFactory, beanDefinition.getAnnotatedElement());
+					beanConfigurator.getContext().addFilter(new Accept<Field>() {
 
 						@Override
 						public boolean accept(Field field) {
@@ -106,7 +102,7 @@ public class RequestBeanFactory extends RequestParameterFactory
 
 					Map<String, Object> parameterMap = (Map<String, Object>) beanFactory.getEnvironment()
 							.getConversionService().convert(body, TypeDescriptor.forObject(body), REQUEST_BODY_TYPE);
-					mapper.transform(parameterMap, result.get());
+					beanConfigurator.transform(parameterMap, result.get());
 				}
 				break;
 			}

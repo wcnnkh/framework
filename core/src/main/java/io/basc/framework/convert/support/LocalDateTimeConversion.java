@@ -29,7 +29,6 @@ class LocalDateTimeConversion implements ConversionService, ConversionServiceAwa
 				&& conversionService.canConvert(sourceType.convert(ResolvableType.forClass(Date.class)), targetType);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {

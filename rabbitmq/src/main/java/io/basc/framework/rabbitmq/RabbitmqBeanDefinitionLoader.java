@@ -15,10 +15,10 @@ import io.basc.framework.beans.BeanDefinitionLoader;
 import io.basc.framework.beans.BeanDefinitionLoaderChain;
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.ConfigurableBeanFactory;
+import io.basc.framework.beans.support.BeanConfigurator;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.io.ResourceUtils;
-import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
 
 @Provider
 public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
@@ -121,10 +121,10 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 		public Object create() throws BeansException {
 			Properties properties = beanFactory.getEnvironment().getProperties(DEFAULT_CONFIG).get();
 			ExchangeDeclare exchangeDeclare = new ExchangeDeclare(null);
-			DefaultObjectRelationalMapper mapper = new DefaultObjectRelationalMapper();
-			mapper.configure(beanFactory);
+			BeanConfigurator mapper = new BeanConfigurator(beanFactory.getEnvironment());
 			mapper.setConversionService(beanFactory.getEnvironment().getConversionService());
-			mapper.setNamePrefix("exchange");
+			mapper.configure(beanFactory);
+			mapper.getContext().setNamePrefix("exchange");
 			mapper.transform(properties, exchangeDeclare);
 			return exchangeDeclare;
 		}

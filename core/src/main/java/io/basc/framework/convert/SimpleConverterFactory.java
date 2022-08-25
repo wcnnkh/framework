@@ -26,4 +26,29 @@ public class SimpleConverterFactory<S, E extends Throwable> extends SimpleRevers
 		Assert.requiredArgument(converter != null, "converter");
 		map.put(type, converter);
 	}
+
+	@Override
+	public final <R> R convert(S source, Class<? extends R> targetType) throws E {
+		return ConverterFactory.super.convert(source, targetType);
+	}
+
+	@Override
+	public final <R> R convert(S source, Class<? extends S> sourceType, Class<? extends R> targetType) throws E {
+		return ConverterFactory.super.convert(source, sourceType, targetType);
+	}
+
+	@Override
+	public final <R> R convert(S source, Class<? extends S> sourceType, TypeDescriptor targetType) throws E {
+		return ConverterFactory.super.convert(source, sourceType, targetType);
+	}
+
+	@Override
+	public final <R> R convert(S source, TypeDescriptor sourceType, Class<? extends R> targetType) throws E {
+		return ConverterFactory.super.convert(source, sourceType, targetType);
+	}
+
+	@Override
+	public final Object convert(S source, TypeDescriptor targetType) throws E {
+		return ConverterFactory.super.convert(source, targetType);
+	}
 }

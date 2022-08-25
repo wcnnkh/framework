@@ -1,197 +1,104 @@
 package io.basc.framework.mapper;
 
-import java.util.Collection;
-import java.util.Enumeration;
+import java.util.Comparator;
 import java.util.Iterator;
-import java.util.function.Function;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import io.basc.framework.convert.ConversionException;
-import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.Processor;
-import io.basc.framework.value.AnyValue;
-import io.basc.framework.value.Value;
+import io.basc.framework.util.XUtils;
 
 public interface ObjectMapper<S, E extends Throwable>
-		extends ReversibleMapperFactory<S, E>, StructureFactory, ObjectAccessFactory<S, E> {
+		extends ReversibleMapperFactory<S, E>, StructureFactory, ObjectAccessFactoryRegistry<E> {
 
-	default boolean isEntity(Class<?> entityClass, Field field, ParameterDescriptor descriptor) {
-		return isEntity(descriptor.getType());
+	default Object convert(S source, Structure<? extends Field> targetStructure) throws E {
+		return convert(source, TypeDescriptor.forObject(source),
+				TypeDescriptor.valueOf(targetStructure.getSourceClass()), targetStructure);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	default <R> R convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
+	default Object convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
 		if (canDirectlyConvert(sourceType, targetType)) {
-			return (R) source;
+			return source;
 		}
 
 		if (isConverterRegistred(targetType.getType())) {
 			return ReversibleMapperFactory.super.convert(source, sourceType, targetType);
 		}
-		return convert(source, sourceType, targetType, getStructure(targetType.getType()));
-	}
 
-	@Override
-	default void transform(S source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType)
-			throws E, ConverterNotFoundException {
-		if (isTransformerRegistred(targetType.getType())) {
-			ReversibleMapperFactory.super.transform(source, sourceType, target, targetType);
-			return;
+		Object target = newInstance(targetType);
+		if (target == null) {
+			return null;
 		}
 
-		transform(source, sourceType, target, targetType, getStructure(targetType.getType()));
-	}
-
-	default <R> R convert(S source, Structure<? extends Field> targetStructure) throws E {
-		return convert(source, TypeDescriptor.forObject(source),
-				TypeDescriptor.valueOf(targetStructure.getSourceClass()), targetStructure);
-	}
-
-	default <R> R convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
-			Structure<? extends Field> targetStructure) throws E {
-		return convert(source, sourceType, targetType, targetStructure, getValueProcessor(source, sourceType));
-	}
-
-	@SuppressWarnings("unchecked")
-	default <R, X extends Throwable> R convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
-			Structure<? extends Field> targetStructure, Processor<Field, ? extends Value, X> valueProcessor)
-			throws E, X {
-		R target = (R) newInstance(targetType);
-		transform(source, sourceType, target, targetType, targetStructure, valueProcessor);
+		transform(source, sourceType, target, targetType);
 		return target;
 	}
 
-	default void transform(S source, Object target, Structure<? extends Field> targetStructure) throws E {
-		transform(source, TypeDescriptor.forObject(source), target, TypeDescriptor.forObject(target), targetStructure);
-	}
-
-	default <R, X extends Throwable> R convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
-			Processor<Field, ? extends Value, X> valueProcessor) throws E, X {
-		if (isEntity(targetType.getType())) {
-			return convert(source, sourceType, targetType, getStructure(targetType.getType()), valueProcessor);
-		}
-		return convert(source, sourceType, targetType);
-	}
-
-	default <X extends Throwable> void transform(S source, TypeDescriptor sourceType, Object target,
-			TypeDescriptor targetType, Processor<Field, ? extends Value, X> valueProcessor) throws E, X {
-		transform(source, sourceType, target, targetType, getStructure(targetType.getType()), valueProcessor);
-	}
-
-	default void transform(S source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType,
+	default Object convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
 			Structure<? extends Field> targetStructure) throws E {
-		transform(source, sourceType, target, targetType, targetStructure, getValueProcessor(source, sourceType));
+		Object target = newInstance(targetType);
+		if (target == null) {
+			return null;
+		}
+		transform(source, sourceType, target, targetType, targetStructure);
+		return target;
 	}
 
-	default void transform(S source, TypeDescriptor sourceType, ObjectAccess<? extends E> targetAccess) throws E {
-		transform(source, sourceType, targetAccess, Function.identity());
-	}
-
-	default void transform(S source, TypeDescriptor sourceType, ObjectAccess<? extends E> targetAccess,
-			@Nullable Function<String, String> keyFunction) throws E {
-		if (source == null) {
-			return;
-		}
-
-		ObjectAccess<E> sourceAccess = getObjectAccess(source, sourceType);
-		if (sourceAccess == null) {
-			throw new ConversionException(sourceType.toString());
-		}
-
-		Enumeration<String> keys = sourceAccess.keys();
-		if (keys == null) {
-			return;
-		}
-
-		while (keys.hasMoreElements()) {
-			String key = keys.nextElement();
-			if (key == null) {
-				continue;
-			}
-
-			String useKey = keyFunction == null ? key : keyFunction.apply(key);
-			if (useKey == null) {
-				continue;
-			}
-
-			Parameter parameter = sourceAccess.get(key);
-			if (!StringUtils.equals(key, useKey)) {
-				parameter = parameter.rename(useKey);
-			}
-			targetAccess.set(parameter);
-		}
-	}
-
-	default <X extends Throwable> void transform(S source, TypeDescriptor sourceType, Object target,
-			TypeDescriptor targetType, Collection<? extends Field> fields,
-			Processor<Field, ? extends Value, X> valueProcessor) throws E, X {
-		transform(source, sourceType, target, targetType, fields.iterator(), valueProcessor);
-	}
-
-	default <X extends Throwable> void transform(S source, TypeDescriptor sourceType, Object target,
-			TypeDescriptor targetType, Iterator<? extends Field> properties,
-			Processor<Field, ? extends Value, X> valueProcessor) throws E, X {
+	default <T> void copy(T source, TypeDescriptor sourceType, T target, TypeDescriptor targetType,
+			Iterator<? extends Field> properties) throws E {
 		while (properties.hasNext()) {
-			Field property = properties.next();
-			if (property == null || !property.isSupportSetter()) {
-				continue;
-			}
-
-			Value value = null;
-			if (isEntity(targetType.getType(), property, property.getSetter())) {
-				TypeDescriptor valueTypeDescriptor = new TypeDescriptor(property.getSetter());
-				Object entity = convert(source, sourceType, valueTypeDescriptor,
-						getStructure(valueTypeDescriptor.getType()).setParentField(property), valueProcessor);
-				if (entity != null) {
-					value = new AnyValue(entity, valueTypeDescriptor);
+			Field field = properties.next();
+			if (field.isSupportGetter() && field.isSupportSetter()) {
+				Parameter value = field.getParameter(source);
+				if (value == null || value.isNull()) {
+					continue;
 				}
-			} else {
-				value = valueProcessor.process(property);
+
+				field.set(target, value);
 			}
-			transform(source, sourceType, target, targetType, property, value);
 		}
 	}
 
-	void transform(S source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType, Field targetField,
-			@Nullable Value sourceValue);
-
-	default <X extends Throwable> void transform(S source, TypeDescriptor sourceType, Object target,
-			TypeDescriptor targetType, Structure<? extends Field> targetStructure,
-			Processor<Field, ? extends Value, X> valueProcessor) throws E, X {
-		transform(source, sourceType, target, targetType, targetStructure.stream().iterator(), valueProcessor);
-	}
-
-	default Processor<Field, Parameter, E> getValueProcessor(S source) throws E {
-		return getValueProcessor(source, TypeDescriptor.forObject(source));
-	}
-
-	Processor<Field, Parameter, E> getValueProcessor(S source, TypeDescriptor sourceType) throws E;
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default <R extends S> R invert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
-		if (canDirectlyConvert(sourceType, targetType)) {
-			return (R) source;
+	default <T> void copy(T source, TypeDescriptor sourceType, T target, TypeDescriptor targetType,
+			Structure<? extends Field> structure) throws E {
+		Iterator<? extends Structure<? extends Field>> iterator = structure.pages().iterator();
+		while (iterator.hasNext()) {
+			Structure<? extends Field> useStructure = iterator.next();
+			copy(source, sourceType, target, targetType, useStructure.iterator());
 		}
-
-		if (isInverterRegistred(sourceType.getType())) {
-			return ReversibleMapperFactory.super.invert(source, sourceType, targetType);
-		}
-
-		return invert(source, sourceType, getStructure(sourceType.getType()), targetType);
 	}
 
 	@SuppressWarnings("unchecked")
 	default <R extends S> R invert(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
 			TypeDescriptor targetType) throws E {
 		R target = (R) newInstance(targetType);
-		reverseTransform(source, sourceType, sourceStructure, target, targetType);
+		if (target == null) {
+			return null;
+		}
+
+		transform(source, sourceType, sourceStructure, target, targetType);
+		return target;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	default S invert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
+		if (canDirectlyConvert(sourceType, targetType)) {
+			return (S) source;
+		}
+
+		if (isInverterRegistred(sourceType.getType())) {
+			return ReversibleMapperFactory.super.invert(source, sourceType, targetType);
+		}
+
+		S target = (S) newInstance(targetType);
+		if (target == null) {
+			return null;
+		}
+
+		reverseTransform(source, sourceType, target, targetType);
 		return target;
 	}
 
@@ -202,111 +109,195 @@ public interface ObjectMapper<S, E extends Throwable>
 			ReversibleMapperFactory.super.reverseTransform(source, sourceType, target, targetType);
 			return;
 		}
-		reverseTransform(source, sourceType, getStructure(sourceType.getType()), target, targetType);
-	}
 
-	default void reverseTransform(ObjectAccess<? extends E> sourceAccess, S target, TypeDescriptor targetType)
-			throws E {
-		reverseTransform(sourceAccess, target, targetType, Function.identity());
-	}
-
-	default void reverseTransform(ObjectAccess<? extends E> sourceAccess, S target, TypeDescriptor targetType,
-			@Nullable Function<String, String> keyFunction) throws E {
-		if (target == null) {
+		if (isObjectAccessFactoryRegistred(targetType.getType())) {
+			transform(source, sourceType, getObjectAccess(target, targetType));
 			return;
 		}
 
-		ObjectAccess<E> targetAccess = getObjectAccess(target, targetType);
-		if (targetAccess == null) {
-			throw new ConversionException(targetType.toString());
-		}
-
-		Enumeration<String> keys = targetAccess.keys();
-		if (keys == null) {
+		if (isObjectAccessFactoryRegistred(sourceType.getType())) {
+			transform(getObjectAccess(source, sourceType), target, targetType);
 			return;
 		}
 
-		while (keys.hasMoreElements()) {
-			String key = keys.nextElement();
-			if (key == null) {
-				continue;
-			}
-
-			String useKey = keyFunction == null ? key : keyFunction.apply(key);
-			if (useKey == null) {
-				continue;
-			}
-
-			Parameter parameter = targetAccess.get(key);
-			if (!StringUtils.equals(key, useKey)) {
-				parameter = parameter.rename(useKey);
-			}
-			sourceAccess.set(parameter);
+		if (targetType.getType() == sourceType.getType()
+				|| sourceType.getType().isAssignableFrom(targetType.getType())) {
+			copy(target, targetType, source, sourceType, getStructure(targetType.getType()));
+			return;
 		}
+
+		transform(target, targetType, getStructure(targetType.getType()), source, sourceType,
+				getStructure(sourceType.getType()));
 	}
 
-	default void reverseTransform(Object source, Structure<? extends Field> sourceStructure, S target)
-			throws E, ConverterNotFoundException {
-		reverseTransform(source, TypeDescriptor.forObject(source), sourceStructure, target,
+	default void transform(Object source, Structure<? extends Field> sourceStructure, Object target) throws E {
+		transform(source, TypeDescriptor.valueOf(sourceStructure.getSourceClass()), sourceStructure, target,
 				TypeDescriptor.forObject(target));
 	}
 
-	default void reverseTransform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
-			S target, TypeDescriptor targetType) throws E, ConverterNotFoundException {
-		reverseTransform(source, sourceType, sourceStructure.stream().iterator(), target, targetType);
+	default void transform(Object source, TypeDescriptor sourceType, Iterator<? extends Field> sourceProperties,
+			Object target, TypeDescriptor targetType, Iterator<? extends Field> targetProperties) throws E {
+		Comparator<FieldDescriptor> comparator = (left, right) -> {
+			if (left.getDeclaringClass() == right.getDeclaringClass()) {
+				if (left.getType() == right.getType()) {
+					return 0;
+				}
+
+				return right.getType().isAssignableFrom(left.getType()) ? 1 : -1;
+			}
+			return right.getDeclaringClass().isAssignableFrom(left.getDeclaringClass()) ? 1 : -1;
+		};
+
+		List<Field> targetFields = XUtils.stream(targetProperties).filter((e) -> e.isSupportSetter())
+				.sorted((left, right) -> comparator.compare(left.getGetter(), right.getGetter()))
+				.collect(Collectors.toList());
+		XUtils.stream(sourceProperties).filter((e) -> e.isSupportGetter())
+				.sorted((left, right) -> comparator.compare(left.getSetter(), right.getSetter()))
+				.forEachOrdered((sourceField) -> {
+					Parameter value = sourceField.getParameter(source);
+					if (value == null || value.isNull()) {
+						return;
+					}
+
+					Iterator<Field> iterator = targetFields.iterator();
+					while (iterator.hasNext()) {
+						Field targetField = iterator.next();
+						if (sourceField.accept(targetField)) {
+							targetField.set(target, value);
+						}
+					}
+				});
 	}
 
-	default void reverseTransform(Object source, Collection<? extends Field> properties, S target)
-			throws E, ConverterNotFoundException {
-		reverseTransform(source, TypeDescriptor.forObject(source), properties.iterator(), target,
-				TypeDescriptor.forObject(target));
-	}
-
-	default void reverseTransform(Object source, TypeDescriptor sourceType, Iterator<? extends Field> properties,
-			S target, TypeDescriptor targetType) throws E, ConverterNotFoundException {
-		while (properties.hasNext()) {
-			Field property = properties.next();
-			if (property == null || !property.isSupportGetter()) {
+	default void transform(Object source, TypeDescriptor sourceType, Iterator<? extends Field> sourceProperties,
+			ObjectAccess<? extends E> targetAccess) throws E {
+		while (sourceProperties.hasNext()) {
+			Field field = sourceProperties.next();
+			if (!field.isSupportGetter()) {
 				continue;
 			}
-			reverseTransform(sourceType, property.getParameter(source), property, target, targetType);
+
+			Parameter parameter = field.getParameter(source);
+			if (parameter == null || parameter.isNull()) {
+				continue;
+			}
+
+			targetAccess.set(parameter);
 		}
 	}
 
-	default void reverseTransform(Collection<? extends Parameter> sourceParameters, S target) throws E {
-		reverseTransform(sourceParameters, target, TypeDescriptor.forObject(target));
-	}
-
-	default void reverseTransform(Collection<? extends Parameter> sourceParameters, S target, TypeDescriptor targetType)
-			throws E {
-		if (CollectionUtils.isEmpty(sourceParameters)) {
-			return;
-		}
-
-		for (Parameter parameter : sourceParameters) {
-			reverseTransform(parameter, target, targetType);
-		}
-	}
-
-	default void reverseTransform(TypeDescriptor sourceType, Parameter parameter, Field parameterField, S target,
-			TypeDescriptor targetType) throws E {
-		if (isEntity(sourceType.getType(), parameterField, parameter)) {
-			reverseTransform(parameter.get(), parameter.getTypeDescriptor(),
-					getStructure(parameter.getType()).setParentField(parameterField), target, targetType);
+	default void transform(Object source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType,
+			Structure<? extends Field> targetStructure) throws E {
+		if (isObjectAccessFactoryRegistred(sourceType.getType())) {
+			transform(getObjectAccess(source, sourceType), target, targetType, targetStructure);
 		} else {
-			reverseTransform(parameter, target, targetType);
+			transform(source, sourceType, getStructure(sourceType.getType()), target, targetType, targetStructure);
 		}
 	}
 
-	default void reverseTransform(Parameter sourceParameter, S target) throws E {
-		reverseTransform(sourceParameter, target, TypeDescriptor.forObject(target));
+	default void transform(Object source, TypeDescriptor sourceType, ObjectAccess<? extends E> targetAccess) throws E {
+		if (source == null) {
+			return;
+		}
+
+		if (isObjectAccessFactoryRegistred(sourceType.getType())) {
+			transform(getObjectAccess(source, sourceType), targetAccess);
+			return;
+		}
+
+		Structure<? extends Field> sourceStructure = getStructure(sourceType.getType());
+		transform(source, sourceType, sourceStructure, targetAccess);
 	}
 
-	default void reverseTransform(Parameter parameter, S target, TypeDescriptor targetType) throws E {
-		ObjectAccess<E> objectAccess = getObjectAccess(target, targetType);
-		if (objectAccess == null) {
-			throw new ConversionFailedException(parameter.getTypeDescriptor(), targetType, parameter.get(), null);
+	default void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
+			Object target, TypeDescriptor targetType) throws E {
+		if (isObjectAccessFactoryRegistred(targetType.getType())) {
+			transform(source, sourceType, sourceStructure, getObjectAccess(target, targetType));
+		} else {
+			transform(source, sourceType, sourceStructure, target, targetType, getStructure(targetType.getType()));
 		}
-		objectAccess.set(parameter);
+	}
+
+	default void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
+			Object target, TypeDescriptor targetType, Structure<? extends Field> targetStructure) throws E {
+		transform(source, sourceType, sourceStructure.streamAll().iterator(), target, targetType,
+				targetStructure.streamAll().iterator());
+	}
+
+	default void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
+			ObjectAccess<? extends E> targetAccess) throws E {
+		Iterator<? extends Structure<? extends Field>> iterator = sourceStructure.pages().iterator();
+		while (iterator.hasNext()) {
+			Structure<? extends Field> structure = iterator.next();
+			transform(source, sourceType, structure.iterator(), targetAccess);
+		}
+	}
+
+	default void transform(ObjectAccess<E> sourceAccess, Object target, TypeDescriptor targetType) throws E {
+		if (isObjectAccessFactoryRegistred(targetType.getType())) {
+			transform(sourceAccess, getObjectAccess(target, targetType));
+			return;
+		}
+
+		Structure<? extends Field> targetStructure = getStructure(targetType.getType());
+		transform(sourceAccess, target, targetType, targetStructure);
+	}
+
+	default void transform(ObjectAccess<E> sourceAccess, Object target, TypeDescriptor targetType,
+			Iterator<? extends Field> targetProperties) throws E {
+		while (targetProperties.hasNext()) {
+			Field field = targetProperties.next();
+			if (!field.isSupportSetter()) {
+				continue;
+			}
+
+			Parameter parameter = sourceAccess.get(field.getName());
+			if (parameter == null || parameter.isNull()) {
+				continue;
+			}
+
+			field.set(target, parameter);
+		}
+	}
+
+	default void transform(ObjectAccess<E> sourceAccess, Object target, TypeDescriptor targetType,
+			Structure<? extends Field> targetStructure) throws E {
+		Iterator<? extends Structure<? extends Field>> iterator = targetStructure.pages().iterator();
+		while (iterator.hasNext()) {
+			Structure<? extends Field> structure = iterator.next();
+			transform(sourceAccess, target, targetType, structure.iterator());
+		}
+	}
+
+	default void transform(ObjectAccess<E> sourceAccess, ObjectAccess<? extends E> targetAccess) throws E {
+		sourceAccess.copy(targetAccess);
+	}
+
+	@Override
+	default void transform(S source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType)
+			throws E, ConverterNotFoundException {
+		if (isTransformerRegistred(targetType.getType())) {
+			ReversibleMapperFactory.super.transform(source, sourceType, target, targetType);
+			return;
+		}
+
+		if (isObjectAccessFactoryRegistred(sourceType.getType())) {
+			transform(getObjectAccess(source, sourceType), target, targetType);
+			return;
+		}
+
+		if (isObjectAccessFactoryRegistred(targetType.getType())) {
+			transform((Object) source, sourceType, getObjectAccess(target, targetType));
+			return;
+		}
+
+		if (targetType.getType() == sourceType.getType()
+				|| targetType.getType().isAssignableFrom(sourceType.getType())) {
+			copy(source, sourceType, target, targetType, getStructure(targetType.getType()));
+			return;
+		}
+
+		transform(source, sourceType, getStructure(sourceType.getType()), target, targetType,
+				getStructure(targetType.getType()));
 	}
 }

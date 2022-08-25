@@ -1,17 +1,20 @@
 package io.basc.framework.util.page;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import io.basc.framework.util.AbstractIterator;
 import io.basc.framework.util.StaticSupplier;
 
-final class PageablesIterator<K, T> extends AbstractIterator<Pageables<K, T>> {
-	private Pageables<K, T> pageables;
-	private Supplier<Pageables<K, T>> current;
+public final class PageablesIterator<E extends Pageables<?, ?>> extends AbstractIterator<E> {
+	private E pageables;
+	private Supplier<E> current;
+	private final Function<? super E, ? extends E> next;
 
-	public PageablesIterator(Pageables<K, T> pageables) {
+	public PageablesIterator(E pageables, Function<? super E, ? extends E> next) {
 		this.pageables = pageables;
-		this.current = new StaticSupplier<Pageables<K, T>>(pageables);
+		this.current = new StaticSupplier<E>(pageables);
+		this.next = next;
 	}
 
 	@Override
@@ -24,13 +27,13 @@ final class PageablesIterator<K, T> extends AbstractIterator<Pageables<K, T>> {
 	}
 
 	@Override
-	public Pageables<K, T> next() {
+	public E next() {
 		if (current != null) {
-			Pageables<K, T> value = current.get();
+			E value = current.get();
 			current = null;
 			return value;
 		} else {
-			this.pageables = pageables.next();
+			this.pageables = next.apply(this.pageables);
 			return pageables;
 		}
 	}

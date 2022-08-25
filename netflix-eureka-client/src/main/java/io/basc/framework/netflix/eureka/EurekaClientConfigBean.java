@@ -1,10 +1,6 @@
 package io.basc.framework.netflix.eureka;
 
 import static io.basc.framework.netflix.eureka.EurekaConstants.DEFAULT_PREFIX;
-import io.basc.framework.beans.annotation.Autowired;
-import io.basc.framework.beans.annotation.ConfigurationProperties;
-import io.basc.framework.env.Environment;
-import io.basc.framework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +11,11 @@ import java.util.Objects;
 import com.netflix.appinfo.EurekaAccept;
 import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.discovery.shared.transport.EurekaTransportConfig;
+
+import io.basc.framework.beans.annotation.Autowired;
+import io.basc.framework.env.Environment;
+import io.basc.framework.orm.annotation.ConfigurationProperties;
+import io.basc.framework.util.StringUtils;
 
 /**
  * Eureka client configuration bean.

@@ -75,7 +75,8 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition implements 
 	}
 
 	protected void configurationProperties(Object instance) {
-		BeanUtils.configurationProperties(instance, getAnnotatedElement(), getEnvironment());
+		BeanConfigurator mapper = new BeanConfigurator(getEnvironment());
+		mapper.configurationProperties(instance, getAnnotatedElement());
 	}
 
 	public void init(Object instance) throws BeansException {
@@ -264,7 +265,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition implements 
 	/**
 	 * 创建一个简单的bean定义
 	 * 
-	 * @param <T>
+	 * @param             <T>
 	 * @param beanFactory
 	 * @param clazz
 	 * @param supplier

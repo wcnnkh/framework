@@ -11,7 +11,7 @@ import io.basc.framework.lang.Nullable;
  * @param <T>
  * @param <E>
  */
-public interface Inverter<S, T, E extends Throwable> extends ConverterConfiguration{
+public interface Inverter<S, T, E extends Throwable> extends ConverterConfiguration {
 	default <R extends T> R invert(@Nullable S source, Class<? extends R> targetType) throws E {
 		return invert(source, TypeDescriptor.forObject(source), targetType);
 	}
@@ -21,19 +21,21 @@ public interface Inverter<S, T, E extends Throwable> extends ConverterConfigurat
 		return invert(source, TypeDescriptor.valueOf(sourceType), targetType);
 	}
 
+	@SuppressWarnings("unchecked")
 	default <R extends T> R invert(@Nullable S source, @Nullable Class<? extends S> sourceType,
 			TypeDescriptor targetType) throws E {
-		return invert(source, TypeDescriptor.valueOf(sourceType), targetType);
+		return (R) invert(source, TypeDescriptor.valueOf(sourceType), targetType);
 	}
 
-	default <R extends T> R invert(@Nullable S source, TypeDescriptor targetType) throws E {
+	default T invert(@Nullable S source, TypeDescriptor targetType) throws E {
 		return invert(source, TypeDescriptor.forObject(source), targetType);
 	}
 
+	@SuppressWarnings("unchecked")
 	default <R extends T> R invert(@Nullable S source, @Nullable TypeDescriptor sourceType,
 			Class<? extends R> targetType) throws E {
-		return invert(source, sourceType, TypeDescriptor.valueOf(targetType));
+		return (R) invert(source, sourceType, TypeDescriptor.valueOf(targetType));
 	}
 
-	<R extends T> R invert(@Nullable S source, @Nullable TypeDescriptor sourceType, TypeDescriptor targetType) throws E;
+	T invert(@Nullable S source, @Nullable TypeDescriptor sourceType, TypeDescriptor targetType) throws E;
 }

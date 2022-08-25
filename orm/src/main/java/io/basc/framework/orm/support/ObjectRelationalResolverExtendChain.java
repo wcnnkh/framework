@@ -1,8 +1,10 @@
 package io.basc.framework.orm.support;
 
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.mapper.ObjectMapperContext;
 import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.orm.ObjectRelationalResolver;
 import io.basc.framework.util.Assert;
@@ -211,5 +213,21 @@ public class ObjectRelationalResolverExtendChain implements ObjectRelationalReso
 			return iterator.next().isDisplay(entityClass, descriptor, this);
 		}
 		return nextChain == null ? false : nextChain.isDisplay(entityClass, descriptor);
+	}
+
+	@Override
+	public ObjectMapperContext getContext(TypeDescriptor sourceType, ObjectMapperContext parent) {
+		if (iterator.hasNext()) {
+			return iterator.next().getContext(sourceType, parent, this);
+		}
+		return nextChain == null ? new ObjectMapperContext(parent) : nextChain.getContext(sourceType, parent);
+	}
+
+	@Override
+	public boolean isConfigurable(TypeDescriptor sourceType) {
+		if (iterator.hasNext()) {
+			return iterator.next().isConfigurable(sourceType, this);
+		}
+		return nextChain == null ? false : nextChain.isConfigurable(sourceType);
 	}
 }

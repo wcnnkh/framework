@@ -10,12 +10,12 @@ import com.netflix.appinfo.InstanceInfo.InstanceStatus;
 import com.netflix.appinfo.MyDataCenterInfo;
 
 import io.basc.framework.beans.annotation.Autowired;
-import io.basc.framework.beans.annotation.ConfigurationProperties;
 import io.basc.framework.boot.support.ApplicationUtils;
 import io.basc.framework.cloud.commons.util.InetUtils;
 import io.basc.framework.cloud.commons.util.InetUtils.HostInfo;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Environment;
+import io.basc.framework.orm.annotation.ConfigurationProperties;
 import io.basc.framework.util.StringUtils;
 
 @ConfigurationProperties("eureka.instance")

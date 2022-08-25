@@ -136,7 +136,7 @@ public class MysqlDialect extends StandardSqlDialect {
 		sb.append(" (");
 
 		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
-		Iterator<Column> iterator = tableStructure.iterator();
+		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column col = iterator.next();
 			SqlType sqlType = getSqlType(col.getGetter().getType());

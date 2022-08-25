@@ -22,7 +22,6 @@ class CollectionToArrayConversionService extends AbstractConversionService imple
 		return Collections.singleton(new ConvertiblePair(Collection.class, Object[].class));
 	}
 
-	@SuppressWarnings("unchecked")
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;

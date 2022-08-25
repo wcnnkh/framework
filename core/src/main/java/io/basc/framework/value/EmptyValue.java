@@ -15,7 +15,10 @@ public class EmptyValue extends AbstractValue implements Value, Serializable {
 	}
 
 	@Override
-	protected Object getAsNonBaseType(TypeDescriptor type) {
+	public Object getAsObject(TypeDescriptor type) {
+		if(Value.isBaseType(type.getType())) {
+			return getAsObject(type.getType());
+		}
 		return null;
 	}
 

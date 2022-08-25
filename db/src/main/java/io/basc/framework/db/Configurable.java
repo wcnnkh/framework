@@ -1,8 +1,8 @@
 package io.basc.framework.db;
 
-import io.basc.framework.beans.annotation.ConfigurationProperties;
-
 import java.io.Serializable;
+
+import io.basc.framework.orm.annotation.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "db")
 public class Configurable implements Serializable {

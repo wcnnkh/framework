@@ -12,9 +12,9 @@ import com.netflix.eureka.EurekaServerConfig;
 import com.netflix.eureka.aws.AwsBindingStrategy;
 
 import io.basc.framework.beans.annotation.Autowired;
-import io.basc.framework.beans.annotation.ConfigurationProperties;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Environment;
+import io.basc.framework.orm.annotation.ConfigurationProperties;
 
 @ConfigurationProperties(EurekaServerConfigBean.PREFIX)
 public class EurekaServerConfigBean implements EurekaServerConfig {

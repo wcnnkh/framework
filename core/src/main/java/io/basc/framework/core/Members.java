@@ -14,7 +14,9 @@ import java.util.stream.Stream;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.XUtils;
 import io.basc.framework.util.page.Pageables;
+import io.basc.framework.util.page.PageablesIterator;
 import io.basc.framework.util.stream.Processor;
 import io.basc.framework.util.stream.StreamProcessorSupport;
 
@@ -282,6 +284,11 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 		return with;
 	}
 
+	@Override
+	public Stream<? extends Members<T>> pages() {
+		return XUtils.stream(new PageablesIterator<>(this, (e) -> e.next()));
+	}
+	
 	/**
 	 * 直接设置当前的members
 	 * 

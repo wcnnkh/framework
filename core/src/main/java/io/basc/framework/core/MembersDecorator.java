@@ -141,4 +141,9 @@ public abstract class MembersDecorator<S, T extends Members<S>> extends Members<
 	public T withSuperclass(Predicate<Class<?>> predicate, Function<Class<?>, ? extends Stream<S>> processor) {
 		return decorate(super.withSuperclass(predicate, processor));
 	}
+
+	@Override
+	public Stream<? extends T> pages() {
+		return super.pages().map((e) -> decorate(e));
+	}
 }

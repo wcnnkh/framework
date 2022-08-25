@@ -1,14 +1,13 @@
 package io.basc.framework.hikari.beans;
 
-import io.basc.framework.beans.BeanUtils;
+import com.zaxxer.hikari.HikariConfig;
+
 import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.beans.support.DefaultBeanDefinition;
+import io.basc.framework.beans.support.BeanConfigurator;
 import io.basc.framework.db.Configurable;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.hikari.HikariUtils;
-import io.basc.framework.logger.Levels;
-
-import com.zaxxer.hikari.HikariConfig;
 
 public class HikariConfigDefinition extends DefaultBeanDefinition {
 
@@ -26,7 +25,9 @@ public class HikariConfigDefinition extends DefaultBeanDefinition {
 		Configurable configurable = beanFactory.getInstance(Configurable.class);
 		HikariConfig hikariConfig = new HikariConfig();
 		HikariUtils.config(hikariConfig, configurable);
-		BeanUtils.configurationProperties(hikariConfig, getEnvironment(), "hikari", Levels.DEBUG);
+		BeanConfigurator configurator = new BeanConfigurator(getEnvironment());
+		configurator.getContext().setNamePrefix("hikari.");
+		configurator.transform(hikariConfig);
 		return hikariConfig;
 	}
 }

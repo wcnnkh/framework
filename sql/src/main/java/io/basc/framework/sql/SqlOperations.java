@@ -16,6 +16,7 @@ import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.stream.Cursor;
 import io.basc.framework.util.stream.Processor;
 
+@SuppressWarnings("unchecked")
 public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor {
 
 	/**
@@ -63,7 +64,7 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor 
 		return export(sql, ResultSet.class, processor);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	default Exporter export(Sql sql, TypeDescriptor type, ExportProcessor<?> processor) {
 		return (file) -> {
 			Cursor<Object> cursor = query(type, sql);
@@ -138,12 +139,13 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor 
 	}
 
 	default <T> Cursor<T> query(Connection connection, TypeDescriptor resultType, Sql sql) {
-		return prepare(connection, sql).query().stream((rs) -> getMapper().convert(rs, resultType));
+		return prepare(connection, sql).query().stream((rs) -> (T) getMapper().convert(rs, resultType));
 	}
 
 	default <T> Cursor<T> query(Connection connection, TypeDescriptor resultType, Sql sql,
 			SqlStatementProcessor statementProcessor) {
-		return prepare(connection, sql, statementProcessor).query().stream((rs) -> getMapper().convert(rs, resultType));
+		return prepare(connection, sql, statementProcessor).query()
+				.stream((rs) -> (T) getMapper().convert(rs, resultType));
 	}
 
 	default <T> Cursor<T> query(Connection connection, TypeDescriptor resultType, String sql, Object... sqlParams) {
@@ -160,11 +162,11 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor 
 	}
 
 	default <T> Cursor<T> query(TypeDescriptor resultType, Sql sql) {
-		return prepare(sql).query().stream((rs) -> getMapper().convert(rs, resultType));
+		return prepare(sql).query().stream((rs) -> (T) getMapper().convert(rs, resultType));
 	}
 
 	default <T> Cursor<T> query(TypeDescriptor resultType, Sql sql, SqlStatementProcessor statementProcessor) {
-		return prepare(sql, statementProcessor).query().stream((rs) -> getMapper().convert(rs, resultType));
+		return prepare(sql, statementProcessor).query().stream((rs) -> (T) getMapper().convert(rs, resultType));
 	}
 
 	default <T> Cursor<T> query(TypeDescriptor resultType, String sql, Object... sqlParams) {

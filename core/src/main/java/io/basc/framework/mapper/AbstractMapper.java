@@ -28,8 +28,8 @@ public abstract class AbstractMapper<S, T, E extends Throwable> implements Mappe
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <R extends T> R convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
-		return (R) convert(source, sourceType, targetType, null);
+	public T convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
+		return (T) convert(source, sourceType, targetType, null);
 	}
 
 	@Override

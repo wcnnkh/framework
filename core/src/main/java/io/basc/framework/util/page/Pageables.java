@@ -17,8 +17,7 @@ public interface Pageables<K, T> extends Pageable<K, T> {
 	}
 
 	default Stream<? extends Pageables<K, T>> pages() {
-		Iterator<Pageables<K, T>> iterator = new PageablesIterator<>(this);
-		return XUtils.stream(iterator);
+		return XUtils.stream(new PageablesIterator<>(this, (e) -> e.next()));
 	}
 
 	@Override

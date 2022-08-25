@@ -26,9 +26,8 @@ public class DateFormatConversionService extends AbstractConversionService {
 				&& canConvert(sourceType.getType()) && canConvert(targetType.getType());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <R> R convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		if (source == null || sourceType == null) {
 			return null;
@@ -36,35 +35,35 @@ public class DateFormatConversionService extends AbstractConversionService {
 
 		if (sourceType.getType() == String.class) {
 			if (targetType.getType() == Date.class) {
-				return (R) stringToDate((String) source, sourceType, targetType);
+				return stringToDate((String) source, sourceType, targetType);
 			}
 
 			if (NumberUtils.isNumber(targetType.getType())) {
-				return (R) stringToNumber((String) source, sourceType, targetType);
+				return stringToNumber((String) source, sourceType, targetType);
 			}
 		}
 
 		if (sourceType.getType() == Date.class) {
 			if (targetType.getType() == String.class) {
-				return (R) dateToString((Date) source, sourceType, targetType);
+				return dateToString((Date) source, sourceType, targetType);
 			}
 
 			if (NumberUtils.isNumber(targetType.getType())) {
-				return (R) dateToNumber((Date) source, sourceType, targetType);
+				return dateToNumber((Date) source, sourceType, targetType);
 			}
 		}
 
 		if (NumberUtils.isNumber(sourceType.getType())) {
 			if (targetType.getType() == String.class) {
-				return (R) numberToString(source, sourceType, targetType);
+				return numberToString(source, sourceType, targetType);
 			}
 
 			if (targetType.getType() == Date.class) {
-				return (R) numberToString(source, sourceType, targetType);
+				return numberToString(source, sourceType, targetType);
 			}
 
 			if (NumberUtils.isNumber(targetType.getType())) {
-				return (R) new AnyValue(source).getAsObject(targetType);
+				return new AnyValue(source).getAsObject(targetType);
 			}
 		}
 

@@ -3,6 +3,7 @@ package io.basc.framework.util;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -113,16 +114,15 @@ public final class XUtils {
 				return webapp.getPath();
 			}
 			/*
-			 * //可能会出现一个bin目录，忽略此目录 final File binDirectory = new File(file,
-			 * "bin"); // 路径/xxxx/src/main/webapp/WEB-INF 4层深度 File wi =
-			 * FileUtils.search(file, new Accept<File>() {
+			 * //可能会出现一个bin目录，忽略此目录 final File binDirectory = new File(file, "bin"); //
+			 * 路径/xxxx/src/main/webapp/WEB-INF 4层深度 File wi = FileUtils.search(file, new
+			 * Accept<File>() {
 			 * 
 			 * public boolean accept(File e) { if(e.isDirectory() &&
-			 * "WEB-INF".equals(e.getName())){ //可能会出现一个bin目录，忽略此目录
-			 * if(binDirectory.exists() && binDirectory.isDirectory() &&
-			 * e.getPath().startsWith(binDirectory.getPath())){ return false; }
-			 * return true; } return false; } }, 4); if (wi != null) { return
-			 * wi.getParent(); }
+			 * "WEB-INF".equals(e.getName())){ //可能会出现一个bin目录，忽略此目录 if(binDirectory.exists()
+			 * && binDirectory.isDirectory() &&
+			 * e.getPath().startsWith(binDirectory.getPath())){ return false; } return true;
+			 * } return false; } }, 4); if (wi != null) { return wi.getParent(); }
 			 */
 		}
 		return path;
@@ -161,14 +161,17 @@ public final class XUtils {
 	/**
 	 * 将一次迭代变为操作流
 	 * 
-	 * @param <T>
+	 * @param          <T>
 	 * @param iterator
 	 * @return
 	 */
-	public static <T> Stream<T> stream(Iterator<T> iterator) {
-		Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(
-				iterator, 0);
+	public static <T> Stream<T> stream(Iterator<? extends T> iterator) {
+		Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
 		return StreamSupport.stream(spliterator, false);
+	}
+
+	public static <T> Stream<T> stream(Enumeration<? extends T> enumeration) {
+		return stream(CollectionUtils.toIterator(enumeration));
 	}
 
 	public static Object toString(Supplier<String> supplier) {

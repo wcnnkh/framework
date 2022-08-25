@@ -23,18 +23,17 @@ public class XmlParseConversionService implements ConversionService {
 						|| File.class.isAssignableFrom(sourceType.getType()));
 	}
 
-	@SuppressWarnings("unchecked")
-	public <R> R convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (InputStream.class.isAssignableFrom(sourceType.getType())) {
-			return (R) XmlUtils.getTemplate().getParser().parse((InputStream) source);
+			return XmlUtils.getTemplate().getParser().parse((InputStream) source);
 		} else if (Reader.class.isAssignableFrom(sourceType.getType())) {
-			return (R) XmlUtils.getTemplate().getParser().parse((Reader) source);
+			return XmlUtils.getTemplate().getParser().parse((Reader) source);
 		} else if (String.class.isAssignableFrom(sourceType.getType())) {
-			return (R) XmlUtils.getTemplate().getParser().parse((String) source);
+			return XmlUtils.getTemplate().getParser().parse((String) source);
 		} else if (InputSource.class.isAssignableFrom(sourceType.getType())) {
-			return (R) XmlUtils.getTemplate().getParser().parse((InputSource) source);
+			return XmlUtils.getTemplate().getParser().parse((InputSource) source);
 		} else if (File.class.isAssignableFrom(sourceType.getType())) {
-			return (R) XmlUtils.getTemplate().getParser().parse((File) source);
+			return XmlUtils.getTemplate().getParser().parse((File) source);
 		}
 		throw new ConversionException(sourceType.toString());
 	}

@@ -25,4 +25,46 @@ public class SimpleTransformerFactory<S, E extends Throwable> implements Transfo
 		map.put(type, transformer);
 	}
 
+	@Override
+	public final void transform(S source, Class<? extends S> sourceType, Object target) throws E {
+		TransformerFactory.super.transform(source, sourceType, target);
+	}
+
+	@Override
+	public final void transform(S source, Class<? extends S> sourceType, Object target,
+			Class<? extends Object> targetType) throws E {
+		TransformerFactory.super.transform(source, sourceType, target, targetType);
+	}
+
+	@Override
+	public final void transform(S source, Class<? extends S> sourceType, Object target, TypeDescriptor targetType)
+			throws E {
+		TransformerFactory.super.transform(source, sourceType, target, targetType);
+	}
+
+	@Override
+	public final void transform(S source, Object target) throws E {
+		TransformerFactory.super.transform(source, target);
+	}
+
+	@Override
+	public final void transform(S source, Object target, Class<? extends Object> targetType) throws E {
+		TransformerFactory.super.transform(source, target, targetType);
+	}
+
+	@Override
+	public final void transform(S source, Object target, TypeDescriptor targetType) throws E {
+		TransformerFactory.super.transform(source, target, targetType);
+	}
+
+	@Override
+	public final void transform(S source, TypeDescriptor sourceType, Object target) throws E {
+		TransformerFactory.super.transform(source, sourceType, target);
+	}
+
+	@Override
+	public final void transform(S source, TypeDescriptor sourceType, Object target, Class<? extends Object> targetType)
+			throws E {
+		TransformerFactory.super.transform(source, sourceType, target, targetType);
+	}
 }

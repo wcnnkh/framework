@@ -1,8 +1,10 @@
 package io.basc.framework.orm.support;
 
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.mapper.ObjectMapperContext;
 import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.orm.ObjectRelationalResolver;
 import io.basc.framework.util.comparator.Sort;
@@ -127,5 +129,14 @@ public interface ObjectRelationalResolverExtend {
 
 	default boolean isDisplay(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
 		return chain.isDisplay(entityClass, descriptor);
+	}
+
+	default ObjectMapperContext getContext(TypeDescriptor sourceType, ObjectMapperContext parent,
+			ObjectRelationalResolver chain) {
+		return chain.getContext(sourceType, parent);
+	}
+	
+	default boolean isConfigurable(TypeDescriptor sourceType, ObjectRelationalResolver chain) {
+		return chain.isConfigurable(sourceType);
 	}
 }

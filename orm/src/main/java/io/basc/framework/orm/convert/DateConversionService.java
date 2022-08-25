@@ -24,24 +24,23 @@ public class DateConversionService extends AbstractConversionService implements 
 		CONVERIBLE_PAIRS.add(new ConvertiblePair(java.sql.Date.class, Object.class));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <R> R convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		if (source instanceof Time) {
-			return (R) sqlTimeToObject((Time) source, targetType.getType());
+			return sqlTimeToObject((Time) source, targetType.getType());
 		}
 
 		if (source instanceof Timestamp) {
-			return (R) sqlTimestampToObject((Timestamp) source, targetType.getType());
+			return sqlTimestampToObject((Timestamp) source, targetType.getType());
 		}
 
 		if (source instanceof java.sql.Date) {
-			return (R) sqlDateToObject((java.sql.Date) source, targetType.getType());
+			return sqlDateToObject((java.sql.Date) source, targetType.getType());
 		}
 
 		if (source instanceof Date) {
-			return (R) javaDateToObject((Date) source, targetType.getType());
+			return javaDateToObject((Date) source, targetType.getType());
 		}
 
 		throw new ConversionFailedException(sourceType, targetType, source, null);

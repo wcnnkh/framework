@@ -1,12 +1,13 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.reflect.FieldHolder;
-import io.basc.framework.core.reflect.MethodHolder;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
+import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.core.reflect.FieldHolder;
+import io.basc.framework.core.reflect.MethodHolder;
 
 public interface FieldDescriptor extends ParameterDescriptor, MethodHolder, FieldHolder, Member {
 	/**
@@ -23,4 +24,19 @@ public interface FieldDescriptor extends ParameterDescriptor, MethodHolder, Fiel
 	 * @return
 	 */
 	Method getMethod();
+
+	@Override
+	default boolean accept(ParameterDescriptor target) {
+		if (ParameterDescriptor.super.accept(target)) {
+			if (target instanceof FieldDescriptor) {
+				int sourceModifiers = getModifiers();
+				int targetModifiers = ((FieldDescriptor) target).getModifiers();
+				if (Modifier.isStatic(sourceModifiers) ^ Modifier.isStatic(targetModifiers)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
 }

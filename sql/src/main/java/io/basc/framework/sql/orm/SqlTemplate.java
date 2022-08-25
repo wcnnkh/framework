@@ -35,6 +35,7 @@ import io.basc.framework.util.page.StreamPaginations;
 import io.basc.framework.util.stream.Cursor;
 import io.basc.framework.util.stream.Processor;
 
+@SuppressWarnings("unchecked")
 public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFactory, Repository {
 	/**
 	 * 这里是将sql转为获取结果集的数量
@@ -233,11 +234,11 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> Pagination<T> getPage(TableStructure tableStructure, Sql sql, long pageNumber, long limit) {
-		return getPage(sql, pageNumber, limit, (rs) -> getMapper().convert(rs, tableStructure));
+		return getPage(sql, pageNumber, limit, (rs) -> (T) getMapper().convert(rs, tableStructure));
 	}
 
 	default <T> Pagination<T> getPage(TypeDescriptor resultType, Sql sql, long pageNumber, long limit) {
-		return getPage(sql, pageNumber, limit, (rs) -> getMapper().convert(rs, resultType));
+		return getPage(sql, pageNumber, limit, (rs) -> (T) getMapper().convert(rs, resultType));
 	}
 
 	default <T> Paginations<T> getPages(Class<? extends T> resultType, Sql sql, long pageNumber, int limit) {
@@ -261,11 +262,11 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	default <T> Paginations<T> getPages(TableStructure tableStructure, T query, long getNumber, long limit) {
 		Sql sql = getMapper().toQuerySql(tableStructure, query);
-		return getPages(sql, getNumber, limit, (rs) -> getMapper().convert(rs, tableStructure));
+		return getPages(sql, getNumber, limit, (rs) -> (T) getMapper().convert(rs, tableStructure));
 	}
 
 	default <T> Paginations<T> getPages(TypeDescriptor resultType, Sql sql, long pageNumber, long limit) {
-		return getPages(sql, pageNumber, limit, (rs) -> getMapper().convert(rs, resultType));
+		return getPages(sql, pageNumber, limit, (rs) -> (T) getMapper().convert(rs, resultType));
 	}
 
 	/**
@@ -329,13 +330,13 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		Sql limitSql = getMapper().toLimitSql(sql, start, limit);
 		return prepare(limitSql).query().stream(processor);
 	}
-
+	
 	default <T> Cursor<T> limit(TableStructure structure, Sql sql, long start, long limit) {
-		return limit(sql, start, limit, (rs) -> getMapper().convert(rs, structure));
+		return limit(sql, start, limit, (rs) -> (T) getMapper().convert(rs, structure));
 	}
 
 	default <T> Cursor<T> limit(TypeDescriptor resultsTypeDescriptor, Sql sql, long start, long limit) {
-		return limit(sql, start, limit, (rs) -> getMapper().convert(rs, resultsTypeDescriptor));
+		return limit(sql, start, limit, (rs) -> (T) getMapper().convert(rs, resultsTypeDescriptor));
 	}
 
 	@Override
@@ -371,7 +372,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	default <T> Cursor<T> query(TableStructure tableStructure, Sql sql) {
-		return query(sql, (rs) -> getMapper().convert(rs, tableStructure));
+		return query(sql, (rs) -> (T) getMapper().convert(rs, tableStructure));
 	}
 
 	default <T> Cursor<T> query(TableStructure tableStructure, T query) {
@@ -463,13 +464,11 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	@Override
-	default <E> long save(Class<? extends E> entityClass, Collection<? extends Parameter> columns)
-			throws OrmException {
+	default <E> long save(Class<? extends E> entityClass, Collection<? extends Parameter> columns) throws OrmException {
 		return save(getMapper().getStructure(entityClass), columns);
 	}
 
-	default long save(TableStructure structure, Collection<? extends Parameter> requestColumns)
-			throws OrmException {
+	default long save(TableStructure structure, Collection<? extends Parameter> requestColumns) throws OrmException {
 		Sql sql = getMapper().toSaveSql(structure, getMapper().open(structure.getSourceClass(), requestColumns, null));
 		return update(sql);
 	}
