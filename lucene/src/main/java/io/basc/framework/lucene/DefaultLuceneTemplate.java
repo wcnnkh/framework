@@ -49,7 +49,7 @@ public class DefaultLuceneTemplate implements LuceneTemplate {
 	}
 
 	public DefaultLuceneTemplate(IndexWriterConfig config, String... more) {
-		this(Paths.get(Paths.get(new File(Sys.env.getWorkPath()).toPath().toString(), DIRECTORY_PREFIX).toString(),
+		this(Paths.get(Paths.get(new File(Sys.getEnv().getWorkPath()).toPath().toString(), DIRECTORY_PREFIX).toString(),
 				checkAndReturnMore(more)), config);
 	}
 

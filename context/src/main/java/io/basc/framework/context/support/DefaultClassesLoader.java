@@ -55,7 +55,7 @@ public class DefaultClassesLoader implements ConfigurableClassesLoader, Configur
 	}
 
 	public Iterator<Class<?>> iterator() {
-		List<Iterator<Class<?>>> iterators = new ArrayList<Iterator<Class<?>>>(serviceList.size() + 1);
+		List<Iterator<Class<?>>> iterators = new ArrayList<Iterator<Class<?>>>();
 		iterators.add(defaultClasses.iterator());
 
 		for (ClassesLoader classesLoader : serviceList) {

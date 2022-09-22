@@ -1,11 +1,8 @@
 package io.basc.framework.web.message.support;
 
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.ConversionServiceAware;
-import io.basc.framework.convert.lang.ConversionServices;
-import io.basc.framework.core.parameter.ParameterFactory;
+import io.basc.framework.env.Environment;
+import io.basc.framework.env.EnvironmentAware;
 import io.basc.framework.factory.ServiceLoaderFactory;
-import io.basc.framework.factory.support.DefaultValueFactoryAware;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.message.convert.DefaultMessageConverters;
 import io.basc.framework.net.message.convert.MessageConverterAware;
@@ -18,16 +15,16 @@ import io.basc.framework.web.message.annotation.QueryParamsWebMessageConverter;
 import io.basc.framework.web.message.annotation.RequestBodyMessageConverter;
 
 public class DefaultWebMessageConverters extends WebMessageConverters {
+	private final Environment environment;
 	private final DefaultMessageConverters messageConverters;
-	private final ParameterFactory defaultValueFactory;
 	private final WebMessageConverters afters = new WebMessageConverters();
 
-	public DefaultWebMessageConverters(ConversionService conversionService, ParameterFactory defaultValueFactory) {
+	public DefaultWebMessageConverters(Environment environment) {
 		super.setAfterService(afters);
-		this.messageConverters = new DefaultMessageConverters(conversionService);
-		this.defaultValueFactory = defaultValueFactory;
+		this.messageConverters = new DefaultMessageConverters(environment.getConversionService());
+		this.environment = environment;
 		LastWebMessageConverter lastWebMessageConverter = new LastWebMessageConverter();
-		aware(lastWebMessageConverter);
+		accept(lastWebMessageConverter);
 		afters.setAfterService(lastWebMessageConverter);
 		addService(new MultipartMessageWebMessageConverter(InetUtils.getMultipartMessageResolver()));
 		addService(new EntityMessageConverter());
@@ -48,14 +45,6 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 		return messageConverters;
 	}
 
-	public ConversionServices getConversionServices() {
-		return messageConverters.getConversionServices();
-	}
-
-	public ParameterFactory getDefaultValueFactory() {
-		return defaultValueFactory;
-	}
-
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		messageConverters.configure(serviceLoaderFactory);
@@ -63,18 +52,15 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 	}
 
 	@Override
-	protected void aware(WebMessageConverter converter) {
-		if (converter instanceof ConversionServiceAware) {
-			((ConversionServiceAware) converter).setConversionService(getConversionServices());
+	public void accept(WebMessageConverter service) {
+		if (service instanceof EnvironmentAware) {
+			((EnvironmentAware) service).setEnvironment(environment);
 		}
 
-		if (converter instanceof DefaultValueFactoryAware) {
-			((DefaultValueFactoryAware) converter).setDefaultValueFactory(getDefaultValueFactory());
-		}
+		super.accept(service);
 
-		if (converter instanceof MessageConverterAware) {
-			((MessageConverterAware) converter).setMessageConverter(getMessageConverters());
+		if (service instanceof MessageConverterAware) {
+			((MessageConverterAware) service).setMessageConverter(getMessageConverters());
 		}
-		super.aware(converter);
 	}
 }

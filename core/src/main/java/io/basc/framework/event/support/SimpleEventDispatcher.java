@@ -1,15 +1,17 @@
 package io.basc.framework.event.support;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
+import io.basc.framework.core.OrderComparator;
+import io.basc.framework.core.OrderComparator.OrderSourceProvider;
 import io.basc.framework.event.Event;
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionFactory;
 
 /**
  * 这是一个同步的事件分发服务
@@ -19,49 +21,34 @@ import io.basc.framework.util.CollectionFactory;
  * @param <T>
  */
 public class SimpleEventDispatcher<T extends Event> implements EventDispatcher<T> {
-	private volatile Collection<EventRegistrationInternal> eventListeners;
-	private final boolean concurrent;
-	private final int initialCapacity;
-
-	public SimpleEventDispatcher(boolean concurrent) {
-		this(concurrent, 8);
-	}
-
-	public SimpleEventDispatcher(boolean concurrent, int initialCapacity) {
-		this.concurrent = concurrent;
-		this.initialCapacity = initialCapacity;
-	}
-
-	public Collection<EventRegistrationInternal> getEventListeners() {
-		if (eventListeners == null) {
-			synchronized (this) {
-				if (eventListeners == null) {
-					this.eventListeners = CollectionFactory.createSet(concurrent, initialCapacity);
-				}
-			}
-		}
-		return eventListeners;
-	}
-
-	public final boolean isConcurrent() {
-		return concurrent;
-	}
+	private static final int INITIAL_CAPACITY = Integer.getInteger("io.basc.framework.event.list.initial_capacity",
+			8);
+	private volatile List<EventRegistrationInternal> eventListeners;
 
 	public EventRegistration registerListener(EventListener<T> eventListener) {
 		Assert.requiredArgument(eventListener != null, "eventListener");
-
-		EventRegistration eventRegistration = new EventRegistrationInternal(eventListener);
-		if (getEventListeners().contains(eventRegistration)) {
-			throw new AlreadyExistsException(eventRegistration.toString());
+		EventRegistrationInternal eventRegistration = new EventRegistrationInternal(eventListener);
+		synchronized (this) {
+			if (eventListeners == null) {
+				eventListeners = new ArrayList<>(INITIAL_CAPACITY);
+			} else if (eventListeners.contains(eventRegistration)) {
+				throw new AlreadyExistsException(eventRegistration.toString());
+			}
+			eventListeners.add(eventRegistration);
+			OrderComparator.sort(eventListeners);
 		}
-
-		getEventListeners().add(new EventRegistrationInternal(eventListener));
 		return eventRegistration;
 	}
 
 	public void publishEvent(T event) {
 		Assert.requiredArgument(event != null, "event");
-		publishEvent(event, getEventListeners().iterator());
+		synchronized (this) {
+			if (eventListeners == null) {
+				return;
+			}
+
+			publishEvent(event, eventListeners.iterator());
+		}
 	}
 
 	/**
@@ -81,7 +68,7 @@ public class SimpleEventDispatcher<T extends Event> implements EventDispatcher<T
 		}
 	}
 
-	private class EventRegistrationInternal implements EventRegistration {
+	private class EventRegistrationInternal implements EventRegistration, OrderSourceProvider {
 		private final EventListener<T> eventListener;
 
 		public EventRegistrationInternal(EventListener<T> eventListener) {
@@ -89,10 +76,17 @@ public class SimpleEventDispatcher<T extends Event> implements EventDispatcher<T
 		}
 
 		public void unregister() {
-			getEventListeners().remove(this);
+			synchronized (SimpleEventDispatcher.this) {
+				eventListeners.remove(this);
+			}
 		}
 
 		public EventListener<T> getEventListener() {
+			return eventListener;
+		}
+
+		@Override
+		public Object getOrderSource(Object obj) {
 			return eventListener;
 		}
 	}

@@ -1,9 +1,9 @@
 package io.basc.framework.websocket.adapter.standard;
 
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.beans.ContextLoader;
-
 import javax.websocket.server.ServerEndpointConfig.Configurator;
+
+import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.factory.support.FactoryLoader;
 
 /**
  * 使用容器来管理websocket
@@ -14,9 +14,9 @@ public class StandardContainerConfigurator extends Configurator {
 
 	@Override
 	public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
-		BeanFactory beanFactory = ContextLoader.getCurrentBeanFactory();
+		BeanFactory beanFactory = FactoryLoader.getCurrentBeanFactory();
 		if (beanFactory == null) {
-			beanFactory = ContextLoader.getBeanFactory(endpointClass.getClassLoader());
+			beanFactory = FactoryLoader.getBeanFactory(endpointClass.getClassLoader());
 		}
 
 		if (beanFactory == null) {

@@ -5,11 +5,8 @@ import java.lang.reflect.Type;
 
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Accept;
 import io.basc.framework.util.Named;
-import io.basc.framework.value.StringValue;
-import io.basc.framework.value.Value;
 
 public interface ParameterDescriptor extends AnnotatedElement, Named, Accept<ParameterDescriptor> {
 	public static final ParameterDescriptor[] EMPTY_ARRAY = new ParameterDescriptor[0];
@@ -25,15 +22,6 @@ public interface ParameterDescriptor extends AnnotatedElement, Named, Accept<Par
 	 */
 	default boolean isNullable() {
 		return AnnotatedElementUtils.isNullable(this);
-	}
-
-	@Nullable
-	default Value getDefaultValue() {
-		DefaultValue defaultValue = AnnotatedElementUtils.getMergedAnnotation(this, DefaultValue.class);
-		if (defaultValue == null) {
-			return null;
-		}
-		return new StringValue(defaultValue.value());
 	}
 
 	/**

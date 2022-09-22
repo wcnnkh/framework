@@ -1,24 +1,28 @@
 package io.basc.framework.env;
 
+import java.util.Properties;
+
 import io.basc.framework.convert.lang.ConversionServices;
 import io.basc.framework.convert.resolve.ResourceResolvers;
 import io.basc.framework.event.Observable;
-import io.basc.framework.io.ConfigurableResourceLoader;
+import io.basc.framework.factory.ConfigurableBeanFactory;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.event.ObservableResource;
 import io.basc.framework.io.resolver.PropertiesResolvers;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
-import io.basc.framework.value.ConfigurablePropertyFactory;
-import io.basc.framework.value.PropertyFactory;
 
-import java.util.Properties;
+public interface ConfigurableEnvironment extends Environment, ConfigurableBeanFactory {
 
-public interface ConfigurableEnvironment extends Environment, ConfigurablePropertyFactory, ConfigurableResourceLoader {
+	@Override
+	ConfigurableEnvironmentProperties getProperties();
+
+	@Override
+	ConfigurableEnvironmentResourceLoader getResourceLoader();
 
 	default void setWorkPath(String path) {
-		put(WORK_PATH_PROPERTY, path);
+		getProperties().put(WORK_PATH_PROPERTY, path);
 	}
 
 	default void loadProperties(Resource resource) {
@@ -57,6 +61,4 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	ConversionServices getConversionService();
 
 	ResourceResolvers getResourceResolver();
-
-	void addFactory(PropertyFactory propertyFactory);
 }

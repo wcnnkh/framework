@@ -6,26 +6,26 @@ import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
-public class EurekaClientApplicationPostProcessor implements ApplicationPostProcessor{
+public class EurekaClientApplicationPostProcessor implements ApplicationPostProcessor {
 	private static final String AUTO_REGISTRATION = "io.basc.framework.eureka.client.auto.register";
 
 	@Override
-	public void postProcessApplication(ConfigurableApplication application) throws Throwable {
-		if(enableEurekaClient(application) && application.getBeanFactory().isInstance(EurekaAutoServiceRegistration.class)) {
-			//auto register
-			application.getBeanFactory().getInstance(EurekaAutoServiceRegistration.class);
+	public void postProcessApplication(ConfigurableApplication application) {
+		if (enableEurekaClient(application) && application.isInstance(EurekaAutoServiceRegistration.class)) {
+			// auto register
+			application.getInstance(EurekaAutoServiceRegistration.class);
 		}
 	}
 
-	private boolean enableEurekaClient(ConfigurableApplication application){
-		Boolean enable = application.getEnvironment().getBoolean(AUTO_REGISTRATION);
-		if(enable != null){
+	private boolean enableEurekaClient(ConfigurableApplication application) {
+		Boolean enable = application.getProperties().getBoolean(AUTO_REGISTRATION);
+		if (enable != null) {
 			return enable;
 		}
-		
-		for(Class<?> clazz : application.getSourceClasses()){
+
+		for (Class<?> clazz : application.getSourceClasses()) {
 			EnableEurekaClient enableEurekaClient = clazz.getAnnotation(EnableEurekaClient.class);
-			if(enableEurekaClient == null){
+			if (enableEurekaClient == null) {
 				continue;
 			}
 			return enableEurekaClient.value();

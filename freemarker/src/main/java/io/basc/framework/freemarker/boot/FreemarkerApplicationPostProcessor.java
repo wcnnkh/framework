@@ -10,7 +10,7 @@ import io.basc.framework.freemarker.FreemarkerUtils;
 public class FreemarkerApplicationPostProcessor implements ApplicationPostProcessor {
 
 	@Override
-	public void postProcessApplication(ConfigurableApplication application) throws Throwable {
+	public void postProcessApplication(ConfigurableApplication application) {
 		FreemarkerUtils.ensureLoggerLibrary();
 	}
 

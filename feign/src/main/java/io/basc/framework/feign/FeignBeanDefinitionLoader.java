@@ -1,21 +1,26 @@
 package io.basc.framework.feign;
 
-import io.basc.framework.beans.BeanDefinition;
-import io.basc.framework.beans.BeanDefinitionLoader;
-import io.basc.framework.beans.BeanDefinitionLoaderChain;
-import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.env.Environment;
+import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.factory.FactoryException;
+import io.basc.framework.factory.support.BeanDefinitionLoader;
+import io.basc.framework.factory.support.BeanDefinitionLoaderChain;
 import io.basc.framework.feign.annotation.FeignClient;
+import io.basc.framework.util.ClassUtils;
 
 @Provider
 public class FeignBeanDefinitionLoader implements BeanDefinitionLoader {
 
-	public BeanDefinition load(ConfigurableBeanFactory beanFactory, Class<?> sourceClass,
-			BeanDefinitionLoaderChain loaderChain) {
+	@Override
+	public BeanDefinition load(BeanFactory beanFactory, String name, BeanDefinitionLoaderChain chain)
+			throws FactoryException {
+		Class<?> sourceClass = ClassUtils.getClass(name, beanFactory.getClassLoader());
 		FeignClient feignClient = sourceClass.getAnnotation(FeignClient.class);
 		if (feignClient != null) {
-			return new FeignBeanDefinition(beanFactory, sourceClass, feignClient);
+			return new FeignBeanDefinition(beanFactory.getInstance(Environment.class), sourceClass, feignClient);
 		}
-		return loaderChain.load(beanFactory, sourceClass);
+		return chain.load(beanFactory, name);
 	}
 }

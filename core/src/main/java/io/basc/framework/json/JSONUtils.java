@@ -23,7 +23,7 @@ public final class JSONUtils {
 	public static final JSONSupport JSON_SUPPORT;
 
 	static {
-		JSONSupport jsonSupport = Sys.env.getServiceLoader(JSONSupport.class).first();
+		JSONSupport jsonSupport = Sys.getEnv().getServiceLoader(JSONSupport.class).first();
 		JSON_SUPPORT = jsonSupport == null ? GsonSupport.INSTANCE : jsonSupport;
 		logger.info("default json support [{}]", JSON_SUPPORT);
 	}

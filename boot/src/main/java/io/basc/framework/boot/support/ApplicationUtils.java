@@ -16,7 +16,7 @@ public final class ApplicationUtils {
 
 	@Nullable
 	public static String getApplicatoinName(Environment environment) {
-		return environment.getString(APPLICATION_NAME_PROPERTY);
+		return environment.getProperties().getString(APPLICATION_NAME_PROPERTY);
 	}
 
 	/**
@@ -39,7 +39,7 @@ public final class ApplicationUtils {
 	 * @return
 	 */
 	public static int getServerPort(Environment environment, int defaultPort) {
-		return environment.getValue(SERVER_PORT_PROPERTY, int.class, defaultPort);
+		return environment.getProperties().getValue(SERVER_PORT_PROPERTY, int.class, defaultPort);
 	}
 
 	public static void setServerPort(ConfigurablePropertyFactory environment, int port) {

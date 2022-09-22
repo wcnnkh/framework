@@ -17,7 +17,7 @@ public class MessageConverters extends ConfigurableServices<MessageConverter> im
 	private static Logger logger = LoggerFactory.getLogger(MessageConverters.class);
 
 	public MessageConverters() {
-		super(MessageConverter.class, null, () -> new TreeSet<MessageConverter>(new ComparatorMessageConverter()));
+		super(MessageConverter.class, () -> new TreeSet<MessageConverter>(new ComparatorMessageConverter()));
 	}
 
 	private static class ComparatorMessageConverter implements Comparator<MessageConverter> {

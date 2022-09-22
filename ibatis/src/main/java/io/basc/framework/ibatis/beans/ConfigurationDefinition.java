@@ -1,36 +1,36 @@
 package io.basc.framework.ibatis.beans;
 
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.support.DefaultBeanDefinition;
+import org.apache.ibatis.session.Configuration;
+
+import io.basc.framework.context.Context;
+import io.basc.framework.context.support.ContextBeanDefinition;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.io.Resource;
 import io.basc.framework.util.StringUtils;
 
-import org.apache.ibatis.session.Configuration;
+public class ConfigurationDefinition extends ContextBeanDefinition {
 
-public class ConfigurationDefinition extends DefaultBeanDefinition {
-
-	public ConfigurationDefinition(ConfigurableBeanFactory beanFactory) {
-		super(beanFactory, Configuration.class);
+	public ConfigurationDefinition(Context context) {
+		super(context, Configuration.class);
 	}
 
 	@Override
 	public boolean isInstance() {
-		return beanFactory.isInstance(IbatisProperties.class);
+		return getBeanFactory().isInstance(IbatisProperties.class);
 	}
 
 	@Override
 	public Object create() throws InstanceException {
-		IbatisProperties ibatisProperties = beanFactory.getInstance(IbatisProperties.class);
+		IbatisProperties ibatisProperties = getBeanFactory().getInstance(IbatisProperties.class);
 		Configuration configuration;
 		if (StringUtils.isNotEmpty(ibatisProperties.getConfigLocation())) {
-			Resource resource = beanFactory.getEnvironment().getResource(ibatisProperties.getConfigLocation());
+			Resource resource = getEnvironment().getResourceLoader().getResource(ibatisProperties.getConfigLocation());
 			configuration = ConfigurationUtils.build(resource);
 		} else {
 			configuration = new Configuration();
 		}
-		ConfigurationUtils.configurationEnvironment(configuration, beanFactory);
-		ConfigurationUtils.configuration(configuration, beanFactory);
+		ConfigurationUtils.configurationEnvironment(configuration, getBeanFactory());
+		ConfigurationUtils.configuration(configuration, getContext());
 		return configuration;
 	}
 }

@@ -1,13 +1,5 @@
 package io.basc.framework.netflix.eureka.server;
 
-import io.basc.framework.boot.ApplicationAware;
-import io.basc.framework.boot.ApplicationEvent;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.netflix.eureka.server.event.EurekaInstanceCanceledEvent;
-import io.basc.framework.netflix.eureka.server.event.EurekaInstanceRegisteredEvent;
-import io.basc.framework.netflix.eureka.server.event.EurekaInstanceRenewedEvent;
-
 import java.util.List;
 
 import com.netflix.appinfo.ApplicationInfoManager;
@@ -20,6 +12,14 @@ import com.netflix.eureka.lease.Lease;
 import com.netflix.eureka.registry.PeerAwareInstanceRegistryImpl;
 import com.netflix.eureka.resources.ServerCodecs;
 
+import io.basc.framework.boot.ApplicationAware;
+import io.basc.framework.boot.ApplicationEvent;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.netflix.eureka.server.event.EurekaInstanceCanceledEvent;
+import io.basc.framework.netflix.eureka.server.event.EurekaInstanceRegisteredEvent;
+import io.basc.framework.netflix.eureka.server.event.EurekaInstanceRenewedEvent;
+
 public class InstanceRegistry extends PeerAwareInstanceRegistryImpl implements ApplicationAware {
 	private static Logger logger = LoggerFactory.getLogger(InstanceRegistry.class);
 	private io.basc.framework.boot.Application application;
@@ -31,15 +31,15 @@ public class InstanceRegistry extends PeerAwareInstanceRegistryImpl implements A
 		this.expectedNumberOfClientsSendingRenews = expectedNumberOfClientsSendingRenews;
 		this.defaultOpenForTrafficCount = defaultOpenForTrafficCount;
 	}
-	
+
 	/**
 	 * If
 	 * {@link PeerAwareInstanceRegistryImpl#openForTraffic(ApplicationInfoManager, int)}
 	 * is called with a zero argument, it means that leases are not automatically
-	 * cancelled if the instance hasn't sent any renewals recently. This happens for a
-	 * standalone server. It seems like a bad default, so we set it to the smallest
-	 * non-zero value we can, so that any instances that subsequently register can bump up
-	 * the threshold.
+	 * cancelled if the instance hasn't sent any renewals recently. This happens for
+	 * a standalone server. It seems like a bad default, so we set it to the
+	 * smallest non-zero value we can, so that any instances that subsequently
+	 * register can bump up the threshold.
 	 */
 	@Override
 	public void openForTraffic(ApplicationInfoManager applicationInfoManager, int count) {
@@ -108,10 +108,10 @@ public class InstanceRegistry extends PeerAwareInstanceRegistryImpl implements A
 	}
 
 	private void publishEvent(ApplicationEvent applicationEvent) {
-		if(application == null){
-			return ;
+		if (application == null) {
+			return;
 		}
-		this.application.publishEvent(applicationEvent);
+		this.application.getEventDispatcher().publishEvent(applicationEvent);
 	}
 
 	private int resolveInstanceLeaseDuration(final InstanceInfo info) {

@@ -89,7 +89,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public Converter<? super Object, ? super Object, ? extends RuntimeException> getConverter() {
-		return converter == null ? Sys.env.getConversionService() : converter;
+		return converter == null ? Sys.getEnv().getConversionService() : converter;
 	}
 
 	public String getAsString() {

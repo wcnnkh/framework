@@ -1,10 +1,15 @@
 package io.basc.framework.tcc.test;
 
 import static org.junit.Assert.assertTrue;
-import io.basc.framework.beans.annotation.Service;
-import io.basc.framework.beans.support.DefaultBeanFactory;
+
+import java.io.File;
+
+import org.junit.Test;
+
 import io.basc.framework.consistency.CompensatePolicy;
 import io.basc.framework.consistency.policy.FileCompensatePolicy;
+import io.basc.framework.context.annotation.Service;
+import io.basc.framework.factory.support.DefaultBeanFactory;
 import io.basc.framework.io.FileUtils;
 import io.basc.framework.tcc.annotation.Tcc;
 import io.basc.framework.tcc.annotation.TccStage;
@@ -14,10 +19,6 @@ import io.basc.framework.transaction.TransactionDefinition;
 import io.basc.framework.transaction.TransactionUtils;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.XUtils;
-
-import java.io.File;
-
-import org.junit.Test;
 
 public class TccTest {
 	private static final DefaultBeanFactory beanFactory = new DefaultBeanFactory();

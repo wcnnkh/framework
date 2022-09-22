@@ -69,7 +69,7 @@ public class ObjectMapperContext extends SimpleAttributes<String, Object>
 			return this.parent.getConversionService();
 		}
 
-		return Sys.env.getConversionService();
+		return Sys.getEnv().getConversionService();
 	}
 
 	public Predicate<Field> getFilter() {

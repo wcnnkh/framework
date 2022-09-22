@@ -12,9 +12,9 @@ import io.basc.framework.boot.support.MainApplication;
 
 public class BootTest {
 	@Test
-	public void test() throws InterruptedException, ExecutionException{
+	public void test() throws InterruptedException, ExecutionException {
 		Application application = MainApplication.run(BootTest.class).get();
-		System.out.println(application.getEnvironment().getString(ApplicationUtils.SERVER_PORT_PROPERTY));
-		assertTrue("8888".equals(application.getEnvironment().getString(ApplicationUtils.SERVER_PORT_PROPERTY)));
+		System.out.println(application.getProperties().getString(ApplicationUtils.SERVER_PORT_PROPERTY));
+		assertTrue("8888".equals(application.getProperties().getString(ApplicationUtils.SERVER_PORT_PROPERTY)));
 	}
 }

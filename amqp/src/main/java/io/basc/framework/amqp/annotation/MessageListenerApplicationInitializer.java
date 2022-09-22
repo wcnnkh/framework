@@ -15,13 +15,13 @@ import io.basc.framework.factory.supplier.NameInstanceSupplier;
 public final class MessageListenerApplicationInitializer implements ApplicationPostProcessor {
 
 	@SuppressWarnings("unchecked")
-	public void postProcessApplication(ConfigurableApplication application) throws Throwable {
+	public void postProcessApplication(ConfigurableApplication application) {
 		for (Class<?> clazz : application.getContextClasses()) {
 			if (io.basc.framework.amqp.MessageListener.class.isAssignableFrom(clazz)) {
 				MessageListener messageListener = clazz.getAnnotation(MessageListener.class);
 				if (messageListener != null) {
-					Exchange exchange = application.getBeanFactory().getInstance(messageListener.exchange());
-					io.basc.framework.amqp.MessageListener listener = application.getBeanFactory()
+					Exchange exchange = application.getInstance(messageListener.exchange());
+					io.basc.framework.amqp.MessageListener listener = application
 							.getInstance((Class<io.basc.framework.amqp.MessageListener>) clazz);
 					exchange.bind(messageListener.routingKey(), createQueueDeclare(messageListener), listener);
 				}
@@ -30,10 +30,10 @@ public final class MessageListenerApplicationInitializer implements ApplicationP
 			ReflectionUtils.getDeclaredMethods(clazz).withAll().streamAll()
 					.filter((e) -> e.isAnnotationPresent(MessageListener.class)).forEach((method) -> {
 						MessageListener messageListener = method.getAnnotation(MessageListener.class);
-						Exchange exchange = application.getBeanFactory().getInstance(messageListener.exchange());
-						Supplier<Object> supplier = new NameInstanceSupplier<Object>(application.getBeanFactory(),
+						Exchange exchange = application.getInstance(messageListener.exchange());
+						Supplier<Object> supplier = new NameInstanceSupplier<Object>(application,
 								clazz.getName());
-						MethodInvoker invoker = application.getBeanFactory().getAop().getProxyMethod(clazz, supplier,
+						MethodInvoker invoker = application.getAop().getProxyMethod(clazz, supplier,
 								method);
 						exchange.bind(messageListener.routingKey(), createQueueDeclare(messageListener), invoker);
 					});

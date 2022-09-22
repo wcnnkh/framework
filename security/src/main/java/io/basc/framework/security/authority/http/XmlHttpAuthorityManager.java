@@ -9,7 +9,6 @@ import org.w3c.dom.NodeList;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.Environment;
-import io.basc.framework.env.Sys;
 import io.basc.framework.io.Resource;
 import io.basc.framework.json.JSONUtils;
 import io.basc.framework.logger.Logger;
@@ -40,7 +39,7 @@ public class XmlHttpAuthorityManager extends DefaultHttpAuthorityManager<HttpAut
 		DomUtils.getTemplate().read(resource, (document) -> {
 			Element element = document.getDocumentElement();
 			String prefix = DomUtils.getNodeAttributeValue(element, "prefix");
-			NodeList nodeList = XmlUtils.getTemplate().getChildNodes(element, environment);
+			NodeList nodeList = XmlUtils.getTemplate().getChildNodes(element, environment.getResourceLoader());
 			if (nodeList == null) {
 				return;
 			}
@@ -51,7 +50,7 @@ public class XmlHttpAuthorityManager extends DefaultHttpAuthorityManager<HttpAut
 					continue;
 				}
 
-				Map<String, String> map = (Map<String, String>) Sys.env.getConversionService().convert(node,
+				Map<String, String> map = (Map<String, String>) environment.getConversionService().convert(node,
 						TypeDescriptor.forObject(node), TypeDescriptor.map(Map.class, String.class, String.class));
 				if (map.isEmpty()) {
 					continue;
@@ -88,7 +87,7 @@ public class XmlHttpAuthorityManager extends DefaultHttpAuthorityManager<HttpAut
 
 		String include = map.remove("include");
 		if (!StringUtils.isEmpty(include)) {
-			addByXml(environment.getResource(include), parentId);
+			addByXml(environment.getResourceLoader().getResource(include), parentId);
 		}
 
 		String path = map.remove("path");

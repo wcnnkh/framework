@@ -19,8 +19,8 @@ public class ConvertibleObservables<S, T> extends AbstractObservable<T> implemen
 	public ConvertibleObservables(Function<S, ? extends T> converter, Function<List<S>, ? extends S> combiner) {
 		this.converter = converter;
 		this.combiner = combiner;
-		this.observables = CollectionFactory.createSet(isConcurrent());
-		this.registrations = CollectionFactory.createArrayList(isConcurrent());
+		this.observables = CollectionFactory.createSet(true);
+		this.registrations = CollectionFactory.createArrayList(true);
 	}
 
 	public boolean combine(Observable<S> observable) {

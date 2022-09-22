@@ -4,29 +4,30 @@ import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
 
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.boot.Application;
+import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.factory.BeansException;
+import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.netflix.eureka.CloudEurekaClient;
 
-public class EurekaClientDefinition extends DefaultBeanDefinition {
+public class EurekaClientDefinition extends FactoryBeanDefinition {
 
-	public EurekaClientDefinition(ConfigurableBeanFactory beanFactory) {
+	public EurekaClientDefinition(BeanFactory beanFactory) {
 		super(beanFactory, EurekaClient.class);
 	}
 
 	@Override
 	public boolean isInstance() {
-		return beanFactory.isInstance(ApplicationInfoManager.class)
-				&& beanFactory.isInstance(EurekaClientConfig.class) && beanFactory.isInstance(Application.class);
+		return getBeanFactory().isInstance(ApplicationInfoManager.class)
+				&& getBeanFactory().isInstance(EurekaClientConfig.class)
+				&& getBeanFactory().isInstance(Application.class);
 	}
 
 	@Override
 	public Object create() throws BeansException {
-		ApplicationInfoManager applicationInfoManager = beanFactory.getInstance(ApplicationInfoManager.class);
-		EurekaClientConfig eurekaClientConfig = beanFactory.getInstance(EurekaClientConfig.class);
-		Application application = beanFactory.getInstance(Application.class);
-		return new CloudEurekaClient(applicationInfoManager, eurekaClientConfig, application);
+		ApplicationInfoManager applicationInfoManager = getBeanFactory().getInstance(ApplicationInfoManager.class);
+		EurekaClientConfig eurekaClientConfig = getBeanFactory().getInstance(EurekaClientConfig.class);
+		Application application = getBeanFactory().getInstance(Application.class);
+		return new CloudEurekaClient(applicationInfoManager, eurekaClientConfig, application.getEventDispatcher());
 	}
 }

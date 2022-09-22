@@ -1,25 +1,25 @@
 package io.basc.framework.jedis.beans;
 
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.support.DefaultBeanDefinition;
+import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.InstanceException;
+import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.jedis.JedisClient;
 import redis.clients.jedis.JedisPool;
 
-public class JedisConnectionFactoryDefinition extends DefaultBeanDefinition {
+public class JedisConnectionFactoryDefinition extends FactoryBeanDefinition {
 
-	public JedisConnectionFactoryDefinition(ConfigurableBeanFactory beanFactory) {
+	public JedisConnectionFactoryDefinition(BeanFactory beanFactory) {
 		super(beanFactory, JedisClient.class);
 	}
 
 	@Override
 	public boolean isInstance() {
-		return beanFactory.isInstance(JedisPool.class);
+		return getBeanFactory().isInstance(JedisPool.class);
 	}
 
 	@Override
 	public Object create() throws InstanceException {
-		JedisPool jedisPool = beanFactory.getInstance(JedisPool.class);
+		JedisPool jedisPool = getBeanFactory().getInstance(JedisPool.class);
 		return new JedisClient(jedisPool);
 	}
 }

@@ -5,10 +5,10 @@ import java.util.concurrent.ExecutionException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-import io.basc.framework.beans.annotation.Autowired;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.support.ApplicationUtils;
 import io.basc.framework.boot.support.MainApplication;
+import io.basc.framework.context.ioc.annotation.Autowired;
 import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.logger.Logger;
@@ -26,9 +26,9 @@ public class EurekaClientStart {
 
 	public static void main(String[] args) throws InterruptedException, ExecutionException {
 		Application application = MainApplication.run(EurekaClientStart.class, args).get();
-		EurekaDiscoveryClient client = application.getBeanFactory().getInstance(EurekaDiscoveryClient.class);
-		HttpClient httpClient = application.getBeanFactory().getInstance(HttpClient.class);
-		EurekaTestClient eurekaTestClient = application.getBeanFactory().getInstance(EurekaTestClient.class);
+		EurekaDiscoveryClient client = application.getInstance(EurekaDiscoveryClient.class);
+		HttpClient httpClient = application.getInstance(HttpClient.class);
+		EurekaTestClient eurekaTestClient = application.getInstance(EurekaTestClient.class);
 		while (true) {
 			try {
 				logger.info(client.getServices().toString());
@@ -37,7 +37,7 @@ public class EurekaClientStart {
 					continue;
 				}
 				HttpResponseEntity<String> response = httpClient.get(String.class,
-						"http://" + ApplicationUtils.getApplicatoinName(application.getEnvironment()) + "/port");
+						"http://" + ApplicationUtils.getApplicatoinName(application) + "/port");
 				logger.info("测试请求1返回：" + response);
 
 				String port = eurekaTestClient.message(XUtils.getUUID());
@@ -51,7 +51,7 @@ public class EurekaClientStart {
 	@Path("/port")
 	@GET
 	public Object test() {
-		return ApplicationUtils.getServerPort(application.getEnvironment());
+		return ApplicationUtils.getServerPort(application);
 	}
 
 	@Path("message")

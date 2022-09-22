@@ -14,6 +14,7 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.value.PropertyFactory;
 
 public class EnvConfiguration extends Configuration implements Configurable {
 	public static final String CONFIG_PROPERTY_PREFIX = "io.basc.freemarker.";
@@ -21,15 +22,15 @@ public class EnvConfiguration extends Configuration implements Configurable {
 	private final Environment env;
 
 	public EnvConfiguration() {
-		this(Sys.env);
+		this(Sys.getEnv());
 	}
 
 	public EnvConfiguration(Environment env) {
-		super(getDefaultVersion(env));
+		super(getDefaultVersion(env.getProperties()));
 		this.env = env;
 		setDefaultEncoding(env.getCharsetName());
-		setTemplateLoader(new DefaultTemplateLoader(env));
-		setObjectWrapper(new DefaultObjectWrapper(getDefaultVersion(env)));
+		setTemplateLoader(new DefaultTemplateLoader(env.getResourceLoader()));
+		setObjectWrapper(new DefaultObjectWrapper(getDefaultVersion(env.getProperties())));
 	}
 
 	public Environment getEnv() {
@@ -46,7 +47,7 @@ public class EnvConfiguration extends Configuration implements Configurable {
 		}
 	}
 
-	public static Version getDefaultVersion(Environment environment) {
+	public static Version getDefaultVersion(PropertyFactory environment) {
 		String versionString = environment.getString(CONFIG_PROPERTY_PREFIX + "version");
 		if (StringUtils.hasText(versionString)) {
 			try {

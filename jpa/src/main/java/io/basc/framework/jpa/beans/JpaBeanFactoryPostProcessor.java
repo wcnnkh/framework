@@ -1,24 +1,24 @@
 package io.basc.framework.jpa.beans;
 
-import io.basc.framework.beans.BeanDefinition;
-import io.basc.framework.beans.BeanFactoryPostProcessor;
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
+import io.basc.framework.context.ConfigurableContext;
+import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.jpa.beans.annotation.Repository;
 
 @Provider
-public class JpaBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
-
+public class JpaBeanFactoryPostProcessor implements ContextPostProcessor {
+	
 	@Override
-	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
-		for (Class<?> clazz : beanFactory.getContextClasses()) {
+	public void postProcessContext(ConfigurableContext context) {
+		for (Class<?> clazz : context.getContextClasses()) {
 			if (clazz.isAnnotationPresent(Repository.class)) {
-				BeanDefinition definition = new RepositoryDefinition(beanFactory, clazz);
-				if (!beanFactory.containsDefinition(definition.getId())) {
-					beanFactory.registerDefinition(definition);
+				BeanDefinition definition = new RepositoryDefinition(context, clazz);
+				if (!context.containsDefinition(definition.getId())) {
+					context.registerDefinition(definition);
 				}
 			}
 		}
 	}
+
 }

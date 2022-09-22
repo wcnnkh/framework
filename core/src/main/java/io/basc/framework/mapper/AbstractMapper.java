@@ -7,7 +7,7 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.value.Value;
 
 public abstract class AbstractMapper<S, T, E extends Throwable> implements Mapper<S, T, E> {
-	private ConversionService conversionService = Sys.env.getConversionService();
+	private ConversionService conversionService = Sys.getEnv().getConversionService();
 	private final TypeDescriptor typeDescriptor;
 
 	public AbstractMapper(TypeDescriptor typeDescriptor) {

@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.function.Supplier;
 
-import io.basc.framework.beans.BeanDefinition;
-import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.core.reflect.MethodInvoker;
+import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.supplier.NameInstanceSupplier;
 import io.basc.framework.factory.supplier.SimpleInstanceSupplier;
 import io.basc.framework.factory.support.InstanceIterable;

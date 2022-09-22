@@ -2,26 +2,33 @@ package io.basc.framework.jpa.beans;
 
 import javax.persistence.EntityManagerFactory;
 
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.support.DefaultBeanDefinition;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptors;
+import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.factory.BeanResolver;
+import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.jpa.JpaMethodInterceptor;
 
-public class RepositoryDefinition extends DefaultBeanDefinition {
+public class RepositoryDefinition extends FactoryBeanDefinition {
 
-	public RepositoryDefinition(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
+	public RepositoryDefinition(BeanFactory beanFactory, Class<?> sourceClass) {
 		super(beanFactory, sourceClass);
 	}
 
 	@Override
 	public boolean isInstance() {
-		return beanFactory.getAop().canProxy(getTargetClass()) && beanFactory.isInstance(EntityManagerFactory.class);
+		return getBeanFactory().getAop().canProxy(getTypeDescriptor().getType())
+				&& getBeanFactory().isInstance(EntityManagerFactory.class);
 	}
 
 	@Override
-	protected Object createInternal(Class<?> targetClass, ParameterDescriptors parameterDescriptors, Object[] params) {
-		EntityManagerFactory factory = beanFactory.getInstance(EntityManagerFactory.class);
-		return beanFactory.getAop().getProxy(targetClass, null, new JpaMethodInterceptor(factory, targetClass))
+	protected Object createInternal(BeanResolver beanResolver, TypeDescriptor typeDescriptor,
+			ParameterDescriptors parameterDescriptors, Object[] params) {
+		EntityManagerFactory factory = getBeanFactory().getInstance(EntityManagerFactory.class);
+		return getBeanFactory().getAop()
+				.getProxy(getTypeDescriptor().getType(), null,
+						new JpaMethodInterceptor(factory, typeDescriptor.getType()))
 				.create(parameterDescriptors.getTypes(), params);
 	}
+
 }

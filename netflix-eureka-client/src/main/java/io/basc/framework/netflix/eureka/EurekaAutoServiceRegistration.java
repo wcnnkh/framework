@@ -3,8 +3,8 @@ package io.basc.framework.netflix.eureka;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.basc.framework.context.Destroy;
-import io.basc.framework.context.Init;
+import io.basc.framework.factory.Destroy;
+import io.basc.framework.factory.Init;
 
 public class EurekaAutoServiceRegistration implements Init, Destroy{
 

@@ -306,12 +306,6 @@
 
 			<dependency>
 				<groupId>io.basc.framework</groupId>
-				<artifactId>beans</artifactId>
-				<version>1.8.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>io.basc.framework</groupId>
 				<artifactId>tcc</artifactId>
 				<version>1.8.0</version>
 			</dependency>
@@ -953,7 +947,6 @@
 		<module>elasticsearch</module>
 		<module>rmi</module>
 		<module>solr</module>
-		<module>beans</module>
 		<module>transaction</module>
 		<module>boot</module>
 		<module>sql</module>

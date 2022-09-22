@@ -2,7 +2,7 @@ package io.basc.framework.security.ip;
 
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.parameter.DefaultValue;
+import io.basc.framework.factory.annotation.DefaultValue;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.util.ArrayUtils;

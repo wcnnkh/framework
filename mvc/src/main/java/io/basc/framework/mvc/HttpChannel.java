@@ -3,8 +3,8 @@ package io.basc.framework.mvc;
 import java.io.IOException;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterFactory;
-import io.basc.framework.factory.NoArgsInstanceFactory;
+import io.basc.framework.factory.InstanceFactory;
+import io.basc.framework.factory.ParameterFactory;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.mvc.security.UserSessionManager;
@@ -17,7 +17,7 @@ import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessageConverters;
 import io.basc.framework.web.message.WebMessagelConverterException;
 
-public interface HttpChannel extends ParameterFactory, ValueFactory<String>, NoArgsInstanceFactory {
+public interface HttpChannel extends ParameterFactory, ValueFactory<String>, InstanceFactory {
 	long getCreateTime();
 
 	ServerHttpRequest getRequest();
@@ -42,7 +42,7 @@ public interface HttpChannel extends ParameterFactory, ValueFactory<String>, NoA
 	 * 解析这个请求的user token
 	 * 
 	 * @see UserSessionManager#read(HttpChannel, Class)
-	 * @param <T>
+	 * @param      <T>
 	 * @param type
 	 * @return
 	 */
@@ -53,7 +53,7 @@ public interface HttpChannel extends ParameterFactory, ValueFactory<String>, NoA
 	 * 获取这个channel对应的session
 	 * 
 	 * @see UserSessionManager#getUserSession(HttpChannel, Class)
-	 * @param <T>
+	 * @param      <T>
 	 * @param type
 	 * @return
 	 */
@@ -64,7 +64,7 @@ public interface HttpChannel extends ParameterFactory, ValueFactory<String>, NoA
 	 * 创建一个session
 	 * 
 	 * @see UserSessionManager#createUserSession(HttpChannel, Object)
-	 * @param <T>
+	 * @param     <T>
 	 * @param uid
 	 * @return
 	 */

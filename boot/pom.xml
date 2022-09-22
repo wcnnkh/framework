@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
@@ -10,10 +11,10 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>beans</artifactId>
+			<artifactId>context</artifactId>
 		</dependency>
-		
-		<!-- 额外支持的  -->
+
+		<!-- 额外支持的 -->
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>web</artifactId>
@@ -24,19 +25,19 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- 测试 -->
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>testing</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>yaml</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>log4j2</artifactId>

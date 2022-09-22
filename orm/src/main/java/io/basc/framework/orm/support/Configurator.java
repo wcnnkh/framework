@@ -7,23 +7,24 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.env.Environment;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
+import io.basc.framework.value.PropertyFactory;
 
 public class Configurator extends DefaultObjectRelationalMapper {
 	protected final Object source;
 	private final TypeDescriptor sourceType;
 
-	public Configurator(@Nullable Object source) {
+	public Configurator(Object source) {
 		this(source, null);
 	}
 
 	public Configurator(Environment environment) {
-		this(environment, TypeDescriptor.valueOf(Environment.class));
-		if (environment != null) {
-			setPlaceholderFormat(environment);
-		}
+		this(environment.getProperties(), TypeDescriptor.valueOf(PropertyFactory.class));
+		setPlaceholderFormat(environment);
 	}
 
 	public Configurator(Object source, @Nullable TypeDescriptor sourceType) {
+		Assert.requiredArgument(source != null, "source");
 		this.source = source;
 		this.sourceType = sourceType == null ? TypeDescriptor.forObject(source) : sourceType;
 	}

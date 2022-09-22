@@ -9,7 +9,7 @@ public class DefaultHttpClient extends AbstractHttpClient {
 	/**
 	 * 默认的requestFactory
 	 */
-	private static final ClientHttpRequestFactory REQUEST_FACTORY = Sys.env.getServiceLoader(
+	private static final ClientHttpRequestFactory REQUEST_FACTORY = Sys.getEnv().getServiceLoader(
 			ClientHttpRequestFactory.class, "io.basc.framework.http.client.SimpleClientHttpRequestFactory").first();
 
 	private final MessageConverters messageConverters;

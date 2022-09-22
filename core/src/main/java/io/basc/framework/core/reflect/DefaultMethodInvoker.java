@@ -6,7 +6,7 @@ import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
-import io.basc.framework.factory.NoArgsInstanceFactory;
+import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.factory.supplier.NameInstanceSupplier;
 
 public class DefaultMethodInvoker implements MethodInvoker, Serializable, Cloneable, Supplier<Object> {
@@ -20,7 +20,7 @@ public class DefaultMethodInvoker implements MethodInvoker, Serializable, Clonea
 		this(instance, sourceClass, method, false);
 	}
 
-	public DefaultMethodInvoker(NoArgsInstanceFactory instanceFactory, String instanceName, Class<?> sourceClass,
+	public DefaultMethodInvoker(InstanceFactory instanceFactory, String instanceName, Class<?> sourceClass,
 			Method method) {
 		this(sourceClass, Modifier.isStatic(method.getModifiers()) ? null
 				: new NameInstanceSupplier<Object>(instanceFactory, instanceName), () -> method);

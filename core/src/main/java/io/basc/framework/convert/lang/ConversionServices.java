@@ -16,14 +16,15 @@ public class ConversionServices extends ConfigurableServices<ConversionService>
 			ConversionServices.class.getName());
 
 	public ConversionServices() {
-		super(ConversionService.class, null, () -> new TreeSet<>(ConversionComparator.INSTANCE));
+		super(ConversionService.class, () -> new TreeSet<>(ConversionComparator.INSTANCE));
 	}
-
-	protected void aware(ConversionService conversionService) {
-		if (conversionService instanceof ConversionServiceAware) {
-			((ConversionServiceAware) conversionService).setConversionService(this);
+	
+	@Override
+	public void accept(ConversionService service) {
+		if (service instanceof ConversionServiceAware) {
+			((ConversionServiceAware) service).setConversionService(this);
 		}
-		super.aware(conversionService);
+		super.accept(service);
 	}
 
 	public final boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {

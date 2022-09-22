@@ -5,16 +5,15 @@ import java.util.function.Supplier;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.beans.BeanFactoryPostProcessor;
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.xml.XmlBeanFactory;
-import io.basc.framework.beans.xml.XmlBeanUtils;
+import io.basc.framework.context.ConfigurableContext;
+import io.basc.framework.context.Context;
+import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.xml.XmlBeanUtils;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.http.HttpUtils;
 import io.basc.framework.http.client.HttpClient;
+import io.basc.framework.io.Resource;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.rpc.CallableFactory;
@@ -25,54 +24,57 @@ import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
 
 @Provider
-public class HttpRemoteBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+public class HttpRemoteBeanFactoryPostProcessor implements ContextPostProcessor {
 	private static final String TAG_NAME = "http:reference";
 
-	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
-		if (beanFactory instanceof XmlBeanFactory) {
-			((XmlBeanFactory) beanFactory).readConfigurationFile((rootNodeList) -> {
-				for (int i = 0; i < rootNodeList.getLength(); i++) {
-					Node node = rootNodeList.item(i);
-					if (node == null) {
-						continue;
-					}
+	private void resolve(ConfigurableContext context, NodeList rootNodeList) {
+		for (int i = 0; i < rootNodeList.getLength(); i++) {
+			Node node = rootNodeList.item(i);
+			if (node == null) {
+				continue;
+			}
 
-					if (!TAG_NAME.equals(node.getNodeName())) {
-						continue;
-					}
+			if (!TAG_NAME.equals(node.getNodeName())) {
+				continue;
+			}
 
-					String packageName = XmlBeanUtils.getPackageName(beanFactory.getEnvironment(), node);
-					CallableFactorySupplier supplier = new CallableFactorySupplier();
-					supplier.config(node, beanFactory);
-					if (!StringUtils.isEmpty(packageName)) {
-						for (Class<?> clz : beanFactory.getClassesLoaderFactory().getClassesLoader(packageName,
-								(e, m) -> e.getClassMetadata().isInterface())) {
-							RemoteCallableBeanDefinition definition = new RemoteCallableBeanDefinition(beanFactory,
-									supplier, clz);
-							beanFactory.registerDefinition(definition);
-						}
-					}
-
-					NodeList nodeList = node.getChildNodes();
-					for (int a = 0; a < nodeList.getLength(); a++) {
-						Node n = nodeList.item(a);
-						if (n == null) {
-							continue;
-						}
-
-						String className = DomUtils.getNodeAttributeValue(beanFactory.getEnvironment(), n, "interface");
-						if (StringUtils.isEmpty(className)) {
-							continue;
-						}
-
-						Class<?> clz = ClassUtils.getClass(className, beanFactory.getClassLoader());
-						supplier.config(n, beanFactory);
-						RemoteCallableBeanDefinition definition = new RemoteCallableBeanDefinition(beanFactory,
-								supplier, clz);
-						beanFactory.registerDefinition(definition);
-					}
+			String packageName = XmlBeanUtils.getPackageName(context, node);
+			CallableFactorySupplier supplier = new CallableFactorySupplier();
+			supplier.config(node, context);
+			if (!StringUtils.isEmpty(packageName)) {
+				for (Class<?> clz : context.getClassesLoaderFactory().getClassesLoader(packageName,
+						(e, m) -> e.getClassMetadata().isInterface())) {
+					RemoteCallableBeanDefinition definition = new RemoteCallableBeanDefinition(context, supplier, clz);
+					context.registerDefinition(definition);
 				}
-			});
+			}
+
+			NodeList nodeList = node.getChildNodes();
+			for (int a = 0; a < nodeList.getLength(); a++) {
+				Node n = nodeList.item(a);
+				if (n == null) {
+					continue;
+				}
+
+				String className = DomUtils.getNodeAttributeValue(context, n, "interface");
+				if (StringUtils.isEmpty(className)) {
+					continue;
+				}
+
+				Class<?> clz = ClassUtils.getClass(className, context.getClassLoader());
+				supplier.config(n, context);
+				RemoteCallableBeanDefinition definition = new RemoteCallableBeanDefinition(context, supplier, clz);
+				context.registerDefinition(definition);
+			}
+		}
+	}
+
+	@Override
+	public void postProcessContext(ConfigurableContext context) throws Throwable {
+		for (Resource resource : context.getConfigurationResources()) {
+			if (resource.exists() && resource.getName().endsWith(".xml")) {
+				XmlBeanUtils.readBeans(context.getResourceLoader(), resource, (nodeList) -> resolve(context, nodeList));
+			}
 		}
 	}
 
@@ -81,28 +83,27 @@ public class HttpRemoteBeanFactoryPostProcessor implements BeanFactoryPostProces
 		private RemoteMessageCodec codec;
 		private String url;
 
-		public void config(Node node, BeanFactory beanFactory) {
-			String address = XmlBeanUtils.getAddress(beanFactory.getEnvironment(), node);
+		public void config(Node node, Context context) {
+			String address = XmlBeanUtils.getAddress(context, node);
 			if (StringUtils.isNotEmpty(address)) {
 				this.url = address;
 			}
 
-			String serializer = DomUtils.getNodeAttributeValue(beanFactory.getEnvironment(), node, "serializer");
-			String secretKey = DomUtils.getNodeAttributeValue(beanFactory.getEnvironment(), node, "sign");
+			String serializer = DomUtils.getNodeAttributeValue(context, node, "serializer");
+			String secretKey = DomUtils.getNodeAttributeValue(context, node, "sign");
 			if (StringUtils.isNotEmpty(serializer) || StringUtils.isNotEmpty(secretKey)) {
-				Serializer ser = StringUtils.isEmpty(serializer) ? null
-						: (Serializer) beanFactory.getInstance(serializer);
+				Serializer ser = StringUtils.isEmpty(serializer) ? null : (Serializer) context.getInstance(serializer);
 				codec = new SignerRemoteMessageCodec(ser, secretKey);
 			}
 
-			String codecName = DomUtils.getNodeAttributeValue(beanFactory.getEnvironment(), node, "codec");
+			String codecName = DomUtils.getNodeAttributeValue(context, node, "codec");
 			if (StringUtils.isNotEmpty(codecName)) {
-				codec = beanFactory.getInstance(codecName);
+				codec = (RemoteMessageCodec) context.getInstance(codecName);
 			}
 
-			String httpClientName = DomUtils.getNodeAttributeValue(beanFactory.getEnvironment(), node, "httpClient");
+			String httpClientName = DomUtils.getNodeAttributeValue(context, node, "httpClient");
 			if (StringUtils.isNotEmpty(httpClientName)) {
-				this.httpClient = beanFactory.getInstance(httpClientName);
+				this.httpClient = (HttpClient) context.getInstance(httpClientName);
 			}
 		}
 

@@ -18,7 +18,7 @@ import io.basc.framework.sqlite.SQLiteDialect;
 import io.basc.framework.util.XUtils;
 
 public class OrmTest {
-	private static DB db = new SQLiteDB(Sys.env.getWorkPath() + "/orm_test.db");
+	private static DB db = new SQLiteDB(Sys.getEnv().getWorkPath() + "/orm_test.db");
 
 	static {
 		db.createTable(TestTable1.class);

@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Indexed
-public @interface Provider {
+public @interface Provider{
 	public Class<?>[] value() default {};
 
 	public boolean assignableValue() default true;

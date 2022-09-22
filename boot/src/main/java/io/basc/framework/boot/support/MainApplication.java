@@ -1,15 +1,13 @@
 package io.basc.framework.boot.support;
 
-import io.basc.framework.boot.Application;
-import io.basc.framework.boot.ApplicationPostProcessor;
-import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.env.MainArgs;
+import io.basc.framework.factory.FactoryException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.concurrent.ListenableFuture;
 
-public class MainApplication extends DefaultApplication implements Application, ApplicationPostProcessor {
+public class MainApplication extends DefaultApplication {
 	private final Class<?> mainClass;
 	private final MainArgs mainArgs;
 
@@ -22,15 +20,45 @@ public class MainApplication extends DefaultApplication implements Application, 
 
 		Integer port = ApplicationUtils.getPort(mainArgs);
 		if (port != null) {
-			ApplicationUtils.setServerPort(getEnvironment(), port);
+			ApplicationUtils.setServerPort(this.getProperties(), port);
 		}
-		getEnvironment().addFactory(mainArgs);
+
+		getProperties().getTandemFactories().addService(mainArgs);
 
 		setLogger(LoggerFactory.getLogger(mainClass));
 		if (args != null) {
 			getLogger().debug("args: {}", this.mainArgs);
 		}
-		addPostProcessor(this);
+	}
+
+	private volatile boolean initialized = false;
+
+	@Override
+	public boolean isInitialized() {
+		return super.isInitialized() && initialized;
+	}
+
+	@Override
+	public void init() {
+		synchronized (this) {
+			if (isInitialized()) {
+				throw new FactoryException("The main application has been initialized");
+			}
+
+			try {
+				super.init();
+
+				if (isInstance(Main.class)) {
+					try {
+						getInstance(Main.class).main(this, mainClass, mainArgs);
+					} catch (Throwable e) {
+						getLogger().error(e, "Start main error");
+					}
+				}
+			} finally {
+				initialized = true;
+			}
+		}
 	}
 
 	public Class<?> getMainClass() {
@@ -39,13 +67,6 @@ public class MainApplication extends DefaultApplication implements Application, 
 
 	public MainArgs getMainArgs() {
 		return mainArgs;
-	}
-
-	@Override
-	public void postProcessApplication(ConfigurableApplication application) throws Throwable {
-		if (isInstance(Main.class)) {
-			getInstance(Main.class).main(this, mainClass, mainArgs);
-		}
 	}
 
 	public static ApplicationRunner<MainApplication> main(Class<?> mainClass, @Nullable String[] args) {
@@ -57,7 +78,8 @@ public class MainApplication extends DefaultApplication implements Application, 
 		return main(mainClass, args).start();
 	}
 
-	public static ListenableFuture<MainApplication> run(Class<?> mainClass, @Nullable String[] args, Class<?>... sourceClasses) {
+	public static ListenableFuture<MainApplication> run(Class<?> mainClass, @Nullable String[] args,
+			Class<?>... sourceClasses) {
 		return main(mainClass, args).config((a) -> {
 			for (Class<?> source : sourceClasses) {
 				a.source(source);

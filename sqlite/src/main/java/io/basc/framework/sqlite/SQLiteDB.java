@@ -1,13 +1,13 @@
 package io.basc.framework.sqlite;
 
+import org.sqlite.SQLiteDataSource;
+
 import io.basc.framework.db.DefaultDB;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.sql.DataSourceConnectionFactory;
-
-import org.sqlite.SQLiteDataSource;
 
 public class SQLiteDB extends DefaultDB implements Configurable {
 
@@ -35,6 +35,6 @@ public class SQLiteDB extends DefaultDB implements Configurable {
 	 * @return
 	 */
 	public static SQLiteDB create(String name) {
-		return new SQLiteDB(Sys.env.getWorkPath() + "/" + name + ".db");
+		return new SQLiteDB(Sys.getEnv().getWorkPath() + "/" + name + ".db");
 	}
 }

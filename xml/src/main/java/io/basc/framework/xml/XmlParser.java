@@ -32,19 +32,19 @@ public class XmlParser implements DocumentParser {
 	private static Logger logger = LoggerFactory.getLogger(XmlParser.class);
 	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
 	@Nullable
-	private static final EntityResolver ENTITY_RESOLVER = Sys.env.getServiceLoader(EntityResolver.class).first();
+	private static final EntityResolver ENTITY_RESOLVER = Sys.getEnv().getServiceLoader(EntityResolver.class).first();
 
 	static {
-		DOCUMENT_BUILDER_FACTORY.setIgnoringElementContentWhitespace(
-				Sys.env.getValue("io.basc.framework.xml.ignoring.element.content.whitespace", boolean.class, true));
-		DOCUMENT_BUILDER_FACTORY
-				.setIgnoringComments(Sys.env.getValue("io.basc.framework.xml.ignoring.comments", boolean.class, true));
-		DOCUMENT_BUILDER_FACTORY
-				.setCoalescing(Sys.env.getValue("io.basc.framework.dom.coalescing", boolean.class, true));
-		DOCUMENT_BUILDER_FACTORY.setExpandEntityReferences(
-				Sys.env.getValue("io.basc.framework.xml.expand.entity.references", boolean.class, false));
-		DOCUMENT_BUILDER_FACTORY
-				.setNamespaceAware(Sys.env.getValue("io.basc.framework.xml.namespace.aware", boolean.class, false));
+		DOCUMENT_BUILDER_FACTORY.setIgnoringElementContentWhitespace(Sys.getEnv().getProperties()
+				.getValue("io.basc.framework.xml.ignoring.element.content.whitespace", boolean.class, true));
+		DOCUMENT_BUILDER_FACTORY.setIgnoringComments(
+				Sys.getEnv().getProperties().getValue("io.basc.framework.xml.ignoring.comments", boolean.class, true));
+		DOCUMENT_BUILDER_FACTORY.setCoalescing(
+				Sys.getEnv().getProperties().getValue("io.basc.framework.dom.coalescing", boolean.class, true));
+		DOCUMENT_BUILDER_FACTORY.setExpandEntityReferences(Sys.getEnv().getProperties()
+				.getValue("io.basc.framework.xml.expand.entity.references", boolean.class, false));
+		DOCUMENT_BUILDER_FACTORY.setNamespaceAware(
+				Sys.getEnv().getProperties().getValue("io.basc.framework.xml.namespace.aware", boolean.class, false));
 		try {
 			DOCUMENT_BUILDER_FACTORY.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 		} catch (ParserConfigurationException e) {
@@ -99,10 +99,10 @@ public class XmlParser implements DocumentParser {
 			throws IOException, DomException, E {
 		return resource.read((is) -> {
 			Document document = parse(is);
-			if(document == null) {
+			if (document == null) {
 				return null;
 			}
-			
+
 			try {
 				return processor.process(document);
 			} catch (Throwable e) {

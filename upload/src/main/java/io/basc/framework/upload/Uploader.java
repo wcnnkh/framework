@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import io.basc.framework.beans.annotation.Value;
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.ioc.annotation.Value;
 import io.basc.framework.data.DataException;
-import io.basc.framework.data.resource.ResourceUploadPolicy;
 import io.basc.framework.data.resource.ResourceStorageService;
+import io.basc.framework.data.resource.ResourceUploadPolicy;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.HttpStatus;

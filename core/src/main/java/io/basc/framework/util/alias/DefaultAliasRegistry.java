@@ -1,24 +1,22 @@
 package io.basc.framework.util.alias;
 
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.SmartMap;
-
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import io.basc.framework.util.Assert;
 
 public class DefaultAliasRegistry implements AliasRegistry, Cloneable {
-	private SmartMap<String, Set<String>> aliasMap;
+	private final Map<String, Set<String>> aliasMap;
 
 	public DefaultAliasRegistry() {
-		this(false);
+		this(new ConcurrentHashMap<>());
 	}
 
-	public DefaultAliasRegistry(boolean concurrent) {
-		this.aliasMap = new SmartMap<String, Set<String>>(concurrent);
-	}
-
-	private DefaultAliasRegistry(SmartMap<String, Set<String>> aliasMap) {
+	public DefaultAliasRegistry(Map<String, Set<String>> aliasMap) {
+		Assert.requiredArgument(aliasMap != null, "aliasMap");
 		this.aliasMap = aliasMap;
 	}
 
@@ -32,8 +30,8 @@ public class DefaultAliasRegistry implements AliasRegistry, Cloneable {
 		Assert.hasText(alias, "'alias' must not be empty");
 		Set<String> names = aliasMap.get(name);
 		if (names == null) {
-			names = new HashSet<String>();
-			Set<String> sets = aliasMap.putIfAbsent(name, Collections.synchronizedSet(names));
+			names = Collections.synchronizedSet(new HashSet<>());
+			Set<String> sets = aliasMap.putIfAbsent(name, names);
 			if (sets != null) {
 				names = sets;
 			}
@@ -79,10 +77,5 @@ public class DefaultAliasRegistry implements AliasRegistry, Cloneable {
 		}
 
 		return names.toArray(new String[0]);
-	}
-
-	@Override
-	public DefaultAliasRegistry clone() {
-		return new DefaultAliasRegistry(aliasMap.clone());
 	}
 }

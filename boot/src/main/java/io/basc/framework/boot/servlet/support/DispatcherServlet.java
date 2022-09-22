@@ -28,7 +28,7 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 	public void setApplication(Application application) {
 		reference = true;
 		this.application = application;
-		setServletService(ServletUtils.createServletService(application.getBeanFactory(), application.getEnvironment()));
+		setServletService(ServletUtils.createServletService(application));
 	}
 
 	public Application getApplication() {
@@ -46,7 +46,7 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		if (servletService == null) {
-			//服务未初始化或初始化失败
+			// 服务未初始化或初始化失败
 			resp.sendError(HttpStatus.SERVICE_UNAVAILABLE.value(), "Uninitialized or initialization error");
 			return;
 		}
@@ -66,16 +66,17 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 
 			initialized = true;
 			try {
-				if(application == null){
-					Status<Application> startUp = ServletContextUtils.getServletApplicationStartup().start(servletConfig.getServletContext());
+				if (application == null) {
+					Status<Application> startUp = ServletContextUtils.getServletApplicationStartup()
+							.start(servletConfig.getServletContext());
 					this.application = startUp.get();
-					if(startUp.isActive()){
+					if (startUp.isActive()) {
 						reference = false;
 					}
 				}
 
 				if (servletService == null && application != null) {
-					this.servletService = ServletUtils.createServletService(application.getBeanFactory(), application.getEnvironment());
+					this.servletService = ServletUtils.createServletService(application);
 				}
 			} catch (Throwable e) {
 				ServletContextUtils.startLogger(logger, servletConfig.getServletContext(), e, false);

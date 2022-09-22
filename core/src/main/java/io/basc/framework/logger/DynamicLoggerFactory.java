@@ -6,14 +6,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import io.basc.framework.factory.ServiceLoaderFactory;
-import io.basc.framework.factory.support.DefaultServiceLoaderFactory;
+import io.basc.framework.factory.support.SimpleServiceLoaderFactory;
 
 public class DynamicLoggerFactory extends JdkLoggerFactory {
 	private volatile Map<String, DynamicLogger> loggerMap = new HashMap<String, DynamicLogger>();
 	private final ServiceLoaderFactory serviceLoaderFactory;
 
 	public DynamicLoggerFactory() {
-		this(DefaultServiceLoaderFactory.INSTANCE);
+		this(SimpleServiceLoaderFactory.INSTANCE);
 	}
 
 	public DynamicLoggerFactory(ServiceLoaderFactory serviceLoaderFactory) {

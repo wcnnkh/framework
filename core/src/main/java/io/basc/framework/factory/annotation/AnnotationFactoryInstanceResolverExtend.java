@@ -2,13 +2,13 @@ package io.basc.framework.factory.annotation;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.factory.FactoryResolver;
-import io.basc.framework.factory.support.FactoryResolverExtend;
+import io.basc.framework.factory.BeanResolver;
+import io.basc.framework.factory.BeanResolverExtend;
 
-public class AnnotationFactoryInstanceResolverExtend implements FactoryResolverExtend {
+public class AnnotationFactoryInstanceResolverExtend implements BeanResolverExtend {
 
 	@Override
-	public boolean isSingleton(TypeDescriptor type, FactoryResolver chain) {
+	public boolean isSingleton(TypeDescriptor type, BeanResolver chain) {
 		Singleton singleton = AnnotatedElementUtils.getMergedAnnotation(type, Singleton.class);
 		if (singleton != null) {
 			return singleton.value();

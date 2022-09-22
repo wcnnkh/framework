@@ -5,7 +5,7 @@ import java.io.IOException;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
-import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.context.Context;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.freemarker.EnvConfiguration;
 import io.basc.framework.freemarker.boot.annotation.SharedVariable;
@@ -17,9 +17,9 @@ import io.basc.framework.util.StringUtils;
 public class DefaultConfiguration extends EnvConfiguration {
 	private static Logger logger = LoggerFactory.getLogger(DefaultConfiguration.class);
 
-	public DefaultConfiguration(BeanFactory beanFactory) throws IOException {
-		super(beanFactory.getEnvironment());
-		for (Class<?> clz : beanFactory.getContextClasses()) {
+	public DefaultConfiguration(Context context) throws IOException {
+		super(context);
+		for (Class<?> clz : context.getContextClasses()) {
 			SharedVariable sharedVariable = clz.getAnnotation(SharedVariable.class);
 			if (sharedVariable == null) {
 				continue;
@@ -37,7 +37,7 @@ public class DefaultConfiguration extends EnvConfiguration {
 				continue;
 			}
 
-			Object veriable = beanFactory.getInstance(clz);
+			Object veriable = context.getInstance(clz);
 			if (veriable instanceof TemplateModel) {
 				setSharedVariable(name, (TemplateModel) veriable);
 			} else {

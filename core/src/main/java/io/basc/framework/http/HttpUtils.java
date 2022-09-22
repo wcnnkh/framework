@@ -22,8 +22,8 @@ public final class HttpUtils {
 	private HttpUtils() {
 	};
 
-	private static final HttpClient HTTP_CLIENT = Sys.env.getServiceLoader(HttpClient.class, DefaultHttpClient.class)
-			.first();
+	private static final HttpClient HTTP_CLIENT = Sys.getEnv()
+			.getServiceLoader(HttpClient.class, DefaultHttpClient.class).first();
 
 	/**
 	 * 获取默认的HttpClient(获取spi机制加载)
@@ -55,10 +55,10 @@ public final class HttpUtils {
 	 * @return
 	 */
 	public static boolean isSameOrigin(HttpRequest request) {
-		if(request == null) {
+		if (request == null) {
 			return false;
 		}
-		
+
 		HttpHeaders headers = request.getHeaders();
 		String origin = headers.getOrigin();
 		if (origin == null) {
@@ -143,8 +143,8 @@ public final class HttpUtils {
 		if (charsetToUse == null) {
 			charsetToUse = outputMessage.getCharset();
 		}
-		
-		if(charsetToUse == null) {
+
+		if (charsetToUse == null) {
 			charsetToUse = Constants.UTF_8;
 		}
 

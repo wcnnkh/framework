@@ -2,8 +2,7 @@ package io.basc.framework.mvc;
 
 import java.io.IOException;
 
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.context.Destroy;
+import io.basc.framework.context.Context;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.parameter.DefaultParameterDescriptor;
@@ -22,7 +21,7 @@ import io.basc.framework.web.ServerHttpResponse;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessagelConverterException;
 
-public class DefaultHttpChannel extends RequestBeanFactory implements HttpChannel, Destroy, Decorator {
+public class DefaultHttpChannel extends RequestBeanFactory implements HttpChannel, Decorator {
 	private static Logger defaultLogger = LoggerFactory.getLogger(DefaultHttpChannel.class);
 	private final long createTime;
 	private boolean completed = false;
@@ -30,9 +29,9 @@ public class DefaultHttpChannel extends RequestBeanFactory implements HttpChanne
 	private final UserSessionManager userSessionManager;
 	private Logger logger;
 
-	public DefaultHttpChannel(BeanFactory beanFactory, ServerHttpRequest request, ServerHttpResponse response,
+	public DefaultHttpChannel(Context context, ServerHttpRequest request, ServerHttpResponse response,
 			WebMessageConverter messageConverter, UserSessionManager userSessionManager) {
-		super(request, messageConverter, beanFactory);
+		super(request, messageConverter, context);
 		this.createTime = System.currentTimeMillis();
 		this.response = response;
 		this.userSessionManager = userSessionManager;

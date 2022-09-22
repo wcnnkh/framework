@@ -18,7 +18,7 @@ public class StaticResourceRegistry extends PathRegistry implements HttpService 
 	private ResourceLoader resourceLoader;
 
 	public ResourceLoader getResourceLoader() {
-		return resourceLoader == null ? Sys.env : resourceLoader;
+		return resourceLoader == null ? Sys.getEnv().getResourceLoader() : resourceLoader;
 	}
 
 	public void setResourceLoader(ResourceLoader resourceLoader) {

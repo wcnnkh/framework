@@ -1,5 +1,11 @@
 package io.basc.framework.apollo.client;
 
+import java.util.Iterator;
+
+import com.ctrip.framework.apollo.Config;
+import com.ctrip.framework.apollo.ConfigChangeListener;
+import com.ctrip.framework.apollo.model.ConfigChangeEvent;
+
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventType;
@@ -10,12 +16,6 @@ import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
 
-import java.util.Iterator;
-
-import com.ctrip.framework.apollo.Config;
-import com.ctrip.framework.apollo.ConfigChangeListener;
-import com.ctrip.framework.apollo.model.ConfigChangeEvent;
-
 @Provider
 public class ApolloClientPropertyFactory extends SimpleStringNamedEventDispatcher<ChangeEvent<String>>
 		implements PropertyFactory, ConfigChangeListener {
@@ -23,7 +23,6 @@ public class ApolloClientPropertyFactory extends SimpleStringNamedEventDispatche
 	private final Config config;
 
 	public ApolloClientPropertyFactory(Config config) {
-		super(true);
 		this.config = config;
 		config.addChangeListener(this);
 	}

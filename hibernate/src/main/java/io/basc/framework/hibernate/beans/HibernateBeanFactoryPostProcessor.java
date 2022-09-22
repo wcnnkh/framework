@@ -1,24 +1,23 @@
 package io.basc.framework.hibernate.beans;
 
-import io.basc.framework.beans.BeanFactoryPostProcessor;
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.context.annotation.Provider;
-
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.env.ConfigurableEnvironment;
+import io.basc.framework.env.EnvironmentPostProcessor;
+
 @Provider
-public class HibernateBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+public class HibernateBeanFactoryPostProcessor implements EnvironmentPostProcessor {
 
 	@Override
-	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
-		if(!beanFactory.containsDefinition(SessionFactory.class.getName())) {
-			beanFactory.registerDefinition(new SessionFactoryBeanDefinition(beanFactory));
+	public void postProcessEnvironment(ConfigurableEnvironment environment) {
+		if (!environment.containsDefinition(SessionFactory.class.getName())) {
+			environment.registerDefinition(new SessionFactoryBeanDefinition(environment));
 		}
-		
-		if(!beanFactory.containsDefinition(Configuration.class.getName())) {
-			beanFactory.registerDefinition(new ConfigurationBeanDefinition(beanFactory));
+
+		if (!environment.containsDefinition(Configuration.class.getName())) {
+			environment.registerDefinition(new ConfigurationBeanDefinition(environment));
 		}
 	}
 

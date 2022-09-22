@@ -1,33 +1,34 @@
 package io.basc.framework.event.support;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import io.basc.framework.event.Event;
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.util.StringMatcher;
 import io.basc.framework.util.StringMatchers;
 
-import java.util.Map.Entry;
-
 public class SimpleStringNamedEventDispatcher<T extends Event> extends SimpleNamedEventDispatcher<String, T> {
-	private StringMatcher stringMatcher;
+	private final StringMatcher stringMatcher;
 
-	public SimpleStringNamedEventDispatcher(boolean concurrent) {
-		super(concurrent);
-		setStringMatcher(StringMatchers.SIMPLE);
+	public SimpleStringNamedEventDispatcher() {
+		this(StringMatchers.SIMPLE);
+	}
+
+	public SimpleStringNamedEventDispatcher(StringMatcher stringMatcher) {
+		this.stringMatcher = stringMatcher;
 	}
 
 	public StringMatcher getStringMatcher() {
 		return stringMatcher;
 	}
 
-	public void setStringMatcher(StringMatcher stringMatcher) {
-		this.stringMatcher = stringMatcher;
-	}
-
-	public void publishEvent(String name, T event) {
+	@Override
+	protected void publishEvent(String name, T event, Map<String, EventDispatcher<T>> dispatcherMap) {
 		if (stringMatcher == null) {
-			super.publishEvent(name, event);
+			super.publishEvent(name, event, dispatcherMap);
 		} else {
-			for (Entry<String, EventDispatcher<T>> entry : getNamedEventListenerMap().entrySet()) {
+			for (Entry<String, EventDispatcher<T>> entry : dispatcherMap.entrySet()) {
 				if (stringMatcher.match(entry.getKey(), name)) {
 					entry.getValue().publishEvent(event);
 				}

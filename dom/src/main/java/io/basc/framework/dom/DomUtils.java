@@ -20,7 +20,7 @@ import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.StringValue;
 
 public final class DomUtils {
-	private static final DocumentTemplate TEMPLATE = Sys.env
+	private static final DocumentTemplate TEMPLATE = Sys.getEnv()
 			.getServiceLoader(DocumentTemplate.class, DocumentTemplate.class).first();
 
 	public static DocumentTemplate getTemplate() {

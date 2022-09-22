@@ -16,16 +16,16 @@
 
 package io.basc.framework.websocket.handler;
 
-import io.basc.framework.beans.BeanDefinition;
-import io.basc.framework.beans.BeanFactoryAccessor;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.factory.BeanFactoryAccessor;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.websocket.CloseStatus;
 import io.basc.framework.websocket.WebSocketHandler;
 import io.basc.framework.websocket.WebSocketSession;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A {@link WebSocketHandler} that initializes and destroys a

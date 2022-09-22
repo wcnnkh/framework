@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 import com.netflix.eureka.EurekaServerConfig;
 import com.netflix.eureka.aws.AwsBindingStrategy;
 
-import io.basc.framework.beans.annotation.Autowired;
+import io.basc.framework.context.ioc.annotation.Autowired;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.orm.annotation.ConfigurationProperties;
@@ -264,7 +264,7 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 	@Override
 	public String getExperimental(String name) {
 		if (this.environment != null) {
-			return environment.getValue(PREFIX + ".experimental." + name, String.class, null);
+			return environment.getProperties().getValue(PREFIX + ".experimental." + name, String.class, null);
 		}
 		return null;
 	}

@@ -123,7 +123,7 @@ public abstract class AbstractAop implements Aop {
 				interceptors.addMethodInterceptor(AbstractAop.this.getMethodInterceptor());
 			}
 			interceptors.addMethodInterceptor(getMethodInterceptor());
-			return getProxyFactory().getProxy(getTargetClass(),
+			return getProxyFactory().getProxy(getSourceClass(),
 					ArrayUtils.merge(getInterfaces(), ProxyInstanceTarget.CLASSES), interceptors);
 		}
 

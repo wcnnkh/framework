@@ -1,49 +1,52 @@
 package io.basc.framework.value.support;
 
-import io.basc.framework.core.OrderComparator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
 import io.basc.framework.event.MultiEventRegistration;
-import io.basc.framework.event.support.ObservableMap;
+import io.basc.framework.event.NamedEventDispatcher;
 import io.basc.framework.event.support.SimpleNamedEventDispatcher;
+import io.basc.framework.factory.ConfigurableServices;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionFactory;
-import io.basc.framework.util.Pair;
 import io.basc.framework.value.ConfigurableValueFactory;
 import io.basc.framework.value.Value;
 import io.basc.framework.value.ValueFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 public class DefaultValueFactory<K, F extends ValueFactory<K>> implements ConfigurableValueFactory<K> {
-	private final ObservableMap<K, Value> valueMap;
-	private final List<F> factories;
+	private final Map<K, Value> valueMap;
+	private final NamedEventDispatcher<K, ChangeEvent<K>> eventDispatcher;
+	private final ConfigurableServices<F> tandemFactories = new ConfigurableServices<F>();
 
-	public DefaultValueFactory(boolean concurrent) {
-		this.valueMap = new ObservableMap<K, Value>(concurrent,
-				new SimpleNamedEventDispatcher<K, ChangeEvent<Pair<K, Value>>>(concurrent));
-		this.factories = CollectionFactory.createArrayList(concurrent, 8);
+	public DefaultValueFactory() {
+		this(new ConcurrentHashMap<>());
 	}
 
-	public void addFactory(F factory) {
-		if (factory == null) {
-			return;
-		}
-
-		factories.add(factory);
-		Collections.sort(factories, OrderComparator.INSTANCE);
+	public DefaultValueFactory(@Nullable NamedEventDispatcher<K, ChangeEvent<K>> eventDispatcher) {
+		this(null, eventDispatcher);
 	}
 
-	public ObservableMap<K, Value> getValueMap() {
-		return valueMap;
+	public DefaultValueFactory(@Nullable Map<K, Value> valueMap) {
+		this(valueMap, null);
 	}
 
-	public Iterator<F> getFactories() {
-		return factories.iterator();
+	public DefaultValueFactory(@Nullable Map<K, Value> valueMap,
+			@Nullable NamedEventDispatcher<K, ChangeEvent<K>> eventDispatcher) {
+		this.valueMap = valueMap == null ? new ConcurrentHashMap<>() : valueMap;
+		this.eventDispatcher = eventDispatcher == null ? new SimpleNamedEventDispatcher<>() : eventDispatcher;
+	}
+
+	public Map<K, Value> getValueMap() {
+		return this.valueMap;
+	}
+
+	public ConfigurableServices<F> getTandemFactories() {
+		return this.tandemFactories;
 	}
 
 	public Value getValue(K key) {
@@ -52,13 +55,11 @@ public class DefaultValueFactory<K, F extends ValueFactory<K>> implements Config
 			return value;
 		}
 
-		Iterator<F> iterator = getFactories();
-		while (iterator.hasNext()) {
-			ValueFactory<K> valueFactory = iterator.next();
-			if (valueFactory == null) {
+		for (F factory : getTandemFactories()) {
+			if (factory == null) {
 				continue;
 			}
-			value = valueFactory.getValue(key);
+			value = factory.getValue(key);
 			if (value != null) {
 				return value;
 			}
@@ -71,9 +72,8 @@ public class DefaultValueFactory<K, F extends ValueFactory<K>> implements Config
 			return true;
 		}
 
-		Iterator<F> iterator = getFactories();
-		while (iterator.hasNext()) {
-			if (iterator.next().containsKey(key)) {
+		for (F factory : getTandemFactories()) {
+			if (factory.containsKey(key)) {
 				return true;
 			}
 		}
@@ -81,17 +81,14 @@ public class DefaultValueFactory<K, F extends ValueFactory<K>> implements Config
 	}
 
 	public EventRegistration registerListener(final K key, final EventListener<ChangeEvent<K>> eventListener) {
-		EventRegistration registration1 = this.valueMap.getEventDispatcher().registerListener(key,
-				(event) -> eventListener.onEvent(new ChangeEvent<K>(event, event.getSource().getKey())));
-		if (factories.size() == 0) {
+		EventRegistration registration1 = eventDispatcher.registerListener(key, eventListener);
+		if (getTandemFactories().isEmpty()) {
 			return registration1;
 		}
 
-		List<EventRegistration> registrations = new ArrayList<EventRegistration>(factories.size());
+		List<EventRegistration> registrations = new ArrayList<EventRegistration>(8);
 		registrations.add(registration1);
-		Iterator<F> iterator = getFactories();
-		while (iterator.hasNext()) {
-			F factory = iterator.next();
+		for (F factory : getTandemFactories()) {
 			EventRegistration registration = factory.registerListener(key, eventListener);
 			registrations.add(registration);
 		}

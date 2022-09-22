@@ -1,19 +1,19 @@
 package io.basc.framework.redis.beans;
 
-import io.basc.framework.beans.BeanFactoryPostProcessor;
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
+import io.basc.framework.context.ConfigurableContext;
+import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.redis.RedisConfiguration;
 
 @Provider(order = Ordered.HIGHEST_PRECEDENCE)
-public class RedisBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
-
+public class RedisBeanFactoryPostProcessor implements ContextPostProcessor {
+	
 	@Override
-	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
-		if (!beanFactory.containsDefinition(RedisConfiguration.class.getName())) {
-			beanFactory.registerDefinition(new RedisConfigBeanDefinition(beanFactory));
+	public void postProcessContext(ConfigurableContext context) throws Throwable {
+		if (!context.containsDefinition(RedisConfiguration.class.getName())) {
+			context.registerDefinition(new RedisConfigBeanDefinition(context));
 		}
 	}
+
 }

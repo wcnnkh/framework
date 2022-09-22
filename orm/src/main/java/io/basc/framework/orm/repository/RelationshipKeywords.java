@@ -15,7 +15,7 @@ public class RelationshipKeywords implements Predicate<String>, Cloneable, Seria
 	private static final Keywords AND_KEYWORDS = new Keywords(Keywords.HUMP, "And");
 	private static final Keywords OR_KEYWORDS = new Keywords(Keywords.HUMP, "Or");
 
-	public static final RelationshipKeywords DEFAULT = Sys.env.getServiceLoader(RelationshipKeywords.class)
+	public static final RelationshipKeywords DEFAULT = Sys.getEnv().getServiceLoader(RelationshipKeywords.class)
 			.first(() -> new RelationshipKeywords());
 
 	private final Keywords andKeywords;

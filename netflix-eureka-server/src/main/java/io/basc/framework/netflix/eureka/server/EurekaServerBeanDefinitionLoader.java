@@ -1,14 +1,5 @@
 package io.basc.framework.netflix.eureka.server;
 
-import io.basc.framework.beans.BeanDefinition;
-import io.basc.framework.beans.BeanDefinitionLoader;
-import io.basc.framework.beans.BeanDefinitionLoaderChain;
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.support.DefaultBeanDefinition;
-import io.basc.framework.context.annotation.Provider;
-
 import java.util.Collections;
 
 import com.netflix.appinfo.ApplicationInfoManager;
@@ -21,10 +12,27 @@ import com.netflix.eureka.cluster.PeerEurekaNodes;
 import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.resources.ServerCodecs;
 
+import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.env.Environment;
+import io.basc.framework.env.EnvironmentBeanDefinition;
+import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.factory.BeansException;
+import io.basc.framework.factory.support.BeanDefinitionLoader;
+import io.basc.framework.factory.support.BeanDefinitionLoaderChain;
+import io.basc.framework.factory.support.FactoryBeanDefinition;
+import io.basc.framework.util.ClassUtils;
+
 @Provider
 public class EurekaServerBeanDefinitionLoader implements BeanDefinitionLoader {
+
 	@Override
-	public BeanDefinition load(ConfigurableBeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
+	public BeanDefinition load(BeanFactory beanFactory, String name, BeanDefinitionLoaderChain loaderChain) {
+		Class<?> sourceClass = ClassUtils.getClass(name, beanFactory.getClassLoader());
+		if (sourceClass == null) {
+			return null;
+		}
+
 		if (sourceClass == ServerCodecs.class) {
 			return new ServerCodecsBuilder(beanFactory, sourceClass);
 		}
@@ -33,35 +41,35 @@ public class EurekaServerBeanDefinitionLoader implements BeanDefinitionLoader {
 			return new PeerAwareInstanceRegistryBuilder(beanFactory, sourceClass);
 		}
 
-		if (sourceClass == PeerEurekaNodes.class) {
-			return new PeerEurekaNodesBuilder(beanFactory, sourceClass);
+		if (sourceClass == PeerEurekaNodes.class && beanFactory.isInstance(Environment.class)) {
+			return new PeerEurekaNodesBuilder(beanFactory.getInstance(Environment.class), sourceClass);
 		}
 
 		if (sourceClass == EurekaServerContext.class) {
 			return new EurekaServerContextBuilder(beanFactory, sourceClass);
 		}
 
-		if(sourceClass == EurekaServerConfig.class){
+		if (sourceClass == EurekaServerConfig.class) {
 			return new EurekaServerConfigBuilder(beanFactory, sourceClass);
 		}
-		
-		return loaderChain.load(beanFactory, sourceClass);
-	}
-	
-	private static class EurekaServerConfigBuilder extends DefaultBeanDefinition{
 
-		public EurekaServerConfigBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
+		return loaderChain.load(beanFactory, name);
+	}
+
+	private static class EurekaServerConfigBuilder extends FactoryBeanDefinition {
+
+		public EurekaServerConfigBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
-		
+
 		@Override
 		public boolean isInstance() {
-			return beanFactory.isInstance(EurekaClientConfig.class);
+			return getBeanFactory().isInstance(EurekaClientConfig.class);
 		}
-		
+
 		@Override
 		public Object create() throws BeansException {
-			EurekaClientConfig clientConfig = beanFactory.getInstance(EurekaClientConfig.class);
+			EurekaClientConfig clientConfig = getBeanFactory().getInstance(EurekaClientConfig.class);
 			EurekaServerConfigBean server = new EurekaServerConfigBean();
 			if (clientConfig.shouldRegisterWithEureka()) {
 				// Set a sensible default if we are supposed to replicate
@@ -71,27 +79,28 @@ public class EurekaServerBeanDefinitionLoader implements BeanDefinitionLoader {
 		}
 	}
 
-	private static class EurekaServerContextBuilder extends DefaultBeanDefinition {
+	private static class EurekaServerContextBuilder extends FactoryBeanDefinition {
 
-		public EurekaServerContextBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
+		public EurekaServerContextBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 
 		@Override
 		public boolean isInstance() {
-			return beanFactory.isInstance(EurekaServerConfig.class) && beanFactory.isInstance(ServerCodecs.class)
-					&& beanFactory.isInstance(PeerAwareInstanceRegistry.class)
-					&& beanFactory.isInstance(ApplicationInfoManager.class)
-					&& beanFactory.isInstance(PeerEurekaNodes.class);
+			return getBeanFactory().isInstance(EurekaServerConfig.class)
+					&& getBeanFactory().isInstance(ServerCodecs.class)
+					&& getBeanFactory().isInstance(PeerAwareInstanceRegistry.class)
+					&& getBeanFactory().isInstance(ApplicationInfoManager.class)
+					&& getBeanFactory().isInstance(PeerEurekaNodes.class);
 		}
 
 		@Override
 		public Object create() throws BeansException {
-			EurekaServerConfig eurekaServerConfig = beanFactory.getInstance(EurekaServerConfig.class);
-			ServerCodecs serverCodecs = beanFactory.getInstance(ServerCodecs.class);
-			PeerAwareInstanceRegistry registry = beanFactory.getInstance(PeerAwareInstanceRegistry.class);
-			PeerEurekaNodes peerEurekaNodes = beanFactory.getInstance(PeerEurekaNodes.class);
-			ApplicationInfoManager applicationInfoManager = beanFactory.getInstance(ApplicationInfoManager.class);
+			EurekaServerConfig eurekaServerConfig = getBeanFactory().getInstance(EurekaServerConfig.class);
+			ServerCodecs serverCodecs = getBeanFactory().getInstance(ServerCodecs.class);
+			PeerAwareInstanceRegistry registry = getBeanFactory().getInstance(PeerAwareInstanceRegistry.class);
+			PeerEurekaNodes peerEurekaNodes = getBeanFactory().getInstance(PeerEurekaNodes.class);
+			ApplicationInfoManager applicationInfoManager = getBeanFactory().getInstance(ApplicationInfoManager.class);
 			return new DefaultEurekaServerContext(eurekaServerConfig, serverCodecs, registry, peerEurekaNodes,
 					applicationInfoManager);
 		}
@@ -104,55 +113,58 @@ public class EurekaServerBeanDefinitionLoader implements BeanDefinitionLoader {
 		return beanFactory.getInstance(ReplicationClientAdditionalFilters.class);
 	}
 
-	private static class PeerEurekaNodesBuilder extends DefaultBeanDefinition {
+	private static class PeerEurekaNodesBuilder extends EnvironmentBeanDefinition {
 
-		public PeerEurekaNodesBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
-			super(beanFactory, sourceClass);
+		public PeerEurekaNodesBuilder(Environment environment, Class<?> sourceClass) {
+			super(environment, sourceClass);
 		}
 
 		@Override
 		public boolean isInstance() {
-			return beanFactory.isInstance(ServerCodecs.class) && beanFactory.isInstance(EurekaServerConfig.class)
-					&& beanFactory.isInstance(EurekaClientConfig.class)
-					&& beanFactory.isInstance(ApplicationInfoManager.class)
-					&& beanFactory.isInstance(PeerAwareInstanceRegistry.class);
+			return getBeanFactory().isInstance(ServerCodecs.class)
+					&& getBeanFactory().isInstance(EurekaServerConfig.class)
+					&& getBeanFactory().isInstance(EurekaClientConfig.class)
+					&& getBeanFactory().isInstance(ApplicationInfoManager.class)
+					&& getBeanFactory().isInstance(PeerAwareInstanceRegistry.class);
 		}
 
 		@Override
 		public Object create() throws BeansException {
-			PeerAwareInstanceRegistry registry = beanFactory.getInstance(PeerAwareInstanceRegistry.class);
-			EurekaServerConfig serverConfig = beanFactory.getInstance(EurekaServerConfig.class);
-			EurekaClientConfig clientConfig = beanFactory.getInstance(EurekaClientConfig.class);
-			ServerCodecs serverCodecs = beanFactory.getInstance(ServerCodecs.class);
-			ApplicationInfoManager applicationInfoManager = beanFactory.getInstance(ApplicationInfoManager.class);
+			PeerAwareInstanceRegistry registry = getBeanFactory().getInstance(PeerAwareInstanceRegistry.class);
+			EurekaServerConfig serverConfig = getBeanFactory().getInstance(EurekaServerConfig.class);
+			EurekaClientConfig clientConfig = getBeanFactory().getInstance(EurekaClientConfig.class);
+			ServerCodecs serverCodecs = getBeanFactory().getInstance(ServerCodecs.class);
+			ApplicationInfoManager applicationInfoManager = getBeanFactory().getInstance(ApplicationInfoManager.class);
 			ReplicationClientAdditionalFilters replicationClientAdditionalFilters = getReplicationClientAdditionalFilters(
-					beanFactory);
+					getBeanFactory());
 			return new RefreshablePeerEurekaNodes(registry, serverConfig, clientConfig, serverCodecs,
-					applicationInfoManager, replicationClientAdditionalFilters, beanFactory.getEnvironment());
+					applicationInfoManager, replicationClientAdditionalFilters, getEnvironment());
 		}
 	}
 
-	private static class PeerAwareInstanceRegistryBuilder extends DefaultBeanDefinition {
+	private static class PeerAwareInstanceRegistryBuilder extends FactoryBeanDefinition {
 
-		public PeerAwareInstanceRegistryBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
+		public PeerAwareInstanceRegistryBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 
 		@Override
 		public boolean isInstance() {
-			return beanFactory.isInstance(ServerCodecs.class) && beanFactory.isInstance(EurekaServerConfig.class)
-					&& beanFactory.isInstance(EurekaClientConfig.class) && beanFactory.isInstance(EurekaClient.class)
-					&& beanFactory.isInstance(InstanceRegistryProperties.class);
+			return getBeanFactory().isInstance(ServerCodecs.class)
+					&& getBeanFactory().isInstance(EurekaServerConfig.class)
+					&& getBeanFactory().isInstance(EurekaClientConfig.class)
+					&& getBeanFactory().isInstance(EurekaClient.class)
+					&& getBeanFactory().isInstance(InstanceRegistryProperties.class);
 		}
 
 		@Override
 		public Object create() throws BeansException {
-			ServerCodecs serverCodecs = beanFactory.getInstance(ServerCodecs.class);
-			EurekaServerConfig serverConfig = beanFactory.getInstance(EurekaServerConfig.class);
-			EurekaClientConfig clientConfig = beanFactory.getInstance(EurekaClientConfig.class);
-			EurekaClient eurekaClient = beanFactory.getInstance(EurekaClient.class);
+			ServerCodecs serverCodecs = getBeanFactory().getInstance(ServerCodecs.class);
+			EurekaServerConfig serverConfig = getBeanFactory().getInstance(EurekaServerConfig.class);
+			EurekaClientConfig clientConfig = getBeanFactory().getInstance(EurekaClientConfig.class);
+			EurekaClient eurekaClient = getBeanFactory().getInstance(EurekaClient.class);
 			eurekaClient.getApplications(); // force initialization
-			InstanceRegistryProperties instanceRegistryProperties = beanFactory
+			InstanceRegistryProperties instanceRegistryProperties = getBeanFactory()
 					.getInstance(InstanceRegistryProperties.class);
 			return new InstanceRegistry(serverConfig, clientConfig, serverCodecs, eurekaClient,
 					instanceRegistryProperties.getExpectedNumberOfClientsSendingRenews(),
@@ -160,20 +172,20 @@ public class EurekaServerBeanDefinitionLoader implements BeanDefinitionLoader {
 		}
 	}
 
-	private static class ServerCodecsBuilder extends DefaultBeanDefinition {
+	private static class ServerCodecsBuilder extends FactoryBeanDefinition {
 
-		public ServerCodecsBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
+		public ServerCodecsBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 
 		@Override
 		public boolean isInstance() {
-			return beanFactory.isInstance(EurekaServerConfig.class);
+			return getBeanFactory().isInstance(EurekaServerConfig.class);
 		}
 
 		@Override
 		public Object create() throws BeansException {
-			return new CloudServerCodecs(beanFactory.getInstance(EurekaServerConfig.class));
+			return new CloudServerCodecs(getBeanFactory().getInstance(EurekaServerConfig.class));
 		}
 	}
 }

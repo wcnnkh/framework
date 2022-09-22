@@ -62,10 +62,6 @@ public interface Processor<S, T, E extends Throwable> {
 		};
 	}
 
-	default Processor<S, T, E> caching() {
-		return new CachingProcessor<>(this);
-	}
-
 	default <TL extends Collection<T>> TL processTo(Collection<? extends S> sourceList, TL targetList) throws E {
 		if (sourceList == null) {
 			return targetList;

@@ -9,38 +9,38 @@ import com.netflix.eureka.cluster.PeerEurekaNodes;
 import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.resources.ServerCodecs;
 
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.support.DefaultBeanDefinition;
+import io.basc.framework.env.Environment;
+import io.basc.framework.env.EnvironmentBeanDefinition;
+import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.factory.BeansException;
 import io.basc.framework.netflix.eureka.server.RefreshablePeerEurekaNodes;
 import io.basc.framework.netflix.eureka.server.ReplicationClientAdditionalFilters;
 
-public class PeerEurekaNodesDefinition extends DefaultBeanDefinition {
+public class PeerEurekaNodesDefinition extends EnvironmentBeanDefinition {
 
-	public PeerEurekaNodesDefinition(ConfigurableBeanFactory beanFactory) {
-		super(beanFactory, PeerEurekaNodes.class);
+	public PeerEurekaNodesDefinition(Environment environment) {
+		super(environment, PeerEurekaNodes.class);
 	}
 
 	@Override
 	public boolean isInstance() {
-		return beanFactory.isInstance(ServerCodecs.class) && beanFactory.isInstance(EurekaServerConfig.class)
-				&& beanFactory.isInstance(EurekaClientConfig.class)
-				&& beanFactory.isInstance(ApplicationInfoManager.class)
-				&& beanFactory.isInstance(PeerAwareInstanceRegistry.class);
+		return getBeanFactory().isInstance(ServerCodecs.class) && getBeanFactory().isInstance(EurekaServerConfig.class)
+				&& getBeanFactory().isInstance(EurekaClientConfig.class)
+				&& getBeanFactory().isInstance(ApplicationInfoManager.class)
+				&& getBeanFactory().isInstance(PeerAwareInstanceRegistry.class);
 	}
 
 	@Override
 	public Object create() throws BeansException {
-		PeerAwareInstanceRegistry registry = beanFactory.getInstance(PeerAwareInstanceRegistry.class);
-		EurekaServerConfig serverConfig = beanFactory.getInstance(EurekaServerConfig.class);
-		EurekaClientConfig clientConfig = beanFactory.getInstance(EurekaClientConfig.class);
-		ServerCodecs serverCodecs = beanFactory.getInstance(ServerCodecs.class);
-		ApplicationInfoManager applicationInfoManager = beanFactory.getInstance(ApplicationInfoManager.class);
+		PeerAwareInstanceRegistry registry = getBeanFactory().getInstance(PeerAwareInstanceRegistry.class);
+		EurekaServerConfig serverConfig = getBeanFactory().getInstance(EurekaServerConfig.class);
+		EurekaClientConfig clientConfig = getBeanFactory().getInstance(EurekaClientConfig.class);
+		ServerCodecs serverCodecs = getBeanFactory().getInstance(ServerCodecs.class);
+		ApplicationInfoManager applicationInfoManager = getBeanFactory().getInstance(ApplicationInfoManager.class);
 		ReplicationClientAdditionalFilters replicationClientAdditionalFilters = getReplicationClientAdditionalFilters(
-				beanFactory);
+				getBeanFactory());
 		return new RefreshablePeerEurekaNodes(registry, serverConfig, clientConfig, serverCodecs,
-				applicationInfoManager, replicationClientAdditionalFilters, beanFactory.getEnvironment());
+				applicationInfoManager, replicationClientAdditionalFilters, getEnvironment());
 	}
 
 	private static ReplicationClientAdditionalFilters getReplicationClientAdditionalFilters(BeanFactory beanFactory) {

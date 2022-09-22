@@ -1,41 +1,39 @@
 package io.basc.framework.netflix.eureka.server.beans;
 
-import io.basc.framework.beans.BeanFactoryPostProcessor;
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
+import io.basc.framework.env.ConfigurableEnvironment;
+import io.basc.framework.env.EnvironmentPostProcessor;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
-public class EurekaServerBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+public class EurekaServerBeanFactoryPostProcessor implements EnvironmentPostProcessor {
 
 	@Override
-	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
-		EurekaServerConfigDefinition eurekaServerConfigDefinition = new EurekaServerConfigDefinition(beanFactory);
-		if (!beanFactory.containsDefinition(eurekaServerConfigDefinition.getId())) {
-			beanFactory.registerDefinition(eurekaServerConfigDefinition);
+	public void postProcessEnvironment(ConfigurableEnvironment environment) {
+		EurekaServerConfigDefinition eurekaServerConfigDefinition = new EurekaServerConfigDefinition(environment);
+		if (!environment.containsDefinition(eurekaServerConfigDefinition.getId())) {
+			environment.registerDefinition(eurekaServerConfigDefinition);
 		}
 
-		EurekaServerContextDefinition eurekaServerContextDefinition = new EurekaServerContextDefinition(beanFactory);
-		if (!beanFactory.containsDefinition(eurekaServerContextDefinition.getId())) {
-			beanFactory.registerDefinition(eurekaServerContextDefinition);
+		EurekaServerContextDefinition eurekaServerContextDefinition = new EurekaServerContextDefinition(environment);
+		if (!environment.containsDefinition(eurekaServerContextDefinition.getId())) {
+			environment.registerDefinition(eurekaServerContextDefinition);
 		}
 
 		PeerAwareInstanceRegistryDefinition peerAwareInstanceRegistryDefinition = new PeerAwareInstanceRegistryDefinition(
-				beanFactory);
-		if (!beanFactory.containsDefinition(peerAwareInstanceRegistryDefinition.getId())) {
-			beanFactory.registerDefinition(peerAwareInstanceRegistryDefinition);
+				environment);
+		if (!environment.containsDefinition(peerAwareInstanceRegistryDefinition.getId())) {
+			environment.registerDefinition(peerAwareInstanceRegistryDefinition);
 		}
 
-		PeerEurekaNodesDefinition peerEurekaNodesDefinition = new PeerEurekaNodesDefinition(beanFactory);
-		if (!beanFactory.containsDefinition(peerEurekaNodesDefinition.getId())) {
-			beanFactory.registerDefinition(peerEurekaNodesDefinition);
+		PeerEurekaNodesDefinition peerEurekaNodesDefinition = new PeerEurekaNodesDefinition(environment);
+		if (!environment.containsDefinition(peerEurekaNodesDefinition.getId())) {
+			environment.registerDefinition(peerEurekaNodesDefinition);
 		}
 
-		ServerCodecsDefinition serverCodecsDefinition = new ServerCodecsDefinition(beanFactory);
-		if (!beanFactory.containsDefinition(serverCodecsDefinition.getId())) {
-			beanFactory.registerDefinition(serverCodecsDefinition);
+		ServerCodecsDefinition serverCodecsDefinition = new ServerCodecsDefinition(environment);
+		if (!environment.containsDefinition(serverCodecsDefinition.getId())) {
+			environment.registerDefinition(serverCodecsDefinition);
 		}
 	}
-
 }

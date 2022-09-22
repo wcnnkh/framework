@@ -1,15 +1,15 @@
 package io.basc.framework.rpc.support;
 
-import io.basc.framework.factory.NoArgsInstanceFactory;
-import io.basc.framework.rpc.CallableFactory;
-
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
-public class ServiceCallableFactory implements CallableFactory {
-	private final NoArgsInstanceFactory instanceFactory;
+import io.basc.framework.factory.InstanceFactory;
+import io.basc.framework.rpc.CallableFactory;
 
-	public ServiceCallableFactory(NoArgsInstanceFactory instanceFactory) {
+public class ServiceCallableFactory implements CallableFactory {
+	private final InstanceFactory instanceFactory;
+
+	public ServiceCallableFactory(InstanceFactory instanceFactory) {
 		this.instanceFactory = instanceFactory;
 	}
 

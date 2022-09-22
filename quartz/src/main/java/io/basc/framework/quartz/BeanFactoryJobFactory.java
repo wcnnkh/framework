@@ -1,8 +1,5 @@
 package io.basc.framework.quartz;
 
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.beans.BeanFactoryAware;
-
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -11,6 +8,9 @@ import org.quartz.SchedulerException;
 import org.quartz.simpl.PropertySettingJobFactory;
 import org.quartz.simpl.SimpleJobFactory;
 import org.quartz.spi.TriggerFiredBundle;
+
+import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.factory.BeanFactoryAware;
 
 /**
  * 依赖BeanFactory的实现

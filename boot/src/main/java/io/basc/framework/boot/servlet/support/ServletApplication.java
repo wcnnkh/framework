@@ -13,11 +13,11 @@ public class ServletApplication extends DefaultApplication {
 		setClassLoader(servletContext.getClassLoader());
 		String webRoot = ServletContextUtils.getWebRoot(servletContext);
 		if (webRoot != null) {
-			getEnvironment().setWorkPath(webRoot);
-			getContextClasses().add(new DirectoryClassesLoader(webRoot, getEnvironment()));
+			setWorkPath(webRoot);
+			getContextClasses().add(new DirectoryClassesLoader(webRoot, getProperties()));
 		}
 
-		getEnvironment().addFactory(new ServletContextPropertyFactory(servletContext));
-		getEnvironment().addResourceLoader(new ServletContextResourceLoader(servletContext));
+		getProperties().getTandemFactories().addService(new ServletContextPropertyFactory(servletContext));
+		getResourceLoader().getResourceLoaders().addService(new ServletContextResourceLoader(servletContext));
 	}
 }

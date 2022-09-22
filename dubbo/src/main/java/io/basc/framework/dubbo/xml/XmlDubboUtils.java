@@ -24,10 +24,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import io.basc.framework.context.ClassesLoaderFactory;
+import io.basc.framework.context.Context;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
-import io.basc.framework.factory.NoArgsInstanceFactory;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -95,30 +95,29 @@ public final class XmlDubboUtils {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static List<ServiceConfig> parseServiceConfigList(final Environment environment, NodeList nodeList,
-			ServiceConfig<?> defaultConfig, final NoArgsInstanceFactory refInstanceFactory,
-			final ClassesLoaderFactory classesLoaderFactory) {
-		return parseConfigList(ServiceConfig.class, environment, nodeList, defaultConfig,
+	public static List<ServiceConfig> parseServiceConfigList(final Context context, NodeList nodeList,
+			ServiceConfig<?> defaultConfig) {
+		return parseConfigList(ServiceConfig.class, context, nodeList, defaultConfig,
 				new ConfigFilter<ServiceConfig>() {
 
 					@SuppressWarnings("unchecked")
 					@Override
 					public boolean doFilter(List<ServiceConfig> list, Node node, ServiceConfig config) {
-						String ref = DomUtils.getNodeAttributeValue(environment, node, "ref");
-						if (StringUtils.isNotEmpty(ref) && refInstanceFactory.isInstance(ref)) {
-							config.setRef(refInstanceFactory.getInstance(ref));
+						String ref = DomUtils.getNodeAttributeValue(context, node, "ref");
+						if (StringUtils.isNotEmpty(ref) && context.isInstance(ref)) {
+							config.setRef(context.getInstance(ref));
 						}
 
-						String packageName = getPackageName(environment, node);
+						String packageName = getPackageName(context, node);
 						if (StringUtils.isNotEmpty(packageName)) {
-							for (Class<?> clazz : classesLoaderFactory.getClassesLoader(packageName,
+							for (Class<?> clazz : context.getClassesLoaderFactory().getClassesLoader(packageName,
 									(e, m) -> e.getAnnotationMetadata().isInterface())) {
-								if (!refInstanceFactory.isInstance(clazz)) {
+								if (!context.isInstance(clazz)) {
 									logger.warn("{} not supported get instance", clazz);
 									continue;
 								}
 
-								Object refInstance = refInstanceFactory.getInstance(clazz);
+								Object refInstance = context.getInstance(clazz);
 								ServiceConfig<Object> scanService = Copy.copy(config, ServiceConfig.class);
 								scanService.setInterface(clazz);
 								scanService.setRef(refInstance);
@@ -128,21 +127,21 @@ public final class XmlDubboUtils {
 							}
 						}
 
-						List<RegistryConfig> registryConfigs = parseRegistryConfigList(environment,
-								node.getChildNodes(), null);
+						List<RegistryConfig> registryConfigs = parseRegistryConfigList(context, node.getChildNodes(),
+								null);
 						if (!registryConfigs.isEmpty()) {
 							config.setRegistries(registryConfigs);
 						}
 
-						List<ProtocolConfig> protocolConfigs = parseProtocolConfigList(environment,
-								node.getChildNodes(), null);
+						List<ProtocolConfig> protocolConfigs = parseProtocolConfigList(context, node.getChildNodes(),
+								null);
 						if (!protocolConfigs.isEmpty()) {
 							config.setProtocols(protocolConfigs);
 						}
 
 						if (config.isValid() && config.getRef() != null
 								&& StringUtils.isNotEmpty(config.getInterface())) {
-							List<MethodConfig> methodConfigs = parseMethodConfigList(environment, node.getChildNodes());
+							List<MethodConfig> methodConfigs = parseMethodConfigList(context, node.getChildNodes());
 							if (!methodConfigs.isEmpty()) {
 								config.setMethods(methodConfigs);
 							}
@@ -268,7 +267,7 @@ public final class XmlDubboUtils {
 					continue;
 				}
 
-				T config = defaultConfig == null ? Sys.env.getInstance(type) : Copy.copy(defaultConfig, type);
+				T config = defaultConfig == null ? Sys.getEnv().getInstance(type) : Copy.copy(defaultConfig, type);
 				loader(config, environment, node);
 
 				if (filter != null && !filter.doFilter(list, node, config)) {

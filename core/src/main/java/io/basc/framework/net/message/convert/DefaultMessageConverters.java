@@ -44,10 +44,11 @@ public class DefaultMessageConverters extends MessageConverters {
 	}
 
 	@Override
-	protected void aware(MessageConverter messageConverter) {
-		if (messageConverter instanceof ConversionServiceAware) {
-			((ConversionServiceAware) messageConverter).setConversionService(conversionServices);
+	public void accept(MessageConverter service) {
+		if (service instanceof ConversionServiceAware) {
+			((ConversionServiceAware) service).setConversionService(conversionServices);
 		}
-		super.aware(messageConverter);
+		super.accept(service);
 	}
+
 }

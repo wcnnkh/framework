@@ -11,6 +11,7 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.StringMatchers;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.PropertyFactory;
+import io.basc.framework.value.ValueFactory;
 
 public class EnableConditionUtils {
 	private static Logger logger = LoggerFactory.getLogger(EnableConditionUtils.class);
@@ -55,7 +56,7 @@ public class EnableConditionUtils {
 		return false;
 	}
 
-	public static boolean enable(MetadataReader metadataReader, PropertyFactory propertyFactory) {
+	public static boolean enable(MetadataReader metadataReader, ValueFactory<String> propertyFactory) {
 		Map<String, Object> attributeMap = metadataReader.getAnnotationMetadata()
 				.getAnnotationAttributes(EnableCondition.class.getName());
 		if (attributeMap == null) {

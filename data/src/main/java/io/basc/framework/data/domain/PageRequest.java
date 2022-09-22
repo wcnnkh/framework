@@ -17,7 +17,7 @@ import java.io.Serializable;
  */
 public class PageRequest extends BascObject implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private static final Observable<Long> DEFAULT_PAGE_SIZE = Sys.env
+	private static final Observable<Long> DEFAULT_PAGE_SIZE = Sys.getEnv().getProperties()
 			.getObservableValue("data.page.request.size", Long.class, 10L);
 
 	private static final ThreadLocal<PageRequest> LOCAL = new NamedThreadLocal<PageRequest>(

@@ -16,7 +16,8 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 
-public class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader implements EnvironmentResourceLoader {
+class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader
+		implements ConfigurableEnvironmentResourceLoader {
 	/**
 	 * @see AutoSelectResource
 	 */
@@ -30,7 +31,7 @@ public class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader i
 
 	public DefaultEnvironmentResourceLoader(Environment environment) {
 		this.environment = environment;
-		this.autoSelect = environment.getObservableValue(AUTO_SELECT_RESOURCE, boolean.class, false);
+		this.autoSelect = environment.getProperties().getObservableValue(AUTO_SELECT_RESOURCE, boolean.class, false);
 	}
 
 	@Override
@@ -60,11 +61,6 @@ public class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader i
 		return super.ignoreClassPathResource(resource) || resource.getPath().startsWith(environment.getWorkPath());
 	}
 
-	@Override
-	public ClassLoader getClassLoader() {
-		return environment.getClassLoader();
-	}
-
 	public boolean isAutoSelectResource() {
 		return autoSelect.get();
 	}
@@ -83,7 +79,7 @@ public class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader i
 
 	@Override
 	public Resource[] getResources(String locationPattern) {
-		Collection<String> names = profilesResolver.resolve(environment,
+		Collection<String> names = profilesResolver.resolve(environment.getProperties(),
 				environment.replacePlaceholders(locationPattern));
 		List<Resource> resources = new ArrayList<Resource>(names.size());
 		for (String name : names) {

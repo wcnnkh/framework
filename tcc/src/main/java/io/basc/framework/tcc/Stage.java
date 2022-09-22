@@ -1,12 +1,12 @@
 package io.basc.framework.tcc;
 
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.beans.BeanFactoryAware;
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.core.reflect.SerializableMethod;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.core.reflect.SerializableMethod;
+import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.factory.BeanFactoryAware;
 
 public class Stage extends SerializableMethod implements Runnable, BeanFactoryAware {
 	private static final long serialVersionUID = 1L;

@@ -7,8 +7,8 @@ import org.junit.Test;
 
 public class SystemEnvironmentTest {
 	@Test
-	public void test(){
-		boolean value = Sys.env.getValue("scw.test._key", boolean.class, true);
+	public void test() {
+		boolean value = Sys.getEnv().getProperties().getValue("scw.test._key", boolean.class, true);
 		assertTrue(value);
 	}
 }

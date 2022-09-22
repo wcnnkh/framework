@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import io.basc.framework.env.Environment;
 import io.basc.framework.event.Observable;
-import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.web.servlet.ServletService;
 import io.basc.framework.web.support.DefaultHttpService;
@@ -17,8 +16,8 @@ import io.basc.framework.web.support.DefaultHttpService;
 public class DefaultHttpServletService extends DefaultHttpService implements ServletService {
 	private final Observable<String> charsetName;
 
-	public DefaultHttpServletService(ServiceLoaderFactory factory, Environment environment) {
-		super(factory);
+	public DefaultHttpServletService(Environment environment) {
+		super(environment);
 		charsetName = environment.getObservableCharsetName();
 	}
 

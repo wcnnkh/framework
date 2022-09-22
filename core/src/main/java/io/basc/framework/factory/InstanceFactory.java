@@ -1,57 +1,40 @@
 package io.basc.framework.factory;
 
-import java.util.function.Supplier;
+import io.basc.framework.util.ClassLoaderProvider;
 
-public interface InstanceFactory extends NoArgsInstanceFactory, DefinitionFactory {
-	boolean isInstance(String name, Object... params);
+public interface InstanceFactory extends ClassLoaderProvider {
 
-	<T> T getInstance(String name, Object... params);
+	/**
+	 * 获取一个实例
+	 * 
+	 * @param       <T>
+	 * @param clazz
+	 * @return
+	 */
+	<T> T getInstance(Class<? extends T> clazz) throws FactoryException;
 
-	default <T> Supplier<T> getInstanceSupplier(String name, Object... params) {
-		return new Supplier<T>() {
-			@Override
-			public T get() {
-				return getInstance(name, params);
-			}
-		};
-	}
+	/**
+	 * 根据名称获取一个实例
+	 * 
+	 * @param
+	 * @param name
+	 * @return
+	 */
+	Object getInstance(String name) throws FactoryException;
 
-	boolean isInstance(Class<?> clazz, Object... params);
+	/**
+	 * 表示可以使用getInstance(Class<T> type)方式获取实例
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	boolean isInstance(Class<?> clazz);
 
-	<T> T getInstance(Class<T> clazz, Object... params);
-
-	default <T> Supplier<T> getInstanceSupplier(Class<T> clazz, Object... params) {
-		return new Supplier<T>() {
-			@Override
-			public T get() {
-				return getInstance(clazz, params);
-			}
-		};
-	}
-
-	boolean isInstance(String name, Class<?>[] parameterTypes);
-
-	<T> T getInstance(String name, Class<?>[] parameterTypes, Object[] params);
-
-	default <T> Supplier<T> getInstanceSupplier(String name, Class<?>[] parameterTypes, Object[] params) {
-		return new Supplier<T>() {
-			@Override
-			public T get() {
-				return getInstance(name, parameterTypes, params);
-			}
-		};
-	}
-
-	boolean isInstance(Class<?> clazz, Class<?>[] parameterTypes);
-
-	<T> T getInstance(Class<T> clazz, Class<?>[] parameterTypes, Object[] params);
-
-	default <T> Supplier<T> getInstanceSupplier(Class<T> clazz, Class<?>[] parameterTypes, Object[] params) {
-		return new Supplier<T>() {
-			@Override
-			public T get() {
-				return getInstance(clazz, parameterTypes, params);
-			}
-		};
-	}
+	/**
+	 * 表示可以使用getInstance(String name)方式获取实例
+	 * 
+	 * @param name
+	 * @return
+	 */
+	boolean isInstance(String name);
 }

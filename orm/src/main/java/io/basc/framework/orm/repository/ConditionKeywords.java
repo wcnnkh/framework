@@ -29,7 +29,7 @@ public class ConditionKeywords implements Predicate<String>, Cloneable {
 	private static final Keywords SEARCH_KEYWORDS = new Keywords(Keywords.HUMP, "search");
 	private static final Keywords START_WITH_KEYWORDS = new Keywords(Keywords.HUMP, "startWith");
 
-	public static final ConditionKeywords DEFAULT = Sys.env.getServiceLoader(ConditionKeywords.class)
+	public static final ConditionKeywords DEFAULT = Sys.getEnv().getServiceLoader(ConditionKeywords.class)
 			.first(() -> new ConditionKeywords());
 
 	private final Keywords endWithKeywords;

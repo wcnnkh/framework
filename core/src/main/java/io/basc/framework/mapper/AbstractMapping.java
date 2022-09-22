@@ -9,7 +9,7 @@ import io.basc.framework.util.ClassUtils;
 public abstract class AbstractMapping implements Mapping {
 
 	public <T> T newInstance(Class<? extends T> type) {
-		return Sys.env.getInstance(type);
+		return Sys.getEnv().getInstance(type);
 	}
 
 	public <T> T mapping(Class<T> entityClass, Fields fields) {

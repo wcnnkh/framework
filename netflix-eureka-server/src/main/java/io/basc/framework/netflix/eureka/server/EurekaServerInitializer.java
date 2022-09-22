@@ -1,14 +1,14 @@
 package io.basc.framework.netflix.eureka.server;
 
-import io.basc.framework.beans.annotation.Autowired;
+import javax.servlet.ServletContext;
+
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.servlet.ServletContextInitialization;
-import io.basc.framework.context.Destroy;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.ioc.annotation.Autowired;
+import io.basc.framework.factory.Destroy;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-
-import javax.servlet.ServletContext;
 
 /**
  * 自动启动eureka服务端
@@ -19,7 +19,7 @@ import javax.servlet.ServletContext;
 @Provider
 public class EurekaServerInitializer implements ServletContextInitialization, Destroy {
 	private static Logger logger = LoggerFactory.getLogger(EurekaServerInitializer.class);
-	
+
 	@Autowired
 	private EurekaServerBootstrap eurekaServerBootstrap;
 	private ServletContext servletContext;
@@ -39,7 +39,7 @@ public class EurekaServerInitializer implements ServletContextInitialization, De
 	}
 
 	@Override
-	public void destroy() throws Throwable {
+	public void destroy() {
 		if (servletContext == null) {
 			return;
 		}

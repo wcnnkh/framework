@@ -13,7 +13,7 @@ import io.basc.framework.util.CollectionUtils;
 public interface ObjectOperations<K> extends KeyValueOperations<K, Object> {
 
 	default ConversionService getConversionService() {
-		return Sys.env.getConversionService();
+		return Sys.getEnv().getConversionService();
 	}
 
 	default <T> T get(Class<T> type, K key) {

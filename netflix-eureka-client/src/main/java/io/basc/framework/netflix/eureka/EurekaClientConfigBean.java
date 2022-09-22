@@ -12,7 +12,7 @@ import com.netflix.appinfo.EurekaAccept;
 import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.discovery.shared.transport.EurekaTransportConfig;
 
-import io.basc.framework.beans.annotation.Autowired;
+import io.basc.framework.context.ioc.annotation.Autowired;
 import io.basc.framework.env.Environment;
 import io.basc.framework.orm.annotation.ConfigurationProperties;
 import io.basc.framework.util.StringUtils;
@@ -52,8 +52,8 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	private EurekaTransportConfig transport = new CloudEurekaTransportConfig();
 
 	/**
-	 * Indicates how often(in seconds) to fetch the registry information from
-	 * the eureka server.
+	 * Indicates how often(in seconds) to fetch the registry information from the
+	 * eureka server.
 	 */
 	private int registryFetchIntervalSeconds = 30;
 
@@ -64,8 +64,8 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	private int instanceInfoReplicationIntervalSeconds = 30;
 
 	/**
-	 * Indicates how long initially (in seconds) to replicate instance info to
-	 * the eureka server.
+	 * Indicates how long initially (in seconds) to replicate instance info to the
+	 * eureka server.
 	 */
 	private int initialInstanceInfoReplicationIntervalSeconds = 40;
 
@@ -103,18 +103,18 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	private int eurekaServerReadTimeoutSeconds = 8;
 
 	/**
-	 * Indicates how long to wait (in seconds) before a connection to eureka
-	 * server needs to timeout. Note that the connections in the client are
-	 * pooled by org.apache.http.client.HttpClient and this setting affects the
-	 * actual connection creation and also the wait time to get the connection
-	 * from the pool.
+	 * Indicates how long to wait (in seconds) before a connection to eureka server
+	 * needs to timeout. Note that the connections in the client are pooled by
+	 * org.apache.http.client.HttpClient and this setting affects the actual
+	 * connection creation and also the wait time to get the connection from the
+	 * pool.
 	 */
 	private int eurekaServerConnectTimeoutSeconds = 5;
 
 	/**
-	 * Gets the name of the implementation which implements BackupRegistry to
-	 * fetch the registry information as a fall back option for only the first
-	 * time when the eureka client starts.
+	 * Gets the name of the implementation which implements BackupRegistry to fetch
+	 * the registry information as a fall back option for only the first time when
+	 * the eureka client starts.
 	 *
 	 * This may be needed for applications which needs additional resiliency for
 	 * registry information without which it cannot operate.
@@ -122,14 +122,14 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	private String backupRegistryImpl;
 
 	/**
-	 * Gets the total number of connections that is allowed from eureka client
-	 * to all eureka servers.
+	 * Gets the total number of connections that is allowed from eureka client to
+	 * all eureka servers.
 	 */
 	private int eurekaServerTotalConnections = 200;
 
 	/**
-	 * Gets the total number of connections that is allowed from eureka client
-	 * to a eureka server host.
+	 * Gets the total number of connections that is allowed from eureka client to a
+	 * eureka server host.
 	 */
 	private int eurekaServerTotalConnectionsPerHost = 50;
 
@@ -139,22 +139,22 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	 * information is not required if the contract returns the service urls from
 	 * eurekaServerServiceUrls.
 	 *
-	 * The DNS mechanism is used when useDnsForFetchingServiceUrls is set to
-	 * true and the eureka client expects the DNS to configured a certain way so
-	 * that it can fetch changing eureka servers dynamically. The changes are
-	 * effective at runtime.
+	 * The DNS mechanism is used when useDnsForFetchingServiceUrls is set to true
+	 * and the eureka client expects the DNS to configured a certain way so that it
+	 * can fetch changing eureka servers dynamically. The changes are effective at
+	 * runtime.
 	 */
 	private String eurekaServerURLContext;
 
 	/**
 	 * Gets the port to be used to construct the service url to contact eureka
-	 * server when the list of eureka servers come from the DNS.This information
-	 * is not required if the contract returns the service urls
+	 * server when the list of eureka servers come from the DNS.This information is
+	 * not required if the contract returns the service urls
 	 * eurekaServerServiceUrls(String).
 	 *
-	 * The DNS mechanism is used when useDnsForFetchingServiceUrls is set to
-	 * true and the eureka client expects the DNS to configured a certain way so
-	 * that it can fetch changing eureka servers dynamically.
+	 * The DNS mechanism is used when useDnsForFetchingServiceUrls is set to true
+	 * and the eureka client expects the DNS to configured a certain way so that it
+	 * can fetch changing eureka servers dynamically.
 	 *
 	 * The changes are effective at runtime.
 	 */
@@ -165,9 +165,9 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	 * information is not required if the contract returns the service urls by
 	 * implementing serviceUrls.
 	 *
-	 * The DNS mechanism is used when useDnsForFetchingServiceUrls is set to
-	 * true and the eureka client expects the DNS to configured a certain way so
-	 * that it can fetch changing eureka servers dynamically.
+	 * The DNS mechanism is used when useDnsForFetchingServiceUrls is set to true
+	 * and the eureka client expects the DNS to configured a certain way so that it
+	 * can fetch changing eureka servers dynamically.
 	 *
 	 * The changes are effective at runtime.
 	 */
@@ -182,15 +182,15 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	 * Indicates how much time (in seconds) that the HTTP connections to eureka
 	 * server can stay idle before it can be closed.
 	 *
-	 * In the AWS environment, it is recommended that the values is 30 seconds
-	 * or less, since the firewall cleans up the connection information after a
-	 * few mins leaving the connection hanging in limbo.
+	 * In the AWS environment, it is recommended that the values is 30 seconds or
+	 * less, since the firewall cleans up the connection information after a few
+	 * mins leaving the connection hanging in limbo.
 	 */
 	private int eurekaConnectionIdleTimeoutSeconds = 30;
 
 	/**
-	 * Indicates whether the client is only interested in the registry
-	 * information for a single VIP.
+	 * Indicates whether the client is only interested in the registry information
+	 * for a single VIP.
 	 */
 	private String registryRefreshSingleVipAddress;
 
@@ -212,23 +212,23 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	private int cacheRefreshExecutorThreadPoolSize = 2;
 
 	/**
-	 * Cache refresh executor exponential back off related property. It is a
-	 * maximum multiplier value for retry delay, in case where a sequence of
-	 * timeouts occurred.
+	 * Cache refresh executor exponential back off related property. It is a maximum
+	 * multiplier value for retry delay, in case where a sequence of timeouts
+	 * occurred.
 	 */
 	private int cacheRefreshExecutorExponentialBackOffBound = 10;
 
 	/**
-	 * Map of availability zone to list of fully qualified URLs to communicate
-	 * with eureka server. Each value can be a single URL or a comma separated
-	 * list of alternative locations.
+	 * Map of availability zone to list of fully qualified URLs to communicate with
+	 * eureka server. Each value can be a single URL or a comma separated list of
+	 * alternative locations.
 	 *
-	 * Typically the eureka server URLs carry protocol,host,port,context and
-	 * version information if any. Example:
+	 * Typically the eureka server URLs carry protocol,host,port,context and version
+	 * information if any. Example:
 	 * https://ec2-256-156-243-129.compute-1.amazonaws.com:7001/eureka/
 	 *
-	 * The changes are effective at runtime at the next service url refresh
-	 * cycle as specified by eurekaServiceUrlPollIntervalSeconds.
+	 * The changes are effective at runtime at the next service url refresh cycle as
+	 * specified by eurekaServiceUrlPollIntervalSeconds.
 	 */
 	private Map<String, String> serviceUrl = new HashMap<>();
 
@@ -237,40 +237,39 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	}
 
 	/**
-	 * Indicates whether the content fetched from eureka server has to be
-	 * compressed whenever it is supported by the server. The registry
-	 * information from the eureka server is compressed for optimum network
-	 * traffic.
+	 * Indicates whether the content fetched from eureka server has to be compressed
+	 * whenever it is supported by the server. The registry information from the
+	 * eureka server is compressed for optimum network traffic.
 	 */
 	private boolean gZipContent = true;
 
 	/**
-	 * Indicates whether the eureka client should use the DNS mechanism to fetch
-	 * a list of eureka servers to talk to. When the DNS name is updated to have
+	 * Indicates whether the eureka client should use the DNS mechanism to fetch a
+	 * list of eureka servers to talk to. When the DNS name is updated to have
 	 * additional servers, that information is used immediately after the eureka
 	 * client polls for that information as specified in
 	 * eurekaServiceUrlPollIntervalSeconds.
 	 *
-	 * Alternatively, the service urls can be returned serviceUrls, but the
-	 * users should implement their own mechanism to return the updated list in
-	 * case of changes.
+	 * Alternatively, the service urls can be returned serviceUrls, but the users
+	 * should implement their own mechanism to return the updated list in case of
+	 * changes.
 	 *
 	 * The changes are effective at runtime.
 	 */
 	private boolean useDnsForFetchingServiceUrls = false;
 
 	/**
-	 * Indicates whether or not this instance should register its information
-	 * with eureka server for discovery by others.
+	 * Indicates whether or not this instance should register its information with
+	 * eureka server for discovery by others.
 	 *
-	 * In some cases, you do not want your instances to be discovered whereas
-	 * you just want do discover other instances.
+	 * In some cases, you do not want your instances to be discovered whereas you
+	 * just want do discover other instances.
 	 */
 	private boolean registerWithEureka = true;
 
 	/**
-	 * Indicates whether or not this instance should try to use the eureka
-	 * server in the same zone for latency and/or other reason.
+	 * Indicates whether or not this instance should try to use the eureka server in
+	 * the same zone for latency and/or other reason.
 	 *
 	 * Ideally eureka clients are configured to talk to servers in the same zone
 	 *
@@ -280,19 +279,18 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	private boolean preferSameZoneEureka = true;
 
 	/**
-	 * Indicates whether to log differences between the eureka server and the
-	 * eureka client in terms of registry information.
+	 * Indicates whether to log differences between the eureka server and the eureka
+	 * client in terms of registry information.
 	 *
 	 * Eureka client tries to retrieve only delta changes from eureka server to
 	 * minimize network traffic. After receiving the deltas, eureka client
-	 * reconciles the information from the server to verify it has not missed
-	 * out some information. Reconciliation failures could happen when the
-	 * client has had network issues communicating to server.If the
-	 * reconciliation fails, eureka client gets the full registry information.
+	 * reconciles the information from the server to verify it has not missed out
+	 * some information. Reconciliation failures could happen when the client has
+	 * had network issues communicating to server.If the reconciliation fails,
+	 * eureka client gets the full registry information.
 	 *
-	 * While getting the full registry information, the eureka client can log
-	 * the differences between the client and the server and this setting
-	 * controls that.
+	 * While getting the full registry information, the eureka client can log the
+	 * differences between the client and the server and this setting controls that.
 	 *
 	 * The changes are effective at runtime at the next registry fetch cycle as
 	 * specified by registryFetchIntervalSecondsr
@@ -303,9 +301,9 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	 * Indicates whether the eureka client should disable fetching of delta and
 	 * should rather resort to getting the full registry information.
 	 *
-	 * Note that the delta fetches can reduce the traffic tremendously, because
-	 * the rate of change with the eureka server is normally much lower than the
-	 * rate of fetches.
+	 * Note that the delta fetches can reduce the traffic tremendously, because the
+	 * rate of change with the eureka server is normally much lower than the rate of
+	 * fetches.
 	 *
 	 * The changes are effective at runtime at the next registry fetch cycle as
 	 * specified by registryFetchIntervalSeconds
@@ -314,16 +312,16 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 
 	/**
 	 * Comma separated list of regions for which the eureka registry information
-	 * will be fetched. It is mandatory to define the availability zones for
-	 * each of these regions as returned by availabilityZones. Failing to do so,
-	 * will result in failure of discovery client startup.
+	 * will be fetched. It is mandatory to define the availability zones for each of
+	 * these regions as returned by availabilityZones. Failing to do so, will result
+	 * in failure of discovery client startup.
 	 *
 	 */
 	private String fetchRemoteRegionsRegistry;
 
 	/**
-	 * Gets the list of availability zones (used in AWS data centers) for the
-	 * region in which this instance resides.
+	 * Gets the list of availability zones (used in AWS data centers) for the region
+	 * in which this instance resides.
 	 *
 	 * The changes are effective at runtime at the next registry fetch cycle as
 	 * specified by registryFetchIntervalSeconds.
@@ -331,14 +329,14 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	private Map<String, String> availabilityZones = new HashMap<>();
 
 	/**
-	 * Indicates whether to get the applications after filtering the
-	 * applications for instances with only InstanceStatus UP states.
+	 * Indicates whether to get the applications after filtering the applications
+	 * for instances with only InstanceStatus UP states.
 	 */
 	private boolean filterOnlyUpInstances = true;
 
 	/**
-	 * Indicates whether this client should fetch eureka registry information
-	 * from eureka server.
+	 * Indicates whether this client should fetch eureka registry information from
+	 * eureka server.
 	 */
 	private boolean fetchRegistry = true;
 
@@ -356,16 +354,15 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 
 	/**
 	 * Indicates whether server can redirect a client request to a backup
-	 * server/cluster. If set to false, the server will handle the request
-	 * directly, If set to true, it may send HTTP redirect to the client, with a
-	 * new server location.
+	 * server/cluster. If set to false, the server will handle the request directly,
+	 * If set to true, it may send HTTP redirect to the client, with a new server
+	 * location.
 	 */
 	private boolean allowRedirects = false;
 
 	/**
-	 * If set to true, local status updates via ApplicationInfoManager will
-	 * trigger on-demand (but rate limited) register/updates to remote eureka
-	 * servers.
+	 * If set to true, local status updates via ApplicationInfoManager will trigger
+	 * on-demand (but rate limited) register/updates to remote eureka servers.
 	 */
 	private boolean onDemandUpdateStatusChange = true;
 
@@ -399,8 +396,8 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	private boolean shouldEnforceRegistrationAtInit = false;
 
 	/**
-	 * Order of the discovery client used by `CompositeDiscoveryClient` for
-	 * sorting available clients.
+	 * Order of the discovery client used by `CompositeDiscoveryClient` for sorting
+	 * available clients.
 	 */
 	private int order = 0;
 
@@ -506,7 +503,7 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	@Override
 	public String getExperimental(String name) {
 		if (this.environment != null) {
-			return this.environment.getValue(PREFIX + ".experimental." + name, String.class, null);
+			return this.environment.getProperties().getValue(PREFIX + ".experimental." + name, String.class, null);
 		}
 		return null;
 	}
@@ -980,9 +977,9 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 
 	@Override
 	public String toString() {
-		return new StringBuilder("EurekaClientConfigBean{").append("propertyResolver=").append(environment)
-				.append(", ").append("enabled=").append(enabled).append(", ").append("transport=").append(transport)
-				.append(", ").append("registryFetchIntervalSeconds=").append(registryFetchIntervalSeconds).append(", ")
+		return new StringBuilder("EurekaClientConfigBean{").append("propertyResolver=").append(environment).append(", ")
+				.append("enabled=").append(enabled).append(", ").append("transport=").append(transport).append(", ")
+				.append("registryFetchIntervalSeconds=").append(registryFetchIntervalSeconds).append(", ")
 				.append("instanceInfoReplicationIntervalSeconds=").append(instanceInfoReplicationIntervalSeconds)
 				.append(", ").append("initialInstanceInfoReplicationIntervalSeconds=")
 				.append(initialInstanceInfoReplicationIntervalSeconds).append(", ")

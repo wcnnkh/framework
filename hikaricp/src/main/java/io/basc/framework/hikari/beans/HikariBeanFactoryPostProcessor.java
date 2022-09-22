@@ -1,43 +1,43 @@
 package io.basc.framework.hikari.beans;
 
-import io.basc.framework.beans.BeanFactoryPostProcessor;
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
+import javax.sql.DataSource;
+
+import io.basc.framework.context.ConfigurableContext;
+import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.db.DataBase;
 import io.basc.framework.sql.ConnectionFactory;
 
-import javax.sql.DataSource;
-
 @Provider
-public class HikariBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+public class HikariBeanFactoryPostProcessor implements ContextPostProcessor {
 
-	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
-		HikariConfigDefinition hikariConfigDefinition = new HikariConfigDefinition(beanFactory);
-		if (!beanFactory.containsDefinition(hikariConfigDefinition.getId())) {
-			beanFactory.registerDefinition(hikariConfigDefinition);
+	@Override
+	public void postProcessContext(ConfigurableContext context) throws Throwable {
+		HikariConfigDefinition hikariConfigDefinition = new HikariConfigDefinition(context);
+		if (!context.containsDefinition(hikariConfigDefinition.getId())) {
+			context.registerDefinition(hikariConfigDefinition);
 		}
 
-		HikariDataSourceDefinition hikariDataSourceDefinition = new HikariDataSourceDefinition(beanFactory);
-		if (!beanFactory.containsDefinition(hikariConfigDefinition.getId())) {
-			beanFactory.registerDefinition(hikariDataSourceDefinition);
+		HikariDataSourceDefinition hikariDataSourceDefinition = new HikariDataSourceDefinition(context);
+		if (!context.containsDefinition(hikariConfigDefinition.getId())) {
+			context.registerDefinition(hikariDataSourceDefinition);
 
-			if (!beanFactory.isAlias(DataSource.class.getName())) {
-				beanFactory.registerAlias(hikariDataSourceDefinition.getId(), DataSource.class.getName());
+			if (!context.isAlias(DataSource.class.getName())) {
+				context.registerAlias(hikariDataSourceDefinition.getId(), DataSource.class.getName());
 			}
 		}
 
-		ConnectionFactoryDefinition connectionFactoryDefinition = new ConnectionFactoryDefinition(beanFactory);
-		if (!beanFactory.containsDefinition(connectionFactoryDefinition.getId())) {
-			beanFactory.registerDefinition(connectionFactoryDefinition);
+		ConnectionFactoryDefinition connectionFactoryDefinition = new ConnectionFactoryDefinition(context);
+		if (!context.containsDefinition(connectionFactoryDefinition.getId())) {
+			context.registerDefinition(connectionFactoryDefinition);
 
-			if (!beanFactory.isAlias(ConnectionFactory.class.getName())) {
-				beanFactory.registerAlias(connectionFactoryDefinition.getId(), ConnectionFactory.class.getName());
+			if (!context.isAlias(ConnectionFactory.class.getName())) {
+				context.registerAlias(connectionFactoryDefinition.getId(), ConnectionFactory.class.getName());
 			}
 		}
 
-		if (!beanFactory.containsDefinition(DataBase.class.getName())) {
-			beanFactory.registerDefinition(new DataBaseDefinition(beanFactory));
+		if (!context.containsDefinition(DataBase.class.getName())) {
+			context.registerDefinition(new DataBaseDefinition(context));
 		}
 	}
 }

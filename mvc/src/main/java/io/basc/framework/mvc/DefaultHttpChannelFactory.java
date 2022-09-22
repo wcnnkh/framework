@@ -2,7 +2,7 @@ package io.basc.framework.mvc;
 
 import java.io.IOException;
 
-import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.context.Context;
 import io.basc.framework.mvc.security.UserSessionManager;
 import io.basc.framework.net.message.multipart.MultipartMessageResolver;
 import io.basc.framework.web.ServerHttpRequest;
@@ -14,21 +14,20 @@ import io.basc.framework.web.message.support.DefaultWebMessageConverters;
 import io.basc.framework.web.pattern.HttpPatternMatcher;
 
 public class DefaultHttpChannelFactory implements HttpChannelFactory {
-	protected final BeanFactory beanFactory;
 	private MultipartMessageResolver multipartMessageResolver;
 	private final HttpPatternMatcher<Boolean> jsonpSupportConfig = new HttpPatternMatcher<Boolean>();
 	private final HttpPatternMatcher<Boolean> jsonSupportWrapperConfig = new HttpPatternMatcher<Boolean>();
 	private final HttpPatternMatcher<Boolean> multipartFormSupportWrapperConfig = new HttpPatternMatcher<Boolean>();
 	private final WebMessageConverters webMessageConverters;
 	private final UserSessionManager userSessionManager;
+	private final Context context;
 
-	public DefaultHttpChannelFactory(BeanFactory beanFactory) {
-		this.beanFactory = beanFactory;
-		webMessageConverters = new DefaultWebMessageConverters(beanFactory.getEnvironment().getConversionService(),
-				beanFactory.getDefaultValueFactory());
-		webMessageConverters.configure(beanFactory);
-		this.userSessionManager = beanFactory.isInstance(UserSessionManager.class)
-				? beanFactory.getInstance(UserSessionManager.class)
+	public DefaultHttpChannelFactory(Context context) {
+		this.context = context;
+		webMessageConverters = new DefaultWebMessageConverters(context);
+		webMessageConverters.configure(context);
+		this.userSessionManager = context.isInstance(UserSessionManager.class)
+				? context.getInstance(UserSessionManager.class)
 				: null;
 	}
 
@@ -82,7 +81,6 @@ public class DefaultHttpChannelFactory implements HttpChannelFactory {
 		if (isSupportJsonp(requestToUse)) {
 			responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse);
 		}
-		return new DefaultHttpChannel(beanFactory, requestToUse, responseToUse, webMessageConverters,
-				userSessionManager);
+		return new DefaultHttpChannel(context, requestToUse, responseToUse, webMessageConverters, userSessionManager);
 	}
 }

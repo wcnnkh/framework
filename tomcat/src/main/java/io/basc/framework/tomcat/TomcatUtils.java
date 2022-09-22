@@ -17,7 +17,7 @@ public final class TomcatUtils {
 	};
 
 	private static String getProperty(Environment environment, String name) {
-		return environment.getString("tomcat." + name);
+		return environment.getProperties().getString("tomcat." + name);
 	}
 
 	public static String getBaseDir(Environment environment) {
@@ -80,7 +80,7 @@ public final class TomcatUtils {
 			properties.put("load-on-startup", 1);
 		}
 
-		if (environment.exists(path)) {
+		if (environment.getResourceLoader().exists(path)) {
 			properties.putAll(environment.getProperties(path).get());
 		}
 		return properties;

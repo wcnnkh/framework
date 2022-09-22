@@ -23,9 +23,10 @@ public class DefaultUserSessionManager implements UserSessionManager {
 	private static final String UID_ATTRIBUTE = "io.basc.framework.mvc.http.channel.uid";
 	private static final String SESSIONID_ATTRIBUTE = "io.basc.framework.mvc.http.channel.sessionid";
 	private static final String SINGLE_ATTRIBUTE = "io.basc.framework.mvc.http.channel.single.session";
-	private static final String TOKEN_NAME = Sys.env.getValue(SESSIONID_ATTRIBUTE, String.class, "token");
-	private static final String UID_NAME = Sys.env.getValue(UID_ATTRIBUTE, String.class, "uid");
-	private static final boolean SINGLE_SESSION = Sys.env.getBooleanValue(SINGLE_ATTRIBUTE);
+	private static final String TOKEN_NAME = Sys.getEnv().getProperties().getValue(SESSIONID_ATTRIBUTE, String.class,
+			"token");
+	private static final String UID_NAME = Sys.getEnv().getProperties().getValue(UID_ATTRIBUTE, String.class, "uid");
+	private static final boolean SINGLE_SESSION = Sys.getEnv().getProperties().getBooleanValue(SINGLE_ATTRIBUTE);
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultUserSessionManager.class);
 

@@ -1,26 +1,26 @@
 package io.basc.framework.ibatis.beans;
 
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.support.DefaultBeanDefinition;
-import io.basc.framework.ibatis.MybatisUtils;
-
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-public class SqlSessionFactoryBeanDefinition extends DefaultBeanDefinition {
+import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.factory.BeansException;
+import io.basc.framework.factory.support.FactoryBeanDefinition;
+import io.basc.framework.ibatis.MybatisUtils;
 
-	public SqlSessionFactoryBeanDefinition(ConfigurableBeanFactory beanFactory) {
+public class SqlSessionFactoryBeanDefinition extends FactoryBeanDefinition {
+
+	public SqlSessionFactoryBeanDefinition(BeanFactory beanFactory) {
 		super(beanFactory, SqlSessionFactory.class);
 	}
 
 	public boolean isInstance() {
-		return beanFactory.isInstance(Configuration.class);
+		return getBeanFactory().isInstance(Configuration.class);
 	}
 
 	public Object create() throws BeansException {
-		Configuration configuration = beanFactory.getInstance(Configuration.class);
+		Configuration configuration = getBeanFactory().getInstance(Configuration.class);
 		SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
 		return MybatisUtils.proxySqlSessionFactory(sqlSessionFactory);
 	}

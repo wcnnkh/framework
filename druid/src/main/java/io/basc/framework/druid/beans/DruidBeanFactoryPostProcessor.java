@@ -1,38 +1,39 @@
 package io.basc.framework.druid.beans;
 
-import io.basc.framework.beans.BeanDefinition;
-import io.basc.framework.beans.BeanFactoryPostProcessor;
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.db.DataBase;
-import io.basc.framework.sql.ConnectionFactory;
-
 import javax.sql.DataSource;
 
+import io.basc.framework.context.ConfigurableContext;
+import io.basc.framework.context.ContextPostProcessor;
+import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.db.DataBase;
+import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.sql.ConnectionFactory;
+
 @Provider
-public class DruidBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+public class DruidBeanFactoryPostProcessor implements ContextPostProcessor {
 
-	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
-		BeanDefinition definition = new DruidDataSourceDefinition(beanFactory);
-		if (!beanFactory.containsDefinition(definition.getId())) {
-			beanFactory.registerDefinition(definition);
+	@Override
+	public void postProcessContext(ConfigurableContext context) throws Throwable {
+		BeanDefinition definition = new DruidDataSourceDefinition(context);
+		if (!context.containsDefinition(definition.getId())) {
+			context.registerDefinition(definition);
 
-			if (!beanFactory.isAlias(DataSource.class.getName())) {
-				beanFactory.registerAlias(definition.getId(), DataSource.class.getName());
+			if (!context.isAlias(DataSource.class.getName())) {
+				context.registerAlias(definition.getId(), DataSource.class.getName());
 			}
 		}
 
-		ConnectionFactoryDefinition connectionFactoryDefinition = new ConnectionFactoryDefinition(beanFactory);
-		if (!beanFactory.containsDefinition(connectionFactoryDefinition.getId())) {
-			beanFactory.registerDefinition(connectionFactoryDefinition);
-			if (!beanFactory.isAlias(ConnectionFactory.class.getName())) {
-				beanFactory.registerAlias(connectionFactoryDefinition.getId(), ConnectionFactory.class.getName());
+		ConnectionFactoryDefinition connectionFactoryDefinition = new ConnectionFactoryDefinition(context);
+		if (!context.containsDefinition(connectionFactoryDefinition.getId())) {
+			context.registerDefinition(connectionFactoryDefinition);
+			if (!context.isAlias(ConnectionFactory.class.getName())) {
+				context.registerAlias(connectionFactoryDefinition.getId(), ConnectionFactory.class.getName());
 			}
 		}
 
-		if (!beanFactory.containsDefinition(DataBase.class.getName())) {
-			beanFactory.registerDefinition(new DataBaseDefinition(beanFactory));
+		if (!context.containsDefinition(DataBase.class.getName())) {
+			context.registerDefinition(new DataBaseDefinition(context));
 		}
 	}
+
 }

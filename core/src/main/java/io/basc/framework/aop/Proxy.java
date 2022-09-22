@@ -8,11 +8,11 @@ import io.basc.framework.factory.InstanceCreator;
  * @author shuchaowen
  *
  */
-public interface Proxy extends InstanceCreator<Object> {
+public interface Proxy extends InstanceCreator<Object, ProxyException> {
 	/**
 	 * 被代理的原始类
 	 * 
 	 * @return
 	 */
-	Class<?> getTargetClass();
+	Class<?> getSourceClass();
 }

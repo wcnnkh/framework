@@ -23,7 +23,7 @@ public class DruidWebStateInitizer implements ServletContextInitialization {
 
 	@Override
 	public void init(Application application, ServletContext servletContext) {
-		String value = application.getEnvironment().getString("druid.filters");
+		String value = application.getProperties().getString("druid.filters");
 		if (value == null || !value.contains("stat")) {
 			return;
 		}
@@ -39,7 +39,7 @@ public class DruidWebStateInitizer implements ServletContextInitialization {
 		filterDynamic.setInitParameter("exclusions", "/druid/*");
 		filterDynamic.setInitParameter("loginUsername", RandomUtils.randomString(10));
 		filterDynamic.setInitParameter("loginPassword", RandomUtils.randomString(10));
-		application.getEnvironment().streamByPrefix("druid.web.stat.").forEach((e) -> {
+		application.getProperties().streamByPrefix("druid.web.stat.").forEach((e) -> {
 			filterDynamic.setInitParameter(e.getKey(), e.getValue().getAsString());
 		});
 		logger.info("Druid web state username[{}] password[{}]", filterDynamic.getInitParameter("loginUsername"),

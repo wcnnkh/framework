@@ -2,7 +2,7 @@ package io.basc.framework.mvc;
 
 import java.io.IOException;
 
-import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.context.Context;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
@@ -41,27 +41,24 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 			ActionInterceptor.class);
 	private final ExceptionHandler exceptionHandler;
 	private final HttpChannelFactory httpChannelFactory;
-	protected final BeanFactory beanFactory;
 	private ActionManager actionManager;
 	private ModelAndViewRegistry modelAndViewRegistry;
 
-	public HttpControllerService(BeanFactory beanFactory) {
-		this.beanFactory = beanFactory;
-		if (beanFactory.isInstance(HttpChannelFactory.class)) {
-			httpChannelFactory = beanFactory.getInstance(HttpChannelFactory.class);
+	public HttpControllerService(Context context) {
+		if (context.isInstance(HttpChannelFactory.class)) {
+			httpChannelFactory = context.getInstance(HttpChannelFactory.class);
 		} else {
-			httpChannelFactory = new DefaultHttpChannelFactory(beanFactory);
+			httpChannelFactory = new DefaultHttpChannelFactory(context);
 		}
 
-		this.actionManager = beanFactory.getInstance(ActionManager.class);
-		this.exceptionHandler = beanFactory.isInstance(ExceptionHandler.class)
-				? beanFactory.getInstance(ExceptionHandler.class)
+		this.actionManager = context.getInstance(ActionManager.class);
+		this.exceptionHandler = context.isInstance(ExceptionHandler.class) ? context.getInstance(ExceptionHandler.class)
 				: null;
 
-		if (beanFactory.isInstance(ModelAndViewRegistry.class)) {
-			this.modelAndViewRegistry = beanFactory.getInstance(ModelAndViewRegistry.class);
+		if (context.isInstance(ModelAndViewRegistry.class)) {
+			this.modelAndViewRegistry = context.getInstance(ModelAndViewRegistry.class);
 		}
-		configure(beanFactory);
+		configure(context);
 	}
 
 	@Override

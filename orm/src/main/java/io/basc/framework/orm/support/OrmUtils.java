@@ -13,7 +13,7 @@ import io.basc.framework.util.Pair;
 import io.basc.framework.util.stream.Processor;
 
 public final class OrmUtils {
-	private static final ObjectRelationalMapper MAPPER = Sys.env
+	private static final ObjectRelationalMapper MAPPER = Sys.getEnv()
 			.getServiceLoader(ObjectRelationalMapper.class, DefaultObjectRelationalMapper.class).first();
 
 	private OrmUtils() {

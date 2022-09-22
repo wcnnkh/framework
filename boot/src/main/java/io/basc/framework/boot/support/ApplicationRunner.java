@@ -19,12 +19,12 @@ public class ApplicationRunner<T extends ConfigurableApplication> {
 		consumer.accept(application);
 		return this;
 	}
-	
+
 	public ListenableFuture<T> start() {
 		Runtime.getRuntime().addShutdownHook(new ApplicationShutdown());
 		ApplicationStart start = new ApplicationStart();
 		Thread run = new Thread(start);
-		run.setContextClassLoader(application.getEnvironment().getClassLoader());
+		run.setContextClassLoader(application.getClassLoader());
 		run.setName(threadName);
 		run.setDaemon(false);
 		run.start();
@@ -54,7 +54,7 @@ public class ApplicationRunner<T extends ConfigurableApplication> {
 	private class ApplicationShutdown extends Thread {
 		public ApplicationShutdown() {
 			setName("shutdown-" + threadName);
-			setContextClassLoader(application.getEnvironment().getClassLoader());
+			setContextClassLoader(application.getClassLoader());
 		}
 
 		@Override

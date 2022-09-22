@@ -1,11 +1,5 @@
 package io.basc.framework.netflix.hystrix;
 
-import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.Ordered;
-import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.factory.NoArgsInstanceFactory;
-import io.basc.framework.netflix.hystrix.annotation.Hystrix;
-
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommand.Setter;
 import com.netflix.hystrix.HystrixCommandGroupKey;
@@ -13,11 +7,17 @@ import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
 
+import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.core.Ordered;
+import io.basc.framework.core.reflect.MethodInvoker;
+import io.basc.framework.factory.InstanceFactory;
+import io.basc.framework.netflix.hystrix.annotation.Hystrix;
+
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class DefaultHystrixCommandFactory implements HystrixCommandFactory {
-	private NoArgsInstanceFactory instanceFactory;
+	private InstanceFactory instanceFactory;
 
-	public DefaultHystrixCommandFactory(NoArgsInstanceFactory instanceFactory) {
+	public DefaultHystrixCommandFactory(InstanceFactory instanceFactory) {
 		this.instanceFactory = instanceFactory;
 	}
 

@@ -2,12 +2,14 @@ package io.basc.framework.xmemcached.beans;
 
 import java.io.IOException;
 
-import io.basc.framework.beans.BeanDefinition;
-import io.basc.framework.beans.BeanFactoryPostProcessor;
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.env.ConfigurableEnvironment;
+import io.basc.framework.env.Environment;
+import io.basc.framework.env.EnvironmentPostProcessor;
+import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.factory.BeansException;
+import io.basc.framework.factory.ConfigurableBeanFactory;
+import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.io.SerializerUtils;
 import io.basc.framework.xmemcached.MyTranscoder;
 import io.basc.framework.xmemcached.XMemcached;
@@ -17,37 +19,21 @@ import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.transcoders.Transcoder;
 
 @Provider
-public class XMemcachedBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+public class XMemcachedBeanFactoryPostProcessor implements EnvironmentPostProcessor {
 
-	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
-		BeanDefinition clientDefinition = new MemcachedClientBeanDefinition(beanFactory);
-		if (!beanFactory.containsDefinition(clientDefinition.getId())) {
-			beanFactory.registerDefinition(clientDefinition);
-		}
-
-		BeanDefinition builderDefinition = new XMemcachedClientBuilderBeanDefinition(beanFactory);
-		if (!beanFactory.containsDefinition(builderDefinition.getId())) {
-			beanFactory.registerDefinition(builderDefinition);
-
-			if (!beanFactory.containsDefinition(MemcachedClientBuilder.class.getName())) {
-				beanFactory.registerAlias(builderDefinition.getId(), MemcachedClientBuilder.class.getName());
-			}
-		}
-	}
-
-	private static final class MemcachedClientBeanDefinition extends DefaultBeanDefinition {
+	private static final class MemcachedClientBeanDefinition extends FactoryBeanDefinition {
 
 		public MemcachedClientBeanDefinition(ConfigurableBeanFactory beanFactory) {
 			super(beanFactory, MemcachedClient.class);
 		}
 
 		public boolean isInstance() {
-			return beanFactory.isInstance(MemcachedClientBuilder.class);
+			return getBeanFactory().isInstance(MemcachedClientBuilder.class);
 		}
 
 		public Object create() throws BeansException {
 			try {
-				return beanFactory.getInstance(MemcachedClientBuilder.class).build();
+				return getBeanFactory().getInstance(MemcachedClientBuilder.class).build();
 			} catch (IOException e) {
 				throw new BeansException(e);
 			}
@@ -66,10 +52,12 @@ public class XMemcachedBeanFactoryPostProcessor implements BeanFactoryPostProces
 		}
 	}
 
-	private static final class XMemcachedClientBuilderBeanDefinition extends DefaultBeanDefinition {
+	private static final class XMemcachedClientBuilderBeanDefinition extends FactoryBeanDefinition {
+		private Environment environment;
 
-		public XMemcachedClientBuilderBeanDefinition(ConfigurableBeanFactory beanFactory) {
-			super(beanFactory, XMemcachedClientBuilder.class);
+		public XMemcachedClientBuilderBeanDefinition(Environment environment) {
+			super(environment, XMemcachedClientBuilder.class);
+			this.environment = environment;
 		}
 
 		public boolean isInstance() {
@@ -77,9 +65,9 @@ public class XMemcachedBeanFactoryPostProcessor implements BeanFactoryPostProces
 		}
 
 		private String getHosts() {
-			String name = beanFactory.getEnvironment().getValue("memcached.hosts.config.name", String.class,
+			String name = environment.getProperties().getValue("memcached.hosts.config.name", String.class,
 					"memcached.hosts");
-			return beanFactory.getEnvironment().getString(name);
+			return environment.getProperties().getString(name);
 		}
 
 		public Object create() throws BeansException {
@@ -89,15 +77,32 @@ public class XMemcachedBeanFactoryPostProcessor implements BeanFactoryPostProces
 		}
 
 		private void builderDefault(XMemcachedClientBuilder builder) {
-			if (beanFactory.isInstance(Transcoder.class)) {
-				builder.setTranscoder(beanFactory.getInstance(Transcoder.class));
+			if (environment.isInstance(Transcoder.class)) {
+				builder.setTranscoder(environment.getInstance(Transcoder.class));
 			} else {
 				builder.setTranscoder(new MyTranscoder(SerializerUtils.getSerializer()));
 			}
 
-			Integer poolSize = beanFactory.getEnvironment().getInteger("memcached.poolsize");
+			Integer poolSize = environment.getProperties().getInteger("memcached.poolsize");
 			if (poolSize != null) {
 				builder.setConnectionPoolSize(poolSize);
+			}
+		}
+	}
+
+	@Override
+	public void postProcessEnvironment(ConfigurableEnvironment environment) {
+		BeanDefinition clientDefinition = new MemcachedClientBeanDefinition(environment);
+		if (!environment.containsDefinition(clientDefinition.getId())) {
+			environment.registerDefinition(clientDefinition);
+		}
+
+		BeanDefinition builderDefinition = new XMemcachedClientBuilderBeanDefinition(environment);
+		if (!environment.containsDefinition(builderDefinition.getId())) {
+			environment.registerDefinition(builderDefinition);
+
+			if (!environment.containsDefinition(MemcachedClientBuilder.class.getName())) {
+				environment.registerAlias(builderDefinition.getId(), MemcachedClientBuilder.class.getName());
 			}
 		}
 	}

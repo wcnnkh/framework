@@ -1,15 +1,15 @@
 package io.basc.framework.rabbitmq;
 
+import java.io.IOException;
+
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+
 import io.basc.framework.amqp.ExchangeDeclare;
 import io.basc.framework.amqp.QueueDeclare;
 import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
-
-import java.io.IOException;
-
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
 
 public class RabbitmqExchange extends AbstractRabbitmqExchange {
 	private static final String DIX_PREFIX = "io.basc.framework.dix.";

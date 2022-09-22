@@ -1,9 +1,5 @@
 package io.basc.framework.netflix.eureka.server;
 
-import io.basc.framework.env.Environment;
-import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.EventListener;
-
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.eureka.EurekaServerConfig;
@@ -13,9 +9,14 @@ import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.resources.ServerCodecs;
 import com.netflix.eureka.transport.JerseyReplicationClient;
 
+import io.basc.framework.env.Environment;
+import io.basc.framework.event.ChangeEvent;
+import io.basc.framework.event.EventListener;
+
 public class RefreshablePeerEurekaNodes extends PeerEurekaNodes implements EventListener<ChangeEvent<String>> {
-	private static final String[] KEYS = new String[]{"eureka.client.region*", "eureka.client.service-url.*", "eureka.client.availability-zones."}; 
-	
+	private static final String[] KEYS = new String[] { "eureka.client.region*", "eureka.client.service-url.*",
+			"eureka.client.availability-zones." };
+
 	private ReplicationClientAdditionalFilters replicationClientAdditionalFilters;
 
 	public RefreshablePeerEurekaNodes(final PeerAwareInstanceRegistry registry, final EurekaServerConfig serverConfig,
@@ -24,8 +25,8 @@ public class RefreshablePeerEurekaNodes extends PeerEurekaNodes implements Event
 			final ReplicationClientAdditionalFilters replicationClientAdditionalFilters, Environment environment) {
 		super(registry, serverConfig, clientConfig, serverCodecs, applicationInfoManager);
 		this.replicationClientAdditionalFilters = replicationClientAdditionalFilters;
-		for(String key : KEYS){
-			environment.registerListener(key, this);
+		for (String key : KEYS) {
+			environment.getProperties().registerListener(key, this);
 		}
 	}
 
@@ -45,10 +46,10 @@ public class RefreshablePeerEurekaNodes extends PeerEurekaNodes implements Event
 
 	@Override
 	public void onEvent(ChangeEvent<String> event) {
-		if(clientConfig.shouldUseDnsForFetchingServiceUrls()){
-			return ;
+		if (clientConfig.shouldUseDnsForFetchingServiceUrls()) {
+			return;
 		}
-		
+
 		updatePeerEurekaNodes(resolvePeerUrls());
 	}
 

@@ -20,11 +20,6 @@
 			</exclusions>
 		</dependency>
 
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>beans</artifactId>
-		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-client -->
 		<dependency>
 			<groupId>org.apache.activemq</groupId>

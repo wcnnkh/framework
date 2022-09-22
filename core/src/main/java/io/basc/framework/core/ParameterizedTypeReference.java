@@ -29,13 +29,7 @@ public abstract class ParameterizedTypeReference<T> {
 	private final Type type;
 
 	protected ParameterizedTypeReference() {
-		Class<?> parameterizedTypeReferenceSubclass = findParameterizedTypeReferenceSubclass(getClass());
-		Type type = parameterizedTypeReferenceSubclass.getGenericSuperclass();
-		Assert.isInstanceOf(ParameterizedType.class, type, "Type must be a parameterized type");
-		ParameterizedType parameterizedType = (ParameterizedType) type;
-		Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-		Assert.isTrue(actualTypeArguments.length == 1, "Number of type arguments must be 1");
-		this.type = actualTypeArguments[0];
+		this.type = getParameterizedType(getClass());
 	}
 
 	private ParameterizedTypeReference(Type type) {
@@ -86,4 +80,13 @@ public abstract class ParameterizedTypeReference<T> {
 		}
 	}
 
+	public static Type getParameterizedType(Class<?> clazz) throws IllegalStateException {
+		Class<?> parameterizedTypeReferenceSubclass = findParameterizedTypeReferenceSubclass(clazz);
+		Type type = parameterizedTypeReferenceSubclass.getGenericSuperclass();
+		Assert.isInstanceOf(ParameterizedType.class, type, "Type must be a parameterized type");
+		ParameterizedType parameterizedType = (ParameterizedType) type;
+		Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+		Assert.isTrue(actualTypeArguments.length == 1, "Number of type arguments must be 1");
+		return actualTypeArguments[0];
+	}
 }

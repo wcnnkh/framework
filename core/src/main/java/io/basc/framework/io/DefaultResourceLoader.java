@@ -1,47 +1,30 @@
 package io.basc.framework.io;
 
-import io.basc.framework.factory.Configurable;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassLoaderProvider;
-import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.DefaultClassLoaderProvider;
 import io.basc.framework.util.StringUtils;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
-public class DefaultResourceLoader implements ConfigurableResourceLoader, Configurable {
-	private ClassLoaderProvider classLoaderProvider;
-	private ConfigurableServices<ProtocolResolver> protocolResolvers = new ConfigurableServices<>(
+public class DefaultResourceLoader extends DefaultClassLoaderProvider implements ConfigurableResourceLoader {
+	private final ConfigurableServices<ProtocolResolver> protocolResolvers = new ConfigurableServices<>(
 			ProtocolResolver.class);
-	private ConfigurableServices<ResourceLoader> resourceLoaders = new ConfigurableServices<>(ResourceLoader.class);
+	private final ConfigurableServices<ResourceLoader> resourceLoaders = new ConfigurableServices<>(
+			ResourceLoader.class);
 
 	public DefaultResourceLoader() {
 	}
 
 	public DefaultResourceLoader(ClassLoader classLoader) {
-		this(new DefaultClassLoaderProvider(classLoader));
+		super(classLoader);
 	}
 
 	public DefaultResourceLoader(ClassLoaderProvider classLoaderProvider) {
-		this.classLoaderProvider = classLoaderProvider;
-	}
-
-	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
-		this.classLoaderProvider = classLoaderProvider;
-	}
-
-	public ClassLoader getClassLoader() {
-		return ClassUtils.getClassLoader(classLoaderProvider);
-	}
-
-	public void addProtocolResolver(ProtocolResolver resolver) {
-		Assert.notNull(resolver, "ProtocolResolver must not be null");
-		synchronized (this) {
-			protocolResolvers.addService(resolver);
-		}
+		super(classLoaderProvider);
 	}
 
 	@Override
@@ -50,19 +33,12 @@ public class DefaultResourceLoader implements ConfigurableResourceLoader, Config
 		resourceLoaders.configure(serviceLoaderFactory);
 	}
 
-	public Iterable<ProtocolResolver> getProtocolResolvers() {
+	public ConfigurableServices<ProtocolResolver> getProtocolResolvers() {
 		return protocolResolvers;
 	}
 
-	public Iterable<ResourceLoader> getResourceLoaders() {
+	public ConfigurableServices<ResourceLoader> getResourceLoaders() {
 		return resourceLoaders;
-	}
-
-	public void addResourceLoader(ResourceLoader resourceLoader) {
-		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
-		synchronized (this) {
-			resourceLoaders.addService(resourceLoader);
-		}
 	}
 
 	public Resource getResource(String location) {

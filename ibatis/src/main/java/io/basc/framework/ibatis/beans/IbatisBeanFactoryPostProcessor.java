@@ -1,44 +1,43 @@
 package io.basc.framework.ibatis.beans;
 
-import io.basc.framework.beans.BeanFactoryPostProcessor;
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.ibatis.beans.annotation.MapperScan;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 
+import io.basc.framework.context.ConfigurableContext;
+import io.basc.framework.context.ContextPostProcessor;
+import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.ibatis.beans.annotation.MapperScan;
+
 @Provider
-public class IbatisBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
-
+public class IbatisBeanFactoryPostProcessor implements ContextPostProcessor {
 	@Override
-	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
-		if (!beanFactory.containsDefinition(SqlSessionFactory.class.getName())) {
-			beanFactory.registerDefinition(new SqlSessionFactoryBeanDefinition(beanFactory));
+	public void postProcessContext(ConfigurableContext context) {
+		if (!context.containsDefinition(SqlSessionFactory.class.getName())) {
+			context.registerDefinition(new SqlSessionFactoryBeanDefinition(context));
 		}
 
-		if (!beanFactory.containsDefinition(Configuration.class.getName())) {
-			beanFactory.registerDefinition(new ConfigurationDefinition(beanFactory));
+		if (!context.containsDefinition(Configuration.class.getName())) {
+			context.registerDefinition(new ConfigurationDefinition(context));
 		}
 
-		for (Class<?> clazz : beanFactory.getContextClasses()) {
+		for (Class<?> clazz : context.getContextClasses()) {
 			if (clazz.isAnnotationPresent(Mapper.class)) {
-				ConfigurationUtils.registerMapperDefinition(beanFactory, clazz);
+				ConfigurationUtils.registerMapperDefinition(context, clazz);
 			}
 		}
 
-		for (Class<?> clazz : beanFactory.getSourceClasses()) {
+		for (Class<?> clazz : context.getSourceClasses()) {
 			MapperScan mapperScan = clazz.getAnnotation(MapperScan.class);
 			if (mapperScan != null) {
 				for (String scan : mapperScan.value()) {
-					for (Class<?> mapperClass : beanFactory.getClassesLoaderFactory().getClassesLoader(scan,
+					for (Class<?> mapperClass : context.getClassesLoaderFactory().getClassesLoader(scan,
 							(e, m) -> e.getClassMetadata().isInterface())) {
-						ConfigurationUtils.registerMapperDefinition(beanFactory, mapperClass);
+						ConfigurationUtils.registerMapperDefinition(context, mapperClass);
 					}
 				}
 			}
 		}
 	}
+
 }

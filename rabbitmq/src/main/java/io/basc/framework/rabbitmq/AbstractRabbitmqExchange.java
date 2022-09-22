@@ -1,17 +1,17 @@
 package io.basc.framework.rabbitmq;
 
+import java.io.IOException;
+
+import com.rabbitmq.client.Channel;
+
 import io.basc.framework.amqp.ExchangeDeclare;
 import io.basc.framework.amqp.ExchangeException;
 import io.basc.framework.amqp.MessageListener;
 import io.basc.framework.amqp.MessageProperties;
 import io.basc.framework.amqp.QueueDeclare;
 import io.basc.framework.amqp.support.AbstractExchange;
-import io.basc.framework.context.Init;
+import io.basc.framework.factory.Init;
 import io.basc.framework.json.JSONUtils;
-
-import java.io.IOException;
-
-import com.rabbitmq.client.Channel;
 
 public abstract class AbstractRabbitmqExchange extends AbstractExchange implements Init {
 	static final String DIX_ROUTING_KEY = "io.basc.framework.dix.routingKey";
@@ -33,13 +33,19 @@ public abstract class AbstractRabbitmqExchange extends AbstractExchange implemen
 
 	public abstract QueueDeclare getDelayQueueDeclare();
 
-	public void init() throws Exception {
+	public void init() {
 		// 声明路由
-		declare(getExchangeDeclare(), null);
 
-		// 声明死信路由和队列
-		declare(getDixExchangeDeclare(), getDixQueueDeclare());
-		queueBind(getDixExchangeDeclare(), getDixQueueDeclare(), DIX_ROUTING_KEY, new MessageListenerInternal(null));
+		try {
+			declare(getExchangeDeclare(), null);
+
+			// 声明死信路由和队列
+			declare(getDixExchangeDeclare(), getDixQueueDeclare());
+			queueBind(getDixExchangeDeclare(), getDixQueueDeclare(), DIX_ROUTING_KEY,
+					new MessageListenerInternal(null));
+		} catch (IOException e) {
+			throw new RuntimeException("dix", e);
+		}
 
 		// 延迟消息队列
 		QueueDeclare delayQueueDeclare = getDelayQueueDeclare();
@@ -48,8 +54,12 @@ public abstract class AbstractRabbitmqExchange extends AbstractExchange implemen
 		delayQueueDeclare.setArgument(X_DEAD_LETTER_EXCHANGE, getDixExchangeDeclare().getName());
 
 		// 声明延迟消息路由和队列
-		declare(getDelayExchangeDeclare(), delayQueueDeclare);
-		queueBind(getDelayExchangeDeclare(), delayQueueDeclare, DELAY_ROUTING_KEY, null);
+		try {
+			declare(getDelayExchangeDeclare(), delayQueueDeclare);
+			queueBind(getDelayExchangeDeclare(), delayQueueDeclare, DELAY_ROUTING_KEY, null);
+		} catch (Exception e) {
+			throw new RuntimeException("delay", e);
+		}
 	}
 
 	protected abstract Channel getChannel() throws IOException;
@@ -87,10 +97,9 @@ public abstract class AbstractRabbitmqExchange extends AbstractExchange implemen
 		declare(null, queueDeclare);
 		queueBind(getExchangeDeclare(), queueDeclare, routingKey, messageListener);
 	}
-	
+
 	@Override
-	public void basicPublish(String routingKey,
-			MessageProperties messageProperties, byte[] body)
+	public void basicPublish(String routingKey, MessageProperties messageProperties, byte[] body)
 			throws ExchangeException {
 		ExchangeDeclare exchangeDeclare = messageProperties.getDelay() > 0 ? getDelayExchangeDeclare()
 				: getExchangeDeclare();

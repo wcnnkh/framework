@@ -61,7 +61,7 @@ public class CustomRepositoryMethodAdapter extends CurdRepositoryMethodAdapter i
 	}
 
 	public ConversionService getConversionService() {
-		return conversionService == null ? Sys.env.getConversionService() : conversionService;
+		return conversionService == null ? Sys.getEnv().getConversionService() : conversionService;
 	}
 
 	public void setConversionService(ConversionService conversionService) {

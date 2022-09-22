@@ -1,9 +1,8 @@
 package io.basc.framework.core.parameter;
 
-import io.basc.framework.core.annotation.AnnotatedElementWrapper;
-import io.basc.framework.value.Value;
-
 import java.lang.reflect.Type;
+
+import io.basc.framework.core.annotation.AnnotatedElementWrapper;
 
 public class ParameterDescriptorWrapper<P extends ParameterDescriptor> extends AnnotatedElementWrapper<P>
 		implements ParameterDescriptor {
@@ -28,7 +27,8 @@ public class ParameterDescriptorWrapper<P extends ParameterDescriptor> extends A
 		return wrappedTarget.isNullable();
 	}
 
-	public Value getDefaultValue() {
-		return wrappedTarget.getDefaultValue();
+	@Override
+	public boolean accept(ParameterDescriptor target) {
+		return wrappedTarget.accept(target);
 	}
 }

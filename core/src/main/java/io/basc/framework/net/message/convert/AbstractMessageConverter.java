@@ -45,7 +45,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	}
 
 	public Charset getCharset() {
-		return charset == null ? Sys.env.getCharset() : charset;
+		return charset == null ? Sys.getEnv().getCharset() : charset;
 	}
 
 	public void setCharset(Charset charset) {
