@@ -12,7 +12,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 
-public final class EmptyBeanDefinition implements BeanDefinition {
+final class EmptyBeanDefinition implements BeanDefinition {
 	private final String id;
 	private final TypeDescriptor typeDescriptor;
 
@@ -95,5 +95,10 @@ public final class EmptyBeanDefinition implements BeanDefinition {
 
 	@Override
 	public void destroy(Object instance) throws BeansException {
+	}
+
+	@Override
+	public boolean isExternal() {
+		return true;
 	}
 }

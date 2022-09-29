@@ -23,62 +23,72 @@ public class ConfigurableBeanResolver extends ConfigurableServices<BeanResolverE
 
 	@Override
 	public boolean isSingleton(TypeDescriptor type) {
-		return BeanResolverExtendChain.build(iterator(), getDefaultResolver()).isSingleton(type);
+		return BeanResolverChain.build(iterator(), getDefaultResolver()).isSingleton(type);
 	}
 
 	@Override
 	public String getId(TypeDescriptor typeDescriptor) {
-		return BeanResolverExtendChain.build(iterator(), getDefaultResolver()).getId(typeDescriptor);
+		return BeanResolverChain.build(iterator(), getDefaultResolver()).getId(typeDescriptor);
 	}
 
 	@Override
 	public Collection<String> getNames(TypeDescriptor typeDescriptor) {
-		return BeanResolverExtendChain.build(iterator(), getDefaultResolver()).getNames(typeDescriptor);
+		return BeanResolverChain.build(iterator(), getDefaultResolver()).getNames(typeDescriptor);
 	}
 
 	@Override
 	public boolean isAopEnable(TypeDescriptor typeDescriptor) {
-		return BeanResolverExtendChain.build(iterator(), getDefaultResolver()).isAopEnable(typeDescriptor);
+		return BeanResolverChain.build(iterator(), getDefaultResolver()).isAopEnable(typeDescriptor);
 	}
 
 	@Override
 	public Collection<BeanPostProcessor> resolveDependenceProcessors(TypeDescriptor typeDescriptor) {
-		return BeanResolverExtendChain.build(iterator(), getDefaultResolver())
+		return BeanResolverChain.build(iterator(), getDefaultResolver())
 				.resolveDependenceProcessors(typeDescriptor);
 	}
 
 	@Override
 	public Collection<BeanPostProcessor> resolveInitProcessors(TypeDescriptor typeDescriptor) {
-		return BeanResolverExtendChain.build(iterator(), getDefaultResolver()).resolveInitProcessors(typeDescriptor);
+		return BeanResolverChain.build(iterator(), getDefaultResolver()).resolveInitProcessors(typeDescriptor);
 	}
 
 	@Override
 	public Collection<BeanPostProcessor> resolveDestroyProcessors(TypeDescriptor typeDescriptor) {
-		return BeanResolverExtendChain.build(iterator(), getDefaultResolver()).resolveDestroyProcessors(typeDescriptor);
+		return BeanResolverChain.build(iterator(), getDefaultResolver()).resolveDestroyProcessors(typeDescriptor);
 	}
 
 	@Override
 	public Object getDefaultParameter(ParameterDescriptor parameterDescriptor) {
-		return BeanResolverExtendChain.build(iterator(), getDefaultResolver()).getDefaultParameter(parameterDescriptor);
+		return BeanResolverChain.build(iterator(), getDefaultResolver()).getDefaultParameter(parameterDescriptor);
 	}
 
 	@Override
 	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
-		return BeanResolverExtendChain.build(iterator(), getDefaultResolver()).isAccept(parameterDescriptor);
+		return BeanResolverChain.build(iterator(), getDefaultResolver()).isAccept(parameterDescriptor);
 	}
 
 	@Override
 	public Object getParameter(ParameterDescriptor parameterDescriptor) {
-		return BeanResolverExtendChain.build(iterator(), getDefaultResolver()).getParameter(parameterDescriptor);
+		return BeanResolverChain.build(iterator(), getDefaultResolver()).getParameter(parameterDescriptor);
 	}
 
 	@Override
 	public boolean isAccept(ParameterDescriptors parameterDescriptors) {
-		return BeanResolverExtendChain.build(iterator(), getDefaultResolver()).isAccept(parameterDescriptors);
+		return BeanResolverChain.build(iterator(), getDefaultResolver()).isAccept(parameterDescriptors);
 	}
 
 	@Override
 	public Object[] getParameters(ParameterDescriptors parameterDescriptors) {
-		return BeanResolverExtendChain.build(iterator(), getDefaultResolver()).getParameters(parameterDescriptors);
+		return BeanResolverChain.build(iterator(), getDefaultResolver()).getParameters(parameterDescriptors);
+	}
+
+	@Override
+	public boolean isNullable(ParameterDescriptor parameterDescriptor) {
+		return BeanResolverChain.build(iterator(), getDefaultResolver()).isNullable(parameterDescriptor);
+	}
+
+	@Override
+	public boolean isExternal(TypeDescriptor typeDescriptor) {
+		return BeanResolverChain.build(iterator(), getDefaultResolver()).isExternal(typeDescriptor);
 	}
 }

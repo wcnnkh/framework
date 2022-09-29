@@ -41,11 +41,14 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 		writers.addService(new ToMapWriter(this));
 	}
 
+	private boolean configured;
+
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		transformers.configure(serviceLoaderFactory);
 		writers.configure(serviceLoaderFactory);
 		parsers.configure(serviceLoaderFactory);
+		configured = true;
 	}
 
 	public ConfigurableServices<DocumentTransformer> getTransformers() {
@@ -250,5 +253,10 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 			}
 		}
 		throw new NotSupportedException(document.toString());
+	}
+
+	@Override
+	public boolean isConfigured() {
+		return configured;
 	}
 }

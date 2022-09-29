@@ -37,6 +37,8 @@ public class EnvConfiguration extends Configuration implements Configurable {
 		return env;
 	}
 
+	private boolean configured;
+
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		if (serviceLoaderFactory.isInstance(TemplateLoader.class)) {
@@ -45,6 +47,7 @@ public class EnvConfiguration extends Configuration implements Configurable {
 		if (serviceLoaderFactory.isInstance(TemplateExceptionHandler.class)) {
 			setTemplateExceptionHandler(serviceLoaderFactory.getInstance(TemplateExceptionHandler.class));
 		}
+		this.configured = true;
 	}
 
 	public static Version getDefaultVersion(PropertyFactory environment) {
@@ -71,5 +74,10 @@ public class EnvConfiguration extends Configuration implements Configurable {
 			}
 		}
 		return VERSION_2_3_31;
+	}
+
+	@Override
+	public boolean isConfigured() {
+		return configured;
 	}
 }

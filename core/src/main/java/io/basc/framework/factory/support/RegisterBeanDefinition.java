@@ -2,11 +2,10 @@ package io.basc.framework.factory.support;
 
 import java.util.function.Supplier;
 
-import com.sun.istack.internal.Nullable;
-
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.InstanceException;
+import io.basc.framework.lang.Nullable;
 
 public class RegisterBeanDefinition extends FactoryBeanDefinition {
 	private final Supplier<Boolean> isInstanceSupplier;

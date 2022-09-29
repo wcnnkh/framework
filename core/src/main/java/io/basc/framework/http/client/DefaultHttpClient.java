@@ -49,4 +49,10 @@ public class DefaultHttpClient extends AbstractHttpClient {
 	public DefaultHttpClient clone() {
 		return new DefaultHttpClient(this);
 	}
+
+	@Override
+	public boolean isConfigured() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

@@ -29,12 +29,18 @@ public class BeanDefinitionLoaderChain {
 		}
 
 		if (nextChain == null) {
-			try {
-				Class<?> clazz = ClassUtils.forName(name, beanFactory.getClassLoader());
-				return new FactoryBeanDefinition(beanFactory, TypeDescriptor.valueOf(clazz));
-			} catch (ClassNotFoundException | LinkageError e) {
+			Class<?> clazz = ClassUtils.getClass(name, beanFactory.getClassLoader());
+			if (clazz == null) {
 				return null;
 			}
+
+			ServiceLoaderBeanDefinition serviceLoaderBeanDefinition = new ServiceLoaderBeanDefinition(beanFactory,
+					clazz);
+			if (serviceLoaderBeanDefinition.isInstance()) {
+				return serviceLoaderBeanDefinition;
+			}
+
+			return new FactoryBeanDefinition(beanFactory, TypeDescriptor.valueOf(clazz));
 		}
 		return nextChain.load(beanFactory, name);
 	}

@@ -2,7 +2,7 @@ package io.basc.framework.env;
 
 import java.util.Properties;
 
-import io.basc.framework.convert.lang.ConversionServices;
+import io.basc.framework.convert.lang.ConfigurableConversionService;
 import io.basc.framework.convert.resolve.ResourceResolvers;
 import io.basc.framework.event.Observable;
 import io.basc.framework.factory.ConfigurableBeanFactory;
@@ -58,7 +58,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableBeanFa
 
 	PropertiesResolvers getPropertiesResolver();
 
-	ConversionServices getConversionService();
+	ConfigurableConversionService getConversionService();
 
 	ResourceResolvers getResourceResolver();
 }

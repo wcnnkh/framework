@@ -59,4 +59,9 @@ public class DefaultConfigurableAop extends AbstractAop implements ConfigurableA
 		}
 		return super.isProxy(instance);
 	}
+
+	@Override
+	public boolean isConfigured() {
+		return configurableMethodInterceptor.isConfigured() && policies.isConfigured();
+	}
 }

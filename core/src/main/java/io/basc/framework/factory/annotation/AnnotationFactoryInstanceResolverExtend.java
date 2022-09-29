@@ -2,10 +2,18 @@ package io.basc.framework.factory.annotation;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
+import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.factory.BeanResolver;
 import io.basc.framework.factory.BeanResolverExtend;
+import io.basc.framework.factory.InstanceFactory;
+import io.basc.framework.factory.support.InstanceParameterFactory;
+import io.basc.framework.lang.Nullable;
 
-public class AnnotationFactoryInstanceResolverExtend implements BeanResolverExtend {
+public class AnnotationFactoryInstanceResolverExtend extends InstanceParameterFactory implements BeanResolverExtend {
+
+	public AnnotationFactoryInstanceResolverExtend(InstanceFactory instanceFactory) {
+		super(instanceFactory);
+	}
 
 	@Override
 	public boolean isSingleton(TypeDescriptor type, BeanResolver chain) {
@@ -43,5 +51,23 @@ public class AnnotationFactoryInstanceResolverExtend implements BeanResolverExte
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public boolean isNullable(ParameterDescriptor parameterDescriptor, BeanResolver chain) {
+		Nullable nullable = parameterDescriptor.getAnnotation(Nullable.class);
+		if (nullable != null) {
+			return nullable.value();
+		}
+		return super.isNullable(parameterDescriptor, chain);
+	}
+
+	@Override
+	public Object getDefaultParameter(ParameterDescriptor parameterDescriptor, BeanResolver chain) {
+		DefaultValue defaultValue = AnnotatedElementUtils.getMergedAnnotation(parameterDescriptor, DefaultValue.class);
+		if (defaultValue != null) {
+			return defaultValue.value();
+		}
+		return super.getDefaultParameter(parameterDescriptor, chain);
 	}
 }

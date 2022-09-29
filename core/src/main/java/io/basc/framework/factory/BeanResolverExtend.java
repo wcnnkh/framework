@@ -55,4 +55,12 @@ public interface BeanResolverExtend {
 	default Collection<BeanPostProcessor> resolveDestroyProcessors(TypeDescriptor typeDescriptor, BeanResolver chain) {
 		return chain.resolveDestroyProcessors(typeDescriptor);
 	}
+
+	default boolean isNullable(ParameterDescriptor parameterDescriptor, BeanResolver chain) {
+		return chain.isNullable(parameterDescriptor);
+	}
+	
+	default boolean isExternal(TypeDescriptor typeDescriptor, BeanResolver chain) {
+		return chain.isExternal(typeDescriptor);
+	}
 }

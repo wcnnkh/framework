@@ -85,30 +85,6 @@ public final class ParameterUtils {
 		return map;
 	}
 
-	public static boolean isAssignableValue(ParameterDescriptors parameterDescriptors, Object[] params) {
-		// 异或运算，如果两个不同则结果为1
-		if (parameterDescriptors.size() == 0 ^ ArrayUtils.isEmpty(params)) {
-			return false;
-		}
-
-		if (parameterDescriptors.size() != params.length) {
-			return false;
-		}
-
-		int index = 0;
-		for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
-			Object value = params[index++];
-			if (value == null && !parameterDescriptor.isNullable()) {
-				return false;
-			}
-
-			if (!ClassUtils.isAssignableValue(parameterDescriptor.getType(), value)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	public static boolean isisAssignable(ParameterDescriptors parameterDescriptors, Class<?>[] types) {
 		// 异或运算，如果两个不同则结果为1
 		if (parameterDescriptors.size() == 0 ^ ArrayUtils.isEmpty(types)) {

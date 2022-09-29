@@ -72,7 +72,7 @@ public class ExecutableBeanDefinition extends FactoryBeanDefinition {
 			// 必须要是接口，因为非接口不一定是无法保证一定可以代理实例
 			if (method.getReturnType().isInterface() && (isAopEnable(getTypeDescriptor(), getBeanResolver())
 					|| isAopEnable(TypeDescriptor.forObject(bean), getBeanResolver()))) {
-				return createInstanceProxy(bean, sourceClass, null).create();
+				return createInstanceProxy(getAop(), bean, sourceClass, null).create();
 			}
 			return bean;
 		}

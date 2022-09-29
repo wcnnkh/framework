@@ -1,39 +1,19 @@
 package io.basc.framework.util.placeholder.support;
 
-import io.basc.framework.factory.Configurable;
-import io.basc.framework.factory.ConfigurableServices;
-import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
 import io.basc.framework.util.placeholder.PlaceholderReplacer;
 import io.basc.framework.util.placeholder.PlaceholderResolver;
 
-import java.util.Iterator;
-
-public class DefaultPlaceholderReplacer implements ConfigurablePlaceholderReplacer, Configurable {
+public class DefaultPlaceholderReplacer extends ConfigurablePlaceholderReplacer {
 	private static final String DEFAULT_PREFIX = "{";
 	private static final String DEFAULT_SUFFIX = "}";
 	private static final PlaceholderReplacer DEFAULT_SIMPLE_REPLACER = new SimplePlaceholderReplaer(DEFAULT_PREFIX,
 			DEFAULT_SUFFIX, true);
 	private static final PlaceholderReplacer DEFAULT_SMART_REPLACER = new SmartPlaceholderReplacer(DEFAULT_PREFIX,
 			DEFAULT_SUFFIX, true);
-	private final ConfigurableServices<PlaceholderReplacer> placeholderReplacers = new ConfigurableServices<>(
-			PlaceholderReplacer.class);
-
-	public void addPlaceholderReplacer(PlaceholderReplacer placeholderReplacer) {
-		placeholderReplacers.addService(placeholderReplacer);
-	}
-
-	@Override
-	public Iterator<PlaceholderReplacer> iterator() {
-		return placeholderReplacers.iterator();
-	}
 
 	public String replacePlaceholders(String value, PlaceholderResolver placeholderResolver) {
-		String textToUse = value;
-		for (PlaceholderReplacer replacer : this) {
-			textToUse = replacer.replacePlaceholders(textToUse, placeholderResolver);
-		}
-
+		String textToUse = super.replacePlaceholders(value, placeholderResolver);
 		textToUse = SimplePlaceholderReplaer.NON_STRICT_REPLACER.replacePlaceholders(textToUse, placeholderResolver);
 		textToUse = SmartPlaceholderReplacer.NON_STRICT_REPLACER.replacePlaceholders(textToUse, placeholderResolver);
 		textToUse = DEFAULT_SIMPLE_REPLACER.replacePlaceholders(textToUse, placeholderResolver);
@@ -42,11 +22,7 @@ public class DefaultPlaceholderReplacer implements ConfigurablePlaceholderReplac
 	}
 
 	public String replaceRequiredPlaceholders(String value, PlaceholderResolver placeholderResolver) {
-		String textToUse = value;
-		for (PlaceholderReplacer replacer : this) {
-			textToUse = replacer.replaceRequiredPlaceholders(textToUse, placeholderResolver);
-		}
-
+		String textToUse = super.replaceRequiredPlaceholders(value, placeholderResolver);
 		textToUse = SimplePlaceholderReplaer.STRICT_REPLACER.replaceRequiredPlaceholders(textToUse,
 				placeholderResolver);
 		textToUse = SmartPlaceholderReplacer.STRICT_REPLACER.replaceRequiredPlaceholders(textToUse,
@@ -54,10 +30,5 @@ public class DefaultPlaceholderReplacer implements ConfigurablePlaceholderReplac
 		textToUse = DEFAULT_SIMPLE_REPLACER.replaceRequiredPlaceholders(textToUse, placeholderResolver);
 		textToUse = DEFAULT_SMART_REPLACER.replaceRequiredPlaceholders(textToUse, placeholderResolver);
 		return textToUse;
-	}
-
-	@Override
-	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		placeholderReplacers.configure(serviceLoaderFactory);
 	}
 }

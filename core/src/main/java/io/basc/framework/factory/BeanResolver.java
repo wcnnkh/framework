@@ -3,6 +3,7 @@ package io.basc.framework.factory;
 import java.util.Collection;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.parameter.ParameterDescriptor;
 
 public interface BeanResolver extends DefaultParameterFactory, ParameterFactory {
 	boolean isSingleton(TypeDescriptor typeDescriptor);
@@ -18,4 +19,8 @@ public interface BeanResolver extends DefaultParameterFactory, ParameterFactory 
 	Collection<BeanPostProcessor> resolveInitProcessors(TypeDescriptor typeDescriptor);
 
 	Collection<BeanPostProcessor> resolveDestroyProcessors(TypeDescriptor typeDescriptor);
+	
+	boolean isNullable(ParameterDescriptor parameterDescriptor);
+	
+	boolean isExternal(TypeDescriptor typeDescriptor);
 }

@@ -41,10 +41,13 @@ public class JaxrsWebMessageConverter implements WebMessageConverter, Configurab
 		return messageBodyWriters;
 	}
 
+	private boolean configured;
+
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		messageBodyReaders.configure(serviceLoaderFactory);
 		messageBodyWriters.configure(serviceLoaderFactory);
+		configured = true;
 	}
 
 	@Override
@@ -142,5 +145,10 @@ public class JaxrsWebMessageConverter implements WebMessageConverter, Configurab
 			}
 		}
 		return request;
+	}
+
+	@Override
+	public boolean isConfigured() {
+		return configured;
 	}
 }

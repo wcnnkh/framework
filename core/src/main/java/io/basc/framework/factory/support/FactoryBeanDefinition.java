@@ -1,9 +1,9 @@
 package io.basc.framework.factory.support;
 
+import io.basc.framework.aop.Aop;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.BeanResolver;
-import io.basc.framework.factory.ServiceLoaderFactory;
 
 public class FactoryBeanDefinition extends DefaultBeanDefinition {
 	private BeanFactory beanFactory;
@@ -20,16 +20,16 @@ public class FactoryBeanDefinition extends DefaultBeanDefinition {
 	@Override
 	public BeanResolver getBeanResolver() {
 		BeanResolver beanResolver = super.getBeanResolver();
-		return beanFactory == null ? beanFactory.getBeanResolver() : beanResolver;
-	}
-
-	@Override
-	public ServiceLoaderFactory getServiceLoaderFactory() {
-		ServiceLoaderFactory serviceLoaderFactory = super.getServiceLoaderFactory();
-		return serviceLoaderFactory == null ? beanFactory : serviceLoaderFactory;
+		return beanResolver == null ? beanFactory.getBeanResolver() : beanResolver;
 	}
 
 	public BeanFactory getBeanFactory() {
 		return beanFactory;
+	}
+
+	@Override
+	public Aop getAop() {
+		Aop aop = super.getAop();
+		return aop == null ? beanFactory.getAop() : aop;
 	}
 }

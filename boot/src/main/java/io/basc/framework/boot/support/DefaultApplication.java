@@ -1,17 +1,16 @@
 package io.basc.framework.boot.support;
 
-import java.util.Properties;
-
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.ApplicationAware;
 import io.basc.framework.boot.ApplicationEvent;
 import io.basc.framework.boot.ApplicationException;
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
+import io.basc.framework.boot.annotation.ComponentScan;
+import io.basc.framework.boot.annotation.ComponentScans;
 import io.basc.framework.context.support.DefaultContext;
-import io.basc.framework.env.Sys;
+import io.basc.framework.context.support.LinkedHashSetClassesLoader;
 import io.basc.framework.event.EventDispatcher;
-import io.basc.framework.event.Observable;
 import io.basc.framework.event.support.SimpleEventDispatcher;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.ConfigurableServices;
@@ -21,17 +20,74 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.SplitLine;
 
 public class DefaultApplication extends DefaultContext implements ConfigurableApplication {
-	private static final String APPLICATION_PREFIX_CONFIGURATION = "io.basc.framework.application";
+	private static final String APPLICATION_PREFIX_CONFIGURATION = "io.basc.framework.application.configuration";
 	private static final String APPLICATION_PREFIX = "application";
 	private final EventDispatcher<ApplicationEvent> applicationEventDispathcer = new SimpleEventDispatcher<ApplicationEvent>();
 	private volatile Logger logger;
 	private final long createTime;
-	private final ConfigurableServices<ApplicationPostProcessor> applicationPostProcessors = new ConfigurableServices<ApplicationPostProcessor>();
+	private final ConfigurableServices<ApplicationPostProcessor> applicationPostProcessors = new ConfigurableServices<ApplicationPostProcessor>(
+			ApplicationPostProcessor.class);
 	private volatile boolean initialized;
+	private final LinkedHashSetClassesLoader sourceClasses = new LinkedHashSetClassesLoader();
 
 	public DefaultApplication() {
+		// 添加默认的类
+		getContextClasses().add(sourceClasses);
 		this.createTime = System.currentTimeMillis();
 		registerSingleton(Application.class.getName(), this);
+	}
+
+	@Override
+	public LinkedHashSetClassesLoader getSourceClasses() {
+		return sourceClasses;
+	}
+
+	@Override
+	public void source(Class<?> sourceClass) {
+		if (!sourceClasses.add(sourceClass)) {
+			throw new IllegalArgumentException("Already source " + sourceClass);
+		}
+
+		if (sourceClass.getPackage() != null) {
+			componentScan(sourceClass.getPackage().getName());
+		}
+
+		ComponentScan componentScan = sourceClass.getAnnotation(ComponentScan.class);
+		if (componentScan != null) {
+			componentScan(componentScan);
+		}
+
+		ComponentScans componentScans = sourceClass.getAnnotation(ComponentScans.class);
+		if (componentScans != null) {
+			for (ComponentScan scan : componentScans.value()) {
+				componentScan(scan);
+			}
+		}
+	}
+
+	private void componentScan(ComponentScan componentScan) {
+		for (String name : componentScan.value()) {
+			componentScan(name);
+		}
+
+		for (String name : componentScan.basePackages()) {
+			componentScan(name);
+		}
+	}
+
+	@Override
+	protected boolean useSpi(Class<?> serviceClass) {
+		for (Class<?> sourceClass : sourceClasses) {
+			Package pg = sourceClass.getPackage();
+			if (pg == null) {
+				continue;
+			}
+
+			if (serviceClass.getName().startsWith(pg.getName())) {
+				return true;
+			}
+		}
+		return super.useSpi(serviceClass);
 	}
 
 	public long getCreateTime() {
@@ -80,18 +136,16 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 					String configPath = applicationConfiguration + suffix;
 					if (getResourceLoader().exists(configPath)) {
 						getLogger().info("Configure application resource: {}", configPath);
-						// 此处使用Sys.env.getPropertiesResolver()的原因是此时还未初始化，无法得到相应的解析器
-						Observable<Properties> properties = getProperties(Sys.getEnv().getPropertiesResolver(),
-								configPath);
-						loadProperties(properties);
+						loadProperties(configPath);
 					}
 				}
-
+				
 				super.init();
 
 				if (!applicationPostProcessors.isConfigured()) {
 					applicationPostProcessors.configure(this);
 				}
+
 				for (ApplicationPostProcessor postProcessor : applicationPostProcessors) {
 					postProcessApplication(postProcessor);
 				}

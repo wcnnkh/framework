@@ -16,7 +16,7 @@ import io.basc.framework.lang.Nullable;
 public class Services<T> implements Iterable<T>, Consumer<T> {
 	private T afterService;
 	private T beforeService;
-	private final Services<Consumer<T>> consumers = new Services<>();
+	private volatile Services<Consumer<T>> consumers;
 	private volatile Collection<T> services;
 	private final Supplier<Collection<T>> supplier;
 
@@ -30,6 +30,14 @@ public class Services<T> implements Iterable<T>, Consumer<T> {
 
 	@Override
 	public void accept(T service) {
+		if (consumers == null) {
+			synchronized (this) {
+				if (consumers == null) {
+					return;
+				}
+			}
+		}
+
 		for (Consumer<T> consumer : consumers) {
 			consumer.accept(service);
 		}
@@ -103,7 +111,14 @@ public class Services<T> implements Iterable<T>, Consumer<T> {
 	}
 
 	public final Services<Consumer<T>> getConsumers() {
-		return this.consumers;
+		if (consumers == null) {
+			synchronized (this) {
+				if (consumers == null) {
+					consumers = new Services<>();
+				}
+			}
+		}
+		return consumers;
 	}
 
 	public final Collection<T> getTargetServices() {

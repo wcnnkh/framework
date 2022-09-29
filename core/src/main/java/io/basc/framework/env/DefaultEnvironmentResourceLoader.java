@@ -14,6 +14,7 @@ import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 
 class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader
@@ -27,11 +28,19 @@ class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader
 			256);
 	private ProfilesResolver profilesResolver = DefaultProfilesResolver.INSTANCE;
 	private final Environment environment;
-	private final Observable<Boolean> autoSelect;
+	private volatile Observable<Boolean> autoSelect;
 
 	public DefaultEnvironmentResourceLoader(Environment environment) {
 		this.environment = environment;
-		this.autoSelect = environment.getProperties().getObservableValue(AUTO_SELECT_RESOURCE, boolean.class, false);
+	}
+
+	@Override
+	public ClassLoaderProvider getClassLoaderProvider() {
+		ClassLoaderProvider classLoaderProvider = super.getClassLoaderProvider();
+		if (classLoaderProvider == null) {
+			return environment;
+		}
+		return classLoaderProvider;
 	}
 
 	@Override
@@ -62,6 +71,14 @@ class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader
 	}
 
 	public boolean isAutoSelectResource() {
+		if (autoSelect == null) {
+			synchronized (this) {
+				if (autoSelect == null) {
+					autoSelect = environment.getProperties().getObservableValue(AUTO_SELECT_RESOURCE, boolean.class,
+							false);
+				}
+			}
+		}
 		return autoSelect.get();
 	}
 
@@ -105,7 +122,7 @@ class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader
 			}
 
 			// 不存在的资源不缓存
-			if (resource.exists()) {
+			if (resource.exists() && !resource.getName().endsWith(".class")) {
 				Resource cache = cacheMap.putIfAbsent(location, resource);
 				if (cache != null) {
 					resource = cache;

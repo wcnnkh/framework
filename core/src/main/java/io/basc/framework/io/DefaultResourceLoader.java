@@ -3,6 +3,7 @@ package io.basc.framework.io;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.util.Assert;
@@ -10,7 +11,8 @@ import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.DefaultClassLoaderProvider;
 import io.basc.framework.util.StringUtils;
 
-public class DefaultResourceLoader extends DefaultClassLoaderProvider implements ConfigurableResourceLoader {
+public class DefaultResourceLoader extends DefaultClassLoaderProvider
+		implements ConfigurableResourceLoader, Configurable {
 	private final ConfigurableServices<ProtocolResolver> protocolResolvers = new ConfigurableServices<>(
 			ProtocolResolver.class);
 	private final ConfigurableServices<ResourceLoader> resourceLoaders = new ConfigurableServices<>(
@@ -27,10 +29,13 @@ public class DefaultResourceLoader extends DefaultClassLoaderProvider implements
 		super(classLoaderProvider);
 	}
 
+	private boolean configured;
+
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		protocolResolvers.configure(serviceLoaderFactory);
 		resourceLoaders.configure(serviceLoaderFactory);
+		configured = true;
 	}
 
 	public ConfigurableServices<ProtocolResolver> getProtocolResolvers() {
@@ -93,6 +98,11 @@ public class DefaultResourceLoader extends DefaultClassLoaderProvider implements
 			String pathToUse = StringUtils.applyRelativePath(getPath(), relativePath);
 			return new ClassPathContextResource(pathToUse, getClassLoader());
 		}
+	}
+
+	@Override
+	public boolean isConfigured() {
+		return configured;
 	}
 
 }

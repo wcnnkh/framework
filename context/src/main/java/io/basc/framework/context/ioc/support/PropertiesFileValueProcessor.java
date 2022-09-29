@@ -5,7 +5,7 @@ import java.util.Properties;
 
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ioc.ValueDefinition;
-import io.basc.framework.env.Sys;
+import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.event.Observable;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.mapper.Field;
@@ -34,7 +34,7 @@ public final class PropertiesFileValueProcessor extends AbstractObservableValueP
 			return properties;
 		} else {
 			Class<?> fieldType = field.getSetter().getType();
-			Object obj = Sys.getEnv().getInstance(fieldType);
+			Object obj = ReflectionApi.newInstance(fieldType);
 			Fields fields = Fields.getFields(fieldType).all().filter(FieldFeature.SUPPORT_SETTER).shared();
 			for (final Object key : properties.keySet()) {
 				Field keyField = fields.getBySetterName(key.toString(), null);

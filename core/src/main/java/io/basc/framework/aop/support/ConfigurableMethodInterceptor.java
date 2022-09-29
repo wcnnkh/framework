@@ -1,11 +1,5 @@
 package io.basc.framework.aop.support;
 
-import io.basc.framework.aop.MethodInterceptor;
-import io.basc.framework.factory.Configurable;
-import io.basc.framework.factory.ServiceLoaderFactory;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.MultiIterator;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,14 +7,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import io.basc.framework.aop.MethodInterceptor;
+import io.basc.framework.factory.Configurable;
+import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.MultiIterator;
+
 public class ConfigurableMethodInterceptor extends AbstractMethodInterceptors implements Configurable {
 	private static final long serialVersionUID = 1L;
 	private volatile List<MethodInterceptor> defaultInterceptors;
 	private volatile List<MethodInterceptor> interceptors;
 
+	private boolean configured;
+
 	@Override
-	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+	public synchronized void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		this.defaultInterceptors = serviceLoaderFactory.getServiceLoader(MethodInterceptor.class).toList();
+		configured = true;
 	}
 
 	public Iterator<MethodInterceptor> iterator() {
@@ -86,5 +89,10 @@ public class ConfigurableMethodInterceptor extends AbstractMethodInterceptors im
 	public void addFirstMethodInterceptor(MethodInterceptor methodInterceptor) {
 		init();
 		this.interceptors.add(0, methodInterceptor);
+	}
+
+	@Override
+	public boolean isConfigured() {
+		return configured;
 	}
 }

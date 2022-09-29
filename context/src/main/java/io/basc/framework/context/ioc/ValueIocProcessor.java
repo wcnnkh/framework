@@ -24,7 +24,7 @@ public class ValueIocProcessor extends FieldIocProcessor {
 			return;
 		}
 
-		ValueProcessor valueProcessor = getContext().getInstance(ValueProcessor.class);
+		ValueProcessor valueProcessor = getContext().getInstance(valueDefinition.getValueProcessor());
 		valueProcessor.process(getContext(), bean, definition, field, valueDefinition);
 	}
 }

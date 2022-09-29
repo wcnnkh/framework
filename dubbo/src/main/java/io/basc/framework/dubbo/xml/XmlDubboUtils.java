@@ -25,9 +25,9 @@ import org.w3c.dom.NodeList;
 
 import io.basc.framework.context.ClassesLoaderFactory;
 import io.basc.framework.context.Context;
+import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.Environment;
-import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -267,7 +267,7 @@ public final class XmlDubboUtils {
 					continue;
 				}
 
-				T config = defaultConfig == null ? Sys.getEnv().getInstance(type) : Copy.copy(defaultConfig, type);
+				T config = defaultConfig == null ? ReflectionApi.newInstance(type) : Copy.copy(defaultConfig, type);
 				loader(config, environment, node);
 
 				if (filter != null && !filter.doFilter(list, node, config)) {

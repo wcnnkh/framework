@@ -16,7 +16,7 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
 
 public class ProviderClassesLoader implements ClassesLoader, Comparator<Class<?>> {
-	private static Logger logger = LoggerFactory.getLogger(ProviderServiceLoader.class);
+	private static Logger logger = LoggerFactory.getLogger(ProviderClassesLoader.class);
 	private final ClassesLoader classesLoader;
 	private volatile Set<Class<?>> providers;
 	private final Class<?> serviceClass;

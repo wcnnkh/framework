@@ -2,6 +2,8 @@ package io.basc.framework.test;
 
 import io.basc.framework.factory.support.SpiServiceLoader;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 public class SpiTest implements SpiTestInterface {
@@ -17,6 +19,6 @@ public class SpiTest implements SpiTestInterface {
 		SpiServiceLoader<SpiTestInterface> spiServiceLoader = new SpiServiceLoader<SpiTestInterface>(SpiTestInterface.class);
 		SpiTestInterface spiTestInterface = spiServiceLoader.first();
 		String text = spiTestInterface.test();
-		assert TEST_TEXT.equals(text);
+		assertTrue(TEST_TEXT.equals(text));
 	}
 }

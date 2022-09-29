@@ -61,10 +61,13 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 		configure(context);
 	}
 
+	private boolean configured;
+
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		httpChannelInterceptors.configure(serviceLoaderFactory);
 		actionInterceptors.configure(serviceLoaderFactory);
+		configured = true;
 	}
 
 	public ConfigurableServices<ActionInterceptor> getActionInterceptors() {
@@ -231,5 +234,10 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 		}
 		httpChannel.getResponse().sendError(500, "system error");
 		return null;
+	}
+
+	@Override
+	public boolean isConfigured() {
+		return configured;
 	}
 }

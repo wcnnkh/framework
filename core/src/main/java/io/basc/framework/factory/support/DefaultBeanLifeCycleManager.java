@@ -2,21 +2,19 @@ package io.basc.framework.factory.support;
 
 import java.util.Collection;
 
-import com.sun.istack.internal.Nullable;
-
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
 import io.basc.framework.event.support.SimpleEventDispatcher;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanDefinitionAware;
-import io.basc.framework.factory.BeanDefinitionFactory;
 import io.basc.framework.factory.BeanLifeCycleManager;
 import io.basc.framework.factory.BeanPostProcessor;
 import io.basc.framework.factory.BeanlifeCycleEvent;
 import io.basc.framework.factory.BeanlifeCycleEvent.Step;
 import io.basc.framework.factory.ConfigurableBeanResolver;
 import io.basc.framework.factory.ConfigurableServices;
+import io.basc.framework.factory.DefaultParameterFactoryAware;
 import io.basc.framework.factory.Destroy;
 import io.basc.framework.factory.FactoryException;
 import io.basc.framework.factory.Init;
@@ -34,17 +32,12 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 			BeanPostProcessor.class);
 	private final ConfigurableBeanResolver beanResolver = new ConfigurableBeanResolver();
 
-	public DefaultBeanLifeCycleManager() {
-		this(null);
-	}
-
-	public DefaultBeanLifeCycleManager(@Nullable BeanDefinitionFactory parentBeanDefinitionFactory) {
-		super(parentBeanDefinitionFactory);
-	}
-
 	protected void _dependence(Object instance, BeanDefinition definition) throws FactoryException {
 		if (instance instanceof BeanDefinitionAware) {
 			((BeanDefinitionAware) instance).setBeanDefinition(definition);
+		}
+		if (instance instanceof DefaultParameterFactoryAware) {
+			((DefaultParameterFactoryAware) instance).setDefaultParameterFactory(beanResolver);
 		}
 	}
 
@@ -84,7 +77,7 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 
 	@Override
 	public void dependence(Object instance, BeanDefinition definition) throws FactoryException {
-		if (definition == null || definition instanceof EmptyBeanDefinition) {
+		if (definition == null) {
 			return;
 		}
 
@@ -93,12 +86,16 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 			return;
 		}
 
+		if (definition.isExternal()) {
+			definition.dependence(instance);
+		}
+
 		try {
 			publishEvent(new BeanlifeCycleEvent(definition, instance, Step.BEFORE_DEPENDENCE));
 		} finally {
 			if (beanResolver != null) {
 				Collection<BeanPostProcessor> processors = beanResolver
-						.resolveDependenceProcessors(definition.getTypeDescriptor());
+						.resolveDependenceProcessors(definition.getTypeDescriptor().narrow(instance));
 				if (processors != null) {
 					for (BeanPostProcessor processor : processors) {
 						processor.processPostBean(instance, definition);
@@ -116,7 +113,7 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 
 	@Override
 	public void destroy(Object instance, BeanDefinition definition) throws FactoryException {
-		if (definition == null || definition instanceof EmptyBeanDefinition) {
+		if (definition == null) {
 			return;
 		}
 
@@ -129,6 +126,11 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 			logger.trace("destroy {}", definition);
 		}
 
+		if (definition.isExternal()) {
+			definition.destroy(instance);
+			return;
+		}
+
 		try {
 			publishEvent(new BeanlifeCycleEvent(definition, instance, Step.BEFORE_DESTROY));
 		} finally {
@@ -139,7 +141,7 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 			definition.destroy(instance);
 			if (beanResolver != null) {
 				Collection<BeanPostProcessor> processors = beanResolver
-						.resolveDestroyProcessors(definition.getTypeDescriptor());
+						.resolveDestroyProcessors(definition.getTypeDescriptor().narrow(instance));
 				if (processors != null) {
 					for (BeanPostProcessor processor : processors) {
 						processor.processPostBean(instance, definition);
@@ -168,7 +170,7 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 
 	@Override
 	public void init(Object instance, BeanDefinition definition) throws FactoryException {
-		if (definition == null || definition instanceof EmptyBeanDefinition) {
+		if (definition == null) {
 			return;
 		}
 
@@ -177,12 +179,17 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 			return;
 		}
 
+		if (definition.isExternal()) {
+			definition.init(instance);
+			return;
+		}
+
 		try {
 			publishEvent(new BeanlifeCycleEvent(definition, instance, Step.BEFORE_INIT));
 		} finally {
 			if (beanResolver != null) {
 				Collection<BeanPostProcessor> processors = beanResolver
-						.resolveInitProcessors(definition.getTypeDescriptor());
+						.resolveInitProcessors(definition.getTypeDescriptor().narrow(instance));
 				if (processors != null) {
 					for (BeanPostProcessor processor : processors) {
 						processor.processPostBean(instance, definition);

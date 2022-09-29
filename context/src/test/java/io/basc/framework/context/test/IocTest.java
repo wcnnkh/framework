@@ -7,15 +7,15 @@ import java.util.Map;
 import org.junit.Test;
 
 import io.basc.framework.context.ioc.annotation.Value;
-import io.basc.framework.factory.support.DefaultBeanFactory;
+import io.basc.framework.context.support.DefaultContext;
 import io.basc.framework.orm.annotation.PrimaryKey;
 
 public class IocTest {
-	private static DefaultBeanFactory beanFactory = new DefaultBeanFactory();
+	private static DefaultContext context = new DefaultContext();
 
 	static {
 		try {
-			beanFactory.init();
+			context.init();
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
@@ -26,7 +26,8 @@ public class IocTest {
 
 	@Test
 	public void test() {
-		IocTest iocTest = beanFactory.getInstance(IocTest.class);
+		IocTest iocTest = context.getInstance(IocTest.class);
+		System.out.println(iocTest.map);
 		assertTrue(iocTest.map.size() == 3);
 	}
 

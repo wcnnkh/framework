@@ -18,7 +18,7 @@ public class DubboBeanDefinition extends FactoryBeanDefinition {
 	}
 
 	public Object create() {
-		return createInstanceProxy(referenceConfig.get(), getTypeDescriptor().getType(),
+		return createInstanceProxy(getAop(), referenceConfig.get(), getTypeDescriptor().getType(),
 				new Class<?>[] { referenceConfig.getInterfaceClass() }).create();
 	}
 }

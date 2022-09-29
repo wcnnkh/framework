@@ -67,7 +67,7 @@ public class ConfigurationUtils {
 			}
 		}
 
-		for (Class<?> clazz : context.getSourceClasses()) {
+		for (Class<?> clazz : context.getContextClasses()) {
 			MapperScan scan = clazz.getAnnotation(MapperScan.class);
 			if (scan != null) {
 				for (String packageName : scan.value()) {
@@ -81,8 +81,7 @@ public class ConfigurationUtils {
 			TypeAliaseScan typeAliaseScan = clazz.getAnnotation(TypeAliaseScan.class);
 			if (typeAliaseScan != null) {
 				for (String packageName : typeAliaseScan.value()) {
-					for (Class<?> typeAliaseclass : context.getClassesLoaderFactory()
-							.getClassesLoader(packageName)) {
+					for (Class<?> typeAliaseclass : context.getClassesLoaderFactory().getClassesLoader(packageName)) {
 						typeAliases(typeAliasRegistry, null, typeAliaseclass);
 					}
 				}

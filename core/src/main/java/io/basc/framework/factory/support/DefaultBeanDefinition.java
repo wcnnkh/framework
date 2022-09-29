@@ -12,6 +12,7 @@ import io.basc.framework.aop.Proxy;
 import io.basc.framework.aop.support.ConfigurableMethodInterceptor;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ExecutableParameterDescriptorsIterator;
+import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptors;
 import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.core.reflect.ReflectionUtils;
@@ -22,13 +23,12 @@ import io.basc.framework.factory.BeansException;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.ParametersFactory;
-import io.basc.framework.factory.ServiceLoader;
-import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
 
 public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
@@ -46,11 +46,9 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 	private final ConfigurableMethodInterceptor methodInterceptors = new ConfigurableMethodInterceptor();
 	private Collection<String> names;
 	private volatile ParameterDescriptors parameterDescriptors;
-	@SuppressWarnings("rawtypes")
-	private volatile ServiceLoader serviceLoader;
-	private ServiceLoaderFactory serviceLoaderFactory;
 	private Boolean singleton;
 	private TypeDescriptor typeDescriptor;
+	private Boolean external;
 
 	public DefaultBeanDefinition(TypeDescriptor typeDescriptor) {
 		this.typeDescriptor = typeDescriptor;
@@ -58,6 +56,14 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 
 	private boolean canCreateInterfaceInsance() {
 		return typeDescriptor.getType().isInterface() && isAopEnable(getBeanResolver());
+	}
+
+	public Aop getAop() {
+		return aop;
+	}
+
+	public void setAop(Aop aop) {
+		this.aop = aop;
 	}
 
 	protected ParameterDescriptors checkParameterDescriptors(ParametersFactory parametersFactory) {
@@ -83,18 +89,13 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 
 	@Override
 	public Object create() throws InstanceException {
-		if (canCreateInterfaceInsance()) {
-			return createProxy(typeDescriptor, null).create();
+		Aop aop = getAop();
+		if (aop != null && canCreateInterfaceInsance()) {
+			return createProxy(aop, typeDescriptor, null).create();
 		}
 
 		if (!isInstance()) {
 			throw new NotSupportedException(getTypeDescriptor().getName());
-		}
-
-		if (serviceLoader != null) {
-			for (Object instance : serviceLoader) {
-				return instance;
-			}
 		}
 
 		BeanResolver beanResolver = getBeanResolver();
@@ -113,14 +114,15 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 	}
 
 	public Object create(Object... params) throws InstanceException {
-		ParameterDescriptors parameterDescriptors = getParameterDescriptors(params);
+		BeanResolver beanResolver = getBeanResolver();
+		ParameterDescriptors parameterDescriptors = getParameterDescriptors(beanResolver, params);
 		if (parameterDescriptors == null) {
 			throw new NotFoundException(getTypeDescriptor() + "找不到指定的构造方法");
 		}
-		return createInternal(getBeanResolver(), typeDescriptor, parameterDescriptors, params);
+		return createInternal(beanResolver, typeDescriptor, parameterDescriptors, params);
 	}
 
-	protected Proxy createInstanceProxy(Object instance, Class<?> targetClass, Class<?>[] interfaces) {
+	protected Proxy createInstanceProxy(Aop aop, Object instance, Class<?> targetClass, Class<?>[] interfaces) {
 		Class<?>[] interfacesToUse = interfaces;
 		if (ArrayUtils.isEmpty(interfacesToUse)) {
 			interfacesToUse = RuntimeBean.PROXY_INTERFACES;
@@ -136,8 +138,9 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 
 	protected Object createInternal(BeanResolver beanResolver, TypeDescriptor typeDescriptor,
 			ParameterDescriptors parameterDescriptors, Object[] params) {
-		if (isAopEnable(typeDescriptor, beanResolver)) {
-			return createProxyInstance(typeDescriptor, parameterDescriptors.getTypes(), params);
+		Aop aop = getAop();
+		if (aop != null && isAopEnable(typeDescriptor, beanResolver)) {
+			return createProxyInstance(aop, typeDescriptor, parameterDescriptors.getTypes(), params);
 		}
 
 		Constructor<?> constructor = ReflectionUtils.getDeclaredConstructor(typeDescriptor.getType(),
@@ -146,7 +149,7 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 		return instance;
 	}
 
-	protected Proxy createProxy(TypeDescriptor typeDescriptor, Class<?>[] interfaces) {
+	protected Proxy createProxy(Aop aop, TypeDescriptor typeDescriptor, Class<?>[] interfaces) {
 		Class<?>[] interfacesToUse = interfaces;
 		if (ArrayUtils.isEmpty(interfacesToUse)) {
 			interfacesToUse = RuntimeBean.PROXY_INTERFACES;
@@ -165,12 +168,13 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 		return aop.getProxy(typeDescriptor.getType(), interfacesToUse, interceptors);
 	}
 
-	protected Object createProxyInstance(TypeDescriptor typeDescriptor, Class<?>[] parameterTypes, Object[] args) {
+	protected Object createProxyInstance(Aop aop, TypeDescriptor typeDescriptor, Class<?>[] parameterTypes,
+			Object[] args) {
 		if (typeDescriptor.getType().isInterface() && methodInterceptors.isEmpty()) {
 			logger.warn("empty filter: {}", typeDescriptor.getName());
 		}
 
-		Proxy proxy = createProxy(typeDescriptor, null);
+		Proxy proxy = createProxy(aop, typeDescriptor, null);
 		return proxy.create(parameterTypes, args);
 	}
 
@@ -247,22 +251,38 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 		return null;
 	}
 
-	protected ParameterDescriptors getParameterDescriptors(Object[] params) {
+	protected boolean isAssignableValue(BeanResolver beanResolver, ParameterDescriptors parameterDescriptors,
+			Object[] params) {
+		// 异或运算，如果两个不同则结果为1
+		if (parameterDescriptors.size() == 0 ^ ArrayUtils.isEmpty(params)) {
+			return false;
+		}
+
+		if (parameterDescriptors.size() != params.length) {
+			return false;
+		}
+
+		int index = 0;
+		for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
+			Object value = params[index++];
+			if (value == null && beanResolver != null && beanResolver.isNullable(parameterDescriptor)) {
+				return false;
+			}
+
+			if (!ClassUtils.isAssignableValue(parameterDescriptor.getType(), value)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	protected ParameterDescriptors getParameterDescriptors(BeanResolver beanResolver, Object[] params) {
 		for (ParameterDescriptors parameterDescriptors : this) {
-			if (ParameterUtils.isAssignableValue(parameterDescriptors, params)) {
+			if (isAssignableValue(beanResolver, parameterDescriptors, params)) {
 				return parameterDescriptors;
 			}
 		}
 		return null;
-	}
-
-	protected <S> ServiceLoader<S> getServiceLoader(Class<S> clazz) {
-		ServiceLoaderFactory serviceLoaderFactory = getServiceLoaderFactory();
-		if (serviceLoaderFactory == null) {
-			return null;
-		}
-
-		return serviceLoaderFactory.getServiceLoader(clazz);
 	}
 
 	public Boolean getSingleton() {
@@ -294,7 +314,8 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 	}
 
 	public boolean isAopEnable(TypeDescriptor typeDescriptor, BeanResolver beanResolver) {
-		return !methodInterceptors.isEmpty() || (beanResolver != null && beanResolver.isAopEnable(typeDescriptor));
+		return getAop() != null && (!methodInterceptors.isEmpty()
+				|| (beanResolver != null && beanResolver.isAopEnable(typeDescriptor)));
 	}
 
 	public boolean isInstance() {
@@ -302,14 +323,6 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 	}
 
 	public boolean isInstance(boolean supportAbstract) {
-		if (serviceLoader == null) {
-			serviceLoader = getServiceLoader(getTypeDescriptor().getType());
-		}
-
-		if (serviceLoader.iterator().hasNext()) {
-			return true;
-		}
-
 		if (!supportAbstract && Modifier.isAbstract(getTypeDescriptor().getType().getModifiers())) {
 			return false;
 		}
@@ -321,7 +334,7 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 	}
 
 	public boolean isInstance(Object... params) {
-		return getParameterDescriptors(params) != null;
+		return getParameterDescriptors(getBeanResolver(), params) != null;
 	}
 
 	public boolean isNew() {
@@ -331,10 +344,10 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 	@Override
 	public boolean isSingleton() {
 		BeanResolver beanResolver = getBeanResolver();
-		if (this.singleton != null && beanResolver != null) {
+		if (this.singleton == null && beanResolver != null) {
 			return beanResolver.isSingleton(typeDescriptor);
 		}
-		return this.singleton == null ? false : singleton;
+		return this.singleton == null ? true : singleton;
 	}
 
 	public Iterator<ParameterDescriptors> iterator() {
@@ -369,11 +382,16 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 		return getClass().getName() + "[" + getStringDescribe() + "]";
 	}
 
-	public ServiceLoaderFactory getServiceLoaderFactory() {
-		return serviceLoaderFactory;
+	public void setExternal(Boolean external) {
+		this.external = external;
 	}
 
-	public void setServiceLoaderFactory(ServiceLoaderFactory serviceLoaderFactory) {
-		this.serviceLoaderFactory = serviceLoaderFactory;
+	@Override
+	public boolean isExternal() {
+		if (external == null && beanResolver != null) {
+			return beanResolver.isExternal(typeDescriptor);
+		}
+
+		return external == null ? false : external;
 	}
 }

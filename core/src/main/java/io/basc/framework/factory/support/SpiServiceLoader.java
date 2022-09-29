@@ -25,8 +25,9 @@ import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.DefaultClassLoaderProvider;
 
-public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderProvider {
+public final class SpiServiceLoader<S> extends DefaultClassLoaderProvider implements ServiceLoader<S>, ClassLoaderProvider {
 
 	private static final String PREFIX = ResourceUtils.META_INF_PREFIX + "services/";
 

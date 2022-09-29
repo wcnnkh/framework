@@ -93,9 +93,17 @@ public class HttpRemoteCallableFactory implements CallableFactory, Configurable 
 				ParameterUtils.getParameters(method), args, TypeDescriptor.forMethodReturnType(method));
 	}
 
+	private boolean configured;
+
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		httpPatternResolvers.configure(serviceLoaderFactory);
 		webMessageConverters.configure(serviceLoaderFactory);
+		configured = true;
+	}
+
+	@Override
+	public boolean isConfigured() {
+		return configured;
 	}
 }

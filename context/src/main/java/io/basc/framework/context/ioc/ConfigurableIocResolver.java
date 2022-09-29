@@ -7,6 +7,10 @@ import io.basc.framework.factory.ConfigurableServices;
 
 public class ConfigurableIocResolver extends ConfigurableServices<IocResolverExtend> implements IocResolver {
 	private IocResolver defaultResolver;
+	
+	public ConfigurableIocResolver() {
+		super(IocResolverExtend.class);
+	}
 
 	public IocResolver getDefaultResolver() {
 		return defaultResolver;

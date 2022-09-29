@@ -3,13 +3,13 @@ package io.basc.framework.mapper;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import io.basc.framework.env.Sys;
+import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.util.ClassUtils;
 
 public abstract class AbstractMapping implements Mapping {
 
 	public <T> T newInstance(Class<? extends T> type) {
-		return Sys.getEnv().getInstance(type);
+		return ReflectionApi.newInstance(type);
 	}
 
 	public <T> T mapping(Class<T> entityClass, Fields fields) {

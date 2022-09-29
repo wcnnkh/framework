@@ -9,18 +9,18 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventRegistration;
 import io.basc.framework.factory.BeanDefinition;
-import io.basc.framework.factory.BeanDefinitionFactory;
-import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.BeanPostProcessor;
 import io.basc.framework.factory.BeanlifeCycleEvent;
 import io.basc.framework.factory.BeanlifeCycleEvent.Step;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.Destroy;
 import io.basc.framework.factory.FactoryException;
+import io.basc.framework.factory.SingletonFactory;
 import io.basc.framework.factory.SingletonRegistry;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.DefaultStatus;
 import io.basc.framework.util.Status;
 import io.basc.framework.util.StringUtils;
@@ -44,24 +44,26 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 		public void setStep(Step step) {
 			this.step = step;
 		}
+
+		@Override
+		public String toString() {
+			return "setp=" + step + ", bean=" + instance;
+		}
 	}
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultSingletonRegistry.class);
 	private final ConfigurableServices<BeanPostProcessor> beanPostProcessors = new ConfigurableServices<BeanPostProcessor>(
 			BeanPostProcessor.class);
 	private volatile Map<String, SingletonObject<?>> singletionMap = new LinkedHashMap<String, SingletonObject<?>>();
+	private SingletonFactory parentSingletonFactory;
 
-	public DefaultSingletonRegistry() {
-		this(null);
+	@Nullable
+	public SingletonFactory getParentSingletonFactory() {
+		return parentSingletonFactory;
 	}
 
-	public DefaultSingletonRegistry(BeanFactory beanFactory) {
-		this((BeanDefinitionFactory) beanFactory);
-		getBeanResolver().setDefaultResolver(beanFactory.getBeanResolver());
-	}
-
-	public DefaultSingletonRegistry(@Nullable BeanDefinitionFactory parentBeanDefinitionFactory) {
-		super(parentBeanDefinitionFactory);
+	public void setParentSingletonFactory(SingletonFactory parentSingletonFactory) {
+		this.parentSingletonFactory = parentSingletonFactory;
 	}
 
 	public void registerSingleton(String beanName, Object singletonObject) {
@@ -73,17 +75,20 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 			}
 
 			BeanDefinition definition;
-			if (containsDefinition(beanName) || (getParentBeanDefinitionFactory() != null
-					&& getParentBeanDefinitionFactory().containsDefinition(beanName))) {
+			SingletonObject<Object> singleton;
+			if (containsDefinition(beanName)) {
 				// 如果定义已经存在
 				definition = getDefinition(beanName);
+				singleton = new SingletonObject<Object>(singletonObject);
+				;
 			} else {
 				// 如果定义不存在，创建一个空定义
 				definition = new EmptyBeanDefinition(TypeDescriptor.forObject(singletonObject), beanName);
 				registerDefinition(definition);
+				singleton = new SingletonObject<Object>(singletonObject);
+				singleton.setStep(Step.AFTER_INIT);
 			}
 
-			SingletonObject<Object> singleton = new SingletonObject<Object>(singletonObject);
 			old = singletionMap.get(definition.getId());
 			if (old != null) {
 				throw new IllegalStateException("Could not register object [" + singletonObject + "] under bean name '"
@@ -95,10 +100,7 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 
 	@Override
 	public BeanDefinition registerDefinition(String name, BeanDefinition beanDefinition) {
-		BeanDefinition definition = getDefinition(name);
-		if (definition != null && definition instanceof EmptyBeanDefinition) {
-			removeDefinition(name);
-		} else if (containsSingleton(name)) {
+		if (containsSingleton(name)) {
 			// 单例已经存在，不可以再注册定义了
 			throw new FactoryException("Single instance[" + name + "] already exists, unable to register definition["
 					+ beanDefinition + "]");
@@ -107,6 +109,10 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 	}
 
 	public Object getSingleton(String beanName) {
+		return getSingleton(beanName, getParentSingletonFactory());
+	}
+
+	public Object getSingleton(String beanName, SingletonFactory parent) {
 		SingletonObject<?> instance = singletionMap.get(beanName);
 		if (instance != null) {
 			return instance.get();
@@ -114,12 +120,12 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 
 		BeanDefinition definition = getDefinition(beanName);
 		if (definition == null) {
-			return null;
+			return parent == null ? null : parent.getSingleton(beanName);
 		}
 
 		SingletonObject<?> singletonObject = singletionMap.get(definition.getId());
 		if (singletonObject == null) {
-			return null;
+			return parent == null ? null : parent.getSingleton(beanName);
 		}
 		return singletonObject.get();
 	}
@@ -127,6 +133,33 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 	public boolean containsSingleton(String beanName) {
 		if (singletionMap.containsKey(beanName)) {
 			return true;
+		}
+
+		// 存在单例必然存在定义
+		if (!containsDefinition(beanName)) {
+			return false;
+		}
+
+		BeanDefinition definition = getDefinition(beanName);
+		if (definition == null) {
+			return false;
+		}
+
+		return singletionMap.containsKey(definition.getId());
+	}
+
+	public boolean containsSingleton(String beanName, SingletonFactory parent) {
+		if (parent != null && parent.containsSingleton(beanName)) {
+			return true;
+		}
+
+		if (singletionMap.containsKey(beanName)) {
+			return true;
+		}
+
+		// 存在单例必然存在定义
+		if (!containsDefinition(beanName)) {
+			return false;
 		}
 
 		BeanDefinition definition = getDefinition(beanName);
@@ -138,21 +171,14 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 	}
 
 	public String[] getSingletonNames() {
-		synchronized (singletionMap) {
-			return StringUtils.toStringArray(singletionMap.keySet());
-		}
+		return getSingletonNames(getParentSingletonFactory());
 	}
 
-	public void removeSingleton(String name) {
+	public String[] getSingletonNames(SingletonFactory parent) {
 		synchronized (singletionMap) {
-			BeanDefinition definition = getDefinition(name);
-			if (definition != null) {
-				Object instance = getSingleton(definition.getId());
-				if (instance != null) {
-					destroy(instance, definition);
-				}
-			}
-			singletionMap.remove(name);
+			String[] array = StringUtils.toStringArray(singletionMap.keySet());
+			return (array != null || parent == null) ? array
+					: ArrayUtils.merge(parentSingletonFactory.getSingletonNames(), array);
 		}
 	}
 
@@ -168,11 +194,11 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 	@SuppressWarnings("unchecked")
 	public <T, E extends Throwable> Status<T> getSingleton(String name, CallableProcessor<T, E> creater,
 			boolean postProcessBean) throws E {
-		Object object = singletionMap.get(name);
+		Object object = getSingleton(name);
 		boolean created = false;
 		if (object == null) {
 			synchronized (singletionMap) {
-				object = singletionMap.get(name);
+				object = getSingleton(name);
 				if (object == null) {
 					object = creater.process();
 					registerSingleton(name, object);
@@ -198,9 +224,18 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 
 	@Override
 	public void destroy() {
-		String[] names = getSingletonNames();
-		for (int i = names.length - 1; i >= 0; i--) {
-			removeSingleton(names[i]);
+		synchronized (singletionMap) {
+			String[] names = getSingletonNames();
+			for (int i = names.length - 1; i >= 0; i--) {
+				BeanDefinition definition = getDefinition(names[i]);
+				if (definition != null) {
+					Object instance = getSingleton(definition.getId());
+					if (instance != null) {
+						destroy(instance, definition);
+					}
+				}
+				singletionMap.remove(names[i]);
+			}
 		}
 	}
 
@@ -223,6 +258,8 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 					eventListener.onEvent(new BeanlifeCycleEvent(definition, singletonObject.get(), step));
 				} catch (Throwable e) {
 					logger.error(e, "Register listener after on bean[{}]", definition.getId());
+				} finally {
+					singletonObject.step = step;
 				}
 			}
 		}
@@ -235,7 +272,7 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 			return;
 		}
 
-		if (definition.isSingleton()) {
+		if (!definition.isSingleton()) {
 			super.dependence(instance, definition);
 			return;
 		}
@@ -266,7 +303,7 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 			return;
 		}
 
-		if (definition.isSingleton()) {
+		if (!definition.isSingleton()) {
 			super.init(instance, definition);
 			return;
 		}
@@ -297,7 +334,7 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 			return;
 		}
 
-		if (definition.isSingleton()) {
+		if (!definition.isSingleton()) {
 			super.destroy(instance, definition);
 			return;
 		}

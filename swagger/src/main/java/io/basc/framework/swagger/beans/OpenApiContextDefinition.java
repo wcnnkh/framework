@@ -4,8 +4,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import io.basc.framework.context.Context;
+import io.basc.framework.context.support.ContextBeanDefinition;
 import io.basc.framework.factory.InstanceException;
-import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.swagger.OpenAPIExtensionsReload;
 import io.basc.framework.swagger.WebOpenApiContextBuilder;
 import io.basc.framework.util.CollectionUtils;
@@ -15,8 +15,7 @@ import io.swagger.v3.oas.integration.SwaggerConfiguration;
 import io.swagger.v3.oas.integration.api.OpenApiContext;
 import io.swagger.v3.oas.integration.api.OpenApiContextBuilder;
 
-public class OpenApiContextDefinition extends FactoryBeanDefinition {
-	private Context context;
+public class OpenApiContextDefinition extends ContextBeanDefinition {
 
 	public OpenApiContextDefinition(Context context) {
 		super(context, OpenApiContext.class);
@@ -36,7 +35,7 @@ public class OpenApiContextDefinition extends FactoryBeanDefinition {
 		if (CollectionUtils.isEmpty(configuration.getResourceClasses())
 				&& StringUtils.isEmpty(configuration.getScannerClass())
 				&& StringUtils.isEmpty(configuration.getReaderClass())) {
-			Set<String> classNames = context.getContextClasses().stream().map((c) -> c.getName())
+			Set<String> classNames = getContext().getContextClasses().stream().map((c) -> c.getName())
 					.collect(Collectors.toSet());
 			configuration.setResourceClasses(classNames);
 		}

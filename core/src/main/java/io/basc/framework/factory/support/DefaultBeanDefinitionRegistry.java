@@ -3,47 +3,41 @@ package io.basc.framework.factory.support;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sun.istack.internal.Nullable;
-
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanDefinitionFactory;
 import io.basc.framework.factory.BeanDefinitionRegistry;
 import io.basc.framework.lang.AlreadyExistsException;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.alias.DefaultAliasRegistry;
 
 public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implements BeanDefinitionRegistry {
 	private static Logger logger = LoggerFactory.getLogger(DefaultBeanDefinitionRegistry.class);
 	private volatile Map<String, BeanDefinition> beanDefinitionMap = new HashMap<String, BeanDefinition>();
-	@Nullable
-	private final BeanDefinitionFactory parentBeanDefinitionFactory;
-
-	public DefaultBeanDefinitionRegistry() {
-		this(null);
-	}
-
-	public DefaultBeanDefinitionRegistry(@Nullable BeanDefinitionFactory parentBeanDefinitionFactory) {
-		this.parentBeanDefinitionFactory = parentBeanDefinitionFactory;
-	}
+	private BeanDefinitionFactory parentBeanDefinitionFactory;
 
 	@Nullable
 	public BeanDefinitionFactory getParentBeanDefinitionFactory() {
 		return parentBeanDefinitionFactory;
 	}
 
+	public void setParentBeanDefinitionFactory(BeanDefinitionFactory parentBeanDefinitionFactory) {
+		this.parentBeanDefinitionFactory = parentBeanDefinitionFactory;
+		setParentAliasFactory(parentBeanDefinitionFactory);
+	}
+
 	public Object getDefinitionMutex() {
 		return beanDefinitionMap;
 	}
 
-	public void removeDefinition(String name) {
-		synchronized (beanDefinitionMap) {
-			beanDefinitionMap.remove(name);
-		}
+	public BeanDefinition getDefinition(String name) {
+		return getDefinition(name, getParentBeanDefinitionFactory());
 	}
 
-	public BeanDefinition getDefinition(String name) {
+	public BeanDefinition getDefinition(String name, BeanDefinitionFactory parent) {
 		BeanDefinition beanDefinition = beanDefinitionMap.get(name);
 		if (beanDefinition == null) {
 			String[] aliases = getAliases(name);
@@ -56,19 +50,17 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 				}
 			}
 		}
-
-		if (beanDefinition == null) {
-			BeanDefinitionFactory parentBeanDefinitionFactory = getParentBeanDefinitionFactory();
-			if (parentBeanDefinitionFactory != null) {
-				beanDefinition = parentBeanDefinitionFactory.getDefinition(name);
-			}
-		}
-		return beanDefinition;
+		return (beanDefinition != null || parent == null) ? beanDefinition : parent.getDefinition(name);
 
 	}
 
 	public final BeanDefinition getDefinition(Class<?> clazz) {
-		return getDefinition(clazz.getName());
+		return getDefinition(clazz, getParentBeanDefinitionFactory());
+	}
+
+	public final BeanDefinition getDefinition(Class<?> clazz, BeanDefinitionFactory parent) {
+		BeanDefinition definition = getDefinition(clazz.getName(), null);
+		return (definition != null || parent == null) ? definition : parent.getDefinition(clazz);
 	}
 
 	public final BeanDefinition registerDefinition(BeanDefinition beanDefinition) {
@@ -125,11 +117,20 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 		}
 	}
 
-	public String[] getDefinitionIds() {
-		return StringUtils.toStringArray(this.beanDefinitionMap.keySet());
+	public final String[] getDefinitionIds() {
+		return getDefinitionIds(getParentBeanDefinitionFactory());
 	}
 
-	public boolean containsDefinition(String beanName) {
+	public String[] getDefinitionIds(BeanDefinitionFactory parent) {
+		String[] ids = StringUtils.toStringArray(this.beanDefinitionMap.keySet());
+		return parent == null ? ids : ArrayUtils.merge(ids, parent.getDefinitionIds());
+	}
+
+	public final boolean containsDefinition(String beanName) {
+		return containsDefinition(beanName, getParentBeanDefinitionFactory());
+	}
+
+	public boolean containsDefinition(String beanName, BeanDefinitionFactory parent) {
 		if (beanDefinitionMap.containsKey(beanName)) {
 			return true;
 		}
@@ -140,6 +141,7 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 				return true;
 			}
 		}
-		return false;
+
+		return parent == null ? false : parent.containsDefinition(beanName);
 	}
 }

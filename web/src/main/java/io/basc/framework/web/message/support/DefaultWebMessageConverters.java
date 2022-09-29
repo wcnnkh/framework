@@ -1,7 +1,9 @@
 package io.basc.framework.web.message.support;
 
+import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentAware;
+import io.basc.framework.factory.DefaultParameterFactoryAware;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.message.convert.DefaultMessageConverters;
@@ -21,6 +23,7 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 
 	public DefaultWebMessageConverters(Environment environment) {
 		super.setAfterService(afters);
+		afters.getConsumers().addService(this);
 		this.messageConverters = new DefaultMessageConverters(environment.getConversionService());
 		this.environment = environment;
 		LastWebMessageConverter lastWebMessageConverter = new LastWebMessageConverter();
@@ -61,6 +64,14 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 
 		if (service instanceof MessageConverterAware) {
 			((MessageConverterAware) service).setMessageConverter(getMessageConverters());
+		}
+
+		if (service instanceof ConversionServiceAware) {
+			((ConversionServiceAware) service).setConversionService(messageConverters.getConversionService());
+		}
+		
+		if(service instanceof DefaultParameterFactoryAware) {
+			((DefaultParameterFactoryAware) service).setDefaultParameterFactory(environment.getBeanResolver());
 		}
 	}
 }

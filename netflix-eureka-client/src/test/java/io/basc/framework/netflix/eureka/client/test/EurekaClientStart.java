@@ -13,8 +13,8 @@ import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.netflix.eureka.EnableEurekaClient;
 import io.basc.framework.netflix.eureka.EurekaDiscoveryClient;
+import io.basc.framework.netflix.eureka.boot.EnableEurekaClient;
 import io.basc.framework.util.XUtils;
 
 @EnableEurekaClient

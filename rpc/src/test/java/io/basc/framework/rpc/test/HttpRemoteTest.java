@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import io.basc.framework.factory.support.DefaultBeanFactory;
+import io.basc.framework.context.support.DefaultContext;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -15,7 +15,7 @@ public class HttpRemoteTest {
 	@Test
 	public void test() throws Throwable {
 		LoggerFactory.getLevelManager().getCustomLevelRegistry().put("io.basc.framework.rpc", Levels.DEBUG.getValue());
-		DefaultBeanFactory beanFactory = new DefaultBeanFactory();
+		DefaultContext beanFactory = new DefaultContext();
 		beanFactory.init();
 		TestRemoteInterface test = beanFactory.getInstance(TestRemoteInterface.class);
 		String response;

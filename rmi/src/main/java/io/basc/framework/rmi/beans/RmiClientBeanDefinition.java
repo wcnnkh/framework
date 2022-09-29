@@ -36,7 +36,7 @@ public class RmiClientBeanDefinition extends FactoryBeanDefinition {
 		} catch (NotBoundException e) {
 			throw new BeansException(name, e);
 		}
-		return createInstanceProxy(instance, getTypeDescriptor().getType(),
+		return createInstanceProxy(getAop(), instance, getTypeDescriptor().getType(),
 				new Class<?>[] { getTypeDescriptor().getType() }).create();
 	}
 }

@@ -1,7 +1,6 @@
 package io.basc.framework.netflix.eureka.server.beans;
 
 import com.netflix.discovery.EurekaClientConfig;
-import com.netflix.eureka.EurekaServerConfig;
 
 import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.BeansException;
@@ -11,7 +10,7 @@ import io.basc.framework.netflix.eureka.server.EurekaServerConfigBean;
 public class EurekaServerConfigDefinition extends FactoryBeanDefinition {
 
 	public EurekaServerConfigDefinition(BeanFactory beanFactory) {
-		super(beanFactory, EurekaServerConfig.class);
+		super(beanFactory, EurekaServerConfigBean.class);
 	}
 
 	@Override

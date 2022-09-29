@@ -32,7 +32,9 @@ public class RequestBeanFactory extends RequestParameterFactory implements Insta
 	public RequestBeanFactory(ServerHttpRequest request, WebMessageConverter messageConverter, Context context) {
 		super(request, messageConverter);
 		this.context = context;
-		this.singletonRegistry = new DefaultSingletonRegistry(context);
+		this.singletonRegistry = new DefaultSingletonRegistry();
+		this.singletonRegistry.setParentBeanDefinitionFactory(context);
+		this.singletonRegistry.getBeanResolver().setDefaultResolver(context.getBeanResolver());
 		this.request = request;
 	}
 
@@ -64,8 +66,8 @@ public class RequestBeanFactory extends RequestParameterFactory implements Insta
 				if (beanDefinition.isSingleton()) {
 					result = singletonRegistry.getSingleton(beanDefinition.getId(), () -> {
 						return beanDefinition.create(parameterDescriptors.getTypes(),
-								getParameters(parameterDescriptors), false);
-					});
+								getParameters(parameterDescriptors));
+					}, false);
 				} else {
 					result = new DefaultStatus<Object>(true, beanDefinition.create(parameterDescriptors.getTypes(),
 							getParameters(parameterDescriptors)));

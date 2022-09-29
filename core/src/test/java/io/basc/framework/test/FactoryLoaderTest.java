@@ -8,8 +8,8 @@ import java.util.logging.Level;
 import org.junit.Test;
 
 import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.factory.FactoryLoader;
 import io.basc.framework.factory.support.DefaultBeanFactory;
-import io.basc.framework.factory.support.FactoryLoader;
 import io.basc.framework.logger.LoggerFactory;
 
 public class FactoryLoaderTest {
@@ -31,7 +31,7 @@ public class FactoryLoaderTest {
 	}
 
 	private void test(BeanFactory beanFactory) {
-		BeanFactory current = FactoryLoader.getCurrentBeanFactory();
+		BeanFactory current = FactoryLoader.getBeanFactory();
 		assertTrue(current != null);
 	}
 }

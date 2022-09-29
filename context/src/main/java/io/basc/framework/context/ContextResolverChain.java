@@ -1,8 +1,10 @@
 package io.basc.framework.context;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.util.Assert;
 
 public class ContextResolverChain extends ContextResolverConfiguration implements ContextResolver {
@@ -33,6 +35,14 @@ public class ContextResolverChain extends ContextResolverConfiguration implement
 			return iterator.next().hasContext(parameterDescriptor, this);
 		}
 		return nextChain == null ? super.hasContext(parameterDescriptor) : nextChain.hasContext(parameterDescriptor);
+	}
+
+	@Override
+	public Collection<BeanDefinition> resolveBeanDefinitions(Class<?> clazz) {
+		if (iterator.hasNext()) {
+			return iterator.next().resolveBeanDefinitions(clazz, this);
+		}
+		return nextChain == null ? super.resolveBeanDefinitions(clazz) : nextChain.resolveBeanDefinitions(clazz);
 	}
 
 	public static ContextResolverChain build(Iterator<? extends ContextResolverExtend> iterator) {

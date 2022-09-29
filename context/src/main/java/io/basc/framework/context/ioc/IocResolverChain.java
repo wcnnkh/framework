@@ -3,9 +3,8 @@ package io.basc.framework.context.ioc;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 
-import com.sun.istack.internal.Nullable;
-
 import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.lang.Nullable;
 
 public class IocResolverChain extends IocResolverConfiguration implements IocResolver {
 	private final Iterator<? extends IocResolverExtend> iterator;

@@ -6,8 +6,6 @@ import io.basc.framework.util.Services;
 
 public interface ConfigurableContext extends Context, ConfigurableEnvironment {
 
-	void source(Class<?> sourceClass);
-
 	void componentScan(String packageName);
 
 	@Override

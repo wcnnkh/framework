@@ -5,8 +5,6 @@ import io.basc.framework.io.Resource;
 
 public interface Context extends Environment {
 
-	ClassesLoader getSourceClasses();
-
 	ClassesLoader getContextClasses();
 
 	ClassesLoaderFactory getClassesLoaderFactory();

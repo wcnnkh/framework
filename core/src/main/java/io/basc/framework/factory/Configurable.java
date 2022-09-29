@@ -8,6 +8,9 @@ package io.basc.framework.factory;
  * @author shuchaowen
  */
 public interface Configurable {
+	
+	boolean isConfigured();
+	
 	/**
 	 * 通过工厂模式实体化的会自动调用此方法
 	 * 

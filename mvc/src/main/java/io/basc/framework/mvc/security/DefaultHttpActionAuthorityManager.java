@@ -1,5 +1,9 @@
 package io.basc.framework.mvc.security;
 
+import java.lang.reflect.AnnotatedElement;
+import java.util.HashMap;
+import java.util.Map;
+
 import io.basc.framework.codec.Encoder;
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.context.annotation.Provider;
@@ -14,10 +18,6 @@ import io.basc.framework.security.authority.http.DefaultHttpAuthority;
 import io.basc.framework.security.authority.http.DefaultHttpAuthorityManager;
 import io.basc.framework.security.authority.http.HttpAuthority;
 import io.basc.framework.web.pattern.HttpPattern;
-
-import java.lang.reflect.AnnotatedElement;
-import java.util.HashMap;
-import java.util.Map;
 
 @Provider(value = HttpActionAuthorityManager.class)
 public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManager<HttpAuthority>

@@ -67,9 +67,16 @@ public class DefaultObjectMapper<S, E extends Throwable> extends io.basc.framewo
 		}
 	}
 
+	private boolean configured;
+
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		this.objectRelationalResolverExtendServices.configure(serviceLoaderFactory);
+		configured = true;
+	}
+
+	public boolean isConfigured() {
+		return configured;
 	}
 
 	@Override

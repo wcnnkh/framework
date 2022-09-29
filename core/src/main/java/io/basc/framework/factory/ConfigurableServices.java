@@ -36,10 +36,10 @@ public class ConfigurableServices<T> extends Services<T> implements Configurable
 		this.serviceClass = serviceClass;
 		if (this.serviceClass == null) {
 			try {
-				ResolvableType type = ResolvableType
-						.forType(ParameterizedTypeReference.getParameterizedType(getClass()));
+				ResolvableType type = ResolvableType.forType(new ParameterizedTypeReference<T>() {
+				});
 				if (!type.hasGenerics()) {
-					this.serviceClass = (Class<T>) type.getRawClass();
+					this.serviceClass = type.getRawClass() == Object.class ? null : (Class<T>) type.getRawClass();
 				}
 			} catch (Exception e) {
 			}

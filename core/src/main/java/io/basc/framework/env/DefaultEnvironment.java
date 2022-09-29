@@ -3,18 +3,22 @@ package io.basc.framework.env;
 import java.util.Properties;
 import java.util.function.Consumer;
 
-import io.basc.framework.convert.lang.ConversionServices;
+import io.basc.framework.convert.ConversionServiceAware;
+import io.basc.framework.convert.lang.ConfigurableConversionService;
+import io.basc.framework.convert.lang.ConverterConversionService;
+import io.basc.framework.convert.lang.ResourceToPropertiesConverter;
+import io.basc.framework.convert.resolve.ResourceResolverConversionService;
 import io.basc.framework.convert.resolve.ResourceResolvers;
-import io.basc.framework.convert.support.DefaultConversionServices;
+import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.event.Observable;
-import io.basc.framework.factory.Configurable;
+import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.FactoryException;
 import io.basc.framework.factory.ServiceLoader;
-import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.factory.support.ConfigServiceLoader;
 import io.basc.framework.factory.support.DefaultBeanFactory;
 import io.basc.framework.factory.support.ServiceLoaders;
+import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.PropertiesResolvers;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.logger.Logger;
@@ -23,13 +27,14 @@ import io.basc.framework.util.AntPathMatcher;
 import io.basc.framework.util.StringMatchers;
 import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
 import io.basc.framework.util.placeholder.support.DefaultPlaceholderReplacer;
+import io.basc.framework.util.stream.StreamProcessorSupport;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 
 public class DefaultEnvironment extends DefaultBeanFactory
-		implements ConfigurableEnvironment, Configurable, PropertyWrapper, Consumer<PropertyFactory> {
+		implements ConfigurableEnvironment, PropertyWrapper, Consumer<PropertyFactory> {
 	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
 
 	private class AnyFormatValue extends AnyValue {
@@ -58,10 +63,17 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	}
 
 	private static final String ENABLE_PREFIX = "io.basc.framework.spi";
-	private final DefaultConversionServices conversionServices = new DefaultConversionServices();
+	private final DefaultConversionService conversionService = new DefaultConversionService();
 
+	// properties和environmentResourceLoader不能更换顺序
+	private final DefaultEnvironmentProperties properties = new DefaultEnvironmentProperties(this);
 	private final DefaultEnvironmentResourceLoader environmentResourceLoader = new DefaultEnvironmentResourceLoader(
 			this);
+
+	private final PropertiesResolvers propertiesResolvers = new PropertiesResolvers();
+
+	private final ResourceResolvers resourceResolvers = new ResourceResolvers(propertiesResolvers, conversionService,
+			getObservableCharset());
 
 	/**
 	 * 是否强制使用spi
@@ -70,12 +82,33 @@ public class DefaultEnvironment extends DefaultBeanFactory
 
 	private final DefaultPlaceholderReplacer placeholderReplacer = new DefaultPlaceholderReplacer();
 
-	private final DefaultEnvironmentProperties properties = new DefaultEnvironmentProperties(this);
-	private final ConfigurableServices<EnvironmentPostProcessor> environmentPostProcessors = new ConfigurableServices<EnvironmentPostProcessor>();
+	private final ConfigurableServices<EnvironmentPostProcessor> environmentPostProcessors = new ConfigurableServices<EnvironmentPostProcessor>(
+			EnvironmentPostProcessor.class);
+	private Environment parentEnvironment;
 
 	public DefaultEnvironment() {
+		conversionService
+				.addService(new ConverterConversionService(Resource.class, Properties.class, StreamProcessorSupport
+						.toProcessor(new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers()))));
+		conversionService.addService(new ResourceResolverConversionService(resourceResolvers));
 		registerSingleton(Environment.class.getName(), this);
 		this.properties.getTandemFactories().getConsumers().addService(this);
+	}
+
+	public Environment getParentEnvironment() {
+		return parentEnvironment;
+	}
+
+	public void setParentEnvironment(Environment environment) {
+		setParentBeanFactory(environment);
+		this.parentEnvironment = environment;
+		placeholderReplacer.setAfterService(environment == null ? null : environment.getPlaceholderReplacer());
+		conversionService.setAfterService(environment == null ? null : environment.getConversionService());
+		properties.getTandemFactories().setAfterService(environment == null ? null : environment.getProperties());
+		environmentResourceLoader.getResourceLoaders()
+				.setAfterService(environment == null ? null : environment.getResourceLoader());
+		resourceResolvers.setAfterService(environment == null ? null : environment.getResourceResolver());
+		propertiesResolvers.setAfterService(environment == null ? null : environment.getPropertiesResolver());
 	}
 
 	@Override
@@ -87,14 +120,6 @@ public class DefaultEnvironment extends DefaultBeanFactory
 		if (instance instanceof EnvironmentAware) {
 			((EnvironmentAware) instance).setEnvironment(this);
 		}
-	}
-
-	@Override
-	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		environmentResourceLoader.configure(serviceLoaderFactory);
-		conversionServices.configure(serviceLoaderFactory);
-		properties.getTandemFactories().configure(serviceLoaderFactory);
-		placeholderReplacer.configure(serviceLoaderFactory);
 	}
 
 	private volatile boolean initialized = false;
@@ -110,8 +135,31 @@ public class DefaultEnvironment extends DefaultBeanFactory
 				super.init();
 				logger.debug("Start initializing environment[{}]!", this);
 
+				if (!environmentResourceLoader.isConfigured()) {
+					environmentResourceLoader.configure(this);
+				}
+
+				if (!conversionService.isConfigured()) {
+					conversionService.configure(this);
+				}
+				if (!properties.getTandemFactories().isConfigured()) {
+					properties.getTandemFactories().configure(this);
+				}
+
+				if (!placeholderReplacer.isConfigured()) {
+					placeholderReplacer.configure(this);
+				}
+
 				if (!environmentPostProcessors.isConfigured()) {
 					environmentPostProcessors.configure(this);
+				}
+
+				if (!resourceResolvers.isConfigured()) {
+					resourceResolvers.configure(this);
+				}
+
+				if (!propertiesResolvers.isConfigured()) {
+					propertiesResolvers.configure(this);
 				}
 
 				for (EnvironmentPostProcessor postProcessor : environmentPostProcessors) {
@@ -139,8 +187,8 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	}
 
 	@Override
-	public ConversionServices getConversionService() {
-		return conversionServices;
+	public ConfigurableConversionService getConversionService() {
+		return conversionService;
 	}
 
 	@Override
@@ -155,7 +203,7 @@ public class DefaultEnvironment extends DefaultBeanFactory
 
 	@Override
 	public PropertiesResolvers getPropertiesResolver() {
-		return conversionServices.getResourceResolvers().getPropertiesResolvers();
+		return propertiesResolvers;
 	}
 
 	@Override
@@ -165,7 +213,7 @@ public class DefaultEnvironment extends DefaultBeanFactory
 
 	@Override
 	public ResourceResolvers getResourceResolver() {
-		return conversionServices.getResourceResolvers();
+		return resourceResolvers;
 	}
 
 	@Override
@@ -184,7 +232,7 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	public void loadProperties(String keyPrefix, Observable<Properties> properties) {
 		ObservablePropertiesPropertyFactory factory = new ObservablePropertiesPropertyFactory(properties, keyPrefix,
 				this);
-		this.properties.getTandemFactories().addService(factory);
+		this.getProperties().getTandemFactories().addService(factory);
 	}
 
 	public void setForceSpi(boolean forceSpi) {
@@ -217,5 +265,13 @@ public class DefaultEnvironment extends DefaultBeanFactory
 			v = new AnyFormatValue(value);
 		}
 		return v;
+	}
+
+	@Override
+	protected void _dependence(Object instance, BeanDefinition definition) throws FactoryException {
+		super._dependence(instance, definition);
+		if (instance instanceof ConversionServiceAware) {
+			((ConversionServiceAware) instance).setConversionService(getConversionService());
+		}
 	}
 }

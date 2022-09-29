@@ -9,7 +9,7 @@ import org.junit.Test;
 import io.basc.framework.consistency.CompensatePolicy;
 import io.basc.framework.consistency.policy.FileCompensatePolicy;
 import io.basc.framework.context.annotation.Service;
-import io.basc.framework.factory.support.DefaultBeanFactory;
+import io.basc.framework.context.support.DefaultContext;
 import io.basc.framework.io.FileUtils;
 import io.basc.framework.tcc.annotation.Tcc;
 import io.basc.framework.tcc.annotation.TccStage;
@@ -21,7 +21,7 @@ import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.XUtils;
 
 public class TccTest {
-	private static final DefaultBeanFactory beanFactory = new DefaultBeanFactory();
+	private static final DefaultContext beanFactory = new DefaultContext();
 	private static final File file = new File(FileUtils.getTempDirectory(), "install_test");
 	static {
 		file.mkdir();

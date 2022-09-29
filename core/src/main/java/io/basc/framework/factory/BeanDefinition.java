@@ -12,13 +12,13 @@ public interface BeanDefinition extends Iterable<ParameterDescriptors>, Instance
 	Collection<String> getNames();
 
 	boolean isSingleton();
-	
+
 	TypeDescriptor getTypeDescriptor();
 
 	boolean isInstance();
 
 	boolean isInstance(Class<?>[] parameterTypes);
-	
+
 	boolean isInstance(Object... params);
 
 	Object create(Object... params) throws BeansException;
@@ -30,4 +30,11 @@ public interface BeanDefinition extends Iterable<ParameterDescriptors>, Instance
 	void init(Object instance) throws BeansException;
 
 	void destroy(Object instance) throws BeansException;
+
+	/**
+	 * 是否是外部的
+	 * 
+	 * @return
+	 */
+	boolean isExternal();
 }

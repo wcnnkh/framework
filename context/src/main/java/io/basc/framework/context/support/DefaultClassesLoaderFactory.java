@@ -8,13 +8,11 @@ import io.basc.framework.io.ResourcePatternResolver;
 import io.basc.framework.io.support.PathMatchingResourcePatternResolver;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassLoaderProvider;
-import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.DefaultClassLoaderProvider;
 import io.basc.framework.util.StringUtils;
 
-public class DefaultClassesLoaderFactory implements ClassesLoaderFactory {
+public class DefaultClassesLoaderFactory extends DefaultClassLoaderProvider implements ClassesLoaderFactory {
 	private final ResourcePatternResolver resourcePatternResolver;
-	private final ClassLoaderProvider classLoaderProvider;
 
 	public DefaultClassesLoaderFactory() {
 		this(new PathMatchingResourcePatternResolver(), null);
@@ -30,8 +28,8 @@ public class DefaultClassesLoaderFactory implements ClassesLoaderFactory {
 
 	public DefaultClassesLoaderFactory(ResourcePatternResolver resourcePatternResolver,
 			@Nullable ClassLoaderProvider classLoaderProvider) {
+		super(classLoaderProvider);
 		this.resourcePatternResolver = resourcePatternResolver;
-		this.classLoaderProvider = classLoaderProvider;
 	}
 
 	public ClassesLoader getClassesLoader(final String packageName, TypeFilter typeFilter) {
@@ -41,9 +39,5 @@ public class DefaultClassesLoaderFactory implements ClassesLoaderFactory {
 			editableClassesLoader.add(new PackageClassesLoader(resourcePatternResolver, name, this, typeFilter));
 		}
 		return editableClassesLoader;
-	}
-
-	public ClassLoader getClassLoader() {
-		return ClassUtils.getClassLoader(classLoaderProvider);
 	}
 }

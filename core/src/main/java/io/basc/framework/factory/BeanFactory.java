@@ -6,9 +6,13 @@ import java.util.Map;
 
 import io.basc.framework.aop.Aop;
 import io.basc.framework.core.ResolvableType;
+import io.basc.framework.lang.Nullable;
 
 public interface BeanFactory
 		extends ServiceLoaderFactory, BeanDefinitionFactory, SingletonFactory, BeanLifeCycleManager {
+	@Nullable
+	BeanFactory getParentBeanFactory();
+
 	Aop getAop();
 
 	@SuppressWarnings("unchecked")
