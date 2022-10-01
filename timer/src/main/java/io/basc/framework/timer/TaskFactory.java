@@ -1,6 +1,6 @@
 package io.basc.framework.timer;
 
-import io.basc.framework.util.Accept;
+import java.util.function.Predicate;
 
 public interface TaskFactory {
 	/**
@@ -32,5 +32,5 @@ public interface TaskFactory {
 	 * 
 	 * @param action
 	 */
-	void iteratorRegisteredTaskConfig(Accept<TaskConfig> action);
+	void iteratorRegisteredTaskConfig(Predicate<TaskConfig> action);
 }

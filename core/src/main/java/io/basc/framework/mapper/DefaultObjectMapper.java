@@ -366,7 +366,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends SimpleReverseMa
 				Iterator<Field> iterator = targetFields.iterator();
 				while (iterator.hasNext()) {
 					Field targetField = iterator.next();
-					if (sourceField.accept(targetField)) {
+					if (sourceField.test(targetField)) {
 						if (!accept(sourceField, targetField.getSetter(), context)) {
 							continue;
 						}

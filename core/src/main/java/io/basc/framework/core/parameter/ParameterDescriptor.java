@@ -2,13 +2,13 @@ package io.basc.framework.core.parameter;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
+import java.util.function.Predicate;
 
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.util.Accept;
 import io.basc.framework.util.Named;
 
-public interface ParameterDescriptor extends AnnotatedElement, Named, Accept<ParameterDescriptor> {
+public interface ParameterDescriptor extends AnnotatedElement, Named, Predicate<ParameterDescriptor> {
 	public static final ParameterDescriptor[] EMPTY_ARRAY = new ParameterDescriptor[0];
 
 	Class<?> getType();
@@ -35,7 +35,7 @@ public interface ParameterDescriptor extends AnnotatedElement, Named, Accept<Par
 	}
 
 	@Override
-	default boolean accept(ParameterDescriptor target) {
+	default boolean test(ParameterDescriptor target) {
 		if (target == null) {
 			return false;
 		}

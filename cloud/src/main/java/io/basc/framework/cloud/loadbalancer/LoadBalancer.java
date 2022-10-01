@@ -1,13 +1,14 @@
 package io.basc.framework.cloud.loadbalancer;
 
 import java.util.HashSet;
+import java.util.function.Predicate;
 
 import io.basc.framework.http.client.HttpClientException;
 import io.basc.framework.retry.ExhaustedRetryException;
 import io.basc.framework.retry.RetryOperations;
 
 public interface LoadBalancer<T> {
-	Server<T> choose(ServerAccept<T> accept);
+	Server<T> choose(Predicate<Server<T>> accept);
 
 	void stat(Server<T> server, State state);
 

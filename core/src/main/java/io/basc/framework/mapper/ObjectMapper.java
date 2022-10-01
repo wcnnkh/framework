@@ -162,7 +162,7 @@ public interface ObjectMapper<S, E extends Throwable>
 					Iterator<Field> iterator = targetFields.iterator();
 					while (iterator.hasNext()) {
 						Field targetField = iterator.next();
-						if (sourceField.accept(targetField)) {
+						if (sourceField.test(targetField)) {
 							targetField.set(target, value);
 						}
 					}

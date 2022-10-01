@@ -26,8 +26,8 @@ public interface FieldDescriptor extends ParameterDescriptor, MethodHolder, Fiel
 	Method getMethod();
 
 	@Override
-	default boolean accept(ParameterDescriptor target) {
-		if (ParameterDescriptor.super.accept(target)) {
+	default boolean test(ParameterDescriptor target) {
+		if (ParameterDescriptor.super.test(target)) {
 			if (target instanceof FieldDescriptor) {
 				int sourceModifiers = getModifiers();
 				int targetModifiers = ((FieldDescriptor) target).getModifiers();

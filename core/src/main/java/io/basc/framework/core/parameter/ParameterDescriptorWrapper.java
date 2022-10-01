@@ -28,7 +28,7 @@ public class ParameterDescriptorWrapper<P extends ParameterDescriptor> extends A
 	}
 
 	@Override
-	public boolean accept(ParameterDescriptor target) {
-		return wrappedTarget.accept(target);
+	public boolean test(ParameterDescriptor target) {
+		return wrappedTarget.test(target);
 	}
 }

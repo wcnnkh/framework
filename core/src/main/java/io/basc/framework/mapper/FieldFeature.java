@@ -1,12 +1,12 @@
 package io.basc.framework.mapper;
 
+import java.lang.reflect.Modifier;
+import java.util.function.Predicate;
+
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.NotSupportedException;
-import io.basc.framework.util.Accept;
 
-import java.lang.reflect.Modifier;
-
-public enum FieldFeature implements Accept<Field> {
+public enum FieldFeature implements Predicate<Field> {
 	/**
 	 * 存在getter行为
 	 */
@@ -84,7 +84,7 @@ public enum FieldFeature implements Accept<Field> {
 	IGNORE_ANNOTATION;
 
 	@Override
-	public boolean accept(Field field) {
+	public boolean test(Field field) {
 		switch (this) {
 		case SUPPORT_GETTER:
 			return field.isSupportGetter();
@@ -126,7 +126,7 @@ public enum FieldFeature implements Accept<Field> {
 		case EXISTING_SETTER_FIELD:
 			return field.isSupportSetter() && field.getSetter().getField() != null;
 		case EXISTING_FIELD:
-			return EXISTING_GETTER_FIELD.accept(field) && EXISTING_SETTER_FIELD.accept(field);
+			return EXISTING_GETTER_FIELD.test(field) && EXISTING_SETTER_FIELD.test(field);
 		case IGNORE_GETTER_FINAL:
 			if (field.isSupportGetter() && field.getGetter().getField() != null
 					&& Modifier.isFinal(field.getGetter().getField().getModifiers())) {

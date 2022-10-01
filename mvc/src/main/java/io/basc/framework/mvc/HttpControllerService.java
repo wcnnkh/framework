@@ -183,7 +183,7 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 		});
 	}
 
-	public boolean accept(ServerHttpRequest request) {
+	public boolean test(ServerHttpRequest request) {
 		if (getAction(request) != null) {
 			return true;
 		}

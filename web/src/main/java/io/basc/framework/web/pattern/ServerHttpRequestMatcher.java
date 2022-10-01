@@ -98,7 +98,7 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 	}
 
 	@Override
-	public boolean accept(ServerHttpRequest request) {
+	public boolean test(ServerHttpRequest request) {
 		return get(request) != null;
 	}
 

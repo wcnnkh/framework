@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -12,7 +13,6 @@ import org.w3c.dom.NodeList;
 
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.NotFoundException;
-import io.basc.framework.util.Accept;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
@@ -281,7 +281,7 @@ public final class DomUtils {
 		};
 	}
 
-	public static Node findNode(NodeList nodeList, Accept<Node> accept) {
+	public static Node findNode(NodeList nodeList, Predicate<Node> accept) {
 		if (nodeList == null) {
 			return null;
 		}
@@ -297,7 +297,7 @@ public final class DomUtils {
 				continue;
 			}
 
-			if (accept.accept(item)) {
+			if (accept.test(item)) {
 				return item;
 			}
 		}

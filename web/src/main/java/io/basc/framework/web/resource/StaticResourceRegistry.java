@@ -34,7 +34,7 @@ public class StaticResourceRegistry extends PathRegistry implements HttpService 
 	}
 
 	@Override
-	public boolean accept(ServerHttpRequest request) {
+	public boolean test(ServerHttpRequest request) {
 		Resource resource = getResource(request);
 		if (resource == null || !resource.exists()) {
 			return false;

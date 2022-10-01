@@ -29,8 +29,8 @@ public abstract class AbstractMapping implements Mapping {
 		return entity;
 	}
 
-	public boolean accept(Field field) {
-		return FieldFeature.IGNORE_STATIC.accept(field);
+	public boolean test(Field field) {
+		return FieldFeature.IGNORE_STATIC.test(field);
 	}
 
 	protected boolean isNesting(FieldDescriptor fieldDescriptor) {

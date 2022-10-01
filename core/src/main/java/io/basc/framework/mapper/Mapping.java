@@ -1,7 +1,7 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.util.Accept;
+import java.util.function.Predicate;
 
-public interface Mapping extends Accept<Field> {
+public interface Mapping extends Predicate<Field> {
 	<T> T mapping(Class<T> entityClass, Fields fields);
 }

@@ -9,7 +9,6 @@ import io.basc.framework.convert.Converter;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.Parameter;
-import io.basc.framework.util.Accept;
 
 public class NodeListAccess<E extends Throwable> implements ObjectAccess<E> {
 	private final NodeList nodeList;
@@ -32,13 +31,7 @@ public class NodeListAccess<E extends Throwable> implements ObjectAccess<E> {
 
 	@Override
 	public Parameter get(String name) throws E {
-		Node node = DomUtils.findNode(nodeList, new Accept<Node>() {
-
-			public boolean accept(Node e) {
-				return e.getNodeName().equals(name);
-			}
-		});
-
+		Node node = DomUtils.findNode(nodeList, (e) -> e.getNodeName().equals(name));
 		if (node == null) {
 			return null;
 		}

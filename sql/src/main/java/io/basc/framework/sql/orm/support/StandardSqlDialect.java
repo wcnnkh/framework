@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 
 import io.basc.framework.aop.support.FieldSetterListen;
 import io.basc.framework.convert.TypeDescriptor;
@@ -33,7 +34,6 @@ import io.basc.framework.sql.orm.SqlDialect;
 import io.basc.framework.sql.orm.SqlDialectException;
 import io.basc.framework.sql.orm.SqlType;
 import io.basc.framework.sql.orm.TableStructure;
-import io.basc.framework.util.Accept;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
@@ -338,7 +338,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 	}
 
 	protected Sql toUpdateSql(TableStructure tableStructure, Object entity, Map<String, Object> changeMap,
-			Accept<Column> accept) throws SqlDialectException {
+			Predicate<Column> accept) throws SqlDialectException {
 		List<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
 		if (primaryKeyColumns.size() == 0) {
 			throw new SqlDialectException(tableStructure.getName() + " not found primary key");
@@ -358,7 +358,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 				continue;
 			}
 
-			if (!accept.accept(column)) {
+			if (!accept.test(column)) {
 				continue;
 			}
 
@@ -384,7 +384,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 
 		// 添加版本号字段变更条件
 		notPrimaryKeys.forEach((column) -> {
-			if (!accept.accept(column)) {
+			if (!accept.test(column)) {
 				return;
 			}
 

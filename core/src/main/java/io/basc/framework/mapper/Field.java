@@ -9,12 +9,12 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Accept;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ParentDiscover;
 import io.basc.framework.util.StringUtils;
@@ -22,7 +22,7 @@ import io.basc.framework.util.alias.AliasRegistry;
 import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.EmptyValue;
 
-public class Field extends AccessibleField implements Member, ParentDiscover<Field>, Accept<Field> {
+public class Field extends AccessibleField implements Member, ParentDiscover<Field>, Predicate<Field> {
 	protected Field parent;
 	protected Class<?> declaringClass;
 	protected Collection<String> aliasNames;
@@ -409,7 +409,7 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 	}
 
 	@Override
-	public boolean accept(Field target) {
+	public boolean test(Field target) {
 		if (target == null) {
 			return false;
 		}

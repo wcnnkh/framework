@@ -23,16 +23,16 @@ public class HttpPatternMatcher<T> extends ServerHttpRequestMatcher<T> {
 	}
 
 	@Override
-	public boolean accept(ServerHttpRequest request) {
-		if (excludeMatcher.accept(request)) {
+	public boolean test(ServerHttpRequest request) {
+		if (excludeMatcher.test(request)) {
 			return false;
 		}
 
-		return super.accept(request);
+		return super.test(request);
 	}
 
 	public T get(ServerHttpRequest request) {
-		if (excludeMatcher.accept(request)) {
+		if (excludeMatcher.test(request)) {
 			return null;
 		}
 
