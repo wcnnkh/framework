@@ -1,16 +1,15 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.core.annotation.AnnotatedElementWrapper;
-import io.basc.framework.core.annotation.AnnotationArrayAnnotatedElement;
-import io.basc.framework.core.annotation.MultiAnnotatedElement;
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.lang.NestedExceptionUtils;
-import io.basc.framework.lang.NotSupportedException;
-
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+
+import io.basc.framework.core.annotation.AnnotatedElementWrapper;
+import io.basc.framework.core.annotation.MultiAnnotatedElement;
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.lang.NestedExceptionUtils;
+import io.basc.framework.lang.NotSupportedException;
 
 public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<AnnotatedElement>
 		implements FieldDescriptor {
@@ -19,7 +18,7 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 	private final Method method;
 
 	public AbstractFieldDescriptor(Class<?> sourceClass, Field field, Method method) {
-		super(new AnnotationArrayAnnotatedElement(MultiAnnotatedElement.forAnnotatedElements(method, field)));
+		super(MultiAnnotatedElement.forAnnotatedElements(method, field));
 		this.sourceClass = sourceClass;
 		this.field = field;
 		this.method = method;
@@ -105,17 +104,17 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 
 	@Override
 	public String toString() {
-		if(field == null && method == null){
+		if (field == null && method == null) {
 			return "declaringClass [" + getDeclaringClass() + "] name [" + getName() + "]";
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
-		if(field != null){
+		if (field != null) {
 			sb.append("field[").append(field).append("]");
 		}
-		
-		if(method != null){
-			if(sb.length() != 0){
+
+		if (method != null) {
+			if (sb.length() != 0) {
 				sb.append(" ");
 			}
 			sb.append("method[").append(method).append("]");
