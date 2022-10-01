@@ -1,8 +1,8 @@
 package io.basc.framework.factory;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.lang.reflect.Type;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import io.basc.framework.aop.Aop;
 import io.basc.framework.core.ResolvableType;
@@ -15,31 +15,18 @@ public interface BeanFactory
 
 	Aop getAop();
 
+	default Map<String, Object> getBeans(ResolvableType type) {
+		return matchType(type).filter((e) -> isInstance(e.getId()))
+				.collect(Collectors.toMap((e) -> e.getId(), (e) -> getInstance(e.getId())));
+	}
+
+	default Map<String, Object> getBeans(Type type) {
+		return getBeans(ResolvableType.forType(type));
+	}
+
 	@SuppressWarnings("unchecked")
 	default <T> Map<String, T> getBeans(Class<? extends T> type) {
 		return (Map<String, T>) getBeans(ResolvableType.forClass(type));
-	}
-
-	default Map<String, Object> getBeans(ResolvableType type) {
-		String[] names = getDefinitionIds();
-		if (names == null || names.length == 0) {
-			return Collections.emptyMap();
-		}
-
-		Map<String, Object> map = new HashMap<String, Object>();
-		for (String name : names) {
-			BeanDefinition definition = getDefinition(name);
-			if (definition == null) {
-				continue;
-			}
-
-			if (!definition.getTypeDescriptor().getResolvableType().isAssignableFrom(type)) {
-				continue;
-			}
-
-			map.put(name, getInstance(name));
-		}
-		return map;
 	}
 
 	boolean isSingleton(Class<?> clazz);

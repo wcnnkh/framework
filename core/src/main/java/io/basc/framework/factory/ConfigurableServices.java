@@ -98,6 +98,10 @@ public class ConfigurableServices<T> extends Services<T> implements Configurable
 		return serviceClass;
 	}
 
+	public void setServiceClass(Class<T> serviceClass) {
+		this.serviceClass = serviceClass;
+	}
+
 	@Override
 	public void reload() {
 		if (serviceLoaderFactory != null) {

@@ -9,6 +9,7 @@ import io.basc.framework.factory.BeanResolver;
 import io.basc.framework.factory.BeanResolverExtend;
 import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.factory.ParameterFactory;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.value.Value;
 
 public class InstanceParameterFactory extends AbstractParametersFactory
@@ -70,6 +71,7 @@ public class InstanceParameterFactory extends AbstractParametersFactory
 
 	@Override
 	public Object getParameter(ParameterDescriptor parameterDescriptor) {
+
 		String name = getInstanceName(parameterDescriptor);
 		return name == null ? null : getInstanceFactory().getInstance(name);
 	}
@@ -98,5 +100,14 @@ public class InstanceParameterFactory extends AbstractParametersFactory
 			return getParameters(parameterDescriptors);
 		}
 		return BeanResolverExtend.super.getParameters(parameterDescriptors, chain);
+	}
+
+	@Override
+	public boolean isNullable(ParameterDescriptor parameterDescriptor, BeanResolver chain) {
+		Nullable nullable = parameterDescriptor.getAnnotation(Nullable.class);
+		if (nullable != null) {
+			return nullable.value();
+		}
+		return BeanResolverExtend.super.isNullable(parameterDescriptor, chain);
 	}
 }

@@ -17,7 +17,9 @@ import io.basc.framework.context.ProviderDefinition;
 import io.basc.framework.context.support.ContextBeanDefinition;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.annotation.AnnotationUtils;
+import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanResolver;
 import io.basc.framework.factory.BeanResolverExtend;
@@ -49,7 +51,8 @@ public class AnnotationContextResolverExtend implements ContextResolverExtend, O
 		ProviderDefinition providerDefinition = new ProviderDefinition();
 		providerDefinition.setAssignable(provider.assignableValue());
 		providerDefinition.setExcludes(Arrays.asList(provider.excludes()));
-		providerDefinition.setNames(Arrays.asList(provider.value()));
+		providerDefinition
+				.setNames(provider.value().length == 0 ? Arrays.asList(clazz) : Arrays.asList(provider.value()));
 		providerDefinition.setOrder(provider.order());
 		return providerDefinition;
 	}
@@ -158,5 +161,52 @@ public class AnnotationContextResolverExtend implements ContextResolverExtend, O
 			}
 			return true;
 		}).findFirst().orElse(null);
+	}
+
+	@Override
+	public boolean isSingleton(TypeDescriptor type, BeanResolver chain) {
+		Singleton singleton = AnnotatedElementUtils.getMergedAnnotation(type, Singleton.class);
+		if (singleton != null) {
+			return singleton.value();
+		}
+
+		Boolean b = isSingleton(type.getType());
+		if (b != null) {
+			return b;
+		}
+		return chain.isSingleton(type);
+	}
+
+	private Boolean isSingleton(Class<?> type) {
+		if (type == null) {
+			return null;
+		}
+
+		Singleton singleton = AnnotatedElementUtils.getMergedAnnotation(type, Singleton.class);
+		if (singleton != null) {
+			return singleton.value();
+		}
+
+		Boolean b = isSingleton(type.getSuperclass());
+		if (b != null) {
+			return b;
+		}
+
+		for (Class<?> interfaceClass : type.getInterfaces()) {
+			b = isSingleton(interfaceClass);
+			if (b != null) {
+				return b;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Object getDefaultParameter(ParameterDescriptor parameterDescriptor, BeanResolver chain) {
+		DefaultValue defaultValue = AnnotatedElementUtils.getMergedAnnotation(parameterDescriptor, DefaultValue.class);
+		if (defaultValue != null) {
+			return defaultValue.value();
+		}
+		return chain.getDefaultParameter(parameterDescriptor);
 	}
 }

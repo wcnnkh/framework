@@ -5,6 +5,7 @@ import io.basc.framework.boot.ApplicationAware;
 import io.basc.framework.boot.ApplicationEvent;
 import io.basc.framework.boot.ApplicationException;
 import io.basc.framework.boot.ApplicationPostProcessor;
+import io.basc.framework.boot.ApplicationServer;
 import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.boot.annotation.ComponentScan;
 import io.basc.framework.boot.annotation.ComponentScans;
@@ -22,6 +23,8 @@ import io.basc.framework.util.SplitLine;
 public class DefaultApplication extends DefaultContext implements ConfigurableApplication {
 	private static final String APPLICATION_PREFIX_CONFIGURATION = "io.basc.framework.application.configuration";
 	private static final String APPLICATION_PREFIX = "application";
+	private static final String SERVER_PORT_PROPERTY = "server.port";
+
 	private final EventDispatcher<ApplicationEvent> applicationEventDispathcer = new SimpleEventDispatcher<ApplicationEvent>();
 	private volatile Logger logger;
 	private final long createTime;
@@ -31,9 +34,9 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 	private final LinkedHashSetClassesLoader sourceClasses = new LinkedHashSetClassesLoader();
 
 	public DefaultApplication() {
+		this.createTime = System.currentTimeMillis();
 		// 添加默认的类
 		getContextClasses().add(sourceClasses);
-		this.createTime = System.currentTimeMillis();
 		registerSingleton(Application.class.getName(), this);
 	}
 
@@ -111,15 +114,36 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 
 	@Override
 	protected void _dependence(Object instance, BeanDefinition definition) throws FactoryException {
+		super._dependence(instance, definition);
 		if (instance != null && instance instanceof ApplicationAware) {
 			((ApplicationAware) instance).setApplication(this);
 		}
-		super._dependence(instance, definition);
 	}
 
 	@Override
 	public boolean isInitialized() {
 		return super.isInitialized() && initialized;
+	}
+
+	public boolean isEnableServer() {
+		return getProperties().getValue("application.server.enable", Boolean.class, true);
+	}
+
+	public void startServer() {
+		if (isInstance(ApplicationServer.class)) {
+			ApplicationServer server = getInstance(ApplicationServer.class);
+			try {
+				server.startup(this);
+			} catch (Throwable e) {
+				throw new ApplicationException(e);
+			}
+		}
+	}
+
+	@Override
+	public void destroy() {
+		getLogger().info(new SplitLine("Start destroying application[{}]"), this);
+		super.destroy();
 	}
 
 	@Override
@@ -139,8 +163,22 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 						loadProperties(configPath);
 					}
 				}
-				
+
+				int port = getPort();
+				if (port == -1) {
+					// 兼容旧版本
+					Integer serverPort = getProperties().getInteger(SERVER_PORT_PROPERTY);
+					if (serverPort != null) {
+						setPort(serverPort);
+					}
+				}
+
 				super.init();
+
+				// 启动服务器
+				if (isEnableServer()) {
+					startServer();
+				}
 
 				if (!applicationPostProcessors.isConfigured()) {
 					applicationPostProcessors.configure(this);

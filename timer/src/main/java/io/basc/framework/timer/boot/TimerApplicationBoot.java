@@ -12,7 +12,7 @@ import io.basc.framework.core.reflect.Invoker;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.BeanFactory;
-import io.basc.framework.factory.supplier.NameInstanceSupplier;
+import io.basc.framework.factory.NameInstanceSupplier;
 import io.basc.framework.timer.Delayed;
 import io.basc.framework.timer.ScheduleTaskConfig;
 import io.basc.framework.timer.Task;

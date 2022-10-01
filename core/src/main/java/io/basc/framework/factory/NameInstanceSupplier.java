@@ -1,8 +1,6 @@
-package io.basc.framework.factory.supplier;
+package io.basc.framework.factory;
 
 import java.util.function.Supplier;
-
-import io.basc.framework.factory.InstanceFactory;
 
 public class NameInstanceSupplier<T> implements Supplier<T> {
 	private final InstanceFactory instanceFactory;

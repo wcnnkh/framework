@@ -1,6 +1,11 @@
 package io.basc.framework.env;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import io.basc.framework.core.Ordered;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.AbstractIterator;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
@@ -8,10 +13,6 @@ import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
-
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 public class MainArgs implements PropertyFactory, Ordered {
 	private final String[] args;
@@ -137,6 +138,17 @@ public class MainArgs implements PropertyFactory, Ordered {
 			index++;
 			return keyValuePair.getKey();
 		}
+	}
 
+	/**
+	 * 使用-p参数获取端口号
+	 * 
+	 * @param args
+	 * @return
+	 */
+	@Nullable
+	public Integer getPort() {
+		Value port = getNextValue("-p");
+		return (port != null && !port.isEmpty()) ? port.getAsInteger() : null;
 	}
 }

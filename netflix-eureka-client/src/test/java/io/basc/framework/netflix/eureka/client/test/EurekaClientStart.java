@@ -6,7 +6,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import io.basc.framework.boot.Application;
-import io.basc.framework.boot.support.ApplicationUtils;
 import io.basc.framework.boot.support.MainApplication;
 import io.basc.framework.context.ioc.annotation.Autowired;
 import io.basc.framework.http.HttpResponseEntity;
@@ -37,7 +36,7 @@ public class EurekaClientStart {
 					continue;
 				}
 				HttpResponseEntity<String> response = httpClient.get(String.class,
-						"http://" + ApplicationUtils.getApplicatoinName(application) + "/port");
+						"http://" + application.getName() + "/port");
 				logger.info("测试请求1返回：" + response);
 
 				String port = eurekaTestClient.message(XUtils.getUUID());
@@ -51,7 +50,7 @@ public class EurekaClientStart {
 	@Path("/port")
 	@GET
 	public Object test() {
-		return ApplicationUtils.getServerPort(application);
+		return application.getPort();
 	}
 
 	@Path("message")

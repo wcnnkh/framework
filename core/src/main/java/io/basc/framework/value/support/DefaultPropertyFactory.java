@@ -42,6 +42,7 @@ public class DefaultPropertyFactory extends DefaultValueFactory<String, Property
 			@Nullable PropertyWrapper propertyWrapper) {
 		super(valueMap, eventDispatcher);
 		this.propertyWrapper = propertyWrapper;
+		getTandemFactories().setServiceClass(PropertyFactory.class);
 	}
 
 	public Iterator<String> iterator() {

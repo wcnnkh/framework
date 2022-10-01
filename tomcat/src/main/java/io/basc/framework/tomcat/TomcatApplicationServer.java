@@ -23,15 +23,13 @@ import org.apache.catalina.util.ServerInfo;
 import org.apache.tomcat.util.descriptor.web.ErrorPage;
 
 import io.basc.framework.boot.Application;
+import io.basc.framework.boot.ApplicationServer;
 import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.boot.servlet.support.ApplicationServletContainerInitializer;
 import io.basc.framework.boot.servlet.support.ServletContextUtils;
-import io.basc.framework.boot.support.ApplicationUtils;
-import io.basc.framework.boot.support.Main;
 import io.basc.framework.context.servlet.ServletContextPropertyFactory;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Environment;
-import io.basc.framework.env.MainArgs;
 import io.basc.framework.env.Sys;
 import io.basc.framework.factory.Destroy;
 import io.basc.framework.http.HttpMethod;
@@ -44,8 +42,8 @@ import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.pattern.HttpPattern;
 
-public class TomcatStart implements Main, Destroy {
-	private static Logger logger = LoggerFactory.getLogger(TomcatStart.class);
+public class TomcatApplicationServer implements ApplicationServer, Destroy {
+	private static Logger logger = LoggerFactory.getLogger(TomcatApplicationServer.class);
 	private Tomcat tomcat;
 
 	protected String getContextPath(Environment environment) {
@@ -139,8 +137,11 @@ public class TomcatStart implements Main, Destroy {
 		ReflectionUtils.invoke(method, context, pattern, servletName);
 	}
 
-	protected void configureServlet(Context context, Application application, Class<?> mainClass) throws Exception {
-		String servletName = mainClass.getSimpleName();
+	protected void configureServlet(Context context, Application application) throws Exception {
+		String servletName = application.getName();
+		if (StringUtils.isEmpty(servletName)) {
+			servletName = "framework";
+		}
 		Servlet servlet = ServletContextUtils.createServlet(application);
 		Wrapper wrapper = Tomcat.addServlet(context, servletName, servlet);
 		wrapper.setAsyncSupported(true);
@@ -192,7 +193,8 @@ public class TomcatStart implements Main, Destroy {
 		}
 	}
 
-	public void main(ConfigurableApplication application, Class<?> mainClass, MainArgs args) throws Throwable {
+	@Override
+	public void startup(ConfigurableApplication application) throws Throwable {
 		if (application.getProperties().getValue("tomcat.log.enable", boolean.class, true)) {
 			java.util.logging.Logger.getLogger("org.apache").setLevel(Level.WARNING);
 		}
@@ -203,7 +205,11 @@ public class TomcatStart implements Main, Destroy {
 		}
 
 		this.tomcat = new Tomcat();
-		int port = ApplicationUtils.getServerPort(application);
+		int port = application.getPort();
+		if (port == -1) {
+			port = Application.DEFAULT_PORT;
+			application.setPort(port);
+		}
 		tomcat.setPort(port);
 		logger.info("The boot port is {}", port);
 
@@ -224,7 +230,7 @@ public class TomcatStart implements Main, Destroy {
 				.addService(new ServletContextPropertyFactory(context.getServletContext()));
 
 		configureJSP(context, application);
-		configureServlet(context, application, mainClass);
+		configureServlet(context, application);
 
 		for (TomcatContextConfiguration configuration : application
 				.getServiceLoader(TomcatContextConfiguration.class)) {

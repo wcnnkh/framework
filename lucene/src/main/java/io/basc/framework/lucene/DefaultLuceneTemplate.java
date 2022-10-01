@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 
 import org.apache.lucene.index.IndexReader;
@@ -21,6 +19,7 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.lucene.support.DefaultLuceneMapper;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.XUtils;
 import io.basc.framework.util.concurrent.AsyncExecutor;
 import io.basc.framework.util.concurrent.TaskQueue;
 import io.basc.framework.util.stream.Processor;
@@ -39,8 +38,7 @@ public class DefaultLuceneTemplate implements LuceneTemplate {
 
 	private LuceneMapper mapper = new DefaultLuceneMapper();
 	private final AsyncExecutor writeExecutor;// 写执行器
-	private Executor searchExecutor = ForkJoinPool.getCommonPoolParallelism() > 1 ? ForkJoinPool.commonPool()
-			: Executors.newWorkStealingPool();// 搜索执行器
+	private Executor searchExecutor = XUtils.getCommonExecutor();// 搜索执行器
 	private final LucenePool<IndexWriter> indexWriterPool;
 	private final LucenePool<IndexReader> indexReaderPool;
 

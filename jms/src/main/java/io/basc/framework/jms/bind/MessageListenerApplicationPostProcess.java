@@ -13,7 +13,7 @@ import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.factory.supplier.NameInstanceSupplier;
+import io.basc.framework.factory.NameInstanceSupplier;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 

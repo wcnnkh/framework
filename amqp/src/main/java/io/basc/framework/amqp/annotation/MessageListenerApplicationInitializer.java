@@ -9,7 +9,7 @@ import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.factory.supplier.NameInstanceSupplier;
+import io.basc.framework.factory.NameInstanceSupplier;
 
 @Provider
 public final class MessageListenerApplicationInitializer implements ApplicationPostProcessor {

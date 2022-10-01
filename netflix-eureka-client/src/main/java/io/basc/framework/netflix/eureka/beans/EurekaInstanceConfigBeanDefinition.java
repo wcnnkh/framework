@@ -7,7 +7,6 @@ import java.util.Map;
 import com.netflix.appinfo.EurekaInstanceConfig;
 
 import io.basc.framework.boot.Application;
-import io.basc.framework.boot.support.ApplicationUtils;
 import io.basc.framework.cloud.commons.util.IdUtils;
 import io.basc.framework.cloud.commons.util.InetUtils;
 import io.basc.framework.env.Environment;
@@ -51,8 +50,6 @@ public class EurekaInstanceConfigBeanDefinition extends EnvironmentBeanDefinitio
 		String serverContextPath = getEnvironment().getProperties().getValue("server.servlet.context-path",
 				String.class, "/");
 		Application application = getBeanFactory().getInstance(Application.class);
-		int serverPort = ApplicationUtils.getServerPort(application);
-
 		Integer managementPort = getEnvironment().getProperties().getValue("management.server.port", Integer.class,
 				null);
 		String managementContextPath = getEnvironment().getProperties()
@@ -61,7 +58,10 @@ public class EurekaInstanceConfigBeanDefinition extends EnvironmentBeanDefinitio
 				null);
 		EurekaInstanceConfigBean instance = new EurekaInstanceConfigBean(inetUtils);
 
-		instance.setNonSecurePort(serverPort);
+		if (application.getPort() != -1) {
+			instance.setNonSecurePort(application.getPort());
+		}
+
 		instance.setInstanceId(IdUtils.getDefaultInstanceId(getEnvironment().getProperties()));
 		instance.setPreferIpAddress(preferIpAddress);
 		instance.setSecurePortEnabled(isSecurePortEnabled);
@@ -69,8 +69,8 @@ public class EurekaInstanceConfigBeanDefinition extends EnvironmentBeanDefinitio
 			instance.setIpAddress(ipAddress);
 		}
 
-		if (isSecurePortEnabled) {
-			instance.setSecurePort(serverPort);
+		if (isSecurePortEnabled && application.getPort() != -1) {
+			instance.setSecurePort(application.getPort());
 		}
 
 		if (StringUtils.hasText(hostname)) {
@@ -86,7 +86,7 @@ public class EurekaInstanceConfigBeanDefinition extends EnvironmentBeanDefinitio
 			instance.setHealthCheckUrlPath(healthCheckUrlPath);
 		}
 
-		ManagementMetadata metadata = managementMetadataProvider.get(instance, serverPort, serverContextPath,
+		ManagementMetadata metadata = managementMetadataProvider.get(instance, instance.getNonSecurePort(), serverContextPath,
 				managementContextPath, managementPort);
 
 		if (metadata != null) {

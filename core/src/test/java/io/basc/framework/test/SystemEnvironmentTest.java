@@ -1,9 +1,10 @@
 package io.basc.framework.test;
 
 import static org.junit.Assert.assertTrue;
-import io.basc.framework.env.Sys;
 
 import org.junit.Test;
+
+import io.basc.framework.env.Sys;
 
 public class SystemEnvironmentTest {
 	@Test

@@ -1,4 +1,4 @@
-package io.basc.framework.factory.annotation;
+package io.basc.framework.context.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

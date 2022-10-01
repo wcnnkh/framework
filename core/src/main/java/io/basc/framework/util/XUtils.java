@@ -8,16 +8,35 @@ import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.UUID;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import io.basc.framework.io.FileUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.concurrent.ThreadPerTaskExecutor;
 
 public final class XUtils {
+	private static final boolean ENABLE_COMMON_POOL = (ForkJoinPool.getCommonPoolParallelism() > 1);
+	/**
+	 * Default executor -- ForkJoinPool.commonPool() unless it cannot support
+	 * parallelism.
+	 */
+	private static final Executor COMMON_EXECUTOR = ENABLE_COMMON_POOL ? ForkJoinPool.commonPool()
+			: new ThreadPerTaskExecutor();
+
 	private XUtils() {
 	};
+
+	public static boolean isEnableCommonPool() {
+		return ENABLE_COMMON_POOL;
+	}
+
+	public static Executor getCommonExecutor() {
+		return COMMON_EXECUTOR;
+	}
 
 	/**
 	 * 获取UUID，已经移除了‘-’
@@ -161,7 +180,7 @@ public final class XUtils {
 	/**
 	 * 将一次迭代变为操作流
 	 * 
-	 * @param          <T>
+	 * @param <T>
 	 * @param iterator
 	 * @return
 	 */
