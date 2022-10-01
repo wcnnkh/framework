@@ -1,21 +1,5 @@
 package io.basc.framework.ibatis.beans;
 
-import io.basc.framework.beans.BeanDefinition;
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.ibatis.IbatisException;
-import io.basc.framework.ibatis.beans.annotation.MapperResources;
-import io.basc.framework.ibatis.beans.annotation.MapperScan;
-import io.basc.framework.ibatis.beans.annotation.TypeAliase;
-import io.basc.framework.ibatis.beans.annotation.TypeAliaseScan;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.support.PathMatchingResourcePatternResolver;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
-
 import java.io.IOException;
 
 import javax.sql.DataSource;
@@ -29,33 +13,50 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.ibatis.type.TypeAliasRegistry;
 
+import io.basc.framework.context.Context;
+import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.factory.ConfigurableBeanFactory;
+import io.basc.framework.factory.InstanceFactory;
+import io.basc.framework.ibatis.IbatisException;
+import io.basc.framework.ibatis.beans.annotation.MapperResources;
+import io.basc.framework.ibatis.beans.annotation.MapperScan;
+import io.basc.framework.ibatis.beans.annotation.TypeAliase;
+import io.basc.framework.ibatis.beans.annotation.TypeAliaseScan;
+import io.basc.framework.io.Resource;
+import io.basc.framework.io.support.PathMatchingResourcePatternResolver;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.XUtils;
+
 public class ConfigurationUtils {
 	private static Logger logger = LoggerFactory.getLogger(ConfigurationUtils.class);
 
-	public static void configurationEnvironment(Configuration configuration, BeanFactory beanFactory) {
+	public static void configurationEnvironment(Configuration configuration, InstanceFactory instanceFactory) {
 		Environment environment = configuration.getEnvironment();
 		if (environment == null) {
 			// 创建Environment
-			if (beanFactory.isInstance(DataSource.class)) {
+			if (instanceFactory.isInstance(DataSource.class)) {
 				environment = new Environment(XUtils.getUUID(), new JdbcTransactionFactory(),
-						beanFactory.getInstance(DataSource.class));
+						instanceFactory.getInstance(DataSource.class));
 				configuration.setEnvironment(environment);
 			}
 		} else {
 			DataSource dataSource = environment.getDataSource();
-			if (dataSource == null && beanFactory.isInstance(DataSource.class)) {
-				dataSource = beanFactory.getInstance(DataSource.class);
+			if (dataSource == null && instanceFactory.isInstance(DataSource.class)) {
+				dataSource = instanceFactory.getInstance(DataSource.class);
 				environment = new Environment(environment.getId(), environment.getTransactionFactory(), dataSource);
 				configuration.setEnvironment(environment);
 			}
 		}
 	}
 
-	public static void configuration(Configuration configuration, BeanFactory beanFactory) {
+	public static void configuration(Configuration configuration, Context context) {
 		PathMatchingResourcePatternResolver pathMatchingResourcePatternResolver = new PathMatchingResourcePatternResolver(
-				beanFactory.getEnvironment());
+				context.getResourceLoader());
 		TypeAliasRegistry typeAliasRegistry = configuration.getTypeAliasRegistry();
-		for (Class<?> clazz : beanFactory.getContextClasses()) {
+		for (Class<?> clazz : context.getContextClasses()) {
 			TypeAliase typeAliase = clazz.getAnnotation(TypeAliase.class);
 			if (typeAliase != null) {
 				typeAliases(typeAliasRegistry, typeAliase.value(), clazz);
@@ -66,11 +67,12 @@ public class ConfigurationUtils {
 			}
 		}
 
-		for (Class<?> clazz : beanFactory.getSourceClasses()) {
+		for (Class<?> clazz : context.getContextClasses()) {
 			MapperScan scan = clazz.getAnnotation(MapperScan.class);
 			if (scan != null) {
 				for (String packageName : scan.value()) {
-					for (Class<?> mapperClass : beanFactory.getClassesLoaderFactory().getClassesLoader(packageName, (e, m) -> e.getClassMetadata().isInterface())) {
+					for (Class<?> mapperClass : context.getClassesLoaderFactory().getClassesLoader(packageName,
+							(e, m) -> e.getClassMetadata().isInterface())) {
 						registerMapper(configuration, mapperClass);
 					}
 				}
@@ -79,8 +81,7 @@ public class ConfigurationUtils {
 			TypeAliaseScan typeAliaseScan = clazz.getAnnotation(TypeAliaseScan.class);
 			if (typeAliaseScan != null) {
 				for (String packageName : typeAliaseScan.value()) {
-					for (Class<?> typeAliaseclass : beanFactory.getClassesLoaderFactory()
-							.getClassesLoader(packageName)) {
+					for (Class<?> typeAliaseclass : context.getClassesLoaderFactory().getClassesLoader(packageName)) {
 						typeAliases(typeAliasRegistry, null, typeAliaseclass);
 					}
 				}

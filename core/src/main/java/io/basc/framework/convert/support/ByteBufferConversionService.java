@@ -38,7 +38,6 @@ class ByteBufferConversionService extends AbstractConversionService implements C
 		return CONVERTIBLE_PAIRS;
 	}
 
-	@SuppressWarnings("unchecked")
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		boolean byteBufferTarget = targetType.isAssignableTo(BYTE_BUFFER_TYPE);
 		if (source instanceof ByteBuffer) {

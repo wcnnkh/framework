@@ -30,15 +30,14 @@ public class ObjectToStringConverter extends JSONSupportAccessor
 		return targetType.getType() == String.class;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <R> R convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
 			throws ConversionException {
 		JSON json = sourceType.getAnnotation(JSON.class);
 		if (json == null) {
-			return (R) apply(source);
+			return apply(source);
 		}
 
-		return (R) getJsonSupport().toJSONString(source);
+		return getJsonSupport().toJSONString(source);
 	}
 }

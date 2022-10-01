@@ -9,21 +9,16 @@ import io.basc.framework.core.type.ClassMetadata;
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.core.type.classreading.MetadataReaderFactory;
 import io.basc.framework.core.type.filter.TypeFilter;
-import io.basc.framework.env.Environment;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.JavaVersion;
+import io.basc.framework.value.ValueFactory;
 
 public class ContextTypeFilter implements TypeFilter {
-	private final Environment environment;
+	private final ValueFactory<String> propertyFactory;
 
-	public ContextTypeFilter(@Nullable Environment environment) {
-		this.environment = environment;
-	}
-
-	@Nullable
-	public Environment getEnvironment() {
-		return environment;
+	public ContextTypeFilter(@Nullable ValueFactory<String> propertyFactory) {
+		this.propertyFactory = propertyFactory;
 	}
 
 	@Override
@@ -47,6 +42,6 @@ public class ContextTypeFilter implements TypeFilter {
 		}
 
 		return classMetadata.isPublic() && JavaVersion.isSupported(annotationMetadata)
-				&& (environment == null || EnableConditionUtils.enable(metadataReader, environment));
+				&& (propertyFactory == null || EnableConditionUtils.enable(metadataReader, propertyFactory));
 	}
 }

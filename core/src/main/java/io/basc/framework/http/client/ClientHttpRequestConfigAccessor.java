@@ -4,9 +4,9 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.event.Observable;
 
 public class ClientHttpRequestConfigAccessor {
-	private static final Observable<Integer> DEFAULT_CONNECT_TIMEOUT = Sys.env
+	private static final Observable<Integer> DEFAULT_CONNECT_TIMEOUT = Sys.getEnv().getProperties()
 			.getObservableValue("http.client.connect.timeout", Integer.class, 10000);
-	private static final Observable<Integer> DEFAULT_READ_TIMEOUT = Sys.env
+	private static final Observable<Integer> DEFAULT_READ_TIMEOUT = Sys.getEnv().getProperties()
 			.getObservableValue("http.client.read.timeout", Integer.class, 10000);
 
 	private Integer connectTimeout;

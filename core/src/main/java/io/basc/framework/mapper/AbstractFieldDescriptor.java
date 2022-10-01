@@ -134,9 +134,8 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 			}
 		}
 
-		java.lang.reflect.Field field = getField();
+		Field field = getField();
 		if (field != null) {
-			ReflectionUtils.makeAccessible(field);
 			try {
 				return ReflectionUtils.get(field, Modifier.isStatic(field.getModifiers()) ? null : instance);
 			} catch (Exception e) {
@@ -161,7 +160,6 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 
 		Field field = getField();
 		if (field != null) {
-			ReflectionUtils.makeAccessible(field);
 			try {
 				ReflectionUtils.set(field, Modifier.isStatic(field.getModifiers()) ? null : instance, value);
 			} catch (Exception e) {

@@ -77,7 +77,7 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see ReflectionApi#newInstance(Class)
-	 * @param <T>
+	 * @param         <T>
 	 * @param members
 	 * @param source
 	 * @param deep    对集合的操作
@@ -96,7 +96,7 @@ public abstract class ReflectionUtils {
 	}
 
 	/**
-	 * @param <T>
+	 * @param         <T>
 	 * @param members {@link Members#streamAll()}
 	 * @param source
 	 * @param target
@@ -180,8 +180,8 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see #ENTITY_MEMBER
-	 * @param <T>
-	 * @param <E>
+	 * @param         <T>
+	 * @param         <E>
 	 * @param members
 	 * @param left
 	 * @param right
@@ -274,7 +274,7 @@ public abstract class ReflectionUtils {
 	 * 通过参数获取可以调用的{@link java.lang.reflect.Executable}
 	 * 
 	 * @see #matchParams(Stream, boolean, Object...)
-	 * @param <T>
+	 * @param              <T>
 	 * @param sourceStream
 	 * @param strict       true表示严格的验证参数(包含有效长度、类型等)
 	 * @param params
@@ -311,7 +311,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * @see Class#getConstructor(Class...)
 	 * @see #getDeclaredConstructor(Class)
-	 * @param <T>
+	 * @param      <T>
 	 * @param type
 	 * @return
 	 */
@@ -322,7 +322,7 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see Class#getConstructor(Class...)
-	 * @param <T>
+	 * @param                <T>
 	 * @param type
 	 * @param parameterTypes
 	 * @return
@@ -345,7 +345,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * @see ClassUtils#getClass(String, ClassLoader)
 	 * @see #getConstructor(Class, Class...)
-	 * @param <T>
+	 * @param                <T>
 	 * @param className
 	 * @param classLoader
 	 * @param parameterTypes
@@ -384,7 +384,7 @@ public abstract class ReflectionUtils {
 	 * 
 	 * @see #makeAccessible(Constructor)
 	 * @see Class#getDeclaredConstructor(Class...)
-	 * @param <T>
+	 * @param      <T>
 	 * @param type
 	 * @return
 	 */
@@ -418,7 +418,7 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see Class#getDeclaredConstructor(Class...)
-	 * @param <T>
+	 * @param                <T>
 	 * @param type
 	 * @param parameterTypes
 	 * @return
@@ -441,7 +441,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * @see ClassUtils#getClass(String, ClassLoader)
 	 * @see #getDeclaredConstructor(Class, Class...)
-	 * @param <T>
+	 * @param                <T>
 	 * @param className
 	 * @param classLoader
 	 * @param parameterTypes
@@ -724,7 +724,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * 获取重载的方法
 	 * 
-	 * @param <T>
+	 * @param             <T>
 	 * @param sourceClass
 	 * @param methodName
 	 * @param strict      {@link #findByParams(Stream, boolean, Object...)}
@@ -834,7 +834,7 @@ public abstract class ReflectionUtils {
 
 	/**
 	 * @see #ENTITY_MEMBER
-	 * @param <E>
+	 * @param         <E>
 	 * @param members
 	 * @param entity
 	 * @param deep
@@ -966,7 +966,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * 根据参数调用构造方法
 	 * 
-	 * @param <T>
+	 * @param             <T>
 	 * @param sourceClass
 	 * @param strict      {@link #findByParams(Stream, boolean, Object...)}
 	 * @param args
@@ -1209,7 +1209,7 @@ public abstract class ReflectionUtils {
 		 * if (ctor.isAccessible()) { return; }
 		 */
 
-		if ((!Modifier.isPublic(ctor.getModifiers()) || !Modifier.isPublic(ctor.getDeclaringClass().getModifiers()))) {
+		if (!Modifier.isPublic(ctor.getModifiers()) || !Modifier.isPublic(ctor.getDeclaringClass().getModifiers())) {
 			ctor.setAccessible(true);
 		}
 	}
@@ -1232,9 +1232,8 @@ public abstract class ReflectionUtils {
 		/*
 		 * if (field.isAccessible()) { return; }
 		 */
-
-		if ((!Modifier.isPublic(field.getModifiers()) || !Modifier.isPublic(field.getDeclaringClass().getModifiers())
-				|| Modifier.isFinal(field.getModifiers()))) {
+		if (!Modifier.isPublic(field.getModifiers()) || !Modifier.isPublic(field.getDeclaringClass().getModifiers())
+				|| Modifier.isFinal(field.getModifiers())) {
 			field.setAccessible(true);
 		}
 	}
@@ -1256,8 +1255,8 @@ public abstract class ReflectionUtils {
 		/*
 		 * if (method.isAccessible()) { return; }
 		 */
-		if ((!Modifier.isPublic(method.getModifiers())
-				|| !Modifier.isPublic(method.getDeclaringClass().getModifiers()))) {
+		if (!Modifier.isPublic(method.getModifiers())
+				|| !Modifier.isPublic(method.getDeclaringClass().getModifiers())) {
 			method.setAccessible(true);
 		}
 	}
@@ -1265,7 +1264,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * 通过参数获取可以调用的{@link java.lang.reflect.Executable}
 	 * 
-	 * @param <T>
+	 * @param              <T>
 	 * @param sourceStream
 	 * @param strict       true表示严格的验证参数(包含有效长度、类型等)
 	 * @param params
@@ -1323,7 +1322,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * 使用反射查找无参的构造方法(包含未公开的构造方法)
 	 * 
-	 * @param <T>
+	 * @param       <T>
 	 * @param clazz
 	 * @return
 	 * @throws NotSupportedException 不存在无参构造方法
@@ -1355,7 +1354,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * 使用空值构造实体
 	 * 
-	 * @param <T>
+	 * @param             <T>
 	 * @param entityClass
 	 * @return
 	 * @throws NotSupportedException
@@ -1380,7 +1379,7 @@ public abstract class ReflectionUtils {
 	/**
 	 * 根据参数来构造实体
 	 * 
-	 * @param <T>
+	 * @param             <T>
 	 * @param entityClass
 	 * @param params
 	 * @return

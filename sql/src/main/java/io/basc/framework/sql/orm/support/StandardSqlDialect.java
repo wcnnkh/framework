@@ -67,7 +67,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 
 	@Override
 	public Environment getEnvironment() {
-		return environment == null ? Sys.env : environment;
+		return environment == null ? Sys.getEnv() : environment;
 	}
 
 	@Override

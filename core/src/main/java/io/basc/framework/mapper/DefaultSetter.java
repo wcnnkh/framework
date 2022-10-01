@@ -46,16 +46,6 @@ public class DefaultSetter extends AbstractFieldDescriptor implements Setter {
 		return nullable;
 	}
 
-	@Override
-	public Value getDefaultValue() {
-		if (setterParameterDescriptor == null) {
-			return super.getDefaultValue();
-		}
-
-		Value value = setterParameterDescriptor.getDefaultValue();
-		return value == null ? super.getDefaultValue() : value;
-	}
-
 	public Class<?> getType() {
 		if (setterParameterDescriptor != null) {
 			return setterParameterDescriptor.getType();

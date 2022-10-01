@@ -28,7 +28,6 @@ import io.basc.framework.lucene.DocumentAccess;
 import io.basc.framework.lucene.LuceneException;
 import io.basc.framework.lucene.LuceneMapper;
 import io.basc.framework.lucene.annotation.AnnotationLuceneResolverExtend;
-import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.Structure;
 import io.basc.framework.orm.Property;
@@ -38,17 +37,17 @@ import io.basc.framework.orm.repository.Conditions;
 import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.RelationshipKeywords;
 import io.basc.framework.orm.repository.WithCondition;
-import io.basc.framework.orm.support.AbstractObjectMapper;
+import io.basc.framework.orm.support.DefaultObjectMapper;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.NumberUtils;
 
-public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneException>
-		implements LuceneMapper {
+public class DefaultLuceneMapper extends DefaultObjectMapper<Document, LuceneException> implements LuceneMapper {
 	private final ConfigurableServices<LuceneResolverExtend> luceneResolverExtends = new ConfigurableServices<LuceneResolverExtend>(
 			LuceneResolverExtend.class);
 
 	public DefaultLuceneMapper() {
 		luceneResolverExtends.addService(new AnnotationLuceneResolverExtend());
+		registerObjectAccessFactory(Document.class, (s, e) -> new DocumentAccess(s, this));
 	}
 
 	@Override
@@ -264,10 +263,5 @@ public class DefaultLuceneMapper extends AbstractObjectMapper<Document, LuceneEx
 			}
 			appendSort(structure, sortFields, column.getWithOrders());
 		}
-	}
-
-	@Override
-	public ObjectAccess<LuceneException> getObjectAccess(Document source, TypeDescriptor sourceType) {
-		return new DocumentAccess(source, this);
 	}
 }

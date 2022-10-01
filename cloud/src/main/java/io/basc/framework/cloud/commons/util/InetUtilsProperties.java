@@ -20,7 +20,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.basc.framework.beans.annotation.ConfigurationProperties;
+import io.basc.framework.orm.annotation.ConfigurationProperties;
 
 /**
  * Properties for {@link InetUtils}.

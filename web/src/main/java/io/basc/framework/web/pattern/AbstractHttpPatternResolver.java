@@ -19,7 +19,7 @@ public abstract class AbstractHttpPatternResolver implements HttpPatternResolver
 	}
 
 	public PlaceholderFormat getPlaceholderFormat() {
-		return placeholderFormat == null ? Sys.env : placeholderFormat;
+		return placeholderFormat == null ? Sys.getEnv() : placeholderFormat;
 	}
 
 	@Override

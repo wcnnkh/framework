@@ -53,7 +53,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- https://mvnrepository.com/artifact/io.swagger.core.v3 -->
-		<swagger.version>2.2.0</swagger.version>
+		<swagger.version>2.2.2</swagger.version>
 		<!-- tomcat7只支持jdk1.6及以上的版本 -->
 		<!-- tomcat8只支持jdk1.7及以上的版本 -->
 		<tomcat.version>9.0.58</tomcat.version>
@@ -301,12 +301,6 @@
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>transaction</artifactId>
-				<version>1.8.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>beans</artifactId>
 				<version>1.8.0</version>
 			</dependency>
 
@@ -953,7 +947,6 @@
 		<module>elasticsearch</module>
 		<module>rmi</module>
 		<module>solr</module>
-		<module>beans</module>
 		<module>transaction</module>
 		<module>boot</module>
 		<module>sql</module>

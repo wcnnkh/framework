@@ -9,9 +9,8 @@ import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.util.placeholder.PlaceholderFormatAware;
 
-public class HttpPatternResolvers extends
-		ConfigurableServices<HttpPatternResolver> implements
-		HttpPatternResolver, PlaceholderFormatAware {
+public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolver>
+		implements HttpPatternResolver, PlaceholderFormatAware {
 	private PlaceholderFormat placeholderFormat;
 
 	public HttpPatternResolvers() {
@@ -19,7 +18,7 @@ public class HttpPatternResolvers extends
 	}
 
 	public PlaceholderFormat getPlaceholderFormat() {
-		return placeholderFormat == null ? Sys.env : placeholderFormat;
+		return placeholderFormat == null ? Sys.getEnv() : placeholderFormat;
 	}
 
 	public void setPlaceholderFormat(PlaceholderFormat placeholderFormat) {
@@ -27,14 +26,13 @@ public class HttpPatternResolvers extends
 	}
 
 	@Override
-	protected void aware(HttpPatternResolver service) {
+	public void accept(HttpPatternResolver service) {
 		if (placeholderFormat != null) {
 			if (service instanceof PlaceholderFormatAware) {
-				((PlaceholderFormatAware) service)
-						.setPlaceholderFormat(placeholderFormat);
+				((PlaceholderFormatAware) service).setPlaceholderFormat(placeholderFormat);
 			}
 		}
-		super.aware(service);
+		super.accept(service);
 	}
 
 	@Override

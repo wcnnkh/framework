@@ -19,7 +19,7 @@ public final class MicrosoftUtils {
 	private MicrosoftUtils() {
 	};
 
-	private static final ExcelOperations EXCEL_OPERATIONS = Sys.env.getServiceLoader(ExcelOperations.class,
+	private static final ExcelOperations EXCEL_OPERATIONS = Sys.getEnv().getServiceLoader(ExcelOperations.class,
 			"io.basc.framework.microsoft.poi.PoiExcelOperations", "io.basc.framework.microsoft.jxl.JxlExcelOperations")
 			.first();
 

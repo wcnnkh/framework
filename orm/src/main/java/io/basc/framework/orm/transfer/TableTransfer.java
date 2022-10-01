@@ -44,7 +44,7 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 
 	public TableTransfer() {
 		this.mapper = TransfRelationalMapping.INSTANCE;
-		this.conversionService = Sys.env.getConversionService();
+		this.conversionService = Sys.getEnv().getConversionService();
 	}
 
 	protected TableTransfer(TableTransfer source) {
@@ -256,8 +256,7 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 		}
 	}
 
-	public final TransfColumns<String, String> mapColumns(Object source,
-			Structure<? extends Property> structure) {
+	public final TransfColumns<String, String> mapColumns(Object source, Structure<? extends Property> structure) {
 		return structure.stream().filter((e) -> e.isSupportGetter()).map((property) -> {
 			Object value = property.get(source);
 			if (value == null) {

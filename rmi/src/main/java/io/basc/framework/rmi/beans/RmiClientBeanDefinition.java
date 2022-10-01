@@ -1,32 +1,31 @@
 package io.basc.framework.rmi.beans;
 
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.support.DefaultBeanDefinition;
-
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.factory.BeansException;
+import io.basc.framework.factory.support.FactoryBeanDefinition;
 
-public class RmiClientBeanDefinition extends DefaultBeanDefinition{
+public class RmiClientBeanDefinition extends FactoryBeanDefinition {
 	private String host;
-	
-	public RmiClientBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> targetClass, String host) {
+
+	public RmiClientBeanDefinition(BeanFactory beanFactory, Class<?> targetClass, String host) {
 		super(beanFactory, targetClass);
 		this.host = host;
 	}
 
 	@Override
 	public boolean isInstance() {
-		return Remote.class.isAssignableFrom(getTargetClass());
+		return Remote.class.isAssignableFrom(getTypeDescriptor().getType());
 	}
-	
+
 	@Override
 	public Object create() throws BeansException {
-		String name = "rmi:" + host + "/" + getTargetClass().getName();
+		String name = "rmi:" + host + "/" + getTypeDescriptor().getType().getName();
 		Object instance;
 		try {
 			instance = Naming.lookup(name);
@@ -37,6 +36,7 @@ public class RmiClientBeanDefinition extends DefaultBeanDefinition{
 		} catch (NotBoundException e) {
 			throw new BeansException(name, e);
 		}
-		return createInstanceProxy(instance, getTargetClass(), new Class<?>[]{getTargetClass()}).create();
+		return createInstanceProxy(getAop(), instance, getTypeDescriptor().getType(),
+				new Class<?>[] { getTypeDescriptor().getType() }).create();
 	}
 }

@@ -5,9 +5,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
-import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterFactory;
 import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.factory.Configurable;
@@ -32,9 +30,9 @@ public class HttpRemoteCallableFactory implements CallableFactory, Configurable 
 	private final HttpClient httpClient;
 	private final Environment environment;
 
-	public HttpRemoteCallableFactory(HttpClient httpClient, ConversionService conversionService,
-			ParameterFactory defaultValueFactory, HttpRemoteResolver httpRemoteUriResolver, Environment environment) {
-		this.webMessageConverters = new DefaultWebMessageConverters(conversionService, defaultValueFactory);
+	public HttpRemoteCallableFactory(HttpClient httpClient, HttpRemoteResolver httpRemoteUriResolver,
+			Environment environment) {
+		this.webMessageConverters = new DefaultWebMessageConverters(environment);
 		this.httpClient = httpClient;
 		this.httpRemoteUriResolver = httpRemoteUriResolver;
 		this.environment = environment;
@@ -95,9 +93,17 @@ public class HttpRemoteCallableFactory implements CallableFactory, Configurable 
 				ParameterUtils.getParameters(method), args, TypeDescriptor.forMethodReturnType(method));
 	}
 
+	private boolean configured;
+
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		httpPatternResolvers.configure(serviceLoaderFactory);
 		webMessageConverters.configure(serviceLoaderFactory);
+		configured = true;
+	}
+
+	@Override
+	public boolean isConfigured() {
+		return configured;
 	}
 }

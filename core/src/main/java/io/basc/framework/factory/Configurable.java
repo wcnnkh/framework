@@ -1,16 +1,16 @@
 package io.basc.framework.factory;
 
-import io.basc.framework.factory.support.DefaultInstanceDefinition;
-
 /**
  * 可配置的<br/>
  * 
  * 工厂模式应该实现此注入
  * 
  * @author shuchaowen
- * @see DefaultInstanceDefinition
  */
 public interface Configurable {
+	
+	boolean isConfigured();
+	
 	/**
 	 * 通过工厂模式实体化的会自动调用此方法
 	 * 

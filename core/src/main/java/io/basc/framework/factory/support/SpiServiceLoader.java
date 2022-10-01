@@ -20,13 +20,14 @@ import java.util.Objects;
 import java.util.ServiceConfigurationError;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.factory.NoArgsInstanceFactory;
+import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.DefaultClassLoaderProvider;
 
-public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderProvider {
+public final class SpiServiceLoader<S> extends DefaultClassLoaderProvider implements ServiceLoader<S>, ClassLoaderProvider {
 
 	private static final String PREFIX = ResourceUtils.META_INF_PREFIX + "services/";
 
@@ -45,18 +46,18 @@ public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderP
 	// The current lazy-lookup iterator
 	private LazyIterator lookupIterator;
 
-	private NoArgsInstanceFactory instanceFactory;
+	private InstanceFactory instanceFactory;
 
 	public SpiServiceLoader(Class<S> svc) {
-		this(svc, (NoArgsInstanceFactory) null);
+		this(svc, (InstanceFactory) null);
 	}
 
 	public SpiServiceLoader(Class<S> svc, ClassLoader cl) {
-		this(svc, (NoArgsInstanceFactory) null);
+		this(svc, (InstanceFactory) null);
 		this.loader = cl;
 	}
 
-	public SpiServiceLoader(Class<S> svc, NoArgsInstanceFactory instanceFactory) {
+	public SpiServiceLoader(Class<S> svc, InstanceFactory instanceFactory) {
 		service = Objects.requireNonNull(svc, "Service interface cannot be null");
 		this.instanceFactory = instanceFactory;
 		acc = (System.getSecurityManager() != null) ? AccessController.getContext() : null;
@@ -345,11 +346,11 @@ public final class SpiServiceLoader<S> implements ServiceLoader<S>, ClassLoaderP
 		return instanceFactory == null ? loader : instanceFactory.getClassLoader();
 	}
 
-	public NoArgsInstanceFactory getInstanceFactory() {
+	public InstanceFactory getInstanceFactory() {
 		return instanceFactory;
 	}
 
-	public void setInstanceFactory(NoArgsInstanceFactory instanceFactory) {
+	public void setInstanceFactory(InstanceFactory instanceFactory) {
 		this.instanceFactory = instanceFactory;
 	}
 

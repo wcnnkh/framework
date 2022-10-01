@@ -2,7 +2,6 @@ package io.basc.framework.core;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public abstract class MembersDecorator<S, T extends Members<S>> extends Members<S> {
@@ -108,8 +107,8 @@ public abstract class MembersDecorator<S, T extends Members<S>> extends Members<
 	}
 
 	@Override
-	public T withStream(Supplier<? extends Stream<S>> streamSupplier) {
-		return decorate(super.withStream(streamSupplier));
+	public T withStream(Stream<S> stream) {
+		return decorate(super.withStream(stream));
 	}
 
 	@Override
@@ -141,5 +140,10 @@ public abstract class MembersDecorator<S, T extends Members<S>> extends Members<
 	@Override
 	public T withSuperclass(Predicate<Class<?>> predicate, Function<Class<?>, ? extends Stream<S>> processor) {
 		return decorate(super.withSuperclass(predicate, processor));
+	}
+
+	@Override
+	public Stream<? extends T> pages() {
+		return super.pages().map((e) -> decorate(e));
 	}
 }

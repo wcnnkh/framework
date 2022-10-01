@@ -5,15 +5,15 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.function.Supplier;
 
-import io.basc.framework.beans.BeanDefinition;
-import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.factory.supplier.NameInstanceSupplier;
-import io.basc.framework.factory.supplier.SimpleInstanceSupplier;
+import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.factory.NameInstanceSupplier;
 import io.basc.framework.factory.support.InstanceIterable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mvc.annotation.ActionInterceptors;
+import io.basc.framework.util.SingletonSupplier;
 import io.basc.framework.web.pattern.HttpPatternResolver;
 
 public class BeanAction extends AbstractAction {
@@ -32,7 +32,7 @@ public class BeanAction extends AbstractAction {
 		this.beanFactory = beanFactory;
 		Supplier<Object> instanceSupplier;
 		if(beanFactory.isSingleton(targetClass)){
-			instanceSupplier = new SimpleInstanceSupplier<Object>(beanFactory.getInstance(targetClass));
+			instanceSupplier = new SingletonSupplier<Object>(beanFactory.getInstance(targetClass));
 		}else{
 			instanceSupplier = new NameInstanceSupplier<Object>(beanFactory, targetClass.getName());
 		}

@@ -1,15 +1,14 @@
 package io.basc.framework.dubbo.beans;
 
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.support.DefaultBeanDefinition;
-
 import org.apache.dubbo.config.ReferenceConfig;
 
-public class DubboBeanDefinition extends DefaultBeanDefinition {
+import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.factory.support.FactoryBeanDefinition;
+
+public class DubboBeanDefinition extends FactoryBeanDefinition {
 	private final ReferenceConfig<?> referenceConfig;
 
-	public DubboBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> targetClass,
-			ReferenceConfig<?> referenceConfig) {
+	public DubboBeanDefinition(BeanFactory beanFactory, Class<?> targetClass, ReferenceConfig<?> referenceConfig) {
 		super(beanFactory, targetClass);
 		this.referenceConfig = referenceConfig;
 	}
@@ -19,7 +18,7 @@ public class DubboBeanDefinition extends DefaultBeanDefinition {
 	}
 
 	public Object create() {
-		return createInstanceProxy(referenceConfig.get(), getTargetClass(),
+		return createInstanceProxy(getAop(), referenceConfig.get(), getTypeDescriptor().getType(),
 				new Class<?>[] { referenceConfig.getInterfaceClass() }).create();
 	}
 }

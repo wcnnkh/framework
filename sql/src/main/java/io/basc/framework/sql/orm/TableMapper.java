@@ -12,7 +12,7 @@ public interface TableMapper extends TableResolver, RepositoryMapper<ResultSet, 
 
 	@Override
 	default TableStructure getStructure(Class<?> entityClass) {
-		return new TableStructure(entityClass, this, null).withSuperclass().all().clone();
+		return new TableStructure(entityClass, this, null).withSuperclass();
 	}
 
 	default <T> TableStructure getStructure(Class<? extends T> entityClass, @Nullable T entity,

@@ -85,5 +85,4 @@ public abstract class ParameterizedTypeReference<T> {
 			return findParameterizedTypeReferenceSubclass(parent);
 		}
 	}
-
 }

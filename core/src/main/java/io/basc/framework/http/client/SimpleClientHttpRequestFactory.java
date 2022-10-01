@@ -23,7 +23,8 @@ import io.basc.framework.net.ssl.SSLContexts;
 import io.basc.framework.net.ssl.TrustAllManager;
 import io.basc.framework.util.StringUtils;
 
-public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAccessor implements ClientHttpRequestFactory {
+public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAccessor
+		implements ClientHttpRequestFactory {
 	private static Logger logger = LoggerFactory.getLogger(SimpleClientHttpRequestFactory.class);
 
 	/**
@@ -81,7 +82,7 @@ public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAcces
 			return false;
 		}
 
-		Resource resource = Sys.env.getResource(certTrustFile);
+		Resource resource = Sys.getEnv().getResourceLoader().getResource(certTrustFile);
 		if (!resource.exists()) {
 			logger.warn("not found certTrustFile: {}", certTrustFile);
 			return false;
@@ -177,10 +178,9 @@ public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAcces
 		} else {
 			connection.setInstanceFollowRedirects(false);
 		}
-		
+
 		connection.setDoInput(HttpMethod.hasResponseBody(httpMethod));
 		connection.setDoOutput(HttpMethod.hasRequestBody(httpMethod));
-		
 
 		if (connection instanceof HttpsURLConnection) {
 			SSLSocketFactory factory = getSslSocketFactory();

@@ -6,13 +6,12 @@ import java.util.Map;
 
 import com.netflix.appinfo.EurekaInstanceConfig;
 
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.boot.Application;
-import io.basc.framework.boot.support.ApplicationUtils;
 import io.basc.framework.cloud.commons.util.IdUtils;
 import io.basc.framework.cloud.commons.util.InetUtils;
+import io.basc.framework.env.Environment;
+import io.basc.framework.env.EnvironmentBeanDefinition;
+import io.basc.framework.factory.BeansException;
 import io.basc.framework.netflix.eureka.CloudEurekaInstanceConfig;
 import io.basc.framework.netflix.eureka.EurekaInstanceConfigBean;
 import io.basc.framework.netflix.eureka.metadata.DefaultManagementMetadataProvider;
@@ -20,12 +19,12 @@ import io.basc.framework.netflix.eureka.metadata.ManagementMetadata;
 import io.basc.framework.netflix.eureka.metadata.ManagementMetadataProvider;
 import io.basc.framework.util.StringUtils;
 
-public class EurekaInstanceConfigBeanDefinition extends DefaultBeanDefinition {
+public class EurekaInstanceConfigBeanDefinition extends EnvironmentBeanDefinition {
 
-	public EurekaInstanceConfigBeanDefinition(ConfigurableBeanFactory beanFactory) {
-		super(beanFactory, EurekaInstanceConfigBean.class);
+	public EurekaInstanceConfigBeanDefinition(Environment environment) {
+		super(environment, EurekaInstanceConfigBean.class);
 	}
-	
+
 	@Override
 	public Collection<String> getNames() {
 		return Arrays.asList(CloudEurekaInstanceConfig.class.getName(), EurekaInstanceConfig.class.getName());
@@ -33,46 +32,52 @@ public class EurekaInstanceConfigBeanDefinition extends DefaultBeanDefinition {
 
 	@Override
 	public boolean isInstance() {
-		return beanFactory.isInstance(InetUtils.class) && beanFactory.isInstance(Application.class);
+		return getBeanFactory().isInstance(InetUtils.class) && getBeanFactory().isInstance(Application.class);
 	}
 
-	@Override	
+	@Override
 	public Object create() throws BeansException {
-		InetUtils inetUtils = beanFactory.getInstance(InetUtils.class);
-		ManagementMetadataProvider managementMetadataProvider = beanFactory.isInstance(
-				ManagementMetadataProvider.class) ? beanFactory.getInstance(ManagementMetadataProvider.class)
+		InetUtils inetUtils = getBeanFactory().getInstance(InetUtils.class);
+		ManagementMetadataProvider managementMetadataProvider = getBeanFactory().isInstance(
+				ManagementMetadataProvider.class) ? getBeanFactory().getInstance(ManagementMetadataProvider.class)
 						: new DefaultManagementMetadataProvider();
-		String hostname = beanFactory.getEnvironment().getString("eureka.instance.hostname");
-		boolean preferIpAddress = beanFactory.getEnvironment().getBooleanValue("eureka.instance.prefer-ip-address");
-		String ipAddress = beanFactory.getEnvironment().getString("eureka.instance.ip-address");
-		boolean isSecurePortEnabled = beanFactory.getEnvironment().getBooleanValue("eureka.instance.secure-port-enabled");
+		String hostname = getEnvironment().getProperties().getString("eureka.instance.hostname");
+		boolean preferIpAddress = getEnvironment().getProperties().getBooleanValue("eureka.instance.prefer-ip-address");
+		String ipAddress = getEnvironment().getProperties().getString("eureka.instance.ip-address");
+		boolean isSecurePortEnabled = getEnvironment().getProperties()
+				.getBooleanValue("eureka.instance.secure-port-enabled");
 
-		String serverContextPath = beanFactory.getEnvironment().getValue("server.servlet.context-path", String.class, "/");
-		Application application = beanFactory.getInstance(Application.class);
-		int serverPort = ApplicationUtils.getServerPort(application.getEnvironment());
-
-		Integer managementPort = beanFactory.getEnvironment().getValue("management.server.port", Integer.class, null);
-		String managementContextPath = beanFactory.getEnvironment().getString("management.server.servlet.context-path");
-		Integer jmxPort = beanFactory.getEnvironment().getValue("com.sun.management.jmxremote.port", Integer.class, null);
+		String serverContextPath = getEnvironment().getProperties().getValue("server.servlet.context-path",
+				String.class, "/");
+		Application application = getBeanFactory().getInstance(Application.class);
+		Integer managementPort = getEnvironment().getProperties().getValue("management.server.port", Integer.class,
+				null);
+		String managementContextPath = getEnvironment().getProperties()
+				.getString("management.server.servlet.context-path");
+		Integer jmxPort = getEnvironment().getProperties().getValue("com.sun.management.jmxremote.port", Integer.class,
+				null);
 		EurekaInstanceConfigBean instance = new EurekaInstanceConfigBean(inetUtils);
 
-		instance.setNonSecurePort(serverPort);
-		instance.setInstanceId(IdUtils.getDefaultInstanceId(beanFactory.getEnvironment()));
+		if (application.getPort() != -1) {
+			instance.setNonSecurePort(application.getPort());
+		}
+
+		instance.setInstanceId(IdUtils.getDefaultInstanceId(getEnvironment().getProperties()));
 		instance.setPreferIpAddress(preferIpAddress);
 		instance.setSecurePortEnabled(isSecurePortEnabled);
 		if (StringUtils.hasText(ipAddress)) {
 			instance.setIpAddress(ipAddress);
 		}
 
-		if (isSecurePortEnabled) {
-			instance.setSecurePort(serverPort);
+		if (isSecurePortEnabled && application.getPort() != -1) {
+			instance.setSecurePort(application.getPort());
 		}
 
 		if (StringUtils.hasText(hostname)) {
 			instance.setHostname(hostname);
 		}
-		String statusPageUrlPath = beanFactory.getEnvironment().getString("eureka.instance.status-page-url-path");
-		String healthCheckUrlPath = beanFactory.getEnvironment().getString("eureka.instance.health-check-url-path");
+		String statusPageUrlPath = getEnvironment().getProperties().getString("eureka.instance.status-page-url-path");
+		String healthCheckUrlPath = getEnvironment().getProperties().getString("eureka.instance.health-check-url-path");
 
 		if (StringUtils.hasText(statusPageUrlPath)) {
 			instance.setStatusPageUrlPath(statusPageUrlPath);
@@ -81,7 +86,7 @@ public class EurekaInstanceConfigBeanDefinition extends DefaultBeanDefinition {
 			instance.setHealthCheckUrlPath(healthCheckUrlPath);
 		}
 
-		ManagementMetadata metadata = managementMetadataProvider.get(instance, serverPort, serverContextPath,
+		ManagementMetadata metadata = managementMetadataProvider.get(instance, instance.getNonSecurePort(), serverContextPath,
 				managementContextPath, managementPort);
 
 		if (metadata != null) {
@@ -107,7 +112,7 @@ public class EurekaInstanceConfigBeanDefinition extends DefaultBeanDefinition {
 		setupJmxPort(instance, jmxPort);
 		return instance;
 	}
-	
+
 	private static void setupJmxPort(EurekaInstanceConfigBean instance, Integer jmxPort) {
 		Map<String, String> metadataMap = instance.getMetadataMap();
 		if (metadataMap.get("jmx.port") == null && jmxPort != null) {

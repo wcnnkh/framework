@@ -35,7 +35,6 @@ public class SimpleResourceEventDispatcher extends SimpleEventDispatcher<ChangeE
 	 * @param period
 	 */
 	public SimpleResourceEventDispatcher(AbstractResource resource, long period) {
-		super(true);
 		this.resource = resource;
 		this.period = Math.max(LISTENER_PERIOD, period);
 	}

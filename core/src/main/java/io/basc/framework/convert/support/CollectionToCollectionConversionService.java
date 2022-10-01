@@ -9,6 +9,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.CollectionFactory;
 
 class CollectionToCollectionConversionService extends AbstractConversionService
@@ -22,7 +23,12 @@ class CollectionToCollectionConversionService extends AbstractConversionService
 		return Collections.singleton(new ConvertiblePair(Collection.class, Collection.class));
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
+	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		return ConditionalConversionService.super.canConvert(sourceType, targetType)
+				&& ReflectionUtils.isInstance(targetType.getType());
+	}
+
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;

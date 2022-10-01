@@ -1,33 +1,34 @@
 package io.basc.framework.druid.beans;
 
-import io.basc.framework.beans.BeanUtils;
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.support.DefaultBeanDefinition;
-import io.basc.framework.db.Configurable;
-import io.basc.framework.druid.DruidUtils;
-import io.basc.framework.factory.InstanceException;
-import io.basc.framework.logger.Levels;
-
 import com.alibaba.druid.pool.DruidDataSource;
 
-public class DruidDataSourceDefinition extends DefaultBeanDefinition {
+import io.basc.framework.context.Context;
+import io.basc.framework.context.support.ContextBeanDefinition;
+import io.basc.framework.context.support.ContextConfigurator;
+import io.basc.framework.db.Configurable;
+import io.basc.framework.druid.DruidUtils;
+import io.basc.framework.factory.BeansException;
+import io.basc.framework.factory.InstanceException;
 
-	public DruidDataSourceDefinition(ConfigurableBeanFactory beanFactory) {
-		super(beanFactory, DruidDataSource.class);
+public class DruidDataSourceDefinition extends ContextBeanDefinition {
+
+	public DruidDataSourceDefinition(Context context) {
+		super(context, DruidDataSource.class);
 	}
 
 	@Override
 	public boolean isInstance(Class<?>[] parameterTypes) {
-		return beanFactory.isInstance(Configurable.class);
+		return getBeanFactory().isInstance(Configurable.class);
 	}
 
 	@Override
 	public Object create() throws InstanceException {
-		Configurable configurable = beanFactory.getInstance(Configurable.class);
+		Configurable configurable = getContext().getInstance(Configurable.class);
 		DruidDataSource dataSource = new DruidDataSource();
 		DruidUtils.config(dataSource, configurable);
-		BeanUtils.configurationProperties(dataSource, getEnvironment(), "druid", Levels.DEBUG);
+		ContextConfigurator contextConfigurator = new ContextConfigurator(getContext());
+		contextConfigurator.getContext().setNamePrefix("druid.");
+		contextConfigurator.transform(dataSource);
 		return dataSource;
 	}
 

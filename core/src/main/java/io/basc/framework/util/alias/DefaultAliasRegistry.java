@@ -1,39 +1,51 @@
 package io.basc.framework.util.alias;
 
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.SmartMap;
-
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
 
 public class DefaultAliasRegistry implements AliasRegistry, Cloneable {
-	private SmartMap<String, Set<String>> aliasMap;
+	private final Map<String, Set<String>> aliasMap;
+	private AliasFactory parentAliasFactory;
 
 	public DefaultAliasRegistry() {
-		this(false);
+		this(new ConcurrentHashMap<>());
 	}
 
-	public DefaultAliasRegistry(boolean concurrent) {
-		this.aliasMap = new SmartMap<String, Set<String>>(concurrent);
-	}
-
-	private DefaultAliasRegistry(SmartMap<String, Set<String>> aliasMap) {
+	public DefaultAliasRegistry(Map<String, Set<String>> aliasMap) {
+		Assert.requiredArgument(aliasMap != null, "aliasMap");
 		this.aliasMap = aliasMap;
 	}
 
+	@Nullable
+	public AliasFactory getParentAliasFactory() {
+		return parentAliasFactory;
+	}
+
+	public void setParentAliasFactory(AliasFactory parentAliasFactory) {
+		this.parentAliasFactory = parentAliasFactory;
+	}
+
 	public void registerAlias(String name, String alias) {
+		Assert.hasText(name, "'name' must not be empty");
+		Assert.hasText(alias, "'alias' must not be empty");
+		Assert.requiredArgument(!hasAlias(name, alias), "");
 		register(name, alias);
 		register(alias, name);
 	}
 
 	private void register(String name, String alias) {
-		Assert.hasText(name, "'name' must not be empty");
-		Assert.hasText(alias, "'alias' must not be empty");
 		Set<String> names = aliasMap.get(name);
 		if (names == null) {
-			names = new HashSet<String>();
-			Set<String> sets = aliasMap.putIfAbsent(name, Collections.synchronizedSet(names));
+			names = Collections.synchronizedSet(new HashSet<>());
+			Set<String> sets = aliasMap.putIfAbsent(name, names);
 			if (sets != null) {
 				names = sets;
 			}
@@ -45,44 +57,38 @@ public class DefaultAliasRegistry implements AliasRegistry, Cloneable {
 		names.add(alias);
 	}
 
-	public void removeAlias(String alias) {
-		Set<String> names = aliasMap.remove(alias);
-		if (names == null) {
-			return;
-		}
-
-		for (String name : names) {
-			Set<String> aliasNames = aliasMap.get(name);
-			if (aliasNames != null) {
-				aliasNames.remove(alias);
-			}
-		}
+	public final boolean isAlias(String name) {
+		return isAlias(name, getParentAliasFactory());
 	}
 
-	public boolean isAlias(String name) {
-		return aliasMap.containsKey(name);
+	public boolean isAlias(String name, AliasFactory parent) {
+		return aliasMap.containsKey(name) || (parent != null && parent.isAlias(name));
 	}
 
-	public boolean hasAlias(String name, String alias) {
+	public final boolean hasAlias(String name, String alias) {
+		return hasAlias(name, alias, getParentAliasFactory());
+	}
+
+	public boolean hasAlias(String name, String alias, AliasFactory parent) {
 		Set<String> aliases = aliasMap.get(name);
 		if (aliases == null) {
-			return false;
+			return parent == null ? false : parent.hasAlias(name, alias);
 		}
 
-		return aliases.contains(alias);
+		return aliases.contains(alias) || (parent != null && parent.hasAlias(name, alias));
 	}
 
-	public String[] getAliases(String name) {
+	public final String[] getAliases(String name) {
+		return getAliases(name, getParentAliasFactory());
+	}
+
+	public String[] getAliases(String name, AliasFactory parent) {
 		Set<String> names = aliasMap.get(name);
 		if (names == null) {
-			return new String[0];
+			return parent == null ? StringUtils.EMPTY_ARRAY : parent.getAliases(name);
 		}
 
-		return names.toArray(new String[0]);
-	}
-
-	@Override
-	public DefaultAliasRegistry clone() {
-		return new DefaultAliasRegistry(aliasMap.clone());
+		String[] array = names.toArray(new String[0]);
+		return parent == null ? array : ArrayUtils.merge(array, parent.getAliases(name));
 	}
 }

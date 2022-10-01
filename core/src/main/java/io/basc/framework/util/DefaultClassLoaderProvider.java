@@ -1,29 +1,32 @@
 package io.basc.framework.util;
 
-import java.util.function.Supplier;
+public class DefaultClassLoaderProvider implements ConfigurableClassLoaderProvider {
+	private ClassLoaderProvider classLoaderProvider;
 
-import io.basc.framework.lang.Nullable;
-
-public final class DefaultClassLoaderProvider implements ClassLoaderProvider {
-	private final Supplier<? extends ClassLoader> classLoader;
-
-	public DefaultClassLoaderProvider(@Nullable Supplier<? extends ClassLoader> classLoader) {
-		this.classLoader = classLoader;
+	public DefaultClassLoaderProvider() {
 	}
 
-	public DefaultClassLoaderProvider(@Nullable ClassLoader classLoader) {
-		this(new StaticSupplier<ClassLoader>(classLoader));
+	public DefaultClassLoaderProvider(Class<?> clazz) {
+		this.classLoaderProvider = clazz == null ? null : (() -> clazz.getClassLoader());
 	}
 
-	public DefaultClassLoaderProvider(final Class<?> clazz) {
-		this(new Supplier<ClassLoader>() {
-			public ClassLoader get() {
-				return clazz.getClassLoader();
-			}
-		});
+	public DefaultClassLoaderProvider(ClassLoader classLoader) {
+		this.classLoaderProvider = classLoaderProvider == null ? null : (() -> classLoader);
+	}
+
+	public DefaultClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
+		this.classLoaderProvider = classLoaderProvider;
+	}
+
+	public ClassLoaderProvider getClassLoaderProvider() {
+		return classLoaderProvider;
+	}
+
+	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
+		this.classLoaderProvider = classLoaderProvider;
 	}
 
 	public ClassLoader getClassLoader() {
-		return classLoader == null ? ClassUtils.getDefaultClassLoader() : classLoader.get();
+		return classLoaderProvider == null ? ClassUtils.getDefaultClassLoader() : classLoaderProvider.getClassLoader();
 	}
 }

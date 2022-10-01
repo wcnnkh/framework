@@ -1,52 +1,54 @@
 package io.basc.framework.lucene;
 
-import io.basc.framework.env.Sys;
-import io.basc.framework.lang.NamedThreadLocal;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.concurrent.AsyncExecutor;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
 
-public class DefaultLuceneTemplate extends AbstractLuceneTemplate {
-	public static final String DIRECTORY_PREFIX = "lucene-documents";
-	private ThreadLocal<DirectoryReader> localReader = new NamedThreadLocal<>(
-			DIRECTORY_PREFIX);
-	private final Directory directory;
-	private final Analyzer analyzer;
+import io.basc.framework.env.Sys;
+import io.basc.framework.lucene.support.DefaultLuceneMapper;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.XUtils;
+import io.basc.framework.util.concurrent.AsyncExecutor;
+import io.basc.framework.util.concurrent.TaskQueue;
+import io.basc.framework.util.stream.Processor;
 
-	public DefaultLuceneTemplate(String... more) throws LuceneException {
-		this(new StandardAnalyzer(), more);
+public class DefaultLuceneTemplate implements LuceneTemplate {
+	public static final String DIRECTORY_PREFIX = "lucene-documents";
+
+	// 默认的写操作队列, 所有的写都排队处理
+	protected static final TaskQueue TASK_QUEUE = new TaskQueue();
+
+	static {
+		// 启动写操作队列
+		TASK_QUEUE.setName(DefaultLuceneTemplate.class.getName());
+		TASK_QUEUE.start();
 	}
 
-	/**
-	 * @param more
-	 *            注意此参数并不是一个路径，只是一个名称，使用的是workPath/{DIRECTORY_PREFIX}/{more}
-	 *            下此名称的目录
-	 * @see Paths#get(String, String...)
-	 * @see Sys#getWorkPath()
-	 * @throws LuceneException
-	 */
-	public DefaultLuceneTemplate(Analyzer analyzer, String... more)
-			throws LuceneException {
-		this(analyzer, Paths.get(
-				Paths.get(new File(Sys.env.getWorkPath()).toPath().toString(),
-						DIRECTORY_PREFIX).toString(), checkAndReturnMore(more)));
+	private LuceneMapper mapper = new DefaultLuceneMapper();
+	private final AsyncExecutor writeExecutor;// 写执行器
+	private Executor searchExecutor = XUtils.getCommonExecutor();// 搜索执行器
+	private final LucenePool<IndexWriter> indexWriterPool;
+	private final LucenePool<IndexReader> indexReaderPool;
+
+	public DefaultLuceneTemplate(String... more) {
+		this(new IndexWriterConfig(), more);
+	}
+
+	public DefaultLuceneTemplate(IndexWriterConfig config, String... more) {
+		this(Paths.get(Paths.get(new File(Sys.getEnv().getWorkPath()).toPath().toString(), DIRECTORY_PREFIX).toString(),
+				checkAndReturnMore(more)), config);
 	}
 
 	private static String[] checkAndReturnMore(String... more) {
@@ -54,131 +56,119 @@ public class DefaultLuceneTemplate extends AbstractLuceneTemplate {
 		return more;
 	}
 
-	public DefaultLuceneTemplate(Analyzer analyzer, Path path)
-			throws LuceneException {
-		super();
-		this.analyzer = analyzer;
-		try {
-			this.directory = MMapDirectory.open(path);
-		} catch (IOException e) {
-			throw new LuceneException(path.toString(), e);
-		}
+	public DefaultLuceneTemplate(Path path, IndexWriterConfig config) {
+		this(open(path), config);
 	}
 
-	public DefaultLuceneTemplate(AsyncExecutor writeExecutor,
-			Analyzer analyzer, Path path) throws LuceneException {
-		super(writeExecutor);
-		this.analyzer = analyzer;
-		try {
-			this.directory = MMapDirectory.open(path);
-		} catch (IOException e) {
-			throw new LuceneException(path.toString(), e);
-		}
+	public DefaultLuceneTemplate(Directory directory, IndexWriterConfig config) {
+		this(new IndexWriterPool(directory, config), new IndexReaderPool(directory));
 	}
 
-	public DefaultLuceneTemplate(Analyzer analyzer, Directory directory) {
-		super();
-		this.directory = directory;
-		this.analyzer = analyzer;
+	public DefaultLuceneTemplate(AsyncExecutor writerExecutor, Directory directory, IndexWriterConfig config) {
+		this(writerExecutor, new IndexWriterPool(directory, config), new IndexReaderPool(directory));
 	}
 
-	public DefaultLuceneTemplate(AsyncExecutor writeExecutor,
-			Analyzer analyzer, Directory directory) {
-		super(writeExecutor);
-		this.directory = directory;
-		this.analyzer = analyzer;
+	public DefaultLuceneTemplate(LucenePool<IndexWriter> indexWriterPool, LucenePool<IndexReader> indexReaderPool) {
+		this(TASK_QUEUE, indexWriterPool, indexReaderPool);
 	}
 
-	public DefaultLuceneTemplate(AsyncExecutor writeExecutor,
-			@Nullable Executor readExecutor, Analyzer analyzer,
-			Directory directory) {
-		super(writeExecutor, readExecutor);
-		this.directory = directory;
-		this.analyzer = analyzer;
-	}
-
-	public final Directory getDirectory() {
-		return directory;
-	}
-
-	public final Analyzer getAnalyzer() {
-		return analyzer;
+	public DefaultLuceneTemplate(AsyncExecutor writeExecutor, LucenePool<IndexWriter> indexWriterPool,
+			LucenePool<IndexReader> indexReaderPool) {
+		this.writeExecutor = writeExecutor;
+		this.indexReaderPool = indexReaderPool;
+		this.indexWriterPool = indexWriterPool;
 	}
 
 	@Override
-	protected IndexWriter getIndexWriter() throws IOException {
-		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
-		return new IndexWriter(getDirectory(), indexWriterConfig);
+	public LuceneMapper getMapper() {
+		return this.mapper;
+	}
+
+	public void setMapper(LuceneMapper mapper) {
+		this.mapper = mapper;
+	}
+
+	public LucenePool<IndexWriter> getIndexWriterPool() {
+		return indexWriterPool;
+	}
+
+	public LucenePool<IndexReader> getIndexReaderPool() {
+		return indexReaderPool;
+	}
+
+	public Executor getSearchExecutor() {
+		return searchExecutor;
+	}
+
+	public void setSearchExecutor(Executor searchExecutor) {
+		this.searchExecutor = searchExecutor;
 	}
 
 	@Override
-	protected IndexReader getIndexReader() throws IOException {
-		DirectoryReader reader = localReader.get();
-		if (reader == null) {
-			reader = DirectoryReader.open(directory);
-			localReader.set(reader);
-		} else {
-			DirectoryReader newReader = DirectoryReader.openIfChanged(reader);
-			if (newReader != null) {
-				reader.close();
-				reader = newReader;
-				localReader.set(reader);
-			}
-		}
-		return reader;
-	}
-
-	@Override
-	protected void closeIndexReader(IndexReader indexReader) throws IOException {
-		// 不关闭
-	}
-
-	private volatile Boolean indexExists;
-
-	public boolean indexExists() throws LuceneException {
-		if (indexExists == null) {
-			synchronized (this) {
-				if (indexExists == null) {
-					try {
-						indexExists = DirectoryReader.indexExists(directory);
-					} catch (IOException e) {
-						throw new LuceneException(e);
+	public <T> Future<T> write(Processor<IndexWriter, T, ? extends Exception> processor) throws LuceneWriteException {
+		return writeExecutor.submit(() -> {
+			return getIndexWriterPool().process((indexWriter) -> {
+				try {
+					T value = processor.process(indexWriter);
+					indexWriter.commit();
+					return value;
+				} catch (Exception e) {
+					if (indexWriter != null) {
+						indexWriter.rollback();
 					}
+					throw e;
 				}
-			}
-		}
-		return indexExists;
+			});
+		});
 	}
 
 	@Override
-	public <T> SearchResults<T> search(SearchParameters parameters,
-			ScoreDocMapper<T> rowMapper) throws LuceneSearchException {
-		if (!indexExists()) {
-			return new SearchResults<>(parameters, null, rowMapper, this);
-		}
-
-		try {
-			return super.search(parameters, rowMapper);
-		} catch (LuceneException e) {
-			indexExists = null;
-			throw e;
-		}
-
+	public <T, E extends Throwable> T read(Processor<IndexReader, T, E> processor) throws LuceneReadException, E {
+		return getIndexReaderPool().process(processor);
 	}
 
 	@Override
-	public <T> SearchResults<T> searchAfter(ScoreDoc after,
-			SearchParameters parameters, ScoreDocMapper<T> rowMapper)
+	public <T, E extends Exception> T search(Processor<IndexSearcher, T, ? extends E> processor)
 			throws LuceneSearchException {
-		if (!indexExists()) {
+		if (searchExecutor == null) {
+			return LuceneTemplate.super.search(processor);
+		}
+		try {
+			return read((reader) -> {
+				IndexSearcher indexSearcher = new IndexSearcher(reader, searchExecutor);
+				return processor.process(indexSearcher);
+			});
+		} catch (LuceneException e) {
+			throw e;
+		} catch (Throwable e) {
+			throw new LuceneSearchException(e);
+		}
+	}
+
+	@Override
+	public <T> SearchResults<T> search(SearchParameters parameters, ScoreDocMapper<T> rowMapper)
+			throws LuceneSearchException {
+		if (!getIndexReaderPool().indexExists()) {
+			return new SearchResults<>(parameters, null, rowMapper, this);
+		}
+		return LuceneTemplate.super.search(parameters, rowMapper);
+	}
+
+	@Override
+	public <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters, ScoreDocMapper<T> rowMapper)
+			throws LuceneSearchException {
+		if (!getIndexReaderPool().indexExists()) {
 			return new SearchResults<>(parameters, null, rowMapper, this);
 		}
 
+		return LuceneTemplate.super.searchAfter(after, parameters, rowMapper);
+	}
+
+	public static Directory open(Path path) throws LuceneException {
 		try {
-			return super.searchAfter(after, parameters, rowMapper);
-		} catch (LuceneException e) {
-			indexExists = null;
-			throw e;
+			return MMapDirectory.open(path);
+		} catch (IOException e) {
+			throw new LuceneException(path.toString(), e);
 		}
 	}
 }

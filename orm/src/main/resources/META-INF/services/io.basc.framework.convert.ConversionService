@@ -7,7 +7,6 @@ io.basc.framework.orm.convert.XmlParseConversionService
 io.basc.framework.orm.convert.NodeListToCollectionConversionService
 io.basc.framework.orm.convert.NodeListToMapConversionService
 io.basc.framework.orm.convert.NodeToObjectConversionService
-io.basc.framework.orm.convert.NodeListToEntityConversionService
 ## DOM ##
 
 io.basc.framework.orm.convert.CollectionToMapConversionService

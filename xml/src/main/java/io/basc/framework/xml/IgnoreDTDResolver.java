@@ -11,8 +11,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 public class IgnoreDTDResolver implements EntityResolver {
-	private static final Observable<Boolean> IGNORE_DTD = Sys.env.getObservableValue("io.basc.framework.xml.ignore.dtd",
-			boolean.class, true);
+	private static final Observable<Boolean> IGNORE_DTD = Sys.getEnv().getProperties()
+			.getObservableValue("io.basc.framework.xml.ignore.dtd", boolean.class, true);
 
 	public static final EntityResolver INSTANCE = new IgnoreDTDResolver();
 

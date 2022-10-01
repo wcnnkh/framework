@@ -1,28 +1,28 @@
 package io.basc.framework.druid.beans;
 
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.support.DefaultBeanDefinition;
+import com.alibaba.druid.pool.DruidDataSource;
+
 import io.basc.framework.db.DataBase;
 import io.basc.framework.db.DataBaseResolver;
 import io.basc.framework.druid.DruidUtils;
+import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.InstanceException;
+import io.basc.framework.factory.support.FactoryBeanDefinition;
 
-import com.alibaba.druid.pool.DruidDataSource;
+public class DataBaseDefinition extends FactoryBeanDefinition {
 
-public class DataBaseDefinition extends DefaultBeanDefinition {
-
-	public DataBaseDefinition(ConfigurableBeanFactory beanFactory) {
+	public DataBaseDefinition(BeanFactory beanFactory) {
 		super(beanFactory, DataBase.class);
 	}
 
 	@Override
 	public boolean isInstance() {
-		return beanFactory.isInstance(DruidDataSource.class) && beanFactory.isInstance(DataBaseResolver.class);
+		return getBeanFactory().isInstance(DruidDataSource.class) && getBeanFactory().isInstance(DataBaseResolver.class);
 	}
 
 	@Override
 	public Object create() throws InstanceException {
-		DruidDataSource druidDataSource = beanFactory.getInstance(DruidDataSource.class);
-		return DruidUtils.resolve(druidDataSource, beanFactory.getInstance(DataBaseResolver.class));
+		DruidDataSource druidDataSource = getBeanFactory().getInstance(DruidDataSource.class);
+		return DruidUtils.resolve(druidDataSource, getBeanFactory().getInstance(DataBaseResolver.class));
 	}
 }

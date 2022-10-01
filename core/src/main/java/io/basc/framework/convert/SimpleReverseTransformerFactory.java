@@ -26,4 +26,47 @@ public class SimpleReverseTransformerFactory<T, E extends Throwable> extends Sim
 		Assert.requiredArgument(transformer != null, "transformer");
 		map.put(type, transformer);
 	}
+
+	@Override
+	public final void reverseTransform(Object source, Class<? extends Object> sourceType, T target) throws E {
+		ReverseTransformerFactory.super.reverseTransform(source, sourceType, target);
+	}
+
+	@Override
+	public final void reverseTransform(Object source, Class<? extends Object> sourceType, T target,
+			Class<? extends T> targetType) throws E {
+		ReverseTransformerFactory.super.reverseTransform(source, sourceType, target, targetType);
+	}
+
+	@Override
+	public final void reverseTransform(Object source, Class<? extends Object> sourceType, T target,
+			TypeDescriptor targetType) throws E {
+		ReverseTransformerFactory.super.reverseTransform(source, sourceType, target, targetType);
+	}
+
+	@Override
+	public final void reverseTransform(Object source, T target) throws E {
+		ReverseTransformerFactory.super.reverseTransform(source, target);
+	}
+
+	@Override
+	public final void reverseTransform(Object source, T target, Class<? extends T> targetType) throws E {
+		ReverseTransformerFactory.super.reverseTransform(source, target, targetType);
+	}
+
+	@Override
+	public final void reverseTransform(Object source, T target, TypeDescriptor targetType) throws E {
+		ReverseTransformerFactory.super.reverseTransform(source, target, targetType);
+	}
+
+	@Override
+	public final void reverseTransform(Object source, TypeDescriptor sourceType, T target) throws E {
+		ReverseTransformerFactory.super.reverseTransform(source, sourceType, target);
+	}
+
+	@Override
+	public final void reverseTransform(Object source, TypeDescriptor sourceType, T target,
+			Class<? extends T> targetType) throws E {
+		ReverseTransformerFactory.super.reverseTransform(source, sourceType, target, targetType);
+	}
 }

@@ -11,8 +11,10 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Accept;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ParentDiscover;
 import io.basc.framework.util.StringUtils;
@@ -20,7 +22,7 @@ import io.basc.framework.util.alias.AliasRegistry;
 import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.EmptyValue;
 
-public class Field extends AccessibleField implements Member, ParentDiscover<Field> {
+public class Field extends AccessibleField implements Member, ParentDiscover<Field>, Accept<Field> {
 	protected Field parent;
 	protected Class<?> declaringClass;
 	protected Collection<String> aliasNames;
@@ -355,7 +357,7 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 
 	private static void appendNames(String prefix, Field field, Collection<String> names, boolean root,
 			String nameConnector, boolean nameNesting, AliasRegistry aliasRegistry) {
-		io.basc.framework.mapper.Field parent = field.getParent();
+		Field parent = field.getParent();
 		if (parent == null || !root || !nameNesting || field.nameNestingDepth >= 0) {
 			names.add(prefix == null ? field.getName() : (prefix + field.getName()));
 			Collection<String> aliasNames = field.getAliasNames();
@@ -388,10 +390,46 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 	 * @param nameConnector 发生嵌套时名称之间的连接符
 	 * @return
 	 */
-	public Collection<String> getNames(boolean nameNesting, @Nullable AliasRegistry aliasRegistry,
+	protected Collection<String> getNames(boolean nameNesting, @Nullable AliasRegistry aliasRegistry,
 			@Nullable String prefix, @Nullable String nameConnector) {
 		Set<String> names = new LinkedHashSet<String>(8);
 		appendNames(prefix, this, names, true, nameConnector, nameNesting, aliasRegistry);
 		return names;
+	}
+
+	/**
+	 * 获取所有可以使用的名称
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public Collection<String> getNames(ObjectMapperContext context) {
+		return getNames(context.isNameNesting(), context.getAliasRegistry(), context.getNamePrefix(),
+				context.getNameConnector());
+	}
+
+	@Override
+	public boolean accept(Field target) {
+		if (target == null) {
+			return false;
+		}
+
+		if (target.getName().equals(getName()) || target.getAliasNames().contains(getName())) {
+			if (isSupportGetter() && target.isSupportSetter()) {
+				int sourceModifiers = getGetter().getModifiers();
+				int targetModifiers = target.getSetter().getModifiers();
+				if (Modifier.isStatic(sourceModifiers) ^ Modifier.isStatic(targetModifiers)) {
+					return false;
+				}
+				
+				ResolvableType type1 = ResolvableType.forType(getGetter().getGenericType());
+				ResolvableType type2 = ResolvableType.forType(target.getSetter().getGenericType());
+				if (!type2.isAssignableFrom(type1)) {
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
 	}
 }

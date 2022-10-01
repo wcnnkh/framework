@@ -3,7 +3,7 @@ package io.basc.framework.mapper;
 import java.util.Collection;
 import java.util.Map;
 
-import io.basc.framework.core.reflect.ReflectionApi;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.value.Value;
 
@@ -31,7 +31,8 @@ public interface StructureFactory {
 	void registerStructure(Class<?> entityClass, Structure<? extends Field> structure);
 
 	default boolean isEntity(Class<?> type) {
-		return !Value.isBaseType(type) && type != Object.class && ReflectionApi.isInstance(type)
-				&& !Map.class.isAssignableFrom(type) && !Collection.class.isAssignableFrom(type);
+		return (!Value.isBaseType(type) && !type.isArray() && type != Object.class && ReflectionUtils.isInstance(type)
+				&& !Map.class.isAssignableFrom(type) && !Collection.class.isAssignableFrom(type))
+				|| isStructureRegistred(type);
 	}
 }

@@ -1,232 +1,125 @@
 package io.basc.framework.factory.support;
 
-import io.basc.framework.convert.ConversionService;
-import io.basc.framework.core.parameter.ParameterFactories;
-import io.basc.framework.core.parameter.ParameterFactory;
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.env.Environment;
-import io.basc.framework.factory.AbstractServiceLoaderFactory;
-import io.basc.framework.factory.InstanceDefinition;
-import io.basc.framework.factory.InstanceException;
+import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.factory.FactoryException;
 import io.basc.framework.factory.InstanceFactory;
-import io.basc.framework.factory.NoArgsInstanceFactory;
-import io.basc.framework.util.ClassLoaderProvider;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.ConcurrentReferenceHashMap;
-import io.basc.framework.util.DefaultClassLoaderProvider;
-import io.basc.framework.value.ValueFactory;
+import io.basc.framework.util.DefaultStatus;
+import io.basc.framework.util.Status;
+import io.basc.framework.util.stream.CallableProcessor;
+import io.basc.framework.util.stream.Processor;
 
-@SuppressWarnings("unchecked")
-public class DefaultInstanceFactory extends AbstractServiceLoaderFactory implements InstanceFactory {
-	private ConcurrentReferenceHashMap<Class<?>, InstanceDefinition> cacheMap = new ConcurrentReferenceHashMap<>(256);
-	private final Environment environment;
-	private ClassLoaderProvider classLoaderProvider;
-	private final ParameterFactories defaultValueFactory = new DefaultParameterDefaultValueFactories();
-
-	public DefaultInstanceFactory(Environment environment) {
-		this.environment = environment;
-		defaultValueFactory.configure(this);
-	}
-
-	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
-		this.classLoaderProvider = classLoaderProvider;
-	}
-
-	public void setClassLoader(ClassLoader classLoader) {
-		setClassLoaderProvider(new DefaultClassLoaderProvider(classLoader));
-	}
-
-	public ParameterFactories getDefaultValueFactory() {
-		return defaultValueFactory;
-	}
+public class DefaultInstanceFactory extends DefaultSingletonRegistry implements InstanceFactory {
+	private ClassLoader classLoader = ClassUtils.getDefaultClassLoader();
 
 	@Override
 	public ClassLoader getClassLoader() {
-		if (classLoaderProvider == null) {
-			return ClassUtils.getClassLoader(environment);
-		}
-		return ClassUtils.getClassLoader(classLoaderProvider);
+		return classLoader;
 	}
 
-	public <T> T getInstance(Class<T> clazz) {
-		InstanceDefinition instanceBuilder = getDefinition(clazz);
-		if (instanceBuilder == null) {
+	public void setClassLoader(ClassLoader classLoader) {
+		Assert.requiredArgument(classLoader != null, "classLoader");
+		this.classLoader = classLoader;
+	}
+
+	public <T, E extends Throwable> T getInstance(BeanDefinition definition, CallableProcessor<T, E> creater) throws E {
+		return getInstance(definition, creater, true).get();
+	}
+
+	public <T, E extends Throwable> Status<T> getInstance(BeanDefinition definition, CallableProcessor<T, E> creater,
+			boolean postProcessBean) throws E {
+		if (definition.isSingleton()) {
+			return getSingleton(definition.getId(), creater, postProcessBean);
+		}
+
+		T instance = creater.process();
+		if (postProcessBean) {
+			processPostBean(instance, definition);
+		}
+		return new DefaultStatus<T>(true, instance);
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T, E extends Throwable> Status<T> getInstance(String name, Processor<BeanDefinition, T, E> createProcessor,
+			boolean postProcessBean) throws E {
+		Object object = getSingleton(name);
+		if (object != null) {
+			return new DefaultStatus<>(true, (T) object);
+		}
+
+		BeanDefinition definition = getDefinition(name);
+		if (definition == null) {
 			return null;
 		}
-		return (T) instanceBuilder.create();
+
+		return getInstance(definition, () -> createProcessor.process(definition), postProcessBean);
 	}
 
-	public <T> T getInstance(String name) {
-		InstanceDefinition instanceBuilder = getDefinition(name);
-		if (instanceBuilder == null) {
-			return null;
-		}
-
-		return (T) instanceBuilder.create();
+	public <T, E extends Throwable> T getInstance(String name, Processor<BeanDefinition, T, E> createProcessor)
+			throws E {
+		return getInstance(name, createProcessor, true).get();
 	}
 
-	public boolean isInstance(String name) {
-		InstanceDefinition instanceBuilder = getDefinition(name);
-		if (instanceBuilder == null) {
-			return false;
-		}
-
-		return instanceBuilder.isInstance();
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T getInstance(Class<? extends T> clazz) throws FactoryException {
+		return (T) getInstance(clazz.getName());
 	}
 
+	@Override
+	public Object getInstance(String name) throws FactoryException {
+		return getInstance(name, (e) -> e.create());
+	}
+
+	@Override
 	public boolean isInstance(Class<?> clazz) {
-		InstanceDefinition instanceBuilder = getDefinition(clazz);
-		if (instanceBuilder == null) {
+		return isInstance(clazz.getName());
+	}
+
+	public <E extends Throwable> boolean isInstance(BeanDefinition definition, CallableProcessor<Boolean, E> processor)
+			throws E {
+		if (definition == null) {
 			return false;
 		}
 
-		return instanceBuilder.isInstance();
-	}
-
-	public boolean isInstance(String name, Object... params) {
-		InstanceDefinition instanceBuilder = getDefinition(name);
-		if (instanceBuilder == null) {
-			return false;
-		}
-
-		return instanceBuilder.isInstance(params);
-	}
-
-	public <T> T getInstance(String name, Object... params) {
-		InstanceDefinition instanceBuilder = getDefinition(name);
-		if (instanceBuilder == null) {
-			return null;
-		}
-
-		return (T) instanceBuilder.create(params);
-	}
-
-	public boolean isInstance(Class<?> type, Object... params) {
-		InstanceDefinition instanceBuilder = getDefinition(type);
-		if (instanceBuilder == null) {
-			return false;
-		}
-
-		return instanceBuilder.isInstance(params);
-	}
-
-	public <T> T getInstance(Class<T> type, Object... params) {
-		InstanceDefinition instanceBuilder = getDefinition(type);
-		if (instanceBuilder == null) {
-			return null;
-		}
-
-		return (T) instanceBuilder.create(params);
-	}
-
-	public boolean isInstance(String name, Class<?>[] parameterTypes) {
-		InstanceDefinition instanceBuilder = getDefinition(name);
-		if (instanceBuilder == null) {
-			return false;
-		}
-
-		return instanceBuilder.isInstance(parameterTypes);
-	}
-
-	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object[] params) {
-		InstanceDefinition instanceBuilder = getDefinition(name);
-		if (instanceBuilder == null) {
-			return null;
-		}
-
-		return (T) instanceBuilder.create(parameterTypes, params);
-	}
-
-	public boolean isInstance(Class<?> type, Class<?>[] parameterTypes) {
-		InstanceDefinition instanceBuilder = getDefinition(type);
-		if (instanceBuilder == null) {
-			return false;
-		}
-		return instanceBuilder.isInstance(parameterTypes);
-	}
-
-	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes, Object[] params) {
-		InstanceDefinition instanceBuilder = getDefinition(type);
-		if (instanceBuilder == null) {
-			return null;
-		}
-
-		return (T) instanceBuilder.create(parameterTypes, params);
-	}
-
-	public InstanceDefinition getDefinition(String name) {
-		Class<?> type = ClassUtils.getClass(name, getClassLoader());
-		if (type == null) {
-			return null;
-		}
-
-		return getDefinition(type);
-	}
-
-	public InstanceDefinition getDefinition(Class<?> clazz) {
-		if (clazz == null) {
-			return null;
-		}
-
-		if (ClassUtils.isAssignableValue(clazz, this)) {
-			return new InternalInstanceBuilder(clazz, clazz.cast(this));
-		}
-
-		if (Environment.class == clazz) {
-			return new InternalInstanceBuilder(clazz, clazz.cast(environment));
-		}
-
-		if (ConversionService.class == clazz) {
-			return new InternalInstanceBuilder(clazz, clazz.cast(environment.getConversionService()));
-		}
-
-		if (ParameterFactory.class == clazz) {
-			return new InternalInstanceBuilder(clazz, clazz.cast(defaultValueFactory));
-		}
-
-		InstanceDefinition instanceBuilder = (InstanceDefinition) cacheMap.get(clazz);
-		if (instanceBuilder == null) {
-			if (clazz.isPrimitive() || clazz.isArray() || clazz.isEnum() || !ClassUtils.isAvailable(clazz)
-					|| !ReflectionUtils.isAvailable(clazz)) {
-				return null;
-			}
-
-			instanceBuilder = new DefaultInstanceDefinition(this, environment, clazz, this, defaultValueFactory);
-			InstanceDefinition cache = (InstanceDefinition) cacheMap.putIfAbsent(clazz, instanceBuilder);
-			if (cache != null) {
-				instanceBuilder = cache;
-			} else {
-				cacheMap.purgeUnreferencedEntries();
-			}
-		}
-		return instanceBuilder;
-	}
-
-	private final class InternalInstanceBuilder extends DefaultInstanceDefinition {
-		private final Object instance;
-
-		public InternalInstanceBuilder(Class<?> targetClass, Object instance) {
-			super(DefaultInstanceFactory.this, environment, targetClass, DefaultInstanceFactory.this,
-					defaultValueFactory);
-			this.instance = instance;
-		}
-
-		public boolean isInstance() {
+		if (containsSingleton(definition.getId())) {
 			return true;
 		}
 
-		public Object create() throws InstanceException {
-			return instance;
+		Boolean b = processor.process();
+		return b == null ? false : b;
+	}
+
+	public <E extends Throwable> boolean isInstance(String name, Processor<BeanDefinition, Boolean, E> processor)
+			throws E {
+		if (containsSingleton(name)) {
+			return true;
 		}
+
+		BeanDefinition definition = getDefinition(name);
+		return isInstance(definition, () -> processor.process(definition));
 	}
 
 	@Override
-	protected final ValueFactory<String> getConfigFactory() {
-		return environment;
+	public boolean isInstance(String name) {
+		return isInstance(name, (e) -> e.isInstance());
 	}
 
-	@Override
-	protected final NoArgsInstanceFactory getTargetInstanceFactory() {
-		return this;
+	public boolean isSingleton(Class<?> clazz) {
+		return isSingleton(clazz.getName());
+	}
+
+	public boolean isSingleton(String name) {
+		if (containsSingleton(name)) {
+			return true;
+		}
+
+		BeanDefinition definition = getDefinition(name);
+		if (definition == null) {
+			return false;
+		}
+
+		return containsSingleton(definition.getId()) || definition.isSingleton();
 	}
 }

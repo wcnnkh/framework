@@ -17,11 +17,11 @@ public class JdkProxy extends AbstractProxy {
 
 	public Object create() {
 		Class<?>[] interfaces = getInterfaces();
-		return java.lang.reflect.Proxy.newProxyInstance(getTargetClass().getClassLoader(),
+		return java.lang.reflect.Proxy.newProxyInstance(getSourceClass().getClassLoader(),
 				interfaces == null ? new Class<?>[0] : interfaces, invocationHandler);
 	}
 
 	public Object createInternal(Class<?>[] parameterTypes, Object[] arguments) {
-		throw new NotSupportedException(getTargetClass().getName() + "," + Arrays.toString(parameterTypes));
+		throw new NotSupportedException(getSourceClass().getName() + "," + Arrays.toString(parameterTypes));
 	}
 }

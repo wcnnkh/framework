@@ -1,19 +1,18 @@
 package io.basc.framework.factory;
 
+import java.util.Arrays;
+import java.util.List;
+
 import io.basc.framework.convert.ConvertibleIterable;
 import io.basc.framework.convert.lang.ClassToStringConverter;
 import io.basc.framework.factory.support.ServiceLoaders;
 import io.basc.framework.factory.support.StaticServiceLoader;
 
-import java.util.Arrays;
-import java.util.List;
-
-public interface ServiceLoaderFactory extends NoArgsInstanceFactory {
-
+public interface ServiceLoaderFactory extends InstanceFactory {
 	/**
 	 * 获取一个类实现的加载器
 	 * 
-	 * @param <S>
+	 * @param              <S>
 	 * @param serviceClass
 	 * @return
 	 */

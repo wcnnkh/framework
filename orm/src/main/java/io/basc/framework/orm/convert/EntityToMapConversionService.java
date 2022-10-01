@@ -23,8 +23,7 @@ class EntityToMapConversionService extends AbstractConversionService implements 
 		this.mapper = mapper;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <R> R convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		Map<Object, Object> sourceMap = CollectionFactory.createMap(targetType.getType(),
 				targetType.getMapKeyTypeDescriptor().getType(), 16);
 		getMapper().getStructure(sourceType.getType()).stream().filter((p) -> p.isSupportGetter())
@@ -37,12 +36,13 @@ class EntityToMapConversionService extends AbstractConversionService implements 
 							targetType.getMapKeyTypeDescriptor());
 					sourceMap.put(key, value);
 				});
-		return (R) sourceMap;
+		return sourceMap;
 	}
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return ConditionalConversionService.super.canConvert(sourceType, targetType) && OrmUtils.getMapper().isEntity(sourceType.getType());
+		return ConditionalConversionService.super.canConvert(sourceType, targetType)
+				&& OrmUtils.getMapper().isEntity(sourceType.getType());
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {

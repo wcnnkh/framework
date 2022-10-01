@@ -4,7 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import io.basc.framework.beans.support.DefaultBeanFactory;
+import io.basc.framework.context.support.DefaultContext;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -15,7 +15,7 @@ public class HttpRemoteTest {
 	@Test
 	public void test() throws Throwable {
 		LoggerFactory.getLevelManager().getCustomLevelRegistry().put("io.basc.framework.rpc", Levels.DEBUG.getValue());
-		DefaultBeanFactory beanFactory = new DefaultBeanFactory();
+		DefaultContext beanFactory = new DefaultContext();
 		beanFactory.init();
 		TestRemoteInterface test = beanFactory.getInstance(TestRemoteInterface.class);
 		String response;
@@ -23,7 +23,7 @@ public class HttpRemoteTest {
 			response = test.index();
 		} catch (Exception e) {
 			logger.info(e, "发生异常也应该让编译通过");
-			return ;
+			return;
 		}
 		assertTrue(response.indexOf("百度") != -1);
 	}

@@ -1,19 +1,21 @@
 package io.basc.framework.jms.bind;
 
+import java.lang.reflect.Method;
+import java.util.function.Supplier;
+
+import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
+
+import io.basc.framework.boot.ApplicationException;
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.factory.supplier.NameInstanceSupplier;
+import io.basc.framework.factory.NameInstanceSupplier;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-
-import java.lang.reflect.Method;
-import java.util.function.Supplier;
-
-import javax.jms.MessageConsumer;
-import javax.jms.MessageListener;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class MessageListenerApplicationPostProcess implements ApplicationPostProcessor {
@@ -21,16 +23,16 @@ public class MessageListenerApplicationPostProcess implements ApplicationPostPro
 
 	@Override
 	public void postProcessApplication(ConfigurableApplication application) throws Throwable {
-		if (!application.getBeanFactory().isInstance(MessageConsumerFactory.class)) {
+		if (!application.isInstance(MessageConsumerFactory.class)) {
 			return;
 		}
 
-		if (!application.getBeanFactory().isInstance(MessageListenerFactory.class)) {
+		if (!application.isInstance(MessageListenerFactory.class)) {
 			return;
 		}
 
-		MessageConsumerFactory factory = application.getBeanFactory().getInstance(MessageConsumerFactory.class);
-		MessageListenerFactory listenerFactory = application.getBeanFactory().getInstance(MessageListenerFactory.class);
+		MessageConsumerFactory factory = application.getInstance(MessageConsumerFactory.class);
+		MessageListenerFactory listenerFactory = application.getInstance(MessageListenerFactory.class);
 		for (Class<?> clazz : application.getContextClasses()) {
 			io.basc.framework.jms.bind.MessageListener messageListener = clazz
 					.getAnnotation(io.basc.framework.jms.bind.MessageListener.class);
@@ -38,12 +40,16 @@ public class MessageListenerApplicationPostProcess implements ApplicationPostPro
 				if (!MessageListener.class.isAssignableFrom(clazz)) {
 					logger.error("{} non assignable {}", clazz, javax.jms.MessageListener.class);
 				} else {
-					if (!application.getBeanFactory().isInstance(clazz)) {
+					if (!application.isInstance(clazz)) {
 						logger.error("Cannot create instance {}", clazz);
 					} else {
-						MessageListener listener = (MessageListener) application.getBeanFactory().getInstance(clazz);
+						MessageListener listener = (MessageListener) application.getInstance(clazz);
 						MessageConsumer messageConsumer = factory.getMessageConsumer(clazz);
-						messageConsumer.setMessageListener(listener);
+						try {
+							messageConsumer.setMessageListener(listener);
+						} catch (JMSException e) {
+							throw new ApplicationException(e);
+						}
 						logger.info("add class [{}] message listener {}", clazz, listener);
 					}
 				}
@@ -52,10 +58,8 @@ public class MessageListenerApplicationPostProcess implements ApplicationPostPro
 			for (Method method : clazz.getDeclaredMethods()) {
 				messageListener = method.getAnnotation(io.basc.framework.jms.bind.MessageListener.class);
 				if (messageListener != null) {
-					Supplier<Object> supplier = new NameInstanceSupplier<Object>(application.getBeanFactory(),
-							clazz.getName());
-					MethodInvoker methodInvoker = application.getBeanFactory().getAop().getProxyMethod(clazz, supplier,
-							method);
+					Supplier<Object> supplier = new NameInstanceSupplier<Object>(application, clazz.getName());
+					MethodInvoker methodInvoker = application.getAop().getProxyMethod(clazz, supplier, method);
 
 					MessageListener listener = listenerFactory.getMessageListener(methodInvoker);
 					MessageConsumer messageConsumer = factory.getMessageConsumer(method);

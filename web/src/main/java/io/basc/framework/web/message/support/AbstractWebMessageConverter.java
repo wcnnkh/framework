@@ -6,8 +6,8 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterFactory;
-import io.basc.framework.factory.support.DefaultValueFactoryAware;
+import io.basc.framework.factory.DefaultParameterFactory;
+import io.basc.framework.factory.DefaultParameterFactoryAware;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.net.message.convert.MessageConverter;
@@ -25,9 +25,9 @@ import io.basc.framework.web.message.WebMessagelConverterException;
  *
  */
 public abstract class AbstractWebMessageConverter
-		implements WebMessageConverter, ConversionServiceAware, DefaultValueFactoryAware, MessageConverterAware {
+		implements WebMessageConverter, ConversionServiceAware, DefaultParameterFactoryAware, MessageConverterAware {
 	private ConversionService conversionService;
-	private ParameterFactory defaultValueFactory;
+	private DefaultParameterFactory defaultParameterFactory;
 	private MessageConverter messageConverter;
 
 	public MessageConverter getMessageConverter() {
@@ -39,9 +39,19 @@ public abstract class AbstractWebMessageConverter
 		this.conversionService = conversionService;
 	}
 
+	public DefaultParameterFactory getDefaultParameterFactory() {
+		return defaultParameterFactory;
+	}
+
+	public Object getDefaultValue(ParameterDescriptor parameterDescriptor) {
+		DefaultParameterFactory defaultParameterFactory = getDefaultParameterFactory();
+		return defaultParameterFactory == null ? null
+				: defaultParameterFactory.getDefaultParameter(parameterDescriptor);
+	}
+
 	@Override
-	public void setDefaultValueFactory(ParameterFactory defaultValueFactory) {
-		this.defaultValueFactory = defaultValueFactory;
+	public void setDefaultParameterFactory(DefaultParameterFactory defaultParameterFactory) {
+		this.defaultParameterFactory = defaultParameterFactory;
 	}
 
 	@Override
@@ -51,18 +61,6 @@ public abstract class AbstractWebMessageConverter
 
 	public ConversionService getConversionService() {
 		return conversionService;
-	}
-
-	public ParameterFactory getDefaultValueFactory() {
-		return defaultValueFactory;
-	}
-
-	public Object getDefaultValue(ParameterDescriptor parameterDescriptor) {
-		if (defaultValueFactory == null) {
-			return parameterDescriptor.getDefaultValue();
-		} else {
-			return defaultValueFactory.getParameter(parameterDescriptor);
-		}
 	}
 
 	@Override

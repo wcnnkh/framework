@@ -57,35 +57,16 @@ public class LevelRegistry extends TreeMap<String, Level> implements EventDispat
 		}
 	};
 
-	private volatile EventDispatcher<ChangeEvent<LevelRegistry>> dispatcher;
+	private final EventDispatcher<ChangeEvent<LevelRegistry>> dispatcher = new SimpleEventDispatcher<ChangeEvent<LevelRegistry>>();
 
 	@Override
 	public EventRegistration registerListener(EventListener<ChangeEvent<LevelRegistry>> eventListener) {
-		if (dispatcher == null) {
-			synchronized (this) {
-				if (dispatcher == null) {
-					dispatcher = new SimpleEventDispatcher<ChangeEvent<LevelRegistry>>(true);
-				}
-			}
-		}
 		return dispatcher.registerListener(eventListener);
 	}
 
 	@Override
 	public void publishEvent(ChangeEvent<LevelRegistry> event) {
-		if (dispatcher == null) {
-			return;
-		}
 		dispatcher.publishEvent(event);
-	}
-
-	@Nullable
-	public final EventDispatcher<ChangeEvent<LevelRegistry>> getDispatcher() {
-		return dispatcher;
-	}
-
-	public void setDispatcher(EventDispatcher<ChangeEvent<LevelRegistry>> dispatcher) {
-		this.dispatcher = dispatcher;
 	}
 
 	public LevelRegistry() {
@@ -152,9 +133,7 @@ public class LevelRegistry extends TreeMap<String, Level> implements EventDispat
 			try {
 				return super.put(key, value);
 			} finally {
-				if (dispatcher != null) {
-					dispatcher.publishEvent(new ChangeEvent<LevelRegistry>(EventType.UPDATE, this));
-				}
+				dispatcher.publishEvent(new ChangeEvent<LevelRegistry>(EventType.UPDATE, this));
 			}
 		}
 	}
@@ -165,9 +144,7 @@ public class LevelRegistry extends TreeMap<String, Level> implements EventDispat
 			try {
 				return super.remove(key);
 			} finally {
-				if (dispatcher != null) {
-					dispatcher.publishEvent(new ChangeEvent<LevelRegistry>(EventType.UPDATE, this));
-				}
+				dispatcher.publishEvent(new ChangeEvent<LevelRegistry>(EventType.UPDATE, this));
 			}
 		}
 	}
@@ -178,9 +155,7 @@ public class LevelRegistry extends TreeMap<String, Level> implements EventDispat
 			try {
 				super.clear();
 			} finally {
-				if (dispatcher != null) {
-					dispatcher.publishEvent(new ChangeEvent<LevelRegistry>(EventType.UPDATE, this));
-				}
+				dispatcher.publishEvent(new ChangeEvent<LevelRegistry>(EventType.UPDATE, this));
 			}
 		}
 	}

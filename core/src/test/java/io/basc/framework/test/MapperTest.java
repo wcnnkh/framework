@@ -10,10 +10,11 @@ import org.junit.Test;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.json.JSONUtils;
+import io.basc.framework.mapper.DefaultObjectMapper;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Fields;
-import io.basc.framework.mapper.MapMapper;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.mapper.Structure;
 import io.basc.framework.util.XUtils;
 
 public class MapperTest {
@@ -30,13 +31,19 @@ public class MapperTest {
 		map.put("bk", "bk");
 		map.put("s.a", XUtils.getUUID());
 		map.put("s.b", XUtils.getUUID());
-		MapMapper mapper = new MapMapper();
+		DefaultObjectMapper<Object, RuntimeException> mapper = new DefaultObjectMapper<>();
 		A a = mapper.convert(map, A.class);
 		System.out.println(JSONUtils.toJSONString(map));
 		System.out.println(JSONUtils.toJSONString(a));
 		assertTrue(map.get("k").equals(a.getK()));
 		assertTrue(map.get("b.bk").equals(a.getB().getBk()));
 		System.out.println(a);
+
+		Structure<? extends Field> structure = mapper.getStructure(A.class);
+		Field firstField = structure.first();
+		structure = structure.setParentField(firstField);
+		structure = structure.setNameNestingDepth(1);
+		structure.forEach((e) -> assertTrue(e.getName().startsWith(firstField.getName())));
 	}
 
 	public static class A extends B {

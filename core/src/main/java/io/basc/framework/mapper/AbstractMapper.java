@@ -7,7 +7,7 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.value.Value;
 
 public abstract class AbstractMapper<S, T, E extends Throwable> implements Mapper<S, T, E> {
-	private ConversionService conversionService = Sys.env.getConversionService();
+	private ConversionService conversionService = Sys.getEnv().getConversionService();
 	private final TypeDescriptor typeDescriptor;
 
 	public AbstractMapper(TypeDescriptor typeDescriptor) {
@@ -28,8 +28,8 @@ public abstract class AbstractMapper<S, T, E extends Throwable> implements Mappe
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <R extends T> R convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
-		return (R) convert(source, sourceType, targetType, null);
+	public T convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
+		return (T) convert(source, sourceType, targetType, null);
 	}
 
 	@Override

@@ -14,11 +14,11 @@ public final class SerializerUtils {
 	private static final CrossLanguageSerializer CROSS_LANGUAGE_SERIALIZER;
 
 	static {
-		Serializer serializer = Sys.env.getServiceLoader(Serializer.class).first();
+		Serializer serializer = Sys.getEnv().getServiceLoader(Serializer.class).first();
 		SERIALIZER = serializer == null ? JavaSerializer.INSTANCE : serializer;
 		logger.info("default serializer {}", SERIALIZER);
 
-		CrossLanguageSerializer crossLanguageSerializer = Sys.env.getServiceLoader(CrossLanguageSerializer.class)
+		CrossLanguageSerializer crossLanguageSerializer = Sys.getEnv().getServiceLoader(CrossLanguageSerializer.class)
 				.first();
 		CROSS_LANGUAGE_SERIALIZER = crossLanguageSerializer == null ? JsonSerializer.INSTANCE : crossLanguageSerializer;
 		logger.info("default cross language serializer {}", CROSS_LANGUAGE_SERIALIZER);

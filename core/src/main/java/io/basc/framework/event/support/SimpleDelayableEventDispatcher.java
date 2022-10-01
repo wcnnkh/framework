@@ -17,7 +17,6 @@ public class SimpleDelayableEventDispatcher<T extends Event> extends SimpleEvent
 	}
 
 	public SimpleDelayableEventDispatcher(DelayableExecutor delayableExecutor) {
-		super(true);
 		this.delayableExecutor = delayableExecutor;
 	}
 

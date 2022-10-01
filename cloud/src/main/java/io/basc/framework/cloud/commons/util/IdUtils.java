@@ -18,6 +18,7 @@ package io.basc.framework.cloud.commons.util;
 
 import io.basc.framework.env.Environment;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.value.PropertyFactory;
 
 /**
  * @author Spencer Gibb
@@ -35,14 +36,12 @@ public final class IdUtils {
 		throw new IllegalStateException("Can't instantiate a utility class");
 	}
 
-	public static String getDefaultInstanceId(Environment environment) {
+	public static String getDefaultInstanceId(PropertyFactory environment) {
 		return getDefaultInstanceId(environment, true);
 	}
 
-	public static String getDefaultInstanceId(Environment environment,
-			boolean includeHostname) {
-		String vcapInstanceId = environment
-				.getString("vcap.application.instance_id");
+	public static String getDefaultInstanceId(PropertyFactory environment, boolean includeHostname) {
+		String vcapInstanceId = environment.getString("vcap.application.instance_id");
 		if (StringUtils.hasText(vcapInstanceId)) {
 			return vcapInstanceId;
 		}
@@ -55,8 +54,8 @@ public final class IdUtils {
 
 		String namePart = combineParts(hostname, SEPARATOR, appName);
 
-		String indexPart = environment.getValue("application.instance_id",
-				String.class, environment.getString("server.port"));
+		String indexPart = environment.getValue("application.instance_id", String.class,
+				environment.getString("server.port"));
 
 		return combineParts(namePart, SEPARATOR, indexPart);
 	}
@@ -64,8 +63,7 @@ public final class IdUtils {
 	/**
 	 * Gets the resolved service id.
 	 * 
-	 * @param resolver
-	 *            A property resolved
+	 * @param resolver A property resolved
 	 * @return A unique id that can be used to uniquely identify a service
 	 */
 	public static String getResolvedServiceId(Environment environment) {
@@ -81,8 +79,7 @@ public final class IdUtils {
 		return DEFAULT_SERVICE_ID_STRING;
 	}
 
-	public static String combineParts(String firstPart, String separator,
-			String secondPart) {
+	public static String combineParts(String firstPart, String separator, String secondPart) {
 		String combined = null;
 		if (firstPart != null && secondPart != null) {
 			combined = firstPart + separator + secondPart;

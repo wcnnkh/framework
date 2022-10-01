@@ -22,7 +22,6 @@ public class AmqpEventDisabtcher<T extends Event> extends SimpleEventDispatcher<
 	private Serializer serializer = SerializerUtils.getSerializer();
 
 	public AmqpEventDisabtcher(Exchange exchange, String routingKey, QueueDeclare queueDeclare) {
-		super(true);
 		this.exchange = exchange;
 		this.queueDeclare = queueDeclare;
 	}

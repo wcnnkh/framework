@@ -17,7 +17,6 @@ public class SimpleDelayableNamedEventDispatcher<K, T extends Event> extends Sim
 	}
 
 	public SimpleDelayableNamedEventDispatcher(DelayableExecutor delayableExecutor) {
-		super(true);
 		this.delayableExecutor = delayableExecutor;
 	}
 

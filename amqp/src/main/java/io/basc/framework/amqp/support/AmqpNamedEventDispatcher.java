@@ -10,7 +10,6 @@ public class AmqpNamedEventDispatcher<T extends Event> extends SimpleNamedEventD
 	private Exchange exchange;
 
 	public AmqpNamedEventDispatcher(Exchange exchange) {
-		super(true);
 		this.exchange = exchange;
 	}
 	

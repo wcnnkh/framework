@@ -7,10 +7,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import io.basc.framework.context.Destroy;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
+import io.basc.framework.factory.Destroy;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -35,20 +36,19 @@ import io.basc.framework.util.StringUtils;
 public final class DefaultTimer implements io.basc.framework.timer.Timer, Destroy {
 	private static Logger logger = LoggerFactory.getLogger(DefaultTimer.class);
 	private final ConcurrentHashMap<String, TaskContext> contextMap = new ConcurrentHashMap<String, TaskContext>();
+	private final ExecutorService executorService = Executors.newWorkStealingPool();
 	private final TaskLockFactory taskLockFactory;
 	private final java.util.Timer timer;
-	private final ExecutorService executorService;
 	private final TaskFactory taskFactory;
 	private StringMatcher matcher = StringMatchers.SIMPLE;
 
-	public DefaultTimer(ExecutorService executorService, TaskFactory taskFactory) {
-		this(new EmptyTaskLockFactory(), executorService, taskFactory);
+	public DefaultTimer(TaskFactory taskFactory) {
+		this(new EmptyTaskLockFactory(), taskFactory);
 	}
 
-	public DefaultTimer(TaskLockFactory taskLockFactory, ExecutorService executorService, TaskFactory taskFactory) {
+	public DefaultTimer(TaskLockFactory taskLockFactory, TaskFactory taskFactory) {
 		this.taskLockFactory = taskLockFactory;
 		this.timer = createTimer();
-		this.executorService = executorService;
 		this.taskFactory = taskFactory;
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.MINUTE, 1);
@@ -153,6 +153,7 @@ public final class DefaultTimer implements io.basc.framework.timer.Timer, Destro
 
 	public void destroy() {
 		timer.cancel();
+		executorService.shutdown();
 	}
 
 	private final class PurgeTimerTask extends TimerTask {
@@ -194,10 +195,14 @@ public final class DefaultTimer implements io.basc.framework.timer.Timer, Destro
 		}
 
 		public void run() {
+			if (task == null) {
+				return;
+			}
+
 			try {
 				task.run(cts);
 			} catch (Throwable e) {
-				e.printStackTrace();
+				logger.error(e, task.toString());
 			}
 		}
 	}

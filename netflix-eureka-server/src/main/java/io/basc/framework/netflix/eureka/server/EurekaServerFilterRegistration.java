@@ -31,7 +31,7 @@ public class EurekaServerFilterRegistration implements FilterRegistration {
 	}
 
 	public static Application getApplication(io.basc.framework.boot.Application application) {
-		Set<Class<?>> classes = application.getBeanFactory().getClassesLoaderFactory()
+		Set<Class<?>> classes = application.getClassesLoaderFactory()
 				.getClassesLoader(StringUtils.arrayToCommaDelimitedString(EUREKA_PACKAGES),
 						(e, m) -> e.getAnnotationMetadata().hasAnnotation(Path.class.getName())
 								|| e.getAnnotationMetadata().hasAnnotation(javax.ws.rs.ext.Provider.class.getName()))

@@ -35,11 +35,11 @@ public class ZooKeeperServerStart extends Thread {
 
 	protected ServerConfig parse(Properties properties) throws IOException, ConfigException {
 		if (!properties.containsKey(DATA_DIR)) {
-			properties.setProperty(DATA_DIR, Sys.env.getWorkPath() + File.separator + "zk_data");
+			properties.setProperty(DATA_DIR, Sys.getEnv().getWorkPath() + File.separator + "zk_data");
 		}
 
 		if (!properties.containsKey(DATA_LOG_DIR)) {
-			properties.setProperty(DATA_LOG_DIR, Sys.env.getWorkPath() + File.separator + "zk_logs");
+			properties.setProperty(DATA_LOG_DIR, Sys.getEnv().getWorkPath() + File.separator + "zk_logs");
 		}
 
 		if (!properties.containsKey(CLIENT_PORT)) {

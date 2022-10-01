@@ -1,6 +1,6 @@
 package io.basc.framework.ibatis.beans;
 
-import io.basc.framework.beans.annotation.ConfigurationProperties;
+import io.basc.framework.orm.annotation.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = IbatisProperties.MYBATIS_PREFIX)
 public class IbatisProperties {

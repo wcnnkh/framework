@@ -11,6 +11,7 @@ import org.apache.poi.poifs.filesystem.FileMagic;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.RequiredJavaVersion;
 import io.basc.framework.microsoft.AbstractExcelReader;
@@ -25,9 +26,9 @@ import io.basc.framework.util.ClassUtils;
 
 @RequiredJavaVersion(8)
 public class PoiExcelOperations extends AbstractExcelReader implements ExcelOperations {
-	private static final ExcelReader OLE2_READER = Sys.env
+	private static final ExcelReader OLE2_READER = (ExcelReader) Sys.getEnv()
 			.getInstance("io.basc.framework.microsoft.poi.HSSFExcelReader");
-	private static final ExcelReader OOXML_READER = Sys.env
+	private static final ExcelReader OOXML_READER = (ExcelReader) Sys.getEnv()
 			.getInstance("io.basc.framework.microsoft.poi.XSSFExcelReader");
 	private static final boolean XSSF_SUPPORT = ClassUtils
 			.isPresent("org.apache.poi.xssf.usermodel.XSSFWorkbookFactory", null);
@@ -75,7 +76,7 @@ public class PoiExcelOperations extends AbstractExcelReader implements ExcelOper
 	}
 
 	public WritableExcel create(OutputStream outputStream) throws IOException, ExcelException {
-		Workbook workbook = SXSS_WORKBOOK_CLASS != null ? Sys.env.getInstance(SXSS_WORKBOOK_CLASS)
+		Workbook workbook = SXSS_WORKBOOK_CLASS != null ? ReflectionUtils.newInstance(SXSS_WORKBOOK_CLASS)
 				: WorkbookFactory.create(XSSF_SUPPORT);
 		return new PoiExcel(workbook, outputStream, false);
 	}
@@ -85,7 +86,7 @@ public class PoiExcelOperations extends AbstractExcelReader implements ExcelOper
 			// 文件内容为空
 			ExcelVersion version = ExcelVersion.forFileName(file.getName());
 			if (SXSS_WORKBOOK_CLASS != null && version == ExcelVersion.XLSX) {
-				Workbook workbook = Sys.env.getInstance(SXSS_WORKBOOK_CLASS);
+				Workbook workbook = ReflectionUtils.newInstance(SXSS_WORKBOOK_CLASS);
 				return new PoiExcel(workbook, new FileOutputStream(file), true);
 			}
 			return create(new FileOutputStream(file), version, true);
@@ -108,7 +109,7 @@ public class PoiExcelOperations extends AbstractExcelReader implements ExcelOper
 		if (excelVersionTouse == ExcelVersion.XLS) {
 			workbook = WorkbookFactory.create(false);
 		} else {
-			workbook = SXSS_WORKBOOK_CLASS != null ? Sys.env.getInstance(SXSS_WORKBOOK_CLASS)
+			workbook = SXSS_WORKBOOK_CLASS != null ? ReflectionUtils.newInstance(SXSS_WORKBOOK_CLASS)
 					: WorkbookFactory.create(true);
 		}
 		return new PoiExcel(workbook, outputStream, closeStream);

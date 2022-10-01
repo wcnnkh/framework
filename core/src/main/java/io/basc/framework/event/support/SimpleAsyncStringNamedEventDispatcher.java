@@ -9,7 +9,6 @@ public class SimpleAsyncStringNamedEventDispatcher<T extends Event> extends Simp
 	private Executor executor;
 
 	public SimpleAsyncStringNamedEventDispatcher() {
-		super(true);
 		TaskQueue taskQueue = new TaskQueue();
 		taskQueue.setName(getClass().getName());
 		taskQueue.start();
@@ -17,7 +16,6 @@ public class SimpleAsyncStringNamedEventDispatcher<T extends Event> extends Simp
 	}
 
 	public SimpleAsyncStringNamedEventDispatcher(Executor executor) {
-		super(true);
 		this.executor = executor;
 	}
 

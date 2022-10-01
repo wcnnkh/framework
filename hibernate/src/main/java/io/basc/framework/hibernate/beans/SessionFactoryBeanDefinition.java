@@ -1,27 +1,27 @@
 package io.basc.framework.hibernate.beans;
 
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.support.DefaultBeanDefinition;
-
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
-public class SessionFactoryBeanDefinition extends DefaultBeanDefinition {
+import io.basc.framework.env.Environment;
+import io.basc.framework.env.EnvironmentBeanDefinition;
+import io.basc.framework.factory.BeansException;
 
-	public SessionFactoryBeanDefinition(ConfigurableBeanFactory beanFactory) {
-		super(beanFactory, SessionFactory.class);
+public class SessionFactoryBeanDefinition extends EnvironmentBeanDefinition {
+
+	public SessionFactoryBeanDefinition(Environment environment) {
+		super(environment, SessionFactory.class);
 	}
 
 	public boolean isInstance() {
-		return beanFactory.isInstance(Configuration.class);
+		return getBeanFactory().isInstance(Configuration.class);
 	}
 
 	public Object create() throws BeansException {
-		Configuration configuration = beanFactory.getInstance(Configuration.class);
-		if (beanFactory.isInstance(ServiceRegistry.class)) {
-			return configuration.buildSessionFactory(beanFactory.getInstance(ServiceRegistry.class));
+		Configuration configuration = getBeanFactory().getInstance(Configuration.class);
+		if (getBeanFactory().isInstance(ServiceRegistry.class)) {
+			return configuration.buildSessionFactory(getBeanFactory().getInstance(ServiceRegistry.class));
 		} else {
 			return configuration.buildSessionFactory();
 		}

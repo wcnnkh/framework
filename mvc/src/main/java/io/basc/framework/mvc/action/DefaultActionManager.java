@@ -21,10 +21,6 @@ public class DefaultActionManager extends SimpleEventDispatcher<ObjectEvent<Acti
 	private HttpPatternMatcher<Action> registry = new HttpPatternMatcher<Action>();
 	private Map<Method, Action> actionMap = new HashMap<Method, Action>();
 
-	public DefaultActionManager() {
-		super(true);
-	}
-
 	public Iterator<Action> iterator() {
 		synchronized (actionMap) {
 			return actionMap.values().iterator();

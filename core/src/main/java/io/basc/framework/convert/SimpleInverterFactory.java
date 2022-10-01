@@ -26,4 +26,32 @@ public class SimpleInverterFactory<R, E extends Throwable> extends SimpleConvert
 		Assert.requiredArgument(inverter != null, "inverter");
 		map.put(type, inverter);
 	}
+
+	@Override
+	public final R invert(Object source, TypeDescriptor targetType) throws E {
+		return InverterFactory.super.invert(source, targetType);
+	}
+
+	@Override
+	public final <S extends R> S invert(Object source, Class<? extends Object> sourceType,
+			Class<? extends S> targetType) throws E {
+		return InverterFactory.super.invert(source, sourceType, targetType);
+	}
+
+	@Override
+	public final <S extends R> S invert(Object source, Class<? extends Object> sourceType, TypeDescriptor targetType)
+			throws E {
+		return InverterFactory.super.invert(source, sourceType, targetType);
+	}
+
+	@Override
+	public final <S extends R> S invert(Object source, Class<? extends S> targetType) throws E {
+		return InverterFactory.super.invert(source, targetType);
+	}
+
+	@Override
+	public final <S extends R> S invert(Object source, TypeDescriptor sourceType, Class<? extends S> targetType)
+			throws E {
+		return InverterFactory.super.invert(source, sourceType, targetType);
+	}
 }

@@ -1,22 +1,22 @@
 package io.basc.framework.factory.support;
 
-import io.basc.framework.factory.NoArgsInstanceFactory;
+import java.util.Arrays;
+import java.util.Iterator;
+
+import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.util.Assert;
 import io.basc.framework.value.Value;
 import io.basc.framework.value.ValueFactory;
 
-import java.util.Arrays;
-import java.util.Iterator;
-
 public class ConfigServiceLoader<S> implements ServiceLoader<S> {
 	private final Class<S> serviceClass;
 	private final ValueFactory<String> configFactory;
-	private final NoArgsInstanceFactory instanceFactory;
+	private final InstanceFactory instanceFactory;
 	private volatile String[] names;
 
 	public ConfigServiceLoader(Class<S> serviceClass, ValueFactory<String> configFactory,
-			NoArgsInstanceFactory instanceFactory) {
+			InstanceFactory instanceFactory) {
 		Assert.requiredArgument(serviceClass != null, "serviceClass");
 		Assert.requiredArgument(configFactory != null, "configFactory");
 		Assert.requiredArgument(instanceFactory != null, "instanceFactory");

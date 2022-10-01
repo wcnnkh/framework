@@ -14,7 +14,9 @@ import java.util.stream.Stream;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.XUtils;
 import io.basc.framework.util.page.Pageables;
+import io.basc.framework.util.page.PageablesIterator;
 import io.basc.framework.util.stream.Processor;
 import io.basc.framework.util.stream.StreamProcessorSupport;
 
@@ -48,7 +50,7 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	private Supplier<? extends Stream<T>> streamSupplier;
 
 	@Nullable
-	private Supplier<? extends Stream<T>> withStreamSupplier;
+	private Stream<T> withStream;
 	@Nullable
 	private Members<T> with;
 
@@ -66,7 +68,7 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 		this.sourceClass = members.sourceClass;
 		this.processor = members.processor;
 		this.streamSupplier = members.streamSupplier;
-		this.withStreamSupplier = members.withStreamSupplier;
+		this.withStream = members.withStream;
 		this.with = members.with;
 		this.members = members.members == null ? null : new ArrayList<T>(members.members);
 		this.withMethod = members.withMethod;
@@ -101,8 +103,8 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 			clone.streamSupplier = this.streamSupplier;
 		}
 
-		if (this.withStreamSupplier != null) {
-			clone.withStreamSupplier = this.withStreamSupplier;
+		if (this.withStream != null) {
+			clone.withStream = this.withStream;
 		}
 
 		if (this.members != null) {
@@ -200,7 +202,7 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	public final Class<?> getCursorId() {
 		return sourceClass;
 	}
-	
+
 	@Override
 	public Iterator<T> iterator() {
 		return stream().iterator();
@@ -270,6 +272,10 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 		if (this.members != null) {
 			members.members = processor.apply(this.members.stream()).collect(Collectors.toList());
 		}
+
+		if (this.withStream != null) {
+			members.withStream = processor.apply(this.withStream);
+		}
 		return members;
 	}
 
@@ -278,6 +284,11 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 		return with;
 	}
 
+	@Override
+	public Stream<? extends Members<T>> pages() {
+		return XUtils.stream(new PageablesIterator<>(this, (e) -> e.next()));
+	}
+	
 	/**
 	 * 直接设置当前的members
 	 * 
@@ -316,18 +327,17 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 			stream = streamSupplier.get();
 		}
 
-		Stream<T> withStream = this.withStreamSupplier == null ? null : this.withStreamSupplier.get();
 		if (stream == null) {
-			if (withStream == null) {
+			if (this.withStream == null) {
 				return StreamProcessorSupport.emptyStream();
 			} else {
-				return withStream;
+				return this.withStream;
 			}
 		} else {
-			if (withStream == null) {
+			if (this.withStream == null) {
 				return stream;
 			} else {
-				return Stream.concat(stream, withStream);
+				return Stream.concat(stream, this.withStream);
 			}
 		}
 	}
@@ -435,34 +445,22 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 		return members;
 	}
 
-	public Members<T> withStream(Supplier<? extends Stream<T>> streamSupplier) {
-		if (streamSupplier == null) {
+	public Members<T> withStream(Stream<T> stream) {
+		if (stream == null) {
 			return this;
 		}
 
-		Members<T> members = clone();
-		if (members.withStreamSupplier == null) {
-			members.withStreamSupplier = streamSupplier;
-		} else {
-			members.withStreamSupplier = () -> {
-				Stream<T> stream = members.withStreamSupplier.get();
-				Stream<T> withStream = streamSupplier.get();
-				if (stream == null) {
-					if (withStream == null) {
-						return StreamProcessorSupport.emptyStream();
-					} else {
-						return withStream;
-					}
-				} else {
-					if (withStream == null) {
-						return stream;
-					} else {
-						return Stream.concat(stream, withStream);
-					}
-				}
-			};
+		if (members != null) {
+			this.members = Stream.concat(this.members.stream(), stream).collect(Collectors.toList());
+			return this;
 		}
-		return members;
+
+		if (this.withStream == null) {
+			this.withStream = stream;
+		} else {
+			this.withStream = Stream.concat(this.withStream, stream);
+		}
+		return this;
 	}
 
 	/**
@@ -598,7 +596,7 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 							targetWith.members = item.members;
 							targetWith.processor = item.processor;
 							targetWith.streamSupplier = item.streamSupplier;
-							targetWith.withStreamSupplier = item.withStreamSupplier;
+							targetWith.withStream = item.withStream;
 						}
 						break;
 					}

@@ -10,10 +10,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>beans</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.basc.framework</groupId>
 			<artifactId>messageing</artifactId>
 		</dependency>
 		<dependency>

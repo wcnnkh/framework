@@ -10,14 +10,17 @@ public interface InverterFactory<T, E extends Throwable>
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default <R extends T> R invert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
+	default T invert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
 		if (canDirectlyConvert(sourceType, targetType)) {
-			return (R) source;
+			return (T) source;
 		}
 
 		Inverter<Object, T, E> inverter = getInverter(targetType.getType());
 		if (inverter == null) {
-			R target = (R) newInstance(targetType);
+			T target = (T) newInstance(targetType);
+			if (target == null) {
+				return null;
+			}
 			reverseTransform(source, sourceType, target, targetType);
 			return target;
 		}

@@ -15,11 +15,6 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>data</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>beans</artifactId>
-			<scope>provided</scope>
-		</dependency>
 		
 		<dependency>
 			<groupId>io.basc.framework</groupId>

@@ -16,6 +16,8 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.LinkedMultiValueMap;
 import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.XUtils;
+import io.basc.framework.util.page.PageablesIterator;
 
 /**
  * 结构
@@ -28,7 +30,7 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 	protected String name;
 	protected Collection<String> aliasNames;
 	private T parent;
-	private int nameNestingDepth;
+	private int nameNestingDepth = -1;
 	private String nameNestingConnector = "_";
 
 	/**
@@ -91,9 +93,13 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 	@Override
 	protected Structure<T> decorate(Members<T> members) {
 		Structure<T> structure = new Structure<T>(members);
-		structure.parent = this.parent;
-		structure.aliasNames = this.aliasNames;
-		structure.parent = this.parent;
+		if (!(members instanceof Structure)) {
+			structure.parent = this.parent;
+			structure.aliasNames = this.aliasNames;
+			structure.parent = this.parent;
+			structure.nameNestingConnector = this.nameNestingConnector;
+			structure.nameNestingDepth = this.nameNestingDepth;
+		}
 		return structure;
 	}
 
@@ -122,6 +128,11 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 		Structure<T> structure = decorate(members);
 		structure.parent = parent;
 		return structure;
+	}
+
+	@Override
+	public Stream<? extends Structure<T>> pages() {
+		return XUtils.stream(new PageablesIterator<>(this, (e) -> e.next()));
 	}
 
 	public Structure<T> setNameNestingDepth(int nameNestingDepth) {

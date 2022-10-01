@@ -1,11 +1,5 @@
 package io.basc.framework.dubbo.beans;
 
-import io.basc.framework.boot.ApplicationPostProcessor;
-import io.basc.framework.boot.ConfigurableApplication;
-import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.dubbo.DubboConfigure;
-import io.basc.framework.dubbo.DubboServiceConfigure;
-
 import java.util.List;
 
 import org.apache.dubbo.config.ApplicationConfig;
@@ -21,6 +15,12 @@ import org.apache.dubbo.config.ServiceConfig;
 import org.apache.dubbo.config.SslConfig;
 import org.apache.dubbo.rpc.model.ApplicationModel;
 
+import io.basc.framework.boot.ApplicationPostProcessor;
+import io.basc.framework.boot.ConfigurableApplication;
+import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.dubbo.DubboConfigure;
+import io.basc.framework.dubbo.DubboServiceConfigure;
+
 /**
  * 暴露dubbo服务
  * 
@@ -31,7 +31,7 @@ import org.apache.dubbo.rpc.model.ApplicationModel;
 public class XmlDubboInitializer implements ApplicationPostProcessor {
 
 	@Override
-	public void postProcessApplication(ConfigurableApplication application) throws Throwable {
+	public void postProcessApplication(ConfigurableApplication application) {
 		if (application.isInstance(DubboConfigure.class)) {
 			DubboConfigure configure = application.getInstance(DubboConfigure.class);
 			List<RegistryConfig> registryConfigs = configure.getRegistryConfigList();
@@ -78,7 +78,8 @@ public class XmlDubboInitializer implements ApplicationPostProcessor {
 		if (application.isInstance(DubboServiceConfigure.class)) {
 			DubboServiceConfigure configure = application.getInstance(DubboServiceConfigure.class);
 			for (ServiceConfig<?> config : configure.getServiceConfigList()) {
-				//TODO 按理说不用设置的{@link org.apache.dubbo.config.AbstractMethodConfig}，但在升级到3.0.5时出现了异常，还未找到原因(可能是classloader的问题)
+				// TODO 按理说不用设置的{@link
+				// org.apache.dubbo.config.AbstractMethodConfig}，但在升级到3.0.5时出现了异常，还未找到原因(可能是classloader的问题)
 				config.setScopeModel(ApplicationModel.defaultModel().getDefaultModule());
 				config.export();
 			}

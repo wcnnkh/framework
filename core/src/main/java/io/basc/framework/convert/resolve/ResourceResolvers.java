@@ -39,13 +39,13 @@ public class ResourceResolvers extends ConfigurableServices<ResourceResolver> im
 		this.conversionService = conversionService;
 		this.charset = charset;
 	}
-
+	
 	@Override
-	protected void aware(ResourceResolver service) {
+	public void accept(ResourceResolver service) {
 		if (service instanceof ConversionServiceAware) {
 			((ConversionServiceAware) service).setConversionService(getConversionService());
 		}
-		super.aware(service);
+		super.accept(service);
 	}
 
 	@Override

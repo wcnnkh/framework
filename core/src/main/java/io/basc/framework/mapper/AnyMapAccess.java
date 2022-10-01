@@ -8,8 +8,6 @@ import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConvertibleEnumeration;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.mapper.ObjectAccess;
-import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.CollectionFactory;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })

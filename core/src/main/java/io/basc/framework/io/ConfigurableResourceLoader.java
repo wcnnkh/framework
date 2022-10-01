@@ -1,7 +1,10 @@
 package io.basc.framework.io;
 
-public interface ConfigurableResourceLoader extends ResourceLoader {
-	void addProtocolResolver(ProtocolResolver resolver);
+import io.basc.framework.factory.ConfigurableServices;
 
-	void addResourceLoader(ResourceLoader resourceLoader);
+public interface ConfigurableResourceLoader extends ResourceLoader {
+
+	ConfigurableServices<ProtocolResolver> getProtocolResolvers();
+
+	ConfigurableServices<ResourceLoader> getResourceLoaders();
 }

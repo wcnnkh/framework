@@ -1,19 +1,20 @@
 package io.basc.framework.boot.servlet.support;
 
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.boot.Application;
-import io.basc.framework.boot.servlet.ServletApplicationStartup;
-import io.basc.framework.env.Sys;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 
+import io.basc.framework.boot.Application;
+import io.basc.framework.boot.servlet.ServletApplicationStartup;
+import io.basc.framework.env.Sys;
+import io.basc.framework.factory.InstanceFactory;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.logger.Logger;
+
 public abstract class ServletContextUtils {
-	private static final ServletApplicationStartup SERVLET_APPLICATION_STARTUP = Sys.env
-			.getServiceLoader(ServletApplicationStartup.class, ServletApplicationStartup.class.getPackage().getName() + ".support.Servlet3ApplicationStartup",
-					ServletApplicationStartup.class.getPackage().getName() + ".support.DefaultServletApplicationStartup")
+	private static final ServletApplicationStartup SERVLET_APPLICATION_STARTUP = Sys.getEnv().getServiceLoader(
+			ServletApplicationStartup.class,
+			ServletApplicationStartup.class.getPackage().getName() + ".support.Servlet3ApplicationStartup",
+			ServletApplicationStartup.class.getPackage().getName() + ".support.DefaultServletApplicationStartup")
 			.first();
 
 	public static ServletApplicationStartup getServletApplicationStartup() {
@@ -52,9 +53,9 @@ public abstract class ServletContextUtils {
 		return servletContext.getRealPath("/");
 	}
 
-	public static Servlet createServlet(BeanFactory beanFactory) {
-		if (beanFactory.isInstance(Servlet.class)) {
-			return beanFactory.getInstance(Servlet.class);
+	public static Servlet createServlet(InstanceFactory instanceFactory) {
+		if (instanceFactory.isInstance(Servlet.class)) {
+			return instanceFactory.getInstance(Servlet.class);
 		}
 		return new DispatcherServlet();
 	}

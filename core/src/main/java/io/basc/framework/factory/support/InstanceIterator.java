@@ -1,17 +1,17 @@
 package io.basc.framework.factory.support;
 
-import io.basc.framework.factory.NoArgsInstanceFactory;
-import io.basc.framework.util.AbstractIterator;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import io.basc.framework.factory.InstanceFactory;
+import io.basc.framework.util.AbstractIterator;
+
 public class InstanceIterator<E> extends AbstractIterator<E> {
-	private final NoArgsInstanceFactory instanceFactory;
+	private final InstanceFactory instanceFactory;
 	private final Iterator<String> iterator;
 	private String name;
 
-	public InstanceIterator(NoArgsInstanceFactory instanceFactory, Iterator<String> iterator) {
+	public InstanceIterator(InstanceFactory instanceFactory, Iterator<String> iterator) {
 		this.instanceFactory = instanceFactory;
 		this.iterator = iterator;
 	}
@@ -32,12 +32,13 @@ public class InstanceIterator<E> extends AbstractIterator<E> {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	public E next() {
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
 
-		E instance = instanceFactory.getInstance(name);
+		E instance = (E) instanceFactory.getInstance(name);
 		name = null;
 		return instance;
 	}

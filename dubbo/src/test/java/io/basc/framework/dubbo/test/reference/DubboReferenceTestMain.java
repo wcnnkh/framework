@@ -13,7 +13,7 @@ public class DubboReferenceTestMain {
 	
 	public static void main(String[] args) throws InterruptedException, ExecutionException {
 		Application application = MainApplication
-				.run(DubboReferenceTestMain.class, new String[] { "--io.basc.framework.beans.xml=reference.xml" })
+				.run(DubboReferenceTestMain.class, new String[] { "--io.basc.framework.beans.configuration=reference.xml" })
 				.get();
 		HelloService helloService = application.getInstance(HelloService.class);
 		logger.info(Thread.currentThread().getName());

@@ -3,24 +3,24 @@ package io.basc.framework.netflix.eureka.server.beans;
 import com.netflix.eureka.EurekaServerConfig;
 import com.netflix.eureka.resources.ServerCodecs;
 
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.support.DefaultBeanDefinition;
+import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.factory.BeansException;
+import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.netflix.eureka.server.CloudServerCodecs;
 
-public class ServerCodecsDefinition extends DefaultBeanDefinition {
+public class ServerCodecsDefinition extends FactoryBeanDefinition {
 
-	public ServerCodecsDefinition(ConfigurableBeanFactory beanFactory) {
+	public ServerCodecsDefinition(BeanFactory beanFactory) {
 		super(beanFactory, ServerCodecs.class);
 	}
 
 	@Override
 	public boolean isInstance() {
-		return beanFactory.isInstance(EurekaServerConfig.class);
+		return getBeanFactory().isInstance(EurekaServerConfig.class);
 	}
 
 	@Override
 	public Object create() throws BeansException {
-		return new CloudServerCodecs(beanFactory.getInstance(EurekaServerConfig.class));
+		return new CloudServerCodecs(getBeanFactory().getInstance(EurekaServerConfig.class));
 	}
 }

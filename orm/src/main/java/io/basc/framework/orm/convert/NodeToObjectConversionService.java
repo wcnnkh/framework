@@ -17,18 +17,17 @@ import io.basc.framework.value.Value;
 
 class NodeToObjectConversionService extends AbstractConversionService implements ConditionalConversionService {
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <R> R convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;
 		}
 
 		if (Document.class.isAssignableFrom(sourceType.getType())) {
 			Node node = ((Document) source).getDocumentElement();
-			return (R) convert(node, TypeDescriptor.valueOf(NodeList.class), targetType);
+			return convert(node, TypeDescriptor.valueOf(NodeList.class), targetType);
 		} else {
-			return (R) convert((Node) source, sourceType, targetType);
+			return convert((Node) source, sourceType, targetType);
 		}
 	}
 

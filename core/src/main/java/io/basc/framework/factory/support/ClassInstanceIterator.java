@@ -1,17 +1,17 @@
 package io.basc.framework.factory.support;
 
-import io.basc.framework.factory.NoArgsInstanceFactory;
-import io.basc.framework.util.AbstractIterator;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import io.basc.framework.factory.InstanceFactory;
+import io.basc.framework.util.AbstractIterator;
+
 public class ClassInstanceIterator<E> extends AbstractIterator<E> {
 	private final Iterator<Class<?>> iterator;
-	private final NoArgsInstanceFactory instanceFactory;
+	private final InstanceFactory instanceFactory;
 	private Class<?> service;
 
-	public ClassInstanceIterator(NoArgsInstanceFactory instanceFactory, Iterator<Class<?>> iterator) {
+	public ClassInstanceIterator(InstanceFactory instanceFactory, Iterator<Class<?>> iterator) {
 		this.instanceFactory = instanceFactory;
 		this.iterator = iterator;
 	}

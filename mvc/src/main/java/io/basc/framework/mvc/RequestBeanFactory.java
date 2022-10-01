@@ -3,20 +3,17 @@ package io.basc.framework.mvc;
 import java.io.IOException;
 import java.util.Map;
 
-import io.basc.framework.beans.BeanDefinition;
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.beans.BeanUtils;
-import io.basc.framework.beans.SingletonBeanRegistry;
-import io.basc.framework.beans.annotation.ConfigurationProperties;
-import io.basc.framework.beans.support.DefaultSingletonBeanRegistry;
-import io.basc.framework.context.Destroy;
+import io.basc.framework.context.Context;
+import io.basc.framework.context.support.ContextConfigurator;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptors;
-import io.basc.framework.core.parameter.ParameterFactory;
-import io.basc.framework.factory.NoArgsInstanceFactory;
+import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.factory.Destroy;
+import io.basc.framework.factory.InstanceFactory;
+import io.basc.framework.factory.ParameterFactory;
+import io.basc.framework.factory.support.DefaultSingletonRegistry;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
 import io.basc.framework.util.Accept;
 import io.basc.framework.util.DefaultStatus;
 import io.basc.framework.util.Status;
@@ -26,65 +23,59 @@ import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessagelConverterException;
 import io.basc.framework.web.message.annotation.RequestBody;
 
-public class RequestBeanFactory extends RequestParameterFactory
-		implements NoArgsInstanceFactory, Destroy, ParameterFactory {
+public class RequestBeanFactory extends RequestParameterFactory implements InstanceFactory, Destroy, ParameterFactory {
 	private static final TypeDescriptor REQUEST_BODY_TYPE = TypeDescriptor.map(Map.class, String.class, Object.class);
-	private final BeanFactory beanFactory;
-	private final SingletonBeanRegistry singletonBeanRegistry;
+	private final Context context;
+	private final DefaultSingletonRegistry singletonRegistry;
 	private final ServerHttpRequest request;
 
-	public RequestBeanFactory(ServerHttpRequest request, WebMessageConverter messageConverter,
-			BeanFactory beanFactory) {
+	public RequestBeanFactory(ServerHttpRequest request, WebMessageConverter messageConverter, Context context) {
 		super(request, messageConverter);
-		this.beanFactory = beanFactory;
-		this.singletonBeanRegistry = new DefaultSingletonBeanRegistry(beanFactory);
+		this.context = context;
+		this.singletonRegistry = new DefaultSingletonRegistry();
+		this.singletonRegistry.setParentBeanDefinitionFactory(context);
+		this.singletonRegistry.getBeanResolver().setDefaultResolver(context.getBeanResolver());
 		this.request = request;
 	}
 
-	public BeanFactory getBeanFactory() {
-		return beanFactory;
-	}
-
-	public <T> T getInstance(Class<T> clazz) {
-		return getInstance(clazz.getName());
+	@SuppressWarnings("unchecked")
+	public <T> T getInstance(Class<? extends T> clazz) {
+		return (T) getInstance(clazz.getName());
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getInstance(String name) {
-		Object instance = singletonBeanRegistry.getSingleton(name);
+	public Object getInstance(String name) {
+		Object instance = singletonRegistry.getSingleton(name);
 		if (instance != null) {
-			return (T) instance;
+			return instance;
 		}
 
-		final BeanDefinition beanDefinition = beanFactory.getDefinition(name);
+		final BeanDefinition beanDefinition = singletonRegistry.getDefinition(name);
 		if (beanDefinition == null) {
 			return null;
 		}
 
-		instance = singletonBeanRegistry.getSingleton(beanDefinition.getId());
+		instance = singletonRegistry.getSingleton(beanDefinition.getId());
 		if (instance != null) {
-			return (T) instance;
+			return instance;
 		}
 
 		Status<Object> result = null;
 		for (final ParameterDescriptors parameterDescriptors : beanDefinition) {
 			if (isAccept(parameterDescriptors)) {
 				if (beanDefinition.isSingleton()) {
-					result = singletonBeanRegistry.getSingleton(beanDefinition.getId(), () -> {
+					result = singletonRegistry.getSingleton(beanDefinition.getId(), () -> {
 						return beanDefinition.create(parameterDescriptors.getTypes(),
 								getParameters(parameterDescriptors));
-					});
+					}, false);
 				} else {
 					result = new DefaultStatus<Object>(true, beanDefinition.create(parameterDescriptors.getTypes(),
 							getParameters(parameterDescriptors)));
 				}
 
 				if (result != null && result.isActive()) {
-					DefaultObjectRelationalMapper mapper = BeanUtils.createMapper(beanFactory.getEnvironment(),
-							beanDefinition.getAnnotatedElement().getAnnotation(ConfigurationProperties.class));
-					mapper.configure(beanFactory);
-					mapper.setTransformSuperclass(true);
-					mapper.addFilter(new Accept<Field>() {
+					ContextConfigurator beanConfigurator = new ContextConfigurator(context);
+					beanConfigurator.getContext().addFilter(new Accept<Field>() {
 
 						@Override
 						public boolean accept(Field field) {
@@ -104,9 +95,9 @@ public class RequestBeanFactory extends RequestParameterFactory
 						throw new WebMessagelConverterException(request.toString());
 					}
 
-					Map<String, Object> parameterMap = (Map<String, Object>) beanFactory.getEnvironment()
-							.getConversionService().convert(body, TypeDescriptor.forObject(body), REQUEST_BODY_TYPE);
-					mapper.transform(parameterMap, result.get());
+					Map<String, Object> parameterMap = (Map<String, Object>) context.getConversionService()
+							.convert(body, TypeDescriptor.forObject(body), REQUEST_BODY_TYPE);
+					beanConfigurator.transform(parameterMap, result.get());
 				}
 				break;
 			}
@@ -115,25 +106,25 @@ public class RequestBeanFactory extends RequestParameterFactory
 		if (result != null) {
 			Object obj = result.get();
 			if (result.isActive()) {
-				beanDefinition.dependence(obj);
-				beanDefinition.init(obj);
+				singletonRegistry.dependence(obj, beanDefinition);
+				singletonRegistry.init(obj, beanDefinition);
 			}
-			return (T) obj;
+			return obj;
 		}
 		return null;
 	}
 
 	public boolean isInstance(String name) {
-		if (singletonBeanRegistry.containsSingleton(name)) {
+		if (singletonRegistry.containsSingleton(name)) {
 			return true;
 		}
 
-		BeanDefinition beanDefinition = beanFactory.getDefinition(name);
+		BeanDefinition beanDefinition = singletonRegistry.getDefinition(name);
 		if (beanDefinition == null) {
 			return false;
 		}
 
-		if (singletonBeanRegistry.containsSingleton(beanDefinition.getId())) {
+		if (singletonRegistry.containsSingleton(beanDefinition.getId())) {
 			return true;
 		}
 
@@ -153,12 +144,13 @@ public class RequestBeanFactory extends RequestParameterFactory
 		return isInstance(clazz.getName());
 	}
 
+	@Override
 	public ClassLoader getClassLoader() {
-		return beanFactory.getClassLoader();
+		return context.getClassLoader();
 	}
 
 	public void destroy() {
-		singletonBeanRegistry.destroyAll();
+		singletonRegistry.destroy();
 	}
 
 	@Override

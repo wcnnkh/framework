@@ -21,7 +21,6 @@ class ObjectToCollectionConversionService extends AbstractConversionService impl
 		return Collections.singleton(new ConvertiblePair(Object.class, Collection.class));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Nullable
 	public Object convert(@Nullable Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {

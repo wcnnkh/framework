@@ -137,7 +137,7 @@ public class DefaultGeneratorProcessor implements GeneratorProcessor {
 				field.getSetter().set(entity, sequenceId.getId());
 			} else if (NumberUtils.isNumber(field.getSetter().getType())) {
 				Number number = generateNumber(entityClass, entity, field);
-				field.getSetter().set(entity, number, Sys.env.getConversionService());
+				field.getSetter().set(entity, number, Sys.getEnv().getConversionService());
 			} else {
 				logger.warn("not generator: " + field);
 			}

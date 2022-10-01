@@ -1,30 +1,35 @@
 package io.basc.framework.rpc.http.beans;
 
-import io.basc.framework.beans.BeanDefinition;
-import io.basc.framework.beans.BeanDefinitionLoader;
-import io.basc.framework.beans.BeanDefinitionLoaderChain;
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.support.DefaultBeanDefinition;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
+import io.basc.framework.env.Environment;
+import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.factory.support.BeanDefinitionLoader;
+import io.basc.framework.factory.support.BeanDefinitionLoaderChain;
+import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.rpc.http.DefaultHttpRemoteResolvers;
 import io.basc.framework.rpc.http.HttpRemoteCallableFactory;
 import io.basc.framework.rpc.http.HttpRemoteResolver;
 import io.basc.framework.rpc.support.RemoteCallableBeanDefinition;
+import io.basc.framework.util.ClassUtils;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class HttpRemoteBeanLoader implements BeanDefinitionLoader {
 
 	@Override
-	public BeanDefinition load(ConfigurableBeanFactory beanFactory, Class<?> sourceClass,
-			BeanDefinitionLoaderChain loaderChain) {
+	public BeanDefinition load(BeanFactory beanFactory, String name, BeanDefinitionLoaderChain loaderChain) {
+		Class<?> sourceClass = ClassUtils.getClass(name, beanFactory.getClassLoader());
+		if (sourceClass == null) {
+			return null;
+		}
+
 		if (sourceClass == HttpRemoteResolver.class) {
-			return DefaultBeanDefinition.create(beanFactory, DefaultHttpRemoteResolvers.class,
-					() -> new DefaultHttpRemoteResolvers());
+			return new FactoryBeanDefinition(beanFactory, DefaultHttpRemoteResolvers.class);
 		}
 
 		if (sourceClass == HttpRemoteCallableFactory.class) {
-			return new HttpRemoteCallableFactoryDefinition(beanFactory);
+			return new HttpRemoteCallableFactoryDefinition(beanFactory.getInstance(Environment.class));
 		}
 
 		if (beanFactory.isInstance(HttpRemoteResolver.class)) {
@@ -34,7 +39,7 @@ public class HttpRemoteBeanLoader implements BeanDefinitionLoader {
 						() -> beanFactory.getInstance(HttpRemoteCallableFactory.class), sourceClass);
 			}
 		}
-		return loaderChain.load(beanFactory, sourceClass);
+		return loaderChain.load(beanFactory, name);
 	}
 
 }

@@ -1,27 +1,27 @@
 package io.basc.framework.hikari.beans;
 
-import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.support.DefaultBeanDefinition;
-import io.basc.framework.factory.InstanceException;
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-public class HikariDataSourceDefinition extends DefaultBeanDefinition {
+import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.factory.BeansException;
+import io.basc.framework.factory.InstanceException;
+import io.basc.framework.factory.support.FactoryBeanDefinition;
 
-	public HikariDataSourceDefinition(ConfigurableBeanFactory beanFactory) {
+public class HikariDataSourceDefinition extends FactoryBeanDefinition {
+
+	public HikariDataSourceDefinition(BeanFactory beanFactory) {
 		super(beanFactory, HikariDataSource.class);
 	}
 
 	@Override
 	public boolean isInstance() {
-		return beanFactory.isInstance(HikariConfig.class);
+		return getBeanFactory().isInstance(HikariConfig.class);
 	}
 
 	@Override
 	public Object create() throws InstanceException {
-		HikariConfig config = beanFactory.getInstance(HikariConfig.class);
+		HikariConfig config = getBeanFactory().getInstance(HikariConfig.class);
 		return new HikariDataSource(config);
 	}
 

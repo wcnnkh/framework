@@ -5,15 +5,24 @@ import java.util.Enumeration;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import io.basc.framework.convert.Converter;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.Accept;
 
 public class NodeListAccess<E extends Throwable> implements ObjectAccess<E> {
 	private final NodeList nodeList;
+	private final @Nullable Converter<? super Object, ? super Object, ? extends RuntimeException> converter;
 
 	public NodeListAccess(NodeList nodeList) {
+		this(nodeList, null);
+	}
+
+	public NodeListAccess(NodeList nodeList,
+			@Nullable Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
 		this.nodeList = nodeList;
+		this.converter = converter;
 	}
 
 	@Override
@@ -29,7 +38,16 @@ public class NodeListAccess<E extends Throwable> implements ObjectAccess<E> {
 				return e.getNodeName().equals(name);
 			}
 		});
-		return node == null ? null : new Parameter(name, node);
+
+		if (node == null) {
+			return null;
+		}
+
+		Parameter parameter = new Parameter(name, node);
+		if (converter != null) {
+			parameter.setConverter(converter);
+		}
+		return parameter;
 	}
 
 	@Override

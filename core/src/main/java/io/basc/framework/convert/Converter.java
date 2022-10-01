@@ -23,18 +23,20 @@ public interface Converter<S, T, E extends Throwable> extends ConverterConfigura
 		return convert(source, TypeDescriptor.valueOf(sourceType), targetType);
 	}
 
+	@SuppressWarnings("unchecked")
 	default <R extends T> R convert(@Nullable S source, @Nullable Class<? extends S> sourceType,
 			TypeDescriptor targetType) throws E {
-		return convert(source, TypeDescriptor.valueOf(sourceType), targetType);
+		return (R) convert(source, TypeDescriptor.valueOf(sourceType), targetType);
 	}
 
-	default <R extends T> R convert(@Nullable S source, TypeDescriptor targetType) throws E {
+	default T convert(@Nullable S source, TypeDescriptor targetType) throws E {
 		return convert(source, TypeDescriptor.forObject(source), targetType);
 	}
 
+	@SuppressWarnings("unchecked")
 	default <R extends T> R convert(@Nullable S source, @Nullable TypeDescriptor sourceType,
 			Class<? extends R> targetType) throws E {
-		return convert(source, sourceType, TypeDescriptor.valueOf(targetType));
+		return (R) convert(source, sourceType, TypeDescriptor.valueOf(targetType));
 	}
 
 	/*
@@ -58,6 +60,5 @@ public interface Converter<S, T, E extends Throwable> extends ConverterConfigura
 	 * @throws IllegalArgumentException if targetType is {@code null}, or {@code
 	 * sourceType} is {@code null} but source is not {@code null}
 	 */
-	<R extends T> R convert(@Nullable S source, @Nullable TypeDescriptor sourceType, TypeDescriptor targetType)
-			throws E;
+	T convert(@Nullable S source, @Nullable TypeDescriptor sourceType, TypeDescriptor targetType) throws E;
 }

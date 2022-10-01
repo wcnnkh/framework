@@ -1,17 +1,19 @@
 package io.basc.framework.tcc;
 
+import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
+
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.MethodInterceptorAccept;
-import io.basc.framework.beans.BeanUtils;
-import io.basc.framework.beans.RuntimeBean;
-import io.basc.framework.beans.annotation.Autowired;
 import io.basc.framework.consistency.CompensateRegistry;
 import io.basc.framework.consistency.Compensator;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.ioc.annotation.Autowired;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.core.reflect.MethodInvoker;
+import io.basc.framework.factory.support.RuntimeBean;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.tcc.annotation.Tcc;
 import io.basc.framework.tcc.annotation.TccStage;
@@ -20,9 +22,6 @@ import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
-
-import java.lang.reflect.Method;
-import java.util.LinkedHashMap;
 
 @Provider(order = Ordered.HIGHEST_PRECEDENCE)
 public class TccService implements MethodInterceptor, MethodInterceptorAccept {
@@ -95,7 +94,7 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 			throw new NotSupportedException("not exist compensate registry");
 		}
 
-		RuntimeBean runtimeBean = BeanUtils.getRuntimeBean(invoker.getInstance());
+		RuntimeBean runtimeBean = RuntimeBean.getRuntimeBean(invoker.getInstance());
 		if (runtimeBean == null) {
 			throw new NotSupportedException("not exist transaction");
 		}

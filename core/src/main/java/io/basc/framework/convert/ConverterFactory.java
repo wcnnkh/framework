@@ -11,18 +11,20 @@ public interface ConverterFactory<S, E extends Throwable> extends TransformerFac
 
 	<T> void registerConverter(Class<T> type, Converter<S, ? extends T, ? extends E> converter);
 
-	@SuppressWarnings("unchecked")
 	@Override
-	default <R> R convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
+	default Object convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType) throws E {
 		if (canDirectlyConvert(sourceType, targetType)) {
-			return (R) source;
+			return source;
 		}
 
 		Converter<S, Object, E> converter = getConverter(targetType.getType());
 		if (converter == null) {
 			Object target = newInstance(targetType);
+			if (target == null) {
+				return null;
+			}
 			transform(source, sourceType, target, targetType);
-			return (R) target;
+			return target;
 		}
 		return converter.convert(source, sourceType, targetType);
 	}

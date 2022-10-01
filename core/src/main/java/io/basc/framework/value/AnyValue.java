@@ -2,12 +2,16 @@ package io.basc.framework.value;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import io.basc.framework.convert.ConversionException;
+import io.basc.framework.convert.ConversionFailedException;
+import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
@@ -18,7 +22,7 @@ import io.basc.framework.util.StaticSupplier;
 
 public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
-	private transient Converter<? super Object, ? extends Object, ? extends RuntimeException> converter;
+	private transient Converter<? super Object, ? super Object, ? extends RuntimeException> converter;
 	private Supplier<? extends Object> valueSupplier;
 	private TypeDescriptor typeDescriptor;
 
@@ -27,7 +31,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public AnyValue(Object value,
-			@Nullable Converter<? super Object, ? extends Object, ? extends RuntimeException> converter) {
+			@Nullable Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
 		this(value, null, converter);
 	}
 
@@ -36,12 +40,12 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 	}
 
 	public AnyValue(Object value, @Nullable TypeDescriptor typeDescriptor,
-			@Nullable Converter<? super Object, ? extends Object, ? extends RuntimeException> converter) {
+			@Nullable Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
 		this(new StaticSupplier<>(value), typeDescriptor, converter);
 	}
 
 	public AnyValue(Supplier<? extends Object> valueSupplier, @Nullable TypeDescriptor typeDescriptor,
-			@Nullable Converter<? super Object, ? extends Object, ? extends RuntimeException> converter) {
+			@Nullable Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
 		this.valueSupplier = valueSupplier;
 		this.typeDescriptor = typeDescriptor;
 		this.converter = converter;
@@ -84,8 +88,8 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 		return TypeDescriptor.forObject(value);
 	}
 
-	public Converter<? super Object, ? extends Object, ? extends RuntimeException> getConverter() {
-		return converter == null ? Sys.env.getConversionService() : converter;
+	public Converter<? super Object, ? super Object, ? extends RuntimeException> getConverter() {
+		return converter == null ? Sys.getEnv().getConversionService() : converter;
 	}
 
 	public String getAsString() {
@@ -106,7 +110,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 			return ((Value) value).getAsString();
 		}
 
-		return value.toString();
+		return getConverter().convert(value, getTypeDescriptor(value), String.class);
 	}
 
 	public Byte getAsByte() {
@@ -514,8 +518,19 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 		return super.getAsEnum(enumType);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	protected Object getAsNonBaseType(TypeDescriptor type) {
+	public final <T> T getAsObject(Class<T> type) {
+		return (T) getAsObject(TypeDescriptor.valueOf(type));
+	}
+
+	@Override
+	public final Object getAsObject(Type type) {
+		return getAsObject(TypeDescriptor.valueOf(type));
+	}
+
+	@Override
+	public Object getAsObject(TypeDescriptor type) {
 		Object value = getValue();
 		if (value == null) {
 			return null;
@@ -533,7 +548,31 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 		if (value instanceof Value) {
 			return ((Value) value).getAsObject(type);
 		}
-		return getConverter().convert(value, getTypeDescriptor(value), type);
+
+		TypeDescriptor sourceType = getTypeDescriptor(value);
+		if (converter instanceof ConversionService) {
+			if (!((ConversionService) converter).canConvert(sourceType, type)) {
+				return convert(value, sourceType, type);
+			}
+		}
+
+		try {
+			return getConverter().convert(value, sourceType, type);
+		} catch (ConversionException e) {
+			return convert(value, sourceType, type);
+		}
+	}
+
+	private Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (source instanceof String) {
+			return new StringValue((String) source, sourceType).getAsObject(targetType);
+		}
+
+		if (Value.isBaseType(targetType.getType())) {
+			return super.getAsObject(targetType.getType());
+		}
+
+		throw new ConversionFailedException(sourceType, targetType, source, null);
 	}
 
 	@Override
@@ -654,7 +693,7 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 		this.valueSupplier = valueSupplier;
 	}
 
-	public void setConverter(Converter<? super Object, ? extends Object, ? extends RuntimeException> converter) {
+	public void setConverter(Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
 		this.converter = converter;
 	}
 

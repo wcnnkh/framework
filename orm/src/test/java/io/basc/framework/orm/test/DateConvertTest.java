@@ -22,7 +22,7 @@ public class DateConvertTest {
 		Target target = new Target();
 		target.a = new Date();
 		target.b = new java.sql.Date(System.currentTimeMillis());
-		Object value = Sys.env.getConversionService().convert(target, TypeDescriptor.forObject(target),
+		Object value = Sys.getEnv().getConversionService().convert(target, TypeDescriptor.forObject(target),
 				TypeDescriptor.map(Map.class, String.class, String.class));
 		System.out.println(value);
 	}

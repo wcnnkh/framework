@@ -13,7 +13,7 @@ import io.basc.framework.sqlite.SQLiteDB;
 import io.basc.framework.util.XUtils;
 
 public class AutoIncrementTest {
-	private static DB db = new SQLiteDB(Sys.env.getWorkPath() + "/auto_increment.db");
+	private static DB db = new SQLiteDB(Sys.getEnv().getWorkPath() + "/auto_increment.db");
 
 	@Test
 	public void test() {

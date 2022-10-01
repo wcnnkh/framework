@@ -93,17 +93,16 @@ public class EurekaRegistration implements ServiceInstance {
 		if (this.cloudEurekaClient.get() == null) {
 			try {
 				this.cloudEurekaClient.compareAndSet(null, getTargetObject(eurekaClient, CloudEurekaClient.class));
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				log.error("error getting CloudEurekaClient", e);
 			}
 		}
 		return this.cloudEurekaClient.get();
 	}
-	
+
 	@SuppressWarnings({ "unchecked" })
 	protected <T> T getTargetObject(Object proxy, Class<T> targetClass) throws Exception {
-		if(proxy instanceof ProxyInstanceTarget){
+		if (proxy instanceof ProxyInstanceTarget) {
 			return (T) ((ProxyInstanceTarget) proxy).getTargetProxyInstance();
 		} else {
 			return (T) proxy; // expected to be cglib proxy then, which is simply a
@@ -142,7 +141,7 @@ public class EurekaRegistration implements ServiceInstance {
 	public int getSecurePort() {
 		return this.instanceConfig.getSecurePort();
 	}
-	
+
 	@Override
 	public String toString() {
 		return ReflectionUtils.toString(this);
@@ -202,7 +201,7 @@ public class EurekaRegistration implements ServiceInstance {
 				Assert.notNull(this.application, "if eurekaClient is null, ApplicationEventPublisher may not be null");
 
 				this.eurekaClient = new CloudEurekaClient(this.applicationInfoManager, this.clientConfig,
-						this.application);
+						this.application.getEventDispatcher());
 			}
 			return new EurekaRegistration(instanceConfig, eurekaClient, applicationInfoManager, healthCheckHandler);
 		}

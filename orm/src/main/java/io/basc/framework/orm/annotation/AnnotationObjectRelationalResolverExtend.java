@@ -1,21 +1,38 @@
 package io.basc.framework.orm.annotation;
 
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.annotation.AnnotationAttributes;
+import io.basc.framework.core.annotation.AnnotationUtils;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.data.domain.Range;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.mapper.ObjectMapperContext;
 import io.basc.framework.orm.ObjectRelationalResolver;
 import io.basc.framework.orm.support.ObjectRelationalResolverExtend;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.comparator.Sort;
+import io.basc.framework.util.placeholder.PlaceholderFormat;
+import io.basc.framework.util.placeholder.PlaceholderFormatAware;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
-public class AnnotationObjectRelationalResolverExtend implements ObjectRelationalResolverExtend {
+public class AnnotationObjectRelationalResolverExtend
+		implements ObjectRelationalResolverExtend, PlaceholderFormatAware {
+	private PlaceholderFormat placeholderFormat;
+
+	@Nullable
+	public PlaceholderFormat getPlaceholderFormat() {
+		return placeholderFormat;
+	}
+
+	@Override
+	public void setPlaceholderFormat(@Nullable PlaceholderFormat placeholderFormat) {
+		this.placeholderFormat = placeholderFormat;
+	}
 
 	@Override
 	public boolean isIgnore(Class<?> entityClass, ObjectRelationalResolver chain) {
@@ -311,5 +328,43 @@ public class AnnotationObjectRelationalResolverExtend implements ObjectRelationa
 			return new io.basc.framework.orm.ForeignKey(foreignKey.entity(), foreignKey.name());
 		}
 		return ObjectRelationalResolverExtend.super.getForeignKey(entityClass, descriptor, chain);
+	}
+
+	@Override
+	public boolean isConfigurable(TypeDescriptor sourceType, ObjectRelationalResolver chain) {
+		ConfigurationProperties configurationProperties = AnnotationUtils.getAnnotation(ConfigurationProperties.class,
+				sourceType, sourceType.getType());
+		if (configurationProperties != null) {
+			return true;
+		}
+		return ObjectRelationalResolverExtend.super.isConfigurable(sourceType, chain);
+	}
+
+	@Override
+	public ObjectMapperContext getContext(TypeDescriptor sourceType, ObjectMapperContext parent,
+			ObjectRelationalResolver chain) {
+		ConfigurationProperties configurationProperties = AnnotationUtils.getAnnotation(ConfigurationProperties.class,
+				sourceType, sourceType.getType());
+		if (configurationProperties == null) {
+			return ObjectRelationalResolverExtend.super.getContext(sourceType, parent, chain);
+		}
+
+		ObjectMapperContext context = new ObjectMapperContext(parent);
+		String prefix = configurationProperties.prefix();
+		if (StringUtils.isEmpty(prefix)) {
+			prefix = configurationProperties.value();
+		}
+
+		if (StringUtils.isNotEmpty(prefix)) {
+			PlaceholderFormat placeholderFormat = getPlaceholderFormat();
+			if (placeholderFormat != null) {
+				prefix = placeholderFormat.replacePlaceholders(prefix);
+			}
+
+			prefix = prefix + context.getNameConnector();
+		}
+		context.setNamePrefix(prefix);
+		context.setLoggerLevel(configurationProperties.loggerLevel().getValue());
+		return context;
 	}
 }

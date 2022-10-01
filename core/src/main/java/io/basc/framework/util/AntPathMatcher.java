@@ -55,6 +55,8 @@ import io.basc.framework.lang.Nullable;
  * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/util/AntPathMatcher.java
  */
 public class AntPathMatcher implements PathMatcher {
+	public static final AntPathMatcher POINT_PATH_MATCHER = new AntPathMatcher(".");
+	public static final AntPathMatcher DEFAULT = new AntPathMatcher();
 
 	/** Default path separator: "/". */
 	public static final String DEFAULT_PATH_SEPARATOR = "/";

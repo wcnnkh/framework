@@ -21,11 +21,12 @@ public class WebMessageConverters extends ConfigurableServices<WebMessageConvert
 		super(WebMessageConverter.class);
 	}
 
-	protected void aware(WebMessageConverter converter) {
-		if (converter instanceof WebMessageConverterAware) {
-			((WebMessageConverterAware) converter).setWebMessageConverter(this);
+	@Override
+	public void accept(WebMessageConverter service) {
+		if (service instanceof WebMessageConverterAware) {
+			((WebMessageConverterAware) service).setWebMessageConverter(this);
 		}
-		super.aware(converter);
+		super.accept(service);
 	}
 
 	@Override

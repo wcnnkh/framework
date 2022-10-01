@@ -29,7 +29,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 
 	static {
 		List<MathScriptFunction> functions = new ArrayList<MathScriptFunction>(
-				Sys.env.getServiceLoader(MathScriptFunction.class).toList());
+				Sys.getEnv().getServiceLoader(MathScriptFunction.class).toList());
 		functions.add(new MaxFunction());
 		functions.add(new MinFunction());
 		functions.add(new MeaninglessFunction("{", "}"));

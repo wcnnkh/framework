@@ -15,7 +15,7 @@ public abstract class AbstractProxy implements Proxy {
 		this.methodInterceptor = methodInterceptor;
 	}
 
-	public Class<?> getTargetClass() {
+	public Class<?> getSourceClass() {
 		return targetClass;
 	}
 

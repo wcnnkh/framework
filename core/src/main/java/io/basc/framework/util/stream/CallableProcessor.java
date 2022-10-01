@@ -20,4 +20,8 @@ public interface CallableProcessor<T, E extends Throwable> {
 	default void process(ConsumerProcessor<T, ? extends E> callback) throws E {
 		callback.process(process());
 	}
+
+	default CallableProcessor<T, E> caching() {
+		return new CachingProcessor<>(this);
+	}
 }

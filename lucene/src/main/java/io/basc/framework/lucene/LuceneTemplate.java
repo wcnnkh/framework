@@ -35,6 +35,7 @@ import io.basc.framework.util.stream.Cursor;
 import io.basc.framework.util.stream.Processor;
 import io.basc.framework.util.stream.StreamProcessorSupport;
 
+@SuppressWarnings("unchecked")
 public interface LuceneTemplate extends Repository {
 	LuceneMapper getMapper();
 
@@ -193,7 +194,7 @@ public interface LuceneTemplate extends Repository {
 
 	default <T> SearchResults<T> search(SearchParameters parameters, TypeDescriptor resultType)
 			throws LuceneSearchException {
-		return search(parameters, (e) -> getMapper().convert(e, resultType));
+		return search(parameters, (e) -> (T) getMapper().convert(e, resultType));
 	}
 
 	default <T> SearchResults<T> search(SearchParameters parameters, Class<? extends T> resultType)
@@ -203,7 +204,7 @@ public interface LuceneTemplate extends Repository {
 
 	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters, TypeDescriptor resultType)
 			throws LuceneSearchException {
-		return searchAfter(after, parameters, (e) -> getMapper().convert(e, resultType));
+		return searchAfter(after, parameters, (e) -> (T) getMapper().convert(e, resultType));
 	}
 
 	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters, Class<? extends T> resultType)
@@ -213,17 +214,17 @@ public interface LuceneTemplate extends Repository {
 
 	default <T> SearchResults<T> search(SearchParameters parameters, ObjectRelational<? extends Property> structure)
 			throws LuceneSearchException {
-		return search(parameters, (e) -> getMapper().convert(e, structure));
+		return search(parameters, (e) -> (T) getMapper().convert(e, structure));
 	}
 
 	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters,
 			ObjectRelational<? extends Property> structure) throws LuceneSearchException {
-		return searchAfter(after, parameters, (e) -> getMapper().convert(e, structure));
+		return searchAfter(after, parameters, (e) -> (T) getMapper().convert(e, structure));
 	}
 
-	<T, E extends Exception> Future<T> write(Processor<IndexWriter, T, E> processor) throws LuceneWriteException;
+	<T> Future<T> write(Processor<IndexWriter, T, ? extends Exception> processor) throws LuceneWriteException;
 
-	<T, E extends Exception> T read(Processor<IndexReader, T, E> processor) throws LuceneReadException;
+	<T, E extends Throwable> T read(Processor<IndexReader, T, E> processor) throws LuceneReadException, E;
 
 	default Future<Long> deleteAll() {
 		return write((e) -> e.deleteAll());
@@ -304,7 +305,6 @@ public interface LuceneTemplate extends Repository {
 		return search(parameters, resultsTypeDescriptor);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	default <T> Cursor<T> query(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass, Conditions conditions,
 			List<? extends OrderColumn> orders, PageRequest pageRequest) throws OrmException {

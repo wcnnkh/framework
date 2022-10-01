@@ -15,7 +15,7 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>memcached</artifactId>
 		</dependency>
-
+		
 		<!-- https://mvnrepository.com/artifact/com.googlecode.xmemcached/xmemcached -->
 		<dependency>
 			<groupId>com.googlecode.xmemcached</groupId>
@@ -23,13 +23,6 @@
 			<version>${xmemcached.version}</version>
 		</dependency>
 
-		<!-- provided -->
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>beans</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>testing</artifactId>

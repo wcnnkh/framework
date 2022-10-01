@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import io.basc.framework.env.Environment;
-import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.web.ServerHttpRequest;
@@ -51,10 +50,10 @@ public final class ServletUtils {
 		return XUtils.getDelegate(response, HttpServletResponse.class);
 	}
 
-	public static ServletService createServletService(ServiceLoaderFactory factory, Environment environment) {
-		if (factory.isInstance(ServletService.class)) {
-			return factory.getInstance(ServletService.class);
+	public static ServletService createServletService(Environment environment) {
+		if (environment.isInstance(ServletService.class)) {
+			return environment.getInstance(ServletService.class);
 		}
-		return new DefaultHttpServletService(factory, environment);
+		return new DefaultHttpServletService(environment);
 	}
 }

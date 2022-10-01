@@ -66,6 +66,13 @@ public abstract class AbstractHttpClient implements HttpClient, Configurable {
 
 	public abstract AbstractHttpClient clone();
 
+	private boolean configured;
+
+	@Override
+	public boolean isConfigured() {
+		return configured;
+	}
+
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		if (serviceLoaderFactory.isInstance(ClientHttpRequestFactory.class)) {
@@ -91,6 +98,7 @@ public abstract class AbstractHttpClient implements HttpClient, Configurable {
 		if (serviceLoaderFactory.isInstance(RetryOperations.class)) {
 			this.retryOperations = serviceLoaderFactory.getInstance(RetryOperations.class);
 		}
+		configured = true;
 	}
 
 	public UriTemplateHandler getUriTemplateHandler() {

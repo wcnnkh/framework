@@ -38,8 +38,7 @@ import org.apache.zookeeper.ZooKeeper;
 @Provider(order = Integer.MIN_VALUE)
 public class ZookeeperCloudPropertyFactory implements ConfigurablePropertyFactory, Watcher {
 	private static Logger logger = LoggerFactory.getLogger(ZookeeperCloudPropertyFactory.class);
-	private final NamedEventDispatcher<String, ChangeEvent<String>> eventDispatcher = new SimpleStringNamedEventDispatcher<ChangeEvent<String>>(
-			true);
+	private final NamedEventDispatcher<String, ChangeEvent<String>> eventDispatcher = new SimpleStringNamedEventDispatcher<ChangeEvent<String>>();
 	private final ZooKeeper zooKeeper;
 	private final String parentPath;
 	private Serializer serializer;

@@ -3,20 +3,40 @@ package io.basc.framework.util;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.UUID;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ForkJoinPool;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import io.basc.framework.io.FileUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.concurrent.ThreadPerTaskExecutor;
 
 public final class XUtils {
+	private static final boolean ENABLE_COMMON_POOL = (ForkJoinPool.getCommonPoolParallelism() > 1);
+	/**
+	 * Default executor -- ForkJoinPool.commonPool() unless it cannot support
+	 * parallelism.
+	 */
+	private static final Executor COMMON_EXECUTOR = ENABLE_COMMON_POOL ? ForkJoinPool.commonPool()
+			: new ThreadPerTaskExecutor();
+
 	private XUtils() {
 	};
+
+	public static boolean isEnableCommonPool() {
+		return ENABLE_COMMON_POOL;
+	}
+
+	public static Executor getCommonExecutor() {
+		return COMMON_EXECUTOR;
+	}
 
 	/**
 	 * 获取UUID，已经移除了‘-’
@@ -113,16 +133,15 @@ public final class XUtils {
 				return webapp.getPath();
 			}
 			/*
-			 * //可能会出现一个bin目录，忽略此目录 final File binDirectory = new File(file,
-			 * "bin"); // 路径/xxxx/src/main/webapp/WEB-INF 4层深度 File wi =
-			 * FileUtils.search(file, new Accept<File>() {
+			 * //可能会出现一个bin目录，忽略此目录 final File binDirectory = new File(file, "bin"); //
+			 * 路径/xxxx/src/main/webapp/WEB-INF 4层深度 File wi = FileUtils.search(file, new
+			 * Accept<File>() {
 			 * 
 			 * public boolean accept(File e) { if(e.isDirectory() &&
-			 * "WEB-INF".equals(e.getName())){ //可能会出现一个bin目录，忽略此目录
-			 * if(binDirectory.exists() && binDirectory.isDirectory() &&
-			 * e.getPath().startsWith(binDirectory.getPath())){ return false; }
-			 * return true; } return false; } }, 4); if (wi != null) { return
-			 * wi.getParent(); }
+			 * "WEB-INF".equals(e.getName())){ //可能会出现一个bin目录，忽略此目录 if(binDirectory.exists()
+			 * && binDirectory.isDirectory() &&
+			 * e.getPath().startsWith(binDirectory.getPath())){ return false; } return true;
+			 * } return false; } }, 4); if (wi != null) { return wi.getParent(); }
 			 */
 		}
 		return path;
@@ -165,10 +184,13 @@ public final class XUtils {
 	 * @param iterator
 	 * @return
 	 */
-	public static <T> Stream<T> stream(Iterator<T> iterator) {
-		Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(
-				iterator, 0);
+	public static <T> Stream<T> stream(Iterator<? extends T> iterator) {
+		Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
 		return StreamSupport.stream(spliterator, false);
+	}
+
+	public static <T> Stream<T> stream(Enumeration<? extends T> enumeration) {
+		return stream(CollectionUtils.toIterator(enumeration));
 	}
 
 	public static Object toString(Supplier<String> supplier) {

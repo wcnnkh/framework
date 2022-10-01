@@ -213,7 +213,7 @@ public class Property extends Field {
 			return (isSupportGetter() && objectRelationalResolver.isEntity(getDeclaringClass(), getGetter()))
 					|| (isSupportSetter() && objectRelationalResolver.isEntity(getDeclaringClass(), getSetter()));
 		}
-		return entity;
+		return entity == null ? false : entity;
 	}
 
 	public boolean isIncrement() {

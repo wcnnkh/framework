@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 
-public class StringValue extends AbstractValue implements Serializable {
+public class StringValue extends DirectValue implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final String value;
 	private final TypeDescriptor valueTypeDescriptor;

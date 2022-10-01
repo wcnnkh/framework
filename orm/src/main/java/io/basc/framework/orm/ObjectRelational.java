@@ -1,5 +1,6 @@
 package io.basc.framework.orm;
 
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,18 +16,24 @@ import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Structure;
 import io.basc.framework.mapper.StructureDecorator;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.stream.StreamProcessorSupport;
 
 public class ObjectRelational<T extends Property> extends StructureDecorator<T, ObjectRelational<T>> {
 	private static Logger logger = LoggerFactory.getLogger(ObjectRelational.class);
-
 	protected ObjectRelationalResolver objectRelationalResolver;
 	protected String comment;
 	protected String charsetName;
 
 	public ObjectRelational(Class<?> sourceClass, ObjectRelationalResolver objectRelationalResolver, T parent,
 			Function<Class<?>, ? extends Stream<T>> processor) {
-		super(sourceClass, parent,
-				processor.andThen((e) -> e.filter((o) -> o.isSupportGetter() || o.isSupportSetter())));
+		super(sourceClass, parent, (s) -> {
+			Stream<T> stream = processor.apply(s);
+			if (stream == null) {
+				return StreamProcessorSupport.emptyStream();
+			}
+			return stream.filter((o) -> o.isSupportGetter() || o.isSupportSetter())
+					.filter((o) -> !Modifier.isStatic(o.getModifiers()));
+		});
 		this.objectRelationalResolver = objectRelationalResolver;
 	}
 
@@ -116,7 +123,7 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 	}
 
 	public Stream<T> columns() {
-		return stream().filter((e) -> !e.isEntity());
+		return streamAll().filter((e) -> !e.isEntity());
 	}
 
 	public final List<T> getPrimaryKeys() {
@@ -171,7 +178,7 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 	}
 
 	public <E extends Throwable> ObjectRelational<T> withEntitys() {
-		return withEntitysAfter((e) -> e);
+		return withEntitysAfter((e) -> e.withSuperclass().setNameNestingDepth(0).all());
 	}
 
 	public ObjectRelational<T> withEntitysAfter(
@@ -199,7 +206,7 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 			return this;
 		}
 
-		List<Supplier<ObjectRelational<T>>> withs = new LinkedList<>();
+		List<Supplier<Stream<T>>> withs = new LinkedList<>();
 		ObjectRelational<T> objectRelational = this.filter((property) -> {
 			if (property == null || !property.isEntity()) {
 				return true;
@@ -213,17 +220,13 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 			if (logger.isTraceEnabled()) {
 				logger.trace("with entity[{}] for property[]", property.getDeclaringClass(), property.getName());
 			}
-			withs.add(() -> with.setParent(property).filter((e) -> {
-				e.setNameNestingDepth(0);
-				return true;
-			}).withEntitys(processor));
+			withs.add(() -> with.setParent(property).withEntitys(processor).stream());
 			return false;
 		}).shared();// 此处因为在filter中进行了逻辑处理，所以此处需要执行shared防止重复执行
 
-		for (Supplier<ObjectRelational<T>> with : withs) {
-			objectRelational = objectRelational.with(with.get());
+		for (Supplier<Stream<T>> with : withs) {
+			objectRelational = objectRelational.withStream(with.get());
 		}
-
 		return objectRelational;
 	}
 }

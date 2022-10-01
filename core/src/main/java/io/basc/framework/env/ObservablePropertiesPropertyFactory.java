@@ -20,8 +20,7 @@ import io.basc.framework.value.Value;
 
 public class ObservablePropertiesPropertyFactory extends ConvertibleObservable<Properties, Map<String, Value>>
 		implements PropertyFactory {
-	private final NamedEventDispatcher<String, ChangeEvent<String>> dispatcher = new SimpleStringNamedEventDispatcher<ChangeEvent<String>>(
-			true);
+	private final NamedEventDispatcher<String, ChangeEvent<String>> dispatcher = new SimpleStringNamedEventDispatcher<ChangeEvent<String>>();
 	private final EventRegistration eventRegistration;
 
 	public ObservablePropertiesPropertyFactory(Observable<Properties> observableProperties, String keyPrefix,

@@ -14,6 +14,7 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.value.PropertyFactory;
 
 public class EnvConfiguration extends Configuration implements Configurable {
 	public static final String CONFIG_PROPERTY_PREFIX = "io.basc.freemarker.";
@@ -21,20 +22,22 @@ public class EnvConfiguration extends Configuration implements Configurable {
 	private final Environment env;
 
 	public EnvConfiguration() {
-		this(Sys.env);
+		this(Sys.getEnv());
 	}
 
 	public EnvConfiguration(Environment env) {
-		super(getDefaultVersion(env));
+		super(getDefaultVersion(env.getProperties()));
 		this.env = env;
 		setDefaultEncoding(env.getCharsetName());
-		setTemplateLoader(new DefaultTemplateLoader(env));
-		setObjectWrapper(new DefaultObjectWrapper(getDefaultVersion(env)));
+		setTemplateLoader(new DefaultTemplateLoader(env.getResourceLoader()));
+		setObjectWrapper(new DefaultObjectWrapper(getDefaultVersion(env.getProperties())));
 	}
 
 	public Environment getEnv() {
 		return env;
 	}
+
+	private boolean configured;
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
@@ -44,9 +47,10 @@ public class EnvConfiguration extends Configuration implements Configurable {
 		if (serviceLoaderFactory.isInstance(TemplateExceptionHandler.class)) {
 			setTemplateExceptionHandler(serviceLoaderFactory.getInstance(TemplateExceptionHandler.class));
 		}
+		this.configured = true;
 	}
 
-	public static Version getDefaultVersion(Environment environment) {
+	public static Version getDefaultVersion(PropertyFactory environment) {
 		String versionString = environment.getString(CONFIG_PROPERTY_PREFIX + "version");
 		if (StringUtils.hasText(versionString)) {
 			try {
@@ -70,5 +74,10 @@ public class EnvConfiguration extends Configuration implements Configurable {
 			}
 		}
 		return VERSION_2_3_31;
+	}
+
+	@Override
+	public boolean isConfigured() {
+		return configured;
 	}
 }
