@@ -10,7 +10,6 @@ import io.basc.framework.context.Context;
 import io.basc.framework.context.ioc.AutowiredDefinition;
 import io.basc.framework.context.ioc.AutowiredIocProcessor;
 import io.basc.framework.context.ioc.BeanMethodProcessor;
-import io.basc.framework.context.ioc.ConfigurableIocResolver;
 import io.basc.framework.context.ioc.IocResolver;
 import io.basc.framework.context.ioc.IocResolverExtend;
 import io.basc.framework.context.ioc.MethodIocDefinition;
@@ -28,12 +27,11 @@ import io.basc.framework.mapper.Fields;
 
 public class IocBeanResolverExtend implements BeanResolverExtend, IocResolverExtend {
 	private final Context context;
-	private final ConfigurableIocResolver iocResolver;
+	private final IocResolver iocResolver;
 
-	public IocBeanResolverExtend(Context context) {
+	public IocBeanResolverExtend(Context context, IocResolver iocResolver) {
 		this.context = context;
-		this.iocResolver = new ConfigurableIocResolver();
-		iocResolver.setAfterService(this);
+		this.iocResolver = iocResolver;
 	}
 
 	@Override
@@ -41,7 +39,7 @@ public class IocBeanResolverExtend implements BeanResolverExtend, IocResolverExt
 			BeanResolver chain) {
 		List<BeanPostProcessor> postProcessors = new ArrayList<BeanPostProcessor>();
 		postProcessors.addAll(BeanResolverExtend.super.resolveDependenceProcessors(typeDescriptor, chain));
-		for (Field field : Fields.getFields(typeDescriptor.getType()).filter(FieldFeature.SUPPORT_SETTER)) {
+		for (Field field : Fields.getFields(typeDescriptor.getType()).filter(FieldFeature.SUPPORT_SETTER).all()) {
 			if (iocResolver.resolveAutowiredDefinition(field.getSetter()) != null) {
 				postProcessors.add(new AutowiredIocProcessor(context, iocResolver, field));
 			}
