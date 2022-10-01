@@ -15,7 +15,6 @@ import io.basc.framework.context.annotation.AnnotationContextResolverExtend;
 import io.basc.framework.context.ioc.ConfigurableIocResolver;
 import io.basc.framework.context.ioc.IocResolver;
 import io.basc.framework.context.ioc.annotation.IocBeanResolverExtend;
-import io.basc.framework.context.ioc.support.DefaultIocResolver;
 import io.basc.framework.context.repository.annotation.RepositoryContextResolverExtend;
 import io.basc.framework.context.xml.XmlContextPostProcessor;
 import io.basc.framework.core.type.filter.TypeFilter;
@@ -49,21 +48,23 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 			ContextPostProcessor.class);
 	private final Services<Resource> configurationResources = new Services<Resource>();
 	private final ConfigurableContextResolver contextResolver = new ConfigurableContextResolver();
-	private final ConfigurableIocResolver iocResolver = new DefaultIocResolver(this);
+	private final ConfigurableIocResolver iocResolver = new ConfigurableIocResolver();
 
 	public DefaultContext() {
+		IocBeanResolverExtend iocBeanResolverExtend = new IocBeanResolverExtend(this, iocResolver);
+		iocResolver.setAfterService(iocBeanResolverExtend);
 		this.classesLoaderFactory = new DefaultClassesLoaderFactory(getResourceLoader());
 		contextResolver.addService(new AnnotationContextResolverExtend(this));
 		contextResolver.addService(new RepositoryContextResolverExtend(this));
 		getBeanResolver().addService(new AnnotationContextResolverExtend(this));
-		getBeanResolver().addService(new IocBeanResolverExtend(this));
+		getBeanResolver().addService(iocBeanResolverExtend);
 
 		registerSingleton(Context.class.getName(), this);
 		registerSingleton(IocResolver.class.getName(), iocResolver);
 		setParentEnvironment(Sys.getEnv());
 		// 这是为了执行init时重新选择parentBeanFactory
 		setParentBeanFactory(null);
-		
+
 		// 扫描框架类，忽略(.test.)路径
 		componentScan(Constants.SYSTEM_PACKAGE_NAME, null);
 	}
