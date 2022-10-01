@@ -8,10 +8,10 @@
 	</parent>
 	<artifactId>yaml</artifactId>
 	<properties>
-		<snakeyaml.version>1.29</snakeyaml.version>
+		<snakeyaml.version>1.33</snakeyaml.version>
 	</properties>
 	<dependencies>
-		<dependency>
+		<dependency> 
 			<groupId>io.basc.framework</groupId>
 			<artifactId>core</artifactId>
 		</dependency>

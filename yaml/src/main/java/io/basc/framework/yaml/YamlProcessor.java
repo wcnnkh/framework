@@ -49,6 +49,8 @@ public class YamlProcessor implements Function<Resource, Properties>, Properties
 
 	private boolean matchDefault = true;
 
+	private final DumperOptions dumperOptions = new DumperOptions();
+
 	private Set<String> supportedTypes = Collections.emptySet();
 
 	/**
@@ -103,6 +105,10 @@ public class YamlProcessor implements Function<Resource, Properties>, Properties
 	public void setResolutionMethod(ResolutionMethod resolutionMethod) {
 		Assert.notNull(resolutionMethod, "ResolutionMethod must not be null");
 		this.resolutionMethod = resolutionMethod;
+	}
+
+	public DumperOptions getDumperOptions() {
+		return dumperOptions;
 	}
 
 	/**
@@ -186,7 +192,8 @@ public class YamlProcessor implements Function<Resource, Properties>, Properties
 		loaderOptions.setAllowDuplicateKeys(false);
 
 		if (!this.supportedTypes.isEmpty()) {
-			return new Yaml(new FilteringConstructor(loaderOptions), new Representer(), new DumperOptions(),
+			DumperOptions dumperOptions = getDumperOptions();
+			return new Yaml(new FilteringConstructor(loaderOptions), new Representer(dumperOptions), dumperOptions,
 					loaderOptions);
 		}
 		return new Yaml(loaderOptions);
