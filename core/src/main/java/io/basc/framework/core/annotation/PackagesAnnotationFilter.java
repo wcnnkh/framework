@@ -24,7 +24,7 @@ final class PackagesAnnotationFilter implements AnnotationFilter {
 		for (int i = 0; i < packages.length; i++) {
 			String pkg = packages[i];
 			Assert.hasText(pkg, "Packages array must not have empty elements");
-			this.prefixes[i] = pkg + ".";
+			this.prefixes[i] = pkg.endsWith(".") ? pkg : (pkg + ".");
 		}
 		Arrays.sort(this.prefixes);
 		this.hashCode = Arrays.hashCode(this.prefixes);

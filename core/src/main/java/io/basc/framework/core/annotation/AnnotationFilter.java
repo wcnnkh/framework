@@ -20,11 +20,11 @@ public interface AnnotationFilter {
 
 	/**
 	 * {@link AnnotationFilter} that matches annotations in the {@code java.lang}
-	 * and {@code io.basc.framework.lang} packages and their subpackages.
+	 * packages and their subpackages.
 	 * <p>
 	 * This is the default filter in the {@link MergedAnnotations} model.
 	 */
-	AnnotationFilter PLAIN = packages("java.lang", "io.basc.framework.lang");
+	AnnotationFilter PLAIN = packages("java.lang");
 
 	/**
 	 * {@link AnnotationFilter} that matches annotations in the {@code java} and
