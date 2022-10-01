@@ -15,6 +15,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,7 +25,6 @@ import io.basc.framework.net.message.Headers;
 import io.basc.framework.net.message.Message;
 import io.basc.framework.net.message.OutputMessage;
 import io.basc.framework.net.message.multipart.MultipartMessageResolver;
-import io.basc.framework.util.Accept;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
@@ -160,8 +160,8 @@ public final class InetUtils {
 	/**
 	 * 排除虚拟接口和没有启动运行的接口
 	 */
-	public static final Accept<NetworkInterface> LOCAL_IP_NETWORK_INTERFACE_ACCEPT = new Accept<NetworkInterface>() {
-		public boolean accept(NetworkInterface networkInterface) {
+	public static final Predicate<NetworkInterface> LOCAL_IP_NETWORK_INTERFACE_ACCEPT = new Predicate<NetworkInterface>() {
+		public boolean test(NetworkInterface networkInterface) {
 			if (networkInterface.isVirtual()) {
 				return false;
 			}
@@ -177,8 +177,8 @@ public final class InetUtils {
 		};
 	};
 
-	public static final Accept<InetAddress> IPV4_INET_ADDRESS_ACCEPT = new Accept<InetAddress>() {
-		public boolean accept(InetAddress inetAddress) {
+	public static final Predicate<InetAddress> IPV4_INET_ADDRESS_ACCEPT = new Predicate<InetAddress>() {
+		public boolean test(InetAddress inetAddress) {
 			return inetAddress instanceof Inet4Address;
 		};
 	};
@@ -187,12 +187,12 @@ public final class InetUtils {
 		return getLocalIpAddresses(ipv4 ? IPV4_INET_ADDRESS_ACCEPT : null);
 	}
 
-	public static Set<InetAddress> getLocalIpAddresses(Accept<InetAddress> accept) {
+	public static Set<InetAddress> getLocalIpAddresses(Predicate<InetAddress> accept) {
 		return getLocalIpAddresses(LOCAL_IP_NETWORK_INTERFACE_ACCEPT, accept);
 	}
 
-	public static Set<InetAddress> getLocalIpAddresses(Accept<NetworkInterface> networkInterfaceAccept,
-			Accept<InetAddress> accept) {
+	public static Set<InetAddress> getLocalIpAddresses(Predicate<NetworkInterface> networkInterfaceAccept,
+			Predicate<InetAddress> accept) {
 		Enumeration<NetworkInterface> allNetInterfaces;
 		try {
 			allNetInterfaces = NetworkInterface.getNetworkInterfaces();
@@ -204,14 +204,14 @@ public final class InetUtils {
 		while (allNetInterfaces.hasMoreElements()) {
 			NetworkInterface netInterface = allNetInterfaces.nextElement();
 			if (netInterface == null
-					|| (networkInterfaceAccept != null && !networkInterfaceAccept.accept(netInterface))) {
+					|| (networkInterfaceAccept != null && !networkInterfaceAccept.test(netInterface))) {
 				continue;
 			}
 
 			Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
 			while (addresses.hasMoreElements()) {
 				InetAddress address = addresses.nextElement();
-				if (address == null || (accept != null && !accept.accept(address))) {
+				if (address == null || (accept != null && !accept.test(address))) {
 					continue;
 				}
 

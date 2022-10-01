@@ -10,6 +10,7 @@ import java.util.Spliterators;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -209,5 +210,19 @@ public final class XUtils {
 		public String toString() {
 			return msg.get();
 		}
+	}
+
+	@SafeVarargs
+	public static <T> T first(Predicate<? super T> predicate, T... option) {
+		if (option == null) {
+			return null;
+		}
+
+		for (T o : option) {
+			if (predicate.test(o)) {
+				return o;
+			}
+		}
+		return null;
 	}
 }

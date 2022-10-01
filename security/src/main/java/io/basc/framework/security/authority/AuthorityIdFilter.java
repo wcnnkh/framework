@@ -1,17 +1,16 @@
 package io.basc.framework.security.authority;
 
-import io.basc.framework.util.Accept;
-
 import java.util.Set;
+import java.util.function.Predicate;
 
-public class AuthorityIdFilter<T extends Authority> implements Accept<T> {
+public class AuthorityIdFilter<T extends Authority> implements Predicate<T> {
 	private Set<String> ids;
 
 	public AuthorityIdFilter(Set<String> ids) {
 		this.ids = ids;
 	}
 
-	public boolean accept(T authority) {
+	public boolean test(T authority) {
 		if (ids == null) {
 			return false;
 		}

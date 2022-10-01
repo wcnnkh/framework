@@ -24,7 +24,7 @@ public class StaticResourceHttpService extends LinkedList<StaticResourceLoader>
 		addAll(serviceLoaderFactory.getServiceLoader(StaticResourceLoader.class).toList());
 	}
 
-	public boolean accept(ServerHttpRequest request) {
+	public boolean test(ServerHttpRequest request) {
 		if (request.getMethod() != HttpMethod.GET) {
 			return false;
 		}

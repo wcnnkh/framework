@@ -23,13 +23,13 @@ class HttpPatternService<T> implements ServerHttpRequestAccept, OrderSourceProvi
 	}
 
 	@Override
-	public boolean accept(ServerHttpRequest request) {
-		if (pattern != null && !pattern.accept(request)) {
+	public boolean test(ServerHttpRequest request) {
+		if (pattern != null && !pattern.test(request)) {
 			return false;
 		}
 
 		if (service instanceof ServerHttpRequestAccept) {
-			return ((ServerHttpRequestAccept) service).accept(request);
+			return ((ServerHttpRequestAccept) service).test(request);
 		}
 		return true;
 	}

@@ -1,20 +1,5 @@
 package io.basc.framework.sql;
 
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Accept;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.LinkedMultiValueMap;
-import io.basc.framework.util.MultiValueMap;
-import io.basc.framework.util.Pair;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
-import io.basc.framework.util.stream.ConsumerProcessor;
-import io.basc.framework.util.stream.Cursor;
-import io.basc.framework.util.stream.Processor;
-import io.basc.framework.util.stream.StreamProcessor;
-import io.basc.framework.util.stream.StreamProcessorSupport;
-
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.sql.Array;
@@ -38,10 +23,25 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.LinkedMultiValueMap;
+import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.util.Pair;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.XUtils;
+import io.basc.framework.util.stream.ConsumerProcessor;
+import io.basc.framework.util.stream.Cursor;
+import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.stream.StreamProcessor;
+import io.basc.framework.util.stream.StreamProcessorSupport;
 
 public final class SqlUtils {
 	private static final String PATTERN = "(|_([a-zA-Z0-9]_?)*$)|(^[a-zA-Z](_?[a-zA-Z0-9])*_?$)";
@@ -476,12 +476,12 @@ public final class SqlUtils {
 	}
 
 	public static List<SqlSplitSegment> resolveSegments(Sql sql, Collection<? extends CharSequence> separators,
-			Accept<Sql> accept) {
+			Predicate<Sql> accept) {
 		LinkedList<SqlSplitSegment> list = new LinkedList<SqlSplitSegment>();
 		Iterator<SqlSplitSegment> iterator = split(sql, separators).iterator();
 		while (iterator.hasNext()) {
 			SqlSplitSegment segment = iterator.next();
-			if (accept.accept(segment)) {
+			if (accept.test(segment)) {
 				// 合法的片段
 				list.add(segment);
 			} else {

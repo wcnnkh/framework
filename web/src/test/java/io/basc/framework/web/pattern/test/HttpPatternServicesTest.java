@@ -17,49 +17,50 @@ public class HttpPatternServicesTest {
 		corsRegistry.add("/**", Cors.DEFAULT);
 		corsRegistry.add("/abc/**", Cors.DEFAULT);
 		corsRegistry.add(new Processor<ServerHttpRequest, Cors, WebException>() {
-			
+
 			@Override
 			public Cors process(ServerHttpRequest source) throws WebException {
 				return null;
 			}
-			
+
 			@Override
 			public String toString() {
 				return "test1";
 			}
 		});
-		
+
 		corsRegistry.add(new TestProcessor("test12", 1));
 		corsRegistry.add(new TestProcessor("test22", 1));
 		System.out.println(corsRegistry);
 	}
-	
-	private static class TestProcessor implements Processor<ServerHttpRequest, Cors, WebException>, ServerHttpRequestAccept, Ordered{
+
+	private static class TestProcessor
+			implements Processor<ServerHttpRequest, Cors, WebException>, ServerHttpRequestAccept, Ordered {
 		private final String name;
 		private final int order;
-		
+
 		public TestProcessor(String name, int order) {
 			this.name = name;
 			this.order = order;
 		}
-		
+
 		@Override
 		public int getOrder() {
 			return order;
 		}
-		
+
 		@Override
 		public Cors process(ServerHttpRequest source) throws WebException {
 			return null;
 		}
-		
+
 		@Override
 		public String toString() {
 			return name;
 		}
 
 		@Override
-		public boolean accept(ServerHttpRequest request) {
+		public boolean test(ServerHttpRequest request) {
 			return true;
 		}
 	}

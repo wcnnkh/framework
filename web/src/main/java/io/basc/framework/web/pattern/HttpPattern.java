@@ -135,7 +135,7 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 	}
 
 	@Override
-	public boolean accept(ServerHttpRequest request) {
+	public boolean test(ServerHttpRequest request) {
 		if (method != null && !ObjectUtils.equals(method, request.getRawMethod())) {
 			return false;
 		}

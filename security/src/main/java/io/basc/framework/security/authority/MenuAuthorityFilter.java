@@ -1,10 +1,10 @@
 package io.basc.framework.security.authority;
 
-import io.basc.framework.util.Accept;
+import java.util.function.Predicate;
 
-public class MenuAuthorityFilter<T extends Authority> implements Accept<T> {
+public class MenuAuthorityFilter<T extends Authority> implements Predicate<T> {
 
-	public boolean accept(T authority) {
+	public boolean test(T authority) {
 		return authority.isMenu();
 	}
 }

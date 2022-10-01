@@ -56,23 +56,23 @@ public abstract class FieldsDecorator<S extends Field, T extends FieldsDecorator
 	}
 
 	public T byGetterName(String name, @Nullable Type type) {
-		return getters(new AcceptFieldDescriptor(name, type));
+		return getters(new PredicateFieldDescriptor(name, type));
 	}
 
 	public T byName(String name) {
-		AcceptFieldDescriptor acceptFieldDescriptor = new AcceptFieldDescriptor(name, null);
-		return filter((e) -> (e.isSupportGetter() && acceptFieldDescriptor.accept(e.getGetter()))
-				|| (e.isSupportSetter() && acceptFieldDescriptor.accept(e.getSetter())));
+		PredicateFieldDescriptor acceptFieldDescriptor = new PredicateFieldDescriptor(name, null);
+		return filter((e) -> (e.isSupportGetter() && acceptFieldDescriptor.test(e.getGetter()))
+				|| (e.isSupportSetter() && acceptFieldDescriptor.test(e.getSetter())));
 	}
 
 	public T byName(String name, @Nullable Type type) {
-		AcceptFieldDescriptor acceptFieldDescriptor = new AcceptFieldDescriptor(name, type);
-		return filter((e) -> (e.isSupportGetter() && acceptFieldDescriptor.accept(e.getGetter()))
-				|| (e.isSupportSetter() && acceptFieldDescriptor.accept(e.getSetter())));
+		PredicateFieldDescriptor acceptFieldDescriptor = new PredicateFieldDescriptor(name, type);
+		return filter((e) -> (e.isSupportGetter() && acceptFieldDescriptor.test(e.getGetter()))
+				|| (e.isSupportSetter() && acceptFieldDescriptor.test(e.getSetter())));
 	}
 
 	public T bySetterName(String name, @Nullable Type type) {
-		return setters(new AcceptFieldDescriptor(name, type));
+		return setters(new PredicateFieldDescriptor(name, type));
 	}
 
 	/**

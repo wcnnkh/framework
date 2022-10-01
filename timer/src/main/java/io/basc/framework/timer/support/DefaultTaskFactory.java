@@ -1,12 +1,12 @@
 package io.basc.framework.timer.support;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.timer.TaskConfig;
 import io.basc.framework.timer.TaskFactory;
-import io.basc.framework.util.Accept;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public final class DefaultTaskFactory implements TaskFactory {
@@ -24,7 +24,7 @@ public final class DefaultTaskFactory implements TaskFactory {
 		return taskMap.remove(taskConfig.getTaskId()) != null;
 	}
 
-	public void iteratorRegisteredTaskConfig(Accept<TaskConfig> action) {
+	public void iteratorRegisteredTaskConfig(Predicate<TaskConfig> action) {
 		return;
 	}
 

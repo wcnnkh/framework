@@ -2,6 +2,7 @@ package io.basc.framework.cloud.loadbalancer;
 
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 import io.basc.framework.boot.Application;
 import io.basc.framework.cloud.DiscoveryClient;
@@ -41,11 +42,11 @@ public class RoundRobinDiscoveryLoadBalancer implements DiscoveryLoadBalancer {
 		return loadBalancer;
 	}
 
-	public Server<ServiceInstance> choose(ServerAccept<ServiceInstance> accept) {
+	public Server<ServiceInstance> choose(Predicate<Server<ServiceInstance>> accept) {
 		return getLoadBalancer(name).choose(accept);
 	}
 
-	public Server<ServiceInstance> choose(String name, ServerAccept<ServiceInstance> accept) {
+	public Server<ServiceInstance> choose(String name, Predicate<Server<ServiceInstance>> accept) {
 		return getLoadBalancer(name).choose(accept);
 	}
 

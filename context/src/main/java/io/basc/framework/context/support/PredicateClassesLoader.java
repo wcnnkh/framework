@@ -2,33 +2,33 @@ package io.basc.framework.context.support;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import io.basc.framework.context.ClassesLoader;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Accept;
 
-public class AcceptClassesLoader implements ClassesLoader {
+public class PredicateClassesLoader implements ClassesLoader {
 	private final ClassesLoader classesLoader;
-	private final Accept<Class<?>> accept;
+	private final Predicate<Class<?>> filter;
 	private final boolean cache;
 	private volatile List<Class<?>> cacheClasses;
 
-	public AcceptClassesLoader(ClassesLoader classesLoader, @Nullable Accept<Class<?>> accept) {
-		this(classesLoader, accept, false);
+	public PredicateClassesLoader(ClassesLoader classesLoader, @Nullable Predicate<Class<?>> filter) {
+		this(classesLoader, filter, false);
 	}
 
-	public AcceptClassesLoader(ClassesLoader classesLoader, @Nullable Accept<Class<?>> accept, boolean cache) {
+	public PredicateClassesLoader(ClassesLoader classesLoader, @Nullable Predicate<Class<?>> filter, boolean cache) {
 		this.classesLoader = classesLoader;
-		this.accept = accept;
+		this.filter = filter;
 		this.cache = cache;
 	}
 
 	private List<Class<?>> filter() {
-		if (accept == null) {
+		if (filter == null) {
 			return classesLoader.toList();
 		} else {
-			return classesLoader.stream().filter(accept).collect(Collectors.toList());
+			return classesLoader.stream().filter(filter).collect(Collectors.toList());
 		}
 	}
 
@@ -53,10 +53,10 @@ public class AcceptClassesLoader implements ClassesLoader {
 			}
 			return cacheClasses.iterator();
 		} else {
-			if (accept == null) {
+			if (filter == null) {
 				return classesLoader.iterator();
 			} else {
-				return classesLoader.stream().filter(accept).iterator();
+				return classesLoader.stream().filter(filter).iterator();
 			}
 		}
 	}

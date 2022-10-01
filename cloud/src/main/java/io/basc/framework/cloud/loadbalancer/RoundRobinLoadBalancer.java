@@ -3,6 +3,7 @@ package io.basc.framework.cloud.loadbalancer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 
 import io.basc.framework.util.CollectionUtils;
 
@@ -13,12 +14,12 @@ public class RoundRobinLoadBalancer<T> extends AbstractLoadBalancer<T> {
 		super(serverSupplier);
 	}
 
-	public Server<T> choose(ServerAccept<T> accept) {
+	public Server<T> choose(Predicate<Server<T>> accept) {
 		return choose(this.position, getServerSupplier().getServers(), accept);
 	}
 
 	public Server<T> choose(AtomicInteger position, List<Server<T>> servers,
-			ServerAccept<T> accept) {
+			Predicate<Server<T>> accept) {
 		if (CollectionUtils.isEmpty(servers)) {
 			return null;
 		}
@@ -36,7 +37,7 @@ public class RoundRobinLoadBalancer<T> extends AbstractLoadBalancer<T> {
 				continue;
 			}
 
-			if (accept != null && !accept.accept(server)) {
+			if (accept != null && !accept.test(server)) {
 				continue;
 			}
 

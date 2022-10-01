@@ -196,7 +196,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	}
 
 	@Override
-	public boolean accept(ServerHttpRequest request) {
+	public boolean test(ServerHttpRequest request) {
 		return (request.getMethod() == HttpMethod.GET || request.getMethod() == HttpMethod.POST)
 				&& request.getPath().startsWith(getController());
 	}

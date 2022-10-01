@@ -2,6 +2,7 @@ package io.basc.framework.cloud.loadbalancer;
 
 import java.net.URI;
 import java.util.HashSet;
+import java.util.function.Predicate;
 
 import io.basc.framework.cloud.ServiceInstance;
 import io.basc.framework.http.client.HttpClientException;
@@ -10,7 +11,7 @@ import io.basc.framework.retry.ExhaustedRetryException;
 import io.basc.framework.retry.RetryOperations;
 
 public interface DiscoveryLoadBalancer extends LoadBalancer<ServiceInstance> {
-	Server<ServiceInstance> choose(String name, ServerAccept<ServiceInstance> accept);
+	Server<ServiceInstance> choose(String name, Predicate<Server<ServiceInstance>> accept);
 
 	default <V, E extends Throwable> V execute(String name, RetryOperations retryOperations,
 			LoadConsumer<ServiceInstance, V, E> consumer) throws E, ExhaustedRetryException {

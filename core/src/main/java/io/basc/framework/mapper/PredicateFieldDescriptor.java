@@ -1,21 +1,21 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Accept;
-
 import java.lang.reflect.Type;
+import java.util.function.Predicate;
 
-public class AcceptFieldDescriptor implements Accept<FieldDescriptor> {
+import io.basc.framework.lang.Nullable;
+
+public class PredicateFieldDescriptor implements Predicate<FieldDescriptor> {
 	private final String name;
 	private final Type type;
 
-	public AcceptFieldDescriptor(String name, @Nullable Type type) {
+	public PredicateFieldDescriptor(String name, @Nullable Type type) {
 		this.name = name;
 		this.type = type;
 	}
 
 	@Override
-	public boolean accept(FieldDescriptor descriptor) {
+	public boolean test(FieldDescriptor descriptor) {
 		if (descriptor == null) {
 			return false;
 		}

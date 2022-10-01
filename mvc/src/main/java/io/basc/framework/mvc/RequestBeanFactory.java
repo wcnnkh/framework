@@ -2,6 +2,7 @@ package io.basc.framework.mvc;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import io.basc.framework.context.Context;
 import io.basc.framework.context.support.ContextConfigurator;
@@ -14,7 +15,6 @@ import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.factory.ParameterFactory;
 import io.basc.framework.factory.support.DefaultSingletonRegistry;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.util.Accept;
 import io.basc.framework.util.DefaultStatus;
 import io.basc.framework.util.Status;
 import io.basc.framework.web.ServerHttpRequest;
@@ -75,10 +75,10 @@ public class RequestBeanFactory extends RequestParameterFactory implements Insta
 
 				if (result != null && result.isActive()) {
 					ContextConfigurator beanConfigurator = new ContextConfigurator(context);
-					beanConfigurator.getContext().addFilter(new Accept<Field>() {
+					beanConfigurator.getContext().addFilter(new Predicate<Field>() {
 
 						@Override
-						public boolean accept(Field field) {
+						public boolean test(Field field) {
 							for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
 								if (parameterDescriptor.getName().equals(field.getSetter().getName())) {
 									return false;

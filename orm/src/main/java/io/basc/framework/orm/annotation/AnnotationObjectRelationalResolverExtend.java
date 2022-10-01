@@ -1,5 +1,9 @@
 package io.basc.framework.orm.annotation;
 
+import java.lang.reflect.AnnotatedElement;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.annotation.AnnotationAttributes;
@@ -15,10 +19,6 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.comparator.Sort;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.util.placeholder.PlaceholderFormatAware;
-
-import java.lang.reflect.AnnotatedElement;
-import java.util.Collection;
-import java.util.LinkedHashSet;
 
 public class AnnotationObjectRelationalResolverExtend
 		implements ObjectRelationalResolverExtend, PlaceholderFormatAware {

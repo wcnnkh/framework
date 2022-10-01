@@ -48,7 +48,7 @@ class HttpPatternServices<T> implements Comparator<HttpPatternService<T>>, Serve
 
 	public T get(ServerHttpRequest request) {
 		for (HttpPatternService<T> service : services) {
-			if (service.accept(request)) {
+			if (service.test(request)) {
 				return service.getService();
 			}
 		}
@@ -56,7 +56,7 @@ class HttpPatternServices<T> implements Comparator<HttpPatternService<T>>, Serve
 	}
 
 	@Override
-	public boolean accept(ServerHttpRequest request) {
+	public boolean test(ServerHttpRequest request) {
 		return get(request) != null;
 	}
 

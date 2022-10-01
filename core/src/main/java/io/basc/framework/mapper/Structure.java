@@ -217,23 +217,23 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 	}
 
 	public Structure<T> byGetterName(String name, @Nullable Type type) {
-		return getters(new AcceptFieldDescriptor(name, type));
+		return getters(new PredicateFieldDescriptor(name, type));
 	}
 
 	public Structure<T> byName(String name) {
-		AcceptFieldDescriptor acceptFieldDescriptor = new AcceptFieldDescriptor(name, null);
-		return filter((e) -> (e.isSupportGetter() && acceptFieldDescriptor.accept(e.getGetter()))
-				|| (e.isSupportSetter() && acceptFieldDescriptor.accept(e.getSetter())));
+		PredicateFieldDescriptor acceptFieldDescriptor = new PredicateFieldDescriptor(name, null);
+		return filter((e) -> (e.isSupportGetter() && acceptFieldDescriptor.test(e.getGetter()))
+				|| (e.isSupportSetter() && acceptFieldDescriptor.test(e.getSetter())));
 	}
 
 	public Structure<T> byName(String name, @Nullable Type type) {
-		AcceptFieldDescriptor acceptFieldDescriptor = new AcceptFieldDescriptor(name, type);
-		return filter((e) -> (e.isSupportGetter() && acceptFieldDescriptor.accept(e.getGetter()))
-				|| (e.isSupportSetter() && acceptFieldDescriptor.accept(e.getSetter())));
+		PredicateFieldDescriptor acceptFieldDescriptor = new PredicateFieldDescriptor(name, type);
+		return filter((e) -> (e.isSupportGetter() && acceptFieldDescriptor.test(e.getGetter()))
+				|| (e.isSupportSetter() && acceptFieldDescriptor.test(e.getSetter())));
 	}
 
 	public Structure<T> bySetterName(String name, @Nullable Type type) {
-		return setters(new AcceptFieldDescriptor(name, type));
+		return setters(new PredicateFieldDescriptor(name, type));
 	}
 
 	/**
