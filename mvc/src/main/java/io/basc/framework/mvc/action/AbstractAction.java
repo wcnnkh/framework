@@ -8,7 +8,6 @@ import java.util.Collection;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.AnnotatedElementWrapper;
-import io.basc.framework.core.annotation.AnnotationArrayAnnotatedElement;
 import io.basc.framework.core.annotation.MultiAnnotatedElement;
 import io.basc.framework.core.parameter.ExecutableParameterDescriptors;
 import io.basc.framework.core.parameter.ParameterDescriptors;
@@ -24,7 +23,7 @@ public abstract class AbstractAction extends AnnotatedElementWrapper<AnnotatedEl
 	private final TypeDescriptor returnType;
 
 	public AbstractAction(Class<?> sourceClass, Method method, HttpPatternResolver httpPatternResolver) {
-		super(new AnnotationArrayAnnotatedElement(method));
+		super(method);
 		this.returnType = new TypeDescriptor(ResolvableType.forMethodReturnType(method), method.getReturnType(),
 				MultiAnnotatedElement.forAnnotatedElements(method.getAnnotatedReturnType(), this, sourceClass));
 		this.sourceClass = sourceClass;
