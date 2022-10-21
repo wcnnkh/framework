@@ -67,9 +67,9 @@ public class DefaultProfilesResolver implements ProfilesResolver {
 	public String[] getProfiles(ValueFactory<String> factory) {
 		Value value = null;
 		for (String key : PROFILES) {
-			value = factory.getValue(key);
+			value = factory.get(key);
 			if (isIgnoreCase() && (value == null || value.isEmpty())) {
-				value = factory.getValue(key.toUpperCase());
+				value = factory.get(key.toUpperCase());
 			}
 
 			if (value != null && !value.isEmpty()) {

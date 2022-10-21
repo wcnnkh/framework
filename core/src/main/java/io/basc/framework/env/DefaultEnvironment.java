@@ -12,9 +12,11 @@ import io.basc.framework.convert.resolve.ResourceResolvers;
 import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.event.Observable;
 import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.FactoryException;
 import io.basc.framework.factory.ServiceLoader;
+import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.factory.support.ConfigServiceLoader;
 import io.basc.framework.factory.support.DefaultBeanFactory;
 import io.basc.framework.factory.support.ServiceLoaders;
@@ -30,36 +32,22 @@ import io.basc.framework.util.placeholder.support.DefaultPlaceholderReplacer;
 import io.basc.framework.util.stream.StreamProcessorSupport;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.PropertyFactory;
-import io.basc.framework.value.StringValue;
+import io.basc.framework.value.PropertyWrapper;
 import io.basc.framework.value.Value;
 
 public class DefaultEnvironment extends DefaultBeanFactory
-		implements ConfigurableEnvironment, PropertyWrapper, Consumer<PropertyFactory> {
+		implements ConfigurableEnvironment, PropertyWrapper, Consumer<PropertyFactory>, Configurable {
 	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
 
 	private class AnyFormatValue extends AnyValue {
-		private static final long serialVersionUID = 1L;
 
 		public AnyFormatValue(Object value) {
-			super(value, DefaultEnvironment.this.getConversionService());
+			super(value, null, DefaultEnvironment.this.getConversionService());
 		}
 
 		public String getAsString() {
 			return replacePlaceholders(super.getAsString());
 		};
-	}
-
-	private class StringFormatValue extends StringValue {
-		private static final long serialVersionUID = 1L;
-
-		public StringFormatValue(String value) {
-			super(value);
-		}
-
-		@Override
-		public String getAsString() {
-			return replacePlaceholders(super.getAsString());
-		}
 	}
 
 	private static final String ENABLE_PREFIX = "io.basc.framework.spi";
@@ -92,7 +80,7 @@ public class DefaultEnvironment extends DefaultBeanFactory
 						.toProcessor(new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers()))));
 		conversionService.addService(new ResourceResolverConversionService(resourceResolvers));
 		registerSingleton(Environment.class.getName(), this);
-		this.properties.getTandemFactories().getConsumers().addService(this);
+		this.properties.getPropertyFactories().getFactories().getConsumers().addService(this);
 	}
 
 	public Environment getParentEnvironment() {
@@ -104,7 +92,8 @@ public class DefaultEnvironment extends DefaultBeanFactory
 		this.parentEnvironment = environment;
 		placeholderReplacer.setAfterService(environment == null ? null : environment.getPlaceholderReplacer());
 		conversionService.setAfterService(environment == null ? null : environment.getConversionService());
-		properties.getTandemFactories().setAfterService(environment == null ? null : environment.getProperties());
+		properties.getPropertyFactories().getFactories()
+				.setAfterService(environment == null ? null : environment.getProperties());
 		environmentResourceLoader.getResourceLoaders()
 				.setAfterService(environment == null ? null : environment.getResourceLoader());
 		resourceResolvers.setAfterService(environment == null ? null : environment.getResourceResolver());
@@ -124,6 +113,46 @@ public class DefaultEnvironment extends DefaultBeanFactory
 
 	private volatile boolean initialized = false;
 
+	private boolean configured = false;
+
+	@Override
+	public boolean isConfigured() {
+		return configured;
+	}
+
+	@Override
+	public synchronized void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		configured = true;
+
+		if (!environmentResourceLoader.isConfigured()) {
+			environmentResourceLoader.configure(serviceLoaderFactory);
+		}
+
+		if (!conversionService.isConfigured()) {
+			conversionService.configure(serviceLoaderFactory);
+		}
+
+		if (!properties.isConfigured()) {
+			properties.configure(serviceLoaderFactory);
+		}
+
+		if (!placeholderReplacer.isConfigured()) {
+			placeholderReplacer.configure(this);
+		}
+
+		if (!environmentPostProcessors.isConfigured()) {
+			environmentPostProcessors.configure(serviceLoaderFactory);
+		}
+
+		if (!resourceResolvers.isConfigured()) {
+			resourceResolvers.configure(serviceLoaderFactory);
+		}
+
+		if (!propertiesResolvers.isConfigured()) {
+			propertiesResolvers.configure(serviceLoaderFactory);
+		}
+	}
+
 	@Override
 	public void init() throws FactoryException {
 		synchronized (this) {
@@ -135,31 +164,8 @@ public class DefaultEnvironment extends DefaultBeanFactory
 				super.init();
 				logger.debug("Start initializing environment[{}]!", this);
 
-				if (!environmentResourceLoader.isConfigured()) {
-					environmentResourceLoader.configure(this);
-				}
-
-				if (!conversionService.isConfigured()) {
-					conversionService.configure(this);
-				}
-				if (!properties.getTandemFactories().isConfigured()) {
-					properties.getTandemFactories().configure(this);
-				}
-
-				if (!placeholderReplacer.isConfigured()) {
-					placeholderReplacer.configure(this);
-				}
-
-				if (!environmentPostProcessors.isConfigured()) {
-					environmentPostProcessors.configure(this);
-				}
-
-				if (!resourceResolvers.isConfigured()) {
-					resourceResolvers.configure(this);
-				}
-
-				if (!propertiesResolvers.isConfigured()) {
-					propertiesResolvers.configure(this);
+				if (!isConfigured()) {
+					configure(this);
 				}
 
 				for (EnvironmentPostProcessor postProcessor : environmentPostProcessors) {
@@ -229,10 +235,8 @@ public class DefaultEnvironment extends DefaultBeanFactory
 		return forceSpi;
 	}
 
-	public void loadProperties(String keyPrefix, Observable<Properties> properties) {
-		ObservablePropertiesPropertyFactory factory = new ObservablePropertiesPropertyFactory(properties, keyPrefix,
-				this);
-		this.getProperties().getTandemFactories().addService(factory);
+	public void loadProperties(Observable<Properties> properties) {
+		this.getProperties().getObservable().registerProperties(properties);
 	}
 
 	public void setForceSpi(boolean forceSpi) {
@@ -240,7 +244,7 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	}
 
 	protected boolean useSpi(Class<?> serviceClass) {
-		String[] prefixs = getProperties().getObject(ENABLE_PREFIX, String[].class);
+		String[] prefixs = getProperties().getAsObject(ENABLE_PREFIX, String[].class);
 		if (prefixs == null) {
 			return false;
 		}
@@ -259,8 +263,6 @@ public class DefaultEnvironment extends DefaultBeanFactory
 		Value v;
 		if (value instanceof Value) {
 			return (Value) value;
-		} else if (value instanceof String) {
-			v = new StringFormatValue((String) value);
 		} else {
 			v = new AnyFormatValue(value);
 		}

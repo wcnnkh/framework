@@ -15,6 +15,7 @@ public class TomcatTest {
 	public void test() throws InterruptedException, ExecutionException {
 		int port = InetUtils.getAvailablePort();
 		Application application = MainApplication.run(TomcatTest.class, new String[] {"-p", port + ""}).get();
+		System.out.println(application.getPort().getAsInt());
 		assertFalse(InetUtils.isAvailablePort(port));
 		application.destroy();
 	}

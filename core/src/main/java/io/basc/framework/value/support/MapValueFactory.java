@@ -1,10 +1,9 @@
 package io.basc.framework.value.support;
 
-import io.basc.framework.value.AnyValue;
+import java.util.Map;
+
 import io.basc.framework.value.Value;
 import io.basc.framework.value.ValueFactory;
-
-import java.util.Map;
 
 public class MapValueFactory<K> implements ValueFactory<K> {
 	protected final Map<K, ?> map;
@@ -13,16 +12,12 @@ public class MapValueFactory<K> implements ValueFactory<K> {
 		this.map = map;
 	}
 
-	public Value getValue(K key) {
+	public Value get(K key) {
 		if (map == null) {
 			return null;
 		}
 
 		Object value = map.get(key);
-		return value == null ? null : createValue(value);
-	}
-
-	protected Value createValue(Object value) {
-		return new AnyValue(value);
+		return Value.of(value);
 	}
 }

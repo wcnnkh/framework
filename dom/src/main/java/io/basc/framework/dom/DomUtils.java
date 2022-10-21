@@ -1,6 +1,5 @@
 package io.basc.framework.dom;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,7 +16,7 @@ import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.util.stream.Processor;
-import io.basc.framework.value.StringValue;
+import io.basc.framework.value.Value;
 
 public final class DomUtils {
 	private static final DocumentTemplate TEMPLATE = Sys.getEnv()
@@ -122,38 +121,18 @@ public final class DomUtils {
 		return map.isEmpty() ? null : map;
 	}
 
-	public static String getNodeAttributeValue(Node node, String name) {
-		return getNodeAttributeValue(node, name, null);
-	}
-
-	/**
-	 * @param node
-	 * @param name
-	 * @param defaultValue
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T getNodeAttributeValue(Type basicType, Node node, String name, T defaultValue) {
-		String value = getNodeAttributeValue(node, name);
-		if (value == null) {
-			return defaultValue;
-		} else {
-			return (T) StringValue.parse(value, basicType);
-		}
-	}
-
-	public static String getNodeAttributeValue(Node node, String name, String defaultValue) {
+	public static Value getNodeAttributeValue(Node node, String name) {
 		if (node == null) {
-			return null;
+			return Value.EMPTY;
 		}
 
 		NamedNodeMap namedNodeMap = node.getAttributes();
 		if (namedNodeMap == null) {
-			return null;
+			return Value.EMPTY;
 		}
 
 		Node n = namedNodeMap.getNamedItem(name);
-		return n == null ? defaultValue : n.getNodeValue();
+		return n == null ? Value.EMPTY : Value.of(n.getNodeValue());
 	}
 
 	public static String getNodeAttributeValueOrNodeContent(Node node, String name) {
@@ -166,9 +145,9 @@ public final class DomUtils {
 		return n == null ? node.getTextContent() : n.getNodeValue();
 	}
 
-	public static String getRequireNodeAttributeValue(Node node, String name) {
-		String value = getNodeAttributeValue(node, name);
-		if (StringUtils.isEmpty(value)) {
+	public static Value getRequireNodeAttributeValue(Node node, String name) {
+		Value value = getNodeAttributeValue(node, name);
+		if (value.isEmpty()) {
 			throw new NotFoundException("not found attribute [" + name + "]");
 		}
 		return value;
@@ -182,15 +161,17 @@ public final class DomUtils {
 		}
 	}
 
-	public static Boolean getBooleanValueAndParent(Node node, String name, Boolean defaultValue) {
+	public static Value getParentAttributeValue(Node node, String name) {
 		Node parent = node.getParentNode();
-		return getBooleanValue(node, name,
-				parent == null ? defaultValue : getBooleanValueAndParent(parent, name, defaultValue));
-	}
+		if (parent == null) {
+			return Value.EMPTY;
+		}
 
-	public static Boolean getBooleanValue(Node node, String name, Boolean defaultValue) {
-		String value = getNodeAttributeValue(node, name);
-		return StringUtils.parseBoolean(value, defaultValue);
+		Value value = getNodeAttributeValue(node, name);
+		if (value.isEmpty()) {
+			return getParentAttributeValue(parent, name);
+		}
+		return value;
 	}
 
 	public static boolean ignoreNode(Node node) {
@@ -221,20 +202,22 @@ public final class DomUtils {
 			return value;
 		}
 
-		if (!getBooleanValue(node, "replace", true)) {
+		if (!getNodeAttributeValue(node, "replace").or(true).getAsBoolean()) {
 			return value;
 		}
 
 		return placeholderFormat.replacePlaceholders(value);
 	}
 
-	public static String getNodeAttributeValue(PlaceholderFormat placeholderFormat, Node node, String name) {
-		String value = getNodeAttributeValue(node, name);
-		if (value == null || value.length() == 0) {
+	public static Value getNodeAttributeValue(PlaceholderFormat placeholderFormat, Node node, String name) {
+		Value value = getNodeAttributeValue(node, name);
+		if (value.isEmpty()) {
 			return value;
 		}
 
-		return formatNodeValue(placeholderFormat, node, value);
+		String str = value.getAsString();
+		str = formatNodeValue(placeholderFormat, node, str);
+		return Value.of(str);
 	}
 
 	public static String getNodeAttributeValueOrNodeContent(PlaceholderFormat placeholderFormat, Node node,
@@ -256,9 +239,9 @@ public final class DomUtils {
 		return formatNodeValue(placeholderFormat, node, value);
 	}
 
-	public static String getRequireNodeAttributeValue(PlaceholderFormat placeholderFormat, Node node, String name) {
-		String value = getNodeAttributeValue(placeholderFormat, node, name);
-		if (StringUtils.isEmpty(value)) {
+	public static Value getRequireNodeAttributeValue(PlaceholderFormat placeholderFormat, Node node, String name) {
+		Value value = getNodeAttributeValue(placeholderFormat, node, name);
+		if (value.isEmpty()) {
 			throw new NotFoundException("not found attribute " + name);
 		}
 		return value;

@@ -11,11 +11,11 @@ public class GsonTest {
 	@Test
 	public void test() {
 		A a = new A(XUtils.getUUID());
-		String json = GsonSupport.INSTANCE.toJSONString(a);
+		String json = GsonSupport.INSTANCE.toJsonString(a);
 		System.out.println(json);
 		a = GsonSupport.INSTANCE.parseObject(json, A.class);
 		System.out.println(a);
-		assertTrue(GsonSupport.INSTANCE.toJSONString(a).equals(json));
+		assertTrue(GsonSupport.INSTANCE.toJsonString(a).equals(json));
 	}
 
 	public static class A {

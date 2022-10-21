@@ -1,6 +1,6 @@
 package io.basc.framework.redis;
 
-import io.basc.framework.json.JSONUtils;
+import io.basc.framework.json.JsonUtils;
 
 import java.io.Serializable;
 
@@ -72,6 +72,6 @@ public class RedisConfiguration implements Serializable {
 
 	@Override
 	public String toString() {
-		return JSONUtils.getDefaultJsonSupport().toJSONString(this);
+		return JsonUtils.toJsonString(this);
 	}
 }

@@ -22,7 +22,7 @@ public class RoundRobinDiscoveryLoadBalancer implements DiscoveryLoadBalancer {
 	private ConcurrentHashMap<String, LoadBalancer<ServiceInstance>> loadBalancerMap = new ConcurrentHashMap<String, LoadBalancer<ServiceInstance>>();
 
 	public RoundRobinDiscoveryLoadBalancer(DiscoveryClient discoveryClient, Application application) {
-		this(discoveryClient, application.getName());
+		this(discoveryClient, application.getName().get());
 	}
 
 	public RoundRobinDiscoveryLoadBalancer(DiscoveryClient discoveryClient, String name) {

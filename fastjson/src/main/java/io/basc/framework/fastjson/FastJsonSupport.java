@@ -2,10 +2,10 @@ package io.basc.framework.fastjson;
 
 import com.alibaba.fastjson.JSON;
 
-import io.basc.framework.json.AbstractJSONSupport;
+import io.basc.framework.json.AbstractJsonSupport;
 import io.basc.framework.json.JsonElement;
 
-public final class FastJsonSupport extends AbstractJSONSupport {
+public final class FastJsonSupport extends AbstractJsonSupport {
 	public static final FastJsonSupport INSTANCE = new FastJsonSupport();
 
 	@Override

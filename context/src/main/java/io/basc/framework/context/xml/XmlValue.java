@@ -19,7 +19,7 @@ public class XmlValue {
 		String charset = XmlBeanUtils.getCharsetName(node, parentCharsetName);
 
 		String value;
-		String url = DomUtils.getNodeAttributeValue(node, "url");
+		String url = DomUtils.getNodeAttributeValue(node, "url").getAsString();
 
 		if (StringUtils.isNotEmpty(url)) {
 			if (url.startsWith("http://") || url.startsWith("https://")) {
@@ -39,7 +39,7 @@ public class XmlValue {
 	}
 
 	public boolean isRequire() {
-		return DomUtils.getBooleanValue(node, "require", false);
+		return DomUtils.getNodeAttributeValue(node, "require").getAsBoolean();
 	}
 
 	public String getValue() {
@@ -51,7 +51,7 @@ public class XmlValue {
 	}
 
 	public String getNodeAttributeValue(String name) {
-		return DomUtils.getNodeAttributeValue(node, name);
+		return DomUtils.getNodeAttributeValue(node, name).getAsString();
 	}
 
 	public String formatValue(final PlaceholderFormat format) {

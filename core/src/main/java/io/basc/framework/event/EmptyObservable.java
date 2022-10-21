@@ -1,8 +1,17 @@
 package io.basc.framework.event;
 
-public final class EmptyObservable<T> extends NotSupportedObservable<T> {
+import io.basc.framework.util.Registration;
 
-	public EmptyObservable() {
-		super(null);
+public class EmptyObservable<T> extends AbstractObservable<T> {
+
+	@Override
+	public Registration registerListener(EventListener<ObservableChangeEvent<T>> eventListener) {
+		return Registration.EMPTY;
 	}
+
+	@Override
+	public T getValue() {
+		return null;
+	}
+
 }

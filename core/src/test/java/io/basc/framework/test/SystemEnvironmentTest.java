@@ -9,7 +9,7 @@ import io.basc.framework.env.Sys;
 public class SystemEnvironmentTest {
 	@Test
 	public void test() {
-		boolean value = Sys.getEnv().getProperties().getValue("scw.test._key", boolean.class, true);
+		boolean value = Sys.getEnv().getProperties().get("scw.test._key").or(true).getAsBoolean();
 		assertTrue(value);
 	}
 }

@@ -3,7 +3,9 @@ package io.basc.framework.json;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.value.Value;
 
-public interface JsonElement extends Value, JSONAware {
+public interface JsonElement extends Value, JsonAware {
+	public static JsonElement EMPTY = new EmptyJsonElement();
+	
 	@Nullable
 	JsonArray getAsJsonArray();
 

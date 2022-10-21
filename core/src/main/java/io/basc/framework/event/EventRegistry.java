@@ -1,5 +1,7 @@
 package io.basc.framework.event;
 
+import io.basc.framework.util.Registration;
+
 public interface EventRegistry<T extends Event> {
-	EventRegistration registerListener(EventListener<T> eventListener);
+	Registration registerListener(EventListener<T> eventListener);
 }

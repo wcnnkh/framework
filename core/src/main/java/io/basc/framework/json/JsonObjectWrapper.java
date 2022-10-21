@@ -1,9 +1,6 @@
 package io.basc.framework.json;
 
-import io.basc.framework.util.Pair;
-
 import java.util.Iterator;
-import java.util.Set;
 
 public class JsonObjectWrapper extends JsonWrapper<String, JsonObject> implements JsonObject {
 
@@ -12,22 +9,18 @@ public class JsonObjectWrapper extends JsonWrapper<String, JsonObject> implement
 	}
 
 	public boolean containsKey(String key) {
-		return targetFactory.containsKey(key);
+		return wrappedTarget.containsKey(key);
 	}
 
 	public boolean remove(String key) {
-		return targetFactory.remove(key);
+		return wrappedTarget.remove(key);
 	}
 
 	public boolean put(String key, Object value) {
-		return targetFactory.put(key, value);
+		return wrappedTarget.put(key, value);
 	}
 
-	public Set<String> keySet() {
-		return targetFactory.keySet();
-	}
-
-	public Iterator<Pair<String, JsonElement>> iterator() {
-		return targetFactory.iterator();
+	public Iterator<String> iterator() {
+		return wrappedTarget.iterator();
 	}
 }

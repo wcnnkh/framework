@@ -82,9 +82,9 @@ public class XMemcachedContextPostProcessor implements ContextPostProcessor {
 		}
 
 		private String getHosts() {
-			String name = environment.getProperties().getValue("memcached.hosts.config.name", String.class,
-					"memcached.hosts");
-			return environment.getProperties().getString(name);
+			String name = environment.getProperties().get("memcached.hosts.config.name").or("memcached.hosts")
+					.getAsString();
+			return environment.getProperties().getAsString(name);
 		}
 
 		public Object create() throws BeansException {
@@ -100,10 +100,8 @@ public class XMemcachedContextPostProcessor implements ContextPostProcessor {
 				builder.setTranscoder(new MyTranscoder(SerializerUtils.getSerializer()));
 			}
 
-			Integer poolSize = environment.getProperties().getInteger("memcached.poolsize");
-			if (poolSize != null) {
-				builder.setConnectionPoolSize(poolSize);
-			}
+			environment.getProperties().get("memcached.poolsize").as(Integer.class)
+					.ifPresent((e) -> builder.setConnectionPoolSize(e));
 		}
 	}
 }

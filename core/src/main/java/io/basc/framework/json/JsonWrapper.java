@@ -1,39 +1,27 @@
 package io.basc.framework.json;
 
-import io.basc.framework.value.ValueFactoryWrapper;
+import io.basc.framework.util.Wrapper;
 
-public class JsonWrapper<K, F extends Json<K>> extends ValueFactoryWrapper<K, F> implements Json<K> {
+public class JsonWrapper<K, F extends Json<K>> extends Wrapper<F> implements Json<K> {
 
 	public JsonWrapper(F target) {
 		super(target);
 	}
 
-	@Override
-	public JsonElement getDefaultValue(K key) {
-		return targetFactory.getDefaultValue(key);
-	}
-
 	public int size() {
-		return targetFactory.size();
+		return wrappedTarget.size();
 	}
 
 	public boolean isEmpty() {
-		return targetFactory.isEmpty();
+		return wrappedTarget.isEmpty();
 	}
 
-	public JsonElement getValue(K key) {
-		return targetFactory.getValue(key);
+	public JsonElement get(K key) {
+		return wrappedTarget.get(key);
 	}
 
-	public JsonArray getJsonArray(K key) {
-		return targetFactory.getJsonArray(key);
+	public String toJsonString() {
+		return wrappedTarget.toJsonString();
 	}
 
-	public JsonObject getJsonObject(K key) {
-		return targetFactory.getJsonObject(key);
-	}
-
-	public String toJSONString() {
-		return targetFactory.toJSONString();
-	}
 }

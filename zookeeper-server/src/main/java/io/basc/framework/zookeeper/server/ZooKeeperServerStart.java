@@ -1,7 +1,7 @@
 package io.basc.framework.zookeeper.server;
 
 import io.basc.framework.env.Sys;
-import io.basc.framework.json.JSONUtils;
+import io.basc.framework.json.JsonUtils;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
@@ -64,7 +64,7 @@ public class ZooKeeperServerStart extends Thread {
 		try {
 			zooKeeperServerMain.runFromConfig(serverConfig);
 		} catch (Exception e) {
-			logger.error(e, "start zookeeper server error: {}", JSONUtils.getJsonSupport().toJSONString(serverConfig));
+			logger.error(e, "start zookeeper server error: {}", JsonUtils.toJsonString(serverConfig));
 		}
 		super.run();
 	}

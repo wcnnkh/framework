@@ -15,7 +15,6 @@ import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeansException;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 
 public final class XmlBeanParameter extends EmptyAnnotatedElement
@@ -92,15 +91,15 @@ public final class XmlBeanParameter extends EmptyAnnotatedElement
 		case value:
 			String text = xmlValue.formatValue(environment);
 			if (text != null) {
-				value = formatStringValue(new StringValue(text), parameterDescriptor);
+				value = formatStringValue(Value.of(text), parameterDescriptor);
 			}
 			break;
 		case ref:
 			value = environment.getInstance(xmlValue.formatValue(environment));
 			break;
 		case property:
-			Value v = environment.getProperties().getValue(xmlValue.getValue());
-			if (v != null) {
+			Value v = environment.getProperties().get(xmlValue.getValue());
+			if (v.isPresent()) {
 				value = formatStringValue(v, parameterDescriptor);
 			}
 			break;

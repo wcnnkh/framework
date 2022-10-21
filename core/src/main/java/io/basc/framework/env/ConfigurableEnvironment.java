@@ -8,7 +8,6 @@ import io.basc.framework.event.Observable;
 import io.basc.framework.factory.ConfigurableBeanFactory;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
-import io.basc.framework.io.event.ObservableResource;
 import io.basc.framework.io.resolver.PropertiesResolvers;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
@@ -30,8 +29,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableBeanFa
 			throw new NotSupportedException(resource.getDescription());
 		}
 
-		Observable<Properties> observable = new ObservableResource<Properties>(resource,
-				ResourceUtils.toPropertiesConverter(getPropertiesResolver()));
+		Observable<Properties> observable = resource.map(ResourceUtils.toPropertiesConverter(getPropertiesResolver()));
 		loadProperties(observable);
 	}
 
@@ -39,20 +37,12 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableBeanFa
 		loadProperties((String) resource, (String) null);
 	}
 
-	default void loadProperties(String resource, String charsetName) {
-		loadProperties(null, resource, charsetName);
-	}
-
-	default void loadProperties(String keyPrefix, String location, String charsetName) {
+	default void loadProperties(String location, String charsetName) {
 		Observable<Properties> observable = getProperties(location, charsetName);
-		loadProperties(keyPrefix, observable);
+		loadProperties(observable);
 	}
 
-	default void loadProperties(Observable<Properties> properties) {
-		loadProperties(null, properties);
-	}
-
-	void loadProperties(String prefix, Observable<Properties> properties);
+	void loadProperties(Observable<Properties> properties);
 
 	ConfigurablePlaceholderReplacer getPlaceholderReplacer();
 

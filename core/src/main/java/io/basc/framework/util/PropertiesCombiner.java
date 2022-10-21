@@ -5,7 +5,7 @@ import java.util.Properties;
 import java.util.function.Function;
 
 public class PropertiesCombiner implements Function<List<Properties>, Properties> {
-	public static final PropertiesCombiner DEFAULT = new PropertiesCombiner();
+	public static final PropertiesCombiner INSTANCE = new PropertiesCombiner();
 
 	@Override
 	public Properties apply(List<Properties> list) throws RuntimeException {
@@ -17,5 +17,4 @@ public class PropertiesCombiner implements Function<List<Properties>, Properties
 		}
 		return properties;
 	}
-
 }

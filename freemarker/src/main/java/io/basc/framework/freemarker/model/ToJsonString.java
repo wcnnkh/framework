@@ -1,12 +1,11 @@
 package io.basc.framework.freemarker.model;
 
-import io.basc.framework.freemarker.boot.annotation.SharedVariable;
-import io.basc.framework.json.JSONUtils;
-
 import java.util.List;
 
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
+import io.basc.framework.freemarker.boot.annotation.SharedVariable;
+import io.basc.framework.json.JsonUtils;
 
 @SharedVariable
 public class ToJsonString implements TemplateMethodModelEx {
@@ -20,8 +19,8 @@ public class ToJsonString implements TemplateMethodModelEx {
 		if (value == null) {
 			return null;
 		}
-		
-		return JSONUtils.getJsonSupport().toJSONString(value);
+
+		return JsonUtils.getJsonSupport().toJsonString(value);
 	}
 
 }

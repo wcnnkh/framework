@@ -7,12 +7,11 @@ import java.util.function.Function;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.resolve.ResourceResolver;
-import io.basc.framework.event.EmptyObservable;
 import io.basc.framework.event.Observable;
+import io.basc.framework.event.support.ObservableProperties;
 import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
-import io.basc.framework.io.event.ObservableProperties;
 import io.basc.framework.io.resolver.PropertiesResolver;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.Nullable;
@@ -26,25 +25,26 @@ public interface Environment extends BeanFactory, PlaceholderFormat {
 	public static final String WORK_PATH_PROPERTY = "io.basc.framework.work.path";
 
 	default Charset getCharset() {
-		return getProperties().getValue(CHARSET_PROPERTY, Charset.class, Constants.UTF_8);
+		return getProperties().get(CHARSET_PROPERTY).as(Charset.class).orElse(Constants.UTF_8);
 	}
 
 	default String getCharsetName() {
-		return getProperties().getValue(CHARSET_PROPERTY, String.class, Constants.UTF_8_NAME);
+		return getProperties().get(CHARSET_PROPERTY).as(String.class).orElse(Constants.UTF_8_NAME);
 	}
 
 	ConversionService getConversionService();
 
 	default Observable<Charset> getObservableCharset() {
-		return getProperties().getObservableValue(CHARSET_PROPERTY, Charset.class, Constants.UTF_8);
+		return getProperties().getObservable(CHARSET_PROPERTY)
+				.map((e) -> e.or(Constants.UTF_8).getAsObject(Charset.class));
 	}
 
 	default Observable<String> getObservableCharsetName() {
-		return getProperties().getObservableValue(CHARSET_PROPERTY, String.class, Constants.UTF_8_NAME);
+		return getProperties().getObservable(CHARSET_PROPERTY).map((e) -> e.or(Constants.UTF_8_NAME).getAsString());
 	}
 
 	default Observable<String> getObservableWorkPath() {
-		return getProperties().getObservableValue(WORK_PATH_PROPERTY, String.class, null);
+		return getProperties().getObservable(WORK_PATH_PROPERTY).map((e) -> e.getAsString());
 	}
 
 	PlaceholderReplacer getPlaceholderReplacer();
@@ -57,7 +57,7 @@ public interface Environment extends BeanFactory, PlaceholderFormat {
 			@Nullable Charset charset) {
 		Resource[] resources = getResourceLoader().getResources(location);
 		if (ArrayUtils.isEmpty(resources)) {
-			return new EmptyObservable<Properties>();
+			return Observable.empty();
 		}
 
 		// 颠倒一下，优先级高的覆盖优先级低的
@@ -91,7 +91,7 @@ public interface Environment extends BeanFactory, PlaceholderFormat {
 	ResourceResolver getResourceResolver();
 
 	default String getWorkPath() {
-		return getProperties().getString(WORK_PATH_PROPERTY);
+		return getProperties().getAsString(WORK_PATH_PROPERTY);
 	}
 
 	/**
@@ -99,12 +99,12 @@ public interface Environment extends BeanFactory, PlaceholderFormat {
 	 */
 	@Override
 	default String replacePlaceholders(String text) {
-		return getPlaceholderReplacer().replacePlaceholders(text, (name) -> getProperties().getString(name));
+		return getPlaceholderReplacer().replacePlaceholders(text, (name) -> getProperties().getAsString(name));
 	}
 
 	@Override
 	default String replaceRequiredPlaceholders(String text) throws IllegalArgumentException {
-		return getPlaceholderReplacer().replaceRequiredPlaceholders(text, (name) -> getProperties().getString(name));
+		return getPlaceholderReplacer().replaceRequiredPlaceholders(text, (name) -> getProperties().getAsString(name));
 	}
 
 	default Object resolveResource(String location, TypeDescriptor targetType) {
@@ -121,7 +121,7 @@ public interface Environment extends BeanFactory, PlaceholderFormat {
 		ObservableProperties properties = new ObservableProperties();
 		Function<Resource, Properties> converter = ResourceUtils.toPropertiesConverter(propertiesResolver, charset);
 		for (Resource resource : resources) {
-			properties.combine(resource, converter);
+			properties.register(resource.map(converter));
 		}
 		return properties;
 	}

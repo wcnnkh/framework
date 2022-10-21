@@ -13,7 +13,7 @@ public class DefaultObjectKeyFormat implements ObjectKeyFormat {
 	 * 默认对象主键的连接符
 	 */
 	private static final String OBJECT_KEY_CONNECTOR = Sys.getEnv().getProperties()
-			.getValue("io.basc.framework.orm.key.connector", String.class, ":");
+			.get("io.basc.framework.orm.key.connector").or(":").getAsString();
 
 	private final String connector;
 

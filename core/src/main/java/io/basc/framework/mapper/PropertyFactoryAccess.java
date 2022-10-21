@@ -30,7 +30,7 @@ public class PropertyFactoryAccess<E extends Throwable> implements ObjectAccess<
 			return null;
 		}
 
-		Value value = propertyFactory.getValue(name);
+		Value value = propertyFactory.get(name);
 		return value == null ? null : new Parameter(name, value);
 	}
 

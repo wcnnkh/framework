@@ -7,7 +7,6 @@ import io.basc.framework.context.ioc.ValueDefinition;
 import io.basc.framework.event.Observable;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.io.Resource;
-import io.basc.framework.io.event.ObservableResourceUtils;
 import io.basc.framework.mapper.Field;
 
 public abstract class AbstractObservableResourceValueProcessor extends AbstractObservableValueProcessor<Resource> {
@@ -19,6 +18,6 @@ public abstract class AbstractObservableResourceValueProcessor extends AbstractO
 		if (valueDefinition.isRequired() && (resource == null || !resource.exists())) {
 			return null;
 		}
-		return ObservableResourceUtils.getResource(resource);
+		return resource;
 	}
 }

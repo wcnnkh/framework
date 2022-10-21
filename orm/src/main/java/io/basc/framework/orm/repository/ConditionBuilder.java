@@ -2,6 +2,7 @@ package io.basc.framework.orm.repository;
 
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.StringUtils;
 
 public final class ConditionBuilder {
 	private final ConditionKeywords conditionKeywords;
@@ -40,7 +41,7 @@ public final class ConditionBuilder {
 	}
 
 	public ConditionBuilder value(Object value) {
-		Assert.requiredArgument(parameter != null && !parameter.isInvalid(), "parameter");
+		Assert.requiredArgument(parameter != null && StringUtils.isNotEmpty(parameter.getName()), "parameter");
 		this.parameter.setValue(value);
 		return this;
 	}

@@ -9,6 +9,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.DefaultStatus;
+import io.basc.framework.util.Optional;
 import io.basc.framework.util.Status;
 
 /**
@@ -86,5 +87,23 @@ public class FactoryLoader {
 	@Nullable
 	public static BeanFactory getBeanFactory() {
 		return getBeanFactory(Thread.currentThread().getContextClassLoader());
+	}
+
+	public static <T> Optional<T> getInstance(Class<? extends T> type) {
+		BeanFactory beanFactory = getBeanFactory(type.getClassLoader());
+		if (beanFactory == null || !beanFactory.isInstance(type)) {
+			return Optional.empty();
+		}
+
+		return Optional.of(beanFactory.getInstance(type));
+	}
+
+	public static Optional<Object> getInstance(String name, ClassLoader classLoader) {
+		BeanFactory beanFactory = getBeanFactory(classLoader);
+		if (beanFactory == null || !beanFactory.isInstance(name)) {
+			return Optional.empty();
+		}
+
+		return Optional.of(beanFactory.getInstance(name));
 	}
 }

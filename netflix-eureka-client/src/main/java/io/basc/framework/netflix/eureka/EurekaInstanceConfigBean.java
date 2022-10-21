@@ -15,7 +15,6 @@ import io.basc.framework.cloud.commons.util.InetUtils;
 import io.basc.framework.cloud.commons.util.InetUtils.HostInfo;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.orm.annotation.ConfigurationProperties;
-import io.basc.framework.util.StringUtils;
 
 @ConfigurationProperties("eureka.instance")
 public class EurekaInstanceConfigBean implements CloudEurekaInstanceConfig, ApplicationAware {
@@ -320,11 +319,10 @@ public class EurekaInstanceConfigBean implements CloudEurekaInstanceConfig, Appl
 		// set some defaults from the environment, but allow the defaults to use
 		// relaxed
 		// binding
-		String appName = application.getName();
-		if (StringUtils.hasText(appName)) {
-			setAppname(appName);
-			setVirtualHostName(appName);
-			setSecureVirtualHostName(appName);
+		if (application.getName().isPresent()) {
+			setAppname(application.getName().get());
+			setVirtualHostName(application.getName().get());
+			setSecureVirtualHostName(application.getName().get());
 		}
 	}
 

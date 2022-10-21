@@ -11,15 +11,16 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.event.ChangeEvent;
+import io.basc.framework.event.AbstractObservable;
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventRegistration;
+import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.io.event.SimpleResourceEventDispatcher;
 import io.basc.framework.lang.NestedIOException;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.JavaVersion;
+import io.basc.framework.util.Registration;
 
 /**
  * Convenience base class for {@link Resource} implementations, pre-implementing
@@ -31,14 +32,15 @@ import io.basc.framework.util.JavaVersion;
  * and "toString" will return the description.
  *
  */
-public abstract class AbstractResource implements Resource, EventDispatcher<ChangeEvent<Resource>> {
-	private static final Constructor<EventDispatcher<ChangeEvent<Resource>>> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
+public abstract class AbstractResource extends AbstractObservable<Resource>
+		implements Resource, EventDispatcher<ObservableChangeEvent<Resource>> {
+	private static final Constructor<EventDispatcher<ObservableChangeEvent<Resource>>> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
 			.getDeclaredConstructor("io.basc.framework.io.event.WatchServiceResourceEventDispatcher", null,
 					AbstractResource.class);
 
-	private volatile EventDispatcher<ChangeEvent<Resource>> eventDispatcher;
+	private volatile EventDispatcher<ObservableChangeEvent<Resource>> eventDispatcher;
 
-	private EventDispatcher<ChangeEvent<Resource>> getEventDispatcher() {
+	private EventDispatcher<ObservableChangeEvent<Resource>> getEventDispatcher() {
 		if (eventDispatcher == null) {
 			synchronized (this) {
 				if (eventDispatcher == null) {
@@ -77,18 +79,16 @@ public abstract class AbstractResource implements Resource, EventDispatcher<Chan
 	}
 
 	@Override
-	public EventRegistration registerListener(EventListener<ChangeEvent<Resource>> eventListener) {
+	public Registration registerListener(EventListener<ObservableChangeEvent<Resource>> eventListener) {
 		if (!isObservable()) {
-			return EventRegistration.EMPTY;
+			return Registration.EMPTY;
 		}
 		return getEventDispatcher().registerListener(eventListener);
 	}
 
 	@Override
-	public void publishEvent(ChangeEvent<Resource> event) {
-		if (isObservable()) {
-			getEventDispatcher().publishEvent(event);
-		}
+	public void publishEvent(ObservableChangeEvent<Resource> event) {
+		getEventDispatcher().publishEvent(event);
 	}
 
 	/**
@@ -260,5 +260,10 @@ public abstract class AbstractResource implements Resource, EventDispatcher<Chan
 
 	public OutputStream getOutputStream() throws IOException {
 		throw new NotSupportedException(getDescription());
+	}
+
+	@Override
+	public Resource getValue() {
+		return exists() ? this : null;
 	}
 }

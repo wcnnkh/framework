@@ -10,7 +10,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.io.Resource;
-import io.basc.framework.json.JSONUtils;
+import io.basc.framework.json.JsonUtils;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.StringUtils;
@@ -38,7 +38,7 @@ public class XmlHttpAuthorityManager extends DefaultHttpAuthorityManager<HttpAut
 
 		DomUtils.getTemplate().read(resource, (document) -> {
 			Element element = document.getDocumentElement();
-			String prefix = DomUtils.getNodeAttributeValue(element, "prefix");
+			String prefix = DomUtils.getNodeAttributeValue(element, "prefix").getAsString();
 			NodeList nodeList = XmlUtils.getTemplate().getChildNodes(element, environment.getResourceLoader());
 			if (nodeList == null) {
 				return;
@@ -64,7 +64,7 @@ public class XmlHttpAuthorityManager extends DefaultHttpAuthorityManager<HttpAut
 	private void addAuthority(Map<String, String> map, String defParentId, String prefix) {
 		String id = map.remove("id");
 		if (id == null) {
-			throw new NullPointerException("id不能为空：" + JSONUtils.getJsonSupport().toJSONString(map));
+			throw new NullPointerException("id不能为空：" + JsonUtils.toJsonString(map));
 		}
 
 		if (StringUtils.isNotEmpty(prefix)) {
@@ -73,7 +73,7 @@ public class XmlHttpAuthorityManager extends DefaultHttpAuthorityManager<HttpAut
 
 		String name = map.remove("name");
 		if (StringUtils.isEmpty(name)) {
-			throw new NullPointerException("name不能为空或空字符串：" + JSONUtils.getJsonSupport().toJSONString(map));
+			throw new NullPointerException("name不能为空或空字符串：" + JsonUtils.toJsonString(map));
 		}
 
 		String parentId = map.remove("parentId");

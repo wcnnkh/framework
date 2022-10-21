@@ -138,10 +138,7 @@ public class TomcatApplicationServer implements ApplicationServer, Destroy {
 	}
 
 	protected void configureServlet(Context context, Application application) throws Exception {
-		String servletName = application.getName();
-		if (StringUtils.isEmpty(servletName)) {
-			servletName = "framework";
-		}
+		String servletName = application.getName().map((e) -> StringUtils.isEmpty(e) ? null : e).orElse("framework");
 		Servlet servlet = ServletContextUtils.createServlet(application);
 		Wrapper wrapper = Tomcat.addServlet(context, servletName, servlet);
 		wrapper.setAsyncSupported(true);
@@ -195,7 +192,7 @@ public class TomcatApplicationServer implements ApplicationServer, Destroy {
 
 	@Override
 	public void startup(ConfigurableApplication application) throws Throwable {
-		if (application.getProperties().getValue("tomcat.log.enable", boolean.class, true)) {
+		if (application.getProperties().get("tomcat.log.enable").or(true).getAsBoolean()) {
 			java.util.logging.Logger.getLogger("org.apache").setLevel(Level.WARNING);
 		}
 
@@ -205,11 +202,8 @@ public class TomcatApplicationServer implements ApplicationServer, Destroy {
 		}
 
 		this.tomcat = new Tomcat();
-		int port = application.getPort();
-		if (port == -1) {
-			port = Application.DEFAULT_PORT;
-			application.setPort(port);
-		}
+		int port = application.getPort().orElseGet(() -> Application.getAvailablePort());
+		application.setPort(port);
 		tomcat.setPort(port);
 		logger.info("The boot port is {}", port);
 
@@ -226,7 +220,7 @@ public class TomcatApplicationServer implements ApplicationServer, Destroy {
 			context.addLifecycleListener(new AprLifecycleListener());
 		}
 
-		application.getProperties().getTandemFactories()
+		application.getProperties().getPropertyFactories().getFactories()
 				.addService(new ServletContextPropertyFactory(context.getServletContext()));
 
 		configureJSP(context, application);

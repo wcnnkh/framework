@@ -79,7 +79,7 @@ public final class StreamProcessorSupport {
 	 * 使用静态代理而不动态代理的原因是考虑性能
 	 * 虽然可以自动关闭，并并非所有情况都适用，例如调用iterator/spliterator方法或获取到此对象后未调用任何方法
 	 * 
-	 * @param        <T>
+	 * @param <T>
 	 * @param stream
 	 * @return
 	 */
@@ -94,7 +94,7 @@ public final class StreamProcessorSupport {
 	 * 使用静态代理而不动态代理的原因是考虑性能
 	 * 虽然可以自动关闭，并并非所有情况都适用，例如调用iterator/spliterator方法或获取到此对象后未调用任何方法
 	 * 
-	 * @param          <T>
+	 * @param <T>
 	 * @param iterator
 	 * @return
 	 */
@@ -108,7 +108,7 @@ public final class StreamProcessorSupport {
 
 	/**
 	 * @see Cursor
-	 * @param        <T>
+	 * @param <T>
 	 * @param stream
 	 * @return
 	 */
@@ -243,5 +243,43 @@ public final class StreamProcessorSupport {
 
 	public static <S, T, E extends Throwable> Processor<S, T, E> toProcessor(Function<S, ? extends T> function) {
 		return (s) -> function.apply(s);
+	}
+
+	/**
+	 * 即使出现异常也会将执行其他consumer
+	 * 
+	 * @param <S>
+	 * @param <E>
+	 * @param iterator
+	 * @param consumer
+	 * @throws E
+	 */
+	public static <S, E extends Throwable> void consumeAll(Iterator<? extends S> iterator,
+			ConsumerProcessor<? super S, ? extends E> consumer) throws E {
+		Assert.requiredArgument(iterator != null, "iterator");
+		Assert.requiredArgument(consumer != null, "consumer");
+		if (iterator.hasNext()) {
+			S source = iterator.next();
+			try {
+				consumer.process(source);
+			} finally {
+				consumeAll(iterator, consumer);
+			}
+		}
+	}
+
+	/**
+	 * 即使出现异常也会将执行其他consumer
+	 * 
+	 * @param <S>
+	 * @param <E>
+	 * @param iterable
+	 * @param consumer
+	 * @throws E
+	 */
+	public static <S, E extends Throwable> void consumeAll(Iterable<? extends S> iterable,
+			ConsumerProcessor<? super S, ? extends E> consumer) throws E {
+		Assert.requiredArgument(iterable != null, "iterable");
+		consumeAll(iterable.iterator(), consumer);
 	}
 }

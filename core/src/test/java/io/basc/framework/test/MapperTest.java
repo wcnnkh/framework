@@ -9,7 +9,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.json.JSONUtils;
+import io.basc.framework.json.JsonUtils;
 import io.basc.framework.mapper.DefaultObjectMapper;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Fields;
@@ -33,8 +33,8 @@ public class MapperTest {
 		map.put("s.b", XUtils.getUUID());
 		DefaultObjectMapper<Object, RuntimeException> mapper = new DefaultObjectMapper<>();
 		A a = mapper.convert(map, A.class);
-		System.out.println(JSONUtils.toJSONString(map));
-		System.out.println(JSONUtils.toJSONString(a));
+		System.out.println(JsonUtils.toJsonString(map));
+		System.out.println(JsonUtils.toJsonString(a));
 		assertTrue(map.get("k").equals(a.getK()));
 		assertTrue(map.get("b.bk").equals(a.getB().getBk()));
 		System.out.println(a);

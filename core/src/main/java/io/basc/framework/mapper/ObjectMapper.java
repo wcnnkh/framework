@@ -52,7 +52,7 @@ public interface ObjectMapper<S, E extends Throwable>
 			Field field = properties.next();
 			if (field.isSupportGetter() && field.isSupportSetter()) {
 				Parameter value = field.getParameter(source);
-				if (value == null || value.isNull()) {
+				if (value == null || !value.isPresent()) {
 					continue;
 				}
 
@@ -155,7 +155,7 @@ public interface ObjectMapper<S, E extends Throwable>
 				.sorted((left, right) -> comparator.compare(left.getSetter(), right.getSetter()))
 				.forEachOrdered((sourceField) -> {
 					Parameter value = sourceField.getParameter(source);
-					if (value == null || value.isNull()) {
+					if (value == null || !value.isPresent()) {
 						return;
 					}
 
@@ -178,7 +178,7 @@ public interface ObjectMapper<S, E extends Throwable>
 			}
 
 			Parameter parameter = field.getParameter(source);
-			if (parameter == null || parameter.isNull()) {
+			if (parameter == null || !parameter.isPresent()) {
 				continue;
 			}
 
@@ -252,7 +252,7 @@ public interface ObjectMapper<S, E extends Throwable>
 			}
 
 			Parameter parameter = sourceAccess.get(field.getName());
-			if (parameter == null || parameter.isNull()) {
+			if (parameter == null || !parameter.isPresent()) {
 				continue;
 			}
 

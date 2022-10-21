@@ -1,28 +1,23 @@
 package io.basc.framework.value.support;
 
+import java.util.Iterator;
+
 import io.basc.framework.convert.ConvertibleEnumeration;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.MultiIterator;
 import io.basc.framework.value.PropertyFactory;
-import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
-
-import java.util.Iterator;
 
 public class SystemPropertyFactory implements PropertyFactory {
 	public static final SystemPropertyFactory INSTANCE = new SystemPropertyFactory();
 
-	public Value getValue(String key) {
+	public Value get(String key) {
 		String value = System.getProperty(key);
 		if (value == null) {
 			value = System.getenv(key);
 		}
 
-		if (value == null) {
-			return null;
-		}
-
-		return new StringValue(value);
+		return Value.of(value);
 	}
 
 	public Iterator<String> iterator() {

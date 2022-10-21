@@ -140,8 +140,8 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 					iocResolver.configure(this);
 				}
 
-				String beansConfiguration = getProperties().getValue(BEANS_CONFIGURATION, String.class,
-						DEFAULT_BEANS_CONFIGURATION);
+				String beansConfiguration = getProperties().get(BEANS_CONFIGURATION).or(DEFAULT_BEANS_CONFIGURATION)
+						.getAsString();
 				getConfigurationResources().addService(getResourceLoader().getResource(beansConfiguration));
 
 				postProcessContext(new XmlContextPostProcessor());

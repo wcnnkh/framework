@@ -35,6 +35,6 @@ public class Condition extends BascObject implements Serializable {
 	}
 
 	public boolean isInvalid() {
-		return StringUtils.isEmpty(condition) || parameter.isInvalid();
+		return StringUtils.isEmpty(condition) || !parameter.isPresent();
 	}
 }

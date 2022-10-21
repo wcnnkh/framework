@@ -3,140 +3,27 @@ package io.basc.framework.value;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.function.Supplier;
+import java.util.NoSuchElementException;
+import java.util.function.DoubleSupplier;
+import java.util.function.IntSupplier;
+import java.util.function.LongSupplier;
 
+import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.ResolvableType;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.Optional;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.stream.CallableProcessor;
 
-public interface Value extends Supplier<Object> {
-	final Value[] EMPTY_ARRAY = new Value[0];
+public interface Value extends Optional<Value>, IntSupplier, LongSupplier, DoubleSupplier, ConversionService {
+	static final Value EMPTY = new EmptyValue();
 
-	/**
-	 * 获取原始值
-	 * 
-	 * @return
-	 */
-	@Nullable
-	Object get();
-
-	default TypeDescriptor getTypeDescriptor() {
-		Object value = get();
-		if (value == null) {
-			return TypeDescriptor.valueOf(Object.class);
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getTypeDescriptor();
-		}
-		return TypeDescriptor.forObject(value);
-	}
-
-	@SuppressWarnings("unchecked")
-	default <T, E extends Throwable> T convert(Class<? extends T> targetType,
-			Converter<? super Object, ? extends Object, E> converter) throws E {
-		return (T) convert(TypeDescriptor.valueOf(targetType), converter);
-	}
-
-	default <E extends Throwable> Object convert(TypeDescriptor targetType,
-			Converter<? super Object, ? extends Object, E> converter) throws E {
-		Object value = get();
-		if (value == null) {
-			return null;
-		}
-
-		Class<?> rawClass = targetType.getType();
-		if (rawClass == Object.class || rawClass == null) {
-			return value;
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).convert(targetType, converter);
-		}
-		return converter.convert(value, getTypeDescriptor(), targetType);
-	}
-
-	@Nullable
-	<T> T getAsObject(Class<T> type);
-
-	@Nullable
-	Object getAsObject(Type type);
-
-	@Nullable
-	Object getAsObject(TypeDescriptor type);
-
-	@Nullable
-	String getAsString();
-
-	@Nullable
-	Byte getAsByte();
-
-	byte getAsByteValue();
-
-	@Nullable
-	Short getAsShort();
-
-	short getAsShortValue();
-
-	@Nullable
-	Integer getAsInteger();
-
-	int getAsIntValue();
-
-	@Nullable
-	Long getAsLong();
-
-	long getAsLongValue();
-
-	@Nullable
-	Boolean getAsBoolean();
-
-	boolean getAsBooleanValue();
-
-	@Nullable
-	Float getAsFloat();
-
-	float getAsFloatValue();
-
-	@Nullable
-	Double getAsDouble();
-
-	double getAsDoubleValue();
-
-	char getAsChar();
-
-	@Nullable
-	Character getAsCharacter();
-
-	@Nullable
-	BigInteger getAsBigInteger();
-
-	@Nullable
-	BigDecimal getAsBigDecimal();
-
-	@Nullable
-	Number getAsNumber();
-
-	/**
-	 * 是否可以转换为number,此方法不代表数据的原始类型是number
-	 * 
-	 * @see #getAsNumber()
-	 * @return
-	 */
-	boolean isNumber();
-
-	boolean isEmpty();
-
-	default boolean isNull() {
-		return get() == null;
-	}
-
-	@Nullable
-	Class<?> getAsClass();
-
-	@Nullable
-	Enum<?> getAsEnum(Class<?> enumType);
+	static final Value[] EMPTY_ARRAY = new Value[0];
 
 	/**
 	 * 这并不是指基本数据类型，这是指Value可以直接转换的类型
@@ -158,5 +45,667 @@ public interface Value extends Supplier<Object> {
 
 		return ClassUtils.isPrimitiveOrWrapper(type) || type == String.class || type == BigDecimal.class
 				|| type == BigInteger.class || Number.class == type || type == Class.class;
+	}
+
+	static Value of(@Nullable Object value) {
+		return of(value, null, null);
+	}
+
+	static Value of(@Nullable Object value, @Nullable TypeDescriptor type) {
+		return of(value, type, null);
+	}
+
+	static Value of(@Nullable Object value,
+			@Nullable Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
+		return of(value, null, converter);
+	}
+
+	static Value of(@Nullable Object value, @Nullable TypeDescriptor type,
+			@Nullable Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
+		if (converter == null) {
+			if (type == null) {
+				if (value == null) {
+					return EMPTY;
+				}
+
+				if (value instanceof Value) {
+					return (Value) value;
+				}
+
+				return new AnyValue(value);
+			}
+
+			// 使用默认的转换行为
+			return new AnyValue(value, type);
+		}
+		return new AnyValue(value, type, converter);
+	}
+
+	default <T> Optional<T> as(Class<? extends T> type) {
+		return map((e) -> getAsObject(type));
+	}
+
+	@Override
+	default boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		return !isBaseType(targetType.getType());
+	}
+
+	@Nullable
+	@SuppressWarnings("unchecked")
+	default <T, E extends Throwable> T convert(Class<? extends T> targetType,
+			Converter<? super Object, ? extends Object, E> converter) throws E {
+		return (T) convert(TypeDescriptor.valueOf(targetType), converter);
+	}
+
+	@Nullable
+	default <E extends Throwable> Object convert(TypeDescriptor targetType,
+			Converter<? super Object, ? extends Object, E> converter) throws E {
+		Assert.requiredArgument(converter != null, "converter");
+		Object value = getSource();
+		if (value == null) {
+			return null;
+		}
+
+		Class<?> rawClass = targetType.getType();
+		if (rawClass == Object.class || rawClass == null) {
+			return value;
+		}
+
+		TypeDescriptor sourceType = getTypeDescriptor();
+		if (converter instanceof ConversionService) {
+			while (true) {
+				ConversionService conversionService = (ConversionService) converter;
+				if (conversionService.canConvert(sourceType, targetType)) {
+					return converter.convert(value, sourceType, targetType);
+				}
+
+				if (value instanceof Value) {
+					value = ((Value) value).getSource();
+					sourceType = ((Value) value).getTypeDescriptor();
+				}
+				break;
+			}
+		}
+
+		value = getSource();
+		sourceType = getTypeDescriptor();
+		try {
+			return converter.convert(value, sourceType, targetType);
+		} catch (RuntimeException e) {
+			if (value instanceof Value) {
+				return ((Value) value).getAsObject(targetType);
+			}
+			throw e;
+		}
+	}
+
+	@Override
+	default Value get() {
+		Object value = getSource();
+		if (value == null) {
+			throw new NoSuchElementException("No value present");
+		}
+
+		if (value instanceof Value) {
+			return (Value) value;
+		}
+
+		return transform(value, getTypeDescriptor());
+	}
+
+	@Nullable
+	default BigDecimal getAsBigDecimal() {
+		Object value = getSource();
+		if (value == null) {
+			return null;
+		}
+
+		if (value instanceof BigDecimal) {
+			return (BigDecimal) value;
+		}
+
+		if (value instanceof BigInteger) {
+			return new BigDecimal((BigInteger) value);
+		}
+
+		if (value instanceof Number) {
+			return new BigDecimal(((Number) value).doubleValue());
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getAsBigDecimal();
+		}
+
+		String v = getAsNumberString();
+		if (StringUtils.hasText(v)) {
+			return new BigDecimal(v);
+		}
+		return null;
+	}
+
+	@Nullable
+	default BigInteger getAsBigInteger() {
+		Object value = getSource();
+		if (value == null) {
+			return null;
+		}
+
+		if (value instanceof BigInteger) {
+			return (BigInteger) value;
+		}
+
+		if (value instanceof BigDecimal) {
+			return ((BigDecimal) value).toBigInteger();
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getAsBigInteger();
+		}
+
+		String v = getAsNumberString();
+		if (StringUtils.hasText(v)) {
+			return new BigInteger(v, getNumberRadix());
+		}
+		return null;
+	}
+
+	default boolean getAsBoolean() {
+		Object value = getSource();
+		if (value == null) {
+			return false;
+		}
+
+		if (value instanceof Boolean) {
+			return (Boolean) value;
+		}
+
+		if (value instanceof Number) {
+			return ((Number) value).intValue() == 1;
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getAsBoolean();
+		}
+
+		String v = getAsString();
+		if (StringUtils.hasText(v)) {
+			return StringUtils.parseBoolean(v);
+		}
+		return false;
+	}
+
+	default byte getAsByte() {
+		Object value = getSource();
+		if (value == null) {
+			return 0;
+		}
+
+		if (value instanceof Byte) {
+			return (Byte) value;
+		}
+
+		if (value instanceof Number) {
+			return ((Number) value).byteValue();
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getAsByte();
+		}
+
+		String v = getAsNumberString();
+		if (StringUtils.hasText(v)) {
+			return Byte.parseByte(v, getNumberRadix());
+		}
+		return 0;
+	}
+
+	default char getAsChar() {
+		Object value = getSource();
+		if (value == null) {
+			return 0;
+		}
+
+		if (value instanceof Character) {
+			return (Character) value;
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getAsChar();
+		}
+
+		String v = getAsString();
+		if (StringUtils.isEmpty(v)) {
+			return 0;
+		}
+		return v.charAt(0);
+	}
+
+	@Nullable
+	default Class<?> getAsClass() {
+		Object value = getSource();
+		if (value == null) {
+			return null;
+		}
+
+		if (value instanceof Class) {
+			return (Class<?>) value;
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getAsClass();
+		}
+
+		String v = getAsString();
+		if (StringUtils.hasText(v)) {
+			try {
+				return ClassUtils.forName(v, null);
+			} catch (ClassNotFoundException e) {
+				return null;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	default double getAsDouble() {
+		Object value = getSource();
+		if (value == null) {
+			return 0;
+		}
+
+		if (value instanceof Double) {
+			return (Double) value;
+		}
+
+		if (value instanceof Number) {
+			return ((Number) value).doubleValue();
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getAsDouble();
+		}
+
+		String v = getAsNumberString();
+		if (StringUtils.hasText(v)) {
+			return Double.parseDouble(v);
+		}
+		return 0;
+	}
+
+	@Nullable
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	default Enum<?> getAsEnum(Class<?> enumType) {
+		Object value = getSource();
+		if (value == null) {
+			return null;
+		}
+
+		if (value instanceof Enum<?>) {
+			return (Enum<?>) value;
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getAsEnum(enumType);
+		}
+
+		String v = getAsString();
+		if (StringUtils.hasText(v)) {
+			return Enum.valueOf((Class<? extends Enum>) enumType, v);
+		}
+		return null;
+	}
+
+	default float getAsFloat() {
+		Object value = getSource();
+		if (value == null) {
+			return 0;
+		}
+
+		if (value instanceof Float) {
+			return (Float) value;
+		}
+
+		if (value instanceof Number) {
+			return ((Number) value).floatValue();
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getAsFloat();
+		}
+
+		String v = getAsNumberString();
+		if (StringUtils.hasText(v)) {
+			return Float.valueOf(v);
+		}
+		return 0;
+	}
+
+	@Override
+	default int getAsInt() {
+		Object value = getSource();
+		if (value == null) {
+			return 0;
+		}
+
+		if (value instanceof Integer) {
+			return (Integer) value;
+		}
+
+		if (value instanceof Number) {
+			return ((Number) value).intValue();
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getAsInt();
+		}
+
+		String v = getAsNumberString();
+		if (StringUtils.hasText(v)) {
+			return Integer.parseInt(v, getNumberRadix());
+		}
+		return 0;
+	}
+
+	@Override
+	default long getAsLong() {
+		Object value = getSource();
+		if (value == null) {
+			return 0;
+		}
+
+		if (value instanceof Long) {
+			return (Long) value;
+		}
+
+		if (value instanceof Number) {
+			return ((Number) value).longValue();
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getAsLong();
+		}
+
+		String v = getAsNumberString();
+		if (StringUtils.hasText(v)) {
+			return Long.parseLong(v, getNumberRadix());
+		}
+		return 0;
+	}
+
+	@Nullable
+	default Number getAsNumber() {
+		Object value = getSource();
+		if (value == null) {
+			return null;
+		}
+
+		if (value instanceof Number) {
+			return (Number) value;
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getAsNumber();
+		}
+
+		String v = getAsNumberString();
+		if (StringUtils.hasText(v)) {
+			return new BigDecimal(v);
+		}
+		return null;
+	}
+
+	@Nullable
+	default String getAsNumberString() {
+		return StringUtils.parseNumberText(getAsString(), getNumberRadix());
+	}
+
+	@Nullable
+	@SuppressWarnings("unchecked")
+	default <T> T getAsObject(Class<? extends T> type) {
+		Object v = null;
+		if (String.class == type) {
+			v = getAsString();
+		} else if (int.class == type) {
+			v = getAsInt();
+		} else if (Integer.class == type) {
+			v = isEmpty() ? null : getAsInt();
+		} else if (long.class == type) {
+			v = getAsLong();
+		} else if (Long.class == type) {
+			v = isEmpty() ? null : getAsLong();
+		} else if (float.class == type) {
+			v = getAsFloat();
+		} else if (Float.class == type) {
+			v = isEmpty() ? null : getAsFloat();
+		} else if (double.class == type) {
+			v = getAsDouble();
+		} else if (Double.class == type) {
+			v = isEmpty() ? null : getAsDouble();
+		} else if (short.class == type) {
+			v = getAsShort();
+		} else if (Short.class == type) {
+			v = isEmpty() ? null : getAsShort();
+		} else if (boolean.class == type) {
+			v = getAsBoolean();
+		} else if (Boolean.class == type) {
+			v = isEmpty() ? null : getAsBoolean();
+		} else if (byte.class == type) {
+			v = getAsByte();
+		} else if (Byte.class == type) {
+			v = isEmpty() ? null : getAsByte();
+		} else if (char.class == type) {
+			v = getAsChar();
+		} else if (Character.class == type) {
+			v = isEmpty() ? null : getAsChar();
+		} else if (BigDecimal.class == type) {
+			v = getAsBigDecimal();
+		} else if (BigInteger.class == type) {
+			v = getAsBigInteger();
+		} else if (Number.class == type) {
+			v = getAsNumber();
+		} else if (Class.class == type) {
+			v = getAsClass();
+		} else if (type.isEnum()) {
+			v = getAsEnum(type);
+		} else if (type == Value.class) {
+			v = this;
+		} else {
+			v = getAsObject(TypeDescriptor.valueOf(type));
+		}
+		return (T) v;
+	}
+
+	@Nullable
+	default Object getAsObject(Type type) {
+		if (type instanceof Class) {
+			return getAsObject((Class<?>) type);
+		}
+		return getAsObject(TypeDescriptor.valueOf(type));
+	}
+
+	default Object getAsObject(ResolvableType type) {
+		return getAsObject(TypeDescriptor.valueOf(type));
+	}
+
+	@Nullable
+	default Object getAsObject(TypeDescriptor type) {
+		if (Value.isBaseType(type.getType())) {
+			return getAsObject(type.getType());
+		}
+
+		Object value = getSource();
+		if (value == null) {
+			return null;
+		}
+
+		Class<?> rawClass = type.getType();
+		if (rawClass == Object.class || rawClass == null) {
+			return value;
+		}
+
+		if (!type.isGeneric() && type.getType().isInstance(value)) {
+			return value;
+		}
+
+		TypeDescriptor sourceType = getTypeDescriptor();
+		while (true) {
+			if (canConvert(sourceType, type)) {
+				return convert(value, sourceType, type);
+			}
+
+			if (value instanceof Value) {
+				Value sourceValue = (Value) value;
+				if (sourceValue.canConvert(sourceType, type)) {
+					return sourceValue.convert(value, sourceType, type);
+				}
+				value = sourceValue.getSource();
+				sourceType = sourceValue.getTypeDescriptor();
+			}
+			break;
+		}
+
+		value = getSource();
+		sourceType = getTypeDescriptor();
+		if (value instanceof Value) {
+			return ((Value) value).getAsObject(type);
+		}
+		return convert(value, sourceType, type);
+	}
+
+	default short getAsShort() {
+		Object value = getSource();
+		if (value == null) {
+			return 0;
+		}
+
+		if (value instanceof Short) {
+			return (Short) value;
+		}
+
+		if (value instanceof Number) {
+			return ((Number) value).shortValue();
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getAsShort();
+		}
+
+		String v = getAsNumberString();
+		if (StringUtils.hasText(v)) {
+			return Short.parseShort(v, getNumberRadix());
+		}
+		return 0;
+	}
+
+	@Nullable
+	default String getAsString() {
+		Object value = getSource();
+		if (value == null) {
+			return null;
+		}
+
+		if (value instanceof String) {
+			return (String) value;
+		}
+
+		if (value instanceof Enum) {
+			return ((Enum<?>) value).name();
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).getAsString();
+		}
+
+		return convert(value, getTypeDescriptor(), String.class);
+	}
+
+	default int getNumberRadix() {
+		return 10;
+	}
+
+	@Nullable
+	Object getSource();
+
+	default TypeDescriptor getTypeDescriptor() {
+		Object value = getSource();
+		if (value == null) {
+			return TypeDescriptor.valueOf(Object.class);
+		}
+		return TypeDescriptor.forObject(value);
+	}
+
+	default boolean isEmpty() {
+		if (isPresent()) {
+			Object value = getSource();
+			if (value instanceof Value) {
+				return ((Value) value).isEmpty();
+			}
+
+			return ObjectUtils.isEmpty(value);
+		}
+		return true;
+	}
+
+	/**
+	 * 是否可以转换为number,此方法不代表数据的原始类型是number
+	 * 
+	 * @see #getAsNumber()
+	 * @return
+	 */
+	default boolean isNumber() {
+		if (isEmpty()) {
+			return false;
+		}
+
+		Object value = getSource();
+		if (value instanceof Number) {
+			return true;
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).isNumber();
+		}
+
+		String numberString = getAsNumberString();
+		if (!StringUtils.hasText(numberString)) {
+			return false;
+		}
+
+		if (StringUtils.isNumeric(numberString, getNumberRadix())) {
+			return true;
+		}
+
+		try {
+			new BigDecimal(numberString);
+			return true;
+		} catch (NumberFormatException e) {
+		}
+		return false;
+	}
+
+	@Override
+	default boolean isPresent() {
+		Object value = getSource();
+		if (value == null) {
+			return false;
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).isPresent();
+		}
+
+		return true;
+	}
+
+	default Value or(Object other) {
+		return orElse(other instanceof Value ? (Value) other : transform(other, null));
+	}
+
+	default <E extends Throwable> Value orGet(CallableProcessor<? extends Object, ? extends E> other) throws E {
+		return orElseGet(() -> transform(other.process(), null));
+	}
+
+	default Value transform(Object value, @Nullable TypeDescriptor type) {
+		return new AnyValue(value, type);
 	}
 }

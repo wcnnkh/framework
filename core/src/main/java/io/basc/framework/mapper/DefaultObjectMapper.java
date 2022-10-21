@@ -26,7 +26,6 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.stream.Processor;
-import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
 
@@ -100,7 +99,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends SimpleReverseMa
 					continue;
 				}
 
-				if (context.isIgnoreNull() && value.isNull()) {
+				if (context.isIgnoreNull() && !value.isPresent()) {
 					continue;
 				}
 
@@ -174,7 +173,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends SimpleReverseMa
 				}
 
 				Parameter value = field.getParameter(source);
-				if (value == null || value.isNull()) {
+				if (value == null || !value.isPresent()) {
 					continue;
 				}
 
@@ -244,7 +243,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends SimpleReverseMa
 
 			for (String name : names) {
 				Parameter value = objectAccess.get(name);
-				if (value == null || value.isNull()) {
+				if (value == null || !value.isPresent()) {
 					continue;
 				}
 				return value;
@@ -256,7 +255,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends SimpleReverseMa
 					appendMapProperty(valueMap, name + context.getNameConnector(), objectAccess, context);
 				}
 				if (!CollectionUtils.isEmpty(valueMap)) {
-					Value value = new AnyValue(valueMap,
+					Value value = Value.of(valueMap,
 							TypeDescriptor.map(LinkedHashMap.class, String.class, Object.class));
 					return new Parameter(
 							context.getNamePrefix() == null ? p.getName() : (context.getNamePrefix() + p.getName()),
@@ -379,7 +378,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends SimpleReverseMa
 							TypeDescriptor entityType = new TypeDescriptor(targetField.getSetter());
 							ObjectMapperContext contextUse = getContext(entityType, context);
 							Object entity = convert(source, sourceType, entityType, targetField, contextUse);
-							value = new AnyValue(entity, entityType, context.getConversionService());
+							value = Value.of(entity, entityType, context.getConversionService());
 						} else {
 							Parameter parameter = sourceField.getParameter(source);
 							if (parameter != null) {
@@ -392,7 +391,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends SimpleReverseMa
 							break;
 						}
 
-						if (context.isIgnoreNull() && value.isNull()) {
+						if (context.isIgnoreNull() && !value.isPresent()) {
 							break;
 						}
 
@@ -430,7 +429,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends SimpleReverseMa
 				continue;
 			}
 
-			if (context.isIgnoreNull() && parameter.isNull()) {
+			if (context.isIgnoreNull() && !parameter.isPresent()) {
 				continue;
 			}
 
@@ -608,7 +607,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends SimpleReverseMa
 					continue;
 				}
 
-				if (context.isIgnoreNull() && parameter.isNull()) {
+				if (context.isIgnoreNull() && !parameter.isPresent()) {
 					continue;
 				}
 

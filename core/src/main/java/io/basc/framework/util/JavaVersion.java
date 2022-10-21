@@ -1,11 +1,10 @@
 package io.basc.framework.util;
 
+import java.util.Map;
+
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.lang.RequiredJavaVersion;
-import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
-
-import java.util.Map;
 
 public class JavaVersion extends Version {
 	private static final long serialVersionUID = 1L;
@@ -16,9 +15,9 @@ public class JavaVersion extends Version {
 		Version version = new Version(System.getProperty("java.version"));
 		if (version.length() > 1) {
 			Value fragment = version.get(0);
-			if (fragment.isNumber() && fragment.getAsIntValue() > 1) {// java9以上
+			if (fragment.isNumber() && fragment.getAsInt() > 1) {// java9以上
 				Value[] fragments = new Value[version.length() + 1];
-				fragments[0] = new AnyValue(1);
+				fragments[0] = Value.of(1);
 				System.arraycopy(version.getFragments(), 0, fragments, 1, version.length());
 				version = new Version(fragments, version.getDividers());
 			}

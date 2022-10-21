@@ -51,12 +51,12 @@ public class EnvConfiguration extends Configuration implements Configurable {
 	}
 
 	public static Version getDefaultVersion(PropertyFactory environment) {
-		String versionString = environment.getString(CONFIG_PROPERTY_PREFIX + "version");
+		String versionString = environment.getAsString(CONFIG_PROPERTY_PREFIX + "version");
 		if (StringUtils.hasText(versionString)) {
 			try {
 				Date buildDate;
 				{
-					String buildDateStr = environment.getString(CONFIG_PROPERTY_PREFIX + "buildTimestamp");
+					String buildDateStr = environment.getAsString(CONFIG_PROPERTY_PREFIX + "buildTimestamp");
 					if (buildDateStr.endsWith("Z")) {
 						buildDateStr = buildDateStr.substring(0, buildDateStr.length() - 1) + "+0000";
 					}
@@ -67,7 +67,8 @@ public class EnvConfiguration extends Configuration implements Configurable {
 					}
 				}
 
-				final Boolean gaeCompliant = environment.getBoolean(CONFIG_PROPERTY_PREFIX + "isGAECompliant");
+				final Boolean gaeCompliant = environment.get(CONFIG_PROPERTY_PREFIX + "isGAECompliant")
+						.getAsObject(Boolean.class);
 				return new Version(versionString, gaeCompliant, buildDate);
 			} catch (Exception e) {
 				throw new RuntimeException("Failed to load and parse version", e);

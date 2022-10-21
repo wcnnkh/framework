@@ -1,10 +1,9 @@
 package io.basc.framework.util;
 
-import io.basc.framework.value.StringValue;
-import io.basc.framework.value.Value;
-
 import java.io.Serializable;
 import java.util.Comparator;
+
+import io.basc.framework.value.Value;
 
 public class Version implements Serializable, Comparable<Version>, Comparator<Value> {
 	private static final long serialVersionUID = 1L;
@@ -26,7 +25,7 @@ public class Version implements Serializable, Comparable<Version>, Comparator<Va
 		String[] arr = StringUtils.splitToArray(version, dividers);
 		fragments = new Value[arr.length];
 		for (int i = 0; i < arr.length; i++) {
-			this.fragments[i] = new StringValue(arr[i]);
+			this.fragments[i] = Value.of(arr[i]);
 		}
 	}
 
@@ -144,7 +143,7 @@ public class Version implements Serializable, Comparable<Version>, Comparator<Va
 	@Override
 	public int compare(Value v1, Value v2) {
 		if (v1.isNumber() && v2.isNumber()) {
-			return v1.getAsDouble().compareTo(v2.getAsDouble());
+			return Double.compare(v1.getAsDouble(), v2.getAsDouble());
 		}
 
 		return v1.getAsString().compareTo(v2.getAsString());

@@ -10,7 +10,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import io.basc.framework.aop.support.ProxyUtils;
-import io.basc.framework.json.JSONAware;
+import io.basc.framework.json.JsonAware;
 import io.basc.framework.value.Value;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -18,7 +18,7 @@ public class ExtendGsonTypeAdapter extends TypeAdapter<Object> {
 	public static final TypeAdapterFactory FACTORY = new TypeAdapterFactory() {
 
 		public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
-			if (JSONAware.class.isAssignableFrom(typeToken.getRawType())
+			if (JsonAware.class.isAssignableFrom(typeToken.getRawType())
 					|| Value.class.isAssignableFrom(typeToken.getRawType())
 					|| ProxyUtils.getFactory().isProxy(typeToken.getRawType())) {
 				return (TypeAdapter) new ExtendGsonTypeAdapter(gson);
@@ -49,8 +49,8 @@ public class ExtendGsonTypeAdapter extends TypeAdapter<Object> {
 			return;
 		}
 
-		if (value instanceof JSONAware) {
-			out.jsonValue(((JSONAware) value).toJSONString());
+		if (value instanceof JsonAware) {
+			out.jsonValue(((JsonAware) value).toJsonString());
 			return;
 		}
 

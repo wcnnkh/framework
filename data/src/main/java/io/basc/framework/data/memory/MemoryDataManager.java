@@ -14,7 +14,7 @@ import io.basc.framework.logger.LoggerFactory;
 public final class MemoryDataManager implements AutoCloseable {
 	// 单位：秒
 	private static final int DEFAULT_CLEAR_PERIOD = Sys.getEnv().getProperties()
-			.getValue("memory.temporary.cache.clear.period", int.class, 60);
+			.get("memory.temporary.cache.clear.period").or(60).getAsInt();
 	// 守护线程，自动退出
 	private static final Timer TIMER = new Timer(MemoryDataManager.class.getSimpleName(), true);
 

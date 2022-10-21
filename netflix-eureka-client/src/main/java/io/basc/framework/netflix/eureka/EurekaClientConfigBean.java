@@ -503,7 +503,7 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	@Override
 	public String getExperimental(String name) {
 		if (this.environment != null) {
-			return this.environment.getProperties().getValue(PREFIX + ".experimental." + name, String.class, null);
+			return this.environment.getProperties().getAsString(PREFIX + ".experimental." + name);
 		}
 		return null;
 	}

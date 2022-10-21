@@ -1,0 +1,103 @@
+package io.basc.framework.value;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.stream.Stream;
+
+import io.basc.framework.event.ChangeEvent;
+import io.basc.framework.event.EventListener;
+import io.basc.framework.event.EventTypes;
+import io.basc.framework.event.NamedEventDispatcher;
+import io.basc.framework.event.support.SimpleNamedEventDispatcher;
+import io.basc.framework.factory.Configurable;
+import io.basc.framework.factory.ConfigurableServices;
+import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.util.Registration;
+import io.basc.framework.util.stream.StreamProcessorSupport;
+
+public class PropertyFactories implements PropertyFactory, Configurable {
+	private final NamedEventDispatcher<String, ChangeEvent<String>> namedEventDispatcher;
+	private final ConfigurableServices<PropertyFactory> factories;
+
+	public PropertyFactories() {
+		this(new SimpleNamedEventDispatcher<>());
+	}
+
+	public PropertyFactories(NamedEventDispatcher<String, ChangeEvent<String>> namedEventDispatcher) {
+		this.namedEventDispatcher = namedEventDispatcher;
+		this.factories = new ConfigurableServices<PropertyFactory>(PropertyFactory.class) {
+			@Override
+			protected boolean addService(PropertyFactory service, Collection<PropertyFactory> targetServices) {
+				if (super.addService(service, targetServices)) {
+					long t = System.currentTimeMillis();
+					StreamProcessorSupport.consumeAll(service.iterator(), (e) -> namedEventDispatcher.publishEvent(e,
+							new ChangeEvent<String>(t, EventTypes.CREATE, e)));
+					return true;
+				}
+				return false;
+			}
+		};
+	}
+
+	public ConfigurableServices<PropertyFactory> getFactories() {
+		return factories;
+	}
+
+	@Override
+	public boolean isConfigured() {
+		return factories.isConfigured();
+	}
+
+	@Override
+	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		factories.configure(serviceLoaderFactory);
+	}
+
+	@Override
+	public Value get(String key) {
+		for (PropertyFactory factory : factories) {
+			if (factory == null || factory == this) {
+				continue;
+			}
+
+			Value value = factory.get(key);
+			if (value != null && value.isPresent()) {
+				return value;
+			}
+		}
+		return Value.EMPTY;
+	}
+
+	@Override
+	public boolean containsKey(String key) {
+		for (PropertyFactory factory : factories) {
+			if (factory == null || factory == this) {
+				continue;
+			}
+
+			if (factory.containsKey(key)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public Iterator<String> iterator() {
+		return stream().iterator();
+	}
+
+	@Override
+	public Stream<String> stream() {
+		Stream<String> stream = null;
+		for (PropertyFactory factory : factories) {
+			stream = stream == null ? factory.stream() : Stream.concat(stream, factory.stream());
+		}
+		return stream == null ? StreamProcessorSupport.emptyStream() : stream.distinct();
+	}
+
+	@Override
+	public Registration registerListener(String name, EventListener<ChangeEvent<String>> eventListener) {
+		return namedEventDispatcher.registerListener(name, eventListener);
+	}
+}

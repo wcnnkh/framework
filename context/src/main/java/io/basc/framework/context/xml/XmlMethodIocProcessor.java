@@ -13,7 +13,7 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeansException;
 import io.basc.framework.factory.FactoryException;
-import io.basc.framework.json.JSONUtils;
+import io.basc.framework.json.JsonUtils;
 
 public class XmlMethodIocProcessor extends IocProcessor {
 	private Class<?> type;
@@ -66,7 +66,7 @@ public class XmlMethodIocProcessor extends IocProcessor {
 		}
 
 		throw new BeansException(type.getName() + " not found method [" + name + "] parameterTypes "
-				+ JSONUtils.getJsonSupport().toJSONString(xmlBeanParameters));
+				+ JsonUtils.getJsonSupport().toJsonString(xmlBeanParameters));
 
 	}
 }

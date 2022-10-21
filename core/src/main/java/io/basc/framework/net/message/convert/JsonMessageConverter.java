@@ -1,7 +1,7 @@
 package io.basc.framework.net.message.convert;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.json.JSONSupport;
+import io.basc.framework.json.JsonSupport;
 import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.mapper.ToMap;
 import io.basc.framework.net.MimeType;
@@ -43,15 +43,15 @@ public final class JsonMessageConverter extends AbstractMessageConverter<Object>
 		writeTextBody(text, contentType, outputMessage);
 	}
 
-	public static String toJsonString(Object body, JSONSupport jsonSupport) {
+	public static String toJsonString(Object body, JsonSupport jsonSupport) {
 		if (body == null) {
 			return null;
 		}
 
 		if (body instanceof ToMap) {
-			return jsonSupport.toJSONString(MapperUtils.toMap(body));
+			return jsonSupport.toJsonString(MapperUtils.toMap(body));
 		} else {
-			return jsonSupport.toJSONString(body);
+			return jsonSupport.toJsonString(body);
 		}
 	}
 }

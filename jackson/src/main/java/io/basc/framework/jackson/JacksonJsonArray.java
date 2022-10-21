@@ -31,7 +31,7 @@ public class JacksonJsonArray extends AbstractJson<Integer> implements JsonArray
 	}
 
 	@Override
-	public String toJSONString() {
+	public String toJsonString() {
 		return arrayNode.toString();
 	}
 
@@ -45,9 +45,9 @@ public class JacksonJsonArray extends AbstractJson<Integer> implements JsonArray
 	}
 
 	@Override
-	public JsonElement getValue(Integer index) {
+	public JsonElement get(Integer index) {
 		JsonNode jsonNode = arrayNode.get(index);
-		return jsonNode == null ? null : convert(jsonNode);
+		return jsonNode == null ? JsonElement.EMPTY : convert(jsonNode);
 	}
 
 	@Override

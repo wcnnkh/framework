@@ -1,6 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.basc.framework</groupId>
 	<artifactId>framework</artifactId>
@@ -63,10 +61,32 @@
 		<jersey.version>1.19.4</jersey.version>
 		<jackson.version>2.13.3</jackson.version>
 		<slf4j.version>1.7.36</slf4j.version>
+		<activemq.version>5.16.5</activemq.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-client -->
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-client</artifactId>
+				<version>${activemq.version}</version>
+			</dependency>
+
+			<dependency>
+				<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-broker -->
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-broker</artifactId>
+				<version>${activemq.version}</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-kahadb-store -->
+			<dependency>
+				<groupId>org.apache.activemq</groupId>
+				<artifactId>activemq-kahadb-store</artifactId>
+				<version>${activemq.version}</version>
+			</dependency>
+
 			<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
 			<dependency>
 				<groupId>com.fasterxml.jackson.core</groupId>
@@ -717,7 +737,7 @@
 				<artifactId>validation</artifactId>
 				<version>1.8.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>csv</artifactId>
@@ -741,7 +761,7 @@
 				<artifactId>console</artifactId>
 				<version>1.8.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>logback</artifactId>
@@ -989,5 +1009,6 @@
 		<module>console</module>
 		<module>logback</module>
 		<module>csv</module>
+		<module>activemq-broker</module>
 	</modules>
 </project>

@@ -36,7 +36,7 @@ public class HttpFormMessageConveter extends AbstractMessageConverter<Object> {
 		}
 
 		MultiValueMap<String, String> map = UriUtils.getQueryParams(content);
-		String json = getJsonSupport().toJSONString(map);
+		String json = getJsonSupport().toJsonString(map);
 		return getJsonSupport().parseObject(json, type.getType());
 	}
 

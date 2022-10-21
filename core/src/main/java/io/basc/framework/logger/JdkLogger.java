@@ -17,7 +17,7 @@ public class JdkLogger extends CustomLogger {
 
 	public JdkLogger(Logger logger) {
 		this.logger = logger;
-		Level level = LoggerFactory.getLevelManager().get().getLevel(logger.getName());
+		Level level = LoggerFactory.getLevelManager().getLevel(logger.getName());
 		if (level != null) {
 			setLevel(level);
 		}

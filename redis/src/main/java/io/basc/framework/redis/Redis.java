@@ -16,7 +16,7 @@ import io.basc.framework.io.SerializerUtils;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.redis.convert.DefaultConvertibleRedisClient;
 import io.basc.framework.util.Assert;
-import io.basc.framework.value.AnyValue;
+import io.basc.framework.value.Value;
 
 public final class Redis
 		extends DefaultConvertibleRedisClient<RedisClient<byte[], byte[]>, byte[], String, byte[], String, Redis>
@@ -63,7 +63,7 @@ public final class Redis
 			String v = getValueCodec().decode((byte[]) value);
 			return Long.parseLong(v);
 		}
-		return new AnyValue(value).getAsLongValue();
+		return Value.of(value).getAsLong();
 	}
 
 	@Override

@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.basc.framework.env.Sys;
-import io.basc.framework.io.event.ConvertibleObservableProperties;
+import io.basc.framework.event.support.StandardObservableMap;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -532,13 +532,14 @@ public class HttpHeaders extends Headers {
 		};
 	};
 
-	private static final ConvertibleObservableProperties<Map<String, String[]>> AJAX_HEADERS = new ConvertibleObservableProperties<Map<String, String[]>>(
-			CONVERTER);
+	private static final StandardObservableMap<String, String[]> AJAX_HEADERS = new StandardObservableMap<>();
 
 	static {
-		AJAX_HEADERS.combine(Sys.getEnv().getProperties("/io/basc/framework/net/headers/ajax.headers.properties"));
-		AJAX_HEADERS.combine(Sys.getEnv().getProperties(Sys.getEnv().getProperties()
-				.getValue("io.basc.framework.net.ajax.headers", String.class, "/ajax-headers.properties")));
+		AJAX_HEADERS.register(Sys.getEnv().getProperties("/io/basc/framework/net/headers/ajax.headers.properties")
+				.convert(CONVERTER));
+		AJAX_HEADERS.register(
+				Sys.getEnv().getProperties(Sys.getEnv().getProperties().get("io.basc.framework.net.ajax.headers")
+						.or("/ajax-headers.properties").getAsString()).convert(CONVERTER));
 	}
 
 	public HttpHeaders() {

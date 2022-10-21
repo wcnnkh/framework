@@ -37,8 +37,9 @@ public class GeoTest {
 
 	@Test
 	public void test() throws LuceneWriteException, InterruptedException, ExecutionException {
-		LoggerFactory.getLevelManager().getCustomLevelRegistry().put("io.basc.framework.util.concurrent.TaskQueue", Levels.DEBUG.getValue());
-		
+		LoggerFactory.getLevelManager().getSourceMap().put("io.basc.framework.util.concurrent.TaskQueue",
+				Levels.DEBUG.getValue());
+
 		// SpatialPrefixTree也可以通过SpatialPrefixTreeFactory工厂类构建
 		SpatialPrefixTree grid = new GeohashPrefixTree(spatialContext, GeohashPrefixTree.getMaxLevelsPossible());
 		this.strategy = new RecursivePrefixTreeStrategy(grid, "geoField");
@@ -60,7 +61,7 @@ public class GeoTest {
 		SearchParameters parameters = new SearchParameters(luceneQuery, 10);
 		SearchResults<Document> results = luceneTemplate.search(parameters, Document.class);
 		List<Document> list = results.streamAll().collect(Collectors.toList());
-		for(Document d : list) {
+		for (Document d : list) {
 			System.out.println(d.getFields());
 		}
 	}

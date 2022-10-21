@@ -1,16 +1,17 @@
 package io.basc.framework.env;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import io.basc.framework.event.Observable;
 import io.basc.framework.factory.ServiceLoaderFactory;
-import io.basc.framework.io.AutoSelectResource;
 import io.basc.framework.io.FileSystemResource;
 import io.basc.framework.io.FileSystemResourceLoader;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
+import io.basc.framework.io.Resources;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
@@ -20,7 +21,7 @@ import io.basc.framework.util.ConcurrentReferenceHashMap;
 class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader
 		implements ConfigurableEnvironmentResourceLoader {
 	/**
-	 * @see AutoSelectResource
+	 * @see Resources
 	 */
 	private static final String AUTO_SELECT_RESOURCE = "basc.env.auto.select.resource";
 	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironmentResourceLoader.class);
@@ -74,8 +75,8 @@ class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader
 		if (autoSelect == null) {
 			synchronized (this) {
 				if (autoSelect == null) {
-					autoSelect = environment.getProperties().getObservableValue(AUTO_SELECT_RESOURCE, boolean.class,
-							false);
+					autoSelect = environment.getProperties().getObservable(AUTO_SELECT_RESOURCE)
+							.map((e) -> e.getAsBoolean());
 				}
 			}
 		}
@@ -89,7 +90,10 @@ class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader
 			if (resources == null) {
 				return ResourceUtils.NONEXISTENT_RESOURCE;
 			}
-			return new AutoSelectResource(resources);
+
+			Resources rs = new Resources();
+			rs.registers(Arrays.asList(resources));
+			return rs;
 		}
 		return super.getResource(location);
 	}

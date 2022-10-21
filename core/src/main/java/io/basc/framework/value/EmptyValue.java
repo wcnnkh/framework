@@ -1,34 +1,22 @@
 package io.basc.framework.value;
 
-import io.basc.framework.convert.TypeDescriptor;
-
 import java.io.Serializable;
 
-public class EmptyValue extends AbstractValue implements Value, Serializable {
+import io.basc.framework.convert.ConversionException;
+import io.basc.framework.convert.ConversionFailedException;
+import io.basc.framework.convert.TypeDescriptor;
+
+public class EmptyValue implements Value, Serializable {
 	private static final long serialVersionUID = 1L;
 
-	public static final EmptyValue INSTANCE = new EmptyValue();
-
 	@Override
-	public String getAsString() {
+	public Object getSource() {
 		return null;
 	}
 
 	@Override
-	public Object getAsObject(TypeDescriptor type) {
-		if(Value.isBaseType(type.getType())) {
-			return getAsObject(type.getType());
-		}
-		return null;
-	}
-
-	@Override
-	public Object get() {
-		return null;
-	}
-
-	@Override
-	public TypeDescriptor getTypeDescriptor() {
-		return TypeDescriptor.valueOf(Object.class);
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+			throws ConversionException {
+		throw new ConversionFailedException(sourceType, targetType, source, null);
 	}
 }

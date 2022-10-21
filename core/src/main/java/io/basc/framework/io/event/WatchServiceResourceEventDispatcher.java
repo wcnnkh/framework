@@ -1,13 +1,5 @@
 package io.basc.framework.io.event;
 
-import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.EventType;
-import io.basc.framework.io.AbstractResource;
-import io.basc.framework.io.Resource;
-import io.basc.framework.lang.RequiredJavaVersion;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -21,6 +13,15 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import io.basc.framework.event.EventType;
+import io.basc.framework.event.EventTypes;
+import io.basc.framework.event.ObservableChangeEvent;
+import io.basc.framework.io.AbstractResource;
+import io.basc.framework.io.Resource;
+import io.basc.framework.lang.RequiredJavaVersion;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 
 /**
  * 使用WatchService实现resource监听<br/>
@@ -129,16 +130,16 @@ public class WatchServiceResourceEventDispatcher extends SimpleResourceEventDisp
 		}
 		return false;
 	}
-
+	
 	@Override
-	protected void onChange(ChangeEvent<Resource> resourceEvent) {
-		if (resourceEvent.getEventType() == EventType.CREATE) {
+	public void publishEvent(ObservableChangeEvent<Resource> event) {
+		if (event.getEventType() == EventTypes.CREATE) {
 			// 如果资源创建了，那么尝试重新注册
 			if (watchServiceRegister()) {
 				cancelListener();
 			}
 		}
-		super.onChange(resourceEvent);
+		super.publishEvent(event);
 	}
 
 	@Override
@@ -223,11 +224,11 @@ public class WatchServiceResourceEventDispatcher extends SimpleResourceEventDisp
 
 					EventType eventType = null;
 					if (StandardWatchEventKinds.ENTRY_CREATE.equals(event.kind())) {
-						eventType = EventType.CREATE;
+						eventType = EventTypes.CREATE;
 					} else if (StandardWatchEventKinds.ENTRY_MODIFY.equals(event.kind())) {
-						eventType = EventType.UPDATE;
+						eventType = EventTypes.UPDATE;
 					} else if (StandardWatchEventKinds.ENTRY_DELETE.equals(event.kind())) {
-						eventType = EventType.DELETE;
+						eventType = EventTypes.DELETE;
 					}
 
 					if (eventType == null) {
@@ -236,8 +237,8 @@ public class WatchServiceResourceEventDispatcher extends SimpleResourceEventDisp
 
 					for (ResourceItem item : resources) {
 						if (file.getName().equals(item.getName())) {
-							ChangeEvent<Resource> resourceEvent = new ChangeEvent<Resource>(eventType,
-									item.getResource());
+							ObservableChangeEvent<Resource> resourceEvent = new ObservableChangeEvent<Resource>(
+									eventType, item.getResource(), item.getResource());
 							if (logger.isDebugEnabled()) {
 								logger.debug(resourceEvent.toString());
 							}

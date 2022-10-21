@@ -2,7 +2,6 @@ package io.basc.framework.mapper;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.function.Supplier;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
@@ -12,7 +11,6 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.AnyValue;
 
 public class Parameter extends AnyValue implements ParameterDescriptor {
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * 无效的
@@ -31,16 +29,6 @@ public class Parameter extends AnyValue implements ParameterDescriptor {
 
 	public Parameter(String name, Object value, @Nullable TypeDescriptor typeDescriptor) {
 		super(value, typeDescriptor);
-		this.name = name;
-	}
-
-	public Parameter(String name, Supplier<? extends Object> valueSupplier, @Nullable TypeDescriptor typeDescriptor) {
-		super(valueSupplier, typeDescriptor);
-		this.name = name;
-	}
-
-	protected Parameter(String name, AnyValue value) {
-		super(value);
 		this.name = name;
 	}
 
@@ -80,12 +68,8 @@ public class Parameter extends AnyValue implements ParameterDescriptor {
 		return new Parameter(name, this);
 	}
 
-	/**
-	 * 是否是无效的字段
-	 * 
-	 * @return
-	 */
-	public boolean isInvalid() {
-		return StringUtils.isEmpty(name);
+	@Override
+	public boolean isPresent() {
+		return !StringUtils.isEmpty(name) && super.isPresent();
 	}
 }

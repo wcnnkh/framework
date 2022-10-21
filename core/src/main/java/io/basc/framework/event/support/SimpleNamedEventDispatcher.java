@@ -6,8 +6,8 @@ import java.util.Map;
 import io.basc.framework.event.Event;
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventRegistration;
 import io.basc.framework.event.NamedEventDispatcher;
+import io.basc.framework.util.Registration;
 
 /**
  * 这是一个同步的基于命名的事件分发器
@@ -25,7 +25,7 @@ public class SimpleNamedEventDispatcher<K, T extends Event> implements NamedEven
 		return new SimpleEventDispatcher<T>();
 	}
 
-	public EventRegistration registerListener(K name, EventListener<T> eventListener) {
+	public Registration registerListener(K name, EventListener<T> eventListener) {
 		synchronized (this) {
 			if (namedEventListenerMap == null) {
 				namedEventListenerMap = new HashMap<>(INITIAL_CAPACITY);

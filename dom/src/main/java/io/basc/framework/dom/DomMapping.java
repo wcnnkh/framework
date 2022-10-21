@@ -1,14 +1,14 @@
 package io.basc.framework.dom;
 
+import java.util.Map;
+
+import org.w3c.dom.Node;
+
 import io.basc.framework.mapper.AbstractMapping;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
-import io.basc.framework.value.StringValue;
-
-import java.util.Map;
-
-import org.w3c.dom.Node;
+import io.basc.framework.value.Value;
 
 public class DomMapping extends AbstractMapping {
 	private final PlaceholderFormat placeholderFormat;
@@ -41,6 +41,6 @@ public class DomMapping extends AbstractMapping {
 	}
 
 	protected Object getNodeValue(String name, String value, Class<?> type, Field field, Node node) {
-		return StringValue.parse(value, field.getSetter().getGenericType());
+		return Value.of(value).getAsObject(field.getSetter().getGenericType());
 	}
 }

@@ -3,6 +3,7 @@ package io.basc.framework.gson;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
+import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.json.AbstractJsonElement;
 import io.basc.framework.json.JsonArray;
@@ -18,7 +19,7 @@ public final class GsonElement extends AbstractJsonElement {
 	}
 
 	@Override
-	public Object get() {
+	public Object getSource() {
 		return gsonJsonElement;
 	}
 
@@ -27,11 +28,6 @@ public final class GsonElement extends AbstractJsonElement {
 			return gsonJsonElement.toString();
 		}
 		return gsonJsonElement.getAsString();
-	}
-
-	@Override
-	protected Object getAsNonBaseType(TypeDescriptor type) {
-		return gson.fromJson(gsonJsonElement, type.getResolvableType().getType());
 	}
 
 	public JsonArray getAsJsonArray() {
@@ -50,11 +46,7 @@ public final class GsonElement extends AbstractJsonElement {
 		return gsonJsonElement.isJsonObject();
 	}
 
-	public boolean isEmpty() {
-		return gsonJsonElement.isJsonNull();
-	}
-
-	public String toJSONString() {
+	public String toJsonString() {
 		if (gsonJsonElement.isJsonArray() || gsonJsonElement.isJsonObject()) {
 			return gsonJsonElement.toString();
 		}
@@ -76,5 +68,11 @@ public final class GsonElement extends AbstractJsonElement {
 			return gsonJsonElement.equals(((GsonElement) obj).gsonJsonElement);
 		}
 		return false;
+	}
+
+	@Override
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+			throws ConversionException {
+		return gson.fromJson(gsonJsonElement, targetType.getResolvableType().getType());
 	}
 }

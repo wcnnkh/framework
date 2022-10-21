@@ -5,11 +5,11 @@ import io.basc.framework.event.Observable;
 
 public class ResultFactory {
 	static final Observable<String> DEFAULT_ERROR_MESSAGE = Sys.getEnv().getProperties()
-			.getObservableValue("result.error.msg", String.class, "系统错误");
+			.getObservable("result.error.msg").map((e) -> e.or("系统错误").getAsString());
 	static final Observable<String> AUTHORIZATION_FAILURE_MESSAGE = Sys.getEnv().getProperties()
-			.getObservableValue("result.authorization.failure.msg", String.class, "登录状态已过期");
+			.getObservable("result.authorization.failure.msg").map((e) -> e.or("登录状态已过期").getAsString());
 	static final Observable<String> PARAMETER_ERROR_MESSAGE = Sys.getEnv().getProperties()
-			.getObservableValue("result.parameter.error.msg", String.class, "参数错误");
+			.getObservable("result.parameter.error.msg").map((e) -> e.or("参数错误").getAsString());
 
 	private final ResultMsgFactory resultMessageFactory;
 	private final int defaultErrorCode;

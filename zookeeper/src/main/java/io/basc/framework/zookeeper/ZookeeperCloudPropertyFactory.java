@@ -1,23 +1,5 @@
 package io.basc.framework.zookeeper;
 
-import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventRegistration;
-import io.basc.framework.event.EventType;
-import io.basc.framework.event.NamedEventDispatcher;
-import io.basc.framework.event.support.SimpleStringNamedEventDispatcher;
-import io.basc.framework.io.JavaSerializer;
-import io.basc.framework.io.Serializer;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.AnyValue;
-import io.basc.framework.value.ConfigurablePropertyFactory;
-import io.basc.framework.value.EmptyValue;
-import io.basc.framework.value.Value;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -28,6 +10,23 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
+
+import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.event.ChangeEvent;
+import io.basc.framework.event.EventListener;
+import io.basc.framework.event.EventTypes;
+import io.basc.framework.event.NamedEventDispatcher;
+import io.basc.framework.event.support.SimpleStringNamedEventDispatcher;
+import io.basc.framework.io.JavaSerializer;
+import io.basc.framework.io.Serializer;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Registration;
+import io.basc.framework.util.StringUtils;
+import io.basc.framework.value.ConfigurablePropertyFactory;
+import io.basc.framework.value.Value;
 
 /**
  * 使用zookeeper实现的配置中心
@@ -87,20 +86,20 @@ public class ZookeeperCloudPropertyFactory implements ConfigurablePropertyFactor
 		return ZooKeeperUtils.isExist(zooKeeper, path);
 	}
 
-	public Value getValue(String key) {
+	public Value get(String key) {
 		if (StringUtils.isEmpty(key)) {
-			return EmptyValue.INSTANCE;
+			return Value.EMPTY;
 		}
 
 		String path = ZooKeeperUtils.cleanPath(parentPath, key);
 		byte[] data = ZooKeeperUtils.getData(zooKeeper, path);
 		if (data == null) {
-			return EmptyValue.INSTANCE;
+			return Value.EMPTY;
 		}
 
 		try {
 			Object value = getSerializer().deserialize(data);
-			return new AnyValue(value);
+			return Value.of(value);
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
@@ -129,13 +128,13 @@ public class ZookeeperCloudPropertyFactory implements ConfigurablePropertyFactor
 		ChangeEvent<String> changeEvent;
 		switch (event.getType()) {
 		case NodeDeleted:
-			changeEvent = new ChangeEvent<String>(EventType.DELETE, key);
+			changeEvent = new ChangeEvent<String>(EventTypes.DELETE, key);
 			break;
 		case NodeCreated:
-			changeEvent = new ChangeEvent<String>(EventType.CREATE, key);
+			changeEvent = new ChangeEvent<String>(EventTypes.CREATE, key);
 			break;
 		default:
-			changeEvent = new ChangeEvent<String>(EventType.UPDATE, key);
+			changeEvent = new ChangeEvent<String>(EventTypes.UPDATE, key);
 			break;
 		}
 
@@ -146,23 +145,20 @@ public class ZookeeperCloudPropertyFactory implements ConfigurablePropertyFactor
 		}
 	}
 
-	public boolean put(String key, Object value) {
-		if (StringUtils.isEmpty(key)) {
-			return false;
-		}
-
+	public void put(String key, Object value) {
+		Assert.requiredArgument(StringUtils.isNotEmpty(key), "key");
 		String path = ZooKeeperUtils.cleanPath(parentPath, key);
 		ZooKeeperUtils.createNotExist(zooKeeper, path, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 		byte[] data = getSerializer().serialize(value);
-		return ZooKeeperUtils.setData(zooKeeper, path, data);
+		ZooKeeperUtils.setData(zooKeeper, path, data);
 	}
 
-	public EventRegistration registerListener(String name, EventListener<ChangeEvent<String>> eventListener) {
+	public Registration registerListener(String name, EventListener<ChangeEvent<String>> eventListener) {
 		return eventDispatcher.registerListener(name, eventListener);
 	}
 
-	public boolean put(String key, Value value) {
-		return put(key, value.getAsString());
+	public void put(String key, Value value) {
+		put(key, value.getAsString());
 	}
 
 	public boolean putIfAbsent(String key, Value value) {

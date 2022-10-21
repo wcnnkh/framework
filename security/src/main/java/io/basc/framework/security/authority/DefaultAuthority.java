@@ -1,6 +1,6 @@
 package io.basc.framework.security.authority;
 
-import io.basc.framework.json.JSONUtils;
+import io.basc.framework.json.JsonUtils;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -47,6 +47,6 @@ public class DefaultAuthority implements Authority, Serializable {
 	
 	@Override
 	public String toString() {
-		return JSONUtils.getJsonSupport().toJSONString(this);
+		return JsonUtils.toJsonString(this);
 	}
 }

@@ -38,7 +38,6 @@ import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
 
 /**
@@ -76,7 +75,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 	}
 
 	public Object toDataBaseValue(Value value) {
-		if (value == null || value.isNull()) {
+		if (value == null || !value.isPresent()) {
 			return null;
 		}
 
@@ -140,7 +139,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		while (iterator.hasNext() && valueIterator.hasNext()) {
 			Column column = iterator.next();
 			Object value = valueIterator.next();
-			params[i++] = toDataBaseValue(new AnyValue(value, getConversionService()));
+			params[i++] = toDataBaseValue(Value.of(value, getConversionService()));
 			keywordProcessing(sb, column.getName());
 			sb.append("=?");
 			if (iterator.hasNext() && valueIterator.hasNext()) {
@@ -243,7 +242,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			Column column = iterator.next();
 			keywordProcessing(sql, column.getName());
 			sql.append("=?");
-			params[i] = toDataBaseValue(new AnyValue(ids[i]));
+			params[i] = toDataBaseValue(Value.of(ids[i]));
 			i++;
 			if (iterator.hasNext()) {
 				sql.append(AND);
@@ -277,7 +276,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 				Column column = iterator.next();
 				keywordProcessing(sb, column.getName());
 				sb.append("=?");
-				params.add(toDataBaseValue(new AnyValue(primaryKeys[i])));
+				params.add(toDataBaseValue(Value.of(primaryKeys[i])));
 			}
 		}
 
@@ -290,7 +289,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			sb.append(IN);
 			Iterator<?> valueIterator = inPrimaryKeys.iterator();
 			while (valueIterator.hasNext()) {
-				params.add(toDataBaseValue(new AnyValue(valueIterator.next())));
+				params.add(toDataBaseValue(Value.of(valueIterator.next())));
 				sb.append("?");
 				if (valueIterator.hasNext()) {
 					sb.append(",");
@@ -402,12 +401,12 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 					sb.append(AND);
 					keywordProcessing(sb, column.getName());
 					if (column.isIncrement()) {
-						AnyValue newValue = new AnyValue(toDataBaseValue(column.getGetter().getValue(entity)));
-						AnyValue oldValue = changeMap == null ? null
-								: new AnyValue(changeMap.get(column.getSetter().getName()));
+						Value newValue = Value.of(toDataBaseValue(column.getGetter().getValue(entity)));
+						Value oldValue = changeMap == null ? null
+								: Value.of(changeMap.get(column.getSetter().getName()));
 						if (oldValue != null) {
 							sb.append("+");
-							sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
+							sb.append(newValue.getAsDouble() - oldValue.getAsDouble());
 						}
 					}
 					sb.append(">");
@@ -421,12 +420,12 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 					sb.append(AND);
 					keywordProcessing(sb, column.getName());
 					if (column.isIncrement()) {
-						AnyValue newValue = new AnyValue(toDataBaseValue(column.getGetter().getValue(entity)));
-						AnyValue oldValue = changeMap == null ? null
-								: new AnyValue(changeMap.get(column.getSetter().getName()));
+						Value newValue = Value.of(toDataBaseValue(column.getGetter().getValue(entity)));
+						Value oldValue = changeMap == null ? null
+								: Value.of(changeMap.get(column.getSetter().getName()));
 						if (oldValue != null) {
 							sb.append("+");
-							sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
+							sb.append(newValue.getAsDouble() - oldValue.getAsDouble());
 						}
 					}
 					sb.append("<");
@@ -439,10 +438,10 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		}
 
 		if (column.isVersion()) {
-			AnyValue oldVersion = null;
+			Value oldVersion = null;
 			if (changeMap != null && changeMap.containsKey(column.getSetter().getName())) {
-				oldVersion = new AnyValue(changeMap.get(column.getSetter().getName()));
-				if (oldVersion.getAsDoubleValue() == 0) {
+				oldVersion = Value.of(changeMap.get(column.getSetter().getName()));
+				if (oldVersion.getAsLong() == 0) {
 					// 如果存在变更但版本号为0就忽略此条件
 					return;
 				}
@@ -455,7 +454,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 
 			// 如果存在旧值就使用旧值
 			params.add(oldVersion == null ? toDataBaseValue(column.getGetter().getValue(entity))
-					: toDataBaseValue(new AnyValue(oldVersion.getAsLongValue())));
+					: toDataBaseValue(Value.of(oldVersion.getAsLong())));
 		}
 	}
 
@@ -497,8 +496,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 
 	protected final void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Column column,
 			Map<String, Object> changeMap) {
-		AnyValue newValue = new AnyValue(toDataBaseValue(column.getGetter().getValue(entity)));
-		AnyValue oldValue = changeMap == null ? null : new AnyValue(changeMap.get(column.getSetter().getName()));
+		Value newValue = Value.of(toDataBaseValue(column.getGetter().getValue(entity)));
+		Value oldValue = changeMap == null ? null : Value.of(changeMap.get(column.getSetter().getName()));
 		appendUpdateValue(sb, params, entity, column, oldValue, newValue);
 	}
 
@@ -507,7 +506,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		if (column.isIncrement() && oldValue != null) {
 			keywordProcessing(sb, column.getName());
 			sb.append("+");
-			sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
+			sb.append(newValue.getAsDouble() - oldValue.getAsDouble());
 		} else {
 			sb.append("?");
 			params.add(newValue.get());
@@ -721,7 +720,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			sb.append(" > ?");
 			params.add(toDataBaseValue(condition.getParameter()));
 		} else if (conditionKeywords.getInKeywords().exists(condition.getCondition())) {
-			if (condition.getParameter().isNull()) {
+			if (!condition.getParameter().isPresent()) {
 				return false;
 			}
 
@@ -745,7 +744,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			sb.append(" in(");
 			while (iterator.hasNext()) {
 				sb.append("?");
-				params.add(toDataBaseValue(new AnyValue(iterator.next(), typeDescriptor)));
+				params.add(toDataBaseValue(Value.of(iterator.next(), typeDescriptor)));
 				if (iterator.hasNext()) {
 					sb.append(",");
 				}

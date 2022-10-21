@@ -8,7 +8,7 @@ import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.lang.LinkedThreadLocal;
-import io.basc.framework.value.EmptyValue;
+import io.basc.framework.value.Value;
 
 public class ConfigurableConversionService extends ConfigurableServices<ConversionService>
 		implements ConversionService, Comparable<Object>, Iterable<ConversionService> {
@@ -18,7 +18,7 @@ public class ConfigurableConversionService extends ConfigurableServices<Conversi
 	public ConfigurableConversionService() {
 		super(ConversionService.class, () -> new TreeSet<>(ConversionComparator.INSTANCE));
 	}
-	
+
 	@Override
 	public void accept(ConversionService service) {
 		if (service instanceof ConversionServiceAware) {
@@ -71,7 +71,7 @@ public class ConfigurableConversionService extends ConfigurableServices<Conversi
 		}
 
 		if (sourceTypeToUse == null) {
-			Object value = EmptyValue.INSTANCE.getAsObject(targetType);
+			Object value = Value.EMPTY.getAsObject(targetType);
 			return value;
 		}
 

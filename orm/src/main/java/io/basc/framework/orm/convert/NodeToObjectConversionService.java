@@ -12,7 +12,6 @@ import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.dom.DomUtils;
-import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 
 class NodeToObjectConversionService extends AbstractConversionService implements ConditionalConversionService {
@@ -33,8 +32,7 @@ class NodeToObjectConversionService extends AbstractConversionService implements
 
 	public Object convert(Node node, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (Value.isBaseType(targetType.getType())) {
-			StringValue value = new StringValue(node.getTextContent());
-			return value.getAsObject(targetType.getResolvableType().getType());
+			return Value.of(node.getTextContent()).getAsObject(targetType.getResolvableType().getType());
 		}
 
 		NodeList nodeList = node.getChildNodes();

@@ -6,8 +6,6 @@ import io.basc.framework.context.Context;
 import io.basc.framework.context.ioc.ValueDefinition;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.EventListener;
 import io.basc.framework.event.Observable;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.mapper.Field;
@@ -25,16 +23,14 @@ public class EnvironmentValueProceor extends AbstractValueProcessor {
 	protected void processInteranl(BeanDefinition beanDefinition, final Context context, final Object bean,
 			final Field field, ValueDefinition valueDefinition, Charset charset) throws Exception {
 		if (field.getSetter().getType() == Observable.class) {
-			ResolvableType valueType = ResolvableType.forType(field.getSetter().getGenericType());
-			valueType = valueType.getGeneric(0);
-
 			Observable<Object> dynamicValue = null;
 			for (String name : valueDefinition.getNames()) {
 				if (valueDefinition.isRequired() && !context.getProperties().containsKey(name)) {
 					continue;
 				}
 
-				dynamicValue = context.getProperties().getObservableValue(name, valueType.getType(), null);
+				dynamicValue = context.getProperties().getObservable(name).map((e) -> e.getAsObject(
+						ResolvableType.forType(field.getSetter().getGenericType()).getGeneric(0).getType()));
 				if (dynamicValue != null) {
 					break;
 				}
@@ -60,26 +56,22 @@ public class EnvironmentValueProceor extends AbstractValueProcessor {
 				continue;
 			}
 
-			io.basc.framework.value.Value v = context.getProperties().getValue(name);
+			io.basc.framework.value.Value v = context.getProperties().get(name);
 			set(context.getConversionService(), bean, field, name, v);
 			if (isRegisterListener(beanDefinition, field, valueDefinition)) {
-				context.getProperties().registerListener(name, new EventListener<ChangeEvent<String>>() {
-
-					public void onEvent(ChangeEvent<String> event) {
-						try {
-							set(context.getConversionService(), bean, field, name,
-									context.getProperties().getValue(name));
-						} catch (Exception e) {
-							logger.error(e, field.toString());
-						}
+				context.getProperties().registerListener(name, (event) -> {
+					try {
+						set(context.getConversionService(), bean, field, name, context.getProperties().get(name));
+					} catch (Exception e) {
+						logger.error(e, field.toString());
 					}
 				});
 			}
 		}
 	}
 
-	protected void set(ConversionService conversionService, final Object bean, final Field field,
-			final String name, Object value) throws Exception {
+	protected void set(ConversionService conversionService, final Object bean, final Field field, final String name,
+			Object value) throws Exception {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Changes in progress name [{}] field [{}] value [{}]", name, field.getSetter(), value);
 		}

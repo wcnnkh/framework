@@ -1,11 +1,7 @@
 package io.basc.framework.jackson;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -15,15 +11,11 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import io.basc.framework.convert.ConvertibleIterator;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Pair;
 
-public class JacksonJsonObject extends AbstractJson<String>
-		implements JsonObject, JsonSerializable{
+public class JacksonJsonObject extends AbstractJson<String> implements JsonObject, JsonSerializable {
 	private final ObjectNode objectNode;
 	private final ObjectMapper mapper;
 
@@ -38,26 +30,19 @@ public class JacksonJsonObject extends AbstractJson<String>
 	}
 
 	@Override
-	public JsonElement getValue(String key) {
+	public JsonElement get(String key) {
 		JsonNode jsonNode = objectNode.get(key);
-		return jsonNode == null ? null : convert(jsonNode);
+		return jsonNode == null ? JsonElement.EMPTY : convert(jsonNode);
 	}
 
 	@Override
-	public String toJSONString() {
+	public String toJsonString() {
 		return objectNode.toString();
 	}
 
 	@Override
-	public Iterator<Pair<String, JsonElement>> iterator() {
-		return new ConvertibleIterator<Entry<String, JsonNode>, Pair<String, JsonElement>>(objectNode.fields(),
-				(o) -> new Pair<String, JsonElement>(o.getKey(), JacksonJsonObject.this.convert(o.getValue())));
-	}
-
-	@Override
-	public Set<String> keySet() {
-		return Collections.list(CollectionUtils.toEnumeration(objectNode.fieldNames())).stream()
-				.collect(Collectors.toSet());
+	public Iterator<String> iterator() {
+		return objectNode.fieldNames();
 	}
 
 	@Override

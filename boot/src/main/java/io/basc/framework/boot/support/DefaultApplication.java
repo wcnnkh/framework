@@ -18,6 +18,7 @@ import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.FactoryException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.OptionalInt;
 import io.basc.framework.util.SplitLine;
 
 public class DefaultApplication extends DefaultContext implements ConfigurableApplication {
@@ -126,7 +127,7 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 	}
 
 	public boolean isEnableServer() {
-		return getProperties().getValue("application.server.enable", Boolean.class, true);
+		return getProperties().get("application.server.enable").or(true).getAsBoolean();
 	}
 
 	public void startServer() {
@@ -154,8 +155,8 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 			}
 
 			try {
-				String applicationConfiguration = getProperties().getValue(APPLICATION_PREFIX_CONFIGURATION,
-						String.class, APPLICATION_PREFIX);
+				String applicationConfiguration = getProperties().get(APPLICATION_PREFIX_CONFIGURATION)
+						.or(APPLICATION_PREFIX).getAsString();
 				for (String suffix : new String[] { ".properties", ".yaml", ".yml" }) {
 					String configPath = applicationConfiguration + suffix;
 					if (getResourceLoader().exists(configPath)) {
@@ -164,13 +165,13 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 					}
 				}
 
-				int port = getPort();
-				if (port == -1) {
+				OptionalInt port = getPort();
+				if (!port.isPresent()) {
 					// 兼容旧版本
-					Integer serverPort = getProperties().getInteger(SERVER_PORT_PROPERTY);
-					if (serverPort != null) {
-						setPort(serverPort);
-					}
+					int serverPort = getProperties().get(SERVER_PORT_PROPERTY)
+							.orGet(() -> Application.getAvailablePort()).getAsInt();
+					setPort(serverPort);
+					port = OptionalInt.of(serverPort);
 				}
 
 				super.init();

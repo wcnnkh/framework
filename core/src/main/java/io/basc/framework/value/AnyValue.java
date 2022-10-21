@@ -1,13 +1,7 @@
 package io.basc.framework.value;
 
-import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.Collection;
-import java.util.Map;
-import java.util.function.Supplier;
+import java.util.Objects;
 
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionFailedException;
@@ -15,594 +9,91 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.ClassUtils;
+import io.basc.framework.json.JsonSupport;
+import io.basc.framework.json.JsonUtils;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.StaticSupplier;
+import io.basc.framework.util.StringUtils;
 
-public class AnyValue extends AbstractValue implements Serializable, Cloneable {
-	private static final long serialVersionUID = 1L;
-	private transient Converter<? super Object, ? super Object, ? extends RuntimeException> converter;
-	private Supplier<? extends Object> valueSupplier;
+public class AnyValue implements Value, Cloneable {
+	private Converter<? super Object, ? super Object, ? extends RuntimeException> converter;
+	private JsonSupport jsonSupport;
 	private TypeDescriptor typeDescriptor;
+	private Object value;
 
 	public AnyValue(Object value) {
 		this(value, null, null);
 	}
 
-	public AnyValue(Object value,
-			@Nullable Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
+	public AnyValue(Object value, Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
 		this(value, null, converter);
 	}
 
-	public AnyValue(Object value, @Nullable TypeDescriptor typeDescriptor) {
-		this(value, typeDescriptor, null);
+	public AnyValue(Object value, TypeDescriptor type) {
+		this(value, type, null);
 	}
 
-	public AnyValue(Object value, @Nullable TypeDescriptor typeDescriptor,
-			@Nullable Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
-		this(new StaticSupplier<>(value), typeDescriptor, converter);
-	}
-
-	public AnyValue(Supplier<? extends Object> valueSupplier, @Nullable TypeDescriptor typeDescriptor,
-			@Nullable Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
-		this.valueSupplier = valueSupplier;
-		this.typeDescriptor = typeDescriptor;
-		this.converter = converter;
-	}
-
-	public AnyValue(AnyValue value) {
-		if (value != null) {
-			this.valueSupplier = value.valueSupplier;
-			this.typeDescriptor = value.typeDescriptor;
-			this.converter = value.converter;
-		}
-	}
-
-	@Nullable
-	public Object getValue() {
-		return valueSupplier == null ? null : valueSupplier.get();
+	public AnyValue(Object value, TypeDescriptor type,
+			Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
+		setValue(value, type);
+		setConverter(converter);
 	}
 
 	@Override
-	public final TypeDescriptor getTypeDescriptor() {
-		if (typeDescriptor != null) {
-			return typeDescriptor;
-		}
-
-		return getTypeDescriptor(getValue());
-	}
-
-	protected TypeDescriptor getTypeDescriptor(Object value) {
-		if (typeDescriptor != null) {
-			return typeDescriptor;
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getTypeDescriptor();
-		}
-
-		if (value == null) {
-			return TypeDescriptor.valueOf(Object.class);
-		}
-		return TypeDescriptor.forObject(value);
-	}
-
-	public Converter<? super Object, ? super Object, ? extends RuntimeException> getConverter() {
-		return converter == null ? Sys.getEnv().getConversionService() : converter;
-	}
-
-	public String getAsString() {
-		Object value = getValue();
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof String) {
-			return (String) value;
-		}
-
-		if (value instanceof Enum) {
-			return ((Enum<?>) value).name();
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsString();
-		}
-
-		return getConverter().convert(value, getTypeDescriptor(value), String.class);
-	}
-
-	public Byte getAsByte() {
-		Object value = getValue();
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof Byte) {
-			return (Byte) value;
-		}
-
-		if (value instanceof Number) {
-			return ((Number) value).byteValue();
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsByte();
-		}
-		return super.getAsByte();
-	}
-
-	public byte getAsByteValue() {
-		Object value = getValue();
-		if (value == null) {
-			return 0;
-		}
-
-		if (value instanceof Byte) {
-			return (Byte) value;
-		}
-
-		if (value instanceof Number) {
-			return ((Number) value).byteValue();
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsByteValue();
-		}
-		return super.getAsByteValue();
-	}
-
-	public Short getAsShort() {
-		Object value = getValue();
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof Short) {
-			return (Short) value;
-		}
-
-		if (value instanceof Number) {
-			return ((Number) value).shortValue();
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsShort();
-		}
-		return super.getAsShort();
-	}
-
-	public short getAsShortValue() {
-		Object value = getValue();
-		if (value == null) {
-			return 0;
-		}
-
-		if (value instanceof Short) {
-			return (Short) value;
-		}
-
-		if (value instanceof Number) {
-			return ((Number) value).shortValue();
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsShortValue();
-		}
-		return super.getAsShortValue();
-	}
-
-	public Integer getAsInteger() {
-		Object value = getValue();
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof Integer) {
-			return (Integer) value;
-		}
-
-		if (value instanceof Number) {
-			return ((Number) value).intValue();
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsInteger();
-		}
-		return super.getAsInteger();
-	}
-
-	public int getAsIntValue() {
-		Object value = getValue();
-		if (value == null) {
-			return 0;
-		}
-
-		if (value instanceof Integer) {
-			return (Integer) value;
-		}
-
-		if (value instanceof Number) {
-			return ((Number) value).intValue();
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsIntValue();
-		}
-		return super.getAsIntValue();
-	}
-
-	public Long getAsLong() {
-		Object value = getValue();
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof Long) {
-			return (Long) value;
-		}
-
-		if (value instanceof Number) {
-			return ((Number) value).longValue();
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsLong();
-		}
-		return super.getAsLong();
-	}
-
-	public long getAsLongValue() {
-		Object value = getValue();
-		if (value == null) {
-			return 0;
-		}
-
-		if (value instanceof Long) {
-			return (Long) value;
-		}
-
-		if (value instanceof Number) {
-			return ((Number) value).longValue();
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsLongValue();
-		}
-		return super.getAsLongValue();
-	}
-
-	public Boolean getAsBoolean() {
-		Object value = getValue();
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof Boolean) {
-			return (Boolean) value;
-		}
-
-		if (value instanceof Number) {
-			return ((Number) value).intValue() == 1;
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsBoolean();
-		}
-		return super.getAsBoolean();
-	}
-
-	public boolean getAsBooleanValue() {
-		Object value = getValue();
-		if (value == null) {
-			return false;
-		}
-
-		if (value instanceof Boolean) {
-			return (Boolean) value;
-		}
-
-		if (value instanceof Number) {
-			return ((Number) value).intValue() == 1;
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsBooleanValue();
-		}
-		return super.getAsBooleanValue();
-	}
-
-	public Float getAsFloat() {
-		Object value = getValue();
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof Float) {
-			return (Float) value;
-		}
-
-		if (value instanceof Number) {
-			return ((Number) value).floatValue();
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsFloat();
-		}
-		return super.getAsFloat();
-	}
-
-	public float getAsFloatValue() {
-		Object value = getValue();
-		if (value == null) {
-			return 0;
-		}
-
-		if (value instanceof Float) {
-			return (Float) value;
-		}
-
-		if (value instanceof Number) {
-			return ((Number) value).floatValue();
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsFloatValue();
-		}
-		return super.getAsFloatValue();
-	}
-
-	public Double getAsDouble() {
-		Object value = getValue();
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof Double) {
-			return (Double) value;
-		}
-
-		if (value instanceof Number) {
-			return ((Number) value).doubleValue();
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsDouble();
-		}
-		return super.getAsDouble();
-	}
-
-	public double getAsDoubleValue() {
-		Object value = getValue();
-		if (value == null) {
-			return 0;
-		}
-
-		if (value instanceof Double) {
-			return (Double) value;
-		}
-
-		if (value instanceof Number) {
-			return ((Number) value).doubleValue();
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsDoubleValue();
-		}
-		return super.getAsDoubleValue();
-	}
-
-	public char getAsChar() {
-		Object value = getValue();
-		if (value == null) {
-			return 0;
-		}
-
-		if (value instanceof Character) {
-			return (Character) value;
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsChar();
-		}
-		return super.getAsChar();
-	}
-
-	public Character getAsCharacter() {
-		Object value = getValue();
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof Character) {
-			return (Character) value;
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsCharacter();
-		}
-		return super.getAsCharacter();
-	}
-
-	public BigInteger getAsBigInteger() {
-		Object value = getValue();
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof BigInteger) {
-			return (BigInteger) value;
-		}
-
-		if (value instanceof BigDecimal) {
-			return ((BigDecimal) value).toBigInteger();
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsBigInteger();
-		}
-		return super.getAsBigInteger();
-	}
-
-	public BigDecimal getAsBigDecimal() {
-		Object value = getValue();
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof BigDecimal) {
-			return (BigDecimal) value;
-		}
-
-		if (value instanceof BigInteger) {
-			return new BigDecimal((BigInteger) value);
-		}
-
-		if (value instanceof Number) {
-			return new BigDecimal(((Number) value).doubleValue());
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsBigDecimal();
-		}
-		return super.getAsBigDecimal();
-	}
-
-	public Number getAsNumber() {
-		Object value = getValue();
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof Number) {
-			return (Number) value;
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsNumber();
-		}
-		return super.getAsNumber();
-	}
-
-	public Class<?> getAsClass() {
-		Object value = getValue();
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof Class) {
-			return (Class<?>) value;
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsClass();
-		}
-		return super.getAsClass();
-	}
-
-	public Enum<?> getAsEnum(Class<?> enumType) {
-		Object value = getValue();
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof Enum<?>) {
-			return (Enum<?>) value;
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsEnum(enumType);
-		}
-
-		return super.getAsEnum(enumType);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public final <T> T getAsObject(Class<T> type) {
-		return (T) getAsObject(TypeDescriptor.valueOf(type));
+	public AnyValue clone() {
+		AnyValue value = new AnyValue(this.value, this.typeDescriptor, this.converter);
+		value.jsonSupport = this.jsonSupport;
+		return value;
 	}
 
 	@Override
-	public final Object getAsObject(Type type) {
-		return getAsObject(TypeDescriptor.valueOf(type));
+	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (converter != null) {
+			if (converter instanceof ConversionService) {
+				return ((ConversionService) converter).canConvert(sourceType, targetType);
+			}
+
+			return Value.super.canConvert(sourceType, targetType);
+		}
+
+		return !Value.class.isAssignableFrom(sourceType.getType()) && Value.super.canConvert(sourceType, targetType);
 	}
 
 	@Override
-	public Object getAsObject(TypeDescriptor type) {
-		Object value = getValue();
-		if (value == null) {
-			return null;
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType)
+			throws ConversionException {
+		if (isSupportAsArray(sourceType) && targetType.isArray()) {
+			return getAsArray(targetType.getElementTypeDescriptor());
 		}
 
-		if (type.getType().isInstance(value)) {
-			return value;
-		}
-
-		Class<?> rawClass = type.getType();
-		if (rawClass == Object.class || rawClass == null) {
-			return value;
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsObject(type);
-		}
-
-		TypeDescriptor sourceType = getTypeDescriptor(value);
+		Converter<? super Object, ? super Object, ? extends RuntimeException> converter = getConverter();
 		if (converter instanceof ConversionService) {
-			if (!((ConversionService) converter).canConvert(sourceType, type)) {
-				return convert(value, sourceType, type);
+			if (!((ConversionService) converter).canConvert(sourceType, targetType)) {
+				return convertInternal(source, sourceType, targetType, null);
 			}
 		}
 
 		try {
-			return getConverter().convert(value, sourceType, type);
+			return converter.convert(source, sourceType, targetType);
 		} catch (ConversionException e) {
-			return convert(value, sourceType, type);
+			return convertInternal(source, sourceType, targetType, e);
 		}
 	}
 
-	private Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	private Object convertInternal(Object source, TypeDescriptor sourceType, TypeDescriptor targetType,
+			ConversionException exception) {
 		if (source instanceof String) {
-			return new StringValue((String) source, sourceType).getAsObject(targetType);
+			return getJsonSupport().convert(source, sourceType, targetType);
 		}
 
 		if (Value.isBaseType(targetType.getType())) {
-			return super.getAsObject(targetType.getType());
+			return getAsObject(targetType.getType());
 		}
 
-		throw new ConversionFailedException(sourceType, targetType, source, null);
-	}
-
-	@Override
-	public <E extends Throwable> Object convert(TypeDescriptor targetType,
-			Converter<? super Object, ? extends Object, E> converter) throws E {
-		Object value = getValue();
-		if (value == null) {
-			return null;
-		}
-
-		Class<?> rawClass = targetType.getType();
-		if (rawClass == Object.class || rawClass == null) {
-			return value;
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).convert(targetType, converter);
-		}
-		return converter.convert(value, getTypeDescriptor(value), targetType);
-	}
-
-	@Override
-	public int hashCode() {
-		Object value = getValue();
-		return value == null ? super.hashCode() : value.hashCode();
+		throw new ConversionFailedException(sourceType, targetType, source, exception);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		Object value = getValue();
 		if (value == null) {
 			return false;
 		}
@@ -618,86 +109,93 @@ public class AnyValue extends AbstractValue implements Serializable, Cloneable {
 		return false;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public boolean isEmpty() {
-		Object value = getValue();
-		if (value == null) {
-			return true;
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).isEmpty();
-		}
-
-		if (value instanceof Collection) {
-			return ((Collection) value).isEmpty();
-		}
-
-		if (value instanceof Map) {
-			return ((Map) value).isEmpty();
-		}
-
-		if (value.getClass().isArray()) {
-			return Array.getLength(value) == 0;
-		}
-
-		if ("".equals(value)) {
-			return true;
-		}
-		return super.isEmpty();
+	public <E> E[] getAsArray(Class<E> componentType) {
+		return getAsArray(TypeDescriptor.valueOf(componentType));
 	}
 
-	public boolean isNumber() {
-		if (isEmpty()) {
-			return false;
-		}
-
-		Object value = get();
-		if (value instanceof Number) {
-			return true;
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).isNumber();
-		}
-		return super.isNumber();
-	}
-
-	@Override
-	public Object get() {
-		Object value = getValue();
-		if (value == null) {
+	@SuppressWarnings("unchecked")
+	public <E> E[] getAsArray(TypeDescriptor componentType) {
+		String[] values = split(getAsString());
+		if (values == null) {
 			return null;
 		}
 
-		if (typeDescriptor != null && ClassUtils.isAssignableValue(typeDescriptor.getType(), value)) {
-			return value;
+		Object array = Array.newInstance(componentType.getType(), values.length);
+		for (int i = 0; i < values.length; i++) {
+			AnyValue value = clone();
+			value.setValue(values[i]);
+			if (value.isPresent()) {
+				Array.set(array, i, value.getAsObject(componentType));
+			}
 		}
+		return (E[]) array;
+	}
 
-		if (value instanceof Value) {
-			return ((Value) value).get();
-		}
+	public Converter<? super Object, ? super Object, ? extends RuntimeException> getConverter() {
+		return converter == null ? Sys.getEnv().getConversionService() : converter;
+	}
+
+	public JsonSupport getJsonSupport() {
+		return jsonSupport == null ? JsonUtils.getJsonSupport() : jsonSupport;
+	}
+
+	@Override
+	public Object getSource() {
 		return value;
 	}
 
 	@Override
-	public AnyValue clone() {
-		return new AnyValue(this);
+	public TypeDescriptor getTypeDescriptor() {
+		if (typeDescriptor != null) {
+			return typeDescriptor;
+		}
+
+		return Value.super.getTypeDescriptor();
 	}
 
-	public void setValue(Object value) {
-		setValueSupplier(new StaticSupplier<Object>(value));
+	@Override
+	public int hashCode() {
+		return value == null ? super.hashCode() : value.hashCode();
 	}
 
-	public void setValueSupplier(Supplier<? extends Object> valueSupplier) {
-		this.valueSupplier = valueSupplier;
+	public boolean isSupportAsArray(TypeDescriptor type) {
+		if (type == null) {
+			return false;
+		}
+
+		return type.getType() == String.class;
 	}
 
 	public void setConverter(Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
 		this.converter = converter;
 	}
 
-	public void setTypeDescriptor(TypeDescriptor typeDescriptor) {
-		this.typeDescriptor = typeDescriptor;
+	public void setJsonSupport(JsonSupport jsonSupport) {
+		this.jsonSupport = jsonSupport;
+	}
+
+	public void setValue(Object value) {
+		setValue(value, null);
+	}
+
+	public void setValue(Object value, TypeDescriptor type) {
+		this.value = value;
+		this.typeDescriptor = type;
+	}
+
+	public String[] split(String value) {
+		return StringUtils.splitToArray(value);
+	}
+
+	@Override
+	public String toString() {
+		return Objects.toString(value);
+	}
+
+	@Override
+	public Value transform(Object value, TypeDescriptor type) {
+		AnyValue anyValue = clone();
+		anyValue.setValue(value, type);
+		return anyValue;
 	}
 }

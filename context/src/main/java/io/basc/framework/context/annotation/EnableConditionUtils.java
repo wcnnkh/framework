@@ -43,7 +43,7 @@ public class EnableConditionUtils {
 			return false;
 		}
 
-		String value = propertyFactory.getString(condition);
+		String value = propertyFactory.getAsString(condition);
 		String[] values = enableCondition.value();
 		if (enable(values, value)) {
 			return true;
@@ -71,7 +71,7 @@ public class EnableConditionUtils {
 			return false;
 		}
 
-		String value = propertyFactory.getString(condition);
+		String value = propertyFactory.getAsString(condition);
 		String[] values = (String[]) attributeMap.get("value");
 		if (enable(values, value)) {
 			return true;

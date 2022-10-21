@@ -2,7 +2,6 @@ package io.basc.framework.convert.support;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
 
 class ValueConversionService implements ConversionService {
@@ -13,20 +12,9 @@ class ValueConversionService implements ConversionService {
 	}
 
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		Value value = new AnyValue(source, conversionService);
-//		if (source instanceof Value) {
-//			value = (Value) source;
-//		} else {
-//			value = new AnyValue(source, sourceType, conversionService);
-//		}
-		
+		Value value = Value.of(source, sourceType, conversionService);
 		if(targetType.getType() == Value.class) {
 			return value;
-		}
-
-		if (targetType.getType() == AnyValue.class) {
-			return value;
-			//new AnyValue(value);
 		}
 
 		return value.getAsObject(targetType);
@@ -40,7 +28,7 @@ class ValueConversionService implements ConversionService {
 		if (isAssignableFrom) {
 			return Value.class.isAssignableFrom(type);
 		} else {
-			return Value.class == type || AnyValue.class == type;
+			return Value.class == type;
 		}
 	}
 

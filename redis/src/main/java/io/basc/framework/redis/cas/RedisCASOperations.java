@@ -12,7 +12,7 @@ import io.basc.framework.io.SerializerUtils;
 import io.basc.framework.redis.Redis;
 import io.basc.framework.redis.RedisClient;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.value.AnyValue;
+import io.basc.framework.value.Value;
 
 public class RedisCASOperations implements TemporaryDataCasOperations, DataStorage {
 	private static final String CAS_IS_NULL = "if (" + isNullScript("cas") + ") then cas = 0 end";
@@ -71,12 +71,12 @@ public class RedisCASOperations implements TemporaryDataCasOperations, DataStora
 			resposne = client.eval(CAS_SCRIPT, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + ""),
 					Arrays.asList(value));
 		}
-		return new AnyValue(resposne).getAsBooleanValue();
+		return Value.of(resposne).getAsBoolean();
 	}
 
 	public boolean delete(String key, long cas) {
 		Object v = client.eval(CAS_DELETE, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + ""), null);
-		return new AnyValue(v).getAsBooleanValue();
+		return Value.of(v).getAsBoolean();
 	}
 
 	public CAS<Object> gets(String key) {
@@ -86,7 +86,7 @@ public class RedisCASOperations implements TemporaryDataCasOperations, DataStora
 		}
 
 		Object value = values.get(0);
-		long verion = new AnyValue(values.get(1)).getAsLongValue();
+		long verion = Value.of(values.get(1)).getAsLong();
 		return new CAS<>(verion, value);
 	}
 
@@ -133,7 +133,7 @@ public class RedisCASOperations implements TemporaryDataCasOperations, DataStora
 		} else {
 			v = client.eval(ADD, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
 		}
-		return new AnyValue(v).getAsBooleanValue();
+		return Value.of(v).getAsBoolean();
 	}
 
 	@Override
@@ -145,7 +145,7 @@ public class RedisCASOperations implements TemporaryDataCasOperations, DataStora
 		} else {
 			v = client.eval(setIfPresent, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
 		}
-		return new AnyValue(v).getAsBooleanValue();
+		return Value.of(v).getAsBoolean();
 	}
 
 	@Override
@@ -161,7 +161,7 @@ public class RedisCASOperations implements TemporaryDataCasOperations, DataStora
 	@Override
 	public boolean setIfPresent(String key, Object value, TypeDescriptor valueType) {
 		Object v = client.eval(setIfPresent, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
-		return new AnyValue(v).getAsBooleanValue();
+		return Value.of(v).getAsBoolean();
 	}
 
 	@Override
@@ -172,14 +172,14 @@ public class RedisCASOperations implements TemporaryDataCasOperations, DataStora
 	@Override
 	public boolean setIfAbsent(String key, Object value, TypeDescriptor valueType) {
 		Object v = client.eval(ADD, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
-		return new AnyValue(v).getAsBooleanValue();
+		return Value.of(v).getAsBoolean();
 	}
 
 	@Override
 	public boolean cas(String key, Object value, TypeDescriptor valueType, long cas) {
 		Object resposne = client.eval(CAS_SCRIPT, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + ""),
 				Arrays.asList(value));
-		return new AnyValue(resposne).getAsBooleanValue();
+		return Value.of(resposne).getAsBoolean();
 	}
 
 	@Override

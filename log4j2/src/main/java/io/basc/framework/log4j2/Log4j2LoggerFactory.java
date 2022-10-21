@@ -17,7 +17,7 @@ public class Log4j2LoggerFactory implements ILoggerFactory {
 
 	public Logger getLogger(String name) {
 		org.apache.logging.log4j.Logger logger = LogManager.getLogger(name);
-		Level level = LoggerFactory.getLevelManager().get().getLevel(name);
+		Level level = LoggerFactory.getLevelManager().getLevel(name);
 		if (level != null) {
 			Configurator.setLevel(logger, LevelCodec.INSTANCE.encode(level));
 		}

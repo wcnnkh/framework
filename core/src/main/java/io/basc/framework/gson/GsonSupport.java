@@ -6,11 +6,11 @@ import java.io.Reader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import io.basc.framework.json.AbstractJSONSupport;
-import io.basc.framework.json.JSONException;
+import io.basc.framework.json.AbstractJsonSupport;
 import io.basc.framework.json.JsonElement;
+import io.basc.framework.json.JsonException;
 
-public final class GsonSupport extends AbstractJSONSupport {
+public final class GsonSupport extends AbstractJsonSupport {
 	public static final GsonSupport INSTANCE = new GsonSupport();
 
 	private final Gson gson;
@@ -33,7 +33,7 @@ public final class GsonSupport extends AbstractJSONSupport {
 	}
 
 	@Override
-	public JsonElement parseJson(Reader reader) throws IOException, JSONException {
+	public JsonElement parseJson(Reader reader) throws IOException, JsonException {
 		com.google.gson.JsonElement gsonJsonElement = gson.fromJson(reader, com.google.gson.JsonElement.class);
 		return new GsonElement(gsonJsonElement, gson);
 	}
