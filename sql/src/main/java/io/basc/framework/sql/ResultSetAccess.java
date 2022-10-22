@@ -36,7 +36,7 @@ public class ResultSetAccess implements ObjectAccess<SQLException> {
 
 	@Override
 	public void set(Parameter parameter) throws SQLException {
-		resultSet.updateObject(parameter.getName(), parameter.get());
+		resultSet.updateObject(parameter.getName(), parameter.getSource());
 	}
 
 }

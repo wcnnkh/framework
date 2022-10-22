@@ -5,6 +5,7 @@ import java.util.Properties;
 import io.basc.framework.db.Configurable;
 import io.basc.framework.db.DBUtils;
 import io.basc.framework.env.Environment;
+import io.basc.framework.event.Observable;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.value.support.PropertiesPropertyFactory;
@@ -25,8 +26,7 @@ public class ConfigurableDefinition extends FactoryBeanDefinition {
 	@Override
 	public Object create() throws InstanceException {
 		Configurable configurable = new Configurable();
-		io.basc.framework.event.Observable<Properties> properties = environment
-				.getProperties(DBUtils.DEFAULT_CONFIGURATION);
+		Observable<Properties> properties = environment.getProperties(DBUtils.DEFAULT_CONFIGURATION);
 		DBUtils.loadProperties(configurable, new PropertiesPropertyFactory(properties.get()));
 		return configurable;
 	}
