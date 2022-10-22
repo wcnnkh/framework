@@ -90,10 +90,10 @@ public class DefaultLuceneMapper extends DefaultObjectMapper<Document, LuceneExc
 			TypeDescriptor elementTypeDescriptor;
 			if (column.getTypeDescriptor().isArray() || column.getTypeDescriptor().isCollection()) {
 				elementTypeDescriptor = column.getTypeDescriptor().getElementTypeDescriptor();
-				list = (List<?>) getConversionService().convert(column.get(), column.getTypeDescriptor(),
-						TypeDescriptor.collection(List.class, elementTypeDescriptor));
+				list = (List<?>) column.convert(TypeDescriptor.collection(List.class, elementTypeDescriptor),
+						getConversionService());
 			} else {
-				list = Arrays.asList(column.get());
+				list = Arrays.asList(column.getSource());
 				elementTypeDescriptor = column.getTypeDescriptor();
 			}
 

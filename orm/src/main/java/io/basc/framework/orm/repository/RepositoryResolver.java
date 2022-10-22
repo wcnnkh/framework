@@ -77,8 +77,8 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 			getStructure(column.getType()).columns().filter((e) -> {
 				resolveOrders(column.getType(), e.getGetter(), appendableOrders);
 				return true;
-			}).filter((e) -> !e.isAutoIncrement() || MapperUtils.isExistValue(e, column.get())).forEach((c) -> {
-				Parameter repositoryColumn = c.getParameter(column.get());
+			}).filter((e) -> !e.isAutoIncrement() || MapperUtils.isExistValue(e, column.getSource())).forEach((c) -> {
+				Parameter repositoryColumn = c.getParameter(column.getSource());
 				list.add(repositoryColumn);
 			});
 
@@ -109,7 +109,7 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 			while (iterator.hasNext()) {
 				Property property = iterator.next();
 				resolveOrders(entityClass, property.getGetter(), appendableOrders);
-				Parameter repositoryColumn = property.getParameter(condition.getParameter().get());
+				Parameter repositoryColumn = property.getParameter(condition.getParameter().getSource());
 				Condition newCondition = new Condition(condition.getCondition(), repositoryColumn);
 				withConditions.add(new WithCondition("and", new Conditions(newCondition, null)));
 			}
@@ -186,6 +186,6 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 			Structure<? extends Property> structure) {
 		return parseParameters(entityClass, structure.stream().filter((e) -> !e.isEntity()).iterator(), null,
 				(e) -> e.get(entity), (e) -> e.getKey().isNullable() || StringUtils.isNotEmpty(e.getValue()))
-						.collect(Collectors.toList());
+				.collect(Collectors.toList());
 	}
 }

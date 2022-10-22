@@ -84,8 +84,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			return value;
 		}
 
-		return getEnvironment().getConversionService().convert(value.get(), value.getTypeDescriptor(),
-				TypeDescriptor.valueOf(sqlType.getType()));
+		return value.convert(TypeDescriptor.valueOf(sqlType.getType()), getEnvironment().getConversionService());
 	}
 
 	public String getEscapeCharacter() {
@@ -509,7 +508,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			sb.append(newValue.getAsDouble() - oldValue.getAsDouble());
 		} else {
 			sb.append("?");
-			params.add(newValue.get());
+			params.add(newValue.getSource());
 		}
 	}
 
@@ -727,12 +726,12 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			List<Object> list;
 			TypeDescriptor typeDescriptor = condition.getParameter().getTypeDescriptor();
 			if (typeDescriptor.isArray() || typeDescriptor.isCollection()) {
-				list = (List<Object>) getEnvironment().getConversionService().convert(condition.getParameter().get(),
-						typeDescriptor,
-						TypeDescriptor.collection(List.class, typeDescriptor.getElementTypeDescriptor()));
+				list = (List<Object>) condition.getParameter().convert(
+						TypeDescriptor.collection(List.class, typeDescriptor.getElementTypeDescriptor()),
+						getEnvironment().getConversionService());
 				typeDescriptor = typeDescriptor.getElementTypeDescriptor();
 			} else {
-				list = Arrays.asList(condition.getParameter().get());
+				list = Arrays.asList(condition.getParameter().getSource());
 			}
 
 			if (list == null || list.isEmpty()) {
@@ -764,8 +763,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			sb.append(" is not ?");
 			params.add(toDataBaseValue(condition.getParameter()));
 		} else if (conditionKeywords.getSearchKeywords().exists(condition.getCondition())) {
-			String value = (String) getEnvironment().getConversionService().convert(condition.getParameter().get(),
-					condition.getParameter().getTypeDescriptor(), TypeDescriptor.valueOf(String.class));
+			String value = condition.getParameter().convert(String.class, getEnvironment().getConversionService());
 			if (StringUtils.isEmpty(value)) {
 				return false;
 			}
