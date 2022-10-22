@@ -79,7 +79,7 @@ public class DefaultHttpChannel extends RequestBeanFactory implements HttpChanne
 		return createTime;
 	}
 
-	public final Value getValue(String name) {
+	public final Value get(String name) {
 		ParameterDescriptor parameterDescriptor = new DefaultParameterDescriptor(name, Value.class);
 		try {
 			return (Value) getMessageConverters().read(getRequest(), parameterDescriptor);

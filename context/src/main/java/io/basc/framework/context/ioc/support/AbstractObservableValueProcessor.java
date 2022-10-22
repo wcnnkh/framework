@@ -4,8 +4,6 @@ import java.nio.charset.Charset;
 
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ioc.ValueDefinition;
-import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.EventListener;
 import io.basc.framework.event.Observable;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.lang.NotSupportedException;
@@ -33,22 +31,22 @@ public abstract class AbstractObservableValueProcessor<R> extends AbstractValueP
 			return;
 		}
 
-		set(beanDefinition, context, bean, field, valueDefinition, nameToUse, charset, res.get(), false);
+		set(beanDefinition, context, bean, field, valueDefinition, nameToUse, charset, res.orElse(null), false);
 
 		if (isRegisterListener(beanDefinition, field, valueDefinition)) {
 			final String name = nameToUse;
-			res.registerListener(new EventListener<ChangeEvent<R>>() {
-
-				public void onEvent(ChangeEvent<R> event) {
+			final Observable<R> source = res;
+			res.registerListener((event) -> {
 					try {
-						set(beanDefinition, context, bean, field, valueDefinition, name, charset, event.getSource(),
+						set(beanDefinition, context, bean, field, valueDefinition, name, charset, source.orElse(null),
 								true);
 					} catch (Exception e) {
 						logger.error(e, field.toString());
 					}
 				}
-			});
+			);
 		}
+
 	}
 
 	/**

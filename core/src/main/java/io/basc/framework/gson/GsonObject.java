@@ -6,7 +6,6 @@ import java.util.Set;
 
 import com.google.gson.Gson;
 
-import io.basc.framework.convert.ConvertibleIterator;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
@@ -30,10 +29,10 @@ public final class GsonObject extends AbstractJson<String> implements JsonObject
 		return true;
 	}
 
-	public JsonElement getValue(String key) {
+	public JsonElement get(String key) {
 		com.google.gson.JsonElement gsonJsonElement = gsonJsonObject.get(key);
 		if (gsonJsonElement == null) {
-			return getDefaultValue(key);
+			return JsonElement.EMPTY;
 		}
 
 		return new GsonElement(gsonJsonElement, gson);
@@ -47,7 +46,7 @@ public final class GsonObject extends AbstractJson<String> implements JsonObject
 		return gsonJsonObject.has(key);
 	}
 
-	public String toJSONString() {
+	public String toJsonString() {
 		return gsonJsonObject.toString();
 	}
 
@@ -81,8 +80,7 @@ public final class GsonObject extends AbstractJson<String> implements JsonObject
 		return new Pair<String, JsonElement>(k.getKey(), new GsonElement(k.getValue(), gson));
 	}
 
-	public Iterator<Pair<String, JsonElement>> iterator() {
-		return new ConvertibleIterator<Entry<String, com.google.gson.JsonElement>, Pair<String, JsonElement>>(
-				gsonJsonObject.entrySet().iterator(), this::convert);
+	public Iterator<String> iterator() {
+		return gsonJsonObject.keySet().iterator();
 	}
 }

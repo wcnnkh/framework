@@ -17,7 +17,7 @@ public class WebRpcContextPostProcessor implements ContextPostProcessor {
 	private static final String WEB_RPC_SECRET_KEY = "web.rpc.secret.key";
 	private static final String WEB_RPC_PATH = "web.rpc.path";
 	private static final String DEFAULT_RPC_PATH = "/rpc";
-	
+
 	@Override
 	public void postProcessContext(ConfigurableContext context) throws Throwable {
 		RemoteHttpServiceHandlerDefinition httpServiceDefinition = new RemoteHttpServiceHandlerDefinition(context);
@@ -44,13 +44,13 @@ public class WebRpcContextPostProcessor implements ContextPostProcessor {
 			if (getBeanFactory().isInstance(RemoteMessageCodec.class)) {
 				messageCodec = getBeanFactory().getInstance(RemoteMessageCodec.class);
 			} else {
-				String secretKey = getEnvironment().getProperties().getValue(RPC_HTTP_SIGN_NAME, String.class,
-						getEnvironment().getProperties().getString(WEB_RPC_SECRET_KEY));
+				String secretKey = getEnvironment().getProperties().get(RPC_HTTP_SIGN_NAME)
+						.or(getEnvironment().getProperties().getAsString(WEB_RPC_SECRET_KEY)).getAsString();
 				messageCodec = new SignerRemoteMessageCodec(secretKey);
 			}
 
-			String path = getEnvironment().getProperties().getValue(RPC_HTTP_PATH, String.class,
-					getEnvironment().getProperties().getValue(WEB_RPC_PATH, String.class, DEFAULT_RPC_PATH));
+			String path = getEnvironment().getProperties().get(RPC_HTTP_PATH)
+					.orElse(getEnvironment().getProperties().get(WEB_RPC_PATH).or(DEFAULT_RPC_PATH)).getAsString();
 			return new RemoteHttpServiceHandler(getEnvironment(), messageCodec, path);
 		}
 	}

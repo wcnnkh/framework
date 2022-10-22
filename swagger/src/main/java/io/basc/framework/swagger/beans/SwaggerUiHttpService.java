@@ -3,7 +3,7 @@ package io.basc.framework.swagger.beans;
 import java.io.IOException;
 
 import io.basc.framework.http.MediaType;
-import io.basc.framework.json.JSONUtils;
+import io.basc.framework.json.JsonUtils;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
@@ -14,6 +14,7 @@ import io.swagger.v3.oas.models.OpenAPI;
  * 
  * {@link https://github.com/swagger-api/swagger-ui}
  * {@link https://github.com/swagger-api/swagger-ui/tree/master/dist}
+ * 
  * @author shuchaowen
  *
  */
@@ -31,7 +32,7 @@ public class SwaggerUiHttpService implements HttpService {
 	@Override
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		OpenAPI openAPI = openApiContext.read();
-		String json = JSONUtils.getJsonSupport().toJSONString(openAPI);
+		String json = JsonUtils.getJsonSupport().toJsonString(openAPI);
 		response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 		response.getWriter().write(json);
 	}

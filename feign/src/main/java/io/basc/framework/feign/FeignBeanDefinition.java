@@ -22,7 +22,7 @@ public class FeignBeanDefinition extends EnvironmentBeanDefinition {
 	private String getHost() {
 		String host = feignClient.host();
 		if (StringUtils.isEmpty(host)) {
-			host = getEnvironment().getProperties().getString("feign.host");
+			host = getEnvironment().getProperties().getAsString("feign.host");
 		} else {
 			host = getEnvironment().replacePlaceholders(host);
 		}

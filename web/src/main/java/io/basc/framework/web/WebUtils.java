@@ -17,10 +17,10 @@ import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpStatus;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
-import io.basc.framework.json.JSONUtils;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
+import io.basc.framework.json.JsonUtils;
 import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
@@ -35,9 +35,6 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.value.AnyValue;
-import io.basc.framework.value.EmptyValue;
-import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 import io.basc.framework.web.pattern.HttpPattern;
 import io.basc.framework.web.support.DefaultHttpService;
@@ -121,14 +118,14 @@ public final class WebUtils {
 
 		if (value != null) {
 			value = decodeGETParameter(request, value);
-			return new StringValue(value);
+			return Value.of(value);
 		}
 
 		JsonServerHttpRequest jsonServerHttpRequest = XUtils.getDelegate(request, JsonServerHttpRequest.class);
 		if (jsonServerHttpRequest != null) {
 			JsonObject jsonObject = jsonServerHttpRequest.getJsonObject();
 			if (jsonObject != null) {
-				JsonElement element = jsonObject.getValue(name);
+				JsonElement element = jsonObject.get(name);
 				if (element != null) {
 					return element;
 				}
@@ -140,10 +137,10 @@ public final class WebUtils {
 		if (multiPartServerHttpRequest != null) {
 			MultipartMessage multipartMessage = multiPartServerHttpRequest.getMultipartMessageMap().getFirst(name);
 			if (multipartMessage != null) {
-				return new AnyValue(multipartMessage);
+				return Value.of(multipartMessage);
 			}
 		}
-		return EmptyValue.INSTANCE;
+		return Value.EMPTY;
 	}
 
 	/**
@@ -159,7 +156,7 @@ public final class WebUtils {
 			Value[] values = new Value[valueList.size()];
 			int index = 0;
 			for (String value : valueList) {
-				values[index++] = new StringValue(decodeGETParameter(request, value));
+				values[index++] = Value.of(decodeGETParameter(request, value));
 			}
 			return values;
 		}
@@ -168,7 +165,7 @@ public final class WebUtils {
 		if (jsonServerHttpRequest != null) {
 			JsonObject jsonObject = jsonServerHttpRequest.getJsonObject();
 			if (jsonObject != null) {
-				JsonElement jsonElement = jsonObject.getValue(name);
+				JsonElement jsonElement = jsonObject.get(name);
 				if (jsonElement.isJsonArray()) {
 					JsonArray jsonArray = jsonElement.getAsJsonArray();
 					Value[] values = new Value[jsonArray.size()];
@@ -188,7 +185,7 @@ public final class WebUtils {
 			Value[] values = new Value[items.size()];
 			int index = 0;
 			for (MultipartMessage element : items) {
-				values[index++] = new AnyValue(element);
+				values[index++] = Value.of(element);
 			}
 			return values;
 		}
@@ -387,7 +384,7 @@ public final class WebUtils {
 
 	public static Object getRequestBody(ServerHttpRequest request) throws IOException {
 		if (request.getHeaders().isJsonContentType()) {
-			return JSONUtils.parseJson(request.getReader());
+			return JsonUtils.parseJson(request.getReader());
 		} else if (request.getHeaders().isXmlContentType()) {
 			return XmlUtils.getTemplate().getParser().parse(request.getReader());
 		} else if (request.getHeaders().isFormContentType()) {
@@ -400,7 +397,7 @@ public final class WebUtils {
 				}
 
 				try {
-					JsonElement jsonElement = JSONUtils.parseJson(content);
+					JsonElement jsonElement = JsonUtils.parseJson(content);
 					if (jsonElement.isJsonArray() || jsonElement.isJsonObject()) {
 						return jsonElement;
 					}

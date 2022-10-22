@@ -58,7 +58,7 @@ public class XmlBeanDefinition extends FactoryBeanDefinition {
 
 	@SuppressWarnings("unchecked")
 	protected Collection<String> getFilters(Node node) {
-		String filters = DomUtils.getNodeAttributeValue(node, "filters");
+		String filters = DomUtils.getNodeAttributeValue(node, "filters").getAsString();
 		if (StringUtils.isEmpty(filters)) {
 			return Collections.EMPTY_LIST;
 		}
@@ -67,12 +67,12 @@ public class XmlBeanDefinition extends FactoryBeanDefinition {
 	}
 
 	protected String getId(Node node) {
-		String id = DomUtils.getNodeAttributeValue(node, "id");
+		String id = DomUtils.getNodeAttributeValue(node, "id").getAsString();
 		return StringUtils.isEmpty(id) ? XmlBeanUtils.getClassName(node, true) : id;
 	}
 
 	protected String[] getNames(Node node) {
-		String name = DomUtils.getNodeAttributeValue(node, "name");
+		String name = DomUtils.getNodeAttributeValue(node, "name").getAsString();
 		return StringUtils.isEmpty(name) ? new String[0] : StringUtils.splitToArray(name);
 	}
 
@@ -84,7 +84,7 @@ public class XmlBeanDefinition extends FactoryBeanDefinition {
 			return super.isInstance();
 		}
 
-		for (ParameterDescriptors parameterDescriptors : this) {
+		for (ParameterDescriptors parameterDescriptors : this) { 
 			if (xmlParameterFactory.isAccept(parameterDescriptors)) {
 				return true;
 			}

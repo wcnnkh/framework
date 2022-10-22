@@ -27,10 +27,10 @@ public final class GsonArray extends AbstractJson<Integer> implements JsonArray 
 				this::convert);
 	}
 
-	public JsonElement getValue(Integer index) {
+	public JsonElement get(Integer index) {
 		com.google.gson.JsonElement element = gsonJsonArray.get(index);
 		if (element == null) {
-			return getDefaultValue(index);
+			return JsonElement.EMPTY;
 		}
 
 		return new GsonElement(element, gson);
@@ -48,7 +48,7 @@ public final class GsonArray extends AbstractJson<Integer> implements JsonArray 
 		return gsonJsonArray.size();
 	}
 
-	public String toJSONString() {
+	public String toJsonString() {
 		return gsonJsonArray.toString();
 	}
 

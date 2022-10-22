@@ -40,6 +40,6 @@ public class SwaggerContextPostProcessor implements ContextPostProcessor {
 	}
 
 	private boolean isEnableSwagger(Environment environment) {
-		return environment.getProperties().getValue("swagger.enable", boolean.class, false);
+		return environment.getProperties().getAsBoolean("swagger.enable");
 	}
 }

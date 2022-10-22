@@ -20,7 +20,7 @@ import io.basc.framework.util.ParentDiscover;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.alias.AliasRegistry;
 import io.basc.framework.util.stream.Processor;
-import io.basc.framework.value.EmptyValue;
+import io.basc.framework.value.Value;
 
 public class Field extends AccessibleField implements Member, ParentDiscover<Field>, Predicate<Field> {
 	protected Field parent;
@@ -107,7 +107,7 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 		while (enumeration.hasMoreElements()) {
 			Field parentField = enumeration.nextElement();
 			if (!parentField.isSupportGetter()) {
-				return EmptyValue.INSTANCE.getAsObject(getGetter().getType());
+				return Value.EMPTY.getAsObject(getGetter().getType());
 			}
 
 			boolean isStatic = Modifier.isStatic(parentField.getGetter().getModifiers());
@@ -122,7 +122,7 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 				parentValue = parentField.getGetter().get(parentValue);
 				// 如果不是静态的，但获取到的是空就不用再向下获取了
 				if (parentValue == null) {
-					return EmptyValue.INSTANCE.getAsObject(getGetter().getType());
+					return Value.EMPTY.getAsObject(getGetter().getType());
 				}
 			}
 		}
@@ -421,7 +421,7 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 				if (Modifier.isStatic(sourceModifiers) ^ Modifier.isStatic(targetModifiers)) {
 					return false;
 				}
-				
+
 				ResolvableType type1 = ResolvableType.forType(getGetter().getGenericType());
 				ResolvableType type2 = ResolvableType.forType(target.getSetter().getGenericType());
 				if (!type2.isAssignableFrom(type1)) {

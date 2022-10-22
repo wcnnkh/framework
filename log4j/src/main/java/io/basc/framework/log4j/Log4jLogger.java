@@ -18,7 +18,7 @@ public class Log4jLogger extends CustomLogger {
 	public Log4jLogger(Logger logger, @Nullable String placeholder) {
 		this.placeholder = placeholder;
 		this.logger = logger;
-		Level level = LoggerFactory.getLevelManager().get().getLevel(logger.getName());
+		Level level = LoggerFactory.getLevelManager().getLevel(logger.getName());
 		if (level != null) {
 			setLevel(level);
 		}

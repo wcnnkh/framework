@@ -11,7 +11,7 @@ import io.basc.framework.amqp.MessageProperties;
 import io.basc.framework.amqp.QueueDeclare;
 import io.basc.framework.amqp.support.AbstractExchange;
 import io.basc.framework.factory.Init;
-import io.basc.framework.json.JSONUtils;
+import io.basc.framework.json.JsonUtils;
 
 public abstract class AbstractRabbitmqExchange extends AbstractExchange implements Init {
 	static final String DIX_ROUTING_KEY = "io.basc.framework.dix.routingKey";
@@ -105,7 +105,7 @@ public abstract class AbstractRabbitmqExchange extends AbstractExchange implemen
 				: getExchangeDeclare();
 		if (logger.isDebugEnabled()) {
 			logger.debug("push exchange={}, routingKey={}, properties={}, body={}", exchangeDeclare.getName(),
-					routingKey, JSONUtils.getJsonSupport().toJSONString(messageProperties), String.valueOf(body));
+					routingKey, JsonUtils.getJsonSupport().toJsonString(messageProperties), String.valueOf(body));
 		}
 
 		if (messageProperties.getDeliveryMode() == null) {

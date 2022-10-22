@@ -8,7 +8,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.annotation.DateFormat;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.TimeUtils;
-import io.basc.framework.value.AnyValue;
+import io.basc.framework.value.Value;
 
 public class DateFormatConversionService extends AbstractConversionService {
 
@@ -63,7 +63,7 @@ public class DateFormatConversionService extends AbstractConversionService {
 			}
 
 			if (NumberUtils.isNumber(targetType.getType())) {
-				return new AnyValue(source).getAsObject(targetType);
+				return Value.of(source).getAsObject(targetType);
 			}
 		}
 
@@ -117,12 +117,11 @@ public class DateFormatConversionService extends AbstractConversionService {
 	}
 
 	private Object dateToNumber(Date source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return new AnyValue(source.getTime()).getAsObject(targetType);
+		return Value.of(source.getTime()).getAsObject(targetType);
 	}
 
 	private Date numberToDate(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		AnyValue anyValue = new AnyValue(source);
-		long time = anyValue.getAsLongValue();
+		long time = Value.of(source).getAsLong();
 		return new Date(time);
 	}
 

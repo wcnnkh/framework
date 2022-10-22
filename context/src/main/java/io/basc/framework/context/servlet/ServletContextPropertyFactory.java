@@ -1,13 +1,12 @@
 package io.basc.framework.context.servlet;
 
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.value.PropertyFactory;
-import io.basc.framework.value.StringValue;
-import io.basc.framework.value.Value;
-
 import java.util.Iterator;
 
 import javax.servlet.ServletContext;
+
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.value.PropertyFactory;
+import io.basc.framework.value.Value;
 
 public class ServletContextPropertyFactory implements PropertyFactory {
 	private final ServletContext servletContext;
@@ -16,9 +15,9 @@ public class ServletContextPropertyFactory implements PropertyFactory {
 		this.servletContext = servletContext;
 	}
 	
-	public Value getValue(String key) {
+	public Value get(String key) {
 		String value = servletContext.getInitParameter(key);
-		return value == null? null:new StringValue(value);
+		return Value.of(value);
 	}
 
 	public Iterator<String> iterator() {

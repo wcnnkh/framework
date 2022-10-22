@@ -27,11 +27,11 @@ public final class XmlBeanUtils {
 
 	public static XmlBeanParameter parseBeanParameter(Node node, ClassLoader classLoader)
 			throws ClassNotFoundException {
-		String name = DomUtils.getNodeAttributeValue(node, "name");
-		String ref = DomUtils.getNodeAttributeValue(node, "ref");
-		String value = DomUtils.getNodeAttributeValue(node, "value");
-		String type = DomUtils.getNodeAttributeValue(node, "type");
-		String property = DomUtils.getNodeAttributeValue(node, "property");
+		String name = DomUtils.getNodeAttributeValue(node, "name").getAsString();
+		String ref = DomUtils.getNodeAttributeValue(node, "ref").getAsString();
+		String value = DomUtils.getNodeAttributeValue(node, "value").getAsString();
+		String type = DomUtils.getNodeAttributeValue(node, "type").getAsString();
+		String property = DomUtils.getNodeAttributeValue(node, "property").getAsString();
 
 		Class<?> typeClass = StringUtils.isEmpty(type) ? null : ClassUtils.forName(type, classLoader);
 		if (!StringUtils.isEmpty(ref)) {
@@ -47,16 +47,16 @@ public final class XmlBeanUtils {
 	}
 
 	public static Boolean isSingleton(Node node) {
-		return DomUtils.getBooleanValue(node, "singleton", null);
+		return DomUtils.getNodeAttributeValue(node, "singleton").getAsObject(Boolean.class);
 	}
 
 	public static boolean getBooleanValue(Environment environment, Node node, String name, boolean defaultValue) {
-		String value = DomUtils.getNodeAttributeValue(environment, node, name);
+		String value = DomUtils.getNodeAttributeValue(environment, node, name).getAsString();
 		return StringUtils.isEmpty(value) ? defaultValue : Boolean.parseBoolean(value);
 	}
 
 	public static int getIntegerValue(Environment environment, Node node, String name, int defaultValue) {
-		String value = DomUtils.getNodeAttributeValue(environment, node, name);
+		String value = DomUtils.getNodeAttributeValue(environment, node, name).getAsString();
 		return StringUtils.isEmpty(value) ? defaultValue : Integer.parseInt(value);
 	}
 
@@ -78,28 +78,28 @@ public final class XmlBeanUtils {
 	}
 
 	public static String getPackageName(Environment environment, Node node) {
-		return DomUtils.getNodeAttributeValue(environment, node, "package");
+		return DomUtils.getNodeAttributeValue(environment, node, "package").getAsString();
 	}
 
 	public static String getVersion(Environment environment, Node node) {
-		return DomUtils.getNodeAttributeValue(environment, node, "version");
+		return DomUtils.getNodeAttributeValue(environment, node, "version").getAsString();
 	}
 
 	public static String getAddress(Environment environment, Node node) {
-		return DomUtils.getRequireNodeAttributeValue(environment, node, "address");
+		return DomUtils.getRequireNodeAttributeValue(environment, node, "address").getAsString();
 	}
 
 	public static String getRef(Environment environment, Node node) {
-		return DomUtils.getRequireNodeAttributeValue(environment, node, "ref");
+		return DomUtils.getRequireNodeAttributeValue(environment, node, "ref").getAsString();
 	}
 
 	public static String getCharsetName(Environment environment, Node node, String defaultValue) {
-		String charsetName = DomUtils.getNodeAttributeValue(environment, node, "charsetName");
+		String charsetName = DomUtils.getNodeAttributeValue(environment, node, "charsetName").getAsString();
 		return StringUtils.isEmpty(charsetName) ? defaultValue : charsetName;
 	}
 
 	public static String getCharsetName(Node node, String defaultValue) {
-		String charsetName = DomUtils.getNodeAttributeValue(node, "charsetName");
+		String charsetName = DomUtils.getNodeAttributeValue(node, "charsetName").getAsString();
 		return StringUtils.isEmpty(charsetName) ? defaultValue : charsetName;
 	}
 
@@ -161,7 +161,7 @@ public final class XmlBeanUtils {
 	}
 
 	public static TimeUnit getTimeUnit(Node node) {
-		String format = DomUtils.getNodeAttributeValue(node, "unit");
+		String format = DomUtils.getNodeAttributeValue(node, "unit").getAsString();
 		TimeUnit timeUnit = TimeUnit.MINUTES;
 		if (StringUtils.isNotEmpty(format)) {
 			timeUnit = TimeUnit.valueOf(format.toUpperCase());
@@ -170,8 +170,8 @@ public final class XmlBeanUtils {
 	}
 
 	public static String getClassName(Node node, boolean require) {
-		return require ? DomUtils.getRequireNodeAttributeValue(node, "class")
-				: DomUtils.getNodeAttributeValue(node, "class");
+		return require ? DomUtils.getRequireNodeAttributeValue(node, "class").getAsString()
+				: DomUtils.getNodeAttributeValue(node, "class").getAsString();
 	}
 
 	public static Class<?> getClass(Node node, boolean require, ClassLoader classLoader) throws ClassNotFoundException {

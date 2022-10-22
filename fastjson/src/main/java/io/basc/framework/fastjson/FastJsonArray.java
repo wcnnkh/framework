@@ -14,8 +14,7 @@ import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
 
-public final class FastJsonArray extends AbstractJson<Integer>
-		implements JsonArray, JSONAware, Serializable {
+public final class FastJsonArray extends AbstractJson<Integer> implements JsonArray, JSONAware, Serializable {
 	private static final long serialVersionUID = 1L;
 	private JSONArray jsonArray;
 
@@ -38,10 +37,10 @@ public final class FastJsonArray extends AbstractJson<Integer>
 		return new ConvertibleIterator<Object, JsonElement>(jsonArray.iterator(), this::convert);
 	}
 
-	public JsonElement getValue(Integer index) {
+	public JsonElement get(Integer index) {
 		String text = jsonArray.getString(index);
 		if (text == null) {
-			return getDefaultValue(index);
+			return JsonElement.EMPTY;
 		}
 
 		return new FastJsonElement(text);

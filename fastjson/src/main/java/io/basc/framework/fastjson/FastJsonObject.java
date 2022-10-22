@@ -3,19 +3,16 @@ package io.basc.framework.fastjson;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONAware;
 import com.alibaba.fastjson.JSONObject;
 
-import io.basc.framework.convert.ConvertibleIterator;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
-import io.basc.framework.util.Pair;
 
 public final class FastJsonObject extends AbstractJson<String> implements JsonObject, JSONAware, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -30,7 +27,7 @@ public final class FastJsonObject extends AbstractJson<String> implements JsonOb
 		return true;
 	}
 
-	public io.basc.framework.json.JsonObject getJsonObject(String key) {
+	public JsonObject getJsonObject(String key) {
 		JSONObject json = jsonObject.getJSONObject(key);
 		return json == null ? null : new FastJsonObject(json);
 	}
@@ -40,10 +37,10 @@ public final class FastJsonObject extends AbstractJson<String> implements JsonOb
 		return json == null ? null : new FastJsonArray(json);
 	}
 
-	public JsonElement getValue(String key) {
+	public JsonElement get(String key) {
 		String text = jsonObject.getString(key);
 		if (text == null) {
-			return getDefaultValue(key);
+			return JsonElement.EMPTY;
 		}
 
 		return new FastJsonElement(text);
@@ -99,12 +96,7 @@ public final class FastJsonObject extends AbstractJson<String> implements JsonOb
 		return jsonObject.remove(key) != null;
 	}
 
-	public Iterator<Pair<String, JsonElement>> iterator() {
-		return new ConvertibleIterator<Entry<String, Object>, Pair<String, JsonElement>>(
-				jsonObject.entrySet().iterator(), this::convert);
-	}
-
-	public Pair<String, JsonElement> convert(Entry<String, Object> k) {
-		return new Pair<String, JsonElement>(k.getKey(), getValue(k.getKey()));
+	public Iterator<String> iterator() {
+		return jsonObject.keySet().iterator();
 	}
 }

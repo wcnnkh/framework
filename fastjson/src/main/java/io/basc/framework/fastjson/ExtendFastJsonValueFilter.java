@@ -5,7 +5,7 @@ import com.alibaba.fastjson.serializer.ValueFilter;
 import io.basc.framework.aop.support.FieldSetterListen;
 import io.basc.framework.aop.support.FieldSetterListenImpl;
 import io.basc.framework.aop.support.ProxyUtils;
-import io.basc.framework.json.JSONAware;
+import io.basc.framework.json.JsonAware;
 import io.basc.framework.mapper.Copy;
 import io.basc.framework.value.Value;
 
@@ -20,8 +20,8 @@ public class ExtendFastJsonValueFilter implements ValueFilter {
 			return value;
 		}
 
-		if (value instanceof JSONAware) {
-			return ((JSONAware) value).toJSONString();
+		if (value instanceof JsonAware) {
+			return ((JsonAware) value).toJsonString();
 		}
 
 		if (value instanceof Value) {

@@ -3,15 +3,14 @@ package io.basc.framework.env;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.OptionalInt;
 
 import io.basc.framework.core.Ordered;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.AbstractIterator;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.PropertyFactory;
-import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 
 public class MainArgs implements PropertyFactory, Ordered {
@@ -43,7 +42,7 @@ public class MainArgs implements PropertyFactory, Ordered {
 	}
 
 	public Value get(int index) {
-		return new AnyValue(args[index]);
+		return Value.of(args[index]);
 	}
 
 	public int length() {
@@ -101,9 +100,9 @@ public class MainArgs implements PropertyFactory, Ordered {
 		return null;
 	}
 
-	public Value getValue(String key) {
+	public Value get(String key) {
 		String value = getProperty(key);
-		return value == null ? null : new StringValue(value);
+		return Value.of(value);
 	}
 
 	public Iterator<String> iterator() {
@@ -147,8 +146,8 @@ public class MainArgs implements PropertyFactory, Ordered {
 	 * @return
 	 */
 	@Nullable
-	public Integer getPort() {
+	public OptionalInt getPort() {
 		Value port = getNextValue("-p");
-		return (port != null && !port.isEmpty()) ? port.getAsInteger() : null;
+		return port != null && port.isPresent() ? OptionalInt.of(port.getAsInt()) : OptionalInt.empty();
 	}
 }

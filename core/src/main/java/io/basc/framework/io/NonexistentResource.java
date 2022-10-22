@@ -1,10 +1,5 @@
 package io.basc.framework.io;
 
-import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventRegistration;
-import io.basc.framework.lang.NotSupportedException;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,7 +8,10 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 
-public final class NonexistentResource implements Resource {
+import io.basc.framework.event.EmptyObservable;
+import io.basc.framework.lang.NotSupportedException;
+
+public final class NonexistentResource extends EmptyObservable<Resource> implements Resource {
 	public InputStream getInputStream() throws IOException {
 		throw new NotSupportedException("empty resource");
 	}
@@ -72,10 +70,5 @@ public final class NonexistentResource implements Resource {
 
 	public boolean isSupportEventDispatcher() {
 		return false;
-	}
-
-	@Override
-	public EventRegistration registerListener(EventListener<ChangeEvent<Resource>> eventListener) {
-		return EventRegistration.EMPTY;
 	}
 }

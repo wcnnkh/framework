@@ -7,9 +7,9 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.annotation.JSON;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.json.JSONSupportAccessor;
+import io.basc.framework.json.JsonSupportAccessor;
 
-public class ObjectToStringConverter extends JSONSupportAccessor
+public class ObjectToStringConverter extends JsonSupportAccessor
 		implements ConversionService, Function<Object, String>, Ordered {
 
 	public String apply(Object o) {
@@ -38,6 +38,6 @@ public class ObjectToStringConverter extends JSONSupportAccessor
 			return apply(source);
 		}
 
-		return getJsonSupport().toJSONString(source);
+		return getJsonSupport().toJsonString(source);
 	}
 }

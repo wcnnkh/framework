@@ -34,7 +34,10 @@ public class FileSystemResourceLoader extends DefaultResourceLoader {
 			return fileSystemResource;
 		}
 		Resource resource = super.getResourceByPath(path);
-		return new AutoSelectResource(fileSystemResource, resource);
+		Resources resources = new Resources();
+		resources.register(fileSystemResource);
+		resources.register(resource);
+		return resources;
 	}
 
 	/**

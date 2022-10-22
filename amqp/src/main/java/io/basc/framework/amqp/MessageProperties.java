@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import io.basc.framework.math.NumberHolder;
 import io.basc.framework.script.MathScriptEngine;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
 
 public class MessageProperties implements Serializable, Cloneable {
@@ -187,10 +186,7 @@ public class MessageProperties implements Serializable, Cloneable {
 
 	public Value getHeaderValue(String name) {
 		Object value = getHeader(name);
-		if (value == null) {
-			return null;
-		}
-		return new AnyValue(value);
+		return Value.of(value);
 	}
 
 	public MessageProperties removeHeader(String name) {
@@ -245,7 +241,7 @@ public class MessageProperties implements Serializable, Cloneable {
 
 	public int getRetryCount() {
 		Value value = getHeaderValue(RETRY_COUNT);
-		return value == null ? 0 : value.getAsIntValue();
+		return value == null ? 0 : value.getAsInt();
 	}
 
 	public void incrRetryCount() {
@@ -259,7 +255,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	 */
 	public int getMaxRetryCount() {
 		Value value = getHeaderValue(MAX_RETRY_COUNT);
-		return value == null ? 0 : value.getAsIntValue();
+		return value == null ? 0 : value.getAsInt();
 	}
 
 	public void setMaxRetryCount(int maxRetryCount) {
@@ -273,7 +269,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	 */
 	public double getRetryDelayMultiple() {
 		Value multiple = getHeaderValue(RETRY_DELAY_MULTIPLE);
-		return multiple == null ? 0 : multiple.getAsDoubleValue();
+		return multiple == null ? 0 : multiple.getAsDouble();
 	}
 
 	/**
@@ -299,7 +295,7 @@ public class MessageProperties implements Serializable, Cloneable {
 				return 0;
 			}
 
-			return value.getAsLongValue();
+			return value.getAsLong();
 		}
 
 		MathScriptEngine mathScriptEngine = new MathScriptEngine();
@@ -337,7 +333,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	 */
 	public long getTransactionMessageConfirmDelay() {
 		Value value = getHeaderValue(TRANSACTION_MESSAGE_CONFIRM_DELAY_KEY);
-		return (value == null || value.isEmpty()) ? TimeUnit.MINUTES.toMillis(10) : value.getAsLongValue();
+		return (value == null || value.isEmpty()) ? TimeUnit.MINUTES.toMillis(10) : value.getAsLong();
 	}
 
 	/**

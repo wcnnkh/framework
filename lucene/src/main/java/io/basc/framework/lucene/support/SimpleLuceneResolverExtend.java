@@ -39,12 +39,12 @@ public class SimpleLuceneResolverExtend implements LuceneResolverExtend {
 				fields.add(new StoredField(parameter.getName(), parameter.getAsString()));
 			}
 		} else if (ClassUtils.isDouble(parameter.getType())) {
-			fields.add(new DoubleDocValuesField(parameter.getName(), parameter.getAsDoubleValue()));
+			fields.add(new DoubleDocValuesField(parameter.getName(), parameter.getAsDouble()));
 			if (isStored(parameter)) {
 				fields.add(new StoredField(parameter.getName(), parameter.getAsString()));
 			}
 		} else if (ClassUtils.isFloat(parameter.getType())) {
-			fields.add(new FloatDocValuesField(parameter.getName(), parameter.getAsFloatValue()));
+			fields.add(new FloatDocValuesField(parameter.getName(), parameter.getAsFloat()));
 			if (isStored(parameter)) {
 				fields.add(new StoredField(parameter.getName(), parameter.getAsString()));
 			}

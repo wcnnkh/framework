@@ -41,25 +41,24 @@ public class EurekaInstanceConfigBeanDefinition extends EnvironmentBeanDefinitio
 		ManagementMetadataProvider managementMetadataProvider = getBeanFactory().isInstance(
 				ManagementMetadataProvider.class) ? getBeanFactory().getInstance(ManagementMetadataProvider.class)
 						: new DefaultManagementMetadataProvider();
-		String hostname = getEnvironment().getProperties().getString("eureka.instance.hostname");
-		boolean preferIpAddress = getEnvironment().getProperties().getBooleanValue("eureka.instance.prefer-ip-address");
-		String ipAddress = getEnvironment().getProperties().getString("eureka.instance.ip-address");
+		String hostname = getEnvironment().getProperties().getAsString("eureka.instance.hostname");
+		boolean preferIpAddress = getEnvironment().getProperties().getAsBoolean("eureka.instance.prefer-ip-address");
+		String ipAddress = getEnvironment().getProperties().getAsString("eureka.instance.ip-address");
 		boolean isSecurePortEnabled = getEnvironment().getProperties()
-				.getBooleanValue("eureka.instance.secure-port-enabled");
+				.getAsBoolean("eureka.instance.secure-port-enabled");
 
-		String serverContextPath = getEnvironment().getProperties().getValue("server.servlet.context-path",
-				String.class, "/");
+		String serverContextPath = getEnvironment().getProperties().get("server.servlet.context-path").or("/")
+				.getAsString();
 		Application application = getBeanFactory().getInstance(Application.class);
-		Integer managementPort = getEnvironment().getProperties().getValue("management.server.port", Integer.class,
-				null);
+		Integer managementPort = getEnvironment().getProperties().getAsObject("management.server.port", Integer.class);
 		String managementContextPath = getEnvironment().getProperties()
-				.getString("management.server.servlet.context-path");
-		Integer jmxPort = getEnvironment().getProperties().getValue("com.sun.management.jmxremote.port", Integer.class,
-				null);
+				.getAsString("management.server.servlet.context-path");
+		Integer jmxPort = getEnvironment().getProperties().getAsObject("com.sun.management.jmxremote.port",
+				Integer.class);
 		EurekaInstanceConfigBean instance = new EurekaInstanceConfigBean(inetUtils);
 
-		if (application.getPort() != -1) {
-			instance.setNonSecurePort(application.getPort());
+		if (application.getPort().isPresent()) {
+			instance.setNonSecurePort(application.getPort().getAsInt());
 		}
 
 		instance.setInstanceId(IdUtils.getDefaultInstanceId(getEnvironment().getProperties()));
@@ -69,15 +68,16 @@ public class EurekaInstanceConfigBeanDefinition extends EnvironmentBeanDefinitio
 			instance.setIpAddress(ipAddress);
 		}
 
-		if (isSecurePortEnabled && application.getPort() != -1) {
-			instance.setSecurePort(application.getPort());
+		if (isSecurePortEnabled && application.getPort().isPresent()) {
+			instance.setSecurePort(application.getPort().getAsInt());
 		}
 
 		if (StringUtils.hasText(hostname)) {
 			instance.setHostname(hostname);
 		}
-		String statusPageUrlPath = getEnvironment().getProperties().getString("eureka.instance.status-page-url-path");
-		String healthCheckUrlPath = getEnvironment().getProperties().getString("eureka.instance.health-check-url-path");
+		String statusPageUrlPath = getEnvironment().getProperties().getAsString("eureka.instance.status-page-url-path");
+		String healthCheckUrlPath = getEnvironment().getProperties()
+				.getAsString("eureka.instance.health-check-url-path");
 
 		if (StringUtils.hasText(statusPageUrlPath)) {
 			instance.setStatusPageUrlPath(statusPageUrlPath);
@@ -86,8 +86,8 @@ public class EurekaInstanceConfigBeanDefinition extends EnvironmentBeanDefinitio
 			instance.setHealthCheckUrlPath(healthCheckUrlPath);
 		}
 
-		ManagementMetadata metadata = managementMetadataProvider.get(instance, instance.getNonSecurePort(), serverContextPath,
-				managementContextPath, managementPort);
+		ManagementMetadata metadata = managementMetadataProvider.get(instance, instance.getNonSecurePort(),
+				serverContextPath, managementContextPath, managementPort);
 
 		if (metadata != null) {
 			instance.setStatusPageUrl(metadata.getStatusPageUrl());

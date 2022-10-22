@@ -7,7 +7,7 @@ import io.basc.framework.context.ioc.ValueDefinition;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
-import io.basc.framework.json.JSONUtils;
+import io.basc.framework.json.JsonUtils;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonObject;
 import io.basc.framework.mapper.Field;
@@ -25,13 +25,13 @@ public final class JsonFileValueProcessor extends AbstractObservableResourceValu
 			String name, Charset charset, Resource resource) {
 		String content = ResourceUtils.getContent(resource, charset);
 		if (JsonObject.class.isAssignableFrom(field.getSetter().getType())) {
-			return JSONUtils.getJsonSupport().parseObject(content);
+			return JsonUtils.getJsonSupport().parseObject(content);
 		} else if (JsonArray.class.isAssignableFrom(field.getSetter().getType())) {
-			return JSONUtils.getJsonSupport().parseArray(content);
+			return JsonUtils.getJsonSupport().parseArray(content);
 		} else if (String.class.isAssignableFrom(field.getSetter().getType())) {
 			return content;
 		} else {
-			return JSONUtils.getJsonSupport().parseObject(content, field.getSetter().getType());
+			return JsonUtils.getJsonSupport().parseObject(content, field.getSetter().getType());
 		}
 	}
 }

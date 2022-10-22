@@ -18,7 +18,7 @@ public class EurekaClientApplicationPostProcessor implements ApplicationPostProc
 	}
 
 	private boolean enableEurekaClient(ConfigurableApplication application) {
-		Boolean enable = application.getProperties().getBoolean(AUTO_REGISTRATION);
+		Boolean enable = application.getProperties().getAsObject(AUTO_REGISTRATION, Boolean.class);
 		if (enable != null) {
 			return enable;
 		}

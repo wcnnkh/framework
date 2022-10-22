@@ -14,7 +14,6 @@ import io.basc.framework.security.session.UserSessions;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 import io.basc.framework.web.WebUtils;
 
@@ -23,10 +22,10 @@ public class DefaultUserSessionManager implements UserSessionManager {
 	private static final String UID_ATTRIBUTE = "io.basc.framework.mvc.http.channel.uid";
 	private static final String SESSIONID_ATTRIBUTE = "io.basc.framework.mvc.http.channel.sessionid";
 	private static final String SINGLE_ATTRIBUTE = "io.basc.framework.mvc.http.channel.single.session";
-	private static final String TOKEN_NAME = Sys.getEnv().getProperties().getValue(SESSIONID_ATTRIBUTE, String.class,
-			"token");
-	private static final String UID_NAME = Sys.getEnv().getProperties().getValue(UID_ATTRIBUTE, String.class, "uid");
-	private static final boolean SINGLE_SESSION = Sys.getEnv().getProperties().getBooleanValue(SINGLE_ATTRIBUTE);
+	private static final String TOKEN_NAME = Sys.getEnv().getProperties().get(SESSIONID_ATTRIBUTE).or("token")
+			.getAsString();
+	private static final String UID_NAME = Sys.getEnv().getProperties().get(UID_ATTRIBUTE).or("uid").getAsString();
+	private static final boolean SINGLE_SESSION = Sys.getEnv().getProperties().getAsBoolean(SINGLE_ATTRIBUTE);
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultUserSessionManager.class);
 
@@ -82,7 +81,7 @@ public class DefaultUserSessionManager implements UserSessionManager {
 	}
 
 	protected Value getParameter(HttpChannel httpChannel, String name) {
-		Value value = httpChannel.getValue(name);
+		Value value = httpChannel.get(name);
 		if (value == null || value.isEmpty()) {
 			String token = httpChannel.getRequest().getHeaders().getFirst(name);
 			if (token == null) {
@@ -93,7 +92,7 @@ public class DefaultUserSessionManager implements UserSessionManager {
 			}
 
 			if (token != null) {
-				value = new StringValue(token);
+				value = Value.of(token);
 			}
 		}
 		return value;

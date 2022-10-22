@@ -264,7 +264,7 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 	@Override
 	public String getExperimental(String name) {
 		if (this.environment != null) {
-			return environment.getProperties().getValue(PREFIX + ".experimental." + name, String.class, null);
+			return environment.getProperties().getAsString(PREFIX + ".experimental." + name);
 		}
 		return null;
 	}

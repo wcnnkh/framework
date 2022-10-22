@@ -18,9 +18,10 @@ import io.basc.framework.util.StringUtils;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class DefaultUserSessionFactory implements UserSessionFactory {
-	private static final String USER_SESSION_PREFIX = Sys.getEnv().getProperties().getValue(
-			UserSessionFactory.class.getPackage().getName() + ".prefix", String.class,
-			StringUtils.replace(UserSessionFactory.class.getPackage().getName(), '.', ':') + ":user:");
+	private static final String USER_SESSION_PREFIX = Sys.getEnv().getProperties()
+			.get(UserSessionFactory.class.getPackage().getName() + ".prefix")
+			.or(StringUtils.replace(UserSessionFactory.class.getPackage().getName(), '.', ':') + ":user:")
+			.getAsString();
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultUserSessionFactory.class);
 	private final TemporaryDataOperations dataOperations;

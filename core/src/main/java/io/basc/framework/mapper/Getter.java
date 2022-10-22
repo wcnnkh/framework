@@ -2,7 +2,6 @@ package io.basc.framework.mapper;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
 
 public interface Getter extends FieldDescriptor {
@@ -22,7 +21,7 @@ public interface Getter extends FieldDescriptor {
 			return (Value) value;
 		}
 
-		return new AnyValue(value, new TypeDescriptor(this));
+		return Value.of(value, new TypeDescriptor(this));
 	}
 
 	default Parameter getParameter(Object instance) {

@@ -67,7 +67,7 @@ public class InetUtilsProperties {
 	 * preferred.
 	 */
 	private List<String> preferredNetworks = new ArrayList<String>();
-
+	
 	public String getDefaultHostname() {
 		return this.defaultHostname;
 	}

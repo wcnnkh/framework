@@ -2,9 +2,9 @@ package io.basc.framework.convert.lang;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
-import io.basc.framework.json.JSONSupportAccessor;
+import io.basc.framework.json.JsonSupportAccessor;
 
-public abstract class AbstractConversionService extends JSONSupportAccessor
+public abstract class AbstractConversionService extends JsonSupportAccessor
 		implements ConversionService, ConversionServiceAware {
 	private ConversionService conversionService;
 

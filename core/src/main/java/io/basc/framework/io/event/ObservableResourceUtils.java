@@ -2,7 +2,6 @@ package io.basc.framework.io.event;
 
 import java.nio.charset.Charset;
 import java.util.List;
-import java.util.function.Function;
 
 import io.basc.framework.event.Observable;
 import io.basc.framework.io.Resource;
@@ -14,18 +13,18 @@ public final class ObservableResourceUtils {
 	}
 
 	public static Observable<byte[]> getBytes(final Resource resource) {
-		return getObservableResource(resource, (k) -> ResourceUtils.getBytes(k));
+		return resource.map((k) -> ResourceUtils.getBytes(k));
 	}
 
 	public static Observable<UnsafeByteArrayInputStream> getInputStream(final Resource resource) {
-		return getObservableResource(resource, (k) -> {
+		return resource.map((k) -> {
 			byte[] data = ResourceUtils.getBytes(k);
 			return data == null ? null : new UnsafeByteArrayInputStream(data);
 		});
 	}
 
 	public static Observable<List<String>> getLines(final Resource resource, final String charsetName) {
-		return getObservableResource(resource, (k) -> ResourceUtils.getLines(k, charsetName));
+		return resource.map((k) -> ResourceUtils.getLines(k, charsetName));
 	}
 
 	public static Observable<List<String>> getLines(Resource resource, Charset charset) {
@@ -37,15 +36,6 @@ public final class ObservableResourceUtils {
 	}
 
 	public static Observable<String> getContent(Resource resource, final String charsetName) {
-		return getObservableResource(resource, (k) -> ResourceUtils.getContent(k, charsetName));
-	}
-
-	public static Observable<Resource> getResource(Resource resource) {
-		return getObservableResource(resource, (e) -> e);
-	}
-
-	public static <R> Observable<R> getObservableResource(final Resource resource,
-			final Function<Resource, ? extends R> processor) {
-		return new ObservableResource<R>(resource, processor);
+		return resource.map((e) -> ResourceUtils.getContent(e, charsetName));
 	}
 }

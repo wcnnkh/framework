@@ -1,13 +1,5 @@
 package io.basc.framework.http;
 
-import io.basc.framework.lang.Constants;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.value.StringValue;
-import io.basc.framework.value.Value;
-
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -16,6 +8,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import io.basc.framework.lang.Constants;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.value.Value;
 
 public final class ContentDisposition {
 	private static final String INVALID_HEADER_FIELD_PARAMETER_FORMAT = "Invalid header field parameter format (as defined in RFC 5987)";
@@ -202,7 +201,7 @@ public final class ContentDisposition {
 				} else if (attribute.equals("filename") && (filename == null)) {
 					filename = value;
 				} else {
-					attributes.put(attribute, new StringValue(value));
+					attributes.put(attribute, Value.of(value));
 				}
 			} else {
 				throw new IllegalArgumentException("Invalid content disposition format");

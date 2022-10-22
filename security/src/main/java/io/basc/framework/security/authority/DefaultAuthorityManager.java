@@ -11,7 +11,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import io.basc.framework.json.JSONUtils;
+import io.basc.framework.json.JsonUtils;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -110,11 +110,11 @@ public class DefaultAuthorityManager<T extends Authority> implements AuthorityMa
 
 		if (authority.getId().equals(authority.getParentId())) {
 			throw new RuntimeException(
-					"ID and parentid cannot be the same：" + JSONUtils.getJsonSupport().toJSONString(authority));
+					"ID and parentid cannot be the same：" + JsonUtils.toJsonString(authority));
 		}
 
 		if (logger.isTraceEnabled()) {
-			logger.trace("register authority:{}", JSONUtils.getJsonSupport().toJSONString(authority));
+			logger.trace("register authority:{}", JsonUtils.toJsonString(authority));
 		}
 
 		authorityMap.put(authority.getId(), authority);

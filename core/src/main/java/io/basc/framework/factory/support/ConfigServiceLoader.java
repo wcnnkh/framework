@@ -26,7 +26,7 @@ public class ConfigServiceLoader<S> implements ServiceLoader<S> {
 	}
 
 	public String[] getNames() {
-		Value value = configFactory.getValue(serviceClass.getName());
+		Value value = configFactory.get(serviceClass.getName());
 		if (value == null) {
 			return new String[0];
 		}

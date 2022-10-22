@@ -9,14 +9,14 @@ public class JsonArrayWrapper extends JsonWrapper<Integer, JsonArray> implements
 	}
 
 	public Iterator<JsonElement> iterator() {
-		return targetFactory.iterator();
+		return wrappedTarget.iterator();
 	}
 
 	public boolean add(Object element) {
-		return targetFactory.add(element);
+		return wrappedTarget.add(element);
 	}
 
 	public boolean remove(int index) {
-		return targetFactory.remove(index);
+		return wrappedTarget.remove(index);
 	}
 }

@@ -15,6 +15,6 @@ public class BootTest {
 		Application application = MainApplication.run(BootTest.class).get();
 
 		System.out.println(application.getPort());
-		assertTrue(application.getPort() == 8888);
+		assertTrue(application.getPort().getAsInt() == 8888);
 	}
 }

@@ -7,7 +7,7 @@
 	</parent>
 	<artifactId>dubbo</artifactId>
 	<properties>
-		<dubbo.version>3.1.0</dubbo.version>
+		<dubbo.version>3.1.1</dubbo.version>
 		<curator.version>5.2.0</curator.version>
 	</properties>
 	<dependencies>

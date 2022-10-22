@@ -1,13 +1,13 @@
 package io.basc.framework.data.domain;
 
+import java.io.Serializable;
+
 import io.basc.framework.env.BascObject;
 import io.basc.framework.env.Sys;
 import io.basc.framework.event.Observable;
 import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.page.PageSupport;
-
-import java.io.Serializable;
 
 /**
  * 分页请求
@@ -18,7 +18,7 @@ import java.io.Serializable;
 public class PageRequest extends BascObject implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final Observable<Long> DEFAULT_PAGE_SIZE = Sys.getEnv().getProperties()
-			.getObservableValue("data.page.request.size", Long.class, 10L);
+			.getObservable("data.page.request.size").map((e) -> e.or(10L).getAsLong());
 
 	private static final ThreadLocal<PageRequest> LOCAL = new NamedThreadLocal<PageRequest>(
 			PageRequest.class.getName());

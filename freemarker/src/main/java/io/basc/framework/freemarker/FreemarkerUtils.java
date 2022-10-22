@@ -24,8 +24,8 @@ public class FreemarkerUtils {
 	private static io.basc.framework.logger.Logger logger = LoggerFactory.getLogger(FreemarkerUtils.class);
 
 	public static void ensureLoggerLibrary() {
-		String library = Sys.getEnv().getProperties().getValue(Logger.SYSTEM_PROPERTY_NAME_LOGGER_LIBRARY, String.class,
-				Logger.LIBRARY_NAME_SLF4J);
+		String library = Sys.getEnv().getProperties().get(Logger.SYSTEM_PROPERTY_NAME_LOGGER_LIBRARY)
+				.or(Logger.LIBRARY_NAME_SLF4J).getAsString();
 		logger.debug("use logger library {}", library);
 		// 默认选择使用slf4j
 		System.setProperty(Logger.SYSTEM_PROPERTY_NAME_LOGGER_LIBRARY, library);

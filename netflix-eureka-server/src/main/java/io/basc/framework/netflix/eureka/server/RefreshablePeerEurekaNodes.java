@@ -25,6 +25,7 @@ public class RefreshablePeerEurekaNodes extends PeerEurekaNodes implements Event
 			final ReplicationClientAdditionalFilters replicationClientAdditionalFilters, Environment environment) {
 		super(registry, serverConfig, clientConfig, serverCodecs, applicationInfoManager);
 		this.replicationClientAdditionalFilters = replicationClientAdditionalFilters;
+
 		for (String key : KEYS) {
 			environment.getProperties().registerListener(key, this);
 		}

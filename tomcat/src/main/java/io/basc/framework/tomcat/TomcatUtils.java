@@ -17,7 +17,7 @@ public final class TomcatUtils {
 	};
 
 	private static String getProperty(Environment environment, String name) {
-		return environment.getProperties().getString("tomcat." + name);
+		return environment.getProperties().getAsString("tomcat." + name);
 	}
 
 	public static String getBaseDir(Environment environment) {

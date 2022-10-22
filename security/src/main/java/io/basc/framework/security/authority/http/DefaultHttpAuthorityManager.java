@@ -1,6 +1,6 @@
 package io.basc.framework.security.authority.http;
 
-import io.basc.framework.json.JSONUtils;
+import io.basc.framework.json.JsonUtils;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.security.authority.DefaultAuthorityManager;
 import io.basc.framework.util.StringUtils;
@@ -8,8 +8,8 @@ import io.basc.framework.util.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends
-		DefaultAuthorityManager<T> implements HttpAuthorityManager<T> {
+public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends DefaultAuthorityManager<T>
+		implements HttpAuthorityManager<T> {
 	private Map<String, Map<String, String>> pathMap = new HashMap<String, Map<String, String>>();
 
 	public T getAuthority(String path, String method) {
@@ -34,8 +34,7 @@ public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends
 			}
 
 			if (map.containsKey(authority.getMethod())) {
-				throw new AlreadyExistsException(
-						JSONUtils.getJsonSupport().toJSONString(authority));
+				throw new AlreadyExistsException(JsonUtils.toJsonString(authority));
 			}
 
 			map.put(authority.getMethod(), authority.getId());
@@ -43,12 +42,12 @@ public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends
 		}
 		super.register(authority);
 	};
-	
+
 	@Override
 	public void remove(T authority) {
 		if (StringUtils.isNotEmpty(authority.getPath())) {
 			Map<String, String> map = pathMap.get(authority.getPath());
-			if(map != null){
+			if (map != null) {
 				map.remove(authority.getMethod());
 			}
 		}

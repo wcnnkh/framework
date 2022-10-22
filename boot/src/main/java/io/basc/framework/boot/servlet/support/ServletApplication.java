@@ -17,7 +17,8 @@ public class ServletApplication extends DefaultApplication {
 			getContextClasses().add(new DirectoryClassesLoader(webRoot, getProperties()));
 		}
 
-		getProperties().getTandemFactories().addService(new ServletContextPropertyFactory(servletContext));
+		getProperties().getPropertyFactories().getFactories()
+				.addService(new ServletContextPropertyFactory(servletContext));
 		getResourceLoader().getResourceLoaders().addService(new ServletContextResourceLoader(servletContext));
 	}
 }

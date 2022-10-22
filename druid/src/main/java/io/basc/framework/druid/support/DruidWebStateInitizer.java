@@ -23,7 +23,7 @@ public class DruidWebStateInitizer implements ServletContextInitialization {
 
 	@Override
 	public void init(Application application, ServletContext servletContext) {
-		String value = application.getProperties().getString("druid.filters");
+		String value = application.getProperties().getAsString("druid.filters");
 		if (value == null || !value.contains("stat")) {
 			return;
 		}

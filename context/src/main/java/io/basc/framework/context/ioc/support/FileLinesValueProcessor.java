@@ -15,14 +15,14 @@ import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.value.StringValue;
+import io.basc.framework.value.Value;
 
 public final class FileLinesValueProcessor extends AbstractObservableResourceValueProcessor {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	protected Object parse(BeanDefinition beanDefinition, Context context, Object bean, Field field, ValueDefinition valueDefinition,
-			String name, Charset charset, Resource resource) throws Exception {
+	protected Object parse(BeanDefinition beanDefinition, Context context, Object bean, Field field,
+			ValueDefinition valueDefinition, String name, Charset charset, Resource resource) throws Exception {
 		List<String> lines = ResourceUtils.getLines(resource, charset);
 		if (lines == null) {
 			return null;
@@ -31,7 +31,7 @@ public final class FileLinesValueProcessor extends AbstractObservableResourceVal
 		if (field.getSetter().getType().isArray()) {
 			Object array = Array.newInstance(field.getSetter().getType().getComponentType(), lines.size());
 			for (int i = 0; i < lines.size(); i++) {
-				io.basc.framework.value.Value v = new StringValue(lines.get(i));
+				io.basc.framework.value.Value v = Value.of(lines.get(i));
 				Array.set(array, i, v.getAsObject(field.getSetter().getType().getComponentType()));
 			}
 			return array;
@@ -40,7 +40,7 @@ public final class FileLinesValueProcessor extends AbstractObservableResourceVal
 			ResolvableType componentType = resolvableType.getGeneric(0);
 			List list = new ArrayList();
 			for (String line : lines) {
-				list.add(new StringValue(line).getAsObject(componentType.getType()));
+				list.add(Value.of(line).getAsObject(componentType));
 			}
 			return list;
 		} else if (Set.class.isAssignableFrom(field.getSetter().getType())) {
@@ -48,7 +48,7 @@ public final class FileLinesValueProcessor extends AbstractObservableResourceVal
 			ResolvableType componentType = resolvableType.getGeneric(0);
 			Set set = new LinkedHashSet();
 			for (String line : lines) {
-				set.add(new StringValue(line).getAsObject(componentType.getType()));
+				set.add(Value.of(line).getAsObject(componentType.getType()));
 			}
 			return set;
 		} else {
@@ -56,7 +56,7 @@ public final class FileLinesValueProcessor extends AbstractObservableResourceVal
 			for (String str : lines) {
 				sb.append(str);
 			}
-			return new StringValue(sb.toString()).getAsObject(field.getSetter().getGenericType());
+			return Value.of(sb.toString()).getAsObject(field.getSetter().getGenericType());
 		}
 	}
 }

@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventRegistration;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanPostProcessor;
 import io.basc.framework.factory.BeanlifeCycleEvent;
@@ -22,6 +21,7 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.DefaultStatus;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.Status;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.stream.CallableProcessor;
@@ -240,8 +240,8 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 	}
 
 	@Override
-	public EventRegistration registerListener(EventListener<BeanlifeCycleEvent> eventListener) {
-		EventRegistration eventRegistration = super.registerListener(eventListener);
+	public Registration registerListener(EventListener<BeanlifeCycleEvent> eventListener) {
+		Registration eventRegistration = super.registerListener(eventListener);
 		for (Entry<String, SingletonObject<?>> entry : singletionMap.entrySet()) {
 			BeanDefinition definition = getDefinition(entry.getKey());
 			if (definition == null) {

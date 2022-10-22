@@ -15,7 +15,6 @@ import io.basc.framework.net.message.OutputMessage;
 import io.basc.framework.net.message.convert.AbstractMessageConverter;
 import io.basc.framework.net.message.convert.MessageConvertException;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.value.StringValue;
 import io.basc.framework.value.Value;
 import io.basc.framework.xml.XmlUtils;
 
@@ -46,9 +45,7 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> implem
 		String text = readTextBody(inputMessage);
 		if (ClassUtils.isPrimitiveOrWrapper(type.getType()) || String.class == type.getType()
 				|| Value.class == type.getType()) {
-			StringValue value = new StringValue(text);
-			value.setJsonSupport(getJsonSupport());
-			return value.getAsObject(type);
+			return Value.of(text, getJsonSupport()).getAsObject(type);
 		}
 
 		Document document = XmlUtils.getTemplate().getParser().parse(text);

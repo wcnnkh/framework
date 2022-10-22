@@ -8,7 +8,7 @@ import java.util.Map;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.http.MediaType;
-import io.basc.framework.json.JSONUtils;
+import io.basc.framework.json.JsonUtils;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.web.message.model.Text;
@@ -74,13 +74,13 @@ public class KindManagerResult implements Serializable, Text {
 			}
 		}
 		map.put("file_list", list);
-		return JSONUtils.getJsonSupport().toJSONString(map);
+		return JsonUtils.getJsonSupport().toJsonString(map);
 	}
 
 	public MimeType getMimeType() {
 		return MediaType.APPLICATION_JSON;
 	}
-	
+
 	@Override
 	public String toString() {
 		return ReflectionUtils.toString(this);

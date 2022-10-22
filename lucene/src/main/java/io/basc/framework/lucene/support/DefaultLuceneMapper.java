@@ -62,7 +62,7 @@ public class DefaultLuceneMapper extends DefaultObjectMapper<Document, LuceneExc
 
 	@Override
 	public Collection<org.apache.lucene.document.Field> resolve(Parameter parameter) {
-		if (parameter == null || parameter.isNull()) {
+		if (parameter == null || !parameter.isPresent()) {
 			return Collections.emptyList();
 		}
 
@@ -71,7 +71,7 @@ public class DefaultLuceneMapper extends DefaultObjectMapper<Document, LuceneExc
 
 	private Query parseQuery(Condition condition, ConditionKeywords conditionKeywords) {
 		Parameter column = condition.getParameter();
-		if (column == null || column.isNull()) {
+		if (column == null || !column.isPresent()) {
 			return null;
 		}
 
@@ -79,7 +79,7 @@ public class DefaultLuceneMapper extends DefaultObjectMapper<Document, LuceneExc
 			// =
 			Term term;
 			if (column.getType() == byte[].class) {
-				term = new Term(column.getName(), new BytesRef((byte[]) column.get()));
+				term = new Term(column.getName(), new BytesRef((byte[]) column.getSource()));
 			} else {
 				term = new Term(column.getName(), column.convert(String.class, getConversionService()));
 			}

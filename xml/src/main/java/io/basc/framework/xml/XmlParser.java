@@ -36,15 +36,15 @@ public class XmlParser implements DocumentParser {
 
 	static {
 		DOCUMENT_BUILDER_FACTORY.setIgnoringElementContentWhitespace(Sys.getEnv().getProperties()
-				.getValue("io.basc.framework.xml.ignoring.element.content.whitespace", boolean.class, true));
+				.get("io.basc.framework.xml.ignoring.element.content.whitespace").or(true).getAsBoolean());
 		DOCUMENT_BUILDER_FACTORY.setIgnoringComments(
-				Sys.getEnv().getProperties().getValue("io.basc.framework.xml.ignoring.comments", boolean.class, true));
+				Sys.getEnv().getProperties().get("io.basc.framework.xml.ignoring.comments").or(true).getAsBoolean());
 		DOCUMENT_BUILDER_FACTORY.setCoalescing(
-				Sys.getEnv().getProperties().getValue("io.basc.framework.dom.coalescing", boolean.class, true));
-		DOCUMENT_BUILDER_FACTORY.setExpandEntityReferences(Sys.getEnv().getProperties()
-				.getValue("io.basc.framework.xml.expand.entity.references", boolean.class, false));
-		DOCUMENT_BUILDER_FACTORY.setNamespaceAware(
-				Sys.getEnv().getProperties().getValue("io.basc.framework.xml.namespace.aware", boolean.class, false));
+				Sys.getEnv().getProperties().get("io.basc.framework.dom.coalescing").or(true).getAsBoolean());
+		DOCUMENT_BUILDER_FACTORY.setExpandEntityReferences(
+				Sys.getEnv().getProperties().getAsBoolean("io.basc.framework.xml.expand.entity.references"));
+		DOCUMENT_BUILDER_FACTORY
+				.setNamespaceAware(Sys.getEnv().getProperties().getAsBoolean("io.basc.framework.xml.namespace.aware"));
 		try {
 			DOCUMENT_BUILDER_FACTORY.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 		} catch (ParserConfigurationException e) {

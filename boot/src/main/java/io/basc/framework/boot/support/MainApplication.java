@@ -1,5 +1,6 @@
 package io.basc.framework.boot.support;
 
+import java.util.OptionalInt;
 import java.util.concurrent.CountDownLatch;
 
 import io.basc.framework.boot.Application;
@@ -20,12 +21,12 @@ public class MainApplication extends DefaultApplication implements Runnable {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		this.sourceClass = sourceClass;
 		this.mainArgs = new MainArgs(args);
-		Integer port = mainArgs.getPort();
-		if (port != null) {
-			setPort(port);
+		OptionalInt port = mainArgs.getPort();
+		if (port.isPresent()) {
+			setPort(port.getAsInt());
 		}
 
-		getProperties().getTandemFactories().addService(mainArgs);
+		getProperties().getPropertyFactories().getFactories().addService(mainArgs);
 		setClassLoader(sourceClass.getClassLoader());
 		source(sourceClass);
 		setLogger(LoggerFactory.getLogger(sourceClass));

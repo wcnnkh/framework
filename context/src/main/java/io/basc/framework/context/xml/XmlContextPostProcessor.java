@@ -2,6 +2,8 @@ package io.basc.framework.context.xml;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map.Entry;
+import java.util.Properties;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -10,6 +12,7 @@ import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.ConfigurableEnvironment;
+import io.basc.framework.event.Observable;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.http.HttpUtils;
 import io.basc.framework.io.Resource;
@@ -59,26 +62,37 @@ public class XmlContextPostProcessor implements ContextPostProcessor {
 	}
 
 	private void loadXmlEnv(ConfigurableEnvironment environment, String prefix, String charsetName, Node node) {
-		String prefixToUse = DomUtils.getNodeAttributeValue(node, "prefix");
+		String prefixToUse = DomUtils.getNodeAttributeValue(node, "prefix").getAsString();
 		if (StringUtils.isEmpty(prefixToUse)) {
 			prefixToUse = prefix;
 		} else {
 			prefixToUse = StringUtils.isEmpty(prefix) ? prefixToUse : (prefix + prefixToUse);
 		}
 
-		String charsetNameToUse = DomUtils.getNodeAttributeValue(node, "charsetName");
+		String charsetNameToUse = DomUtils.getNodeAttributeValue(node, "charsetName").getAsString();
 		if (StringUtils.isEmpty(charsetNameToUse)) {
 			charsetNameToUse = charsetName;
 		} else {
 			charsetNameToUse = StringUtils.isEmpty(charsetName) ? charsetNameToUse : charsetName;
 		}
 
-		String file = DomUtils.getNodeAttributeValue(node, "file");
+		String file = DomUtils.getNodeAttributeValue(node, "file").getAsString();
 		if (!StringUtils.isEmpty(file)) {
-			environment.loadProperties(prefixToUse, file, charsetNameToUse);
+			final String propertyPrefix = prefixToUse;
+			Observable<Properties> observableProperties = environment.getProperties(file);
+			if (StringUtils.isNotEmpty(prefixToUse)) {
+				observableProperties = observableProperties.map((e) -> {
+					Properties properties = new Properties();
+					for (Entry<Object, Object> entry : e.entrySet()) {
+						properties.put(propertyPrefix + entry.getKey(), entry.getValue());
+					}
+					return properties;
+				});
+			}
+			environment.loadProperties(observableProperties);
 		}
 
-		String name = DomUtils.getNodeAttributeValue(node, "name");
+		String name = DomUtils.getNodeAttributeValue(node, "name").getAsString();
 		if (StringUtils.isNotEmpty(name)) {
 			name = StringUtils.isEmpty(prefixToUse) ? name : (prefixToUse + name);
 
@@ -112,7 +126,7 @@ public class XmlContextPostProcessor implements ContextPostProcessor {
 	}
 
 	private static String getURL(Node node) {
-		return DomUtils.getNodeAttributeValue(node, "url");
+		return DomUtils.getNodeAttributeValue(node, "url").getAsString();
 	}
 
 	private void addXmlBeanNameMapping(ConfigurableContext context, NodeList nodeList) {
@@ -128,7 +142,7 @@ public class XmlContextPostProcessor implements ContextPostProcessor {
 
 			if ("mapping".equalsIgnoreCase(node.getNodeName())) {
 				Collection<String> names = Arrays
-						.asList(StringUtils.splitToArray(DomUtils.getRequireNodeAttributeValue(context, node, "name")));
+						.asList(StringUtils.splitToArray(DomUtils.getRequireNodeAttributeValue(context, node, "name").getAsString()));
 				String id = DomUtils.getRequireNodeAttributeValueOrNodeContent(context, node, "id");
 				for (String name : names) {
 					context.registerAlias(id, name);

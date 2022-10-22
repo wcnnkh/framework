@@ -17,14 +17,14 @@ public class JacksonTest {
 		map.put("a", "a1");
 		map.put("b", "b2");
 
-		System.out.println(JacksonJSONSupport.INSTANCE.toJSONString(map));
+		System.out.println(JacksonJSONSupport.INSTANCE.toJsonString(map));
 
 		A a = new A(XUtils.getUUID());
-		String json = JacksonJSONSupport.INSTANCE.toJSONString(a);
+		String json = JacksonJSONSupport.INSTANCE.toJsonString(a);
 		System.out.println(json);
 		a = JacksonJSONSupport.INSTANCE.parseObject(json, A.class);
 		System.out.println(a);
-		assertTrue(JacksonJSONSupport.INSTANCE.toJSONString(a).equals(json));
+		assertTrue(JacksonJSONSupport.INSTANCE.toJsonString(a).equals(json));
 	}
 
 	public static class A {

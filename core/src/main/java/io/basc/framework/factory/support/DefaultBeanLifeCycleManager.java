@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventRegistration;
 import io.basc.framework.event.support.SimpleEventDispatcher;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanDefinitionAware;
@@ -20,6 +19,7 @@ import io.basc.framework.factory.FactoryException;
 import io.basc.framework.factory.Init;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Registration;
 
 public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry implements BeanLifeCycleManager {
 	private static Logger logger = LoggerFactory.getLogger(DefaultBeanLifeCycleManager.class);
@@ -211,7 +211,7 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 	}
 
 	@Override
-	public EventRegistration registerListener(EventListener<BeanlifeCycleEvent> eventListener) {
+	public Registration registerListener(EventListener<BeanlifeCycleEvent> eventListener) {
 		return eventDispatcher.registerListener(eventListener);
 	}
 }

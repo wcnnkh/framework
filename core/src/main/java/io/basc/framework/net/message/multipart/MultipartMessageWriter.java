@@ -136,7 +136,7 @@ public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
 			multipartMessage = new ResourceMultipartMessage(fieldName, resource);
 		} else {
 			Charset charset = getCharset(outputMessage);
-			String content = getJsonSupport().toJSONString(value);
+			String content = getJsonSupport().toJsonString(value);
 			multipartMessage = new FromMultipartMessage(fieldName, content.getBytes(charset));
 		}
 		writeItem(boundary, multipartMessage, outputMessage);

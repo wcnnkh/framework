@@ -11,13 +11,13 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import io.basc.framework.core.annotation.Order;
 import io.basc.framework.env.Sys;
-import io.basc.framework.json.AbstractJSONSupport;
-import io.basc.framework.json.JSONException;
-import io.basc.framework.json.JSONSupport;
+import io.basc.framework.json.AbstractJsonSupport;
+import io.basc.framework.json.JsonException;
+import io.basc.framework.json.JsonSupport;
 import io.basc.framework.json.JsonElement;
 
-public class JacksonJSONSupport extends AbstractJSONSupport {
-	public static final JSONSupport INSTANCE = new JacksonJSONSupport();
+public class JacksonJSONSupport extends AbstractJsonSupport {
+	public static final JsonSupport INSTANCE = new JacksonJSONSupport();
 
 	private ObjectMapper mapper;
 
@@ -49,9 +49,9 @@ public class JacksonJSONSupport extends AbstractJSONSupport {
 		try {
 			jsonNode = mapper.readTree(text);
 		} catch (JsonMappingException e) {
-			throw new JSONException(e);
+			throw new JsonException(e);
 		} catch (JsonProcessingException e) {
-			throw new JSONException(e);
+			throw new JsonException(e);
 		}
 		return new JacksonJsonElement(jsonNode, mapper);
 	}
@@ -61,7 +61,7 @@ public class JacksonJSONSupport extends AbstractJSONSupport {
 		try {
 			return mapper.writeValueAsString(obj);
 		} catch (JsonProcessingException e) {
-			throw new JSONException(e);
+			throw new JsonException(e);
 		}
 	}
 

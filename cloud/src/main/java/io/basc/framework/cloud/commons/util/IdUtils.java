@@ -41,21 +41,21 @@ public final class IdUtils {
 	}
 
 	public static String getDefaultInstanceId(PropertyFactory environment, boolean includeHostname) {
-		String vcapInstanceId = environment.getString("vcap.application.instance_id");
+		String vcapInstanceId = environment.getAsString("vcap.application.instance_id");
 		if (StringUtils.hasText(vcapInstanceId)) {
 			return vcapInstanceId;
 		}
 
 		String hostname = null;
 		if (includeHostname) {
-			hostname = environment.getString("cloud.client.hostname");
+			hostname = environment.getAsString("cloud.client.hostname");
 		}
-		String appName = environment.getString("application.name");
+		String appName = environment.getAsString("application.name");
 
 		String namePart = combineParts(hostname, SEPARATOR, appName);
 
-		String indexPart = environment.getValue("application.instance_id", String.class,
-				environment.getString("server.port"));
+		String indexPart = environment.get("application.instance_id").orElse(environment.get("server.port"))
+				.getAsString();
 
 		return combineParts(namePart, SEPARATOR, indexPart);
 	}

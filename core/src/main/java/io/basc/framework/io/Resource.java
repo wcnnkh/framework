@@ -7,15 +7,15 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 
-import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventRegistration;
-import io.basc.framework.event.EventRegistry;
+import io.basc.framework.event.Observable;
+import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.stream.Processor;
 
-public interface Resource extends InputStreamSource, EventRegistry<ChangeEvent<Resource>> {
+public interface Resource extends InputStreamSource, Observable<Resource> {
 	/**
 	 * 是否存在
 	 * 
@@ -67,8 +67,13 @@ public interface Resource extends InputStreamSource, EventRegistry<ChangeEvent<R
 
 	String getDescription();
 
-	default EventRegistration registerListener(EventListener<ChangeEvent<Resource>> eventListener) {
-		return EventRegistration.EMPTY;
+	default boolean isPresent() {
+		return exists();
+	}
+
+	@Override
+	default Registration registerListener(EventListener<ObservableChangeEvent<Resource>> eventListener) {
+		return Registration.EMPTY;
 	}
 
 	@Override

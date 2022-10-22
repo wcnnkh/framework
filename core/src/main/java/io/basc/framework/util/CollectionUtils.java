@@ -28,8 +28,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.NavigableSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
 
 import io.basc.framework.util.stream.Processor;
 
@@ -55,13 +59,24 @@ public abstract class CollectionUtils {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static boolean isEmpty(Collection... collections) {
+	public static boolean isEmptyAny(Collection... collections) {
 		for (Collection collection : collections) {
 			if (collection == null || collection.isEmpty()) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static boolean isEmptyAll(Collection... collections) {
+		for (Collection collection : collections) {
+			if (collection == null || collection.isEmpty()) {
+				continue;
+			}
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -77,13 +92,24 @@ public abstract class CollectionUtils {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static boolean isEmpty(Map... map) {
+	public static boolean isEmptyAny(Map... map) {
 		for (Map m : map) {
 			if (m == null || m.isEmpty()) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static boolean isEmptyAll(Map... map) {
+		for (Map m : map) {
+			if (m == null || m.isEmpty()) {
+				continue;
+			}
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -412,7 +438,7 @@ public abstract class CollectionUtils {
 	 * @param map the map for which an unmodifiable view is to be returned.
 	 * @return an unmodifiable view of the specified multi-value map.
 	 */
-	public static <K, V> MultiValueMap<K, V> unmodifiableMultiValueMap(MultiValueMap<? extends K, ? extends V> map) {
+	public static <K, V> MultiValueMap<K, V> unmodifiableMultiValueMap(Map<? extends K, ? extends List<V>> map) {
 		Assert.notNull(map, "'map' must not be null");
 		Map<K, List<V>> result = new LinkedHashMap<K, List<V>>(map.size());
 		for (Map.Entry<? extends K, ? extends List<? extends V>> entry : map.entrySet()) {
@@ -703,5 +729,45 @@ public abstract class CollectionUtils {
 			return Collections.emptyIterator();
 		}
 		return new IterationIterator<>(iterator, converter);
+	}
+
+	public static boolean isUnmodifiable(Object collection) {
+		if (collection == null) {
+			return false;
+		}
+
+		if (collection instanceof Collection || collection instanceof Map) {
+			return collection.getClass().getSimpleName().startsWith("Unmodifiable");
+		}
+		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <K, V> Map<K, V> unmodifiableMap(Map<K, V> map) {
+		if (isUnmodifiable(map)) {
+			return map;
+		}
+
+		if (map instanceof NavigableMap) {
+			return Collections.unmodifiableNavigableMap((NavigableMap<K, V>) map);
+		} else if (map instanceof SortedMap) {
+			return Collections.unmodifiableSortedMap((SortedMap<K, V>) map);
+		} else if (map instanceof MultiValueMap) {
+			return (Map<K, V>) unmodifiableMultiValueMap((MultiValueMap<K, ?>) map);
+		}
+		return Collections.unmodifiableMap(map);
+	}
+
+	public static <E> Set<E> unmodifiableSet(Set<E> set) {
+		if (isUnmodifiable(set)) {
+			return set;
+		}
+
+		if (set instanceof NavigableSet) {
+			return Collections.unmodifiableNavigableSet((NavigableSet<E>) set);
+		} else if (set instanceof SortedSet) {
+			return Collections.unmodifiableSortedSet((SortedSet<E>) set);
+		}
+		return Collections.unmodifiableSet(set);
 	}
 }

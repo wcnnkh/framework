@@ -11,11 +11,11 @@ public class FastJsonTest {
 	@Test
 	public void test() {
 		A a = new A(XUtils.getUUID());
-		String json = FastJsonSupport.INSTANCE.toJSONString(a);
+		String json = FastJsonSupport.INSTANCE.toJsonString(a);
 		System.out.println(json);
 		a = FastJsonSupport.INSTANCE.parseObject(json, A.class);
 		System.out.println(a);
-		assertTrue(FastJsonSupport.INSTANCE.toJSONString(a).equals(json));
+		assertTrue(FastJsonSupport.INSTANCE.toJsonString(a).equals(json));
 	}
 
 	public static class A {

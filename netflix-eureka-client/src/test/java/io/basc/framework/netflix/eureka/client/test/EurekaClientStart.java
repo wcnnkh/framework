@@ -36,7 +36,7 @@ public class EurekaClientStart {
 					continue;
 				}
 				HttpResponseEntity<String> response = httpClient.get(String.class,
-						"http://" + application.getName() + "/port");
+						"http://" + application.getName().get() + "/port");
 				logger.info("测试请求1返回：" + response);
 
 				String port = eurekaTestClient.message(XUtils.getUUID());

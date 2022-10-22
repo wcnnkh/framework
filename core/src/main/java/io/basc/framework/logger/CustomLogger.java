@@ -1,15 +1,16 @@
 package io.basc.framework.logger;
 
-import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventRegistration;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.ObjectUtils;
-
+import java.util.Map;
 import java.util.logging.Level;
 
-public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<LevelRegistry>>, AutoCloseable {
-	private EventRegistration eventRegistration;
+import io.basc.framework.event.EventListener;
+import io.basc.framework.event.ObservableChangeEvent;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.Registration;
+
+public abstract class CustomLogger implements Logger, EventListener<ObservableChangeEvent<Map<String, Level>>>, AutoCloseable {
+	private Registration eventRegistration;
 	private Level level;
 
 	public synchronized void registerListener() {
@@ -19,9 +20,9 @@ public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<
 	}
 
 	@Override
-	public void onEvent(ChangeEvent<LevelRegistry> event) {
+	public void onEvent(ObservableChangeEvent<Map<String, Level>> event) {
 		Level oldLevel = getLevel();
-		Level newLevel = event.getSource().getLevel(getName());
+		Level newLevel = LoggerFactory.getLevelManager().getLevel(getName());
 		if (!ObjectUtils.equals(oldLevel, newLevel)) {
 			info("Level [{}] change to [{}]", oldLevel, newLevel);
 		}

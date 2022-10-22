@@ -7,7 +7,7 @@ import java.util.Properties;
 import org.junit.Test;
 
 import io.basc.framework.context.support.DefaultContext;
-import io.basc.framework.json.JSONUtils;
+import io.basc.framework.json.JsonUtils;
 import io.basc.framework.orm.annotation.ConfigurationProperties;
 import io.basc.framework.util.XUtils;
 
@@ -32,7 +32,7 @@ public class ContextTests {
 		environment.getProperties().put("test.b", "121");
 
 		TestConfigurableBean bean = environment.getInstance(TestConfigurableBean.class);
-		System.out.println(JSONUtils.getJsonSupport().toJSONString(bean));
+		System.out.println(JsonUtils.getJsonSupport().toJsonString(bean));
 
 		TestPropertiesBean propertiesBean = environment.getInstance(TestPropertiesBean.class);
 		System.out.println(propertiesBean);

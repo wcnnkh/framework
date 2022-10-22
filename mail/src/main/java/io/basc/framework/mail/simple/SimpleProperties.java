@@ -6,7 +6,6 @@ import java.util.Set;
 
 import io.basc.framework.orm.annotation.ConfigurationProperties;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.Value;
 
 @ConfigurationProperties("mail")
@@ -30,7 +29,7 @@ public class SimpleProperties extends Properties {
 
 	public boolean isDebug() {
 		Object value = get(PREFIX + DEBUG);
-		return new AnyValue(value).getAsBooleanValue();
+		return Value.of(value).getAsBoolean();
 	}
 
 	public void setDebug(boolean debug) {
@@ -50,7 +49,7 @@ public class SimpleProperties extends Properties {
 		if (StringUtils.isNotEmpty(protocol)) {
 			Object value = get(PREFIX + protocol + "." + key);
 			if (value != null) {
-				return new AnyValue(value);
+				return Value.of(value);
 			}
 		}
 
@@ -58,7 +57,7 @@ public class SimpleProperties extends Properties {
 		if (value == null) {
 			value = System.getProperty(PREFIX + key);
 		}
-		return new AnyValue(value);
+		return Value.of(value);
 	}
 
 	public Value setMailProperty(String key, Object value) {
@@ -69,7 +68,7 @@ public class SimpleProperties extends Properties {
 		} else {
 			old = put(PREFIX + key, value);
 		}
-		return new AnyValue(old);
+		return Value.of(old);
 	}
 
 	@Override

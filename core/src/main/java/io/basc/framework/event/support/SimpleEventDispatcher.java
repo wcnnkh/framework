@@ -1,7 +1,6 @@
 package io.basc.framework.event.support;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import io.basc.framework.core.OrderComparator;
@@ -9,9 +8,10 @@ import io.basc.framework.core.OrderComparator.OrderSourceProvider;
 import io.basc.framework.event.Event;
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventRegistration;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Registration;
+import io.basc.framework.util.stream.StreamProcessorSupport;
 
 /**
  * 这是一个同步的事件分发服务
@@ -21,11 +21,10 @@ import io.basc.framework.util.Assert;
  * @param <T>
  */
 public class SimpleEventDispatcher<T extends Event> implements EventDispatcher<T> {
-	private static final int INITIAL_CAPACITY = Integer.getInteger("io.basc.framework.event.list.initial_capacity",
-			8);
+	private static final int INITIAL_CAPACITY = Integer.getInteger("io.basc.framework.event.list.initial_capacity", 8);
 	private volatile List<EventRegistrationInternal> eventListeners;
 
-	public EventRegistration registerListener(EventListener<T> eventListener) {
+	public Registration registerListener(EventListener<T> eventListener) {
 		Assert.requiredArgument(eventListener != null, "eventListener");
 		EventRegistrationInternal eventRegistration = new EventRegistrationInternal(eventListener);
 		synchronized (this) {
@@ -47,28 +46,11 @@ public class SimpleEventDispatcher<T extends Event> implements EventDispatcher<T
 				return;
 			}
 
-			publishEvent(event, eventListeners.iterator());
+			StreamProcessorSupport.consumeAll(eventListeners, (e) -> e.getEventListener().onEvent(event));
 		}
 	}
 
-	/**
-	 * 使用此方法的原因是即便发生了异常也将所有的listener通知一遍
-	 * 
-	 * @param event
-	 * @param iterator
-	 */
-	private void publishEvent(T event, Iterator<EventRegistrationInternal> iterator) {
-		if (iterator.hasNext()) {
-			EventRegistrationInternal registration = iterator.next();
-			try {
-				registration.getEventListener().onEvent(event);
-			} finally {
-				publishEvent(event, iterator);
-			}
-		}
-	}
-
-	private class EventRegistrationInternal implements EventRegistration, OrderSourceProvider {
+	private class EventRegistrationInternal implements Registration, OrderSourceProvider {
 		private final EventListener<T> eventListener;
 
 		public EventRegistrationInternal(EventListener<T> eventListener) {

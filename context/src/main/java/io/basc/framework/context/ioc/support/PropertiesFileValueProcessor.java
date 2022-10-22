@@ -13,7 +13,7 @@ import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.Fields;
 import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.value.StringValue;
+import io.basc.framework.value.Value;
 
 public final class PropertiesFileValueProcessor extends AbstractObservableValueProcessor<Properties> {
 
@@ -24,12 +24,12 @@ public final class PropertiesFileValueProcessor extends AbstractObservableValueP
 	}
 
 	@Override
-	protected Object parse(BeanDefinition beanDefinition, Context context, Object bean, Field field, ValueDefinition value,
-			String name, Charset charset, Properties properties) {
+	protected Object parse(BeanDefinition beanDefinition, Context context, Object bean, Field field,
+			ValueDefinition value, String name, Charset charset, Properties properties) {
 		if (ClassUtils.isPrimitiveOrWrapper(field.getSetter().getType())
 				|| field.getSetter().getType() == String.class) {
-			return StringValue.parse(properties.getProperty(field.getSetter().getName()),
-					field.getSetter().getGenericType());
+			return Value.of(properties.getProperty(field.getSetter().getName()))
+					.getAsObject(field.getSetter().getGenericType());
 		} else if (Properties.class.isAssignableFrom(field.getSetter().getType())) {
 			return properties;
 		} else {

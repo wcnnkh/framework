@@ -13,14 +13,14 @@ import io.basc.framework.io.IOUtils;
 public class JsonSerializer implements CrossLanguageSerializer {
 	public static final CrossLanguageSerializer INSTANCE = new JsonSerializer();
 
-	private JSONSupport jsonSupport;
+	private JsonSupport jsonSupport;
 	private Codec<String, byte[]> codec = CharsetCodec.UTF_8;
 
-	public JSONSupport getJsonSupport() {
-		return jsonSupport == null ? JSONUtils.getJsonSupport() : jsonSupport;
+	public JsonSupport getJsonSupport() {
+		return jsonSupport == null ? JsonUtils.getJsonSupport() : jsonSupport;
 	}
 
-	public void setJsonSupport(JSONSupport jsonSupport) {
+	public void setJsonSupport(JsonSupport jsonSupport) {
 		this.jsonSupport = jsonSupport;
 	}
 
@@ -34,7 +34,7 @@ public class JsonSerializer implements CrossLanguageSerializer {
 
 	@Override
 	public void serialize(Object source, TypeDescriptor sourceTypeDescriptor, OutputStream target) throws IOException {
-		String content = getJsonSupport().toJSONString(source);
+		String content = getJsonSupport().toJsonString(source);
 		target.write(codec.encode(content));
 	}
 

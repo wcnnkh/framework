@@ -1,30 +1,29 @@
 package io.basc.framework.nacos.client;
 
-import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventRegistration;
-import io.basc.framework.value.ConfigurablePropertyFactory;
-import io.basc.framework.value.StringValue;
-import io.basc.framework.value.Value;
-
 import java.util.Collections;
 import java.util.Iterator;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 
+import io.basc.framework.event.ChangeEvent;
+import io.basc.framework.event.EventListener;
+import io.basc.framework.util.Registration;
+import io.basc.framework.value.ConfigurablePropertyFactory;
+import io.basc.framework.value.Value;
+
 /**
- * 使用nacos实现配置中心
- * {@link https://nacos.io/zh-cn/docs/sdk.html}
+ * 使用nacos实现配置中心 {@link https://nacos.io/zh-cn/docs/sdk.html}
+ * 
  * @author shuchaowen
  *
  */
-public class NacosPropertyFactory implements ConfigurablePropertyFactory{
+public class NacosPropertyFactory implements ConfigurablePropertyFactory {
 	private final ConfigService configService;
 	private final String group;
 	private final long timeoutMs;
-	
-	public NacosPropertyFactory(ConfigService configService, String group, long timeoutMs){
+
+	public NacosPropertyFactory(ConfigService configService, String group, long timeoutMs) {
 		this.configService = configService;
 		this.group = group;
 		this.timeoutMs = timeoutMs;
@@ -35,44 +34,44 @@ public class NacosPropertyFactory implements ConfigurablePropertyFactory{
 	}
 
 	public boolean containsKey(String key) {
-		return getValue(key) != null;
+		return get(key).isPresent();
 	}
 
-	public Value getValue(String key) {
+	public Value get(String key) {
 		String value;
 		try {
 			value = configService.getConfig(key, group, timeoutMs);
 		} catch (NacosException e) {
 			throw new RuntimeException(key, e);
 		}
-		return value == null? null:new StringValue(value);
+		return Value.of(value);
 	}
 
-	public EventRegistration registerListener(String name,
-			EventListener<ChangeEvent<String>> eventListener) {
+	@Override
+	public Registration registerListener(String name, EventListener<ChangeEvent<String>> eventListener) {
 		NacosConfigListener listener = new NacosConfigListener(eventListener);
 		try {
 			configService.addListener(name, group, listener);
 		} catch (NacosException e) {
 			throw new NacosConfigException(name, e);
 		}
-		
+
 		return new NacosConfigEventRegistration(configService, name, group, listener);
 	}
 
-	public boolean put(String key, Value value) {
+	public void put(String key, Value value) {
 		try {
-			return configService.publishConfig(key, group, value.getAsString());
+			configService.publishConfig(key, group, value.getAsString());
 		} catch (NacosException e) {
 			throw new RuntimeException(key + "=" + value, e);
 		}
 	}
 
 	public boolean putIfAbsent(String key, Value value) {
-		if(containsKey(key)){
+		if (containsKey(key)) {
 			return false;
 		}
-		
+
 		try {
 			return configService.publishConfig(key, group, value.getAsString());
 		} catch (NacosException e) {
@@ -88,19 +87,19 @@ public class NacosPropertyFactory implements ConfigurablePropertyFactory{
 		}
 	}
 
-	public boolean put(String key, Object value) {
+	public void put(String key, Object value) {
 		try {
-			return configService.publishConfig(key, group, value.toString());
+			configService.publishConfig(key, group, value.toString());
 		} catch (NacosException e) {
 			throw new RuntimeException(key + "=" + value, e);
 		}
 	}
 
 	public boolean putIfAbsent(String key, Object value) {
-		if(containsKey(key)){
+		if (containsKey(key)) {
 			return false;
 		}
-		
+
 		try {
 			return configService.publishConfig(key, group, value.toString());
 		} catch (NacosException e) {

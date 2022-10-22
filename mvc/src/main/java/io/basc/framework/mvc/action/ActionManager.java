@@ -3,9 +3,9 @@ package io.basc.framework.mvc.action;
 import java.lang.reflect.Method;
 
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventRegistration;
 import io.basc.framework.event.EventRegistry;
 import io.basc.framework.event.ObjectEvent;
+import io.basc.framework.util.Registration;
 import io.basc.framework.web.ServerHttpRequest;
 
 public interface ActionManager extends EventRegistry<ObjectEvent<Action>>, Iterable<Action> {
@@ -18,5 +18,5 @@ public interface ActionManager extends EventRegistry<ObjectEvent<Action>>, Itera
 	/**
 	 * 监听新的action注册
 	 */
-	EventRegistration registerListener(EventListener<ObjectEvent<Action>> eventListener);
+	Registration registerListener(EventListener<ObjectEvent<Action>> eventListener);
 }

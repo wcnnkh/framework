@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import io.basc.framework.db.DB;
 import io.basc.framework.env.Sys;
-import io.basc.framework.json.JSONUtils;
+import io.basc.framework.json.JsonUtils;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.orm.repository.Conditions;
@@ -37,7 +37,7 @@ public class OrmTest {
 	}
 
 	private static void saveOrUpdate() {
-		LoggerFactory.getLevelManager().getCustomLevelRegistry().put("io.basc.framework.sql", Levels.DEBUG.getValue());
+		LoggerFactory.getLevelManager().getSourceMap().put("io.basc.framework.sql", Levels.DEBUG.getValue());
 		for (int i = 0; i < 5; i++) {
 			TestTable1 table1 = new TestTable1();
 			table1.setId(i);
@@ -58,7 +58,7 @@ public class OrmTest {
 		for (int i = 0; i < 100; i++) {
 			int v = i;
 			new Thread(() -> {
-				System.out.println(JSONUtils.getJsonSupport().toJSONString(db.getByIdList(TestTable1.class, v)));
+				System.out.println(JsonUtils.getJsonSupport().toJsonString(db.getByIdList(TestTable1.class, v)));
 			}).start();
 		}
 	}

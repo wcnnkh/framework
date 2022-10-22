@@ -2,8 +2,8 @@ package io.basc.framework.web;
 
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.json.EmptyJsonElement;
-import io.basc.framework.json.JSONSupport;
-import io.basc.framework.json.JSONUtils;
+import io.basc.framework.json.JsonSupport;
+import io.basc.framework.json.JsonUtils;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
@@ -23,17 +23,17 @@ import java.io.UnsupportedEncodingException;
  */
 public class JsonServerHttpRequest extends CachingServerHttpRequest {
 	private static Logger logger = LoggerFactory.getLogger(JsonServerHttpRequest.class);
-	private JSONSupport jsonSupport;
+	private JsonSupport jsonSupport;
 
 	public JsonServerHttpRequest(ServerHttpRequest targetRequest) {
 		super(targetRequest);
 	}
 
-	public JSONSupport getJsonSupport() {
-		return jsonSupport == null ? JSONUtils.getJsonSupport() : jsonSupport;
+	public JsonSupport getJsonSupport() {
+		return jsonSupport == null ? JsonUtils.getJsonSupport() : jsonSupport;
 	}
 
-	public void setJsonSupport(JSONSupport jsonSupport) {
+	public void setJsonSupport(JsonSupport jsonSupport) {
 		this.jsonSupport = jsonSupport;
 	}
 

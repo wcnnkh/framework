@@ -10,6 +10,12 @@ import io.basc.framework.util.StringMatcher;
 import io.basc.framework.util.StringMatchers;
 
 public interface PropertyFactory extends ValueFactory<String>, Iterable<String> {
+
+	default boolean containsKey(String key) {
+		Value value = get(key);
+		return value != null && value.isPresent();
+	}
+
 	Iterator<String> iterator();
 
 	default Stream<String> stream() {
@@ -31,6 +37,6 @@ public interface PropertyFactory extends ValueFactory<String>, Iterable<String> 
 	default Stream<Pair<String, Value>> streamByPrefix(String prefix) {
 		Assert.requiredArgument(prefix != null, "prefix");
 		return stream().filter((k) -> k.length() > prefix.length() && k.startsWith(prefix))
-				.map((k) -> new Pair<>(k.substring(prefix.length()), getValue(k)));
+				.map((k) -> new Pair<>(k.substring(prefix.length()), get(k)));
 	}
 }

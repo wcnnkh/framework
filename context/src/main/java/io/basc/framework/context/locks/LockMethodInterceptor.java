@@ -8,7 +8,7 @@ import io.basc.framework.core.annotation.AnnotationUtils;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.json.JSONUtils;
+import io.basc.framework.json.JsonUtils;
 import io.basc.framework.locks.LockFactory;
 import io.basc.framework.locks.ReentrantLockFactory;
 
@@ -56,7 +56,7 @@ public final class LockMethodInterceptor implements MethodInterceptor, MethodInt
 				sb.append(i == 0 ? "?" : "&");
 				sb.append(config.getName());
 				sb.append("=");
-				sb.append(JSONUtils.getJsonSupport().toJSONString(args[i]));
+				sb.append(JsonUtils.getJsonSupport().toJsonString(args[i]));
 			}
 		}
 		return lockFactory.process(sb.toString(), lockConfig.tryLockTime(), lockConfig.tryLockTimeUnit(),

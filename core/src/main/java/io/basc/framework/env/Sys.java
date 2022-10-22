@@ -6,6 +6,7 @@ import io.basc.framework.event.Observable;
 import io.basc.framework.factory.FactoryException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Optional;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.value.support.SystemPropertyFactory;
@@ -32,9 +33,11 @@ public final class Sys extends DefaultEnvironment {
 			Runtime.getRuntime().addShutdownHook(new Thread(() -> env.destroy()));
 		}
 
-		Observable<Properties> observable = env.getProperties(env.getProperties()
-				.getValue("io.basc.framework.logger.level.properties", String.class, "/logger-level.properties"));
-		LoggerFactory.getLevelManager().combine(observable);
+		String resourceName = Optional
+				.ofNullable(env.getProperties().getAsString("io.basc.framework.logger.level.properties"))
+				.orElse("/logger-level.properties");
+		Observable<Properties> observable = env.getProperties(resourceName);
+		LoggerFactory.getLevelManager().registerProperties(observable);
 	}
 
 	public static Sys getEnv() {
@@ -55,18 +58,20 @@ public final class Sys extends DefaultEnvironment {
 			}
 		}
 
-		if (StringUtils.isEmpty(getProperties().getString(WEB_ROOT_PROPERTY))) {
+		if (StringUtils.isEmpty(getProperties().getAsString(WEB_ROOT_PROPERTY))) {
 			getProperties().put(WEB_ROOT_PROPERTY, path);
 		}
 
 		super.init();
 
-		getProperties().getTandemFactories().addService(SystemPropertyFactory.INSTANCE);
+		getProperties().getPropertyFactories().getFactories().addService(SystemPropertyFactory.INSTANCE);
 
 		/**
 		 * 加载配置文件
 		 */
 		loadProperties("system.properties");
-		loadProperties(getProperties().getValue("io.basc.framework.properties", String.class, "/private.properties"));
+		String resourceName = Optional.ofNullable(getProperties().getAsString("io.basc.framework.properties"))
+				.orElse("/private.properties");
+		loadProperties(resourceName);
 	}
 }

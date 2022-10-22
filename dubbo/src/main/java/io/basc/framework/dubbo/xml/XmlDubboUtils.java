@@ -103,7 +103,7 @@ public final class XmlDubboUtils {
 					@SuppressWarnings("unchecked")
 					@Override
 					public boolean doFilter(List<ServiceConfig> list, Node node, ServiceConfig config) {
-						String ref = DomUtils.getNodeAttributeValue(context, node, "ref");
+						String ref = DomUtils.getNodeAttributeValue(context, node, "ref").getAsString();
 						if (StringUtils.isNotEmpty(ref) && context.isInstance(ref)) {
 							config.setRef(context.getInstance(ref));
 						}
@@ -173,7 +173,7 @@ public final class XmlDubboUtils {
 	}
 
 	private static String getPackageName(Environment environment, Node node) {
-		return DomUtils.getNodeAttributeValue(environment, node, DUBBO_SCAN_PACKAGE);
+		return DomUtils.getNodeAttributeValue(environment, node, DUBBO_SCAN_PACKAGE).getAsString();
 	}
 
 	@SuppressWarnings("rawtypes")

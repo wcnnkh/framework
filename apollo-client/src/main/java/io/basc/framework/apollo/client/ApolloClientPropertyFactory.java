@@ -1,5 +1,6 @@
 package io.basc.framework.apollo.client;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 import com.ctrip.framework.apollo.Config;
@@ -8,18 +9,14 @@ import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.EventType;
-import io.basc.framework.event.support.SimpleStringNamedEventDispatcher;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.value.AnyValue;
+import io.basc.framework.event.EventTypes;
+import io.basc.framework.event.support.SimpleEventDispatcher;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
 
 @Provider
-public class ApolloClientPropertyFactory extends SimpleStringNamedEventDispatcher<ChangeEvent<String>>
+public class ApolloClientPropertyFactory extends SimpleEventDispatcher<ChangeEvent<Collection<String>>>
 		implements PropertyFactory, ConfigChangeListener {
-	private static Logger logger = LoggerFactory.getLogger(ApolloClientPropertyFactory.class);
 	private final Config config;
 
 	public ApolloClientPropertyFactory(Config config) {
@@ -33,19 +30,13 @@ public class ApolloClientPropertyFactory extends SimpleStringNamedEventDispatche
 	}
 
 	@Override
-	public Value getValue(String key) {
+	public Value get(String key) {
 		String value = config.getProperty(key, null);
-		return value == null ? null : new AnyValue(value);
+		return Value.of(value);
 	}
 
 	@Override
 	public void onChange(ConfigChangeEvent changeEvent) {
-		for (String key : changeEvent.changedKeys()) {
-			try {
-				publishEvent(key, new ChangeEvent<String>(EventType.UPDATE, key));
-			} catch (Exception e) {
-				logger.error(e, changeEvent.toString());
-			}
-		}
+		publishEvent(new ChangeEvent<Collection<String>>(EventTypes.UPDATE, changeEvent.changedKeys()));
 	}
 }

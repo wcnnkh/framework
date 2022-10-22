@@ -6,10 +6,10 @@ import io.basc.framework.amqp.MessageListener;
 import io.basc.framework.amqp.QueueDeclare;
 import io.basc.framework.event.Event;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventRegistration;
 import io.basc.framework.event.support.SimpleEventDispatcher;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.io.SerializerUtils;
+import io.basc.framework.util.Registration;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -37,7 +37,7 @@ public class AmqpEventDisabtcher<T extends Event> extends SimpleEventDispatcher<
 	private volatile AtomicBoolean bind = new AtomicBoolean(false);
 
 	@Override
-	public EventRegistration registerListener(EventListener<T> eventListener) {
+	public Registration registerListener(EventListener<T> eventListener) {
 		if (!bind.get() && bind.compareAndSet(false, true)) {
 			exchange.bind(routingKey, queueDeclare, this);
 		}

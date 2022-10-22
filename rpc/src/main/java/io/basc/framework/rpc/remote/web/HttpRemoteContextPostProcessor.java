@@ -56,7 +56,7 @@ public class HttpRemoteContextPostProcessor implements ContextPostProcessor {
 					continue;
 				}
 
-				String className = DomUtils.getNodeAttributeValue(context, n, "interface");
+				String className = DomUtils.getNodeAttributeValue(context, n, "interface").getAsString();
 				if (StringUtils.isEmpty(className)) {
 					continue;
 				}
@@ -89,19 +89,19 @@ public class HttpRemoteContextPostProcessor implements ContextPostProcessor {
 				this.url = address;
 			}
 
-			String serializer = DomUtils.getNodeAttributeValue(context, node, "serializer");
-			String secretKey = DomUtils.getNodeAttributeValue(context, node, "sign");
+			String serializer = DomUtils.getNodeAttributeValue(context, node, "serializer").getAsString();
+			String secretKey = DomUtils.getNodeAttributeValue(context, node, "sign").getAsString();
 			if (StringUtils.isNotEmpty(serializer) || StringUtils.isNotEmpty(secretKey)) {
 				Serializer ser = StringUtils.isEmpty(serializer) ? null : (Serializer) context.getInstance(serializer);
 				codec = new SignerRemoteMessageCodec(ser, secretKey);
 			}
 
-			String codecName = DomUtils.getNodeAttributeValue(context, node, "codec");
+			String codecName = DomUtils.getNodeAttributeValue(context, node, "codec").getAsString();
 			if (StringUtils.isNotEmpty(codecName)) {
 				codec = (RemoteMessageCodec) context.getInstance(codecName);
 			}
 
-			String httpClientName = DomUtils.getNodeAttributeValue(context, node, "httpClient");
+			String httpClientName = DomUtils.getNodeAttributeValue(context, node, "httpClient").getAsString();
 			if (StringUtils.isNotEmpty(httpClientName)) {
 				this.httpClient = (HttpClient) context.getInstance(httpClientName);
 			}

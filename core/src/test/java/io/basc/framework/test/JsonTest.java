@@ -1,6 +1,6 @@
 package io.basc.framework.test;
 
-import io.basc.framework.json.JSONUtils;
+import io.basc.framework.json.JsonUtils;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonObject;
 import io.basc.framework.json.JsonObjectWrapper;
@@ -24,14 +24,14 @@ public class JsonTest {
 		list.add(map);
 		list.add(map);
 		
-		String content = JSONUtils.getJsonSupport().toJSONString(list);
+		String content = JsonUtils.getJsonSupport().toJsonString(list);
 		System.out.println(content);
 		
-		JsonArray jsonArray = JSONUtils.getJsonSupport().parseArray(content);
+		JsonArray jsonArray = JsonUtils.getJsonSupport().parseArray(content);
 		List<TestJsonObjectWrapper> wrappers = jsonArray.convert(TestJsonObjectWrapper.class);
 		System.out.println(wrappers);
 		
-		List<TestInfo> testInfo = JSONUtils.getJsonSupport().parseArray(content).convert(TestInfo.class);
+		List<TestInfo> testInfo = JsonUtils.getJsonSupport().parseArray(content).convert(TestInfo.class);
 		System.out.println(testInfo);
 	}
 	
