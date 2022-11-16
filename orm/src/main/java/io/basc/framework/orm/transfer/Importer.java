@@ -2,9 +2,9 @@ package io.basc.framework.orm.transfer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.stream.Stream;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.util.Cursor;
 
 /**
  * 导入
@@ -13,9 +13,9 @@ import io.basc.framework.convert.TypeDescriptor;
  *
  */
 public interface Importer {
-	<T> Stream<T> read(File source, TypeDescriptor targetType) throws IOException;
+	<T> Cursor<T> read(File source, TypeDescriptor targetType) throws IOException;
 
-	default <T> Stream<T> read(File source, Class<? extends T> targetType) throws IOException {
+	default <T> Cursor<T> read(File source, Class<? extends T> targetType) throws IOException {
 		return read(source, TypeDescriptor.valueOf(targetType));
 	}
 }

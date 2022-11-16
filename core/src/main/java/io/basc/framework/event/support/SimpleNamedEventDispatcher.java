@@ -2,11 +2,15 @@ package io.basc.framework.event.support;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import io.basc.framework.event.Event;
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.NamedEventDispatcher;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Matcher;
 import io.basc.framework.util.Registration;
 
 /**
@@ -18,8 +22,17 @@ import io.basc.framework.util.Registration;
  * @param <T>
  */
 public class SimpleNamedEventDispatcher<K, T extends Event> implements NamedEventDispatcher<K, T> {
-	private static final int INITIAL_CAPACITY = Integer.getInteger("io.basc.framework.event.map.initial_capacity", 8);
 	private volatile Map<K, EventDispatcher<T>> namedEventListenerMap;
+	@Nullable
+	protected final Matcher<K> matcher;
+
+	public SimpleNamedEventDispatcher() {
+		this(null);
+	}
+
+	public SimpleNamedEventDispatcher(@Nullable Matcher<K> matcher) {
+		this.matcher = matcher;
+	}
 
 	protected EventDispatcher<T> createEventDispatcher(K name) {
 		return new SimpleEventDispatcher<T>();
@@ -28,7 +41,7 @@ public class SimpleNamedEventDispatcher<K, T extends Event> implements NamedEven
 	public Registration registerListener(K name, EventListener<T> eventListener) {
 		synchronized (this) {
 			if (namedEventListenerMap == null) {
-				namedEventListenerMap = new HashMap<>(INITIAL_CAPACITY);
+				namedEventListenerMap = matcher == null ? new HashMap<>(8) : new TreeMap<>(matcher);
 			}
 
 			EventDispatcher<T> eventDispatcher = namedEventListenerMap.get(name);
@@ -51,11 +64,19 @@ public class SimpleNamedEventDispatcher<K, T extends Event> implements NamedEven
 	}
 
 	protected void publishEvent(K name, T event, Map<K, EventDispatcher<T>> dispatcherMap) {
-		EventDispatcher<T> dispatcher = dispatcherMap.get(name);
-		if (dispatcher == null) {
-			return;
-		}
+		if (matcher == null) {
+			EventDispatcher<T> dispatcher = dispatcherMap.get(name);
+			if (dispatcher == null) {
+				return;
+			}
 
-		dispatcher.publishEvent(event);
+			dispatcher.publishEvent(event);
+		} else {
+			for (Entry<K, EventDispatcher<T>> entry : dispatcherMap.entrySet()) {
+				if (matcher.match(entry.getKey(), name) || matcher.match(name, entry.getKey())) {
+					entry.getValue().publishEvent(event);
+				}
+			}
+		}
 	}
 }

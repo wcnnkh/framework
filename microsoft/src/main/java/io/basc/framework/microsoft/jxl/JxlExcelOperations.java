@@ -54,7 +54,7 @@ public class JxlExcelOperations extends AbstractExcelReader implements ExcelOper
 		try {
 			for (int i = 0; i < excel.getNumberOfSheets(); i++) {
 				io.basc.framework.microsoft.Sheet sheet = excel.getSheet(i);
-				for (int r = 0; r < sheet.getTotal(); r++) {
+				for (int r = 0; r < sheet.getRows(); r++) {
 					consumer.accept(new ExcelRow(i, sheet.getName(), r, sheet.read(r)));
 				}
 			}

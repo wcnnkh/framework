@@ -1,9 +1,5 @@
 package io.basc.framework.ibatis;
 
-import io.basc.framework.aop.MethodInterceptor;
-import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.util.stream.Processor;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
@@ -12,13 +8,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.ibatis.binding.MapperMethod;
 import org.apache.ibatis.session.SqlSession;
 
+import io.basc.framework.aop.MethodInterceptor;
+import io.basc.framework.core.reflect.MethodInvoker;
+import io.basc.framework.util.Processor;
+
 public class MapperMethodInterceptor implements MethodInterceptor {
 	private final Map<Method, MapperMethod> methodCache = new ConcurrentHashMap<Method, MapperMethod>();
-	private final Processor<MethodInvoker, SqlSession, Throwable> openSessionProcessor;
+	private final Processor<? super MethodInvoker, ? extends SqlSession, ? extends Throwable> openSessionProcessor;
 	private final Class<?> mapperClass;
 
 	public MapperMethodInterceptor(Class<?> mapperClass,
-			Processor<MethodInvoker, SqlSession, Throwable> openSessionProcessor) {
+			Processor<? super MethodInvoker, ? extends SqlSession, ? extends Throwable> openSessionProcessor) {
 		this.mapperClass = mapperClass;
 		this.openSessionProcessor = openSessionProcessor;
 	}

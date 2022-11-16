@@ -1,7 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.lang.Nullable;
-
 import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.AbstractSet;
@@ -13,6 +11,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+
+import io.basc.framework.lang.Nullable;
 
 public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;

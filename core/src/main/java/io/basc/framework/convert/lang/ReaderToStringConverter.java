@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 import io.basc.framework.io.IOUtils;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.Processor;
 
 public class ReaderToStringConverter implements Processor<Reader, String, IOException> {
 

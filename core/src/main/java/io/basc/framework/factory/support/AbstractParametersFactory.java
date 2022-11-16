@@ -1,5 +1,7 @@
 package io.basc.framework.factory.support;
 
+import java.util.logging.Level;
+
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptors;
 import io.basc.framework.factory.ParametersFactory;
@@ -7,8 +9,6 @@ import io.basc.framework.lang.ParameterException;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-
-import java.util.logging.Level;
 
 public abstract class AbstractParametersFactory implements ParametersFactory {
 	private static Logger logger = LoggerFactory.getLogger(AbstractParametersFactory.class);

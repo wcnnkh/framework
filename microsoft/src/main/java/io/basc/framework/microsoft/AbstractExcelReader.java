@@ -9,8 +9,8 @@ import java.util.stream.Stream;
 
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.ResponsiveIterator;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.stream.ResponsiveIterator;
 
 public abstract class AbstractExcelReader implements ExcelReader {
 	private static Logger logger = LoggerFactory.getLogger(AbstractExcelReader.class);
@@ -40,11 +40,7 @@ public abstract class AbstractExcelReader implements ExcelReader {
 			} catch (Throwable e) {
 				logger.error(e, "read error");
 			} finally {
-				try {
-					iterator.close();
-				} catch (InterruptedException e) {
-					logger.error(e, "read thread error");
-				}
+				iterator.close();
 			}
 		});
 		return XUtils.stream(iterator);
@@ -65,11 +61,7 @@ public abstract class AbstractExcelReader implements ExcelReader {
 			} catch (Throwable e) {
 				logger.error(e, "read error");
 			} finally {
-				try {
-					iterator.close();
-				} catch (InterruptedException e) {
-					logger.error(e, "read thread error");
-				}
+				iterator.close();
 			}
 		});
 		return XUtils.stream(iterator);

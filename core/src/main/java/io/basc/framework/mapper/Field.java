@@ -17,9 +17,9 @@ import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ParentDiscover;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.alias.AliasRegistry;
-import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.Value;
 
 public class Field extends AccessibleField implements Member, ParentDiscover<Field>, Predicate<Field> {
@@ -176,7 +176,8 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 		}
 	}
 
-	public <V, E extends Throwable> V getValueByNames(Processor<String, V, E> processor) throws E {
+	public <V, E extends Throwable> V getValueByNames(Processor<? super String, ? extends V, ? extends E> processor)
+			throws E {
 		if (isSupportSetter()) {
 			V value = processor.process(getSetter().getName());
 			if (value != null) {

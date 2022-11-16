@@ -7,7 +7,6 @@ import java.util.function.Predicate;
 import io.basc.framework.env.Sys;
 import io.basc.framework.util.Keywords;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.stream.StreamProcessorSupport;
 
 public class RelationshipKeywords implements Predicate<String>, Cloneable, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -61,7 +60,7 @@ public class RelationshipKeywords implements Predicate<String>, Cloneable, Seria
 	}
 
 	public Pair<String, Integer> indexOf(String express) {
-		return StreamProcessorSupport
+		return Pair
 				.process(Arrays.asList(andKeywords, orKeywords), (e) -> e.indexOf(express), (e) -> e.getValue() != null)
 				.map((e) -> e.getValue()).orElse(null);
 	}

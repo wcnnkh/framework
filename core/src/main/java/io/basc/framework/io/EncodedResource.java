@@ -16,14 +16,14 @@
 
 package io.basc.framework.io;
 
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.ObjectUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
+
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.ObjectUtils;
 
 /**
  * Holder that combines a {@link Resource} descriptor with a specific encoding

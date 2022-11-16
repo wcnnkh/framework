@@ -3,8 +3,6 @@ package io.basc.framework.util;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import io.basc.framework.util.stream.Processor;
-
 public class IterationIterator<S, T> implements Iterator<T> {
 	private final Iterator<? extends S> iterator;
 	private final Processor<S, ? extends Iterator<? extends T>, ? extends RuntimeException> converter;

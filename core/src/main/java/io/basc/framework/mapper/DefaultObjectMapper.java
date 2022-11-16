@@ -23,9 +23,9 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
 
@@ -527,8 +527,8 @@ public class DefaultObjectMapper<S, E extends Throwable> extends SimpleReverseMa
 	public void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
 			Object target, TypeDescriptor targetType, Structure<? extends Field> targetStructure,
 			ObjectMapperContext context) throws E {
-		transform(source, sourceType, sourceStructure.streamAll().iterator(), target, targetType,
-				targetStructure.streamAll().iterator(), context);
+		transform(source, sourceType, sourceStructure.all().stream().iterator(), target, targetType,
+				targetStructure.all().stream().iterator(), context);
 	}
 
 	@Override

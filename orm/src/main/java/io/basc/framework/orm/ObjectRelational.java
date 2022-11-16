@@ -16,7 +16,7 @@ import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Structure;
 import io.basc.framework.mapper.StructureDecorator;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.StreamProcessorSupport;
+import io.basc.framework.util.XUtils;
 
 public class ObjectRelational<T extends Property> extends StructureDecorator<T, ObjectRelational<T>> {
 	private static Logger logger = LoggerFactory.getLogger(ObjectRelational.class);
@@ -29,7 +29,7 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 		super(sourceClass, parent, (s) -> {
 			Stream<T> stream = processor.apply(s);
 			if (stream == null) {
-				return StreamProcessorSupport.emptyStream();
+				return XUtils.emptyStream();
 			}
 			return stream.filter((o) -> o.isSupportGetter() || o.isSupportSetter())
 					.filter((o) -> !Modifier.isStatic(o.getModifiers()));
@@ -123,7 +123,7 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 	}
 
 	public Stream<T> columns() {
-		return streamAll().filter((e) -> !e.isEntity());
+		return all().stream().filter((e) -> !e.isEntity());
 	}
 
 	public final List<T> getPrimaryKeys() {

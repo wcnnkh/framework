@@ -6,10 +6,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.stream.CallableProcessor;
-import io.basc.framework.util.stream.ConsumerProcessor;
-
 public interface Optional<T> extends Supplier<T> {
+	public static final String NO_VALUE_PRESENT = "No value present";
 
 	public static <U> Optional<U> empty() {
 		return ofNullable(null);
@@ -25,7 +23,7 @@ public interface Optional<T> extends Supplier<T> {
 	}
 
 	public static <U> Optional<U> ofSupplier(Supplier<? extends U> valueSupplier) {
-		return new StreamOptional<>(valueSupplier);
+		return new SharedOptional<>(valueSupplier);
 	}
 
 	/**
@@ -53,7 +51,7 @@ public interface Optional<T> extends Supplier<T> {
 	 * @param consumer block to be executed if a value is present
 	 * @throws NullPointerException if value is present and {@code consumer} is null
 	 */
-	default <E extends Throwable> void ifPresent(ConsumerProcessor<? super T, ? extends E> consumer) throws E {
+	default <E extends Throwable> void ifPresent(ConsumeProcessor<? super T, ? extends E> consumer) throws E {
 		if (isPresent())
 			consumer.process(get());
 	}
@@ -191,8 +189,8 @@ public interface Optional<T> extends Supplier<T> {
 	 * @throws NullPointerException if value is not present and {@code other} is
 	 *                              null
 	 */
-	default <E extends Throwable> T orElseGet(CallableProcessor<? extends T, ? extends E> other) throws E {
-		return isPresent() ? get() : other.process();
+	default <E extends Throwable> T orElseGet(Source<? extends T, ? extends E> other) throws E {
+		return isPresent() ? get() : other.get();
 	}
 
 	/**

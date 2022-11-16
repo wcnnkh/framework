@@ -12,12 +12,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.codec.support.ListRecordCodec;
 import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.ConvertibleIterator;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.env.Sys;
@@ -29,12 +27,12 @@ import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.ConsumeProcessor;
+import io.basc.framework.util.Cursor;
+import io.basc.framework.util.ConvertibleIterator;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.stream.ConsumerProcessor;
-import io.basc.framework.util.stream.Cursor;
-import io.basc.framework.util.stream.StreamProcessorSupport;
 import io.basc.framework.value.Value;
 
 public abstract class TableTransfer implements Importer, ExportProcessor<Object> {
@@ -100,9 +98,8 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 		} else if (targetType.isMap()) {
 			if (isHeader()) {
 				String[] titles = null;
-				Iterator<String[]> iterator = cursor.iterator();
-				while (iterator.hasNext()) {
-					String[] contents = iterator.next();
+				while (cursor.hasNext()) {
+					String[] contents = cursor.next();
 					if (titles == null && contents != null && contents.length > 0) {
 						titles = contents.clone();
 						break;
@@ -110,12 +107,12 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 				}
 
 				if (titles == null) {
-					return StreamProcessorSupport.emptyCursor();
+					return Cursor.empty();
 				}
 
 				final String[] titleUes = titles.clone();
 				// 映射
-				return StreamProcessorSupport.cursor(iterator).onClose(() -> cursor.close()).map((contents) -> {
+				return Cursor.create(cursor).onClose(() -> cursor.close()).map((contents) -> {
 					Map<String, String> columnMap = new LinkedHashMap<>();
 					for (int i = 0; i < contents.length; i++) {
 						columnMap.put(titleUes[i], contents[i]);
@@ -154,14 +151,13 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 	}
 
 	@SuppressWarnings("unchecked")
-	public final <T> Cursor<T> mapEntity(Stream<String[]> source, Structure<? extends Property> structure) {
+	public final <T> Cursor<T> mapEntity(Cursor<String[]> source, Structure<? extends Property> structure) {
 		Assert.requiredArgument(structure != null, "structure");
 		Assert.requiredArgument(source != null, "source");
 		if (isHeader()) {
 			Map<String, Integer> nameToIndexMap = new HashMap<String, Integer>();
-			Iterator<String[]> iterator = source.iterator();
-			while (iterator.hasNext()) {
-				String[] contents = iterator.next();
+			while (source.hasNext()) {
+				String[] contents = source.next();
 				if (nameToIndexMap.isEmpty() && contents != null && contents.length > 0) {
 					for (int i = 0; i < contents.length; i++) {
 						nameToIndexMap.put(contents[i], i);
@@ -173,7 +169,7 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 			List<Property> properties = structure.stream().filter((e) -> e.isSupportSetter())
 					.collect(Collectors.toList());
 			// 映射
-			return StreamProcessorSupport.cursor(iterator).onClose(() -> source.close()).map((contents) -> {
+			return Cursor.create(source).onClose(() -> source.close()).map((contents) -> {
 				T instance = (T) ReflectionApi.newInstance(structure.getSourceClass());
 				properties.forEach((property) -> {
 					Integer index = nameToIndexMap.get(property.getName());
@@ -195,7 +191,7 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 				return instance;
 			});
 		} else {
-			return StreamProcessorSupport.cursor(source).onClose(() -> source.close()).map((e) -> {
+			return Cursor.create(source).map((e) -> {
 				T instance = (T) ReflectionApi.newInstance(structure.getSourceClass());
 				int i = 0;
 				Iterator<? extends Property> iterator = structure.stream().filter((p) -> p.isSupportSetter())
@@ -269,8 +265,7 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 	}
 
 	public final Iterator<TransfColumns<String, String>> exportAll(Iterator<?> source) {
-		return XUtils
-				.stream(new ConvertibleIterator<Object, TransfColumns<String, String>>(source, (e) -> mapColumns(e)))
+		return XUtils.stream(new ConvertibleIterator<Object, TransfColumns<String, String>>(source, (e) -> mapColumns(e)))
 				.filter((e) -> e != null).iterator();
 	}
 
@@ -278,8 +273,8 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 		return XUtils.stream(exportAll(source.iterator())).collect(Collectors.toList());
 	}
 
-	public final <E extends Throwable> void exportAll(Iterator<?> source, ConsumerProcessor<List<String>, E> consumer)
-			throws E, IOException {
+	public final <E extends Throwable> void exportAll(Iterator<?> source,
+			ConsumeProcessor<? super List<String>, ? extends E> consumer) throws E, IOException {
 		Iterator<TransfColumns<String, String>> iterator = exportAll(source);
 		// 是否已写入header
 		boolean writeHeader = false;

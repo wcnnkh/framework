@@ -1,17 +1,16 @@
 package io.basc.framework.microsoft;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.math.BigInteger;
 
-import io.basc.framework.util.page.PageSupport;
-import io.basc.framework.util.page.Paginations;
-import io.basc.framework.util.stream.Cursor;
-import io.basc.framework.util.stream.StreamProcessorSupport;
+import io.basc.framework.util.Cursor;
+import io.basc.framework.util.PositionIterator;
+import io.basc.framework.util.ResultSet;
 
-public interface Sheet extends Paginations<String[]> {
+public interface Sheet extends ResultSet<String[]> {
 	String getName();
+
+	int getRows();
 
 	/**
 	 * 读取指定行
@@ -37,50 +36,14 @@ public interface Sheet extends Paginations<String[]> {
 	/**
 	 * 如果支持流读取应该重写此方法
 	 */
-	default Cursor<String[]> stream() {
-		List<String[]> list = new ArrayList<String[]>();
-		for (long rowIndex = getCursorId(); rowIndex < Math.min(Integer.MIN_VALUE,
-				Math.min(getCursorId() + getCount(), getTotal())); rowIndex++) {
+	default Cursor<String[]> iterator() {
+		PositionIterator<String[]> iterator = new PositionIterator<>(BigInteger.valueOf(getRows()), (e) -> {
 			try {
-				String[] contents = read((int) rowIndex);
-				list.add(contents);
-			} catch (IOException e) {
-				throw new ExcelException(e);
+				return read(e.intValue());
+			} catch (IOException ex) {
+				throw new ExcelException(ex);
 			}
-		}
-		return StreamProcessorSupport.cursor(list.iterator());
-	}
-
-	@Override
-	Sheet jumpTo(Long cursorId, long count);
-
-	@Override
-	default List<String[]> getList() {
-		return stream().collect(Collectors.toList());
-	}
-
-	@Override
-	default Sheet jumpToPage(long pageNumber) {
-		return jumpToPage(pageNumber, getCount());
-	}
-
-	@Override
-	default Sheet jumpTo(Long cursorId) {
-		return jumpTo(cursorId, getCount());
-	}
-
-	@Override
-	default Sheet jumpToPage(long pageNumber, long count) {
-		return jumpTo(PageSupport.getStart(pageNumber, count), count);
-	}
-
-	@Override
-	default Sheet next() {
-		return jumpTo(getNextCursorId());
-	}
-
-	@Override
-	default Sheet previous() {
-		return jumpToPage(getPageNumber() - 1);
+		});
+		return Cursor.create(iterator);
 	}
 }

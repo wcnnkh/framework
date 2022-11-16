@@ -8,11 +8,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONAware;
 
-import io.basc.framework.convert.ConvertibleIterator;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
+import io.basc.framework.util.ConvertibleIterator;
 
 public final class FastJsonArray extends AbstractJson<Integer> implements JsonArray, JSONAware, Serializable {
 	private static final long serialVersionUID = 1L;

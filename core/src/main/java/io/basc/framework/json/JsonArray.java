@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.stream.Processor;
 
 public interface JsonArray extends Json<Integer>, Iterable<JsonElement> {
 	static final String PREFIX = "[";

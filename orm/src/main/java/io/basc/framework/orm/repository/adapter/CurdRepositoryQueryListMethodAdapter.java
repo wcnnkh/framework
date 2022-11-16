@@ -6,25 +6,20 @@ import io.basc.framework.orm.repository.RepositoryTemplate;
 
 import java.lang.reflect.Method;
 
-public final class CurdRepositoryQueryListMethodAdapter extends
-		CurdRepositoryMethodAdapter {
+public final class CurdRepositoryQueryListMethodAdapter extends CurdRepositoryMethodAdapter {
 
 	@Override
-	protected boolean test(Method method, String methodName,
-			Class<?>[] parameterTypes) {
+	protected boolean test(Method method, String methodName, Class<?>[] parameterTypes) {
 		return methodName.equals("queryList");
 	}
 
 	@Override
-	protected Object intercept(RepositoryTemplate template,
-			MethodInvoker invoker, Object[] args, Class<?> entityClass,
-			TypeDescriptor resultsTypeDescriptor, String methodName)
-			throws Throwable {
+	protected Object intercept(RepositoryTemplate template, MethodInvoker invoker, Object[] args, Class<?> entityClass,
+			TypeDescriptor resultsTypeDescriptor, String methodName) throws Throwable {
 		if (args.length == 2) {
-			return template.queryList((TypeDescriptor) args[0], entityClass,
-					args[1]);
+			return template.query((TypeDescriptor) args[0], entityClass, args[1]).list();
 		}
-		return template.queryList(resultsTypeDescriptor, entityClass, args[0]);
+		return template.query(resultsTypeDescriptor, entityClass, args[0]).list();
 	}
 
 }

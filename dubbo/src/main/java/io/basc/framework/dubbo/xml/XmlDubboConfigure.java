@@ -20,7 +20,7 @@ import io.basc.framework.context.xml.XmlBeanUtils;
 import io.basc.framework.dubbo.DubboConfigure;
 import io.basc.framework.env.Environment;
 import io.basc.framework.io.Resource;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.Processor;
 
 public class XmlDubboConfigure implements DubboConfigure {
 	private final List<Resource> resources;
@@ -44,7 +44,8 @@ public class XmlDubboConfigure implements DubboConfigure {
 		return parse((nodeList) -> XmlDubboUtils.parseApplicationConfigList(environment, nodeList, null));
 	}
 
-	public <T, E extends Throwable> List<T> parse(Processor<NodeList, List<T>, E> processor) throws E {
+	public <T, E extends Throwable> List<T> parse(Processor<? super NodeList, ? extends List<T>, ? extends E> processor)
+			throws E {
 		List<T> list = new ArrayList<T>();
 		for (Resource resource : resources) {
 			list.addAll(XmlBeanUtils.parse(environment.getResourceLoader(), resource, processor));

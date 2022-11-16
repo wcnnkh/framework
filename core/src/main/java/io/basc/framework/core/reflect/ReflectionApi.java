@@ -13,8 +13,8 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.Processor;
 
 /**
  * 使用反射调用api，不安全的调用
@@ -223,8 +223,8 @@ public class ReflectionApi implements Supplier<Object> {
 		}
 		return true;
 	}
-	
-	public static <T> T newInstance(Class<T> type) throws NotSupportedException{
+
+	public static <T> T newInstance(Class<T> type) throws NotSupportedException {
 		return newInstance(type, ObjectUtils.EMPTY_ARRAY);
 	}
 

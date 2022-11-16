@@ -1,12 +1,11 @@
 package io.basc.framework.web.pattern;
 
-import io.basc.framework.lang.AlreadyExistsException;
-import io.basc.framework.util.AbstractHolder;
-import io.basc.framework.util.Holder;
-import io.basc.framework.web.ServerHttpRequest;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import io.basc.framework.lang.AlreadyExistsException;
+import io.basc.framework.util.Registration;
+import io.basc.framework.web.ServerHttpRequest;
 
 /**
  * 请求匹配,线程安全的
@@ -19,11 +18,12 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 	private Map<String, Map<String, HttpPatternServices<T>>> matcherMap = new HashMap<>();
 	private HttpPatternServices<T> matchers = new HttpPatternServices<>();
 
-	public Holder<T> add(String pattern, T service) throws AlreadyExistsException {
+	public Registration add(String pattern, T service) throws AlreadyExistsException {
 		return add(new HttpPattern(pattern), service);
 	}
 
-	private Holder<T> add(String pattern, String method, HttpPatternService<T> service) throws AlreadyExistsException {
+	private Registration add(String pattern, String method, HttpPatternService<T> service)
+			throws AlreadyExistsException {
 		synchronized (matcherMap) {
 			Map<String, HttpPatternServices<T>> map = matcherMap.get(pattern);
 			if (map == null) {
@@ -42,54 +42,46 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 			}
 		}
 
-		return new AbstractHolder<T>(() -> service.getService()) {
-
-			@Override
-			protected boolean releeaseInternal() {
-				synchronized (matcherMap) {
-					Map<String, HttpPatternServices<T>> map = matcherMap.get(pattern);
-					if (map == null) {
-						return false;
-					}
-
-					HttpPatternServices<T> httpPatterns = map.get(method);
-					if (httpPatterns == null) {
-						return false;
-					}
-
-					return httpPatterns.remove(service);
+		return () -> {
+			synchronized (matcherMap) {
+				Map<String, HttpPatternServices<T>> map = matcherMap.get(pattern);
+				if (map == null) {
+					return;
 				}
+
+				HttpPatternServices<T> httpPatterns = map.get(method);
+				if (httpPatterns == null) {
+					return;
+				}
+
+				httpPatterns.remove(service);
 			}
 		};
 	}
 
-	public Holder<T> add(String pattern, String method, T service) throws AlreadyExistsException {
+	public Registration add(String pattern, String method, T service) throws AlreadyExistsException {
 		return add(new HttpPattern(pattern, method), service);
 	}
 
-	public Holder<T> add(T service) throws AlreadyExistsException {
+	public Registration add(T service) throws AlreadyExistsException {
 		return add(new HttpPatternService<T>(service));
 	}
 
-	private Holder<T> add(HttpPatternService<T> pattern) throws AlreadyExistsException {
+	private Registration add(HttpPatternService<T> pattern) throws AlreadyExistsException {
 		synchronized (matchers) {
 			if (!matchers.add(pattern)) {
 				throw new AlreadyExistsException(pattern.toString());
 			}
 		}
 
-		return new AbstractHolder<T>(() -> pattern.getService()) {
-
-			@Override
-			protected boolean releeaseInternal() {
-				synchronized (matchers) {
-					return matchers.remove(pattern);
-				}
+		return () -> {
+			synchronized (matchers) {
+				matchers.remove(pattern);
 			}
 		};
 	}
 
-	public Holder<T> add(HttpPattern httpPattern, T service) throws AlreadyExistsException {
+	public Registration add(HttpPattern httpPattern, T service) throws AlreadyExistsException {
 		if (httpPattern.isPattern()) {
 			return add(new HttpPatternService<T>(service, httpPattern));
 		} else {

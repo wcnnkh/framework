@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
-import io.basc.framework.util.stream.StreamProcessorSupport;
 
 public final class StringUtils {
 	private static final Set<String> BOOLEANS;
@@ -2134,7 +2133,7 @@ public final class StringUtils {
 
 	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence, CharSequence... filters) {
 		if (charSequence == null) {
-			return StreamProcessorSupport.emptyStream();
+			return XUtils.emptyStream();
 		}
 		return split(charSequence, 0, charSequence.length(), Arrays.asList(filters));
 	}
@@ -2142,7 +2141,7 @@ public final class StringUtils {
 	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence,
 			Collection<? extends CharSequence> filters) {
 		if (charSequence == null) {
-			return StreamProcessorSupport.emptyStream();
+			return XUtils.emptyStream();
 		}
 		return split(charSequence, 0, charSequence.length(), filters);
 	}
@@ -2150,7 +2149,7 @@ public final class StringUtils {
 	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence, int beginIndex, int endIndex,
 			Collection<? extends CharSequence> filters) {
 		if (StringUtils.isEmpty(charSequence)) {
-			return StreamProcessorSupport.emptyStream();
+			return XUtils.emptyStream();
 		}
 
 		boolean find = false;
@@ -2269,7 +2268,7 @@ public final class StringUtils {
 
 	public static Stream<String> tokenize(String text, String delimiters) {
 		if (StringUtils.isEmpty(text)) {
-			return StreamProcessorSupport.emptyStream();
+			return XUtils.emptyStream();
 		}
 
 		return tokenize(new StringTokenizer(text, delimiters));
@@ -2283,10 +2282,10 @@ public final class StringUtils {
 
 	public static Stream<String> tokenize(StringTokenizer tokenizer) {
 		if (tokenizer == null) {
-			return StreamProcessorSupport.emptyStream();
+			return XUtils.emptyStream();
 		}
 
-		Iterator<String> iterator = new AbstractIterator<String>() {
+		Iterator<String> iterator = new Iterator<String>() {
 			@Override
 			public boolean hasNext() {
 				return tokenizer.hasMoreTokens();

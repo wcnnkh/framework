@@ -2,20 +2,20 @@ package io.basc.framework.jedis;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.function.Function;
 
 import io.basc.framework.redis.ClusterRedirectException;
 import io.basc.framework.redis.RedisConnectionFailureException;
 import io.basc.framework.redis.RedisSystemException;
 import io.basc.framework.redis.TooManyClusterRedirectionsException;
-import io.basc.framework.util.stream.Processor;
 import redis.clients.jedis.exceptions.JedisClusterOperationException;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisException;
 import redis.clients.jedis.exceptions.JedisRedirectionException;
 
-public class JedisExceptionConverter implements Processor<Exception, RedisSystemException, RedisSystemException> {
+public class JedisExceptionConverter implements Function<Exception, RedisSystemException> {
 
-	public RedisSystemException process(Exception ex) throws RedisSystemException {
+	public RedisSystemException apply(Exception ex) {
 
 		if (ex instanceof RedisSystemException) {
 			return (RedisSystemException) ex;

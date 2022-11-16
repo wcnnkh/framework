@@ -57,7 +57,7 @@ public final class DBManager {
 	}
 
 	public static <T> List<T> select(Class<T> type, Sql sql) {
-		return getDB(type).query(type, sql).shared();
+		return getDB(type).query(type, sql).list();
 	}
 
 	public static <T> T selectOne(Class<T> type, Sql sql) {

@@ -1,12 +1,12 @@
 package io.basc.framework.value.support;
 
-import io.basc.framework.convert.ConvertibleIterator;
-import io.basc.framework.convert.lang.ObjectToStringConverter;
-import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.value.PropertyFactory;
-
 import java.util.Iterator;
 import java.util.Properties;
+
+import io.basc.framework.convert.lang.ObjectToStringConverter;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ConvertibleIterator;
+import io.basc.framework.value.PropertyFactory;
 
 public class PropertiesPropertyFactory extends PropertiesValueFactory<String> implements PropertyFactory {
 

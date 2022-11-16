@@ -1,7 +1,9 @@
 package io.basc.framework.http;
 
+import io.basc.framework.util.Status;
+
 //注意：如果定义新的可用的code，那么应该定义在被弃用的code之前 , 可查看resolve方法查看，因为是按顺序解析的
-public enum HttpStatus {
+public enum HttpStatus implements Status {
 	// 1xx Informational
 
 	/**
@@ -512,11 +514,26 @@ public enum HttpStatus {
 		return this.value;
 	}
 
+	@Override
+	public long getCode() {
+		return this.value;
+	}
+
+	@Override
+	public String getMsg() {
+		return reasonPhrase;
+	}
+
 	/**
 	 * Return the reason phrase of this status code.
 	 */
 	public String getReasonPhrase() {
 		return this.reasonPhrase;
+	}
+
+	@Override
+	public boolean isSuccess() {
+		return !isError();
 	}
 
 	/**

@@ -1,16 +1,13 @@
 package io.basc.framework.db;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.sql.DefaultSqlStatementProcessor;
-import io.basc.framework.sql.SimpleSql;
-import io.basc.framework.sql.Sql;
-import io.basc.framework.sql.SqlException;
-import io.basc.framework.sql.SqlUtils;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.sql.SimpleSql;
+import io.basc.framework.sql.Sql;
 
 public abstract class AbstractDataBase implements DataBase {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -49,26 +46,9 @@ public abstract class AbstractDataBase implements DataBase {
 	}
 
 	public void create(String database) {
-		execute(new SimpleSql(getCreateSql(database)));
-	}
-
-	public void execute(Sql sql) {
-		Connection connection = null;
+		Sql sql = new SimpleSql(getCreateSql(database));
 		logger.info(sql.toString());
-		try {
-			connection = getConnection();
-			SqlUtils.prepare(this, sql, new DefaultSqlStatementProcessor()).execute();
-		} catch (SQLException e) {
-			throw new SqlException(e);
-		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		consume(sql, (e) -> e.execute());
 	}
 
 	public String getDriverClassName() {

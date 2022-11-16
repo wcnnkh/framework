@@ -6,8 +6,6 @@ import java.util.function.IntPredicate;
 import java.util.function.IntSupplier;
 import java.util.function.Predicate;
 
-import io.basc.framework.util.stream.IntConsumerProcessor;
-
 public interface OptionalInt extends Optional<Integer>, IntSupplier {
 
 	static OptionalInt empty() {

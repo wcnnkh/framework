@@ -16,9 +16,9 @@ import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ConsumeProcessor;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.ConsumerProcessor;
-import io.basc.framework.util.stream.Processor;
 import io.basc.framework.xml.XmlUtils;
 
 public final class XmlBeanUtils {
@@ -184,12 +184,12 @@ public final class XmlBeanUtils {
 	}
 
 	public static <E extends Throwable> void read(ResourceLoader resourceLoader, Resource resource,
-			ConsumerProcessor<NodeList, E> processor) throws E {
+			ConsumeProcessor<? super NodeList, ? extends E> processor) throws E {
 		parse(resourceLoader, resource, processor.toProcessor());
 	}
 
 	public static <T, E extends Throwable> T parse(ResourceLoader resourceLoader, Resource resource,
-			Processor<NodeList, T, E> processor) throws E {
+			Processor<? super NodeList, ? extends T, ? extends E> processor) throws E {
 		return XmlUtils.getTemplate().parse(resource, (document) -> {
 			Node node = document.getDocumentElement();
 			if (!"beans".equals(node.getNodeName())) {

@@ -7,7 +7,7 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.Processor;
 
 public class PageSupport {
 	private PageSupport() {

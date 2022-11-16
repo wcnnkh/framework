@@ -8,7 +8,7 @@ import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.sql.transaction.SqlTransactionUtils;
 import io.basc.framework.util.Assert;
 
-public class DefaultSqlOperations extends DefaultSqlStatementProcessor implements SqlOperations {
+public class DefaultSqlOperations implements SqlOperations {
 	private ConnectionFactory connectionFactory;
 	private final ObjectMapper<ResultSet, SQLException> mapper;
 

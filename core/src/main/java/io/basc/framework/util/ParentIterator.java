@@ -1,6 +1,8 @@
 package io.basc.framework.util;
 
-public class ParentIterator<T extends ParentDiscover<T>> extends AbstractIterator<T> {
+import java.util.Iterator;
+
+public class ParentIterator<T extends ParentDiscover<T>> implements Iterator<T> {
 	private ParentDiscover<T> parent;
 
 	public ParentIterator(ParentDiscover<T> parent) {

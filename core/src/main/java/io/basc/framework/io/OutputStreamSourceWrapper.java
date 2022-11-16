@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
 
+import io.basc.framework.util.ConsumeProcessor;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.Wrapper;
-import io.basc.framework.util.stream.ConsumerProcessor;
-import io.basc.framework.util.stream.Processor;
 
 public class OutputStreamSourceWrapper<W extends OutputStreamSource> extends Wrapper<W> implements OutputStreamSource {
 
@@ -20,18 +20,19 @@ public class OutputStreamSourceWrapper<W extends OutputStreamSource> extends Wra
 	}
 
 	@Override
-	public WritableByteChannel writableChannel() throws IOException {
-		return wrappedTarget.writableChannel();
+	public <E extends Throwable> void produce(ConsumeProcessor<? super OutputStream, ? extends E> processor)
+			throws IOException, E {
+		wrappedTarget.produce(processor);
 	}
 
 	@Override
-	public <E extends Throwable> void produce(ConsumerProcessor<OutputStream, E> callback) throws IOException, E {
-		wrappedTarget.produce(callback);
-	}
-
-	@Override
-	public <T, E extends Throwable> T write(Processor<OutputStream, ? extends T, E> processor) throws IOException, E {
+	public <T, E extends Throwable> T write(Processor<? super OutputStream, ? extends T, ? extends E> processor)
+			throws IOException, E {
 		return wrappedTarget.write(processor);
 	}
 
+	@Override
+	public WritableByteChannel writableChannel() throws IOException {
+		return wrappedTarget.writableChannel();
+	}
 }

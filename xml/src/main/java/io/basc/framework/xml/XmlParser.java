@@ -25,8 +25,8 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.Processor;
 
 public class XmlParser implements DocumentParser {
 	private static Logger logger = LoggerFactory.getLogger(XmlParser.class);
@@ -95,8 +95,8 @@ public class XmlParser implements DocumentParser {
 	}
 
 	@Override
-	public <T, E extends Throwable> T parse(Resource resource, Processor<Document, ? extends T, E> processor)
-			throws IOException, DomException, E {
+	public <T, E extends Throwable> T parse(Resource resource,
+			Processor<? super Document, ? extends T, ? extends E> processor) throws IOException, DomException, E {
 		return resource.read((is) -> {
 			Document document = parse(is);
 			if (document == null) {

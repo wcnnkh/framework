@@ -4,10 +4,10 @@ import java.util.Iterator;
 
 import com.google.gson.Gson;
 
-import io.basc.framework.convert.ConvertibleIterator;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
+import io.basc.framework.util.ConvertibleIterator;
 
 public final class GsonArray extends AbstractJson<Integer> implements JsonArray {
 	private com.google.gson.JsonArray gsonJsonArray;

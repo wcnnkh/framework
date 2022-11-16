@@ -17,8 +17,8 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Optional;
+import io.basc.framework.util.Source;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.CallableProcessor;
 
 public interface Value extends Optional<Value>, IntSupplier, LongSupplier, DoubleSupplier, ConversionService {
 	static final Value EMPTY = new EmptyValue();
@@ -701,8 +701,8 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 		return orElse(other instanceof Value ? (Value) other : transform(other, null));
 	}
 
-	default <E extends Throwable> Value orGet(CallableProcessor<? extends Object, ? extends E> other) throws E {
-		return orElseGet(() -> transform(other.process(), null));
+	default <E extends Throwable> Value orGet(Source<? extends Object, ? extends E> other) throws E {
+		return orElseGet(() -> transform(other.get(), null));
 	}
 
 	default Value transform(Object value, @Nullable TypeDescriptor type) {

@@ -1,14 +1,13 @@
 package io.basc.framework.util.page;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Cursor;
+import io.basc.framework.util.ResultSet;
 
-public interface Pageable<K, T> extends Iterable<T> {
+public interface Pageable<K, T> extends ResultSet<T> {
 	/**
 	 * 获取当前页的使用的开始游标
 	 * 
@@ -25,10 +24,11 @@ public interface Pageable<K, T> extends Iterable<T> {
 	@Nullable
 	K getNextCursorId();
 
-	List<T> getList();
+	@Override
+	Cursor<T> iterator();
 
-	default Stream<T> stream() {
-		return getList().stream();
+	default List<T> getList() {
+		return iterator().list();
 	}
 
 	/**
@@ -40,33 +40,6 @@ public interface Pageable<K, T> extends Iterable<T> {
 		return getNextCursorId() != null;
 	}
 
-	/**
-	 * 获取当前分页的第一条数据
-	 * 
-	 * @return
-	 */
-	default T first() {
-		return stream().findFirst().orElse(null);
-	}
-
-	/**
-	 * 获取当前分页的最后一条数据
-	 * 
-	 * @return
-	 */
-	default T last() {
-		List<T> rows = getList();
-		if (CollectionUtils.isEmpty(rows)) {
-			return null;
-		}
-		return rows.get(rows.size() - 1);
-	}
-
-	@Override
-	default Iterator<T> iterator() {
-		return stream().iterator();
-	}
-
 	default Pageable<K, T> shared() {
 		return new SharedPageable<>(this);
 	}
@@ -75,7 +48,8 @@ public interface Pageable<K, T> extends Iterable<T> {
 		return map(Function.identity(), map);
 	}
 
-	default <TK, TT> Pageable<TK, TT> map(Function<? super K, ? extends  TK> keyMap, Function<? super T, ? extends TT> valueMap) {
+	default <TK, TT> Pageable<TK, TT> map(Function<? super K, ? extends TK> keyMap,
+			Function<? super T, ? extends TT> valueMap) {
 		return new MapPageable<>(this, keyMap, valueMap);
 	}
 }

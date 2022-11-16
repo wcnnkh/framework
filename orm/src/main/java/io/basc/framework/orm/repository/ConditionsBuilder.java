@@ -7,7 +7,7 @@ import java.util.List;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.Processor;
 
 public final class ConditionsBuilder {
 	private final RelationshipKeywords relationshipKeywords;
@@ -31,7 +31,8 @@ public final class ConditionsBuilder {
 	}
 
 	public <E extends Throwable> ConditionsBuilder(RelationshipKeywords relationshipKeywords,
-			ConditionKeywords conditionKeywords, Processor<ConditionBuilder, Condition, E> conditionBuilder) throws E {
+			ConditionKeywords conditionKeywords,
+			Processor<? super ConditionBuilder, ? extends Condition, ? extends E> conditionBuilder) throws E {
 		Assert.requiredArgument(relationshipKeywords != null, "relationshipKeywords");
 		Assert.requiredArgument(conditionKeywords != null, "conditionKeywords");
 		Assert.requiredArgument(conditionBuilder != null, "conditionBuilder");

@@ -11,7 +11,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.stream.Cursor;
+import io.basc.framework.util.Cursor;
 
 public final class MicrosoftUtils {
 	private static Logger logger = LoggerFactory.getLogger(MicrosoftUtils.class);

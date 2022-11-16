@@ -18,7 +18,7 @@ import io.basc.framework.convert.lang.StringToCharsetConverter;
 import io.basc.framework.convert.lang.StringToCurrencyConverter;
 import io.basc.framework.convert.lang.StringToLocaleConverter;
 import io.basc.framework.convert.lang.StringToTimeZoneConverter;
-import io.basc.framework.util.stream.StreamProcessorSupport;
+import io.basc.framework.util.Processor;
 
 public class DefaultConversionService extends ConfigurableConversionService {
 
@@ -42,13 +42,13 @@ public class DefaultConversionService extends ConfigurableConversionService {
 		addService(new JsonToObjectConversionService());
 
 		addService(new ConverterConversionService(String.class, Charset.class,
-				StreamProcessorSupport.toProcessor(new StringToCharsetConverter())));
+				Processor.of(new StringToCharsetConverter())));
 		addService(new ConverterConversionService(String.class, Locale.class,
-				StreamProcessorSupport.toProcessor(new StringToLocaleConverter())));
+				Processor.of(new StringToLocaleConverter())));
 		addService(new ConverterConversionService(String.class, TimeZone.class,
-				StreamProcessorSupport.toProcessor(new StringToTimeZoneConverter())));
+				Processor.of(new StringToTimeZoneConverter())));
 		addService(new ConverterConversionService(String.class, Currency.class,
-				StreamProcessorSupport.toProcessor(new StringToCurrencyConverter())));
+				Processor.of(new StringToCurrencyConverter())));
 		addService(new ConverterConversionService(Reader.class, String.class, new ReaderToStringConverter()));
 
 		addService(new ObjectToArrayConversionService(this));

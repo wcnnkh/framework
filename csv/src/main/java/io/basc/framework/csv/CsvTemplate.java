@@ -22,8 +22,7 @@ import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.orm.transfer.TableTransfer;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.stream.Cursor;
-import io.basc.framework.util.stream.StreamProcessorSupport;
+import io.basc.framework.util.Cursor;
 
 public class CsvTemplate extends TableTransfer {
 	private Charset charset = Constants.UTF_8;
@@ -54,7 +53,7 @@ public class CsvTemplate extends TableTransfer {
 		try {
 			exportAll(source, (contents) -> {
 				printer.printRecord(contents);
-				if(count.getAndIncrement()%256 == 0) {
+				if (count.getAndIncrement() % 256 == 0) {
 					printer.flush();
 				}
 			});
@@ -113,7 +112,7 @@ public class CsvTemplate extends TableTransfer {
 		CSVParser parser = new CSVParser(reader, format);
 		try {
 			Stream<String[]> stream = parser.stream().map((e) -> e.stream().toArray(String[]::new));
-			return StreamProcessorSupport.cursor(stream).onClose(() -> {
+			return Cursor.create(stream.iterator()).onClose(() -> stream.close()).onClose(() -> {
 				try {
 					parser.close();
 				} catch (IOException e) {

@@ -15,17 +15,9 @@ import io.basc.framework.microsoft.WritableSheet;
 public class PoiSheet implements Sheet, WritableSheet {
 	private static Logger logger = LoggerFactory.getLogger(PoiSheet.class);
 	private final org.apache.poi.ss.usermodel.Sheet sheet;
-	private final long cursorId;
-	private final long count;
 
 	public PoiSheet(org.apache.poi.ss.usermodel.Sheet sheet) {
-		this(sheet, 0, Long.MAX_VALUE);
-	}
-
-	public PoiSheet(org.apache.poi.ss.usermodel.Sheet sheet, long cursorId, long count) {
 		this.sheet = sheet;
-		this.cursorId = cursorId;
-		this.count = count;
 	}
 
 	public org.apache.poi.ss.usermodel.Sheet getSheet() {
@@ -87,13 +79,8 @@ public class PoiSheet implements Sheet, WritableSheet {
 	}
 
 	@Override
-	public long getTotal() {
+	public int getRows() {
 		return sheet.getPhysicalNumberOfRows();
-	}
-
-	@Override
-	public long getCount() {
-		return count;
 	}
 
 	public void write(int rowIndex, Collection<String> contents) throws ExcelException {
@@ -115,15 +102,5 @@ public class PoiSheet implements Sheet, WritableSheet {
 			cell = row.createCell(colIndex);
 		}
 		cell.setCellValue(content);
-	}
-
-	@Override
-	public Long getCursorId() {
-		return cursorId;
-	}
-
-	@Override
-	public Sheet jumpTo(Long cursorId, long count) {
-		return new PoiSheet(this.sheet, cursorId, count);
 	}
 }

@@ -236,7 +236,10 @@ public class MysqlDialect extends StandardSqlDialect {
 	@Override
 	public Sql toLimitSql(Sql sql, long start, long limit) throws SqlDialectException {
 		StringBuilder sb = new StringBuilder(sql.getSql());
-		sb.append(" limit ").append(start).append(",").append(limit);
+		sb.append(" limit ").append(start);
+		if (limit != 0) {
+			sb.append(",").append(limit);
+		}
 		return new SimpleSql(sb.toString(), sql.getParams());
 	}
 

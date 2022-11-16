@@ -59,7 +59,7 @@ public interface ConvertibleRedisKeysPipelineCommands<SK, K, SV, V>
 	default RedisResponse<Set<K>> keys(K pattern) {
 		SK k = getKeyCodec().encode(pattern);
 		return getSourceRedisKeysCommands().keys(k)
-				.map((tvs) -> getKeyCodec().toDecodeProcessor().processTo(tvs, new LinkedHashSet<K>(tvs.size())));
+				.map((tvs) -> getKeyCodec().toDecodeProcessor().processAll(tvs, new LinkedHashSet<K>(tvs.size())));
 	}
 
 	@Override

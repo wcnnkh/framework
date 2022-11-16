@@ -6,8 +6,6 @@ import java.util.function.LongPredicate;
 import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 
-import io.basc.framework.util.stream.DoubleConsumerProcessor;
-
 public interface OptionalLong extends Optional<Long>, LongSupplier {
 
 	static OptionalLong empty() {
@@ -25,7 +23,7 @@ public interface OptionalLong extends Optional<Long>, LongSupplier {
 	 * @param consumer block to be executed if a value is present
 	 * @throws NullPointerException if value is present and {@code consumer} is null
 	 */
-	default <E extends Throwable> void ifPresent(DoubleConsumerProcessor<? extends E> consumer) throws E {
+	default <E extends Throwable> void ifPresent(LongConsumerProcessor<? extends E> consumer) throws E {
 		if (isPresent()) {
 			consumer.process(getAsLong());
 		}

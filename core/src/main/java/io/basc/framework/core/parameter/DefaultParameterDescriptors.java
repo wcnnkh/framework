@@ -1,14 +1,13 @@
 package io.basc.framework.core.parameter;
 
-import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.core.annotation.AnnotatedElementWrapper;
-import io.basc.framework.core.annotation.MultiAnnotatedElement;
-import io.basc.framework.util.AbstractIterator;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 import java.util.Iterator;
+
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
+import io.basc.framework.core.annotation.AnnotatedElementWrapper;
+import io.basc.framework.core.annotation.MultiAnnotatedElement;
 
 public class DefaultParameterDescriptors<T> extends AnnotatedElementWrapper<AnnotatedElement>
 		implements ParameterDescriptors {
@@ -59,7 +58,7 @@ public class DefaultParameterDescriptors<T> extends AnnotatedElementWrapper<Anno
 		return parameterDescriptors == null ? 0 : parameterDescriptors.length;
 	}
 
-	private class InternalIterator extends AbstractIterator<ParameterDescriptor> {
+	private class InternalIterator implements Iterator<ParameterDescriptor> {
 		private int index = 0;
 
 		public boolean hasNext() {

@@ -2,22 +2,13 @@ package io.basc.framework.microsoft.jxl;
 
 import java.io.IOException;
 
-import io.basc.framework.microsoft.Sheet;
 import jxl.Cell;
 
 public class JxlSheet implements io.basc.framework.microsoft.Sheet {
 	private final jxl.Sheet sheet;
-	private final long cursorId;
-	private final long count;
 
 	public JxlSheet(jxl.Sheet sheet) {
-		this(sheet, 0, Long.MAX_VALUE);
-	}
-
-	public JxlSheet(jxl.Sheet sheet, long cursorId, long count) {
 		this.sheet = sheet;
-		this.cursorId = cursorId;
-		this.count = count;
 	}
 
 	public String getName() {
@@ -42,22 +33,7 @@ public class JxlSheet implements io.basc.framework.microsoft.Sheet {
 	}
 
 	@Override
-	public long getTotal() {
+	public int getRows() {
 		return sheet.getRows();
-	}
-
-	@Override
-	public long getCount() {
-		return count;
-	}
-
-	@Override
-	public Long getCursorId() {
-		return cursorId;
-	}
-
-	@Override
-	public Sheet jumpTo(Long cursorId, long count) {
-		return new JxlSheet(this.sheet, cursorId, count);
 	}
 }

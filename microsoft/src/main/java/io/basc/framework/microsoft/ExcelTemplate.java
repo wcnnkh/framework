@@ -15,13 +15,10 @@ import io.basc.framework.orm.transfer.TableTransfer;
 import io.basc.framework.orm.transfer.TransfColumns;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.stream.Cursor;
-import io.basc.framework.util.stream.StreamProcessorSupport;
+import io.basc.framework.util.Cursor;
 
 public class ExcelTemplate extends TableTransfer {
 	private ExcelOperations excelOperations;
-	private long readStart = 0;
-	private long readLimit = -1;
 
 	public ExcelTemplate() {
 		this.excelOperations = MicrosoftUtils.getExcelOperations();
@@ -30,8 +27,6 @@ public class ExcelTemplate extends TableTransfer {
 	protected ExcelTemplate(ExcelTemplate source) {
 		super(source);
 		this.excelOperations = source.excelOperations;
-		this.readStart = source.readStart;
-		this.readLimit = source.readLimit;
 	}
 
 	public ExcelOperations getExcelOperations() {
@@ -41,22 +36,6 @@ public class ExcelTemplate extends TableTransfer {
 	public void setExcelOperations(ExcelOperations excelOperations) {
 		Assert.requiredArgument(excelOperations != null, "excelOperations");
 		this.excelOperations = excelOperations;
-	}
-
-	public long getReadStart() {
-		return readStart;
-	}
-
-	public void setReadStart(long readStart) {
-		this.readStart = readStart;
-	}
-
-	public long getReadLimit() {
-		return readLimit;
-	}
-
-	public void setReadLimit(long readLimit) {
-		this.readLimit = readLimit;
 	}
 
 	@Override
@@ -115,6 +94,6 @@ public class ExcelTemplate extends TableTransfer {
 		} else {
 			throw new NotSupportedException(source.getClass().getName());
 		}
-		return StreamProcessorSupport.cursor(stream).limit(readStart, readLimit).map((e) -> e.getValues());
+		return Cursor.create(stream).map((e) -> e.getValues());
 	}
 }

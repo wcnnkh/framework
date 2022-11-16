@@ -35,8 +35,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 
-import io.basc.framework.util.stream.Processor;
-
 public abstract class CollectionUtils {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static final MultiValueMap EMPTY_MULTI_VALUE_MAP = new MultiValueMapWrapper(Collections.emptyMap());
@@ -469,7 +467,7 @@ public abstract class CollectionUtils {
 	/**
 	 * Iterator wrapping an Enumeration.
 	 */
-	private static class EnumerationIterator<E> extends io.basc.framework.util.AbstractIterator<E> {
+	private static class EnumerationIterator<E> implements Iterator<E> {
 
 		private Enumeration<? extends E> enumeration;
 
@@ -532,7 +530,7 @@ public abstract class CollectionUtils {
 		return sets;
 	}
 
-	private static final class PreviousIterator<E> extends AbstractIterator<E> {
+	private static final class PreviousIterator<E> implements Iterator<E> {
 		private final ListIterator<E> listIterator;
 
 		public PreviousIterator(ListIterator<E> listIterator) {
@@ -545,6 +543,11 @@ public abstract class CollectionUtils {
 
 		public E next() {
 			return listIterator.previous();
+		}
+		
+		@Override
+		public void remove() {
+			listIterator.remove();
 		}
 	}
 

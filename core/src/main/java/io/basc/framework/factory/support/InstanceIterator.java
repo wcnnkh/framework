@@ -4,9 +4,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import io.basc.framework.factory.InstanceFactory;
-import io.basc.framework.util.AbstractIterator;
 
-public class InstanceIterator<E> extends AbstractIterator<E> {
+public class InstanceIterator<E> implements Iterator<E> {
 	private final InstanceFactory instanceFactory;
 	private final Iterator<String> iterator;
 	private String name;

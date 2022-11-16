@@ -20,11 +20,11 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.DefaultStatus;
+import io.basc.framework.util.Creator;
 import io.basc.framework.util.Registration;
-import io.basc.framework.util.Status;
+import io.basc.framework.util.Return;
+import io.basc.framework.util.StandardReturn;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.CallableProcessor;
 
 public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 		implements SingletonRegistry, BeanPostProcessor, Destroy {
@@ -187,12 +187,13 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 	}
 
 	@Override
-	public <T, E extends Throwable> Status<T> getSingleton(String name, CallableProcessor<T, E> creater) throws E {
+	public <T, E extends Throwable> Return<T> getSingleton(String name, Creator<? extends T, ? extends E> creater)
+			throws E {
 		return getSingleton(name, creater, true);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T, E extends Throwable> Status<T> getSingleton(String name, CallableProcessor<T, E> creater,
+	public <T, E extends Throwable> Return<T> getSingleton(String name, Creator<? extends T, ? extends E> creater,
 			boolean postProcessBean) throws E {
 		Object object = getSingleton(name);
 		boolean created = false;
@@ -200,7 +201,7 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 			synchronized (singletionMap) {
 				object = getSingleton(name);
 				if (object == null) {
-					object = creater.process();
+					object = creater.create();
 					registerSingleton(name, object);
 					created = true;
 				}
@@ -210,7 +211,7 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 		if (created && postProcessBean) {
 			processPostBean(object, getDefinition(name));
 		}
-		return new DefaultStatus<T>(created, (T) object);
+		return new StandardReturn<T>(created, 0, null, (T) object);
 	}
 
 	@Override

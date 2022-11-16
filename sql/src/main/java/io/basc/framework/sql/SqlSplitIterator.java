@@ -1,10 +1,10 @@
 package io.basc.framework.sql;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.AbstractIterator;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StaticSupplier;
 import io.basc.framework.util.StringUtils;
@@ -15,7 +15,7 @@ import io.basc.framework.util.StringUtils;
  * @author shuchaowen
  *
  */
-public class SqlSplitIterator extends AbstractIterator<SqlSplitSegment> {
+public class SqlSplitIterator implements Iterator<SqlSplitSegment> {
 	private final Sql sql;
 	private final Collection<? extends CharSequence> filters;
 	private final int endIndex;

@@ -1,12 +1,11 @@
 package io.basc.framework.orm.repository;
 
+import java.util.Arrays;
+import java.util.function.Predicate;
+
 import io.basc.framework.env.Sys;
 import io.basc.framework.util.Keywords;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.stream.StreamProcessorSupport;
-
-import java.util.Arrays;
-import java.util.function.Predicate;
 
 /**
  * 条件类型
@@ -135,7 +134,7 @@ public class ConditionKeywords implements Predicate<String>, Cloneable {
 	}
 
 	public Pair<String, Integer> indexOf(String express) {
-		return StreamProcessorSupport
+		return Pair
 				.process(
 						Arrays.asList(equalKeywords, notEqualKeywords, lessThanKeywords, equalOrLessThanKeywords,
 								greaterThanKeywords, equalOrGreaterThanKeywords, inKeywords, searchKeywords,

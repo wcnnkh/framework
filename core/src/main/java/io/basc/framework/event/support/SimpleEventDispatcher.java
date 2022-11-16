@@ -10,8 +10,8 @@ import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.ConsumeProcessor;
 import io.basc.framework.util.Registration;
-import io.basc.framework.util.stream.StreamProcessorSupport;
 
 /**
  * 这是一个同步的事件分发服务
@@ -46,7 +46,7 @@ public class SimpleEventDispatcher<T extends Event> implements EventDispatcher<T
 				return;
 			}
 
-			StreamProcessorSupport.consumeAll(eventListeners, (e) -> e.getEventListener().onEvent(event));
+			ConsumeProcessor.consumeAll(eventListeners, (e) -> e.getEventListener().onEvent(event));
 		}
 	}
 

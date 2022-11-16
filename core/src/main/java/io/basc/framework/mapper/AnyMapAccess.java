@@ -6,9 +6,9 @@ import java.util.Map;
 
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.ConvertibleEnumeration;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.CollectionFactory;
+import io.basc.framework.util.ConvertibleEnumeration;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class AnyMapAccess<E extends Throwable> implements ObjectAccess<E> {

@@ -4,7 +4,7 @@ public class StreamPaginations<T> extends StreamPages<Long, T> implements Pagina
 
 	public StreamPaginations(Page<Long, T> page, CursorProcessor<Long, T> processor) {
 		super(page, (start, limit) -> {
-			return new StreamPageable<Long, T>(start, () -> processor.process(start, limit),
+			return new StreamPageable<>(start, () -> processor.process(start, limit),
 					PageSupport.hasMore(page.getTotal(), start, limit) ? PageSupport.getNextStart(start, limit) : null);
 		});
 	}
@@ -14,13 +14,13 @@ public class StreamPaginations<T> extends StreamPages<Long, T> implements Pagina
 	}
 
 	public StreamPaginations(long total, Long cursorId, long count, CursorProcessor<Long, T> processor) {
-		this(new StreamPage<Long, T>(cursorId, () -> processor.process(cursorId, count),
+		this(new StreamPage<>(cursorId, () -> processor.process(cursorId, count),
 				PageSupport.hasMore(total, cursorId, count) ? PageSupport.getNextStart(cursorId, count) : null, count,
 				total), processor);
 	}
 
 	@Override
 	public Paginations<T> jumpTo(Long cursorId, long count) {
-		return new StreamPaginations<T>(getTotal(), cursorId, count, processor);
+		return new StreamPaginations<>(getTotal(), cursorId, count, processor);
 	}
 }

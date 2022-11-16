@@ -21,10 +21,10 @@ import io.basc.framework.orm.Property;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.comparator.Sort;
-import io.basc.framework.util.stream.Processor;
 
 public interface RepositoryResolver extends ObjectRelationalFactory {
 	default ConditionKeywords getConditionKeywords() {
@@ -44,7 +44,7 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 	}
 
 	default <E extends Throwable> ConditionsBuilder conditionsBuilder(
-			Processor<ConditionBuilder, Condition, E> conditionBuilder) throws E {
+			Processor<? super ConditionBuilder, ? extends Condition, ? extends E> conditionBuilder) throws E {
 		return new ConditionsBuilder(getRelationshipKeywords(), getConditionKeywords(), conditionBuilder);
 	}
 

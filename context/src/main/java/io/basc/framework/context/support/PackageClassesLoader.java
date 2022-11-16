@@ -12,7 +12,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.StaticSupplier;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.StreamProcessorSupport;
+import io.basc.framework.util.XUtils;
 
 public class PackageClassesLoader extends AbstractClassesLoader {
 	private final ResourcePatternResolver resourcePatternResolver;
@@ -48,7 +48,7 @@ public class PackageClassesLoader extends AbstractClassesLoader {
 	protected Stream<Class<?>> load(ClassLoader classLoader) {
 		String packageName = this.packageName.get();
 		if (StringUtils.isEmpty(packageName)) {
-			return StreamProcessorSupport.emptyStream();
+			return XUtils.emptyStream();
 		}
 
 		Stream<Class<?>> stream;
@@ -57,7 +57,7 @@ public class PackageClassesLoader extends AbstractClassesLoader {
 					typeFilter);
 		} catch (IOException e) {
 			logger.error(e, "Scan package {}", packageName);
-			return StreamProcessorSupport.emptyStream();
+			return XUtils.emptyStream();
 		}
 		return stream;
 	}

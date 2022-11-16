@@ -19,10 +19,10 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.lucene.support.DefaultLuceneMapper;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.concurrent.AsyncExecutor;
 import io.basc.framework.util.concurrent.TaskQueue;
-import io.basc.framework.util.stream.Processor;
 
 public class DefaultLuceneTemplate implements LuceneTemplate {
 	public static final String DIRECTORY_PREFIX = "lucene-documents";
@@ -105,7 +105,8 @@ public class DefaultLuceneTemplate implements LuceneTemplate {
 	}
 
 	@Override
-	public <T> Future<T> write(Processor<IndexWriter, T, ? extends Exception> processor) throws LuceneWriteException {
+	public <T> Future<T> write(Processor<? super IndexWriter, ? extends T, ? extends Exception> processor)
+			throws LuceneWriteException {
 		return writeExecutor.submit(() -> {
 			return getIndexWriterPool().process((indexWriter) -> {
 				try {
@@ -123,12 +124,13 @@ public class DefaultLuceneTemplate implements LuceneTemplate {
 	}
 
 	@Override
-	public <T, E extends Throwable> T read(Processor<IndexReader, T, E> processor) throws LuceneReadException, E {
+	public <T, E extends Throwable> T read(Processor<? super IndexReader, ? extends T, ? extends E> processor)
+			throws LuceneReadException, E {
 		return getIndexReaderPool().process(processor);
 	}
 
 	@Override
-	public <T, E extends Exception> T search(Processor<IndexSearcher, T, ? extends E> processor)
+	public <T, E extends Exception> T search(Processor<? super IndexSearcher, ? extends T, ? extends E> processor)
 			throws LuceneSearchException {
 		if (searchExecutor == null) {
 			return LuceneTemplate.super.search(processor);

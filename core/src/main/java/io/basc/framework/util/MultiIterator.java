@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class MultiIterator<E> extends AbstractIterator<E> {
+public class MultiIterator<E> implements Iterator<E> {
 	private final Iterator<Iterator<E>> iterators;
 	private Iterator<E> valueIterator;
 

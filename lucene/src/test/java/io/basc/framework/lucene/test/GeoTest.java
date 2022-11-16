@@ -2,7 +2,6 @@ package io.basc.framework.lucene.test;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -60,7 +59,7 @@ public class GeoTest {
 		Query luceneQuery = strategy.makeQuery(args);
 		SearchParameters parameters = new SearchParameters(luceneQuery, 10);
 		SearchResults<Document> results = luceneTemplate.search(parameters, Document.class);
-		List<Document> list = results.streamAll().collect(Collectors.toList());
+		List<Document> list = results.all().getList();
 		for (Document d : list) {
 			System.out.println(d.getFields());
 		}

@@ -61,7 +61,7 @@ public interface ConvertibleRedisHashesPipelineCommands<SK, K, SV, V>
 	default RedisResponse<Set<K>> hkeys(K key) {
 		SK k = getKeyCodec().encode(key);
 		return getSourceRedisHashesCommands().hkeys(k)
-				.map((tks) -> getKeyCodec().toDecodeProcessor().processTo(tks, new LinkedHashSet<K>(tks.size())));
+				.map((tks) -> getKeyCodec().toDecodeProcessor().processAll(tks, new LinkedHashSet<K>(tks.size())));
 	}
 
 	@Override

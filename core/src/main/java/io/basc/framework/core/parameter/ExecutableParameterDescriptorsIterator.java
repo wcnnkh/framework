@@ -1,10 +1,5 @@
 package io.basc.framework.core.parameter;
 
-import io.basc.framework.core.annotation.Order;
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.util.AbstractIterator;
-import io.basc.framework.util.comparator.CompareUtils;
-
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -13,7 +8,11 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
-public class ExecutableParameterDescriptorsIterator extends AbstractIterator<ParameterDescriptors> {
+import io.basc.framework.core.annotation.Order;
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.util.comparator.CompareUtils;
+
+public class ExecutableParameterDescriptorsIterator implements Iterator<ParameterDescriptors> {
 	private static final Comparator<Constructor<?>> CONSTRUCTOR_COMPARATOR = new Comparator<Constructor<?>>() {
 
 		public int compare(Constructor<?> o1, Constructor<?> o2) {

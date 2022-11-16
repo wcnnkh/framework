@@ -24,7 +24,6 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 
 import io.basc.framework.lang.ParameterException;
-import io.basc.framework.util.stream.Processor;
 
 /**
  * Miscellaneous utility methods for number conversion and parsing. Mainly for

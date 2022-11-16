@@ -6,8 +6,6 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.util.stream.DoubleConsumerProcessor;
-
 public interface OptionalDouble extends Optional<Double>, DoubleSupplier {
 
 	static OptionalDouble empty() {

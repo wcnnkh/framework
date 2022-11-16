@@ -687,7 +687,7 @@ public final class ResourceUtils {
 		InputStream is = null;
 		try {
 			is = resource.getInputStream();
-			return IOUtils.readLines(is, charsetName);
+			return IOUtils.readLines(is, charsetName).list();
 		} catch (IOException e) {
 			throw new NestedRuntimeException(resource.getDescription(), e);
 		} finally {

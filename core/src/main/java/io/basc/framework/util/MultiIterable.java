@@ -20,7 +20,7 @@ public final class MultiIterable<E> implements Iterable<E> {
 		return new InternalIterator();
 	}
 
-	private final class InternalIterator extends AbstractIterator<E> {
+	private final class InternalIterator implements Iterator<E> {
 		private Iterator<? extends Iterable<? extends E>> iterator = iterables == null ? null : iterables.iterator();
 		private Iterator<? extends E> valueIterator;
 

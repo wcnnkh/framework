@@ -1,13 +1,13 @@
 package io.basc.framework.test;
 
-import io.basc.framework.util.XUtils;
-import io.basc.framework.util.page.InMemoryPaginations;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import io.basc.framework.util.XUtils;
+import io.basc.framework.util.page.InMemoryPaginations;
 
 public class InMemoryPaginationsTest {
 	@Test
@@ -22,7 +22,7 @@ public class InMemoryPaginationsTest {
 			InMemoryPaginations<String> paginations = new InMemoryPaginations<String>(list, 0, i);
 			Assert.assertTrue(paginations.jumpToPage(paginations.getPages() + 1).getList().size() == 0);
 			Assert.assertTrue(!paginations.jumpToPage(paginations.getPages()).hasNext());
-			Assert.assertArrayEquals(list.toArray(new String[0]), paginations.streamAll().toArray(String[]::new));
+			Assert.assertArrayEquals(list.toArray(new String[0]), paginations.all().stream().toArray(String[]::new));
 		}
 	}
 }

@@ -102,7 +102,7 @@ public class StandardAnnotationMetadata extends StandardClassMetadata implements
 	public boolean hasAnnotatedMethods(String annotationName) {
 		if (AnnotationUtils.isCandidateClass(getIntrospectedClass(), annotationName)) {
 			try {
-				return ReflectionUtils.getDeclaredMethods(getIntrospectedClass()).withInterfaces().streamAll()
+				return ReflectionUtils.getDeclaredMethods(getIntrospectedClass()).withInterfaces().all().stream()
 						.filter((method) -> isAnnotatedMethod(method, annotationName)).findAny().isPresent();
 			} catch (Throwable ex) {
 				throw new IllegalStateException("Failed to introspect annotated methods on " + getIntrospectedClass(),
@@ -116,7 +116,7 @@ public class StandardAnnotationMetadata extends StandardClassMetadata implements
 	public Set<MethodMetadata> getAnnotatedMethods(String annotationName) {
 		if (AnnotationUtils.isCandidateClass(getIntrospectedClass(), annotationName)) {
 			try {
-				return ReflectionUtils.getDeclaredMethods(getIntrospectedClass()).withInterfaces().streamAll()
+				return ReflectionUtils.getDeclaredMethods(getIntrospectedClass()).withInterfaces().all().stream()
 						.filter((method) -> isAnnotatedMethod(method, annotationName))
 						.map((method) -> new StandardMethodMetadata(method, this.nestedAnnotationsAsMap))
 						.collect(Collectors.toCollection(() -> new LinkedHashSet<MethodMetadata>(4)));

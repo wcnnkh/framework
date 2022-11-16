@@ -16,7 +16,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.stream.RunnableProcessor;
+import io.basc.framework.util.RunnableProcessor;
 
 public class ExcelMapper extends ExcelTemplate implements AutoCloseable {
 	private final ExcelExport export;

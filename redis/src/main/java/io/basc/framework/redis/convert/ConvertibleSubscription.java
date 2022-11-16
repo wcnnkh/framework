@@ -60,13 +60,13 @@ public class ConvertibleSubscription<TK, TV, K, V> implements Subscription<K, V>
 	@Override
 	public Collection<K> getChannels() {
 		Collection<TK> ks = subscription.getChannels();
-		return keyCodec.toDecodeProcessor().processTo(ks, new LinkedHashSet<K>(ks.size()));
+		return keyCodec.toDecodeProcessor().processAll(ks, new LinkedHashSet<K>(ks.size()));
 	}
 
 	@Override
 	public Collection<K> getPatterns() {
 		Collection<TK> ks = subscription.getPatterns();
-		return keyCodec.toDecodeProcessor().processTo(ks, new LinkedHashSet<K>(ks.size()));
+		return keyCodec.toDecodeProcessor().processAll(ks, new LinkedHashSet<K>(ks.size()));
 	}
 
 	@Override

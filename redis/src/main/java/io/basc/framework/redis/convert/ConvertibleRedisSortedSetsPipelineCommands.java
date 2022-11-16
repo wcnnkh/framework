@@ -14,7 +14,7 @@ import io.basc.framework.redis.ScoreOption;
 import io.basc.framework.redis.SetOption;
 import io.basc.framework.redis.Tuple;
 import io.basc.framework.util.CollectionFactory;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.Processor;
 
 @SuppressWarnings("unchecked")
 public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>
@@ -75,7 +75,7 @@ public interface ConvertibleRedisSortedSetsPipelineCommands<SK, K, SV, V>
 	default RedisResponse<Collection<V>> zinter(InterArgs args, K... keys) {
 		SK[] ks = getKeyCodec().encodeAll(keys);
 		return getSourceRedisSortedSetsCommands().zinter(args, ks)
-				.map((tvs) -> getValueCodec().toDecodeProcessor().processTo(tvs, new LinkedHashSet<V>(tvs.size())));
+				.map((tvs) -> getValueCodec().toDecodeProcessor().processAll(tvs, new LinkedHashSet<V>(tvs.size())));
 	}
 
 	@Override

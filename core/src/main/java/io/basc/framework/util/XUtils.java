@@ -3,8 +3,10 @@ package io.basc.framework.util;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.UUID;
@@ -174,10 +176,6 @@ public final class XUtils {
 		return System.getProperty("os.name");
 	}
 
-	public static <T> Status<T> status(boolean active, T value) {
-		return new DefaultStatus<T>(active, value);
-	}
-
 	/**
 	 * 将一次迭代变为操作流
 	 * 
@@ -224,5 +222,30 @@ public final class XUtils {
 			}
 		}
 		return null;
+	}
+
+	public static <E extends Throwable> RunnableProcessor<E> composeWithExceptions(RunnableProcessor<? extends E> a,
+			RunnableProcessor<? extends E> b) {
+		return () -> {
+			try {
+				a.process();
+			} catch (Throwable e1) {
+				try {
+					b.process();
+				} catch (Throwable e2) {
+					try {
+						e1.addSuppressed(e2);
+					} catch (Throwable ignore) {
+					}
+				}
+				throw e1;
+			}
+			b.process();
+		};
+	}
+
+	public static <T> Stream<T> emptyStream() {
+		List<T> list = Collections.emptyList();
+		return list.stream();
 	}
 }

@@ -1,35 +1,46 @@
 package io.basc.framework.sql;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import io.basc.framework.util.stream.ConsumerProcessor;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.ConsumeProcessor;
+import io.basc.framework.util.Processor;
+import io.basc.framework.util.ResultSet;
 
 @FunctionalInterface
 public interface ConnectionFactory {
 	Connection getConnection() throws SQLException;
 
-	default <T, E extends Throwable> T process(Processor<Connection, ? extends T, ? extends E> process)
-			throws SQLException, E {
-		Connection connection = null;
+	default ConnectionOperations operations() {
+		return new ConnectionOperations(() -> getConnection());
+	}
+
+	default <T> T process(Sql sql,
+			Processor<? super PreparedStatement, ? extends T, ? extends SQLException> processor) {
 		try {
-			connection = getConnection();
-			return process.process(connection);
-		} finally {
-			if (connection != null && !connection.isClosed()) {
-				connection.close();
-			}
+			return operations().prepare(sql).process(processor);
+		} catch (SQLException e) {
+			throw SqlUtils.throwableSqlException(e, () -> SqlUtils.toString(sql));
 		}
 	}
 
-	/**
-	 * @see #process(SqlProcessor)
-	 * @param processor
-	 * @throws SQLException
-	 */
-	default <E extends Throwable> void process(ConsumerProcessor<Connection, ? extends E> processor)
-			throws SQLException, E {
-		process(processor.toProcessor());
+	default void consume(Sql sql, ConsumeProcessor<? super PreparedStatement, ? extends SQLException> processor) {
+		try {
+			operations().prepare(sql).consume(processor);
+		} catch (SQLException e) {
+			throw SqlUtils.throwableSqlException(e, () -> SqlUtils.toString(sql));
+		}
+	}
+
+	default <T> ResultSet<T> query(Sql sql,
+			Processor<? super java.sql.ResultSet, ? extends T, ? extends Throwable> rowMapper) {
+		return ResultSet.of(() -> {
+			try {
+				return operations().prepare(sql).query().map(rowMapper);
+			} catch (SQLException e) {
+				throw SqlUtils.throwableSqlException(e, () -> SqlUtils.toString(sql));
+			}
+		});
 	}
 }

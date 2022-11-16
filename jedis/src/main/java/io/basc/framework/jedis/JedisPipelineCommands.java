@@ -75,7 +75,7 @@ public class JedisPipelineCommands<P extends PipelineBinaryCommands> implements 
 	public RedisResponse<List<String>> geohash(byte[] key, byte[]... members) {
 		Response<List<byte[]>> response = commands.geohash(key, members);
 		return new JedisRedisResponse<>(
-				() -> JedisCodec.INSTANCE.toDecodeProcessor().processTo(response.get(), new ArrayList<String>()));
+				() -> JedisCodec.INSTANCE.toDecodeProcessor().processAll(response.get(), new ArrayList<String>()));
 	}
 
 	@Override

@@ -20,7 +20,6 @@ import io.basc.framework.mvc.action.ActionInterceptorChain;
 import io.basc.framework.mvc.action.ActionManager;
 import io.basc.framework.mvc.action.ActionParameters;
 import io.basc.framework.mvc.annotation.Jsonp;
-import io.basc.framework.mvc.exception.ExceptionHandler;
 import io.basc.framework.util.MultiIterable;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.ServerHttpAsyncControl;

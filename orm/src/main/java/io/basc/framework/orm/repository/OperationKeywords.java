@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.function.Predicate;
 
 import io.basc.framework.util.Keywords;
-import io.basc.framework.util.stream.StreamProcessorSupport;
+import io.basc.framework.util.Pair;
 
 public class OperationKeywords implements Predicate<String> {
 	private static final Keywords QUERY_KEYWORDS = new Keywords(Keywords.ORIGINAL, "select", "query", "find");
@@ -44,7 +44,7 @@ public class OperationKeywords implements Predicate<String> {
 	}
 
 	public String startsWith(String express) {
-		return StreamProcessorSupport
+		return Pair
 				.process(Arrays.asList(queryKeywords, updateKeywords, deleteKeywords, saveKeywords),
 						(e) -> startsWith(e, express), (e) -> e.getValue() != null)
 				.map((e) -> e.getValue()).orElse(null);

@@ -26,12 +26,13 @@ public class FileSystemResourceLoader extends DefaultResourceLoader {
 	 */
 	@Override
 	protected Resource getResourceByPath(String path) {
-		if (path != null && path.startsWith("/")) {
-			path = path.substring(1);
-		}
 		FileSystemResource fileSystemResource = new FileSystemContextResource(path);
 		if (ignoreClassPathResource(fileSystemResource)) {
 			return fileSystemResource;
+		}
+		
+		if (path != null && path.startsWith("/")) {
+			path = path.substring(1);
 		}
 		Resource resource = super.getResourceByPath(path);
 		Resources resources = new Resources();

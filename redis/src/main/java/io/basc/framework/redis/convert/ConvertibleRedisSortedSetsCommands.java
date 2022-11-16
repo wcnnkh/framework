@@ -15,7 +15,7 @@ import io.basc.framework.redis.SetOption;
 import io.basc.framework.redis.Tuple;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.Processor;
 
 @SuppressWarnings("unchecked")
 public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
@@ -80,7 +80,7 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 		if (CollectionUtils.isEmpty(tvs)) {
 			return Collections.emptyList();
 		}
-		return getValueCodec().toDecodeProcessor().processTo(tvs, new LinkedHashSet<V>(tvs.size()));
+		return getValueCodec().toDecodeProcessor().processAll(tvs, new LinkedHashSet<V>(tvs.size()));
 	}
 
 	@Override

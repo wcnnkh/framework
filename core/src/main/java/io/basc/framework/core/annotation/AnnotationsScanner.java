@@ -300,7 +300,8 @@ abstract class AnnotationsScanner {
 		if (methods == null) {
 			boolean isInterface = baseType.isInterface();
 			methods = isInterface ? baseType.getMethods()
-					: ReflectionUtils.getDeclaredMethods(baseType).withInterfaces().streamAll().toArray(Method[]::new);
+					: ReflectionUtils.getDeclaredMethods(baseType).withInterfaces().all().stream()
+							.toArray(Method[]::new);
 			int cleared = 0;
 			for (int i = 0; i < methods.length; i++) {
 				if ((!isInterface && Modifier.isPrivate(methods[i].getModifiers()))

@@ -1,9 +1,9 @@
 package io.basc.framework.util;
 
-import io.basc.framework.env.BascObject;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
+
+import io.basc.framework.env.BascObject;
 
 public class NumberUnit extends BascObject implements Serializable,
 		Comparable<NumberUnit> {

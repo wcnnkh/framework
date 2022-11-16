@@ -3,13 +3,13 @@ package io.basc.framework.locks;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
-import io.basc.framework.util.stream.CallableProcessor;
+import io.basc.framework.util.Source;
 
 @FunctionalInterface
 public interface LockFactory {
 	Lock getLock(String name) throws UnableToAcquireLockException;
 
-	default <T, E extends Throwable> T process(String name, CallableProcessor<T, E> processor)
+	default <T, E extends Throwable> T process(String name, Source<? extends T, ? extends E> source)
 			throws E, UnableToAcquireLockException {
 		Lock lock = getLock(name);
 		if (lock == null) {
@@ -18,7 +18,7 @@ public interface LockFactory {
 
 		if (lock.tryLock()) {
 			try {
-				return processor.process();
+				return source.get();
 			} finally {
 				lock.unlock();
 			}
@@ -27,7 +27,7 @@ public interface LockFactory {
 	}
 
 	default <T, E extends Throwable> T process(String name, long tryLockTime, TimeUnit tryLockTimeUnit,
-			CallableProcessor<T, E> processor) throws E, UnableToAcquireLockException, InterruptedException {
+			Source<? extends T, ? extends E> source) throws E, UnableToAcquireLockException, InterruptedException {
 		Lock lock = getLock(name);
 		if (lock == null) {
 			throw new UnableToAcquireLockException("Lock[" + name + "] is empty");
@@ -35,7 +35,7 @@ public interface LockFactory {
 
 		if (lock.tryLock(tryLockTime, tryLockTimeUnit)) {
 			try {
-				return processor.process();
+				return source.get();
 			} finally {
 				lock.unlock();
 			}

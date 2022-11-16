@@ -10,9 +10,8 @@ import io.basc.framework.data.geo.Lbs;
 import io.basc.framework.data.geo.Marker;
 import io.basc.framework.data.geo.Point;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Cursor;
 import io.basc.framework.util.comparator.Sort;
-import io.basc.framework.util.stream.Cursor;
-import io.basc.framework.util.stream.StreamProcessorSupport;
 
 @SuppressWarnings("unchecked")
 public class RedisLbs<K, V> implements Lbs<V> {
@@ -61,10 +60,10 @@ public class RedisLbs<K, V> implements Lbs<V> {
 		Collection<GeoWithin<V>> collection = factory.georadius(this.key, new Circle(point, radius),
 				new GeoRadiusWith().withCoord(), new GeoRadiusArgs<K>().sort(sort).count(count));
 		if (CollectionUtils.isEmpty(collection)) {
-			return StreamProcessorSupport.emptyCursor();
+			return Cursor.empty();
 		}
 
-		return StreamProcessorSupport.cursor(collection.stream().map(markerConvert));
+		return Cursor.create(collection.stream().map(markerConvert));
 	}
 
 }

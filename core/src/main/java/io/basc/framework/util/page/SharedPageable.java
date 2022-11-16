@@ -2,16 +2,17 @@ package io.basc.framework.util.page;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.util.Cursor;
 
 public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 	private static final long serialVersionUID = 1L;
-
-	private List<T> list;
 	private K cursorId;
 	private K nextCursorId;
+	private List<T> list;
 
 	/**
 	 * 默认的构造方法，cursorId为空
@@ -25,6 +26,10 @@ public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 	 */
 	public SharedPageable(K cursorId) {
 		this(cursorId, Collections.emptyList(), null);
+	}
+
+	protected Iterator<? extends T> getIterator() {
+		return Collections.emptyIterator();
 	}
 
 	/**
@@ -44,14 +49,6 @@ public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 	}
 
 	@Override
-	public List<T> getList() {
-		if (list == null) {
-			return Collections.emptyList();
-		}
-		return Collections.unmodifiableList(list);
-	}
-
-	@Override
 	public K getCursorId() {
 		return cursorId;
 	}
@@ -59,10 +56,6 @@ public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 	@Override
 	public K getNextCursorId() {
 		return nextCursorId;
-	}
-
-	public void setList(List<T> list) {
-		this.list = list;
 	}
 
 	public void setCursorId(K cursorId) {
@@ -73,8 +66,21 @@ public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 		this.nextCursorId = nextCursorId;
 	}
 
+	public List<T> getList() {
+		return list == null ? Collections.emptyList() : Collections.unmodifiableList(list);
+	}
+
+	public void setList(List<T> list) {
+		this.list = list;
+	}
+
 	@Override
 	public String toString() {
 		return ReflectionUtils.toString(this);
+	}
+
+	@Override
+	public Cursor<T> iterator() {
+		return Cursor.create(list.iterator());
 	}
 }

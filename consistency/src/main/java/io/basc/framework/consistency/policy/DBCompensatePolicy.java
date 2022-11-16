@@ -41,7 +41,7 @@ public class DBCompensatePolicy extends StorageCompensatePolicy {
 	public Enumeration<String> getUnfinishedGroups() {
 		Sql sql = new SimpleSql("select `group` from " + TABLE_NAME + " where cts<? group by `group` order by cts desc",
 				(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(getCompenstBeforeMinute())));
-		List<String> groups = db.query(String.class, sql).shared();
+		List<String> groups = db.query(String.class, sql).list();
 		if (CollectionUtils.isEmpty(groups)) {
 			return Collections.emptyEnumeration();
 		}

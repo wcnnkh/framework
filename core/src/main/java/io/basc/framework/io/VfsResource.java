@@ -1,13 +1,13 @@
 package io.basc.framework.io;
 
-import io.basc.framework.lang.NestedIOException;
-import io.basc.framework.util.Assert;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+
+import io.basc.framework.lang.NestedIOException;
+import io.basc.framework.util.Assert;
 
 /**
  * JBoss VFS based {@link Resource} implementation.

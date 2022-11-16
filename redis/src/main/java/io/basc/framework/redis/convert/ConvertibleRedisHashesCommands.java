@@ -61,7 +61,7 @@ public interface ConvertibleRedisHashesCommands<SK, K, SV, V>
 	default Set<K> hkeys(K key) {
 		SK k = getKeyCodec().encode(key);
 		Set<SK> tks = getSourceRedisHashesCommands().hkeys(k);
-		return getKeyCodec().toDecodeProcessor().processTo(tks, new LinkedHashSet<K>(tks.size()));
+		return getKeyCodec().toDecodeProcessor().processAll(tks, new LinkedHashSet<K>(tks.size()));
 	}
 
 	@Override

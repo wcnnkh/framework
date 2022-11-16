@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import io.basc.framework.retry.RetryOperations;
 import io.basc.framework.retry.support.RetryTemplate;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.Processor;
 
 public abstract class AbstractTokenFactory implements TokenFactory {
 	private RetryOperations retryOperations = RetryTemplate.DEFAULT;
@@ -55,7 +55,8 @@ public abstract class AbstractTokenFactory implements TokenFactory {
 	}
 
 	@Override
-	public final <V, E extends Throwable> V process(Processor<Token, V, E> processor) throws E, InvalidTokenException {
+	public final <V, E extends Throwable> V process(Processor<? super Token, ? extends V, ? extends E> processor)
+			throws E, InvalidTokenException {
 		return process(getRetryOperations(), processor);
 	}
 

@@ -6,8 +6,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.stream.CallableProcessor;
-import io.basc.framework.util.stream.ConsumerProcessor;
 
 public abstract class AbstractOptional<T> implements Optional<T> {
 
@@ -35,9 +33,9 @@ public abstract class AbstractOptional<T> implements Optional<T> {
 	}
 
 	@Override
-	public <E extends Throwable> T orElseGet(CallableProcessor<? extends T, ? extends E> other) throws E {
+	public <E extends Throwable> T orElseGet(Source<? extends T, ? extends E> other) throws E {
 		T value = getValue();
-		return value == null ? other.process() : value;
+		return value == null ? other.get() : value;
 	}
 
 	@Override
@@ -51,7 +49,7 @@ public abstract class AbstractOptional<T> implements Optional<T> {
 	}
 
 	@Override
-	public <E extends Throwable> void ifPresent(ConsumerProcessor<? super T, ? extends E> consumer) throws E {
+	public <E extends Throwable> void ifPresent(ConsumeProcessor<? super T, ? extends E> consumer) throws E {
 		T value = getValue();
 		if (value != null)
 			consumer.process(value);

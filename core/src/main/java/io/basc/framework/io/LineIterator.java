@@ -1,14 +1,11 @@
 package io.basc.framework.io;
 
-import io.basc.framework.util.AbstractIterator;
-
 import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.IOException;
-import java.io.Reader;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class LineIterator extends AbstractIterator<String> implements Closeable {
+public class LineIterator implements Iterator<String> {
 	/** The reader that is being read. */
 	private final BufferedReader bufferedReader;
 	/** The current line. */
@@ -22,15 +19,11 @@ public class LineIterator extends AbstractIterator<String> implements Closeable 
 	 * @param reader the <code>Reader</code> to read from, not null
 	 * @throws IllegalArgumentException if the reader is null
 	 */
-	public LineIterator(final Reader reader) throws IllegalArgumentException {
-		if (reader == null) {
+	public LineIterator(final BufferedReader bufferedReader) throws IllegalArgumentException {
+		if (bufferedReader == null) {
 			throw new IllegalArgumentException("Reader must not be null");
 		}
-		if (reader instanceof BufferedReader) {
-			bufferedReader = (BufferedReader) reader;
-		} else {
-			bufferedReader = new BufferedReader(reader);
-		}
+		this.bufferedReader = bufferedReader;
 	}
 
 	// -----------------------------------------------------------------------
@@ -61,7 +54,6 @@ public class LineIterator extends AbstractIterator<String> implements Closeable 
 					}
 				}
 			} catch (final IOException ioe) {
-				IOUtils.closeQuietly(this, e -> ioe.addSuppressed(e));
 				throw new IllegalStateException(ioe);
 			}
 		}
@@ -102,20 +94,5 @@ public class LineIterator extends AbstractIterator<String> implements Closeable 
 		final String currentLine = cachedLine;
 		cachedLine = null;
 		return currentLine;
-	}
-
-	/**
-	 * Closes the underlying {@code Reader}. This method is useful if you only want
-	 * to process the first few lines of a larger file. If you do not close the
-	 * iterator then the {@code Reader} remains open. This method can safely be
-	 * called multiple times.
-	 *
-	 * @throws IOException if closing the underlying {@code Reader} fails.
-	 */
-	@Override
-	public void close() throws IOException {
-		finished = true;
-		cachedLine = null;
-		IOUtils.close(bufferedReader);
 	}
 }

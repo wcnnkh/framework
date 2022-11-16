@@ -18,7 +18,6 @@ import io.basc.framework.factory.Init;
 import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.Assert;
 
 @SuppressWarnings({ "unchecked" })
 public class DefaultBeanFactory extends DefaultServiceLoaderFactory
@@ -268,8 +267,7 @@ public class DefaultBeanFactory extends DefaultServiceLoaderFactory
 	}
 
 	public void setParentBeanFactory(BeanFactory parentBeanFactory) {
-		Assert.isTrue(FactoryLoader.getParentBeanFactory(parentBeanFactory, this).isActive(),
-				"BeanFactory cannot be nested circularly");
+		FactoryLoader.getParentBeanFactory(parentBeanFactory, this).assertSuccess();
 		this.parentBeanFactory = parentBeanFactory;
 	}
 }

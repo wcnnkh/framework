@@ -16,7 +16,7 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.stream.ConsumerProcessor;
+import io.basc.framework.util.ConsumeProcessor;
 
 /**
  * 一个标准的session管理器
@@ -118,6 +118,7 @@ public class StandardSessionManager<T> {
 
 	/**
 	 * 移除指定session
+	 * 
 	 * @param group
 	 * @param sessionId
 	 * @return 如果移除成功返回移除的session，否则返回空
@@ -142,6 +143,7 @@ public class StandardSessionManager<T> {
 
 	/**
 	 * 获取指定session
+	 * 
 	 * @param group
 	 * @param sessionId
 	 * @return 如果存在返回session,否则返回空
@@ -244,11 +246,11 @@ public class StandardSessionManager<T> {
 		}
 		return sessions;
 	}
-	
-	public void remove(T group, ConsumerProcessor<Session, IOException> processor) {
+
+	public void remove(T group, ConsumeProcessor<Session, IOException> processor) {
 		remove(group).stream().filter((s) -> s.isOpen()).forEach((session) -> process(group, session, processor));
 	}
-	
+
 	public void remove(T group, Processor<T> processor) {
 		remove(group).stream().filter((s) -> s.isOpen()).forEach((session) -> process(group, session, processor));
 	}
@@ -264,70 +266,71 @@ public class StandardSessionManager<T> {
 		}
 		return size;
 	}
-	
-	public void process(T group, Session session, ConsumerProcessor<Session, IOException> processor) {	
-		if(processor == null) {
-			return ;
+
+	public void process(T group, Session session, ConsumeProcessor<Session, IOException> processor) {
+		if (processor == null) {
+			return;
 		}
-		
-		if(!session.isOpen()) {
-			return ;
+
+		if (!session.isOpen()) {
+			return;
 		}
-		
+
 		try {
 			processor.process(session);
 		} catch (IOException e) {
 			logger.error(e, "Process group[{}] session[{}] info[{}]", group, session.getId(), session);
 		}
 	}
-	
+
 	public void process(T group, Session session, Processor<T> processor) {
-		if(processor == null) {
-			return ;
+		if (processor == null) {
+			return;
 		}
-		
-		if(!session.isOpen()) {
-			return ;
+
+		if (!session.isOpen()) {
+			return;
 		}
-		
+
 		try {
 			processor.process(group, session);
 		} catch (IOException e) {
 			logger.error(e, "Process group[{}] session[{}] info[{}]", group, session.getId(), session);
 		}
 	}
-	
-	public void forEach(T group, ConsumerProcessor<Session, IOException> processor) {
+
+	public void forEach(T group, ConsumeProcessor<Session, IOException> processor) {
 		getSessions(group).stream().filter((s) -> s.isOpen()).forEach((s) -> process(group, s, processor));
 	}
-	
+
 	public void forEach(T group, Processor<T> processor) {
 		getSessions(group).stream().filter((s) -> s.isOpen()).forEach((s) -> process(group, s, processor));
 	}
-	
-	public void forEach(ConsumerProcessor<Session, IOException> processor) {
+
+	public void forEach(ConsumeProcessor<Session, IOException> processor) {
 		getGroups().forEach((group) -> forEach(group, processor));
 	}
-	
+
 	public void forEach(Processor<T> processor) {
 		getGroups().forEach((group) -> forEach(group, processor));
 	}
-	
-	public void clear(ConsumerProcessor<Session, IOException> processor) {
+
+	public void clear(ConsumeProcessor<Session, IOException> processor) {
 		getGroups().forEach((group) -> remove(group, processor));
 	}
-	
+
 	public void clear(Processor<T> processor) {
 		getGroups().forEach((group) -> remove(group, processor));
 	}
-	
+
 	@FunctionalInterface
-	public static interface Processor<T>{
+	public static interface Processor<T> {
 		void process(T group, Session session) throws IOException;
 	}
-	
+
 	/**
 	 * 向指定的session发送
+	 * 
 	 * @see Session#getBasicRemote()
 	 * @param session
 	 * @param text
@@ -336,23 +339,23 @@ public class StandardSessionManager<T> {
 	public void sendText(Session session, String text) throws IOException {
 		session.getBasicRemote().sendText(text);
 	}
-	
+
 	public void sendText(String text) {
-		if(text == null) {
-			return ;
+		if (text == null) {
+			return;
 		}
-		
+
 		forEach((s) -> sendText(s, text));
 	}
-	
+
 	public void sendText(String text, Collection<? extends T> groups) {
-		if(CollectionUtils.isEmpty(groups) || text == null) {
-			return ;
+		if (CollectionUtils.isEmpty(groups) || text == null) {
+			return;
 		}
-		
+
 		groups.forEach((group) -> forEach(group, (s) -> sendText(s, text)));
 	}
-	
+
 	public void sendText(String text, T group) {
 		sendText(text, Arrays.asList(group));
 	}

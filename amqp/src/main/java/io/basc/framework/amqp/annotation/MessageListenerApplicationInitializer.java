@@ -27,14 +27,12 @@ public final class MessageListenerApplicationInitializer implements ApplicationP
 				}
 			}
 
-			ReflectionUtils.getDeclaredMethods(clazz).withAll().streamAll()
+			ReflectionUtils.getDeclaredMethods(clazz).withAll().all().stream()
 					.filter((e) -> e.isAnnotationPresent(MessageListener.class)).forEach((method) -> {
 						MessageListener messageListener = method.getAnnotation(MessageListener.class);
 						Exchange exchange = application.getInstance(messageListener.exchange());
-						Supplier<Object> supplier = new NameInstanceSupplier<Object>(application,
-								clazz.getName());
-						MethodInvoker invoker = application.getAop().getProxyMethod(clazz, supplier,
-								method);
+						Supplier<Object> supplier = new NameInstanceSupplier<Object>(application, clazz.getName());
+						MethodInvoker invoker = application.getAop().getProxyMethod(clazz, supplier, method);
 						exchange.bind(messageListener.routingKey(), createQueueDeclare(messageListener), invoker);
 					});
 		}

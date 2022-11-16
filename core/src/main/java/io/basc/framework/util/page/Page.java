@@ -16,7 +16,7 @@ public interface Page<K, T> extends Pageable<K, T> {
 	 * @return
 	 */
 	long getCount();
-
+	
 	default Page<K, T> shared() {
 		return new SharedPage<>(this);
 	}
@@ -27,7 +27,8 @@ public interface Page<K, T> extends Pageable<K, T> {
 	}
 
 	@Override
-	default <TK, TT> Page<TK, TT> map(Function<? super K, ? extends TK> keyMap, Function<? super T, ? extends TT> valueMap) {
+	default <TK, TT> Page<TK, TT> map(Function<? super K, ? extends TK> keyMap,
+			Function<? super T, ? extends TT> valueMap) {
 		return new MapPage<>(this, keyMap, valueMap);
 	}
 }

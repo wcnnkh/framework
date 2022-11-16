@@ -13,9 +13,9 @@ import org.w3c.dom.NodeList;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.util.Pair;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
-import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.Value;
 
 public final class DomUtils {

@@ -12,8 +12,9 @@ import io.basc.framework.event.support.SimpleNamedEventDispatcher;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.util.ConsumeProcessor;
 import io.basc.framework.util.Registration;
-import io.basc.framework.util.stream.StreamProcessorSupport;
+import io.basc.framework.util.XUtils;
 
 public class PropertyFactories implements PropertyFactory, Configurable {
 	private final NamedEventDispatcher<String, ChangeEvent<String>> namedEventDispatcher;
@@ -30,7 +31,7 @@ public class PropertyFactories implements PropertyFactory, Configurable {
 			protected boolean addService(PropertyFactory service, Collection<PropertyFactory> targetServices) {
 				if (super.addService(service, targetServices)) {
 					long t = System.currentTimeMillis();
-					StreamProcessorSupport.consumeAll(service.iterator(), (e) -> namedEventDispatcher.publishEvent(e,
+					ConsumeProcessor.consumeAll(service.iterator(), (e) -> namedEventDispatcher.publishEvent(e,
 							new ChangeEvent<String>(t, EventTypes.CREATE, e)));
 					return true;
 				}
@@ -93,7 +94,7 @@ public class PropertyFactories implements PropertyFactory, Configurable {
 		for (PropertyFactory factory : factories) {
 			stream = stream == null ? factory.stream() : Stream.concat(stream, factory.stream());
 		}
-		return stream == null ? StreamProcessorSupport.emptyStream() : stream.distinct();
+		return stream == null ? XUtils.emptyStream() : stream.distinct();
 	}
 
 	@Override

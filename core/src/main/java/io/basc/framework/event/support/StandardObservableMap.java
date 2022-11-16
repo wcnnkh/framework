@@ -20,9 +20,9 @@ import io.basc.framework.event.NamedEventRegistry;
 import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ConsumeProcessor;
 import io.basc.framework.util.MapCombiner;
 import io.basc.framework.util.Registration;
-import io.basc.framework.util.stream.StreamProcessorSupport;
 
 public class StandardObservableMap<K, V> extends StandardObservable<Map<K, V>>
 		implements NamedEventRegistry<K, ChangeEvent<K>> {
@@ -78,18 +78,18 @@ public class StandardObservableMap<K, V> extends StandardObservable<Map<K, V>>
 				if (CollectionUtils.isEmpty(newMap)) {
 					return;
 				} else {
-					StreamProcessorSupport.consumeAll(newMap.keySet(), (key) -> eventListener
+					ConsumeProcessor.consumeAll(newMap.keySet(), (key) -> eventListener
 							.onEvent(new ChangeEvent<>(e.getCreateTime(), EventTypes.CREATE, key)));
 				}
 			} else {
 				if (CollectionUtils.isEmpty(newMap)) {
-					StreamProcessorSupport.consumeAll(oldMap.keySet(), (key) -> eventListener
+					ConsumeProcessor.consumeAll(oldMap.keySet(), (key) -> eventListener
 							.onEvent(new ChangeEvent<>(e.getCreateTime(), EventTypes.DELETE, key)));
 				} else {
 					List<K> keys = Stream.concat(oldMap.keySet().stream(), newMap.keySet().stream())
 							.filter((key) -> !Objects.equals(oldMap.get(key), newMap.get(key)))
 							.collect(Collectors.toList());
-					StreamProcessorSupport.consumeAll(keys, (key) -> eventListener
+					ConsumeProcessor.consumeAll(keys, (key) -> eventListener
 							.onEvent(new ChangeEvent<>(e.getCreateTime(), EventTypes.UPDATE, key)));
 				}
 			}

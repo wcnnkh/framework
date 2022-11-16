@@ -220,8 +220,8 @@ public interface ObjectMapper<S, E extends Throwable>
 
 	default void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
 			Object target, TypeDescriptor targetType, Structure<? extends Field> targetStructure) throws E {
-		transform(source, sourceType, sourceStructure.streamAll().iterator(), target, targetType,
-				targetStructure.streamAll().iterator());
+		transform(source, sourceType, sourceStructure.all().stream().iterator(), target, targetType,
+				targetStructure.all().stream().iterator());
 	}
 
 	default void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,

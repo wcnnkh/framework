@@ -11,7 +11,7 @@ import io.basc.framework.context.Context;
 import io.basc.framework.context.xml.XmlBeanUtils;
 import io.basc.framework.dubbo.DubboReferenceConfigure;
 import io.basc.framework.io.Resource;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.Processor;
 
 public class XmlDubboReferenceConfigure implements DubboReferenceConfigure {
 	private final List<Resource> resources;
@@ -30,7 +30,8 @@ public class XmlDubboReferenceConfigure implements DubboReferenceConfigure {
 		return context;
 	}
 
-	public <T, E extends Throwable> List<T> parse(Processor<NodeList, List<T>, E> processor) throws E {
+	public <T, E extends Throwable> List<T> parse(Processor<NodeList, ? extends List<T>, ? extends E> processor)
+			throws E {
 		List<T> list = new ArrayList<T>();
 		for (Resource resource : resources) {
 			list.addAll(XmlBeanUtils.parse(context.getResourceLoader(), resource, processor));
@@ -42,6 +43,6 @@ public class XmlDubboReferenceConfigure implements DubboReferenceConfigure {
 	public List<ReferenceConfig<?>> getReferenceConfigList() {
 		return parse((nodeList) -> XmlDubboUtils.parseReferenceConfigList(context, nodeList, null,
 				context.getClassesLoaderFactory())).stream().map((e) -> (ReferenceConfig<?>) e)
-						.collect(Collectors.toList());
+				.collect(Collectors.toList());
 	}
 }

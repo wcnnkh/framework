@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  *
  * @param <E>
  */
-public class DuplicateRemovalIterator<E> extends AbstractIterator<E> {
+public class DuplicateRemovalIterator<E> implements Iterator<E> {
 	private Set<E> set;
 	private final Iterator<E> iterator;
 	private Supplier<E> cacheSupplier;

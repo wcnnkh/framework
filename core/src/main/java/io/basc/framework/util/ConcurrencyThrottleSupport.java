@@ -16,12 +16,12 @@
 
 package io.basc.framework.util;
 
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 
 /**
  * Support class for throttling concurrent access to a specific resource.

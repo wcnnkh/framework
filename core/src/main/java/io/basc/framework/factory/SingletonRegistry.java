@@ -1,12 +1,12 @@
 package io.basc.framework.factory;
 
-import io.basc.framework.util.Status;
-import io.basc.framework.util.stream.CallableProcessor;
+import io.basc.framework.util.Creator;
+import io.basc.framework.util.Return;
 
 public interface SingletonRegistry extends SingletonFactory {
 	void registerSingleton(String name, Object singletonObject);
 
-	<T, E extends Throwable> Status<T> getSingleton(String name, CallableProcessor<T, E> creater) throws E;
+	<T, E extends Throwable> Return<T> getSingleton(String name, Creator<? extends T, ? extends E> creater) throws E;
 
 	Object getSingletonMutex();
 }

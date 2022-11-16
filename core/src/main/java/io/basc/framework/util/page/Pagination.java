@@ -11,7 +11,7 @@ public interface Pagination<T> extends Page<Long, T> {
 	default long getPageNumber() {
 		return PageSupport.getPageNumber(getCursorId(), getCount());
 	}
-
+	
 	/**
 	 * 总页数
 	 * 

@@ -5,10 +5,10 @@ import io.basc.framework.factory.FactoryException;
 import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.DefaultStatus;
-import io.basc.framework.util.Status;
-import io.basc.framework.util.stream.CallableProcessor;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.Creator;
+import io.basc.framework.util.Processor;
+import io.basc.framework.util.Return;
+import io.basc.framework.util.Source;
 
 public class DefaultInstanceFactory extends DefaultSingletonRegistry implements InstanceFactory {
 	private ClassLoader classLoader = ClassUtils.getDefaultClassLoader();
@@ -23,29 +23,31 @@ public class DefaultInstanceFactory extends DefaultSingletonRegistry implements 
 		this.classLoader = classLoader;
 	}
 
-	public <T, E extends Throwable> T getInstance(BeanDefinition definition, CallableProcessor<T, E> creater) throws E {
+	public <T, E extends Throwable> T getInstance(BeanDefinition definition, Creator<? extends T, ? extends E> creater)
+			throws E {
 		return getInstance(definition, creater, true).get();
 	}
 
-	public <T, E extends Throwable> Status<T> getInstance(BeanDefinition definition, CallableProcessor<T, E> creater,
-			boolean postProcessBean) throws E {
+	public <T, E extends Throwable> Return<T> getInstance(BeanDefinition definition,
+			Creator<? extends T, ? extends E> creater, boolean postProcessBean) throws E {
 		if (definition.isSingleton()) {
 			return getSingleton(definition.getId(), creater, postProcessBean);
 		}
 
-		T instance = creater.process();
+		T instance = creater.create();
 		if (postProcessBean) {
 			processPostBean(instance, definition);
 		}
-		return new DefaultStatus<T>(true, instance);
+		return Return.success(instance);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T, E extends Throwable> Status<T> getInstance(String name, Processor<BeanDefinition, T, E> createProcessor,
-			boolean postProcessBean) throws E {
+	public <T, E extends Throwable> Return<T> getInstance(String name,
+			Processor<? super BeanDefinition, ? extends T, ? extends E> createProcessor, boolean postProcessBean)
+			throws E {
 		Object object = getSingleton(name);
 		if (object != null) {
-			return new DefaultStatus<>(true, (T) object);
+			return Return.success((T) object);
 		}
 
 		BeanDefinition definition = getDefinition(name);
@@ -77,7 +79,7 @@ public class DefaultInstanceFactory extends DefaultSingletonRegistry implements 
 		return isInstance(clazz.getName());
 	}
 
-	public <E extends Throwable> boolean isInstance(BeanDefinition definition, CallableProcessor<Boolean, E> processor)
+	public <E extends Throwable> boolean isInstance(BeanDefinition definition, Source<Boolean, E> processor)
 			throws E {
 		if (definition == null) {
 			return false;
@@ -87,7 +89,7 @@ public class DefaultInstanceFactory extends DefaultSingletonRegistry implements 
 			return true;
 		}
 
-		Boolean b = processor.process();
+		Boolean b = processor.get();
 		return b == null ? false : b;
 	}
 
