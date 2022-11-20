@@ -19,7 +19,7 @@ public class FileMimeTypeUitls {
 		MultiValueMap<String, MimeType> result = new LinkedMultiValueMap<String, MimeType>();
 		String mimeTypesFileName = "/io/basc/framework/net/mime/mime.types";
 		Resource resource = ResourceUtils.getSystemResource(mimeTypesFileName);
-		for (String line : ResourceUtils.getLines(resource, MimeTypeUtils.US_ASCII)) {
+		for (String line : ResourceUtils.readLines(resource, MimeTypeUtils.US_ASCII).toList()) {
 			if (line.isEmpty() || line.charAt(0) == '#') {
 				continue;
 			}

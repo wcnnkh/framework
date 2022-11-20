@@ -12,7 +12,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -32,13 +31,9 @@ import java.util.stream.Stream;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.ConsumeProcessor;
-import io.basc.framework.util.Creator;
-import io.basc.framework.util.Cursor;
 import io.basc.framework.util.LinkedMultiValueMap;
 import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.Processor;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 
@@ -176,167 +171,6 @@ public final class SqlUtils {
 		return name;
 	}
 
-	public static <S, P extends Statement, T, E extends Throwable> T process(S source,
-			Processor<S, ? extends P, ? extends SQLException> statementCreator,
-			Processor<P, ? extends T, ? extends E> processor) throws SQLException, E {
-		P ps = null;
-		try {
-			ps = statementCreator.process(source);
-			return processor.process(ps);
-		} finally {
-			if (ps != null && !ps.isClosed()) {
-				ps.close();
-			}
-		}
-	}
-
-	public static <S, P extends Statement> void process(S source,
-			Processor<S, ? extends P, ? extends SQLException> statementCreator,
-			ConsumeProcessor<P, ? extends SQLException> processor) throws SQLException {
-		P statement = null;
-		try {
-			statement = statementCreator.process(source);
-			processor.process(statement);
-		} finally {
-			if (statement != null && !statement.isClosed()) {
-				statement.close();
-			}
-		}
-	}
-
-	public static <T> T process(PreparedStatement ps,
-			Processor<ResultSet, ? extends T, ? extends SQLException> resultSetProcessor) throws SQLException {
-		ResultSet resultSet = null;
-		try {
-			resultSet = ps.executeQuery();
-			return resultSetProcessor.process(resultSet);
-		} finally {
-			if (resultSet != null && !resultSet.isClosed()) {
-				resultSet.close();
-			}
-		}
-	}
-
-	public static int update(Connection connection,
-			Processor<Connection, ? extends PreparedStatement, ? extends SQLException> preparedStatementCreator)
-			throws SQLException {
-		return process(connection, preparedStatementCreator, (ps) -> {
-			return ps.executeUpdate();
-		});
-	}
-
-	public static <P extends PreparedStatement> int[] executeBatch(Connection connection,
-			Processor<Connection, ? extends P, ? extends SQLException> connectionProcessor,
-			@Nullable Collection<Object[]> batchArgs) throws SQLException {
-		return process(connection, connectionProcessor, (ps) -> {
-			if (batchArgs != null) {
-				for (Object[] args : batchArgs) {
-					setSqlParams(ps, args);
-					ps.addBatch();
-				}
-			}
-			return ps.executeBatch();
-		});
-	}
-
-	public static <T> Stream<T> stream(ResultSet resultSet,
-			Processor<? super ResultSet, ? extends T, ? extends Throwable> rowMapper, @Nullable Supplier<String> desc) {
-		ResultSetIterator iterator = new ResultSetIterator(resultSet);
-		Stream<T> cursor = XUtils.stream(iterator).map((row) -> {
-			try {
-				return rowMapper.process(row);
-			} catch (Throwable e) {
-				throw throwableSqlException(e, desc);
-			}
-		});
-		return cursor.onClose(() -> {
-			try {
-				if (!resultSet.isClosed()) {
-					resultSet.close();
-				}
-			} catch (Throwable e) {
-				throw throwableSqlException(e, desc);
-			}
-		});
-	}
-
-	public static <T, E extends Throwable> Stream<T> stream(Creator<? extends ResultSet, ? extends E> resultSetCreator,
-			Processor<? super ResultSet, ? extends T, ? extends Throwable> rowMapper, @Nullable Supplier<String> desc)
-			throws SQLException, E {
-		ResultSet resultSet = resultSetCreator.create();
-		try {
-			return stream(resultSet, rowMapper, desc);
-		} catch (Throwable e) {
-			if (resultSet != null && !resultSet.isClosed()) {
-				resultSet.close();
-			}
-			throw e;
-		}
-	}
-
-	public static <T, E extends Throwable> Cursor<T> query(PreparedStatement preparedStatement,
-			Processor<? super ResultSet, ? extends T, ? extends Throwable> rowMapper, @Nullable Supplier<String> desc)
-			throws SQLException, E {
-		ResultSet resultSet = preparedStatement.executeQuery();
-		try {
-			Stream<T> stream = stream(resultSet, rowMapper, desc);
-			return Cursor.create(stream);
-		} catch (Throwable e) {
-			if (resultSet != null && !resultSet.isClosed()) {
-				resultSet.close();
-			}
-			throw e;
-		}
-	}
-
-	public static <S extends Statement, T, E extends Throwable> Cursor<T> query(S source,
-			Processor<? super S, ? extends ResultSet, ? extends E> queryProcessor,
-			Processor<? super ResultSet, ? extends T, ? extends Throwable> rowMapper, @Nullable Supplier<String> desc)
-			throws SQLException, E {
-		ResultSet resultSet = queryProcessor.process(source);
-		try {
-			Stream<T> stream = stream(resultSet, rowMapper, desc);
-			return Cursor.create(stream);
-		} catch (Throwable e) {
-			if (resultSet != null && !resultSet.isClosed()) {
-				resultSet.close();
-			}
-			throw e;
-		}
-	}
-
-	public static <S, T, P extends Statement, E extends Throwable> Cursor<T> query(S source,
-			Processor<? super S, ? extends P, ? extends E> statementProcessor,
-			Processor<? super P, ? extends ResultSet, ? extends SQLException> queryProcessor,
-			Processor<? super ResultSet, ? extends T, ? extends Throwable> rowMapper, @Nullable Supplier<String> desc)
-			throws SQLException, E {
-		P statement = statementProcessor.process(source);
-		try {
-			Cursor<T> cursor = query(statement, queryProcessor, rowMapper, desc);
-			try {
-				return cursor.onClose(() -> {
-					try {
-						if (!statement.isClosed()) {
-							statement.close();
-						}
-					} catch (Throwable e) {
-						throw throwableSqlException(e, desc);
-					}
-				});
-			} catch (Throwable e) {
-				if (cursor != null && cursor.isClosed()) {
-					cursor.close();
-				}
-				throw e;
-			}
-		} catch (Throwable e) {
-			if (statement != null && !statement.isClosed()) {
-				statement.close();
-			}
-			throw e;
-		}
-	}
-
 	public static SqlException throwableSqlException(Throwable e, Supplier<String> desc) {
 		if (e instanceof SqlException) {
 			return (SqlException) e;
@@ -471,7 +305,7 @@ public final class SqlUtils {
 				list.add(segment);
 			} else {
 				SqlSplitSegment last = list.removeLast();
-				EditableSql item = new EditableSql();
+				EasySql item = new EasySql();
 				item.append(last);
 				item.append(last.getSeparator());
 				item.append(segment);

@@ -1,4 +1,4 @@
-package io.basc.framework.io.event;
+package io.basc.framework.io;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +17,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import io.basc.framework.event.EventType;
 import io.basc.framework.event.EventTypes;
 import io.basc.framework.event.ObservableChangeEvent;
-import io.basc.framework.io.AbstractResource;
-import io.basc.framework.io.Resource;
 import io.basc.framework.lang.RequiredJavaVersion;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;

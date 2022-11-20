@@ -1,10 +1,7 @@
-package io.basc.framework.data.domain;
+package io.basc.framework.util;
 
 import java.util.Comparator;
 import java.util.Optional;
-
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.Processor;
 
 public class Range<T> {
 	private final static Range<?> UNBOUNDED = Range.of(Bound.unbounded(), Bound.UNBOUNDED);

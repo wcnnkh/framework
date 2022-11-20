@@ -37,7 +37,7 @@ public interface ConnectionFactory {
 			Processor<? super java.sql.ResultSet, ? extends T, ? extends Throwable> rowMapper) {
 		return ResultSet.of(() -> {
 			try {
-				return operations().prepare(sql).query().map(rowMapper);
+				return operations().prepare(sql).query().rows(rowMapper);
 			} catch (SQLException e) {
 				throw SqlUtils.throwableSqlException(e, () -> SqlUtils.toString(sql));
 			}

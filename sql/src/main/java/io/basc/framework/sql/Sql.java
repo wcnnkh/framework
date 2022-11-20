@@ -33,4 +33,12 @@ public interface Sql {
 	default Sql trim() {
 		return new SimpleSql(isStoredProcedure(), getSql().trim(), getParams());
 	}
+
+	public static Sql of(String sql, Object... params) {
+		return new SimpleSql(sql, params);
+	}
+
+	public static Sql ofStoredProcedure(String sql, Object... params) {
+		return new SimpleSql(true, sql, params);
+	}
 }

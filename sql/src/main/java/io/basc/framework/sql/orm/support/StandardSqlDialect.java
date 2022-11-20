@@ -12,7 +12,6 @@ import java.util.function.Predicate;
 
 import io.basc.framework.aop.support.FieldSetterListen;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.domain.Range;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
@@ -25,7 +24,7 @@ import io.basc.framework.orm.repository.ConditionKeywords;
 import io.basc.framework.orm.repository.Conditions;
 import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.WithCondition;
-import io.basc.framework.sql.EditableSql;
+import io.basc.framework.sql.EasySql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.SqlUtils;
@@ -36,6 +35,7 @@ import io.basc.framework.sql.orm.SqlType;
 import io.basc.framework.sql.orm.TableStructure;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.value.Value;
@@ -575,7 +575,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 	public Sql toCountSql(Sql sql) throws SqlDialectException {
 		String str = sql.getSql();
 		str = str.toLowerCase();
-		EditableSql countSql = new EditableSql();
+		EasySql countSql = new EasySql();
 		countSql.append("select count(*) from (");
 		int orderIndex = str.lastIndexOf(" order by ");
 		if (orderIndex != -1 && str.indexOf(")", orderIndex) == -1) {

@@ -1,14 +1,17 @@
 package io.basc.framework.util;
 
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@FunctionalInterface
 public interface Streamy<E> extends io.basc.framework.util.Optional<E> {
 	Stream<E> stream();
 
@@ -58,8 +61,12 @@ public interface Streamy<E> extends io.basc.framework.util.Optional<E> {
 		return findAny().isPresent();
 	}
 
-	default List<E> list() {
+	default List<E> toList() {
 		return collect(Collectors.toList());
+	}
+
+	default Set<E> toSet() {
+		return collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
 	}
 
 	default E last() {
@@ -76,6 +83,10 @@ public interface Streamy<E> extends io.basc.framework.util.Optional<E> {
 		} finally {
 			stream.close();
 		}
+	}
+
+	default <U> Streamy<U> flatConvert(Function<? super Stream<E>, ? extends Stream<U>> converter) {
+		return () -> converter.apply(stream());
 	}
 
 	@Override

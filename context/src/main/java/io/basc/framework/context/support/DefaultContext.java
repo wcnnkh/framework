@@ -26,7 +26,6 @@ import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.FactoryException;
 import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.factory.support.BeanDefinitionLoaderChain;
-import io.basc.framework.factory.support.ServiceLoaders;
 import io.basc.framework.io.Resource;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.logger.Logger;
@@ -213,6 +212,12 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 
 	private ConcurrentReferenceHashMap<Class<?>, ServiceLoader<?>> serviceLoaderCacheMap = new ConcurrentReferenceHashMap<Class<?>, ServiceLoader<?>>();
 
+	@Override
+	protected <S> ServiceLoader<S> getAfterServiceLoader(Class<S> serviceClass) {
+		return ServiceLoader.concat(new ClassesServiceLoader<S>(getProviderClassesLoader(serviceClass), this),
+				getAfterServiceLoader(serviceClass));
+	}
+
 	@SuppressWarnings("unchecked")
 	public <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass) {
 		ServiceLoader<?> serviceLoader = serviceLoaderCacheMap.get(serviceClass);
@@ -222,10 +227,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 				return (ServiceLoader<S>) serviceLoader;
 			}
 
-			ClassesLoader providerClassesLoader = getProviderClassesLoader(serviceClass);
-			ServiceLoader<S> parentServiceLoader = new ClassesServiceLoader<S>(providerClassesLoader, this);
-			ServiceLoader<S> defaultServiceLoader = super.getServiceLoader(serviceClass);
-			ServiceLoader<S> created = new ServiceLoaders<S>(parentServiceLoader, defaultServiceLoader);
+			ServiceLoader<S> created = super.getServiceLoader(serviceClass);
 			ServiceLoader<?> old = serviceLoaderCacheMap.putIfAbsent(serviceClass, created);
 			if (old == null) {
 				old = created;

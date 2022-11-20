@@ -5,7 +5,7 @@ import java.util.List;
 
 import io.basc.framework.convert.lang.ClassToStringConverter;
 import io.basc.framework.factory.support.ServiceLoaders;
-import io.basc.framework.factory.support.StaticServiceLoader;
+import io.basc.framework.factory.support.NamedServiceLoader;
 import io.basc.framework.util.ConvertibleIterable;
 
 public interface ServiceLoaderFactory extends InstanceFactory {
@@ -19,7 +19,7 @@ public interface ServiceLoaderFactory extends InstanceFactory {
 	<S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass);
 
 	default <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, String... defaultNames) {
-		ServiceLoader<S> staticServiceLoader = new StaticServiceLoader<S>(this, defaultNames);
+		ServiceLoader<S> staticServiceLoader = new NamedServiceLoader<S>(this, defaultNames);
 		return new ServiceLoaders<S>(getServiceLoader(serviceClass), staticServiceLoader);
 	}
 
@@ -27,7 +27,7 @@ public interface ServiceLoaderFactory extends InstanceFactory {
 		List<Class<?>> classes = Arrays.asList(defaultClasses);
 		ConvertibleIterable<Class<?>, String> nameIterator = new ConvertibleIterable<Class<?>, String>(classes,
 				ClassToStringConverter.NAME);
-		ServiceLoader<S> staticServiceLoader = new StaticServiceLoader<S>(this, nameIterator);
+		ServiceLoader<S> staticServiceLoader = new NamedServiceLoader<S>(this, nameIterator);
 		return new ServiceLoaders<S>(getServiceLoader(serviceClass), staticServiceLoader);
 	}
 }

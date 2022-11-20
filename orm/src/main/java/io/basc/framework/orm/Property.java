@@ -3,10 +3,10 @@ package io.basc.framework.orm;
 import java.util.Collection;
 import java.util.Enumeration;
 
-import io.basc.framework.data.domain.Range;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Processor;
+import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 
 public class Property extends Field {

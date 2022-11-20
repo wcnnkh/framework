@@ -12,9 +12,18 @@ public interface Registration {
 		public Registration disposable() {
 			return this;
 		}
+
+		@Override
+		public boolean isEmpty() {
+			return true;
+		}
 	};
 
 	void unregister();
+
+	default boolean isEmpty() {
+		return this == EMPTY;
+	}
 
 	default Registration disposable() {
 		return new DisposableRegistration(this);

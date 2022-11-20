@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +13,7 @@ import io.basc.framework.core.OrderComparator;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.Cursor;
 
 public class ProviderClassesLoader implements ClassesLoader, Comparator<Class<?>> {
 	private static Logger logger = LoggerFactory.getLogger(ProviderClassesLoader.class);
@@ -123,7 +123,7 @@ public class ProviderClassesLoader implements ClassesLoader, Comparator<Class<?>
 		return OrderComparator.INSTANCE.compare(c1.getOrder(), c2.getOrder());
 	}
 
-	public Iterator<Class<?>> iterator() {
+	public Cursor<Class<?>> iterator() {
 		if (providers == null) {
 			synchronized (this) {
 				if (providers == null) {
@@ -131,7 +131,7 @@ public class ProviderClassesLoader implements ClassesLoader, Comparator<Class<?>
 				}
 			}
 		}
-		return providers.iterator();
+		return Cursor.create(providers.iterator());
 	}
 
 }

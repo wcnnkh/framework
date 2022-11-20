@@ -28,7 +28,7 @@ public interface Pageable<K, T> extends ResultSet<T> {
 	Cursor<T> iterator();
 
 	default List<T> getList() {
-		return iterator().list();
+		return iterator().toList();
 	}
 
 	/**

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.sql.EditableSql;
+import io.basc.framework.sql.EasySql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.orm.Column;
@@ -276,7 +276,7 @@ public class MysqlDialect extends StandardSqlDialect {
 
 	@Override
 	public Sql condition(Sql condition, Sql left, Sql right) {
-		EditableSql sql = new EditableSql();
+		EasySql sql = new EasySql();
 		sql.append("IF(");
 		sql.append(condition);
 		sql.append(",");

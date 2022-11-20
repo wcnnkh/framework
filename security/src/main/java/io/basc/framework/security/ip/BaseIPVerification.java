@@ -1,18 +1,16 @@
 package io.basc.framework.security.ip;
 
+import java.util.HashSet;
+
 import io.basc.framework.env.Environment;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringMatcher;
 import io.basc.framework.util.StringMatchers;
 import io.basc.framework.util.StringUtils;
-
-import java.util.HashSet;
-import java.util.List;
 
 public class BaseIPVerification extends HashSet<String> implements IPVerification {
 	private static final long serialVersionUID = 1L;
@@ -29,32 +27,30 @@ public class BaseIPVerification extends HashSet<String> implements IPVerificatio
 
 	protected void appendIPFile(Environment environment, Resource resource) {
 		if (resource != null && resource.exists()) {
-			List<String> contentList = ResourceUtils.getLines(resource, environment.getCharsetName());
-			if (!CollectionUtils.isEmpty(contentList)) {
-				for (String content : contentList) {
-					if (StringUtils.isEmpty(content)) {
-						continue;
-					}
-
-					String[] arr = StringUtils.splitToArray(content);
-					if (ArrayUtils.isEmpty(arr)) {
-						continue;
-					}
-
-					for (String ip : arr) {
-						if (StringUtils.isEmpty(ip)) {
-							continue;
-						}
-
-						ip = ip.trim();
-						if (logger.isDebugEnabled()) {
-							logger.debug("add ip {}", ip);
-						}
-						add(ip);
-					}
+			ResourceUtils.readLines(resource, environment.getCharsetName()).forEachRemaining((content) -> {
+				if (StringUtils.isEmpty(content)) {
+					return;
 				}
-			}
+
+				String[] arr = StringUtils.splitToArray(content);
+				if (ArrayUtils.isEmpty(arr)) {
+					return;
+				}
+
+				for (String ip : arr) {
+					if (StringUtils.isEmpty(ip)) {
+						continue;
+					}
+
+					ip = ip.trim();
+					if (logger.isDebugEnabled()) {
+						logger.debug("add ip {}", ip);
+					}
+					add(ip);
+				}
+			});
 		}
+
 	}
 
 	public boolean verification(String ip) {

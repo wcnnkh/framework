@@ -171,9 +171,9 @@ public class CustomRepositoryMethodAdapter extends CurdRepositoryMethodAdapter i
 				ResultSet<?> cursor = repository.query(responseTypeDescriptor.getElementTypeDescriptor(), entityClass,
 						conditions, orders);
 				if (responseTypeDescriptor.isArray()) {
-					return cursor.list().toArray();
+					return cursor.toList().toArray();
 				} else {
-					return cursor.list();
+					return cursor.toList();
 				}
 			} else {
 				return repository.query(responseTypeDescriptor, entityClass, conditions, orders).first();

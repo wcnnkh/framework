@@ -222,12 +222,17 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	}
 
 	@Override
-	public <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass) {
-		ServiceLoader<S> configServiceLoader = new ConfigServiceLoader<S>(serviceClass, getProperties(), this);
+	protected <S> ServiceLoader<S> getBeforeServiceLoader(Class<S> serviceClass) {
+		return new ServiceLoaders<>(new ConfigServiceLoader<S>(serviceClass, getProperties(), this),
+				super.getBeforeServiceLoader(serviceClass));
+	}
+
+	@Override
+	protected <S> ServiceLoader<S> getAfterServiceLoader(Class<S> serviceClass) {
 		if (isForceSpi() || serviceClass.getName().startsWith(Constants.SYSTEM_PACKAGE_NAME) || useSpi(serviceClass)) {
-			return new ServiceLoaders<S>(configServiceLoader, super.getServiceLoader(serviceClass));
+			return super.getAfterServiceLoader(serviceClass);
 		}
-		return configServiceLoader;
+		return null;
 	}
 
 	public boolean isForceSpi() {

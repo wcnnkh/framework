@@ -37,8 +37,8 @@ public class SqlExportTest {
 		ExcelTemplate template = new ExcelTemplate();
 		File file = File.createTempFile("export", "aaa.xls");
 		db.query(java.sql.ResultSet.class, sql).export((e) -> template.process(e.iterator(), file));
-		List<SqlExportTestTable> list = db.query(SqlExportTestTable.class, sql).list();
-		List<SqlExportTestTable> fileRecords = template.read(file, SqlExportTestTable.class).list();
+		List<SqlExportTestTable> list = db.query(SqlExportTestTable.class, sql).toList();
+		List<SqlExportTestTable> fileRecords = template.read(file, SqlExportTestTable.class).toList();
 		assertTrue(CollectionUtils.equals(list, fileRecords));
 		file.delete();
 	}

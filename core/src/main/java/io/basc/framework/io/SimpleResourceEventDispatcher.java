@@ -1,4 +1,4 @@
-package io.basc.framework.io.event;
+package io.basc.framework.io;
 
 import java.io.IOException;
 import java.util.Timer;
@@ -9,8 +9,6 @@ import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventTypes;
 import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.event.support.SimpleEventDispatcher;
-import io.basc.framework.io.AbstractResource;
-import io.basc.framework.io.Resource;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Registration;

@@ -12,10 +12,14 @@ public interface Cursor<E> extends CloseableIterator<E>, Streamy<E>, StreamOptio
 
 	BigInteger getPosition();
 
-	Cursor<E> onClose(RunnableProcessor<? extends RuntimeException> close) throws RuntimeException;
+	Cursor<E> onClose(RunnableProcessor<? extends RuntimeException> close);
 
 	default Stream<E> stream() {
 		return XUtils.stream(this).onClose(() -> close());
+	}
+
+	default <U> Cursor<U> flatConvert(Function<? super Stream<E>, ? extends Stream<U>> mapper) {
+		return Cursor.create(mapper.apply(stream()));
 	}
 
 	@Override

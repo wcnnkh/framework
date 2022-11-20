@@ -34,11 +34,11 @@ public class StandardResultSet<E> implements ResultSet<E> {
 	}
 
 	@Override
-	public List<E> list() {
+	public List<E> toList() {
 		if (list == null) {
 			synchronized (this) {
 				if (list == null) {
-					list = ResultSet.super.list();
+					list = ResultSet.super.toList();
 				}
 			}
 		}

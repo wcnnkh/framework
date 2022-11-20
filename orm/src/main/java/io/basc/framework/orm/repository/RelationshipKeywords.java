@@ -13,20 +13,24 @@ public class RelationshipKeywords implements Predicate<String>, Cloneable, Seria
 
 	private static final Keywords AND_KEYWORDS = new Keywords(Keywords.HUMP, "And");
 	private static final Keywords OR_KEYWORDS = new Keywords(Keywords.HUMP, "Or");
+	private static final Keywords NOT_KEYWORDS = new Keywords(Keywords.HUMP, "Not");
 
 	public static final RelationshipKeywords DEFAULT = Sys.getEnv().getServiceLoader(RelationshipKeywords.class)
-			.first(() -> new RelationshipKeywords());
+			.findFirst().orElseGet(() -> new RelationshipKeywords());
 
 	private final Keywords andKeywords;
 	private final Keywords orKeywords;
+	private final Keywords notKeywords;
 
 	public RelationshipKeywords() {
-		this(new Keywords(AND_KEYWORDS, Keywords.HUMP), new Keywords(OR_KEYWORDS, Keywords.HUMP));
+		this(new Keywords(AND_KEYWORDS, Keywords.HUMP), new Keywords(OR_KEYWORDS, Keywords.HUMP),
+				new Keywords(NOT_KEYWORDS, Keywords.HUMP));
 	}
 
-	protected RelationshipKeywords(Keywords andKeywords, Keywords orKeywords) {
+	protected RelationshipKeywords(Keywords andKeywords, Keywords orKeywords, Keywords notKeywords) {
 		this.andKeywords = aware(andKeywords);
 		this.orKeywords = aware(orKeywords);
+		this.notKeywords = aware(notKeywords);
 	}
 
 	private Keywords aware(Keywords keywords) {
@@ -43,12 +47,12 @@ public class RelationshipKeywords implements Predicate<String>, Cloneable, Seria
 
 	@Override
 	public RelationshipKeywords clone() {
-		return new RelationshipKeywords(andKeywords.clone(), orKeywords.clone());
+		return new RelationshipKeywords(andKeywords.clone(), orKeywords.clone(), notKeywords.clone());
 	}
 
 	@Override
 	public boolean test(String key) {
-		return andKeywords.test(key) && orKeywords.test(key);
+		return andKeywords.test(key) && orKeywords.test(key) && notKeywords.test(key);
 	}
 
 	public Keywords getAndKeywords() {
@@ -59,9 +63,12 @@ public class RelationshipKeywords implements Predicate<String>, Cloneable, Seria
 		return orKeywords;
 	}
 
+	public Keywords getNotKeywords() {
+		return notKeywords;
+	}
+
 	public Pair<String, Integer> indexOf(String express) {
-		return Pair
-				.process(Arrays.asList(andKeywords, orKeywords), (e) -> e.indexOf(express), (e) -> e.getValue() != null)
-				.map((e) -> e.getValue()).orElse(null);
+		return Pair.process(Arrays.asList(andKeywords, orKeywords, notKeywords), (e) -> e.indexOf(express),
+				(e) -> e.getValue() != null).map((e) -> e.getValue()).orElse(null);
 	}
 }

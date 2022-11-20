@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import io.basc.framework.data.domain.Range;
+import io.basc.framework.util.Range;
 
 @SuppressWarnings("unchecked")
 public interface RedisSortedSetsCommands<K, V> {

@@ -110,7 +110,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	default Object getAutoIncrementLastId(Connection connection, TableStructure tableStructure) {
 		Sql sql = getMapper().toLastInsertIdSql(tableStructure);
 		try {
-			return new ConnectionOperations(() -> connection).prepare(sql).query().map((e) -> e.getObject(1)).first();
+			return new ConnectionOperations(() -> connection).prepare(sql).query().rows((e) -> e.getObject(1)).first();
 		} catch (SQLException e) {
 			throw SqlUtils.throwableSqlException(e, () -> SqlUtils.toString(sql));
 		}
@@ -142,7 +142,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	default <T> List<T> getByIdList(TableStructure tableStructure, Object... ids) {
 		Sql sql = getMapper().toSelectByIdsSql(tableStructure, ids);
-		return (List<T>) query(tableStructure, sql).list();
+		return (List<T>) query(tableStructure, sql).toList();
 	}
 
 	default <K, V> Map<K, V> getInIds(Class<? extends V> type, Collection<? extends K> inPrimaryKeys,
@@ -159,7 +159,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 			Object... primaryKeys) {
 		Sql sql = getMapper().getInIds(tableStructure, primaryKeys, inPrimaryKeys);
 		io.basc.framework.util.ResultSet<V> cursor = query(tableStructure, sql);
-		List<V> list = cursor.list();
+		List<V> list = cursor.toList();
 		if (list == null || list.isEmpty()) {
 			return Collections.emptyMap();
 		}
@@ -233,7 +233,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	default TableChanges getTableChanges(TableStructure tableStructure) {
 		TableStructureMapping tableStructureMapping = getMapper().getTableStructureMapping(tableStructure);
-		List<Column> list = query(tableStructureMapping.getSql(), (rs) -> tableStructureMapping.getName(rs)).list();
+		List<Column> list = query(tableStructureMapping.getSql(), (rs) -> tableStructureMapping.getName(rs)).toList();
 		HashSet<String> hashSet = new HashSet<String>();
 		List<String> deleteList = new ArrayList<String>();
 		TableStructure oldStructure = getMapper().getStructure(tableStructure.getSourceClass());

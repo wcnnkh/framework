@@ -28,7 +28,7 @@ public class FileRecordsTest {
 			}
 
 			System.out.println(list);
-			List<String> readList = records.iterator().list();
+			List<String> readList = records.iterator().toList();
 			System.out.println(readList);
 			assertTrue(readList.equals(list));
 		} finally {

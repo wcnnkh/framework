@@ -15,7 +15,6 @@ import io.basc.framework.event.AbstractObservable;
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.ObservableChangeEvent;
-import io.basc.framework.io.event.SimpleResourceEventDispatcher;
 import io.basc.framework.lang.NestedIOException;
 import io.basc.framework.lang.NotSupportedException;
 import io.basc.framework.util.Assert;

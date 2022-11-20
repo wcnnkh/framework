@@ -43,6 +43,10 @@ public class Pair<K, V> extends BascObject implements Serializable {
 		return value;
 	}
 
+	public <A, B> Pair<A, B> of(A key, B value) {
+		return new Pair<>(key, value);
+	}
+
 	public static <K, V, E extends Throwable> Optional<Pair<K, V>> process(Iterable<? extends K> keys,
 			Processor<? super K, ? extends V, ? extends E> processor, Predicate<? super Pair<K, V>> returnTest)
 			throws E {

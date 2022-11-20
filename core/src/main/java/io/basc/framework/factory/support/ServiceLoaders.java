@@ -6,7 +6,8 @@ import java.util.List;
 
 import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.MultiIterable;
+import io.basc.framework.util.Cursor;
+import io.basc.framework.util.Cursors;
 
 public class ServiceLoaders<S> implements ServiceLoader<S> {
 	private List<ServiceLoader<S>> serviceLoaders;
@@ -34,8 +35,9 @@ public class ServiceLoaders<S> implements ServiceLoader<S> {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Iterator<S> iterator() {
-		return new MultiIterable(serviceLoaders).iterator();
+	public Cursor<S> iterator() {
+		Iterator<Cursor<S>> iterator = serviceLoaders.stream().filter((e) -> e != null).map((e) -> e.iterator())
+				.iterator();
+		return new Cursors<>(iterator);
 	}
 }

@@ -11,6 +11,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Cursor;
 import io.basc.framework.util.Services;
 
 public class ConfigurableServices<T> extends Services<T> implements Configurable, ServiceLoader<T> {
@@ -100,6 +101,11 @@ public class ConfigurableServices<T> extends Services<T> implements Configurable
 
 	public void setServiceClass(Class<T> serviceClass) {
 		this.serviceClass = serviceClass;
+	}
+
+	@Override
+	public Cursor<T> iterator() {
+		return Cursor.create(super.iterator());
 	}
 
 	@Override

@@ -34,6 +34,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.function.Function;
 
 public abstract class CollectionUtils {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -544,7 +545,7 @@ public abstract class CollectionUtils {
 		public E next() {
 			return listIterator.previous();
 		}
-		
+
 		@Override
 		public void remove() {
 			listIterator.remove();
@@ -726,7 +727,7 @@ public abstract class CollectionUtils {
 	}
 
 	public static <S, T> Iterator<T> iterator(Iterator<? extends S> iterator,
-			Processor<S, ? extends Iterator<? extends T>, ? extends RuntimeException> converter) {
+			Function<? super S, ? extends Iterator<T>> converter) {
 		Assert.requiredArgument(converter != null, "converter");
 		if (iterator == null) {
 			return Collections.emptyIterator();

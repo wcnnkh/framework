@@ -23,7 +23,7 @@ public final class FileLinesValueProcessor extends AbstractObservableResourceVal
 	@Override
 	protected Object parse(BeanDefinition beanDefinition, Context context, Object bean, Field field,
 			ValueDefinition valueDefinition, String name, Charset charset, Resource resource) throws Exception {
-		List<String> lines = ResourceUtils.getLines(resource, charset);
+		List<String> lines = ResourceUtils.readLines(resource, charset).toList();
 		if (lines == null) {
 			return null;
 		}

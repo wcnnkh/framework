@@ -1,11 +1,11 @@
 package io.basc.framework.factory.support;
 
 import java.util.Arrays;
-import java.util.Iterator;
 
 import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Cursor;
 import io.basc.framework.value.Value;
 import io.basc.framework.value.ValueFactory;
 
@@ -44,7 +44,7 @@ public class ConfigServiceLoader<S> implements ServiceLoader<S> {
 		}
 	}
 
-	public Iterator<S> iterator() {
+	public Cursor<S> iterator() {
 		if (names == null) {
 			synchronized (this) {
 				if (names == null) {
@@ -52,7 +52,7 @@ public class ConfigServiceLoader<S> implements ServiceLoader<S> {
 				}
 			}
 		}
-		return new InstanceIterator<S>(instanceFactory, Arrays.asList(names).iterator());
+		return Cursor.create(new InstanceIterator<S>(instanceFactory, Arrays.asList(names).iterator()));
 	}
 
 }

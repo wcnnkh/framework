@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+@FunctionalInterface
 public interface ResultSet<E> extends Iterable<E>, Streamy<E> {
 	@Override
 	Cursor<E> iterator();
@@ -15,12 +16,22 @@ public interface ResultSet<E> extends Iterable<E>, Streamy<E> {
 	}
 
 	@Override
-	default <U> Streamy<U> map(Function<? super E, ? extends U> mapper) {
+	default <U> ResultSet<U> flatConvert(Function<? super Stream<E>, ? extends Stream<U>> converter) {
+		return of(() -> iterator().flatConvert(converter));
+	}
+
+	@Override
+	default <U> ResultSet<U> convert(Function<? super E, ? extends U> converter) {
+		return of(() -> iterator().convert(converter));
+	}
+
+	@Override
+	default <U> ResultSet<U> map(Function<? super E, ? extends U> mapper) {
 		return of(() -> iterator().map(mapper));
 	}
 
 	@Override
-	default Streamy<E> filter(Predicate<? super E> predicate) {
+	default ResultSet<E> filter(Predicate<? super E> predicate) {
 		return of(() -> iterator().filter(predicate));
 	}
 

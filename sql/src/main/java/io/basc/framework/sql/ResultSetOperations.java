@@ -2,11 +2,14 @@ package io.basc.framework.sql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.stream.Stream;
+import java.util.NoSuchElementException;
+import java.util.function.Supplier;
 
+import io.basc.framework.util.CloseableIterator;
 import io.basc.framework.util.Cursor;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.Source;
+import io.basc.framework.util.StaticSupplier;
 
 public class ResultSetOperations extends Operations<ResultSet, ResultSetOperations> {
 
@@ -14,22 +17,71 @@ public class ResultSetOperations extends Operations<ResultSet, ResultSetOperatio
 		super(source);
 	}
 
-	public <E> Cursor<E> map(Processor<? super ResultSet, ? extends E, ? extends Throwable> rowMapper)
+	public <E> Cursor<E> rows(Processor<? super ResultSet, ? extends E, ? extends Throwable> rowMapper)
 			throws SQLException {
-		ResultSet resultSet = get();
-		Stream<E> stream = SqlUtils.stream(resultSet, rowMapper, () -> ResultSetOperations.this.toString());
-		return Cursor.create(stream.onClose(() -> {
+		ResultSetIterator resultSetIterator = new ResultSetIterator();
+		return Cursor.create(resultSetIterator).map((e) -> {
 			try {
-				close(resultSet);
-			} catch (SQLException e) {
-				throw SqlUtils.throwableSqlException(e, () -> ResultSetOperations.this.toString());
-			}
-		})).onClose(() -> {
-			try {
-				close();
-			} catch (SQLException e) {
-				throw SqlUtils.throwableSqlException(e, () -> ResultSetOperations.this.toString());
+				return rowMapper.process(e);
+			} catch (Throwable err) {
+				throw SqlUtils.throwableSqlException(err, () -> ResultSetOperations.this.toString());
 			}
 		});
+	}
+
+	private class ResultSetIterator implements CloseableIterator<ResultSet> {
+		private Supplier<ResultSet> next;
+		private boolean error = false;
+		private ResultSet resultSet;
+
+		@Override
+		public boolean hasNext() {
+			if (error) {
+				return false;
+			}
+
+			if (next != null) {
+				return true;
+			}
+
+			try {
+				resultSet = ResultSetOperations.this.get();
+				if (resultSet.next()) {
+					this.next = new StaticSupplier<ResultSet>(resultSet);
+					return true;
+				}
+			} catch (SQLException e) {
+				error = true;
+				try {
+					ResultSetOperations.this.close(resultSet);
+				} catch (SQLException e1) {
+					e.addSuppressed(e1);
+				}
+				throw SqlUtils.throwableSqlException(e, () -> ResultSetOperations.this.toString());
+			}
+			return false;
+		}
+
+		@Override
+		public ResultSet next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException("ResultSet");
+			}
+
+			ResultSet rs = next.get();
+			next = null;
+			return rs;
+		}
+
+		@Override
+		public void close() {
+			if (resultSet != null) {
+				try {
+					ResultSetOperations.this.close(resultSet);
+				} catch (SQLException e) {
+					throw SqlUtils.throwableSqlException(e, () -> ResultSetOperations.this.toString());
+				}
+			}
+		}
 	}
 }

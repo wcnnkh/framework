@@ -1,7 +1,6 @@
 package io.basc.framework.jedis;
 
 import io.basc.framework.convert.lang.NumberToBooleanConverter;
-import io.basc.framework.data.domain.Range;
 import io.basc.framework.data.geo.Circle;
 import io.basc.framework.data.geo.Distance;
 import io.basc.framework.data.geo.Metric;
@@ -29,6 +28,7 @@ import io.basc.framework.redis.SetOption;
 import io.basc.framework.redis.Tuple;
 import io.basc.framework.redis.convert.RedisConverters;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.page.Pageable;
 import io.basc.framework.util.page.SharedPageable;

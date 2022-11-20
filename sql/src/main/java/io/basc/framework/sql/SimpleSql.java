@@ -1,6 +1,8 @@
 package io.basc.framework.sql;
 
-public final class SimpleSql extends SerializableSql {
+import java.io.Serializable;
+
+public final class SimpleSql extends AbstractSql implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.basc.framework.data.domain.Range;
 import io.basc.framework.redis.InterArgs;
 import io.basc.framework.redis.RedisSortedSetsCommands;
 import io.basc.framework.redis.ScoreOption;
@@ -16,6 +15,7 @@ import io.basc.framework.redis.Tuple;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Processor;
+import io.basc.framework.util.Range;
 
 @SuppressWarnings("unchecked")
 public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>

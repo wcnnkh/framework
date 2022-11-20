@@ -204,6 +204,8 @@ public class DefaultLuceneMapper extends DefaultObjectMapper<Document, LuceneExc
 			return Occur.MUST;
 		} else if (relationshipKeywords.getOrKeywords().exists(condition)) {
 			return Occur.SHOULD;
+		} else if (relationshipKeywords.getNotKeywords().exists(condition)) {
+			return Occur.MUST_NOT;
 		}
 		return null;
 	}

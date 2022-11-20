@@ -11,7 +11,7 @@ public class EmptyResultSet<E> implements ResultSet<E> {
 	}
 
 	@Override
-	public List<E> list() {
+	public List<E> toList() {
 		return Collections.emptyList();
 	}
 
