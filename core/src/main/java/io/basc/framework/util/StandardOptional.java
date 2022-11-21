@@ -4,10 +4,10 @@ import java.util.function.Supplier;
 
 import io.basc.framework.lang.Nullable;
 
-public class SharedOptional<T> extends AbstractOptional<T> {
+public class StandardOptional<T> extends AbstractOptional<T> {
 	private final Supplier<? extends T> valueSupplier;
 
-	public SharedOptional(@Nullable Supplier<? extends T> valueSupplier) {
+	public StandardOptional(@Nullable Supplier<? extends T> valueSupplier) {
 		this.valueSupplier = valueSupplier;
 	}
 

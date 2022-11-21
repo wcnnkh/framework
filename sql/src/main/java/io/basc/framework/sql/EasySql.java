@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import io.basc.framework.util.Pair;
+import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 
 public final class EasySql extends AbstractSql implements Serializable {
@@ -455,5 +456,32 @@ public final class EasySql extends AbstractSql implements Serializable {
 	 */
 	public EasySql between(String column, Object start, Object end) {
 		return append(" `" + column + "` BETWEEN ? AND ?", start, end);
+	}
+
+	/**
+	 * 指定范围
+	 * 
+	 * @param column
+	 * @param range
+	 * @return
+	 */
+	public EasySql range(String column, Range<? extends Object> range) {
+		if (range == null) {
+			return this;
+		}
+
+		if (range.getLowerBound().isBounded() && range.getUpperBound().isBounded()
+				&& range.getLowerBound().isInclusive() && !range.getUpperBound().isInclusive()) {
+			return between(column, range.getLowerBound().get(), range.getUpperBound().get());
+		}
+
+		if (range.getLowerBound().isBounded()) {
+			and().condition(column, range.getLowerBound().isInclusive() ? ">=" : ">", range.getLowerBound().get());
+		}
+
+		if (range.getUpperBound().isBounded()) {
+			and().condition(column, range.getUpperBound().isInclusive() ? "<=" : "<", range.getUpperBound().get());
+		}
+		return this;
 	}
 }

@@ -396,7 +396,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		Collection<Range<Double>> numberRanges = column.getNumberRanges();
 		if (!CollectionUtils.isEmpty(numberRanges)) {
 			for (Range<Double> range : numberRanges) {
-				if (range.getLowerBound().getValue().isPresent()) {
+				if (range.getLowerBound().isBounded()) {
 					sb.append(AND);
 					keywordProcessing(sb, column.getName());
 					if (column.isIncrement()) {
@@ -412,10 +412,10 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 					if (range.getLowerBound().isInclusive()) {
 						sb.append("=");
 					}
-					sb.append(range.getLowerBound().getValue());
+					sb.append(range.getLowerBound().get());
 				}
 
-				if (range.getUpperBound().getValue().isPresent()) {
+				if (range.getUpperBound().isBounded()) {
 					sb.append(AND);
 					keywordProcessing(sb, column.getName());
 					if (column.isIncrement()) {
@@ -431,7 +431,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 					if (range.getUpperBound().isInclusive()) {
 						sb.append("=");
 					}
-					sb.append(range.getUpperBound().getValue());
+					sb.append(range.getUpperBound().get());
 				}
 			}
 		}

@@ -1,10 +1,10 @@
 package io.basc.framework.util;
 
 import java.util.Comparator;
-import java.util.Optional;
+import java.util.function.Function;
 
-public class Range<T> {
-	private final static Range<?> UNBOUNDED = Range.of(Bound.unbounded(), Bound.UNBOUNDED);
+public final class Range<T> {
+	private final static Range<?> UNBOUNDED = Range.of(Bound.unbounded(), Bound.unbounded());
 
 	/**
 	 * The lower bound of the range.
@@ -17,13 +17,14 @@ public class Range<T> {
 	private final Bound<T> upperBound;
 
 	public Range(Bound<T> lowerBound, Bound<T> upperBound) {
+		Assert.requiredArgument(lowerBound != null, "lowerBound");
+		Assert.requiredArgument(upperBound != null, "upperBound");
 		this.lowerBound = lowerBound;
 		this.upperBound = upperBound;
 	}
 
-	public <V, E extends Throwable> Range<V> convert(Processor<? super T, ? extends V, ? extends E> converter)
-			throws E {
-		return new Range<V>(lowerBound.convert(converter), upperBound.convert(converter));
+	public <U> Range<U> convert(Function<? super T, ? extends U> converter) {
+		return new Range<U>(lowerBound.convert(converter), upperBound.convert(converter));
 	}
 
 	public Bound<T> getLowerBound() {
@@ -158,19 +159,29 @@ public class Range<T> {
 	 * @return
 	 */
 	public boolean contains(T value, Comparator<T> comparator) {
-
 		Assert.notNull(value, "Reference value must not be null!");
-
-		boolean greaterThanLowerBound = lowerBound.getValue() //
+		boolean greaterThanLowerBound = lowerBound //
 				.map(it -> lowerBound.isInclusive() ? comparator.compare(it, value) <= 0
 						: comparator.compare(it, value) < 0) //
 				.orElse(true);
 
-		boolean lessThanUpperBound = upperBound.getValue() //
+		boolean lessThanUpperBound = upperBound //
 				.map(it -> upperBound.isInclusive() ? comparator.compare(it, value) >= 0
 						: comparator.compare(it, value) > 0) //
 				.orElse(true);
 		return greaterThanLowerBound && lessThanUpperBound;
+	}
+
+	String toPrefixString() {
+		return lowerBound.map(Object::toString) //
+				.map(it -> lowerBound.isInclusive() ? "[".concat(it) : "(".concat(it)) //
+				.orElse("unbounded");
+	}
+
+	String toSuffixString() {
+		return upperBound.map(Object::toString) //
+				.map(it -> upperBound.isInclusive() ? it.concat("]") : it.concat(")")) //
+				.orElse("unbounded");
 	}
 
 	/*
@@ -180,182 +191,7 @@ public class Range<T> {
 	 */
 	@Override
 	public String toString() {
-		return String.format("%s-%s", lowerBound.toPrefixString(), upperBound.toSuffixString());
-	}
-
-	public static class Bound<T> {
-
-		@SuppressWarnings({ "rawtypes", "unchecked" }) //
-		private static final Bound<?> UNBOUNDED = new Bound(Optional.empty(), true);
-
-		private final Optional<T> value;
-		private final boolean inclusive;
-
-		private Bound(Optional<T> value, boolean inclusive) {
-			this.value = value;
-			this.inclusive = inclusive;
-		}
-
-		public Optional<T> getValue() {
-			return value;
-		}
-
-		public boolean isInclusive() {
-			return inclusive;
-		}
-
-		public <V, E extends Throwable> Bound<V> convert(Processor<? super T, ? extends V, ? extends E> converter)
-				throws E {
-			return new Bound<V>(Optional.of(converter.process(value.get())), inclusive);
-		}
-
-		/**
-		 * Creates an unbounded {@link Bound}.
-		 */
-		@SuppressWarnings("unchecked")
-		public static <T> Bound<T> unbounded() {
-			return (Bound<T>) UNBOUNDED;
-		}
-
-		/**
-		 * Returns whether this boundary is bounded.
-		 *
-		 * @return
-		 */
-		public boolean isBounded() {
-			return value.isPresent();
-		}
-
-		/**
-		 * Creates a boundary including {@code value}.
-		 *
-		 * @param value must not be {@literal null}.
-		 * @return
-		 */
-		public static <T> Bound<T> inclusive(T value) {
-
-			Assert.notNull(value, "Value must not be null!");
-			return new Bound<>(Optional.of(value), true);
-		}
-
-		/**
-		 * Creates a boundary including {@code value}.
-		 *
-		 * @param value must not be {@literal null}.
-		 * @return
-		 */
-		public static Bound<Integer> inclusive(int value) {
-			return inclusive((Integer) value);
-		}
-
-		/**
-		 * Creates a boundary including {@code value}.
-		 *
-		 * @param value must not be {@literal null}.
-		 * @return
-		 */
-		public static Bound<Long> inclusive(long value) {
-			return inclusive((Long) value);
-		}
-
-		/**
-		 * Creates a boundary including {@code value}.
-		 *
-		 * @param value must not be {@literal null}.
-		 * @return
-		 */
-		public static Bound<Float> inclusive(float value) {
-			return inclusive((Float) value);
-		}
-
-		/**
-		 * Creates a boundary including {@code value}.
-		 *
-		 * @param value must not be {@literal null}.
-		 * @return
-		 */
-		public static Bound<Double> inclusive(double value) {
-			return inclusive((Double) value);
-		}
-
-		/**
-		 * Creates a boundary excluding {@code value}.
-		 *
-		 * @param value must not be {@literal null}.
-		 * @return
-		 */
-		public static <T> Bound<T> exclusive(T value) {
-
-			Assert.notNull(value, "Value must not be null!");
-			return new Bound<>(Optional.of(value), false);
-		}
-
-		/**
-		 * Creates a boundary excluding {@code value}.
-		 *
-		 * @param value must not be {@literal null}.
-		 * @return
-		 */
-		public static Bound<Integer> exclusive(int value) {
-			return exclusive((Integer) value);
-		}
-
-		/**
-		 * Creates a boundary excluding {@code value}.
-		 *
-		 * @param value must not be {@literal null}.
-		 * @return
-		 */
-		public static Bound<Long> exclusive(long value) {
-			return exclusive((Long) value);
-		}
-
-		/**
-		 * Creates a boundary excluding {@code value}.
-		 *
-		 * @param value must not be {@literal null}.
-		 * @return
-		 */
-		public static Bound<Float> exclusive(float value) {
-			return exclusive((Float) value);
-		}
-
-		/**
-		 * Creates a boundary excluding {@code value}.
-		 *
-		 * @param value must not be {@literal null}.
-		 * @return
-		 */
-		public static Bound<Double> exclusive(double value) {
-			return exclusive((Double) value);
-		}
-
-		String toPrefixString() {
-
-			return getValue() //
-					.map(Object::toString) //
-					.map(it -> isInclusive() ? "[".concat(it) : "(".concat(it)) //
-					.orElse("unbounded");
-		}
-
-		String toSuffixString() {
-
-			return getValue() //
-					.map(Object::toString) //
-					.map(it -> isInclusive() ? it.concat("]") : it.concat(")")) //
-					.orElse("unbounded");
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see java.lang.Object#toString()
-		 */
-		@Override
-		public String toString() {
-			return value.map(Object::toString).orElse("unbounded");
-		}
-
+		return String.format("%s-%s", toPrefixString(), toSuffixString());
 	}
 
 	/**

@@ -653,8 +653,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 
 	@Override
 	public Long zcount(byte[] key, Range<? extends Number> range) {
-		return jedis.zcount(key, range.getLowerBound().getValue().get().doubleValue(),
-				range.getUpperBound().getValue().get().doubleValue());
+		return jedis.zcount(key, range.getLowerBound().get().doubleValue(), range.getUpperBound().get().doubleValue());
 	}
 
 	@Override

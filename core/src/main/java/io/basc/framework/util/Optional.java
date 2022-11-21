@@ -23,7 +23,7 @@ public interface Optional<T> extends Supplier<T> {
 	}
 
 	public static <U> Optional<U> ofSupplier(Supplier<? extends U> valueSupplier) {
-		return new SharedOptional<>(valueSupplier);
+		return new StandardOptional<>(valueSupplier);
 	}
 
 	/**
