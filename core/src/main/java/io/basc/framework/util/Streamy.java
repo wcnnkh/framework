@@ -1,12 +1,15 @@
 package io.basc.framework.util;
 
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,6 +70,22 @@ public interface Streamy<E> extends io.basc.framework.util.Optional<E> {
 
 	default Set<E> toSet() {
 		return collect(Collectors.toCollection(() -> new LinkedHashSet<>()));
+	}
+
+	default <K> Map<K, E> toMap(Function<? super E, ? extends K> keyMapper) {
+		return toMap(keyMapper, Function.identity());
+	}
+
+	default <K, V> Map<K, V> toMap(Function<? super E, ? extends K> keyMapper,
+			Function<? super E, ? extends V> valueMapper) {
+		return toMap(keyMapper, valueMapper, () -> new LinkedHashMap<>());
+	}
+
+	default <K, V, M extends Map<K, V>> M toMap(Function<? super E, ? extends K> keyMapper,
+			Function<? super E, ? extends V> valueMapper, Supplier<? extends M> mapSupplier) {
+		return collect(Collectors.toMap(keyMapper, valueMapper, (u, v) -> {
+			throw new IllegalStateException(String.format("Duplicate key %s", u));
+		}, mapSupplier));
 	}
 
 	default E last() {

@@ -4,12 +4,13 @@ import java.util.List;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.orm.OrmException;
+import io.basc.framework.util.ResultSet;
 import io.basc.framework.util.page.Paginations;
 
 /**
  * curd操作
  * 
- * @see CurdRepository
+ * @see CurdOperations
  * @author wcnnkh
  *
  * @param <V>
@@ -21,18 +22,18 @@ public interface Curd<V> {
 
 	long deleteAll(V conditions);
 
-	boolean deleteById(Object... ids);
+	boolean deleteById(Object... primaryKeys);
 
-	V getById(Object... ids);
+	V getById(Object... primaryKeys);
 
-	<T> T getById(TypeDescriptor resultsTypeDescriptor, Object... entityIds) throws OrmException;
+	<T> T getById(TypeDescriptor resultsTypeDescriptor, Object... primaryKeys) throws OrmException;
 
-	List<V> getInIds(List<?> inIds, Object... ids);
+	<K> ResultSet<V> getInIds(List<? extends K> inPrimaryKeys, Object... primaryKeys);
 
-	<T> List<T> getInIds(TypeDescriptor resultsTypeDescriptor, List<?> entityInIds, Object... entityIds)
-			throws OrmException;
+	<K, T> ResultSet<T> getInIds(TypeDescriptor resultsTypeDescriptor, List<? extends K> inPrimaryKeys,
+			Object... primaryKeys) throws OrmException;
 
-	boolean isPresentById(Object... ids);
+	boolean isPresentById(Object... primaryKeys);
 
 	boolean isPresent(V conditions);
 

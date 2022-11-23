@@ -7,13 +7,14 @@ import java.util.Map;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.ResultSet;
 import io.basc.framework.util.page.Paginations;
 
-public class CurdRepositoryTemplate implements CurdRepository {
+public class CurdTemplate implements CurdOperations {
 	private final Map<Class<?>, Curd<?>> repositoryMap = new HashMap<Class<?>, Curd<?>>();
-	private final CurdRepository repository;
+	private final CurdOperations repository;
 
-	public CurdRepositoryTemplate(CurdRepository repository) {
+	public CurdTemplate(CurdOperations repository) {
 		Assert.requiredArgument(repository != null, "repository");
 		this.repository = repository;
 	}
@@ -40,7 +41,7 @@ public class CurdRepositoryTemplate implements CurdRepository {
 		return curd;
 	}
 
-	public CurdRepository getRepository() {
+	public CurdOperations getRepository() {
 		return repository;
 	}
 
@@ -57,9 +58,9 @@ public class CurdRepositoryTemplate implements CurdRepository {
 	}
 
 	@Override
-	public <T> T getById(Class<? extends T> entityClass, Object... ids) {
+	public <T> T getById(Class<? extends T> entityClass, Object... primaryKeys) {
 		Curd<T> curd = getCurd(entityClass);
-		return curd.getById(ids);
+		return curd.getById(primaryKeys);
 	}
 
 	@Override
@@ -69,9 +70,9 @@ public class CurdRepositoryTemplate implements CurdRepository {
 	}
 
 	@Override
-	public <T> boolean isPresentById(Class<? extends T> entityClass, Object... ids) {
+	public <T> boolean isPresentById(Class<? extends T> entityClass, Object... primaryKeys) {
 		Curd<T> curd = getCurd(entityClass);
-		return curd.isPresentById(ids);
+		return curd.isPresentById(primaryKeys);
 	}
 
 	@Override
@@ -99,17 +100,17 @@ public class CurdRepositoryTemplate implements CurdRepository {
 	}
 
 	@Override
-	public <T, E> T getById(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass, Object... entityIds)
+	public <T, E> T getById(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass, Object... primaryKeys)
 			throws OrmException {
 		Curd<E> curd = getCurd(entityClass);
-		return curd.getById(resultsTypeDescriptor, entityIds);
+		return curd.getById(resultsTypeDescriptor, primaryKeys);
 	}
 
 	@Override
-	public <T, E> List<T> getInIds(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
-			List<?> entityInIds, Object... entityIds) throws OrmException {
-		Curd<E> curd = getCurd(entityClass);
-		return curd.getInIds(resultsTypeDescriptor, entityInIds, entityIds);
+	public <K, T> ResultSet<T> getInIds(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
+			List<? extends K> inPrimaryKeys, Object... primaryKeys) throws OrmException {
+		Curd<?> curd = getCurd(entityClass);
+		return curd.getInIds(resultsTypeDescriptor, inPrimaryKeys, primaryKeys);
 	}
 
 	@Override

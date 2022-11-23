@@ -510,11 +510,11 @@ public abstract class CollectionUtils {
 		return map == null ? 0 : map.size();
 	}
 
-	public static <E> List<E> toList(Iterable<E> iterable) {
-		Iterator<E> iterator = iterable.iterator();
-		if (!iterator.hasNext()) {
+	public static <E> List<E> list(Iterator<E> iterator) {
+		if (iterator == null || !iterator.hasNext()) {
 			return Collections.emptyList();
 		}
+
 		return Collections.list(CollectionUtils.toEnumeration(iterator));
 	}
 

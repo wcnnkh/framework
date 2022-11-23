@@ -1,6 +1,6 @@
 package io.basc.framework.orm.repository;
 
-public class RepositoryTemplate extends CurdRepositoryTemplate {
+public class RepositoryTemplate extends CurdTemplate {
 
 	public RepositoryTemplate(Repository repository) {
 		super(repository);

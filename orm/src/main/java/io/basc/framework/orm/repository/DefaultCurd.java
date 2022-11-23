@@ -4,13 +4,14 @@ import java.util.List;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.orm.OrmException;
+import io.basc.framework.util.ResultSet;
 import io.basc.framework.util.page.Paginations;
 
 public class DefaultCurd<V> implements Curd<V> {
 	private final Class<? extends V> entityClass;
-	private final CurdRepository repository;
+	private final CurdOperations repository;
 
-	public DefaultCurd(Class<? extends V> entityClass, CurdRepository repository) {
+	public DefaultCurd(Class<? extends V> entityClass, CurdOperations repository) {
 		this.entityClass = entityClass;
 		this.repository = repository;
 	}
@@ -36,7 +37,7 @@ public class DefaultCurd<V> implements Curd<V> {
 	}
 
 	@Override
-	public List<V> getInIds(List<?> inIds, Object... ids) {
+	public <K> ResultSet<V> getInIds(List<? extends K> inIds, Object... ids) {
 		return repository.getInIds(TypeDescriptor.valueOf(entityClass), entityClass, inIds, ids);
 	}
 
@@ -86,14 +87,13 @@ public class DefaultCurd<V> implements Curd<V> {
 	}
 
 	@Override
-	public <T> List<T> getInIds(TypeDescriptor resultsTypeDescriptor, List<?> entityInIds, Object... entityIds)
-			throws OrmException {
+	public <K, T> ResultSet<T> getInIds(TypeDescriptor resultsTypeDescriptor, List<? extends K> entityInIds,
+			Object... entityIds) throws OrmException {
 		return repository.getInIds(resultsTypeDescriptor, entityClass, entityInIds, entityIds);
 	}
 
 	@Override
-	public <T> Paginations<T> query(TypeDescriptor resultsTypeDescriptor, V conditions)
-			throws OrmException {
+	public <T> Paginations<T> query(TypeDescriptor resultsTypeDescriptor, V conditions) throws OrmException {
 		return repository.query(resultsTypeDescriptor, entityClass, conditions);
 	}
 

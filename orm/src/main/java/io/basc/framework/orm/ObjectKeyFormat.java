@@ -1,7 +1,6 @@
 package io.basc.framework.orm;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -11,21 +10,29 @@ import io.basc.framework.mapper.Structure;
 import io.basc.framework.util.CollectionUtils;
 
 public interface ObjectKeyFormat {
-	String getObjectKeyByIds(Structure<? extends Property> structure, Collection<Object> ids);
+	String getObjectKeyByIds(Structure<? extends Property> structure, Iterator<?> ids);
+
+	default String getObjectKeyByIds(Structure<? extends Property> structure, Iterable<?> ids) {
+		return getObjectKeyByIds(structure, ids == null ? Collections.emptyIterator() : ids.iterator());
+	}
 
 	<T> String getObjectKey(Structure<? extends Property> structure, T bean);
 
 	default <K> Map<String, K> getInIdsKeyMap(Structure<? extends Property> structure,
-			Collection<? extends K> lastPrimaryKeys, Object[] primaryKeys) {
+			Iterable<? extends K> lastPrimaryKeys, Object[] primaryKey) {
+		return getInIdsKeyMap(structure,
+				lastPrimaryKeys == null ? Collections.emptyIterator() : lastPrimaryKeys.iterator(), primaryKey);
+	}
+
+	default <K> Map<String, K> getInIdsKeyMap(Structure<? extends Property> structure,
+			Iterator<? extends K> lastPrimaryKeys, Object[] primaryKeys) {
 		if (CollectionUtils.isEmpty(lastPrimaryKeys)) {
 			return Collections.emptyMap();
 		}
 
 		Map<String, K> keyMap = new LinkedHashMap<String, K>();
-		Iterator<? extends K> valueIterator = lastPrimaryKeys.iterator();
-
-		while (valueIterator.hasNext()) {
-			K k = valueIterator.next();
+		while (lastPrimaryKeys.hasNext()) {
+			K k = lastPrimaryKeys.next();
 			Object[] ids;
 			if (primaryKeys == null || primaryKeys.length == 0) {
 				ids = new Object[] { k };

@@ -7,26 +7,20 @@ import io.basc.framework.orm.repository.RepositoryTemplate;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public final class CurdRepositoryGetInIdsMethodAdapter extends
-		CurdRepositoryMethodAdapter {
+public final class CurdRepositoryGetInIdsMethodAdapter extends CurdRepositoryMethodAdapter {
 
 	@Override
-	protected boolean test(Method method, String methodName,
-			Class<?>[] parameterTypes) {
+	protected boolean test(Method method, String methodName, Class<?>[] parameterTypes) {
 		return methodName.equals("getInIds");
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	protected Object intercept(RepositoryTemplate template,
-			MethodInvoker invoker, Object[] args, Class<?> entityClass,
-			TypeDescriptor resultsTypeDescriptor, String methodName)
-			throws Throwable {
+	protected Object intercept(RepositoryTemplate template, MethodInvoker invoker, Object[] args, Class<?> entityClass,
+			TypeDescriptor resultsTypeDescriptor, String methodName) throws Throwable {
 		if (args.length == 3) {
-			return template.getInIds((TypeDescriptor) args[0], entityClass,
-					(List) args[1], args[2]);
+			return template.getInIds((TypeDescriptor) args[0], entityClass, (List) args[1], (Object[]) args[2]);
 		}
-		return template.getInIds(resultsTypeDescriptor, entityClass,
-				(List) args[0], args[1]);
+		return template.getInIds(resultsTypeDescriptor, entityClass, (List) args[0], (Object[]) args[1]);
 	}
 }

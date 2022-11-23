@@ -4,11 +4,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
@@ -18,6 +15,7 @@ import io.basc.framework.orm.EntityOperations;
 import io.basc.framework.orm.MaxValueFactory;
 import io.basc.framework.orm.ObjectKeyFormat;
 import io.basc.framework.orm.OrmException;
+import io.basc.framework.orm.PrimaryKeyResultSet;
 import io.basc.framework.orm.repository.Conditions;
 import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.Repository;
@@ -27,6 +25,7 @@ import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.SqlOperations;
 import io.basc.framework.sql.SqlUtils;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.ResultSet;
 import io.basc.framework.util.StringUtils;
 
 @SuppressWarnings("unchecked")
@@ -145,32 +144,23 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return (List<T>) query(tableStructure, sql).toList();
 	}
 
-	default <K, V> Map<K, V> getInIds(Class<? extends V> type, Collection<? extends K> inPrimaryKeys,
-			Object... primaryKeys) {
-		return getInIds(null, type, inPrimaryKeys, primaryKeys);
+	@Override
+	default <K, T> PrimaryKeyResultSet<K, T> getInIds(Class<? extends T> entityClass, List<? extends K> inPrimaryKeys,
+			Object... primaryKeys) throws OrmException {
+		return getInIds((String) null, entityClass, inPrimaryKeys, primaryKeys);
 	}
 
-	default <K, V> Map<K, V> getInIds(@Nullable String tableName, Class<? extends V> entityClass,
-			Collection<? extends K> inPrimaryKeys, Object... primaryKeys) {
+	default <K, V> PrimaryKeyResultSet<K, V> getInIds(@Nullable String tableName, Class<? extends V> entityClass,
+			List<? extends K> inPrimaryKeys, Object... primaryKeys) {
 		return getInIds(getMapper().getStructure(entityClass, null, tableName), inPrimaryKeys, primaryKeys);
 	}
 
-	default <K, V> Map<K, V> getInIds(TableStructure tableStructure, Collection<? extends K> inPrimaryKeys,
+	default <K, V> PrimaryKeyResultSet<K, V> getInIds(TableStructure tableStructure, List<? extends K> inPrimaryKeys,
 			Object... primaryKeys) {
 		Sql sql = getMapper().getInIds(tableStructure, primaryKeys, inPrimaryKeys);
-		io.basc.framework.util.ResultSet<V> cursor = query(tableStructure, sql);
-		List<V> list = cursor.toList();
-		if (list == null || list.isEmpty()) {
-			return Collections.emptyMap();
-		}
-
-		Map<String, K> keyMap = getObjectKeyFormat().getInIdsKeyMap(tableStructure, inPrimaryKeys, primaryKeys);
-		Map<K, V> map = new LinkedHashMap<K, V>();
-		for (V v : list) {
-			String key = getObjectKeyFormat().getObjectKey(tableStructure, v);
-			map.put(keyMap.get(key), v);
-		}
-		return map;
+		ResultSet<V> resultSet = query(tableStructure, sql);
+		return new PrimaryKeyResultSet<>(() -> resultSet.iterator(), getObjectKeyFormat(), tableStructure, inPrimaryKeys,
+				primaryKeys);
 	}
 
 	SqlDialect getMapper();
