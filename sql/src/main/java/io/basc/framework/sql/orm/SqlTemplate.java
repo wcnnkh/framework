@@ -1,7 +1,6 @@
 package io.basc.framework.sql.orm;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -23,7 +22,6 @@ import io.basc.framework.sql.ConnectionOperations;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.SqlOperations;
-import io.basc.framework.sql.SqlUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ResultSet;
 import io.basc.framework.util.StringUtils;
@@ -108,11 +106,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	default Object getAutoIncrementLastId(Connection connection, TableStructure tableStructure) {
 		Sql sql = getMapper().toLastInsertIdSql(tableStructure);
-		try {
-			return new ConnectionOperations(() -> connection).prepare(sql).query().rows((e) -> e.getObject(1)).first();
-		} catch (SQLException e) {
-			throw SqlUtils.throwableSqlException(e, () -> SqlUtils.toString(sql));
-		}
+		return ConnectionOperations.of(connection).prepare(sql).query().rows((e) -> e.getObject(1)).first();
 	}
 
 	@Override
@@ -159,8 +153,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 			Object... primaryKeys) {
 		Sql sql = getMapper().getInIds(tableStructure, primaryKeys, inPrimaryKeys);
 		ResultSet<V> resultSet = query(tableStructure, sql);
-		return new PrimaryKeyResultSet<>(() -> resultSet.iterator(), getObjectKeyFormat(), tableStructure, inPrimaryKeys,
-				primaryKeys);
+		return new PrimaryKeyResultSet<>(() -> resultSet.iterator(), getObjectKeyFormat(), tableStructure,
+				inPrimaryKeys, primaryKeys);
 	}
 
 	SqlDialect getMapper();

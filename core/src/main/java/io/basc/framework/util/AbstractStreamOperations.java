@@ -2,10 +2,26 @@ package io.basc.framework.util;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.basc.framework.lang.Nullable;
+
 public abstract class AbstractStreamOperations<T, E extends Throwable, C extends StreamOperations<T, E>>
 		extends AbstractStreamSource<T, E, C> implements StreamOperations<T, E> {
 	private final AtomicBoolean closed = new AtomicBoolean(false);
 	private RunnableProcessor<? extends E> closeHandler;
+
+	public AbstractStreamOperations() {
+		this(null);
+	}
+
+	public AbstractStreamOperations(@Nullable RunnableProcessor<? extends E> closeHandler) {
+		this(null, closeHandler);
+	}
+
+	public AbstractStreamOperations(@Nullable ConsumeProcessor<? super T, ? extends E> closeProcessor,
+			@Nullable RunnableProcessor<? extends E> closeHandler) {
+		super(closeProcessor);
+		this.closeHandler = closeHandler;
+	}
 
 	@Override
 	public void close() throws E {

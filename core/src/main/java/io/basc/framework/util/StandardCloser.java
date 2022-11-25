@@ -1,8 +1,18 @@
 package io.basc.framework.util;
 
+import io.basc.framework.lang.Nullable;
+
 public class StandardCloser<T, E extends Throwable, C extends Closer<T, E>> implements Closer<T, E> {
 	private ConsumeProcessor<? super T, ? extends E> closeHandler;
-
+	
+	public StandardCloser() {
+		this(null);
+	}
+	
+	public StandardCloser(@Nullable ConsumeProcessor<? super T, ? extends E> closeHandler) {
+		this.closeHandler = closeHandler;
+	}
+	
 	@Override
 	public void close(T source) throws E {
 		if (source != null && this.closeHandler != null) {
