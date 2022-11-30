@@ -1,4 +1,4 @@
-package io.basc.framework.jedis.test;
+package io.basc.framework.test;
 
 import java.util.concurrent.CountDownLatch;
 

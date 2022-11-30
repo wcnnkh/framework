@@ -5,6 +5,13 @@ import java.util.Set;
 
 import io.basc.framework.util.comparator.ComparableComparator;
 
+/**
+ * Note: this comparator imposes orderings that are inconsistent with equals.
+ * 
+ * @author wcnnkh
+ *
+ * @param <T>
+ */
 public class ConversionComparator<T> implements Comparator<T> {
 	public static final Comparator<Object> INSTANCE = new ConversionComparator<Object>();
 
@@ -20,7 +27,7 @@ public class ConversionComparator<T> implements Comparator<T> {
 				}
 			}
 
-			return ComparableComparator.INSTANCE.compare(o1, o2) == 1 ? -1 : 1;
+			return ComparableComparator.INSTANCE.compare(o1, o2) == 1 ? 1 : -1;
 		}
 
 		if (o1 instanceof ConvertibleConditional) {
@@ -31,6 +38,6 @@ public class ConversionComparator<T> implements Comparator<T> {
 			return 1;
 		}
 
-		return ComparableComparator.INSTANCE.compare(o1, o2) == -1 ? -1 : 1;
+		return ComparableComparator.INSTANCE.compare(o1, o2) == 1 ? 1 : -1;
 	}
 }

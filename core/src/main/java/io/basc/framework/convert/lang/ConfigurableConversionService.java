@@ -29,7 +29,7 @@ public class ConfigurableConversionService extends ConfigurableServices<Conversi
 
 	public final boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		for (ConversionService service : this) {
-			if (NESTED.exists(service)) {
+			if (NESTED.isCurrent(service)) {
 				continue;
 			}
 
@@ -52,7 +52,7 @@ public class ConfigurableConversionService extends ConfigurableServices<Conversi
 		}
 
 		for (ConversionService service : this) {
-			if (NESTED.exists(service)) {
+			if (NESTED.isCurrent(service)) {
 				continue;
 			}
 

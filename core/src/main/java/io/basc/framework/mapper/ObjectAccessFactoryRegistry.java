@@ -3,7 +3,9 @@ package io.basc.framework.mapper;
 import io.basc.framework.convert.TypeDescriptor;
 
 public interface ObjectAccessFactoryRegistry<E extends Throwable> extends ObjectAccessFactory<Object, E> {
-	boolean isObjectAccessFactoryRegistred(Class<?> type);
+	default boolean isObjectAccessFactoryRegistred(Class<?> type) {
+		return getObjectAccessFactory(type) != null;
+	}
 
 	<S> void registerObjectAccessFactory(Class<S> type, ObjectAccessFactory<? super S, ? extends E> factory);
 

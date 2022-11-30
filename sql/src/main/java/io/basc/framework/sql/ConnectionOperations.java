@@ -14,16 +14,42 @@ import io.basc.framework.util.RunnableProcessor;
 import io.basc.framework.util.Source;
 
 public class ConnectionOperations extends Operations<Connection, ConnectionOperations> {
-	private static Logger logger = LoggerFactory.getLogger(ConnectionOperations.class);
+	private class PrepareOperations<T extends PreparedStatement>
+			extends PreparedStatementOperations<T, PrepareOperations<T>> {
+		private final Processor<? super Connection, ? extends T, ? extends SQLException> processor;
 
-	public ConnectionOperations(Source<? extends Connection, ? extends SQLException> source) {
-		super(source);
+		public PrepareOperations(Processor<? super Connection, ? extends T, ? extends SQLException> processor) {
+			super((operations) -> {
+				Connection connection = ConnectionOperations.this.get();
+				try {
+					return processor.process(connection);
+				} catch (Throwable e) {
+					ConnectionOperations.this.close(connection);
+					throw e;
+				} finally {
+					operations.onClose(() -> ConnectionOperations.this.close(connection))
+							.onClose(() -> ConnectionOperations.this.close());
+				}
+			}, (e) -> e.close(), null);
+			this.processor = processor;
+		}
+
+		@Override
+		public String toString() {
+			return processor.toString();
+		}
 	}
 
-	public ConnectionOperations(Source<? extends Connection, ? extends SQLException> source,
-			@Nullable ConsumeProcessor<? super Connection, ? extends SQLException> closeProcessor,
-			@Nullable RunnableProcessor<? extends SQLException> closeHandler) {
-		super(source, closeProcessor, closeHandler);
+	private static Logger logger = LoggerFactory.getLogger(ConnectionOperations.class);
+
+	public static ConnectionOperations of(Connection connection) {
+		return new ConnectionOperations(() -> connection);
+	}
+
+	public static ConnectionOperations of(Source<? extends Connection, SQLException> source) {
+		return new ConnectionOperations((e) -> {
+			return source.get();
+		}, (e) -> e.close(), null);
 	}
 
 	public ConnectionOperations(
@@ -38,51 +64,19 @@ public class ConnectionOperations extends Operations<Connection, ConnectionOpera
 		super(sourceProcesor, closeProcessor, closeHandler);
 	}
 
-	public <T extends Statement> StatementOperations<T, ?> statement(
-			Processor<? super Connection, ? extends T, ? extends SQLException> processor) {
-		return new StatementOperations<>((operations) -> {
-			Connection connection = ConnectionOperations.this.get();
-			try {
-				return processor.process(connection);
-			} catch (Throwable e) {
-				connection.close();
-				throw e;
-			} finally {
-				operations.onClose(() -> ConnectionOperations.this.close(connection))
-						.onClose(() -> ConnectionOperations.this.close());
-			}
-		}, (e) -> e.close(), null);
+	public ConnectionOperations(Source<? extends Connection, ? extends SQLException> source) {
+		super(source);
+	}
+
+	public ConnectionOperations(Source<? extends Connection, ? extends SQLException> source,
+			@Nullable ConsumeProcessor<? super Connection, ? extends SQLException> closeProcessor,
+			@Nullable RunnableProcessor<? extends SQLException> closeHandler) {
+		super(source, closeProcessor, closeHandler);
 	}
 
 	public <T extends PreparedStatement> PreparedStatementOperations<T, ?> prepare(
 			Processor<? super Connection, ? extends T, ? extends SQLException> processor) {
 		return new PrepareOperations<>(processor);
-	}
-
-	private class PrepareOperations<T extends PreparedStatement>
-			extends PreparedStatementOperations<T, PrepareOperations<T>> {
-		private final Processor<? super Connection, ? extends T, ? extends SQLException> processor;
-
-		public PrepareOperations(Processor<? super Connection, ? extends T, ? extends SQLException> processor) {
-			super((operations) -> {
-				Connection connection = ConnectionOperations.this.get();
-				try {
-					return processor.process(connection);
-				} catch (Throwable e) {
-					connection.close();
-					throw e;
-				} finally {
-					operations.onClose(() -> ConnectionOperations.this.close(connection))
-							.onClose(() -> ConnectionOperations.this.close());
-				}
-			}, (e) -> e.close(), null);
-			this.processor = processor;
-		}
-
-		@Override
-		public String toString() {
-			return processor.toString();
-		}
 	}
 
 	public final PreparedStatementOperations<PreparedStatement, ?> prepare(Sql sql) {
@@ -108,21 +102,27 @@ public class ConnectionOperations extends Operations<Connection, ConnectionOpera
 		});
 	}
 
-	public final PreparedStatementOperations<PreparedStatement, ?> prepare(String sql, Object... params) {
-		return prepare(new SimpleSql(sql, params));
-	}
-
 	public final PreparedStatementOperations<PreparedStatement, ?> prepare(String sql) {
 		return prepare(new SimpleSql(sql));
 	}
 
-	public static ConnectionOperations of(Connection connection) {
-		return new ConnectionOperations(() -> connection);
+	public final PreparedStatementOperations<PreparedStatement, ?> prepare(String sql, Object... params) {
+		return prepare(new SimpleSql(sql, params));
 	}
 
-	public static ConnectionOperations of(Source<? extends Connection, SQLException> source) {
-		return new ConnectionOperations((e) -> {
-			return source.get();
+	public <T extends Statement, R extends StatementOperations<T, R>> StatementOperations<T, R> statement(
+			Processor<? super Connection, ? extends T, ? extends SQLException> processor) {
+		return new StatementOperations<T, R>((operations) -> {
+			Connection connection = ConnectionOperations.this.get();
+			try {
+				return processor.process(connection);
+			} catch (Throwable e) {
+				ConnectionOperations.this.close(connection);
+				throw e;
+			} finally {
+				operations.onClose(() -> ConnectionOperations.this.close(connection))
+						.onClose(() -> ConnectionOperations.this.close());
+			}
 		}, (e) -> e.close(), null);
 	}
 }

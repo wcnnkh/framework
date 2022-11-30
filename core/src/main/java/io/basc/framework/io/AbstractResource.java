@@ -34,7 +34,7 @@ import io.basc.framework.util.Registration;
 public abstract class AbstractResource extends AbstractObservable<Resource>
 		implements Resource, EventDispatcher<ObservableChangeEvent<Resource>> {
 	private static final Constructor<EventDispatcher<ObservableChangeEvent<Resource>>> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
-			.getDeclaredConstructor("io.basc.framework.io.event.WatchServiceResourceEventDispatcher", null,
+			.getDeclaredConstructor("io.basc.framework.io.WatchServiceResourceEventDispatcher", null,
 					AbstractResource.class);
 
 	private volatile EventDispatcher<ObservableChangeEvent<Resource>> eventDispatcher;

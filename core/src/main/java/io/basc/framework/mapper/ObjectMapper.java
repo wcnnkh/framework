@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import io.basc.framework.convert.ConverterNotFoundException;
+import io.basc.framework.convert.ReversibleMapperFactory;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.XUtils;
 

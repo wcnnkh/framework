@@ -135,7 +135,7 @@ public final class Keywords extends BascObject implements Predicate<String>, Ite
 		}
 
 		if (predicate != null) {
-			if (!NESTED.exists(predicate) && !NESTED.exists(this)) {
+			if (!NESTED.isCurrent(predicate) && !NESTED.isCurrent(this)) {
 				try {
 					NESTED.set(predicate);
 					NESTED.set(this);

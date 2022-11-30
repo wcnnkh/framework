@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -32,7 +31,7 @@ public class ExcelResolverTest {
 
 		MicrosoftUtils.export(file).putAll(exportList).close();
 
-		List<TestBean> readList = MicrosoftUtils.read(file, TestBean.class).collect(Collectors.toList());
+		List<TestBean> readList = MicrosoftUtils.read(file, TestBean.class).toList();
 		assertTrue(exportList.equals(readList));
 		file.delete();
 	}

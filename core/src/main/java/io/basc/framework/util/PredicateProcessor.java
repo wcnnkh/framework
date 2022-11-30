@@ -1,5 +1,6 @@
 package io.basc.framework.util;
 
+import java.util.Iterator;
 import java.util.Objects;
 
 public interface PredicateProcessor<T, E extends Throwable> {
@@ -78,5 +79,35 @@ public interface PredicateProcessor<T, E extends Throwable> {
 	 */
 	static <T, X extends Throwable> PredicateProcessor<T, X> isEqual(Object targetRef) {
 		return (null == targetRef) ? Objects::isNull : object -> targetRef.equals(object);
+	}
+
+	public static <S, X extends Throwable> boolean all(Iterator<? extends S> iterator,
+			PredicateProcessor<? super S, ? extends X> processor) throws X {
+		Assert.requiredArgument(processor != null, "processor");
+		if (iterator == null || !iterator.hasNext()) {
+			return true;
+		}
+
+		while (iterator.hasNext()) {
+			if (!processor.process(iterator.next())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static <S, X extends Throwable> boolean any(Iterator<? extends S> iterator,
+			PredicateProcessor<? super S, ? extends X> processor) throws X {
+		Assert.requiredArgument(processor != null, "processor");
+		if (iterator == null || !iterator.hasNext()) {
+			return true;
+		}
+
+		while (iterator.hasNext()) {
+			if (processor.process(iterator.next())) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

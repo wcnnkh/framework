@@ -11,7 +11,7 @@ public class DefaultClassLoaderProvider implements ConfigurableClassLoaderProvid
 	}
 
 	public DefaultClassLoaderProvider(ClassLoader classLoader) {
-		this.classLoaderProvider = classLoaderProvider == null ? null : (() -> classLoader);
+		this.classLoaderProvider = classLoader == null ? null : (() -> classLoader);
 	}
 
 	public DefaultClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
@@ -24,6 +24,14 @@ public class DefaultClassLoaderProvider implements ConfigurableClassLoaderProvid
 
 	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
 		this.classLoaderProvider = classLoaderProvider;
+	}
+
+	public void setClassLoaderProvider(Class<?> clazz) {
+		this.classLoaderProvider = clazz == null ? null : (() -> clazz.getClassLoader());
+	}
+
+	public void setClassLoader(ClassLoader classLoader) {
+		this.classLoaderProvider = classLoader == null ? null : (() -> classLoader);
 	}
 
 	public ClassLoader getClassLoader() {

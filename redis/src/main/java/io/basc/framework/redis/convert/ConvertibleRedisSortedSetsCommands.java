@@ -34,7 +34,8 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 	default Long zadd(K key, SetOption setOption, ScoreOption scoreOption, boolean changed,
 			Map<V, Double> memberScores) {
 		SK k = getKeyCodec().encode(key);
-		Map<SV, Double> ts = CollectionFactory.convert(memberScores, getValueCodec()::encode, Processor.identity());
+		Map<SV, Double> ts = CollectionFactory.convert(memberScores, getValueCodec().toEncodeProcessor(),
+				Processor.identity());
 		return getSourceRedisSortedSetsCommands().zadd(k, setOption, scoreOption, changed, ts);
 	}
 

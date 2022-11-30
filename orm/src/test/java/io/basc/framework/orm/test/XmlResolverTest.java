@@ -20,6 +20,7 @@ public class XmlResolverTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void test() {
+		System.out.println(Sys.getEnv().getConversionService());
 		TypeDescriptor mapType = TypeDescriptor.map(Map.class, String.class, TestBean.class);
 		TypeDescriptor listType = TypeDescriptor.collection(List.class, TestBean.class);
 		Resource resource = Sys.getEnv().getResourceLoader().getResource("test.xml");

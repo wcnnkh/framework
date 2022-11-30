@@ -215,7 +215,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	@Override
 	protected <S> ServiceLoader<S> getAfterServiceLoader(Class<S> serviceClass) {
 		return ServiceLoader.concat(new ClassesServiceLoader<S>(getProviderClassesLoader(serviceClass), this),
-				getAfterServiceLoader(serviceClass));
+				super.getAfterServiceLoader(serviceClass));
 	}
 
 	@SuppressWarnings("unchecked")

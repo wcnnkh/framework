@@ -15,8 +15,4 @@ public abstract class AbstractConversionService extends JsonSupportAccessor
 	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
-
-	public String toString() {
-		return getClass().getName();
-	}
 }

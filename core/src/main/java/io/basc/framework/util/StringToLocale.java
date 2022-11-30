@@ -1,11 +1,12 @@
-package io.basc.framework.convert.lang;
+package io.basc.framework.util;
 
 import java.util.Locale;
 import java.util.function.Function;
 
 import io.basc.framework.lang.Nullable;
 
-public class StringToLocaleConverter implements Function<String, Locale> {
+public class StringToLocale implements Function<String, Locale> {
+	public static final StringToLocale DEFAULT = new StringToLocale();
 
 	@Nullable
 	public Locale apply(String source) {

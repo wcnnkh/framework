@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,15 +13,12 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.function.IntPredicate;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
 
 public final class StringUtils {
-	private static final Set<String> BOOLEANS;
-
 	private static final String CURRENT_PATH = ".";
 
 	/**
@@ -35,52 +31,10 @@ public final class StringUtils {
 	private static final char EXTENSION_SEPARATOR = '.';
 
 	private static final String FOLDER_SEPARATOR = "/";
-	public static final Predicate<CharSequence> HAS_TEXT = new Predicate<CharSequence>() {
-
-		@Override
-		public boolean test(CharSequence value) {
-			if (value == null) {
-				return false;
-			}
-
-			int len = value.length();
-			if (len == 0) {
-				return false;
-			}
-
-			for (int i = 0; i < len; i++) {
-				if (!Character.isWhitespace(value.charAt(i))) {
-					return true;
-				}
-			}
-			return false;
-		}
-	};
-
-	public static final Predicate<CharSequence> IS_EMPTY = new Predicate<CharSequence>() {
-
-		@Override
-		public boolean test(CharSequence text) {
-			return text == null || text.length() == 0;
-		}
-	};
 
 	private static final String TOP_PATH = "..";
 
 	private static final String WINDOWS_FOLDER_SEPARATOR = "\\";
-
-	static {
-		BOOLEANS = new HashSet<String>();
-		BOOLEANS.add("1");
-		BOOLEANS.add("y");
-		BOOLEANS.add("t");
-		BOOLEANS.add("ok");
-		BOOLEANS.add("yes");
-		BOOLEANS.add("right");
-		BOOLEANS.add("true");
-		BOOLEANS.add("success");
-		BOOLEANS.add("successful");
-	}
 
 	/**
 	 * Append the given String to the given String array, returning a new array
@@ -772,7 +726,21 @@ public final class StringUtils {
 	 * @see Character#isWhitespace
 	 */
 	public static boolean hasText(CharSequence value) {
-		return HAS_TEXT.test(value);
+		if (value == null) {
+			return false;
+		}
+
+		int len = value.length();
+		if (len == 0) {
+			return false;
+		}
+
+		for (int i = 0; i < len; i++) {
+			if (!Character.isWhitespace(value.charAt(i))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -781,7 +749,7 @@ public final class StringUtils {
 	 * @param values
 	 * @return
 	 */
-	public static boolean hasText(CharSequence... values) {
+	public static boolean hasTextAll(CharSequence... values) {
 		if (values == null || values.length == 0) {
 			return false;
 		}
@@ -1101,7 +1069,7 @@ public final class StringUtils {
 	}
 
 	public static boolean isEmpty(CharSequence value) {
-		return IS_EMPTY.test(value);
+		return value == null || value.length() == 0;
 	}
 
 	/**
@@ -1110,7 +1078,7 @@ public final class StringUtils {
 	 * @param values
 	 * @return
 	 */
-	public static boolean isEmpty(CharSequence... values) {
+	public static boolean isEmptyAny(CharSequence... values) {
 		if (values == null || values.length == 0) {
 			return true;
 		}
@@ -1142,97 +1110,12 @@ public final class StringUtils {
 	 * @param values
 	 * @return
 	 */
-	public static boolean isNotEmpty(CharSequence... values) {
-		return !isEmpty(values);
+	public static boolean isNotEmptyAll(CharSequence... values) {
+		return !isEmptyAny(values);
 	}
 
 	public static boolean isNotEmpty(Object value) {
 		return value != null && !"".equals(value);
-	}
-
-	private static boolean isNumberSign(char chr) {
-		return chr == '-' || chr == '+';
-	}
-
-	public static boolean isNumeric(CharSequence source) {
-		return isNumeric(source, false, 10);
-	}
-
-	/**
-	 * 是否是可解析的数字字符串
-	 * 
-	 * @param source
-	 * @param radix  进制(小于等于0表示未知)
-	 * @return
-	 */
-	public static boolean isNumeric(CharSequence source, boolean unsigned, int radix) {
-		return isNumeric(source, unsigned, radix,
-				(c) -> (radix > 10 || radix <= 0) ? Character.isLetterOrDigit(c) : Character.isDigit(c));
-	}
-
-	public static boolean isNumeric(@Nullable CharSequence source, boolean unsigned, int radix,
-			@Nullable IntPredicate filter) {
-		if (isEmpty(source)) {
-			return false;
-		}
-
-		boolean findPoint = false;
-		char[] chars = new char[source.length()];
-		int pos = 0;
-		for (int i = 0, len = source.length(); i < len; i++) {
-			char chr = source.charAt(i);
-			if (chr == '-' || chr == '+') {
-				if (pos == 0) {
-					// 如果是无符号的
-					if (unsigned && chr == '-') {
-						return false;
-					}
-
-					pos++;
-					continue;
-				}
-
-				return false;
-			}
-
-			if (radix > 10) {
-				if (chr == '#') {
-					if (!findPoint && (pos == 0 || (pos == 1 && isNumberSign(chars[0])))) {
-						chars[pos++] = chr;
-						continue;
-					}
-					return false;
-				}
-			}
-
-			if (chr == '.') {
-				if (findPoint) {
-					return false;
-				}
-
-				findPoint = true;
-				pos++;
-				continue;
-			}
-
-			if (filter != null && !filter.test(chr)) {
-				return false;
-			}
-			pos++;
-		}
-		return true;
-	}
-
-	public static boolean isNumeric(CharSequence source, int radix) {
-		return isNumeric(source, false, radix);
-	}
-
-	public static boolean isUnsignedNumeric(CharSequence source) {
-		return isNumeric(source, true, 10);
-	}
-
-	public static boolean isUnsignedNumeric(CharSequence source, int radix) {
-		return isNumeric(source, true, radix);
 	}
 
 	public static int lastIndexOf(char[] source, char[] target) {
@@ -1454,255 +1337,6 @@ public final class StringUtils {
 		return toStringArray(result);
 	}
 
-	/**
-	 * @see #trimAllWhitespace(CharSequence)
-	 * @param text
-	 * @return
-	 */
-	public static boolean parseBoolean(Object text) {
-		return parseBoolean(text, false);
-	}
-
-	/**
-	 * @see #trimAllWhitespace(CharSequence)
-	 * @param text
-	 * @param defaultValue
-	 * @return
-	 */
-	public static boolean parseBoolean(Object text, Boolean defaultValue) {
-		if (text == null) {
-			return defaultValue;
-		}
-
-		return parseBoolean(String.valueOf(text), defaultValue);
-	}
-
-	/**
-	 * @see #trimAllWhitespace(CharSequence)
-	 * @param text
-	 * @return
-	 */
-	public static boolean parseBoolean(String text) {
-		return parseBoolean(text, false);
-	}
-
-	/**
-	 * @see #trimAllWhitespace(CharSequence)
-	 * @param text
-	 * @param defaultValue
-	 * @return
-	 */
-	public static Boolean parseBoolean(String text, Boolean defaultValue) {
-		if (!hasText(text)) {
-			return defaultValue;
-		}
-
-		return parseBooleanValue(trimAllWhitespace(text));
-	}
-
-	private static boolean parseBooleanValue(String text) {
-		return BOOLEANS.contains(text) || BOOLEANS.contains(text.toLowerCase());
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @return
-	 */
-	public static byte parseByte(String text) {
-		return parseByte(text, 10, (byte) 0);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @param defaultValue
-	 * @return
-	 */
-	public static Byte parseByte(String text, Byte defaultValue) {
-		return parseByte(text, 10, defaultValue);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @param radix
-	 * @param defaultValue
-	 * @return
-	 */
-	public static byte parseByte(String text, int radix, byte defaultValue) {
-		String v = parseNumberText(text, radix);
-		if (isEmpty(v)) {
-			return defaultValue;
-		}
-		return Byte.parseByte(v, radix);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @param radix
-	 * @param defaultValue
-	 * @return
-	 */
-	public static Byte parseByte(String text, int radix, Byte defaultValue) {
-		String v = parseNumberText(text, radix);
-		if (isEmpty(v)) {
-			return defaultValue;
-		}
-		return Byte.valueOf(v, radix);
-	}
-
-	public static char parseChar(String text, char defaultValue) {
-		if (isEmpty(text)) {
-			return defaultValue;
-		}
-		return text.charAt(0);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence)
-	 * @param text
-	 * @return
-	 */
-	public static double parseDouble(String text) {
-		return parseDouble(text, 0);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence)
-	 * @param text
-	 * @param defaultValue
-	 * @return
-	 */
-	public static double parseDouble(String text, double defaultValue) {
-		String v = parseNumberText(text);
-		if (isEmpty(v)) {
-			return defaultValue;
-		}
-
-		return Double.parseDouble(v);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence)
-	 * @param text
-	 * @param defaultValue
-	 * @return
-	 */
-	public static Double parseDouble(String text, Double defaultValue) {
-		String v = parseNumberText(text);
-		if (isEmpty(v)) {
-			return defaultValue;
-		}
-
-		return Double.valueOf(v);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence)
-	 * @param text
-	 * @return
-	 */
-	public static float parseFloat(String text) {
-		return parseFloat(text, 0f);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence)
-	 * @param text
-	 * @param defaultValue
-	 * @return
-	 */
-	public static float parseFloat(String text, float defaultValue) {
-		String v = parseNumberText(text);
-		if (isEmpty(v)) {
-			return defaultValue;
-		}
-		return Float.parseFloat(v);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence)
-	 * @param text
-	 * @param defaultValue
-	 * @return
-	 */
-	public static Float parseFloat(String text, Float defaultValue) {
-		String v = parseNumberText(text);
-		if (isEmpty(v)) {
-			return defaultValue;
-		}
-		return Float.valueOf(v);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @return
-	 */
-	public static int parseInt(String text) {
-		return parseInt(text, 0);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @param radix
-	 * @param defaultValue
-	 * @return
-	 */
-	public static int parseInt(String text, boolean unsigned, int radix, int defaultValue) {
-		String v = parseNumberText(text, unsigned, radix);
-		if (isEmpty(v)) {
-			return defaultValue;
-		}
-		return unsigned ? Integer.parseUnsignedInt(v, radix) : Integer.parseInt(v, radix);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @param radix
-	 * @param defaultValue
-	 * @return
-	 */
-	public static Integer parseInt(String text, boolean unsigned, int radix, Integer defaultValue) {
-		String v = parseNumberText(text, unsigned, radix);
-		if (isEmpty(v)) {
-			return defaultValue;
-		}
-		return unsigned ? Integer.valueOf(Integer.parseUnsignedInt(v, radix)) : Integer.valueOf(v, radix);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @param defaultValue
-	 * @return
-	 */
-	public static int parseInt(String text, int defaultValue) {
-		return parseInt(text, 10, defaultValue);
-	}
-
-	public static int parseInt(String text, int radix, int defaultValue) {
-		return parseInt(text, false, radix, defaultValue);
-	}
-
-	public static Integer parseInt(String text, int radix, Integer defaultValue) {
-		return parseInt(text, false, radix, defaultValue);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @param defaultValue
-	 * @return
-	 */
-	public static Integer parseInt(String text, Integer defaultValue) {
-		return parseInt(text, 10, defaultValue);
-	}
-
 	@Nullable
 	public static Pair<String, String> parseKV(String text, String separator) {
 		int index = text.indexOf(separator);
@@ -1711,247 +1345,6 @@ public final class StringUtils {
 		}
 
 		return new Pair<String, String>(text.substring(0, index), text.substring(index + separator.length()));
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @return
-	 */
-	public static long parseLong(String text) {
-		return parseLong(text, 10, 0L);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @param radix
-	 * @param defaultValue
-	 * @return
-	 */
-	public static long parseLong(String text, boolean unsigned, int radix, long defaultValue) {
-		String v = parseNumberText(text, unsigned, radix);
-		if (isEmpty(v)) {
-			return defaultValue;
-		}
-
-		return unsigned ? Long.parseUnsignedLong(v, radix) : Long.parseLong(v, radix);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @param radix
-	 * @param defaultValue
-	 * @return
-	 */
-	public static Long parseLong(String text, boolean unsigned, int radix, Long defaultValue) {
-		String v = parseNumberText(text, unsigned, radix);
-		if (isEmpty(v)) {
-			return defaultValue;
-		}
-
-		return unsigned ? Long.valueOf(Long.parseUnsignedLong(v, radix)) : Long.valueOf(v, radix);
-	}
-
-	public static long parseLong(String text, int radix, long defaultValue) {
-		return parseLong(text, false, radix, defaultValue);
-	}
-
-	public static Long parseLong(String text, int radix, Long defaultValue) {
-		return parseLong(text, false, radix, defaultValue);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @param defaultValue
-	 * @return
-	 */
-	public static long parseLong(String text, long defaultValue) {
-		return parseLong(text, 10, defaultValue);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @param defaultValue
-	 * @return
-	 */
-	public static Long parseLong(String text, Long defaultValue) {
-		return parseLong(text, defaultValue);
-	}
-
-	public static String parseNumberText(@Nullable CharSequence source) {
-		return parseNumberText(source, false, 10);
-	}
-
-	@Nullable
-	public static String parseNumberText(@Nullable CharSequence source, boolean unsigned) {
-		return parseNumberText(source, unsigned, 0);
-	}
-
-	/**
-	 * 转换为可解析的数字字符串, 不支持科学计数法
-	 * 
-	 * @param source
-	 * @param radix  进制(小于等于0表示未知)
-	 * @return
-	 */
-	@Nullable
-	public static String parseNumberText(@Nullable CharSequence source, boolean unsigned, int radix) {
-		return parseNumberText(source, unsigned, radix,
-				(c) -> (radix > 10 || radix <= 0) ? Character.isLetterOrDigit(c) : Character.isDigit(c));
-	}
-
-	@Nullable
-	public static String parseNumberText(@Nullable CharSequence source, boolean unsigned, int radix,
-			@Nullable IntPredicate filter) {
-		if (isEmpty(source)) {
-			return null;
-		}
-
-		char[] chars = new char[source.length()];
-		int pos = 0;
-		boolean findPoint = false;
-		for (int i = 0, len = source.length(); i < len; i++) {
-			char chr = source.charAt(i);
-			if (isNumberSign(chr)) {
-				if (pos == 0) {
-					// 无符号类型的不应该存在符号
-					if (unsigned && chr == '-') {
-						// 不支持解析？
-						return null;
-					}
-					chars[pos++] = chr;
-					continue;
-				}
-				continue;
-			}
-
-			if (radix > 10) {
-				if (chr == '#' && !findPoint && (pos == 0 || (pos == 1 && isNumberSign(chars[0])))) {
-					chars[pos++] = chr;
-					continue;
-				}
-			}
-
-			if (chr == '.') {
-				if (findPoint) {
-					continue;
-				}
-
-				findPoint = true;
-				chars[pos++] = chr;
-				continue;
-			}
-
-			if (filter == null || filter.test(chr)) {
-				chars[pos++] = chr;
-			}
-		}
-		return pos == 0 ? null : new String(chars, 0, pos);
-	}
-
-	public static String parseNumberText(@Nullable CharSequence source, int radix) {
-		return parseNumberText(source, false, radix);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @return
-	 */
-	public static short parseShort(String text) {
-		return parseShort(text, 10, (short) 0);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @param radix
-	 * @param defaultValue
-	 * @return
-	 */
-	public static short parseShort(String text, int radix, short defaultValue) {
-		String v = parseNumberText(text, radix);
-		if (isEmpty(v)) {
-			return defaultValue;
-		}
-		return Short.parseShort(v, radix);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @param radix
-	 * @param defaultValue
-	 * @return
-	 */
-	public static Short parseShort(String text, int radix, Short defaultValue) {
-		String v = parseNumberText(text, radix);
-		if (isEmpty(v)) {
-			return defaultValue;
-		}
-		return Short.valueOf(v, radix);
-	}
-
-	/**
-	 * @see #parseNumberText(CharSequence, int)
-	 * @param text
-	 * @param defaultValue
-	 * @return
-	 */
-	public static Short parseShort(String text, Short defaultValue) {
-		return parseShort(text, 10, defaultValue);
-	}
-
-	public static int parseUnsignedInt(String text) {
-		return parseUnsignedInt(text, 0);
-	}
-
-	public static int parseUnsignedInt(String text, int defaultValue) {
-		return parseInt(text, true, 10, defaultValue);
-	}
-
-	public static int parseUnsignedInt(String text, int radix, int defaultValue) {
-		return parseInt(text, true, radix, defaultValue);
-	}
-
-	public static Integer parseUnsignedInt(String text, int radix, Integer defaultValue) {
-		return parseInt(text, true, radix, defaultValue);
-	}
-
-	public static Integer parseUnsignedInt(String text, Integer defaultValue) {
-		return parseInt(text, true, 10, defaultValue);
-	}
-
-	public static long parseUnsignedLong(String text) {
-		return parseLong(text, true, 10, 0L);
-	}
-
-	public static long parseUnsignedLong(String text, int radix, long defaultValue) {
-		return parseLong(text, true, radix, defaultValue);
-	}
-
-	public static Long parseUnsignedLong(String text, int radix, Long defaultValue) {
-		return parseLong(text, true, radix, defaultValue);
-	}
-
-	public static long parseUnsignedLong(String text, long defaultValue) {
-		return parseLong(text, true, 10, defaultValue);
-	}
-
-	public static Long parseUnsignedLong(String text, Long defaultValue) {
-		return parseLong(text, true, 10, defaultValue);
-	}
-
-	public static String parseUnsignedNumberText(@Nullable CharSequence source) {
-		return parseNumberText(source, true, 10);
-	}
-
-	public static String parseUnsignedNumberText(@Nullable CharSequence source, int radix) {
-		return parseNumberText(source, true, radix);
 	}
 
 	/**

@@ -1,6 +1,8 @@
 package io.basc.framework.convert.lang;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionFailedException;
@@ -10,7 +12,13 @@ import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.TimeUtils;
 import io.basc.framework.value.Value;
 
-public class DateFormatConversionService extends AbstractConversionService {
+public class DateFormatConversionService extends AbstractConversionService implements ConditionalConversionService {
+	private static final Set<ConvertiblePair> CONVERTIBLE_PAIRS = new HashSet<>(4);
+
+	static {
+		CONVERTIBLE_PAIRS.add(new ConvertiblePair(String.class, Date.class));
+		CONVERTIBLE_PAIRS.add(new ConvertiblePair(Date.class, String.class));
+	}
 
 	private boolean canConvert(Class<?> type) {
 		return type == String.class || Date.class.isAssignableFrom(type) || NumberUtils.isNumber(type);
@@ -143,5 +151,10 @@ public class DateFormatConversionService extends AbstractConversionService {
 				return TimeUtils.format(date, targetFormat.value());
 			}
 		}
+	}
+
+	@Override
+	public Set<ConvertiblePair> getConvertibleTypes() {
+		return CONVERTIBLE_PAIRS;
 	}
 }

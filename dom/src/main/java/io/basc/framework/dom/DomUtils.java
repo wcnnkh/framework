@@ -155,7 +155,7 @@ public final class DomUtils {
 
 	public static void requireAttribute(Node node, String... name) {
 		for (String n : name) {
-			if (StringUtils.isEmpty(DomUtils.getNodeAttributeValue(node, n))) {
+			if (DomUtils.getNodeAttributeValue(node, n).isEmpty()) {
 				throw new NotFoundException("not found attribute [" + n + "]");
 			}
 		}
@@ -264,7 +264,7 @@ public final class DomUtils {
 		};
 	}
 
-	public static Node findNode(NodeList nodeList, Predicate<Node> accept) {
+	public static Node findNode(NodeList nodeList, Predicate<? super Node> accept) {
 		if (nodeList == null) {
 			return null;
 		}
@@ -276,10 +276,11 @@ public final class DomUtils {
 
 		for (int i = 0; i < len; i++) {
 			Node item = nodeList.item(i);
+			
 			if (item == null) {
 				continue;
 			}
-
+			
 			if (accept.test(item)) {
 				return item;
 			}

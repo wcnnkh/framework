@@ -35,7 +35,16 @@ public class StandardCursor<E, C extends Cursor<E>> extends AbstractCursor<E, C>
 
 	@Override
 	public boolean hasNext() {
-		return !isClosed() && iterator.hasNext();
+		if (isClosed()) {
+			return false;
+		}
+
+		if (iterator.hasNext()) {
+			return true;
+		}
+
+		close();
+		return false;
 	}
 
 	@Override

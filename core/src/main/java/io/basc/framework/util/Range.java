@@ -1,9 +1,12 @@
 package io.basc.framework.util;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.function.Function;
 
-public final class Range<T> {
+public final class Range<T> implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	private final static Range<?> UNBOUNDED = Range.of(Bound.unbounded(), Bound.unbounded());
 
 	/**
@@ -23,7 +26,7 @@ public final class Range<T> {
 		this.upperBound = upperBound;
 	}
 
-	public <U> Range<U> convert(Function<? super T, ? extends U> converter) {
+	public <U, E> Range<U> convert(Function<? super T, ? extends U> converter) {
 		return new Range<U>(lowerBound.convert(converter), upperBound.convert(converter));
 	}
 

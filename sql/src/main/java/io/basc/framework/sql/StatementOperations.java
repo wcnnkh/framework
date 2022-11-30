@@ -37,10 +37,10 @@ public class StatementOperations<T extends Statement, C extends StatementOperati
 			T statement = StatementOperations.this.get();
 			try {
 				return queryProcessor.process(statement);
-			} catch (Throwable e) {
-				statement.close();
+			} catch(Throwable e) {
+				StatementOperations.this.close(statement);
 				throw e;
-			} finally {
+			}finally {
 				operations.onClose(() -> StatementOperations.this.close(statement))
 						.onClose(() -> StatementOperations.this.close());
 			}

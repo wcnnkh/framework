@@ -65,7 +65,10 @@ public class ResultSetOperations extends Operations<ResultSet, ResultSetOperatio
 			}
 
 			try {
-				resultSet = ResultSetOperations.this.get();
+				if(resultSet == null) {
+					resultSet = ResultSetOperations.this.get();
+				}
+				
 				if (resultSet.next()) {
 					this.next = new StaticSupplier<ResultSet>(resultSet);
 					return true;
@@ -95,9 +98,17 @@ public class ResultSetOperations extends Operations<ResultSet, ResultSetOperatio
 
 		@Override
 		public void close() {
-			if (resultSet != null) {
+			try {
+				if (resultSet != null) {
+					try {
+						ResultSetOperations.this.close(resultSet);
+					} catch (SQLException e) {
+						throw SqlUtils.throwableSqlException(e, () -> ResultSetOperations.this.toString());
+					}
+				}
+			} finally {
 				try {
-					ResultSetOperations.this.close(resultSet);
+					ResultSetOperations.this.close();
 				} catch (SQLException e) {
 					throw SqlUtils.throwableSqlException(e, () -> ResultSetOperations.this.toString());
 				}

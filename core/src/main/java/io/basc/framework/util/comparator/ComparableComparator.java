@@ -1,8 +1,8 @@
 package io.basc.framework.util.comparator;
 
-import io.basc.framework.core.OrderComparator;
-
 import java.util.Comparator;
+
+import io.basc.framework.core.OrderComparator;
 
 public class ComparableComparator<T> implements Comparator<T> {
 

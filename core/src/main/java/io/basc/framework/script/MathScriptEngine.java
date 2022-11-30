@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import io.basc.framework.convert.lang.StringConverter;
 import io.basc.framework.env.Sys;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
@@ -197,7 +198,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 			return null;
 		}
 
-		if (StringUtils.isNumeric(scriptToUse)) {
+		if (StringConverter.DEFAULT.getStringToNumber().isNumeric(scriptToUse)) {
 			return new BigDecimalHolder(scriptToUse);
 		}
 		return super.eval(scriptToUse);

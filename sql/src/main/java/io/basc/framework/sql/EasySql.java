@@ -12,7 +12,7 @@ import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 
 public final class EasySql extends AbstractSql implements Serializable {
-	private static final String[] KEYWORDS = new String[] { "where", "join", "having" };
+	private static final String[] KEYWORDS = new String[] { "where", "order by", "join", "having" };
 	private static final String[] RELATIONSHIPS = new String[] { "and", "or", "not" };
 	private static final long serialVersionUID = 1L;
 
@@ -82,6 +82,29 @@ public final class EasySql extends AbstractSql implements Serializable {
 		return append(sql, new Object[0]);
 	}
 
+	public EasySql appendName(String name) {
+		if(StringUtils.isEmpty(name)) {
+			
+		}
+		
+		String[] array = StringUtils.splitToArray(name.trim(), ".");
+		for (int i = 0; i < array.length - 1; i++) {
+			append(array[i]).append(".");
+		}
+		String lastName = array[array.length - 1].trim();
+		if (!lastName.startsWith("`")) {
+			append("`");
+		}
+
+		append(lastName);
+
+		if (!lastName.endsWith("`")) {
+			append("`");
+		}
+
+		return this;
+	}
+
 	public EasySql append(CharSequence sql, Iterable<? extends Object> params) {
 		return append(sql, params == null ? null : params.iterator());
 	}
@@ -143,7 +166,7 @@ public final class EasySql extends AbstractSql implements Serializable {
 	@Override
 	public String getSql() {
 		if (sql == null) {
-			return null;
+			return "";
 		}
 
 		String sql = this.sql.toString().trim();
@@ -195,6 +218,11 @@ public final class EasySql extends AbstractSql implements Serializable {
 		return in(name, Arrays.asList(values));
 	}
 
+	public int indexOfAnyKeyword(int formIndex) {
+		String sql = this.sql == null ? "" : this.sql.toString().toLowerCase();
+		return indexOfAnyKeyword(sql, formIndex, sql.length());
+	}
+
 	private int indexOfAnyKeyword(String sql, int fromIndex, int endIndex) {
 		int index = -1;
 		for (String keyword : KEYWORDS) {
@@ -203,7 +231,7 @@ public final class EasySql extends AbstractSql implements Serializable {
 				continue;
 			}
 
-			if (i < index) {
+			if (i > index) {
 				index = i;
 			}
 		}
@@ -215,7 +243,7 @@ public final class EasySql extends AbstractSql implements Serializable {
 					continue;
 				}
 
-				if (i < index) {
+				if (i > index) {
 					index = i;
 				}
 			}
@@ -223,7 +251,12 @@ public final class EasySql extends AbstractSql implements Serializable {
 		return index;
 	}
 
-	public int indexOfAnyRelationship(String sql, int formIndex, int endIndex) {
+	public int indexOfAnyRelationship(int formIndex) {
+		String sql = this.sql == null ? "" : this.sql.toString().toLowerCase();
+		return indexOfAnyRelationship(sql, formIndex, sql.length());
+	}
+
+	private int indexOfAnyRelationship(String sql, int formIndex, int endIndex) {
 		int index = -1;
 		for (String keyword : RELATIONSHIPS) {
 			int i = indexOfRelationship(sql, keyword, formIndex, endIndex);
@@ -231,7 +264,7 @@ public final class EasySql extends AbstractSql implements Serializable {
 				continue;
 			}
 
-			if (i < index) {
+			if (i > index) {
 				index = i;
 			}
 		}
@@ -243,12 +276,17 @@ public final class EasySql extends AbstractSql implements Serializable {
 					continue;
 				}
 
-				if (i < index) {
+				if (i > index) {
 					index = i;
 				}
 			}
 		}
 		return index;
+	}
+
+	public int indexOfKeyword(String keyword, int formIndex) {
+		String sql = this.sql == null ? "" : this.sql.toString().toLowerCase();
+		return indexOfKeyword(sql, keyword, formIndex, sql.length());
 	}
 
 	private int indexOfKeyword(String sql, String keyword, int formIndex, int endIndex) {
@@ -268,6 +306,11 @@ public final class EasySql extends AbstractSql implements Serializable {
 			}
 			return index;
 		}
+	}
+
+	public int indexOfRelationship(String relationship, int formIndex) {
+		String sql = this.sql == null ? "" : this.sql.toString().toLowerCase();
+		return indexOfRelationship(sql, relationship, formIndex, sql.length());
 	}
 
 	private int indexOfRelationship(String sql, String relationship, int formIndex, int endIndex) {
@@ -292,9 +335,9 @@ public final class EasySql extends AbstractSql implements Serializable {
 	}
 
 	public EasySql keyword(String keyword) {
+		this.sql = new StringBuilder(getSql());
 		addKeyword(keyword);
-		String sql = this.sql == null ? "" : this.sql.toString().toLowerCase();
-		if (indexOfAnyKeyword(sql, 0, sql.length()) != -1) {
+		if (indexOfAnyKeyword(0) != -1) {
 			return this;
 		}
 
@@ -310,9 +353,9 @@ public final class EasySql extends AbstractSql implements Serializable {
 	}
 
 	public EasySql relationship(String relationship) {
+		this.sql = new StringBuilder(getSql());
 		addRelationship(relationship);
-		String sql = this.sql == null ? "" : this.sql.toString();
-		if (indexOfAnyRelationship(sql, 0, sql.length()) == -1) {
+		if (indexOfAnyRelationship(0) == -1) {
 			return this;
 		}
 		return append(" " + relationship.trim() + " ");
@@ -347,17 +390,9 @@ public final class EasySql extends AbstractSql implements Serializable {
 			return this;
 		}
 
-		if (sql == null) {
-			sql = new StringBuilder();
-		}
-
-		if (params == null) {
-			this.params = new ArrayList<>();
-		}
-
-		sql.append(" `").append(column).append("` ");
+		append(" `" + column + "` ");
 		if (condition != null) {
-			sql.append(condition).append(" ");
+			append(condition).append(" ");
 		}
 
 		boolean multiValue = false;
@@ -365,19 +400,18 @@ public final class EasySql extends AbstractSql implements Serializable {
 			Object value = valueIterator.next();
 			if (!multiValue && valueIterator.hasNext()) {
 				// 多个
-				sql.append("(");
+				append("(");
 				multiValue = true;
 			}
 
-			sql.append("?");
-			params.add(value);
+			append("?", value);
 			if (valueIterator.hasNext()) {
-				sql.append(",");
+				append(",");
 			}
 		}
 
 		if (multiValue) {
-			sql.append(")");
+			append(")");
 		}
 		return this;
 	}
@@ -483,5 +517,97 @@ public final class EasySql extends AbstractSql implements Serializable {
 			and().condition(column, range.getUpperBound().isInclusive() ? "<=" : "<", range.getUpperBound().get());
 		}
 		return this;
+	}
+
+	private boolean isFirstColumnByKeyword(String keyword, String separator) {
+		int index = indexOfKeyword(keyword, 0);
+		if (index == -1) {
+			return true;
+		}
+
+		if (separator == null) {
+			return true;
+		}
+
+		return this.sql == null ? true : (this.sql.indexOf(separator, index) == -1);
+	}
+
+	/**
+	 * @see #order(String, Iterator, String, String, String)
+	 * @param keyword
+	 * @param names
+	 * @param connector
+	 * @param order
+	 * @param separator
+	 * @return
+	 */
+	public EasySql order(String keyword, Iterable<String> names, String connector, String order, String separator) {
+		if (names == null) {
+			return this;
+		}
+		return order(keyword, names.iterator(), connector, order, separator);
+	}
+
+	/**
+	 * name + connector + order
+	 * 
+	 * @param keyword
+	 * @param nameIterator
+	 * @param connector
+	 * @param order
+	 * @param separator    多个之间的分割符
+	 * @return
+	 */
+	public EasySql order(String keyword, Iterator<String> nameIterator, String connector, String order,
+			String separator) {
+		if (nameIterator == null || !nameIterator.hasNext()) {
+			return this;
+		}
+
+		if (separator != null && isFirstColumnByKeyword(keyword, separator)) {
+			append(separator);
+		}
+
+		while (nameIterator.hasNext()) {
+			String name = nameIterator.next();
+			appendName(" ").appendName(name);
+			if (connector != null) {
+				append(" " + connector);
+			}
+
+			if (order != null) {
+				append(" " + order);
+			}
+
+			if (separator != null && nameIterator.hasNext()) {
+				append(separator);
+			}
+		}
+		return this;
+	}
+
+	public EasySql orderBy() {
+		return keyword("ORDER BY");
+	}
+
+	public EasySql desc(String... columns) {
+		orderBy();
+		return order("ORDER BY", Arrays.asList(columns), null, "DESC", ",");
+	}
+
+	public EasySql asc(String... columns) {
+		// 可以忽略ASC关键字
+		orderBy();
+		return order("ORDER BY", Arrays.asList(columns), null, null, ",");
+	}
+
+	public EasySql select(String... columns) {
+		keyword("SELECT ");
+		return order("SELECT", Arrays.asList(columns), null, null, ",");
+	}
+
+	public EasySql from(String... names) {
+		keyword(" FROM ");
+		return order("FROM", Arrays.asList(names), null, null, ",");
 	}
 }

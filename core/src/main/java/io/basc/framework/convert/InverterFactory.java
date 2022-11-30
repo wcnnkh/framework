@@ -2,11 +2,13 @@ package io.basc.framework.convert;
 
 public interface InverterFactory<T, E extends Throwable>
 		extends ReverseTransformerFactory<T, E>, Inverter<Object, T, E> {
-	boolean isInverterRegistred(Class<?> type);
+	default boolean isInverterRegistred(Class<?> type) {
+		return getInverter(type) != null;
+	}
 
 	<S> Inverter<S, T, E> getInverter(Class<? extends S> type);
 
-	<S> void registerInverter(Class<S> type, Inverter<? extends S, ? extends T, ? extends E> inverter);
+	<S> void registerInverter(Class<S> type, Inverter<S, ? extends T, ? extends E> inverter);
 
 	@SuppressWarnings("unchecked")
 	@Override

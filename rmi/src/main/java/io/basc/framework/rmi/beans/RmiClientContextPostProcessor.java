@@ -18,7 +18,7 @@ public class RmiClientContextPostProcessor implements ContextPostProcessor {
 			}
 
 			if (!context.containsDefinition(clazz.getName())) {
-				String host = XUtils.first(StringUtils.IS_EMPTY.negate(), client.host(), client.value());
+				String host = XUtils.first((e) -> StringUtils.isNotEmpty(e), client.host(), client.value());
 				context.registerDefinition(new RmiClientBeanDefinition(context, clazz, host));
 			}
 		}
