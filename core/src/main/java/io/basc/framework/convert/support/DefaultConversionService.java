@@ -1,10 +1,13 @@
 package io.basc.framework.convert.support;
 
+import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.lang.ConfigurableConversionService;
 import io.basc.framework.convert.lang.DateFormatConversionService;
 import io.basc.framework.convert.lang.JsonConversionService;
 import io.basc.framework.convert.lang.JsonToObjectConversionService;
 import io.basc.framework.convert.lang.StringConversionService;
+import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.util.ClassUtils;
 
 public class DefaultConversionService extends ConfigurableConversionService {
 
@@ -31,5 +34,11 @@ public class DefaultConversionService extends ConfigurableConversionService {
 
 		addService(new ObjectToArrayConversionService(this));
 		addService(new ObjectToCollectionConversionService(this));
+
+		// 并非所有的环境都支持sql类型
+		if (ClassUtils.isPresent("io.basc.framework.convert.lang.SqlDateConversionService", null)) {
+			addService((ConversionService) ReflectionUtils
+					.newInstance(ClassUtils.getClass("io.basc.framework.convert.lang.SqlDateConversionService", null)));
+		}
 	}
 }

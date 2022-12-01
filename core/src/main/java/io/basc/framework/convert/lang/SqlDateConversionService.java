@@ -1,4 +1,4 @@
-package io.basc.framework.orm.convert;
+package io.basc.framework.convert.lang;
 
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -9,12 +9,9 @@ import java.util.Set;
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.convert.lang.AbstractConversionService;
-import io.basc.framework.convert.lang.ConditionalConversionService;
-import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.lang.NotSupportedException;
 
-public class DateConversionService extends AbstractConversionService implements ConditionalConversionService {
+public class SqlDateConversionService extends AbstractConversionService implements ConditionalConversionService {
 	private static final Set<ConvertiblePair> CONVERIBLE_PAIRS = new HashSet<ConvertiblePair>(8);
 
 	static {
