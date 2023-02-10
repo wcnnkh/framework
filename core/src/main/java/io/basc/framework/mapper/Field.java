@@ -6,7 +6,6 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -18,6 +17,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ParentDiscover;
 import io.basc.framework.util.Processor;
+import io.basc.framework.util.ReversibleIterator;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.alias.AliasRegistry;
 import io.basc.framework.value.Value;
@@ -103,9 +103,9 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 		}
 
 		Object parentValue = instance;
-		Enumeration<Field> enumeration = parents();
-		while (enumeration.hasMoreElements()) {
-			Field parentField = enumeration.nextElement();
+		ReversibleIterator<Field> enumeration = parents().invert();
+		while (enumeration.hasNext()) {
+			Field parentField = enumeration.next();
 			if (!parentField.isSupportGetter()) {
 				return Value.EMPTY.getAsObject(getGetter().getType());
 			}
@@ -147,9 +147,9 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 		}
 
 		Object parentValue = instance;
-		Enumeration<Field> enumeration = parents();
-		while (enumeration.hasMoreElements()) {
-			Field parentField = enumeration.nextElement();
+		ReversibleIterator<Field> enumeration = parents().invert();
+		while (enumeration.hasNext()) {
+			Field parentField = enumeration.next();
 			boolean isStatic = Modifier.isStatic(parentField.getGetter().getModifiers());
 			if (isStatic) {
 				// 如果是静态方法
@@ -223,10 +223,10 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 
 		if (hasParent() && this.nameNestingDepth > 0) {
 			StringBuilder sb = new StringBuilder();
-			Enumeration<Field> parents = parents();
+			ReversibleIterator<Field> parents = parents().invert();
 			int i = 0;
-			while (parents.hasMoreElements() && (i++ < this.nameNestingDepth)) {
-				Field parent = parents.nextElement();
+			while (parents.hasNext() && (i++ < this.nameNestingDepth)) {
+				Field parent = parents.next();
 				sb.append(parent.getName());
 				sb.append(this.nameNestingConnector);
 			}

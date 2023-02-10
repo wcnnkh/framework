@@ -7,6 +7,8 @@ package io.basc.framework.transaction;
  *
  */
 public interface Savepoint {
+	public static Savepoint EMPTY = new EmptySavepoint();
+	
 	void rollback() throws TransactionException;
 
 	void release() throws TransactionException;

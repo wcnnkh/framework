@@ -9,7 +9,7 @@ import io.basc.framework.core.ResolvableType;
 import io.basc.framework.lang.Nullable;
 
 public interface BeanFactory
-		extends ServiceLoaderFactory, BeanDefinitionFactory, SingletonFactory, BeanLifeCycleManager {
+		extends ServiceLoaderFactory, BeanDefinitionFactory, SingletonFactory, BeanLifecycleManager {
 	@Nullable
 	BeanFactory getParentBeanFactory();
 

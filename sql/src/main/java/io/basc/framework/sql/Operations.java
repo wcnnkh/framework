@@ -10,6 +10,7 @@ import io.basc.framework.util.Processor;
 import io.basc.framework.util.RunnableProcessor;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.StandardStreamOperations;
+import io.basc.framework.util.StreamOperations;
 
 public class Operations<T, C extends Operations<T, C>> extends StandardStreamOperations<T, SQLException, C>
 		implements AutoCloseable {
@@ -19,6 +20,11 @@ public class Operations<T, C extends Operations<T, C>> extends StandardStreamOpe
 //	static {
 //		LoggerFactory.getLevelManager().getSourceMap().put(logger.getName(), Levels.TRACE.getValue());
 //	}
+
+	public <S> Operations(StreamOperations<S, ? extends SQLException> sourceStreamOperations,
+			Processor<? super S, ? extends T, ? extends SQLException> processor) {
+		super(sourceStreamOperations, processor);
+	}
 
 	public Operations(Source<? extends T, ? extends SQLException> source) {
 		super(source);

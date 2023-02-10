@@ -3,25 +3,21 @@ package io.basc.framework.transaction;
 /**
  * 事务同步
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface TransactionSynchronization {
+	/**
+	 * This method is invoked before the start of the commit process. The method
+	 * invocation is done in the context of the transaction that is about to be
+	 * committed.
+	 */
+	void beforeCompletion();
 
 	/**
-	 * 提交
-	 * 
-	 * @throws Throwable
+	 * This method is invoked after the transaction has committed or rolled back.
+	 *
+	 * @param status The status of the completed transaction.
 	 */
-	void commit() throws Throwable;
-
-	/**
-	 * 回滚
-	 */
-	void rollback();
-
-	/**
-	 * commit/rollback 后都会调用此方法,此方法在一个事务中一定会调用，一般用于关闭资源
-	 */
-	void complete();
+	void afterCompletion(TransactionStatus status);
 }

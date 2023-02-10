@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import io.basc.framework.lang.Nullable;
 
-public class StandardStreamOptional<T> extends AbstractStreamOptional<T, StreamOptional<T>>
+public class StandardStreamOptional<T> extends AbstractStreamOptional<T, StandardStreamOptional<T>>
 		implements StreamOptional<T> {
 	private final Source<? extends T, ? extends RuntimeException> source;
 
@@ -21,7 +21,7 @@ public class StandardStreamOptional<T> extends AbstractStreamOptional<T, StreamO
 	public StandardStreamOptional(Source<? extends T, ? extends RuntimeException> source,
 			@Nullable ConsumeProcessor<? super T, ? extends RuntimeException> closeProcessor,
 			@Nullable RunnableProcessor<? extends RuntimeException> closeHandler) {
-		super(closeProcessor, closeHandler);
+		super(closeHandler, closeProcessor);
 		this.source = source;
 	}
 

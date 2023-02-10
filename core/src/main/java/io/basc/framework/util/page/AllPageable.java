@@ -33,7 +33,7 @@ public class AllPageable<S extends Pageables<K, T>, K, T> implements Pageable<K,
 		return new All(source);
 	}
 
-	private class All extends AbstractCursor<T, Cursor<T>> {
+	private class All extends AbstractCursor<T, All> {
 		private Pageables<K, T> pageables;
 		private Cursor<T> cursor;
 		private BigInteger position;

@@ -1,5 +1,7 @@
 package io.basc.framework.transaction;
 
+import io.basc.framework.util.ConsumeProcessor;
+
 public class MultipleSavepoint implements Savepoint {
 	private final Iterable<Savepoint> savepoints;
 
@@ -8,14 +10,10 @@ public class MultipleSavepoint implements Savepoint {
 	}
 
 	public void rollback() throws TransactionException {
-		for (Savepoint savepoint : savepoints) {
-			savepoint.rollback();
-		}
+		ConsumeProcessor.consumeAll(savepoints, (e) -> e.rollback());
 	}
 
 	public void release() throws TransactionException {
-		for (Savepoint savepoint : savepoints) {
-			savepoint.release();
-		}
+		ConsumeProcessor.consumeAll(savepoints, (e) -> e.release());
 	}
 }

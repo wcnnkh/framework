@@ -1,11 +1,5 @@
 package io.basc.framework.transaction;
 
-import io.basc.framework.core.OrderComparator;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.Assert;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,6 +10,13 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import io.basc.framework.core.OrderComparator;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.Registration;
+
 /**
  * 默认的事务实现<br/>
  * //TODO 是否应该重试？目前仅定义为事务载体，重试机制由使用方实现
@@ -25,7 +26,7 @@ import java.util.Map.Entry;
  */
 public final class DefaultTransaction implements Transaction, TransactionResource {
 	private static Logger logger = LoggerFactory.getLogger(DefaultTransaction.class);
-	private final DefaultTransaction parent;
+	private final Transaction parent;
 	private final boolean active;
 	private final boolean isNew;
 	private final TransactionDefinition definition;
@@ -44,7 +45,7 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 	 * @param definition
 	 * @param active
 	 */
-	public DefaultTransaction(DefaultTransaction parent, TransactionDefinition definition, boolean active) {
+	public DefaultTransaction(Transaction parent, TransactionDefinition definition, boolean active) {
 		this(parent, definition, active, true, null);
 	}
 
@@ -54,7 +55,7 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 	 * @param parent
 	 * @param definition
 	 */
-	public DefaultTransaction(DefaultTransaction parent, TransactionDefinition definition) {
+	public DefaultTransaction(Transaction parent, TransactionDefinition definition) {
 		this(parent, definition, parent.isActive(), false, null);
 	}
 
@@ -65,7 +66,7 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 	 * @param definition
 	 * @param savepoint
 	 */
-	public DefaultTransaction(DefaultTransaction parent, TransactionDefinition definition, Savepoint savepoint) {
+	public DefaultTransaction(Transaction parent, TransactionDefinition definition, Savepoint savepoint) {
 		this(parent, definition, parent.isActive(), true, savepoint);
 	}
 
@@ -78,8 +79,8 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 	 * @param isNew
 	 * @param savepoint
 	 */
-	public DefaultTransaction(DefaultTransaction parent, TransactionDefinition definition, boolean active,
-			boolean isNew, @Nullable Savepoint savepoint) {
+	public DefaultTransaction(Transaction parent, TransactionDefinition definition, boolean active, boolean isNew,
+			@Nullable Savepoint savepoint) {
 		Assert.isTrue(!(!isNew && parent == null), "An old transaction must have a parent(一个旧的事务一定存在父级)");
 		this.parent = parent;
 		this.active = active;
@@ -91,10 +92,10 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 		 * 如果当前是一个嵌套事务，或者父级是一个嵌套事务，那么应该受父级管理
 		 */
 		if (parent != null && (savepoint != null || parent.hasSavepoint())) {
-			parent.addSynchronization(this);
+			parent.registerSynchronization(this);
 		}
 	}
-
+	
 	public boolean hasSavepoint() {
 		return savepoint != null;
 	}
@@ -104,8 +105,8 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 	 * 
 	 * @return
 	 */
-	public boolean isCommit() {
-		return isNew() ? commit : parent.commit;
+	public boolean isCommitted() {
+		return isNew() ? commit : parent.isCommitted();
 	}
 
 	public boolean isRollbackOnly() {
@@ -129,7 +130,7 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 		return definition;
 	}
 
-	public DefaultTransaction getParent() {
+	public Transaction getParent() {
 		return parent;
 	}
 
@@ -200,12 +201,18 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 	private boolean init;
 	private List<TransactionSynchronization> synchronizations;
 
-	public void addSynchronization(TransactionSynchronization transactionSynchronization) {
+	@Override
+	public Registration registerSynchronization(TransactionSynchronization synchronization)
+			throws TransactionException {
 		checkStatus();
 		if (synchronizations == null) {
 			synchronizations = new ArrayList<TransactionSynchronization>(8);
+		} else if (synchronizations.contains(synchronization)) {
+			throw new TransactionException("This transaction synchronization[" + synchronization + "] already exists");
 		}
-		synchronizations.add(transactionSynchronization);
+
+		synchronizations.add(synchronization);
+		return () -> synchronizations.remove(synchronization);
 	}
 
 	private void init() {
@@ -265,7 +272,7 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 		}
 
 		if (savepoints.isEmpty()) {
-			return new EmptySavepoint();
+			return Savepoint.EMPTY;
 		}
 
 		return new MultipleSavepoint(savepoints);

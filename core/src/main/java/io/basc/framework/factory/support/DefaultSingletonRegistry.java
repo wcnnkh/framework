@@ -9,8 +9,8 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanPostProcessor;
-import io.basc.framework.factory.BeanlifeCycleEvent;
-import io.basc.framework.factory.BeanlifeCycleEvent.Step;
+import io.basc.framework.factory.BeanLifecycleEvent;
+import io.basc.framework.factory.BeanLifecycleEvent.Step;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.Destroy;
 import io.basc.framework.factory.FactoryException;
@@ -241,7 +241,7 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 	}
 
 	@Override
-	public Registration registerListener(EventListener<BeanlifeCycleEvent> eventListener) {
+	public Registration registerListener(EventListener<BeanLifecycleEvent> eventListener) {
 		Registration eventRegistration = super.registerListener(eventListener);
 		for (Entry<String, SingletonObject<?>> entry : singletionMap.entrySet()) {
 			BeanDefinition definition = getDefinition(entry.getKey());
@@ -256,7 +256,7 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 				}
 
 				try {
-					eventListener.onEvent(new BeanlifeCycleEvent(definition, singletonObject.get(), step));
+					eventListener.onEvent(new BeanLifecycleEvent(definition, singletonObject.get(), step));
 				} catch (Throwable e) {
 					logger.error(e, "Register listener after on bean[{}]", definition.getId());
 				} finally {

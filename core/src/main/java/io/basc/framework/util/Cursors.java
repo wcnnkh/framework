@@ -2,21 +2,22 @@ package io.basc.framework.util;
 
 import java.math.BigInteger;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
-public class Cursors<E> extends AbstractCursor<E, Cursor<E>> {
+public class Cursors<E> extends AbstractCursor<E, Cursors<E>> {
 	private BigInteger position = BigInteger.ZERO;
-	private final Iterator<? extends Cursor<E>> sources;
+	private final ReversibleIterator<? extends Cursor<E>> sources;
 	private Cursor<E> currentCursor;
-
-	public Cursors(Iterable<? extends Cursor<E>> sources) {
-		Assert.requiredArgument(sources != null, "sources");
-		this.sources = sources.iterator();
-	}
 
 	public Cursors(Iterator<? extends Cursor<E>> sources) {
 		Assert.requiredArgument(sources != null, "sources");
-		this.sources = sources;
+		this.sources = ReversibleIterator.of(sources);
+	}
+	
+	public Cursors(List<? extends Cursor<E>> sources) {
+		Assert.requiredArgument(sources != null, "sources");
+		this.sources = ReversibleIterator.of(sources);
 	}
 
 	@Override
@@ -30,7 +31,6 @@ public class Cursors<E> extends AbstractCursor<E, Cursor<E>> {
 			while (sources.hasNext()) {
 				currentCursor = sources.next();
 				position = position.add(currentCursor.getPosition());
-				super.onClose((e) -> currentCursor.close(e));
 				super.onClose(() -> currentCursor.close());
 				if (currentCursor.hasNext()) {
 					break;
@@ -50,6 +50,38 @@ public class Cursors<E> extends AbstractCursor<E, Cursor<E>> {
 			return currentCursor.next();
 		} finally {
 			position = position.add(BigInteger.ONE);
+		}
+	}
+
+	@Override
+	public boolean hasPrevious() {
+		if (position.compareTo(BigInteger.ZERO) <= 0) {
+			return false;
+		}
+
+		if (currentCursor == null || !currentCursor.hasPrevious()) {
+			while (sources.hasPrevious()) {
+				currentCursor = sources.previous();
+				position = position.subtract(currentCursor.getPosition());
+				super.onClose(() -> currentCursor.close());
+				if (currentCursor.hasPrevious()) {
+					break;
+				}
+			}
+		}
+		return currentCursor != null && currentCursor.hasPrevious();
+	}
+
+	@Override
+	public E previous() {
+		if (!hasPrevious()) {
+			throw new NoSuchElementException();
+		}
+
+		try {
+			return currentCursor.previous();
+		} finally {
+			position = position.subtract(BigInteger.ONE);
 		}
 	}
 

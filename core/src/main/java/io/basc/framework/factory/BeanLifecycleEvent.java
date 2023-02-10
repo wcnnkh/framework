@@ -9,13 +9,13 @@ import io.basc.framework.event.Event;
  * @author shuchaowen
  *
  */
-public class BeanlifeCycleEvent implements Event {
+public class BeanLifecycleEvent implements Event {
 	private final long createTime;
 	private final Object bean;
 	private final BeanDefinition definition;
 	private final Step step;
 
-	public BeanlifeCycleEvent(BeanDefinition definition, Object bean, Step step) {
+	public BeanLifecycleEvent(BeanDefinition definition, Object bean, Step step) {
 		this.createTime = System.currentTimeMillis();
 		this.bean = bean;
 		this.definition = definition;

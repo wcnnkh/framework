@@ -5,8 +5,8 @@ import java.util.List;
 
 import io.basc.framework.lang.Nullable;
 
-public class StandardStreamOperations<T, E extends Throwable, C extends StreamOperations<T, E>>
-		extends AbstractStreamOperations<T, E, C> {
+public class StandardStreamOperations<T, E extends Throwable, C extends StandardStreamOperations<T, E, C>>
+		extends StandardCloser<T, E, C> implements StreamOperations<T, E> {
 	private final Processor<? super C, ? extends T, ? extends E> sourceProcesor;
 	private List<ConsumeProcessor<? super T, ? extends E>> consumers;
 
@@ -27,8 +27,24 @@ public class StandardStreamOperations<T, E extends Throwable, C extends StreamOp
 	public StandardStreamOperations(Processor<? super C, ? extends T, ? extends E> sourceProcesor,
 			@Nullable ConsumeProcessor<? super T, ? extends E> closeProcessor,
 			@Nullable RunnableProcessor<? extends E> closeHandler) {
-		super(closeProcessor, closeHandler);
+		super(closeHandler, closeProcessor);
 		this.sourceProcesor = sourceProcesor;
+	}
+
+	public <S> StandardStreamOperations(StreamOperations<S, ? extends E> sourceStreamOperations,
+			Processor<? super S, ? extends T, ? extends E> processor) {
+		this((operations) -> {
+			S source = sourceStreamOperations.get();
+			try {
+				return processor.process(source);
+			} catch (Throwable e) {
+				sourceStreamOperations.close(source);
+				throw e;
+			} finally {
+				operations.onClose(() -> sourceStreamOperations.close(source))
+						.onClose(() -> sourceStreamOperations.close());
+			}
+		});
 	}
 
 	@SuppressWarnings("unchecked")

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
@@ -186,10 +185,6 @@ public final class XUtils {
 	public static <T> Stream<T> stream(Iterator<? extends T> iterator) {
 		Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
 		return StreamSupport.stream(spliterator, false);
-	}
-
-	public static <T> Stream<T> stream(Enumeration<? extends T> enumeration) {
-		return stream(CollectionUtils.toIterator(enumeration));
 	}
 
 	public static Object toString(Supplier<String> supplier) {

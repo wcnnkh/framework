@@ -1,19 +1,14 @@
 package io.basc.framework.util;
 
-public interface StreamOperations<T, E extends Throwable> extends StreamSource<T, E> {
+public interface StreamOperations<T, E extends Throwable> extends StreamSource<T, E>, Closeable<E> {
 	@Override
 	StreamOperations<T, E> onClose(ConsumeProcessor<? super T, ? extends E> closeHandler);
-
-	void close() throws E;
-
-	boolean isClosed();
 
 	StreamOperations<T, E> onClose(RunnableProcessor<? extends E> closeHandler);
 
 	@Override
 	default <R> StreamOperations<R, E> stream(Processor<? super T, ? extends R, ? extends E> mapper) {
-		StreamOperations<R, E> stream = of(() -> process(mapper));
-		return stream.onClose(() -> close());
+		return new StandardStreamOperations<>(this, mapper);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -813,7 +813,6 @@ public abstract class ReflectionUtils {
 		} else {
 			throw new UndeclaredThrowableException(ex);
 		}
-
 	}
 
 	public static <T> int hashCode(Class<? extends T> entityClass, T entity) {

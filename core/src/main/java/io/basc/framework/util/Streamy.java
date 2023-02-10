@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @FunctionalInterface
-public interface Streamy<E> extends io.basc.framework.util.Optional<E> {
+public interface Streamy<E> extends Optional<E> {
 	Stream<E> stream();
 
 	default <R, A> R collect(Collector<? super E, A, R> collector) {
@@ -27,11 +26,7 @@ public interface Streamy<E> extends io.basc.framework.util.Optional<E> {
 		}
 	}
 
-	default E first() {
-		return findFirst().orElse(null);
-	}
-
-	default Optional<E> findFirst() {
+	default java.util.Optional<E> findFirst() {
 		Stream<E> stream = stream();
 		try {
 			return stream.findFirst();
@@ -40,7 +35,7 @@ public interface Streamy<E> extends io.basc.framework.util.Optional<E> {
 		}
 	}
 
-	default Optional<E> findAny() {
+	default java.util.Optional<E> findAny() {
 		Stream<E> stream = stream();
 		try {
 			return stream.findAny();
@@ -49,19 +44,35 @@ public interface Streamy<E> extends io.basc.framework.util.Optional<E> {
 		}
 	}
 
-	/**
-	 * @see #findAny()
-	 */
 	@Override
 	default E get() {
-		return findAny().get();
+		return findFirst().get();
 	}
 
-	/**
-	 * @see #findAny()
-	 */
+	@Override
+	default E orElse(E other) {
+		return findFirst().orElse(other);
+	}
+
+	@Override
+	default <X extends Throwable> E orElseGet(Source<? extends E, ? extends X> other) throws X {
+		java.util.Optional<E> optional = findFirst();
+		return optional.isPresent() ? optional.get() : other.get();
+	}
+
+	@Override
 	default boolean isPresent() {
-		return findAny().isPresent();
+		return findFirst().isPresent();
+	}
+
+	default E first() {
+		Stream<E> stream = stream();
+		try {
+			Iterator<E> iterator = stream.iterator();
+			return iterator.hasNext() ? iterator.next() : null;
+		} finally {
+			stream.close();
+		}
 	}
 
 	default List<E> toList() {
@@ -108,17 +119,29 @@ public interface Streamy<E> extends io.basc.framework.util.Optional<E> {
 		return () -> converter.apply(stream());
 	}
 
-	@Override
+	default <U> Streamy<U> convert(Function<? super E, ? extends U> converter) {
+		return () -> stream().map(converter);
+	}
+
 	default <U> Streamy<U> map(Function<? super E, ? extends U> mapper) {
 		return () -> stream().map(mapper);
 	}
 
-	@Override
 	default Streamy<E> filter(Predicate<? super E> predicate) {
 		return () -> stream().filter(predicate);
 	}
 
-	default <X extends Throwable> void export(ConsumeProcessor<? super Stream<E>, ? extends X> processor) throws X {
+	default <T, X extends Throwable> T export(Processor<? super Stream<E>, ? extends T, ? extends X> processor)
+			throws X {
+		Stream<E> stream = stream();
+		try {
+			return processor.process(stream);
+		} finally {
+			stream.close();
+		}
+	}
+
+	default <X extends Throwable> void transfer(ConsumeProcessor<? super Stream<E>, ? extends X> processor) throws X {
 		Stream<E> stream = stream();
 		try {
 			processor.process(stream);

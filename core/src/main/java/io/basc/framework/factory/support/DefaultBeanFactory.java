@@ -262,6 +262,9 @@ public class DefaultBeanFactory extends DefaultServiceLoaderFactory
 
 	@Override
 	public void setClassLoader(ClassLoader classLoader) {
+		if (isInitialized()) {
+			throw new FactoryException("Already initialized");
+		}
 		super.setClassLoader(classLoader);
 		setParentBeanFactory(FactoryLoader.bind(classLoader, this));
 	}

@@ -2,7 +2,7 @@ package io.basc.framework.util;
 
 import io.basc.framework.lang.Nullable;
 
-public class StandardStreamSource<T, E extends Throwable, C extends StreamSource<T, E>>
+public class StandardStreamSource<T, E extends Throwable, C extends StandardStreamSource<T, E, C>>
 		extends AbstractStreamSource<T, E, C> {
 	private final Source<? extends T, ? extends E> source;
 

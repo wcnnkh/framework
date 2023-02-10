@@ -1,6 +1,7 @@
 package io.basc.framework.transaction;
 
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Registration;
 
 /**
  * 一个事务
@@ -15,6 +16,8 @@ public interface Transaction {
 	 * @return
 	 */
 	TransactionDefinition getDefinition();
+
+	Registration registerSynchronization(TransactionSynchronization synchronization) throws TransactionException;
 
 	/**
 	 * 添加事务的生命周期
@@ -65,6 +68,8 @@ public interface Transaction {
 	 */
 	boolean isNew();
 
+	boolean isCommitted();
+
 	/**
 	 * 事务是否是活跃的
 	 * 
@@ -85,4 +90,16 @@ public interface Transaction {
 	 * @return
 	 */
 	boolean hasSavepoint();
+
+	/**
+	 * 提交
+	 * 
+	 * @throws Throwable
+	 */
+	void commit() throws Throwable;
+
+	/**
+	 * 回滚
+	 */
+	void rollback();
 }

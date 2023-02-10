@@ -7,10 +7,10 @@ import io.basc.framework.event.EventListener;
 import io.basc.framework.event.support.SimpleEventDispatcher;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanDefinitionAware;
-import io.basc.framework.factory.BeanLifeCycleManager;
+import io.basc.framework.factory.BeanLifecycleManager;
 import io.basc.framework.factory.BeanPostProcessor;
-import io.basc.framework.factory.BeanlifeCycleEvent;
-import io.basc.framework.factory.BeanlifeCycleEvent.Step;
+import io.basc.framework.factory.BeanLifecycleEvent;
+import io.basc.framework.factory.BeanLifecycleEvent.Step;
 import io.basc.framework.factory.ConfigurableBeanResolver;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.DefaultParameterFactoryAware;
@@ -21,13 +21,13 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Registration;
 
-public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry implements BeanLifeCycleManager {
+public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry implements BeanLifecycleManager {
 	private static Logger logger = LoggerFactory.getLogger(DefaultBeanLifeCycleManager.class);
 	private final ConfigurableServices<BeanPostProcessor> dependenceProcessors = new ConfigurableServices<BeanPostProcessor>(
 			BeanPostProcessor.class);
 	private final ConfigurableServices<BeanPostProcessor> destroyProcessors = new ConfigurableServices<BeanPostProcessor>(
 			BeanPostProcessor.class);
-	private final EventDispatcher<BeanlifeCycleEvent> eventDispatcher = new SimpleEventDispatcher<>();
+	private final EventDispatcher<BeanLifecycleEvent> eventDispatcher = new SimpleEventDispatcher<>();
 	private final ConfigurableServices<BeanPostProcessor> initProcessors = new ConfigurableServices<BeanPostProcessor>(
 			BeanPostProcessor.class);
 	private final ConfigurableBeanResolver beanResolver = new ConfigurableBeanResolver();
@@ -91,7 +91,7 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 		}
 
 		try {
-			publishEvent(new BeanlifeCycleEvent(definition, instance, Step.BEFORE_DEPENDENCE));
+			publishEvent(new BeanLifecycleEvent(definition, instance, Step.BEFORE_DEPENDENCE));
 		} finally {
 			if (beanResolver != null) {
 				Collection<BeanPostProcessor> processors = beanResolver
@@ -107,7 +107,7 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 				processor.processPostBean(instance, definition);
 			}
 			_dependence(instance, definition);
-			publishEvent(new BeanlifeCycleEvent(definition, instance, Step.AFTER_DEPENDENCE));
+			publishEvent(new BeanLifecycleEvent(definition, instance, Step.AFTER_DEPENDENCE));
 		}
 	}
 
@@ -132,7 +132,7 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 		}
 
 		try {
-			publishEvent(new BeanlifeCycleEvent(definition, instance, Step.BEFORE_DESTROY));
+			publishEvent(new BeanLifecycleEvent(definition, instance, Step.BEFORE_DESTROY));
 		} finally {
 			_destroy(instance, definition);
 			for (BeanPostProcessor processor : destroyProcessors) {
@@ -148,7 +148,7 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 					}
 				}
 			}
-			publishEvent(new BeanlifeCycleEvent(definition, instance, Step.AFTER_DESTROY));
+			publishEvent(new BeanLifecycleEvent(definition, instance, Step.AFTER_DESTROY));
 		}
 	}
 
@@ -185,7 +185,7 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 		}
 
 		try {
-			publishEvent(new BeanlifeCycleEvent(definition, instance, Step.BEFORE_INIT));
+			publishEvent(new BeanLifecycleEvent(definition, instance, Step.BEFORE_INIT));
 		} finally {
 			if (beanResolver != null) {
 				Collection<BeanPostProcessor> processors = beanResolver
@@ -201,17 +201,17 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 				processor.processPostBean(instance, definition);
 			}
 			_init(instance, definition);
-			publishEvent(new BeanlifeCycleEvent(definition, instance, Step.AFTER_INIT));
+			publishEvent(new BeanLifecycleEvent(definition, instance, Step.AFTER_INIT));
 		}
 	}
 
 	@Override
-	public void publishEvent(BeanlifeCycleEvent event) {
+	public void publishEvent(BeanLifecycleEvent event) {
 		eventDispatcher.publishEvent(event);
 	}
 
 	@Override
-	public Registration registerListener(EventListener<BeanlifeCycleEvent> eventListener) {
+	public Registration registerListener(EventListener<BeanLifecycleEvent> eventListener) {
 		return eventDispatcher.registerListener(eventListener);
 	}
 }

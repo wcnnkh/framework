@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class StandardCursor<E, C extends Cursor<E>> extends AbstractCursor<E, C> {
+public class StandardCursor<E, C extends StandardCursor<E, C>> extends AbstractCursor<E, C> {
 	private BigInteger position;
 	private final Iterator<? extends E> iterator;
 
@@ -48,9 +48,39 @@ public class StandardCursor<E, C extends Cursor<E>> extends AbstractCursor<E, C>
 	}
 
 	@Override
-	public E next() {
+	public boolean hasPrevious() {
 		if (isClosed()) {
-			throw new NoSuchElementException("Cursor closed!");
+			return false;
+		}
+
+		if (position.compareTo(BigInteger.ZERO) > 0 && iterator instanceof ReversibleIterator) {
+			if (((ReversibleIterator<?>) iterator).hasPrevious()) {
+				return true;
+			}
+		}
+
+		close();
+		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public E previous() {
+		if (!hasPrevious()) {
+			throw new NoSuchElementException(getClass().getName() + "#previous");
+		}
+
+		try {
+			return ((ReversibleIterator<E>) iterator).previous();
+		} finally {
+			position = position.subtract(BigInteger.ONE);
+		}
+	}
+
+	@Override
+	public E next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException(getClass().getName() + "#next");
 		}
 
 		try {

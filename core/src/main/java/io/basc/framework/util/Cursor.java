@@ -8,15 +8,11 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public interface Cursor<E> extends CloseableIterator<E>, Streamy<E>, StreamOptional<E> {
+public interface Cursor<E> extends CloseableIterator<E>, Closeable<RuntimeException> {
 
 	BigInteger getPosition();
 
 	Cursor<E> onClose(RunnableProcessor<? extends RuntimeException> close);
-
-	default Stream<E> stream() {
-		return XUtils.stream(this).onClose(() -> close());
-	}
 
 	default <U> Cursor<U> flatConvert(Function<? super Stream<E>, ? extends Stream<U>> mapper) {
 		return Cursor.create(mapper.apply(stream()));
@@ -61,11 +57,6 @@ public interface Cursor<E> extends CloseableIterator<E>, Streamy<E>, StreamOptio
 		} finally {
 			close();
 		}
-	}
-
-	@Override
-	default E get() throws RuntimeException {
-		return Streamy.super.get();
 	}
 
 	static <T> Cursor<T> empty() {
