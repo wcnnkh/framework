@@ -23,7 +23,8 @@ public class TransactionTest {
 		} catch (Throwable e) {
 			manager.rollback(transaction);
 		}
-		Assert.assertTrue(lifecycle.getValue() == 8);
+		System.out.println("success" + lifecycle.getValue());
+		Assert.assertTrue(lifecycle.getValue() == 14);
 	}
 
 	private static void throwError() {
@@ -43,7 +44,8 @@ public class TransactionTest {
 		} catch (Throwable e) {
 			manager.rollback(transaction);
 		}
-		Assert.assertTrue(lifecycle.getValue() == 12);
+		System.out.println("error" + lifecycle.getValue());
+		Assert.assertTrue(lifecycle.getValue() == 18);
 	}
 
 	private static class TestTransactionLifecycle implements Synchronization {
@@ -61,7 +63,7 @@ public class TransactionTest {
 		@Override
 		public void afterCompletion(TransactionStatus status) {
 			System.out.println(status);
-			value = status.getCode();
+			value += status.getCode();
 		}
 	}
 }

@@ -142,7 +142,7 @@ public final class FilterableCursor<E> extends AbstractCursor<E, FilterableCurso
 				}
 			}
 		} finally {
-			this.position = position.add(BigInteger.ZERO);
+			this.position = position.add(BigInteger.ONE);
 		}
 	}
 
@@ -164,7 +164,7 @@ public final class FilterableCursor<E> extends AbstractCursor<E, FilterableCurso
 		try {
 			return iterator.previous();
 		} finally {
-			this.position = position.subtract(BigInteger.ZERO);
+			this.position = position.subtract(BigInteger.ONE);
 		}
 	}
 

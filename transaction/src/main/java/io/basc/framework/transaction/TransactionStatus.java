@@ -79,7 +79,7 @@ public final class TransactionStatus implements Serializable, ParentDiscover<Tra
 	}
 
 	public boolean isCompleted() {
-		return equals(COMPLETED) || isParents(COMPLETED) || isCommitted() || isRolledBack();
+		return equals(COMPLETED) || isParents(COMPLETED);
 	}
 
 	public TransactionStatus changeTo(TransactionStatus status) {

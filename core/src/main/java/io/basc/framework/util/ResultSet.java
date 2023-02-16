@@ -1,5 +1,6 @@
 package io.basc.framework.util;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -33,6 +34,26 @@ public interface ResultSet<E> extends Iterable<E>, Streamy<E> {
 	@Override
 	default ResultSet<E> filter(Predicate<? super E> predicate) {
 		return of(() -> iterator().filter(predicate));
+	}
+
+	@Override
+	default ResultSet<E> limit(Predicate<? super E> start, Predicate<? super E> end) {
+		return of(() -> iterator().limit(start, end));
+	}
+
+	@Override
+	default ResultSet<E> limit(BigInteger start, BigInteger count) {
+		return of(() -> iterator().limit(start, count));
+	}
+
+	@Override
+	default ResultSet<E> limit(long start) {
+		return limit(BigInteger.valueOf(start), null);
+	}
+
+	@Override
+	default ResultSet<E> limit(long start, long count) {
+		return limit(BigInteger.valueOf(start), BigInteger.valueOf(count));
 	}
 
 	static <T> ResultSet<T> empty() {
