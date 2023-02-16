@@ -1,6 +1,7 @@
 package io.basc.framework.transaction;
 
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ParentDiscover;
 import io.basc.framework.util.Registration;
 
 /**
@@ -9,7 +10,7 @@ import io.basc.framework.util.Registration;
  * @author shuchaowen
  *
  */
-public interface Transaction {
+public interface Transaction extends SavepointManager, ParentDiscover<Transaction> {
 	/**
 	 * 获取事务的定义(配置)
 	 * 
@@ -17,14 +18,7 @@ public interface Transaction {
 	 */
 	TransactionDefinition getDefinition();
 
-	Registration registerSynchronization(TransactionSynchronization synchronization) throws TransactionException;
-
-	/**
-	 * 添加事务的生命周期
-	 * 
-	 * @param lifecycle
-	 */
-	void addLifecycle(TransactionLifecycle lifecycle) throws TransactionException;
+	Registration registerSynchronization(Synchronization synchronization) throws TransactionException;
 
 	/**
 	 * 获取指定名称的资源
@@ -38,13 +32,12 @@ public interface Transaction {
 	/**
 	 * 绑定一个资源
 	 * 
+	 * @see SavepointManager
 	 * @param name
 	 * @param resource
-	 * @return 返回关联资源，如果资源已经存在就返回已存在的资源，如果资源不存在就返回null
 	 * @throws TransactionException
 	 */
-	@Nullable
-	<T> T bindResource(Object name, T resource) throws TransactionException;
+	Registration registerResource(Object name, Object resource) throws TransactionException;
 
 	/**
 	 * 事务是否是只回滚状态
@@ -54,12 +47,11 @@ public interface Transaction {
 	boolean isRollbackOnly();
 
 	/**
-	 * 设置事务的回滚状态
+	 * 设置事务为只回滚
 	 * 
-	 * @param rollbackOnly
-	 * @return 是否设置成功
+	 * @return
 	 */
-	boolean setRollbackOnly(boolean rollbackOnly) throws TransactionException;
+	void setRollbackOnly() throws TransactionException;
 
 	/**
 	 * 是否是一个新的事务
@@ -67,8 +59,6 @@ public interface Transaction {
 	 * @return
 	 */
 	boolean isNew();
-
-	boolean isCommitted();
 
 	/**
 	 * 事务是否是活跃的
@@ -78,18 +68,20 @@ public interface Transaction {
 	boolean isActive();
 
 	/**
-	 * 事务是否已完成(结束)
-	 * 
-	 * @return
-	 */
-	boolean isCompleted();
-
-	/**
 	 * 是否存在保存点，即嵌套事务
 	 * 
 	 * @return
 	 */
 	boolean hasSavepoint();
+
+	TransactionStatus getStatus();
+
+	/**
+	 * 是否已完成
+	 * 
+	 * @return
+	 */
+	boolean isCompleted();
 
 	/**
 	 * 提交

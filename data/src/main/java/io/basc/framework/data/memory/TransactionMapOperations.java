@@ -37,16 +37,16 @@ public final class TransactionMapOperations<K, V> extends AbstractMapOperations<
 
 	@Override
 	protected Map<K, V> createMap() {
-		Transaction transaction = TransactionUtils.getManager().getTransaction();
+		Transaction transaction = TransactionUtils.getTransaction();
 		if (transaction == null) {
 			return null;
 		}
 
-		Map<K, V> map = new HashMap<K, V>(8);
-		Map<K, V> cache = transaction.bindResource(name, map);
-		if (cache == null) {
-			cache = map;
+		Map<K, V> map = transaction.getResource(name);
+		if (map == null) {
+			map = new HashMap<>(8);
+			transaction.registerResource(name, map);
 		}
-		return cache;
+		return map;
 	}
 }

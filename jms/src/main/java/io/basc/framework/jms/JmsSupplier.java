@@ -2,6 +2,7 @@ package io.basc.framework.jms;
 
 import java.lang.reflect.Method;
 
+import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 
@@ -13,10 +14,10 @@ import io.basc.framework.util.ClassUtils;
 
 public interface JmsSupplier {
 	@Nullable
-	<T> MessageConsumer getMessageConsumer(Class<? extends T> clazz);
+	<T> MessageConsumer getMessageConsumer(Class<? extends T> clazz) throws JMSException;
 
 	@Nullable
-	MessageConsumer getMessageConsumer(Class<?> clazz, Method method);
+	MessageConsumer getMessageConsumer(Class<?> clazz, Method method) throws JMSException;
 
 	default <T> MessageListener getMessageListener(Class<? extends T> clazz, T instance) {
 		if (instance instanceof MessageListener) {

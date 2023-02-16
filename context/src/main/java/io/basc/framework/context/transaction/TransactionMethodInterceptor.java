@@ -39,7 +39,7 @@ public final class TransactionMethodInterceptor implements MethodInterceptor {
 		if (rtn != null && (rtn instanceof RollbackOnlyResult)) {
 			RollbackOnlyResult result = (RollbackOnlyResult) rtn;
 			if (result.isRollbackOnly()) {
-				transaction.setRollbackOnly(true);
+				transaction.setRollbackOnly();
 				if (logger.isDebugEnabled()) {
 					logger.debug("rollback only in {}", invoker.getMethod());
 				}

@@ -14,14 +14,23 @@ public interface Cursor<E> extends CloseableIterator<E>, Closeable<RuntimeExcept
 
 	Cursor<E> onClose(RunnableProcessor<? extends RuntimeException> close);
 
+	@Override
+	default Cursor<E> limit(long start) {
+		return limit(BigInteger.valueOf(start), null);
+	}
+
+	@Override
+	default Cursor<E> limit(long start, long count) {
+		return limit(BigInteger.valueOf(start), BigInteger.valueOf(count));
+	}
+
 	default <U> Cursor<U> flatConvert(Function<? super Stream<E>, ? extends Stream<U>> mapper) {
 		return Cursor.create(mapper.apply(stream()));
 	}
 
 	@Override
 	default <U> Cursor<U> convert(Function<? super E, ? extends U> converter) {
-		Cursor<U> cursor = new StandardCursor<>(new ConvertibleIterator<E, U>(this, converter), getPosition());
-		return cursor.onClose(() -> close());
+		return new ConvertibleCursor<>(this, converter, getPosition(), () -> close());
 	}
 
 	default <T> Cursor<T> map(Function<? super E, ? extends T> mapper) {
@@ -30,24 +39,23 @@ public interface Cursor<E> extends CloseableIterator<E>, Closeable<RuntimeExcept
 	}
 
 	default Cursor<E> filter(Predicate<? super E> predicate) {
-		Cursor<E> cursor = new StandardCursor<>(new PredicateIterator<>(this, predicate), getPosition());
-		return cursor.onClose(() -> close());
-	}
-
-	default Cursor<E> limit(long start, long limit) {
-		return limit(BigInteger.valueOf(start), BigInteger.valueOf(limit));
+		return new FilterableCursor<>(this, predicate, () -> close());
 	}
 
 	/**
 	 * 限制
 	 * 
 	 * @param start
-	 * @param limit 小于0代表不限制
+	 * @param limit
 	 * @return
 	 */
 	default Cursor<E> limit(BigInteger start, BigInteger limit) {
-		Cursor<E> cursor = new StandardCursor<>(new LimitIterator<>(this, start, start.add(limit)), start);
-		return cursor.onClose(() -> close());
+		return new FilterableCursor<>(this, start, limit, () -> close());
+	}
+
+	@Override
+	default Cursor<E> limit(Predicate<? super E> start, Predicate<? super E> end) {
+		return new FilterableCursor<>(this, start, end, () -> close());
 	}
 
 	@Override

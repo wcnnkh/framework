@@ -1,5 +1,6 @@
 package io.basc.framework.util;
 
+import java.math.BigInteger;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -13,9 +14,39 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.basc.framework.lang.Nullable;
+
 @FunctionalInterface
 public interface Streamy<E> extends Optional<E> {
 	Stream<E> stream();
+
+	default Streamy<E> limit(long start) {
+		return limit(BigInteger.valueOf(start), null);
+	}
+
+	default Streamy<E> limit(long start, long count) {
+		return limit(BigInteger.valueOf(start), BigInteger.valueOf(count));
+	}
+
+	default Streamy<E> limit(BigInteger start, @Nullable BigInteger count) {
+		Stream<E> stream = stream();
+		try {
+			return new FilterableCursor<>(ReversibleIterator.of(stream.iterator()), start, count, () -> stream.close());
+		} catch (Throwable e) {
+			stream.close();
+			throw e;
+		}
+	}
+
+	default Streamy<E> limit(@Nullable Predicate<? super E> start, @Nullable Predicate<? super E> end) {
+		Stream<E> stream = stream();
+		try {
+			return new FilterableCursor<>(ReversibleIterator.of(stream.iterator()), start, end, () -> stream.close());
+		} catch (Throwable e) {
+			stream.close();
+			throw e;
+		}
+	}
 
 	default <R, A> R collect(Collector<? super E, A, R> collector) {
 		Stream<E> stream = stream();
@@ -128,7 +159,13 @@ public interface Streamy<E> extends Optional<E> {
 	}
 
 	default Streamy<E> filter(Predicate<? super E> predicate) {
-		return () -> stream().filter(predicate);
+		Stream<E> stream = stream();
+		try {
+			return new FilterableCursor<>(ReversibleIterator.of(stream.iterator()), predicate, () -> stream.close());
+		} catch (Throwable e) {
+			stream.close();
+			throw e;
+		}
 	}
 
 	default <T, X extends Throwable> T export(Processor<? super Stream<E>, ? extends T, ? extends X> processor)

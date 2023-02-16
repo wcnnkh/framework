@@ -59,4 +59,27 @@ public final class TransactionUtils {
 		}
 		return old;
 	}
+
+	/**
+	 * 获取当前事务
+	 * 
+	 * @return
+	 */
+	public static Transaction getTransaction() {
+		TransactionManager manager = getManager();
+		Transaction transaction = manager.getTransaction();
+		return transaction == null ? null : new ManagerTransaction(manager, transaction);
+	}
+
+	/**
+	 * 根据规则获取事务
+	 * 
+	 * @param definition
+	 * @return
+	 */
+	public static Transaction getTransaction(TransactionDefinition definition) {
+		TransactionManager manager = getManager();
+		Transaction transaction = manager.getTransaction(definition);
+		return transaction == null ? null : new ManagerTransaction(manager, transaction);
+	}
 }

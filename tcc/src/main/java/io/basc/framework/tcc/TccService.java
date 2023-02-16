@@ -39,10 +39,7 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 		String transactionId = transaction.getResource(TccService.class);
 		if (transactionId == null && create) {
 			transactionId = XUtils.getUUID();
-			String oldId = transaction.bindResource(TccService.class, transactionId);
-			if (oldId != null) {
-				transactionId = oldId;
-			}
+			transaction.registerResource(TccService.class, transactionId);
 		}
 		return transactionId;
 	}
@@ -59,8 +56,12 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 			throw new TccException("not exist transaction");
 		}
 
-		String oldId = transaction.bindResource(TccService.class, transactionId);
-		return oldId == null ? transactionId : oldId;
+		String oldId = transaction.getResource(TccService.class);
+		if (oldId == null) {
+			transaction.registerResource(TccService.class, transactionId);
+			oldId = transactionId;
+		}
+		return oldId;
 	}
 
 	@Autowired(required = false)
@@ -121,7 +122,7 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 			cancel = compensateRegistry.register(transactionId, XUtils.getUUID(), stage);
 		}
 
-		transaction.addLifecycle(new TccCompensator(confirm, cancel));
+		transaction.registerSynchronization(new TccSynchronization(confirm, cancel));
 		return result;
 	}
 

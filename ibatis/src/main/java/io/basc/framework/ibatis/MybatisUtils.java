@@ -15,7 +15,8 @@ public final class MybatisUtils {
 	private MybatisUtils() {
 	};
 
-	public static SqlSession getTransactionSqlSession(SqlSessionFactory sqlSessionFactory, OpenSessionProcessor openSessionProcessor) {
+	public static SqlSession getTransactionSqlSession(SqlSessionFactory sqlSessionFactory,
+			OpenSessionProcessor openSessionProcessor) {
 		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		if (transaction == null) {
 			return openSessionProcessor.process(transaction);
@@ -23,11 +24,8 @@ public final class MybatisUtils {
 
 		SqlSessionTransactionResource resource = transaction.getResource(sqlSessionFactory);
 		if (resource == null) {
-			SqlSessionTransactionResource mybatisTransactionResource = new SqlSessionTransactionResource(transaction, openSessionProcessor);
-			resource = transaction.bindResource(sqlSessionFactory, mybatisTransactionResource);
-			if (resource == null) {
-				resource = mybatisTransactionResource;
-			}
+			resource = new SqlSessionTransactionResource(transaction, openSessionProcessor);
+			transaction.registerResource(sqlSessionFactory, resource);
 		}
 		return resource.getSqlSession();
 	}

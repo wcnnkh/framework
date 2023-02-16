@@ -1,13 +1,12 @@
 package io.basc.framework.ibatis;
 
-import io.basc.framework.transaction.Savepoint;
-import io.basc.framework.transaction.Transaction;
-import io.basc.framework.transaction.TransactionException;
-import io.basc.framework.transaction.TransactionResource;
-
 import org.apache.ibatis.session.SqlSession;
 
-public class SqlSessionTransactionResource implements TransactionResource {
+import io.basc.framework.transaction.Synchronization;
+import io.basc.framework.transaction.Transaction;
+import io.basc.framework.transaction.TransactionStatus;
+
+public class SqlSessionTransactionResource implements Synchronization {
 	private final OpenSessionProcessor openSessionProcessor;
 	private final Transaction transaction;
 	private SqlSession sqlSession;
@@ -43,8 +42,20 @@ public class SqlSessionTransactionResource implements TransactionResource {
 		}
 	}
 
-	public Savepoint createSavepoint() throws TransactionException {
-		return null;
+	@Override
+	public void beforeCompletion() throws Throwable {
+		commit();
+	}
+
+	@Override
+	public void afterCompletion(TransactionStatus status) {
+		if (status.equals(TransactionStatus.ROLLING_BACK)) {
+			rollback();
+		}
+
+		if (status.equals(TransactionStatus.COMPLETED)) {
+			complete();
+		}
 	}
 
 }

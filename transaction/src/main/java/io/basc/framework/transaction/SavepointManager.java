@@ -1,13 +1,6 @@
 package io.basc.framework.transaction;
 
-/**
- * 事务资源
- * 
- * @author shuchaowen
- *
- */
-public interface TransactionResource extends TransactionSynchronization {
-
+public interface SavepointManager {
 	/**
 	 * 创建一个保存点
 	 * 

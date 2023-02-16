@@ -1,14 +1,15 @@
 package io.basc.framework.hibernate;
 
-import io.basc.framework.transaction.Savepoint;
-import io.basc.framework.transaction.TransactionException;
-import io.basc.framework.transaction.TransactionResource;
-
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-public class SessionTransactionResource implements TransactionResource {
+import io.basc.framework.transaction.Savepoint;
+import io.basc.framework.transaction.Synchronization;
+import io.basc.framework.transaction.TransactionException;
+import io.basc.framework.transaction.TransactionStatus;
+
+public class SessionTransactionResource implements Synchronization {
 	private final SessionFactory sessionFactory;
 	private final boolean isActive;
 
@@ -54,6 +55,22 @@ public class SessionTransactionResource implements TransactionResource {
 
 	public Savepoint createSavepoint() throws TransactionException {
 		return null;
+	}
+
+	@Override
+	public void beforeCompletion() throws Throwable {
+		commit();
+	}
+
+	@Override
+	public void afterCompletion(TransactionStatus status) {
+		if (status.equals(TransactionStatus.ROLLING_BACK)) {
+			rollback();
+		}
+
+		if (status.equals(TransactionStatus.COMPLETED)) {
+			complete();
+		}
 	}
 
 }
