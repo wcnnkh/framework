@@ -44,7 +44,8 @@ public final class DefaultReversibleIterator<E> implements ReversibleIterator<E>
 		if (iterator instanceof ListIterator) {
 			return ((ListIterator<? extends E>) iterator).hasPrevious();
 		} else {
-			iterator = toList().iterator();
+			List<E> list = toList();
+			iterator = list.listIterator(list.size());
 			return ((ListIterator<? extends E>) iterator).hasPrevious();
 		}
 	}

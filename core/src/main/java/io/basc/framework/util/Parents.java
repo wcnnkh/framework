@@ -1,9 +1,10 @@
 package io.basc.framework.util;
 
+import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
-public final class Parents<T extends ParentDiscover<T>> implements ReversibleIterator<T> {
+final class Parents<T extends ParentDiscover<T>> implements ReversibleIterator<T> {
 	private ListIterator<T> listIterator;
 	private ParentDiscover<T> parent;
 
@@ -32,7 +33,8 @@ public final class Parents<T extends ParentDiscover<T>> implements ReversibleIte
 	@Override
 	public boolean hasPrevious() {
 		if (listIterator == null) {
-			listIterator = toList().listIterator();
+			List<T> list = toList();
+			listIterator = list.listIterator(list.size());
 		}
 		return listIterator.hasPrevious();
 	}
