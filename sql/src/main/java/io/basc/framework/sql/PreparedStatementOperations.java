@@ -8,11 +8,19 @@ import io.basc.framework.util.ConsumeProcessor;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.RunnableProcessor;
 import io.basc.framework.util.Source;
+import io.basc.framework.util.StreamOperations;
 
 public class PreparedStatementOperations<T extends PreparedStatement, C extends PreparedStatementOperations<T, C>>
 		extends StatementOperations<T, C> {
 	public PreparedStatementOperations(Source<? extends T, ? extends SQLException> source) {
 		super(source);
+	}
+	
+	public <S> PreparedStatementOperations(StreamOperations<S, ? extends SQLException> sourceStreamOperations,
+			Processor<? super S, ? extends T, ? extends SQLException> processor,
+			@Nullable ConsumeProcessor<? super T, ? extends SQLException> closeProcessor,
+			@Nullable RunnableProcessor<? extends SQLException> closeHandler) {
+		super(sourceStreamOperations, processor, closeProcessor, closeHandler);
 	}
 
 	public PreparedStatementOperations(Source<? extends T, ? extends SQLException> source,

@@ -9,6 +9,7 @@ import io.basc.framework.util.ConsumeProcessor;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.RunnableProcessor;
 import io.basc.framework.util.Source;
+import io.basc.framework.util.StreamOperations;
 
 public class StatementOperations<T extends Statement, C extends StatementOperations<T, C>> extends Operations<T, C> {
 
@@ -31,24 +32,15 @@ public class StatementOperations<T extends Statement, C extends StatementOperati
 			@Nullable RunnableProcessor<? extends SQLException> closeHandler) {
 		super(sourceProcesor, closeProcessor, closeHandler);
 	}
+	
+	public <S> StatementOperations(StreamOperations<S, ? extends SQLException> sourceStreamOperations,
+			Processor<? super S, ? extends T, ? extends SQLException> processor,
+			@Nullable ConsumeProcessor<? super T, ? extends SQLException> closeProcessor,
+			@Nullable RunnableProcessor<? extends SQLException> closeHandler) {
+		super(sourceStreamOperations, processor, closeProcessor, closeHandler);
+	}
 
 	public ResultSetOperations query(Processor<? super T, ? extends ResultSet, ? extends SQLException> queryProcessor) {
-		return new ResultSetOperations((operations) -> {
-			T statement = StatementOperations.this.get();
-			try {
-				return queryProcessor.process(statement);
-			} catch(Throwable e) {
-				StatementOperations.this.close(statement);
-				throw e;
-			}finally {
-				operations.onClose(() -> StatementOperations.this.close(statement))
-						.onClose(() -> StatementOperations.this.close());
-			}
-		}, (e) -> e.close(), null) {
-			@Override
-			public String toString() {
-				return StatementOperations.this.toString();
-			}
-		};
+		return new ResultSetOperations(this, queryProcessor, (e) -> e.close(), null);
 	}
 }

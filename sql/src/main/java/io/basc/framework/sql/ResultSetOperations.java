@@ -13,6 +13,7 @@ import io.basc.framework.util.Processor;
 import io.basc.framework.util.RunnableProcessor;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.StaticSupplier;
+import io.basc.framework.util.StreamOperations;
 
 public class ResultSetOperations extends Operations<ResultSet, ResultSetOperations> {
 
@@ -36,6 +37,13 @@ public class ResultSetOperations extends Operations<ResultSet, ResultSetOperatio
 			@Nullable ConsumeProcessor<? super ResultSet, ? extends SQLException> closeProcessor,
 			@Nullable RunnableProcessor<? extends SQLException> closeHandler) {
 		super(sourceProcesor, closeProcessor, closeHandler);
+	}
+
+	public <S> ResultSetOperations(StreamOperations<S, ? extends SQLException> sourceStreamOperations,
+			Processor<? super S, ? extends ResultSet, ? extends SQLException> processor,
+			@Nullable ConsumeProcessor<? super ResultSet, ? extends SQLException> closeProcessor,
+			@Nullable RunnableProcessor<? extends SQLException> closeHandler) {
+		super(sourceStreamOperations, processor, closeProcessor, closeHandler);
 	}
 
 	public <E> Cursor<E> rows(Processor<? super ResultSet, ? extends E, ? extends Throwable> rowMapper) {
@@ -65,10 +73,10 @@ public class ResultSetOperations extends Operations<ResultSet, ResultSetOperatio
 			}
 
 			try {
-				if(resultSet == null) {
+				if (resultSet == null) {
 					resultSet = ResultSetOperations.this.get();
 				}
-				
+
 				if (resultSet.next()) {
 					this.next = new StaticSupplier<ResultSet>(resultSet);
 					return true;

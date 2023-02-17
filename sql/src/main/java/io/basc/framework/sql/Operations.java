@@ -21,11 +21,6 @@ public class Operations<T, C extends Operations<T, C>> extends StandardStreamOpe
 //		LoggerFactory.getLevelManager().getSourceMap().put(logger.getName(), Levels.TRACE.getValue());
 //	}
 
-	public <S> Operations(StreamOperations<S, ? extends SQLException> sourceStreamOperations,
-			Processor<? super S, ? extends T, ? extends SQLException> processor) {
-		super(sourceStreamOperations, processor);
-	}
-
 	public Operations(Source<? extends T, ? extends SQLException> source) {
 		super(source);
 	}
@@ -44,6 +39,13 @@ public class Operations<T, C extends Operations<T, C>> extends StandardStreamOpe
 			@Nullable ConsumeProcessor<? super T, ? extends SQLException> closeProcessor,
 			@Nullable RunnableProcessor<? extends SQLException> closeHandler) {
 		super(sourceProcesor, closeProcessor, closeHandler);
+	}
+
+	public <S> Operations(StreamOperations<S, ? extends SQLException> sourceStreamOperations,
+			Processor<? super S, ? extends T, ? extends SQLException> processor,
+			@Nullable ConsumeProcessor<? super T, ? extends SQLException> closeProcessor,
+			@Nullable RunnableProcessor<? extends SQLException> closeHandler) {
+		super(sourceStreamOperations, processor, closeProcessor, closeHandler);
 	}
 
 	@Override
