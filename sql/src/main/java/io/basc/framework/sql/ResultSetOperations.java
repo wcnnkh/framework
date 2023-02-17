@@ -48,7 +48,7 @@ public class ResultSetOperations extends Operations<ResultSet, ResultSetOperatio
 
 	public <E> Cursor<E> rows(Processor<? super ResultSet, ? extends E, ? extends Throwable> rowMapper) {
 		ResultSetIterator resultSetIterator = new ResultSetIterator();
-		return Cursor.create(resultSetIterator).map((e) -> {
+		return Cursor.of(resultSetIterator).map((e) -> {
 			try {
 				return rowMapper.process(e);
 			} catch (Throwable err) {

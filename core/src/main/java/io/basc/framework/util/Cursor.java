@@ -1,8 +1,10 @@
 package io.basc.framework.util;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -25,7 +27,7 @@ public interface Cursor<E> extends CloseableIterator<E>, Closeable<RuntimeExcept
 	}
 
 	default <U> Cursor<U> flatConvert(Function<? super Stream<E>, ? extends Stream<U>> mapper) {
-		return Cursor.create(mapper.apply(stream()));
+		return Cursor.of(mapper.apply(stream()));
 	}
 
 	@Override
@@ -68,18 +70,39 @@ public interface Cursor<E> extends CloseableIterator<E>, Closeable<RuntimeExcept
 	}
 
 	static <T> Cursor<T> empty() {
-		return create(Collections.emptyIterator());
+		return of(Collections.emptyIterator());
 	}
 
-	static <T> Cursor<T> create(Iterator<? extends T> iterator) {
+	@SuppressWarnings("unchecked")
+	static <T> Cursor<T> of(Iterator<? extends T> iterator) {
+		if (iterator instanceof Cursor) {
+			return (Cursor<T>) iterator;
+		}
+
+		if (iterator instanceof CloseableIterator) {
+			return new StandardCursor<>((CloseableIterator<? extends T>) iterator);
+		}
+
 		return new StandardCursor<>(iterator);
 	}
 
-	static <T> Cursor<T> create(CloseableIterator<? extends T> iterator) {
+	static <T> Cursor<T> of(Stream<T> stream) {
+		return of(stream.iterator()).onClose(() -> stream.close());
+	}
+
+	static <T> Cursor<T> of(Iterable<? extends T> iterable) {
+		Iterator<? extends T> iterator;
+		if (iterable instanceof List) {
+			iterator = ((List<? extends T>) iterable).listIterator();
+		} else {
+			iterator = iterable.iterator();
+		}
 		return new StandardCursor<>(iterator);
 	}
 
-	static <T> Cursor<T> create(Stream<T> stream) {
-		return create(stream.iterator()).onClose(() -> stream.close());
+	@SuppressWarnings("unchecked")
+	static <T> Cursor<T> of(T... values) {
+		return of(Arrays.asList(values));
 	}
+
 }

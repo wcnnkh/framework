@@ -77,7 +77,7 @@ public final class FileRecords<T> implements Iterable<T> {
 			synchronized (this) {
 				if (file != null) {
 					RecordIterator<T> iterator = new RecordIterator<T>(file, codec);
-					return Cursor.create(iterator);
+					return Cursor.of(iterator);
 				}
 			}
 		}

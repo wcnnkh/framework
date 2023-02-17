@@ -485,23 +485,6 @@ public abstract class CollectionUtils {
 		}
 	}
 
-	public static <T> T first(Iterable<T> values) {
-		if (values == null) {
-			return null;
-		}
-
-		if (values instanceof List) {
-			List<T> list = (List<T>) values;
-			return list.isEmpty() ? null : list.get(0);
-		} else {
-			Iterator<T> iterator = values.iterator();
-			if (iterator != null && iterator.hasNext()) {
-				return iterator.next();
-			}
-			return null;
-		}
-	}
-
 	public static int size(Collection<?> collection) {
 		return collection == null ? 0 : collection.size();
 	}

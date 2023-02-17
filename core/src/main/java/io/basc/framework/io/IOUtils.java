@@ -752,7 +752,7 @@ public final class IOUtils {
 
 	public static Cursor<String> readLines(BufferedReader bufferedReader) {
 		LineIterator iterator = new LineIterator(bufferedReader);
-		return Cursor.create(iterator);
+		return Cursor.of(iterator);
 	}
 
 	// -----------------------------------------------------------------------

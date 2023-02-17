@@ -21,7 +21,7 @@ public class ClassesServiceLoader<S> implements ServiceLoader<S> {
 
 	@Override
 	public Cursor<S> iterator() {
-		return Cursor.create(new ClassInstanceIterator<>(instanceFactory, classesLoader.iterator()));
+		return Cursor.of(new ClassInstanceIterator<>(instanceFactory, classesLoader.iterator()));
 	}
 
 }

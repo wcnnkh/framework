@@ -312,7 +312,7 @@ public final class SpiServiceLoader<S> extends DefaultClassLoaderProvider
 	 * @return An iterator that lazily loads providers for this loader's service
 	 */
 	public Cursor<S> iterator() {
-		return Cursor.create(new Iterator<S>() {
+		return Cursor.of(new Iterator<S>() {
 
 			Iterator<Map.Entry<String, S>> knownProviders = providers == null ? Collections.emptyIterator()
 					: providers.entrySet().iterator();

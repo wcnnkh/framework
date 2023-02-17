@@ -19,7 +19,7 @@ public class ConfigurableServiceLoader<S> implements ServiceLoader<S> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Cursor<S> iterator() {
-		return Cursor.create(suppliers.stream().map((e) -> (S) e.get()).sorted(OrderComparator.INSTANCE));
+		return Cursor.of(suppliers.stream().map((e) -> (S) e.get()).sorted(OrderComparator.INSTANCE));
 	}
 
 	public Registration registerSupplier(Supplier<? extends S> supplier) {

@@ -52,7 +52,7 @@ public class ConfigServiceLoader<S> implements ServiceLoader<S> {
 				}
 			}
 		}
-		return Cursor.create(new InstanceIterator<S>(instanceFactory, Arrays.asList(names).iterator()));
+		return Cursor.of(new InstanceIterator<S>(instanceFactory, Arrays.asList(names).iterator()));
 	}
 
 }

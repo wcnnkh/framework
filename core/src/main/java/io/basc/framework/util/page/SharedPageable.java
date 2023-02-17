@@ -81,6 +81,6 @@ public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 
 	@Override
 	public Cursor<T> iterator() {
-		return Cursor.create(list.iterator());
+		return Cursor.of(list);
 	}
 }

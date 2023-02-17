@@ -105,7 +105,7 @@ public class ConfigurableServices<T> extends Services<T> implements Configurable
 
 	@Override
 	public Cursor<T> iterator() {
-		return Cursor.create(super.iterator());
+		return Cursor.of(super.iterator());
 	}
 
 	@Override

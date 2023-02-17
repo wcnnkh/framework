@@ -63,7 +63,7 @@ public class RedisLbs<K, V> implements Lbs<V> {
 			return Cursor.empty();
 		}
 
-		return Cursor.create(collection.stream().map(markerConvert));
+		return Cursor.of(collection.stream().map(markerConvert));
 	}
 
 }

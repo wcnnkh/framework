@@ -2,7 +2,6 @@ package io.basc.framework.util;
 
 import java.math.BigInteger;
 import java.util.Iterator;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -64,17 +63,5 @@ public interface ReversibleIterator<E> extends Iterator<E>, ReverseIterator<E> {
 	@Override
 	default void forEachRemaining(Consumer<? super E> action) {
 		Iterator.super.forEachRemaining(action);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> ReversibleIterator<T> of(Iterator<? extends T> iterator) {
-		if (iterator instanceof ReversibleIterator) {
-			return (ReversibleIterator<T>) iterator;
-		}
-		return new DefaultReversibleIterator<>(iterator);
-	}
-
-	public static <T> ReversibleIterator<T> of(List<? extends T> list) {
-		return new DefaultReversibleIterator<>(list);
 	}
 }

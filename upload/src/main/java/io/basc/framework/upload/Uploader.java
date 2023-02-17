@@ -165,7 +165,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 		String key = request.getParameterMap().getFirst("key");
 		String expiration = request.getParameterMap().getFirst("expiration");
 		String sign = request.getParameterMap().getFirst("sign");
-		if (StringUtils.isEmptyAny(key, expiration, sign)) {
+		if (StringUtils.isAnyEmpty(key, expiration, sign)) {
 			return Return.error("参数错误");
 		}
 

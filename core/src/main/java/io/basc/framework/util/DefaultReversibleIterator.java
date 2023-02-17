@@ -43,6 +43,8 @@ public final class DefaultReversibleIterator<E> implements ReversibleIterator<E>
 	public boolean hasPrevious() {
 		if (iterator instanceof ListIterator) {
 			return ((ListIterator<? extends E>) iterator).hasPrevious();
+		} else if (iterator instanceof ReversibleIterator) {
+			return ((ReversibleIterator<? extends E>) iterator).hasPrevious();
 		} else {
 			List<E> list = toList();
 			iterator = list.listIterator(list.size());
@@ -55,6 +57,13 @@ public final class DefaultReversibleIterator<E> implements ReversibleIterator<E>
 		if (!hasPrevious()) {
 			throw new NoSuchElementException(DefaultReverseIterator.class.getName() + "#previous");
 		}
-		return ((ListIterator<? extends E>) iterator).previous();
+
+		if (iterator instanceof ListIterator) {
+			return ((ListIterator<? extends E>) iterator).previous();
+		} else if (iterator instanceof ReversibleIterator) {
+			return ((ReversibleIterator<? extends E>) iterator).previous();
+		}
+
+		throw Assert.shouldNeverGetHere();
 	}
 }

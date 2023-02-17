@@ -112,7 +112,7 @@ public class CsvTemplate extends TableTransfer {
 		CSVParser parser = new CSVParser(reader, format);
 		try {
 			Stream<String[]> stream = parser.stream().map((e) -> e.stream().toArray(String[]::new));
-			return Cursor.create(stream.iterator()).onClose(() -> stream.close()).onClose(() -> {
+			return Cursor.of(stream).onClose(() -> {
 				try {
 					parser.close();
 				} catch (IOException e) {

@@ -94,8 +94,4 @@ public abstract class NestedExceptionUtils {
 		}
 		return message;
 	}
-
-	public static RuntimeException shouldNeverGetHere() {
-		throw new IllegalStateException("Should never get here");
-	}
 }

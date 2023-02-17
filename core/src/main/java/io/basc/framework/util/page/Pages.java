@@ -43,6 +43,6 @@ public interface Pages<K, T> extends Page<K, T>, Pageables<K, T> {
 	 */
 	default Paginations<T> toPaginations(long start, long limit) {
 		return new StreamPaginations<>(getTotal(), start, limit,
-				(s, count) -> Cursor.create(Pages.this.all().iterator()).limit(s, count));
+				(s, count) -> Cursor.of(Pages.this.all()).limit(s, count));
 	}
 }

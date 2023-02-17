@@ -94,6 +94,6 @@ public class ExcelTemplate extends TableTransfer {
 		} else {
 			throw new NotSupportedException(source.getClass().getName());
 		}
-		return Cursor.create(stream).map((e) -> e.getValues());
+		return Cursor.of(stream).map((e) -> e.getValues());
 	}
 }

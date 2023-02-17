@@ -206,7 +206,7 @@ public final class XUtils {
 	}
 
 	@SafeVarargs
-	public static <T> T first(Predicate<? super T> predicate, T... option) {
+	public static <T> T find(Predicate<? super T> predicate, T... option) {
 		if (option == null) {
 			return null;
 		}

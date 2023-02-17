@@ -809,7 +809,7 @@ public abstract class ReflectionUtils {
 			throw (RuntimeException) ex;
 		} else if (ex instanceof Exception) {
 			handleReflectionException((Exception) ex);
-			throw NestedExceptionUtils.shouldNeverGetHere();
+			throw Assert.shouldNeverGetHere();
 		} else {
 			throw new UndeclaredThrowableException(ex);
 		}

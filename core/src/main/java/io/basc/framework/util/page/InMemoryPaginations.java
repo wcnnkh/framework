@@ -60,7 +60,7 @@ public class InMemoryPaginations<T> implements Paginations<T>, Serializable {
 			return Cursor.empty();
 		}
 
-		return Cursor.create(source.subList(start, end).iterator());
+		return Cursor.of(source.subList(start, end).iterator());
 	}
 
 	@Override

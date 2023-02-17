@@ -87,7 +87,7 @@ public class SearchResults<T> extends TopFieldDocs implements Pages<ScoreDoc, T>
 
 	@Override
 	public Cursor<T> iterator() {
-		return Cursor.create(list.iterator());
+		return Cursor.of(list);
 	}
 
 	@Override

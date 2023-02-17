@@ -16,7 +16,7 @@ public class LinkedHashSetClassesLoader extends LinkedHashSet<Class<?>> implemen
 
 	@Override
 	public Cursor<Class<?>> iterator() {
-		return Cursor.create(super.iterator());
+		return Cursor.of(super.iterator());
 	}
 
 	@Override

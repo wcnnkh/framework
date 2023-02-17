@@ -8,8 +8,8 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
-import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 
 public final class ParameterUtils {
@@ -32,7 +32,7 @@ public final class ParameterUtils {
 		} else if (executable instanceof Constructor) {
 			return parameterNameDiscoverer.getParameterNames((Constructor<?>) executable);
 		}
-		throw NestedExceptionUtils.shouldNeverGetHere();
+		throw Assert.shouldNeverGetHere();
 	}
 
 	public static ParameterDescriptor[] getParameters(ParameterNameDiscoverer parameterNameDiscoverer,

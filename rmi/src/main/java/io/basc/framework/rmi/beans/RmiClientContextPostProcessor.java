@@ -3,8 +3,8 @@ package io.basc.framework.rmi.beans;
 import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.util.Cursor;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
 
 @Provider
 public class RmiClientContextPostProcessor implements ContextPostProcessor {
@@ -18,7 +18,7 @@ public class RmiClientContextPostProcessor implements ContextPostProcessor {
 			}
 
 			if (!context.containsDefinition(clazz.getName())) {
-				String host = XUtils.first((e) -> StringUtils.isNotEmpty(e), client.host(), client.value());
+				String host = Cursor.of(client.host(), client.value()).filter((e) -> StringUtils.isNotEmpty(e)).first();
 				context.registerDefinition(new RmiClientBeanDefinition(context, clazz, host));
 			}
 		}

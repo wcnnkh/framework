@@ -23,7 +23,7 @@ public final class NamedServiceLoader<S> implements ServiceLoader<S> {
 	}
 
 	public Cursor<S> iterator() {
-		return Cursor.create(new InstanceIterator<S>(instanceFactory, names.iterator()));
+		return Cursor.of(new InstanceIterator<S>(instanceFactory, names.iterator()));
 	}
 
 }

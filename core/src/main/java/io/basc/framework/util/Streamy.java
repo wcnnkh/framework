@@ -31,7 +31,7 @@ public interface Streamy<E> extends Optional<E> {
 	default Streamy<E> limit(BigInteger start, @Nullable BigInteger count) {
 		Stream<E> stream = stream();
 		try {
-			return new FilterableCursor<>(ReversibleIterator.of(stream.iterator()), start, count, () -> stream.close());
+			return new FilterableCursor<>(Cursor.of(stream.iterator()), start, count, () -> stream.close());
 		} catch (Throwable e) {
 			stream.close();
 			throw e;
@@ -41,7 +41,7 @@ public interface Streamy<E> extends Optional<E> {
 	default Streamy<E> limit(@Nullable Predicate<? super E> start, @Nullable Predicate<? super E> end) {
 		Stream<E> stream = stream();
 		try {
-			return new FilterableCursor<>(ReversibleIterator.of(stream.iterator()), start, end, () -> stream.close());
+			return new FilterableCursor<>(Cursor.of(stream.iterator()), start, end, () -> stream.close());
 		} catch (Throwable e) {
 			stream.close();
 			throw e;
@@ -161,7 +161,7 @@ public interface Streamy<E> extends Optional<E> {
 	default Streamy<E> filter(Predicate<? super E> predicate) {
 		Stream<E> stream = stream();
 		try {
-			return new FilterableCursor<>(ReversibleIterator.of(stream.iterator()), predicate, () -> stream.close());
+			return new FilterableCursor<>(Cursor.of(stream.iterator()), predicate, () -> stream.close());
 		} catch (Throwable e) {
 			stream.close();
 			throw e;

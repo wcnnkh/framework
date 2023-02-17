@@ -49,7 +49,7 @@ public abstract class AbstractClassesLoader implements ClassesLoader, ClassLoade
 				}
 			}
 		}
-		return Cursor.create(classes.iterator());
+		return Cursor.of(classes);
 	}
 
 	protected abstract Stream<Class<?>> load(ClassLoader classLoader);

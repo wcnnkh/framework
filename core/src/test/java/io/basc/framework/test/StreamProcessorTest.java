@@ -53,7 +53,7 @@ public class StreamProcessorTest {
 		});
 		System.out.println(stream.filter((e) -> true).findFirst().get());
 
-		Cursor<String> cursor = Cursor.create(list.stream().onClose(() -> {
+		Cursor<String> cursor = Cursor.of(list.stream().onClose(() -> {
 			System.out.println("关闭游标");
 		}).onClose(() -> {
 			System.out.println("关闭游标2");

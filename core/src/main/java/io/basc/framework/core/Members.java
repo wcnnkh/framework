@@ -175,7 +175,7 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 
 	@Override
 	public Cursor<T> iterator() {
-		return Cursor.create(stream().iterator());
+		return Cursor.of(stream());
 	}
 
 	@Override

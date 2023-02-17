@@ -101,8 +101,4 @@ public interface ReverseIterator<E> extends Streamy<E> {
 		};
 		return XUtils.stream(iterator);
 	}
-
-	static <T> ReverseIterator<T> of(Iterator<? extends T> iterator) {
-		return new DefaultReverseIterator<>(iterator);
-	}
 }

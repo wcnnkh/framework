@@ -743,6 +743,23 @@ public final class StringUtils {
 		return false;
 	}
 
+	public static boolean hasText(CharSequence value, int fromIndex, int endIndex) {
+		if (fromIndex == endIndex) {
+			return false;
+		}
+
+		if (isEmpty(value)) {
+			return false;
+		}
+
+		for (int i = fromIndex, end = Math.min(value.length(), endIndex); i < end; i++) {
+			if (!Character.isWhitespace(value.charAt(i))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * all has text
 	 * 
@@ -760,23 +777,6 @@ public final class StringUtils {
 			}
 		}
 		return true;
-	}
-
-	public static boolean hasText(CharSequence value, int fromIndex, int endIndex) {
-		if (fromIndex == endIndex) {
-			return false;
-		}
-
-		if (isEmpty(value)) {
-			return false;
-		}
-
-		for (int i = fromIndex, end = Math.min(value.length(), endIndex); i < end; i++) {
-			if (!Character.isWhitespace(value.charAt(i))) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**
@@ -1053,6 +1053,64 @@ public final class StringUtils {
 		return -1;
 	}
 
+	public static boolean isAllEmpty(CharSequence... charSequences) {
+		if (charSequences == null || charSequences.length == 0) {
+			return true;
+		}
+
+		for (CharSequence charSequence : charSequences) {
+			if (isNotEmpty(charSequence)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static boolean isAllEmpty(Object... values) {
+		if (values == null || values.length == 0) {
+			return true;
+		}
+
+		for (Object value : values) {
+			if (isNotEmpty(value)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * any is empty
+	 * 
+	 * @param values
+	 * @return
+	 */
+	public static boolean isAnyEmpty(CharSequence... values) {
+		if (values == null || values.length == 0) {
+			return true;
+		}
+
+		for (CharSequence s : values) {
+			if (isEmpty(s)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean isAnyEmpty(Object... values) {
+		if (values == null || values.length == 0) {
+			return true;
+		}
+
+		for (Object s : values) {
+			if (isEmpty(s)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	// 根据Unicode编码判断中文汉字和符号
 	public static boolean isChinese(char c) {
 		Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
@@ -1072,30 +1130,6 @@ public final class StringUtils {
 		return value == null || value.length() == 0;
 	}
 
-	/**
-	 * any is empty
-	 * 
-	 * @param values
-	 * @return
-	 */
-	public static boolean isEmptyAny(CharSequence... values) {
-		if (values == null || values.length == 0) {
-			return true;
-		}
-
-		for (CharSequence s : values) {
-			if (isEmpty(s)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * @param value
-	 * @return false {@link #isEmpty(CharSequence)} or not string type
-	 *         {@link String#equals(Object)}
-	 */
 	public static boolean isEmpty(Object value) {
 		return value == null || "".equals(value);
 	}
@@ -1104,18 +1138,8 @@ public final class StringUtils {
 		return !isEmpty(value);
 	}
 
-	/**
-	 * all not empty
-	 * 
-	 * @param values
-	 * @return
-	 */
-	public static boolean isNotEmptyAll(CharSequence... values) {
-		return !isEmptyAny(values);
-	}
-
 	public static boolean isNotEmpty(Object value) {
-		return value != null && !"".equals(value);
+		return !isEmpty(value);
 	}
 
 	public static int lastIndexOf(char[] source, char[] target) {

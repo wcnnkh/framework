@@ -131,7 +131,7 @@ public class ProviderClassesLoader implements ClassesLoader, Comparator<Class<?>
 				}
 			}
 		}
-		return Cursor.create(providers.iterator());
+		return Cursor.of(providers);
 	}
 
 }

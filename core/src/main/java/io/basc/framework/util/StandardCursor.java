@@ -2,6 +2,7 @@ package io.basc.framework.util;
 
 import java.math.BigInteger;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 public class StandardCursor<E, C extends StandardCursor<E, C>> extends AbstractCursor<E, C> {
@@ -53,9 +54,15 @@ public class StandardCursor<E, C extends StandardCursor<E, C>> extends AbstractC
 			return false;
 		}
 
-		if (position.compareTo(BigInteger.ZERO) > 0 && iterator instanceof ReversibleIterator) {
-			if (((ReversibleIterator<?>) iterator).hasPrevious()) {
-				return true;
+		if (position.compareTo(BigInteger.ZERO) > 0) {
+			if (iterator instanceof ReversibleIterator) {
+				if (((ReversibleIterator<?>) iterator).hasPrevious()) {
+					return true;
+				}
+			} else if (iterator instanceof ListIterator) {
+				if (((ListIterator<?>) iterator).hasPrevious()) {
+					return true;
+				}
 			}
 		}
 
@@ -63,7 +70,6 @@ public class StandardCursor<E, C extends StandardCursor<E, C>> extends AbstractC
 		return false;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public E previous() {
 		if (!hasPrevious()) {
@@ -71,7 +77,12 @@ public class StandardCursor<E, C extends StandardCursor<E, C>> extends AbstractC
 		}
 
 		try {
-			return ((ReversibleIterator<E>) iterator).previous();
+			if (iterator instanceof ReversibleIterator) {
+				return ((ReversibleIterator<? extends E>) iterator).previous();
+			} else if (iterator instanceof ListIterator) {
+				return ((ListIterator<? extends E>) iterator).previous();
+			}
+			throw Assert.shouldNeverGetHere();
 		} finally {
 			position = position.subtract(BigInteger.ONE);
 		}

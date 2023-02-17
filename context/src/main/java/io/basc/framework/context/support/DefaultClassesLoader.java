@@ -53,7 +53,7 @@ public class DefaultClassesLoader implements ConfigurableClassesLoader {
 	@SuppressWarnings("resource")
 	public Cursor<Class<?>> iterator() {
 		List<Cursor<Class<?>>> iterators = new ArrayList<Cursor<Class<?>>>();
-		iterators.add(Cursor.create(defaultClasses.iterator()));
+		iterators.add(Cursor.of(defaultClasses));
 		for (ClassesLoader classesLoader : classesLoaders) {
 			iterators.add(classesLoader.iterator());
 		}

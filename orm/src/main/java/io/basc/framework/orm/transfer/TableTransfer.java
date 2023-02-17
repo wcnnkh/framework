@@ -28,8 +28,8 @@ import io.basc.framework.orm.Property;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ConsumeProcessor;
-import io.basc.framework.util.Cursor;
 import io.basc.framework.util.ConvertibleIterator;
+import io.basc.framework.util.Cursor;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
@@ -112,7 +112,7 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 
 				final String[] titleUes = titles.clone();
 				// 映射
-				return Cursor.create(cursor).onClose(() -> cursor.close()).map((contents) -> {
+				return cursor.map((contents) -> {
 					Map<String, String> columnMap = new LinkedHashMap<>();
 					for (int i = 0; i < contents.length; i++) {
 						columnMap.put(titleUes[i], contents[i]);
@@ -169,7 +169,7 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 			List<Property> properties = structure.stream().filter((e) -> e.isSupportSetter())
 					.collect(Collectors.toList());
 			// 映射
-			return Cursor.create(source).onClose(() -> source.close()).map((contents) -> {
+			return source.map((contents) -> {
 				T instance = (T) ReflectionApi.newInstance(structure.getSourceClass());
 				properties.forEach((property) -> {
 					Integer index = nameToIndexMap.get(property.getName());
@@ -191,7 +191,7 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 				return instance;
 			});
 		} else {
-			return Cursor.create(source).map((e) -> {
+			return source.map((e) -> {
 				T instance = (T) ReflectionApi.newInstance(structure.getSourceClass());
 				int i = 0;
 				Iterator<? extends Property> iterator = structure.stream().filter((p) -> p.isSupportSetter())
@@ -265,7 +265,8 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 	}
 
 	public final Iterator<TransfColumns<String, String>> exportAll(Iterator<?> source) {
-		return XUtils.stream(new ConvertibleIterator<Object, TransfColumns<String, String>>(source, (e) -> mapColumns(e)))
+		return XUtils
+				.stream(new ConvertibleIterator<Object, TransfColumns<String, String>>(source, (e) -> mapColumns(e)))
 				.filter((e) -> e != null).iterator();
 	}
 

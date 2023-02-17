@@ -12,12 +12,12 @@ public class Cursors<E> extends AbstractCursor<E, Cursors<E>> {
 
 	public Cursors(Iterator<? extends Cursor<E>> sources) {
 		Assert.requiredArgument(sources != null, "sources");
-		this.sources = ReversibleIterator.of(sources);
+		this.sources = Cursor.of(sources);
 	}
-	
+
 	public Cursors(List<? extends Cursor<E>> sources) {
 		Assert.requiredArgument(sources != null, "sources");
-		this.sources = ReversibleIterator.of(sources);
+		this.sources = Cursor.of(sources);
 	}
 
 	@Override

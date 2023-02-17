@@ -6,11 +6,11 @@ import java.util.function.Supplier;
 
 public class StandardResultSet<E> implements ResultSet<E> {
 	private transient final Supplier<? extends Cursor<E>> cursorSupplier;
-	private volatile List<? extends E> list;
+	private volatile Iterable<? extends E> iterable;
 
-	public StandardResultSet(List<? extends E> list) {
+	public StandardResultSet(Iterable<? extends E> iterable) {
 		this.cursorSupplier = null;
-		this.list = list;
+		this.iterable = iterable;
 	}
 
 	public StandardResultSet(Supplier<? extends Cursor<E>> cursorSupplier) {
@@ -19,15 +19,16 @@ public class StandardResultSet<E> implements ResultSet<E> {
 
 	@Override
 	public Cursor<E> iterator() {
-		if (list != null) {
-			return Cursor.create(list.iterator());
+		if (iterable != null) {
+			return Cursor.of(iterable);
 		}
 		return cursorSupplier.get();
 	}
 
 	@Override
 	public E last() {
-		if (list != null) {
+		if (iterable instanceof List) {
+			List<? extends E> list = (List<? extends E>) iterable;
 			return list.get(list.size() - 1);
 		}
 		return ResultSet.super.last();
@@ -35,13 +36,13 @@ public class StandardResultSet<E> implements ResultSet<E> {
 
 	@Override
 	public List<E> toList() {
-		if (list == null) {
+		if (iterable == null && !(iterable instanceof List)) {
 			synchronized (this) {
-				if (list == null) {
-					list = ResultSet.super.toList();
+				if (iterable == null && !(iterable instanceof List)) {
+					iterable = ResultSet.super.toList();
 				}
 			}
 		}
-		return Collections.unmodifiableList(list);
+		return Collections.unmodifiableList((List<? extends E>) iterable);
 	}
 }

@@ -92,7 +92,7 @@ public class XmlHttpAuthorityManager extends DefaultHttpAuthorityManager<HttpAut
 
 		String path = map.remove("path");
 		String method = map.remove("method");
-		boolean isMenu = !StringUtils.isEmptyAny(path, method);
+		boolean isMenu = !StringUtils.isAnyEmpty(path, method);
 		register(new DefaultHttpAuthority(id, parentId, name, map, isMenu, path, method));
 	}
 }

@@ -44,6 +44,6 @@ public interface Sheet extends ResultSet<String[]> {
 				throw new ExcelException(ex);
 			}
 		});
-		return Cursor.create(iterator);
+		return Cursor.of(iterator);
 	}
 }

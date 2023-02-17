@@ -17,7 +17,7 @@ import io.basc.framework.event.EventTypes;
 import io.basc.framework.event.Observable;
 import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Cursor;
 import io.basc.framework.util.Registration;
 
 public class StandardObservable<T> extends AbstractObservable<T> implements EventDispatcher<ObservableChangeEvent<T>> {
@@ -174,7 +174,7 @@ public class StandardObservable<T> extends AbstractObservable<T> implements Even
 		T value = valueReference.get();
 		if (value == null && getSources().size() == 1) {
 			// 如果没有缓存值且只存在一个source那么无需使用valueReference缓存
-			return CollectionUtils.first(getSources()).orElse(null);
+			return Cursor.of(getSources()).first().orElse(null);
 		}
 		return value;
 	}
