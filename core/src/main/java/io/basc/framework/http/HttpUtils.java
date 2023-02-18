@@ -22,16 +22,16 @@ public final class HttpUtils {
 	private HttpUtils() {
 	};
 
-	private static final HttpClient HTTP_CLIENT = Sys.getEnv()
-			.getServiceLoader(HttpClient.class, DefaultHttpClient.class).first();
+	private static final HttpClient CLIENT = Sys.getEnv().getServiceLoader(HttpClient.class, DefaultHttpClient.class)
+			.first();
 
 	/**
 	 * 获取默认的HttpClient(获取spi机制加载)
 	 * 
 	 * @return
 	 */
-	public static HttpClient getHttpClient() {
-		return HTTP_CLIENT;
+	public static HttpClient getClient() {
+		return CLIENT;
 	}
 
 	public static boolean isValidOrigin(HttpRequest request, Collection<String> allowedOrigins) {

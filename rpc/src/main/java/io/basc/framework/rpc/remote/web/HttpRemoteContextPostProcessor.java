@@ -108,7 +108,7 @@ public class HttpRemoteContextPostProcessor implements ContextPostProcessor {
 		}
 
 		public HttpClient getHttpClient() {
-			return httpClient == null ? HttpUtils.getHttpClient() : httpClient;
+			return httpClient == null ? HttpUtils.getClient() : httpClient;
 		}
 
 		public String getUrl() {

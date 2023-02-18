@@ -23,7 +23,7 @@ public class XmlValue {
 
 		if (StringUtils.isNotEmpty(url)) {
 			if (url.startsWith("http://") || url.startsWith("https://")) {
-				value = HttpUtils.getHttpClient().get(String.class, url).getBody();
+				value = HttpUtils.getClient().get(String.class, url).getBody();
 			} else {
 				value = ResourceUtils.getContent(resourceLoader.getResource(url), charset);
 			}
