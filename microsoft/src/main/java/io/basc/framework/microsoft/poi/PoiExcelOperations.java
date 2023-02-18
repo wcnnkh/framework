@@ -13,7 +13,6 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Sys;
-import io.basc.framework.lang.RequiredJavaVersion;
 import io.basc.framework.microsoft.AbstractExcelReader;
 import io.basc.framework.microsoft.Excel;
 import io.basc.framework.microsoft.ExcelException;
@@ -24,7 +23,6 @@ import io.basc.framework.microsoft.ExcelVersion;
 import io.basc.framework.microsoft.WritableExcel;
 import io.basc.framework.util.ClassUtils;
 
-@RequiredJavaVersion(8)
 public class PoiExcelOperations extends AbstractExcelReader implements ExcelOperations {
 	private static final ExcelReader OLE2_READER = (ExcelReader) Sys.getEnv()
 			.getInstance("io.basc.framework.microsoft.poi.HSSFExcelReader");

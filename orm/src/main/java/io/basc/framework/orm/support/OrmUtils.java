@@ -5,7 +5,7 @@ import java.util.List;
 
 import io.basc.framework.data.domain.Tree;
 import io.basc.framework.env.Sys;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.orm.ObjectRelationalMapper;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.CollectionUtils;
@@ -17,7 +17,7 @@ public final class OrmUtils {
 			.getServiceLoader(ObjectRelationalMapper.class, DefaultObjectRelationalMapper.class).first();
 
 	private OrmUtils() {
-		throw new NotSupportedException(getClass().getName());
+		throw new UnsupportedException(getClass().getName());
 	}
 
 	public static ObjectRelationalMapper getMapper() {

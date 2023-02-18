@@ -8,7 +8,7 @@ import javax.jms.MessageListener;
 
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 
@@ -24,7 +24,7 @@ public interface JmsSupplier {
 			return (MessageListener) instance;
 		}
 
-		throw new NotSupportedException(clazz.getName());
+		throw new UnsupportedException(clazz.getName());
 	}
 
 	default MessageListener getMessageListener(Class<?> clazz, Method method, MethodInvoker invoker) {
@@ -37,7 +37,7 @@ public interface JmsSupplier {
 					ReflectionUtils.handleThrowable(e);
 				}
 			}
-			throw new NotSupportedException(message.toString());
+			throw new UnsupportedException(message.toString());
 		};
 	}
 }

@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import io.basc.framework.core.Members;
 import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.lang.NestedExceptionUtils;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -71,7 +71,7 @@ public abstract class ReflectionUtils {
 			OBJECT_CONSTRUCTOR = Object.class.getConstructor();
 		} catch (NoSuchMethodException e) {
 			// Object对象怎么可能没有默认的构造方法
-			throw new NotSupportedException(ReflectionUtils.class.getName(), e);
+			throw new UnsupportedException(ReflectionUtils.class.getName(), e);
 		}
 	}
 
@@ -1324,12 +1324,12 @@ public abstract class ReflectionUtils {
 	 * @param <T>
 	 * @param clazz
 	 * @return
-	 * @throws NotSupportedException 不存在无参构造方法
+	 * @throws UnsupportedException 不存在无参构造方法
 	 */
-	public static <T> T newInstance(Class<T> clazz) throws NotSupportedException {
+	public static <T> T newInstance(Class<T> clazz) throws UnsupportedException {
 		Constructor<T> constructor = getDeclaredConstructor(clazz);
 		if (constructor == null) {
-			throw new NotSupportedException(clazz.getName());
+			throw new UnsupportedException(clazz.getName());
 		}
 
 		try {
@@ -1356,10 +1356,10 @@ public abstract class ReflectionUtils {
 	 * @param <T>
 	 * @param entityClass
 	 * @return
-	 * @throws NotSupportedException
+	 * @throws UnsupportedException
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T newInstanceWithNullValues(Class<T> entityClass) throws NotSupportedException {
+	public static <T> T newInstanceWithNullValues(Class<T> entityClass) throws UnsupportedException {
 		Assert.requiredArgument(entityClass != null, "entityClass");
 		Stream<Constructor<?>> stream = ReflectionUtils.getDeclaredConstructors(entityClass).all().stream()
 				.sorted(MEMBER_SCOPE_COMPARATOR).sorted(Comparator.comparingInt(Constructor::getParameterCount));
@@ -1372,7 +1372,7 @@ public abstract class ReflectionUtils {
 		} finally {
 			stream.close();
 		}
-		throw new NotSupportedException(entityClass.getName());
+		throw new UnsupportedException(entityClass.getName());
 	}
 
 	/**
@@ -1382,10 +1382,10 @@ public abstract class ReflectionUtils {
 	 * @param entityClass
 	 * @param params
 	 * @return
-	 * @throws NotSupportedException
+	 * @throws UnsupportedException
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T newInstanceWithParams(Class<T> entityClass, Object... params) throws NotSupportedException {
+	public static <T> T newInstanceWithParams(Class<T> entityClass, Object... params) throws UnsupportedException {
 		Assert.requiredArgument(entityClass != null, "entityClass");
 		Assert.requiredArgument(params != null, "params");
 		Stream<ExecutableMatchingResults<Constructor<?>>> stream = matchParams(
@@ -1403,7 +1403,7 @@ public abstract class ReflectionUtils {
 		} finally {
 			stream.close();
 		}
-		throw new NotSupportedException(entityClass.getName());
+		throw new UnsupportedException(entityClass.getName());
 	}
 
 	/**

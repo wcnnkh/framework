@@ -14,7 +14,7 @@ import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.data.DataException;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.NotFoundException;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.orm.repository.Condition;
 import io.basc.framework.orm.repository.ConditionKeywords;
@@ -77,7 +77,7 @@ public class CustomRepositoryMethodAdapter extends CurdRepositoryMethodAdapter i
 		String express = methodName;
 		String keywords = operationKeywords.startsWith(express);
 		if (keywords == null) {
-			throw new NotSupportedException(invoker.toString());
+			throw new UnsupportedException(invoker.toString());
 		}
 
 		express = express.substring(keywords.length());
@@ -188,7 +188,7 @@ public class CustomRepositoryMethodAdapter extends CurdRepositoryMethodAdapter i
 			} else if (operationKeywords.getUpdateKeywords().exists(operation)) {
 				value = repository.update(entityClass, columns, conditions);
 			} else {
-				throw new NotSupportedException(operation + "=" + invoker.toString());
+				throw new UnsupportedException(operation + "=" + invoker.toString());
 			}
 
 			return getConversionService().convert(value, TypeDescriptor.valueOf(long.class), responseTypeDescriptor);

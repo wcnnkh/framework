@@ -4,7 +4,7 @@ import java.lang.reflect.Modifier;
 import java.util.function.Predicate;
 
 import io.basc.framework.lang.Ignore;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 
 public enum FieldFeature implements Predicate<Field> {
 	/**
@@ -153,7 +153,7 @@ public enum FieldFeature implements Predicate<Field> {
 		case IGNORE_ANNOTATION:
 			return !field.isAnnotationPresent(Ignore.class);
 		default:
-			throw new NotSupportedException(this.toString());
+			throw new UnsupportedException(this.toString());
 		}
 	}
 }

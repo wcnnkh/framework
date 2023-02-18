@@ -16,7 +16,7 @@ import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.lang.NestedIOException;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.JavaVersion;
 import io.basc.framework.util.Registration;
@@ -258,7 +258,7 @@ public abstract class AbstractResource extends AbstractObservable<Resource>
 	}
 
 	public OutputStream getOutputStream() throws IOException {
-		throw new NotSupportedException(getDescription());
+		throw new UnsupportedException(getDescription());
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package io.basc.framework.aop.jdk;
 
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.support.AbstractProxy;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 
 import java.lang.reflect.InvocationHandler;
 import java.util.Arrays;
@@ -22,6 +22,6 @@ public class JdkProxy extends AbstractProxy {
 	}
 
 	public Object createInternal(Class<?>[] parameterTypes, Object[] arguments) {
-		throw new NotSupportedException(getSourceClass().getName() + "," + Arrays.toString(parameterTypes));
+		throw new UnsupportedException(getSourceClass().getName() + "," + Arrays.toString(parameterTypes));
 	}
 }

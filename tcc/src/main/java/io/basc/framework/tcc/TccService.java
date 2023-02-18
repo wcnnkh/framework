@@ -14,7 +14,7 @@ import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.factory.support.RuntimeBean;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.tcc.annotation.Tcc;
 import io.basc.framework.tcc.annotation.TccStage;
 import io.basc.framework.tcc.annotation.TryResult;
@@ -88,16 +88,16 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 
 		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		if (transaction == null) {
-			throw new NotSupportedException("not exist transaction");
+			throw new UnsupportedException("not exist transaction");
 		}
 
 		if (compensateRegistry == null) {
-			throw new NotSupportedException("not exist compensate registry");
+			throw new UnsupportedException("not exist compensate registry");
 		}
 
 		RuntimeBean runtimeBean = RuntimeBean.getRuntimeBean(invoker.getInstance());
 		if (runtimeBean == null) {
-			throw new NotSupportedException("not exist transaction");
+			throw new UnsupportedException("not exist transaction");
 		}
 
 		Object result = invoker.invoke(args);

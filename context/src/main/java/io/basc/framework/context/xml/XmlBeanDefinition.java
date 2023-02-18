@@ -18,7 +18,7 @@ import io.basc.framework.dom.DomUtils;
 import io.basc.framework.factory.BeansException;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.factory.support.InstanceIterable;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ArrayUtils;
@@ -108,6 +108,6 @@ public class XmlBeanDefinition extends FactoryBeanDefinition {
 				return create(parameterDescriptors.getTypes(), xmlParameterFactory.getParameters(parameterDescriptors));
 			}
 		}
-		throw new NotSupportedException(getTypeDescriptor().getName());
+		throw new UnsupportedException(getTypeDescriptor().getName());
 	}
 }

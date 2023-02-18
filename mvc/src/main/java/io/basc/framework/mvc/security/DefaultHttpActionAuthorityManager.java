@@ -10,7 +10,7 @@ import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.annotation.KeyValuePair;
 import io.basc.framework.core.annotation.MultiAnnotatedElement;
 import io.basc.framework.http.HttpMethod;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.mvc.action.Action;
 import io.basc.framework.mvc.annotation.ActionAuthority;
 import io.basc.framework.mvc.annotation.ActionAuthorityParent;
@@ -80,7 +80,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 		if (parentId != null) {
 			HttpAuthority parent = getAuthority(parentId);
 			if (parent != null && !parent.isMenu()) {
-				throw new NotSupportedException("标注为一个菜单,但父级并不是一个菜单: " + action);
+				throw new UnsupportedException("标注为一个菜单,但父级并不是一个菜单: " + action);
 			}
 		}
 	}

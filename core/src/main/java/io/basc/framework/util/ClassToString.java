@@ -3,7 +3,7 @@ package io.basc.framework.util;
 import java.io.Serializable;
 import java.util.function.Function;
 
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 
 public class ClassToString implements Function<Class<?>, String>, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -36,7 +36,7 @@ public class ClassToString implements Function<Class<?>, String>, Serializable {
 		case 6:
 			return o.toString();
 		default:
-			throw new NotSupportedException("type=" + type + ", class=" + o);
+			throw new UnsupportedException("type=" + type + ", class=" + o);
 		}
 	}
 

@@ -3,7 +3,7 @@ package io.basc.framework.io.resolver;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.WritableResource;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 
 import java.nio.charset.Charset;
 import java.util.Properties;
@@ -35,7 +35,7 @@ public class PropertiesResolvers extends ConfigurableServices<PropertiesResolver
 				return;
 			}
 		}
-		throw new NotSupportedException(resource.getDescription());
+		throw new UnsupportedException(resource.getDescription());
 	}
 
 	@Override
@@ -50,6 +50,6 @@ public class PropertiesResolvers extends ConfigurableServices<PropertiesResolver
 				return;
 			}
 		}
-		throw new NotSupportedException(resource.getDescription());
+		throw new UnsupportedException(resource.getDescription());
 	}
 }

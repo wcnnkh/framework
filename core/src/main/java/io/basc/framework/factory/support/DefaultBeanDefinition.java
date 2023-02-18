@@ -24,7 +24,7 @@ import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.ParametersFactory;
 import io.basc.framework.lang.NotFoundException;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ArrayUtils;
@@ -95,7 +95,7 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 		}
 
 		if (!isInstance()) {
-			throw new NotSupportedException(getTypeDescriptor().getName());
+			throw new UnsupportedException(getTypeDescriptor().getName());
 		}
 
 		BeanResolver beanResolver = getBeanResolver();

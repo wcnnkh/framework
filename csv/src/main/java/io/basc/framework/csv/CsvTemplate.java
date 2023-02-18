@@ -19,7 +19,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 
 import io.basc.framework.lang.Constants;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.orm.transfer.TableTransfer;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Cursor;
@@ -100,7 +100,7 @@ public class CsvTemplate extends TableTransfer {
 				throw new CsvException(e);
 			}
 		}
-		throw new NotSupportedException(source.toString());
+		throw new UnsupportedException(source.toString());
 	}
 
 	public Cursor<String[]> read(InputStream source) throws IOException {

@@ -1,24 +1,24 @@
 package io.basc.framework.data.memory;
 
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 
 public class DefaultMemoryData extends AbstractMemoryData {
 	private volatile Object value;
 
 	public long incr(long incr, long initialValue) {
-		throw new NotSupportedException("incr");
+		throw new UnsupportedException("incr");
 	}
 
 	public long decr(long incr, long initialValue) {
-		throw new NotSupportedException("decr");
+		throw new UnsupportedException("decr");
 	}
 
 	public long incr(long delta) {
-		throw new NotSupportedException("incr");
+		throw new UnsupportedException("incr");
 	}
 
 	public long decr(long delta) {
-		throw new NotSupportedException("decr");
+		throw new UnsupportedException("decr");
 	}
 
 	@Override

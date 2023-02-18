@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.io.Resource;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.orm.transfer.TableTransfer;
 import io.basc.framework.orm.transfer.TransfColumns;
 import io.basc.framework.util.ArrayUtils;
@@ -92,7 +92,7 @@ public class ExcelTemplate extends TableTransfer {
 		} else if (source instanceof Resource) {
 			stream = ((Resource) source).read((input) -> excelOperations.read(input));
 		} else {
-			throw new NotSupportedException(source.getClass().getName());
+			throw new UnsupportedException(source.getClass().getName());
 		}
 		return Cursor.of(stream).map((e) -> e.getValues());
 	}

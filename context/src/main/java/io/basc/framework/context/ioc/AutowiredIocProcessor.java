@@ -4,7 +4,7 @@ import io.basc.framework.context.Context;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeansException;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.mapper.Field;
 
 public class AutowiredIocProcessor extends FieldIocProcessor {
@@ -31,7 +31,7 @@ public class AutowiredIocProcessor extends FieldIocProcessor {
 		}
 
 		if (autowiredDefinition.isRequired() && value == null) {
-			throw new NotSupportedException(getField().getSetter().toString());
+			throw new UnsupportedException(getField().getSetter().toString());
 		}
 
 		if (value != null) {

@@ -5,7 +5,7 @@ import io.basc.framework.http.MediaType;
 import io.basc.framework.io.FileSystemResource;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.FileMimeTypeUitls;
@@ -45,7 +45,7 @@ public class ResourceMessageConverter extends AbstractMessageConverter<Resource>
 	@Override
 	protected Resource readInternal(TypeDescriptor type, InputMessage inputMessage)
 			throws IOException, MessageConvertException {
-		throw new NotSupportedException(type.toString());
+		throw new UnsupportedException(type.toString());
 	}
 
 	private Resource getResource(Object body) {
@@ -60,7 +60,7 @@ public class ResourceMessageConverter extends AbstractMessageConverter<Resource>
 			return new FileSystemResource(file);
 		}
 
-		throw new NotSupportedException(body.toString());
+		throw new UnsupportedException(body.toString());
 	}
 
 	@Override

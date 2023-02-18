@@ -1,6 +1,6 @@
 package io.basc.framework.util.comparator;
 
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 
 import java.io.File;
 import java.util.Comparator;
@@ -31,7 +31,7 @@ public enum FileComparator implements Comparator<File> {
 		case LAST_MODIFIED:
 			return CompareUtils.compare(o1.lastModified(), o2.lastModified(), true);
 		default:
-			throw new NotSupportedException(this.name());
+			throw new UnsupportedException(this.name());
 		}
 	}
 

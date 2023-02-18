@@ -9,7 +9,7 @@ import java.util.Set;
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 
 public class SqlDateConversionService extends AbstractConversionService implements ConditionalConversionService {
 	private static final Set<ConvertiblePair> CONVERIBLE_PAIRS = new HashSet<ConvertiblePair>(8);
@@ -51,7 +51,7 @@ public class SqlDateConversionService extends AbstractConversionService implemen
 		} else if (targetType == Time.class) {
 			return new Time(source.getTime());
 		}
-		throw new NotSupportedException(targetType.getName());
+		throw new UnsupportedException(targetType.getName());
 	}
 
 	private Object sqlDateToObject(java.sql.Date source, Class<?> targetType) {
@@ -62,7 +62,7 @@ public class SqlDateConversionService extends AbstractConversionService implemen
 		} else if (targetType == Time.class) {
 			return new Time(source.getTime());
 		}
-		throw new NotSupportedException(targetType.getName());
+		throw new UnsupportedException(targetType.getName());
 	}
 
 	private Object sqlTimeToObject(Time source, Class<?> targetType) {
@@ -73,7 +73,7 @@ public class SqlDateConversionService extends AbstractConversionService implemen
 		} else if (targetType == Time.class) {
 			return new Time(source.getTime());
 		}
-		throw new NotSupportedException(targetType.getName());
+		throw new UnsupportedException(targetType.getName());
 	}
 
 	private Object sqlTimestampToObject(Timestamp source, Class<?> targetType) {
@@ -84,7 +84,7 @@ public class SqlDateConversionService extends AbstractConversionService implemen
 		} else if (targetType == java.sql.Date.class) {
 			return new java.sql.Date(source.getTime());
 		}
-		throw new NotSupportedException(targetType.getName());
+		throw new UnsupportedException(targetType.getName());
 	}
 
 	@Override

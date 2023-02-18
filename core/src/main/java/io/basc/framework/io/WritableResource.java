@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import io.basc.framework.lang.NotFoundException;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.Processor;
 
 public interface WritableResource extends Resource, OutputStreamSource {
@@ -40,7 +40,7 @@ public interface WritableResource extends Resource, OutputStreamSource {
 		}
 
 		if (!isWritable()) {
-			throw new NotSupportedException("not write: " + getDescription());
+			throw new UnsupportedException("not write: " + getDescription());
 		}
 
 		OutputStream os = null;

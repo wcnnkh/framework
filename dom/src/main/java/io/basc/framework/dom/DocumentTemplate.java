@@ -21,7 +21,7 @@ import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ConsumeProcessor;
 import io.basc.framework.util.Processor;
@@ -120,7 +120,7 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 				}
 			}
 		}
-		throw new NotSupportedException(resource.getDescription());
+		throw new UnsupportedException(resource.getDescription());
 	}
 
 	public <E extends Throwable> void read(Resource resource, ConsumeProcessor<Document, E> processor)
@@ -237,7 +237,7 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 				return;
 			}
 		}
-		throw new NotSupportedException(document.toString());
+		throw new UnsupportedException(document.toString());
 	}
 
 	@Override
@@ -252,7 +252,7 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 				return;
 			}
 		}
-		throw new NotSupportedException(document.toString());
+		throw new UnsupportedException(document.toString());
 	}
 
 	@Override

@@ -2,10 +2,10 @@ package io.basc.framework.transaction;
 
 import io.basc.framework.util.ConsumeProcessor;
 
-public class MultipleSavepoint implements Savepoint {
-	private final Iterable<Savepoint> savepoints;
+public final class MultipleSavepoint implements Savepoint {
+	private final Iterable<? extends Savepoint> savepoints;
 
-	public MultipleSavepoint(Iterable<Savepoint> savepoints) {
+	public MultipleSavepoint(Iterable<? extends Savepoint> savepoints) {
 		this.savepoints = savepoints;
 	}
 

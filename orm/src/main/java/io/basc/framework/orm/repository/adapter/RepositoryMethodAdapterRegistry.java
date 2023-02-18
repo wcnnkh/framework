@@ -2,7 +2,7 @@ package io.basc.framework.orm.repository.adapter;
 
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.factory.ConfigurableServices;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.orm.repository.RepositoryTemplate;
 
 public class RepositoryMethodAdapterRegistry extends
@@ -47,6 +47,6 @@ public class RepositoryMethodAdapterRegistry extends
 				return adapter.intercept(repository, invoker, args);
 			}
 		}
-		throw new NotSupportedException(invoker.toString());
+		throw new UnsupportedException(invoker.toString());
 	}
 }

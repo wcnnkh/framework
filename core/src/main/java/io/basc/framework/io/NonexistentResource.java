@@ -9,15 +9,15 @@ import java.net.URI;
 import java.net.URL;
 
 import io.basc.framework.event.EmptyObservable;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 
 public final class NonexistentResource extends EmptyObservable<Resource> implements Resource {
 	public InputStream getInputStream() throws IOException {
-		throw new NotSupportedException("empty resource");
+		throw new UnsupportedException("empty resource");
 	}
 
 	public OutputStream getOutputStream() throws IOException {
-		throw new NotSupportedException("empty resource");
+		throw new UnsupportedException("empty resource");
 	}
 
 	public boolean exists() {
@@ -37,15 +37,15 @@ public final class NonexistentResource extends EmptyObservable<Resource> impleme
 	}
 
 	public URL getURL() throws IOException {
-		throw new NotSupportedException("empty resource");
+		throw new UnsupportedException("empty resource");
 	}
 
 	public URI getURI() throws IOException {
-		throw new NotSupportedException("empty resource");
+		throw new UnsupportedException("empty resource");
 	}
 
 	public File getFile() throws IOException, FileNotFoundException {
-		throw new NotSupportedException("empty resource");
+		throw new UnsupportedException("empty resource");
 	}
 
 	public long contentLength() throws IOException {
@@ -57,11 +57,11 @@ public final class NonexistentResource extends EmptyObservable<Resource> impleme
 	}
 
 	public Resource createRelative(String relativePath) throws IOException {
-		throw new NotSupportedException("empty resource");
+		throw new UnsupportedException("empty resource");
 	}
 
 	public String getName() {
-		throw new NotSupportedException("empty resource");
+		throw new UnsupportedException("empty resource");
 	}
 
 	public String getDescription() {

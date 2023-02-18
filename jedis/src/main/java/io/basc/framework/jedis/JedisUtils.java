@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import io.basc.framework.data.domain.HostAndPort;
 import io.basc.framework.data.geo.Metric;
 import io.basc.framework.data.geo.Point;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.redis.Aggregate;
 import io.basc.framework.redis.ClaimArgs;
 import io.basc.framework.redis.ExpireOption;
@@ -469,7 +469,7 @@ public final class JedisUtils {
 		case SYNC:
 			return FlushMode.SYNC;
 		default:
-			throw new NotSupportedException(flushMode.name());
+			throw new UnsupportedException(flushMode.name());
 		}
 	}
 
@@ -484,7 +484,7 @@ public final class JedisUtils {
 		case SAVE:
 			return SaveMode.SAVE;
 		default:
-			throw new NotSupportedException(saveMode.name());
+			throw new UnsupportedException(saveMode.name());
 		}
 	}
 
