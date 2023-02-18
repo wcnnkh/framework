@@ -26,5 +26,4 @@ public class NamedThreadLocal<T> extends ThreadLocal<T> {
 	public String toString() {
 		return this.name;
 	}
-
 }
