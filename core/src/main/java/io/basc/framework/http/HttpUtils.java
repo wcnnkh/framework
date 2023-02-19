@@ -36,12 +36,13 @@ public final class HttpUtils {
 		return client == null ? DEFAULT_CLIENT : client;
 	}
 
-	public static void setLocalClient(HttpClient client) {
+	public static HttpClient setLocalClient(HttpClient client) {
 		if (client == null) {
 			LOCAL_CLIENT.remove();
-			return;
+			return DEFAULT_CLIENT;
 		}
 		LOCAL_CLIENT.set(client);
+		return client;
 	}
 
 	public static boolean isValidOrigin(HttpRequest request, Collection<String> allowedOrigins) {

@@ -7,7 +7,7 @@ import io.basc.framework.transaction.Synchronization;
 import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionDefinition;
 import io.basc.framework.transaction.TransactionManager;
-import io.basc.framework.transaction.TransactionStatus;
+import io.basc.framework.transaction.Status;
 import io.basc.framework.transaction.TransactionUtils;
 
 public class TransactionTest {
@@ -24,7 +24,7 @@ public class TransactionTest {
 			manager.rollback(transaction);
 		}
 		System.out.println("success" + lifecycle.getValue());
-		Assert.assertTrue(lifecycle.getValue() == 14);
+		Assert.assertTrue(lifecycle.getValue() == 11);
 	}
 
 	private static void throwError() {
@@ -61,7 +61,7 @@ public class TransactionTest {
 		}
 
 		@Override
-		public void afterCompletion(TransactionStatus status) {
+		public void afterCompletion(Status status) {
 			System.out.println(status);
 			value += status.getCode();
 		}

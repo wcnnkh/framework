@@ -2,11 +2,10 @@ package io.basc.framework.ibatis;
 
 import org.apache.ibatis.session.SqlSession;
 
-import io.basc.framework.transaction.Synchronization;
+import io.basc.framework.transaction.Resource;
 import io.basc.framework.transaction.Transaction;
-import io.basc.framework.transaction.TransactionStatus;
 
-public class SqlSessionTransactionResource implements Synchronization {
+public class SqlSessionTransactionResource implements Resource {
 	private final OpenSessionProcessor openSessionProcessor;
 	private final Transaction transaction;
 	private SqlSession sqlSession;
@@ -36,25 +35,9 @@ public class SqlSessionTransactionResource implements Synchronization {
 		}
 	}
 
-	public void complete() {
+	public void close() {
 		if (sqlSession != null) {
 			MybatisUtils.closeSqlSessionProxy(sqlSession);
-		}
-	}
-
-	@Override
-	public void beforeCompletion() throws Throwable {
-		commit();
-	}
-
-	@Override
-	public void afterCompletion(TransactionStatus status) {
-		if (status.equals(TransactionStatus.ROLLING_BACK)) {
-			rollback();
-		}
-
-		if (status.equals(TransactionStatus.COMPLETED)) {
-			complete();
 		}
 	}
 

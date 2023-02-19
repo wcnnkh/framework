@@ -13,21 +13,19 @@ public class ThreadLocalTransactionManager implements TransactionManager {
 	}
 
 	private Transaction cleanup(Transaction transaction) {
-		if (transaction == null || !transaction.isCompleted()) {
-			return transaction;
+		Transaction tx = transaction;
+		while (tx != null && tx.getStatus().isCompleted()) {
+			tx = tx.getParent();
 		}
 
-		Transaction parent = transaction.getParent();
-		while (parent != null && parent.isCompleted()) {
-			parent = parent.getParent();
+		if (tx == null) {
+			if (transaction != null) {
+				local.remove();
+			}
+		} else if (!tx.equals(transaction)) {
+			local.set(tx);
 		}
-
-		if (parent == null) {
-			local.remove();
-		} else {
-			local.set(parent);
-		}
-		return parent;
+		return tx;
 	}
 
 	/**
@@ -37,24 +35,21 @@ public class ThreadLocalTransactionManager implements TransactionManager {
 	 * @throws Throwable
 	 */
 	public void commit(Transaction transaction) throws Throwable {
-		if (transaction.isCompleted()) {
+		if (transaction.isRollbackOnly()) {// 直接回滚
+			rollback(transaction);
 			return;
 		}
 
-		Transaction localTransaction = local.get();
-		if (transaction != localTransaction) {
-			throw new TransactionException("事务需要顺序执行-commit");
+		if (transaction.getStatus().isCommitting()) {
+			return;
 		}
 
-		if (localTransaction.isRollbackOnly()) {// 直接回滚
-			rollback(transaction);
-		} else {
-			// 这里不使用try-finally,所以外部使用出现异常时一定要调用rollback
-			try {
-				localTransaction.commit();
-			} finally {
-				cleanup(localTransaction);
-			}
+		// 这里不使用try-finally,所以外部使用出现异常时一定要调用rollback
+		transaction.commit();
+		try {
+			transaction.close();
+		} finally {
+			cleanup(transaction);
 		}
 	}
 
@@ -64,19 +59,20 @@ public class ThreadLocalTransactionManager implements TransactionManager {
 	 * @param transaction
 	 */
 	public void rollback(Transaction transaction) {
-		if (transaction.isCompleted()) {
+		if (transaction.getStatus().isRolledBack()) {
 			return;
 		}
 
-		Transaction localTransaction = local.get();
-		if (transaction != localTransaction) {
-			throw new TransactionException("事务需要顺序执行-rollback");
-		}
-
 		try {
-			localTransaction.rollback();
+			if (!transaction.getStatus().isCommitted() && !transaction.getStatus().isCompleted()) {
+				transaction.rollback();
+			}
 		} finally {
-			cleanup(localTransaction);
+			try {
+				transaction.close();
+			} finally {
+				cleanup(transaction);
+			}
 		}
 	}
 

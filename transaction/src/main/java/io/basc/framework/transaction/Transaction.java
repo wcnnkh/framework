@@ -2,7 +2,6 @@ package io.basc.framework.transaction;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ParentDiscover;
-import io.basc.framework.util.Registration;
 
 /**
  * 一个事务
@@ -10,7 +9,7 @@ import io.basc.framework.util.Registration;
  * @author shuchaowen
  *
  */
-public interface Transaction extends SavepointManager, ParentDiscover<Transaction> {
+public interface Transaction extends Resource, ParentDiscover<Transaction> {
 	/**
 	 * 获取事务的定义(配置)
 	 * 
@@ -18,7 +17,7 @@ public interface Transaction extends SavepointManager, ParentDiscover<Transactio
 	 */
 	TransactionDefinition getDefinition();
 
-	Registration registerSynchronization(Synchronization synchronization) throws TransactionException;
+	void registerSynchronization(Synchronization synchronization) throws TransactionException;
 
 	/**
 	 * 获取指定名称的资源
@@ -30,14 +29,14 @@ public interface Transaction extends SavepointManager, ParentDiscover<Transactio
 	<T> T getResource(Object name);
 
 	/**
-	 * 绑定一个资源
+	 * 注册一个资源
 	 * 
 	 * @see SavepointManager
 	 * @param name
 	 * @param resource
 	 * @throws TransactionException
 	 */
-	Registration registerResource(Object name, Object resource) throws TransactionException;
+	void registerResource(Object name, Object resource) throws TransactionException;
 
 	/**
 	 * 事务是否是只回滚状态
@@ -74,24 +73,5 @@ public interface Transaction extends SavepointManager, ParentDiscover<Transactio
 	 */
 	boolean hasSavepoint();
 
-	TransactionStatus getStatus();
-
-	/**
-	 * 是否已完成
-	 * 
-	 * @return
-	 */
-	boolean isCompleted();
-
-	/**
-	 * 提交
-	 * 
-	 * @throws Throwable
-	 */
-	void commit() throws Throwable;
-
-	/**
-	 * 回滚
-	 */
-	void rollback();
+	Status getStatus();
 }

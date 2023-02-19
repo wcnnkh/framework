@@ -23,7 +23,7 @@ import io.basc.framework.transaction.Synchronization;
 import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionDefinition;
 import io.basc.framework.transaction.TransactionManager;
-import io.basc.framework.transaction.TransactionStatus;
+import io.basc.framework.transaction.Status;
 import io.basc.framework.transaction.TransactionUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
@@ -108,8 +108,8 @@ public abstract class AbstractExchange implements Exchange {
 				}
 
 				@Override
-				public void afterCompletion(TransactionStatus status) {
-					if (status.equals(TransactionStatus.COMMITTED)) {
+				public void afterCompletion(Status status) {
+					if (status.equals(Status.COMMITTED)) {
 						retryOperations.execute(retryCallback);
 					}
 				}

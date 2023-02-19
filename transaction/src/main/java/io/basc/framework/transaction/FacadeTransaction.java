@@ -1,13 +1,12 @@
 package io.basc.framework.transaction;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Registration;
 
-public final class ManagerTransaction implements Transaction {
+public final class FacadeTransaction implements Transaction {
 	private final TransactionManager transactionManager;
 	private final Transaction source;
 
-	public ManagerTransaction(TransactionManager transactionManager, Transaction source) {
+	public FacadeTransaction(TransactionManager transactionManager, Transaction source) {
 		Assert.requiredArgument(transactionManager != null, "transactionManager");
 		Assert.requiredArgument(source != null, "source");
 		this.transactionManager = transactionManager;
@@ -30,10 +29,10 @@ public final class ManagerTransaction implements Transaction {
 			return null;
 		}
 
-		if (transaction instanceof ManagerTransaction) {
+		if (transaction instanceof FacadeTransaction) {
 			return transaction;
 		}
-		return new ManagerTransaction(transactionManager, transaction);
+		return new FacadeTransaction(transactionManager, transaction);
 	}
 
 	@Override
@@ -42,8 +41,8 @@ public final class ManagerTransaction implements Transaction {
 	}
 
 	@Override
-	public Registration registerSynchronization(Synchronization synchronization) throws TransactionException {
-		return source.registerSynchronization(synchronization);
+	public void registerSynchronization(Synchronization synchronization) throws TransactionException {
+		source.registerSynchronization(synchronization);
 	}
 
 	@Override
@@ -52,8 +51,8 @@ public final class ManagerTransaction implements Transaction {
 	}
 
 	@Override
-	public Registration registerResource(Object name, Object resource) throws TransactionException {
-		return source.registerResource(name, resource);
+	public void registerResource(Object name, Object resource) throws TransactionException {
+		source.registerResource(name, resource);
 	}
 
 	@Override
@@ -82,18 +81,13 @@ public final class ManagerTransaction implements Transaction {
 	}
 
 	@Override
-	public TransactionStatus getStatus() {
+	public Status getStatus() {
 		return source.getStatus();
 	}
 
 	@Override
-	public boolean isCompleted() {
-		return source.isCompleted();
-	}
-
-	@Override
 	public void commit() throws Throwable {
-		if (source instanceof ManagerTransaction) {
+		if (source instanceof FacadeTransaction) {
 			source.commit();
 		} else {
 			transactionManager.commit(source);
@@ -102,10 +96,47 @@ public final class ManagerTransaction implements Transaction {
 
 	@Override
 	public void rollback() {
-		if (source instanceof ManagerTransaction) {
+		if (source instanceof FacadeTransaction) {
 			source.rollback();
 		} else {
 			transactionManager.rollback(source);
 		}
+	}
+
+	@Override
+	public String toString() {
+		return source.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return source.hashCode();
+	}
+
+	@Override
+	public boolean hasParent() {
+		return source.hasParent();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof FacadeTransaction) {
+			return this.source.equals(((FacadeTransaction) obj).source);
+		}
+
+		return this.source.equals(obj);
+	}
+
+	@Override
+	public void close() {
+		if (source.getStatus().isCompleted()) {
+			return;
+		}
+
+		source.close();
 	}
 }

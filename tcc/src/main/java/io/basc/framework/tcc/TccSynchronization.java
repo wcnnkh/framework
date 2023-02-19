@@ -2,7 +2,7 @@ package io.basc.framework.tcc;
 
 import io.basc.framework.consistency.Compensator;
 import io.basc.framework.transaction.Synchronization;
-import io.basc.framework.transaction.TransactionStatus;
+import io.basc.framework.transaction.Status;
 
 public class TccSynchronization implements Synchronization {
 	private final Compensator confirm;
@@ -15,21 +15,18 @@ public class TccSynchronization implements Synchronization {
 
 	@Override
 	public void beforeCompletion() {
+		if (cancel != null) {
+			cancel.cancel();
+		}
+
+		if (confirm != null) {
+			confirm.run();
+		}
 	}
 
 	@Override
-	public void afterCompletion(TransactionStatus status) {
-		if (status.equals(TransactionStatus.COMMITTED)) {
-			if (cancel != null) {
-				cancel.cancel();
-			}
-
-			if (confirm != null) {
-				confirm.run();
-			}
-		}
-
-		if (status.equals(TransactionStatus.ROLLED_BACK)) {
+	public void afterCompletion(Status status) {
+		if (status.equals(Status.ROLLED_BACK)) {
 			if (confirm != null) {
 				confirm.cancel();
 			}

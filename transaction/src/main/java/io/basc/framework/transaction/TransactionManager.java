@@ -39,16 +39,16 @@ public interface TransactionManager {
 		switch (transactionDefinition.getPropagation()) {
 		case REQUIRED:
 			if (transaction == null) {
-				transaction = new DefaultTransaction(transaction, transactionDefinition, true);
+				transaction = new StandardTransaction(transaction, transactionDefinition, true);
 			} else {
-				transaction = new DefaultTransaction(transaction, transactionDefinition);
+				transaction = new StandardTransaction(transaction, transactionDefinition);
 			}
 			break;
 		case SUPPORTS:
 			if (transaction == null) {
-				transaction = new DefaultTransaction(transaction, transactionDefinition, false);
+				transaction = new StandardTransaction(transaction, transactionDefinition, false);
 			} else {
-				transaction = new DefaultTransaction(transaction, transactionDefinition);
+				transaction = new StandardTransaction(transaction, transactionDefinition);
 			}
 			break;
 		case MANDATORY:
@@ -56,38 +56,38 @@ public interface TransactionManager {
 				throw new TransactionException(transactionDefinition.getPropagation().name());
 			} else {
 				if (transaction.isActive()) {
-					transaction = new DefaultTransaction(transaction, transactionDefinition);
+					transaction = new StandardTransaction(transaction, transactionDefinition);
 				} else {
 					throw new TransactionException(transactionDefinition.getPropagation().name());
 				}
 			}
 			break;
 		case REQUIRES_NEW:
-			transaction = new DefaultTransaction(transaction, transactionDefinition, true);
+			transaction = new StandardTransaction(transaction, transactionDefinition, true);
 			break;
 		case NOT_SUPPORTED:
-			transaction = new DefaultTransaction(transaction, transactionDefinition, false);
+			transaction = new StandardTransaction(transaction, transactionDefinition, false);
 			break;
 		case NEVER:
 			if (transaction == null) {
-				transaction = new DefaultTransaction(transaction, transactionDefinition, false);
+				transaction = new StandardTransaction(transaction, transactionDefinition, false);
 			} else {
 				if (transaction.isActive()) {
 					throw new TransactionException(transactionDefinition.getPropagation().name());
 				} else {
-					transaction = new DefaultTransaction(transaction, transactionDefinition);
+					transaction = new StandardTransaction(transaction, transactionDefinition);
 				}
 			}
 			break;
 		case NESTED:
 			if (transaction == null) {
-				transaction = new DefaultTransaction(transaction, transactionDefinition, true);
+				transaction = new StandardTransaction(transaction, transactionDefinition, true);
 			} else {
 				if (transaction.isActive()) {
 					Savepoint savepoint = transaction.createSavepoint();
-					transaction = new DefaultTransaction(transaction, transactionDefinition, savepoint, true);
+					transaction = new StandardTransaction(transaction, transactionDefinition, savepoint, true);
 				} else {
-					transaction = new DefaultTransaction(transaction, transactionDefinition);
+					transaction = new StandardTransaction(transaction, transactionDefinition);
 				}
 			}
 			break;

@@ -7,14 +7,12 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.sql.ConnectionFactory;
 import io.basc.framework.transaction.Isolation;
+import io.basc.framework.transaction.Resource;
 import io.basc.framework.transaction.Savepoint;
-import io.basc.framework.transaction.SavepointManager;
-import io.basc.framework.transaction.Synchronization;
 import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionException;
-import io.basc.framework.transaction.TransactionStatus;
 
-public class TransactionConnectionHolder implements Synchronization, SavepointManager {
+public class TransactionConnectionHolder implements Resource {
 	private static Logger logger = LoggerFactory.getLogger(TransactionConnectionHolder.class);
 	private static final String SAVEPOINT_NAME_PREFIX = "SAVEPOINT_";
 	private final Transaction transaction;
@@ -54,13 +52,13 @@ public class TransactionConnectionHolder implements Synchronization, SavepointMa
 		return connectionFactory;
 	}
 
-	public void complete() {
+	public void close() {
 		if (hasConnection()) {
 			if (transaction.isActive()) {
 				try {
 					connection.setAutoCommit(true);
 				} catch (SQLException e) {
-					e.printStackTrace();
+					logger.error(e, "Failed to set autocommit");
 				}
 			}
 
@@ -82,7 +80,7 @@ public class TransactionConnectionHolder implements Synchronization, SavepointMa
 		}
 	}
 
-	public Savepoint createSavepoint() throws TransactionException {
+	public synchronized Savepoint createSavepoint() throws TransactionException {
 		savepointCounter++;
 		try {
 			return new ConnectionSavepoint(getConnection(), SAVEPOINT_NAME_PREFIX + savepointCounter);
@@ -97,22 +95,6 @@ public class TransactionConnectionHolder implements Synchronization, SavepointMa
 			if (!connection.getAutoCommit()) {
 				connection.commit();
 			}
-		}
-	}
-
-	@Override
-	public void beforeCompletion() throws Throwable {
-		commit();
-	}
-
-	@Override
-	public void afterCompletion(TransactionStatus status) {
-		if (status.equals(TransactionStatus.ROLLING_BACK)) {
-			rollback();
-		}
-
-		if (status.equals(TransactionStatus.COMPLETED)) {
-			complete();
 		}
 	}
 }

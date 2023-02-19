@@ -37,7 +37,7 @@ public final class TransactionMapOperations<K, V> extends AbstractMapOperations<
 
 	@Override
 	protected Map<K, V> createMap() {
-		Transaction transaction = TransactionUtils.getTransaction();
+		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		if (transaction == null) {
 			return null;
 		}

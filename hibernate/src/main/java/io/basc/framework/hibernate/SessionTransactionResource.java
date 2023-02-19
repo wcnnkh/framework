@@ -4,12 +4,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import io.basc.framework.transaction.Savepoint;
-import io.basc.framework.transaction.Synchronization;
-import io.basc.framework.transaction.TransactionException;
-import io.basc.framework.transaction.TransactionStatus;
+import io.basc.framework.transaction.Resource;
 
-public class SessionTransactionResource implements Synchronization {
+public class SessionTransactionResource implements Resource {
 	private final SessionFactory sessionFactory;
 	private final boolean isActive;
 
@@ -47,30 +44,9 @@ public class SessionTransactionResource implements Synchronization {
 		}
 	}
 
-	public void complete() {
+	public void close() {
 		if (session != null) {
 			HibernateUtils.closeProxySession(session);
 		}
 	}
-
-	public Savepoint createSavepoint() throws TransactionException {
-		return null;
-	}
-
-	@Override
-	public void beforeCompletion() throws Throwable {
-		commit();
-	}
-
-	@Override
-	public void afterCompletion(TransactionStatus status) {
-		if (status.equals(TransactionStatus.ROLLING_BACK)) {
-			rollback();
-		}
-
-		if (status.equals(TransactionStatus.COMPLETED)) {
-			complete();
-		}
-	}
-
 }

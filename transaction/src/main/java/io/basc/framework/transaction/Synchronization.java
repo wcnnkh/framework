@@ -7,6 +7,16 @@ package io.basc.framework.transaction;
  *
  */
 public interface Synchronization {
+	public static final Synchronization EMPTY = new Synchronization() {
+
+		@Override
+		public void beforeCompletion() throws Throwable {
+		}
+
+		@Override
+		public void afterCompletion(Status status) {
+		}
+	};
 
 	/**
 	 * This method is invoked before the start of the commit process. The method
@@ -20,5 +30,17 @@ public interface Synchronization {
 	 *
 	 * @param status The status of the completed transaction.
 	 */
-	void afterCompletion(TransactionStatus status);
+	void afterCompletion(Status status);
+
+	default Synchronization and(Synchronization synchronization) {
+		if (synchronization == null || synchronization == EMPTY) {
+			return this;
+		}
+
+		if (this == EMPTY) {
+			return synchronization;
+		}
+
+		return new MergeSynchronization(this, synchronization);
+	}
 }
