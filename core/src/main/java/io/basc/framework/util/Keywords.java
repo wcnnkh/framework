@@ -1,15 +1,14 @@
 package io.basc.framework.util;
 
-import io.basc.framework.env.BascObject;
-import io.basc.framework.lang.LinkedThreadLocal;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.stream.StreamProcessorSupport;
-
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import io.basc.framework.env.BascObject;
+import io.basc.framework.lang.LinkedThreadLocal;
+import io.basc.framework.lang.Nullable;
 
 public final class Keywords extends BascObject implements Predicate<String>, Iterable<String>, Cloneable, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -136,7 +135,7 @@ public final class Keywords extends BascObject implements Predicate<String>, Ite
 		}
 
 		if (predicate != null) {
-			if (!NESTED.exists(predicate) && !NESTED.exists(this)) {
+			if (!NESTED.isCurrent(predicate) && !NESTED.isCurrent(this)) {
 				try {
 					NESTED.set(predicate);
 					NESTED.set(this);
@@ -159,8 +158,8 @@ public final class Keywords extends BascObject implements Predicate<String>, Ite
 	}
 
 	public Pair<String, Integer> indexOf(String express) {
-		Pair<String, Integer> index = StreamProcessorSupport
-				.process(this.keywords, (e) -> express.indexOf(e), (e) -> e.getValue() != -1).orElse(null);
+		Pair<String, Integer> index = Pair.process(this.keywords, (e) -> express.indexOf(e), (e) -> e.getValue() != -1)
+				.orElse(null);
 		if (index == null && parent != null) {
 			return parent.indexOf(express);
 		}

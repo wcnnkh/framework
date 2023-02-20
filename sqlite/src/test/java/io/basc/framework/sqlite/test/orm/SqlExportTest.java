@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -37,10 +36,9 @@ public class SqlExportTest {
 		Sql sql = new SimpleSql("select * from sql_export_test_table");
 		ExcelTemplate template = new ExcelTemplate();
 		File file = File.createTempFile("export", "aaa.xls");
-		db.export(sql, template).export(file);
-		List<SqlExportTestTable> list = db.queryAll(SqlExportTestTable.class, sql);
-		List<SqlExportTestTable> fileRecords = template.read(file, SqlExportTestTable.class)
-				.collect(Collectors.toList());
+		db.query(sql, (e) -> e).transfer((e) -> template.process(e.iterator(), file));
+		List<SqlExportTestTable> list = db.query(SqlExportTestTable.class, sql).toList();
+		List<SqlExportTestTable> fileRecords = template.read(file, SqlExportTestTable.class).toList();
 		assertTrue(CollectionUtils.equals(list, fileRecords));
 		file.delete();
 	}
@@ -56,6 +54,11 @@ public class SqlExportTest {
 		@Override
 		public boolean equals(Object obj) {
 			return ReflectionUtils.equals(this, obj);
+		}
+
+		@Override
+		public String toString() {
+			return ReflectionUtils.toString(this);
 		}
 	}
 }

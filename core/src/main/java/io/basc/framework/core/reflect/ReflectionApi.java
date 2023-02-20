@@ -7,14 +7,14 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.Processor;
 
 /**
  * 使用反射调用api，不安全的调用
@@ -223,8 +223,8 @@ public class ReflectionApi implements Supplier<Object> {
 		}
 		return true;
 	}
-	
-	public static <T> T newInstance(Class<T> type) throws NotSupportedException{
+
+	public static <T> T newInstance(Class<T> type) throws UnsupportedException {
 		return newInstance(type, ObjectUtils.EMPTY_ARRAY);
 	}
 
@@ -238,13 +238,13 @@ public class ReflectionApi implements Supplier<Object> {
 	 * @param type
 	 * @param params 可选的参数
 	 * @return
-	 * @throws NotSupportedException
+	 * @throws UnsupportedException
 	 */
-	public static <T> T newInstance(Class<T> type, Object... params) throws NotSupportedException {
+	public static <T> T newInstance(Class<T> type, Object... params) throws UnsupportedException {
 		if (params != null && params.length > 0) {
 			try {
 				return ReflectionUtils.newInstanceWithParams(type, params);
-			} catch (NotSupportedException e) {
+			} catch (UnsupportedException e) {
 				// 忽略
 			}
 		}

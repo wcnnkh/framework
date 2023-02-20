@@ -6,7 +6,7 @@ import java.util.Set;
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.Processor;
 
 public class ConverterConversionService implements ConditionalConversionService {
 	@SuppressWarnings("rawtypes")

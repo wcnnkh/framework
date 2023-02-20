@@ -27,6 +27,7 @@ import io.basc.framework.net.InetUtils;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.Cursor;
 import io.basc.framework.util.StringUtils;
 
 /**
@@ -679,26 +680,26 @@ public final class ResourceUtils {
 		return list;
 	}
 
-	public static List<String> getLines(Resource resource, String charsetName) {
+	public static Cursor<String> readLines(Resource resource, String charsetName) {
 		if (resource == null || !resource.exists()) {
-			return Collections.emptyList();
+			return Cursor.empty();
 		}
 
-		InputStream is = null;
+		InputStream is;
 		try {
 			is = resource.getInputStream();
-			return IOUtils.readLines(is, charsetName);
-		} catch (IOException e) {
-			throw new NestedRuntimeException(resource.getDescription(), e);
-		} finally {
-			if (!resource.isOpen()) {
-				IOUtils.closeQuietly(is);
-			}
+			return IOUtils.readLines(is, charsetName).onClose(() -> {
+				if (is != null && !resource.isOpen()) {
+					IOUtils.closeQuietly(is);
+				}
+			});
+		} catch (IOException ignore) {
 		}
+		return Cursor.empty();
 	}
 
-	public static List<String> getLines(Resource resource, Charset charset) {
-		return getLines(resource, charset.name());
+	public static Cursor<String> readLines(Resource resource, Charset charset) {
+		return readLines(resource, charset.name());
 	}
 
 	@Nullable

@@ -13,17 +13,14 @@ import org.apache.zookeeper.ZooKeeper;
 
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventTypes;
-import io.basc.framework.event.NamedEventDispatcher;
-import io.basc.framework.event.support.SimpleStringNamedEventDispatcher;
+import io.basc.framework.event.support.SimpleNamedEventDispatcher;
 import io.basc.framework.io.JavaSerializer;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Registration;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.ConfigurablePropertyFactory;
 import io.basc.framework.value.Value;
@@ -35,9 +32,9 @@ import io.basc.framework.value.Value;
  *
  */
 @Provider(order = Integer.MIN_VALUE)
-public class ZookeeperCloudPropertyFactory implements ConfigurablePropertyFactory, Watcher {
+public class ZookeeperCloudPropertyFactory extends SimpleNamedEventDispatcher<String, ChangeEvent<String>>
+		implements ConfigurablePropertyFactory, Watcher {
 	private static Logger logger = LoggerFactory.getLogger(ZookeeperCloudPropertyFactory.class);
-	private final NamedEventDispatcher<String, ChangeEvent<String>> eventDispatcher = new SimpleStringNamedEventDispatcher<ChangeEvent<String>>();
 	private final ZooKeeper zooKeeper;
 	private final String parentPath;
 	private Serializer serializer;
@@ -139,7 +136,7 @@ public class ZookeeperCloudPropertyFactory implements ConfigurablePropertyFactor
 		}
 
 		try {
-			eventDispatcher.publishEvent(key, changeEvent);
+			publishEvent(key, changeEvent);
 		} catch (Exception e) {
 			logger.error(e, "zookeeper config publish error");
 		}
@@ -151,10 +148,6 @@ public class ZookeeperCloudPropertyFactory implements ConfigurablePropertyFactor
 		ZooKeeperUtils.createNotExist(zooKeeper, path, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 		byte[] data = getSerializer().serialize(value);
 		ZooKeeperUtils.setData(zooKeeper, path, data);
-	}
-
-	public Registration registerListener(String name, EventListener<ChangeEvent<String>> eventListener) {
-		return eventDispatcher.registerListener(name, eventListener);
 	}
 
 	public void put(String key, Value value) {

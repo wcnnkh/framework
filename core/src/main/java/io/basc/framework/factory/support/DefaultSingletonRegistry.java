@@ -9,8 +9,8 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanPostProcessor;
-import io.basc.framework.factory.BeanlifeCycleEvent;
-import io.basc.framework.factory.BeanlifeCycleEvent.Step;
+import io.basc.framework.factory.BeanLifecycleEvent;
+import io.basc.framework.factory.BeanLifecycleEvent.Step;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.Destroy;
 import io.basc.framework.factory.FactoryException;
@@ -20,11 +20,11 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.DefaultStatus;
+import io.basc.framework.util.Creator;
 import io.basc.framework.util.Registration;
-import io.basc.framework.util.Status;
+import io.basc.framework.util.Return;
+import io.basc.framework.util.StandardReturn;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.CallableProcessor;
 
 public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 		implements SingletonRegistry, BeanPostProcessor, Destroy {
@@ -187,12 +187,13 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 	}
 
 	@Override
-	public <T, E extends Throwable> Status<T> getSingleton(String name, CallableProcessor<T, E> creater) throws E {
+	public <T, E extends Throwable> Return<T> getSingleton(String name, Creator<? extends T, ? extends E> creater)
+			throws E {
 		return getSingleton(name, creater, true);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T, E extends Throwable> Status<T> getSingleton(String name, CallableProcessor<T, E> creater,
+	public <T, E extends Throwable> Return<T> getSingleton(String name, Creator<? extends T, ? extends E> creater,
 			boolean postProcessBean) throws E {
 		Object object = getSingleton(name);
 		boolean created = false;
@@ -200,7 +201,7 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 			synchronized (singletionMap) {
 				object = getSingleton(name);
 				if (object == null) {
-					object = creater.process();
+					object = creater.create();
 					registerSingleton(name, object);
 					created = true;
 				}
@@ -210,7 +211,7 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 		if (created && postProcessBean) {
 			processPostBean(object, getDefinition(name));
 		}
-		return new DefaultStatus<T>(created, (T) object);
+		return new StandardReturn<T>(created, 0, null, (T) object);
 	}
 
 	@Override
@@ -240,7 +241,7 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 	}
 
 	@Override
-	public Registration registerListener(EventListener<BeanlifeCycleEvent> eventListener) {
+	public Registration registerListener(EventListener<BeanLifecycleEvent> eventListener) {
 		Registration eventRegistration = super.registerListener(eventListener);
 		for (Entry<String, SingletonObject<?>> entry : singletionMap.entrySet()) {
 			BeanDefinition definition = getDefinition(entry.getKey());
@@ -255,7 +256,7 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 				}
 
 				try {
-					eventListener.onEvent(new BeanlifeCycleEvent(definition, singletonObject.get(), step));
+					eventListener.onEvent(new BeanLifecycleEvent(definition, singletonObject.get(), step));
 				} catch (Throwable e) {
 					logger.error(e, "Register listener after on bean[{}]", definition.getId());
 				} finally {

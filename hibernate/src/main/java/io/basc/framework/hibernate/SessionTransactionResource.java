@@ -1,14 +1,12 @@
 package io.basc.framework.hibernate;
 
-import io.basc.framework.transaction.Savepoint;
-import io.basc.framework.transaction.TransactionException;
-import io.basc.framework.transaction.TransactionResource;
-
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-public class SessionTransactionResource implements TransactionResource {
+import io.basc.framework.transaction.Resource;
+
+public class SessionTransactionResource implements Resource {
 	private final SessionFactory sessionFactory;
 	private final boolean isActive;
 
@@ -46,14 +44,9 @@ public class SessionTransactionResource implements TransactionResource {
 		}
 	}
 
-	public void complete() {
+	public void close() {
 		if (session != null) {
 			HibernateUtils.closeProxySession(session);
 		}
 	}
-
-	public Savepoint createSavepoint() throws TransactionException {
-		return null;
-	}
-
 }

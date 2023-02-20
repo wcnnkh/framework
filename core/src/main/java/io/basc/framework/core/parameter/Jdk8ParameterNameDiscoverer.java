@@ -1,12 +1,9 @@
 package io.basc.framework.core.parameter;
 
-import io.basc.framework.lang.RequiredJavaVersion;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
-@RequiredJavaVersion(8)
 public class Jdk8ParameterNameDiscoverer extends LocalVariableTableParameterNameDiscoverer {
 	@Override
 	public String[] getParameterNames(Constructor<?> ctor) {

@@ -23,13 +23,13 @@ public class BeanDefinitionLoaderChain {
 		this.nextChain = nextChain;
 	}
 
-	public BeanDefinition load(BeanFactory beanFactory, String name) throws FactoryException {
+	public BeanDefinition load(BeanFactory beanFactory, ClassLoader classLoader, String name) throws FactoryException {
 		if (iterator.hasNext()) {
-			return iterator.next().load(beanFactory, name, this);
+			return iterator.next().load(beanFactory, classLoader, name, this);
 		}
 
 		if (nextChain == null) {
-			Class<?> clazz = ClassUtils.getClass(name, beanFactory.getClassLoader());
+			Class<?> clazz = ClassUtils.getClass(name, classLoader);
 			if (clazz == null) {
 				return null;
 			}
@@ -42,7 +42,7 @@ public class BeanDefinitionLoaderChain {
 
 			return new FactoryBeanDefinition(beanFactory, TypeDescriptor.valueOf(clazz));
 		}
-		return nextChain.load(beanFactory, name);
+		return nextChain.load(beanFactory, classLoader, name);
 	}
 
 }

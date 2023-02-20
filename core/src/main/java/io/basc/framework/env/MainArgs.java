@@ -7,7 +7,6 @@ import java.util.OptionalInt;
 
 import io.basc.framework.core.Ordered;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.AbstractIterator;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.PropertyFactory;
@@ -113,7 +112,7 @@ public class MainArgs implements PropertyFactory, Ordered {
 		return getProperty(key) != null;
 	}
 
-	private final class PropertyIterator extends AbstractIterator<String> {
+	private final class PropertyIterator implements Iterator<String> {
 		private int index = 0;
 
 		public boolean hasNext() {

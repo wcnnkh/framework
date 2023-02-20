@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.sql.EditableSql;
+import io.basc.framework.sql.EasySql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.orm.Column;
@@ -143,7 +143,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 
 	@Override
 	public Sql condition(Sql condition, Sql left, Sql right) {
-		EditableSql sql = new EditableSql();
+		EasySql sql = new EasySql();
 		sql.append("CASE WHEN ");
 		sql.append(condition);
 		sql.append(" THEN ");
@@ -185,13 +185,6 @@ public class SQLiteDialect extends StandardSqlDialect {
 		sql.append(values);
 		sql.append(")");
 		return new SimpleSql(sql.toString(), params.toArray());
-	}
-
-	@Override
-	public Sql toLimitSql(Sql sql, long start, long limit) throws SqlDialectException {
-		StringBuilder sb = new StringBuilder(sql.getSql());
-		sb.append(" limit ").append(start).append(",").append(limit);
-		return new SimpleSql(sb.toString(), sql.getParams());
 	}
 
 	@Override

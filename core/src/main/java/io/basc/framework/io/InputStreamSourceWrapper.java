@@ -6,13 +6,13 @@ import java.io.InputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 
+import io.basc.framework.util.ConsumeProcessor;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.Wrapper;
-import io.basc.framework.util.stream.ConsumerProcessor;
-import io.basc.framework.util.stream.Processor;
 
-public class InputStreamSourceWrapper<I extends InputStreamSource> extends Wrapper<I> implements InputStreamSource {
+public class InputStreamSourceWrapper<W extends InputStreamSource> extends Wrapper<W> implements InputStreamSource {
 
-	public InputStreamSourceWrapper(I wrappedTarget) {
+	public InputStreamSourceWrapper(W wrappedTarget) {
 		super(wrappedTarget);
 	}
 
@@ -22,17 +22,19 @@ public class InputStreamSourceWrapper<I extends InputStreamSource> extends Wrapp
 	}
 
 	@Override
+	public <E extends Throwable> void consume(ConsumeProcessor<? super InputStream, ? extends E> processor)
+			throws IOException, E {
+		wrappedTarget.consume(processor);
+	}
+
+	@Override
 	public byte[] getBytes() throws IOException {
 		return wrappedTarget.getBytes();
 	}
 
 	@Override
-	public <E extends Throwable> void consume(ConsumerProcessor<InputStream, E> callback) throws IOException, E {
-		wrappedTarget.consume(callback);
-	}
-
-	@Override
-	public <T, E extends Throwable> T read(Processor<InputStream, ? extends T, E> processor) throws IOException, E {
+	public <T, E extends Throwable> T read(Processor<? super InputStream, ? extends T, ? extends E> processor)
+			throws IOException, E {
 		return wrappedTarget.read(processor);
 	}
 

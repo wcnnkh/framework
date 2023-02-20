@@ -1,10 +1,10 @@
 package io.basc.framework.sql.orm;
 
-import io.basc.framework.mapper.Field;
-import io.basc.framework.util.CollectionUtils;
-
 import java.util.Collection;
 import java.util.Collections;
+
+import io.basc.framework.mapper.Field;
+import io.basc.framework.util.CollectionUtils;
 
 /**
  * 获取表变更

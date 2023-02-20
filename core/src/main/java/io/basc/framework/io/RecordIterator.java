@@ -5,15 +5,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.support.RecordCodec;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.CloseableIterator;
+import io.basc.framework.util.Source;
 import io.basc.framework.util.StaticSupplier;
-import io.basc.framework.util.stream.CallableProcessor;
 
 /**
  * 线程不安全
@@ -22,43 +22,43 @@ import io.basc.framework.util.stream.CallableProcessor;
  *
  * @param <E>
  */
-public final class RecordIterator<E> implements Iterator<E>, AutoCloseable {
-	private final CallableProcessor<InputStream, IOException> sourceSupplier;
+public final class RecordIterator<E> implements CloseableIterator<E> {
+	private final Source<? extends InputStream, ? extends IOException> source;
 	private final RecordCodec<E> codec;
-	private volatile InputStream source;
+	private volatile InputStream inputStream;
 	private volatile Supplier<E> supplier;
 
 	public RecordIterator(File file, RecordCodec<E> codec) {
 		this(() -> new FileInputStream(file), codec);
 	}
 
-	public RecordIterator(CallableProcessor<InputStream, IOException> sourceSupplier, RecordCodec<E> codec) {
-		Assert.requiredArgument(sourceSupplier != null, "sourceSupplier");
+	public RecordIterator(Source<? extends InputStream, ? extends IOException> source, RecordCodec<E> codec) {
+		Assert.requiredArgument(source != null, "source");
 		Assert.requiredArgument(codec != null, "codec");
-		this.sourceSupplier = sourceSupplier;
+		this.source = source;
 		this.codec = codec;
 	}
 
-	private InputStream getSource() throws IOException {
-		if (source == null) {
+	private InputStream getInputStream() throws IOException {
+		if (inputStream == null) {
 			synchronized (this) {
-				if (source == null) {
-					source = sourceSupplier.process();
+				if (inputStream == null) {
+					inputStream = source.get();
 				}
 			}
 		}
-		return source;
+		return inputStream;
 	}
 
 	@Override
 	public void close() {
-		if (source != null) {
+		if (inputStream != null) {
 			synchronized (this) {
-				if (source != null) {
+				if (inputStream != null) {
 					try {
-						IOUtils.closeQuietly(source);
+						IOUtils.closeQuietly(inputStream);
 					} finally {
-						source = null;
+						inputStream = null;
 					}
 				}
 			}
@@ -69,7 +69,7 @@ public final class RecordIterator<E> implements Iterator<E>, AutoCloseable {
 	public boolean hasNext() {
 		if (supplier == null) {
 			try {
-				supplier = new StaticSupplier<E>(codec.decode(getSource()));
+				supplier = new StaticSupplier<E>(codec.decode(getInputStream()));
 			} catch (EOFException e) {
 				close();
 				return false;

@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.ServerHttpRequest;
@@ -60,7 +60,7 @@ public class Cors {
 
 	public Cors setHeaders(String... headers) {
 		if (isReadyOnly()) {
-			throw new NotSupportedException("setHeaders");
+			throw new UnsupportedException("setHeaders");
 		}
 
 		this.headers = headers;
@@ -73,7 +73,7 @@ public class Cors {
 
 	public Cors setMethods(String... methods) {
 		if (isReadyOnly()) {
-			throw new NotSupportedException("setMethods");
+			throw new UnsupportedException("setMethods");
 		}
 
 		this.methods = methods;
@@ -86,7 +86,7 @@ public class Cors {
 
 	public void setOrigins(String... origins) {
 		if (isReadyOnly()) {
-			throw new NotSupportedException("setOrigins");
+			throw new UnsupportedException("setOrigins");
 		}
 
 		this.origins = origins;
@@ -98,7 +98,7 @@ public class Cors {
 
 	public Cors setCredentials(Boolean credentials) {
 		if (isReadyOnly()) {
-			throw new NotSupportedException("setCredentials");
+			throw new UnsupportedException("setCredentials");
 		}
 
 		this.credentials = credentials;
@@ -111,7 +111,7 @@ public class Cors {
 
 	public Cors setMaxAge(Integer maxAge) {
 		if (isReadyOnly()) {
-			throw new NotSupportedException("setMaxAge");
+			throw new UnsupportedException("setMaxAge");
 		}
 
 		this.maxAge = maxAge;

@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import io.basc.framework.convert.ConversionFactory;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
@@ -23,13 +24,14 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.comparator.TypeComparator;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
 
-public class DefaultObjectMapper<S, E extends Throwable> extends SimpleReverseMapperFactory<S, E>
+public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFactory<S, E>
 		implements ObjectMapper<S, E>, ConversionServiceAware {
 	private static final ThreadLocal<Integer> ENTITY_NESTING_DEPTH = new NamedThreadLocal<Integer>(
 			DefaultObjectMapper.class.getName() + "#ENTITY_NESTING_DEPTH") {
@@ -40,7 +42,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends SimpleReverseMa
 
 	private final ObjectMapperContext context = new ObjectMapperContext();
 	private final Map<Class<?>, ObjectAccessFactory<?, ? extends E>> objectAccessFactoryMap = new TreeMap<>(
-			(o1, o2) -> o1 == o2 ? 0 : (ClassUtils.isAssignable(o1, o2) ? 1 : -1));
+			TypeComparator.DEFAULT);
 	private final Map<Class<?>, Structure<? extends Field>> structureMap = new ConcurrentHashMap<>();
 
 	public DefaultObjectMapper() {
@@ -290,27 +292,18 @@ public class DefaultObjectMapper<S, E extends Throwable> extends SimpleReverseMa
 	}
 
 	@Override
-	public boolean isObjectAccessFactoryRegistred(Class<?> type) {
-		if (objectAccessFactoryMap.containsKey(type)) {
-			return true;
-		}
-
-		for (Class<?> key : objectAccessFactoryMap.keySet()) {
-			if (ClassUtils.isAssignable(key, type)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@Override
 	public boolean isStructureRegistred(Class<?> entityClass) {
 		return structureMap.containsKey(entityClass);
 	}
 
 	@Override
 	public <T> void registerObjectAccessFactory(Class<T> type, ObjectAccessFactory<? super T, ? extends E> factory) {
-		objectAccessFactoryMap.put(type, factory);
+		Assert.requiredArgument(type != null, "type");
+		if (factory == null) {
+			objectAccessFactoryMap.remove(type);
+		} else {
+			objectAccessFactoryMap.put(type, factory);
+		}
 	}
 
 	@Override
@@ -527,8 +520,8 @@ public class DefaultObjectMapper<S, E extends Throwable> extends SimpleReverseMa
 	public void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
 			Object target, TypeDescriptor targetType, Structure<? extends Field> targetStructure,
 			ObjectMapperContext context) throws E {
-		transform(source, sourceType, sourceStructure.streamAll().iterator(), target, targetType,
-				targetStructure.streamAll().iterator(), context);
+		transform(source, sourceType, sourceStructure.all().stream().iterator(), target, targetType,
+				targetStructure.all().stream().iterator(), context);
 	}
 
 	@Override

@@ -24,6 +24,8 @@ import java.util.List;
  * value of {@link Ordered#LOWEST_PRECEDENCE}, thus ending up at the end of a
  * sorted collection in arbitrary order with respect to other objects with the
  * same order value.
+ * 
+ * Note: this comparator imposes orderings that are inconsistent with equals.
  *
  * @see Ordered
  * @see io.basc.framework.core.annotation.AnnotationAwareOrderComparator

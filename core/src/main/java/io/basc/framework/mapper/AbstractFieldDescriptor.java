@@ -9,7 +9,7 @@ import io.basc.framework.core.annotation.AnnotatedElementWrapper;
 import io.basc.framework.core.annotation.MultiAnnotatedElement;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.NestedExceptionUtils;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 
 public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<AnnotatedElement>
 		implements FieldDescriptor {
@@ -71,8 +71,8 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 		return 0;
 	}
 
-	protected NotSupportedException createNotSupportException() {
-		return new NotSupportedException("class=[" + sourceClass + "] field [" + getName() + "]");
+	protected UnsupportedException createNotSupportException() {
+		return new UnsupportedException("class=[" + sourceClass + "] field [" + getName() + "]");
 	}
 
 	public Class<?> getSourceClass() {

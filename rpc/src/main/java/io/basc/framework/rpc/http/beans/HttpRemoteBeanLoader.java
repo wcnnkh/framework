@@ -18,7 +18,8 @@ import io.basc.framework.util.ClassUtils;
 public class HttpRemoteBeanLoader implements BeanDefinitionLoader {
 
 	@Override
-	public BeanDefinition load(BeanFactory beanFactory, String name, BeanDefinitionLoaderChain loaderChain) {
+	public BeanDefinition load(BeanFactory beanFactory, ClassLoader classLoader, String name,
+			BeanDefinitionLoaderChain loaderChain) {
 		Class<?> sourceClass = ClassUtils.getClass(name, beanFactory.getClassLoader());
 		if (sourceClass == null) {
 			return null;
@@ -39,7 +40,7 @@ public class HttpRemoteBeanLoader implements BeanDefinitionLoader {
 						() -> beanFactory.getInstance(HttpRemoteCallableFactory.class), sourceClass);
 			}
 		}
-		return loaderChain.load(beanFactory, name);
+		return loaderChain.load(beanFactory, classLoader, name);
 	}
 
 }

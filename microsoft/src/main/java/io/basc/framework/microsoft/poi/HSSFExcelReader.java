@@ -7,13 +7,11 @@ import java.util.function.Consumer;
 
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
-import io.basc.framework.lang.RequiredJavaVersion;
 import io.basc.framework.microsoft.AbstractExcelReader;
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.ExcelReader;
 import io.basc.framework.microsoft.ExcelRow;
 
-@RequiredJavaVersion(8)
 public class HSSFExcelReader extends AbstractExcelReader implements ExcelReader {
 
 	public void read(POIFSFileSystem poifsFileSystem, Consumer<ExcelRow> consumer) throws IOException, ExcelException {

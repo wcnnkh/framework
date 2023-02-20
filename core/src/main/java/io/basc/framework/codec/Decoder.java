@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.Processor;
 
 /**
  * 解码器<br/>

@@ -1,6 +1,8 @@
 package io.basc.framework.sql;
 
-public class SimpleSql extends SerializableSql {
+import java.io.Serializable;
+
+public final class SimpleSql extends AbstractSql implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
@@ -30,5 +32,19 @@ public class SimpleSql extends SerializableSql {
 
 	public boolean isStoredProcedure() {
 		return storedProcedure;
+	}
+
+	protected volatile transient String toStringCache;
+
+	@Override
+	public String toString() {
+		if (toStringCache == null) {
+			synchronized (this) {
+				if (toStringCache == null) {
+					this.toStringCache = super.toString();
+				}
+			}
+		}
+		return this.toStringCache;
 	}
 }

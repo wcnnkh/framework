@@ -6,12 +6,12 @@ import java.io.OutputStream;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.stream.Cursor;
+import io.basc.framework.util.Cursor;
 
 public final class MicrosoftUtils {
 	private static Logger logger = LoggerFactory.getLogger(MicrosoftUtils.class);
@@ -33,7 +33,7 @@ public final class MicrosoftUtils {
 
 	public static ExcelOperations getExcelOperations() {
 		if (EXCEL_OPERATIONS == null) {
-			throw new NotSupportedException("excel operations");
+			throw new UnsupportedException("excel operations");
 		}
 		return EXCEL_OPERATIONS;
 	}
@@ -50,7 +50,7 @@ public final class MicrosoftUtils {
 		} else if (target instanceof File) {
 			export = getExcelOperations().createExport((File) target);
 		} else {
-			throw new NotSupportedException(target.toString());
+			throw new UnsupportedException(target.toString());
 		}
 		return new ExcelMapper(export);
 	}

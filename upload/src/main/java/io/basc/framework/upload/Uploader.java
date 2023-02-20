@@ -31,7 +31,7 @@ import io.basc.framework.net.message.multipart.MultipartMessage;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.DefaultStatus;
+import io.basc.framework.util.Return;
 import io.basc.framework.util.Status;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.TimeUtils;
@@ -140,7 +140,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 		return CharsetCodec.UTF_8.toMD5().encode(cleanPath(key) + expiration.getTime() + sign);
 	}
 
-	public Status<String> checkSign(String key, String expiration, String sign) {
+	public Status checkSign(String key, String expiration, String sign) {
 		long time = Long.parseLong(expiration);
 		if (logger.isDebugEnabled()) {
 			logger.debug("Check sign key={} expiration={} sign={}", key, TimeUtils.format(time, "yyyy-MM-dd HH:mm:ss"),
@@ -148,40 +148,40 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 		}
 
 		if (System.currentTimeMillis() > time) {
-			return new DefaultStatus<>(false, "签名已过期");
+			return Status.error("签名已过期");
 		}
 		boolean succes = CharsetCodec.UTF_8.toMD5().verify(key + expiration + this.sign, sign);
 		if (succes) {
-			return new DefaultStatus<>(true, "上传成功");
+			return Status.success("上传成功");
 		}
-		return new DefaultStatus<>(false, "签名错误");
+		return Status.error("签名错误");
 	}
 
-	public Status<String> upload(ServerHttpRequest request) throws DataException, IOException {
+	public Return<String> upload(ServerHttpRequest request) throws DataException, IOException {
 		if (!(request instanceof MultiPartServerHttpRequest)) {
-			return new DefaultStatus<String>(false, "无法解析的文件上传请求");
+			return Return.error("无法解析的文件上传请求");
 		}
 
 		String key = request.getParameterMap().getFirst("key");
 		String expiration = request.getParameterMap().getFirst("expiration");
 		String sign = request.getParameterMap().getFirst("sign");
-		if (StringUtils.isEmpty(key, expiration, sign)) {
-			return new DefaultStatus<>(false, "参数错误");
+		if (StringUtils.isAnyEmpty(key, expiration, sign)) {
+			return Return.error("参数错误");
 		}
 
-		Status<String> checkStatus = checkSign(key, expiration, sign);
-		if (!checkStatus.isActive()) {
-			return checkStatus;
+		Status checkStatus = checkSign(key, expiration, sign);
+		if (checkStatus.isError()) {
+			return checkStatus.toReturn();
 		}
 
 		logger.info("upload request " + request);
 		MultiPartServerHttpRequest multiPartServerHttpRequest = (MultiPartServerHttpRequest) request;
 		MultipartMessage message = multiPartServerHttpRequest.getFirstFile();
 		if (message == null) {
-			return new DefaultStatus<String>(false, "无文件");
+			return Return.error("无文件");
 		}
 		put(key, message);
-		return new DefaultStatus<>(true, key);
+		return Return.success(key);
 	}
 
 	@Override
@@ -209,8 +209,8 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 			MimeType mimeType = FileMimeTypeUitls.getMimeType(resource);
 			WebUtils.writeStaticResource(request, response, resource, mimeType);
 		} else {
-			Status<String> status = upload(request);
-			if (status.isActive()) {
+			Return<String> status = upload(request);
+			if (status.isSuccess()) {
 				Cors.DEFAULT.write(request, response.getHeaders());
 				response.setStatusCode(HttpStatus.OK);
 			} else {

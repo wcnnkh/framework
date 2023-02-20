@@ -1,7 +1,7 @@
 package io.basc.framework.env;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 
 /**
  * 1.使用反射重写equals hashCode toString方法
@@ -31,7 +31,7 @@ public class BascObject extends Object implements Cloneable {
 		try {
 			return super.clone();
 		} catch (CloneNotSupportedException e) {
-			throw new NotSupportedException(toString());
+			throw new UnsupportedException(toString());
 		}
 	}
 }

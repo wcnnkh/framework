@@ -9,7 +9,7 @@ import io.basc.framework.factory.ConfigurableBeanFactory;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.resolver.PropertiesResolvers;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
 
 public interface ConfigurableEnvironment extends Environment, ConfigurableBeanFactory {
@@ -26,7 +26,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableBeanFa
 
 	default void loadProperties(Resource resource) {
 		if (!getPropertiesResolver().canResolveProperties(resource)) {
-			throw new NotSupportedException(resource.getDescription());
+			throw new UnsupportedException(resource.getDescription());
 		}
 
 		Observable<Properties> observable = resource.map(ResourceUtils.toPropertiesConverter(getPropertiesResolver()));

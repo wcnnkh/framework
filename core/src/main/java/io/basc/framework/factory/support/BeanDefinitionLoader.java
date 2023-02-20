@@ -5,5 +5,5 @@ import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.FactoryException;
 
 public interface BeanDefinitionLoader {
-	BeanDefinition load(BeanFactory beanFactory, String name, BeanDefinitionLoaderChain chain) throws FactoryException;
+	BeanDefinition load(BeanFactory beanFactory, ClassLoader classLoader, String name, BeanDefinitionLoaderChain chain) throws FactoryException;
 }

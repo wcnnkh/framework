@@ -1,7 +1,8 @@
 package io.basc.framework.util.page;
 
-import java.util.List;
 import java.util.stream.Stream;
+
+import io.basc.framework.util.Cursor;
 
 public class StreamPages<K, T> implements Pages<K, T> {
 	private final Page<K, T> page;
@@ -14,7 +15,7 @@ public class StreamPages<K, T> implements Pages<K, T> {
 
 	public StreamPages(long total, K cursorId, long count, PageableProcessor<K, T> processor) {
 		Pageable<K, T> pageable = processor.process(cursorId, count);
-		this.page = new SharedPage<K, T>(cursorId, pageable.getList(), pageable.getNextCursorId(), count, total);
+		this.page = new StreamPage<K, T>(cursorId, () -> pageable.iterator(), pageable.getNextCursorId(), count, total);
 		this.processor = processor;
 	}
 
@@ -43,8 +44,8 @@ public class StreamPages<K, T> implements Pages<K, T> {
 	}
 
 	@Override
-	public List<T> getList() {
-		return page.getList();
+	public Cursor<T> iterator() {
+		return page.iterator();
 	}
 
 	@Override

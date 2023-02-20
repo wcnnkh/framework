@@ -14,7 +14,7 @@ import java.util.Set;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.Value;
@@ -51,7 +51,7 @@ public class MapperUtils {
 	public static void setValue(ConversionService conversionService, Object instance,
 			io.basc.framework.mapper.Field field, Object value) {
 		if (!field.isSupportSetter()) {
-			throw new NotSupportedException(field.toString());
+			throw new UnsupportedException(field.toString());
 		}
 
 		Object valueToUse;
@@ -180,7 +180,7 @@ public class MapperUtils {
 		}
 
 		if (Value.isBaseType(instance.getClass())) {
-			throw new NotSupportedException(instance.getClass().getName());
+			throw new UnsupportedException(instance.getClass().getName());
 		}
 
 		Map<String, Object> valueMap = Fields.getFields(instance.getClass()).ignoreStatic().all().getValueMap(instance);

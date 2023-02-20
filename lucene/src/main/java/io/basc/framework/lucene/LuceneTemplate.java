@@ -30,10 +30,8 @@ import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.Repository;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.page.Paginations;
-import io.basc.framework.util.stream.Cursor;
-import io.basc.framework.util.stream.Processor;
-import io.basc.framework.util.stream.StreamProcessorSupport;
 
 @SuppressWarnings("unchecked")
 public interface LuceneTemplate extends Repository {
@@ -97,7 +95,7 @@ public interface LuceneTemplate extends Repository {
 	 * @return
 	 */
 	default boolean isPresent(Term term) {
-		return search(new SearchParameters(new TermQuery(term), 1), (search, d) -> d.doc).streamAll().findAny()
+		return search(new SearchParameters(new TermQuery(term), 1), (search, d) -> d.doc).all().stream().findAny()
 				.isPresent();
 	}
 
@@ -144,7 +142,7 @@ public interface LuceneTemplate extends Repository {
 		});
 	}
 
-	default <T, E extends Exception> T search(Processor<IndexSearcher, T, ? extends E> processor)
+	default <T, E extends Exception> T search(Processor<? super IndexSearcher, ? extends T, ? extends E> processor)
 			throws LuceneSearchException {
 		try {
 			return read((reader) -> {
@@ -169,7 +167,8 @@ public interface LuceneTemplate extends Repository {
 	}
 
 	default <T> SearchResults<T> search(SearchParameters parameters,
-			Processor<Document, T, LuceneException> mapProcessor) throws LuceneSearchException {
+			Processor<? super Document, ? extends T, ? extends LuceneException> mapProcessor)
+			throws LuceneSearchException {
 		return search(parameters, new ScoreDocMapper<T>() {
 
 			@Override
@@ -222,9 +221,11 @@ public interface LuceneTemplate extends Repository {
 		return searchAfter(after, parameters, (e) -> (T) getMapper().convert(e, structure));
 	}
 
-	<T> Future<T> write(Processor<IndexWriter, T, ? extends Exception> processor) throws LuceneWriteException;
+	<T> Future<T> write(Processor<? super IndexWriter, ? extends T, ? extends Exception> processor)
+			throws LuceneWriteException;
 
-	<T, E extends Throwable> T read(Processor<IndexReader, T, E> processor) throws LuceneReadException, E;
+	<T, E extends Throwable> T read(Processor<? super IndexReader, ? extends T, ? extends E> processor)
+			throws LuceneReadException, E;
 
 	default Future<Long> deleteAll() {
 		return write((e) -> e.deleteAll());
@@ -260,7 +261,7 @@ public interface LuceneTemplate extends Repository {
 		try {
 			return write((writer) -> {
 				SearchResults<Document> searchResults = search(new SearchParameters(query, 100), (e) -> e);
-				Stream<Document> stream = searchResults.streamAll();
+				Stream<Document> stream = searchResults.all().stream();
 				try {
 					Iterator<Document> iterator = stream.iterator();
 					while (iterator.hasNext()) {
@@ -306,38 +307,9 @@ public interface LuceneTemplate extends Repository {
 	}
 
 	@Override
-	default <T> Cursor<T> query(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass, Conditions conditions,
-			List<? extends OrderColumn> orders, PageRequest pageRequest) throws OrmException {
-		PageRequest request = pageRequest;
-		if (request == null) {
-			request = PageRequest.getPageRequest();
-		}
-
-		if (request == null) {
-			return queryAll(resultsTypeDescriptor, entityClass, conditions, orders);
-		}
-
-		Cursor<T> cursor = (Cursor<T>) StreamProcessorSupport
-				.cursor(search(resultsTypeDescriptor, entityClass, conditions, orders, (int) pageRequest.getPageSize())
-						.streamAll());
-		return cursor.limit(request.getStart(), request.getPageSize());
-	}
-
-	@Override
-	default <T, E> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
+	default <T, E> Paginations<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
 			Conditions conditions, List<? extends OrderColumn> orders) throws OrmException {
-		SearchResults<T> results = search(resultsTypeDescriptor, entityClass, conditions, orders, 100);
-		return StreamProcessorSupport.cursor(results.streamAll());
-	}
-
-	@Override
-	default <T, E> Paginations<T> pagingQuery(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
-			Conditions conditions, List<? extends OrderColumn> orders, PageRequest pageRequest) throws OrmException {
-		PageRequest request = pageRequest;
-		if (request == null) {
-			request = PageRequest.getPageRequest();
-		}
-
+		PageRequest request = PageRequest.getPageRequest();
 		if (request == null) {
 			request = new PageRequest();
 		}

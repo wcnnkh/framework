@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import io.basc.framework.util.ResponsiveIterator;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.stream.ResponsiveIterator;
 
 public class ResponsiveIteratorTest {
 	private static List<Object> pushList = new ArrayList<Object>();
@@ -41,11 +41,7 @@ public class ResponsiveIteratorTest {
 				}
 			}
 
-			try {
-				iterator.close();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			iterator.close();
 		}
 	}
 }

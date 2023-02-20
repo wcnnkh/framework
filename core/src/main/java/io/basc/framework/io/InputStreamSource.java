@@ -7,8 +7,8 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 
-import io.basc.framework.util.stream.ConsumerProcessor;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.ConsumeProcessor;
+import io.basc.framework.util.Processor;
 
 /**
  * Simple interface for objects that are sources for an {@link InputStream}.
@@ -46,7 +46,7 @@ public interface InputStreamSource {
 		return Channels.newChannel(getInputStream());
 	}
 
-	default <T, E extends Throwable> T read(Processor<InputStream, ? extends T, E> processor) throws IOException, E {
+	default <T, E extends Throwable> T read(Processor<? super InputStream, ? extends T, ? extends E> processor) throws IOException, E {
 		InputStream is = null;
 		try {
 			is = getInputStream();
@@ -64,7 +64,7 @@ public interface InputStreamSource {
 	 * @param processor
 	 * @throws IOException
 	 */
-	default <E extends Throwable> void consume(ConsumerProcessor<InputStream, E> processor) throws IOException, E {
+	default <E extends Throwable> void consume(ConsumeProcessor<? super InputStream, ? extends E> processor) throws IOException, E {
 		read((is) -> {
 			processor.process(is);
 			return null;

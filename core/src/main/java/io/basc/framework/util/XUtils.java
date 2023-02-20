@@ -3,8 +3,9 @@ package io.basc.framework.util;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.UUID;
@@ -174,10 +175,6 @@ public final class XUtils {
 		return System.getProperty("os.name");
 	}
 
-	public static <T> Status<T> status(boolean active, T value) {
-		return new DefaultStatus<T>(active, value);
-	}
-
 	/**
 	 * 将一次迭代变为操作流
 	 * 
@@ -188,10 +185,6 @@ public final class XUtils {
 	public static <T> Stream<T> stream(Iterator<? extends T> iterator) {
 		Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
 		return StreamSupport.stream(spliterator, false);
-	}
-
-	public static <T> Stream<T> stream(Enumeration<? extends T> enumeration) {
-		return stream(CollectionUtils.toIterator(enumeration));
 	}
 
 	public static Object toString(Supplier<String> supplier) {
@@ -213,7 +206,7 @@ public final class XUtils {
 	}
 
 	@SafeVarargs
-	public static <T> T first(Predicate<? super T> predicate, T... option) {
+	public static <T> T find(Predicate<? super T> predicate, T... option) {
 		if (option == null) {
 			return null;
 		}
@@ -224,5 +217,30 @@ public final class XUtils {
 			}
 		}
 		return null;
+	}
+
+	public static <E extends Throwable> RunnableProcessor<E> composeWithExceptions(RunnableProcessor<? extends E> a,
+			RunnableProcessor<? extends E> b) {
+		return () -> {
+			try {
+				a.process();
+			} catch (Throwable e1) {
+				try {
+					b.process();
+				} catch (Throwable e2) {
+					try {
+						e1.addSuppressed(e2);
+					} catch (Throwable ignore) {
+					}
+				}
+				throw e1;
+			}
+			b.process();
+		};
+	}
+
+	public static <T> Stream<T> emptyStream() {
+		List<T> list = Collections.emptyList();
+		return list.stream();
 	}
 }

@@ -9,6 +9,7 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.http.client.DefaultHttpClient;
 import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.lang.Constants;
+import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
@@ -22,16 +23,26 @@ public final class HttpUtils {
 	private HttpUtils() {
 	};
 
-	private static final HttpClient HTTP_CLIENT = Sys.getEnv()
+	private static final HttpClient DEFAULT_CLIENT = Sys.getEnv()
 			.getServiceLoader(HttpClient.class, DefaultHttpClient.class).first();
+	private static final ThreadLocal<HttpClient> LOCAL_CLIENT = new NamedThreadLocal<>(HttpClient.class.getName());
 
-	/**
-	 * 获取默认的HttpClient(获取spi机制加载)
-	 * 
-	 * @return
-	 */
-	public static HttpClient getHttpClient() {
-		return HTTP_CLIENT;
+	public static HttpClient getDefaultClient() {
+		return DEFAULT_CLIENT;
+	}
+
+	public static HttpClient getClient() {
+		HttpClient client = LOCAL_CLIENT.get();
+		return client == null ? DEFAULT_CLIENT : client;
+	}
+
+	public static HttpClient setLocalClient(HttpClient client) {
+		if (client == null) {
+			LOCAL_CLIENT.remove();
+			return DEFAULT_CLIENT;
+		}
+		LOCAL_CLIENT.set(client);
+		return client;
 	}
 
 	public static boolean isValidOrigin(HttpRequest request, Collection<String> allowedOrigins) {

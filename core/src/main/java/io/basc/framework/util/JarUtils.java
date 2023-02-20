@@ -1,8 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.io.IOUtils;
-
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -11,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import io.basc.framework.io.IOUtils;
 
 public abstract class JarUtils {
 	private static final String MANIFEST = "META-INF/MANIFEST.MF";
@@ -33,9 +32,9 @@ public abstract class JarUtils {
 		return Collections.EMPTY_MAP;
 	}
 
-	private static Map<String, String> formatManifestFile(InputStream inputStream) throws IOException {
+	private static Map<String, String> formatManifestFile(InputStream inputStream) {
 		Map<String, String> map = new HashMap<String, String>(8);
-		List<String> list = IOUtils.readLines(inputStream);
+		List<String> list = IOUtils.readLines(inputStream).toList();
 		for (String content : list) {
 			content = content.trim();
 			if (StringUtils.isEmpty(content)) {

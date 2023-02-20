@@ -1,12 +1,14 @@
 package io.basc.framework.event.support;
 
+import java.util.concurrent.TimeUnit;
+
 import io.basc.framework.event.DelayableNamedEventDispatcher;
 import io.basc.framework.event.Event;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Matcher;
 import io.basc.framework.util.concurrent.DefaultDelayableExecutor;
 import io.basc.framework.util.concurrent.DelayableExecutor;
-
-import java.util.concurrent.TimeUnit;
 
 public class SimpleDelayableNamedEventDispatcher<K, T extends Event> extends SimpleNamedEventDispatcher<K, T>
 		implements DelayableNamedEventDispatcher<K, T> {
@@ -17,6 +19,12 @@ public class SimpleDelayableNamedEventDispatcher<K, T extends Event> extends Sim
 	}
 
 	public SimpleDelayableNamedEventDispatcher(DelayableExecutor delayableExecutor) {
+		this(null, delayableExecutor);
+	}
+
+	public SimpleDelayableNamedEventDispatcher(@Nullable Matcher<K> matcher, DelayableExecutor delayableExecutor) {
+		super(matcher);
+		Assert.requiredArgument(delayableExecutor != null, "delayableExecutor");
 		this.delayableExecutor = delayableExecutor;
 	}
 

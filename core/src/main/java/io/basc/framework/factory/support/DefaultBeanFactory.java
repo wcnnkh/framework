@@ -18,7 +18,6 @@ import io.basc.framework.factory.Init;
 import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.Assert;
 
 @SuppressWarnings({ "unchecked" })
 public class DefaultBeanFactory extends DefaultServiceLoaderFactory
@@ -32,7 +31,7 @@ public class DefaultBeanFactory extends DefaultServiceLoaderFactory
 			BeanFactoryPostProcessor.class);
 	private volatile boolean initialized = false;
 
-	private BeanFactory parentBeanFactory;
+	private BeanFactory parent;
 
 	public DefaultBeanFactory() {
 		beanDefinitionLoaders.setAfterService(this);
@@ -83,14 +82,14 @@ public class DefaultBeanFactory extends DefaultServiceLoaderFactory
 		return beanFactoryPostProcessors;
 	}
 
-	@Override
-	public BeanDefinition getDefinition(String name) {
+	public BeanDefinition getDefinition(ClassLoader classLoader, String name) {
 		BeanDefinition definition = super.getDefinition(name);
 		if (definition == null) {
 			synchronized (getDefinitionMutex()) {
 				definition = super.getDefinition(name);
 				if (definition == null) {
-					definition = new BeanDefinitionLoaderChain(this.beanDefinitionLoaders.iterator()).load(this, name);
+					definition = new BeanDefinitionLoaderChain(this.beanDefinitionLoaders.iterator()).load(this,
+							classLoader, name);
 					if (definition == null || !definition.isInstance()) {
 						for (String aliase : getAliases(name)) {
 							BeanDefinition aliaseDefinition = getDefinition(aliase);
@@ -111,65 +110,76 @@ public class DefaultBeanFactory extends DefaultServiceLoaderFactory
 	}
 
 	@Override
+	public final BeanDefinition getDefinition(String name) {
+		return getDefinition(getClassLoader(), name);
+	}
+
+	@Override
+	public final BeanDefinition getDefinition(Class<?> clazz) {
+		BeanDefinition definition = super.getDefinition(clazz);
+		if (definition != null) {
+			return definition;
+		}
+		return getDefinition(clazz.getClassLoader(), clazz.getName());
+	}
+
+	@Override
 	public <T> T getInstance(Class<? extends T> clazz) throws FactoryException {
-		if (parentBeanFactory != null && !containsDefinition(clazz.getName()) && !super.isInstance(clazz)
-				&& parentBeanFactory.isInstance(clazz)) {
-			return parentBeanFactory.getInstance(clazz);
+		if (parent != null && !containsDefinition(clazz.getName()) && !super.isInstance(clazz)
+				&& parent.isInstance(clazz)) {
+			return parent.getInstance(clazz);
 		}
 		return super.getInstance(clazz);
 	}
 
 	@Override
 	public <T> T getInstance(Class<? extends T> type, Class<?>[] parameterTypes, Object... params) {
-		if (parentBeanFactory != null && !containsDefinition(type.getName())
+		if (parent != null && !containsDefinition(type.getName())
 				&& !isInstance(type.getName(), (e) -> e.isInstance(parameterTypes))
-				&& parentBeanFactory.isInstance(type, parameterTypes)) {
-			return parentBeanFactory.getInstance(type, parameterTypes, params);
+				&& parent.isInstance(type, parameterTypes)) {
+			return parent.getInstance(type, parameterTypes, params);
 		}
 		return (T) getInstance(type.getName(), parameterTypes, params);
 	}
 
 	@Override
 	public <T> T getInstance(Class<? extends T> type, Object... params) {
-		if (parentBeanFactory != null && !containsDefinition(type.getName())
-				&& !isInstance(type.getName(), (e) -> e.isInstance(params))
-				&& parentBeanFactory.isInstance(type, params)) {
-			return parentBeanFactory.getInstance(type, params);
+		if (parent != null && !containsDefinition(type.getName())
+				&& !isInstance(type.getName(), (e) -> e.isInstance(params)) && parent.isInstance(type, params)) {
+			return parent.getInstance(type, params);
 		}
 		return (T) getInstance(type.getName(), params);
 	}
 
 	@Override
 	public Object getInstance(String name) throws FactoryException {
-		if (parentBeanFactory != null && !containsDefinition(name) && !super.isInstance(name)
-				&& parentBeanFactory.isInstance(name)) {
-			return parentBeanFactory.getInstance(name);
+		if (parent != null && !containsDefinition(name) && !super.isInstance(name) && parent.isInstance(name)) {
+			return parent.getInstance(name);
 		}
 		return super.getInstance(name);
 	}
 
 	@Override
 	public Object getInstance(String name, Class<?>[] parameterTypes, Object... params) {
-		if (parentBeanFactory != null && !containsDefinition(name)
-				&& !isInstance(name, (e) -> e.isInstance(parameterTypes))
-				&& parentBeanFactory.isInstance(name, parameterTypes)) {
-			return parentBeanFactory.getInstance(name, parameterTypes, params);
+		if (parent != null && !containsDefinition(name) && !isInstance(name, (e) -> e.isInstance(parameterTypes))
+				&& parent.isInstance(name, parameterTypes)) {
+			return parent.getInstance(name, parameterTypes, params);
 		}
 		return getInstance(name, (e) -> e.create(parameterTypes, params));
 	}
 
 	@Override
 	public Object getInstance(String name, Object... params) {
-		if (parentBeanFactory != null && !containsDefinition(name) && !isInstance(name, (e) -> e.isInstance(params))
-				&& parentBeanFactory.isInstance(name, params)) {
-			return parentBeanFactory.getInstance(name, params);
+		if (parent != null && !containsDefinition(name) && !isInstance(name, (e) -> e.isInstance(params))
+				&& parent.isInstance(name, params)) {
+			return parent.getInstance(name, params);
 		}
 		return getInstance(name, (e) -> e.create(params));
 	}
 
 	@Override
-	public BeanFactory getParentBeanFactory() {
-		return parentBeanFactory;
+	public BeanFactory getParent() {
+		return parent;
 	}
 
 	@Override
@@ -182,7 +192,7 @@ public class DefaultBeanFactory extends DefaultServiceLoaderFactory
 			try {
 				logger.debug("Start initializing bean factory[{}]!", this);
 
-				if (parentBeanFactory == null) {
+				if (parent == null) {
 					setParentBeanFactory(FactoryLoader.bind(getClassLoader(), this));
 				}
 
@@ -216,42 +226,41 @@ public class DefaultBeanFactory extends DefaultServiceLoaderFactory
 
 	@Override
 	public boolean isInstance(Class<?> clazz) {
-		return super.isInstance(clazz) || (parentBeanFactory != null && !containsDefinition(clazz.getName())
-				&& parentBeanFactory.isInstance(clazz));
+		return super.isInstance(clazz)
+				|| (parent != null && !containsDefinition(clazz.getName()) && parent.isInstance(clazz));
 	}
 
 	@Override
 	public boolean isInstance(Class<?> clazz, Class<?>... parameterTypes) {
-		return isInstance(clazz.getName(), parameterTypes) || (parentBeanFactory != null
-				&& !containsDefinition(clazz.getName()) && parentBeanFactory.isInstance(clazz, parameterTypes));
+		return isInstance(clazz.getName(), parameterTypes)
+				|| (parent != null && !containsDefinition(clazz.getName()) && parent.isInstance(clazz, parameterTypes));
 	}
 
 	public boolean isInstance(Class<?> clazz, Object... params) {
-		return isInstance(clazz.getName(), params) || (parentBeanFactory != null && !containsDefinition(clazz.getName())
-				&& parentBeanFactory.isInstance(clazz, params));
+		return isInstance(clazz.getName(), params)
+				|| (parent != null && !containsDefinition(clazz.getName()) && parent.isInstance(clazz, params));
 	}
 
 	@Override
 	public boolean isInstance(String name) {
-		return super.isInstance(name)
-				|| (parentBeanFactory != null && !containsDefinition(name) && parentBeanFactory.isInstance(name));
+		return super.isInstance(name) || (parent != null && !containsDefinition(name) && parent.isInstance(name));
 	}
 
 	@Override
 	public boolean isInstance(String name, Class<?>... parameterTypes) {
-		return isInstance(name, (e) -> e.isInstance(parameterTypes)) || (parentBeanFactory != null
-				&& !containsDefinition(name) && parentBeanFactory.isInstance(name, parameterTypes));
+		return isInstance(name, (e) -> e.isInstance(parameterTypes))
+				|| (parent != null && !containsDefinition(name) && parent.isInstance(name, parameterTypes));
 	}
 
 	public boolean isInstance(String name, Object... params) {
-		return isInstance(name, (e) -> e.isInstance()) || (parentBeanFactory != null && !containsDefinition(name)
-				&& parentBeanFactory.isInstance(name, params));
+		return isInstance(name, (e) -> e.isInstance())
+				|| (parent != null && !containsDefinition(name) && parent.isInstance(name, params));
 	}
 
 	@Override
-	public BeanDefinition load(BeanFactory beanFactory, String name, BeanDefinitionLoaderChain chain)
-			throws FactoryException {
-		return chain.load(beanFactory, name);
+	public BeanDefinition load(BeanFactory beanFactory, ClassLoader classLoader, String name,
+			BeanDefinitionLoaderChain chain) throws FactoryException {
+		return chain.load(beanFactory, classLoader, name);
 	}
 
 	@Override
@@ -263,13 +272,15 @@ public class DefaultBeanFactory extends DefaultServiceLoaderFactory
 
 	@Override
 	public void setClassLoader(ClassLoader classLoader) {
+		if (isInitialized()) {
+			throw new FactoryException("Already initialized");
+		}
 		super.setClassLoader(classLoader);
 		setParentBeanFactory(FactoryLoader.bind(classLoader, this));
 	}
 
-	public void setParentBeanFactory(BeanFactory parentBeanFactory) {
-		Assert.isTrue(FactoryLoader.getParentBeanFactory(parentBeanFactory, this).isActive(),
-				"BeanFactory cannot be nested circularly");
-		this.parentBeanFactory = parentBeanFactory;
+	public void setParentBeanFactory(BeanFactory parent) {
+		FactoryLoader.getParentBeanFactory(parent, this).assertSuccess();
+		this.parent = parent;
 	}
 }

@@ -25,13 +25,11 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import io.basc.framework.io.IOUtils;
-import io.basc.framework.lang.RequiredJavaVersion;
 import io.basc.framework.microsoft.AbstractExcelReader;
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.ExcelReader;
 import io.basc.framework.microsoft.ExcelRow;
 
-@RequiredJavaVersion(8)
 public class XSSFExcelReader extends AbstractExcelReader implements ExcelReader {
 	private boolean firstSheet = false;
 	private boolean formulasNotResults = true;

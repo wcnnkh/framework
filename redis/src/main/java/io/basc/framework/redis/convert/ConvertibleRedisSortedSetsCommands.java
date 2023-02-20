@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.basc.framework.data.domain.Range;
 import io.basc.framework.redis.InterArgs;
 import io.basc.framework.redis.RedisSortedSetsCommands;
 import io.basc.framework.redis.ScoreOption;
@@ -15,7 +14,8 @@ import io.basc.framework.redis.SetOption;
 import io.basc.framework.redis.Tuple;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.Processor;
+import io.basc.framework.util.Range;
 
 @SuppressWarnings("unchecked")
 public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
@@ -80,7 +80,7 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 		if (CollectionUtils.isEmpty(tvs)) {
 			return Collections.emptyList();
 		}
-		return getValueCodec().toDecodeProcessor().processTo(tvs, new LinkedHashSet<V>(tvs.size()));
+		return getValueCodec().toDecodeProcessor().processAll(tvs, new LinkedHashSet<V>(tvs.size()));
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 	@Override
 	default Long zlexcount(K key, Range<V> range) {
 		SK k = getKeyCodec().encode(key);
-		Range<SV> tr = range.convert(getValueCodec().toEncodeProcessor());
+		Range<SV> tr = range.convert(getValueCodec()::encode);
 		return getSourceRedisSortedSetsCommands().zlexcount(k, tr);
 	}
 
@@ -170,7 +170,7 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 	default Collection<V> zrangeByLex(K key, Range<V> range, int offset, int limit) {
 		SK k = getKeyCodec().encode(key);
 		Collection<SV> tuples = getSourceRedisSortedSetsCommands().zrangeByLex(k,
-				range.convert(getValueCodec().toEncodeProcessor()), offset, limit);
+				range.convert(getValueCodec()::encode), offset, limit);
 		return getValueCodec().decodeAll(tuples);
 	}
 
@@ -178,7 +178,7 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 	default Collection<V> zrangeByScore(K key, Range<V> range, int offset, int limit) {
 		SK k = getKeyCodec().encode(key);
 		Collection<SV> tuples = getSourceRedisSortedSetsCommands().zrangeByScore(k,
-				range.convert(getValueCodec().toEncodeProcessor()), offset, limit);
+				range.convert(getValueCodec()::encode), offset, limit);
 		return getValueCodec().decodeAll(tuples);
 	}
 
@@ -186,7 +186,7 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 	default Collection<Tuple<V>> zrangeByScoreWithScores(K key, Range<V> range, int offset, int limit) {
 		SK k = getKeyCodec().encode(key);
 		Collection<Tuple<SV>> values = getSourceRedisSortedSetsCommands().zrangeByScoreWithScores(k,
-				range.convert(getValueCodec().toEncodeProcessor()), offset, limit);
+				range.convert(getValueCodec()::encode), offset, limit);
 		if (values == null) {
 			return Collections.emptyList();
 		}
@@ -212,7 +212,7 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 	@Override
 	default Long zremrangebylex(K key, Range<V> range) {
 		return getSourceRedisSortedSetsCommands().zremrangebylex(getKeyCodec().encode(key),
-				range.convert(getValueCodec().toEncodeProcessor()));
+				range.convert(getValueCodec()::encode));
 	}
 
 	@Override
@@ -223,7 +223,7 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 	@Override
 	default Long zremrangebyscore(K key, Range<V> range) {
 		return getSourceRedisSortedSetsCommands().zremrangebyscore(getKeyCodec().encode(key),
-				range.convert(getValueCodec().toEncodeProcessor()));
+				range.convert(getValueCodec()::encode));
 	}
 
 	@Override
@@ -235,21 +235,21 @@ public interface ConvertibleRedisSortedSetsCommands<SK, K, SV, V>
 	@Override
 	default Collection<V> zrevrangebylex(K key, Range<V> range, int offset, int count) {
 		Collection<SV> values = getSourceRedisSortedSetsCommands().zrevrangebylex(getKeyCodec().encode(key),
-				range.convert(getValueCodec().toEncodeProcessor()), offset, count);
+				range.convert(getValueCodec()::encode), offset, count);
 		return getValueCodec().toDecodeProcessor().processAll(values);
 	}
 
 	@Override
 	default Collection<V> zrevrangebyscore(K key, Range<V> range, int offset, int count) {
 		Collection<SV> values = getSourceRedisSortedSetsCommands().zrevrangebyscore(getKeyCodec().encode(key),
-				range.convert(getValueCodec().toEncodeProcessor()), offset, count);
+				range.convert(getValueCodec()::encode), offset, count);
 		return getValueCodec().toDecodeProcessor().processAll(values);
 	}
 
 	@Override
 	default Collection<Tuple<V>> zrevrangebyscoreWithScores(K key, Range<V> range, int offset, int count) {
 		Collection<Tuple<SV>> values = getSourceRedisSortedSetsCommands().zrevrangebyscoreWithScores(
-				getKeyCodec().encode(key), range.convert(getValueCodec().toEncodeProcessor()), offset, count);
+				getKeyCodec().encode(key), range.convert(getValueCodec()::encode), offset, count);
 		if (values == null) {
 			return Collections.emptyList();
 		}

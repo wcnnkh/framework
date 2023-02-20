@@ -1,7 +1,17 @@
 package io.basc.framework.jedis;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import io.basc.framework.convert.lang.NumberToBooleanConverter;
-import io.basc.framework.data.domain.Range;
 import io.basc.framework.data.geo.Circle;
 import io.basc.framework.data.geo.Distance;
 import io.basc.framework.data.geo.Metric;
@@ -29,21 +39,10 @@ import io.basc.framework.redis.SetOption;
 import io.basc.framework.redis.Tuple;
 import io.basc.framework.redis.convert.RedisConverters;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.page.Pageable;
 import io.basc.framework.util.page.SharedPageable;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import redis.clients.jedis.GeoCoordinate;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.commands.PipelineBinaryCommands;
@@ -75,7 +74,7 @@ public class JedisPipelineCommands<P extends PipelineBinaryCommands> implements 
 	public RedisResponse<List<String>> geohash(byte[] key, byte[]... members) {
 		Response<List<byte[]>> response = commands.geohash(key, members);
 		return new JedisRedisResponse<>(
-				() -> JedisCodec.INSTANCE.toDecodeProcessor().processTo(response.get(), new ArrayList<String>()));
+				() -> JedisCodec.INSTANCE.toDecodeProcessor().processAll(response.get(), new ArrayList<String>()));
 	}
 
 	@Override
@@ -833,8 +832,8 @@ public class JedisPipelineCommands<P extends PipelineBinaryCommands> implements 
 
 	@Override
 	public RedisResponse<Long> zcount(byte[] key, Range<? extends Number> range) {
-		Response<Long> response = commands.zcount(key, range.getLowerBound().getValue().get().doubleValue(),
-				range.getUpperBound().getValue().get().doubleValue());
+		Response<Long> response = commands.zcount(key, range.getLowerBound().get().doubleValue(),
+				range.getUpperBound().get().doubleValue());
 		return new JedisRedisResponse<Long>(() -> response.get());
 	}
 

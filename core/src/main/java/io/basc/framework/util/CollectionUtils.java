@@ -34,8 +34,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
-
-import io.basc.framework.util.stream.Processor;
+import java.util.function.Function;
 
 public abstract class CollectionUtils {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -469,7 +468,7 @@ public abstract class CollectionUtils {
 	/**
 	 * Iterator wrapping an Enumeration.
 	 */
-	private static class EnumerationIterator<E> extends io.basc.framework.util.AbstractIterator<E> {
+	private static class EnumerationIterator<E> implements Iterator<E> {
 
 		private Enumeration<? extends E> enumeration;
 
@@ -486,23 +485,6 @@ public abstract class CollectionUtils {
 		}
 	}
 
-	public static <T> T first(Iterable<T> values) {
-		if (values == null) {
-			return null;
-		}
-
-		if (values instanceof List) {
-			List<T> list = (List<T>) values;
-			return list.isEmpty() ? null : list.get(0);
-		} else {
-			Iterator<T> iterator = values.iterator();
-			if (iterator != null && iterator.hasNext()) {
-				return iterator.next();
-			}
-			return null;
-		}
-	}
-
 	public static int size(Collection<?> collection) {
 		return collection == null ? 0 : collection.size();
 	}
@@ -511,11 +493,11 @@ public abstract class CollectionUtils {
 		return map == null ? 0 : map.size();
 	}
 
-	public static <E> List<E> toList(Iterable<E> iterable) {
-		Iterator<E> iterator = iterable.iterator();
-		if (!iterator.hasNext()) {
+	public static <E> List<E> list(Iterator<E> iterator) {
+		if (iterator == null || !iterator.hasNext()) {
 			return Collections.emptyList();
 		}
+
 		return Collections.list(CollectionUtils.toEnumeration(iterator));
 	}
 
@@ -532,7 +514,7 @@ public abstract class CollectionUtils {
 		return sets;
 	}
 
-	private static final class PreviousIterator<E> extends AbstractIterator<E> {
+	private static final class PreviousIterator<E> implements Iterator<E> {
 		private final ListIterator<E> listIterator;
 
 		public PreviousIterator(ListIterator<E> listIterator) {
@@ -545,6 +527,11 @@ public abstract class CollectionUtils {
 
 		public E next() {
 			return listIterator.previous();
+		}
+
+		@Override
+		public void remove() {
+			listIterator.remove();
 		}
 	}
 
@@ -723,7 +710,7 @@ public abstract class CollectionUtils {
 	}
 
 	public static <S, T> Iterator<T> iterator(Iterator<? extends S> iterator,
-			Processor<S, ? extends Iterator<? extends T>, ? extends RuntimeException> converter) {
+			Function<? super S, ? extends Iterator<T>> converter) {
 		Assert.requiredArgument(converter != null, "converter");
 		if (iterator == null) {
 			return Collections.emptyIterator();

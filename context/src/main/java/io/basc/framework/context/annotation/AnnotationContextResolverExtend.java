@@ -155,7 +155,7 @@ public class AnnotationContextResolverExtend implements ContextResolverExtend, O
 	}
 
 	private static Class<?> getServiceInterface(Class<?> clazz) {
-		return ClassUtils.getInterfaces(clazz).streamAll().filter((i) -> {
+		return ClassUtils.getInterfaces(clazz).all().stream().filter((i) -> {
 			if (i.isAnnotationPresent(Ignore.class) || i.getMethods().length == 0) {
 				return false;
 			}

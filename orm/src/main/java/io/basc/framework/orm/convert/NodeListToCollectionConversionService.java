@@ -20,6 +20,11 @@ class NodeListToCollectionConversionService extends AbstractConversionService im
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(NodeList.class, Collection.class));
 	}
+	
+	@Override
+	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		return ConditionalConversionService.super.canConvert(sourceType, targetType);
+	}
 
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {

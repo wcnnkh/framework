@@ -1,11 +1,10 @@
 package io.basc.framework.context.support;
 
-import java.util.Iterator;
-
 import io.basc.framework.context.ClassesLoader;
 import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.factory.support.ClassInstanceIterator;
+import io.basc.framework.util.Cursor;
 
 public class ClassesServiceLoader<S> implements ServiceLoader<S> {
 	private final ClassesLoader classesLoader;
@@ -21,8 +20,8 @@ public class ClassesServiceLoader<S> implements ServiceLoader<S> {
 	}
 
 	@Override
-	public Iterator<S> iterator() {
-		return new ClassInstanceIterator<>(instanceFactory, classesLoader.iterator());
+	public Cursor<S> iterator() {
+		return Cursor.of(new ClassInstanceIterator<>(instanceFactory, classesLoader.iterator()));
 	}
 
 }

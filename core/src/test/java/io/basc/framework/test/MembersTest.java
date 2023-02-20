@@ -18,9 +18,10 @@ public class MembersTest {
 				.withMethod(Members.DIRECT).withAll().withMethod(Members.REFUSE).all();
 		assertTrue(members.stream().count() == 7);
 		System.out.println(ReflectionUtils.getDeclaredFields(B.class).withAll().withInterfaces().withSuperclass()
-				.withStream(ReflectionUtils.getFields(B.class).stream()).all().map((e) -> e.getName()).streamAll().count() == 7);
+				.withStream(ReflectionUtils.getFields(B.class).stream()).all().map((e) -> e.getName()).all().stream()
+				.count() == 7);
 		Assert.assertTrue(ReflectionUtils.getDeclaredFields(B.class).withAll().withAll()
-				.filter((e) -> e.getName().equals("a")).streamAll().count() == 2);
+				.filter((e) -> e.getName().equals("a")).all().stream().count() == 2);
 	}
 
 	public static class A {

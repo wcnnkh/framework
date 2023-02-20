@@ -27,7 +27,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.stream.Processor;
 
 public final class CollectionFactory {
 	private static final Field KEY_TYPE_FIELD = ReflectionUtils.getDeclaredField(EnumMap.class, "keyType");
@@ -570,7 +569,8 @@ public final class CollectionFactory {
 	}
 
 	public static <K, V, SK, SV, E extends Throwable> Map<K, V> convert(Map<? extends SK, ? extends SV> sourceMap,
-			Processor<SK, K, E> keyConverter, Processor<SV, V, E> valueConverter) throws E {
+			Processor<? super SK, ? extends K, ? extends E> keyConverter,
+			Processor<? super SV, ? extends V, ? extends E> valueConverter) throws E {
 		if (CollectionUtils.isEmpty(sourceMap)) {
 			return Collections.emptyMap();
 		}

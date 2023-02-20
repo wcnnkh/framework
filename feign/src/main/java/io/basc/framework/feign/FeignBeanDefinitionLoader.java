@@ -14,13 +14,13 @@ import io.basc.framework.util.ClassUtils;
 public class FeignBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	@Override
-	public BeanDefinition load(BeanFactory beanFactory, String name, BeanDefinitionLoaderChain chain)
-			throws FactoryException {
-		Class<?> sourceClass = ClassUtils.getClass(name, beanFactory.getClassLoader());
+	public BeanDefinition load(BeanFactory beanFactory, ClassLoader classLoader, String name,
+			BeanDefinitionLoaderChain chain) throws FactoryException {
+		Class<?> sourceClass = ClassUtils.getClass(name, classLoader);
 		FeignClient feignClient = sourceClass.getAnnotation(FeignClient.class);
 		if (feignClient != null) {
 			return new FeignBeanDefinition(beanFactory.getInstance(Environment.class), sourceClass, feignClient);
 		}
-		return chain.load(beanFactory, name);
+		return chain.load(beanFactory, classLoader, name);
 	}
 }

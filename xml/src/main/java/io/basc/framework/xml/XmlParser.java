@@ -17,6 +17,9 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import io.basc.framework.convert.ConversionException;
+import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.dom.DocumentParser;
 import io.basc.framework.dom.DomException;
 import io.basc.framework.env.Sys;
@@ -25,10 +28,10 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.Processor;
 
-public class XmlParser implements DocumentParser {
+public class XmlParser implements DocumentParser, ConversionService {
 	private static Logger logger = LoggerFactory.getLogger(XmlParser.class);
 	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
 	@Nullable
@@ -95,8 +98,8 @@ public class XmlParser implements DocumentParser {
 	}
 
 	@Override
-	public <T, E extends Throwable> T parse(Resource resource, Processor<Document, ? extends T, E> processor)
-			throws IOException, DomException, E {
+	public <T, E extends Throwable> T parse(Resource resource,
+			Processor<? super Document, ? extends T, ? extends E> processor) throws IOException, DomException, E {
 		return resource.read((is) -> {
 			Document document = parse(is);
 			if (document == null) {
@@ -177,5 +180,29 @@ public class XmlParser implements DocumentParser {
 		}
 
 		return parse(new InputSource(new StringReader(content)));
+	}
+
+	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		return Document.class.isAssignableFrom(targetType.getType())
+				&& (InputStream.class.isAssignableFrom(sourceType.getType())
+						|| Reader.class.isAssignableFrom(sourceType.getType())
+						|| String.class.isAssignableFrom(sourceType.getType())
+						|| InputSource.class.isAssignableFrom(sourceType.getType())
+						|| File.class.isAssignableFrom(sourceType.getType()));
+	}
+
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (InputStream.class.isAssignableFrom(sourceType.getType())) {
+			return XmlUtils.getTemplate().getParser().parse((InputStream) source);
+		} else if (Reader.class.isAssignableFrom(sourceType.getType())) {
+			return XmlUtils.getTemplate().getParser().parse((Reader) source);
+		} else if (String.class.isAssignableFrom(sourceType.getType())) {
+			return XmlUtils.getTemplate().getParser().parse((String) source);
+		} else if (InputSource.class.isAssignableFrom(sourceType.getType())) {
+			return XmlUtils.getTemplate().getParser().parse((InputSource) source);
+		} else if (File.class.isAssignableFrom(sourceType.getType())) {
+			return XmlUtils.getTemplate().getParser().parse((File) source);
+		}
+		throw new ConversionException(sourceType.toString());
 	}
 }

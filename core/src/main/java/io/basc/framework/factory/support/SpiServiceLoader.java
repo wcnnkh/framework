@@ -25,9 +25,11 @@ import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.Cursor;
 import io.basc.framework.util.DefaultClassLoaderProvider;
 
-public final class SpiServiceLoader<S> extends DefaultClassLoaderProvider implements ServiceLoader<S>, ClassLoaderProvider {
+public final class SpiServiceLoader<S> extends DefaultClassLoaderProvider
+		implements ServiceLoader<S>, ClassLoaderProvider {
 
 	private static final String PREFIX = ResourceUtils.META_INF_PREFIX + "services/";
 
@@ -212,7 +214,8 @@ public final class SpiServiceLoader<S> extends DefaultClassLoaderProvider implem
 			}
 
 			try {
-				Object instance = instanceFactory == null ? ReflectionUtils.newInstance(c) : instanceFactory.getInstance(c);
+				Object instance = instanceFactory == null ? ReflectionUtils.newInstance(c)
+						: instanceFactory.getInstance(c);
 				S p = service.cast(instance);
 				if (providers == null) {
 					synchronized (this) {
@@ -308,8 +311,8 @@ public final class SpiServiceLoader<S> extends DefaultClassLoaderProvider implem
 	 *
 	 * @return An iterator that lazily loads providers for this loader's service
 	 */
-	public Iterator<S> iterator() {
-		return new Iterator<S>() {
+	public Cursor<S> iterator() {
+		return Cursor.of(new Iterator<S>() {
 
 			Iterator<Map.Entry<String, S>> knownProviders = providers == null ? Collections.emptyIterator()
 					: providers.entrySet().iterator();
@@ -325,12 +328,7 @@ public final class SpiServiceLoader<S> extends DefaultClassLoaderProvider implem
 					return knownProviders.next().getValue();
 				return lookupIterator.next();
 			}
-
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-
-		};
+		});
 	}
 
 	/**

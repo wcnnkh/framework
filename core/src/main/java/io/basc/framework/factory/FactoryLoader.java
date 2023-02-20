@@ -8,9 +8,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.DefaultStatus;
 import io.basc.framework.util.Optional;
-import io.basc.framework.util.Status;
+import io.basc.framework.util.Return;
 
 /**
  * 通过classloader来获取上下文的BeanFactory
@@ -22,6 +21,7 @@ public class FactoryLoader {
 	private static volatile Map<ClassLoader, BeanFactory> FACTORY_MAP = new HashMap<>(4);
 	private static final ReadWriteLock LOCK = new ReentrantReadWriteLock();
 
+	@Nullable
 	public static BeanFactory bind(ClassLoader classLoader, BeanFactory beanFactory) {
 		Lock lock = LOCK.writeLock();
 		lock.lock();
@@ -36,18 +36,18 @@ public class FactoryLoader {
 			source = getBeanFactory(classLoader.getParent());
 		}
 
-		return getParentBeanFactory(source, beanFactory).get();
+		return getParentBeanFactory(source, beanFactory).orElse(null);
 	}
 
-	public static Status<BeanFactory> getParentBeanFactory(BeanFactory source, BeanFactory exclude) {
+	public static Return<BeanFactory> getParentBeanFactory(BeanFactory source, BeanFactory exclude) {
 		BeanFactory factory = source;
 		while (factory != null) {
 			if (factory == exclude) {
-				return new DefaultStatus<BeanFactory>(false, factory.getParentBeanFactory());
+				return Return.error("BeanFactory cannot be nested circularly", factory.getParent());
 			}
-			factory = factory.getParentBeanFactory();
+			factory = factory.getParent();
 		}
-		return new DefaultStatus<>(true, source);
+		return Return.success(source);
 	}
 
 	@SuppressWarnings("unchecked")

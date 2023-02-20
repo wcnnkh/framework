@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -29,7 +28,7 @@ public class FileRecordsTest {
 			}
 
 			System.out.println(list);
-			List<String> readList = records.stream().collect(Collectors.toList());
+			List<String> readList = records.iterator().toList();
 			System.out.println(readList);
 			assertTrue(readList.equals(list));
 		} finally {

@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.basc.framework.convert.lang.StringConverter;
 import io.basc.framework.math.NumberHolder;
 import io.basc.framework.script.MathScriptEngine;
 import io.basc.framework.util.StringUtils;
@@ -205,7 +206,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	 */
 	public long getDelay() {
 		Object delay = getHeader(DELAY_MESSAGE);
-		return delay == null ? 0 : StringUtils.parseLong(delay.toString());
+		return delay == null ? 0 : StringConverter.parseLong(delay.toString());
 	}
 
 	/**
@@ -289,7 +290,6 @@ public class MessageProperties implements Serializable, Cloneable {
 	public long getRetryDelay() {
 		Object script = getHeader(RETRY_DELAY_SCRIPT);
 		if (script == null) {
-			;
 			Value value = getHeaderValue(RETRY_DELAY);
 			if (value == null) {
 				return 0;

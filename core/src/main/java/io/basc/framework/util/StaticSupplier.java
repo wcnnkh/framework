@@ -19,4 +19,21 @@ public final class StaticSupplier<T> implements Supplier<T>, Serializable {
 	public String toString() {
 		return String.valueOf(source);
 	}
+
+	@Override
+	public int hashCode() {
+		return source == null ? 0 : source.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof StaticSupplier) {
+			return ObjectUtils.equals(source, ((StaticSupplier<?>) obj).source);
+		}
+		return false;
+	}
 }

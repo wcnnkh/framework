@@ -1,9 +1,10 @@
 package io.basc.framework.script;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public abstract class AbstractScriptEngine<T> implements ScriptEngine<T> {
-	protected final LinkedList<ScriptResolver<T>> resolvers = new LinkedList<ScriptResolver<T>>();
+	protected final List<ScriptResolver<T>> resolvers = new LinkedList<ScriptResolver<T>>();
 
 	public T eval(String script) throws ScriptException {
 		for (ScriptResolver<T> resolver : getResolvers()) {
@@ -15,7 +16,12 @@ public abstract class AbstractScriptEngine<T> implements ScriptEngine<T> {
 		return evalInternal(script);
 	}
 
-	public LinkedList<ScriptResolver<T>> getResolvers() {
+	/**
+	 * 可操作的对象
+	 * 
+	 * @return
+	 */
+	public List<ScriptResolver<T>> getResolvers() {
 		return resolvers;
 	}
 

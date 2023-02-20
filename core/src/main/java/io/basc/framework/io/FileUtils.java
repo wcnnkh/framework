@@ -32,6 +32,7 @@ import java.util.zip.Checksum;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Cursor;
 import io.basc.framework.util.XUtils;
 
 public final class FileUtils {
@@ -1252,9 +1253,9 @@ public final class FileUtils {
 	 * @param file     the file to read, must not be <code>null</code>
 	 * @param encoding the encoding to use, <code>null</code> means platform default
 	 * @return the file contents, never <code>null</code>
-	 * @throws IOException in case of an I/O error
-	 * @throws             java.io.UnsupportedEncodingException if the encoding is
-	 *                     not supported by the VM
+	 * @throws IOException                          in case of an I/O error
+	 * @throws java.io.UnsupportedEncodingException if the encoding is not supported
+	 *                                              by the VM
 	 */
 	public static String readFileToString(File file, String encoding) throws IOException {
 		InputStream in = null;
@@ -1303,18 +1304,13 @@ public final class FileUtils {
 	 * @param encoding the encoding to use, <code>null</code> means platform default
 	 * @return the list of Strings representing each line in the file, never
 	 *         <code>null</code>
-	 * @throws IOException in case of an I/O error
-	 * @throws             java.io.UnsupportedEncodingException if the encoding is
-	 *                     not supported by the VM
+	 * @throws IOException                          in case of an I/O error
+	 * @throws java.io.UnsupportedEncodingException if the encoding is not supported
+	 *                                              by the VM
 	 */
-	public static List<String> readLines(File file, String encoding) throws IOException {
-		InputStream in = null;
-		try {
-			in = openInputStream(file);
-			return IOUtils.readLines(in, encoding);
-		} finally {
-			IOUtils.closeQuietly(in);
-		}
+	public static Cursor<String> readLines(File file, String encoding) throws IOException {
+		InputStream in = openInputStream(file);
+		return IOUtils.readLines(in, encoding).onClose(() -> IOUtils.closeQuietly(in));
 	}
 
 	/**
@@ -1326,7 +1322,7 @@ public final class FileUtils {
 	 *         <code>null</code>
 	 * @throws IOException in case of an I/O error
 	 */
-	public static List<String> readLines(File file) throws IOException {
+	public static Cursor<String> readLines(File file) throws IOException {
 		return readLines(file, null);
 	}
 
@@ -1340,9 +1336,9 @@ public final class FileUtils {
 	 * @param file     the file to write
 	 * @param data     the content to write to the file
 	 * @param encoding the encoding to use, <code>null</code> means platform default
-	 * @throws IOException in case of an I/O error
-	 * @throws             java.io.UnsupportedEncodingException if the encoding is
-	 *                     not supported by the VM
+	 * @throws IOException                          in case of an I/O error
+	 * @throws java.io.UnsupportedEncodingException if the encoding is not supported
+	 *                                              by the VM
 	 */
 	public static void writeStringToFile(File file, String data, String encoding) throws IOException {
 		writeStringToFile(file, data, encoding, false);
@@ -1356,9 +1352,9 @@ public final class FileUtils {
 	 * @param encoding the encoding to use, <code>null</code> means platform default
 	 * @param append   if <code>true</code>, then the String will be added to the
 	 *                 end of the file rather than overwriting
-	 * @throws IOException in case of an I/O error
-	 * @throws             java.io.UnsupportedEncodingException if the encoding is
-	 *                     not supported by the VM
+	 * @throws IOException                          in case of an I/O error
+	 * @throws java.io.UnsupportedEncodingException if the encoding is not supported
+	 *                                              by the VM
 	 */
 	public static void writeStringToFile(File file, String data, String encoding, boolean append) throws IOException {
 		OutputStream out = null;
@@ -1430,9 +1426,9 @@ public final class FileUtils {
 	 * @param file     the file to write
 	 * @param data     the content to write to the file
 	 * @param encoding the encoding to use, <code>null</code> means platform default
-	 * @throws IOException in case of an I/O error
-	 * @throws             java.io.UnsupportedEncodingException if the encoding is
-	 *                     not supported by the VM
+	 * @throws IOException                          in case of an I/O error
+	 * @throws java.io.UnsupportedEncodingException if the encoding is not supported
+	 *                                              by the VM
 	 */
 	public static void write(File file, CharSequence data, String encoding) throws IOException {
 		write(file, data, encoding, false);
@@ -1446,9 +1442,9 @@ public final class FileUtils {
 	 * @param encoding the encoding to use, <code>null</code> means platform default
 	 * @param append   if <code>true</code>, then the data will be added to the end
 	 *                 of the file rather than overwriting
-	 * @throws IOException in case of an I/O error
-	 * @throws             java.io.UnsupportedEncodingException if the encoding is
-	 *                     not supported by the VM
+	 * @throws IOException                          in case of an I/O error
+	 * @throws java.io.UnsupportedEncodingException if the encoding is not supported
+	 *                                              by the VM
 	 */
 	public static void write(File file, CharSequence data, String encoding, boolean append) throws IOException {
 		String str = data == null ? null : data.toString();
@@ -1502,9 +1498,9 @@ public final class FileUtils {
 	 * @param encoding the encoding to use, <code>null</code> means platform default
 	 * @param lines    the lines to write, <code>null</code> entries produce blank
 	 *                 lines
-	 * @throws IOException in case of an I/O error
-	 * @throws             java.io.UnsupportedEncodingException if the encoding is
-	 *                     not supported by the VM
+	 * @throws IOException                          in case of an I/O error
+	 * @throws java.io.UnsupportedEncodingException if the encoding is not supported
+	 *                                              by the VM
 	 */
 	public static void writeLines(File file, String encoding, Collection<?> lines) throws IOException {
 		writeLines(file, encoding, lines, null, false);
@@ -1521,9 +1517,9 @@ public final class FileUtils {
 	 *                 lines
 	 * @param append   if <code>true</code>, then the lines will be added to the end
 	 *                 of the file rather than overwriting
-	 * @throws IOException in case of an I/O error
-	 * @throws             java.io.UnsupportedEncodingException if the encoding is
-	 *                     not supported by the VM
+	 * @throws IOException                          in case of an I/O error
+	 * @throws java.io.UnsupportedEncodingException if the encoding is not supported
+	 *                                              by the VM
 	 */
 	public static void writeLines(File file, String encoding, Collection<?> lines, boolean append) throws IOException {
 		writeLines(file, encoding, lines, null, append);
@@ -1574,9 +1570,9 @@ public final class FileUtils {
 	 *                   lines
 	 * @param lineEnding the line separator to use, <code>null</code> is system
 	 *                   default
-	 * @throws IOException in case of an I/O error
-	 * @throws             java.io.UnsupportedEncodingException if the encoding is
-	 *                     not supported by the VM
+	 * @throws IOException                          in case of an I/O error
+	 * @throws java.io.UnsupportedEncodingException if the encoding is not supported
+	 *                                              by the VM
 	 */
 	public static void writeLines(File file, String encoding, Collection<?> lines, String lineEnding)
 			throws IOException {
@@ -1597,9 +1593,9 @@ public final class FileUtils {
 	 *                   default
 	 * @param append     if <code>true</code>, then the lines will be added to the
 	 *                   end of the file rather than overwriting
-	 * @throws IOException in case of an I/O error
-	 * @throws             java.io.UnsupportedEncodingException if the encoding is
-	 *                     not supported by the VM
+	 * @throws IOException                          in case of an I/O error
+	 * @throws java.io.UnsupportedEncodingException if the encoding is not supported
+	 *                                              by the VM
 	 */
 	public static void writeLines(File file, String encoding, Collection<?> lines, String lineEnding, boolean append)
 			throws IOException {

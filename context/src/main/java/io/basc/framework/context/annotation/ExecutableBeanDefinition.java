@@ -16,7 +16,7 @@ import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.BeanResolver;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 
@@ -49,7 +49,7 @@ public class ExecutableBeanDefinition extends FactoryBeanDefinition {
 	@Override
 	public Object create() throws InstanceException {
 		if (!isInstance()) {
-			throw new NotSupportedException("不支持的构造方式");
+			throw new UnsupportedException("不支持的构造方式");
 		}
 
 		return createInternal(getBeanResolver(), getTypeDescriptor(), parameterDescriptors,

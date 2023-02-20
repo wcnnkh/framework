@@ -1,6 +1,6 @@
 package io.basc.framework.freemarker;
 
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -25,14 +25,14 @@ public class MultiTemplateLoader extends LinkedList<TemplateLoader> implements T
 		if (templateSource instanceof MultiTemplateLoaderSource) {
 			return ((MultiTemplateLoaderSource) templateSource).getLastModified();
 		}
-		throw new NotSupportedException(templateSource.getClass().getName());
+		throw new UnsupportedException(templateSource.getClass().getName());
 	}
 
 	public Reader getReader(Object templateSource, String encoding) throws IOException {
 		if (templateSource instanceof MultiTemplateLoaderSource) {
 			return ((MultiTemplateLoaderSource) templateSource).getReader(encoding);
 		}
-		throw new NotSupportedException(templateSource.getClass().getName() + ", encoding=" + encoding);
+		throw new UnsupportedException(templateSource.getClass().getName() + ", encoding=" + encoding);
 	}
 
 	public void closeTemplateSource(Object templateSource) throws IOException {
@@ -40,7 +40,7 @@ public class MultiTemplateLoader extends LinkedList<TemplateLoader> implements T
 			((MultiTemplateLoaderSource) templateSource).closeTemplateSource();
 			return;
 		}
-		throw new NotSupportedException(templateSource.getClass().getName());
+		throw new UnsupportedException(templateSource.getClass().getName());
 	}
 
 	public static final class MultiTemplateLoaderSource {

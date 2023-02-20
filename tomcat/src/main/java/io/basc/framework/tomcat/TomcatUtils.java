@@ -7,10 +7,10 @@ import javax.servlet.ServletContainerInitializer;
 
 import org.apache.catalina.Context;
 
+import io.basc.framework.convert.lang.StringConverter;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.StringUtils;
 
 public final class TomcatUtils {
 	private TomcatUtils() {
@@ -69,7 +69,7 @@ public final class TomcatUtils {
 	}
 
 	public static boolean tomcatScanTld(Environment environment) {
-		return StringUtils.parseBoolean(getProperty(environment, "scan.tld"), true);
+		return StringConverter.parseBoolean(getProperty(environment, "scan.tld"), true);
 	}
 
 	public static Properties getServletInitParametersConfig(Environment environment, String servletName,

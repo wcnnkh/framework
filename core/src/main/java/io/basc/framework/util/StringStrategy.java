@@ -2,10 +2,9 @@ package io.basc.framework.util;
 
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.TreeMap;
 
 import io.basc.framework.lang.Nullable;
-
-import java.util.TreeMap;
 
 public final class StringStrategy<T> {
 	private TreeMap<String, T> strategyMap;

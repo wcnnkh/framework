@@ -2,11 +2,20 @@ package io.basc.framework.event;
 
 import java.util.Iterator;
 
+import io.basc.framework.util.ConsumeProcessor;
 import io.basc.framework.util.Registration;
 
 @FunctionalInterface
 public interface EventListener<T extends Event> extends java.util.EventListener {
 	void onEvent(T event);
+
+	default void onEvents(Iterator<? extends T> events) {
+		ConsumeProcessor.consumeAll(events, (e) -> onEvent(e));
+	}
+
+	default void onEvents(Iterable<? extends T> events) {
+		ConsumeProcessor.consumeAll(events, (e) -> onEvent(e));
+	}
 
 	default Registration registerTo(Iterator<? extends EventRegistry<T>> registries) {
 		if (registries == null) {

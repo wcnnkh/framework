@@ -5,7 +5,7 @@ import java.util.logging.Handler;
 public final class LoggerFactory {
 	private static final DynamicLoggerFactory LOGGER_FACTORY = new DynamicLoggerFactory();
 	private static final LevelManager LEVEL_MANAGER = LOGGER_FACTORY.getServiceLoaderFactory()
-			.getServiceLoader(LevelManager.class).first(() -> new LevelManager());
+			.getServiceLoader(LevelManager.class).findFirst().orElseGet(() -> new LevelManager());
 
 	public static LevelManager getLevelManager() {
 		return LEVEL_MANAGER;

@@ -1,8 +1,5 @@
 package io.basc.framework.lucene;
 
-import io.basc.framework.util.ArrayUtils;
-import io.basc.framework.util.stream.Processor;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +8,9 @@ import java.util.List;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Processor;
 
 public class SearchProcessor<T> implements Processor<IndexSearcher, SearchResults<T>, LuceneException> {
 	protected final ScoreDoc after;

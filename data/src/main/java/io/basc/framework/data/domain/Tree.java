@@ -1,11 +1,5 @@
 package io.basc.framework.data.domain;
 
-import io.basc.framework.env.BascObject;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.Pair;
-import io.basc.framework.util.stream.Processor;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,6 +8,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import io.basc.framework.env.BascObject;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.Pair;
+import io.basc.framework.util.Processor;
 
 /**
  * 树
@@ -45,10 +45,10 @@ public class Tree<T> extends BascObject implements Serializable {
 		this.childNodes = childNodes;
 	}
 
-	public static <T, O, E extends Throwable, K> List<Tree<T>> parse(
-			Collection<? extends O> options, Processor<O, K, E> keyProcessor,
-			@Nullable K parentId, Processor<O, K, E> parentKeyProcessor,
-			Processor<O, T, E> processor) throws E {
+	public static <T, O, E extends Throwable, K> List<Tree<T>> parse(Collection<? extends O> options,
+			Processor<? super O, ? extends K, ? extends E> keyProcessor, @Nullable K parentId,
+			Processor<? super O, ? extends K, ? extends E> parentKeyProcessor,
+			Processor<? super O, ? extends T, ? extends E> processor) throws E {
 		if (options == null) {
 			return null;
 		}
@@ -65,8 +65,7 @@ public class Tree<T> extends BascObject implements Serializable {
 				K key = keyProcessor.process(option);
 				Tree<T> tree = new Tree<T>();
 				tree.setNode(value);
-				tree.setChildNodes(parse(options, keyProcessor, key,
-						parentKeyProcessor, processor));
+				tree.setChildNodes(parse(options, keyProcessor, key, parentKeyProcessor, processor));
 				list.add(tree);
 			}
 		}
@@ -75,18 +74,15 @@ public class Tree<T> extends BascObject implements Serializable {
 
 	/**
 	 * @param sourceList
-	 * @param depth
-	 *            深度,应该从0开始
-	 * @param maxDepth
-	 *            最大深度
-	 * @param processor
-	 *            key是当前深度
+	 * @param depth      深度,应该从0开始
+	 * @param maxDepth   最大深度
+	 * @param processor  key是当前深度
 	 * @return
 	 * @throws E
 	 */
-	public static <S, K, V, E extends Throwable> List<Tree<Pair<K, V>>> parse(
-			Collection<? extends S> sourceList, int depth, int maxDepth,
-			Processor<Pair<Integer, S>, Pair<K, V>, E> processor) throws E {
+	public static <S, K, V, E extends Throwable> List<Tree<Pair<K, V>>> parse(Collection<? extends S> sourceList,
+			int depth, int maxDepth, Processor<? super Pair<Integer, S>, ? extends Pair<K, V>, ? extends E> processor)
+			throws E {
 		if (sourceList == null) {
 			return null;
 		}
@@ -101,8 +97,7 @@ public class Tree<T> extends BascObject implements Serializable {
 
 		Map<Temp<K, Pair<K, V>>, List<S>> map = new LinkedHashMap<>();
 		for (S source : sourceList) {
-			Pair<K, V> pair = processor.process(new Pair<Integer, S>(depth,
-					source));
+			Pair<K, V> pair = processor.process(new Pair<Integer, S>(depth, source));
 			if (pair == null) {
 				continue;
 			}
@@ -122,8 +117,7 @@ public class Tree<T> extends BascObject implements Serializable {
 		for (Entry<Temp<K, Pair<K, V>>, List<S>> entry : map.entrySet()) {
 			Tree<Pair<K, V>> tree = new Tree<Pair<K, V>>();
 			tree.setNode(entry.getKey().getValue());
-			tree.setChildNodes(parse(entry.getValue(), depth + 1, maxDepth,
-					processor));
+			tree.setChildNodes(parse(entry.getValue(), depth + 1, maxDepth, processor));
 			list.add(tree);
 		}
 		return list;

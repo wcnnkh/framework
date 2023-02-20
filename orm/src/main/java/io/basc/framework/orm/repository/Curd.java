@@ -1,18 +1,16 @@
 package io.basc.framework.orm.repository;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.domain.PageRequest;
-import io.basc.framework.orm.OrmException;
-import io.basc.framework.util.page.Paginations;
-import io.basc.framework.util.stream.Cursor;
-
 import java.util.List;
-import java.util.stream.Collectors;
+
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.orm.OrmException;
+import io.basc.framework.util.ResultSet;
+import io.basc.framework.util.page.Paginations;
 
 /**
  * curd操作
  * 
- * @see CurdRepository
+ * @see CurdOperations
  * @author wcnnkh
  *
  * @param <V>
@@ -24,52 +22,28 @@ public interface Curd<V> {
 
 	long deleteAll(V conditions);
 
-	boolean deleteById(Object... ids);
+	boolean deleteById(Object... primaryKeys);
 
-	V getById(Object... ids);
+	V getById(Object... primaryKeys);
 
-	<T> T getById(TypeDescriptor resultsTypeDescriptor, Object... entityIds)
-			throws OrmException;
+	<T> T getById(TypeDescriptor resultsTypeDescriptor, Object... primaryKeys) throws OrmException;
 
-	List<V> getInIds(List<?> inIds, Object... ids);
+	<K> ResultSet<V> getInIds(List<? extends K> inPrimaryKeys, Object... primaryKeys);
 
-	<T> List<T> getInIds(TypeDescriptor resultsTypeDescriptor,
-			List<?> entityInIds, Object... entityIds) throws OrmException;
+	<K, T> ResultSet<T> getInIds(TypeDescriptor resultsTypeDescriptor, List<? extends K> inPrimaryKeys,
+			Object... primaryKeys) throws OrmException;
 
-	boolean isPresentById(Object... ids);
+	boolean isPresentById(Object... primaryKeys);
 
 	boolean isPresent(V conditions);
 
-	boolean isPresentAny(V conditions);
+	<T> Paginations<T> query(TypeDescriptor resultsTypeDescriptor, V conditions) throws OrmException;
 
-	<T> Paginations<T> pagingQuery(TypeDescriptor resultsTypeDescriptor,
-			V conditions, PageRequest request) throws OrmException;
+	Paginations<V> query(V conditions);
 
-	Paginations<V> pagingQuery(V conditions, PageRequest request);
+	Paginations<V> queryAll();
 
-	<T> Cursor<T> query(TypeDescriptor resultsTypeDescriptor, V conditions,
-			PageRequest request) throws OrmException;
-
-	Cursor<V> query(V conditions, PageRequest request);
-
-	Cursor<V> queryAll();
-
-	<T> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor)
-			throws OrmException;
-
-	<T> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor, V conditions)
-			throws OrmException;
-
-	Cursor<V> queryAll(V conditions);
-
-	@SuppressWarnings("unchecked")
-	default <T> List<T> queryList(TypeDescriptor resultsTypeDescriptor,
-			V conditions) throws OrmException {
-		return (List<T>) queryAll(resultsTypeDescriptor, conditions).collect(
-				Collectors.toList());
-	}
-
-	List<V> queryList(V conditions);
+	<T> Paginations<T> queryAll(TypeDescriptor resultsTypeDescriptor) throws OrmException;
 
 	void save(V entity);
 

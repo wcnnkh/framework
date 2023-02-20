@@ -98,7 +98,7 @@ public class XmlContextPostProcessor implements ContextPostProcessor {
 
 			String url = getURL(node);
 			if (StringUtils.isNotEmpty(url)) {
-				String value = HttpUtils.getHttpClient().get(String.class, url).getBody();
+				String value = HttpUtils.getClient().get(String.class, url).getBody();
 				environment.getProperties().put(name, value);
 			}
 
@@ -141,8 +141,8 @@ public class XmlContextPostProcessor implements ContextPostProcessor {
 			}
 
 			if ("mapping".equalsIgnoreCase(node.getNodeName())) {
-				Collection<String> names = Arrays
-						.asList(StringUtils.splitToArray(DomUtils.getRequireNodeAttributeValue(context, node, "name").getAsString()));
+				Collection<String> names = Arrays.asList(StringUtils
+						.splitToArray(DomUtils.getRequireNodeAttributeValue(context, node, "name").getAsString()));
 				String id = DomUtils.getRequireNodeAttributeValueOrNodeContent(context, node, "id");
 				for (String name : names) {
 					context.registerAlias(id, name);

@@ -8,27 +8,26 @@ import io.basc.framework.boot.servlet.ServletApplicationStartup;
 import io.basc.framework.boot.servlet.ServletContextInitialization;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.DefaultStatus;
-import io.basc.framework.util.Status;
+import io.basc.framework.util.Return;
 
 public class DefaultServletApplicationStartup implements ServletApplicationStartup {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
-	protected Status<Application> getStartup(ServletContext servletContext) throws ServletException {
+	protected Return<Application> getStartup(ServletContext servletContext) throws ServletException {
 		Application application = ServletContextUtils.getApplication(servletContext);
 		if (application == null) {
 			ServletContextUtils.startLogger(logger, servletContext, null, false);
 			application = new ServletApplication(servletContext);
 			application.init();
 			ServletContextUtils.setApplication(servletContext, application);
-			return new DefaultStatus<Application>(true, application);
+			return Return.success(application);
 		} else {
-			return new DefaultStatus<Application>(false, application);
+			return Return.error("已经创建过了", application);
 		}
 	}
 
-	public Status<Application> start(ServletContext servletContext) throws ServletException {
-		Status<Application> startUp = getStartup(servletContext);
+	public Return<Application> start(ServletContext servletContext) throws ServletException {
+		Return<Application> startUp = getStartup(servletContext);
 		start(servletContext, startUp.get());
 		return startUp;
 	}

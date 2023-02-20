@@ -1,12 +1,11 @@
 package io.basc.framework.orm.repository;
 
+import java.util.Arrays;
+import java.util.function.Predicate;
+
 import io.basc.framework.env.Sys;
 import io.basc.framework.util.Keywords;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.stream.StreamProcessorSupport;
-
-import java.util.Arrays;
-import java.util.function.Predicate;
 
 /**
  * 条件类型
@@ -29,8 +28,8 @@ public class ConditionKeywords implements Predicate<String>, Cloneable {
 	private static final Keywords SEARCH_KEYWORDS = new Keywords(Keywords.HUMP, "search");
 	private static final Keywords START_WITH_KEYWORDS = new Keywords(Keywords.HUMP, "startWith");
 
-	public static final ConditionKeywords DEFAULT = Sys.getEnv().getServiceLoader(ConditionKeywords.class)
-			.first(() -> new ConditionKeywords());
+	public static final ConditionKeywords DEFAULT = Sys.getEnv().getServiceLoader(ConditionKeywords.class).findFirst()
+			.orElseGet(() -> new ConditionKeywords());
 
 	private final Keywords endWithKeywords;
 	private final Keywords equalKeywords;
@@ -135,7 +134,7 @@ public class ConditionKeywords implements Predicate<String>, Cloneable {
 	}
 
 	public Pair<String, Integer> indexOf(String express) {
-		return StreamProcessorSupport
+		return Pair
 				.process(
 						Arrays.asList(equalKeywords, notEqualKeywords, lessThanKeywords, equalOrLessThanKeywords,
 								greaterThanKeywords, equalOrGreaterThanKeywords, inKeywords, searchKeywords,

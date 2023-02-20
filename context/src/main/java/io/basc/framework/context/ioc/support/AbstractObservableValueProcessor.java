@@ -6,7 +6,7 @@ import io.basc.framework.context.Context;
 import io.basc.framework.context.ioc.ValueDefinition;
 import io.basc.framework.event.Observable;
 import io.basc.framework.factory.BeanDefinition;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.mapper.Field;
 
 public abstract class AbstractObservableValueProcessor<R> extends AbstractValueProcessor {
@@ -26,7 +26,7 @@ public abstract class AbstractObservableValueProcessor<R> extends AbstractValueP
 
 		if (res == null) {
 			if (valueDefinition.isRequired()) {
-				throw new NotSupportedException(field.getSetter().toString());
+				throw new UnsupportedException(field.getSetter().toString());
 			}
 			return;
 		}

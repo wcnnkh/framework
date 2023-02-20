@@ -37,7 +37,7 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 		return getDefinition(name, getParentBeanDefinitionFactory());
 	}
 
-	public BeanDefinition getDefinition(String name, BeanDefinitionFactory parent) {
+	protected BeanDefinition getDefinition(String name, BeanDefinitionFactory parent) {
 		BeanDefinition beanDefinition = beanDefinitionMap.get(name);
 		if (beanDefinition == null) {
 			String[] aliases = getAliases(name);
@@ -54,11 +54,11 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 
 	}
 
-	public final BeanDefinition getDefinition(Class<?> clazz) {
+	public BeanDefinition getDefinition(Class<?> clazz) {
 		return getDefinition(clazz, getParentBeanDefinitionFactory());
 	}
 
-	public final BeanDefinition getDefinition(Class<?> clazz, BeanDefinitionFactory parent) {
+	protected BeanDefinition getDefinition(Class<?> clazz, BeanDefinitionFactory parent) {
 		BeanDefinition definition = getDefinition(clazz.getName(), null);
 		return (definition != null || parent == null) ? definition : parent.getDefinition(clazz);
 	}

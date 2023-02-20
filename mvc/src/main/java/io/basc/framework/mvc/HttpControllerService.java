@@ -11,7 +11,7 @@ import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mvc.action.Action;
@@ -20,7 +20,6 @@ import io.basc.framework.mvc.action.ActionInterceptorChain;
 import io.basc.framework.mvc.action.ActionManager;
 import io.basc.framework.mvc.action.ActionParameters;
 import io.basc.framework.mvc.annotation.Jsonp;
-import io.basc.framework.mvc.exception.ExceptionHandler;
 import io.basc.framework.util.MultiIterable;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.ServerHttpAsyncControl;
@@ -225,7 +224,7 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 		}
 
 		// 不应该到这里的，因为accept里面已经判断过了
-		throw new NotSupportedException(request.toString());
+		throw new UnsupportedException(request.toString());
 	}
 
 	protected Object doError(HttpChannel httpChannel, Action action, Throwable error) throws IOException {

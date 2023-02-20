@@ -12,7 +12,6 @@ import java.util.function.Predicate;
 
 import io.basc.framework.aop.support.FieldSetterListen;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.domain.Range;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
@@ -25,7 +24,7 @@ import io.basc.framework.orm.repository.ConditionKeywords;
 import io.basc.framework.orm.repository.Conditions;
 import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.WithCondition;
-import io.basc.framework.sql.EditableSql;
+import io.basc.framework.sql.EasySql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.SqlUtils;
@@ -36,6 +35,8 @@ import io.basc.framework.sql.orm.SqlType;
 import io.basc.framework.sql.orm.TableStructure;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Pair;
+import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.value.Value;
@@ -396,7 +397,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		Collection<Range<Double>> numberRanges = column.getNumberRanges();
 		if (!CollectionUtils.isEmpty(numberRanges)) {
 			for (Range<Double> range : numberRanges) {
-				if (range.getLowerBound().getValue().isPresent()) {
+				if (range.getLowerBound().isBounded()) {
 					sb.append(AND);
 					keywordProcessing(sb, column.getName());
 					if (column.isIncrement()) {
@@ -412,10 +413,10 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 					if (range.getLowerBound().isInclusive()) {
 						sb.append("=");
 					}
-					sb.append(range.getLowerBound().getValue());
+					sb.append(range.getLowerBound().get());
 				}
 
-				if (range.getUpperBound().getValue().isPresent()) {
+				if (range.getUpperBound().isBounded()) {
 					sb.append(AND);
 					keywordProcessing(sb, column.getName());
 					if (column.isIncrement()) {
@@ -431,7 +432,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 					if (range.getUpperBound().isInclusive()) {
 						sb.append("=");
 					}
-					sb.append(range.getUpperBound().getValue());
+					sb.append(range.getUpperBound().get());
 				}
 			}
 		}
@@ -575,7 +576,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 	public Sql toCountSql(Sql sql) throws SqlDialectException {
 		String str = sql.getSql();
 		str = str.toLowerCase();
-		EditableSql countSql = new EditableSql();
+		EasySql countSql = new EasySql();
 		countSql.append("select count(*) from (");
 		int orderIndex = str.lastIndexOf(" order by ");
 		if (orderIndex != -1 && str.indexOf(")", orderIndex) == -1) {
@@ -872,5 +873,34 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			appendOrders(orders, sb);
 		}
 		return new SimpleSql(sb.toString(), params.toArray());
+	}
+
+	/**
+	 * 只是因为大部分数据库都支持limit请求，所以才写了此默认实现。 并非所以的数据库都支持limit语法，如: sql server
+	 */
+	@Override
+	public Sql toLimitSql(Sql sql, long start, long limit) throws SqlDialectException {
+		Pair<Integer, Integer> range = StringUtils.indexOf(sql.getSql(), "(", ")");
+		int fromIndex = 0;
+		if (range != null) {
+			fromIndex = range.getValue();
+		}
+
+		StringBuilder sb;
+		if (sql.getSql().toLowerCase().indexOf(" limit ", fromIndex) != -1) {
+			// 如果已经存在limit了，那么嵌套一上
+			sb = new StringBuilder();
+			sb.append("select * from (");
+			sb.append(sql.getSql());
+			sb.append(")");
+		} else {
+			sb = new StringBuilder(sql.getSql());
+		}
+
+		sb.append(" limit ").append(start);
+		if (limit != 0) {
+			sb.append(",").append(limit);
+		}
+		return new SimpleSql(sb.toString(), sql.getParams());
 	}
 }

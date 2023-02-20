@@ -46,6 +46,9 @@ public class PageRequest extends BascObject implements Serializable {
 	private long pageNum;
 	private long pageSize;
 
+	/**
+	 * 默认的分页策略
+	 */
 	public PageRequest() {
 		this(1, DEFAULT_PAGE_SIZE.get());
 	}

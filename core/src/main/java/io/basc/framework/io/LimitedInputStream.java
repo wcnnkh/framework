@@ -1,10 +1,10 @@
 package io.basc.framework.io;
 
-import io.basc.framework.util.Assert;
-
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import io.basc.framework.util.Assert;
 
 public class LimitedInputStream extends FilterInputStream {
 	private long left;

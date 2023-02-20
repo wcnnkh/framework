@@ -1,6 +1,5 @@
 package io.basc.framework.context.support;
 
-import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -12,6 +11,7 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.Cursor;
 
 public abstract class AbstractClassesLoader implements ClassesLoader, ClassLoaderProvider {
 	protected Logger logger = LoggerFactory.getLogger(getClass());
@@ -41,7 +41,7 @@ public abstract class AbstractClassesLoader implements ClassesLoader, ClassLoade
 		}
 	}
 
-	public Iterator<Class<?>> iterator() {
+	public Cursor<Class<?>> iterator() {
 		if (classes == null) {
 			synchronized (this) {
 				if (classes == null) {
@@ -49,7 +49,7 @@ public abstract class AbstractClassesLoader implements ClassesLoader, ClassLoade
 				}
 			}
 		}
-		return classes.iterator();
+		return Cursor.of(classes);
 	}
 
 	protected abstract Stream<Class<?>> load(ClassLoader classLoader);

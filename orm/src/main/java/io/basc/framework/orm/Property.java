@@ -1,13 +1,13 @@
 package io.basc.framework.orm;
 
 import java.util.Collection;
-import java.util.Enumeration;
 
-import io.basc.framework.data.domain.Range;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Processor;
+import io.basc.framework.util.Range;
+import io.basc.framework.util.ReversibleIterator;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.Processor;
 
 public class Property extends Field {
 	protected Boolean autoIncrement;
@@ -137,10 +137,10 @@ public class Property extends Field {
 			if (StringUtils.isNotEmpty(name)) {
 				if (hasParent() && this.nameNestingDepth > 0) {
 					StringBuilder sb = new StringBuilder();
-					Enumeration<Field> parents = parents();
+					ReversibleIterator<Field> parents = parents().invert();
 					int i = 0;
-					while (parents.hasMoreElements() && (i++ < this.nameNestingDepth)) {
-						Field parent = parents.nextElement();
+					while (parents.hasNext() && (i++ < this.nameNestingDepth)) {
+						Field parent = parents.next();
 						sb.append(parent.getName());
 						sb.append(this.nameNestingConnector);
 					}
@@ -172,7 +172,8 @@ public class Property extends Field {
 		return objectRelationalResolver;
 	}
 
-	public <V, E extends Throwable> V getValueByNames(Processor<String, V, E> processor) throws E {
+	public <V, E extends Throwable> V getValueByNames(Processor<? super String, ? extends V, ? extends E> processor)
+			throws E {
 		V value = processor.process(getName());
 		if (value != null) {
 			return value;

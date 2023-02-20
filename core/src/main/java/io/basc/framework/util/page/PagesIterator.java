@@ -1,11 +1,11 @@
 package io.basc.framework.util.page;
 
+import java.util.Iterator;
 import java.util.function.Supplier;
 
-import io.basc.framework.util.AbstractIterator;
 import io.basc.framework.util.StaticSupplier;
 
-final class PagesIterator<K, T> extends AbstractIterator<Pages<K, T>> {
+final class PagesIterator<K, T> implements Iterator<Pages<K, T>> {
 	private Pages<K, T> pages;
 	private Supplier<Pages<K, T>> current;
 

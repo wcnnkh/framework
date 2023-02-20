@@ -29,10 +29,8 @@ import org.apache.poi.hssf.record.StringRecord;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
-import io.basc.framework.lang.RequiredJavaVersion;
 import io.basc.framework.microsoft.ExcelRow;
 
-@RequiredJavaVersion(8)
 public class DefaultHSSFListener implements HSSFListener {
 	private final Consumer<ExcelRow> consumer;
 	private final List<String> values = new ArrayList<String>(8);

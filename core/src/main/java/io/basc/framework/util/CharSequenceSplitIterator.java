@@ -1,6 +1,7 @@
 package io.basc.framework.util;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
@@ -10,7 +11,7 @@ import java.util.function.Supplier;
  * @author shuchaowen
  *
  */
-public class CharSequenceSplitIterator extends AbstractIterator<CharSequenceSplitSegment> {
+public class CharSequenceSplitIterator implements Iterator<CharSequenceSplitSegment> {
 	private final CharSequence charSequence;
 	private final Collection<? extends CharSequence> filters;
 	private final int endIndex;

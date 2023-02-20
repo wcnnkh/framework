@@ -31,7 +31,6 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.page.Pageables;
 import io.basc.framework.util.page.SharedPageable;
 import io.basc.framework.util.page.StreamPageables;
-import io.basc.framework.util.stream.StreamProcessorSupport;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -404,7 +403,7 @@ public final class ClassUtils {
 		Assert.requiredArgument(StringUtils.isNotEmpty(locationPattern), "locationPattern");
 		Resource[] resources = resourcePatternResolver.getResources(locationPattern);
 		if (resources == null || resources.length == 0) {
-			return StreamProcessorSupport.emptyStream();
+			return XUtils.emptyStream();
 		}
 
 		MetadataReaderFactory factory = metadataReaderFactory;

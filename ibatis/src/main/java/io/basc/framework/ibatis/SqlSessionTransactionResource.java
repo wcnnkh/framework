@@ -1,13 +1,11 @@
 package io.basc.framework.ibatis;
 
-import io.basc.framework.transaction.Savepoint;
-import io.basc.framework.transaction.Transaction;
-import io.basc.framework.transaction.TransactionException;
-import io.basc.framework.transaction.TransactionResource;
-
 import org.apache.ibatis.session.SqlSession;
 
-public class SqlSessionTransactionResource implements TransactionResource {
+import io.basc.framework.transaction.Resource;
+import io.basc.framework.transaction.Transaction;
+
+public class SqlSessionTransactionResource implements Resource {
 	private final OpenSessionProcessor openSessionProcessor;
 	private final Transaction transaction;
 	private SqlSession sqlSession;
@@ -37,14 +35,10 @@ public class SqlSessionTransactionResource implements TransactionResource {
 		}
 	}
 
-	public void complete() {
+	public void close() {
 		if (sqlSession != null) {
 			MybatisUtils.closeSqlSessionProxy(sqlSession);
 		}
-	}
-
-	public Savepoint createSavepoint() throws TransactionException {
-		return null;
 	}
 
 }

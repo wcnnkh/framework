@@ -17,22 +17,19 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Cursor;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.StreamProcessorSupport;
-import io.basc.framework.util.stream.StreamWrapper;
 
 public final class IOUtils {
 	// NOTE: This class is focussed on InputStream, OutputStream, Reader and
@@ -700,9 +697,9 @@ public final class IOUtils {
 	 * @throws NullPointerException if the input is null
 	 * @throws IOException          if an I/O error occurs
 	 */
-	public static List<String> readLines(InputStream input) throws IOException {
+	public static Cursor<String> readLines(InputStream input) {
 		InputStreamReader reader = new InputStreamReader(input);
-		return readLines(reader);
+		return readLines(reader).onClose(() -> closeQuietly(reader));
 	}
 
 	/**
@@ -718,15 +715,17 @@ public final class IOUtils {
 	 * @param input    the <code>InputStream</code> to read from, not null
 	 * @param encoding the encoding to use, null means platform default
 	 * @return the list of Strings, never null
-	 * @throws NullPointerException if the input is null
-	 * @throws IOException          if an I/O error occurs
+	 * @throws UnsupportedEncodingException
+	 * @throws NullPointerException         if the input is null
+	 * @throws IOException                  if an I/O error occurs
 	 */
-	public static List<String> readLines(InputStream input, @Nullable String encoding) throws IOException {
+	public static Cursor<String> readLines(InputStream input, @Nullable String encoding)
+			throws UnsupportedEncodingException {
 		if (encoding == null) {
 			return readLines(input);
 		} else {
 			InputStreamReader reader = new InputStreamReader(input, encoding);
-			return readLines(reader);
+			return readLines(reader).onClose(() -> closeQuietly(reader));
 		}
 	}
 
@@ -738,29 +737,22 @@ public final class IOUtils {
 	 * <code>BufferedReader</code>.
 	 *
 	 * @param input the <code>Reader</code> to read from, not null
-	 * @return the list of Strings, never null
+	 * @return the cursor of Strings, never null
 	 * @throws NullPointerException if the input is null
 	 * @throws IOException          if an I/O error occurs
 	 */
-	public static List<String> readLines(Reader input) throws IOException {
-		BufferedReader reader = toBufferedReader(input);
-		List<String> list = new ArrayList<String>();
-		String line = reader.readLine();
-		while (line != null) {
-			list.add(line);
-			line = reader.readLine();
+	public static Cursor<String> readLines(Reader reader) {
+		if (reader instanceof BufferedReader) {
+			return readLines((BufferedReader) reader);
 		}
-		return list;
+
+		BufferedReader bufferedReader = new BufferedReader(reader);
+		return readLines(bufferedReader).onClose(() -> closeQuietly(bufferedReader));
 	}
 
-	/**
-	 * @param reader 使用过后会自动 关闭
-	 * @return
-	 * @see StreamWrapper
-	 */
-	public static Stream<String> stream(Reader reader) {
-		LineIterator iterator = new LineIterator(reader);
-		return StreamProcessorSupport.stream(iterator).onClose(() -> closeQuietly(iterator));
+	public static Cursor<String> readLines(BufferedReader bufferedReader) {
+		LineIterator iterator = new LineIterator(bufferedReader);
+		return Cursor.of(iterator);
 	}
 
 	// -----------------------------------------------------------------------

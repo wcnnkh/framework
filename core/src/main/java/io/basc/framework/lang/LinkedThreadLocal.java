@@ -1,8 +1,8 @@
 package io.basc.framework.lang;
 
-import io.basc.framework.util.ObjectUtils;
-
 import java.util.LinkedList;
+
+import io.basc.framework.util.ObjectUtils;
 
 public class LinkedThreadLocal<E> {
 	private final ThreadLocal<LinkedList<E>> local;
@@ -44,7 +44,21 @@ public class LinkedThreadLocal<E> {
 		list.add(element);
 	}
 
-	public boolean exists(E element) {
+	public boolean isCurrent(E element) {
 		return ObjectUtils.equals(element, getCurrent());
+	}
+
+	public boolean exists(E element) {
+		LinkedList<E> list = local.get();
+		if (list == null) {
+			return false;
+		}
+
+		for (E e : list) {
+			if (ObjectUtils.equals(element, e)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

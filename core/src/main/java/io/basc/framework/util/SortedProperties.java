@@ -1,7 +1,5 @@
 package io.basc.framework.util;
 
-import io.basc.framework.lang.Nullable;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,6 +13,8 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
+
+import io.basc.framework.lang.Nullable;
 
 public class SortedProperties extends Properties {
 	private static final long serialVersionUID = 1L;

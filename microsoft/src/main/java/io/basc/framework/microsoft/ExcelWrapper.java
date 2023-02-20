@@ -29,4 +29,23 @@ public class ExcelWrapper implements Excel {
 		return excel.getNumberOfSheets();
 	}
 
+	@Override
+	public Excel jumpTo(Long cursorId, long count) {
+		return excel.jumpTo(cursorId, count);
+	}
+
+	@Override
+	public long getTotal() {
+		return excel.getTotal();
+	}
+
+	@Override
+	public long getCount() {
+		return excel.getCount();
+	}
+
+	@Override
+	public Long getCursorId() {
+		return excel.getCursorId();
+	}
 }

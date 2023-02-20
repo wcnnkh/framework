@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import io.basc.framework.lang.NotFoundException;
-import io.basc.framework.lang.NotSupportedException;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.lang.UnsupportedException;
+import io.basc.framework.util.Processor;
 
 public interface WritableResource extends Resource, OutputStreamSource {
 	/**
@@ -34,13 +34,13 @@ public interface WritableResource extends Resource, OutputStreamSource {
 	OutputStream getOutputStream() throws IOException;
 
 	@Override
-	default <T, E extends Throwable> T write(Processor<OutputStream, ? extends T, E> processor) throws IOException, E {
+	default <T, E extends Throwable> T write(Processor<? super OutputStream, ? extends T, ? extends E> processor) throws IOException, E {
 		if (!exists()) {
 			throw new NotFoundException("not found: " + getDescription());
 		}
 
 		if (!isWritable()) {
-			throw new NotSupportedException("not write: " + getDescription());
+			throw new UnsupportedException("not write: " + getDescription());
 		}
 
 		OutputStream os = null;

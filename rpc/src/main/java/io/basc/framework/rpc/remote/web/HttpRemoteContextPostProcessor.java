@@ -15,7 +15,7 @@ import io.basc.framework.http.HttpUtils;
 import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.Serializer;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.rpc.CallableFactory;
 import io.basc.framework.rpc.remote.RemoteMessageCodec;
 import io.basc.framework.rpc.remote.SignerRemoteMessageCodec;
@@ -108,7 +108,7 @@ public class HttpRemoteContextPostProcessor implements ContextPostProcessor {
 		}
 
 		public HttpClient getHttpClient() {
-			return httpClient == null ? HttpUtils.getHttpClient() : httpClient;
+			return httpClient == null ? HttpUtils.getClient() : httpClient;
 		}
 
 		public String getUrl() {
@@ -122,7 +122,7 @@ public class HttpRemoteContextPostProcessor implements ContextPostProcessor {
 				synchronized (this) {
 					if (callableFactory == null) {
 						if (codec == null) {
-							throw new NotSupportedException("未配置codec, 请检查codec/secretKey是否配置");
+							throw new UnsupportedException("未配置codec, 请检查codec/secretKey是否配置");
 						}
 						callableFactory = new HttpCallableFactory(getHttpClient(), codec, getUrl());
 					}

@@ -129,7 +129,7 @@ public class DbTemporaryStorageCasOperations implements
 	public boolean exists(String key) {
 		Sql sql = new SimpleSql("select count(*) from `" + tableName
 				+ "` where " + whereSql, key, System.currentTimeMillis());
-		return db.queryFirst(long.class, sql) > 0;
+		return db.query(long.class, sql).first() > 0;
 	}
 
 	@Override

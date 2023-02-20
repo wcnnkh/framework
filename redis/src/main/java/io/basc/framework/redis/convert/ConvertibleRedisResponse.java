@@ -5,13 +5,14 @@ import java.util.concurrent.TimeoutException;
 
 import io.basc.framework.redis.RedisResponse;
 import io.basc.framework.redis.RedisSystemException;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.Processor;
 
 public class ConvertibleRedisResponse<SV, V> implements RedisResponse<V> {
 	private final RedisResponse<SV> source;
-	private final Processor<SV, V, ? extends RedisSystemException> converter;
+	private final Processor<? super SV, ? extends V, ? extends RedisSystemException> converter;
 
-	public ConvertibleRedisResponse(RedisResponse<SV> source, Processor<SV, V, ? extends RedisSystemException> converter) {
+	public ConvertibleRedisResponse(RedisResponse<SV> source,
+			Processor<? super SV, ? extends V, ? extends RedisSystemException> converter) {
 		this.source = source;
 		this.converter = converter;
 	}

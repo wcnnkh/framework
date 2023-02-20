@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import io.basc.framework.data.domain.Range;
 import io.basc.framework.data.geo.Circle;
 import io.basc.framework.data.geo.Distance;
 import io.basc.framework.data.geo.Metric;
@@ -43,6 +42,7 @@ import io.basc.framework.redis.Tuple;
 import io.basc.framework.redis.convert.RedisConverters;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Decorator;
+import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.page.Pageable;
@@ -588,7 +588,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	@Override
 	public List<String> geohash(byte[] key, byte[]... members) {
 		List<byte[]> list = jedis.geohash(key, members);
-		return JedisCodec.INSTANCE.toDecodeProcessor().processTo(list, new ArrayList<String>());
+		return JedisCodec.INSTANCE.toDecodeProcessor().processAll(list, new ArrayList<String>());
 	}
 
 	@Override
@@ -653,8 +653,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 
 	@Override
 	public Long zcount(byte[] key, Range<? extends Number> range) {
-		return jedis.zcount(key, range.getLowerBound().getValue().get().doubleValue(),
-				range.getUpperBound().getValue().get().doubleValue());
+		return jedis.zcount(key, range.getLowerBound().get().doubleValue(), range.getUpperBound().get().doubleValue());
 	}
 
 	@Override

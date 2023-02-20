@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Cursor;
 
 public class MultiAnnotatedElement implements AnnotatedElement {
 	private final Collection<? extends AnnotatedElement> annotatedElements;
@@ -29,7 +30,7 @@ public class MultiAnnotatedElement implements AnnotatedElement {
 		}
 
 		if (annotatedElements.size() == 1) {
-			AnnotatedElement annotatedElement = CollectionUtils.first(annotatedElements);
+			AnnotatedElement annotatedElement = Cursor.of(annotatedElements).first();
 			return isDeclared ? annotatedElement.getDeclaredAnnotations() : annotatedElement.getAnnotations();
 		}
 

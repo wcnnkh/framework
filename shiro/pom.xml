@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>io.basc.framework</groupId>
+		<artifactId>framework</artifactId>
+		<version>1.8.0</version>
+	</parent>
+	<artifactId>shiro</artifactId>
+	
+	<properties>
+		<shiro.version>1.11.0</shiro.version>
+	</properties>
+	
+	<dependencies>
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>core</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.shiro/shiro-core -->
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-web</artifactId>
+			<version>${shiro.version}</version>
+		</dependency>
+		
+		<!--<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-web</artifactId>
+			<version>${shiro.version}</version>
+			<scope>provided</scope>
+		</dependency>-->
+		
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>testing</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>log4j2</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

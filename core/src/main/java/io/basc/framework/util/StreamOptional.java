@@ -1,19 +1,44 @@
 package io.basc.framework.util;
 
-import java.util.function.Supplier;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
-import io.basc.framework.lang.Nullable;
+public interface StreamOptional<T> extends Optional<T>, AutoCloseable, StreamOperations<T, RuntimeException> {
+	@Override
+	void close();
 
-public class StreamOptional<T> extends AbstractOptional<T> {
-	private final Supplier<? extends T> valueSupplier;
+	boolean isClosed();
 
-	public StreamOptional(@Nullable Supplier<? extends T> valueSupplier) {
-		this.valueSupplier = valueSupplier;
+	@Override
+	<U> StreamOptional<U> convert(Function<? super T, ? extends U> converter);
+
+	@Override
+	default <U> StreamOptional<U> map(Function<? super T, ? extends U> mapper) {
+		return convert((e) -> e == null ? null : mapper.apply(e));
 	}
 
 	@Override
-	protected T getValue() {
-		return valueSupplier == null ? null : valueSupplier.get();
+	default StreamOptional<T> filter(Predicate<? super T> predicate) {
+		return convert((e) -> (e != null && predicate.test(e)) ? e : null);
 	}
 
+	@Override
+	StreamOptional<T> onClose(ConsumeProcessor<? super T, ? extends RuntimeException> closeHandler);
+
+	@Override
+	StreamOptional<T> onClose(RunnableProcessor<? extends RuntimeException> closeHandler);
+
+	@Override
+	default <R> StreamOptional<R> stream(Processor<? super T, ? extends R, ? extends RuntimeException> mapper) {
+		StreamOptional<R> stream = of(() -> process(mapper));
+		return stream.onClose(() -> close());
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <R> StreamOptional<R> of(Source<? extends R, ? extends RuntimeException> source) {
+		if (source instanceof StreamOptional) {
+			return (StreamOptional<R>) source;
+		}
+		return new StandardStreamOptional<>(source);
+	}
 }

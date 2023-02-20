@@ -19,17 +19,17 @@ public class HttpClientTest {
 	@Test
 	public void test() {
 		try {
-			HttpResponseEntity<String> response = HttpUtils.getHttpClient().get(String.class, "https://www.baidu.com");
+			HttpResponseEntity<String> response = HttpUtils.getClient().get(String.class, "https://www.baidu.com");
 			System.out.println(response);
 		} catch (HttpClientErrorException | HttpClientResourceAccessException e) {
 			// 这些异常可以忽略
 			logger.info(e, e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void test2() {
-		HttpClient httpClient = HttpUtils.getHttpClient();
+		HttpClient httpClient = HttpUtils.getClient();
 		HttpClient httpClient2 = httpClient.setMaxRedirectDeep(10);
 		assertTrue(httpClient != httpClient2);
 	}

@@ -1,8 +1,5 @@
 package io.basc.framework.io;
 
-import io.basc.framework.codec.support.Base64;
-import io.basc.framework.util.StringUtils;
-
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
@@ -20,6 +17,9 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
+import io.basc.framework.codec.support.Base64;
+import io.basc.framework.util.StringUtils;
 
 public final class ImageUtils {
 	private ImageUtils() {

@@ -8,7 +8,7 @@ import io.basc.framework.db.DefaultDB;
 import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.sql.ConnectionFactory;
 import io.basc.framework.sql.orm.SqlDialect;
 import io.basc.framework.util.StringUtils;
@@ -55,7 +55,7 @@ public class DataBaseDefinition extends FactoryBeanDefinition {
 		}
 
 		if (sqlDialect == null) {
-			throw new NotSupportedException(SqlDialect.class.getName());
+			throw new UnsupportedException(SqlDialect.class.getName());
 		}
 
 		DB db = new DefaultDB(connectionFactory, sqlDialect);

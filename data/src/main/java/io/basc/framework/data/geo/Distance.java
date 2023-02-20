@@ -1,11 +1,11 @@
 package io.basc.framework.data.geo;
 
-import io.basc.framework.data.domain.Range;
-import io.basc.framework.data.domain.Range.Bound;
+import java.io.Serializable;
+
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-
-import java.io.Serializable;
+import io.basc.framework.util.Bound;
+import io.basc.framework.util.Range;
 
 public class Distance implements Serializable, Comparable<Distance> {
 	private static final long serialVersionUID = 1L;

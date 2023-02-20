@@ -1,12 +1,12 @@
 package io.basc.framework.util;
 
-import io.basc.framework.lang.NamedThreadLocal;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+
+import io.basc.framework.lang.NamedThreadLocal;
 
 public final class ThreadLocalMap<K, V> implements Map<K, V> {
 	private final ThreadLocal<Map<K, V>> local;

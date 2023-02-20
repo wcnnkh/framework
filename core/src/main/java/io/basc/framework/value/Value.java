@@ -11,14 +11,14 @@ import java.util.function.LongSupplier;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.StringConverter;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Optional;
-import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.stream.CallableProcessor;
+import io.basc.framework.util.Source;
 
 public interface Value extends Optional<Value>, IntSupplier, LongSupplier, DoubleSupplier, ConversionService {
 	static final Value EMPTY = new EmptyValue();
@@ -153,6 +153,10 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 		return transform(value, getTypeDescriptor());
 	}
 
+	default StringConverter getStringConverter() {
+		return StringConverter.DEFAULT;
+	}
+
 	@Nullable
 	default BigDecimal getAsBigDecimal() {
 		Object value = getSource();
@@ -176,11 +180,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsBigDecimal();
 		}
 
-		String v = getAsNumberString();
-		if (StringUtils.hasText(v)) {
-			return new BigDecimal(v);
-		}
-		return null;
+		return getStringConverter().convert(getAsString(), BigDecimal.class);
 	}
 
 	@Nullable
@@ -202,11 +202,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsBigInteger();
 		}
 
-		String v = getAsNumberString();
-		if (StringUtils.hasText(v)) {
-			return new BigInteger(v, getNumberRadix());
-		}
-		return null;
+		return getStringConverter().convert(getAsString(), BigInteger.class);
 	}
 
 	default boolean getAsBoolean() {
@@ -226,12 +222,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 		if (value instanceof Value) {
 			return ((Value) value).getAsBoolean();
 		}
-
-		String v = getAsString();
-		if (StringUtils.hasText(v)) {
-			return StringUtils.parseBoolean(v);
-		}
-		return false;
+		return getStringConverter().convert(getAsString(), boolean.class);
 	}
 
 	default byte getAsByte() {
@@ -252,11 +243,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsByte();
 		}
 
-		String v = getAsNumberString();
-		if (StringUtils.hasText(v)) {
-			return Byte.parseByte(v, getNumberRadix());
-		}
-		return 0;
+		return getStringConverter().convert(getAsString(), byte.class);
 	}
 
 	default char getAsChar() {
@@ -273,11 +260,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsChar();
 		}
 
-		String v = getAsString();
-		if (StringUtils.isEmpty(v)) {
-			return 0;
-		}
-		return v.charAt(0);
+		return getStringConverter().convert(getAsString(), char.class);
 	}
 
 	@Nullable
@@ -295,15 +278,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsClass();
 		}
 
-		String v = getAsString();
-		if (StringUtils.hasText(v)) {
-			try {
-				return ClassUtils.forName(v, null);
-			} catch (ClassNotFoundException e) {
-				return null;
-			}
-		}
-		return null;
+		return getStringConverter().convert(getAsString(), Class.class);
 	}
 
 	@Override
@@ -325,15 +300,10 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsDouble();
 		}
 
-		String v = getAsNumberString();
-		if (StringUtils.hasText(v)) {
-			return Double.parseDouble(v);
-		}
-		return 0;
+		return getStringConverter().convert(getAsString(), double.class);
 	}
 
 	@Nullable
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	default Enum<?> getAsEnum(Class<?> enumType) {
 		Object value = getSource();
 		if (value == null) {
@@ -348,11 +318,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsEnum(enumType);
 		}
 
-		String v = getAsString();
-		if (StringUtils.hasText(v)) {
-			return Enum.valueOf((Class<? extends Enum>) enumType, v);
-		}
-		return null;
+		return (Enum<?>) getStringConverter().convert(getAsString(), enumType);
 	}
 
 	default float getAsFloat() {
@@ -373,11 +339,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsFloat();
 		}
 
-		String v = getAsNumberString();
-		if (StringUtils.hasText(v)) {
-			return Float.valueOf(v);
-		}
-		return 0;
+		return getStringConverter().convert(getAsString(), float.class);
 	}
 
 	@Override
@@ -399,11 +361,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsInt();
 		}
 
-		String v = getAsNumberString();
-		if (StringUtils.hasText(v)) {
-			return Integer.parseInt(v, getNumberRadix());
-		}
-		return 0;
+		return getStringConverter().convert(getAsString(), int.class);
 	}
 
 	@Override
@@ -425,11 +383,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsLong();
 		}
 
-		String v = getAsNumberString();
-		if (StringUtils.hasText(v)) {
-			return Long.parseLong(v, getNumberRadix());
-		}
-		return 0;
+		return getStringConverter().convert(getAsString(), long.class);
 	}
 
 	@Nullable
@@ -447,16 +401,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsNumber();
 		}
 
-		String v = getAsNumberString();
-		if (StringUtils.hasText(v)) {
-			return new BigDecimal(v);
-		}
-		return null;
-	}
-
-	@Nullable
-	default String getAsNumberString() {
-		return StringUtils.parseNumberText(getAsString(), getNumberRadix());
+		return getStringConverter().convert(getAsString(), Number.class);
 	}
 
 	@Nullable
@@ -590,11 +535,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).getAsShort();
 		}
 
-		String v = getAsNumberString();
-		if (StringUtils.hasText(v)) {
-			return Short.parseShort(v, getNumberRadix());
-		}
-		return 0;
+		return getStringConverter().convert(getAsString(), short.class);
 	}
 
 	@Nullable
@@ -617,10 +558,6 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 		}
 
 		return convert(value, getTypeDescriptor(), String.class);
-	}
-
-	default int getNumberRadix() {
-		return 10;
 	}
 
 	@Nullable
@@ -666,21 +603,7 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).isNumber();
 		}
 
-		String numberString = getAsNumberString();
-		if (!StringUtils.hasText(numberString)) {
-			return false;
-		}
-
-		if (StringUtils.isNumeric(numberString, getNumberRadix())) {
-			return true;
-		}
-
-		try {
-			new BigDecimal(numberString);
-			return true;
-		} catch (NumberFormatException e) {
-		}
-		return false;
+		return getStringConverter().getStringToNumber().isNumeric(getAsString());
 	}
 
 	@Override
@@ -693,7 +616,6 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 		if (value instanceof Value) {
 			return ((Value) value).isPresent();
 		}
-
 		return true;
 	}
 
@@ -701,8 +623,8 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 		return orElse(other instanceof Value ? (Value) other : transform(other, null));
 	}
 
-	default <E extends Throwable> Value orGet(CallableProcessor<? extends Object, ? extends E> other) throws E {
-		return orElseGet(() -> transform(other.process(), null));
+	default <E extends Throwable> Value orGet(Source<? extends Object, ? extends E> other) throws E {
+		return orElseGet(() -> transform(other.get(), null));
 	}
 
 	default Value transform(Object value, @Nullable TypeDescriptor type) {

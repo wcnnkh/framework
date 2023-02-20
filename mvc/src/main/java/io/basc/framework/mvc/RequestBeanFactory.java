@@ -15,8 +15,7 @@ import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.factory.ParameterFactory;
 import io.basc.framework.factory.support.DefaultSingletonRegistry;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.util.DefaultStatus;
-import io.basc.framework.util.Status;
+import io.basc.framework.util.Return;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.WebUtils;
 import io.basc.framework.web.message.WebMessageConverter;
@@ -60,7 +59,7 @@ public class RequestBeanFactory extends RequestParameterFactory implements Insta
 			return instance;
 		}
 
-		Status<Object> result = null;
+		Return<Object> result = null;
 		for (final ParameterDescriptors parameterDescriptors : beanDefinition) {
 			if (isAccept(parameterDescriptors)) {
 				if (beanDefinition.isSingleton()) {
@@ -69,11 +68,11 @@ public class RequestBeanFactory extends RequestParameterFactory implements Insta
 								getParameters(parameterDescriptors));
 					}, false);
 				} else {
-					result = new DefaultStatus<Object>(true, beanDefinition.create(parameterDescriptors.getTypes(),
+					result = Return.success(beanDefinition.create(parameterDescriptors.getTypes(),
 							getParameters(parameterDescriptors)));
 				}
 
-				if (result != null && result.isActive()) {
+				if (result != null && result.isSuccess()) {
 					ContextConfigurator beanConfigurator = new ContextConfigurator(context);
 					beanConfigurator.getContext().addFilter(new Predicate<Field>() {
 
@@ -105,7 +104,7 @@ public class RequestBeanFactory extends RequestParameterFactory implements Insta
 
 		if (result != null) {
 			Object obj = result.get();
-			if (result.isActive()) {
+			if (result.isSuccess()) {
 				singletonRegistry.dependence(obj, beanDefinition);
 				singletonRegistry.init(obj, beanDefinition);
 			}

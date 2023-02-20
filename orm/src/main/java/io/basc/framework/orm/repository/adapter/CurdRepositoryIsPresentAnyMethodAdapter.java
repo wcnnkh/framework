@@ -6,20 +6,16 @@ import io.basc.framework.orm.repository.RepositoryTemplate;
 
 import java.lang.reflect.Method;
 
-public final class CurdRepositoryIsPresentAnyMethodAdapter extends
-		CurdRepositoryMethodAdapter {
+public final class CurdRepositoryIsPresentAnyMethodAdapter extends CurdRepositoryMethodAdapter {
 
 	@Override
-	protected boolean test(Method method, String methodName,
-			Class<?>[] parameterTypes) {
+	protected boolean test(Method method, String methodName, Class<?>[] parameterTypes) {
 		return methodName.equals("isPresentAny");
 	}
 
 	@Override
-	protected Object intercept(RepositoryTemplate template,
-			MethodInvoker invoker, Object[] args, Class<?> entityClass,
-			TypeDescriptor resultsTypeDescriptor, String methodName)
-			throws Throwable {
-		return template.isPresentAny(entityClass, args[0]);
+	protected Object intercept(RepositoryTemplate template, MethodInvoker invoker, Object[] args, Class<?> entityClass,
+			TypeDescriptor resultsTypeDescriptor, String methodName) throws Throwable {
+		return template.query(entityClass, args[0]).isPresent();
 	}
 }

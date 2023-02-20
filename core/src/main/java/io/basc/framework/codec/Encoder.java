@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.Validator;
-import io.basc.framework.util.stream.Processor;
 
 /**
  * 编码器<br/>

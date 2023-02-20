@@ -5,7 +5,8 @@ import java.util.function.Supplier;
 import io.basc.framework.aop.ConfigurableAop;
 import io.basc.framework.convert.TypeDescriptor;
 
-public interface ConfigurableBeanFactory extends BeanFactory, SingletonRegistry, BeanDefinitionRegistry {
+public interface ConfigurableBeanFactory
+		extends BeanFactory, SingletonRegistry, BeanDefinitionRegistry, ConfigurableServiceLoaderFactory {
 	ConfigurableAop getAop();
 
 	@Override

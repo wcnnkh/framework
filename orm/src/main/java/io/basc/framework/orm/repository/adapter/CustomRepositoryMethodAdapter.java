@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
@@ -13,10 +12,9 @@ import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.data.DataException;
-import io.basc.framework.data.domain.PageRequest;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.NotFoundException;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.orm.repository.Condition;
 import io.basc.framework.orm.repository.ConditionKeywords;
@@ -30,11 +28,11 @@ import io.basc.framework.orm.repository.WithCondition;
 import io.basc.framework.util.CharSequenceSplitSegment;
 import io.basc.framework.util.Keywords;
 import io.basc.framework.util.Pair;
+import io.basc.framework.util.ResultSet;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.comparator.Sort;
 import io.basc.framework.util.page.Pagination;
 import io.basc.framework.util.page.Paginations;
-import io.basc.framework.util.stream.Cursor;
 
 public class CustomRepositoryMethodAdapter extends CurdRepositoryMethodAdapter implements Ordered {
 	private static final Keywords ORDER_BY_KEYWORDS = new Keywords(Keywords.HUMP, "orderBy");
@@ -79,7 +77,7 @@ public class CustomRepositoryMethodAdapter extends CurdRepositoryMethodAdapter i
 		String express = methodName;
 		String keywords = operationKeywords.startsWith(express);
 		if (keywords == null) {
-			throw new NotSupportedException(invoker.toString());
+			throw new UnsupportedException(invoker.toString());
 		}
 
 		express = express.substring(keywords.length());
@@ -164,34 +162,21 @@ public class CustomRepositoryMethodAdapter extends CurdRepositoryMethodAdapter i
 			columns.add(column);
 		}
 
-		PageRequest pageRequest = null;
-		for (Object arg : args) {
-			if (arg instanceof PageRequest) {
-				pageRequest = (PageRequest) arg;
-				break;
-			}
-		}
-
 		if (operationKeywords.getQueryKeywords().exists(operation)) {
 			// query
 			if (responseTypeDescriptor.getType() == Paginations.class
 					|| responseTypeDescriptor.getType() == Pagination.class) {
-				return repository.pagingQuery(responseTypeDescriptor.getGeneric(0), entityClass, conditions, orders,
-						pageRequest);
-			} else if (responseTypeDescriptor.getType() == Stream.class
-					|| responseTypeDescriptor.getType() == Cursor.class) {
-				return repository.queryAll(responseTypeDescriptor.getGeneric(0), entityClass, conditions, orders);
+				return repository.query(responseTypeDescriptor.getGeneric(0), entityClass, conditions, orders);
 			} else if (responseTypeDescriptor.isArray() || responseTypeDescriptor.isCollection()) {
-				Cursor<?> cursor = repository.queryAll(responseTypeDescriptor.getElementTypeDescriptor(), entityClass,
+				ResultSet<?> cursor = repository.query(responseTypeDescriptor.getElementTypeDescriptor(), entityClass,
 						conditions, orders);
 				if (responseTypeDescriptor.isArray()) {
-					return cursor.toArray();
+					return cursor.toList().toArray();
 				} else {
-					return cursor.collect(Collectors.toList());
+					return cursor.toList();
 				}
 			} else {
-				Cursor<?> cursor = repository.queryAll(responseTypeDescriptor, entityClass, conditions, orders);
-				return cursor.first();
+				return repository.query(responseTypeDescriptor, entityClass, conditions, orders).first();
 			}
 		} else {
 			long value;
@@ -203,7 +188,7 @@ public class CustomRepositoryMethodAdapter extends CurdRepositoryMethodAdapter i
 			} else if (operationKeywords.getUpdateKeywords().exists(operation)) {
 				value = repository.update(entityClass, columns, conditions);
 			} else {
-				throw new NotSupportedException(operation + "=" + invoker.toString());
+				throw new UnsupportedException(operation + "=" + invoker.toString());
 			}
 
 			return getConversionService().convert(value, TypeDescriptor.valueOf(long.class), responseTypeDescriptor);

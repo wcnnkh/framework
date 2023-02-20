@@ -3,83 +3,29 @@ package io.basc.framework.transaction;
 import io.basc.framework.lang.NamedThreadLocal;
 
 public class ThreadLocalTransactionManager implements TransactionManager {
-	private final ThreadLocal<DefaultTransaction> local = new NamedThreadLocal<DefaultTransaction>(
-			Transaction.class.getSimpleName());
+	private final ThreadLocal<Transaction> local = new NamedThreadLocal<Transaction>(Transaction.class.getSimpleName());
 
-	/**
-	 * 获取事务，会根据事务定义生成指定规则的事务
-	 * 
-	 * @param transactionDefinition
-	 * @return
-	 */
-	public DefaultTransaction getTransaction(TransactionDefinition transactionDefinition) {
-		DefaultTransaction transaction = local.get();
-		switch (transactionDefinition.getPropagation()) {
-		case REQUIRED:
-			if (transaction == null) {
-				transaction = new DefaultTransaction(transaction, transactionDefinition, true);
-			} else {
-				transaction = new DefaultTransaction(transaction, transactionDefinition);
-			}
-			break;
-		case SUPPORTS:
-			if (transaction == null) {
-				transaction = new DefaultTransaction(transaction, transactionDefinition, false);
-			} else {
-				transaction = new DefaultTransaction(transaction, transactionDefinition);
-			}
-			break;
-		case MANDATORY:
-			if (transaction == null) {
-				throw new TransactionException(transactionDefinition.getPropagation().name());
-			} else {
-				if (transaction.isActive()) {
-					transaction = new DefaultTransaction(transaction, transactionDefinition);
-				} else {
-					throw new TransactionException(transactionDefinition.getPropagation().name());
-				}
-			}
-			break;
-		case REQUIRES_NEW:
-			transaction = new DefaultTransaction(transaction, transactionDefinition, true);
-			break;
-		case NOT_SUPPORTED:
-			transaction = new DefaultTransaction(transaction, transactionDefinition, false);
-			break;
-		case NEVER:
-			if (transaction == null) {
-				transaction = new DefaultTransaction(transaction, transactionDefinition, false);
-			} else {
-				if (transaction.isActive()) {
-					throw new TransactionException(transactionDefinition.getPropagation().name());
-				} else {
-					transaction = new DefaultTransaction(transaction, transactionDefinition);
-				}
-			}
-			break;
-		case NESTED:
-			if (transaction == null) {
-				transaction = new DefaultTransaction(transaction, transactionDefinition, true);
-			} else {
-				if (transaction.isActive()) {
-					Savepoint savepoint = transaction.createSavepoint();
-					transaction = new DefaultTransaction(transaction, transactionDefinition, savepoint);
-				} else {
-					transaction = new DefaultTransaction(transaction, transactionDefinition);
-				}
-			}
-			break;
-		}
+	@Override
+	public Transaction getTransaction(TransactionDefinition transactionDefinition) {
+		Transaction transaction = TransactionManager.super.getTransaction(transactionDefinition);
 		local.set(transaction);
 		return transaction;
 	}
 
-	private void changeLocal(DefaultTransaction transaction) {
-		if (transaction.getParent() == null) {
-			local.remove();
-		} else {
-			local.set(transaction.getParent());
+	private Transaction cleanup(Transaction transaction) {
+		Transaction tx = transaction;
+		while (tx != null && tx.getStatus().isCompleted()) {
+			tx = tx.getParent();
 		}
+
+		if (tx == null) {
+			if (transaction != null) {
+				local.remove();
+			}
+		} else if (!tx.equals(transaction)) {
+			local.set(tx);
+		}
+		return tx;
 	}
 
 	/**
@@ -89,25 +35,21 @@ public class ThreadLocalTransactionManager implements TransactionManager {
 	 * @throws Throwable
 	 */
 	public void commit(Transaction transaction) throws Throwable {
-		if (transaction.isCompleted()) {
+		if (transaction.isRollbackOnly()) {// 直接回滚
+			rollback(transaction);
 			return;
 		}
 
-		DefaultTransaction localTransaction = local.get();
-		if (transaction != localTransaction) {
-			throw new TransactionException("事务需要顺序执行-commit");
+		if (transaction.getStatus().isCommitting()) {
+			return;
 		}
 
-		if (localTransaction.isRollbackOnly()) {// 直接回滚
-			rollback(transaction);
-		} else {
-			// 这里不使用try-finally,所以外部使用出现异常时一定要调用rollback
-			localTransaction.commit();
-			try {
-				localTransaction.complete();
-			} finally {
-				changeLocal(localTransaction);
-			}
+		// 这里不使用try-finally,所以外部使用出现异常时一定要调用rollback
+		transaction.commit();
+		try {
+			transaction.close();
+		} finally {
+			cleanup(transaction);
 		}
 	}
 
@@ -117,31 +59,24 @@ public class ThreadLocalTransactionManager implements TransactionManager {
 	 * @param transaction
 	 */
 	public void rollback(Transaction transaction) {
-		if (transaction.isCompleted()) {
+		if (transaction.getStatus().isRolledBack()) {
 			return;
 		}
 
-		DefaultTransaction localTransaction = local.get();
-		if (transaction != localTransaction) {
-			throw new TransactionException("事务需要顺序执行-rollback");
-		}
-
 		try {
-			localTransaction.rollback();
+			if (!transaction.getStatus().isCommitted() && !transaction.getStatus().isCompleted()) {
+				transaction.rollback();
+			}
 		} finally {
 			try {
-				localTransaction.complete();
+				transaction.close();
 			} finally {
-				changeLocal(localTransaction);
+				cleanup(transaction);
 			}
 		}
 	}
 
-	public boolean hasTransaction() {
-		return getTransaction() != null;
-	}
-
-	public DefaultTransaction getTransaction() {
-		return local.get();
+	public Transaction getTransaction() {
+		return cleanup(local.get());
 	}
 }

@@ -2,6 +2,8 @@ package io.basc.framework.transaction;
 
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.NamedThreadLocal;
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
 
 public final class TransactionUtils {
 
@@ -36,27 +38,41 @@ public final class TransactionUtils {
 	}
 
 	/**
-	 * 当前是否存在事务管理器
-	 * 
-	 * @return
-	 */
-	public static boolean hasManager() {
-		return LOCAL.get() != null;
-	}
-
-	/**
 	 * 设置事务管理器
 	 * 
 	 * @param manager
-	 * @return 返回旧的事务管理器
 	 */
-	public static TransactionManager setManager(TransactionManager manager) {
-		TransactionManager old = LOCAL.get();
+	public static void setManager(TransactionManager manager) {
 		if (manager == null) {
 			LOCAL.remove();
 		} else {
 			LOCAL.set(manager);
 		}
-		return old;
+	}
+
+	@Nullable
+	public static FacadeTransaction getTransaction() {
+		return getTransaction(null);
+	}
+
+	@Nullable
+	public static FacadeTransaction getTransaction(TransactionDefinition definition) {
+		return getTransaction(getManager(), definition);
+	}
+
+	@Nullable
+	public static FacadeTransaction getTransaction(TransactionManager manager,
+			@Nullable TransactionDefinition definition) {
+		Assert.requiredArgument(manager == null, "manager");
+		Transaction transaction = definition == null ? manager.getTransaction() : manager.getTransaction(definition);
+		if (transaction == null) {
+			return null;
+		}
+
+		if (transaction instanceof FacadeTransaction) {
+			return (FacadeTransaction) transaction;
+		}
+
+		return new FacadeTransaction(manager, transaction);
 	}
 }

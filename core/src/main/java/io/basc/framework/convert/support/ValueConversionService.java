@@ -21,10 +21,11 @@ class ValueConversionService implements ConversionService {
 	}
 
 	private boolean isValueType(Class<?> type, boolean isAssignableFrom) {
+		//用来处理基本数据类型之前的转换 如：int->long
 		if (Value.isBaseType(type)) {
 			return true;
 		}
-
+		
 		if (isAssignableFrom) {
 			return Value.class.isAssignableFrom(type);
 		} else {

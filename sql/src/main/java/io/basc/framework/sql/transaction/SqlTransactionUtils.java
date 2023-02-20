@@ -26,14 +26,10 @@ public final class SqlTransactionUtils {
 			return connectionFactory.getConnection();
 		}
 
-		ConnectionTransactionResource resource = transaction.getResource(connectionFactory);
+		TransactionConnectionHolder resource = transaction.getResource(connectionFactory);
 		if (resource == null) {
-			ConnectionTransactionResource connectionTransactionResource = new ConnectionTransactionResource(
-					connectionFactory, transaction.getDefinition(), transaction.isActive());
-			resource = transaction.bindResource(connectionFactory, connectionTransactionResource);
-			if (resource == null) {
-				resource = connectionTransactionResource;
-			}
+			resource = new TransactionConnectionHolder(transaction, connectionFactory);
+			transaction.registerResource(connectionFactory, resource);
 		}
 		return resource.getConnection();
 	}

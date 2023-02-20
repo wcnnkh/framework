@@ -7,7 +7,21 @@ package io.basc.framework.transaction;
  *
  */
 public interface Savepoint {
-	void rollback() throws TransactionException;
+	public static Savepoint EMPTY = new EmptySavepoint();
 
-	void release() throws TransactionException;
+	void rollback();
+
+	void release();
+
+	default Savepoint and(Savepoint savepoint) {
+		if (savepoint == null || savepoint == EMPTY) {
+			return this;
+		}
+
+		if (this == EMPTY) {
+			return savepoint;
+		}
+
+		return new MergeSavepoint(this, savepoint);
+	}
 }

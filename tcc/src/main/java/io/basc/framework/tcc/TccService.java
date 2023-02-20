@@ -14,7 +14,7 @@ import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.factory.support.RuntimeBean;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.tcc.annotation.Tcc;
 import io.basc.framework.tcc.annotation.TccStage;
 import io.basc.framework.tcc.annotation.TryResult;
@@ -39,10 +39,7 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 		String transactionId = transaction.getResource(TccService.class);
 		if (transactionId == null && create) {
 			transactionId = XUtils.getUUID();
-			String oldId = transaction.bindResource(TccService.class, transactionId);
-			if (oldId != null) {
-				transactionId = oldId;
-			}
+			transaction.registerResource(TccService.class, transactionId);
 		}
 		return transactionId;
 	}
@@ -59,8 +56,12 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 			throw new TccException("not exist transaction");
 		}
 
-		String oldId = transaction.bindResource(TccService.class, transactionId);
-		return oldId == null ? transactionId : oldId;
+		String oldId = transaction.getResource(TccService.class);
+		if (oldId == null) {
+			transaction.registerResource(TccService.class, transactionId);
+			oldId = transactionId;
+		}
+		return oldId;
 	}
 
 	@Autowired(required = false)
@@ -87,16 +88,16 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 
 		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		if (transaction == null) {
-			throw new NotSupportedException("not exist transaction");
+			throw new UnsupportedException("not exist transaction");
 		}
 
 		if (compensateRegistry == null) {
-			throw new NotSupportedException("not exist compensate registry");
+			throw new UnsupportedException("not exist compensate registry");
 		}
 
 		RuntimeBean runtimeBean = RuntimeBean.getRuntimeBean(invoker.getInstance());
 		if (runtimeBean == null) {
-			throw new NotSupportedException("not exist transaction");
+			throw new UnsupportedException("not exist transaction");
 		}
 
 		Object result = invoker.invoke(args);
@@ -121,7 +122,7 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 			cancel = compensateRegistry.register(transactionId, XUtils.getUUID(), stage);
 		}
 
-		transaction.addLifecycle(new TccCompensator(confirm, cancel));
+		transaction.registerSynchronization(new TccSynchronization(confirm, cancel));
 		return result;
 	}
 

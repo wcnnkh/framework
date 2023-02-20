@@ -1,14 +1,5 @@
 package io.basc.framework.boot.servlet.support;
 
-import io.basc.framework.boot.Application;
-import io.basc.framework.boot.ApplicationAware;
-import io.basc.framework.http.HttpStatus;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.Status;
-import io.basc.framework.web.servlet.ServletService;
-import io.basc.framework.web.servlet.ServletUtils;
-
 import java.io.IOException;
 
 import javax.servlet.ServletConfig;
@@ -16,6 +7,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import io.basc.framework.boot.Application;
+import io.basc.framework.boot.ApplicationAware;
+import io.basc.framework.http.HttpStatus;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Return;
+import io.basc.framework.web.servlet.ServletService;
+import io.basc.framework.web.servlet.ServletUtils;
 
 public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 	private static final long serialVersionUID = 1L;
@@ -67,10 +67,10 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 			initialized = true;
 			try {
 				if (application == null) {
-					Status<Application> startUp = ServletContextUtils.getServletApplicationStartup()
+					Return<Application> startUp = ServletContextUtils.getServletApplicationStartup()
 							.start(servletConfig.getServletContext());
 					this.application = startUp.get();
-					if (startUp.isActive()) {
+					if (startUp.isSuccess()) {
 						reference = false;
 					}
 				}

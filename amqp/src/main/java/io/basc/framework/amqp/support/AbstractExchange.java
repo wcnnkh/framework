@@ -1,5 +1,8 @@
 package io.basc.framework.amqp.support;
 
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
 import io.basc.framework.amqp.ArgsMessageCodec;
 import io.basc.framework.amqp.Exchange;
 import io.basc.framework.amqp.ExchangeDeclare;
@@ -8,7 +11,6 @@ import io.basc.framework.amqp.Message;
 import io.basc.framework.amqp.MessageListener;
 import io.basc.framework.amqp.MessageProperties;
 import io.basc.framework.amqp.QueueDeclare;
-import io.basc.framework.core.Ordered;
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.logger.Logger;
@@ -17,16 +19,14 @@ import io.basc.framework.retry.RetryCallback;
 import io.basc.framework.retry.RetryContext;
 import io.basc.framework.retry.RetryOperations;
 import io.basc.framework.retry.support.RetryTemplate;
-import io.basc.framework.transaction.DefaultTransactionLifecycle;
+import io.basc.framework.transaction.Synchronization;
 import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionDefinition;
 import io.basc.framework.transaction.TransactionManager;
+import io.basc.framework.transaction.Status;
 import io.basc.framework.transaction.TransactionUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
-
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 此实现通过重试来保证消息的可靠消费
@@ -101,15 +101,18 @@ public abstract class AbstractExchange implements Exchange {
 			// 发送延迟的确认消息
 			retryOperations.execute(new PushRetryCallback(routingKey, confirmMessage, body));
 			// 在事务提交后发送消息
-			transaction.addLifecycle(new DefaultTransactionLifecycle() {
+			transaction.registerSynchronization(new Synchronization() {
+
 				@Override
-				public int getOrder() {
-					return Ordered.LOWEST_PRECEDENCE;
+				public void beforeCompletion() throws Throwable {
 				}
 
-				public void afterCommit() {
-					retryOperations.execute(retryCallback);
-				};
+				@Override
+				public void afterCompletion(Status status) {
+					if (status.equals(Status.COMMITTED)) {
+						retryOperations.execute(retryCallback);
+					}
+				}
 			});
 		} else {
 			retryOperations.execute(retryCallback);

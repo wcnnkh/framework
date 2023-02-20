@@ -13,10 +13,10 @@ import org.apache.lucene.search.TotalHits;
 import org.apache.lucene.search.TotalHits.Relation;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.util.Cursor;
 import io.basc.framework.util.page.Pages;
 
-public class SearchResults<T> extends TopFieldDocs implements
-		Pages<ScoreDoc, T> {
+public class SearchResults<T> extends TopFieldDocs implements Pages<ScoreDoc, T> {
 	private final SearchParameters parameters;
 	private final List<T> list;
 	private Sort resultSort;
@@ -33,16 +33,14 @@ public class SearchResults<T> extends TopFieldDocs implements
 	 * @param rowMapper
 	 * @param luceneTemplete
 	 */
-	public SearchResults(SearchParameters parameters, ScoreDoc cursorId,
-			ScoreDocMapper<T> rowMapper, LuceneTemplate luceneTemplete) {
-		this(parameters, cursorId, new TopDocs(new TotalHits(0,
-				Relation.EQUAL_TO), new ScoreDoc[0]), Collections.emptyList(),
-				rowMapper, luceneTemplete);
+	public SearchResults(SearchParameters parameters, ScoreDoc cursorId, ScoreDocMapper<T> rowMapper,
+			LuceneTemplate luceneTemplete) {
+		this(parameters, cursorId, new TopDocs(new TotalHits(0, Relation.EQUAL_TO), new ScoreDoc[0]),
+				Collections.emptyList(), rowMapper, luceneTemplete);
 	}
 
-	public SearchResults(SearchParameters parameters, ScoreDoc cursorId,
-			TopDocs topDocs, SortField[] fields, List<T> list,
-			ScoreDocMapper<T> rowMapper, LuceneTemplate luceneTemplete) {
+	public SearchResults(SearchParameters parameters, ScoreDoc cursorId, TopDocs topDocs, SortField[] fields,
+			List<T> list, ScoreDocMapper<T> rowMapper, LuceneTemplate luceneTemplete) {
 		super(topDocs.totalHits, topDocs.scoreDocs, fields);
 		this.cursorId = cursorId;
 		this.parameters = parameters;
@@ -54,15 +52,10 @@ public class SearchResults<T> extends TopFieldDocs implements
 		}
 	}
 
-	public SearchResults(SearchParameters parameters, ScoreDoc cursorId,
-			TopDocs topDocs, List<T> rows, ScoreDocMapper<T> rowMapper,
-			LuceneTemplate luceneTemplete) {
-		this(
-				parameters,
-				cursorId,
-				topDocs,
-				topDocs instanceof TopFieldDocs ? ((TopFieldDocs) topDocs).fields
-						: null, rows, rowMapper, luceneTemplete);
+	public SearchResults(SearchParameters parameters, ScoreDoc cursorId, TopDocs topDocs, List<T> rows,
+			ScoreDocMapper<T> rowMapper, LuceneTemplate luceneTemplete) {
+		this(parameters, cursorId, topDocs, topDocs instanceof TopFieldDocs ? ((TopFieldDocs) topDocs).fields : null,
+				rows, rowMapper, luceneTemplete);
 	}
 
 	public Sort getResultSort() {
@@ -90,6 +83,11 @@ public class SearchResults<T> extends TopFieldDocs implements
 	@Override
 	public ScoreDoc getNextCursorId() {
 		return nextCursorId;
+	}
+
+	@Override
+	public Cursor<T> iterator() {
+		return Cursor.of(list);
 	}
 
 	@Override
@@ -122,7 +120,6 @@ public class SearchResults<T> extends TopFieldDocs implements
 
 	@Override
 	public Pages<ScoreDoc, T> jumpTo(ScoreDoc cursorId, long count) {
-		return luceneTemplete.searchAfter(cursorId,
-				parameters.setTop((int) count), rowMapper);
+		return luceneTemplete.searchAfter(cursorId, parameters.setTop((int) count), rowMapper);
 	}
 }

@@ -18,8 +18,8 @@ import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ConsumeProcessor;
 import io.basc.framework.util.Registration;
-import io.basc.framework.util.stream.StreamProcessorSupport;
 
 public class ObservableMap<K, V> extends AbstractObservable<Map<K, V>>
 		implements EventDispatcher<ObservableChangeEvent<Map<K, V>>>, NamedEventRegistry<K, ChangeEvent<K>> {
@@ -161,7 +161,7 @@ public class ObservableMap<K, V> extends AbstractObservable<Map<K, V>>
 				return;
 			}
 
-			StreamProcessorSupport.consumeAll(changeMap.entrySet().iterator(),
+			ConsumeProcessor.consumeAll(changeMap.entrySet().iterator(),
 					(e) -> eventListener.onEvent(new ChangeEvent<>(event.getEventType(), e.getKey())));
 		});
 	}

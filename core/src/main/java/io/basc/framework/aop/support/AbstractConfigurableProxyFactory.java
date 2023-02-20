@@ -4,7 +4,7 @@ import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.Proxy;
 import io.basc.framework.aop.ProxyFactory;
 import io.basc.framework.aop.cglib.CglibProxyFactory;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.ClassUtils;
 
 public abstract class AbstractConfigurableProxyFactory extends CglibProxyFactory
@@ -42,7 +42,7 @@ public abstract class AbstractConfigurableProxyFactory extends CglibProxyFactory
 			return super.getProxy(clazz, interfaces, methodInterceptor);
 		}
 
-		throw new NotSupportedException(clazz.getName());
+		throw new UnsupportedException(clazz.getName());
 	}
 
 	@Override

@@ -58,7 +58,7 @@ public interface ConvertibleRedisKeysCommands<SK, K, SV, V> extends RedisCodec<S
 	default Set<K> keys(K pattern) {
 		SK k = getKeyCodec().encode(pattern);
 		Set<SK> tvs = getSourceRedisKeysCommands().keys(k);
-		return getKeyCodec().toDecodeProcessor().processTo(tvs, new LinkedHashSet<K>(tvs.size()));
+		return getKeyCodec().toDecodeProcessor().processAll(tvs, new LinkedHashSet<K>(tvs.size()));
 	}
 
 	@Override

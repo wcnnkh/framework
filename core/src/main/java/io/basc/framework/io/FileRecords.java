@@ -7,11 +7,10 @@ import java.io.IOException;
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.support.RecordCodec;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.ConsumeProcessor;
+import io.basc.framework.util.Creator;
+import io.basc.framework.util.Cursor;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.stream.CallableProcessor;
-import io.basc.framework.util.stream.ConsumerProcessor;
-import io.basc.framework.util.stream.Cursor;
-import io.basc.framework.util.stream.StreamProcessorSupport;
 
 /**
  * 线程不安全的
@@ -20,8 +19,8 @@ import io.basc.framework.util.stream.StreamProcessorSupport;
  *
  * @param <T>
  */
-public final class FileRecords<T> {
-	private final CallableProcessor<File, IOException> lazyCreator;
+public final class FileRecords<T> implements Iterable<T> {
+	private final Creator<? extends File, ? extends IOException> lazyCreator;
 	private volatile File file;
 	private final RecordCodec<T> codec;
 
@@ -38,7 +37,7 @@ public final class FileRecords<T> {
 		this(() -> file, codec);
 	}
 
-	public FileRecords(CallableProcessor<File, IOException> lazyCreator, Codec<T, byte[]> codec) {
+	public FileRecords(Creator<? extends File, ? extends IOException> lazyCreator, Codec<T, byte[]> codec) {
 		Assert.requiredArgument(lazyCreator != null, "lazyCreator");
 		Assert.requiredArgument(codec != null, "codec");
 		this.lazyCreator = lazyCreator;
@@ -49,7 +48,7 @@ public final class FileRecords<T> {
 		if (file == null) {
 			synchronized (this) {
 				if (file == null) {
-					file = lazyCreator.process();
+					file = lazyCreator.create();
 				}
 			}
 		}
@@ -72,16 +71,17 @@ public final class FileRecords<T> {
 		return false;
 	}
 
-	public Cursor<T> stream() {
+	@Override
+	public Cursor<T> iterator() {
 		if (file != null) {
 			synchronized (this) {
 				if (file != null) {
 					RecordIterator<T> iterator = new RecordIterator<T>(file, codec);
-					return StreamProcessorSupport.cursor(iterator).onClose(() -> iterator.close());
+					return Cursor.of(iterator);
 				}
 			}
 		}
-		return StreamProcessorSupport.emptyCursor();
+		return Cursor.empty();
 	}
 
 	/**
@@ -90,7 +90,7 @@ public final class FileRecords<T> {
 	 * @param consumer
 	 * @throws E
 	 */
-	public <E extends Throwable> void consume(ConsumerProcessor<T, E> consumer) throws E {
+	public <E extends Throwable> void consume(ConsumeProcessor<? super T, ? extends E> consumer) throws E {
 		Assert.requiredArgument(consumer != null, "consumer");
 		if (file != null) {
 			synchronized (this) {

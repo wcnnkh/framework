@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.sql.EditableSql;
+import io.basc.framework.sql.EasySql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.orm.Column;
@@ -234,13 +234,6 @@ public class MysqlDialect extends StandardSqlDialect {
 	}
 
 	@Override
-	public Sql toLimitSql(Sql sql, long start, long limit) throws SqlDialectException {
-		StringBuilder sb = new StringBuilder(sql.getSql());
-		sb.append(" limit ").append(start).append(",").append(limit);
-		return new SimpleSql(sb.toString(), sql.getParams());
-	}
-
-	@Override
 	public Sql toCopyTableStructureSql(Class<?> entityClass, String newTableName, String oldTableName)
 			throws SqlDialectException {
 		StringBuilder sb = new StringBuilder();
@@ -273,7 +266,7 @@ public class MysqlDialect extends StandardSqlDialect {
 
 	@Override
 	public Sql condition(Sql condition, Sql left, Sql right) {
-		EditableSql sql = new EditableSql();
+		EasySql sql = new EasySql();
 		sql.append("IF(");
 		sql.append(condition);
 		sql.append(",");

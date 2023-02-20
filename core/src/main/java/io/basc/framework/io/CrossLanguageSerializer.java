@@ -1,10 +1,10 @@
 package io.basc.framework.io;
 
-import io.basc.framework.convert.TypeDescriptor;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import io.basc.framework.convert.TypeDescriptor;
 
 /**
  * 跨语言的序列化和反序列化

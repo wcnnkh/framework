@@ -4,7 +4,9 @@ import io.basc.framework.lang.Nullable;
 
 public interface ConverterFactory<S, E extends Throwable> extends TransformerFactory<S, E>, Converter<S, Object, E> {
 
-	boolean isConverterRegistred(Class<?> type);
+	default boolean isConverterRegistred(Class<?> type) {
+		return getConverter(type) != null;
+	}
 
 	@Nullable
 	<T> Converter<S, T, E> getConverter(Class<? extends T> type);

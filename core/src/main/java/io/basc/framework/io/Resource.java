@@ -11,9 +11,9 @@ import io.basc.framework.event.EventListener;
 import io.basc.framework.event.Observable;
 import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.lang.NotFoundException;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.Registration;
-import io.basc.framework.util.stream.Processor;
 
 public interface Resource extends InputStreamSource, Observable<Resource> {
 	/**
@@ -77,13 +77,13 @@ public interface Resource extends InputStreamSource, Observable<Resource> {
 	}
 
 	@Override
-	default <T, E extends Throwable> T read(Processor<InputStream, ? extends T, E> processor) throws IOException, E {
+	default <T, E extends Throwable> T read(Processor<? super InputStream, ? extends T, ? extends E> processor) throws IOException, E {
 		if (!exists()) {
 			throw new NotFoundException("not found: " + getDescription());
 		}
 
 		if (!isReadable()) {
-			throw new NotSupportedException("not read: " + getDescription());
+			throw new UnsupportedException("not read: " + getDescription());
 		}
 
 		InputStream is = null;

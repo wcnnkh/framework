@@ -568,4 +568,9 @@ public abstract class Assert {
 					e);
 		}
 	}
+
+	public static IllegalStateException shouldNeverGetHere() {
+		return new IllegalStateException("Should never get here");
+	}
+
 }

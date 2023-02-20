@@ -1,14 +1,14 @@
 package io.basc.framework.io;
 
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.StringUtils;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.StringUtils;
 
 /**
  * {@link Resource} implementation for class path resources. Uses either a given

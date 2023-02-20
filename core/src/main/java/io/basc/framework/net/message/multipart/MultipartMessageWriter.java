@@ -3,7 +3,7 @@ package io.basc.framework.net.message.multipart;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.MimeType;
@@ -178,7 +178,7 @@ public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
 				}
 			}
 		} else {
-			throw new NotSupportedException(multipartItem.toString());
+			throw new UnsupportedException(multipartItem.toString());
 		}
 	}
 

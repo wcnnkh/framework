@@ -1,7 +1,6 @@
 package io.basc.framework.context.support;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -11,8 +10,8 @@ import io.basc.framework.context.ClassesLoader;
 import io.basc.framework.context.ConfigurableClassesLoader;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.DuplicateRemovalIterator;
-import io.basc.framework.util.MultiIterator;
+import io.basc.framework.util.Cursor;
+import io.basc.framework.util.Cursors;
 
 public class DefaultClassesLoader implements ConfigurableClassesLoader {
 	private final Set<Class<?>> defaultClasses = new LinkedHashSet<Class<?>>();
@@ -34,7 +33,7 @@ public class DefaultClassesLoader implements ConfigurableClassesLoader {
 	}
 
 	public void add(ClassesLoader classesLoader) {
-		classesLoaders.addService(filter == null ? classesLoader : new PredicateClassesLoader(classesLoader, filter));
+		classesLoaders.addService(filter == null ? classesLoader : classesLoader.filter(filter));
 	}
 
 	public Set<Class<?>> getDefaultClasses() {
@@ -51,15 +50,13 @@ public class DefaultClassesLoader implements ConfigurableClassesLoader {
 		}
 	}
 
-	public Iterator<Class<?>> iterator() {
-		List<Iterator<Class<?>>> iterators = new ArrayList<Iterator<Class<?>>>();
-		iterators.add(defaultClasses.iterator());
-
+	@SuppressWarnings("resource")
+	public Cursor<Class<?>> iterator() {
+		List<Cursor<Class<?>>> iterators = new ArrayList<Cursor<Class<?>>>();
+		iterators.add(Cursor.of(defaultClasses));
 		for (ClassesLoader classesLoader : classesLoaders) {
 			iterators.add(classesLoader.iterator());
 		}
-
-		Iterator<Class<?>> iterator = new MultiIterator<Class<?>>(iterators);
-		return new DuplicateRemovalIterator<Class<?>>(iterator);
+		return new Cursors<Class<?>>(iterators).flatConvert((e) -> e.distinct());
 	}
 }

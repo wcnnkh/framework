@@ -3,7 +3,7 @@ package io.basc.framework.http.client;
 import java.io.IOException;
 
 import io.basc.framework.http.HttpEntity;
-import io.basc.framework.lang.NotSupportedException;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.net.message.convert.MessageConverter;
 
 public class MessageConverterClientHttpRequestCallback implements ClientHttpRequestCallback {
@@ -28,7 +28,7 @@ public class MessageConverterClientHttpRequestCallback implements ClientHttpRequ
 		if (httpEntity.hasBody() && clientRequest.getMethod().hasRequestBody()) {
 			if (messageConverter == null || !messageConverter.canWrite(httpEntity.getTypeDescriptor(),
 					httpEntity.getBody(), httpEntity.getContentType())) {
-				throw new NotSupportedException("not supported write " + httpEntity);
+				throw new UnsupportedException("not supported write " + httpEntity);
 			}
 
 			messageConverter.write(httpEntity.getTypeDescriptor(), httpEntity.getBody(), httpEntity.getContentType(),

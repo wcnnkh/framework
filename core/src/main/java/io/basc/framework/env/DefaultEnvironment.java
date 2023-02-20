@@ -26,10 +26,10 @@ import io.basc.framework.lang.Constants;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.AntPathMatcher;
+import io.basc.framework.util.Processor;
 import io.basc.framework.util.StringMatchers;
 import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
 import io.basc.framework.util.placeholder.support.DefaultPlaceholderReplacer;
-import io.basc.framework.util.stream.StreamProcessorSupport;
 import io.basc.framework.value.AnyValue;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.PropertyWrapper;
@@ -75,9 +75,8 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	private Environment parentEnvironment;
 
 	public DefaultEnvironment() {
-		conversionService
-				.addService(new ConverterConversionService(Resource.class, Properties.class, StreamProcessorSupport
-						.toProcessor(new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers()))));
+		conversionService.addService(new ConverterConversionService(Resource.class, Properties.class,
+				Processor.of(new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers()))));
 		conversionService.addService(new ResourceResolverConversionService(resourceResolvers));
 		registerSingleton(Environment.class.getName(), this);
 		this.properties.getPropertyFactories().getFactories().getConsumers().addService(this);
@@ -223,12 +222,17 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	}
 
 	@Override
-	public <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass) {
-		ServiceLoader<S> configServiceLoader = new ConfigServiceLoader<S>(serviceClass, getProperties(), this);
+	protected <S> ServiceLoader<S> getBeforeServiceLoader(Class<S> serviceClass) {
+		return new ServiceLoaders<>(new ConfigServiceLoader<S>(serviceClass, getProperties(), this),
+				super.getBeforeServiceLoader(serviceClass));
+	}
+
+	@Override
+	protected <S> ServiceLoader<S> getAfterServiceLoader(Class<S> serviceClass) {
 		if (isForceSpi() || serviceClass.getName().startsWith(Constants.SYSTEM_PACKAGE_NAME) || useSpi(serviceClass)) {
-			return new ServiceLoaders<S>(configServiceLoader, super.getServiceLoader(serviceClass));
+			return super.getAfterServiceLoader(serviceClass);
 		}
-		return configServiceLoader;
+		return null;
 	}
 
 	public boolean isForceSpi() {

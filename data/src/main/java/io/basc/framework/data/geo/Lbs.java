@@ -1,8 +1,8 @@
 package io.basc.framework.data.geo;
 
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Cursor;
 import io.basc.framework.util.comparator.Sort;
-import io.basc.framework.util.stream.Cursor;
 
 /**
  * 基于位置的服务（Location Based Services，LBS）

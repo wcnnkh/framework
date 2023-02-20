@@ -1,11 +1,10 @@
 package io.basc.framework.util.page;
 
-import io.basc.framework.util.Assert;
-
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.Cursor;
 
 /**
  * 在内存中分页
@@ -55,18 +54,13 @@ public class InMemoryPaginations<T> implements Paginations<T>, Serializable {
 	}
 
 	@Override
-	public List<T> getList() {
+	public Cursor<T> iterator() {
 		int end = Math.min(start + count, source.size());
 		if (start >= end) {
-			return Collections.emptyList();
+			return Cursor.empty();
 		}
 
-		return source.subList(start, end);
-	}
-
-	@Override
-	public Iterator<T> iterator() {
-		return getList().iterator();
+		return Cursor.of(source.subList(start, end).iterator());
 	}
 
 	@Override

@@ -29,6 +29,7 @@ import io.swagger.v3.jaxrs2.ext.OpenAPIExtension;
 import io.swagger.v3.jaxrs2.ext.OpenAPIExtensions;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.parameters.Parameter;
 
@@ -127,6 +128,7 @@ public class BascOpenAPIExtendsion extends AbstractOpenAPIExtension {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private Parameter requestBodyToQueryParameter(List<Annotation> paramAnnotations, Type type, Parameter source,
 			Field field) {
 		Parameter target = new Parameter();
@@ -154,7 +156,7 @@ public class BascOpenAPIExtendsion extends AbstractOpenAPIExtension {
 			for (Annotation annotation : paramAnnotations) {
 				if (annotation instanceof Schema) {
 					Schema schema = (Schema) annotation;
-					target.setRequired(schema.required());
+					target.setRequired(schema.requiredMode() == RequiredMode.REQUIRED || schema.required());
 					break;
 				}
 			}

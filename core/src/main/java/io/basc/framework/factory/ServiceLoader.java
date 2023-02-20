@@ -1,16 +1,17 @@
 package io.basc.framework.factory;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.ServiceConfigurationError;
-import java.util.Set;
-import java.util.function.Supplier;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import io.basc.framework.core.OrderComparator;
+import io.basc.framework.factory.support.EmptyServiceLoader;
+import io.basc.framework.factory.support.ServiceLoaders;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Cursor;
+import io.basc.framework.util.ResultSet;
 
 /**
  * A simple service-provider loading facility.
@@ -189,7 +190,7 @@ import io.basc.framework.util.CollectionUtils;
  *
  */
 
-public interface ServiceLoader<S> extends Iterable<S> {
+public interface ServiceLoader<S> extends ResultSet<S> {
 	/**
 	 * Clear this loader's provider cache so that all providers will be reloaded.
 	 *
@@ -251,34 +252,55 @@ public interface ServiceLoader<S> extends Iterable<S> {
 	 *
 	 * @return An iterator that lazily loads providers for this loader's service
 	 */
-	Iterator<S> iterator();
-
-	@Nullable
-	default S first() {
-		return CollectionUtils.first(this);
-	}
-
-	default S first(S service) {
-		S s = CollectionUtils.first(this);
-		return s == null ? service : s;
-	}
-
-	default S first(Supplier<? extends S> supplier) {
-		S s = CollectionUtils.first(this);
-		return s == null ? (supplier == null ? null : supplier.get()) : s;
-	}
-
-	default List<S> toList() {
-		List<S> list = CollectionUtils.toList(this);
-		OrderComparator.sort(list);
-		return list;
-	}
-
-	default Set<S> toSet() {
-		return CollectionUtils.toSet(toList());
-	}
+	Cursor<S> iterator();
 
 	default Stream<S> stream() {
 		return StreamSupport.stream(spliterator(), false).sorted(OrderComparator.INSTANCE);
+	}
+
+	@Override
+	default <U> ServiceLoader<U> flatConvert(Function<? super Stream<S>, ? extends Stream<U>> converter) {
+		return new ServiceLoader<U>() {
+
+			@Override
+			public void reload() {
+				ServiceLoader.this.reload();
+			}
+
+			@Override
+			public Cursor<U> iterator() {
+				return ServiceLoader.this.iterator().flatConvert(converter);
+			}
+		};
+	}
+
+	@Override
+	default <U> ServiceLoader<U> convert(Function<? super S, ? extends U> converter) {
+		return flatConvert((e) -> e.map(converter));
+	}
+
+	@Override
+	default ServiceLoader<S> filter(Predicate<? super S> predicate) {
+		return flatConvert((e) -> e.filter(predicate));
+	}
+
+	public static boolean isEmpty(ServiceLoader<?> serviceLoader) {
+		return serviceLoader == null || serviceLoader.getClass() == EmptyServiceLoader.class;
+	}
+
+	public static <T> ServiceLoader<T> concat(@Nullable ServiceLoader<T> before, @Nullable ServiceLoader<T> after) {
+		if (isEmpty(before)) {
+			if (isEmpty(after)) {
+				return new EmptyServiceLoader<>();
+			} else {
+				return after;
+			}
+		} else {
+			if (isEmpty(after)) {
+				return before;
+			} else {
+				return new ServiceLoaders<>(before, after);
+			}
+		}
 	}
 }

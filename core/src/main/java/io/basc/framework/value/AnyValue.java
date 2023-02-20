@@ -8,6 +8,7 @@ import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.Converter;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.convert.lang.StringConverter;
 import io.basc.framework.env.Sys;
 import io.basc.framework.json.JsonSupport;
 import io.basc.framework.json.JsonUtils;
@@ -19,6 +20,7 @@ public class AnyValue implements Value, Cloneable {
 	private JsonSupport jsonSupport;
 	private TypeDescriptor typeDescriptor;
 	private Object value;
+	private StringConverter stringConverter;
 
 	public AnyValue(Object value) {
 		this(value, null, null);
@@ -39,9 +41,19 @@ public class AnyValue implements Value, Cloneable {
 	}
 
 	@Override
+	public StringConverter getStringConverter() {
+		return stringConverter == null ? Value.super.getStringConverter() : stringConverter;
+	}
+
+	public void setStringConverter(StringConverter stringConverter) {
+		this.stringConverter = stringConverter;
+	}
+
+	@Override
 	public AnyValue clone() {
 		AnyValue value = new AnyValue(this.value, this.typeDescriptor, this.converter);
 		value.jsonSupport = this.jsonSupport;
+		value.stringConverter = this.stringConverter;
 		return value;
 	}
 

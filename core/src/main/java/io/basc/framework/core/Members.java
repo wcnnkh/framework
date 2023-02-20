@@ -1,10 +1,7 @@
 package io.basc.framework.core;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -14,11 +11,10 @@ import java.util.stream.Stream;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.Cursor;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.page.Pageables;
 import io.basc.framework.util.page.PageablesIterator;
-import io.basc.framework.util.stream.Processor;
-import io.basc.framework.util.stream.StreamProcessorSupport;
 
 /**
  * 类成员
@@ -27,7 +23,7 @@ import io.basc.framework.util.stream.StreamProcessorSupport;
  *
  * @param <T>
  */
-public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T> {
+public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	/**
 	 * 直接关联不做任何限制
 	 */
@@ -88,7 +84,7 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	@Override
 	public Members<T> all() {
 		Members<T> members = new Members<T>(this.sourceClass, this.processor);
-		members.streamSupplier = () -> streamAll();
+		members.streamSupplier = () -> Pageables.super.all().stream();
 		return members;
 	}
 
@@ -161,7 +157,6 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	/**
 	 * 过滤
 	 * 
-	 * @see #map(Processor)
 	 * @see Stream#filter(Predicate)
 	 * @param predicate
 	 * @return
@@ -173,48 +168,14 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 		return mapProcessor((s) -> s == null ? s : s.filter(predicate));
 	}
 
-	/**
-	 * @see #streamAll()
-	 * @see Stream#findAny()
-	 * @return
-	 * @throws E
-	 */
-	public final Optional<T> findAny() {
-		return streamAll().findAny();
-	}
-
-	/**
-	 * @see #streamAll()
-	 * @see Stream#findFirst()
-	 * @return
-	 */
-	public final Optional<T> findFirst() {
-		return streamAll().findFirst();
-	}
-
-	@Nullable
-	@Override
-	public final T get() {
-		return findAny().orElse(null);
-	}
-
 	@Override
 	public final Class<?> getCursorId() {
 		return sourceClass;
 	}
 
 	@Override
-	public Iterator<T> iterator() {
-		return stream().iterator();
-	}
-
-	@Override
-	public List<T> getList() {
-		if (this.members != null) {
-			return Collections.unmodifiableList(this.members);
-		}
-
-		return stream().collect(Collectors.toList());
+	public Cursor<T> iterator() {
+		return Cursor.of(stream());
 	}
 
 	@Override
@@ -288,7 +249,7 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	public Stream<? extends Members<T>> pages() {
 		return XUtils.stream(new PageablesIterator<>(this, (e) -> e.next()));
 	}
-	
+
 	/**
 	 * 直接设置当前的members
 	 * 
@@ -329,7 +290,7 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 
 		if (stream == null) {
 			if (this.withStream == null) {
-				return StreamProcessorSupport.emptyStream();
+				return XUtils.emptyStream();
 			} else {
 				return this.withStream;
 			}
@@ -402,7 +363,6 @@ public class Members<T> implements Cloneable, Supplier<T>, Pageables<Class<?>, T
 	 * 该类上的所有接口(此方法不支持superclass的原因的，无法获取一个接口的父类，尝试获取一个接口的父类时始终为空)
 	 * 
 	 * @see Class#getInterfaces()
-	 * @see #withInterfaces(Processor)
 	 * @return
 	 */
 	public Members<T> withInterfaces() {

@@ -18,7 +18,7 @@ class HttpRemoteCallableFactoryDefinition extends EnvironmentBeanDefinition {
 	public Object create() throws InstanceException {
 		HttpClient httpClient = getBeanFactory().isInstance(HttpClient.class)
 				? getBeanFactory().getInstance(HttpClient.class)
-				: HttpUtils.getHttpClient();
+				: HttpUtils.getClient();
 		HttpRemoteResolver httpRemoteUriResolver = getBeanFactory().getInstance(HttpRemoteResolver.class);
 		return new HttpRemoteCallableFactory(httpClient, httpRemoteUriResolver, getEnvironment());
 	}

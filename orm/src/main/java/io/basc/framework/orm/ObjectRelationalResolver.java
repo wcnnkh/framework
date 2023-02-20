@@ -2,9 +2,9 @@ package io.basc.framework.orm;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.data.domain.Range;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.ObjectMapperContext;
+import io.basc.framework.util.Range;
 import io.basc.framework.util.comparator.Sort;
 
 import java.util.Collection;

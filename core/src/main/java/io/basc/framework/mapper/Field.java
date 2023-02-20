@@ -6,7 +6,6 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -17,9 +16,10 @@ import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ParentDiscover;
+import io.basc.framework.util.Processor;
+import io.basc.framework.util.ReversibleIterator;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.alias.AliasRegistry;
-import io.basc.framework.util.stream.Processor;
 import io.basc.framework.value.Value;
 
 public class Field extends AccessibleField implements Member, ParentDiscover<Field>, Predicate<Field> {
@@ -103,9 +103,9 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 		}
 
 		Object parentValue = instance;
-		Enumeration<Field> enumeration = parents();
-		while (enumeration.hasMoreElements()) {
-			Field parentField = enumeration.nextElement();
+		ReversibleIterator<Field> enumeration = parents().invert();
+		while (enumeration.hasNext()) {
+			Field parentField = enumeration.next();
 			if (!parentField.isSupportGetter()) {
 				return Value.EMPTY.getAsObject(getGetter().getType());
 			}
@@ -147,9 +147,9 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 		}
 
 		Object parentValue = instance;
-		Enumeration<Field> enumeration = parents();
-		while (enumeration.hasMoreElements()) {
-			Field parentField = enumeration.nextElement();
+		ReversibleIterator<Field> enumeration = parents().invert();
+		while (enumeration.hasNext()) {
+			Field parentField = enumeration.next();
 			boolean isStatic = Modifier.isStatic(parentField.getGetter().getModifiers());
 			if (isStatic) {
 				// 如果是静态方法
@@ -176,7 +176,8 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 		}
 	}
 
-	public <V, E extends Throwable> V getValueByNames(Processor<String, V, E> processor) throws E {
+	public <V, E extends Throwable> V getValueByNames(Processor<? super String, ? extends V, ? extends E> processor)
+			throws E {
 		if (isSupportSetter()) {
 			V value = processor.process(getSetter().getName());
 			if (value != null) {
@@ -222,10 +223,10 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 
 		if (hasParent() && this.nameNestingDepth > 0) {
 			StringBuilder sb = new StringBuilder();
-			Enumeration<Field> parents = parents();
+			ReversibleIterator<Field> parents = parents().invert();
 			int i = 0;
-			while (parents.hasMoreElements() && (i++ < this.nameNestingDepth)) {
-				Field parent = parents.nextElement();
+			while (parents.hasNext() && (i++ < this.nameNestingDepth)) {
+				Field parent = parents.next();
 				sb.append(parent.getName());
 				sb.append(this.nameNestingConnector);
 			}

@@ -1,5 +1,7 @@
 package io.basc.framework.factory;
 
+import io.basc.framework.util.Creator;
+
 /**
  * 实例创建器
  * 
@@ -8,14 +10,14 @@ package io.basc.framework.factory;
  * @param <T>
  * @param <E>
  */
-public interface InstanceCreator<T, E extends Throwable> {
+public interface InstanceCreator<T, E extends Throwable> extends Creator<T, E> {
 	/**
 	 * 创建一个对象
 	 * 
 	 * @return
 	 */
 	T create() throws E;
-	
+
 	/**
 	 * 根据参数类型和参数创建一个对象
 	 * 

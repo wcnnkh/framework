@@ -6,6 +6,8 @@ import io.basc.framework.util.ClassUtils;
 
 public class TypeComparator implements Comparator<Class<?>> {
 
+	public static final TypeComparator DEFAULT = new TypeComparator();
+
 	/**
 	 * 大类型在小类型之后 Integer -> Number -> Object
 	 */
@@ -19,7 +21,7 @@ public class TypeComparator implements Comparator<Class<?>> {
 		} else if (ClassUtils.isAssignable(o2, o1)) {
 			return -1;
 		}
-		return 0;
+		return -1;
 	}
 
 }

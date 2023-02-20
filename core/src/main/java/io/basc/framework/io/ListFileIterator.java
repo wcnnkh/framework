@@ -7,9 +7,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.AbstractIterator;
 
-public class ListFileIterator extends AbstractIterator<IterationFile<File>> {
+public class ListFileIterator implements Iterator<IterationFile<File>> {
 	private final File directory;
 	private final FileFilter fileFilter;
 	private final int depth;// 当前深度

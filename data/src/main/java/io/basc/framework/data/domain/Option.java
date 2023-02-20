@@ -4,7 +4,7 @@ import java.util.List;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.stream.Processor;
+import io.basc.framework.util.Processor;
 
 /**
  * 选项
@@ -26,15 +26,12 @@ public class Option<K, V> extends Pair<K, V> {
 		this.parentKey = parentKey;
 	}
 
-	public static <K, V, S extends Option<K, V>> List<Tree<S>> parse(
-			List<? extends S> options, @Nullable K parentKey) {
+	public static <K, V, S extends Option<K, V>> List<Tree<S>> parse(List<? extends S> options, @Nullable K parentKey) {
 		return parse(options, parentKey, (e) -> e);
 	}
 
-	public static <K, V, S extends Option<K, V>, T, E extends Throwable> List<Tree<T>> parse(
-			List<? extends S> options, @Nullable K parentKey,
-			Processor<S, T, E> processor) throws E {
-		return Tree.parse(options, Option::getKey, parentKey,
-				Option::getParentKey, processor);
+	public static <K, V, S extends Option<K, V>, T, E extends Throwable> List<Tree<T>> parse(List<? extends S> options,
+			@Nullable K parentKey, Processor<? super S, ? extends T, ? extends E> processor) throws E {
+		return Tree.parse(options, Option::getKey, parentKey, Option::getParentKey, processor);
 	}
 }

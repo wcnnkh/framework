@@ -1,6 +1,5 @@
 package io.basc.framework.orm.support;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 import io.basc.framework.env.Sys;
@@ -26,13 +25,12 @@ public class DefaultObjectKeyFormat implements ObjectKeyFormat {
 	}
 
 	@Override
-	public String getObjectKeyByIds(Structure<? extends Property> structure, Collection<Object> ids) {
+	public String getObjectKeyByIds(Structure<? extends Property> structure, Iterator<?> ids) {
 		StringBuilder sb = new StringBuilder(128);
 		sb.append(structure.getName());
 		Iterator<? extends Property> primaryKeys = structure.stream().filter((e) -> e.isPrimaryKey()).iterator();
-		Iterator<Object> valueIterator = ids.iterator();
-		while (primaryKeys.hasNext() && valueIterator.hasNext()) {
-			appendObjectKeyByValue(sb, primaryKeys.next(), valueIterator.next());
+		while (primaryKeys.hasNext() && ids.hasNext()) {
+			appendObjectKeyByValue(sb, primaryKeys.next(), ids.next());
 		}
 		return sb.toString();
 	}

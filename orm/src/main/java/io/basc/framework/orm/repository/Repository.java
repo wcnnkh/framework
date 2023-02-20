@@ -5,19 +5,19 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.data.domain.PageRequest;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Parameter;
+import io.basc.framework.orm.ObjectKeyFormat;
 import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
+import io.basc.framework.orm.PrimaryKeyResultSet;
 import io.basc.framework.util.Pair;
+import io.basc.framework.util.ResultSet;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.page.Paginations;
-import io.basc.framework.util.stream.Cursor;
 
 /**
  * 存储库
@@ -25,7 +25,7 @@ import io.basc.framework.util.stream.Cursor;
  * @author wcnnkh
  *
  */
-public interface Repository extends CurdRepository {
+public interface Repository extends CurdOperations {
 	<E> long delete(Class<? extends E> entityClass, @Nullable Conditions conditions) throws OrmException;
 
 	@Override
@@ -80,9 +80,14 @@ public interface Repository extends CurdRepository {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	default <T, E> List<T> getInIds(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
-			List<?> entityInIds, Object... entityIds) throws OrmException {
+	default <K, T> PrimaryKeyResultSet<K, T> getInIds(Class<? extends T> entityClass, List<? extends K> inPrimaryKeys,
+			Object... primaryKeys) throws OrmException {
+		return getInIds(TypeDescriptor.valueOf(entityClass), entityClass, inPrimaryKeys, primaryKeys);
+	}
+
+	@Override
+	default <K, T> PrimaryKeyResultSet<K, T> getInIds(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
+			List<? extends K> inPrimaryKeys, Object... primaryKeys) throws OrmException {
 		ObjectRelational<? extends Property> entityStructure = getMapper().getStructure(entityClass);
 		List<? extends Property> list = entityStructure.getPrimaryKeys();
 		RelationshipKeywords relationshipKeywords = getMapper().getRelationshipKeywords();
@@ -92,21 +97,25 @@ public interface Repository extends CurdRepository {
 		int i = 0;
 		while (iterator.hasNext()) {
 			Property property = iterator.next();
-			Object value = entityIds[i++];
+			Object value = primaryKeys[i++];
 			Parameter column = getMapper().parseParameter(entityClass, property, value);
 			Condition condition = new Condition(conditionKeywords.getEqualKeywords().getFirst(), column);
 			pairs.add(new Pair<String, Condition>(relationshipKeywords.getAndKeywords().getFirst(), condition));
 		}
 
 		Property property = iterator.next();
-		Parameter column = getMapper().parseParameter(entityClass, property, entityInIds);
+		Parameter column = getMapper().parseParameter(entityClass, property, inPrimaryKeys);
 		pairs.add(new Pair<String, Condition>(relationshipKeywords.getAndKeywords().getFirst(),
 				new Condition(conditionKeywords.getInKeywords().getFirst(), column)));
 		Conditions conditions = ConditionsBuilder.build(pairs);
-		return (List<T>) query(resultsTypeDescriptor, entityClass, conditions, null).collect(Collectors.toList());
+		ResultSet<T> resultSet = query(resultsTypeDescriptor, entityClass, conditions, null);
+		return new PrimaryKeyResultSet<K, T>(() -> resultSet.iterator(), getObjectKeyFormat(), entityStructure, inPrimaryKeys,
+				primaryKeys);
 	}
 
 	RepositoryResolver getMapper();
+
+	ObjectKeyFormat getObjectKeyFormat();
 
 	@Override
 	default <T> boolean isPresent(Class<? extends T> entityClass, T conditions) {
@@ -114,15 +123,7 @@ public interface Repository extends CurdRepository {
 				getMapper().parseConditions(entityClass,
 						getMapper().getStructure(entityClass).getPrimaryKeys().iterator(), null,
 						(e) -> e.get(conditions), null),
-				null, new PageRequest(1, 1)).findAny().isPresent();
-	}
-
-	@Override
-	default <T> boolean isPresentAny(Class<? extends T> entityClass, T conditions) {
-		return query(TypeDescriptor.valueOf(entityClass), entityClass,
-				getMapper().parseConditions(entityClass, getMapper().getStructure(entityClass).columns().iterator(),
-						null, (e) -> e.get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue())),
-				null, new PageRequest(1, 1)).findAny().isPresent();
+				null).isPresent();
 	}
 
 	@Override
@@ -132,59 +133,31 @@ public interface Repository extends CurdRepository {
 				getMapper().parseConditions(entityClass,
 						getMapper().getStructure(entityClass).getPrimaryKeys().iterator(), null,
 						(e) -> ids[index.getAndIncrement()], null),
-				null, new PageRequest(1, 1)).findAny().isPresent();
+				null).isPresent();
 	}
 
-	default <T> Paginations<T> pagingQuery(Class<? extends T> entityClass, @Nullable Conditions conditions,
-			List<? extends OrderColumn> orders, @Nullable PageRequest pageRequest) throws OrmException {
-		return pagingQuery(TypeDescriptor.valueOf(entityClass), entityClass, conditions, orders, pageRequest);
+	default <T> Paginations<T> query(Class<? extends T> entityClass, @Nullable Conditions conditions,
+			List<? extends OrderColumn> orders) throws OrmException {
+		return query(TypeDescriptor.valueOf(entityClass), entityClass, conditions, orders);
 	}
 
-	<T, E> Paginations<T> pagingQuery(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
-			@Nullable Conditions conditions, List<? extends OrderColumn> orders, @Nullable PageRequest pageRequest)
-			throws OrmException;
-
-	@Override
-	default <T, E> Paginations<T> pagingQuery(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
-			E conditions, PageRequest request) throws OrmException {
-		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
-		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
-				getMapper().getStructure(entityClass).columns().iterator(), orderColumns,
-				(e) -> e.get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue()));
-		return pagingQuery(resultsTypeDescriptor, entityClass, conditionsToUse, orderColumns, request);
-	}
-
-	@Override
-	default <T, E> Cursor<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass, E conditions,
-			PageRequest request) throws OrmException {
-		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
-		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
-				getMapper().getStructure(entityClass).columns().iterator(), orderColumns,
-				(e) -> e.get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue()));
-		return query(resultsTypeDescriptor, entityClass, conditionsToUse, orderColumns, request);
-	}
-
-	<T> Cursor<T> query(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass, @Nullable Conditions conditions,
-			List<? extends OrderColumn> orders, PageRequest pageRequest) throws OrmException;
-
-	@Override
-	default <T, E> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass)
-			throws OrmException {
-		return queryAll(resultsTypeDescriptor, entityClass, null, null);
-	}
-
-	<T, E> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
+	<T, E> Paginations<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
 			@Nullable Conditions conditions, List<? extends OrderColumn> orders) throws OrmException;
 
 	@Override
-	default <T, E> Cursor<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
+	default <T, E> Paginations<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
 			E conditions) throws OrmException {
 		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
-		return queryAll(resultsTypeDescriptor, entityClass,
+		return query(resultsTypeDescriptor, entityClass,
 				getMapper().parseConditions(entityClass, getMapper().getStructure(entityClass).columns().iterator(),
-						orderColumns, (e) -> e.get(conditions),
-						(e) -> StringUtils.isNotEmpty(e.getValue())),
+						orderColumns, (e) -> e.get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue())),
 				orderColumns);
+	}
+
+	@Override
+	default <T, E> Paginations<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass)
+			throws OrmException {
+		return query(resultsTypeDescriptor, entityClass, null, null);
 	}
 
 	<E> long save(Class<? extends E> entityClass, Collection<? extends Parameter> columns) throws OrmException;
@@ -212,8 +185,7 @@ public interface Repository extends CurdRepository {
 		ObjectRelational<? extends Property> entityStructure = getMapper().getStructure(entityClass);
 		List<Parameter> columns = getMapper().parseValues(entityClass, entity, entityStructure);
 		Conditions conditionsToUse = getMapper().parseConditions(entityClass, entityStructure.columns().iterator(),
-				null, (e) -> e.get(conditions),
-				(e) -> e.getKey().isNullable() || StringUtils.isNotEmpty(e.getValue()));
+				null, (e) -> e.get(conditions), (e) -> e.getKey().isNullable() || StringUtils.isNotEmpty(e.getValue()));
 		return update(entityClass, columns, conditionsToUse);
 	}
 }
