@@ -105,9 +105,13 @@ public class Query<T> implements Paginations<T> {
 	}
 
 	@Override
+	public Query<T> limit(long start, long count) {
+		return jumpTo(start, count);
+	}
+
+	@Override
 	public Query<T> jumpTo(Long cursorId, long count) {
-		Sql sql = sqlDialect.toLimitSql(this.sql, cursorId, count);
-		return new Query<>(connectionFactory, sqlDialect, sql, cursorId, count, mapProcessor);
+		return new Query<>(connectionFactory, sqlDialect, this.sql, cursorId, count, mapProcessor);
 	}
 
 	public Query<T> jumpTo(PageRequest request) {

@@ -32,7 +32,7 @@ public class TransactionConnectionHolder implements Resource {
 	public Connection getConnection() throws SQLException {
 		if (connection == null) {
 			connection = connectionFactory.getConnection();
-			connection.setAutoCommit(transaction.isActive());
+			connection.setAutoCommit(!transaction.isActive());
 
 			if (transaction.getDefinition().isReadOnly()) {
 				connection.setReadOnly(true);

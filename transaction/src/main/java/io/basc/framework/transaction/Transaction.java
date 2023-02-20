@@ -31,7 +31,7 @@ public interface Transaction extends Resource, ParentDiscover<Transaction> {
 	/**
 	 * 注册一个资源
 	 * 
-	 * @see SavepointManager
+	 * @see Resource
 	 * @param name
 	 * @param resource
 	 * @throws TransactionException
@@ -69,6 +69,7 @@ public interface Transaction extends Resource, ParentDiscover<Transaction> {
 	/**
 	 * 是否存在保存点，即嵌套事务
 	 * 
+	 * @see Savepoint
 	 * @return
 	 */
 	boolean hasSavepoint();

@@ -35,6 +35,7 @@ import io.basc.framework.sql.orm.SqlType;
 import io.basc.framework.sql.orm.TableStructure;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Pair;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
@@ -872,5 +873,34 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			appendOrders(orders, sb);
 		}
 		return new SimpleSql(sb.toString(), params.toArray());
+	}
+
+	/**
+	 * 只是因为大部分数据库都支持limit请求，所以才写了此默认实现。 并非所以的数据库都支持limit语法，如: sql server
+	 */
+	@Override
+	public Sql toLimitSql(Sql sql, long start, long limit) throws SqlDialectException {
+		Pair<Integer, Integer> range = StringUtils.indexOf(sql.getSql(), "(", ")");
+		int fromIndex = 0;
+		if (range != null) {
+			fromIndex = range.getValue();
+		}
+
+		StringBuilder sb;
+		if (sql.getSql().toLowerCase().indexOf(" limit ", fromIndex) != -1) {
+			// 如果已经存在limit了，那么嵌套一上
+			sb = new StringBuilder();
+			sb.append("select * from (");
+			sb.append(sql.getSql());
+			sb.append(")");
+		} else {
+			sb = new StringBuilder(sql.getSql());
+		}
+
+		sb.append(" limit ").append(start);
+		if (limit != 0) {
+			sb.append(",").append(limit);
+		}
+		return new SimpleSql(sb.toString(), sql.getParams());
 	}
 }

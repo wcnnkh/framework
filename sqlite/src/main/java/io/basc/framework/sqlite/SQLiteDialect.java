@@ -188,13 +188,6 @@ public class SQLiteDialect extends StandardSqlDialect {
 	}
 
 	@Override
-	public Sql toLimitSql(Sql sql, long start, long limit) throws SqlDialectException {
-		StringBuilder sb = new StringBuilder(sql.getSql());
-		sb.append(" limit ").append(start).append(",").append(limit);
-		return new SimpleSql(sb.toString(), sql.getParams());
-	}
-
-	@Override
 	public Sql toSaveSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
