@@ -69,11 +69,11 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	@Override
-	public BeanDefinition load(BeanFactory beanFactory, String name, BeanDefinitionLoaderChain chain)
-			throws FactoryException {
-		Class<?> clazz = ClassUtils.getClass(name, beanFactory.getClassLoader());
+	public BeanDefinition load(BeanFactory beanFactory, ClassLoader classLoader, String name,
+			BeanDefinitionLoaderChain chain) throws FactoryException {
+		Class<?> clazz = ClassUtils.getClass(name, classLoader);
 		if (clazz == null) {
-			return super.load(beanFactory, name, chain);
+			return super.load(beanFactory, classLoader, name, chain);
 		}
 
 		ProviderClassesLoader providerClassesLoader = getProviderClassesLoader(clazz);
@@ -83,7 +83,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 				return beanFactory.getDefinition(providerClass);
 			}
 		}
-		return super.load(beanFactory, name, chain);
+		return super.load(beanFactory, classLoader, name, chain);
 	}
 
 	private final ConcurrentReferenceHashMap<Class<?>, ProviderClassesLoader> providerClassesLoaderMap = new ConcurrentReferenceHashMap<>(

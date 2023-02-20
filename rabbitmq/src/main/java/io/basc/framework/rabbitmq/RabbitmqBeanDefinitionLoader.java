@@ -29,14 +29,15 @@ import io.basc.framework.util.ClassUtils;
 public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 	public static final String DEFAULT_CONFIG = ResourceUtils.CLASSPATH_URL_PREFIX + "/rabbitmq/rabbitmq.properties";
 
-	public BeanDefinition load(BeanFactory beanFactory, String name, BeanDefinitionLoaderChain loaderChain) {
-		Class<?> sourceClass = ClassUtils.getClass(name, beanFactory.getClassLoader());
+	public BeanDefinition load(BeanFactory beanFactory, ClassLoader classLoader, String name,
+			BeanDefinitionLoaderChain loaderChain) {
+		Class<?> sourceClass = ClassUtils.getClass(name, classLoader);
 		if (sourceClass == null) {
-			return loaderChain.load(beanFactory, name);
+			return loaderChain.load(beanFactory, classLoader, name);
 		}
 
 		if (!beanFactory.isInstance(Environment.class)) {
-			return loaderChain.load(beanFactory, name);
+			return loaderChain.load(beanFactory, classLoader, name);
 		}
 
 		Context context = beanFactory.getInstance(Context.class);
@@ -49,7 +50,7 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 		} else if (sourceClass == ExchangeDeclare.class) {
 			return new ExchangeDeclareBeanBuilder(context, sourceClass);
 		}
-		return loaderChain.load(beanFactory, name);
+		return loaderChain.load(beanFactory, classLoader, name);
 	}
 
 	private static class ConnectionBeanBuilder extends FactoryBeanDefinition {

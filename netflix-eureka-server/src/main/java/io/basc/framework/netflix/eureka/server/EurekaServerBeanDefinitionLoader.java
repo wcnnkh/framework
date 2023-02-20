@@ -27,8 +27,9 @@ import io.basc.framework.util.ClassUtils;
 public class EurekaServerBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	@Override
-	public BeanDefinition load(BeanFactory beanFactory, String name, BeanDefinitionLoaderChain loaderChain) {
-		Class<?> sourceClass = ClassUtils.getClass(name, beanFactory.getClassLoader());
+	public BeanDefinition load(BeanFactory beanFactory, ClassLoader classLoader, String name,
+			BeanDefinitionLoaderChain loaderChain) {
+		Class<?> sourceClass = ClassUtils.getClass(name, classLoader);
 		if (sourceClass == null) {
 			return null;
 		}
@@ -53,7 +54,7 @@ public class EurekaServerBeanDefinitionLoader implements BeanDefinitionLoader {
 			return new EurekaServerConfigBuilder(beanFactory, sourceClass);
 		}
 
-		return loaderChain.load(beanFactory, name);
+		return loaderChain.load(beanFactory, classLoader, name);
 	}
 
 	private static class EurekaServerConfigBuilder extends FactoryBeanDefinition {

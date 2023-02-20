@@ -43,9 +43,9 @@ public class FactoryLoader {
 		BeanFactory factory = source;
 		while (factory != null) {
 			if (factory == exclude) {
-				return Return.error("BeanFactory cannot be nested circularly", factory.getParentBeanFactory());
+				return Return.error("BeanFactory cannot be nested circularly", factory.getParent());
 			}
-			factory = factory.getParentBeanFactory();
+			factory = factory.getParent();
 		}
 		return Return.success(source);
 	}

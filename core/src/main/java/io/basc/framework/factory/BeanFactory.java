@@ -6,12 +6,10 @@ import java.util.stream.Collectors;
 
 import io.basc.framework.aop.Aop;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ParentDiscover;
 
-public interface BeanFactory
-		extends ServiceLoaderFactory, BeanDefinitionFactory, SingletonFactory, BeanLifecycleManager {
-	@Nullable
-	BeanFactory getParentBeanFactory();
+public interface BeanFactory extends ServiceLoaderFactory, BeanDefinitionFactory, SingletonFactory,
+		BeanLifecycleManager, ParentDiscover<BeanFactory> {
 
 	Aop getAop();
 
