@@ -14,6 +14,7 @@ public class DefaultHttpClient extends AbstractHttpClient {
 
 	private final MessageConverters messageConverters;
 	private final ClientHttpRequestInterceptors interceptors;
+	private boolean configured = false;
 
 	public DefaultHttpClient() {
 		super(REQUEST_FACTORY);
@@ -28,10 +29,13 @@ public class DefaultHttpClient extends AbstractHttpClient {
 		super(client);
 		this.messageConverters = client.messageConverters;
 		this.interceptors = client.interceptors;
+		this.configured = client.configured;
 	}
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		// 此处不校验是否configured
+		configured = true;
 		interceptors.configure(serviceLoaderFactory);
 		messageConverters.configure(serviceLoaderFactory);
 		super.configure(serviceLoaderFactory);
@@ -52,7 +56,6 @@ public class DefaultHttpClient extends AbstractHttpClient {
 
 	@Override
 	public boolean isConfigured() {
-		// TODO Auto-generated method stub
-		return false;
+		return configured;
 	}
 }

@@ -10,6 +10,9 @@ public class HttpClientConnection extends AbstractHttpConnection {
 
 	public HttpClientConnection(URI uri, String httpMethod, HttpClient httpClient) {
 		super(uri, httpMethod);
+		setRequestFactory(httpClient.getRequestFactory());
+		setCookieHandler(httpClient.getCookieHandler());
+		setRedirectManager(httpClient.getRedirectManager());
 		this.httpClient = httpClient;
 	}
 
