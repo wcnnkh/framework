@@ -5,18 +5,38 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author https://gitee.com/myd123/data-struct/tree/gg/balanceTree/src/main/java/treePrint
- * @author wcnnkh
- *
- * @param <T>
- */
-public class TreePrint<T> {
-	Node<T> root;
+import io.basc.framework.io.IOUtils;
 
-	public TreePrint(Node<T> root) {
-		this.root = root;
+public class BinaryTreeNode<T extends Comparable<T>> {
+	private final T value;
+	private BinaryTreeNode<T> left;
+	private BinaryTreeNode<T> right;
+
+	public BinaryTreeNode(T value) {
+		this.value = value;
 	}
+
+	public BinaryTreeNode<T> getLeft() {
+		return left;
+	}
+
+	public void setLeft(BinaryTreeNode<T> left) {
+		this.left = left;
+	}
+
+	public BinaryTreeNode<T> getRight() {
+		return right;
+	}
+
+	public void setRight(BinaryTreeNode<T> right) {
+		this.right = right;
+	}
+
+	public T getValue() {
+		return value;
+	}
+
+	// 以下为toString实现
 
 	private static final String BASE_EMPTY_LINK = "\t";
 
@@ -24,7 +44,7 @@ public class TreePrint<T> {
 
 	private static final String V_LINE = "|";
 
-	private Map<Node<T>, IndexAndLen> nodesCoo = new HashMap<>();
+	private Map<BinaryTreeNode<T>, IndexAndLen> nodesCoo = new HashMap<>();
 
 	class IndexAndLen {
 		private int index;// index坐标
@@ -37,39 +57,46 @@ public class TreePrint<T> {
 	}
 
 	void calculateCoordinate() {
-		List<Node<T>> nodes = new ArrayList<>();
-		midOrder(root, nodes);
+		List<BinaryTreeNode<T>> nodes = new ArrayList<>();
+		midOrder(this, nodes);
 		if (nodes.isEmpty())
 			return;
 		int offset = 0;
 		for (int i = 0; i < nodes.size(); i++) {
-			Node<T> node = nodes.get(i);
+			BinaryTreeNode<T> node = nodes.get(i);
 			int len = numberLength(node);
 			nodesCoo.put(node, new IndexAndLen(i + offset, len));
 			offset += len;
 		}
 	}
 
-	void midOrder(Node<T> cur, List<Node<T>> list) {
+	void midOrder(BinaryTreeNode<T> cur, List<BinaryTreeNode<T>> list) {
 		if (cur == null)
 			return;
-		midOrder(cur.left(), list);
+		midOrder(cur.left, list);
 		list.add(cur);
-		midOrder(cur.right(), list);
+		midOrder(cur.right, list);
 	}
 
-	int numberLength(Node<T> node) {
+	int numberLength(BinaryTreeNode<T> node) {
 		if (node == null)
 			return 0;
 		else
-			return node.value().toString().length() / 4;
+			return node.value.toString().length() / 4;
 	}
 
-	public void print() {
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		print(sb);
+		return sb.toString();
+	}
+
+	protected void print(StringBuilder out) {
 		calculateCoordinate();
-		List<Node<T>> nodes = new ArrayList<>();
-		nodes.add(root);
-		printRow(nodes);
+		List<BinaryTreeNode<T>> nodes = new ArrayList<>();
+		nodes.add(this);
+		printRow(nodes, out);
 	}
 
 	class PrintRowNodes {
@@ -90,12 +117,12 @@ public class TreePrint<T> {
 		 *
 		 * 前一个节点
 		 */
-		Node<T> prev;
+		BinaryTreeNode<T> prev;
 		/**
 		 *
 		 * 连接子节点线段之间计算相邻线段距离时的上一个线段的右节点；
 		 */
-		Node<T> lastRight;
+		BinaryTreeNode<T> lastRight;
 
 		@Override
 		public String toString() {
@@ -103,24 +130,25 @@ public class TreePrint<T> {
 		}
 	}
 
-	void printRow(List<Node<T>> nodes) {
+	void printRow(List<BinaryTreeNode<T>> nodes, StringBuilder out) {
 		if (nodes.size() == 0)
 			return;
-		List<Node<T>> children = new ArrayList<>();
+		List<BinaryTreeNode<T>> children = new ArrayList<>();
 		PrintRowNodes printNode = new PrintRowNodes();
-		for (Node<T> node : nodes) {
+		for (BinaryTreeNode<T> node : nodes) {
 			printNode(node, printNode, children);
 		}
-		System.out.println(printNode);
-		printRow(children);
+
+		out.append(printNode).append(IOUtils.LINE_SEPARATOR);
+		printRow(children, out);
 	}
 
-	void printNode(Node<T> node, PrintRowNodes printNode, List<Node<T>> children) {
+	void printNode(BinaryTreeNode<T> node, PrintRowNodes printNode, List<BinaryTreeNode<T>> children) {
 		String VLineEmpty = nodeEmpty(nodeDistance(node, printNode.prev, 0));
 		String numberEmpty = nodeEmpty(nodeDistance(node, printNode.prev, prevLength(printNode.prev)));
 		printNode.vLineInDataHead.append(VLineEmpty + V_LINE);
 		printNode.dataLine.append(numberEmpty + value(node));
-		if (node.left() == null && node.right() == null) {
+		if (node.left == null && node.right == null) {
 			printNode.prev = node;
 			return;
 		}
@@ -131,9 +159,9 @@ public class TreePrint<T> {
 		printNode.lastRight = lastRight(node);
 	}
 
-	String linkSonLine(Node<T> cur, List<Node<T>> children) {
-		Node<T> left = cur.left();
-		Node<T> right = cur.right();
+	String linkSonLine(BinaryTreeNode<T> cur, List<BinaryTreeNode<T>> children) {
+		BinaryTreeNode<T> left = cur.left;
+		BinaryTreeNode<T> right = cur.right;
 		String leftLinkSonLine = "";
 		String rightLinkSonLine = "";
 		if (left != null) {
@@ -147,26 +175,26 @@ public class TreePrint<T> {
 		return leftLinkSonLine + V_LINE + rightLinkSonLine;
 	}
 
-	int prevLength(Node<T> node) {
+	int prevLength(BinaryTreeNode<T> node) {
 		return node == null ? 0 : nodesCoo.get(node).length;
 	}
 
-	Node<T> lastRight(Node<T> prev) {
+	BinaryTreeNode<T> lastRight(BinaryTreeNode<T> prev) {
 		if (prev == null)
 			return null;
 		else
-			return prev.right() == null ? prev : prev.right();
+			return prev.right == null ? prev : prev.right;
 	}
 
-	Node<T> leftNode(Node<T> node) {
-		return node.left() != null ? node.left() : node;
+	BinaryTreeNode<T> leftNode(BinaryTreeNode<T> node) {
+		return node.left != null ? node.left : node;
 	}
 
-	int nodeIndex(Node<T> node) {
+	int nodeIndex(BinaryTreeNode<T> node) {
 		return node == null ? 0 : nodesCoo.get(node).index;
 	}
 
-	int nodeDistance(Node<T> cur, Node<T> prev, int prevNumLen) {
+	int nodeDistance(BinaryTreeNode<T> cur, BinaryTreeNode<T> prev, int prevNumLen) {
 		return nodeIndex(cur) - nodeIndex(prev) - prevNumLen;
 	}
 
@@ -186,11 +214,10 @@ public class TreePrint<T> {
 		return linkLine(dis, BASE_LINE_LINK);
 	}
 
-	String value(Node<T> node) {
-		if (node.red())
-			return "\033[91;1m" + node.value().toString() + "\033[0m";// 打印红色
-		else
-			return node.value().toString();// 打印黑色
+	String value(BinaryTreeNode<T> node) {
+		// if (node.red)
+		// return "\033[91;1m" + node.value.toString() + "\033[0m";// 打印红色
+		// else
+		return node.value.toString();// 打印黑色
 	}
-
 }
