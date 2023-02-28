@@ -61,7 +61,7 @@ public class AllPageable<S extends Pageables<K, T>, K, T> implements Pageable<K,
 				cursor = pageables.iterator();
 				super.onClose(() -> cursor.close());
 				position = position.add(cursor.getPosition());
-				return cursor.hasNext();
+				return hasNext();
 			}
 			return false;
 		}

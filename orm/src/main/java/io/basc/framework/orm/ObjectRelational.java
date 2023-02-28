@@ -225,7 +225,7 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 		}).shared();// 此处因为在filter中进行了逻辑处理，所以此处需要执行shared防止重复执行
 
 		for (Supplier<Stream<T>> with : withs) {
-			objectRelational = objectRelational.withStream(with.get());
+			objectRelational = objectRelational.concat(with);
 		}
 		return objectRelational;
 	}
