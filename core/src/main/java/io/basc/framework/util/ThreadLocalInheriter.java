@@ -6,15 +6,12 @@ public final class ThreadLocalInheriter<T> extends InheriterDecorator<T, T> {
 	private boolean nullable;
 
 	public ThreadLocalInheriter(ThreadLocal<T> threadLocal) {
+		this(threadLocal, false);
+	}
+
+	public ThreadLocalInheriter(ThreadLocal<T> threadLocal, boolean nullable) {
 		Assert.requiredArgument(threadLocal != null, "threadLocal");
 		this.threadLocal = threadLocal;
-	}
-
-	public boolean isNullable() {
-		return nullable;
-	}
-
-	public void setNullable(boolean nullable) {
 		this.nullable = nullable;
 	}
 

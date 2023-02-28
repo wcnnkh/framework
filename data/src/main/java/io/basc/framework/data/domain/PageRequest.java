@@ -23,6 +23,10 @@ public class PageRequest extends BascObject implements Serializable {
 	private static final ThreadLocal<PageRequest> LOCAL = new NamedInheritableThreadLocal<PageRequest>(
 			PageRequest.class.getName());
 
+	public static ThreadLocal<PageRequest> getLocal() {
+		return LOCAL;
+	}
+
 	public static PageRequest getPageRequest() {
 		return LOCAL.get();
 	}

@@ -29,8 +29,6 @@ public final class XUtils {
 	private static final Executor COMMON_EXECUTOR = ENABLE_COMMON_POOL ? ForkJoinPool.commonPool()
 			: new ThreadPerTaskExecutor();
 
-	private static final InheriterRegistry<Object, Object> INHERITER_REGISTRY = new InheriterRegistry<>();
-
 	private XUtils() {
 	};
 
@@ -244,9 +242,5 @@ public final class XUtils {
 	public static <T> Stream<T> emptyStream() {
 		List<T> list = Collections.emptyList();
 		return list.stream();
-	}
-
-	public static InheriterRegistry<Object, Object> getInheriterRegistry() {
-		return INHERITER_REGISTRY;
 	}
 }

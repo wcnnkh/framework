@@ -13,8 +13,12 @@ import io.basc.framework.rpc.remote.RemoteMessageCodec;
 import io.basc.framework.rpc.remote.RemoteRequestMessage;
 
 public class HttpCallableFactory implements CallableFactory {
-	private static ThreadLocal<HttpHeaders> HTTP_HEADERS_LOCAL = new NamedInheritableThreadLocal<HttpHeaders>(
+	private static final ThreadLocal<HttpHeaders> HTTP_HEADERS_LOCAL = new NamedInheritableThreadLocal<HttpHeaders>(
 			HttpCallable.class.getSimpleName() + "_headers");
+
+	public static ThreadLocal<HttpHeaders> getHttpHeadersLocal() {
+		return HTTP_HEADERS_LOCAL;
+	}
 
 	public static void setLocalHeaders(HttpHeaders headers) {
 		if (headers == null) {

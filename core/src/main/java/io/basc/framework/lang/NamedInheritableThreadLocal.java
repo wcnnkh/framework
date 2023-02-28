@@ -1,5 +1,6 @@
 package io.basc.framework.lang;
 
+import io.basc.framework.util.AnyInheriterRegistry;
 import io.basc.framework.util.Assert;
 
 /**
@@ -16,10 +17,24 @@ public class NamedInheritableThreadLocal<T> extends InheritableThreadLocal<T> {
 	 * Create a new NamedInheritableThreadLocal with the given name.
 	 * 
 	 * @param name a descriptive name for this ThreadLocal
+	 * 
 	 */
 	public NamedInheritableThreadLocal(String name) {
+		this(name, true);
+	}
+
+	/**
+	 * Create a new NamedInheritableThreadLocal with the given name.
+	 * 
+	 * @param name     a descriptive name for this ThreadLocal
+	 * @param register 是否调用{@link AnyInheriterRegistry#global#register(ThreadLocal)}
+	 */
+	public NamedInheritableThreadLocal(String name, boolean register) {
 		Assert.hasText(name, "Name must not be empty");
 		this.name = name;
+		if (register) {
+			AnyInheriterRegistry.global().register(this);
+		}
 	}
 
 	@Override

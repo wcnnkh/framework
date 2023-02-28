@@ -21,7 +21,7 @@ import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
 import io.basc.framework.json.JsonUtils;
-import io.basc.framework.lang.NamedThreadLocal;
+import io.basc.framework.lang.NamedInheritableThreadLocal;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -42,10 +42,14 @@ import io.basc.framework.xml.XmlUtils;
 
 public final class WebUtils {
 	private static Logger logger = LoggerFactory.getLogger(WebUtils.class);
-	private static ThreadLocal<ServerHttpRequest> SERVER_HTTP_REQUEST_LOCAL = new NamedThreadLocal<ServerHttpRequest>(
+	private static final ThreadLocal<ServerHttpRequest> SERVER_HTTP_REQUEST_LOCAL = new NamedInheritableThreadLocal<ServerHttpRequest>(
 			WebUtils.class.getSimpleName() + "-ServerHttpRequest");
 	private static final String RESTFUL_PARAMETER_MAP = "io.basc.framework.web.restful.parameters";
 	public static final String PATH_SEPARATOR = "/";
+
+	public static ThreadLocal<ServerHttpRequest> getServerHttpRequestLocal() {
+		return SERVER_HTTP_REQUEST_LOCAL;
+	}
 
 	/**
 	 * 缓存是否过期,如果未过期那么返回304，如果已过期则setLastModified

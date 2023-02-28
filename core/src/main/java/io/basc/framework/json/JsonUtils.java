@@ -21,6 +21,13 @@ public final class JsonUtils {
 	 */
 	public static final JsonSupport JSON_SUPPORT;
 
+	private static ThreadLocal<JsonSupport> local = new NamedInheritableThreadLocal<JsonSupport>(
+			JsonUtils.class.getSimpleName()) {
+		protected JsonSupport initialValue() {
+			return getDefaultJsonSupport();
+		};
+	};
+
 	static {
 		JsonSupport jsonSupport = Sys.getEnv().getServiceLoader(JsonSupport.class).first();
 		JSON_SUPPORT = jsonSupport == null ? GsonSupport.INSTANCE : jsonSupport;
@@ -30,13 +37,6 @@ public final class JsonUtils {
 	public static JsonSupport getDefaultJsonSupport() {
 		return JSON_SUPPORT;
 	}
-
-	private static ThreadLocal<JsonSupport> local = new NamedInheritableThreadLocal<JsonSupport>(
-			JsonUtils.class.getSimpleName()) {
-		protected JsonSupport initialValue() {
-			return getDefaultJsonSupport();
-		};
-	};
 
 	public static ThreadLocal<JsonSupport> getLocal() {
 		return local;
