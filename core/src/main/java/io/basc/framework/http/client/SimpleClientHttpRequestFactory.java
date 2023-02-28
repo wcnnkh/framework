@@ -7,8 +7,6 @@ import java.net.Proxy;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
@@ -42,10 +40,8 @@ public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAcces
 		try {
 			sc = javax.net.ssl.SSLContext.getInstance("SSL");
 			sc.init(null, trustAllCerts, null);
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (KeyManagementException e) {
-			e.printStackTrace();
+		} catch (Throwable e) {
+			logger.error(e, "Initialize ssl exception");
 		}
 		TRUSE_ALL_SSL_SOCKET_FACTORY = sc == null ? null : sc.getSocketFactory();
 	}
@@ -60,7 +56,7 @@ public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAcces
 
 	private boolean outputStreaming = true;
 
-	private SSLSocketFactory sslSocketFactory;
+	private SSLSocketFactory sslSocketFactory = TRUSE_ALL_SSL_SOCKET_FACTORY;
 
 	/**
 	 * Set the {@link Proxy} to use for this request factory.
@@ -144,7 +140,12 @@ public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAcces
 
 	public ClientHttpRequest createRequest(URI uri, String httpMethod) throws IOException {
 		HttpURLConnection connection = openConnection(uri.toURL(), this.proxy);
-		prepareConnection(connection, httpMethod);
+		try {
+			prepareConnection(connection, httpMethod);
+		} catch (Throwable e) {
+			connection.disconnect();
+			throw e;
+		}
 
 		if (this.bufferRequestBody) {
 			return new SimpleBufferingClientHttpRequest(connection, this.outputStreaming);
@@ -184,10 +185,9 @@ public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAcces
 
 		if (connection instanceof HttpsURLConnection) {
 			SSLSocketFactory factory = getSslSocketFactory();
-			if (factory == null) {
-				factory = TRUSE_ALL_SSL_SOCKET_FACTORY;
+			if (factory != null) {
+				((HttpsURLConnection) connection).setSSLSocketFactory(factory);
 			}
-			((HttpsURLConnection) connection).setSSLSocketFactory(factory);
 		}
 	}
 }
