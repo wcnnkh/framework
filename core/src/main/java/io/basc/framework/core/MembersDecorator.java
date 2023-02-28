@@ -2,6 +2,7 @@ package io.basc.framework.core;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public abstract class MembersDecorator<S, T extends Members<S>> extends Members<S> {
@@ -107,8 +108,8 @@ public abstract class MembersDecorator<S, T extends Members<S>> extends Members<
 	}
 
 	@Override
-	public T withStream(Stream<S> stream) {
-		return decorate(super.withStream(stream));
+	public T concat(Supplier<? extends Stream<? extends S>> streamSupplier) {
+		return decorate(super.concat(streamSupplier));
 	}
 
 	@Override

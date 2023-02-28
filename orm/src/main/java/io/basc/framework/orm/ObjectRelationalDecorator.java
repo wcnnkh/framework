@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import io.basc.framework.core.Members;
@@ -202,8 +203,8 @@ public abstract class ObjectRelationalDecorator<S extends Property, T extends Ob
 	}
 
 	@Override
-	public T withStream(Stream<S> stream) {
-		return decorate(super.withStream(stream));
+	public T concat(Supplier<? extends Stream<? extends S>> streamSupplier) {
+		return decorate(super.concat(streamSupplier));
 	}
 
 	@Override
