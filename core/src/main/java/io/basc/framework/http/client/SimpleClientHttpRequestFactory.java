@@ -25,6 +25,14 @@ public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAcces
 		implements ClientHttpRequestFactory {
 	private static Logger logger = LoggerFactory.getLogger(SimpleClientHttpRequestFactory.class);
 
+	public static void truseAll() {
+		System.setProperty("io.basc.framework.http.truse.all.sll", "true");
+	}
+
+	public static boolean isTruseAll() {
+		return Boolean.getBoolean("io.basc.framework.http.truse.all.sll");
+	}
+
 	/**
 	 * 一个信任所有的ssl socket factory <br/>
 	 * 注意:在初始化失败后可能为空
@@ -56,7 +64,7 @@ public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAcces
 
 	private boolean outputStreaming = true;
 
-	private SSLSocketFactory sslSocketFactory = TRUSE_ALL_SSL_SOCKET_FACTORY;
+	private SSLSocketFactory sslSocketFactory = isTruseAll() ? TRUSE_ALL_SSL_SOCKET_FACTORY : null;
 
 	/**
 	 * Set the {@link Proxy} to use for this request factory.
