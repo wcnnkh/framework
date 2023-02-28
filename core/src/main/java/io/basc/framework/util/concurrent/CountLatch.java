@@ -10,7 +10,7 @@ import java.util.concurrent.locks.AbstractQueuedSynchronizer;
  * @author shuchaowen
  *
  */
-public class CountLatch {
+public final class CountLatch {
 	/**
 	 * Synchronization control For CountDownLatch. Uses AQS state to represent
 	 * count.

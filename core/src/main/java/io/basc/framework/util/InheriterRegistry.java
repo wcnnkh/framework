@@ -1,0 +1,65 @@
+package io.basc.framework.util;
+
+import java.util.concurrent.CopyOnWriteArraySet;
+
+public class InheriterRegistry<A, B> extends InheriterDecorator<InheriterCapture<A, B>, InheriterBackup<A, B>> {
+	private final CopyOnWriteArraySet<Inheriter<A, B>> registers = new CopyOnWriteArraySet<>();
+
+	@Override
+	public InheriterCapture<A, B> capture() {
+		InheriterCapture<A, B> capture = new InheriterCapture<>(registers.size());
+		for (Inheriter<A, B> inheriter : registers) {
+			capture.put(inheriter, inheriter.capture());
+		}
+		return capture;
+	}
+
+	@Override
+	public InheriterBackup<A, B> replay(InheriterCapture<A, B> capture) {
+		return capture.replay();
+	}
+
+	@Override
+	public void restore(InheriterBackup<A, B> backup) {
+		backup.restore();
+	}
+
+	@Override
+	public InheriterBackup<A, B> clear() {
+		InheriterBackup<A, B> backup = new InheriterBackup<>();
+		for (Inheriter<A, B> inheriter : registers) {
+			backup.put(inheriter, inheriter.clear());
+		}
+		return backup;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof InheriterRegistry) {
+			return registers.equals(((InheriterRegistry<?, ?>) obj).registers);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return registers.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return registers.toString();
+	}
+
+	public Registration register(Inheriter<A, B> inheriter) {
+		return registers.add(inheriter) ? (() -> registers.remove(inheriter)) : Registration.EMPTY;
+	}
+
+	public Registration unregister(Inheriter<A, B> inheriter) {
+		return registers.remove(inheriter) ? (() -> registers.add(inheriter)) : Registration.EMPTY;
+	}
+}

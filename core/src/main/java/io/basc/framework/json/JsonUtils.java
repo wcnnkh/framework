@@ -6,13 +6,12 @@ import java.lang.reflect.Type;
 
 import io.basc.framework.env.Sys;
 import io.basc.framework.gson.GsonSupport;
-import io.basc.framework.lang.NamedThreadLocal;
+import io.basc.framework.lang.NamedInheritableThreadLocal;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 
 public final class JsonUtils {
 	private static Logger logger = LoggerFactory.getLogger(JsonUtils.class);
-	private static ThreadLocal<JsonSupport> local = new NamedThreadLocal<JsonSupport>(JsonUtils.class.getSimpleName());
 
 	private JsonUtils() {
 	};
@@ -21,6 +20,13 @@ public final class JsonUtils {
 	 * 默认的json序列化工具
 	 */
 	public static final JsonSupport JSON_SUPPORT;
+
+	private static ThreadLocal<JsonSupport> local = new NamedInheritableThreadLocal<JsonSupport>(
+			JsonUtils.class.getSimpleName()) {
+		protected JsonSupport initialValue() {
+			return getDefaultJsonSupport();
+		};
+	};
 
 	static {
 		JsonSupport jsonSupport = Sys.getEnv().getServiceLoader(JsonSupport.class).first();
@@ -32,9 +38,13 @@ public final class JsonUtils {
 		return JSON_SUPPORT;
 	}
 
+	public static ThreadLocal<JsonSupport> getLocal() {
+		return local;
+	}
+
 	public static JsonSupport getJsonSupport() {
 		JsonSupport jsonSupport = local.get();
-		return jsonSupport == null ? JSON_SUPPORT : jsonSupport;
+		return jsonSupport == null ? getDefaultJsonSupport() : jsonSupport;
 	}
 
 	public static boolean hasJsonSupport() {

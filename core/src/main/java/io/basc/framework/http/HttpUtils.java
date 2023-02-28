@@ -9,7 +9,7 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.http.client.DefaultHttpClient;
 import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.lang.Constants;
-import io.basc.framework.lang.NamedThreadLocal;
+import io.basc.framework.lang.NamedInheritableThreadLocal;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
@@ -25,23 +25,33 @@ public final class HttpUtils {
 
 	private static final HttpClient DEFAULT_CLIENT = Sys.getEnv()
 			.getServiceLoader(HttpClient.class, DefaultHttpClient.class).first();
-	private static final ThreadLocal<HttpClient> LOCAL_CLIENT = new NamedThreadLocal<>(HttpClient.class.getName());
+	private static final ThreadLocal<HttpClient> LOCAL = new NamedInheritableThreadLocal<HttpClient>(
+			HttpClient.class.getName()) {
+
+		protected HttpClient initialValue() {
+			return getDefaultClient();
+		};
+	};
 
 	public static HttpClient getDefaultClient() {
 		return DEFAULT_CLIENT;
 	}
 
+	public static ThreadLocal<HttpClient> getLocal() {
+		return LOCAL;
+	}
+
 	public static HttpClient getClient() {
-		HttpClient client = LOCAL_CLIENT.get();
-		return client == null ? DEFAULT_CLIENT : client;
+		HttpClient client = LOCAL.get();
+		return client == null ? getDefaultClient() : client;
 	}
 
 	public static HttpClient setLocalClient(HttpClient client) {
 		if (client == null) {
-			LOCAL_CLIENT.remove();
+			LOCAL.remove();
 			return DEFAULT_CLIENT;
 		}
-		LOCAL_CLIENT.set(client);
+		LOCAL.set(client);
 		return client;
 	}
 
