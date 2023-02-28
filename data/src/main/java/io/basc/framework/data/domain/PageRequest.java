@@ -5,7 +5,7 @@ import java.io.Serializable;
 import io.basc.framework.env.BascObject;
 import io.basc.framework.env.Sys;
 import io.basc.framework.event.Observable;
-import io.basc.framework.lang.NamedThreadLocal;
+import io.basc.framework.lang.NamedInheritableThreadLocal;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.page.PageSupport;
 
@@ -20,7 +20,7 @@ public class PageRequest extends BascObject implements Serializable {
 	private static final Observable<Long> DEFAULT_PAGE_SIZE = Sys.getEnv().getProperties()
 			.getObservable("data.page.request.size").map((e) -> e.or(10L).getAsLong());
 
-	private static final ThreadLocal<PageRequest> LOCAL = new NamedThreadLocal<PageRequest>(
+	private static final ThreadLocal<PageRequest> LOCAL = new NamedInheritableThreadLocal<PageRequest>(
 			PageRequest.class.getName());
 
 	public static PageRequest getPageRequest() {

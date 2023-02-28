@@ -8,8 +8,11 @@ import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.Session;
 
+import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.core.Ordered;
 import io.basc.framework.jms.JmsSupplier;
 
+@Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class DefaultJmsSupplier implements JmsSupplier {
 	private Session session;
 

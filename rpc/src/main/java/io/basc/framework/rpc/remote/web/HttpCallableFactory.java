@@ -5,7 +5,7 @@ import java.util.concurrent.Callable;
 
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.client.HttpClient;
-import io.basc.framework.lang.NamedThreadLocal;
+import io.basc.framework.lang.NamedInheritableThreadLocal;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.rpc.CallableFactory;
 import io.basc.framework.rpc.remote.DefaultRemoteRequestMessage;
@@ -13,7 +13,7 @@ import io.basc.framework.rpc.remote.RemoteMessageCodec;
 import io.basc.framework.rpc.remote.RemoteRequestMessage;
 
 public class HttpCallableFactory implements CallableFactory {
-	private static ThreadLocal<HttpHeaders> HTTP_HEADERS_LOCAL = new NamedThreadLocal<HttpHeaders>(
+	private static ThreadLocal<HttpHeaders> HTTP_HEADERS_LOCAL = new NamedInheritableThreadLocal<HttpHeaders>(
 			HttpCallable.class.getSimpleName() + "_headers");
 
 	public static void setLocalHeaders(HttpHeaders headers) {
