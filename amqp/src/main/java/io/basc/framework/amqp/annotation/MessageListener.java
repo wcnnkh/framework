@@ -12,15 +12,15 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Indexed
 public @interface MessageListener {
-	public String routingKey();
+	String routingKey();
 
-	public String queueName();
+	String queueName();
 
-	public boolean durable() default true;
+	boolean durable() default true;
 
-	public boolean exclusive() default false;
+	boolean exclusive() default false;
 
-	public boolean autoDelete() default false;
+	boolean autoDelete() default false;
 
-	public Class<? extends Exchange> exchange() default Exchange.class;
+	Class<? extends Exchange> exchange() default Exchange.class;
 }

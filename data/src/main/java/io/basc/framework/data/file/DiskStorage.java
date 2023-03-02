@@ -26,12 +26,6 @@ public class DiskStorage extends TimerTask implements DataStorage {
 	private final Serializer serializer;
 	private final File directory;
 
-	/**
-	 * 一个固定的目录
-	 * 
-	 * @param exp
-	 * @param expUnit
-	 */
 	protected DiskStorage(long exp, TimeUnit expUnit) {
 		this(exp, expUnit, SerializerUtils.getSerializer(),
 				FileUtils.getTempDirectory() + File.separator + "file_cache_" + expUnit.toMillis(exp));
@@ -220,12 +214,6 @@ public class DiskStorage extends TimerTask implements DataStorage {
 		return getNotExpireFile(key) != null;
 	}
 
-	/**
-	 * 过期后会调用此函数
-	 * 
-	 * @param file
-	 * @param currentTimeMillis
-	 */
 	protected void expireExecute(File file, long currentTimeMillis) {
 		file.delete();
 	}

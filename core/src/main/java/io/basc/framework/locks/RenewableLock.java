@@ -11,7 +11,7 @@ import io.basc.framework.util.Assert;
 /**
  * 一些锁的实现为了防止死锁会设置超时时间，有时因一些意外导致锁超时但不应该释放所以提供了续期的方法
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public abstract class RenewableLock extends AbstractLock {
@@ -55,11 +55,7 @@ public abstract class RenewableLock extends AbstractLock {
 		return autoRenewal(getTimeout(TimeUnit.MILLISECONDS) / 2, TimeUnit.MILLISECONDS);
 	}
 
-	/**
-	 * 在未解锁进自动续期以处理存在过期时间的锁自动解锁的问题
-	 * 
-	 * @return
-	 */
+	// 在未解锁进自动续期以处理存在过期时间的锁自动解锁的问题
 	public boolean autoRenewal(long period, TimeUnit timeUnit) {
 		Assert.requiredArgument(period > 0, "period");
 		if (autoRenewal.get()) {
@@ -81,11 +77,6 @@ public abstract class RenewableLock extends AbstractLock {
 		return false;
 	}
 
-	/**
-	 * 取消自动续期
-	 * 
-	 * @return
-	 */
 	public boolean cancelAutoRenewal() {
 		if (!autoRenewal.get()) {
 			return false;
@@ -98,21 +89,9 @@ public abstract class RenewableLock extends AbstractLock {
 		return false;
 	}
 
-	/**
-	 * 续期
-	 * 
-	 * @return
-	 */
 	public boolean renewal() {
 		return renewal(timeout, timeUnit);
 	}
 
-	/**
-	 * 续期
-	 * 
-	 * @param time
-	 * @param unit
-	 * @return
-	 */
 	public abstract boolean renewal(long time, TimeUnit unit);
 }

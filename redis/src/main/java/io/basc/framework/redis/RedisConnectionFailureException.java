@@ -15,23 +15,13 @@
  */
 package io.basc.framework.redis;
 
-/**
- * Fatal exception thrown when the Redis connection fails completely.
- */
 public class RedisConnectionFailureException extends RedisSystemException {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @param msg the detail message.
-	 */
 	public RedisConnectionFailureException(String msg) {
 		super(msg);
 	}
 
-	/**
-	 * @param msg   the detail message.
-	 * @param cause the nested exception.
-	 */
 	public RedisConnectionFailureException(String msg, Throwable cause) {
 		super(msg, cause);
 	}

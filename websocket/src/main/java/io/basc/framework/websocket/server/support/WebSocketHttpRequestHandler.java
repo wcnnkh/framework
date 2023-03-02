@@ -34,16 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A {@link HttpRequestHandler} for processing WebSocket handshake requests.
- *
- * <p>This is the main class to use when configuring a server WebSocket at a specific URL.
- * It is a very thin wrapper around a {@link WebSocketHandler} and a {@link HandshakeHandler},
- * also adapting the {@link HttpServletRequest} and {@link HttpServletResponse} to
- * {@link ServerHttpRequest} and {@link ServerHttpResponse}, respectively.
- *
- * @author Rossen Stoyanchev
- */
 public class WebSocketHttpRequestHandler {
 
 	private final Logger logger = LoggerFactory.getLogger(WebSocketHttpRequestHandler.class);
@@ -61,24 +51,14 @@ public class WebSocketHttpRequestHandler {
 		this.handshakeHandler = handshakeHandler;
 	}
 
-
-	/**
-	 * Return the WebSocketHandler.
-	 */
 	public WebSocketHandler getWebSocketHandler() {
 		return this.wsHandler;
 	}
 
-	/**
-	 * Return the HandshakeHandler.
-	 */
 	public HandshakeHandler getHandshakeHandler() {
 		return this.handshakeHandler;
 	}
 
-	/**
-	 * Configure one or more WebSocket handshake request interceptors.
-	 */
 	public void setHandshakeInterceptors(List<HandshakeInterceptor> interceptors) {
 		this.interceptors.clear();
 		if (interceptors != null) {
@@ -86,15 +66,11 @@ public class WebSocketHttpRequestHandler {
 		}
 	}
 
-	/**
-	 * Return the configured WebSocket handshake request interceptors.
-	 */
 	public List<HandshakeInterceptor> getHandshakeInterceptors() {
 		return this.interceptors;
 	}
 
-	public void handleRequest(ServerHttpRequest request, ServerHttpResponse response)
-			throws IOException {
+	public void handleRequest(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		HandshakeInterceptorChain chain = new HandshakeInterceptorChain(this.interceptors, this.wsHandler);
 		HandshakeFailureException failure = null;
 
@@ -108,14 +84,11 @@ public class WebSocketHttpRequestHandler {
 			}
 			this.handshakeHandler.doHandshake(request, response, this.wsHandler, attributes);
 			chain.applyAfterHandshake(request, response, null);
-		}
-		catch (HandshakeFailureException ex) {
+		} catch (HandshakeFailureException ex) {
 			failure = ex;
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			failure = new HandshakeFailureException("Uncaught failure for request " + request.getURI(), ex);
-		}
-		finally {
+		} finally {
 			if (failure != null) {
 				chain.applyAfterHandshake(request, response, failure);
 				throw failure;

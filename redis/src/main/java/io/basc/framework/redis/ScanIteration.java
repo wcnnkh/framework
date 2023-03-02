@@ -22,38 +22,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-/**
- * {@link ScanIteration} holds the values contained in Redis
- * {@literal Multibulk reply} on exectuting {@literal SCAN} command.
- */
 public class ScanIteration<T> implements Iterable<T> {
 
 	private final long cursorId;
 	private final Collection<T> items;
 
-	/**
-	 * @param cursorId
-	 * @param items
-	 */
 	public ScanIteration(long cursorId, @Nullable Collection<T> items) {
 		this.cursorId = cursorId;
 		this.items = (items != null ? new ArrayList<>(items) : Collections.emptyList());
 	}
 
-	/**
-	 * The cursor id to be used for subsequent requests.
-	 *
-	 * @return
-	 */
 	public long getCursorId() {
 		return cursorId;
 	}
 
-	/**
-	 * Get the items returned.
-	 *
-	 * @return
-	 */
 	public Collection<T> getItems() {
 		return items;
 	}

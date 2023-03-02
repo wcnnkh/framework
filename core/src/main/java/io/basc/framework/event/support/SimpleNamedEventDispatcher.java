@@ -13,14 +13,6 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Matcher;
 import io.basc.framework.util.Registration;
 
-/**
- * 这是一个同步的基于命名的事件分发器
- * 
- * @author shuchaowen
- *
- * @param <K>
- * @param <T>
- */
 public class SimpleNamedEventDispatcher<K, T extends Event> implements NamedEventDispatcher<K, T> {
 	private volatile Map<K, EventDispatcher<T>> namedEventListenerMap;
 	@Nullable

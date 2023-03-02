@@ -6,7 +6,7 @@ import java.security.PublicKey;
 /**
  * RSA
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class RSA extends AsymmetricCodec {

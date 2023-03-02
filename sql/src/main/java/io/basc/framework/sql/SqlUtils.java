@@ -224,14 +224,6 @@ public final class SqlUtils {
 		return sub(sourceSql, sql.getParams(), sql.isStoredProcedure(), start, sourceSql.length());
 	}
 
-	/**
-	 * 截取sql
-	 * 
-	 * @param sql
-	 * @param start
-	 * @param end
-	 * @return
-	 */
 	public static Sql sub(Sql sql, int start, int end) {
 		Assert.requiredArgument(sql != null, "sql");
 		return sub(sql.getSql(), sql.getParams(), sql.isStoredProcedure(), start, end);
@@ -263,14 +255,6 @@ public final class SqlUtils {
 		return new SimpleSql(storedProcedure, targetSql, targetParams);
 	}
 
-	/**
-	 * a=b 解析为 name -> a, left -> a , operator -> =, right -> b
-	 * 
-	 * @see SqlExpression
-	 * @param sql
-	 * @param filters
-	 * @return
-	 */
 	@Nullable
 	public static SqlExpression resolveExpression(Sql sql, Collection<? extends CharSequence> filters) {
 		String sourceSql = sql.getSql();
@@ -315,14 +299,6 @@ public final class SqlUtils {
 		return list;
 	}
 
-	/**
-	 * 解析例如 a=b, b=c的情况
-	 * 
-	 * @param sql
-	 * @param separators
-	 * @param filters
-	 * @return {@link LinkedHashMap}}
-	 */
 	public static Map<String, SqlExpression> resolveExpressionMap(Sql sql,
 			Collection<? extends CharSequence> separators, Collection<? extends CharSequence> filters) {
 		Map<String, SqlExpression> map = new LinkedHashMap<String, SqlExpression>(8);
@@ -333,12 +309,6 @@ public final class SqlUtils {
 		return map;
 	}
 
-	/**
-	 * 解析update语句的set内容
-	 * 
-	 * @param sql
-	 * @return
-	 */
 	public static Map<String, SqlExpression> resolveUpdateSetMap(Sql sql) {
 		String update = sql.getSql();
 		// 全部转小写
@@ -360,14 +330,6 @@ public final class SqlUtils {
 		return resolveExpressionMap(set, Arrays.asList(","), Arrays.asList("="));
 	}
 
-	/**
-	 * 获取where语句后面的内容
-	 * 
-	 * @param sql
-	 * @param start
-	 * @param end
-	 * @return
-	 */
 	@Nullable
 	public static Sql resolveWhereSql(Sql sql, int start, int end) {
 		String sourceSql = sql.getSql();
@@ -379,12 +341,6 @@ public final class SqlUtils {
 		return sub(sql, index + WHERE.length(), end);
 	}
 
-	/**
-	 * 获取update语句的where部分
-	 * 
-	 * @param sql
-	 * @return
-	 */
 	@Nullable
 	public static Sql resolveUpdateWhereSql(Sql sql) {
 		String sourceSql = sql.getSql();
@@ -398,22 +354,10 @@ public final class SqlUtils {
 		return resolveWhereSql(sql, setIndex + SET.length(), sourceSql.length());
 	}
 
-	/**
-	 * 解析insert语句的values内容
-	 * 
-	 * @param sql
-	 * @return
-	 */
 	public static List<Sql> resolveInsertValues(Sql sql) {
 		return split(resolveInsertValuesSql(sql), ",").collect(Collectors.toList());
 	}
 
-	/**
-	 * 解析insert语句的values部分
-	 * 
-	 * @param sql
-	 * @return
-	 */
 	public static Sql resolveInsertValuesSql(Sql sql) {
 		String sourceSql = sql.getSql();
 		sourceSql = sourceSql.toLowerCase();
@@ -430,12 +374,6 @@ public final class SqlUtils {
 		return sub(sql, pairIndex.getKey() + 1, pairIndex.getValue());
 	}
 
-	/**
-	 * 解析insert语句的columns
-	 * 
-	 * @param sql
-	 * @return 如果返回内容长度为0说明是插入全表字段的语句
-	 */
 	public static List<Sql> resolveInsertColumns(Sql sql) {
 		Sql columns = resolveInsertColumnsSql(sql);
 		if (columns == null) {
@@ -446,12 +384,6 @@ public final class SqlUtils {
 		return split(columns, ",").collect(Collectors.toList());
 	}
 
-	/**
-	 * 获取插入语句的columns部分
-	 * 
-	 * @param sql
-	 * @return 如果返回空说明是未显示声明insert columns
-	 */
 	@Nullable
 	public static Sql resolveInsertColumnsSql(Sql sql) {
 		String sourceSql = sql.getSql();
@@ -470,12 +402,6 @@ public final class SqlUtils {
 		return sub(sql, pairIndex.getKey() + 1, pairIndex.getValue());
 	}
 
-	/**
-	 * 获取update语句处理的表
-	 * 
-	 * @param sql
-	 * @return
-	 */
 	public static Sql resolveUpdateTables(Sql sql) {
 		String sourceSql = sql.getSql();
 		sourceSql = sourceSql.toLowerCase();
@@ -491,12 +417,6 @@ public final class SqlUtils {
 		return sub(sql, UPDATE_PREFIX.length(), endIndex);
 	}
 
-	/**
-	 * 获取insert语句处理的表
-	 * 
-	 * @param sql
-	 * @return
-	 */
 	public static Sql resolveInsertTables(Sql sql) {
 		String sourceSql = sql.getSql();
 		sourceSql = sourceSql.toLowerCase();

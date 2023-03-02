@@ -16,7 +16,7 @@ import java.util.concurrent.RejectedExecutionException;
 /**
  * 任务队列 默认是一个守护线程自动退出
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class TaskQueue extends Thread implements AsyncExecutor {
@@ -41,11 +41,6 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 		}
 	}
 
-	/**
-	 * 执行完后是否尝试调用{@see Future#get()}
-	 * 
-	 * @return
-	 */
 	public boolean isTryGet() {
 		return tryGet;
 	}

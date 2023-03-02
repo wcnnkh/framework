@@ -2,6 +2,7 @@ package io.basc.framework.mapper;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -161,7 +162,7 @@ public class MapperUtils {
 	/**
 	 * 将对象转换为map
 	 * 
-	 * @see ValueUtils#isBaseType(Class) 此类型无法解析
+	 * @see Value#isBaseType(Type) 此类型无法解析
 	 * @param instance
 	 * @param recursion 是否递归
 	 * @return

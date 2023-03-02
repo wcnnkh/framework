@@ -18,39 +18,19 @@ public class StandardTransaction implements Transaction, Synchronization {
 	private Resource resource = Resource.EMPTY;
 	private final boolean active;
 
-	/**
-	 * 创建一个新的事务
-	 * 
-	 */
 	public StandardTransaction(Transaction parent, TransactionDefinition definition, boolean active) {
 		this(parent, definition, active, true, null);
 	}
 
-	/**
-	 * 包装旧的事务
-	 * 
-	 */
 	public StandardTransaction(Transaction parent, TransactionDefinition definition) {
 		this(parent, definition, parent.isActive(), false, null);
 	}
 
-	/**
-	 * 嵌套事务
-	 * 
-	 */
 	public StandardTransaction(Transaction parent, TransactionDefinition definition, Savepoint savepoint,
 			boolean isNew) {
 		this(parent, definition, parent.isActive(), isNew, savepoint);
 	}
 
-	/**
-	 * 自定义
-	 * 
-	 * @param parent
-	 * @param definition
-	 * @param isNew
-	 * @param savepoint
-	 */
 	public StandardTransaction(Transaction parent, TransactionDefinition definition, boolean active, boolean isNew,
 			@Nullable Savepoint savepoint) {
 		Assert.isTrue(!(!isNew && parent == null), "An old transaction must have a parent(一个旧的事务一定存在父级)");

@@ -64,11 +64,6 @@ public final class MVCUtils {
 		return params;
 	}
 
-	/**
-	 * 是否支持servlet
-	 * 
-	 * @return
-	 */
 	public static boolean isSupperServlet() {
 		return SUPPORT_SERVLET;
 	}

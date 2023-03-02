@@ -4,7 +4,7 @@ package io.basc.framework.retry;
  * Defines the basic set of operations implemented by {@link RetryOperations} to
  * execute operations with configurable retry behaviour.
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface RetryOperations {
@@ -32,7 +32,7 @@ public interface RetryOperations {
 	 * @return the value returned by the {@link RetryCallback} upon successful
 	 *         invocation, and that returned by the {@link RecoveryCallback}
 	 *         otherwise.
-	 * @throws Throwable any {@link Exception} raised by the unsuccessful retry.
+	 * @throws E any {@link Exception} raised by the unsuccessful retry.
 	 */
 	<T, E extends Throwable> T execute(RetryCallback<T, E> retryCallback, RecoveryCallback<T, E> recoveryCallback)
 			throws E;

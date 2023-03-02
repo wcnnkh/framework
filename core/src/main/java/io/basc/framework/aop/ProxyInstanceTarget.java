@@ -3,7 +3,7 @@ package io.basc.framework.aop;
 /**
  * 这是一个被代理的实例
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface ProxyInstanceTarget {

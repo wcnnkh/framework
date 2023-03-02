@@ -3,7 +3,7 @@ package io.basc.framework.util;
 /**
  * 字符串匹配
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface StringMatcher extends Matcher<String> {

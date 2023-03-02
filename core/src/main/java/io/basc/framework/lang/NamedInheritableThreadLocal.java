@@ -27,7 +27,8 @@ public class NamedInheritableThreadLocal<T> extends InheritableThreadLocal<T> {
 	 * Create a new NamedInheritableThreadLocal with the given name.
 	 * 
 	 * @param name     a descriptive name for this ThreadLocal
-	 * @param register 是否调用{@link AnyInheriterRegistry#global#register(ThreadLocal)}
+	 * @param register 是否注册到全局
+	 * @see AnyInheriterRegistry#global()
 	 */
 	public NamedInheritableThreadLocal(String name, boolean register) {
 		Assert.hasText(name, "Name must not be empty");

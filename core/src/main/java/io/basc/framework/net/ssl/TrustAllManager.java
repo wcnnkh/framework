@@ -3,7 +3,7 @@ package io.basc.framework.net.ssl;
 /**
  * 信任所有
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class TrustAllManager implements javax.net.ssl.TrustManager, javax.net.ssl.X509TrustManager {

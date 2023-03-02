@@ -22,24 +22,10 @@ public class SharedPagination<T> extends SharedPage<Long, T> implements Paginati
 		super(start, count);
 	}
 
-	/**
-	 * @param start
-	 * @param rows
-	 * @param count 每页的数量
-	 * @param total
-	 */
 	public SharedPagination(long start, List<T> rows, long count, long total) {
 		this(start, rows, null, count, total);
 	}
 
-	/**
-	 * @param start
-	 * @param rows
-	 * @param nextStart 如果为空自动计算下一页的起始点{@link Page#getNextCursorId()}
-	 * @param count     每页的数量
-	 * @param total
-	 * @param hasMore
-	 */
 	public SharedPagination(long start, List<T> rows, @Nullable Long nextStart, long count, long total) {
 		super(start, rows, nextStart, count, total);
 	}

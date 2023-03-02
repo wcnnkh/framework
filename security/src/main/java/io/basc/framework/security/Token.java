@@ -9,7 +9,7 @@ import io.basc.framework.util.StringUtils;
 /**
  * 一个令牌的定义
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class Token implements Serializable, Cloneable {
@@ -30,32 +30,14 @@ public class Token implements Serializable, Cloneable {
 		this(token, System.currentTimeMillis(), expireDuration, expireUnit);
 	}
 
-	/**
-	 * @param token
-	 * @param createTime
-	 * @param expireDuration 过期时长
-	 * @param expireUnit
-	 */
 	public Token(String token, long createTime, long expireDuration, TimeUnit expireUnit) {
 		this(token, createTime, expireDuration, expireUnit, false);
 	}
 
-	/**
-	 * @param token
-	 * @param createTime
-	 * @param expireDuration 过期时长
-	 * @param expireUnit
-	 * @param isNew
-	 */
 	public Token(String token, long createTime, long expireDuration, TimeUnit expireUnit, boolean isNew) {
 		this(token, createTime, createTime + expireUnit.toMillis(expireDuration), isNew);
 	}
 
-	/**
-	 * @param token
-	 * @param createTime
-	 * @param expireAtTime 到期时间
-	 */
 	public Token(String token, long createTime, long expireAtTime) {
 		this(token, createTime, expireAtTime, true);
 	}
@@ -71,38 +53,18 @@ public class Token implements Serializable, Cloneable {
 		return token;
 	}
 
-	/**
-	 * 创建时间
-	 * 
-	 * @return
-	 */
 	public long getCreateTime() {
 		return Math.max(0, createTime);
 	}
 
-	/**
-	 * 到期时间点
-	 * 
-	 * @return
-	 */
 	public long getExpireAtTime() {
 		return expireAtTime;
 	}
 
-	/**
-	 * 有效期(毫秒)
-	 * 
-	 * @return
-	 */
 	public long getPeriodOfValidity() {
 		return expireAtTime - createTime;
 	}
 
-	/**
-	 * 是否是新创建的
-	 * 
-	 * @return
-	 */
 	public boolean isNew() {
 		return isNew;
 	}
@@ -111,12 +73,6 @@ public class Token implements Serializable, Cloneable {
 		return isExpired(0, TimeUnit.MILLISECONDS);
 	}
 
-	/**
-	 * 是否已过期,如果expiresIn或createTime小于等于0那么始终返回false
-	 * 
-	 * @param ahead 提前多久过期
-	 * @return
-	 */
 	public boolean isExpired(long ahead, TimeUnit timeUnit) {
 		if (expireAtTime <= 0 || createTime <= 0) {
 			return false;
@@ -125,9 +81,6 @@ public class Token implements Serializable, Cloneable {
 		return (expireAtTime - timeUnit.toMillis(ahead)) - System.currentTimeMillis() <= 0;
 	}
 
-	/**
-	 * 克隆会将isNew设置为false
-	 */
 	@Override
 	public Token clone() {
 		return new Token(token, expireAtTime, createTime, false);

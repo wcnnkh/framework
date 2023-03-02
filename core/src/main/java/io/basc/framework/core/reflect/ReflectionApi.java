@@ -108,7 +108,6 @@ public class ReflectionApi implements Supplier<Object> {
 	/**
 	 * 不安全的api
 	 * 
-	 * @see sun/misc/Unsafe
 	 */
 	public static final ReflectionApi UNSAFE = new ReflectionApi(ClassUtils.getClass("sun.misc.Unsafe", null),
 			UNSAFE_PROCESSOR);
@@ -136,7 +135,6 @@ public class ReflectionApi implements Supplier<Object> {
 	/**
 	 * 不安全的api
 	 * 
-	 * @see sun/reflect/ReflectionFactory
 	 */
 	public static final ReflectionApi REFLECTION_FACTORY = new ReflectionApi(
 			ClassUtils.getClass("sun.reflect.ReflectionFactory", null), REFLECTION_FACTORY_PROCESSOR);

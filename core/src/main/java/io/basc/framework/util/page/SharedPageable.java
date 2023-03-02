@@ -20,10 +20,6 @@ public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 	public SharedPageable() {
 	}
 
-	/**
-	 * @param cursorId
-	 * @param count    每页的数量
-	 */
 	public SharedPageable(K cursorId) {
 		this(cursorId, Collections.emptyList(), null);
 	}
@@ -32,12 +28,6 @@ public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 		return Collections.emptyIterator();
 	}
 
-	/**
-	 * @param cursorId
-	 * @param list
-	 * @param nextCursorId
-	 * @param next
-	 */
 	public SharedPageable(K cursorId, List<T> list, K nextCursorId) {
 		this.cursorId = cursorId;
 		this.nextCursorId = nextCursorId;

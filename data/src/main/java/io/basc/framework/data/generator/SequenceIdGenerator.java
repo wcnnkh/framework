@@ -8,7 +8,7 @@ import io.basc.framework.util.TimeUtils;
 /**
  * 一个纯数字的流水号生成器,最后10位是一个定长的流水号，除去最后10位，前面剩下的是时间格式化后的结果
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public final class SequenceIdGenerator implements IdGenerator<SequenceId> {

@@ -6,7 +6,7 @@ import io.basc.framework.io.Resource;
 /**
  * 黑名单 检查是否存在于黑名单中
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public final class BlacklistIPVerification extends BaseIPVerification {

@@ -3,7 +3,7 @@ package io.basc.framework.redis;
 /**
  * Note: The XX and NX options are mutually exclusive.
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public enum GeoaddOption {

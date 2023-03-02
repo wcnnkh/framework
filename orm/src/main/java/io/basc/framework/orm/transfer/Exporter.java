@@ -19,12 +19,6 @@ import io.basc.framework.util.StringUtils;
  */
 @FunctionalInterface
 public interface Exporter {
-	/**
-	 * 导出
-	 * 
-	 * @param target
-	 * @throws IOException
-	 */
 	void export(File target) throws IOException;
 
 	default void export(HttpOutputMessage target, String fileName) throws IOException {

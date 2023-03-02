@@ -22,7 +22,7 @@ import io.basc.framework.util.StringUtils;
 /**
  * 实现单简单的数学计算(并不成熟，不推荐进行复杂计算)
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
@@ -241,7 +241,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	/**
 	 * 将对象的属性值做为参数来替换
 	 * 
-	 * @author shuchaowen
+	 * @author wcnnkh
 	 *
 	 */
 	public static final class ObjectFieldScriptResolver implements ScriptResolver<NumberHolder> {

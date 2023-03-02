@@ -44,60 +44,41 @@ public class OriginHandshakeInterceptor implements HandshakeInterceptor {
 
 	private final Set<String> allowedOrigins = new LinkedHashSet<String>();
 
-
 	/**
 	 * Default constructor with only same origin requests allowed.
 	 */
 	public OriginHandshakeInterceptor() {
 	}
 
-	/**
-	 * Constructor using the specified allowed origin values.
-	 * @see #setAllowedOrigins(Collection)
-	 */
 	public OriginHandshakeInterceptor(Collection<String> allowedOrigins) {
 		setAllowedOrigins(allowedOrigins);
 	}
 
-
-	/**
-	 * Configure allowed {@code Origin} header values. This check is mostly
-	 * designed for browsers. There is nothing preventing other types of client
-	 * to modify the {@code Origin} header value.
-	 * <p>Each provided allowed origin must have a scheme, and optionally a port
-	 * (e.g. "https://example.org", "https://example.org:9090"). An allowed origin
-	 * string may also be "*" in which case all origins are allowed.
-	 * @see <a href="https://tools.ietf.org/html/rfc6454">RFC 6454: The Web Origin Concept</a>
-	 */
 	public void setAllowedOrigins(Collection<String> allowedOrigins) {
 		Assert.notNull(allowedOrigins, "Allowed origins Collection must not be null");
 		this.allowedOrigins.clear();
 		this.allowedOrigins.addAll(allowedOrigins);
 	}
 
-	/**
-	 * @see #setAllowedOrigins
-	 */
 	public Collection<String> getAllowedOrigins() {
 		return Collections.unmodifiableSet(this.allowedOrigins);
 	}
 
-
-	public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
-			WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
+	public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
+			Map<String, Object> attributes) throws Exception {
 		if (!HttpUtils.isSameOrigin(request) && !HttpUtils.isValidOrigin(request, this.allowedOrigins)) {
 			response.setStatusCode(HttpStatus.FORBIDDEN);
 			if (logger.isDebugEnabled()) {
-				logger.debug("Handshake request rejected, Origin header value " +
-						request.getHeaders().getOrigin() + " not allowed");
+				logger.debug("Handshake request rejected, Origin header value " + request.getHeaders().getOrigin()
+						+ " not allowed");
 			}
 			return false;
 		}
 		return true;
 	}
 
-	public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
-			WebSocketHandler wsHandler, Exception exception) {
+	public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
+			Exception exception) {
 	}
 
 }

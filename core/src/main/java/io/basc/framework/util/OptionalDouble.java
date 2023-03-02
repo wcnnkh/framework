@@ -63,23 +63,6 @@ public interface OptionalDouble extends Optional<Double>, DoubleSupplier {
 	 * result is non-null, return an {@code Optional} describing the result.
 	 * Otherwise return an empty {@code Optional}.
 	 *
-	 * @apiNote This method supports post-processing on optional values, without the
-	 *          need to explicitly check for a return status. For example, the
-	 *          following code traverses a stream of file names, selects one that
-	 *          has not yet been processed, and then opens that file, returning an
-	 *          {@code Optional<FileInputStream>}:
-	 *
-	 *          <pre>{@code
-	 *     Optional<FileInputStream> fis =
-	 *         names.stream().filter(name -> !isProcessedYet(name))
-	 *                       .findFirst()
-	 *                       .map(name -> new FileInputStream(name));
-	 * }</pre>
-	 *
-	 *          Here, {@code findFirst} returns an {@code Optional<String>}, and
-	 *          then {@code map} returns an {@code Optional<FileInputStream>} for
-	 *          the desired file if one exists.
-	 *
 	 * @param <U>    The type of the result of the mapping function
 	 * @param mapper a mapping function to apply to the value, if present
 	 * @return an {@code Optional} describing the result of applying a mapping

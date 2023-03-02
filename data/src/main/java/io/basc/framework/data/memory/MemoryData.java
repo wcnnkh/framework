@@ -23,30 +23,12 @@ public interface MemoryData {
 
 	void set(Object value);
 
-	/**
-	 * 如果不存在就插入
-	 * 
-	 * @param value
-	 * @return
-	 */
 	boolean setIfAbsent(Object value);
 	
 	boolean setIfPresent(Object value);
 
-	/**
-	 * 判断cas是否匹配
-	 * 
-	 * @param cas
-	 * @return
-	 */
 	boolean incrCasAndCompare(long cas);
 
-	/**
-	 * 如果不存在就插入
-	 * 
-	 * @param value
-	 * @return
-	 */
 	boolean setIfAbsent(CAS<Object> value);
 
 	boolean isExpire();

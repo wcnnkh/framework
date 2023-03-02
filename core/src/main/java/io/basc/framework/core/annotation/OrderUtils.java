@@ -6,7 +6,6 @@ import io.basc.framework.util.ClassUtils;
 
 /**
  * @see Order
- * @see javax.annotation.Priority
  */
 @SuppressWarnings("unchecked")
 public abstract class OrderUtils {

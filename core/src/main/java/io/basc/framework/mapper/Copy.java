@@ -16,7 +16,7 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionFactory;
 
 @SuppressWarnings("unchecked")
-public class Copy implements Cloneable {
+public final class Copy implements Cloneable {
 	/**
 	 * 如果对象实现了java.lang.Cloneable 接口，是否反射调用clone方法
 	 */

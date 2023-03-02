@@ -74,7 +74,7 @@ public interface PathMatcher extends StringMatcher {
 	 * template variables are expressed through curly brackets ('{' and '}').
 	 * <p>
 	 * For example: For pattern "/hotels/{hotel}" and path "/hotels/1", this method
-	 * will return a map containing "hotel"->"1".
+	 * will return a map containing "hotel"-&gt;"1".
 	 * 
 	 * @param pattern the path pattern, possibly containing URI templates
 	 * @param path    the full path to extract template variables from

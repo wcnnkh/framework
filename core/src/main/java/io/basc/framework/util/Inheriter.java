@@ -1,13 +1,14 @@
 package io.basc.framework.util;
 
 /**
- * B b = replay(capture());<br/>
- * try{ <br/>
- * codeing... <br/>
- * }<br/>
- * finally{ <br/>
- * restore(b); <br/>
- * }<br/>
+ * 
+ * B b = replay(capture());
+ * try{
+ * codeing... 
+ * }
+ * finally{ 
+ * restore(b); 
+ * }
  * 
  * @author wcnnkh
  *

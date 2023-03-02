@@ -145,20 +145,10 @@ public class Services<T> implements Iterable<T>, Consumer<T> {
 		}
 	}
 
-	/**
-	 * 设置后置服务
-	 * 
-	 * @param afterService
-	 */
 	public void setAfterService(T afterService) {
 		this.afterService = afterService;
 	}
 
-	/**
-	 * 设置前置服务
-	 * 
-	 * @param beforeService
-	 */
 	public void setBeforeService(T beforeService) {
 		this.beforeService = beforeService;
 	}

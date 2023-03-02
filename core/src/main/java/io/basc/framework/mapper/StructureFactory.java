@@ -14,7 +14,7 @@ public interface StructureFactory {
 	/**
 	 * 获取对应的结构
 	 * 
-	 * @see #isRegistry(Class)
+	 * @see #isStructureRegistred(Class)
 	 * @param entityClass
 	 * @return
 	 */

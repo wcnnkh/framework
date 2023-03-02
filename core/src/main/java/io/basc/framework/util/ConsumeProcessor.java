@@ -3,13 +3,12 @@ package io.basc.framework.util;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * 一个回调的定义
  * 
  * @see Consumer
- * @author shuchaowen
+ * @author wcnnkh
  *
  * @param <S> 回调的数据类型
  * @param <E> 异常类型
@@ -24,12 +23,9 @@ public interface ConsumeProcessor<S, E extends Throwable> {
 	 * either function throws an exception, it is relayed to the caller of the
 	 * composed function.
 	 *
-	 * @param <V>    the type of input to the {@code before} function, and to the
-	 *               composed function
 	 * @param before the function to apply before this function is applied
 	 * @throws NullPointerException if before is null
-	 *
-	 * @see #andThen(Function)
+	 * @see #andThen(ConsumeProcessor)
 	 */
 	default ConsumeProcessor<S, E> compose(ConsumeProcessor<? super S, ? extends E> before) {
 		Objects.requireNonNull(before);

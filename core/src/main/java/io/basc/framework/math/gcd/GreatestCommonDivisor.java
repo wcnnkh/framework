@@ -8,7 +8,7 @@ import java.math.BigInteger;
 /**
  * 求两数的最大公约数(Greatest Common Divisor)
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface GreatestCommonDivisor {

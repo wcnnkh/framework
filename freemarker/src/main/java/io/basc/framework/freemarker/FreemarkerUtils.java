@@ -16,7 +16,7 @@ import io.basc.framework.util.NumberUtils;
 /**
  * freemarker工具类
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class FreemarkerUtils {

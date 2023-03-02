@@ -15,21 +15,10 @@ public interface ParameterDescriptor extends AnnotatedElement, Named, Predicate<
 
 	Type getGenericType();
 
-	/**
-	 * 是否可以为空
-	 * 
-	 * @return
-	 */
 	default boolean isNullable() {
 		return AnnotatedElementUtils.isNullable(this);
 	}
 
-	/**
-	 * 重命名
-	 * 
-	 * @param name
-	 * @return
-	 */
 	default ParameterDescriptor rename(String name) {
 		return new OverrideParameterDescriptor(this, name);
 	}

@@ -3,7 +3,7 @@ package io.basc.framework.db;
 /**
  * 常见数据库
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public enum DataBaseType {
@@ -15,9 +15,6 @@ public enum DataBaseType {
 
 	private final String driverClassName;
 
-	/**
-	 * @param driverClass 默认的数据库驱动
-	 */
 	private DataBaseType(String driverClassName) {
 		this.driverClassName = driverClassName;
 	}

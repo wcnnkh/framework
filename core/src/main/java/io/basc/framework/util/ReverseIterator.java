@@ -20,9 +20,9 @@ public interface ReverseIterator<E> extends Streamy<E> {
 	/**
 	 * Returns the previous element in the list and moves the cursor position
 	 * backwards. This method may be called repeatedly to iterate through the list
-	 * backwards, or intermixed with calls to {@link #next} to go back and forth.
-	 * (Note that alternating calls to {@code next} and {@code previous} will return
-	 * the same element repeatedly.)
+	 * backwards, or intermixed with calls to {@link #previous()} to go back and
+	 * forth. (Note that alternating calls to {@code previous} and {@code previous}
+	 * will return the same element repeatedly.)
 	 *
 	 * @return the previous element in the list
 	 * @throws NoSuchElementException if the iteration has no previous element
@@ -32,20 +32,17 @@ public interface ReverseIterator<E> extends Streamy<E> {
 	/**
 	 * Removes from the underlying collection the last element returned by this
 	 * iterator (optional operation). This method can be called only once per call
-	 * to {@link #next}. The behavior of an iterator is unspecified if the
+	 * to {@link #previous()}. The behavior of an iterator is unspecified if the
 	 * underlying collection is modified while the iteration is in progress in any
 	 * way other than by calling this method.
-	 *
-	 * @implSpec The default implementation throws an instance of
-	 *           {@link UnsupportedOperationException} and performs no other action.
 	 *
 	 * @throws UnsupportedOperationException if the {@code remove} operation is not
 	 *                                       supported by this iterator
 	 *
-	 * @throws IllegalStateException         if the {@code next} method has not yet
+	 * @throws IllegalStateException         if the {@code previous} method has not yet
 	 *                                       been called, or the {@code remove}
 	 *                                       method has already been called after
-	 *                                       the last call to the {@code next}
+	 *                                       the last call to the {@code previous}
 	 *                                       method
 	 */
 	default void remove() {
@@ -57,15 +54,6 @@ public interface ReverseIterator<E> extends Streamy<E> {
 	 * been processed or the action throws an exception. Actions are performed in
 	 * the order of iteration, if that order is specified. Exceptions thrown by the
 	 * action are relayed to the caller.
-	 *
-	 * @implSpec
-	 *           <p>
-	 *           The default implementation behaves as if:
-	 * 
-	 *           <pre>{@code
-	 *     while (hasNext())
-	 *         action.accept(next());
-	 * }</pre>
 	 *
 	 * @param action The action to be performed for each element
 	 * @throws NullPointerException if the specified action is null

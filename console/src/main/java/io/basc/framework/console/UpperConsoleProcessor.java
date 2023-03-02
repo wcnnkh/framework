@@ -1,12 +1,5 @@
 package io.basc.framework.console;
 
-/**
- * 返回上一级
- * 
- * @author wcnnkh
- *
- * @param <T>
- */
 public class UpperConsoleProcessor<T> extends AbstractConsoleProcessor<T> {
 
 	public UpperConsoleProcessor() {

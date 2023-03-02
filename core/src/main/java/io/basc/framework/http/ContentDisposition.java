@@ -28,9 +28,6 @@ public final class ContentDisposition {
 
 	private final Map<String, Value> attributes;
 
-	/**
-	 * Private constructor. See static factory methods in this class.
-	 */
 	private ContentDisposition(String type, String name, String filename, Charset charset,
 			Map<String, Value> attributes) {
 		this.type = type;
@@ -40,35 +37,18 @@ public final class ContentDisposition {
 		this.attributes = attributes;
 	}
 
-	/**
-	 * Return the disposition type, like for example {@literal inline},
-	 * {@literal attachment}, {@literal form-data}, or {@code null} if not defined.
-	 */
 	public String getType() {
 		return this.type;
 	}
 
-	/**
-	 * Return the value of the {@literal name} parameter, or {@code null} if not
-	 * defined.
-	 */
 	public String getName() {
 		return this.name;
 	}
 
-	/**
-	 * Return the value of the {@literal filename} parameter (or the value of the
-	 * {@literal filename*} one decoded as defined in the RFC 5987), or {@code null}
-	 * if not defined.
-	 */
 	public String getFilename() {
 		return this.filename;
 	}
 
-	/**
-	 * Return the charset defined in {@literal filename*} parameter, or {@code null}
-	 * if not defined.
-	 */
 	public Charset getCharset() {
 		return this.charset;
 	}
@@ -107,11 +87,6 @@ public final class ContentDisposition {
 		return result;
 	}
 
-	/**
-	 * Return the header value for this content disposition as defined in RFC 6266.
-	 * 
-	 * @see #parse(String)
-	 */
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -156,9 +131,6 @@ public final class ContentDisposition {
 		return new BuilderImpl(type);
 	}
 
-	/**
-	 * Return an empty content disposition.
-	 */
 	public static ContentDisposition empty() {
 		return new ContentDisposition("", null, null, null, null);
 	}
@@ -343,41 +315,14 @@ public final class ContentDisposition {
 	 */
 	public interface Builder {
 
-		/**
-		 * Set the value of the {@literal name} parameter.
-		 */
 		Builder name(String name);
 
-		/**
-		 * Set the value of the {@literal filename} parameter. The given filename will
-		 * be formatted as quoted-string, as defined in RFC 2616, section 2.2, and any
-		 * quote characters within the filename value will be escaped with a backslash,
-		 * e.g. {@code "foo\"bar.txt"} becomes {@code "foo\\\"bar.txt"}.
-		 */
 		Builder filename(String filename);
 
-		/**
-		 * Set the value of the {@literal filename*} that will be encoded as defined in
-		 * the RFC 5987. Only the US-ASCII, UTF-8 and ISO-8859-1 charsets are supported.
-		 * <p>
-		 * <strong>Note:</strong> Do not use this for a {@code "multipart/form-data"}
-		 * requests as per <a link="https://tools.ietf.org/html/rfc7578#section-4.2">RFC
-		 * 7578, Section 4.2</a> and also RFC 5987 itself mentions it does not apply to
-		 * multipart requests.
-		 */
 		Builder filename(String filename, @Nullable Charset charset);
 
-		/**
-		 * 其他属性 <a href="https://tools.ietf.org/html/rfc6266#appendix-B">RFC 6266
-		 * 
-		 * @param attributes
-		 * @return
-		 */
 		Builder attributes(Map<String, Value> attributes);
 
-		/**
-		 * Build the content disposition.
-		 */
 		ContentDisposition build();
 	}
 

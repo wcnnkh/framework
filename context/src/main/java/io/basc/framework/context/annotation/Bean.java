@@ -9,17 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Indexed
 public @interface Bean {
-	/**
-	 * bean的id，默认是使用当前类名做为id
-	 * 
-	 * @return
-	 */
 	public String value() default "";
 
-	/**
-	 * bean的别名
-	 * 
-	 * @return
-	 */
 	public String[] names() default {};
 }

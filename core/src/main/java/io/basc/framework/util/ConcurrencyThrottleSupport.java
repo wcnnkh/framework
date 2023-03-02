@@ -66,24 +66,10 @@ public abstract class ConcurrencyThrottleSupport implements Serializable {
 
 	private int concurrencyCount = 0;
 
-	/**
-	 * Set the maximum number of concurrent access attempts allowed. -1 indicates
-	 * unbounded concurrency.
-	 * <p>
-	 * In principle, this limit can be changed at runtime, although it is generally
-	 * designed as a config time setting.
-	 * <p>
-	 * NOTE: Do not switch between -1 and any concrete limit at runtime, as this
-	 * will lead to inconsistent concurrency counts: A limit of -1 effectively turns
-	 * off concurrency counting completely.
-	 */
 	public void setConcurrencyLimit(int concurrencyLimit) {
 		this.concurrencyLimit = concurrencyLimit;
 	}
 
-	/**
-	 * Return the maximum number of concurrent access attempts allowed.
-	 */
 	public int getConcurrencyLimit() {
 		return this.concurrencyLimit;
 	}

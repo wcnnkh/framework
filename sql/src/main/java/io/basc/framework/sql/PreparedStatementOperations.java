@@ -57,12 +57,6 @@ public class PreparedStatementOperations<T extends PreparedStatement, C extends 
 		}
 	}
 
-	/**
-	 * @return 返回结果并不代表是否执行成功，意义请参考jdk文档<br/>
-	 *         true if the first result is a ResultSet object; false if the first
-	 *         result is an update count or there is no result
-	 * @throws SQLException
-	 */
 	public boolean execute() {
 		return process((e) -> e.execute());
 	}

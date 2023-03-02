@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 import io.basc.framework.lang.Nullable;
 
 /**
- * 响应式迭代<br/>
+ * 响应式迭代
  * 
  * @author wcnnkh
  *

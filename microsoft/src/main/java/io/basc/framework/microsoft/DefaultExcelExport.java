@@ -39,11 +39,6 @@ public final class DefaultExcelExport extends WritableExcelWrapper implements Ex
 		return rowIndex == 0 && sheetIndex == 0;
 	}
 
-	/**
-	 * 调用append时使用的sheetIndex
-	 * 
-	 * @return
-	 */
 	public int getSheetIndex() {
 		return sheetIndex;
 	}
@@ -52,11 +47,6 @@ public final class DefaultExcelExport extends WritableExcelWrapper implements Ex
 		this.sheetIndex = sheetIndex;
 	}
 
-	/**
-	 * 调用append时使用的rowIndex
-	 * 
-	 * @return
-	 */
 	public int getRowIndex() {
 		return rowIndex;
 	}

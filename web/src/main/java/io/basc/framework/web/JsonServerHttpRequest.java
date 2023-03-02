@@ -18,7 +18,7 @@ import java.io.UnsupportedEncodingException;
 /**
  * 一个json请求
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class JsonServerHttpRequest extends CachingServerHttpRequest {

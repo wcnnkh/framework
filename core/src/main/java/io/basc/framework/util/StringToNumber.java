@@ -131,7 +131,6 @@ public class StringToNumber implements Function<String, Number> {
 	 * 是否是可解析的数字字符串
 	 * 
 	 * @param source
-	 * @param radix  进制(小于等于0表示未知)
 	 * @return
 	 */
 	public boolean isNumeric(String source) {

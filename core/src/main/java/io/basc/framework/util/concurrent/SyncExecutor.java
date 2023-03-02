@@ -22,10 +22,6 @@ import java.util.concurrent.Executor;
 import io.basc.framework.util.Assert;
 
 /**
- * {@link TaskExecutor} implementation that executes each task
- * <i>synchronously</i> in the calling thread.
- *
- * <p>
  * Mainly intended for testing scenarios.
  *
  * <p>

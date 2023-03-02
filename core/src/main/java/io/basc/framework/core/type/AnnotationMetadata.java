@@ -73,13 +73,6 @@ public interface AnnotationMetadata extends ClassMetadata, AnnotatedTypeMetadata
 		return getAnnotations().get(metaAnnotationName, MergedAnnotation::isMetaPresent).isPresent();
 	}
 
-	/**
-	 * Determine whether the underlying class has any methods that are annotated (or
-	 * meta-annotated) with the given annotation type.
-	 * 
-	 * @param annotationName the fully qualified class name of the annotation type
-	 *                       to look for
-	 */
 	default boolean hasAnnotatedMethods(String annotationName) {
 		return !getAnnotatedMethods(annotationName).isEmpty();
 	}

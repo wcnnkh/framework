@@ -117,7 +117,7 @@ public final class ClassUtils {
 	 * suitable for use with {@code Class.getResource} by prepending a slash ('/')
 	 * to the return value). Built by taking the package of the specified class
 	 * file, converting all dots ('.') to slashes ('/'), adding a trailing slash if
-	 * necessary, and concatenating the specified resource name to this. <br/>
+	 * necessary, and concatenating the specified resource name to this. 
 	 * 
 	 * @param clazz        the Class whose package will be used as the base
 	 * @param resourceName the resource name to append. A leading slash is optional.
@@ -539,7 +539,7 @@ public final class ClassUtils {
 	/**
 	 * 如果类不存在将返回空
 	 * 
-	 * @param name
+	 * @param className
 	 * @param classLoader
 	 * @return
 	 */
@@ -817,7 +817,6 @@ public final class ClassUtils {
 	 * @param lhsType the target type
 	 * @param rhsType the value type that should be assigned to the target type
 	 * @return if the target type is assignable from the value type
-	 * @see CGLIBTypeUtils#isAssignable
 	 */
 	@SuppressWarnings("rawtypes")
 	public static boolean isAssignable(Class<?> lhsType, Class<?> rhsType) {
@@ -1023,7 +1022,7 @@ public final class ClassUtils {
 	 * short, int, long, float, or double) or a primitive wrapper (i.e. Boolean,
 	 * Byte, Character, Short, Integer, Long, Float, or Double).
 	 * 
-	 * @param clazz the class to check
+	 * @param type the class to check
 	 * @return whether the given class is a primitive or primitive wrapper class
 	 */
 	public static boolean isPrimitiveOrWrapper(Type type) {
@@ -1035,7 +1034,7 @@ public final class ClassUtils {
 	 * Check if the given class represents a primitive wrapper, i.e. Boolean, Byte,
 	 * Character, Short, Integer, Long, Float, or Double.
 	 * 
-	 * @param clazz the class to check
+	 * @param type the class to check
 	 * @return whether the given class is a primitive wrapper class
 	 */
 	public static boolean isPrimitiveWrapper(Type type) {

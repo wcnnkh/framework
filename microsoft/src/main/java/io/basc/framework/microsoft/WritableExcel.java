@@ -5,7 +5,7 @@ import java.io.Flushable;
 /**
  * 可写的excel
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface WritableExcel extends Excel, Flushable {

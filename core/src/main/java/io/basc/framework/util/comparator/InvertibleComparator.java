@@ -51,7 +51,7 @@ public class InvertibleComparator<T> implements Comparator<T>, Serializable {
 	}
 
 	/**
-	 * Invert the sort order: ascending -> descending or descending -> ascending.
+	 * Invert the sort order: ascending --&gt; descending or descending --&gt; ascending.
 	 */
 	public void invertOrder() {
 		this.ascending = !this.ascending;

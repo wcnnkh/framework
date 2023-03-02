@@ -3,7 +3,7 @@ package io.basc.framework.sql.orm.annotation;
 /**
  * 索引的排序方式
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public enum IndexOrder {

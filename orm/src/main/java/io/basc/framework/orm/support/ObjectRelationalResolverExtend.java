@@ -58,26 +58,11 @@ public interface ObjectRelationalResolverExtend {
 		return chain.isVersionField(entityClass, descriptor);
 	}
 
-	/**
-	 * 获取值的范围
-	 * 
-	 * @param entityClass
-	 * @param descriptor
-	 * @return
-	 */
 	default Collection<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor,
 			ObjectRelationalResolver chain) {
 		return chain.getNumberRanges(entityClass, descriptor);
 	}
 
-	/**
-	 * 是否自增
-	 * 
-	 * @param entityClass
-	 * @param descriptor
-	 * @param chain
-	 * @return
-	 */
 	default boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor,
 			ObjectRelationalResolver chain) {
 		return chain.isAutoIncrement(entityClass, descriptor);

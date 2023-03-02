@@ -66,13 +66,6 @@ public class DefaultHSSFListener implements HSSFListener {
 		this(fs, -1, consumer);
 	}
 
-	/**
-	 * Creates a new XLS -> CSV converter
-	 * 
-	 * @param fs         The POIFSFileSystem to process
-	 * @param minColumns The minimum number of columns to output, or -1 for no
-	 *                   minimum
-	 */
 	public DefaultHSSFListener(POIFSFileSystem fs, int minColumns, Consumer<ExcelRow> consumer) {
 		this.fs = fs;
 		this.minColumns = minColumns;
@@ -87,9 +80,6 @@ public class DefaultHSSFListener implements HSSFListener {
 		this.outputFormulaValues = outputFormulaValues;
 	}
 
-	/**
-	 * Initiates the processing of the XLS file to CSV
-	 */
 	public void process() throws IOException {
 		MissingRecordAwareHSSFListener listener = new MissingRecordAwareHSSFListener(this);
 		formatListener = new FormatTrackingHSSFListener(listener);
@@ -107,10 +97,6 @@ public class DefaultHSSFListener implements HSSFListener {
 		factory.processWorkbookEvents(request, fs);
 	}
 
-	/**
-	 * Main HSSFListener method, processes events, and outputs the CSV as the file
-	 * is processed.
-	 */
 	public void processRecord(org.apache.poi.hssf.record.Record record) {
 		int thisRow = -1;
 		int thisColumn = -1;

@@ -3,7 +3,7 @@ package io.basc.framework.lang;
 /**
  * 参数异常
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class ParameterFormatException extends ParameterException {

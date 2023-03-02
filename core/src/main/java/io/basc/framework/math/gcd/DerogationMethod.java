@@ -8,7 +8,7 @@ import java.math.BigInteger;
 /**
  * 更相减损法
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class DerogationMethod implements GreatestCommonDivisor {

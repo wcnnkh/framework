@@ -8,7 +8,7 @@ import io.basc.framework.io.Resource;
  * 
  * 检查是否存在于白名单中
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public final class WhitelistIPVerification extends BaseIPVerification {

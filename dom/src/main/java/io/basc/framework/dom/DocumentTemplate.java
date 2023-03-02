@@ -186,14 +186,6 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 		return list;
 	}
 
-	/**
-	 * 获取子node
-	 * 
-	 * @param node
-	 * @param resourceLoader 如果resourceloader不为空就说明支持include
-	 * @return
-	 * @throws IOException
-	 */
 	public NodeList getChildNodes(Node node, @Nullable ResourceLoader resourceLoader) {
 		if (node == null) {
 			return EmptyNodeList.EMPTY;

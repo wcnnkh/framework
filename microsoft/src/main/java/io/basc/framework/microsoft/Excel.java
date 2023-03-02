@@ -8,19 +8,8 @@ import io.basc.framework.util.page.Paginations;
 
 public interface Excel extends Closeable, Paginations<String[]> {
 
-	/**
-	 * 获取指定索引的sheet
-	 * 
-	 * @param sheetIndex 从0开始
-	 * @return
-	 */
 	Sheet getSheet(int sheetIndex);
 
-	/**
-	 * 获取有多少个sheet
-	 * 
-	 * @return
-	 */
 	int getNumberOfSheets();
 
 	default Sheet getSheet(String sheetName) {

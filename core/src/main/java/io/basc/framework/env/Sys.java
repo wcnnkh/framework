@@ -14,7 +14,7 @@ import io.basc.framework.value.support.SystemPropertyFactory;
 /**
  * 不使用System这个名称的原因是名称冲突
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public final class Sys extends DefaultEnvironment {

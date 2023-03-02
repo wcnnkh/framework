@@ -29,7 +29,7 @@ import io.basc.framework.util.StringUtils;
 /**
  * 默认的Timer实现
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Provider(order = Ordered.LOWEST_PRECEDENCE)

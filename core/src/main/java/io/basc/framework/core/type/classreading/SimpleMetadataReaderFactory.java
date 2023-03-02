@@ -3,6 +3,8 @@ package io.basc.framework.core.type.classreading;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.objectweb.asm.ClassReader;
+
 import io.basc.framework.io.DefaultResourceLoader;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
@@ -11,8 +13,7 @@ import io.basc.framework.util.ClassUtils;
 
 /**
  * Simple implementation of the {@link MetadataReaderFactory} interface,
- * creating a new ASM {@link io.basc.framework.asm.ClassReader} for every
- * request.
+ * creating a new ASM {@link ClassReader} for every request.
  *
  * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/type/classreading/SimpleMetadataReaderFactory.java
  */
@@ -47,10 +48,6 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 				: new DefaultResourceLoader());
 	}
 
-	/**
-	 * Return the ResourceLoader that this MetadataReaderFactory has been
-	 * constructed with.
-	 */
 	public final ResourceLoader getResourceLoader() {
 		return this.resourceLoader;
 	}

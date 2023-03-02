@@ -28,7 +28,7 @@ import io.basc.framework.value.Value;
 /**
  * 使用zookeeper实现的配置中心
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Provider(order = Integer.MIN_VALUE)

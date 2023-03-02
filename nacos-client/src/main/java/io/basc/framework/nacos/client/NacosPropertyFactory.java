@@ -13,9 +13,9 @@ import io.basc.framework.value.ConfigurablePropertyFactory;
 import io.basc.framework.value.Value;
 
 /**
- * 使用nacos实现配置中心 {@link https://nacos.io/zh-cn/docs/sdk.html}
+ * 使用nacos实现配置中心
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class NacosPropertyFactory implements ConfigurablePropertyFactory {

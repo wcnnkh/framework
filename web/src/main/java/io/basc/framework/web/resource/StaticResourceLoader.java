@@ -9,7 +9,7 @@ import io.basc.framework.web.ServerHttpRequest;
 /**
  * 静态资源解析
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface StaticResourceLoader {

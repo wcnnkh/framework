@@ -31,7 +31,7 @@ public interface Calculator extends MathFunction<NumberHolder, NumberHolder> {
 	}
 
 	/**
-	 * 计算符<br/>
+	 * 计算符
 	 * 
 	 * @return
 	 */

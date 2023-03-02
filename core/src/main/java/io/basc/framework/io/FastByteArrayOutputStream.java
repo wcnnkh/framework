@@ -12,7 +12,6 @@ import io.basc.framework.util.Assert;
 /**
  * A speedy alternative to {@link java.io.ByteArrayOutputStream}. Note that this
  * variant does <i>not</i> extend {@code ByteArrayOutputStream}, unlike its
- * sibling {@link ResizableByteArrayOutputStream}.
  *
  * <p>
  * Unlike {@link java.io.ByteArrayOutputStream}, this implementation is backed

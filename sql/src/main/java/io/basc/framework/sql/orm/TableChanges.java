@@ -9,7 +9,7 @@ import io.basc.framework.util.CollectionUtils;
 /**
  * 获取表变更
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class TableChanges {
@@ -24,20 +24,10 @@ public class TableChanges {
 				: Collections.unmodifiableCollection(addColumns);
 	}
 
-	/**
-	 * 获取删除的字段
-	 * 
-	 * @return
-	 */
 	public Collection<String> getDeleteColumns() {
 		return deleteColumns;
 	}
 
-	/**
-	 * 获取添加的字段
-	 * 
-	 * @return
-	 */
 	public Collection<Field> getAddColumnss() {
 		return addColumns;
 	}

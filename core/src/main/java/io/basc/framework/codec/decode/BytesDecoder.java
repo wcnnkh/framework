@@ -157,16 +157,6 @@ public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<b
 		}
 	}
 
-	/**
-	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
-	 * 
-	 * @param source
-	 * @param bufferSize
-	 * @param target
-	 * @param count
-	 * @throws DecodeException
-	 * @throws IOException
-	 */
 	default void decode(InputStream source, int bufferSize, OutputStream target, int count)
 			throws DecodeException, IOException {
 		Assert.isTrue(count > 0, "Count must be greater than 0");
@@ -201,17 +191,6 @@ public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<b
 
 	void decode(InputStream source, int bufferSize, OutputStream target) throws DecodeException, IOException;
 
-	/**
-	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
-	 * 
-	 * @param source
-	 * @param bufferSize
-	 * @param targetProcessor
-	 * @param count
-	 * @throws DecodeException
-	 * @throws IOException
-	 * @throws E
-	 */
 	default <E extends Throwable> void decode(InputStream source, int bufferSize,
 			BufferProcessor<byte[], E> targetProcessor, int count) throws DecodeException, IOException, E {
 		Assert.isTrue(count > 0, "Count must be greater than 0");
@@ -244,16 +223,6 @@ public interface BytesDecoder extends FromBytesDecoder<byte[]>, ToBytesDecoder<b
 		}
 	}
 
-	/**
-	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
-	 * 
-	 * @param source
-	 * @param bufferSize
-	 * @param targetProcessor
-	 * @throws DecodeException
-	 * @throws IOException
-	 * @throws E
-	 */
 	default <E extends Throwable> void decode(InputStream source, int bufferSize,
 			BufferProcessor<byte[], E> targetProcessor) throws DecodeException, IOException, E {
 		File tempFile = File.createTempFile("decode", "processor");

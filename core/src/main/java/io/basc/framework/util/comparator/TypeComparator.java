@@ -9,7 +9,7 @@ public class TypeComparator implements Comparator<Class<?>> {
 	public static final TypeComparator DEFAULT = new TypeComparator();
 
 	/**
-	 * 大类型在小类型之后 Integer -> Number -> Object
+	 * 大类型在小类型之后
 	 */
 	@Override
 	public int compare(Class<?> o1, Class<?> o2) {

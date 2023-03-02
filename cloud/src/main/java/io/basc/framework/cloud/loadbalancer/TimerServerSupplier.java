@@ -21,19 +21,10 @@ public class TimerServerSupplier<T> extends TimerTask implements ServerSupplier<
 	private ConcurrentHashMap<String, Long> failMap = new ConcurrentHashMap<String, Long>(8);
 	private AtomicBoolean timerTag = new AtomicBoolean(false);
 
-	/**
-	 * 默认1分钟刷新
-	 * 
-	 * @param serverSupplier
-	 */
 	public TimerServerSupplier(ServerSupplier<T> serverSupplier) {
 		this(serverSupplier, 60000L);
 	}
 
-	/**
-	 * @param serverSupplier
-	 * @param period         定时刷新周期：毫秒
-	 */
 	public TimerServerSupplier(ServerSupplier<T> serverSupplier, long period) {
 		this.serverSupplier = serverSupplier;
 		this.period = period;

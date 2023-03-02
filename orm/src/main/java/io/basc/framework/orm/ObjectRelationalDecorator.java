@@ -143,11 +143,6 @@ public abstract class ObjectRelationalDecorator<S extends Property, T extends Ob
 		return decorate(super.shared());
 	}
 
-	/**
-	 * 严格的，必须包含getter和setter
-	 * 
-	 * @return
-	 */
 	public T strict() {
 		return decorate(super.strict());
 	}

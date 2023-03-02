@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 
 /**
  * @see SimpleDateFormat
- * @author shuchaowen
+ * @author wcnnkh
  */
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)

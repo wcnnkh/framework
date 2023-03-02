@@ -6,7 +6,7 @@ import io.basc.framework.event.Event;
 /**
  * 生命周期事件
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class BeanLifecycleEvent implements Event {

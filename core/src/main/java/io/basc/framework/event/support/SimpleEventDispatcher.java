@@ -13,13 +13,6 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ConsumeProcessor;
 import io.basc.framework.util.Registration;
 
-/**
- * 这是一个同步的事件分发服务
- * 
- * @author shuchaowen
- *
- * @param <T>
- */
 public class SimpleEventDispatcher<T extends Event> implements EventDispatcher<T> {
 	private static final int INITIAL_CAPACITY = Integer.getInteger("io.basc.framework.event.list.initial_capacity", 8);
 	private volatile List<EventRegistrationInternal> eventListeners;

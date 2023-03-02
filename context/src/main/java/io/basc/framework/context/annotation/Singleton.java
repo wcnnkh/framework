@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 /**
  * 声明是否是单例
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })

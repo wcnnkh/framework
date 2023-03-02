@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * TCC步骤的定义
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Target({ ElementType.METHOD })

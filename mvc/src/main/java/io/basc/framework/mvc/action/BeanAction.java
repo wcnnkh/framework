@@ -22,11 +22,6 @@ public class BeanAction extends AbstractAction {
 	private final MethodInvoker invoker;
 	private Iterable<ActionInterceptor> actionInterceptors;
 
-	/**
-	 * @param beanFactory
-	 * @param targetClass
-	 * @param method
-	 */
 	public BeanAction(BeanFactory beanFactory, Class<?> targetClass, Method method, HttpPatternResolver httpPatternResolver) {
 		super(targetClass, method, httpPatternResolver);
 		this.beanFactory = beanFactory;

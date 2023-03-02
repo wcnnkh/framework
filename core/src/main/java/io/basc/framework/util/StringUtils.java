@@ -666,7 +666,7 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Extract the filename from the given path, e.g. "mypath/myfile.txt" ->
+	 * Extract the filename from the given path, e.g. "mypath/myfile.txt" --&gt;
 	 * "myfile.txt".
 	 * 
 	 * @param path the file path (may be {@code null})
@@ -686,7 +686,7 @@ public final class StringUtils {
 
 	/**
 	 * Extract the filename extension from the given path, e.g. "mypath/myfile.txt"
-	 * -> "txt".
+	 * -&gt; "txt".
 	 * 
 	 * @param path the file path (may be {@code null})
 	 * @return the extracted filename extension, or {@code null} if none
@@ -1304,7 +1304,7 @@ public final class StringUtils {
 	}
 
 	/**
-	 * 合并多个路径<br/>
+	 * 合并多个路径
 	 * 
 	 * @param paths
 	 * @return
@@ -1606,7 +1606,7 @@ public final class StringUtils {
 			int to = toOffset;
 			int po = 0;
 			int pc = prefix.length();
-			// Note: toffset might be near -1>>>1.
+			// Note: toffset might be near -1&gt;&gt;&gt;1.
 			if ((toOffset < 0) || (toOffset > text.length() - pc)) {
 				return false;
 			}
@@ -1645,8 +1645,8 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Strip the filename extension from the given path, e.g. "mypath/myfile.txt" ->
-	 * "mypath/myfile".
+	 * Strip the filename extension from the given path, e.g. "mypath/myfile.txt"
+	 * -&gt; "mypath/myfile".
 	 * 
 	 * @param path the file path (may be {@code null})
 	 * @return the path with stripped filename extension, or {@code null} if none
@@ -1860,7 +1860,7 @@ public final class StringUtils {
 	 * Trim <i>all</i> whitespace from the given String: leading, trailing, and
 	 * inbetween characters.
 	 * 
-	 * @param str the String to check
+	 * @param charSequence the String to check
 	 * @return the trimmed String
 	 * @see java.lang.Character#isWhitespace
 	 */
@@ -1910,7 +1910,7 @@ public final class StringUtils {
 	/**
 	 * Trim all occurences of the supplied leading character from the given String.
 	 * 
-	 * @param str              the String to check
+	 * @param charSequence     the String to check
 	 * @param leadingCharacter the leading character to be trimmed
 	 * @return the trimmed String
 	 */
@@ -1936,7 +1936,7 @@ public final class StringUtils {
 	/**
 	 * Trim leading whitespace from the given String.
 	 * 
-	 * @param str the String to check
+	 * @param charSequence the String to check
 	 * @return the trimmed String
 	 * @see java.lang.Character#isWhitespace
 	 */
@@ -1962,7 +1962,7 @@ public final class StringUtils {
 	/**
 	 * Trim all occurences of the supplied trailing character from the given String.
 	 * 
-	 * @param str               the String to check
+	 * @param charSequence      the String to check
 	 * @param trailingCharacter the trailing character to be trimmed
 	 * @return the trimmed String
 	 */
@@ -1987,7 +1987,7 @@ public final class StringUtils {
 	/**
 	 * Trim trailing whitespace from the given String.
 	 * 
-	 * @param str the String to check
+	 * @param charSequence the String to check
 	 * @return the trimmed String
 	 * @see java.lang.Character#isWhitespace
 	 */

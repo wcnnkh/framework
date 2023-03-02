@@ -5,7 +5,7 @@ import io.basc.framework.util.comparator.Sort;
 /**
  * 查询附近的点所需的参数
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class QueryNearby extends Point {

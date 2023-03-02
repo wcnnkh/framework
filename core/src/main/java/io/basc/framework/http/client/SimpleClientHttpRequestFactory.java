@@ -13,6 +13,7 @@ import javax.net.ssl.SSLSocketFactory;
 
 import io.basc.framework.env.Sys;
 import io.basc.framework.http.HttpMethod;
+import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.logger.Logger;
@@ -34,8 +35,7 @@ public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAcces
 	}
 
 	/**
-	 * 一个信任所有的ssl socket factory <br/>
-	 * 注意:在初始化失败后可能为空
+	 * 一个信任所有的ssl socket factory 注意:在初始化失败后可能为空
 	 */
 	public static final SSLSocketFactory TRUSE_ALL_SSL_SOCKET_FACTORY;
 
@@ -107,7 +107,7 @@ public class SimpleClientHttpRequestFactory extends ClientHttpRequestConfigAcces
 
 	/**
 	 * Indicate whether this request factory should buffer the
-	 * {@linkplain ClientHttpRequest#getBody() request body} internally.
+	 * {@linkplain HttpRequestEntity#getBody() request body} internally.
 	 * 
 	 * @see #setChunkSize(int)
 	 * @see HttpURLConnection#setFixedLengthStreamingMode(int)

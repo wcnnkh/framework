@@ -9,7 +9,7 @@ import io.basc.framework.value.ValueFactory;
  * profiles 解析器
  * 
  * @see DefaultProfilesResolver
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface ProfilesResolver {

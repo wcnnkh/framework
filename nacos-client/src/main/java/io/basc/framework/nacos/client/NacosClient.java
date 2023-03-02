@@ -17,14 +17,12 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.api.naming.pojo.ServiceInfo;
 
 /**
- * nacos客户端<br/>
- * {@link https://nacos.io/zh-cn/docs/sdk.html}<br/>
+ * nacos客户端
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
-public class NacosClient implements ServiceRegistry<ServiceInstance>,
-		DiscoveryClient {
+public class NacosClient implements ServiceRegistry<ServiceInstance>, DiscoveryClient {
 	private final NamingService namingService;
 	private final String groupName;
 
@@ -50,8 +48,7 @@ public class NacosClient implements ServiceRegistry<ServiceInstance>,
 			return Collections.emptyList();
 		}
 
-		List<ServiceInstance> list = new ArrayList<ServiceInstance>(
-				instances.size());
+		List<ServiceInstance> list = new ArrayList<ServiceInstance>(instances.size());
 		for (Instance instance : instances) {
 			list.add(new NacosServiceInstance(instance));
 		}
@@ -91,11 +88,10 @@ public class NacosClient implements ServiceRegistry<ServiceInstance>,
 			if (groupName == null) {
 				namingService.registerInstance(instance.getName(), registion);
 			} else {
-				namingService.registerInstance(instance.getName(), groupName,
-						registion);
+				namingService.registerInstance(instance.getName(), groupName, registion);
 			}
 		} catch (NacosException e) {
-			throw new ServiceRegistryException("注册["+instance+"]异常", e);
+			throw new ServiceRegistryException("注册[" + instance + "]异常", e);
 		}
 	}
 
@@ -111,11 +107,10 @@ public class NacosClient implements ServiceRegistry<ServiceInstance>,
 			if (groupName == null) {
 				namingService.deregisterInstance(instance.getName(), registion);
 			} else {
-				namingService.deregisterInstance(instance.getName(), groupName,
-						registion);
+				namingService.deregisterInstance(instance.getName(), groupName, registion);
 			}
 		} catch (NacosException e) {
-			throw new ServiceRegistryException("注册["+instance+"]异常", e);
+			throw new ServiceRegistryException("注册[" + instance + "]异常", e);
 		}
 	}
 }

@@ -18,72 +18,27 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 
 	private final URI url;
 
-	/**
-	 * Constructor with method and URL but without body nor headers.
-	 * 
-	 * @param method the method
-	 * @param url    the URL
-	 */
 	public HttpRequestEntity(String method, URI url) {
 		this(null, null, method, url, null);
 	}
 
-	/**
-	 * Constructor with method, URL and body but without headers.
-	 * 
-	 * @param body   the body
-	 * @param method the method
-	 * @param url    the URL
-	 */
 	public HttpRequestEntity(@Nullable T body, String method, URI url) {
 		this(body, null, method, url, null);
 	}
 
-	/**
-	 * Constructor with method, URL, body and type but without headers.
-	 * 
-	 * @param body   the body
-	 * @param method the method
-	 * @param url    the URL
-	 * @param type   the type used for generic type resolution
-	 */
 	public HttpRequestEntity(@Nullable T body, String method, URI url, TypeDescriptor typeDescriptor) {
 		this(body, null, method, url, typeDescriptor);
 	}
 
-	/**
-	 * Constructor with method, URL and headers but without body.
-	 * 
-	 * @param headers the headers
-	 * @param method  the method
-	 * @param url     the URL
-	 */
 	public HttpRequestEntity(MultiValueMap<String, String> headers, String method, URI url) {
 		this(null, headers, method, url, null);
 	}
 
-	/**
-	 * Constructor with method, URL, headers and body.
-	 * 
-	 * @param body    the body
-	 * @param headers the headers
-	 * @param method  the method
-	 * @param url     the URL
-	 */
 	public HttpRequestEntity(@Nullable T body, @Nullable MultiValueMap<String, String> headers, @Nullable String method,
 			URI url) {
 		this(body, headers, method, url, null);
 	}
 
-	/**
-	 * Constructor with method, URL, headers, body and type.
-	 * 
-	 * @param body    the body
-	 * @param headers the headers
-	 * @param method  the method
-	 * @param url     the URL
-	 * @param type    the type used for generic type resolution
-	 */
 	public HttpRequestEntity(@Nullable T body, @Nullable MultiValueMap<String, String> headers, @Nullable String method,
 			URI url, @Nullable TypeDescriptor typeDescriptor) {
 		super(body, typeDescriptor, headers);
@@ -91,22 +46,12 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 		this.url = url;
 	}
 
-	/**
-	 * Return the HTTP method of the request.
-	 * 
-	 * @return the HTTP method as an {@code HttpMethod} enum value
-	 */
 	@Nullable
 	@Override
 	public String getRawMethod() {
 		return this.method;
 	}
 
-	/**
-	 * Return the URI of the request.
-	 * 
-	 * @return the URL as a {@code URI}
-	 */
 	@Override
 	public final URI getURI() {
 		return this.url;
@@ -277,64 +222,18 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 	 */
 	public interface HeadersBuilder<B extends HeadersBuilder<B>> {
 
-		/**
-		 * Add the given, single header value under the given name.
-		 * 
-		 * @param headerName   the header name
-		 * @param headerValues the header value(s)
-		 * @return this builder
-		 * @see HttpHeaders#add(String, String)
-		 */
 		B header(String headerName, String... headerValues);
 
-		/**
-		 * Copy the given headers into the entity's headers map.
-		 * 
-		 * @param headers the existing HttpHeaders to copy from
-		 * @return this builder
-		 * @see HttpHeaders#add(String, String)
-		 */
 		B headers(@Nullable HttpHeaders headers);
 
-		/**
-		 * Set the list of acceptable {@linkplain MediaType media types}, as specified
-		 * by the {@code Accept} header.
-		 * 
-		 * @param acceptableMediaTypes the acceptable media types
-		 */
 		B accept(MediaType... acceptableMediaTypes);
 
-		/**
-		 * Set the list of acceptable {@linkplain Charset charsets}, as specified by the
-		 * {@code Accept-Charset} header.
-		 * 
-		 * @param acceptableCharsets the acceptable charsets
-		 */
 		B acceptCharset(Charset... acceptableCharsets);
 
-		/**
-		 * Set the value of the {@code If-Modified-Since} header.
-		 * <p>
-		 * The date should be specified as the number of milliseconds since January 1,
-		 * 1970 GMT.
-		 * 
-		 * @param ifModifiedSince the new value of the header
-		 */
 		B ifModifiedSince(long ifModifiedSince);
 
-		/**
-		 * Set the values of the {@code If-None-Match} header.
-		 * 
-		 * @param ifNoneMatches the new value of the header
-		 */
 		B ifNoneMatch(String... ifNoneMatches);
 
-		/**
-		 * Builds the request entity with no body.
-		 * 
-		 * @return the request entity
-		 * @see BodyBuilder#body(Object)
-		 */
 		<T> HttpRequestEntity<T> build();
 	}
 
@@ -343,43 +242,12 @@ public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 	 */
 	public interface BodyBuilder<B extends BodyBuilder<B>> extends HeadersBuilder<B> {
 
-		/**
-		 * Set the length of the body in bytes, as specified by the
-		 * {@code Content-Length} header.
-		 * 
-		 * @param contentLength the content length
-		 * @return this builder
-		 * @see HttpHeaders#setContentLength(long)
-		 */
 		B contentLength(long contentLength);
 
-		/**
-		 * Set the {@linkplain MediaType media type} of the body, as specified by the
-		 * {@code Content-Type} header.
-		 * 
-		 * @param contentType the content type
-		 * @return this builder
-		 * @see HttpHeaders#setContentType(MediaType)
-		 */
 		B contentType(MediaType contentType);
 
-		/**
-		 * Set the body of the request entity and build the RequestEntity.
-		 * 
-		 * @param <T>  the type of the body
-		 * @param body the body of the request entity
-		 * @return the built request entity
-		 */
 		<T> HttpRequestEntity<T> body(T body);
 
-		/**
-		 * Set the body and type of the request entity and build the RequestEntity.
-		 * 
-		 * @param <T>  the type of the body
-		 * @param body the body of the request entity
-		 * @param type the type of the body, useful for generic type resolution
-		 * @return the built request entity
-		 */
 		<T> HttpRequestEntity<T> body(T body, TypeDescriptor typeDescriptor);
 	}
 

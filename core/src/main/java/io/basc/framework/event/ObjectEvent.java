@@ -9,7 +9,7 @@ import io.basc.framework.util.TimeUtils;
  * 这和jdk自身提供的区别是source字段可以被序列化
  * 
  * @see EventObject
- * @author shuchaowen
+ * @author wcnnkh
  *
  * @param <T>
  */

@@ -6,7 +6,7 @@ import io.basc.framework.web.pattern.WebProcessorRegistry;
 /**
  * 跨域路径注册
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class CorsRegistry extends WebProcessorRegistry<Cors, WebException> {

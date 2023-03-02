@@ -90,23 +90,23 @@ public final class FilenameUtils {
 	 * character.
 	 * 
 	 * <pre>
-	 * /foo//               -->   /foo/
-	 * /foo/./              -->   /foo/
-	 * /foo/../bar          -->   /bar
-	 * /foo/../bar/         -->   /bar/
-	 * /foo/../bar/../baz   -->   /baz
-	 * //foo//./bar         -->   /foo/bar
-	 * /../                 -->   null
-	 * ../foo               -->   null
-	 * foo/bar/..           -->   foo/
-	 * foo/../../bar        -->   null
-	 * foo/../bar           -->   bar
-	 * //server/foo/../bar  -->   //server/bar
-	 * //server/../bar      -->   null
-	 * C:\foo\..\bar        -->   C:\bar
-	 * C:\..\bar            -->   null
-	 * ~/foo/../bar/        -->   ~/bar/
-	 * ~/../bar             -->   null
+	 * /foo//               --&gt;   /foo/
+	 * /foo/./              --&gt;   /foo/
+	 * /foo/../bar          --&gt;   /bar
+	 * /foo/../bar/         --&gt;   /bar/
+	 * /foo/../bar/../baz   --&gt;   /baz
+	 * //foo//./bar         --&gt;   /foo/bar
+	 * /../                 --&gt;   null
+	 * ../foo               --&gt;   null
+	 * foo/bar/..           --&gt;   foo/
+	 * foo/../../bar        --&gt;   null
+	 * foo/../bar           --&gt;   bar
+	 * //server/foo/../bar  --&gt;   //server/bar
+	 * //server/../bar      --&gt;   null
+	 * C:\foo\..\bar        --&gt;   C:\bar
+	 * C:\..\bar            --&gt;   null
+	 * ~/foo/../bar/        --&gt;   ~/bar/
+	 * ~/../bar             --&gt;   null
 	 * </pre>
 	 * 
 	 * (Note the file separator returned will be correct for Windows/Unix)
@@ -135,23 +135,23 @@ public final class FilenameUtils {
 	 * character.
 	 * 
 	 * <pre>
-	 * /foo//               -->   /foo/
-	 * /foo/./              -->   /foo/
-	 * /foo/../bar          -->   /bar
-	 * /foo/../bar/         -->   /bar/
-	 * /foo/../bar/../baz   -->   /baz
-	 * //foo//./bar         -->   /foo/bar
-	 * /../                 -->   null
-	 * ../foo               -->   null
-	 * foo/bar/..           -->   foo/
-	 * foo/../../bar        -->   null
-	 * foo/../bar           -->   bar
-	 * //server/foo/../bar  -->   //server/bar
-	 * //server/../bar      -->   null
-	 * C:\foo\..\bar        -->   C:\bar
-	 * C:\..\bar            -->   null
-	 * ~/foo/../bar/        -->   ~/bar/
-	 * ~/../bar             -->   null
+	 * /foo//               --&gt;   /foo/
+	 * /foo/./              --&gt;   /foo/
+	 * /foo/../bar          --&gt;   /bar
+	 * /foo/../bar/         --&gt;   /bar/
+	 * /foo/../bar/../baz   --&gt;   /baz
+	 * //foo//./bar         --&gt;   /foo/bar
+	 * /../                 --&gt;   null
+	 * ../foo               --&gt;   null
+	 * foo/bar/..           --&gt;   foo/
+	 * foo/../../bar        --&gt;   null
+	 * foo/../bar           --&gt;   bar
+	 * //server/foo/../bar  --&gt;   //server/bar
+	 * //server/../bar      --&gt;   null
+	 * C:\foo\..\bar        --&gt;   C:\bar
+	 * C:\..\bar            --&gt;   null
+	 * ~/foo/../bar/        --&gt;   ~/bar/
+	 * ~/../bar             --&gt;   null
 	 * </pre>
 	 * 
 	 * The output will be the same on both Unix and Windows including the separator
@@ -187,23 +187,23 @@ public final class FilenameUtils {
 	 * character.
 	 * 
 	 * <pre>
-	 * /foo//               -->   /foo
-	 * /foo/./              -->   /foo
-	 * /foo/../bar          -->   /bar
-	 * /foo/../bar/         -->   /bar
-	 * /foo/../bar/../baz   -->   /baz
-	 * //foo//./bar         -->   /foo/bar
-	 * /../                 -->   null
-	 * ../foo               -->   null
-	 * foo/bar/..           -->   foo
-	 * foo/../../bar        -->   null
-	 * foo/../bar           -->   bar
-	 * //server/foo/../bar  -->   //server/bar
-	 * //server/../bar      -->   null
-	 * C:\foo\..\bar        -->   C:\bar
-	 * C:\..\bar            -->   null
-	 * ~/foo/../bar/        -->   ~/bar
-	 * ~/../bar             -->   null
+	 * /foo//               --&gt;   /foo
+	 * /foo/./              --&gt;   /foo
+	 * /foo/../bar          --&gt;   /bar
+	 * /foo/../bar/         --&gt;   /bar
+	 * /foo/../bar/../baz   --&gt;   /baz
+	 * //foo//./bar         --&gt;   /foo/bar
+	 * /../                 --&gt;   null
+	 * ../foo               --&gt;   null
+	 * foo/bar/..           --&gt;   foo
+	 * foo/../../bar        --&gt;   null
+	 * foo/../bar           --&gt;   bar
+	 * //server/foo/../bar  --&gt;   //server/bar
+	 * //server/../bar      --&gt;   null
+	 * C:\foo\..\bar        --&gt;   C:\bar
+	 * C:\..\bar            --&gt;   null
+	 * ~/foo/../bar/        --&gt;   ~/bar
+	 * ~/../bar             --&gt;   null
 	 * </pre>
 	 * 
 	 * (Note the file separator returned will be correct for Windows/Unix)
@@ -233,23 +233,23 @@ public final class FilenameUtils {
 	 * character.
 	 * 
 	 * <pre>
-	 * /foo//               -->   /foo
-	 * /foo/./              -->   /foo
-	 * /foo/../bar          -->   /bar
-	 * /foo/../bar/         -->   /bar
-	 * /foo/../bar/../baz   -->   /baz
-	 * //foo//./bar         -->   /foo/bar
-	 * /../                 -->   null
-	 * ../foo               -->   null
-	 * foo/bar/..           -->   foo
-	 * foo/../../bar        -->   null
-	 * foo/../bar           -->   bar
-	 * //server/foo/../bar  -->   //server/bar
-	 * //server/../bar      -->   null
-	 * C:\foo\..\bar        -->   C:\bar
-	 * C:\..\bar            -->   null
-	 * ~/foo/../bar/        -->   ~/bar
-	 * ~/../bar             -->   null
+	 * /foo//               --&gt;   /foo
+	 * /foo/./              --&gt;   /foo
+	 * /foo/../bar          --&gt;   /bar
+	 * /foo/../bar/         --&gt;   /bar
+	 * /foo/../bar/../baz   --&gt;   /baz
+	 * //foo//./bar         --&gt;   /foo/bar
+	 * /../                 --&gt;   null
+	 * ../foo               --&gt;   null
+	 * foo/bar/..           --&gt;   foo
+	 * foo/../../bar        --&gt;   null
+	 * foo/../bar           --&gt;   bar
+	 * //server/foo/../bar  --&gt;   //server/bar
+	 * //server/../bar      --&gt;   null
+	 * C:\foo\..\bar        --&gt;   C:\bar
+	 * C:\..\bar            --&gt;   null
+	 * ~/foo/../bar/        --&gt;   ~/bar
+	 * ~/../bar             --&gt;   null
 	 * </pre>
 	 *
 	 * @param filename      the filename to normalize, null returns null
@@ -380,17 +380,17 @@ public final class FilenameUtils {
 	 * character.
 	 * 
 	 * <pre>
-	 * /foo/ + bar          -->   /foo/bar
-	 * /foo + bar           -->   /foo/bar
-	 * /foo + /bar          -->   /bar
-	 * /foo + C:/bar        -->   C:/bar
-	 * /foo + C:bar         -->   C:bar (*)
-	 * /foo/a/ + ../bar     -->   foo/bar
-	 * /foo/ + ../../bar    -->   null
-	 * /foo/ + /bar         -->   /bar
-	 * /foo/.. + /bar       -->   /bar
-	 * /foo + bar/c.txt     -->   /foo/bar/c.txt
-	 * /foo/c.txt + bar     -->   /foo/c.txt/bar (!)
+	 * /foo/ + bar          --&gt;   /foo/bar
+	 * /foo + bar           --&gt;   /foo/bar
+	 * /foo + /bar          --&gt;   /bar
+	 * /foo + C:/bar        --&gt;   C:/bar
+	 * /foo + C:bar         --&gt;   C:bar (*)
+	 * /foo/a/ + ../bar     --&gt;   foo/bar
+	 * /foo/ + ../../bar    --&gt;   null
+	 * /foo/ + /bar         --&gt;   /bar
+	 * /foo/.. + /bar       --&gt;   /bar
+	 * /foo + bar/c.txt     --&gt;   /foo/bar/c.txt
+	 * /foo/c.txt + bar     --&gt;   /foo/c.txt/bar (!)
 	 * </pre>
 	 * 
 	 * (*) Note that the Windows relative drive prefix is unreliable when used with
@@ -524,19 +524,19 @@ public final class FilenameUtils {
 	 * 
 	 * <pre>
 	 * Windows:
-	 * a\b\c.txt           --> ""          --> relative
-	 * \a\b\c.txt          --> "\"         --> current drive absolute
-	 * C:a\b\c.txt         --> "C:"        --> drive relative
-	 * C:\a\b\c.txt        --> "C:\"       --> absolute
-	 * \\server\a\b\c.txt  --> "\\server\" --> UNC
+	 * a\b\c.txt           --&gt; ""          --&gt; relative
+	 * \a\b\c.txt          --&gt; "\"         --&gt; current drive absolute
+	 * C:a\b\c.txt         --&gt; "C:"        --&gt; drive relative
+	 * C:\a\b\c.txt        --&gt; "C:\"       --&gt; absolute
+	 * \\server\a\b\c.txt  --&gt; "\\server\" --&gt; UNC
 	 *
 	 * Unix:
-	 * a/b/c.txt           --> ""          --> relative
-	 * /a/b/c.txt          --> "/"         --> absolute
-	 * ~/a/b/c.txt         --> "~/"        --> current user
-	 * ~                   --> "~/"        --> current user (slash added)
-	 * ~user/a/b/c.txt     --> "~user/"    --> named user
-	 * ~user               --> "~user/"    --> named user (slash added)
+	 * a/b/c.txt           --&gt; ""          --&gt; relative
+	 * /a/b/c.txt          --&gt; "/"         --&gt; absolute
+	 * ~/a/b/c.txt         --&gt; "~/"        --&gt; current user
+	 * ~                   --&gt; "~/"        --&gt; current user (slash added)
+	 * ~user/a/b/c.txt     --&gt; "~user/"    --&gt; named user
+	 * ~user               --&gt; "~user/"    --&gt; named user (slash added)
 	 * </pre>
 	 * <p>
 	 * The output will be the same irrespective of the machine that the code is
@@ -656,19 +656,19 @@ public final class FilenameUtils {
 	 * 
 	 * <pre>
 	 * Windows:
-	 * a\b\c.txt           --> ""          --> relative
-	 * \a\b\c.txt          --> "\"         --> current drive absolute
-	 * C:a\b\c.txt         --> "C:"        --> drive relative
-	 * C:\a\b\c.txt        --> "C:\"       --> absolute
-	 * \\server\a\b\c.txt  --> "\\server\" --> UNC
+	 * a\b\c.txt           --&gt; ""          --&gt; relative
+	 * \a\b\c.txt          --&gt; "\"         --&gt; current drive absolute
+	 * C:a\b\c.txt         --&gt; "C:"        --&gt; drive relative
+	 * C:\a\b\c.txt        --&gt; "C:\"       --&gt; absolute
+	 * \\server\a\b\c.txt  --&gt; "\\server\" --&gt; UNC
 	 *
 	 * Unix:
-	 * a/b/c.txt           --> ""          --> relative
-	 * /a/b/c.txt          --> "/"         --> absolute
-	 * ~/a/b/c.txt         --> "~/"        --> current user
-	 * ~                   --> "~/"        --> current user (slash added)
-	 * ~user/a/b/c.txt     --> "~user/"    --> named user
-	 * ~user               --> "~user/"    --> named user (slash added)
+	 * a/b/c.txt           --&gt; ""          --&gt; relative
+	 * /a/b/c.txt          --&gt; "/"         --&gt; absolute
+	 * ~/a/b/c.txt         --&gt; "~/"        --&gt; current user
+	 * ~                   --&gt; "~/"        --&gt; current user (slash added)
+	 * ~user/a/b/c.txt     --&gt; "~user/"    --&gt; named user
+	 * ~user               --&gt; "~user/"    --&gt; named user (slash added)
 	 * </pre>
 	 * <p>
 	 * The output will be the same irrespective of the machine that the code is
@@ -699,11 +699,11 @@ public final class FilenameUtils {
 	 * forward or backslash.
 	 * 
 	 * <pre>
-	 * C:\a\b\c.txt --> a\b\
-	 * ~/a/b/c.txt  --> a/b/
-	 * a.txt        --> ""
-	 * a/b/c        --> a/b/
-	 * a/b/c/       --> a/b/c/
+	 * C:\a\b\c.txt --&gt; a\b\
+	 * ~/a/b/c.txt  --&gt; a/b/
+	 * a.txt        --&gt; ""
+	 * a/b/c        --&gt; a/b/
+	 * a/b/c/       --&gt; a/b/c/
 	 * </pre>
 	 * <p>
 	 * The output will be the same irrespective of the machine that the code is
@@ -728,11 +728,11 @@ public final class FilenameUtils {
 	 * backslash.
 	 * 
 	 * <pre>
-	 * C:\a\b\c.txt --> a\b
-	 * ~/a/b/c.txt  --> a/b
-	 * a.txt        --> ""
-	 * a/b/c        --> a/b
-	 * a/b/c/       --> a/b/c
+	 * C:\a\b\c.txt --&gt; a\b
+	 * ~/a/b/c.txt  --&gt; a/b
+	 * a.txt        --&gt; ""
+	 * a/b/c        --&gt; a/b
+	 * a/b/c/       --&gt; a/b/c
 	 * </pre>
 	 * <p>
 	 * The output will be the same irrespective of the machine that the code is
@@ -780,17 +780,17 @@ public final class FilenameUtils {
 	 * forward or backslash.
 	 * 
 	 * <pre>
-	 * C:\a\b\c.txt --> C:\a\b\
-	 * ~/a/b/c.txt  --> ~/a/b/
-	 * a.txt        --> ""
-	 * a/b/c        --> a/b/
-	 * a/b/c/       --> a/b/c/
-	 * C:           --> C:
-	 * C:\          --> C:\
-	 * ~            --> ~/
-	 * ~/           --> ~/
-	 * ~user        --> ~user/
-	 * ~user/       --> ~user/
+	 * C:\a\b\c.txt --&gt; C:\a\b\
+	 * ~/a/b/c.txt  --&gt; ~/a/b/
+	 * a.txt        --&gt; ""
+	 * a/b/c        --&gt; a/b/
+	 * a/b/c/       --&gt; a/b/c/
+	 * C:           --&gt; C:
+	 * C:\          --&gt; C:\
+	 * ~            --&gt; ~/
+	 * ~/           --&gt; ~/
+	 * ~user        --&gt; ~user/
+	 * ~user/       --&gt; ~user/
 	 * </pre>
 	 * <p>
 	 * The output will be the same irrespective of the machine that the code is
@@ -812,17 +812,17 @@ public final class FilenameUtils {
 	 * backslash.
 	 * 
 	 * <pre>
-	 * C:\a\b\c.txt --> C:\a\b
-	 * ~/a/b/c.txt  --> ~/a/b
-	 * a.txt        --> ""
-	 * a/b/c        --> a/b
-	 * a/b/c/       --> a/b/c
-	 * C:           --> C:
-	 * C:\          --> C:\
-	 * ~            --> ~
-	 * ~/           --> ~
-	 * ~user        --> ~user
-	 * ~user/       --> ~user
+	 * C:\a\b\c.txt --&gt; C:\a\b
+	 * ~/a/b/c.txt  --&gt; ~/a/b
+	 * a.txt        --&gt; ""
+	 * a/b/c        --&gt; a/b
+	 * a/b/c/       --&gt; a/b/c
+	 * C:           --&gt; C:
+	 * C:\          --&gt; C:\
+	 * ~            --&gt; ~
+	 * ~/           --&gt; ~
+	 * ~user        --&gt; ~user
+	 * ~user/       --&gt; ~user
 	 * </pre>
 	 * <p>
 	 * The output will be the same irrespective of the machine that the code is
@@ -875,10 +875,10 @@ public final class FilenameUtils {
 	 * after the last forward or backslash is returned.
 	 * 
 	 * <pre>
-	 * a/b/c.txt --> c.txt
-	 * a.txt     --> a.txt
-	 * a/b/c     --> c
-	 * a/b/c/    --> ""
+	 * a/b/c.txt --&gt; c.txt
+	 * a.txt     --&gt; a.txt
+	 * a/b/c     --&gt; c
+	 * a/b/c/    --&gt; ""
 	 * </pre>
 	 * <p>
 	 * The output will be the same irrespective of the machine that the code is
@@ -903,10 +903,10 @@ public final class FilenameUtils {
 	 * after the last forward or backslash and before the last dot is returned.
 	 * 
 	 * <pre>
-	 * a/b/c.txt --> c
-	 * a.txt     --> a
-	 * a/b/c     --> c
-	 * a/b/c/    --> ""
+	 * a/b/c.txt --&gt; c
+	 * a.txt     --&gt; a
+	 * a/b/c     --&gt; c
+	 * a/b/c/    --&gt; ""
 	 * </pre>
 	 * <p>
 	 * The output will be the same irrespective of the machine that the code is
@@ -927,10 +927,10 @@ public final class FilenameUtils {
 	 * There must be no directory separator after the dot.
 	 * 
 	 * <pre>
-	 * foo.txt      --> "txt"
-	 * a/b/c.jpg    --> "jpg"
-	 * a/b.txt/c    --> ""
-	 * a/b/c        --> ""
+	 * foo.txt      --&gt; "txt"
+	 * a/b/c.jpg    --&gt; "jpg"
+	 * a/b.txt/c    --&gt; ""
+	 * a/b/c        --&gt; ""
 	 * </pre>
 	 * <p>
 	 * The output will be the same irrespective of the machine that the code is
@@ -960,10 +960,10 @@ public final class FilenameUtils {
 	 * There must be no directory separator after the dot.
 	 * 
 	 * <pre>
-	 * foo.txt    --> foo
-	 * a\b\c.jpg  --> a\b\c
-	 * a\b\c      --> a\b\c
-	 * a.b\c      --> a.b\c
+	 * foo.txt    --&gt; foo
+	 * a\b\c.jpg  --&gt; a\b\c
+	 * a\b\c      --&gt; a\b\c
+	 * a.b\c      --&gt; a.b\c
 	 * </pre>
 	 * <p>
 	 * The output will be the same irrespective of the machine that the code is
@@ -1164,11 +1164,11 @@ public final class FilenameUtils {
 	 * on Dos/Unix command lines. The check is case-sensitive always.
 	 * 
 	 * <pre>
-	 * wildcardMatch("c.txt", "*.txt")      --> true
-	 * wildcardMatch("c.txt", "*.jpg")      --> false
-	 * wildcardMatch("a/b/c.txt", "a/b/*")  --> true
-	 * wildcardMatch("c.txt", "*.???")      --> true
-	 * wildcardMatch("c.txt", "*.????")     --> false
+	 * wildcardMatch("c.txt", "*.txt")      --&gt; true
+	 * wildcardMatch("c.txt", "*.jpg")      --&gt; false
+	 * wildcardMatch("a/b/c.txt", "a/b/*")  --&gt; true
+	 * wildcardMatch("c.txt", "*.???")      --&gt; true
+	 * wildcardMatch("c.txt", "*.????")     --&gt; false
 	 * </pre>
 	 * 
 	 * N.B. the sequence "*?" does not work properly at present in match strings.
@@ -1192,11 +1192,11 @@ public final class FilenameUtils {
 	 * case-insensitive on Windows.
 	 * 
 	 * <pre>
-	 * wildcardMatch("c.txt", "*.txt")      --> true
-	 * wildcardMatch("c.txt", "*.jpg")      --> false
-	 * wildcardMatch("a/b/c.txt", "a/b/*")  --> true
-	 * wildcardMatch("c.txt", "*.???")      --> true
-	 * wildcardMatch("c.txt", "*.????")     --> false
+	 * wildcardMatch("c.txt", "*.txt")      --&gt; true
+	 * wildcardMatch("c.txt", "*.jpg")      --&gt; false
+	 * wildcardMatch("a/b/c.txt", "a/b/*")  --&gt; true
+	 * wildcardMatch("c.txt", "*.???")      --&gt; true
+	 * wildcardMatch("c.txt", "*.????")     --&gt; false
 	 * </pre>
 	 * 
 	 * N.B. the sequence "*?" does not work properly at present in match strings.

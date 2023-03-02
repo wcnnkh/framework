@@ -7,16 +7,11 @@ import io.basc.framework.util.comparator.Sort;
 /**
  * 基于位置的服务（Location Based Services，LBS）
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
- * @param <K>
+ * @param <K> key的类型
  */
 public interface Lbs<K> {
-	/**
-	 * 上报位置信息
-	 * 
-	 * @param marker
-	 */
 	void report(Marker<K> marker);
 
 	@Nullable
@@ -26,10 +21,5 @@ public interface Lbs<K> {
 
 	boolean exists(K key);
 
-	/**
-	 * 查询附近的点
-	 * 
-	 * @return
-	 */
 	Cursor<Marker<K>> getNearbyMarkers(Point point, Distance radius, int count, Sort sort);
 }

@@ -5,7 +5,7 @@ package io.basc.framework.retry;
  * Implementations of {@link RetryOperations} can chose to issue callbacks to an
  * interceptor during the retry lifecycle.
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface RetryListener {

@@ -12,7 +12,7 @@ import io.basc.framework.mapper.Field;
 /**
  * 资源解析
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class ResourceValueProcessor extends AbstractObservableResourceValueProcessor {

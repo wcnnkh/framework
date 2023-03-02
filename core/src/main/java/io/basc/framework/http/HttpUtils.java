@@ -69,12 +69,6 @@ public final class HttpUtils {
 		}
 	}
 
-	/**
-	 * 是否是同一个origin
-	 * 
-	 * @param request
-	 * @return
-	 */
 	public static boolean isSameOrigin(HttpRequest request) {
 		if (request == null) {
 			return false;
@@ -89,13 +83,6 @@ public final class HttpUtils {
 		return isSameOrigin(request.getURI(), UriComponentsBuilder.fromOriginHeader(origin).build().toUri());
 	}
 
-	/**
-	 * 判断两个url是否同源
-	 * 
-	 * @param url1
-	 * @param url2
-	 * @return
-	 */
 	public static boolean isSameOrigin(String url1, String url2) {
 		if (url1 == null || url2 == null) {
 			return false;
@@ -112,13 +99,6 @@ public final class HttpUtils {
 		}
 	}
 
-	/**
-	 * 判断两个uri是否同源
-	 * 
-	 * @param uri1
-	 * @param uri2
-	 * @return
-	 */
 	public static boolean isSameOrigin(URI uri1, URI uri2) {
 		if (uri1 == null || uri2 == null) {
 			return false;
@@ -144,13 +124,6 @@ public final class HttpUtils {
 		return port;
 	}
 
-	/**
-	 * 将文件信息写入ContentDisposition
-	 * 
-	 * @param outputMessage
-	 * @param fileName
-	 * @param charset
-	 */
 	public static void writeFileMessageHeaders(HttpOutputMessage outputMessage, String fileName,
 			@Nullable Charset charset) {
 		Assert.requiredArgument(outputMessage != null, "outputMessage");

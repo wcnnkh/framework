@@ -143,16 +143,10 @@ public class CloseStatus {
 		this.reason = reason;
 	}
 
-	/**
-	 * Return the status code.
-	 */
 	public int getCode() {
 		return this.code;
 	}
 
-	/**
-	 * Return the reason, or {@code null} if none.
-	 */
 	public String getReason() {
 		return this.reason;
 	}

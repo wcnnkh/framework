@@ -232,7 +232,6 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	/**
 	 * 是否是泛型
 	 * 
-	 * @see ResolvableType#hasGenerics();
 	 * @return
 	 */
 	public boolean isGeneric() {

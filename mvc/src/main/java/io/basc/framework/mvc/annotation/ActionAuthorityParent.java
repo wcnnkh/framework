@@ -7,11 +7,12 @@ import java.lang.annotation.Target;
 
 /**
  * 定义权限的父级
- * @author shuchaowen
+ * 
+ * @author wcnnkh
  *
  */
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ActionAuthorityParent {
-	public Class<?> value();
+	Class<?> value();
 }

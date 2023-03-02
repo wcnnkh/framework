@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * 生成一个int类型的ID
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public final class IntegerIdGenerator implements IdGenerator<Integer> {
@@ -13,20 +13,10 @@ public final class IntegerIdGenerator implements IdGenerator<Integer> {
 	private int serverCount;
 	private AtomicInteger maxId;
 
-	/**
-	 * 初始化ID的值为0
-	 * 
-	 * @param initValue
-	 */
 	public IntegerIdGenerator() {
 		this(0, 1, 0);
 	}
 
-	/**
-	 * 初始化ID值
-	 * 
-	 * @param initValue
-	 */
 	public IntegerIdGenerator(int initValue) {
 		this(0, 1, initValue);
 	}

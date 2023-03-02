@@ -13,11 +13,6 @@ public interface Message {
 
 	long getContentLength();
 
-	/**
-	 * 为了兼容旧的版本，默认的实现是调用{@see #getCharacterEncoding()}
-	 * 
-	 * @return
-	 */
 	@Nullable
 	default Charset getCharset() {
 		String name = getCharacterEncoding();

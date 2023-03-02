@@ -38,7 +38,7 @@ public abstract class FieldsDecorator<S extends Field, T extends FieldsDecorator
 	/**
 	 * 返回一个新的
 	 * 
-	 * @param parentField
+	 * @param parent
 	 * @return
 	 */
 	public T setParent(S parent) {

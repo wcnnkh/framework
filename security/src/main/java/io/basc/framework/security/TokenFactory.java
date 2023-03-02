@@ -4,7 +4,6 @@ import io.basc.framework.retry.RetryOperations;
 import io.basc.framework.retry.support.RetryTemplate;
 import io.basc.framework.util.Processor;
 
-@FunctionalInterface
 public interface TokenFactory {
 
 	default Token getToken() throws InvalidTokenException {

@@ -33,7 +33,7 @@ import io.basc.framework.io.FilenameUtils;
  * </pre>
  *
  * Mainly for internal use within the framework; consider Jakarta's Commons Lang
- * >= 2.0 for a more comprehensive suite of assertion utilities.
+ * &gt;= 2.0 for a more comprehensive suite of assertion utilities.
  *
  */
 public abstract class Assert {
@@ -157,7 +157,7 @@ public abstract class Assert {
 	 * 
 	 * @param text    the String to check
 	 * @param message the exception message to use if the assertion fails
-	 * @see StringUtils#hasLength
+	 * @see StringUtils#isEmpty(CharSequence)
 	 */
 	public static void hasLength(String text, String message) {
 		if (StringUtils.isEmpty(text)) {
@@ -174,7 +174,7 @@ public abstract class Assert {
 	 * </pre>
 	 * 
 	 * @param text the String to check
-	 * @see StringUtils#hasLength
+	 * @see Assert#hasLength(String, String)
 	 */
 	public static void hasLength(String text) {
 		hasLength(text, "[Assertion failed] - this String argument must have length; it must not be null or empty");
@@ -517,7 +517,7 @@ public abstract class Assert {
 	 * 安全路径验证
 	 * 
 	 * @see FilenameUtils#normalize(String)
-	 * @see #securePath(String, Supplier)
+	 * @see #secureFilePath(String, Supplier)
 	 * @param path
 	 * @return 返回安全路径
 	 * @throws IllegalStateException

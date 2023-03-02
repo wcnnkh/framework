@@ -9,7 +9,7 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 /**
  * Miscellaneous object utility methods.
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public abstract class ObjectUtils {
@@ -300,15 +300,12 @@ public abstract class ObjectUtils {
 	}
 
 	/**
-	 * 克隆<br/>
-	 * (如果对象实现了Cloneable接口,那么会调用clone方法) </br>
+	 * 克隆 (如果对象实现了Cloneable接口,那么会调用clone方法)
 	 * 
-	 * 以下情况会进行克隆：<br/>
-	 * 实现{@link Cloneable}接口 是一个数组
+	 * 以下情况会进行克隆： 实现{@link Cloneable}接口 是一个数组
 	 * 
-	 * <br/>
-	 * 不可以在{@link Cloneable#clone()}中调用此方法(当deep=false时),
-	 * 因为会尝试调用clone方法来完成克隆，这会造成死循环
+	 * 
+	 * 不可以在{@link Object#clone()}中调用此方法(当deep=false时), 因为会尝试调用clone方法来完成克隆，这会造成死循环
 	 * 
 	 * @see Cloneable
 	 * @see ArrayUtils#clone(Object, boolean)

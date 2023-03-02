@@ -28,13 +28,6 @@ import io.basc.framework.util.StringUtils;
 
 @SuppressWarnings("unchecked")
 public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFactory, Repository {
-	/**
-	 * 这里是将sql转为获取结果集的数量
-	 * 
-	 * @see SqlDialect#toCountSql(Sql)
-	 * @param sql
-	 * @return
-	 */
 	default long count(Sql sql) {
 		Sql countSql = getMapper().toCountSql(sql);
 		return query(long.class, countSql).first();
@@ -159,29 +152,11 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	SqlDialect getMapper();
 
-	/**
-	 * 获取对象指定字段的最大值
-	 * 
-	 * @param <T>
-	 * @param type
-	 * @param tableClass
-	 * @param field
-	 * @return
-	 */
 	@Nullable
 	default <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, Field field) {
 		return getMaxValue(type, tableClass, null, field);
 	}
 
-	/**
-	 * 获取对象指定字段的最大值
-	 * 
-	 * @param type
-	 * @param tableClass
-	 * @param tableName
-	 * @param field
-	 * @return
-	 */
 	@Nullable
 	default <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, @Nullable String tableName, Field field) {
 		return getMaxValue(getMapper().getStructure(tableClass, null, tableName), type, field);
@@ -194,23 +169,10 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	ObjectKeyFormat getObjectKeyFormat();
 
-	/**
-	 * 获取表的变更
-	 * 
-	 * @param tableClass
-	 * @return
-	 */
 	default TableChanges getTableChanges(Class<?> tableClass) {
 		return getTableChanges(tableClass, null);
 	}
 
-	/**
-	 * 获取表的变更
-	 * 
-	 * @param tableClass
-	 * @param tableName
-	 * @return
-	 */
 	default TableChanges getTableChanges(Class<?> tableClass, @Nullable String tableName) {
 		return getTableChanges(getMapper().getStructure(tableClass, null, tableName));
 	}
@@ -390,14 +352,6 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return saveOrUpdate(entityClass, entity, null);
 	}
 
-	/**
-	 * @see #saveOrUpdate(TableStructure, Object)
-	 * @param <T>
-	 * @param entityClass
-	 * @param entity
-	 * @param tableName
-	 * @return
-	 */
 	default <T> boolean saveOrUpdate(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
 		return saveOrUpdate(getMapper().getStructure(entityClass, entity, tableName), entity);
 	}
@@ -447,14 +401,6 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return update(sql);
 	}
 
-	/**
-	 * jdbc的url需要加一个参数useAffectedRows=true，mysql默认是false，也就是说默认返回的是查找到的行数，
-	 * 而不是最终变化的行数。
-	 * 
-	 * @param tableStructure
-	 * @param entity
-	 * @return
-	 */
 	default <T> boolean update(TableStructure tableStructure, T entity) {
 		Assert.requiredArgument(tableStructure != null, "tableStructure");
 		Assert.requiredArgument(entity != null, "entity");

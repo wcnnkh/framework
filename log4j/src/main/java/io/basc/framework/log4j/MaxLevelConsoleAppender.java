@@ -5,7 +5,7 @@ import org.apache.log4j.Priority;
 
 /**
  * 限制最大等级的日志控制器
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class MaxLevelConsoleAppender extends ConsoleAppender {

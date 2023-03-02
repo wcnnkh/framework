@@ -524,9 +524,6 @@ public enum HttpStatus implements Status {
 		return reasonPhrase;
 	}
 
-	/**
-	 * Return the reason phrase of this status code.
-	 */
 	public String getReasonPhrase() {
 		return this.reasonPhrase;
 	}
@@ -536,11 +533,6 @@ public enum HttpStatus implements Status {
 		return !isError();
 	}
 
-	/**
-	 * Return the HTTP status series of this status code.
-	 * 
-	 * @see HttpStatus.Series
-	 */
 	public Series series() {
 		return Series.valueOf(this);
 	}
@@ -565,17 +557,10 @@ public enum HttpStatus implements Status {
 		return (series() == Series.SERVER_ERROR);
 	}
 
-	/**
-	 * @see #is4xxClientError()
-	 * @see #is5xxServerError()
-	 */
 	public boolean isError() {
 		return (is4xxClientError() || is5xxServerError());
 	}
 
-	/**
-	 * Return a string representation of this status code.
-	 */
 	@Override
 	public String toString() {
 		return this.value + " " + name();
@@ -627,9 +612,6 @@ public enum HttpStatus implements Status {
 			this.value = value;
 		}
 
-		/**
-		 * Return the integer value of this status series. Ranges from 1 to 5.
-		 */
 		public int value() {
 			return this.value;
 		}

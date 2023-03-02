@@ -10,7 +10,7 @@ import io.basc.framework.context.transaction.ResultFactory;
 /**
  * 为了兼容{@link ResultFactory}
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })

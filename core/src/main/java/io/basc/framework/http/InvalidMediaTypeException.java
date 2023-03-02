@@ -17,17 +17,11 @@ public class InvalidMediaTypeException extends IllegalArgumentException {
 		this.mediaType = mediaType;
 	}
 
-	/**
-	 * Constructor that allows wrapping {@link InvalidMimeTypeException}.
-	 */
 	InvalidMediaTypeException(InvalidMimeTypeException ex) {
 		super(ex.getMessage(), ex);
 		this.mediaType = ex.getMimeType();
 	}
 
-	/**
-	 * Return the offending media type.
-	 */
 	public String getMediaType() {
 		return this.mediaType;
 	}

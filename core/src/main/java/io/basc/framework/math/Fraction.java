@@ -8,7 +8,7 @@ import io.basc.framework.math.gcd.GreatestCommonDivisor;
 /**
  * 分数
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class Fraction extends Number implements NumberHolder {
@@ -30,7 +30,7 @@ public class Fraction extends Number implements NumberHolder {
 	public Fraction(BigDecimal bigDecimal) {
 		this(new BigDecimalHolder(bigDecimal), new BigDecimalHolder(BigDecimal.ONE));
 	}
-	
+
 	/**
 	 * 构造一个分数
 	 * 
@@ -114,8 +114,7 @@ public class Fraction extends Number implements NumberHolder {
 	/**
 	 * 倒数
 	 * 
-	 * @param fraction
-	 * @return
+	 * @return 倒数
 	 */
 	public Fraction reciprocal() {
 		return new Fraction(denominator, molecule);

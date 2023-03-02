@@ -9,7 +9,7 @@ import io.basc.framework.convert.TypeDescriptor;
 /**
  * 跨语言的序列化和反序列化
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface CrossLanguageSerializer {

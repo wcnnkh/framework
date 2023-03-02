@@ -5,7 +5,7 @@ import java.util.Comparator;
 /**
  * 颠倒比较规则
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  * @param <T>
  */

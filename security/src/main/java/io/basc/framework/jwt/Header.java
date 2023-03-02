@@ -2,7 +2,7 @@ package io.basc.framework.jwt;
 
 /**
  * jwt头
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface Header {

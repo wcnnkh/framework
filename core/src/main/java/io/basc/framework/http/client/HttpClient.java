@@ -17,7 +17,7 @@ import io.basc.framework.net.uri.UriUtils;
 /**
  * 一个http客户端
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface HttpClient extends HttpClientConfigurable<HttpClient> {

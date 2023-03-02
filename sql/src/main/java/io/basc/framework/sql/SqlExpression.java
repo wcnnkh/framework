@@ -11,14 +11,6 @@ public class SqlExpression implements Sql, Serializable {
 	private final CharSequence operator;
 	private final Sql right;
 
-	/**
-	 * a=b 解析为 name -> a, left -> a , operator -> =, right -> b
-	 * 
-	 * @param name
-	 * @param left
-	 * @param operator
-	 * @param right
-	 */
 	public SqlExpression(String name, Sql left, CharSequence operator, Sql right) {
 		this.name = name;
 		this.left = left;

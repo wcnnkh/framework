@@ -36,7 +36,7 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 /**
  * 扩展
  * 
- * @author shuchaowen
+ * @author wcnnkh
  * @see io.swagger.v3.jaxrs2.DefaultParameterExtension
  */
 @Provider(order = Ordered.LOWEST_PRECEDENCE)

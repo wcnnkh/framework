@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * 是否应该是增量 value = value + ?
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Target(ElementType.FIELD)

@@ -322,7 +322,7 @@ public abstract class NumberUtils {
 	 * 清除无用的0
 	 * 
 	 * @see BigDecimal#stripTrailingZeros()
-	 * @See {@link BigDecimal#setScale(int)}
+	 * @see BigDecimal#setScale(int)
 	 * @param number
 	 * @return
 	 */
@@ -441,7 +441,6 @@ public abstract class NumberUtils {
 	 * @param number
 	 * @param len    保留多少位
 	 * @return
-	 * @see
 	 */
 	public static String formatPrecision(double number, int len) {
 		if (len < 0) {

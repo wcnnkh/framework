@@ -13,7 +13,7 @@ public interface FieldSetterListen extends WriteReplaceInterface {
 	/**
 	 * 返回的map是调用了set方法的字段，值是在调用startFieldListen之前的值
 	 * 
-	 * @return
+	 * @return {@link Map}
 	 */
 	Map<String, Object> _getFieldSetterMap();
 

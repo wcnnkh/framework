@@ -11,25 +11,15 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Entity
 public @interface Table {
-	/**
-	 * 默认的表名
-	 * 
-	 * @return
-	 */
-	public String name() default "";
+	String name() default "";
 
-	public String engine() default "";
+	String engine() default "";
 
-	public String charset() default "";
+	String charset() default "";
 
-	public String rowFormat() default "";
+	String rowFormat() default "";
 
-	/**
-	 * 是否自动创建
-	 * 
-	 * @return
-	 */
-	public boolean create() default true;
+	boolean create() default true;
 
-	public String comment() default "";
+	String comment() default "";
 }

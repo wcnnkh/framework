@@ -14,21 +14,23 @@ import java.util.concurrent.TimeUnit;
 @Retention(RetentionPolicy.RUNTIME)
 @Indexed
 public @interface Schedule {
-	public String name();
+	String name();
 
-	public Class<? extends Delayed> delay() default Delayed.class;
+	Class<? extends Delayed> delay() default Delayed.class;
 
 	/**
 	 * 如果为-1就不看周期执行
+	 * 
 	 * @return
 	 */
-	public long period();
+	long period();
 
 	/**
 	 * 默认时间单位为：毫秒
+	 * 
 	 * @return
 	 */
-	public TimeUnit timeUnit() default TimeUnit.MILLISECONDS;
+	TimeUnit timeUnit() default TimeUnit.MILLISECONDS;
 
-	public Class<? extends TaskListener> listener() default TaskListener.class;
+	Class<? extends TaskListener> listener() default TaskListener.class;
 }

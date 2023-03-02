@@ -31,46 +31,18 @@ public class HttpResponseEntity<T> extends HttpEntity<T> {
 	private static final long serialVersionUID = 1L;
 	private final Object status;
 
-	/**
-	 * Create a new {@code ResponseEntity} with the given status code, and no body
-	 * nor headers.
-	 * 
-	 * @param status the status code
-	 */
 	public HttpResponseEntity(HttpStatus status) {
 		this(null, null, status);
 	}
 
-	/**
-	 * Create a new {@code ResponseEntity} with the given body and status code, and
-	 * no headers.
-	 * 
-	 * @param body   the entity body
-	 * @param status the status code
-	 */
 	public HttpResponseEntity(T body, TypeDescriptor bodyTypeDescriptor, HttpStatus status) {
 		this(body, bodyTypeDescriptor, null, status);
 	}
 
-	/**
-	 * Create a new {@code HttpEntity} with the given headers and status code, and
-	 * no body.
-	 * 
-	 * @param headers the entity headers
-	 * @param status  the status code
-	 */
 	public HttpResponseEntity(MultiValueMap<String, String> headers, HttpStatus status) {
 		this(null, null, headers, status);
 	}
 
-	/**
-	 * Create a new {@code HttpEntity} with the given body, headers, and status
-	 * code.
-	 * 
-	 * @param body    the entity body
-	 * @param headers the entity headers
-	 * @param status  the status code
-	 */
 	public HttpResponseEntity(T body, TypeDescriptor bodyTypeDescriptor, MultiValueMap<String, String> headers,
 			HttpStatus status) {
 		super(body, bodyTypeDescriptor, headers);
@@ -78,15 +50,6 @@ public class HttpResponseEntity<T> extends HttpEntity<T> {
 		this.status = status;
 	}
 
-	/**
-	 * Create a new {@code HttpEntity} with the given body, headers, and status
-	 * code. Just used behind the nested builder API.
-	 * 
-	 * @param body    the entity body
-	 * @param headers the entity headers
-	 * @param status  the status code (as {@code HttpStatus} or as {@code Integer}
-	 *                value)
-	 */
 	private HttpResponseEntity(T body, TypeDescriptor bodyTypeDescriptor, MultiValueMap<String, String> headers,
 			Object status) {
 		super(body, bodyTypeDescriptor, headers);

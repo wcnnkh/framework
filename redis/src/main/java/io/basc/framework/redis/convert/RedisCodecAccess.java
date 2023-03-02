@@ -33,10 +33,6 @@ public class RedisCodecAccess<SK, K, SV, V, T extends RedisCodecAccess<SK, K, SV
 		return keyCodec;
 	}
 
-	/**
-	 * @param keyCodec
-	 * @return 返回一个新的对象
-	 */
 	public T setKeyCodec(Codec<K, SK> keyCodec) {
 		Assert.requiredArgument(keyCodec != null, "keyCodec");
 		T access = clone();
@@ -48,10 +44,6 @@ public class RedisCodecAccess<SK, K, SV, V, T extends RedisCodecAccess<SK, K, SV
 		return valueCodec;
 	}
 
-	/**
-	 * @param valueCodec
-	 * @return 返回一个新的对象
-	 */
 	public T setValueCodec(Codec<V, SV> valueCodec) {
 		Assert.requiredArgument(valueCodec != null, "valueCodec");
 		T access = clone();

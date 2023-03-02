@@ -43,10 +43,6 @@ public final class Redis
 		return getSourceRedisClient().to(getKeyCodec(), codec);
 	}
 
-	/**
-	 * @param serializer
-	 * @return 返回一个新的
-	 */
 	public Redis setSerializer(CrossLanguageSerializer serializer) {
 		Assert.requiredArgument(serializer != null, "serializer");
 		Redis redis = clone();

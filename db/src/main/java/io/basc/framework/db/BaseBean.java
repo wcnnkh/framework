@@ -2,12 +2,6 @@ package io.basc.framework.db;
 
 import java.io.Serializable;
 
-/**
- * 
- * @see DBManager
- * @author shuchaowen
- *
- */
 public abstract class BaseBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 

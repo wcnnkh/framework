@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * 别名
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.TYPE, ElementType.ANNOTATION_TYPE })

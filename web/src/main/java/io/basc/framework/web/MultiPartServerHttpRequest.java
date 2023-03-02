@@ -11,7 +11,7 @@ import java.util.Collection;
 /**
  * 一个MultiPart请求
  * 
- * @author shuchaowen
+ * @author wcnnkh
  * @see MediaType#MULTIPART_FORM_DATA
  *
  */

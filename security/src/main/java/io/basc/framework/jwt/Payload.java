@@ -4,7 +4,7 @@ import java.util.Map;
 
 /**
  * jwt主体
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface Payload extends Map<String, String>{

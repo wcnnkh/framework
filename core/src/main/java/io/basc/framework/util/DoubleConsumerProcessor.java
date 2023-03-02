@@ -39,7 +39,7 @@ public interface DoubleConsumerProcessor<E extends Throwable> {
 	/**
 	 * 在执行之前添加一个回调
 	 * 
-	 * @param callback
+	 * @param processor
 	 * @return
 	 */
 	default DoubleConsumerProcessor<E> beforeNesting(DoubleConsumerProcessor<E> processor) {
@@ -59,7 +59,7 @@ public interface DoubleConsumerProcessor<E extends Throwable> {
 	/**
 	 * 在回调之后追加一个回调
 	 * 
-	 * @param callback
+	 * @param processor
 	 * @return
 	 */
 	default DoubleConsumerProcessor<E> afterNesting(DoubleConsumerProcessor<E> processor) {

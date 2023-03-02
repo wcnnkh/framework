@@ -16,7 +16,7 @@ import io.basc.framework.factory.BeanFactoryAware;
  * 依赖BeanFactory的实现
  * @see PropertySettingJobFactory
  * @see SimpleJobFactory
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class BeanFactoryJobFactory extends PropertySettingJobFactory implements BeanFactoryAware{

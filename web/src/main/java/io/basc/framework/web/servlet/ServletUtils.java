@@ -23,11 +23,6 @@ public final class ServletUtils {
 	private ServletUtils() {
 	};
 
-	/**
-	 * 是否支持异步处理(实际是否支持还要判断request)
-	 * 
-	 * @return
-	 */
 	public static boolean isAsyncSupport() {
 		return asyncSupport;
 	}

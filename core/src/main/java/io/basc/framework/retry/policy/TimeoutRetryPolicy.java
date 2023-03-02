@@ -24,7 +24,7 @@ import io.basc.framework.retry.context.DefaultRetryContext;
  * A {@link RetryPolicy} that allows a retry only if it hasn't timed out. The
  * clock is started on a call to {@link #open(RetryContext)}.
  * 
- * @author shuchaowen
+ * @author wcnnkh
  * 
  */
 public class TimeoutRetryPolicy implements RetryPolicy {
@@ -54,11 +54,6 @@ public class TimeoutRetryPolicy implements RetryPolicy {
 		return timeout;
 	}
 
-	/**
-	 * Only permits a retry if the timeout has not expired. Does not check the
-	 * exception at all.
-	 * 
-	 */
 	public boolean canRetry(RetryContext context) {
 		return ((TimeoutRetryContext) context).isAlive();
 	}

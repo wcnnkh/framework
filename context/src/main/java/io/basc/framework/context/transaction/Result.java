@@ -1,10 +1,11 @@
 package io.basc.framework.context.transaction;
 
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.transaction.RollbackOnly;
 import io.basc.framework.util.StandardStatus;
 import io.basc.framework.util.Status;
 
-public class Result extends StandardStatus implements RollbackOnlyResult {
+public class Result extends StandardStatus implements RollbackOnly {
 	private static final long serialVersionUID = 1L;
 
 	private final boolean rollbackOnly;

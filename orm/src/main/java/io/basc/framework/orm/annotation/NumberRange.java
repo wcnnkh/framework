@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * 范围，默认是正整形的范围(0 ~ 2147483647)
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Target({ ElementType.FIELD, ElementType.METHOD })

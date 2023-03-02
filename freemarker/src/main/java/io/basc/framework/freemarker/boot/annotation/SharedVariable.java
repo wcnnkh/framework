@@ -10,18 +10,12 @@ import io.basc.framework.context.annotation.Indexed;
 /**
  * 标识这是一个freemarker方法
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Indexed
 public @interface SharedVariable {
-	/**
-	 * 默认使用简写类名
-	 * 
-	 * @see Class#getSimpleName()
-	 * @return
-	 */
 	String value() default "";
 }

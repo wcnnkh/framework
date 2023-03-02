@@ -3,7 +3,7 @@ package io.basc.framework.util.comparator;
 /**
  * 排序方式
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public enum Sort {

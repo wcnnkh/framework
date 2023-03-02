@@ -16,9 +16,9 @@ import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.Constants;
 
 /**
- * 使用指定字符集进行编解码<br/>
+ * 使用指定字符集进行编解码
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class CharsetCodec implements ToBytesCodec<String> {

@@ -14,7 +14,7 @@ import io.basc.framework.util.CollectionUtils;
 /**
  * 一个MultiPart请求
  * 
- * @author shuchaowen
+ * @author wcnnkh
  * @see MediaType#MULTIPART_FORM_DATA
  *
  */
@@ -48,13 +48,6 @@ public class DefaultMultiPartServerHttpRequest extends ServerHttpRequestWrapper
 		return multipartMessages;
 	}
 
-	/**
-	 * 关闭所有的item
-	 * 
-	 * @throws IOException
-	 * 
-	 * @see FileItem#close()
-	 */
 	public void close() throws IOException {
 		if (!CollectionUtils.isEmpty(multipartMessages)) {
 			for (MultipartMessage message : multipartMessages) {

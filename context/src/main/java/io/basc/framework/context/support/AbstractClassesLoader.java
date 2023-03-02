@@ -54,12 +54,6 @@ public abstract class AbstractClassesLoader implements ClassesLoader, ClassLoade
 
 	protected abstract Stream<Class<?>> load(ClassLoader classLoader);
 
-	/**
-	 * no cache
-	 * 
-	 * @param classLoader
-	 * @return
-	 */
 	public Set<Class<?>> getClasses(ClassLoader classLoader) {
 		return load(classLoader).filter((c) -> {
 			return ClassUtils.isAvailable(c) && ReflectionUtils.isAvailable(c, logger)

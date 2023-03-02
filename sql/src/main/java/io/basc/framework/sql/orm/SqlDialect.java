@@ -37,14 +37,6 @@ public interface SqlDialect extends TableMapper, EnvironmentAware {
 
 	<T> Sql toUpdateSql(TableStructure tableStructure, T entity, T oldEntity) throws SqlDialectException;
 
-	/**
-	 * 转为更新语句，忽略不能为空但实体中为空的字段
-	 * 
-	 * @param tableStructure
-	 * @param entity
-	 * @return
-	 * @throws SqlDialectException
-	 */
 	Sql toUpdatePartSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
 
 	Sql toLastInsertIdSql(TableStructure tableStructure) throws SqlDialectException;
@@ -56,13 +48,6 @@ public interface SqlDialect extends TableMapper, EnvironmentAware {
 	Sql getInIds(TableStructure tableStructure, Object[] primaryKeys, Collection<?> inPrimaryKeys)
 			throws SqlDialectException;
 
-	/**
-	 * 复制表结构
-	 * 
-	 * @param newTableName
-	 * @param oldTableName
-	 * @return
-	 */
 	Sql toCopyTableStructureSql(Class<?> entityClass, String newTableName, String oldTableName)
 			throws SqlDialectException;
 
@@ -76,16 +61,6 @@ public interface SqlDialect extends TableMapper, EnvironmentAware {
 
 	Sql toQuerySql(TableStructure tableStructure, Object query);
 
-	/**
-	 * 条件<br/>
-	 * 
-	 * if(condition, true, false)
-	 * 
-	 * @param condition
-	 * @param left
-	 * @param right
-	 * @return
-	 */
 	Sql condition(Sql condition, Sql left, Sql right);
 
 	Sql toSql(Conditions conditions);

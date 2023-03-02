@@ -16,9 +16,6 @@ public class SharedPage<K, T> extends SharedPageable<K, T> implements Page<K, T>
 	public SharedPage() {
 	}
 
-	/**
-	 * @param count 每页的数量
-	 */
 	public SharedPage(K cursorId) {
 		super(cursorId);
 	}
@@ -27,24 +24,10 @@ public class SharedPage<K, T> extends SharedPageable<K, T> implements Page<K, T>
 		this(cursorId, null, count, 0);
 	}
 
-	/**
-	 * @param cursorId
-	 * @param rows
-	 * @param count    每页的数量
-	 * @param total
-	 */
 	public SharedPage(K cursorId, List<T> rows, long count, long total) {
 		this(cursorId, rows, null, count, total);
 	}
 
-	/**
-	 * @param cursorId
-	 * @param rows
-	 * @param nextCursorId 如果为空自动计算下一页的起始点{@link Page#getNextCursorId()}
-	 * @param count        每页的数量
-	 * @param total
-	 * @param hasMore
-	 */
 	public SharedPage(K cursorId, List<T> rows, @Nullable K nextCursorId, long count, long total) {
 		super(cursorId, rows, nextCursorId);
 		this.count = count;

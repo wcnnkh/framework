@@ -12,30 +12,10 @@ public interface Sheet extends ResultSet<String[]> {
 
 	int getRows();
 
-	/**
-	 * 读取指定行
-	 * 
-	 * @param rowIndex 从0开始
-	 * @return
-	 * @throws IOException
-	 * @throws ExcelException
-	 */
 	String[] read(int rowIndex) throws IOException, ExcelException;
 
-	/**
-	 * 读取指定行，指定列
-	 * 
-	 * @param rowIndex 从0开始
-	 * @param colIndex 从0开始
-	 * @return
-	 * @throws IOException
-	 * @throws ExcelException
-	 */
 	String read(int rowIndex, int colIndex) throws IOException, ExcelException;
 
-	/**
-	 * 如果支持流读取应该重写此方法
-	 */
 	default Cursor<String[]> iterator() {
 		PositionIterator<String[]> iterator = new PositionIterator<>(BigInteger.valueOf(getRows()), (e) -> {
 			try {

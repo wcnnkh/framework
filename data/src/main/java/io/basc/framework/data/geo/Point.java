@@ -11,22 +11,11 @@ public class Point implements Serializable {
 	private final double x;
 	private final double y;
 
-	/**
-	 * Creates a {@link Point} from the given {@code x}, {@code y} coordinate.
-	 *
-	 * @param x
-	 * @param y
-	 */
 	public Point(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
 
-	/**
-	 * Creates a {@link Point} from the given {@link Point} coordinate.
-	 *
-	 * @param point must not be {@literal null}.
-	 */
 	public Point(Point point) {
 
 		Assert.notNull(point, "Source point must not be null!");
@@ -35,20 +24,10 @@ public class Point implements Serializable {
 		this.y = point.y;
 	}
 
-	/**
-	 * Returns the x-coordinate of the {@link Point}.
-	 *
-	 * @return
-	 */
 	public double getX() {
 		return x;
 	}
 
-	/**
-	 * Returns the y-coordinate of the {@link Point}.
-	 *
-	 * @return
-	 */
 	public double getY() {
 		return y;
 	}

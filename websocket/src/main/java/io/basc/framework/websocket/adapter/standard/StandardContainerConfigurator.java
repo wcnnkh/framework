@@ -8,7 +8,7 @@ import io.basc.framework.factory.FactoryLoader;
 /**
  * 使用容器来管理websocket
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class StandardContainerConfigurator extends Configurator {

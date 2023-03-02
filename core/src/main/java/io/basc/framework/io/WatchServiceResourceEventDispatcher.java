@@ -22,11 +22,11 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 
 /**
- * 使用WatchService实现resource监听<br/>
- * 需要jdk7(包含)以上<br/>
+ * 使用WatchService实现resource监听
+ * 需要jdk7(包含)以上
  * 事件可能会重复触发，这与操作系统的实现有关
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @RequiredJavaVersion(7)

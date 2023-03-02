@@ -21,30 +21,30 @@ public final class ZooKeeperUtils {
 		if (ArrayUtils.isEmpty(paths)) {
 			return PATH_PREFIX;
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
-		for(String path : paths){
-			if(StringUtils.isEmpty(path)){
+		for (String path : paths) {
+			if (StringUtils.isEmpty(path)) {
 				continue;
 			}
-			
+
 			sb.append(PATH_PREFIX).append(path);
 		}
-		
-		if(sb.length() == 0){
+
+		if (sb.length() == 0) {
 			return PATH_PREFIX;
 		}
-		
+
 		String[] pathsToUse = StringUtils.splitToArray(sb.toString(), PATH_PREFIX);
 		sb = new StringBuilder();
-		for(String path : pathsToUse){
-			if(StringUtils.isEmpty(path)){
+		for (String path : pathsToUse) {
+			if (StringUtils.isEmpty(path)) {
 				continue;
 			}
 			sb.append(PATH_PREFIX).append(path);
 		}
-		
-		if(sb.length() == 0){
+
+		if (sb.length() == 0) {
 			return PATH_PREFIX;
 		}
 		return sb.toString();
@@ -119,14 +119,7 @@ public final class ZooKeeperUtils {
 		}
 	}
 
-	/**
-	 * 使用cas的特性插入数据，如果节点不存在就失败
-	 * 
-	 * @param zooKeeper
-	 * @param path
-	 * @param data
-	 * @return
-	 */
+	// 使用cas的特性插入数据，如果节点不存在就失败
 	public static boolean setData(ZooKeeper zooKeeper, String path, byte[] data) {
 		try {
 			Stat stat = zooKeeper.exists(path, true);
@@ -147,15 +140,15 @@ public final class ZooKeeperUtils {
 			throw new ZooKeeperException(path, e);
 		}
 	}
-	
-	public static boolean delete(ZooKeeper zooKeeper, String path, int version){
+
+	public static boolean delete(ZooKeeper zooKeeper, String path, int version) {
 		Stat stat;
 		try {
 			stat = zooKeeper.exists(path, true);
-			if(stat == null){
+			if (stat == null) {
 				return false;
 			}
-			
+
 			zooKeeper.delete(path, version);
 			return true;
 		} catch (KeeperException e) {
@@ -165,15 +158,7 @@ public final class ZooKeeperUtils {
 		}
 	}
 
-	/**
-	 * 创建节点(如果父节点不存在，会递归的创建父节点)，如果节点已经存在就返回false
-	 * 
-	 * @param zooKeeper
-	 * @param path
-	 * @param acl
-	 * @param createMode
-	 * @return
-	 */
+	// 创建节点(如果父节点不存在，会递归的创建父节点)，如果节点已经存在就返回false
 	public static boolean createNotExist(ZooKeeper zooKeeper, String path, List<ACL> acl, CreateMode createMode) {
 		Stat stat;
 		try {

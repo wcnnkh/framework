@@ -3,15 +3,10 @@ package io.basc.framework.data.generator;
 /**
  * ID生成器
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
- * @param <T>
+ * @param <T> id类型
  */
 public interface IdGenerator<T> {
-	/**
-	 * 获取下一个可用ID
-	 * 
-	 * @return
-	 */
-	public T next();
+	T next();
 }

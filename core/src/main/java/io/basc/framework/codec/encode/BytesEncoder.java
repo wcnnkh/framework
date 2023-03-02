@@ -39,18 +39,6 @@ public interface BytesEncoder extends FromBytesEncoder<byte[]>, ToBytesEncoder<b
 		encode(input, source.length, target, count);
 	}
 
-	/**
-	 * 对输入流进行多次编码
-	 * 
-	 * @see #encode(InputStream, int)
-	 * @see #encode(byte[], int)
-	 * @param source
-	 * @param bufferSize
-	 * @param count
-	 * @return
-	 * @throws IOException
-	 * @throws EncodeException
-	 */
 	default byte[] encode(InputStream source, int bufferSize, int count) throws IOException, EncodeException {
 		Assert.isTrue(count > 0, "Count must be greater than 0");
 		byte[] v = encode(source, bufferSize);
@@ -70,30 +58,10 @@ public interface BytesEncoder extends FromBytesEncoder<byte[]>, ToBytesEncoder<b
 		return target.toByteArray();
 	}
 
-	/**
-	 * @see #encode(InputStream, int, OutputStream)
-	 * @see IOUtils#DEFAULT_BUFFER_SIZE
-	 * @param source
-	 * @param target
-	 * @throws IOException
-	 * @throws EncodeException
-	 */
 	default void encode(InputStream source, OutputStream target) throws IOException, EncodeException {
 		encode(source, IOUtils.DEFAULT_BUFFER_SIZE, target);
 	}
 
-	/**
-	 * 将一个输入流内容编码n次后写入到输出流, 会使用临时文件存储上一次的编码内容
-	 * <br/>
-	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
-	 * 
-	 * @param source
-	 * @param bufferSize
-	 * @param target
-	 * @param count
-	 * @throws IOException
-	 * @throws EncodeException
-	 */
 	default void encode(InputStream source, int bufferSize, OutputStream target, int count)
 			throws IOException, EncodeException {
 		Assert.isTrue(count > 0, "Count must be greater than 0");
@@ -126,15 +94,6 @@ public interface BytesEncoder extends FromBytesEncoder<byte[]>, ToBytesEncoder<b
 		}
 	}
 
-	/**
-	 * 奖文件内容编码到输出流
-	 * 
-	 * @param source
-	 * @param bufferSize
-	 * @param target
-	 * @throws IOException
-	 * @throws EncodeException
-	 */
 	default void encode(File source, int bufferSize, OutputStream target) throws IOException, EncodeException {
 		FileInputStream fis = new FileInputStream(source);
 		try {
@@ -154,16 +113,6 @@ public interface BytesEncoder extends FromBytesEncoder<byte[]>, ToBytesEncoder<b
 		}
 	}
 
-	/**
-	 * 将编码结果输出到文件
-	 * 
-	 * @see #encode(InputStream, int, OutputStream)
-	 * @param source
-	 * @param bufferSize
-	 * @param target
-	 * @throws IOException
-	 * @throws EncodeException
-	 */
 	default void encode(InputStream source, int bufferSize, File target) throws IOException, EncodeException {
 		FileOutputStream fos = new FileOutputStream(target);
 		try {
@@ -183,15 +132,6 @@ public interface BytesEncoder extends FromBytesEncoder<byte[]>, ToBytesEncoder<b
 		}
 	}
 
-	/**
-	 * 将文件内容编码到另一个文件
-	 * 
-	 * @param source
-	 * @param bufferSize
-	 * @param target
-	 * @throws IOException
-	 * @throws EncodeException
-	 */
 	default void encode(File source, int bufferSize, File target) throws IOException, EncodeException {
 		FileInputStream fis = null;
 		FileOutputStream fos = null;
@@ -216,27 +156,8 @@ public interface BytesEncoder extends FromBytesEncoder<byte[]>, ToBytesEncoder<b
 		}
 	}
 
-	/**
-	 * 奖一个输入流进行编码，并写入到输出流
-	 * 
-	 * @param source
-	 * @param bufferSize
-	 * @param target
-	 * @throws IOException
-	 * @throws EncodeException
-	 */
 	void encode(InputStream source, int bufferSize, OutputStream target) throws IOException, EncodeException;
 
-	/**
-	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
-	 * 
-	 * @param source
-	 * @param bufferSize
-	 * @param targetProcessor
-	 * @throws IOException
-	 * @throws EncodeException
-	 * @throws E
-	 */
 	default <E extends Throwable> void encode(InputStream source, int bufferSize,
 			BufferProcessor<byte[], E> targetProcessor, int count) throws IOException, EncodeException, E {
 		Assert.isTrue(count > 0, "Count must be greater than 0");
@@ -279,16 +200,6 @@ public interface BytesEncoder extends FromBytesEncoder<byte[]>, ToBytesEncoder<b
 		}
 	}
 
-	/**
-	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
-	 * 
-	 * @param source
-	 * @param bufferSize
-	 * @param targetProcessor
-	 * @throws IOException
-	 * @throws EncodeException
-	 * @throws E
-	 */
 	default <E extends Throwable> void encode(InputStream source, int bufferSize,
 			BufferProcessor<byte[], E> targetProcessor) throws IOException, EncodeException, E {
 		File tempFile = File.createTempFile("encode", "processor");

@@ -3,7 +3,7 @@ package io.basc.framework.transaction;
 /**
  * 事务的传播方式
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public enum Propagation {

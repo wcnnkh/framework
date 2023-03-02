@@ -8,7 +8,6 @@ package io.basc.framework.io;
  * protocols to be handled without subclassing the loader implementation (or
  * application context implementation).
  *
- * @see DefaultResourceLoader#addProtocolResolver
  */
 public interface ProtocolResolver {
 

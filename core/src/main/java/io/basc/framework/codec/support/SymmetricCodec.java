@@ -9,7 +9,7 @@ import io.basc.framework.util.StringUtils;
 /**
  * 对称编解码器
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class SymmetricCodec extends CryptoCodec {

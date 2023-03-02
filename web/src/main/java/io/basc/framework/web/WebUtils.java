@@ -37,7 +37,6 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.value.Value;
 import io.basc.framework.web.pattern.HttpPattern;
-import io.basc.framework.web.support.DefaultHttpService;
 import io.basc.framework.xml.XmlUtils;
 
 public final class WebUtils {
@@ -51,14 +50,6 @@ public final class WebUtils {
 		return SERVER_HTTP_REQUEST_LOCAL;
 	}
 
-	/**
-	 * 缓存是否过期,如果未过期那么返回304，如果已过期则setLastModified
-	 * 
-	 * @param request
-	 * @param response
-	 * @param lastModified
-	 * @return
-	 */
 	public static boolean isExpired(ServerHttpRequest request, ServerHttpResponse response, long lastModified) {
 		response.getHeaders().setLastModified(lastModified);
 		long ifModifiedSince = request.getHeaders().getIfModifiedSince();
@@ -78,15 +69,6 @@ public final class WebUtils {
 		return false;
 	}
 
-	/**
-	 * 写入一个静态资源
-	 * 
-	 * @param request
-	 * @param response
-	 * @param resource
-	 * @param mimeType
-	 * @throws IOException
-	 */
 	public static void writeStaticResource(ServerHttpRequest request, ServerHttpResponse response, Resource resource,
 			MimeType mimeType) throws IOException {
 		if (resource == null || !resource.exists()) {
@@ -104,13 +86,6 @@ public final class WebUtils {
 		IOUtils.copy(resource.getInputStream(), response.getOutputStream());
 	}
 
-	/**
-	 * 根据参数名获取
-	 * 
-	 * @param request
-	 * @param name
-	 * @return 如果不存在返回{@see EmptyValue}
-	 */
 	public static Value getParameter(ServerHttpRequest request, String name) {
 		String value = request.getParameterMap().getFirst(name);
 		if (value == null) {
@@ -147,13 +122,6 @@ public final class WebUtils {
 		return Value.EMPTY;
 	}
 
-	/**
-	 * 此方法不会返回空，如果不存在返回的数组长度为0
-	 * 
-	 * @param request
-	 * @param name
-	 * @return
-	 */
 	public static Value[] getParameterValues(ServerHttpRequest request, String name) {
 		List<String> valueList = request.getParameterMap().get(name);
 		if (!CollectionUtils.isEmpty(valueList)) {
@@ -197,12 +165,6 @@ public final class WebUtils {
 		return Value.EMPTY_ARRAY;
 	}
 
-	/**
-	 * 此方法不一定返回 io.basc.framework.web.JsonServerHttpRequest
-	 * 
-	 * @param request
-	 * @return
-	 */
 	public static ServerHttpRequest wrapperServerJsonRequest(ServerHttpRequest request) {
 		if (request.getMethod() == HttpMethod.GET) {
 			return request;
@@ -221,13 +183,6 @@ public final class WebUtils {
 		return request;
 	}
 
-	/**
-	 * 此方法不一定返回 io.basc.framework.web.MultiPartServerHttpRequest
-	 * 
-	 * @param request
-	 * @param multipartMessageResolver
-	 * @return
-	 */
 	public static ServerHttpRequest wrapperServerMultipartFormRequest(ServerHttpRequest request,
 			MultipartMessageResolver multipartMessageResolver) {
 		if (request.getMethod() == HttpMethod.GET) {
@@ -252,14 +207,6 @@ public final class WebUtils {
 		return request;
 	}
 
-	/**
-	 * 从cookie中获取数据
-	 * 
-	 * @param request
-	 * 
-	 * @param name    cookie中的名字
-	 * @return
-	 */
 	public static HttpCookie getCookie(ServerHttpRequest request, String name) {
 		if (name == null) {
 			return null;
@@ -282,12 +229,6 @@ public final class WebUtils {
 		return null;
 	}
 
-	/**
-	 * 将一个ServerhttpRequest保存在ThreadLocal中
-	 * 
-	 * @see DefaultHttpService#service(ServerHttpRequest, ServerHttpResponse)
-	 * @param request
-	 */
 	public static void setLocalServerHttpRequest(ServerHttpRequest request) {
 		if (request == null) {
 			SERVER_HTTP_REQUEST_LOCAL.remove();
@@ -296,13 +237,6 @@ public final class WebUtils {
 		}
 	}
 
-	/**
-	 * 获取一个存储在ThreadLocal中的ServerHttpRequest
-	 * 
-	 * @see #setLocalServerHttpRequest(ServerHttpRequest)
-	 * @see #SERVER_HTTP_REQUEST_LOCAL
-	 * @return
-	 */
 	public static ServerHttpRequest getLocalServerHttpRequest() {
 		return SERVER_HTTP_REQUEST_LOCAL.get();
 	}
@@ -316,20 +250,10 @@ public final class WebUtils {
 		return (Map<String, String>) request.getAttribute(RESTFUL_PARAMETER_MAP);
 	}
 
-	/**
-	 * @see HttpPattern#accept(ServerHttpRequest)
-	 * @param request
-	 * @param httpPattern
-	 */
 	public static void setHttpPattern(ServerHttpRequest request, HttpPattern httpPattern) {
 		request.setAttribute(HttpPattern.class.getName(), httpPattern);
 	}
 
-	/**
-	 * @see HttpPattern#accept(ServerHttpRequest)
-	 * @param request
-	 * @return
-	 */
 	@Nullable
 	public static HttpPattern getHttpPattern(ServerHttpRequest request) {
 		return (HttpPattern) request.getAttribute(HttpPattern.class.getName());

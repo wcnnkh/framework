@@ -52,6 +52,7 @@ import io.basc.framework.util.Assert;
  *
  * <p>
  * <table border="1">
+ * <caption>Examples</caption>
  * <tr>
  * <th>Name</th>
  * <th>Value</th>

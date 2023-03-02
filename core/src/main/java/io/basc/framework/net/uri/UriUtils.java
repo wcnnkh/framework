@@ -186,12 +186,6 @@ public class UriUtils {
 		return null;
 	}
 
-	/**
-	 * 将一段uri转换成键值对
-	 * 
-	 * @param content
-	 * @return
-	 */
 	public static MultiValueMap<String, String> getQueryParams(String uri) {
 		if (!StringUtils.hasText(uri)) {
 			return CollectionUtils.emptyMultiValueMap();
@@ -297,14 +291,6 @@ public class UriUtils {
 		return sb.toString();
 	}
 
-	/**
-	 * 在url后面追加参数
-	 * 
-	 * @param url
-	 * @param paramMap
-	 * @param charsetName
-	 * @return
-	 */
 	public static String appendQueryParams(String url, Map<String, ?> paramMap,
 			@Nullable Encoder<String, String> encoder) {
 		if (paramMap == null || paramMap.isEmpty()) {
@@ -328,12 +314,6 @@ public class UriUtils {
 		return sb.toString();
 	}
 
-	/**
-	 * @param source
-	 * @param charsetName
-	 * @return
-	 * @see URLEncoder#encode(java.lang.String, java.lang.String)
-	 */
 	public static String encode(String source, String charsetName) {
 		if (source == null) {
 			return null;
@@ -347,23 +327,10 @@ public class UriUtils {
 		}
 	}
 
-	/**
-	 * The World Wide Web Consortium Recommendation states that UTF-8 should be
-	 * used.
-	 * 
-	 * @param source
-	 * @return
-	 */
 	public static String encode(String source) {
 		return encode(source, Constants.UTF_8_NAME);
 	}
 
-	/**
-	 * @param source
-	 * @param charsetName
-	 * @return
-	 * @see URLEncoder#decode(java.lang.String, java.lang.String)
-	 */
 	public static String decode(String source, String charsetName) {
 		if (source == null) {
 			return null;
@@ -377,13 +344,6 @@ public class UriUtils {
 		}
 	}
 
-	/**
-	 * The World Wide Web Consortium Recommendation states that UTF-8 should be
-	 * used.
-	 * 
-	 * @param source
-	 * @return
-	 */
 	public static String decode(String source) {
 		return decode(source, Constants.UTF_8_NAME);
 	}

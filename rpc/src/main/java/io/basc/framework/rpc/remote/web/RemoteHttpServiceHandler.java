@@ -25,7 +25,7 @@ import io.basc.framework.web.pattern.HttpPattern;
 /**
  * 依赖web模块
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Provider(order = Ordered.HIGHEST_PRECEDENCE)

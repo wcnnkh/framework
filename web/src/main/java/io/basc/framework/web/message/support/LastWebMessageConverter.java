@@ -23,7 +23,7 @@ import io.basc.framework.web.message.WebMessagelConverterException;
 /**
  * 应该排在最后一个
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 class LastWebMessageConverter extends AbstractWebMessageConverter implements Ordered {

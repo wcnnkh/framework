@@ -19,10 +19,5 @@ public @interface Value {
 
 	String charsetName() default "";
 
-	/**
-	 * 是否监听变更
-	 * 
-	 * @return
-	 */
 	boolean listener() default true;
 }

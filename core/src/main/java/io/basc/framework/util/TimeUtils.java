@@ -215,7 +215,7 @@ public class TimeUtils extends DateCodec {
 	 * 将时间格式化为字符串
 	 * 
 	 * @see DateFormat#format(Date)
-	 * @param date
+	 * @param source
 	 * @param pattern
 	 * @return
 	 */

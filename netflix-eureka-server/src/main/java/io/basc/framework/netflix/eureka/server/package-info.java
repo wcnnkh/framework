@@ -1,6 +1,6 @@
 /**
  * 参考Spring
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 package io.basc.framework.netflix.eureka.server;

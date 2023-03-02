@@ -3,7 +3,7 @@ package io.basc.framework.transaction;
 /**
  * 保存点
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface Savepoint {

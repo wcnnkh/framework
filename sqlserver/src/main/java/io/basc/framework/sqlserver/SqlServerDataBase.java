@@ -9,7 +9,7 @@ import io.basc.framework.util.StringUtils;
 /**
  * Sql Server7.0/2000数据库
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class SqlServerDataBase extends AbstractDataBase {

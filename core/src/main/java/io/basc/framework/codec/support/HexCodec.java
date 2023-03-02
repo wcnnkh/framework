@@ -25,10 +25,10 @@ public class HexCodec implements Codec<byte[], String> {
 	}
 
 	/**
-	 * 两个16进制字符表示一个字节长度<br/>
-	 * 因为一个字节等于8bit（bit = 二进制位）<br/>
-	 * 一个16进制字符 需要 4个二进制才能表示<br/>
-	 * 所以两个16进制字符等于一个字节<br/>
+	 * 两个16进制字符表示一个字节长度
+	 * 因为一个字节等于8bit（bit = 二进制位）
+	 * 一个16进制字符 需要 4个二进制才能表示
+	 * 所以两个16进制字符等于一个字节
 	 */
 	public byte[] decode(String source) throws DecodeException {
 		if (source.length() < 1)

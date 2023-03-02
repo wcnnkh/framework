@@ -11,7 +11,7 @@ import java.io.InputStream;
 /**
  * 缓存请求体，未处理内存溢出的情况
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class CachingServerHttpRequest extends ServerHttpRequestWrapper {

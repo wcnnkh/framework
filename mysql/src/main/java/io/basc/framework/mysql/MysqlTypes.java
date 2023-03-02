@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * 一些常见的类型
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public enum MysqlTypes implements SqlType {

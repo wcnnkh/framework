@@ -63,37 +63,19 @@ public abstract class DefaultHandshakeHandler implements HandshakeHandler {
 	private final List<String> supportedProtocols = new ArrayList<String>();
 
 	/**
-	 * A constructor that accepts a runtime-specific
-	 * {@link RequestUpgradeStrategy}.
+	 * A constructor that accepts a runtime-specific {@link RequestUpgradeStrategy}.
 	 * 
-	 * @param requestUpgradeStrategy
-	 *            the upgrade strategy to use
+	 * @param requestUpgradeStrategy the upgrade strategy to use
 	 */
 	protected DefaultHandshakeHandler(RequestUpgradeStrategy requestUpgradeStrategy) {
 		Assert.notNull(requestUpgradeStrategy, "RequestUpgradeStrategy must not be null");
 		this.requestUpgradeStrategy = requestUpgradeStrategy;
 	}
 
-	/**
-	 * Return the {@link RequestUpgradeStrategy} for WebSocket requests.
-	 */
 	public RequestUpgradeStrategy getRequestUpgradeStrategy() {
 		return this.requestUpgradeStrategy;
 	}
 
-	/**
-	 * Use this property to configure the list of supported sub-protocols. The
-	 * first configured sub-protocol that matches a client-requested
-	 * sub-protocol is accepted. If there are no matches the response will not
-	 * contain a {@literal Sec-WebSocket-Protocol} header.
-	 * <p>
-	 * Note that if the WebSocketHandler passed in at runtime is an instance of
-	 * {@link SubProtocolCapable} then there is not need to explicitly configure
-	 * this property. That is certainly the case with the built-in STOMP over
-	 * WebSocket support. Therefore this property should be configured
-	 * explicitly only if the WebSocketHandler does not implement
-	 * {@code SubProtocolCapable}.
-	 */
 	public void setSupportedProtocols(String... protocols) {
 		this.supportedProtocols.clear();
 		for (String protocol : protocols) {
@@ -101,9 +83,6 @@ public abstract class DefaultHandshakeHandler implements HandshakeHandler {
 		}
 	}
 
-	/**
-	 * Return the list of supported sub-protocols.
-	 */
 	public String[] getSupportedProtocols() {
 		return StringUtils.toStringArray(this.supportedProtocols);
 	}
@@ -209,11 +188,6 @@ public abstract class DefaultHandshakeHandler implements HandshakeHandler {
 				StringUtils.arrayToCommaDelimitedString(getSupportedVersions()));
 	}
 
-	/**
-	 * Return whether the request {@code Origin} header value is valid or not.
-	 * By default, all origins as considered as valid. Consider using an
-	 * {@link OriginHandshakeInterceptor} for filtering origins if needed.
-	 */
 	protected boolean isValidOrigin(ServerHttpRequest request) {
 		return true;
 	}
@@ -222,13 +196,11 @@ public abstract class DefaultHandshakeHandler implements HandshakeHandler {
 	 * Perform the sub-protocol negotiation based on requested and supported
 	 * sub-protocols. For the list of supported sub-protocols, this method first
 	 * checks if the target WebSocketHandler is a {@link SubProtocolCapable} and
-	 * then also checks if any sub-protocols have been explicitly configured
-	 * with {@link #setSupportedProtocols(String...)}.
+	 * then also checks if any sub-protocols have been explicitly configured with
+	 * {@link #setSupportedProtocols(String...)}.
 	 * 
-	 * @param requestedProtocols
-	 *            the requested sub-protocols
-	 * @param webSocketHandler
-	 *            the WebSocketHandler that will be used
+	 * @param requestedProtocols the requested sub-protocols
+	 * @param webSocketHandler   the WebSocketHandler that will be used
 	 * @return the selected protocols or {@code null}
 	 * @see #determineHandlerSupportedProtocols(WebSocketHandler)
 	 */
@@ -251,8 +223,7 @@ public abstract class DefaultHandshakeHandler implements HandshakeHandler {
 	 * Determine the sub-protocols supported by the given WebSocketHandler by
 	 * checking whether it is an instance of {@link SubProtocolCapable}.
 	 * 
-	 * @param handler
-	 *            the handler to check
+	 * @param handler the handler to check
 	 * @return a list of supported protocols, or an empty list if none available
 	 */
 	protected final List<String> determineHandlerSupportedProtocols(WebSocketHandler handler) {
@@ -270,12 +241,9 @@ public abstract class DefaultHandshakeHandler implements HandshakeHandler {
 	 * As of 4.1, the default implementation of this method filters the list to
 	 * leave only extensions that are both requested and supported.
 	 * 
-	 * @param request
-	 *            the current request
-	 * @param requestedExtensions
-	 *            the list of extensions requested by the client
-	 * @param supportedExtensions
-	 *            the list of extensions supported by the server
+	 * @param request             the current request
+	 * @param requestedExtensions the list of extensions requested by the client
+	 * @param supportedExtensions the list of extensions supported by the server
 	 * @return the selected extensions or an empty list
 	 */
 	protected List<WebSocketExtension> filterRequestedExtensions(ServerHttpRequest request,
@@ -291,22 +259,18 @@ public abstract class DefaultHandshakeHandler implements HandshakeHandler {
 	}
 
 	/**
-	 * A method that can be used to associate a user with the WebSocket session
-	 * in the process of being established. The default implementation calls
+	 * A method that can be used to associate a user with the WebSocket session in
+	 * the process of being established. The default implementation calls
 	 * {@link ServerHttpRequest#getPrincipal()}
 	 * <p>
-	 * Subclasses can provide custom logic for associating a user with a
-	 * session, for example for assigning a name to anonymous users (i.e. not
-	 * fully authenticated).
+	 * Subclasses can provide custom logic for associating a user with a session,
+	 * for example for assigning a name to anonymous users (i.e. not fully
+	 * authenticated).
 	 * 
-	 * @param request
-	 *            the handshake request
-	 * @param wsHandler
-	 *            the WebSocket handler that will handle messages
-	 * @param attributes
-	 *            handshake attributes to pass to the WebSocket session
-	 * @return the user for the WebSocket session, or {@code null} if not
-	 *         available
+	 * @param request    the handshake request
+	 * @param wsHandler  the WebSocket handler that will handle messages
+	 * @param attributes handshake attributes to pass to the WebSocket session
+	 * @return the user for the WebSocket session, or {@code null} if not available
 	 */
 	protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler,
 			Map<String, Object> attributes) {

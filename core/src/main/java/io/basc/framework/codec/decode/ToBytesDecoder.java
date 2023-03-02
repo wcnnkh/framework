@@ -39,11 +39,12 @@ public interface ToBytesDecoder<E> extends Decoder<E, byte[]> {
 	/**
 	 * 默认是使用临时文件实现的，如果有更好的实现应该重写此方法
 	 * 
-	 * @param source
-	 * @param targetProcessor
-	 * @throws DecodeException
-	 * @throws IOException
-	 * @throws S
+	 * @param <S>             异常类型
+	 * @param source          输入
+	 * @param targetProcessor 输出
+	 * @throws DecodeException 解码异常
+	 * @throws IOException     io error
+	 * @throws S               异常类型
 	 */
 	default <S extends Throwable> void decode(E source, BufferProcessor<byte[], S> targetProcessor)
 			throws DecodeException, IOException, S {

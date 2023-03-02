@@ -20,26 +20,17 @@ import io.basc.framework.lang.Nullable;
 /**
  * Exception thrown when issuing commands on a connection that is subscribed and
  * waiting for events.
+ * 
+ * @author shuchaowen
  *
  */
 public class RedisSubscribedConnectionException extends RedisSystemException {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructs a new <code>RedisSubscribedConnectionException</code> instance.
-	 *
-	 * @param msg
-	 * @param cause
-	 */
 	public RedisSubscribedConnectionException(@Nullable String msg, @Nullable Throwable cause) {
 		super(msg, cause);
 	}
 
-	/**
-	 * Constructs a new <code>RedisSubscribedConnectionException</code> instance.
-	 *
-	 * @param msg
-	 */
 	public RedisSubscribedConnectionException(String msg) {
 		super(msg);
 	}

@@ -22,6 +22,8 @@ public interface Synchronization {
 	 * This method is invoked before the start of the commit process. The method
 	 * invocation is done in the context of the transaction that is about to be
 	 * committed.
+	 * 
+	 * @throws Throwable 执行异常
 	 */
 	void beforeCompletion() throws Throwable;
 

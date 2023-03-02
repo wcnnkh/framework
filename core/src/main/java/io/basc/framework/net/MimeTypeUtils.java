@@ -361,9 +361,6 @@ public final class MimeTypeUtils {
 		}
 	}
 
-	/**
-	 * Generate a random MIME boundary as bytes, often used in multipart mime types.
-	 */
 	public static byte[] generateMultipartBoundary() {
 		byte[] boundary = new byte[RND.nextInt(11) + 30];
 		for (int i = 0; i < boundary.length; i++) {
@@ -386,10 +383,6 @@ public final class MimeTypeUtils {
 		}
 	}
 
-	/**
-	 * Generate a random MIME boundary as String, often used in multipart mime
-	 * types.
-	 */
 	public static String generateMultipartBoundaryString() {
 		return new String(generateMultipartBoundary(), US_ASCII);
 	}

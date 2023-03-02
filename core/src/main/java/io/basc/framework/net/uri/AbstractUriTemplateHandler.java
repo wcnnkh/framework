@@ -33,9 +33,6 @@ public abstract class AbstractUriTemplateHandler implements UriTemplateHandler {
 		this.baseUrl = baseUrl;
 	}
 
-	/**
-	 * Return the configured base URL.
-	 */
 	public String getBaseUrl() {
 		return this.baseUrl;
 	}
@@ -55,9 +52,6 @@ public abstract class AbstractUriTemplateHandler implements UriTemplateHandler {
 		}
 	}
 
-	/**
-	 * Return a read-only copy of the configured default URI variables.
-	 */
 	public Map<String, ?> getDefaultUriVariables() {
 		return Collections.unmodifiableMap(this.defaultUriVariables);
 	}
@@ -78,19 +72,10 @@ public abstract class AbstractUriTemplateHandler implements UriTemplateHandler {
 		return insertBaseUrl(url);
 	}
 
-	/**
-	 * Actually expand and encode the URI template.
-	 */
 	protected abstract URI expandInternal(String uriTemplate, Map<String, ?> uriVariables);
 
-	/**
-	 * Actually expand and encode the URI template.
-	 */
 	protected abstract URI expandInternal(String uriTemplate, Object... uriVariables);
 
-	/**
-	 * Insert a base URL (if configured) unless the given URL has a host already.
-	 */
 	private URI insertBaseUrl(URI url) {
 		try {
 			String baseUrl = getBaseUrl();

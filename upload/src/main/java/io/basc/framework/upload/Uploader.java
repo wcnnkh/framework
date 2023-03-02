@@ -46,7 +46,7 @@ import io.basc.framework.web.pattern.ServerHttpRequestAccept;
 /**
  * 上传器
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Provider

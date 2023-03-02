@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * 主键
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Target(ElementType.FIELD)

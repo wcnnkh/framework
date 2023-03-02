@@ -18,30 +18,15 @@ public final class TransactionUtils {
 	private static final ThreadLocal<TransactionManager> LOCAL = new NamedThreadLocal<TransactionManager>(
 			TransactionManager.class.getSimpleName());
 
-	/**
-	 * 获取默认的管理器
-	 * 
-	 * @return
-	 */
 	public static TransactionManager getDefaultManager() {
 		return DEFAULT;
 	}
 
-	/**
-	 * 获取当前使用的事务管理器
-	 * 
-	 * @return
-	 */
 	public static TransactionManager getManager() {
 		TransactionManager manager = LOCAL.get();
 		return manager == null ? DEFAULT : manager;
 	}
 
-	/**
-	 * 设置事务管理器
-	 * 
-	 * @param manager
-	 */
 	public static void setManager(TransactionManager manager) {
 		if (manager == null) {
 			LOCAL.remove();

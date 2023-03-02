@@ -7,7 +7,7 @@ import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 /**
  * 
  * @see CountDownLatch
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public final class CountLatch {

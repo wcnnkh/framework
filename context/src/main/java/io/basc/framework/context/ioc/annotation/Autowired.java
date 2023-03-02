@@ -10,13 +10,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Autowired {
-	public String value() default "";
+	String value() default "";
 
-	/**
-	 * 是否强制依赖, 如果为false，那么仅当field不存在或字段的值为空时才注入
-	 * 
-	 * @see AutowiredIocProcessor
-	 * @return
-	 */
-	public boolean required() default true;
+	boolean required() default true;
 }

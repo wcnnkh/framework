@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 /**
  * @see DefaultRemoteMessageHeaders
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface RemoteMessageHeaders extends EditableAttributes<String, Object>, Serializable{

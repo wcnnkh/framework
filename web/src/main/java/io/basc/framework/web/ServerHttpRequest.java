@@ -27,23 +27,12 @@ public interface ServerHttpRequest extends HttpInputMessage, HttpRequest, Editab
 
 	ServerHttpAsyncControl getAsyncControl(ServerHttpResponse response);
 
-	/**
-	 * 获取客户端请求的ip
-	 * 
-	 * @return
-	 */
 	String getIp();
 
 	BufferedReader getReader() throws IOException;
 
-	/**
-	 * Return the address on which the request was received.
-	 */
 	InetSocketAddress getLocalAddress();
 
-	/**
-	 * Return the address of the remote client.
-	 */
 	InetSocketAddress getRemoteAddress();
 
 	MultiValueMap<String, String> getParameterMap();
