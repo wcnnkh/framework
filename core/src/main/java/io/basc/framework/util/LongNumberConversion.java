@@ -3,7 +3,7 @@ package io.basc.framework.util;
 /**
  * 10进制整数与任意进制之间的转换
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public final class LongNumberConversion {

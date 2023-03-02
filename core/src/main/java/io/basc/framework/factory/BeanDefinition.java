@@ -31,10 +31,5 @@ public interface BeanDefinition extends Iterable<ParameterDescriptors>, Instance
 
 	void destroy(Object instance) throws BeansException;
 
-	/**
-	 * 是否是外部的
-	 * 
-	 * @return
-	 */
 	boolean isExternal();
 }

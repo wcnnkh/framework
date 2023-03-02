@@ -6,14 +6,6 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.Processor;
 
-/**
- * 选项
- * 
- * @author wcnnkh
- *
- * @param <K>
- * @param <V>
- */
 public class Option<K, V> extends Pair<K, V> {
 	private static final long serialVersionUID = 1L;
 	private K parentKey;

@@ -17,7 +17,7 @@ import io.basc.framework.util.Source;
 /**
  * 快速验证
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Provider(order = Ordered.LOWEST_PRECEDENCE)

@@ -63,7 +63,7 @@ public final class IdUtils {
 	/**
 	 * Gets the resolved service id.
 	 * 
-	 * @param resolver A property resolved
+	 * @param environment A property resolved
 	 * @return A unique id that can be used to uniquely identify a service
 	 */
 	public static String getResolvedServiceId(Environment environment) {

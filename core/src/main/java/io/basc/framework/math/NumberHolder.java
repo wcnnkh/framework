@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 /**
  * 数字持有者
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface NumberHolder extends Comparable<NumberHolder> {
@@ -28,7 +28,7 @@ public interface NumberHolder extends Comparable<NumberHolder> {
 	/**
 	 * 乘法
 	 * 
-	 * @param numberExtend
+	 * @param numberHolder
 	 * @return
 	 */
 	NumberHolder multiply(NumberHolder numberHolder);

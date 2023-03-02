@@ -19,4 +19,4 @@
 
 3.即将开始模块(不分先后顺序)
 -----------------
-JMX,Solr,Elasticsearch,Kafka,Netty
+JMX,Solr,Elasticsearch,Kafka,Netty,Mongodb

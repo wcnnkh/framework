@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public interface MessageConverter {
 	/**
-	 * 返回只读的MimeTypes<br/>
+	 * 返回只读的MimeTypes,
 	 * 如果返回{@link MimeTypes#EMPTY} 或
 	 * {@code null}说明可以接受任意类型，具体看{@link #canRead(TypeDescriptor, MimeType)} or
 	 * {@link #canWrite(TypeDescriptor, Object, MimeType)}

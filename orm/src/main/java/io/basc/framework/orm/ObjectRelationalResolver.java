@@ -32,22 +32,8 @@ public interface ObjectRelationalResolver {
 
 	boolean isVersionField(Class<?> entityClass, ParameterDescriptor descriptor);
 
-	/**
-	 * 获取值的范围
-	 * 
-	 * @param entityClass
-	 * @param descriptor
-	 * @return
-	 */
 	Collection<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor);
 
-	/**
-	 * 是否自增
-	 * 
-	 * @param entityClass
-	 * @param descriptor
-	 * @return
-	 */
 	boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	String getComment(Class<?> entityClass);
@@ -60,13 +46,6 @@ public interface ObjectRelationalResolver {
 
 	boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor);
 
-	/**
-	 * 是否应该是增量操作 value = value + ?
-	 * 
-	 * @param entityClass
-	 * @param descriptor
-	 * @return
-	 */
 	boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	@Nullable
@@ -76,13 +55,6 @@ public interface ObjectRelationalResolver {
 
 	String getRelationship(Class<?> entityClass, ParameterDescriptor descriptor);
 
-	/**
-	 * 获取外键对应的实体类
-	 * 
-	 * @param entityClass
-	 * @param descriptor
-	 * @return
-	 */
 	ForeignKey getForeignKey(Class<?> entityClass, ParameterDescriptor descriptor);
 
 	boolean isDisplay(Class<?> entityClass, ParameterDescriptor descriptor);

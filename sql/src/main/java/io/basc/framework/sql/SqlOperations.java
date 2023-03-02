@@ -47,14 +47,6 @@ public interface SqlOperations extends ConnectionFactory {
 		return query(resultType, new SimpleSql(sql, sqlParams));
 	}
 
-	/**
-	 * 返回受影响的行数
-	 * 
-	 * @see #prepare(Sql)
-	 * @param sql
-	 * @return
-	 * @throws SqlException
-	 */
 	default int update(Sql sql) {
 		return process(sql, (e) -> e.executeUpdate());
 	}

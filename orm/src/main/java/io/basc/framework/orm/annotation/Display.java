@@ -8,10 +8,5 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Display {
-	/**
-	 * 注解在类上时有效
-	 * 
-	 * @return
-	 */
 	String name() default "";
 }

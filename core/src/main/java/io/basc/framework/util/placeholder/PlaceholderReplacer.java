@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * 占位符替换
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface PlaceholderReplacer {

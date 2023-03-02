@@ -11,7 +11,6 @@ import java.lang.reflect.InvocationTargetException;
  * Mainly for use within the framework.
  *
  * @see NestedRuntimeException
- * @see NestedCheckedException
  * @see NestedIOException
  */
 public abstract class NestedExceptionUtils {
@@ -69,12 +68,6 @@ public abstract class NestedExceptionUtils {
 		return (rootCause != null ? rootCause : original);
 	}
 
-	/**
-	 * 排除无效的嵌套异常
-	 * 
-	 * @param original
-	 * @return
-	 */
 	public static Throwable excludeInvalidNestedExcpetion(Throwable original) {
 		Throwable cause = original;
 		if (original instanceof InvocationTargetException) {// 排除反射异常

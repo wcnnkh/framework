@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
-import io.basc.framework.io.DefaultResourceLoader;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.lang.Nullable;
@@ -53,20 +52,12 @@ public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 	 * 
 	 * @param resourceLoader the ResourceLoader to use (also determines the
 	 *                       ClassLoader to use)
-	 * @see DefaultResourceLoader#getResourceCache
 	 */
 	public CachingMetadataReaderFactory(@Nullable ResourceLoader resourceLoader) {
 		super(resourceLoader);
 		setCacheLimit(DEFAULT_CACHE_LIMIT);
 	}
 
-	/**
-	 * Specify the maximum number of entries for the MetadataReader cache.
-	 * <p>
-	 * Default is 256 for a local cache, whereas a shared cache is typically
-	 * unbounded. This method enforces a local resource cache, even if the
-	 * {@link ResourceLoader} supports a shared resource cache.
-	 */
 	public void setCacheLimit(int cacheLimit) {
 		if (cacheLimit <= 0) {
 			this.metadataReaderCache = null;
@@ -77,9 +68,6 @@ public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 		}
 	}
 
-	/**
-	 * Return the maximum number of entries for the MetadataReader cache.
-	 */
 	public int getCacheLimit() {
 		if (this.metadataReaderCache instanceof LocalResourceCache) {
 			return ((LocalResourceCache) this.metadataReaderCache).getCacheLimit();
@@ -113,10 +101,6 @@ public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 		}
 	}
 
-	/**
-	 * Clear the local MetadataReader cache, if any, removing all cached class
-	 * metadata.
-	 */
 	public void clearCache() {
 		if (this.metadataReaderCache instanceof LocalResourceCache) {
 			synchronized (this.metadataReaderCache) {

@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 /**
  * 迭代分割字符串
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class CharSequenceSplitIterator implements Iterator<CharSequenceSplitSegment> {

@@ -30,14 +30,6 @@ public final class ProxyUtils {
 		return FACTORY;
 	}
 
-	/**
-	 * 代理一个对象并忽略其指定的方法
-	 * 
-	 * @param clazz
-	 * @param instance
-	 * @param ignoreMethods
-	 * @return
-	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T proxyIngoreMethod(ProxyFactory proxyFactory, Class<? extends T> clazz, T instance,
 			IgnoreMethodAccept ignoreMethodAccept) {
@@ -112,23 +104,12 @@ public final class ProxyUtils {
 		throw new UnsupportedOperationException(invoker.getMethod().toString());
 	}
 
-	/**
-	 * 是否是ObjectStream中的WriteReplaceMethod
-	 * 
-	 * @return
-	 */
 	public static boolean isWriteReplaceMethod(MethodInvoker invoker) {
 		return ArrayUtils.isEmpty(invoker.getMethod().getParameterTypes())
 				&& invoker.getInstance() instanceof Serializable
 				&& invoker.getMethod().getName().equals(WriteReplaceInterface.WRITE_REPLACE_METHOD);
 	}
 
-	/**
-	 * 是否是ObjectStream中的WriteReplaceMethod
-	 * 
-	 * @param writeReplaceInterface 原始类型是否应该实现{@see WriteReplaceInterface}
-	 * @return
-	 */
 	public static boolean isWriteReplaceMethod(MethodInvoker invoker, boolean writeReplaceInterface) {
 		if (isWriteReplaceMethod(invoker)) {
 			if (writeReplaceInterface) {

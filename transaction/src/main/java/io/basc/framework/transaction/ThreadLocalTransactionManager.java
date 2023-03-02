@@ -28,12 +28,6 @@ public class ThreadLocalTransactionManager implements TransactionManager {
 		return tx;
 	}
 
-	/**
-	 * 提交事务
-	 * 
-	 * @param transaction
-	 * @throws Throwable
-	 */
 	public void commit(Transaction transaction) throws Throwable {
 		if (transaction.isRollbackOnly()) {// 直接回滚
 			rollback(transaction);
@@ -53,11 +47,6 @@ public class ThreadLocalTransactionManager implements TransactionManager {
 		}
 	}
 
-	/**
-	 * 回滚事务
-	 * 
-	 * @param transaction
-	 */
 	public void rollback(Transaction transaction) {
 		if (transaction.getStatus().isRolledBack()) {
 			return;

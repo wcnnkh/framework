@@ -15,6 +15,7 @@ public interface AliasFactory {
 	 * 
 	 * @param name  the name to check
 	 * @param alias the alias to look for
+	 * @return 是否是别名
 	 */
 	boolean hasAlias(String name, String alias);
 

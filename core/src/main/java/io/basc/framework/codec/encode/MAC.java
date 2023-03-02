@@ -21,11 +21,9 @@ import io.basc.framework.util.Assert;
 
 /**
  * 
- * HmacMD5<br/>
- * HmacSHA1<br/>
- * HmacSHA256<br/>
+ * HmacMD5 HmacSHA1 HmacSHA256
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class MAC implements BytesEncoder, Cloneable {

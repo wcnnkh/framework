@@ -8,7 +8,7 @@ import io.basc.framework.codec.EncodeException;
 import io.basc.framework.lang.Nullable;
 
 /**
- * 大小写转换,默认是小写->大写
+ * 大小写转换,默认是小写--&gt;大写
  * 
  * @author wcnnkh
  *

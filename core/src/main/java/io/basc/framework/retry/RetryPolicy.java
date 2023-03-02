@@ -10,7 +10,7 @@ import io.basc.framework.lang.Nullable;
  * the {@link RetryPolicy} provides a uniform API for a range of different
  * platforms for the external context.
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface RetryPolicy {

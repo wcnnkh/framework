@@ -213,10 +213,6 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 		return (isQuotedString(s) ? s.substring(1, s.length() - 1) : s);
 	}
 
-	/**
-	 * Indicates whether the {@linkplain #getType() type} is the wildcard character
-	 * <code>&#42;</code> or not.
-	 */
 	public boolean isWildcardType() {
 		return WILDCARD_TYPE.equals(getType());
 	}
@@ -249,16 +245,10 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 		return !isWildcardType() && !isWildcardSubtype();
 	}
 
-	/**
-	 * Return the primary type.
-	 */
 	public String getType() {
 		return this.type;
 	}
 
-	/**
-	 * Return the subtype.
-	 */
 	public String getSubtype() {
 		return this.subtype;
 	}
@@ -396,12 +386,6 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 				&& parametersAreEqual(otherType));
 	}
 
-	/**
-	 * Determine if the parameters in this {@code MimeType} and the supplied
-	 * {@code MimeType} are equal, performing case-insensitive comparisons for
-	 * {@link Charset}s.
-	 * 
-	 */
 	private boolean parametersAreEqual(MimeType other) {
 		if (this.parameters.size() != other.parameters.size()) {
 			return false;

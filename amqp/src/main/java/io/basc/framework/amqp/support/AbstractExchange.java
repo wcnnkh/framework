@@ -31,7 +31,7 @@ import io.basc.framework.util.StringUtils;
 /**
  * 此实现通过重试来保证消息的可靠消费
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public abstract class AbstractExchange implements Exchange {
@@ -40,10 +40,6 @@ public abstract class AbstractExchange implements Exchange {
 	private RetryOperations retryOperations = new RetryTemplate();
 	private ArgsMessageCodec messageCodec = new SerializerArgsMessageCodec();
 
-	/**
-	 * @param serializer
-	 * @param exchangeDeclare
-	 */
 	public AbstractExchange(ExchangeDeclare exchangeDeclare) {
 		this.exchangeDeclare = exchangeDeclare;
 	}
@@ -135,24 +131,10 @@ public abstract class AbstractExchange implements Exchange {
 		return 0;
 	}
 
-	/**
-	 * 转发消息时会调用此方法
-	 * 
-	 * @param routingKey
-	 * @param messageProperties
-	 * @param body
-	 */
 	protected void forwardPush(String routingKey, MessageProperties messageProperties, byte[] body) throws IOException {
 		basicPublish(routingKey, messageProperties, body);
 	}
 
-	/**
-	 * 失败重试时会调用此方法
-	 * 
-	 * @param routingKey
-	 * @param messageProperties
-	 * @param body
-	 */
 	protected void retryPush(String routingKey, MessageProperties messageProperties, byte[] body) throws IOException {
 		basicPublish(routingKey, messageProperties, body);
 	}

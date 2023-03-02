@@ -23,13 +23,6 @@ public class CustomLevel extends Level {
 		super(name, value, resourceBundleName);
 	}
 
-	/**
-	 * 大于或等于
-	 * 
-	 * @param origin
-	 * @param target
-	 * @return
-	 */
 	public static boolean isGreaterOrEqual(Level origin, Level target) {
 		return origin.intValue() >= target.intValue();
 	}

@@ -7,13 +7,6 @@ import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.util.Registration;
 import io.basc.framework.web.ServerHttpRequest;
 
-/**
- * 请求匹配,线程安全的
- * 
- * @author shuchaowen
- *
- * @param <T>
- */
 public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 	private Map<String, Map<String, HttpPatternServices<T>>> matcherMap = new HashMap<>();
 	private HttpPatternServices<T> matchers = new HttpPatternServices<>();

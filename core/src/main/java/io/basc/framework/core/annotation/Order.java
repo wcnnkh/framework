@@ -24,7 +24,6 @@ import java.lang.annotation.Target;
  *
  * @see AnnotationAwareOrderComparator
  * @see OrderUtils
- * @see javax.annotation.Priority
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.CONSTRUCTOR })

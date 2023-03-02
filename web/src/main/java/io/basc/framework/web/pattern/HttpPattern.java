@@ -52,36 +52,18 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 		}
 	}
 
-	/**
-	 * 返回一个新的HttpPattern
-	 * 
-	 * @param method
-	 * @return
-	 */
 	public HttpPattern setMethod(String method) {
 		HttpPattern httpPattern = new HttpPattern(this);
 		httpPattern.method = method;
 		return httpPattern;
 	}
 
-	/**
-	 * 返回一个新的HttpPattern
-	 * 
-	 * @param consumes
-	 * @return
-	 */
 	public HttpPattern setConsumes(MimeTypes consumes) {
 		HttpPattern httpPattern = new HttpPattern(this);
 		httpPattern.consumes = consumes;
 		return httpPattern;
 	}
 
-	/**
-	 * 返回一个新的HttpPattern
-	 * 
-	 * @param produces
-	 * @return
-	 */
 	public HttpPattern setProduces(MimeTypes produces) {
 		HttpPattern httpPattern = new HttpPattern(this);
 		httpPattern.produces = produces;
@@ -109,15 +91,6 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 		return consumes != null && !consumes.isEmpty();
 	}
 
-	/**
-	 * 不参与以下方法
-	 * 
-	 * @see #accept(ServerHttpRequest)
-	 * @see #compareTo(HttpPattern)
-	 * @see #equals(Object)
-	 * @see #hashCode()
-	 * @return
-	 */
 	public MimeTypes getProduces() {
 		return produces == null ? MimeTypes.EMPTY : produces;
 	}
@@ -285,12 +258,6 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable, Comparab
 		return path.compareTo(o.path);
 	}
 
-	/**
-	 * 返回一个新的HttpPattern
-	 * 
-	 * @param pathMatcher
-	 * @return
-	 */
 	public HttpPattern setPathMatcher(PathMatcher pathMatcher) {
 		HttpPattern httpPattern = new HttpPattern(this);
 		httpPattern.pathMatcher = pathMatcher;

@@ -8,7 +8,7 @@ import java.sql.Connection;
 /**
  * 一个无法关闭的连接
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class UnableToCloseConnectionProxyHandler implements InvocationHandler {

@@ -26,10 +26,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@code AnnotationAwareOrderComparator} is an extension of
- * {@link Order @Order} and {@link javax.annotation.Priority @Priority}
- * annotations, with an order value provided by an {@code Ordered} instance
- * overriding a statically defined annotation value (if any).
+ * {@code AnnotationAwareOrderComparator} is an extension of annotations, with
+ * an order value provided by an {@code Ordered} instance overriding a
+ * statically defined annotation value (if any).
  *
  * <p>
  * Consult the Javadoc for {@link OrderComparator} for details on the sort
@@ -37,7 +36,6 @@ import java.util.List;
  * 
  * @see io.basc.framework.core.Ordered
  * @see io.basc.framework.core.annotation.Order
- * @see javax.annotation.Priority
  */
 public class AnnotationAwareOrderComparator extends OrderComparator {
 
@@ -77,12 +75,6 @@ public class AnnotationAwareOrderComparator extends OrderComparator {
 		return order;
 	}
 
-	/**
-	 * This implementation retrieves an @{@link javax.annotation.Priority} value,
-	 * allowing for additional semantics over the regular @{@link Order} annotation:
-	 * typically, selecting one object over another in case of multiple matches but
-	 * only one object to be returned.
-	 */
 	@Override
 	public Integer getPriority(Object obj) {
 		Integer priority = null;

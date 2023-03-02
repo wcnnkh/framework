@@ -141,8 +141,7 @@ public class MainArgs implements PropertyFactory, Ordered {
 	/**
 	 * 使用-p参数获取端口号
 	 * 
-	 * @param args
-	 * @return
+	 * @return 返回端口号
 	 */
 	@Nullable
 	public OptionalInt getPort() {

@@ -12,17 +12,17 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Indexed
 public @interface Crontab {
-	public String name();
+	String name();
 
-	public String dayOfWeek() default "*";
+	String dayOfWeek() default "*";
 
-	public String month() default "*";
+	String month() default "*";
 
-	public String dayOfMonth() default "*";
+	String dayOfMonth() default "*";
 
-	public String hour() default "*";
+	String hour() default "*";
 
-	public String minute() default "*";
+	String minute() default "*";
 
-	public Class<? extends TaskListener> listener() default TaskListener.class;
+	Class<? extends TaskListener> listener() default TaskListener.class;
 }

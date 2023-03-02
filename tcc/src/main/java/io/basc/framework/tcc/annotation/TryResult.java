@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * 
  * 将tcc第一阶段的调用结束插入到此处
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Target({ ElementType.PARAMETER })

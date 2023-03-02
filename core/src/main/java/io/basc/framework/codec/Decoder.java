@@ -9,23 +9,8 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Processor;
 
-/**
- * 解码器<br/>
- * 
- * @author shuchaowen
- *
- * @param <E>
- * @param <D>
- */
 @FunctionalInterface
 public interface Decoder<E, D> {
-	/**
-	 * 解码
-	 * 
-	 * @param source
-	 * @return
-	 * @throws DecodeException
-	 */
 	D decode(E source) throws DecodeException;
 
 	default List<D> decodeAll(Collection<? extends E> sources) throws DecodeException {
@@ -42,22 +27,10 @@ public interface Decoder<E, D> {
 		return toDecodeProcessor().processAll(sources);
 	}
 
-	/**
-	 * decode <- decode <- decode ... <br/>
-	 * 
-	 * @param decoder
-	 * @return
-	 */
 	default <F> Decoder<F, D> fromDecoder(Decoder<F, E> decoder) {
 		return new NestedDecoder<>(decoder, this);
 	}
 
-	/**
-	 * decode -> decode -> decode ...<br/>
-	 * 
-	 * @param decoder
-	 * @return
-	 */
 	default <T> Decoder<E, T> toDecoder(Decoder<D, T> decoder) {
 		return new NestedDecoder<>(this, decoder);
 	}
@@ -65,7 +38,7 @@ public interface Decoder<E, D> {
 	default Processor<E, D, DecodeException> toDecodeProcessor() {
 		return (o) -> decode(o);
 	}
-	
+
 	public static <R> Decoder<R, R> identity() {
 		return e -> e;
 	}

@@ -13,9 +13,8 @@
 	<url>https://github.com/wcnnkh/framework</url>
 	<licenses>
 		<license>
-			<name>MIT License</name>
-			<url>https://opensource.org/licenses/MIT</url>
-			<distribution>repo</distribution>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
 	<developers>
@@ -35,16 +34,6 @@
 		<developerConnection>scm:git@https://github.com/wcnnkh/framework.git</developerConnection>
 		<url>https://github.com/wcnnkh/framework.git</url>
 	</scm>
-	<distributionManagement>
-		<snapshotRepository>
-			<id>sonatype</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-		</snapshotRepository>
-		<repository>
-			<id>sonatype</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- https://mvnrepository.com/artifact/io.swagger.core.v3 -->
@@ -327,11 +316,6 @@
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
-				<artifactId>gateway</artifactId>
-				<version>1.8.0</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
 				<artifactId>lucene</artifactId>
 				<version>1.8.0</version>
 			</dependency>
@@ -427,11 +411,6 @@
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
-				<artifactId>redisson</artifactId>
-				<version>1.8.0</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
 				<artifactId>druid</artifactId>
 				<version>1.8.0</version>
 			</dependency>
@@ -467,7 +446,7 @@
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
-				<artifactId>activemq</artifactId>
+				<artifactId>activemq-client</artifactId>
 				<version>1.8.0</version>
 			</dependency>
 			<dependency>
@@ -542,16 +521,6 @@
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
-				<artifactId>elasticsearch</artifactId>
-				<version>1.8.0</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>jmx</artifactId>
-				<version>1.8.0</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
 				<artifactId>protobuf</artifactId>
 				<version>1.8.0</version>
 			</dependency>
@@ -572,16 +541,6 @@
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
-				<artifactId>kafka</artifactId>
-				<version>1.8.0</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>netty</artifactId>
-				<version>1.8.0</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
 				<artifactId>slf4j</artifactId>
 				<version>1.8.0</version>
 			</dependency>
@@ -598,11 +557,6 @@
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>seata</artifactId>
-				<version>1.8.0</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>solr</artifactId>
 				<version>1.8.0</version>
 			</dependency>
 			<dependency>
@@ -642,30 +596,9 @@
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
-				<artifactId>jstl</artifactId>
-				<version>1.8.0</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>mongodb</artifactId>
-				<version>1.8.0</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
 				<artifactId>console</artifactId>
 				<version>1.8.0</version>
 			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>logback</artifactId>
-				<version>1.8.0</version>
-			</dependency>
-			<dependency>
-				<groupId>io.basc.framework</groupId>
-				<artifactId>shiro</artifactId>
-				<version>1.8.0</version>
-			</dependency>
-			
 			<!-- 测试 -->
 			<dependency>
 				<groupId>io.basc.framework</groupId>
@@ -689,20 +622,40 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 	<build>
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>org.sonatype.plugins</groupId>
+					<artifactId>nexus-staging-maven-plugin</artifactId>
+					<version>1.6.7</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-source-plugin</artifactId>
+					<version>3.2.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.2.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.5.3</version>
+				</plugin>
 				<plugin>
 					<!-- java编译插件 -->
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.8.1</version>
-				</plugin>
-				<!-- Source attach plugin -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-source-plugin</artifactId>
-					<version>3.2.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.sonatype.plugins</groupId>
@@ -738,12 +691,6 @@
 					<artifactId>maven-site-plugin</artifactId>
 					<version>3.9.1</version>
 				</plugin>
-				<!-- Javadoc -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.2.0</version>
-				</plugin>
 				<!-- Gpg Signature -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -754,6 +701,66 @@
 		</pluginManagement>
 		<plugins>
 			<plugin>
+				<!-- maven中央仓库-->
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+			<!-- Source attach plugin -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- 生成文档-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<useReleaseProfile>false</useReleaseProfile>
+					<releaseProfiles>release</releaseProfiles>
+					<goals>deploy</goals>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
@@ -761,22 +768,6 @@
 					<target>1.8</target>
 					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
-			</plugin>
-			<!-- Source attach plugin -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<configuration>
-					<attach>true</attach>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<!-- 打包成war包时应该排除嵌入式服务器对应的jar包 -->
 			<plugin>
@@ -800,16 +791,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
 			</plugin>
-			<!-- Javadoc -->
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-javadoc-plugin</artifactId> 
-				<executions> <execution> <phase>package</phase> <goals> <goal>jar</goal> 
-				</goals> </execution> </executions> </plugin> -->
-			<!-- Gpg Signature -->
-			<!-- 参考：https://blog.sonatype.com/2010/01/how-to-generate-pgp-signatures-with-maven/ -->
-			<!-- 如果无需使用：mvn install -Dgpg.skip -->
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-gpg-plugin</artifactId> 
-				<executions> <execution> <id>sign-artifacts</id> <phase>verify</phase> <goals> 
-				<goal>sign</goal> </goals> </execution> </executions> </plugin> -->
 		</plugins>
 	</build>
 	<modules>
@@ -846,10 +827,7 @@
 		<module>log4j2</module>
 		<module>mail</module>
 		<module>quartz</module>
-		<module>jmx</module>
-		<module>elasticsearch</module>
 		<module>rmi</module>
-		<module>solr</module>
 		<module>transaction</module>
 		<module>boot</module>
 		<module>sql</module>
@@ -857,7 +835,6 @@
 		<module>messageing</module>
 		<module>context</module>
 		<module>jms</module>
-		<module>activemq</module>
 		<module>amqp</module>
 		<module>rabbitmq</module>
 		<module>protobuf</module>
@@ -867,8 +844,6 @@
 		<module>rpc</module>
 		<module>seata</module>
 		<module>nacos-client</module>
-		<module>kafka</module>
-		<module>netty</module>
 		<module>slf4j</module>
 		<module>consistency</module>
 		<module>jackson</module>
@@ -882,17 +857,12 @@
 		<module>sqlserver</module>
 		<module>xml</module>
 		<module>testing</module>
-		<module>jstl</module>
 		<module>zookeeper-server</module>
-		<module>gateway</module>
-		<module>redisson</module>
 		<module>jedis</module>
 		<module>xmemcached</module>
-		<module>mongodb</module>
 		<module>console</module>
-		<module>logback</module>
 		<module>csv</module>
 		<module>activemq-broker</module>
-		<module>shiro</module>
+		<module>activemq-client</module>
 	</modules>
 </project>

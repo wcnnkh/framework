@@ -60,8 +60,6 @@ public final class IOUtils {
 
 	/**
 	 * The default buffer size ({@value} ) to use for
-	 * {@link #copyLarge(InputStream, OutputStream)} and
-	 * {@link #copyLarge(Reader, Writer)}
 	 */
 	public static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
 
@@ -362,7 +360,7 @@ public final class IOUtils {
 	 * }
 	 * </pre>
 	 *
-	 * @param output the Writer to close, may be null or already closed
+	 * @param closeable the Writer to close, may be null or already closed
 	 */
 	public static void closeQuietly(Closeable closeable) {
 		closeQuietly(closeable, null);
@@ -695,7 +693,6 @@ public final class IOUtils {
 	 * @param input the <code>InputStream</code> to read from, not null
 	 * @return the list of Strings, never null
 	 * @throws NullPointerException if the input is null
-	 * @throws IOException          if an I/O error occurs
 	 */
 	public static Cursor<String> readLines(InputStream input) {
 		InputStreamReader reader = new InputStreamReader(input);
@@ -717,7 +714,6 @@ public final class IOUtils {
 	 * @return the list of Strings, never null
 	 * @throws UnsupportedEncodingException
 	 * @throws NullPointerException         if the input is null
-	 * @throws IOException                  if an I/O error occurs
 	 */
 	public static Cursor<String> readLines(InputStream input, @Nullable String encoding)
 			throws UnsupportedEncodingException {
@@ -736,10 +732,9 @@ public final class IOUtils {
 	 * This method buffers the input internally, so there is no need to use a
 	 * <code>BufferedReader</code>.
 	 *
-	 * @param input the <code>Reader</code> to read from, not null
+	 * @param reader the <code>Reader</code> to read from, not null
 	 * @return the cursor of Strings, never null
 	 * @throws NullPointerException if the input is null
-	 * @throws IOException          if an I/O error occurs
 	 */
 	public static Cursor<String> readLines(Reader reader) {
 		if (reader instanceof BufferedReader) {
@@ -1758,7 +1753,7 @@ public final class IOUtils {
 	 * @param input  where to read input from
 	 * @param buffer destination
 	 * @param offset inital offset into buffer
-	 * @param length length to read, must be >= 0
+	 * @param length length to read, must be &gt;= 0
 	 * @return actual length read; may be less than requested if EOF was reached
 	 * @throws IOException if a read error occurs
 	 */
@@ -1800,7 +1795,7 @@ public final class IOUtils {
 	 * @param input  where to read input from
 	 * @param buffer destination
 	 * @param offset inital offset into buffer
-	 * @param length length to read, must be >= 0
+	 * @param length length to read, must be &gt;= 0
 	 * @return actual length read; may be less than requested if EOF was reached
 	 * @throws IOException if a read error occurs
 	 */
@@ -1844,7 +1839,7 @@ public final class IOUtils {
 	 * @param input  where to read input from
 	 * @param buffer destination
 	 * @param offset inital offset into buffer
-	 * @param length length to read, must be >= 0
+	 * @param length length to read, must be &gt;= 0
 	 * 
 	 * @throws IOException              if there is a problem reading the file
 	 * @throws IllegalArgumentException if length is negative
@@ -1887,7 +1882,7 @@ public final class IOUtils {
 	 * @param input  where to read input from
 	 * @param buffer destination
 	 * @param offset inital offset into buffer
-	 * @param length length to read, must be >= 0
+	 * @param length length to read, must be &gt;= 0
 	 * 
 	 * @throws IOException              if there is a problem reading the file
 	 * @throws IllegalArgumentException if length is negative
@@ -2087,7 +2082,7 @@ public final class IOUtils {
 	/**
 	 * 包装成一个忽略close方法的流
 	 * 
-	 * @param out
+	 * @param in 输入
 	 * @return
 	 */
 	public static InputStream nonClosing(InputStream in) {

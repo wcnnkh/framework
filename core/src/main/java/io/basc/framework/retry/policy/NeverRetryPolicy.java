@@ -25,56 +25,28 @@ import io.basc.framework.retry.context.DefaultRetryContext;
  * retry. Also be used as a base class for other policies, e.g. for test
  * purposes as a stub.
  * 
- * @author shuchaowen
+ * @author wcnnkh
  * 
  */
 public class NeverRetryPolicy implements RetryPolicy {
 
-	/**
-	 * Returns false after the first exception. So there is always one try, and then
-	 * the retry is prevented.
-	 * 
-	 */
 	public boolean canRetry(RetryContext context) {
 		return !((NeverRetryContext) context).isFinished();
 	}
 
-	/**
-	 * Do nothing.
-	 * 
-	 */
 	public void close(RetryContext context) {
 		// no-op
 	}
 
-	/**
-	 * Return a context that can respond to early termination requests, but does
-	 * nothing else.
-	 * 
-	 */
 	public RetryContext open(RetryContext parent) {
 		return new NeverRetryContext(parent);
 	}
 
-	/**
-	 * Make the throwable available for downstream use through the context.
-	 * Throwable)
-	 */
 	public void registerThrowable(RetryContext context, Throwable throwable) {
 		((NeverRetryContext) context).setFinished();
 		((DefaultRetryContext) context).setLastThrowable(throwable);
 	}
 
-	/**
-	 * Special context object for {@link NeverRetryPolicy}. Implements a flag with a
-	 * similar function to {@link RetryContext#isExhaustedOnly()}, but kept separate
-	 * so that if subclasses of {@link NeverRetryPolicy} need to they can modify the
-	 * behaviour of {@link NeverRetryPolicy#canRetry(RetryContext)} without
-	 * affecting {@link RetryContext#isExhaustedOnly()}.
-	 * 
-	 * @author Dave Syer
-	 * 
-	 */
 	private static class NeverRetryContext extends DefaultRetryContext {
 		private boolean finished = false;
 

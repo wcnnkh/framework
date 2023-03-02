@@ -83,10 +83,10 @@ public final class EasySql extends AbstractSql implements Serializable {
 	}
 
 	public EasySql appendName(String name) {
-		if(StringUtils.isEmpty(name)) {
-			
+		if (StringUtils.isEmpty(name)) {
+
 		}
-		
+
 		String[] array = StringUtils.splitToArray(name.trim(), ".");
 		for (int i = 0; i < array.length - 1; i++) {
 			append(array[i]).append(".");
@@ -416,89 +416,34 @@ public final class EasySql extends AbstractSql implements Serializable {
 		return this;
 	}
 
-	/**
-	 * =
-	 * 
-	 * @param column
-	 * @param value
-	 * @return
-	 */
 	public EasySql eq(String column, Object value) {
 		return condition(column, "=", value);
 	}
 
-	/**
-	 * >=
-	 * 
-	 * @param column
-	 * @param value
-	 * @return
-	 */
 	public EasySql geq(String column, Object value) {
 		return condition(column, ">=", value);
 	}
 
-	/**
-	 * >
-	 * 
-	 * @param column
-	 * @param value
-	 * @return
-	 */
 	public EasySql gtr(String column, Object value) {
 		return condition(column, ">", value);
 	}
 
-	/**
-	 * <=
-	 * 
-	 * @param column
-	 * @param value
-	 * @return
-	 */
 	public EasySql leq(String column, Object value) {
 		return condition(column, "<=", value);
 	}
 
-	/**
-	 * <
-	 * 
-	 * @param column
-	 * @param value
-	 * @return
-	 */
 	public EasySql lss(String column, Object value) {
 		return condition(column, "<", value);
 	}
 
-	/**
-	 * !=
-	 * 
-	 * @param column
-	 * @param value
-	 * @return
-	 */
 	public EasySql neq(String column, Object value) {
 		return condition(column, "!=", value);
 	}
 
-	/**
-	 * @param column
-	 * @param start  包含
-	 * @param end    不包含
-	 * @return
-	 */
 	public EasySql between(String column, Object start, Object end) {
 		return append(" `" + column + "` BETWEEN ? AND ?", start, end);
 	}
 
-	/**
-	 * 指定范围
-	 * 
-	 * @param column
-	 * @param range
-	 * @return
-	 */
 	public EasySql range(String column, Range<? extends Object> range) {
 		if (range == null) {
 			return this;
@@ -532,15 +477,6 @@ public final class EasySql extends AbstractSql implements Serializable {
 		return this.sql == null ? true : (this.sql.indexOf(separator, index) == -1);
 	}
 
-	/**
-	 * @see #order(String, Iterator, String, String, String)
-	 * @param keyword
-	 * @param names
-	 * @param connector
-	 * @param order
-	 * @param separator
-	 * @return
-	 */
 	public EasySql order(String keyword, Iterable<String> names, String connector, String order, String separator) {
 		if (names == null) {
 			return this;
@@ -548,16 +484,6 @@ public final class EasySql extends AbstractSql implements Serializable {
 		return order(keyword, names.iterator(), connector, order, separator);
 	}
 
-	/**
-	 * name + connector + order
-	 * 
-	 * @param keyword
-	 * @param nameIterator
-	 * @param connector
-	 * @param order
-	 * @param separator    多个之间的分割符
-	 * @return
-	 */
 	public EasySql order(String keyword, Iterator<String> nameIterator, String connector, String order,
 			String separator) {
 		if (nameIterator == null || !nameIterator.hasNext()) {

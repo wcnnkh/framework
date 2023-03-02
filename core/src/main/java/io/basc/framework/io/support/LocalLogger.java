@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 /**
  * 本地记录器，为了实现高可靠的服务而使用的工具类，其流程是的开始在本地文件中写入日志，结束时删除日志,在服务启动时将未完成的日志进行补充处理
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public final class LocalLogger {

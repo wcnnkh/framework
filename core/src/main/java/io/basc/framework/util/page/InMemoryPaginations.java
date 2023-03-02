@@ -15,11 +15,11 @@ import io.basc.framework.util.Cursor;
  */
 public class InMemoryPaginations<T> implements Paginations<T>, Serializable {
 	private static final long serialVersionUID = 1L;
-	private final List<T> source;
+	private final List<? extends T> source;
 	private final int start;
 	private final int count;
 
-	public InMemoryPaginations(List<T> source, int start, int count) {
+	public InMemoryPaginations(List<? extends T> source, int start, int count) {
 		Assert.requiredArgument(source != null, "source");
 		Assert.isTrue(start >= 0, "start[" + start + "] cannot be less than 0");
 		Assert.isTrue(count > 0, "count[" + count + "] greater than 0 is required");

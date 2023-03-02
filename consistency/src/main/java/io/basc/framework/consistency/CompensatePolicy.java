@@ -13,14 +13,6 @@ public interface CompensatePolicy {
 	@Nullable
 	String getLastUnfinishedId(String group);
 
-	/**
-	 * 添加不一个存在的任务
-	 * 
-	 * @param group
-	 * @param id
-	 * @param runnable
-	 * @return
-	 */
 	boolean add(String group, String id, Runnable runnable);
 
 	@Nullable

@@ -7,6 +7,7 @@ import io.basc.framework.core.annotation.AnnotationUtils;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.transaction.RollbackOnly;
 import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionDefinition;
 import io.basc.framework.transaction.TransactionManager;
@@ -15,29 +16,25 @@ import io.basc.framework.transaction.TransactionUtils;
 /**
  * 以aop的方式管理事务
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Provider(order = Ordered.HIGHEST_PRECEDENCE)
 public final class TransactionMethodInterceptor implements MethodInterceptor {
-	private static Logger logger = LoggerFactory
-			.getLogger(TransactionMethodInterceptor.class);
+	private static Logger logger = LoggerFactory.getLogger(TransactionMethodInterceptor.class);
 	private TransactionDefinition transactionDefinition;
 
 	public TransactionDefinition getTransactionDefinition() {
-		return transactionDefinition == null ? TransactionDefinition.DEFAULT
-				: transactionDefinition;
+		return transactionDefinition == null ? TransactionDefinition.DEFAULT : transactionDefinition;
 	}
 
-	public void setTransactionDefinition(
-			TransactionDefinition transactionDefinition) {
+	public void setTransactionDefinition(TransactionDefinition transactionDefinition) {
 		this.transactionDefinition = transactionDefinition;
 	}
 
-	private void invokerAfter(Transaction transaction, Object rtn,
-			MethodInvoker invoker) {
-		if (rtn != null && (rtn instanceof RollbackOnlyResult)) {
-			RollbackOnlyResult result = (RollbackOnlyResult) rtn;
+	private void invokerAfter(Transaction transaction, Object rtn, MethodInvoker invoker) {
+		if (rtn != null && (rtn instanceof RollbackOnly)) {
+			RollbackOnly result = (RollbackOnly) rtn;
 			if (result.isRollbackOnly()) {
 				transaction.setRollbackOnly();
 				if (logger.isDebugEnabled()) {
@@ -47,11 +44,10 @@ public final class TransactionMethodInterceptor implements MethodInterceptor {
 		}
 	}
 
-	public Object intercept(MethodInvoker invoker, Object[] args)
-			throws Throwable {
+	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
 		TransactionManager transactionManager = TransactionUtils.getManager();
-		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class,
-				invoker.getSourceClass(), invoker.getMethod());
+		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, invoker.getSourceClass(),
+				invoker.getMethod());
 		if (tx == null && transactionManager.hasTransaction()) {
 			Object rtn = invoker.invoke(args);
 			invokerAfter(transactionManager.getTransaction(), rtn, invoker);
@@ -60,8 +56,7 @@ public final class TransactionMethodInterceptor implements MethodInterceptor {
 
 		TransactionDefinition transactionDefinition = tx == null ? getTransactionDefinition()
 				: new AnnotationTransactionDefinition(tx);
-		Transaction transaction = transactionManager
-				.getTransaction(transactionDefinition);
+		Transaction transaction = transactionManager.getTransaction(transactionDefinition);
 		Object v;
 		try {
 			v = invoker.invoke(args);

@@ -200,7 +200,6 @@ public final class Range<T> implements Serializable {
 	/**
 	 * Builder for {@link Range} allowing to specify the upper boundary.
 	 *
-	 * @soundtrack Aly and Fila - Future Sound Of Egypt 493
 	 */
 	public static class RangeBuilder<T> {
 

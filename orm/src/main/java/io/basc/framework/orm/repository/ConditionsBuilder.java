@@ -130,12 +130,6 @@ public final class ConditionsBuilder {
 		return new Conditions(condition, withs);
 	}
 
-	/**
-	 * 简单的构造
-	 * 
-	 * @param conditions
-	 * @return
-	 */
 	public static Conditions build(List<Pair<String, Condition>> conditions) {
 		return build(conditions.iterator());
 	}

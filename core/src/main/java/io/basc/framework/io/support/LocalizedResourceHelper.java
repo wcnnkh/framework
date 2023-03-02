@@ -26,7 +26,7 @@ public class LocalizedResourceHelper {
 	/**
 	 * Create a new LocalizedResourceHelper with a DefaultResourceLoader.
 	 * 
-	 * @see io.basc.framework.core.io.DefaultResourceLoader
+	 * @see io.basc.framework.io.DefaultResourceLoader
 	 */
 	public LocalizedResourceHelper() {
 		this.resourceLoader = new DefaultResourceLoader();

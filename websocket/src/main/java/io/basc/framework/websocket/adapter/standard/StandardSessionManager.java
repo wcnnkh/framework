@@ -18,13 +18,6 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConsumeProcessor;
 
-/**
- * 一个标准的session管理器
- * 
- * @author shuchaowen
- *
- * @param <T>
- */
 public class StandardSessionManager<T> {
 	private static Logger logger = LoggerFactory.getLogger(StandardSessionManager.class);
 	private final String groupKey;
@@ -44,13 +37,6 @@ public class StandardSessionManager<T> {
 		return (T) session.getUserProperties().get(groupKey);
 	}
 
-	/**
-	 * 向session中插入group标识
-	 * 
-	 * @param session
-	 * @param group
-	 * @return 如果已存在groupKey就返回false
-	 */
 	public boolean setGroup(Session session, T group) {
 		Assert.requiredArgument(session != null, "session");
 		Assert.requiredArgument(group != null, "group");
@@ -67,13 +53,6 @@ public class StandardSessionManager<T> {
 		return false;
 	}
 
-	/**
-	 * 保存session到指定的分组
-	 * 
-	 * @param group
-	 * @param session
-	 * @return 如果插入成功就返回成功的session
-	 */
 	public Session putIfAbsent(T group, Session session) {
 		Assert.requiredArgument(group != null, "group");
 		Assert.requiredArgument(session != null, "session");
@@ -116,13 +95,6 @@ public class StandardSessionManager<T> {
 		return remove(group, session.getId()) != null;
 	}
 
-	/**
-	 * 移除指定session
-	 * 
-	 * @param group
-	 * @param sessionId
-	 * @return 如果移除成功返回移除的session，否则返回空
-	 */
 	@Nullable
 	public Session remove(T group, String sessionId) {
 		Assert.requiredArgument(group != null, "group");
@@ -141,13 +113,6 @@ public class StandardSessionManager<T> {
 		return session;
 	}
 
-	/**
-	 * 获取指定session
-	 * 
-	 * @param group
-	 * @param sessionId
-	 * @return 如果存在返回session,否则返回空
-	 */
 	@Nullable
 	public Session getSession(T group, String sessionId) {
 		Assert.requiredArgument(group != null, "group");
@@ -172,12 +137,6 @@ public class StandardSessionManager<T> {
 		return true;
 	}
 
-	/**
-	 * 只要分组中有一个在线就视为在线
-	 * 
-	 * @param group
-	 * @return
-	 */
 	public boolean isOnline(T group) {
 		Assert.requiredArgument(group != null, "group");
 		ConcurrentHashMap<String, Session> sessionMap = groupMap.get(group);
@@ -328,14 +287,6 @@ public class StandardSessionManager<T> {
 		void process(T group, Session session) throws IOException;
 	}
 
-	/**
-	 * 向指定的session发送
-	 * 
-	 * @see Session#getBasicRemote()
-	 * @param session
-	 * @param text
-	 * @throws IOException
-	 */
 	public void sendText(Session session, String text) throws IOException {
 		session.getBasicRemote().sendText(text);
 	}

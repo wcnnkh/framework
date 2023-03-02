@@ -17,10 +17,6 @@ public class Condition extends BascObject implements Serializable {
 	private final String condition;
 	private final Parameter parameter;
 
-	/**
-	 * @param condition = > < any with startWith endWith ...
-	 * @param parameter
-	 */
 	public Condition(String condition, Parameter parameter) {
 		this.condition = condition;
 		this.parameter = parameter;

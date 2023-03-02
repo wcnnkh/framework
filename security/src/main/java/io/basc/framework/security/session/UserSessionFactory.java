@@ -7,14 +7,5 @@ public interface UserSessionFactory {
 		return getUserSession(uid, sessionId, false);
 	}
 
-	/**
-	 * 获取指定session
-	 * 
-	 * @param <T>
-	 * @param uid
-	 * @param sessionId
-	 * @param create    如果不存在是否创建
-	 * @return
-	 */
 	<T> UserSession<T> getUserSession(T uid, String sessionId, boolean create);
 }

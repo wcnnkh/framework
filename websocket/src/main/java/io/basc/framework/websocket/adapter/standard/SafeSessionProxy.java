@@ -16,7 +16,7 @@ import javax.websocket.Session;
  * @see Session#getBasicRemote()
  * @see Session#close()
  * @see Session#close(javax.websocket.CloseReason)
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface SafeSessionProxy extends Session {

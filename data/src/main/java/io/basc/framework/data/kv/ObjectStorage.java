@@ -2,13 +2,6 @@ package io.basc.framework.data.kv;
 
 import io.basc.framework.convert.TypeDescriptor;
 
-/**
- * 对象存储
- * 
- * @author wcnnkh
- *
- * @param <K>
- */
 public interface ObjectStorage<K> extends Storage<K, Object>, ObjectOperations<K> {
 
 	default <T> T getAndTouch(Class<T> type, K key) {

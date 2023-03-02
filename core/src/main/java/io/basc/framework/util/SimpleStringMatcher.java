@@ -1,10 +1,10 @@
 package io.basc.framework.util;
 
 /**
- * 判断字符串是否与通配符匹配 只能存在通配符*和? ?代表1个 *代表0个或多个<br/>
+ * 判断字符串是否与通配符匹配 只能存在通配符*和? ?代表1个 *代表0个或多个
  * !开头代表非(只支持开头使用!)
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class SimpleStringMatcher implements StringMatcher {

@@ -8,14 +8,6 @@ import java.util.Map;
 import io.basc.framework.data.CAS;
 import io.basc.framework.util.CollectionUtils;
 
-/**
- * 
- * @author wcnnkh
- *
- * @param <K>
- * @param <V>
- */
-
 public interface KeyValueCasOperations<K, V> extends KeyValueOperations<K, V>, KeyCasOperations<K> {
 	CAS<V> gets(K key);
 

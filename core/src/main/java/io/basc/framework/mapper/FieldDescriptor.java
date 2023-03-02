@@ -18,7 +18,7 @@ public interface FieldDescriptor extends ParameterDescriptor, MethodHolder, Fiel
 	Field getField();
 
 	/**
-	 * getter/setter method <br/>
+	 * getter/setter method 
 	 * 可能返回空, 但field和method必定存在一个
 	 * 
 	 * @return

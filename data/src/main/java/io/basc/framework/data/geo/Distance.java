@@ -20,22 +20,10 @@ public class Distance implements Serializable, Comparable<Distance> {
 	 */
 	private final Metric metric;
 
-	/**
-	 * Creates a new {@link Distance} with a neutral metric. This means the provided
-	 * value needs to be in normalized form.
-	 *
-	 * @param value
-	 */
 	public Distance(double value) {
 		this(value, Metrics.NEUTRAL);
 	}
 
-	/**
-	 * Creates a new {@link Distance} with the given {@link Metric}.
-	 *
-	 * @param value
-	 * @param metric must not be {@literal null}.
-	 */
 	public Distance(double value, Metric metric) {
 
 		Assert.notNull(metric, "Metric must not be null!");
@@ -55,25 +43,10 @@ public class Distance implements Serializable, Comparable<Distance> {
 		return Range.from(Bound.inclusive(min)).to(Bound.inclusive(max));
 	}
 
-	/**
-	 * Creates a new {@link Range} by creating minimum and maximum {@link Distance}
-	 * from the given values.
-	 *
-	 * @param minValue
-	 * @param minMetric can be {@literal null}.
-	 * @param maxValue
-	 * @param maxMetric can be {@literal null}.
-	 * @return
-	 */
 	public static Range<Distance> between(double minValue, Metric minMetric, double maxValue, Metric maxMetric) {
 		return between(new Distance(minValue, minMetric), new Distance(maxValue, maxMetric));
 	}
 
-	/**
-	 * Returns the normalized value regarding the underlying {@link Metric}.
-	 *
-	 * @return
-	 */
 	public double getNormalizedValue() {
 		return value / metric.getMultiplier();
 	}
@@ -88,13 +61,6 @@ public class Distance implements Serializable, Comparable<Distance> {
 		return metric.getAbbreviation();
 	}
 
-	/**
-	 * Adds the given distance to the current one. The resulting {@link Distance}
-	 * will be in the same metric as the current one.
-	 *
-	 * @param other must not be {@literal null}.
-	 * @return
-	 */
 	public Distance add(Distance other) {
 
 		Assert.notNull(other, "Distance to add must not be null!");
@@ -104,14 +70,6 @@ public class Distance implements Serializable, Comparable<Distance> {
 		return new Distance(newNormalizedValue * metric.getMultiplier(), metric);
 	}
 
-	/**
-	 * Adds the given {@link Distance} to the current one and forces the result to
-	 * be in a given {@link Metric}.
-	 *
-	 * @param other  must not be {@literal null}.
-	 * @param metric must not be {@literal null}.
-	 * @return
-	 */
 	public Distance add(Distance other, Metric metric) {
 
 		Assert.notNull(other, "Distance to must not be null!");
@@ -123,14 +81,6 @@ public class Distance implements Serializable, Comparable<Distance> {
 		return new Distance(newLeft + newRight, metric);
 	}
 
-	/**
-	 * Returns a new {@link Distance} in the given {@link Metric}. This means that
-	 * the returned instance will have the same normalized value as the original
-	 * instance.
-	 *
-	 * @param metric must not be {@literal null}.
-	 * @return
-	 */
 	public Distance in(Metric metric) {
 
 		Assert.notNull(metric, "Metric must not be null!");

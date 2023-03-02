@@ -9,11 +9,6 @@ public interface Context extends Environment {
 
 	ClassesLoaderFactory getClassesLoaderFactory();
 
-	/**
-	 * 获取配置资源
-	 * 
-	 * @return
-	 */
 	Iterable<Resource> getConfigurationResources();
 
 	ContextResolver getContextResolver();

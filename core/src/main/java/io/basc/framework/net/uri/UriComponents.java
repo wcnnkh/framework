@@ -31,59 +31,28 @@ public abstract class UriComponents implements Serializable {
 	}
 
 	// Component getters
-
-	/**
-	 * Return the scheme. Can be {@code null}.
-	 */
 	public final String getScheme() {
 		return this.scheme;
 	}
 
-	/**
-	 * Return the fragment. Can be {@code null}.
-	 */
 	public final String getFragment() {
 		return this.fragment;
 	}
 
-	/**
-	 * Return the scheme specific part. Can be {@code null}.
-	 */
 	public abstract String getSchemeSpecificPart();
 
-	/**
-	 * Return the user info. Can be {@code null}.
-	 */
 	public abstract String getUserInfo();
 
-	/**
-	 * Return the host. Can be {@code null}.
-	 */
 	public abstract String getHost();
 
-	/**
-	 * Return the port. {@code -1} if no port has been set.
-	 */
 	public abstract int getPort();
 
-	/**
-	 * Return the path. Can be {@code null}.
-	 */
 	public abstract String getPath();
 
-	/**
-	 * Return the list of path segments. Empty if no path has been set.
-	 */
 	public abstract List<String> getPathSegments();
 
-	/**
-	 * Return the query. Can be {@code null}.
-	 */
 	public abstract String getQuery();
 
-	/**
-	 * Return the map of query parameters. Empty if no query has been set.
-	 */
 	public abstract MultiValueMap<String, String> getQueryParams();
 
 	/**
@@ -161,19 +130,10 @@ public abstract class UriComponents implements Serializable {
 	 */
 	abstract UriComponents expandInternal(UriTemplateVariables uriVariables);
 
-	/**
-	 * Normalize the path removing sequences like "path/..".
-	 */
 	public abstract UriComponents normalize();
 
-	/**
-	 * Return a URI String from this {@code UriComponents} instance.
-	 */
 	public abstract String toUriString();
 
-	/**
-	 * Return a {@code URI} from this {@code UriComponents} instance.
-	 */
 	public abstract URI toUri();
 
 	@Override
@@ -181,9 +141,6 @@ public abstract class UriComponents implements Serializable {
 		return toUriString();
 	}
 
-	/**
-	 * Set all components of the given UriComponentsBuilder.
-	 */
 	protected abstract void copyToUriComponentsBuilder(UriComponentsBuilder builder);
 
 	// Static expansion helpers

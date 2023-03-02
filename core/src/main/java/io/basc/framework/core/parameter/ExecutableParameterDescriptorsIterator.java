@@ -38,7 +38,7 @@ public class ExecutableParameterDescriptorsIterator implements Iterator<Paramete
 			return CompareUtils.compare(v1, v2, false);
 		}
 	};
-	
+
 	private static final Comparator<Method> METHOD_COMPARATOR = new Comparator<Method>() {
 
 		public int compare(Method o1, Method o2) {
@@ -64,22 +64,22 @@ public class ExecutableParameterDescriptorsIterator implements Iterator<Paramete
 			return CompareUtils.compare(v1, v2, false);
 		}
 	};
-	
-	public static <E extends AnnotatedElement> int compare(E o1, E o2, Comparator<E> comparator){
+
+	public static <E extends AnnotatedElement> int compare(E o1, E o2, Comparator<E> comparator) {
 		Order auto1 = o1.getAnnotation(Order.class);
 		Order auto2 = o2.getAnnotation(Order.class);
-		if(auto1 != null && auto2 != null){
+		if (auto1 != null && auto2 != null) {
 			if (auto1.value() == auto2.value()) {
 				return comparator.compare(o1, o2);
 			}
 			return CompareUtils.compare(auto1.value(), auto2.value(), true);
-		}else if(auto1 == null && auto2 == null){
+		} else if (auto1 == null && auto2 == null) {
 			return comparator.compare(o1, o2);
-		}else{
-			return auto1 != null? 1:0;
+		} else {
+			return auto1 != null ? 1 : 0;
 		}
 	}
-	
+
 	private final Iterator<? extends Executable> iterator;
 	private final Class<?> targetClass;
 	private final ParameterNameDiscoverer parameterNameDiscoverer;
@@ -92,17 +92,15 @@ public class ExecutableParameterDescriptorsIterator implements Iterator<Paramete
 	}
 
 	public ExecutableParameterDescriptorsIterator(Class<?> clazz) {
-		this(ParameterUtils.getParameterNameDiscoverer(), clazz, ReflectionUtils.getDeclaredConstructors(clazz).stream().sorted((o1, o2) -> compare(o1, o2, CONSTRUCTOR_COMPARATOR)).iterator());
+		this(ParameterUtils.getParameterNameDiscoverer(), clazz, ReflectionUtils.getDeclaredConstructors(clazz).stream()
+				.sorted((o1, o2) -> compare(o1, o2, CONSTRUCTOR_COMPARATOR)).iterator());
 	}
 
-	/**
-	 * @param targetClass
-	 * @param method
-	 * @param polymorphic 是否将多态的方法也包含在内
-	 */
 	public ExecutableParameterDescriptorsIterator(Class<?> targetClass, final Method method, boolean polymorphic) {
 		this(ParameterUtils.getParameterNameDiscoverer(), targetClass,
-				polymorphic ? ReflectionUtils.getDeclaredMethods(targetClass).stream().sorted((o1, o2) -> compare(o1, o2, METHOD_COMPARATOR)).iterator()
+				polymorphic
+						? ReflectionUtils.getDeclaredMethods(targetClass).stream()
+								.sorted((o1, o2) -> compare(o1, o2, METHOD_COMPARATOR)).iterator()
 						: Arrays.asList(method).iterator());
 	}
 

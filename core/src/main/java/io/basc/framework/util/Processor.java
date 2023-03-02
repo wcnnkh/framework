@@ -16,7 +16,7 @@ import io.basc.framework.lang.Nullable;
 /**
  * 一个处理者的定义
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  * @param <S> 数据来源
  * @param <T> 返回的结果
@@ -40,7 +40,7 @@ public interface Processor<S, T, E extends Throwable> {
 	 *         and then applies this function
 	 * @throws NullPointerException if before is null
 	 *
-	 * @see #andThen(Function)
+	 * @see #andThen(Processor)
 	 */
 	default <V> Processor<V, T, E> compose(Processor<? super V, ? extends S, ? extends E> before) {
 		Objects.requireNonNull(before);
@@ -60,7 +60,7 @@ public interface Processor<S, T, E extends Throwable> {
 	 *         the {@code after} function
 	 * @throws NullPointerException if after is null
 	 *
-	 * @see #compose(Function)
+	 * @see #compose(Processor)
 	 */
 	default <V> Processor<S, V, E> andThen(Processor<? super T, ? extends V, ? extends E> after) {
 		Objects.requireNonNull(after);
@@ -69,8 +69,9 @@ public interface Processor<S, T, E extends Throwable> {
 
 	/**
 	 * Returns a function that always returns its input argument.
-	 *
-	 * @param <T> the type of the input and output objects to the function
+	 * 
+	 * @param <U>
+	 * @param <X>
 	 * @return a function that always returns its input argument
 	 */
 	static <U, X extends Throwable> Processor<U, U, X> identity() {

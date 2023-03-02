@@ -12,7 +12,7 @@ import java.io.PrintWriter;
 
 /**
  * 使用结束后必须要调用close方法
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class JsonpServerHttpResponse extends ServerHttpResponseWrapper {

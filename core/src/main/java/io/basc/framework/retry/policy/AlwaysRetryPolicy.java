@@ -23,14 +23,11 @@ import io.basc.framework.retry.RetryPolicy;
  * A {@link RetryPolicy} that always permits a retry. Can also be used as a base
  * class for other policies, e.g. for test purposes as a stub.
  * 
- * @author shuchaowen
+ * @author wcnnkh
  * 
  */
 public class AlwaysRetryPolicy extends NeverRetryPolicy {
 
-	/**
-	 * Always returns true.
-	 */
 	public boolean canRetry(RetryContext context) {
 		return true;
 	}

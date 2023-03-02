@@ -11,7 +11,7 @@ public interface Matcher<T> extends Comparator<T> {
 	 * have to be used because direct equality comparisons on the static path
 	 * Strings will lead to the same result.
 	 * 
-	 * @param path the path String to check
+	 * @param text the path String to check
 	 * @return {@code true} if the given {@code text} represents a pattern
 	 */
 	boolean isPattern(T text);
@@ -21,7 +21,7 @@ public interface Matcher<T> extends Comparator<T> {
 	 * this Matcher's matching strategy.
 	 * 
 	 * @param pattern the pattern to match against
-	 * @param path    the path String to test
+	 * @param text    the path String to test
 	 * @return {@code true} if the supplied {@code text} matched, {@code false} if
 	 *         it didn't
 	 */

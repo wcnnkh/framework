@@ -9,19 +9,16 @@ import io.basc.framework.core.annotation.KeyValuePair;
 
 /**
  * 配置权限，如果是定义的类上的就是父级
- * @author shuchaowen
+ * 
+ * @author wcnnkh
  *
  */
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ActionAuthority {
-	public String value();
-	
-	public KeyValuePair[] attributes() default {};
-	
-	/**
-	 * 这是不是一个菜单
-	 * @return
-	 */
-	public boolean menu() default false;
+	String value();
+
+	KeyValuePair[] attributes() default {};
+
+	boolean menu() default false;
 }

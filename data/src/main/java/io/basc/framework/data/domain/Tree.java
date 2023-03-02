@@ -20,9 +20,7 @@ import io.basc.framework.util.Processor;
  * 
  * @author wcnnkh
  *
- * @param <K>
- * @param <V>
- * @param <T>
+ * @param <T> 节点类型
  */
 public class Tree<T> extends BascObject implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -72,14 +70,6 @@ public class Tree<T> extends BascObject implements Serializable {
 		return list;
 	}
 
-	/**
-	 * @param sourceList
-	 * @param depth      深度,应该从0开始
-	 * @param maxDepth   最大深度
-	 * @param processor  key是当前深度
-	 * @return
-	 * @throws E
-	 */
 	public static <S, K, V, E extends Throwable> List<Tree<Pair<K, V>>> parse(Collection<? extends S> sourceList,
 			int depth, int maxDepth, Processor<? super Pair<Integer, S>, ? extends Pair<K, V>, ? extends E> processor)
 			throws E {

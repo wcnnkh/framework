@@ -15,7 +15,7 @@ import io.basc.framework.security.limit.annotation.CountLimitSecurity;
 /**
  * count limit 实现
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Provider(order = Ordered.HIGHEST_PRECEDENCE)

@@ -34,11 +34,6 @@ public interface Status extends Serializable {
 
 	long getCode();
 
-	/**
-	 * message的简写
-	 * 
-	 * @return
-	 */
 	@Nullable
 	String getMsg();
 

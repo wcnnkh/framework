@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 /**
  * 并非支持所有的日志等级, 仅支持常规的info, debug, trace, warn, error
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class Slf4jLogger extends CustomLogger {

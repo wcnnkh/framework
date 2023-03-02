@@ -6,7 +6,7 @@ import io.basc.framework.util.Assert;
 
 /**
  * 基于存储的实现
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public abstract class StorageCompensatePolicy extends AbstractCompensatePolicy{

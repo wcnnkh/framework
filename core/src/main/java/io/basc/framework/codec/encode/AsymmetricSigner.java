@@ -23,7 +23,7 @@ import io.basc.framework.util.Assert;
 /**
  * 非对称加密签名
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class AsymmetricSigner implements BytesEncoder, Cloneable {

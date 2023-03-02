@@ -24,7 +24,7 @@ import io.basc.framework.dubbo.DubboServiceConfigure;
 /**
  * 暴露dubbo服务
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Provider

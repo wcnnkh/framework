@@ -25,30 +25,12 @@ public class AbstractWebSocketHandler implements WebSocketHandler {
 		}
 	}
 
-	/**
-	 * 收到文本消息时
-	 * @param session
-	 * @param message
-	 * @throws Exception
-	 */
 	protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 	}
 
-	/**
-	 * 收到二进制消息时
-	 * @param session
-	 * @param message
-	 * @throws Exception
-	 */
 	protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
 	}
 
-	/**
-	 * 收到pong消息
-	 * @param session
-	 * @param message
-	 * @throws Exception
-	 */
 	protected void handlePongMessage(WebSocketSession session, PongMessage message) throws Exception {
 	}
 

@@ -34,7 +34,7 @@ public final class FieldSetterListenUtils {
 	}
 
 	/**
-	 * @param instance
+	 * @param instance 实例
 	 * @return 返回空说明这不是一个可以监听的实例
 	 */
 	public static Map<String, Object> getChangeMap(Object instance) {

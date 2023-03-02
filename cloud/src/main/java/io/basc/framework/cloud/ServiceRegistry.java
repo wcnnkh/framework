@@ -19,22 +19,13 @@ package io.basc.framework.cloud;
 /**
  * Contract to register and deregister instances with a Service Registry.
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface ServiceRegistry<T extends ServiceInstance> {
 
-	/**
-	 * Registers the instance. A registration typically has information about an
-	 * instance, such as its hostname and port.
-	 * 
-	 */
 	void register(T instance) throws ServiceRegistryException;
 
-	/**
-	 * Deregisters the instance.
-	 * 
-	 */
 	void deregister(T instance) throws ServiceRegistryException;
 
 }

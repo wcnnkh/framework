@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * @see java.time.ZoneOffset#of(String)
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Target({ ElementType.FIELD })

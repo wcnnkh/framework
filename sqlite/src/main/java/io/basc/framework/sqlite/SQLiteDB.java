@@ -3,7 +3,6 @@ package io.basc.framework.sqlite;
 import org.sqlite.SQLiteDataSource;
 
 import io.basc.framework.db.DefaultDB;
-import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ServiceLoaderFactory;
@@ -29,14 +28,6 @@ public class SQLiteDB extends DefaultDB implements Configurable {
 		this.configured = true;
 	}
 
-	/**
-	 * 在工作目录下创建一个指定名称的数据库
-	 * 
-	 * @see Sys#env
-	 * @see Environment#getWorkPath()
-	 * @param name
-	 * @return
-	 */
 	public static SQLiteDB create(String name) {
 		return new SQLiteDB(Sys.getEnv().getWorkPath() + "/" + name + ".db");
 	}

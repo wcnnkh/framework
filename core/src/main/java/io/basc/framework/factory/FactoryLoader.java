@@ -14,7 +14,7 @@ import io.basc.framework.util.Return;
 /**
  * 通过classloader来获取上下文的BeanFactory
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class FactoryLoader {

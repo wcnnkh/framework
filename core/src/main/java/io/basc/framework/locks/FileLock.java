@@ -12,7 +12,7 @@ import java.io.IOException;
 /**
  * 使用文件实现的锁，不同于{@link java.nio.channels.FileLock}
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class FileLock extends AbstractLock {

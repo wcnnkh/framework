@@ -9,7 +9,7 @@ import io.basc.framework.util.FormatUtils;
 /**
  * 包装的jdk日志记录器
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class JdkLogger extends CustomLogger {

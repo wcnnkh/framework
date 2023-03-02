@@ -5,7 +5,7 @@ import io.basc.framework.mapper.StructureFactory;
 /**
  * 对象映射关系
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface ObjectRelationalFactory extends ObjectRelationalResolver, StructureFactory {

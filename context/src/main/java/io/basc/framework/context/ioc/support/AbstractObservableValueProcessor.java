@@ -37,30 +37,17 @@ public abstract class AbstractObservableValueProcessor<R> extends AbstractValueP
 			final String name = nameToUse;
 			final Observable<R> source = res;
 			res.registerListener((event) -> {
-					try {
-						set(beanDefinition, context, bean, field, valueDefinition, name, charset, source.orElse(null),
-								true);
-					} catch (Exception e) {
-						logger.error(e, field.toString());
-					}
+				try {
+					set(beanDefinition, context, bean, field, valueDefinition, name, charset, source.orElse(null),
+							true);
+				} catch (Exception e) {
+					logger.error(e, field.toString());
 				}
-			);
+			});
 		}
 
 	}
 
-	/**
-	 * @param beanDefinition
-	 * @param beanFactory
-	 * @param propertyFactory
-	 * @param bean
-	 * @param field
-	 * @param value
-	 * @param name
-	 * @param charsetName
-	 * @param res
-	 * @param insertNull      是否可以插入空值
-	 */
 	protected synchronized void set(BeanDefinition beanDefinition, Context context, Object bean, Field field,
 			ValueDefinition valueDefinition, String name, Charset charset, R res, boolean insertNull) throws Exception {
 		Object v = null;

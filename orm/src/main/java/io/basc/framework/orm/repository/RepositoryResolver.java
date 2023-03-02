@@ -48,14 +48,6 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 		return new ConditionsBuilder(getRelationshipKeywords(), getConditionKeywords(), conditionBuilder);
 	}
 
-	/**
-	 * 将参数依据orm规则展开
-	 * 
-	 * @param entityClass
-	 * @param columns
-	 * @param appendableOrders 追加
-	 * @return
-	 */
 	default List<Parameter> open(Class<?> entityClass, Collection<? extends Parameter> columns,
 			List<OrderColumn> appendableOrders) {
 		if (CollectionUtils.isEmpty(columns)) {
@@ -86,15 +78,6 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 		return list;
 	}
 
-	/**
-	 * 将参数依据orm规则展开
-	 * 
-	 * @param entityClass
-	 * @param mapping
-	 * @param conditions
-	 * @param appendableOrders 追加
-	 * @return
-	 */
 	default Conditions open(Class<?> entityClass, Conditions conditions, List<OrderColumn> appendableOrders) {
 		if (conditions == null) {
 			return null;

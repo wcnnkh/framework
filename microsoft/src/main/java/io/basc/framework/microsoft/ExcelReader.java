@@ -14,43 +14,11 @@ import java.util.stream.Stream;
  */
 public interface ExcelReader {
 
-	/**
-	 * 
-	 * @param <E>
-	 * @param inputStream
-	 * @param consumer
-	 * @throws IOException
-	 * @throws ExcelException
-	 * @throws E
-	 */
 	void read(InputStream inputStream, Consumer<ExcelRow> consumer) throws IOException, ExcelException;
 
-	/**
-	 * 
-	 * @param <E>
-	 * @param file
-	 * @param consumer
-	 * @throws IOException
-	 * @throws ExcelException
-	 * @throws E
-	 */
 	void read(File file, Consumer<ExcelRow> consumer) throws IOException, ExcelException;
 
-	/**
-	 * 
-	 * @param source
-	 * @return
-	 * @throws IOException
-	 * @throws ExcelException
-	 */
 	Stream<ExcelRow> read(File source) throws IOException, ExcelException;
 
-	/**
-	 * 
-	 * @param source
-	 * @return
-	 * @throws IOException
-	 * @throws ExcelException
-	 */
 	Stream<ExcelRow> read(InputStream source) throws IOException, ExcelException;
 }

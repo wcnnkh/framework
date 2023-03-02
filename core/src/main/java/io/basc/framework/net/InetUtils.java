@@ -108,7 +108,7 @@ public final class InetUtils {
 	/**
 	 * Return whether input matches regex of ip address.
 	 *
-	 * @param input The input.
+	 * @param ip The input.
 	 * @return {@code true}: yes<br>
 	 *         {@code false}: no
 	 */
@@ -116,12 +116,6 @@ public final class InetUtils {
 		return StringUtils.isNotEmpty(ip) && Pattern.matches(REGEX_IP, ip);
 	}
 
-	/**
-	 * 判断是否是内网IP
-	 * 
-	 * @param ip
-	 * @return
-	 */
 	public static boolean isInnerIP(String ip) {
 		Pattern p = Pattern.compile(INNER_IP_PATTERN);
 		Matcher matcher = p.matcher(ip);
@@ -157,9 +151,6 @@ public final class InetUtils {
 		return StringUtils.getFilename(urlToUse);
 	}
 
-	/**
-	 * 排除虚拟接口和没有启动运行的接口
-	 */
 	public static final Predicate<NetworkInterface> LOCAL_IP_NETWORK_INTERFACE_ACCEPT = new Predicate<NetworkInterface>() {
 		public boolean test(NetworkInterface networkInterface) {
 			if (networkInterface.isVirtual()) {
@@ -259,12 +250,6 @@ public final class InetUtils {
 		return messageId;
 	}
 
-	/**
-	 * 端口是否可用
-	 * 
-	 * @param port
-	 * @return
-	 */
 	public static boolean isAvailablePort(int port) {
 		if (port < 0 || port > 65535) {
 			return false;
@@ -286,13 +271,6 @@ public final class InetUtils {
 		}
 	}
 
-	/**
-	 * 获取指定范围内可用的端口(minPort<=port<=maxPort) {@linkplain 0 and 65535}
-	 * 
-	 * @param minPort
-	 * @param maxPort
-	 * @return
-	 */
 	public static int getAvailablePort(int minPort, int maxPort) {
 		for (int i = Math.max(0, minPort), max = Math.min(65535, maxPort); i <= max; i++) {
 			if (isAvailablePort(i)) {
@@ -302,11 +280,6 @@ public final class InetUtils {
 		throw new IllegalStateException("No ports available(" + minPort + "~" + maxPort + ")");
 	}
 
-	/**
-	 * 获取一个可用的端口号
-	 * 
-	 * @return
-	 */
 	public static int getAvailablePort() {
 		DatagramSocket socket = null;
 		try {

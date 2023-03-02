@@ -12,7 +12,7 @@ import io.basc.framework.util.page.PageSupport;
 /**
  * 分页请求
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class PageRequest extends BascObject implements Serializable {

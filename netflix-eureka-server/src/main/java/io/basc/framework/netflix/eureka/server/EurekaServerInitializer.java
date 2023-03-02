@@ -13,7 +13,7 @@ import io.basc.framework.logger.LoggerFactory;
 /**
  * 自动启动eureka服务端
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Provider

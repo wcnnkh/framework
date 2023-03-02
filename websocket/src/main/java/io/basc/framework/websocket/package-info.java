@@ -1,6 +1,6 @@
 /**
  * 参考spring-websocket
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 package io.basc.framework.websocket;

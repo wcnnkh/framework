@@ -9,13 +9,6 @@ import io.basc.framework.util.ClassToString;
 import io.basc.framework.util.ConvertibleIterable;
 
 public interface ServiceLoaderFactory extends InstanceFactory {
-	/**
-	 * 获取一个类实现的加载器
-	 * 
-	 * @param              <S>
-	 * @param serviceClass
-	 * @return
-	 */
 	<S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass);
 
 	default <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, String... defaultNames) {

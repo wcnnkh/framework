@@ -5,7 +5,7 @@ import io.basc.framework.lang.UnsupportedException;
 /**
  * 常用的运算方式，按运算优先级排序
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public enum Calculators implements Calculator {

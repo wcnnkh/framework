@@ -29,7 +29,6 @@ package io.basc.framework.util.concurrent;
  * The primary use case is to set some execution context around the task's
  * invocation, or to provide some monitoring/statistics for task execution.
  *
- * @see TaskExecutor#execute(Runnable)
  * @see SimpleAsyncExecutor#setTaskDecorator
  */
 public interface TaskDecorator {

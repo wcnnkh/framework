@@ -80,7 +80,7 @@ public class TccActionInterceptor implements MethodInterceptor {
 	/**
 	 * get the method from interface
 	 *
-	 * @param invocation the invocation
+	 * @param invoker the invocation
 	 * @return the action interface method
 	 */
 	protected Method getActionInterfaceMethod(MethodInvoker invoker) {

@@ -16,7 +16,7 @@ public class LineIterator implements Iterator<String> {
 	/**
 	 * Constructs an iterator of the lines for a <code>Reader</code>.
 	 *
-	 * @param reader the <code>Reader</code> to read from, not null
+	 * @param bufferedReader the <code>Reader</code> to read from, not null
 	 * @throws IllegalArgumentException if the reader is null
 	 */
 	public LineIterator(final BufferedReader bufferedReader) throws IllegalArgumentException {
@@ -29,7 +29,7 @@ public class LineIterator implements Iterator<String> {
 	// -----------------------------------------------------------------------
 	/**
 	 * Indicates whether the <code>Reader</code> has more lines. If there is an
-	 * <code>IOException</code> then {@link #close()} will be called on this
+	 * <code>IOException</code> then {@link BufferedReader#close()} will be called on this
 	 * instance.
 	 *
 	 * @return {@code true} if the Reader has more lines

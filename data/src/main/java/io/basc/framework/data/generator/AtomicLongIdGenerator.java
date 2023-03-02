@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * 生成一个Long类型的ID
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public final class AtomicLongIdGenerator implements LongIdGenerator {
@@ -13,20 +13,10 @@ public final class AtomicLongIdGenerator implements LongIdGenerator {
 	private int serverCount;
 	private AtomicLong maxId;
 
-	/**
-	 * 初始化ID的值为0
-	 * 
-	 * @param initValue
-	 */
 	public AtomicLongIdGenerator() {
 		this(0, 1, 0);
 	}
 
-	/**
-	 * 初始化ID值
-	 * 
-	 * @param initValue
-	 */
 	public AtomicLongIdGenerator(long initValue) {
 		this(0, 1, initValue);
 	}

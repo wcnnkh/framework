@@ -151,22 +151,10 @@ public class RetryTemplate implements RetryOperations {
 		return retryPolicy.open(RetrySynchronizationManager.getContext());
 	}
 
-	/**
-	 * @param retryPolicy
-	 * @param context
-	 * @param e
-	 */
 	protected void registerThrowable(RetryPolicy retryPolicy, RetryContext context, Throwable e) {
 		retryPolicy.registerThrowable(context, e);
 	}
 
-	/**
-	 * Clean up the cache if necessary and close the context provided (if the flag
-	 * indicates that processing was successful).
-	 *
-	 * @param context
-	 * @param succeeded
-	 */
 	protected void close(RetryPolicy retryPolicy, RetryContext context, boolean succeeded) {
 		retryPolicy.close(context);
 	}
@@ -180,19 +168,6 @@ public class RetryTemplate implements RetryOperations {
 
 	}
 
-	/**
-	 * Actions to take after final attempt has failed. If there is state clean up
-	 * the cache. If there is a recovery callback, execute that and return its
-	 * result. Otherwise throw an exception.
-	 *
-	 * @param recoveryCallback the callback for recovery (might be null)
-	 * @param context          the current retry context
-	 * @throws Exception               if the callback does, and if there is no
-	 *                                 callback and the state is null then the last
-	 *                                 exception from the context
-	 * @throws ExhaustedRetryException if the state is not null and there is no
-	 *                                 recovery callback
-	 */
 	protected <T, E extends Throwable> T handleRetryExhausted(RecoveryCallback<T, E> recoveryCallback,
 			RetryContext context) throws Throwable {
 		if (recoveryCallback != null) {
@@ -243,10 +218,6 @@ public class RetryTemplate implements RetryOperations {
 		}
 	}
 
-	/**
-	 * Re-throws the original throwable if it is an Exception, and wraps
-	 * non-exceptions into {@link RetryException}.
-	 */
 	private static <E extends Throwable> E wrapIfNecessary(Throwable throwable) throws RetryException {
 		if (throwable instanceof Error) {
 			throw (Error) throwable;

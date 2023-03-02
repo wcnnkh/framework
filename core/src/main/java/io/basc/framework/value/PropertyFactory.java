@@ -28,12 +28,6 @@ public interface PropertyFactory extends ValueFactory<String>, Iterable<String> 
 		return stream().filter((t) -> StringMatchers.match(keyMatcher, pattern, t));
 	}
 
-	/**
-	 * 通过前缀过滤的流
-	 * 
-	 * @param prefix
-	 * @return key是截取过后的结果
-	 */
 	default Stream<Pair<String, Value>> streamByPrefix(String prefix) {
 		Assert.requiredArgument(prefix != null, "prefix");
 		return stream().filter((k) -> k.length() > prefix.length() && k.startsWith(prefix))

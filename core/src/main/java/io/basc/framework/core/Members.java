@@ -329,7 +329,7 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	 * 关联类
 	 * 
 	 * @param sourceClass
-	 * @param processor
+	 * @param predicate
 	 * @return
 	 */
 	public Members<T> withClass(Class<?> sourceClass, Predicate<? super T> predicate) {
@@ -414,7 +414,8 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	/**
 	 * 关联所有父类
 	 * 
-	 * @param interfaces 是否关联父类的接口 {@link #withInterfaces(boolean)}
+	 * @param interfaces 是否关联父类的接口
+	 *                   {@link Members#withInterfaces(Predicate, Function)}
 	 * @return
 	 */
 	public Members<T> withSuperclass(boolean interfaces) {

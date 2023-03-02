@@ -254,11 +254,6 @@ public class UriComponentsBuilder implements Cloneable {
 		return fromUri(request.getURI()).adaptFromForwardedHeaders(request.getHeaders());
 	}
 
-	/**
-	 * Create an instance by parsing the "Origin" header of an HTTP request.
-	 * 
-	 * @see <a href="https://tools.ietf.org/html/rfc6454">RFC 6454</a>
-	 */
 	public static UriComponentsBuilder fromOriginHeader(String origin) {
 		Matcher matcher = URI_PATTERN.matcher(origin);
 		if (matcher.matches()) {
@@ -332,13 +327,6 @@ public class UriComponentsBuilder implements Cloneable {
 		return build(false).expand(uriVariableValues);
 	}
 
-	/**
-	 * Build a URI String. This is a shortcut method which combines calls to
-	 * {@link #build()}, then {@link UriComponents#encode()} and finally
-	 * {@link UriComponents#toUriString()}.
-	 * 
-	 * @see UriComponents#toUriString()
-	 */
 	public String toUriString() {
 		return build(false).encode().toUriString();
 	}

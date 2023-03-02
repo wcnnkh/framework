@@ -13,9 +13,9 @@ import io.basc.framework.event.support.StandardObservableProperties;
 import io.basc.framework.lang.Nullable;
 
 /**
- * 动态管理日志等级管理<br/>
+ * 动态管理日志等级管理
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class LevelManager extends StandardObservableProperties<String, Level> {
@@ -70,12 +70,6 @@ public class LevelManager extends StandardObservableProperties<String, Level> {
 		return false;
 	}
 
-	/**
-	 * 如果没有注册过会返回空
-	 * 
-	 * @param name
-	 * @return
-	 */
 	@Nullable
 	public Level getLevel(String name) {
 		Level level = get(name);

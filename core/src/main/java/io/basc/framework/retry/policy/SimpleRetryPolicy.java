@@ -34,7 +34,7 @@ import io.basc.framework.util.ClassUtils;
  *
  * will execute the callback at least once, and as many as 3 times.
  *
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class SimpleRetryPolicy implements RetryPolicy {
@@ -53,13 +53,6 @@ public class SimpleRetryPolicy implements RetryPolicy {
 		this(DEFAULT_MAX_ATTEMPTS);
 	}
 
-	/**
-	 * Create a {@link SimpleRetryPolicy} with the specified number of retry
-	 * attempts. If traverseCauses is true, the exception causes will be traversed
-	 * until a match is found.
-	 *
-	 * @param maxAttempts
-	 */
 	public SimpleRetryPolicy(int maxAttempts) {
 		super();
 		this.maxAttempts = maxAttempts;
@@ -84,12 +77,6 @@ public class SimpleRetryPolicy implements RetryPolicy {
 		return maxAttempts;
 	}
 
-	/**
-	 * Test for retryable operation based on the status.
-	 *
-	 * @return true if the last exception was retryable and the number of attempts
-	 *         so far is less than the limit.
-	 */
 	public boolean canRetry(RetryContext context) {
 		return context.getRetryCount() < maxAttempts;
 	}
@@ -97,22 +84,11 @@ public class SimpleRetryPolicy implements RetryPolicy {
 	public void close(RetryContext status) {
 	}
 
-	/**
-	 * Update the status with another attempted retry and the latest exception.
-	 *
-	 * @see RetryPolicy#registerThrowable(RetryContext, Throwable)
-	 */
 	public void registerThrowable(RetryContext context, Throwable throwable) {
 		SimpleRetryContext simpleContext = ((SimpleRetryContext) context);
 		simpleContext.setLastThrowable(throwable);
 	}
 
-	/**
-	 * Get a status object that can be used to track the current operation according
-	 * to this policy. Has to be aware of the latest exception and the number of
-	 * attempts.
-	 *
-	 */
 	public RetryContext open(RetryContext parent) {
 		return new SimpleRetryContext(parent);
 	}

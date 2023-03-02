@@ -23,8 +23,7 @@ public class WebSocketExtension {
 	/**
 	 * Create a WebSocketExtension with the given name.
 	 * 
-	 * @param name
-	 *            the name of the extension
+	 * @param name the name of the extension
 	 */
 	public WebSocketExtension(String name) {
 		this(name, null);
@@ -33,10 +32,8 @@ public class WebSocketExtension {
 	/**
 	 * Create a WebSocketExtension with the given name and parameters.
 	 * 
-	 * @param name
-	 *            the name of the extension
-	 * @param parameters
-	 *            the parameters
+	 * @param name       the name of the extension
+	 * @param parameters the parameters
 	 */
 	public WebSocketExtension(String name, Map<String, String> parameters) {
 		Assert.hasLength(name, "Extension name must not be empty");
@@ -50,16 +47,10 @@ public class WebSocketExtension {
 		}
 	}
 
-	/**
-	 * Return the name of the extension (never {@code null) or empty}.
-	 */
 	public String getName() {
 		return this.name;
 	}
 
-	/**
-	 * Return the parameters of the extension (never {@code null}).
-	 */
 	public Map<String, String> getParameters() {
 		return this.parameters;
 	}
@@ -85,7 +76,7 @@ public class WebSocketExtension {
 	public String toString() {
 		StringBuilder str = new StringBuilder();
 		str.append(this.name);
-		for(Entry<String, String> entry : parameters.entrySet()){
+		for (Entry<String, String> entry : parameters.entrySet()) {
 			str.append(";").append(entry.getKey()).append("=").append(entry.getValue());
 		}
 		return str.toString();
@@ -97,11 +88,9 @@ public class WebSocketExtension {
 	 * <p>
 	 * This method can be used to parse a "Sec-WebSocket-Extension" header.
 	 * 
-	 * @param extensions
-	 *            the string to parse
+	 * @param extensions the string to parse
 	 * @return the list of extensions
-	 * @throws IllegalArgumentException
-	 *             if the string cannot be parsed
+	 * @throws IllegalArgumentException if the string cannot be parsed
 	 */
 	public static List<WebSocketExtension> parseExtensions(String extensions) {
 		if (StringUtils.hasText(extensions)) {

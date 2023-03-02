@@ -6,13 +6,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 此类优化了{@link File#deleteOnExit()}<br/>
+ * 此类优化了{@link File#deleteOnExit()}
  * jdk自身实现当文件提前删除时注册的删除路径依然存在，在极端情况也可能会出现内存泄露
  * 
  * @see File
  * @see File#deleteOnExit()
  * @see File#delete()
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class TemporaryFile extends File {

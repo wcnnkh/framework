@@ -10,25 +10,18 @@ import java.lang.annotation.Target;
 /**
  * 使用类扫描实现Service Provider Interface
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Indexed
-public @interface Provider{
-	public Class<?>[] value() default {};
+public @interface Provider {
+	Class<?>[] value() default {};
 
-	public boolean assignableValue() default true;
+	boolean assignableValue() default true;
 
-	// 要排除的
-	public Class<?>[] excludes() default {};
+	Class<?>[] excludes() default {};
 
-	/**
-	 * 从小到大
-	 * 
-	 * @see Ordered#DEFAULT_PRECEDENCE
-	 * @return
-	 */
-	public int order() default Ordered.DEFAULT_PRECEDENCE;
+	int order() default Ordered.DEFAULT_PRECEDENCE;
 }

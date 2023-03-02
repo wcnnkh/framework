@@ -2,7 +2,7 @@ package io.basc.framework.util;
 
 /**
  * @see Runnable
- * @author shuchaowen
+ * @author wcnnkh
  *
  * @param <E>
  */

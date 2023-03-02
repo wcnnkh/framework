@@ -34,7 +34,8 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable {
 	/**
 	 * Create a new {@code HttpEntity} with the given body and no headers.
 	 * 
-	 * @param body the entity body
+	 * @param body               the entity body
+	 * @param bodyTypeDescriptor the entity body type
 	 */
 	public HttpEntity(T body, TypeDescriptor bodyTypeDescriptor) {
 		this(body, bodyTypeDescriptor, null);
@@ -52,8 +53,9 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable {
 	/**
 	 * Create a new {@code HttpEntity} with the given body and headers.
 	 * 
-	 * @param body    the entity body
-	 * @param headers the entity headers
+	 * @param body               the entity body
+	 * @param bodyTypeDescriptor the entity body type
+	 * @param headers            the entity headers
 	 */
 	public HttpEntity(T body, TypeDescriptor bodyTypeDescriptor, MultiValueMap<String, String> headers) {
 		this.body = body;
@@ -65,23 +67,14 @@ public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable {
 		this.headers = tempHeaders;
 	}
 
-	/**
-	 * Returns the headers of this entity.
-	 */
 	public HttpHeaders getHeaders() {
 		return this.headers;
 	}
 
-	/**
-	 * Returns the body of this entity.
-	 */
 	public T getBody() {
 		return this.body;
 	}
 
-	/**
-	 * Indicates whether this entity has a body.
-	 */
 	public boolean hasBody() {
 		return (this.body != null);
 	}

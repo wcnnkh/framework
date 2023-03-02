@@ -14,7 +14,7 @@ import io.basc.framework.security.authority.AuthorizationFailureException;
 /**
  * 默认的异常处理
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Provider

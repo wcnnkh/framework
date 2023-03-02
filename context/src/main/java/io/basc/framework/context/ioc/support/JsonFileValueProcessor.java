@@ -15,7 +15,7 @@ import io.basc.framework.mapper.Field;
 /**
  * 将内容解析为json
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public final class JsonFileValueProcessor extends AbstractObservableResourceValueProcessor {

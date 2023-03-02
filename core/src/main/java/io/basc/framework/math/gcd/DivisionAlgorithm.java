@@ -9,7 +9,7 @@ import java.math.BigInteger;
 /**
  * 辗转相除法
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class DivisionAlgorithm implements GreatestCommonDivisor {

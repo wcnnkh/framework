@@ -44,12 +44,6 @@ public abstract class AbstractTokenFactory implements TokenFactory {
 		this.expireAheadTimeUnit = expireAheadTimeUnit;
 	}
 
-	/**
-	 * 是否是无效的
-	 * 
-	 * @param token
-	 * @return
-	 */
 	protected boolean isInvalid(Token token) {
 		return token == null || token.isExpired(expireAheadTime, expireAheadTimeUnit);
 	}

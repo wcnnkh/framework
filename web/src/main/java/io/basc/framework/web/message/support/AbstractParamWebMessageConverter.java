@@ -21,7 +21,7 @@ import io.basc.framework.web.message.WebMessagelConverterException;
 /**
  * query or form params
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public abstract class AbstractParamWebMessageConverter extends AbstractWebMessageConverter {

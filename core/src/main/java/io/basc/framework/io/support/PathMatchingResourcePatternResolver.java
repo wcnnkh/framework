@@ -45,7 +45,7 @@ import io.basc.framework.util.XUtils;
  * A {@link ResourcePatternResolver} implementation that is able to resolve a
  * specified resource location path into one or more matching Resources. The
  * source path may be a simple path which has a one-to-one mapping to a target
- * {@link io.basc.framework.core.io.Resource}, or alternatively may contain the
+ * {@link io.basc.framework.io.Resource}, or alternatively may contain the
  * special "{@code classpath*:}" prefix and/or internal Ant-style regular
  * expressions (matched using {@link io.basc.framework.util.AntPathMatcher}
  * utility). Both of the latter are effectively wildcards.
@@ -179,7 +179,7 @@ import io.basc.framework.util.XUtils;
  * @author https://github.com/wcnnkh/framework/blob/master/core/src/main/java/io/basc/framework/io/support/PathMatchingResourcePatternResolver.java
  * @see #CLASSPATH_ALL_URL_PREFIX
  * @see io.basc.framework.util.AntPathMatcher
- * @see io.basc.framework.core.io.ResourceLoader#getResource(String)
+ * @see io.basc.framework.io.ResourceLoader#getResource(String)
  * @see ClassLoader#getResources(String)
  */
 public class PathMatchingResourcePatternResolver implements ResourcePatternResolver {
@@ -211,7 +211,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 * <p>
 	 * ClassLoader access will happen via the thread context class loader.
 	 * 
-	 * @see io.basc.framework.core.io.DefaultResourceLoader
+	 * @see io.basc.framework.io.DefaultResourceLoader
 	 */
 	public PathMatchingResourcePatternResolver() {
 		this.resourceLoader = new DefaultResourceLoader();
@@ -237,7 +237,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 * @param classLoader the ClassLoader to load classpath resources with, or
 	 *                    {@code null} for using the thread context class loader at
 	 *                    the time of actual resource access
-	 * @see io.basc.framework.core.io.DefaultResourceLoader
+	 * @see io.basc.framework.io.DefaultResourceLoader
 	 */
 	public PathMatchingResourcePatternResolver(@Nullable ClassLoader classLoader) {
 		this.resourceLoader = new DefaultResourceLoader(classLoader);
@@ -382,7 +382,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 * @param url a URL as returned from the ClassLoader
 	 * @return the corresponding Resource object
 	 * @see java.lang.ClassLoader#getResources
-	 * @see io.basc.framework.core.io.Resource
+	 * @see io.basc.framework.io.Resource
 	 */
 	protected Resource convertClassLoaderURL(URL url) {
 		return new UrlResource(url);
@@ -603,7 +603,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 * @param resource the resource handle to check (usually the root directory to
 	 *                 start path matching from)
 	 * @see #doFindPathMatchingJarResources
-	 * @see io.basc.framework.util.ResourceUtils#isJarURL
+	 * @see io.basc.framework.io.ResourceUtils#isJarURL
 	 */
 	protected boolean isJarResource(Resource resource) throws IOException {
 		return false;

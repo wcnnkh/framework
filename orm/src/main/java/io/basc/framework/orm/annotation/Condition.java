@@ -9,19 +9,41 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Condition {
 	/**
-	 * endWith<br/>
-	 * equ =<br/>
-	 * geq >=<br/>
-	 * gtr ><br/>
-	 * in <br/>
-	 * leq <=<br/>
-	 * like <br/>
-	 * lss <<br/>
-	 * neq !<br/>
-	 * search %a%b%c<br/>
-	 * startWith<br/>
+	 * endWith
 	 * 
-	 * @return
+	 * <p>
+	 * equ =
+	 * 
+	 * <p>
+	 * geq &gt;=
+	 * 
+	 * <p>
+	 * gtr &gt;
+	 * 
+	 * <p>
+	 * in
+	 * 
+	 * <p>
+	 * leq &lt;=
+	 * 
+	 * <p>
+	 * like
+	 * 
+	 * <p>
+	 * lss &lt;
+	 * 
+	 * <p>
+	 * neq !
+	 * 
+	 * <p>
+	 * search %a%b%c
+	 * 
+	 * <p>
+	 * startWith
+	 * 
+	 * <p>
+	 * 
+	 * @return 条件
 	 */
 	String value();
 }

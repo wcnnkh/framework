@@ -6,13 +6,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.basc.framework.context.support.DefaultContext;
-
 /**
  * 上下文扫描时会允许加入上下文
  * 
- * @see DefaultContext#match(io.basc.framework.core.type.classreading.MetadataReader,
- *      io.basc.framework.core.type.classreading.MetadataReaderFactory)
  * @author wcnnkh
  *
  */

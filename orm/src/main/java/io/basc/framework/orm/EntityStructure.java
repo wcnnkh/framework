@@ -11,9 +11,8 @@ import io.basc.framework.mapper.Fields;
 /**
  * 实体结构
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
- * @param <T>
  */
 public final class EntityStructure extends ObjectRelationalDecorator<Property, EntityStructure> {
 

@@ -26,41 +26,40 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A server-specific strategy for performing the actual upgrade to a WebSocket exchange.
+ * A server-specific strategy for performing the actual upgrade to a WebSocket
+ * exchange.
  *
  * @author Rossen Stoyanchev
  */
 public interface RequestUpgradeStrategy {
 
-	/**
-	 * Return the supported WebSocket protocol versions.
-	 */
 	String[] getSupportedVersions();
 
-	/**
-	 * Return the WebSocket protocol extensions supported by the underlying WebSocket server.
-	 */
 	List<WebSocketExtension> getSupportedExtensions(ServerHttpRequest request);
 
 	/**
-	 * Perform runtime specific steps to complete the upgrade. Invoked after successful
-	 * negotiation of the handshake request.
-	 * @param request the current request
-	 * @param response the current response
-	 * @param selectedProtocol the selected sub-protocol, if any
+	 * Perform runtime specific steps to complete the upgrade. Invoked after
+	 * successful negotiation of the handshake request.
+	 * 
+	 * @param request            the current request
+	 * @param response           the current response
+	 * @param selectedProtocol   the selected sub-protocol, if any
 	 * @param selectedExtensions the selected WebSocket protocol extensions
-	 * @param user the user to associate with the WebSocket session
-	 * @param wsHandler the handler for WebSocket messages
-	 * @param attributes handshake request specific attributes to be set on the WebSocket
-	 * session via {@link io.basc.framework.websocket.server.HandshakeInterceptor} and
-	 * thus made available to the {@link io.basc.framework.websocket.WebSocketHandler}
+	 * @param user               the user to associate with the WebSocket session
+	 * @param wsHandler          the handler for WebSocket messages
+	 * @param attributes         handshake request specific attributes to be set on
+	 *                           the WebSocket session via
+	 *                           {@link io.basc.framework.websocket.server.HandshakeInterceptor}
+	 *                           and thus made available to the
+	 *                           {@link io.basc.framework.websocket.WebSocketHandler}
 	 * @throws HandshakeFailureException thrown when handshake processing failed to
-	 * complete due to an internal, unrecoverable error, i.e. a server error as
-	 * opposed to a failure to successfully negotiate the requirements of the
-	 * handshake request.
+	 *                                   complete due to an internal, unrecoverable
+	 *                                   error, i.e. a server error as opposed to a
+	 *                                   failure to successfully negotiate the
+	 *                                   requirements of the handshake request.
 	 */
-	void upgrade(ServerHttpRequest request, ServerHttpResponse response,
-			String selectedProtocol, List<WebSocketExtension> selectedExtensions, Principal user,
-			WebSocketHandler wsHandler, Map<String, Object> attributes) throws HandshakeFailureException;
+	void upgrade(ServerHttpRequest request, ServerHttpResponse response, String selectedProtocol,
+			List<WebSocketExtension> selectedExtensions, Principal user, WebSocketHandler wsHandler,
+			Map<String, Object> attributes) throws HandshakeFailureException;
 
 }

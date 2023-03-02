@@ -7,14 +7,6 @@ import io.basc.framework.orm.OrmException;
 import io.basc.framework.util.ResultSet;
 import io.basc.framework.util.page.Paginations;
 
-/**
- * curd操作
- * 
- * @see CurdOperations
- * @author wcnnkh
- *
- * @param <V>
- */
 public interface Curd<V> {
 	boolean delete(V entity);
 

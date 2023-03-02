@@ -15,7 +15,7 @@ import io.basc.framework.locks.ReentrantLockFactory;
 /**
  * 实现方法级别的锁
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Provider(order = Ordered.HIGHEST_PRECEDENCE)

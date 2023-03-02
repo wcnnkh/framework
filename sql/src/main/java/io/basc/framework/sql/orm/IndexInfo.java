@@ -9,7 +9,7 @@ import io.basc.framework.sql.orm.annotation.IndexType;
 /**
  * 索引名和索引方法相同被视为同一组索引
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class IndexInfo implements Serializable {

@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * 使用指定的实现对ip进行校验
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })

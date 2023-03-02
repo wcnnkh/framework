@@ -12,7 +12,7 @@ import io.basc.framework.util.StringUtils;
 /**
  * 迭代分割sql
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class SqlSplitIterator implements Iterator<SqlSplitSegment> {

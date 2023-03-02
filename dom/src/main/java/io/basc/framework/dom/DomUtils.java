@@ -33,13 +33,6 @@ public final class DomUtils {
 		return toList(node, (o) -> toRecursionMap(o));
 	}
 
-	/**
-	 * 将xml文档解析为map
-	 * 
-	 * @param node
-	 * @return
-	 * @throws Exception
-	 */
 	public static Map<String, Object> toRecursionMap(Node node) {
 		return toMap(node, (n) -> {
 			NodeList nodeList = n.getChildNodes();
@@ -276,11 +269,11 @@ public final class DomUtils {
 
 		for (int i = 0; i < len; i++) {
 			Node item = nodeList.item(i);
-			
+
 			if (item == null) {
 				continue;
 			}
-			
+
 			if (accept.test(item)) {
 				return item;
 			}

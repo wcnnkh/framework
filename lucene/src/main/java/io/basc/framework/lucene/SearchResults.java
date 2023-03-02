@@ -25,14 +25,6 @@ public class SearchResults<T> extends TopFieldDocs implements Pages<ScoreDoc, T>
 	private final ScoreDoc cursorId;
 	private ScoreDoc nextCursorId;
 
-	/**
-	 * 构造一个空的结果
-	 * 
-	 * @param parameters
-	 * @param cursorId
-	 * @param rowMapper
-	 * @param luceneTemplete
-	 */
 	public SearchResults(SearchParameters parameters, ScoreDoc cursorId, ScoreDocMapper<T> rowMapper,
 			LuceneTemplate luceneTemplete) {
 		this(parameters, cursorId, new TopDocs(new TotalHits(0, Relation.EQUAL_TO), new ScoreDoc[0]),

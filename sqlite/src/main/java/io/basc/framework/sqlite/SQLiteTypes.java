@@ -6,8 +6,8 @@ import java.sql.Blob;
 
 /**
  * sqlite中的数据类型
- * {@link https://www.runoob.com/sqlite/sqlite-data-types.html}
- * @author shuchaowen
+ * 
+ * @author wcnnkh
  *
  */
 public enum SQLiteTypes implements SqlType {
@@ -30,8 +30,8 @@ public enum SQLiteTypes implements SqlType {
 	/**
 	 * 值是一个 blob 数据，完全根据它的输入存储。
 	 */
-	BLOB("blob", Blob.class)
-	;
+	BLOB("blob", Blob.class);
+
 	private final String name;
 	private final Class<?> type;
 
@@ -49,7 +49,7 @@ public enum SQLiteTypes implements SqlType {
 	public Class<?> getType() {
 		return type;
 	}
-	
+
 	@Override
 	public int getLength() {
 		return 0;

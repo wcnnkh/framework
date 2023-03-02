@@ -3,9 +3,6 @@ package io.basc.framework.redis;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Processor;
 
-/**
- * Options to be used for with {@literal SCAN} commands.
- */
 public class ScanOptions<P> {
 
 	private final @Nullable Long count;
@@ -53,35 +50,16 @@ public class ScanOptions<P> {
 		private @Nullable Long count;
 		private @Nullable P pattern;
 
-		/**
-		 * Returns the current {@link ScanOptionsBuilder} configured with the given
-		 * {@code count}.
-		 *
-		 * @param count
-		 * @return
-		 */
 		public ScanOptionsBuilder<P> count(long count) {
 			this.count = count;
 			return this;
 		}
 
-		/**
-		 * Returns the current {@link ScanOptionsBuilder} configured with the given
-		 * {@code pattern}.
-		 *
-		 * @param pattern
-		 * @return
-		 */
 		public ScanOptionsBuilder<P> match(P pattern) {
 			this.pattern = pattern;
 			return this;
 		}
 
-		/**
-		 * Builds a new {@link ScanOptions} objects.
-		 *
-		 * @return a new {@link ScanOptions} objects.
-		 */
 		public ScanOptions<P> build() {
 			return new ScanOptions<P>(count, pattern);
 		}

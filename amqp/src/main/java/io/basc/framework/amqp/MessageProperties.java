@@ -326,7 +326,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	}
 
 	/**
-	 * 获取事务消息确认延迟, 默认10分钟<br/>
+	 * 获取事务消息确认延迟, 默认10分钟
 	 * 使用在消息发送前先发送延迟消息来保证消息一定会发送成功
 	 * 
 	 * @return

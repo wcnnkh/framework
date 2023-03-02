@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 /**
  * 线程不安全的
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  * @param <K>
  * @param <V>

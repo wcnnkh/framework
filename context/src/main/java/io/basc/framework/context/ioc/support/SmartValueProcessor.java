@@ -14,7 +14,7 @@ import io.basc.framework.mapper.Field;
  * 
  * @see ResourceValueProcessor
  * @see EnvironmentValueProceor
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class SmartValueProcessor implements ValueProcessor {

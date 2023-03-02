@@ -33,7 +33,7 @@ import io.basc.framework.util.StringUtils;
 /**
  * 资源工具
  * 
- * @author shuchaowen
+ * @author wcnnkh
  */
 public final class ResourceUtils {
 	private ResourceUtils() {

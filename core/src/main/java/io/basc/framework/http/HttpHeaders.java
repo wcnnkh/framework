@@ -557,36 +557,18 @@ public class HttpHeaders extends Headers {
 		super(httpHeaders);
 	}
 
-	/**
-	 * Set the list of acceptable {@linkplain MediaType media types}, as specified
-	 * by the {@code Accept} header.
-	 */
 	public void setAccept(List<MediaType> acceptableMediaTypes) {
 		set(ACCEPT, MediaType.toString(acceptableMediaTypes));
 	}
 
-	/**
-	 * Return the list of acceptable {@linkplain MediaType media types}, as
-	 * specified by the {@code Accept} header.
-	 * <p>
-	 * Returns an empty list when the acceptable media types are unspecified.
-	 */
 	public List<MediaType> getAccept() {
 		return MediaType.parseMediaTypes(get(ACCEPT));
 	}
 
-	/**
-	 * Set the (new) value of the {@code Access-Control-Allow-Credentials} response
-	 * header.
-	 */
 	public void setAccessControlAllowCredentials(boolean allowCredentials) {
 		set(ACCESS_CONTROL_ALLOW_CREDENTIALS, Boolean.toString(allowCredentials));
 	}
 
-	/**
-	 * Return the value of the {@code Access-Control-Allow-Credentials} response
-	 * header.
-	 */
 	public boolean getAccessControlAllowCredentials() {
 		return Boolean.parseBoolean(getFirst(ACCESS_CONTROL_ALLOW_CREDENTIALS));
 	}
@@ -1337,8 +1319,6 @@ public class HttpHeaders extends Headers {
 	 * @param headerName  the header name
 	 * @param headerValue the header value
 	 * @throws UnsupportedOperationException if adding headers is not supported
-	 * @see #put(String, List)
-	 * @see #set(String, String)
 	 */
 	public void add(String headerName, String headerValue) {
 		List<String> headerValues = get(headerName);
@@ -1355,8 +1335,6 @@ public class HttpHeaders extends Headers {
 	 * @param headerName  the header name
 	 * @param headerValue the header value
 	 * @throws UnsupportedOperationException if adding headers is not supported
-	 * @see #put(String, List)
-	 * @see #add(String, String)
 	 */
 	public void set(String headerName, String headerValue) {
 		List<String> headerValues = new LinkedList<String>();
@@ -1460,7 +1438,6 @@ public class HttpHeaders extends Headers {
 	/**
 	 * 通过headers获取客户端ip(一般来说获取的都是代理工具的ip)
 	 * 
-	 * @see ServletServerHttpRequest#getIp()
 	 * @return
 	 */
 	@Nullable

@@ -3,7 +3,7 @@ package io.basc.framework.data.geo;
 /**
  * 圆
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class Circle implements Shape {

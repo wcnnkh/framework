@@ -6,7 +6,7 @@ import io.basc.framework.util.Assert;
 /**
  * 两个对角点可以确定一个矩形
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class Box implements Shape {
@@ -45,20 +45,10 @@ public class Box implements Shape {
 		this.second = new Point(second[0], second[1]);
 	}
 
-	/**
-	 * Returns the first {@link Point} making up the {@link Box}.
-	 *
-	 * @return
-	 */
 	public Point getFirst() {
 		return first;
 	}
 
-	/**
-	 * Returns the second {@link Point} making up the {@link Box}.
-	 *
-	 * @return
-	 */
 	public Point getSecond() {
 		return second;
 	}

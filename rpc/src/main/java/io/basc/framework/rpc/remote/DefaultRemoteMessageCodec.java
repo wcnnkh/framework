@@ -18,7 +18,7 @@ import java.io.OutputStream;
 
 /**
  * 加解密码的方式编解码数据
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class DefaultRemoteMessageCodec implements RemoteMessageCodec {

@@ -135,15 +135,6 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 		}
 	}
 
-	/**
-	 * 从输入源中read excel
-	 * 
-	 * @param reader
-	 * @param structure
-	 * @param source    InputStream or File or Resource
-	 * @return
-	 * @throws ExcelException
-	 */
 	public final <T> Cursor<T> read(Object source, Structure<? extends Property> structure) throws IOException {
 		Assert.requiredArgument(structure != null, "structure");
 		Assert.requiredArgument(source != null, "source");

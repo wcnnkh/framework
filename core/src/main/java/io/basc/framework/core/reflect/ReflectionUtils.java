@@ -75,14 +75,6 @@ public abstract class ReflectionUtils {
 		}
 	}
 
-	/**
-	 * @see ReflectionApi#newInstance(Class)
-	 * @param <T>
-	 * @param members
-	 * @param source
-	 * @param deep    对集合的操作
-	 * @return
-	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T clone(Members<Field> members, T source, boolean deep) {
 		Assert.requiredArgument(members != null, "members");
@@ -95,13 +87,6 @@ public abstract class ReflectionUtils {
 		return target;
 	}
 
-	/**
-	 * @param <T>
-	 * @param members {@link Members#streamAll()}
-	 * @param source
-	 * @param target
-	 * @param deep
-	 */
 	public static <T> void clone(Members<Field> members, T source, T target, boolean deep) {
 		Assert.requiredArgument(members != null, "members");
 		if (source == null || target == null) {
@@ -721,17 +706,6 @@ public abstract class ReflectionUtils {
 		return method;
 	}
 
-	/**
-	 * 获取重载的方法
-	 * 
-	 * @param <T>
-	 * @param sourceClass
-	 * @param methodName
-	 * @param strict      {@link #findByParams(Stream, boolean, Object...)}
-	 * @param args
-	 * @return
-	 * @throws NoSuchMethodException
-	 */
 	public static ExecutableMatchingResults<Method> getOverloadMethod(Class<?> sourceClass, String methodName,
 			boolean strict, Predicate<Method> predicate, Object... args) throws NoSuchMethodException {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
@@ -831,14 +805,6 @@ public abstract class ReflectionUtils {
 		return hashCode(members, entity, true);
 	}
 
-	/**
-	 * @see #ENTITY_MEMBER
-	 * @param <E>
-	 * @param members
-	 * @param entity
-	 * @param deep
-	 * @return
-	 */
 	public static int hashCode(Members<Field> members, Object entity, boolean deep) {
 		Assert.requiredArgument(members != null, "members");
 		if (entity == null) {
@@ -865,16 +831,6 @@ public abstract class ReflectionUtils {
 		return hashCode(entity.getClass(), entity, deep);
 	}
 
-	/**
-	 * 根据参数名来调用方法
-	 * 
-	 * @param type
-	 * @param instance
-	 * @param name
-	 * @param isPublic
-	 * @param parameterMap
-	 * @return
-	 */
 	public static <T> Object invoke(Class<T> type, Object instance, String name, Map<String, Object> parameterMap)
 			throws NoSuchMethodException {
 		if (CollectionUtils.isEmpty(parameterMap)) {
@@ -937,13 +893,6 @@ public abstract class ReflectionUtils {
 		throw new IllegalStateException("Should never get here");
 	}
 
-	/**
-	 * 通过反射调用clone方法
-	 * 
-	 * @see java.lang.Object.clone()
-	 * @param source
-	 * @return 如果对象不存在clone行为就返回空
-	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T invokeCloneMethod(Object source) {
 		if (source == null) {
@@ -962,16 +911,6 @@ public abstract class ReflectionUtils {
 		return (T) invoke(method, source);
 	}
 
-	/**
-	 * 根据参数调用构造方法
-	 * 
-	 * @param <T>
-	 * @param sourceClass
-	 * @param strict      {@link #findByParams(Stream, boolean, Object...)}
-	 * @param args
-	 * @return
-	 * @throws NoSuchMethodException 不存在指定的构造方法
-	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T invokeOverloadConstructor(Class<? extends T> sourceClass, boolean strict, Object... args)
 			throws NoSuchMethodException {
@@ -981,16 +920,6 @@ public abstract class ReflectionUtils {
 		return (T) newInstance(results.getExecutable(), results.getUnsafeParams());
 	}
 
-	/**
-	 * 根据参数调用方法(静态方法)
-	 * 
-	 * @param sourceClass
-	 * @param methodName
-	 * @param strict      {@link #findByParams(Stream, boolean, Object...)}
-	 * @param args
-	 * @return
-	 * @throws NoSuchMethodException 不存在对应的方法
-	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T invokeOverloadMethod(Class<?> sourceClass, String methodName, boolean strict, Object... args)
 			throws NoSuchMethodException {
@@ -999,16 +928,6 @@ public abstract class ReflectionUtils {
 		return (T) invoke(results.getExecutable(), null, results.getUnsafeParams());
 	}
 
-	/**
-	 * 根据参数调用方法(非静态方法)
-	 * 
-	 * @param target
-	 * @param methodName
-	 * @param strict     {@link #findByParams(Stream, boolean, Object...)}
-	 * @param args
-	 * @return
-	 * @throws NoSuchMethodException 不存在对应的方法
-	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T invokeOverloadMethod(Object target, String methodName, boolean strict, Object... args)
 			throws NoSuchMethodException {

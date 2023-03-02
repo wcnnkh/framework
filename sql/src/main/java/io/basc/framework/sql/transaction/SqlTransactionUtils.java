@@ -12,14 +12,6 @@ public final class SqlTransactionUtils {
 	private SqlTransactionUtils() {
 	};
 
-	/**
-	 * 获取一个当前事务的连接，如果不存在事务就返回可用的连接
-	 * 
-	 * @param transactionManager
-	 * @param connectionFactory
-	 * @return
-	 * @throws SQLException
-	 */
 	public static Connection getTransactionConnection(ConnectionFactory connectionFactory) throws SQLException {
 		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		if (transaction == null) {
@@ -47,12 +39,6 @@ public final class SqlTransactionUtils {
 				new Class<?>[] { ConnectionProxy.class }, new UnableToCloseConnectionProxyHandler(connection));
 	}
 
-	/**
-	 * 真实的关闭代理连接
-	 * 
-	 * @param connection
-	 * @throws SQLException
-	 */
 	public static void closeProxyConnection(Connection connection) throws SQLException {
 		if (connection == null) {
 			return;

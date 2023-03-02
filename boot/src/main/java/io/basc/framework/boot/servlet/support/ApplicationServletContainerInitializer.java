@@ -12,7 +12,7 @@ import io.basc.framework.util.Return;
 /**
  * servlet容器会使用spi机制初始化此类,对于嵌入式服务器应当手动初始化(如:tomcat embedded)
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class ApplicationServletContainerInitializer extends ApplicationServletContextListener

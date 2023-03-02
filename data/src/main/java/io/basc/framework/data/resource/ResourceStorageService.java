@@ -13,68 +13,28 @@ import io.basc.framework.net.message.InputMessage;
 /**
  * 资源存储服务
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface ResourceStorageService {
-	/**
-	 * 获取
-	 * 
-	 * @param key
-	 * @return
-	 * @throws DataException
-	 */
 	Resource get(String key) throws DataException, IOException;
 
-	/**
-	 * 上传
-	 * 
-	 * @param key
-	 * @param input
-	 * @return
-	 * @throws DataException
-	 * @throws IOException
-	 */
 	boolean put(String key, InputMessage input) throws DataException, IOException;
 
-	/**
-	 * 删除
-	 * 
-	 * @param key
-	 * @return
-	 * @throws DataException
-	 */
 	boolean delete(String key) throws DataException;
 
-	/**
-	 * 根据uri删除
-	 * 
-	 * @param uri
-	 * @return
-	 * @throws DataException
-	 */
 	boolean delete(URI uri) throws DataException;
 
-	/**
-	 * 列出指定规则的资源
-	 * 
-	 * @param prefix
-	 * @param marker
-	 * @param limit
-	 * @return
-	 * @throws DataException
-	 */
 	List<Resource> list(@Nullable String prefix, @Nullable String marker, int limit) throws DataException, IOException;
 
 	/**
-	 * 生成上传策略<br/>
-	 * 另外，此方法和put方法的区别最大的区别是当存储服务使用的是第三方实现时<br/>
+	 * 生成上传策略 另外，此方法和put方法的区别最大的区别是当存储服务使用的是第三方实现时
 	 * put方法是使用服务器带宽进行上传,而此方法使用的是第三方服务的带宽
 	 * 
-	 * @param key
+	 * @param key        key
 	 * @param expiration 到期时间点
-	 * @return
-	 * @throws DataException
+	 * @return 返回上传策略
+	 * @throws DataException 获取策略失败
 	 */
 	ResourceUploadPolicy generatePolicy(String key, Date expiration) throws DataException;
 }

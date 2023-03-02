@@ -6,34 +6,17 @@ import io.basc.framework.lang.Nullable;
  * 事务管理器
  * 
  * @see ThreadLocalTransactionManager
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface TransactionManager {
-	/**
-	 * 获取当前事务
-	 * 
-	 * @return
-	 */
 	@Nullable
 	Transaction getTransaction();
 
-	/**
-	 * 当前是否存在事务
-	 * 
-	 * @return
-	 */
 	default boolean hasTransaction() {
 		return getTransaction() != null;
 	}
 
-	/**
-	 * 根据规则获取事务
-	 * 
-	 * @param transactionDefinition
-	 * @return
-	 * @throws TransactionException
-	 */
 	default Transaction getTransaction(TransactionDefinition transactionDefinition) throws TransactionException {
 		Transaction transaction = getTransaction();
 		switch (transactionDefinition.getPropagation()) {
@@ -95,20 +78,7 @@ public interface TransactionManager {
 		return transaction;
 	}
 
-	/**
-	 * 提交一个事务
-	 * 
-	 * @param transaction
-	 * @throws Throwable
-	 * @throws TransactionException
-	 */
 	void commit(Transaction transaction) throws Throwable, TransactionException;
 
-	/**
-	 * 回滚一个事务
-	 * 
-	 * @param transaction
-	 * @throws TransactionException
-	 */
 	void rollback(Transaction transaction) throws TransactionException;
 }

@@ -44,7 +44,7 @@ import io.basc.framework.value.Value;
 /**
  * 标准的sql方言
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public abstract class StandardSqlDialect extends DefaultTableMapper implements SqlDialect {

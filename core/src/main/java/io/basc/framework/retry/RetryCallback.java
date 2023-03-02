@@ -9,7 +9,7 @@ public interface RetryCallback<T, E extends Throwable> {
 	 * 
 	 * @param context the current retry context.
 	 * @return the result of the successful operation.
-	 * @throws Throwable if processing fails
+	 * @throws E if processing fails
 	 */
 	T doWithRetry(RetryContext context) throws E;
 }

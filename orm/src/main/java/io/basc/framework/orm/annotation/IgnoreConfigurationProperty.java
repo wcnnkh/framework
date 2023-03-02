@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * 忽略注入属性
  * 
  * @see ConfigurationProperties
- * @author shuchaowen
+ * @author wcnnkh
  */
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)

@@ -70,7 +70,6 @@ public class DefaultClientHttpResponseErrorHandler implements ClientHttpResponse
 	/**
 	 * This default implementation throws a {@link HttpClientErrorException} if the
 	 * response status code is {@link HttpServerErrorException} if it is
-	 * {@link RestClientException} in other cases.
 	 */
 	public void handleError(ClientHttpResponse response) throws IOException {
 		HttpStatus statusCode = getHttpStatusCode(response);

@@ -5,7 +5,7 @@ import io.basc.framework.lang.Nullable;
 /**
  * 代理工厂
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public interface ProxyFactory {
@@ -13,7 +13,7 @@ public interface ProxyFactory {
 	 * 是否可以代理
 	 * 
 	 * @param clazz origin class
-	 * @return
+	 * @return yes/no
 	 */
 	boolean canProxy(Class<?> clazz);
 
@@ -21,7 +21,7 @@ public interface ProxyFactory {
 	 * 是否是代理类
 	 * 
 	 * @param clazz proxy class
-	 * @return
+	 * @return yes/no
 	 */
 	boolean isProxy(Class<?> clazz);
 
@@ -29,7 +29,7 @@ public interface ProxyFactory {
 	 * 获取未被代理的原始类型
 	 * 
 	 * @param clazz proxy class
-	 * @return
+	 * @return 返回原始类
 	 */
 	Class<?> getUserClass(Class<?> clazz);
 
@@ -39,7 +39,7 @@ public interface ProxyFactory {
 	 * @param clazz             source class
 	 * @param interfaces        interfaces
 	 * @param methodInterceptor interceptors
-	 * @return
+	 * @return 返回代理
 	 */
 	Proxy getProxy(Class<?> clazz, @Nullable Class<?>[] interfaces, @Nullable MethodInterceptor methodInterceptor);
 
@@ -48,8 +48,8 @@ public interface ProxyFactory {
 	 * 
 	 * @param className   proxy class name
 	 * @param classLoader class load for name
-	 * @return
-	 * @throws ClassNotFoundException
+	 * @return 是否已被代理
+	 * @throws ClassNotFoundException 类不存在
 	 */
 	boolean isProxy(String className, @Nullable ClassLoader classLoader) throws ClassNotFoundException;
 
@@ -58,8 +58,8 @@ public interface ProxyFactory {
 	 * 
 	 * @param className   proxy class name
 	 * @param classLoader class load for name
-	 * @return
-	 * @throws ClassNotFoundException
+	 * @return 返回被代理的原始类
+	 * @throws ClassNotFoundException 类不存在
 	 */
 	Class<?> getUserClass(String className, @Nullable ClassLoader classLoader) throws ClassNotFoundException;
 }

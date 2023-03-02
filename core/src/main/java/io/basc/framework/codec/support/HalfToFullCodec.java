@@ -7,7 +7,7 @@ import io.basc.framework.codec.EncodeException;
 /**
  * 半角和全角的相互转换
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class HalfToFullCodec implements Codec<String, String> {

@@ -19,12 +19,6 @@ public final class DBManager {
 
 	private static final Map<Class<?>, DB> CLASS_TO_DB = new IdentityHashMap<Class<?>, DB>();
 
-	/**
-	 * 向指定数据库中注册表
-	 * 
-	 * @param clazz
-	 * @param db
-	 */
 	public static void register(Class<?> clazz, DB db) {
 		synchronized (CLASS_TO_DB) {
 			if (CLASS_TO_DB.containsKey(clazz)) {
@@ -42,12 +36,6 @@ public final class DBManager {
 		}
 	}
 
-	/**
-	 * 获取此类对应的数据库
-	 * 
-	 * @param tableClass
-	 * @return
-	 */
 	public static DB getDB(Class<?> tableClass) {
 		DB db = CLASS_TO_DB.get(ProxyUtils.getFactory().getUserClass(tableClass));
 		if (db == null) {
@@ -64,24 +52,10 @@ public final class DBManager {
 		return getDB(type).query(type, sql).first();
 	}
 
-	/**
-	 * 根据主键获取数据
-	 * 
-	 * @param clz
-	 * @param params
-	 * @return
-	 */
 	public static <T> T getById(Class<T> clz, Object... params) {
 		return getDB(clz).getById(clz, params);
 	}
 
-	/**
-	 * 根据主键获取数据列表
-	 * 
-	 * @param clz
-	 * @param params
-	 * @return
-	 */
 	public static <T> List<T> getByIdList(Class<T> clz, Object... params) {
 		return getDB(clz).getByIdList(clz, params);
 	}
@@ -104,11 +78,6 @@ public final class DBManager {
 		return map;
 	}
 
-	/**
-	 * 保存数据
-	 * 
-	 * @param bean
-	 */
 	public static void save(Object... beans) {
 		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
 			List<Object> list = entry.getValue();
@@ -118,11 +87,6 @@ public final class DBManager {
 		}
 	}
 
-	/**
-	 * 删除数据
-	 * 
-	 * @param bean
-	 */
 	public static void delete(Object... beans) {
 		for (Entry<DB, List<Object>> entry : getMap(beans).entrySet()) {
 			List<Object> list = entry.getValue();

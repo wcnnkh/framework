@@ -35,18 +35,12 @@ public interface InputStreamSource {
 	 */
 	InputStream getInputStream() throws IOException;
 
-	/**
-	 * This implementation returns {@link Channels#newChannel(InputStream)} with the
-	 * result of {@link #getInputStream()}.
-	 * <p>
-	 * This is the same as in {@link Resource}'s corresponding default method but
-	 * mirrored here for efficient JVM-level dispatching in a class hierarchy.
-	 */
 	default ReadableByteChannel readableChannel() throws IOException {
 		return Channels.newChannel(getInputStream());
 	}
 
-	default <T, E extends Throwable> T read(Processor<? super InputStream, ? extends T, ? extends E> processor) throws IOException, E {
+	default <T, E extends Throwable> T read(Processor<? super InputStream, ? extends T, ? extends E> processor)
+			throws IOException, E {
 		InputStream is = null;
 		try {
 			is = getInputStream();
@@ -58,13 +52,8 @@ public interface InputStreamSource {
 		}
 	}
 
-	/**
-	 * 一般不需要重写此方法，默认调用的是{@see InputStreamSource#read(IoProcessor)}
-	 * 
-	 * @param processor
-	 * @throws IOException
-	 */
-	default <E extends Throwable> void consume(ConsumeProcessor<? super InputStream, ? extends E> processor) throws IOException, E {
+	default <E extends Throwable> void consume(ConsumeProcessor<? super InputStream, ? extends E> processor)
+			throws IOException, E {
 		read((is) -> {
 			processor.process(is);
 			return null;

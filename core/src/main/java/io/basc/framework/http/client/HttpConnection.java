@@ -48,7 +48,6 @@ public interface HttpConnection
 	/**
 	 * Set the body of the request entity and build the RequestEntity.
 	 * 
-	 * @param <T>  the type of the body
 	 * @param body the body of the request entity
 	 * @return the built request entity
 	 */
@@ -59,9 +58,9 @@ public interface HttpConnection
 	/**
 	 * Set the body and type of the request entity and build the RequestEntity.
 	 * 
-	 * @param <T>  the type of the body
-	 * @param body the body of the request entity
-	 * @param type the type of the body, useful for generic type resolution
+	 * @param body           the body of the request entity
+	 * @param typeDescriptor the type of the body, useful for generic type
+	 *                       resolution
 	 * @return the built request entity
 	 */
 	HttpConnection body(Object body, @Nullable TypeDescriptor typeDescriptor);

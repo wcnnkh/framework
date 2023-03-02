@@ -6,7 +6,7 @@ import io.basc.framework.lang.NotFoundException;
 /**
  * Oracle8/8i/9i数据库（thin模式）
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class OracleDataBase extends AbstractDataBase {

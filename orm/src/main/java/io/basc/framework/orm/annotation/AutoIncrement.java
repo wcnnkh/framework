@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * 自增字段
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Target(ElementType.FIELD)

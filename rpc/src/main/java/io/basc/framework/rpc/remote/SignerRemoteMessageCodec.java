@@ -17,7 +17,7 @@ import io.basc.framework.net.message.OutputMessage;
 /**
  * 验证签名的方式编解码数据
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 public class SignerRemoteMessageCodec implements RemoteMessageCodec {

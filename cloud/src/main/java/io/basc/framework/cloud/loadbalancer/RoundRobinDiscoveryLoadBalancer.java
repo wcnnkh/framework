@@ -12,7 +12,7 @@ import io.basc.framework.context.annotation.Provider;
 /**
  * 轮询方案
  * 
- * @author shuchaowen
+ * @author wcnnkh
  *
  */
 @Provider(value = DiscoveryLoadBalancer.class, assignableValue = false)

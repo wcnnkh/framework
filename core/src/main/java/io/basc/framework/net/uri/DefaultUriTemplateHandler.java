@@ -30,9 +30,6 @@ public class DefaultUriTemplateHandler extends AbstractUriTemplateHandler {
 		this.parsePath = parsePath;
 	}
 
-	/**
-	 * Whether the handler is configured to parse the path into path segments.
-	 */
 	public boolean shouldParsePath() {
 		return this.parsePath;
 	}
@@ -58,9 +55,6 @@ public class DefaultUriTemplateHandler extends AbstractUriTemplateHandler {
 		this.strictEncoding = strictEncoding;
 	}
 
-	/**
-	 * Whether to strictly encode any character outside the unreserved set.
-	 */
 	public boolean isStrictEncoding() {
 		return this.strictEncoding;
 	}
@@ -79,11 +73,6 @@ public class DefaultUriTemplateHandler extends AbstractUriTemplateHandler {
 		return createUri(uriComponents);
 	}
 
-	/**
-	 * Create a {@code UriComponentsBuilder} from the URI template string. This
-	 * implementation also breaks up the path into path segments depending on
-	 * whether {@link #setParsePath parsePath} is enabled.
-	 */
 	protected UriComponentsBuilder initUriComponentsBuilder(String uriTemplate) {
 		UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uriTemplate);
 		if (shouldParsePath() && !isStrictEncoding()) {

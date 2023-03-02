@@ -10,7 +10,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>activemq</artifactId>
+			<artifactId>activemq-client</artifactId>
 		</dependency>
 
 		<dependency>
