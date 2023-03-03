@@ -72,6 +72,6 @@ public class RedisConfiguration implements Serializable {
 
 	@Override
 	public String toString() {
-		return JsonUtils.toJsonString(this);
+		return JsonUtils.getSupport().toJsonString(this);
 	}
 }

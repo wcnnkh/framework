@@ -148,7 +148,7 @@ public class AnyValue implements Value, Cloneable {
 	}
 
 	public JsonSupport getJsonSupport() {
-		return jsonSupport == null ? JsonUtils.getJsonSupport() : jsonSupport;
+		return jsonSupport == null ? JsonUtils.getSupport() : jsonSupport;
 	}
 
 	@Override

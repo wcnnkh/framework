@@ -64,7 +64,7 @@ public class ZooKeeperServerStart extends Thread {
 		try {
 			zooKeeperServerMain.runFromConfig(serverConfig);
 		} catch (Exception e) {
-			logger.error(e, "start zookeeper server error: {}", JsonUtils.toJsonString(serverConfig));
+			logger.error(e, "start zookeeper server error: {}", JsonUtils.getSupport().toJsonString(serverConfig));
 		}
 		super.run();
 	}

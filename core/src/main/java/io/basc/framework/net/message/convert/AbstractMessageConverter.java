@@ -1,11 +1,13 @@
 package io.basc.framework.net.message.convert;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.io.IOUtils;
-import io.basc.framework.json.JsonSupport;
-import io.basc.framework.json.JsonUtils;
+import io.basc.framework.json.JsonSupportAccessor;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.net.MimeTypes;
@@ -14,13 +16,9 @@ import io.basc.framework.net.message.InputMessage;
 import io.basc.framework.net.message.Message;
 import io.basc.framework.net.message.OutputMessage;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-
-public abstract class AbstractMessageConverter<T> implements MessageConverter {
+public abstract class AbstractMessageConverter<T> extends JsonSupportAccessor implements MessageConverter {
 	public static final MimeType TEXT_ALL = new MimeType("text", "*");
 	private Charset charset;
-	private JsonSupport jsonSupport;
 	protected final MimeTypes supportMimeTypes = new MimeTypes();
 	private boolean supportBytes = false;
 
@@ -34,14 +32,6 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 
 	public final MimeTypes getSupportMimeTypes() {
 		return supportMimeTypes.readyOnly();
-	}
-
-	public JsonSupport getJsonSupport() {
-		return jsonSupport == null ? JsonUtils.getJsonSupport() : jsonSupport;
-	}
-
-	public void setJsonSupport(JsonSupport jsonSupport) {
-		this.jsonSupport = jsonSupport;
 	}
 
 	public Charset getCharset() {

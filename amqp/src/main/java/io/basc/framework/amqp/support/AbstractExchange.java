@@ -156,7 +156,7 @@ public abstract class AbstractExchange implements Exchange {
 				// 这是一个延迟消息
 				if (logger.isDebugEnabled()) {
 					logger.debug("delay message forward exchange:{}, routingKey:{}, message:{}", exchange, routingKey,
-							JsonUtils.getJsonSupport().toJsonString(message));
+							JsonUtils.getSupport().toJsonString(message));
 				}
 
 				message.setDelay(0, TimeUnit.SECONDS);
@@ -170,7 +170,7 @@ public abstract class AbstractExchange implements Exchange {
 				TimeUnit delayTimeUnit = TimeUnit.SECONDS;
 				logger.error("retry delay: {}, Unable to consume exchange:{}, routingKey:{}, message:{}",
 						delayTimeUnit.toMillis(delay), exchange, routingKeyToUse,
-						JsonUtils.getJsonSupport().toJsonString(message));
+						JsonUtils.getSupport().toJsonString(message));
 				message.setDelay(delay, delayTimeUnit);
 				retryPush(routingKeyToUse, message, message.getBody());
 				return;
@@ -178,7 +178,7 @@ public abstract class AbstractExchange implements Exchange {
 
 			if (logger.isDebugEnabled()) {
 				logger.debug("handleDelivery exchange:{}, routingKey:{}, message:{}", exchange, routingKeyToUse,
-						JsonUtils.getJsonSupport().toJsonString(message));
+						JsonUtils.getSupport().toJsonString(message));
 			}
 
 			// 开始消费消息
@@ -211,11 +211,11 @@ public abstract class AbstractExchange implements Exchange {
 						|| (maxRetryCount > 0 && message.getRetryCount() > maxRetryCount)) {// 不重试
 					logger.error(NestedExceptionUtils.getRootCause(e),
 							"Don't try again: exchange={}, routingKey={}, message={}", exchange, routingKeyToUse,
-							JsonUtils.getJsonSupport().toJsonString(message));
+							JsonUtils.getSupport().toJsonString(message));
 				} else {
 					logger.error(NestedExceptionUtils.getRootCause(e),
 							"retry delay: {}, exchange={}, routingKey={}, message={}", retryDelay, exchange,
-							routingKeyToUse, JsonUtils.getJsonSupport().toJsonString(message));
+							routingKeyToUse, JsonUtils.getSupport().toJsonString(message));
 					message.setDelay(retryDelay, TimeUnit.MILLISECONDS);
 					retryPush(routingKeyToUse, message, message.getBody());
 				}

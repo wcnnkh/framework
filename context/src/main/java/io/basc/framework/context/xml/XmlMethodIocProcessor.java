@@ -66,7 +66,7 @@ public class XmlMethodIocProcessor extends IocProcessor {
 		}
 
 		throw new BeansException(type.getName() + " not found method [" + name + "] parameterTypes "
-				+ JsonUtils.getJsonSupport().toJsonString(xmlBeanParameters));
+				+ JsonUtils.getSupport().toJsonString(xmlBeanParameters));
 
 	}
 }

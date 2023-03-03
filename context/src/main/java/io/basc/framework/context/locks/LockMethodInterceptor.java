@@ -56,7 +56,7 @@ public final class LockMethodInterceptor implements MethodInterceptor, MethodInt
 				sb.append(i == 0 ? "?" : "&");
 				sb.append(config.getName());
 				sb.append("=");
-				sb.append(JsonUtils.getJsonSupport().toJsonString(args[i]));
+				sb.append(JsonUtils.getSupport().toJsonString(args[i]));
 			}
 		}
 		return lockFactory.process(sb.toString(), lockConfig.tryLockTime(), lockConfig.tryLockTimeUnit(),

@@ -33,11 +33,15 @@ public final class Sys extends DefaultEnvironment {
 			Runtime.getRuntime().addShutdownHook(new Thread(() -> env.destroy()));
 		}
 
-		String resourceName = Optional
-				.ofNullable(env.getProperties().getAsString("io.basc.framework.logger.level.properties"))
-				.orElse("/logger-level.properties");
-		Observable<Properties> observable = env.getProperties(resourceName);
-		LoggerFactory.getLevelManager().registerProperties(observable);
+		try {
+			String resourceName = Optional
+					.ofNullable(env.getProperties().getAsString("io.basc.framework.logger.level.properties"))
+					.orElse("/logger-level.properties");
+			Observable<Properties> observable = env.getProperties(resourceName);
+			LoggerFactory.getLevelManager().registerProperties(observable);
+		} catch (Throwable e) {
+			logger.error(e, "Initialization log level configuration exception");
+		}
 	}
 
 	public static Sys getEnv() {
@@ -49,17 +53,21 @@ public final class Sys extends DefaultEnvironment {
 
 	@Override
 	public void init() throws FactoryException {
-		String path = getWorkPath();
-		if (path == null) {
-			path = XUtils.getWebAppDirectory(getResourceLoader().getClassLoader());
-			if (path != null) {
-				setWorkPath(path);
-				logger.info("default " + Environment.WORK_PATH_PROPERTY + " in " + path);
+		try {
+			String path = getWorkPath();
+			if (path == null) {
+				path = XUtils.getWebAppDirectory(getResourceLoader().getClassLoader());
+				if (path != null) {
+					setWorkPath(path);
+					logger.info("default " + Environment.WORK_PATH_PROPERTY + " in " + path);
+				}
 			}
-		}
 
-		if (StringUtils.isEmpty(getProperties().getAsString(WEB_ROOT_PROPERTY))) {
-			getProperties().put(WEB_ROOT_PROPERTY, path);
+			if (StringUtils.isEmpty(getProperties().getAsString(WEB_ROOT_PROPERTY))) {
+				getProperties().put(WEB_ROOT_PROPERTY, path);
+			}
+		} catch (Throwable e) {
+			logger.error(e, "Initialization working path exception");
 		}
 
 		super.init();
@@ -69,9 +77,13 @@ public final class Sys extends DefaultEnvironment {
 		/**
 		 * 加载配置文件
 		 */
-		loadProperties("system.properties");
-		String resourceName = Optional.ofNullable(getProperties().getAsString("io.basc.framework.properties"))
-				.orElse("/private.properties");
-		loadProperties(resourceName);
+		try {
+			loadProperties("system.properties");
+			String resourceName = Optional.ofNullable(getProperties().getAsString("io.basc.framework.properties"))
+					.orElse("/private.properties");
+			loadProperties(resourceName);
+		} catch (Throwable e) {
+			logger.error(e, "Initialization profile exception");
+		}
 	}
 }

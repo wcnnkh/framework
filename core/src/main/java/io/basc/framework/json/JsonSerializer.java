@@ -17,7 +17,7 @@ public class JsonSerializer implements CrossLanguageSerializer {
 	private Codec<String, byte[]> codec = CharsetCodec.UTF_8;
 
 	public JsonSupport getJsonSupport() {
-		return jsonSupport == null ? JsonUtils.getJsonSupport() : jsonSupport;
+		return jsonSupport == null ? JsonUtils.getSupport() : jsonSupport;
 	}
 
 	public void setJsonSupport(JsonSupport jsonSupport) {

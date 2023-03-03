@@ -32,7 +32,7 @@ public class ContextTests {
 		environment.getProperties().put("test.b", "121");
 
 		TestConfigurableBean bean = environment.getInstance(TestConfigurableBean.class);
-		System.out.println(JsonUtils.getJsonSupport().toJsonString(bean));
+		System.out.println(JsonUtils.getSupport().toJsonString(bean));
 
 		TestPropertiesBean propertiesBean = environment.getInstance(TestPropertiesBean.class);
 		System.out.println(propertiesBean);

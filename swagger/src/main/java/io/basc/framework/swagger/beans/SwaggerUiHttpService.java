@@ -24,7 +24,7 @@ public class SwaggerUiHttpService implements HttpService {
 	@Override
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		OpenAPI openAPI = openApiContext.read();
-		String json = JsonUtils.getJsonSupport().toJsonString(openAPI);
+		String json = JsonUtils.getSupport().toJsonString(openAPI);
 		response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 		response.getWriter().write(json);
 	}

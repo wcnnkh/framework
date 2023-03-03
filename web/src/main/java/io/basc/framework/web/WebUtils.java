@@ -42,7 +42,7 @@ import io.basc.framework.xml.XmlUtils;
 public final class WebUtils {
 	private static Logger logger = LoggerFactory.getLogger(WebUtils.class);
 	private static final ThreadLocal<ServerHttpRequest> SERVER_HTTP_REQUEST_LOCAL = new NamedInheritableThreadLocal<ServerHttpRequest>(
-			WebUtils.class.getSimpleName() + "-ServerHttpRequest");
+			ServerHttpRequest.class.getName(), true);
 	private static final String RESTFUL_PARAMETER_MAP = "io.basc.framework.web.restful.parameters";
 	public static final String PATH_SEPARATOR = "/";
 
@@ -312,7 +312,7 @@ public final class WebUtils {
 
 	public static Object getRequestBody(ServerHttpRequest request) throws IOException {
 		if (request.getHeaders().isJsonContentType()) {
-			return JsonUtils.parseJson(request.getReader());
+			return JsonUtils.getSupport().parseJson(request.getReader());
 		} else if (request.getHeaders().isXmlContentType()) {
 			return XmlUtils.getTemplate().getParser().parse(request.getReader());
 		} else if (request.getHeaders().isFormContentType()) {
@@ -325,7 +325,7 @@ public final class WebUtils {
 				}
 
 				try {
-					JsonElement jsonElement = JsonUtils.parseJson(content);
+					JsonElement jsonElement = JsonUtils.getSupport().parseJson(content);
 					if (jsonElement.isJsonArray() || jsonElement.isJsonObject()) {
 						return jsonElement;
 					}

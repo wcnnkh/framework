@@ -11,6 +11,9 @@ import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.lang.NamedInheritableThreadLocal;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.lang.UnsupportedException;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.uri.UriComponentsBuilder;
@@ -20,38 +23,57 @@ import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
 
 public final class HttpUtils {
+	private static Logger logger = LoggerFactory.getLogger(HttpUtils.class);
+
 	private HttpUtils() {
 	};
 
-	private static final HttpClient DEFAULT_CLIENT = Sys.getEnv()
-			.getServiceLoader(HttpClient.class, DefaultHttpClient.class).first();
-	private static final ThreadLocal<HttpClient> LOCAL = new NamedInheritableThreadLocal<HttpClient>(
-			HttpClient.class.getName()) {
+	private static HttpClient defaultClient;
+
+	static {
+		try {
+			defaultClient = Sys.getEnv().getServiceLoader(HttpClient.class, DefaultHttpClient.class).first();
+		} catch (Throwable e) {
+			logger.error(e, "Initialize the default http client exception");
+		}
+	}
+
+	public static HttpClient getDefaultClient() {
+		return defaultClient;
+	}
+
+	public static void setDefaultClient(HttpClient defaultClient) {
+		Assert.requiredArgument(defaultClient != null, "defaultClient");
+		HttpUtils.defaultClient = defaultClient;
+	}
+
+	private static final ThreadLocal<HttpClient> LOCAL_CLIENT = new NamedInheritableThreadLocal<HttpClient>(
+			HttpClient.class.getName(), true) {
 
 		protected HttpClient initialValue() {
 			return getDefaultClient();
 		};
 	};
 
-	public static HttpClient getDefaultClient() {
-		return DEFAULT_CLIENT;
-	}
-
-	public static ThreadLocal<HttpClient> getLocal() {
-		return LOCAL;
+	public static ThreadLocal<HttpClient> getLocalClient() {
+		return LOCAL_CLIENT;
 	}
 
 	public static HttpClient getClient() {
-		HttpClient client = LOCAL.get();
-		return client == null ? getDefaultClient() : client;
+		HttpClient client = LOCAL_CLIENT.get();
+		client = client == null ? getDefaultClient() : client;
+		if (client == null) {
+			throw new UnsupportedException(HttpClient.class.getName());
+		}
+		return client;
 	}
 
 	public static HttpClient setLocalClient(HttpClient client) {
 		if (client == null) {
-			LOCAL.remove();
-			return DEFAULT_CLIENT;
+			LOCAL_CLIENT.remove();
+			return defaultClient;
 		}
-		LOCAL.set(client);
+		LOCAL_CLIENT.set(client);
 		return client;
 	}
 

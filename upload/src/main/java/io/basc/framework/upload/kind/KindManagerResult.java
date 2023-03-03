@@ -74,7 +74,7 @@ public class KindManagerResult implements Serializable, Text {
 			}
 		}
 		map.put("file_list", list);
-		return JsonUtils.getJsonSupport().toJsonString(map);
+		return JsonUtils.getSupport().toJsonString(map);
 	}
 
 	public MimeType getMimeType() {
