@@ -44,7 +44,7 @@
 		<eureka.version>1.10.17</eureka.version>
 		<xstream.version>1.4.18</xstream.version>
 		<jersey.version>1.19.4</jersey.version>
-		<jackson.version>2.13.4</jackson.version>
+		<jackson.version>2.13.5</jackson.version>
 		<slf4j.version>1.7.36</slf4j.version>
 		<activemq.version>5.16.5</activemq.version>
 		<lombok.version>1.18.26</lombok.version>
