@@ -5,10 +5,10 @@ import java.util.List;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
 import io.basc.framework.freemarker.boot.annotation.SharedVariable;
-import io.basc.framework.json.JsonUtils;
+import io.basc.framework.json.JsonSupportAccessor;
 
 @SharedVariable
-public class ToJsonString implements TemplateMethodModelEx {
+public class ToJsonString extends JsonSupportAccessor implements TemplateMethodModelEx {
 	@SuppressWarnings("rawtypes")
 	public Object exec(List args) throws TemplateModelException {
 		if (args == null || args.size() == 0) {
@@ -20,7 +20,7 @@ public class ToJsonString implements TemplateMethodModelEx {
 			return null;
 		}
 
-		return JsonUtils.getJsonSupport().toJsonString(value);
+		return getJsonSupport().toJsonString(value);
 	}
 
 }

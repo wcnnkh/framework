@@ -58,7 +58,7 @@ public class OrmTest {
 		for (int i = 0; i < 100; i++) {
 			int v = i;
 			new Thread(() -> {
-				System.out.println(JsonUtils.getJsonSupport().toJsonString(db.getByIdList(TestTable1.class, v)));
+				System.out.println(JsonUtils.getSupport().toJsonString(db.getByIdList(TestTable1.class, v)));
 			}).start();
 		}
 	}

@@ -7,7 +7,8 @@ import org.junit.Test;
 import io.basc.framework.lang.NamedInheritableThreadLocal;
 
 public class ThreadLocalTest {
-	private static InheritableThreadLocal<Object> inheritableThreadLocal = new NamedInheritableThreadLocal<>("test");
+	private static InheritableThreadLocal<Object> inheritableThreadLocal = new NamedInheritableThreadLocal<>("test",
+			true);
 
 	@Test
 	public void inheritableThreadLocalTest() {

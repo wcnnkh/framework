@@ -29,7 +29,7 @@ public class FreemarkerTest {
 		String content = new String(output.toByteArray(), configuration.getDefaultEncoding());
 		System.out.println(content);
 
-		JsonObject jsonObject = JsonUtils.getJsonSupport().parseObject(content);
+		JsonObject jsonObject = JsonUtils.getSupport().parseObject(content);
 		assertTrue(jsonObject.size() == 2);
 	}
 }

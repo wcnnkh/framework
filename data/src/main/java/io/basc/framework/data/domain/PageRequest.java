@@ -21,7 +21,7 @@ public class PageRequest extends BascObject implements Serializable {
 			.getObservable("data.page.request.size").map((e) -> e.or(10L).getAsLong());
 
 	private static final ThreadLocal<PageRequest> LOCAL = new NamedInheritableThreadLocal<PageRequest>(
-			PageRequest.class.getName());
+			PageRequest.class.getName(), true);
 
 	public static ThreadLocal<PageRequest> getLocal() {
 		return LOCAL;

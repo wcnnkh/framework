@@ -14,7 +14,7 @@ import io.basc.framework.rpc.remote.RemoteRequestMessage;
 
 public class HttpCallableFactory implements CallableFactory {
 	private static final ThreadLocal<HttpHeaders> HTTP_HEADERS_LOCAL = new NamedInheritableThreadLocal<HttpHeaders>(
-			HttpCallable.class.getSimpleName() + "_headers");
+			HttpHeaders.class.getName(), true);
 
 	public static ThreadLocal<HttpHeaders> getHttpHeadersLocal() {
 		return HTTP_HEADERS_LOCAL;

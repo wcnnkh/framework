@@ -535,11 +535,20 @@ public class HttpHeaders extends Headers {
 	private static final StandardObservableMap<String, String[]> AJAX_HEADERS = new StandardObservableMap<>();
 
 	static {
-		AJAX_HEADERS.register(Sys.getEnv().getProperties("/io/basc/framework/net/headers/ajax.headers.properties")
-				.convert(CONVERTER));
-		AJAX_HEADERS.register(
-				Sys.getEnv().getProperties(Sys.getEnv().getProperties().get("io.basc.framework.net.ajax.headers")
-						.or("/ajax-headers.properties").getAsString()).convert(CONVERTER));
+		try {
+			AJAX_HEADERS.register(Sys.getEnv().getProperties("/io/basc/framework/net/headers/ajax.headers.properties")
+					.convert(CONVERTER));
+		} catch (Throwable e) {
+			logger.error(e, "Failed to load ajax.headers.properties file");
+		}
+
+		try {
+			AJAX_HEADERS.register(
+					Sys.getEnv().getProperties(Sys.getEnv().getProperties().get("io.basc.framework.net.ajax.headers")
+							.or("/ajax-headers.properties").getAsString()).convert(CONVERTER));
+		} catch (Exception e) {
+			logger.error(e, "Failed to load {io.basc.framework.net.ajax.headers} file");
+		}
 	}
 
 	public HttpHeaders() {

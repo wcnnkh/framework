@@ -19,44 +19,48 @@ public class JsonTest {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("key1", "value1");
 		map.put("key2", "asss");
-		
+
 		List<Object> list = new ArrayList<Object>();
 		list.add(map);
 		list.add(map);
-		
-		String content = JsonUtils.getJsonSupport().toJsonString(list);
+
+		String content = JsonUtils.getSupport().toJsonString(list);
 		System.out.println(content);
-		
-		JsonArray jsonArray = JsonUtils.getJsonSupport().parseArray(content);
+
+		JsonArray jsonArray = JsonUtils.getSupport().parseArray(content);
 		List<TestJsonObjectWrapper> wrappers = jsonArray.convert(TestJsonObjectWrapper.class);
 		System.out.println(wrappers);
-		
-		List<TestInfo> testInfo = JsonUtils.getJsonSupport().parseArray(content).convert(TestInfo.class);
+
+		List<TestInfo> testInfo = JsonUtils.getSupport().parseArray(content).convert(TestInfo.class);
 		System.out.println(testInfo);
 	}
-	
-	public static class TestInfo{
+
+	public static class TestInfo {
 		private String id;
 		private String value;
+
 		public String getId() {
 			return id;
 		}
+
 		public void setId(String id) {
 			this.id = id;
 		}
+
 		public String getValue() {
 			return value;
 		}
+
 		public void setValue(String value) {
 			this.value = value;
 		}
 	}
-	
-	public static class TestJsonObjectWrapper extends JsonObjectWrapper{
+
+	public static class TestJsonObjectWrapper extends JsonObjectWrapper {
 
 		public TestJsonObjectWrapper(JsonObject target) {
 			super(target);
 		}
-		
+
 	}
 }

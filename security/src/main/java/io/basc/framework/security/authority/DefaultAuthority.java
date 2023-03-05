@@ -47,6 +47,6 @@ public class DefaultAuthority implements Authority, Serializable {
 	
 	@Override
 	public String toString() {
-		return JsonUtils.toJsonString(this);
+		return JsonUtils.getSupport().toJsonString(this);
 	}
 }

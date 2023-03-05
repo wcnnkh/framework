@@ -160,7 +160,7 @@ public final class ConfigManager {
 		String configContent = this.readFile(this.getConfigPath());
 
 		try {
-			JsonObject jsonConfig = JsonUtils.getJsonSupport().parseObject(configContent);
+			JsonObject jsonConfig = JsonUtils.getSupport().parseObject(configContent);
 			this.jsonConfig = jsonConfig;
 		} catch (Exception e) {
 			this.jsonConfig = null;

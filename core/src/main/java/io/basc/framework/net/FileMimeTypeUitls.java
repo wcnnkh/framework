@@ -3,6 +3,8 @@ package io.basc.framework.net;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.LinkedMultiValueMap;
 import io.basc.framework.util.MultiValueMap;
@@ -13,7 +15,17 @@ import java.util.List;
 import java.util.Locale;
 
 public class FileMimeTypeUitls {
-	private static final MultiValueMap<String, MimeType> fileExtensionToMediaTypes = parseMimeTypes();
+	private static Logger logger = LoggerFactory.getLogger(FileMimeTypeUitls.class);
+	private static MultiValueMap<String, MimeType> fileExtensionToMediaTypes;
+
+	static {
+		try {
+			fileExtensionToMediaTypes = parseMimeTypes();
+		} catch (Throwable e) {
+			logger.error(e, "Failed to load mime.type file");
+			fileExtensionToMediaTypes = CollectionUtils.emptyMultiValueMap();
+		}
+	}
 
 	private static MultiValueMap<String, MimeType> parseMimeTypes() {
 		MultiValueMap<String, MimeType> result = new LinkedMultiValueMap<String, MimeType>();

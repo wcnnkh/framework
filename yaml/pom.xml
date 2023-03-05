@@ -8,19 +8,23 @@
 	</parent>
 	<artifactId>yaml</artifactId>
 	<properties>
-		<snakeyaml.version>1.33</snakeyaml.version>
+		<snakeyaml.version>2.0</snakeyaml.version>
 	</properties>
 	<dependencies>
-		<dependency> 
+		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>core</artifactId>
 		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/org.yaml/snakeyaml -->
 		<dependency>
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
 			<version>${snakeyaml.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>testing</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

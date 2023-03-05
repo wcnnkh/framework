@@ -21,17 +21,17 @@ import io.basc.framework.mapper.Field;
 public final class JsonFileValueProcessor extends AbstractObservableResourceValueProcessor {
 
 	@Override
-	protected Object parse(BeanDefinition beanDefinition, Context context, Object bean, Field field, ValueDefinition valueDefinition,
-			String name, Charset charset, Resource resource) {
+	protected Object parse(BeanDefinition beanDefinition, Context context, Object bean, Field field,
+			ValueDefinition valueDefinition, String name, Charset charset, Resource resource) {
 		String content = ResourceUtils.getContent(resource, charset);
 		if (JsonObject.class.isAssignableFrom(field.getSetter().getType())) {
-			return JsonUtils.getJsonSupport().parseObject(content);
+			return JsonUtils.getSupport().parseObject(content);
 		} else if (JsonArray.class.isAssignableFrom(field.getSetter().getType())) {
-			return JsonUtils.getJsonSupport().parseArray(content);
+			return JsonUtils.getSupport().parseArray(content);
 		} else if (String.class.isAssignableFrom(field.getSetter().getType())) {
 			return content;
 		} else {
-			return JsonUtils.getJsonSupport().parseObject(content, field.getSetter().getType());
+			return JsonUtils.getSupport().parseObject(content, field.getSetter().getType());
 		}
 	}
 }

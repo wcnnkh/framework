@@ -20,7 +20,7 @@ public class NamedInheritableThreadLocal<T> extends InheritableThreadLocal<T> {
 	 * 
 	 */
 	public NamedInheritableThreadLocal(String name) {
-		this(name, true);
+		this(name, false);
 	}
 
 	/**

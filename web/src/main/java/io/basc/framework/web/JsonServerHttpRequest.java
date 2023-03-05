@@ -30,7 +30,7 @@ public class JsonServerHttpRequest extends CachingServerHttpRequest {
 	}
 
 	public JsonSupport getJsonSupport() {
-		return jsonSupport == null ? JsonUtils.getJsonSupport() : jsonSupport;
+		return jsonSupport == null ? JsonUtils.getSupport() : jsonSupport;
 	}
 
 	public void setJsonSupport(JsonSupport jsonSupport) {

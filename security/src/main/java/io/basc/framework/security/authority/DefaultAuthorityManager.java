@@ -110,11 +110,11 @@ public class DefaultAuthorityManager<T extends Authority> implements AuthorityMa
 
 		if (authority.getId().equals(authority.getParentId())) {
 			throw new RuntimeException(
-					"ID and parentid cannot be the same：" + JsonUtils.toJsonString(authority));
+					"ID and parentid cannot be the same：" + JsonUtils.getSupport().toJsonString(authority));
 		}
 
 		if (logger.isTraceEnabled()) {
-			logger.trace("register authority:{}", JsonUtils.toJsonString(authority));
+			logger.trace("register authority:{}", JsonUtils.getSupport().toJsonString(authority));
 		}
 
 		authorityMap.put(authority.getId(), authority);

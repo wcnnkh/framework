@@ -33,8 +33,8 @@ public class MapperTest {
 		map.put("s.b", XUtils.getUUID());
 		DefaultObjectMapper<Object, RuntimeException> mapper = new DefaultObjectMapper<>();
 		A a = mapper.convert(map, A.class);
-		System.out.println(JsonUtils.toJsonString(map));
-		System.out.println(JsonUtils.toJsonString(a));
+		System.out.println(JsonUtils.getSupport().toJsonString(map));
+		System.out.println(JsonUtils.getSupport().toJsonString(a));
 		assertTrue(map.get("k").equals(a.getK()));
 		assertTrue(map.get("b.bk").equals(a.getB().getBk()));
 		System.out.println(a);

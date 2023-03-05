@@ -8,7 +8,7 @@ import io.basc.framework.lang.NamedInheritableThreadLocal;
 public abstract class RemoteRequestMessage extends DefaultRemoteMessageHeaders {
 	private static final long serialVersionUID = 1L;
 	private static final ThreadLocal<RemoteMessageHeaders> HEADERS_LOCAL = new NamedInheritableThreadLocal<RemoteMessageHeaders>(
-			"REMOTE_REQUEST_MESSAGE_HEADERS");
+			RemoteMessageHeaders.class.getName(), true);
 
 	public static ThreadLocal<RemoteMessageHeaders> getHeadersLocal() {
 		return HEADERS_LOCAL;
