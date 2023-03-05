@@ -2,7 +2,7 @@
 
 使用方式:
 ========
-1.pom.xml中引入仓库
+1.pom.xml中引入仓库(如果为正式版本已同步至maven仓库，可忽略此步骤)
 -------------------
     <repositories>
 		  <repository>
