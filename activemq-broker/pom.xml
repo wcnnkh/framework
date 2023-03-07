@@ -6,35 +6,28 @@
 		<version>1.8.1</version>
 	</parent>
 	<artifactId>activemq-broker</artifactId>
-
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>activemq-client</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>testing</artifactId>
 		</dependency>
-		
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>log4j2</artifactId>
 		</dependency>
-
 		<dependency>
 			<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-broker -->
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-broker</artifactId>
 		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-kahadb-store -->
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-kahadb-store</artifactId>
 		</dependency>
-
 	</dependencies>
-
 </project>
