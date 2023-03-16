@@ -75,6 +75,10 @@ public interface Cursor<E> extends CloseableIterator<E>, Closeable<RuntimeExcept
 
 	@SuppressWarnings("unchecked")
 	static <T> Cursor<T> of(Iterator<? extends T> iterator) {
+		if (iterator == null) {
+			return empty();
+		}
+
 		if (iterator instanceof Cursor) {
 			return (Cursor<T>) iterator;
 		}
@@ -87,10 +91,18 @@ public interface Cursor<E> extends CloseableIterator<E>, Closeable<RuntimeExcept
 	}
 
 	static <T> Cursor<T> of(Stream<T> stream) {
+		if (stream == null) {
+			return empty();
+		}
+
 		return of(stream.iterator()).onClose(() -> stream.close());
 	}
 
 	static <T> Cursor<T> of(Iterable<? extends T> iterable) {
+		if (iterable == null) {
+			return empty();
+		}
+
 		Iterator<? extends T> iterator;
 		if (iterable instanceof List) {
 			iterator = ((List<? extends T>) iterable).listIterator();
@@ -102,6 +114,10 @@ public interface Cursor<E> extends CloseableIterator<E>, Closeable<RuntimeExcept
 
 	@SuppressWarnings("unchecked")
 	static <T> Cursor<T> of(T... values) {
+		if (values == null) {
+			return empty();
+		}
+
 		return of(Arrays.asList(values));
 	}
 

@@ -2,7 +2,7 @@ package io.basc.framework.boot;
 
 import io.basc.framework.context.ClassesLoader;
 import io.basc.framework.context.Context;
-import io.basc.framework.event.EventDispatcher;
+import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.factory.Destroy;
 import io.basc.framework.factory.Init;
 import io.basc.framework.logger.Logger;
@@ -16,7 +16,7 @@ public interface Application extends Context, Init, Destroy {
 
 	public static final int DEFAULT_PORT = Integer.getInteger("io.basc.framework.application.default.port", 8080);
 
-	EventDispatcher<ApplicationEvent> getEventDispatcher();
+	BroadcastEventDispatcher<ApplicationEvent> getEventDispatcher();
 
 	Logger getLogger();
 

@@ -1,56 +1,49 @@
 package io.basc.framework.io;
 
 import io.basc.framework.env.Sys;
+import io.basc.framework.factory.InheritableThreadLocalConfigurator;
 import io.basc.framework.json.JsonSerializer;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 
 public final class SerializerUtils {
-	private static Logger logger = LoggerFactory.getLogger(SerializerUtils.class);
-	/**
-	 * 默认的序列化实现
-	 */
-	private static final Serializer SERIALIZER;
-	private static final CrossLanguageSerializer CROSS_LANGUAGE_SERIALIZER;
+	private static final InheritableThreadLocalConfigurator<CrossLanguageSerializer> CROSS_LANGUAGE_SERIALIZER_CONFIGURATOR = new InheritableThreadLocalConfigurator<>(
+			CrossLanguageSerializer.class, Sys.getEnv()).ifAbsentDefaultService(() -> JsonSerializer.INSTANCE);
+	private static final InheritableThreadLocalConfigurator<Serializer> SERIALIZER_CONFIGURATOR = new InheritableThreadLocalConfigurator<>(Serializer.class,
+			Sys.getEnv()).ifAbsentDefaultService(() -> JavaSerializer.INSTANCE);
 
-	static {
-		Serializer serializer = Sys.getEnv().getServiceLoader(Serializer.class).first();
-		SERIALIZER = serializer == null ? JavaSerializer.INSTANCE : serializer;
-		logger.info("default serializer {}", SERIALIZER);
-
-		CrossLanguageSerializer crossLanguageSerializer = Sys.getEnv().getServiceLoader(CrossLanguageSerializer.class)
-				.first();
-		CROSS_LANGUAGE_SERIALIZER = crossLanguageSerializer == null ? JsonSerializer.INSTANCE : crossLanguageSerializer;
-		logger.info("default cross language serializer {}", CROSS_LANGUAGE_SERIALIZER);
-	}
-
-	private SerializerUtils() {
-	}
-
-	/**
-	 * 使用序列化来实现对象拷贝
-	 * 
-	 * @param obj
-	 * @return
-	 */
-	public static <T> T clone(T obj) {
-		if (obj == null) {
+	public static <T> T clone(Serializer serializer, T source) {
+		if (source == null) {
 			return null;
 		}
 
 		try {
-			return SERIALIZER.deserialize(SERIALIZER.serialize(obj));
+			byte[] data = serializer.serialize(source);
+			return serializer.deserialize(data);
 		} catch (Exception e) {
 			// 不可能存在此错误
-			throw new RuntimeException(e);
+			throw new SerializerException("This error is not possible", e);
 		}
 	}
 
-	public static Serializer getSerializer() {
-		return SERIALIZER;
+	public static <T> T clone(T source) {
+		return clone(getSerializer(), source);
 	}
 
 	public static CrossLanguageSerializer getCrossLanguageSerializer() {
-		return CROSS_LANGUAGE_SERIALIZER;
+		return CROSS_LANGUAGE_SERIALIZER_CONFIGURATOR.get();
+	}
+
+	public static InheritableThreadLocalConfigurator<CrossLanguageSerializer> getCrossLanguageSerializerConfigurator() {
+		return CROSS_LANGUAGE_SERIALIZER_CONFIGURATOR;
+	}
+
+	public static Serializer getSerializer() {
+		return SERIALIZER_CONFIGURATOR.get();
+	}
+
+	public static InheritableThreadLocalConfigurator<Serializer> getSerializerConfigurator() {
+		return SERIALIZER_CONFIGURATOR;
+	}
+
+	private SerializerUtils() {
 	}
 }

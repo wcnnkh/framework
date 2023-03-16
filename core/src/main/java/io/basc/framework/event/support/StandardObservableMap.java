@@ -12,8 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventTypes;
 import io.basc.framework.event.NamedEventRegistry;
@@ -34,10 +34,10 @@ public class StandardObservableMap<K, V> extends StandardObservable<Map<K, V>>
 	}
 
 	public StandardObservableMap(Map<K, V> sourceMap) {
-		this(new SimpleEventDispatcher<>(), sourceMap);
+		this(new StandardBroadcastEventDispatcher<>(), sourceMap);
 	}
 
-	public StandardObservableMap(EventDispatcher<ObservableChangeEvent<Map<K, V>>> eventDispatcher,
+	public StandardObservableMap(BroadcastEventDispatcher<ObservableChangeEvent<Map<K, V>>> eventDispatcher,
 			Map<K, V> sourceMap) {
 		super(eventDispatcher);
 		setSelector(select);

@@ -3,27 +3,19 @@ package io.basc.framework.rpc.remote;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 
-import io.basc.framework.lang.NamedInheritableThreadLocal;
+import io.basc.framework.factory.InheritableThreadLocalConfigurator;
 
 public abstract class RemoteRequestMessage extends DefaultRemoteMessageHeaders {
 	private static final long serialVersionUID = 1L;
-	private static final ThreadLocal<RemoteMessageHeaders> HEADERS_LOCAL = new NamedInheritableThreadLocal<RemoteMessageHeaders>(
-			RemoteMessageHeaders.class.getName(), true);
+	private static final InheritableThreadLocalConfigurator<RemoteMessageHeaders> HEADERS_CONFIGURATOR = new InheritableThreadLocalConfigurator<RemoteMessageHeaders>(
+			RemoteMessageHeaders.class);
 
-	public static ThreadLocal<RemoteMessageHeaders> getHeadersLocal() {
-		return HEADERS_LOCAL;
-	}
-
-	public static void setLocalHeaders(RemoteMessageHeaders headers) {
-		if (headers == null) {
-			HEADERS_LOCAL.remove();
-		} else {
-			HEADERS_LOCAL.set(headers);
-		}
+	public static InheritableThreadLocalConfigurator<RemoteMessageHeaders> getHeadersConfigurator() {
+		return HEADERS_CONFIGURATOR;
 	}
 
 	public RemoteRequestMessage() {
-		RemoteMessageHeaders headers = HEADERS_LOCAL.get();
+		RemoteMessageHeaders headers = HEADERS_CONFIGURATOR.get();
 		if (headers != null) {
 			Enumeration<String> keys = headers.getAttributeNames();
 			while (keys.hasMoreElements()) {

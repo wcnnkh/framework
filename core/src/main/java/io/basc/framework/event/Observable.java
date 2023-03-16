@@ -5,12 +5,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import io.basc.framework.event.AbstractObservable.ConvertObservable;
-import io.basc.framework.event.AbstractObservable.FilterObservable;
-import io.basc.framework.event.AbstractObservable.IfAbsentObservable;
 import io.basc.framework.util.Optional;
 
-public interface Observable<T> extends Optional<T>, EventRegistry<ObservableChangeEvent<T>> {
+public interface Observable<T> extends Optional<T>, BroadcastEventRegistry<ObservableChangeEvent<T>> {
 
 	public static <U> Observable<U> empty() {
 		return new EmptyObservable<>();

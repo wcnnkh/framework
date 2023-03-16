@@ -1,8 +1,8 @@
 package io.basc.framework.factory;
 
-import io.basc.framework.event.EventDispatcher;
+import io.basc.framework.event.BroadcastEventDispatcher;
 
-public interface BeanLifecycleManager extends EventDispatcher<BeanLifecycleEvent> {
+public interface BeanLifecycleManager extends BroadcastEventDispatcher<BeanLifecycleEvent> {
 
 	void dependence(Object instance, BeanDefinition definition) throws FactoryException;
 

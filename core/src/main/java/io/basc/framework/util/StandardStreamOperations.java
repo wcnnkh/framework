@@ -71,6 +71,16 @@ public class StandardStreamOperations<T, E extends Throwable, C extends Standard
 		}, closeProcessor, closeHandler);
 	}
 
+	@Override
+	public C onClose(ConsumeProcessor<? super T, ? extends E> closeHandler) {
+		return super.onClose(closeHandler);
+	}
+
+	@Override
+	public C onClose(RunnableProcessor<? extends E> closeHandler) {
+		return super.onClose(closeHandler);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public T get() throws E {

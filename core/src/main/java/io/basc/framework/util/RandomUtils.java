@@ -3,7 +3,6 @@ package io.basc.framework.util;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.function.Predicate;
@@ -595,28 +594,28 @@ public final class RandomUtils {
 	 * 
 	 * @param <T>
 	 * @param <E>
-	 * @param collection
+	 * @param iterable
 	 * @param weightProcessor 返回元素的权重，忽略0或null
 	 * @param randomProcessor 获取随机数
 	 * @param removePredicate 找到元素后如果返回true将删除该元素 {@link Iterator#remove()}
 	 * @return
 	 * @throws E
 	 */
-	public static <T, E extends Throwable> T random(Collection<? extends T> collection,
+	public static <T, E extends Throwable> T random(Iterable<? extends T> iterable,
 			Processor<T, Number, E> weightProcessor, Processor<Number, Number, E> randomProcessor,
 			@Nullable Predicate<? super T> removePredicate) throws E {
 		Assert.requiredArgument(weightProcessor != null, "weightProcessor");
 		Assert.requiredArgument(randomProcessor != null, "randomProcessor");
-		if (collection == null || collection.isEmpty()) {
+		if (iterable == null) {
 			return null;
 		}
 
-		Number totalWegith = getWeight(collection.iterator(), weightProcessor);
+		Number totalWegith = getWeight(iterable.iterator(), weightProcessor);
 		Number randomWeight = randomProcessor.process(totalWegith);
 		if (randomWeight == null) {
 			return null;
 		}
-		return random(totalWegith, randomWeight, collection.iterator(), weightProcessor, removePredicate);
+		return random(totalWegith, randomWeight, iterable.iterator(), weightProcessor, removePredicate);
 	}
 
 	/**
@@ -624,14 +623,14 @@ public final class RandomUtils {
 	 * 
 	 * @param <T>
 	 * @param <E>
-	 * @param collection
+	 * @param iterable
 	 * @param weightProcessor 返回元素的权重，忽略0或null
 	 * @param removePredicate 找到元素后如果返回true将删除该元素 {@link Iterator#remove()}
 	 * @return
 	 * @throws E
 	 */
-	public static <T, E extends Throwable> T random(Collection<? extends T> collection,
+	public static <T, E extends Throwable> T random(Iterable<? extends T> iterable,
 			Processor<T, Number, E> weightProcessor, @Nullable Predicate<? super T> removePredicate) throws E {
-		return random(collection, weightProcessor, (e) -> random(1, Addition.INSTANCE.eval(e, 1)), removePredicate);
+		return random(iterable, weightProcessor, (e) -> random(1, Addition.INSTANCE.eval(e, 1)), removePredicate);
 	}
 }

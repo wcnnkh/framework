@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+import io.basc.framework.event.BroadcastNamedEventDispatcher;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventTypes;
-import io.basc.framework.event.NamedEventDispatcher;
-import io.basc.framework.event.support.SimpleNamedEventDispatcher;
+import io.basc.framework.event.support.StandardBroadcastNamedEventDispatcher;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
@@ -17,14 +17,14 @@ import io.basc.framework.util.Registration;
 import io.basc.framework.util.XUtils;
 
 public class PropertyFactories implements PropertyFactory, Configurable {
-	private final NamedEventDispatcher<String, ChangeEvent<String>> namedEventDispatcher;
+	private final BroadcastNamedEventDispatcher<String, ChangeEvent<String>> namedEventDispatcher;
 	private final ConfigurableServices<PropertyFactory> factories;
 
 	public PropertyFactories() {
-		this(new SimpleNamedEventDispatcher<>());
+		this(new StandardBroadcastNamedEventDispatcher<>());
 	}
 
-	public PropertyFactories(NamedEventDispatcher<String, ChangeEvent<String>> namedEventDispatcher) {
+	public PropertyFactories(BroadcastNamedEventDispatcher<String, ChangeEvent<String>> namedEventDispatcher) {
 		this.namedEventDispatcher = namedEventDispatcher;
 		this.factories = new ConfigurableServices<PropertyFactory>(PropertyFactory.class) {
 			@Override

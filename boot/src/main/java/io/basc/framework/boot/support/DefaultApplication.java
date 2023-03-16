@@ -11,8 +11,8 @@ import io.basc.framework.boot.annotation.ComponentScan;
 import io.basc.framework.boot.annotation.ComponentScans;
 import io.basc.framework.context.support.DefaultContext;
 import io.basc.framework.context.support.LinkedHashSetClassesLoader;
-import io.basc.framework.event.EventDispatcher;
-import io.basc.framework.event.support.SimpleEventDispatcher;
+import io.basc.framework.event.BroadcastEventDispatcher;
+import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.FactoryException;
@@ -26,7 +26,7 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 	private static final String APPLICATION_PREFIX = "application";
 	private static final String SERVER_PORT_PROPERTY = "server.port";
 
-	private final EventDispatcher<ApplicationEvent> applicationEventDispathcer = new SimpleEventDispatcher<ApplicationEvent>();
+	private final BroadcastEventDispatcher<ApplicationEvent> applicationEventDispathcer = new StandardBroadcastEventDispatcher<ApplicationEvent>();
 	private volatile Logger logger;
 	private final long createTime;
 	private final ConfigurableServices<ApplicationPostProcessor> applicationPostProcessors = new ConfigurableServices<ApplicationPostProcessor>(
@@ -211,7 +211,7 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 	}
 
 	@Override
-	public EventDispatcher<ApplicationEvent> getEventDispatcher() {
+	public BroadcastEventDispatcher<ApplicationEvent> getEventDispatcher() {
 		return applicationEventDispathcer;
 	}
 }

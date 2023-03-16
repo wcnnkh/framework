@@ -27,7 +27,7 @@ public class StandardObservable<T> extends AbstractObservable<T> implements Even
 	private Function<? super List<T>, ? extends T> selector;
 
 	public StandardObservable() {
-		this(new SimpleEventDispatcher<>());
+		this(new StandardBroadcastEventDispatcher<>());
 	}
 
 	public StandardObservable(EventDispatcher<ObservableChangeEvent<T>> eventDispatcher) {

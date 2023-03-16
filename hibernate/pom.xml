@@ -5,11 +5,11 @@
 	<parent>
 		<groupId>io.basc.framework</groupId>
 		<artifactId>framework</artifactId>
-		<version>1.8.1</version>
+		<version>1.8.2</version>
 	</parent>
 	<artifactId>hibernate</artifactId>
 	<properties>
-		<hibernate.version>5.5.7.Final</hibernate.version>
+		<hibernate.version>5.6.15.Final</hibernate.version>
 	</properties>
 	<dependencies>
 		<dependency>

@@ -55,10 +55,22 @@ public class InheriterRegistry<A, B> extends InheriterDecorator<InheriterCapture
 		return registers.toString();
 	}
 
+	/**
+	 * 注册传播者
+	 * 
+	 * @param inheriter 传播者
+	 * @return 返回{@link Registration#EMPTY}表示注册失败
+	 */
 	public Registration register(Inheriter<A, B> inheriter) {
 		return registers.add(inheriter) ? (() -> registers.remove(inheriter)) : Registration.EMPTY;
 	}
 
+	/**
+	 * 注销指定传播者
+	 * 
+	 * @param inheriter 传播者
+	 * @return 返回{@link Registration#EMPTY}表示注销失败
+	 */
 	public Registration unregister(Inheriter<A, B> inheriter) {
 		return registers.remove(inheriter) ? (() -> registers.add(inheriter)) : Registration.EMPTY;
 	}

@@ -7,7 +7,7 @@ import java.util.Map;
 
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.event.ObjectEvent;
-import io.basc.framework.event.support.SimpleEventDispatcher;
+import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -16,7 +16,8 @@ import io.basc.framework.web.pattern.HttpPattern;
 import io.basc.framework.web.pattern.HttpPatternMatcher;
 
 @Provider
-public class DefaultActionManager extends SimpleEventDispatcher<ObjectEvent<Action>> implements ActionManager {
+public class DefaultActionManager extends StandardBroadcastEventDispatcher<ObjectEvent<Action>>
+		implements ActionManager {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	private HttpPatternMatcher<Action> registry = new HttpPatternMatcher<Action>();
 	private Map<Method, Action> actionMap = new HashMap<Method, Action>();

@@ -3,9 +3,9 @@ package io.basc.framework.rpc.remote.web;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
+import io.basc.framework.factory.InheritableThreadLocalConfigurator;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.client.HttpClient;
-import io.basc.framework.lang.NamedInheritableThreadLocal;
 import io.basc.framework.net.uri.UriUtils;
 import io.basc.framework.rpc.CallableFactory;
 import io.basc.framework.rpc.remote.DefaultRemoteRequestMessage;
@@ -13,19 +13,11 @@ import io.basc.framework.rpc.remote.RemoteMessageCodec;
 import io.basc.framework.rpc.remote.RemoteRequestMessage;
 
 public class HttpCallableFactory implements CallableFactory {
-	private static final ThreadLocal<HttpHeaders> HTTP_HEADERS_LOCAL = new NamedInheritableThreadLocal<HttpHeaders>(
-			HttpHeaders.class.getName(), true);
+	private static final InheritableThreadLocalConfigurator<HttpHeaders> HTTP_HEADERS_CONFIGURATOR = new InheritableThreadLocalConfigurator<HttpHeaders>(
+			HttpHeaders.class);
 
-	public static ThreadLocal<HttpHeaders> getHttpHeadersLocal() {
-		return HTTP_HEADERS_LOCAL;
-	}
-
-	public static void setLocalHeaders(HttpHeaders headers) {
-		if (headers == null) {
-			HTTP_HEADERS_LOCAL.remove();
-		} else {
-			HTTP_HEADERS_LOCAL.set(headers);
-		}
+	public static InheritableThreadLocalConfigurator<HttpHeaders> getHttpHeadersConfigurator() {
+		return HTTP_HEADERS_CONFIGURATOR;
 	}
 
 	private final HttpClient httpClient;
@@ -39,8 +31,8 @@ public class HttpCallableFactory implements CallableFactory {
 	}
 
 	public Callable<Object> getCallable(Class<?> clazz, Method method, Object[] args) {
-		HttpHeaders httpHeaders = HTTP_HEADERS_LOCAL.get();
-		HTTP_HEADERS_LOCAL.remove();
+		HttpHeaders httpHeaders = HTTP_HEADERS_CONFIGURATOR.get();
+		HTTP_HEADERS_CONFIGURATOR.remove();
 		RemoteRequestMessage requestMessage = new DefaultRemoteRequestMessage(clazz, method, args);
 		return new HttpCallable(httpClient, messageCodec, requestMessage, UriUtils.toUri(url), httpHeaders);
 	}

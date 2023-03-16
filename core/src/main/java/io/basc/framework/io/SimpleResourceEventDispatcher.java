@@ -8,12 +8,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventTypes;
 import io.basc.framework.event.ObservableChangeEvent;
-import io.basc.framework.event.support.SimpleEventDispatcher;
+import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Registration;
 
-public class SimpleResourceEventDispatcher extends SimpleEventDispatcher<ObservableChangeEvent<Resource>> {
+public class SimpleResourceEventDispatcher extends StandardBroadcastEventDispatcher<ObservableChangeEvent<Resource>> {
 	private static Logger logger = LoggerFactory.getLogger(SimpleResourceEventDispatcher.class);
 	/**
 	 * 默认的监听周期5s(经过多次尝试，在性能和实时性间取舍)
@@ -58,7 +58,7 @@ public class SimpleResourceEventDispatcher extends SimpleEventDispatcher<Observa
 	public AbstractResource getResource() {
 		return resource;
 	}
-	
+
 	@Override
 	public void publishEvent(ObservableChangeEvent<Resource> event) {
 		if (logger.isDebugEnabled()) {
@@ -66,7 +66,7 @@ public class SimpleResourceEventDispatcher extends SimpleEventDispatcher<Observa
 		}
 		super.publishEvent(event);
 	}
-	
+
 	@Override
 	public Registration registerListener(EventListener<ObservableChangeEvent<Resource>> eventListener) {
 		if (!lock.get() && lock.compareAndSet(false, true)) {
@@ -105,7 +105,8 @@ public class SimpleResourceEventDispatcher extends SimpleEventDispatcher<Observa
 				if (exist != this.exist) {
 					this.last = last;
 					this.exist = exist;
-					publishEvent(new ObservableChangeEvent<Resource>(exist ? EventTypes.CREATE : EventTypes.DELETE, resource, resource));
+					publishEvent(new ObservableChangeEvent<Resource>(exist ? EventTypes.CREATE : EventTypes.DELETE,
+							resource, resource));
 				} else if (this.last != last) {
 					this.last = last;
 					publishEvent(new ObservableChangeEvent<Resource>(EventTypes.UPDATE, resource, resource));

@@ -31,7 +31,7 @@ public class ObservableMap<K, V> extends AbstractObservable<Map<K, V>>
 	}
 
 	public ObservableMap(Map<K, V> targetMap) {
-		this(targetMap, new SimpleEventDispatcher<>());
+		this(targetMap, new StandardBroadcastEventDispatcher<>());
 	}
 
 	public ObservableMap(Map<K, V> targetMap, EventDispatcher<ObservableChangeEvent<Map<K, V>>> eventDispatcher) {
