@@ -130,6 +130,10 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 		return getProperties().get("application.server.enable").or(true).getAsBoolean();
 	}
 
+	public void setEnableServer(boolean enable) {
+		getProperties().put("application.server.enable", enable);
+	}
+
 	public void startServer() {
 		if (isInstance(ApplicationServer.class)) {
 			ApplicationServer server = getInstance(ApplicationServer.class);
@@ -176,6 +180,11 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 
 				super.init();
 
+				// 初始化所有单例
+				if (isInitializeAllSingletonObjects()) {
+					initializeAllSingletonObjects();
+				}
+
 				// 启动服务器
 				if (isEnableServer()) {
 					startServer();
@@ -194,6 +203,25 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 								.toString());
 			} finally {
 				initialized = true;
+			}
+		}
+	}
+
+	public boolean isInitializeAllSingletonObjects() {
+		return getProperties().getAsBoolean("application.initialize.all.singleton.objects.enable");
+	}
+
+	public void setInitializeAllSingletonObjects(boolean enable) {
+		getProperties().put("application.initialize.all.singleton.objects.enable", enable);
+	}
+
+	/**
+	 * 初始化所有单例
+	 */
+	public void initializeAllSingletonObjects() {
+		for (String id : getDefinitionIds()) {
+			if (isSingleton(id) && isInstance(id)) {
+				getSingleton(id);
 			}
 		}
 	}
