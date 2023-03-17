@@ -25,7 +25,7 @@ public interface Application extends Context, Init, Destroy {
 	ClassesLoader getSourceClasses();
 
 	default Optional<String> getName() {
-		return Optional.ofNullable(getProperties().getAsString(APPLICATION_NAME_PROPERTY));
+		return getProperties().getObservable(APPLICATION_NAME_PROPERTY).convert((e) -> e.getAsString());
 	}
 
 	default OptionalInt getPort() {

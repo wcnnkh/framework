@@ -6,11 +6,13 @@ import java.util.function.Predicate;
 
 import io.basc.framework.cloud.ServiceInstance;
 import io.basc.framework.http.client.HttpClientException;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.retry.ExhaustedRetryException;
 import io.basc.framework.retry.RetryOperations;
 
 public interface DiscoveryLoadBalancer extends LoadBalancer<ServiceInstance> {
+	@Nullable
 	Server<ServiceInstance> choose(String name, Predicate<Server<ServiceInstance>> accept);
 
 	default <V, E extends Throwable> V execute(String name, RetryOperations retryOperations,

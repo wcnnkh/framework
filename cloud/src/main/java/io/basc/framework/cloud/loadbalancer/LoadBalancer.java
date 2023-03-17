@@ -4,10 +4,12 @@ import java.util.HashSet;
 import java.util.function.Predicate;
 
 import io.basc.framework.http.client.HttpClientException;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.retry.ExhaustedRetryException;
 import io.basc.framework.retry.RetryOperations;
 
 public interface LoadBalancer<T> {
+	@Nullable
 	Server<T> choose(Predicate<Server<T>> accept);
 
 	void stat(Server<T> server, State state);
