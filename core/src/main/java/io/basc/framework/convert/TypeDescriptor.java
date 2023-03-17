@@ -15,6 +15,7 @@ import io.basc.framework.core.MethodParameter;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.annotation.AnnotationArrayAnnotatedElement;
+import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
@@ -105,7 +106,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 			@Nullable AnnotatedElement annotatedElement) {
 		this.resolvableType = resolvableType;
 		this.type = (type != null ? type : resolvableType.toClass());
-		this.annotatedElement = annotatedElement == null ? AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT
+		this.annotatedElement = annotatedElement == null ? Annotations.EMPTY_ANNOTATED_ELEMENT
 				: (annotatedElement instanceof Serializable ? annotatedElement
 						: new AnnotationArrayAnnotatedElement(annotatedElement));
 	}

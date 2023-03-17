@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import io.basc.framework.core.annotation.AnnotatedElementUtils;
+import io.basc.framework.core.annotation.Annotations;
 
 public class DefaultGetter extends AbstractFieldDescriptor implements Getter {
 	private final String name;
@@ -13,7 +13,7 @@ public class DefaultGetter extends AbstractFieldDescriptor implements Getter {
 	public DefaultGetter(Class<?> sourceClass, String name, Field field, Method method) {
 		super(sourceClass, field, method);
 		this.name = name;
-		this.nullable = AnnotatedElementUtils.isNullable(this);
+		this.nullable = Annotations.isNullable(this);
 	}
 
 	public String getName() {

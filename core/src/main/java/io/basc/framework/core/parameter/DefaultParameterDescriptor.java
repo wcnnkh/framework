@@ -8,6 +8,7 @@ import java.util.Map;
 
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.annotation.AnnotatedElementWrapper;
+import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
 
@@ -22,7 +23,7 @@ public class DefaultParameterDescriptor extends AnnotatedElementWrapper<Annotate
 	}
 
 	public DefaultParameterDescriptor(String name, Class<?> type, @Nullable Type genericType) {
-		this(name, AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT, type, genericType);
+		this(name, Annotations.EMPTY_ANNOTATED_ELEMENT, type, genericType);
 	}
 
 	public DefaultParameterDescriptor(String name, Annotation[] annotations, Class<?> type,

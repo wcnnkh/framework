@@ -4,7 +4,7 @@ import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.MethodInterceptorAccept;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.annotation.AnnotationUtils;
+import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.data.TemporaryCounter;
 import io.basc.framework.factory.InstanceFactory;
@@ -32,7 +32,7 @@ public final class CountLimitMethodInterceptor implements MethodInterceptor, Met
 	}
 
 	private CountLimitSecurity getCountLimitSecurity(MethodInvoker invoker) {
-		CountLimitSecurity countLimitSecurity = AnnotationUtils.getAnnotation(CountLimitSecurity.class,
+		CountLimitSecurity countLimitSecurity = Annotations.getAnnotation(CountLimitSecurity.class,
 				invoker.getSourceClass(), invoker.getMethod());
 		if (countLimitSecurity == null) {
 			return null;

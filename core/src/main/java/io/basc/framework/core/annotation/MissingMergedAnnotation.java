@@ -1,3 +1,19 @@
+/*
+ * Copyright 2002-2019 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.basc.framework.core.annotation;
 
 import java.lang.annotation.Annotation;
@@ -15,7 +31,8 @@ import io.basc.framework.lang.Nullable;
  * An {@link AbstractMergedAnnotation} used as the implementation of
  * {@link MergedAnnotation#missing()}.
  *
- * @author https://github.com/spring-projects/spring-framework/edit/main/spring-core/src/main/java/org/springframework/core/annotation/MissingMergedAnnotation.java
+ * @author Phillip Webb
+ * @author Juergen Hoeller
  * @param <A> the annotation type
  */
 final class MissingMergedAnnotation<A extends Annotation> extends AbstractMergedAnnotation<A> {
@@ -120,12 +137,14 @@ final class MissingMergedAnnotation<A extends Annotation> extends AbstractMerged
 	@Override
 	public <T extends Annotation> MergedAnnotation<T> getAnnotation(String attributeName, Class<T> type)
 			throws NoSuchElementException {
+
 		throw new NoSuchElementException("Unable to get attribute value for missing annotation");
 	}
 
 	@Override
 	public <T extends Annotation> MergedAnnotation<T>[] getAnnotationArray(String attributeName, Class<T> type)
 			throws NoSuchElementException {
+
 		throw new NoSuchElementException("Unable to get attribute value for missing annotation");
 	}
 
@@ -135,7 +154,7 @@ final class MissingMergedAnnotation<A extends Annotation> extends AbstractMerged
 	}
 
 	@Override
-	protected A createSynthesized() {
+	protected A createSynthesizedAnnotation() {
 		throw new NoSuchElementException("Unable to synthesize missing annotation");
 	}
 

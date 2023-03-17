@@ -7,7 +7,7 @@ import java.util.LinkedHashSet;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.annotation.AnnotationAttributes;
-import io.basc.framework.core.annotation.AnnotationUtils;
+import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
@@ -259,12 +259,12 @@ public class AnnotationObjectRelationalResolverExtend
 
 	@Override
 	public String getCharsetName(Class<?> entityClass, ObjectRelationalResolver chain) {
-		return AnnotatedElementUtils.getCharsetName(entityClass, () -> chain.getCharsetName(entityClass));
+		return Annotations.getCharsetName(entityClass, () -> chain.getCharsetName(entityClass));
 	}
 
 	@Override
 	public String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
-		return AnnotatedElementUtils.getCharsetName(descriptor, () -> chain.getCharsetName(entityClass, descriptor));
+		return Annotations.getCharsetName(descriptor, () -> chain.getCharsetName(entityClass, descriptor));
 	}
 
 	@Override
@@ -332,7 +332,7 @@ public class AnnotationObjectRelationalResolverExtend
 
 	@Override
 	public boolean isConfigurable(TypeDescriptor sourceType, ObjectRelationalResolver chain) {
-		ConfigurationProperties configurationProperties = AnnotationUtils.getAnnotation(ConfigurationProperties.class,
+		ConfigurationProperties configurationProperties = Annotations.getAnnotation(ConfigurationProperties.class,
 				sourceType, sourceType.getType());
 		if (configurationProperties != null) {
 			return true;
@@ -343,7 +343,7 @@ public class AnnotationObjectRelationalResolverExtend
 	@Override
 	public ObjectMapperContext getContext(TypeDescriptor sourceType, ObjectMapperContext parent,
 			ObjectRelationalResolver chain) {
-		ConfigurationProperties configurationProperties = AnnotationUtils.getAnnotation(ConfigurationProperties.class,
+		ConfigurationProperties configurationProperties = Annotations.getAnnotation(ConfigurationProperties.class,
 				sourceType, sourceType.getType());
 		if (configurationProperties == null) {
 			return ObjectRelationalResolverExtend.super.getContext(sourceType, parent, chain);

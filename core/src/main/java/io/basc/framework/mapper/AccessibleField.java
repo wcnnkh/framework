@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import io.basc.framework.core.annotation.AnnotatedElementUtils;
+import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.core.annotation.MultiAnnotatedElement;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
@@ -132,7 +132,7 @@ public class AccessibleField implements AnnotatedElement, Cloneable {
 		if (isSupportSetter()) {
 			return getSetter().getAnnotations();
 		}
-		return AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT.getAnnotations();
+		return Annotations.EMPTY_ANNOTATED_ELEMENT.getAnnotations();
 	}
 
 	@Override
@@ -148,7 +148,7 @@ public class AccessibleField implements AnnotatedElement, Cloneable {
 		if (isSupportSetter()) {
 			return getSetter().getDeclaredAnnotations();
 		}
-		return AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT.getDeclaredAnnotations();
+		return Annotations.EMPTY_ANNOTATED_ELEMENT.getDeclaredAnnotations();
 	}
 
 	public Object get(Object instance) {

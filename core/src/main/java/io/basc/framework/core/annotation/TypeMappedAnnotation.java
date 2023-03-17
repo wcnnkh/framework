@@ -1,3 +1,19 @@
+/*
+ * Copyright 2002-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.basc.framework.core.annotation;
 
 import java.lang.annotation.Annotation;
@@ -14,9 +30,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.LogProcessor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 
@@ -29,9 +43,9 @@ import io.basc.framework.util.ClassUtils;
  * {@code BiFunction}. This allows various different annotation models to be
  * supported by the same class. For example, the attributes source might be an
  * actual {@link Annotation} instance where methods on the annotation instance
- * are {@linkplain ReflectionUtils#invokeMethod(Method, Object) invoked} to
- * extract values. Equally, the source could be a simple {@link Map} with values
- * extracted using {@link Map#get(Object)}.
+ * are {@linkplain AnnotationUtils#invokeAnnotationMethod(Method, Object)
+ * invoked} to extract values. Similarly, the source could be a simple
+ * {@link Map} with values extracted using {@link Map#get(Object)}.
  *
  * <p>
  * Extracted root attribute values must be compatible with the attribute return
@@ -66,7 +80,9 @@ import io.basc.framework.util.ClassUtils;
  * </tr>
  * </table>
  *
- * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/annotation/TypeMappedAnnotation.java
+ * @author Phillip Webb
+ * @author Juergen Hoeller
+ * @author Sam Brannen
  * @param <A> the annotation type
  * @see TypeMappedAnnotations
  */
@@ -114,12 +130,14 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 	private TypeMappedAnnotation(AnnotationTypeMapping mapping, @Nullable ClassLoader classLoader,
 			@Nullable Object source, @Nullable Object rootAttributes, ValueExtractor valueExtractor,
 			int aggregateIndex) {
+
 		this(mapping, classLoader, source, rootAttributes, valueExtractor, aggregateIndex, null);
 	}
 
 	private TypeMappedAnnotation(AnnotationTypeMapping mapping, @Nullable ClassLoader classLoader,
 			@Nullable Object source, @Nullable Object rootAttributes, ValueExtractor valueExtractor, int aggregateIndex,
 			@Nullable int[] resolvedRootMirrors) {
+
 		this.mapping = mapping;
 		this.classLoader = classLoader;
 		this.source = source;
@@ -138,6 +156,7 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 			@Nullable Object source, @Nullable Object rootAnnotation, ValueExtractor valueExtractor, int aggregateIndex,
 			boolean useMergedValues, @Nullable Predicate<String> attributeFilter, int[] resolvedRootMirrors,
 			int[] resolvedMirrors) {
+
 		this.classLoader = classLoader;
 		this.source = source;
 		this.rootAttributes = rootAnnotation;
@@ -226,6 +245,7 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 	@SuppressWarnings("unchecked")
 	public <T extends Annotation> MergedAnnotation<T>[] getAnnotationArray(String attributeName, Class<T> type)
 			throws NoSuchElementException {
+
 		int attributeIndex = getAttributeIndex(attributeName, true);
 		Method attribute = this.mapping.getAttributes().get(attributeIndex);
 		Class<?> componentType = attribute.getReturnType().getComponentType();
@@ -295,6 +315,7 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 
 	private <T extends Map<String, Object>> Object adaptValueForMapOptions(Method attribute, Object value,
 			Class<?> mapType, Function<MergedAnnotation<?>, T> factory, Adapt[] adaptations) {
+
 		if (value instanceof MergedAnnotation) {
 			MergedAnnotation<?> annotation = (MergedAnnotation<?>) value;
 			return (Adapt.ANNOTATION_TO_MAP.isIn(adaptations) ? annotation.asMap(factory, adaptations)
@@ -320,18 +341,48 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 
 	@Override
 	@SuppressWarnings("unchecked")
-	protected A createSynthesized() {
-		if (getType().isInstance(this.rootAttributes) && !isSynthesizable()) {
+	protected A createSynthesizedAnnotation() {
+		// Check root annotation
+		if (isTargetAnnotation(this.rootAttributes) && !isSynthesizable((Annotation) this.rootAttributes)) {
 			return (A) this.rootAttributes;
+		}
+		// Check meta-annotation
+		else if (isTargetAnnotation(this.mapping.getAnnotation()) && !isSynthesizable(this.mapping.getAnnotation())) {
+			return (A) this.mapping.getAnnotation();
 		}
 		return SynthesizedMergedAnnotationInvocationHandler.createProxy(this, getType());
 	}
 
-	private boolean isSynthesizable() {
+	/**
+	 * Determine if the supplied object is an annotation of the required
+	 * {@linkplain #getType() type}.
+	 * 
+	 * @param obj the object to check
+	 */
+	private boolean isTargetAnnotation(@Nullable Object obj) {
+		return getType().isInstance(obj);
+	}
+
+	/**
+	 * Determine if the supplied annotation has not already been synthesized
+	 * <strong>and</strong> whether the mapped annotation is a composed annotation
+	 * that needs to have its attributes merged or the mapped annotation is
+	 * {@linkplain AnnotationTypeMapping#isSynthesizable() synthesizable} in
+	 * general.
+	 * 
+	 * @param annotation the annotation to check
+	 */
+	private boolean isSynthesizable(Annotation annotation) {
 		// Already synthesized?
-		if (this.rootAttributes instanceof SynthesizedAnnotation) {
+		if (annotation instanceof SynthesizedAnnotation) {
 			return false;
 		}
+		// Is this a mapped annotation for a composed annotation, and are there
+		// annotation attributes (mirrors) that need to be merged?
+		if (getDistance() > 0 && this.resolvedMirrors.length > 0) {
+			return true;
+		}
+		// Is the mapped annotation itself synthesizable?
 		return this.mapping.isSynthesizable();
 	}
 
@@ -397,7 +448,7 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 		}
 		if (value == null) {
 			Method attribute = this.mapping.getAttributes().get(attributeIndex);
-			value = ReflectionUtils.invoke(attribute, this.mapping.getAnnotation());
+			value = AnnotationUtils.invokeAnnotationMethod(attribute, this.mapping.getAnnotation());
 		}
 		return value;
 	}
@@ -512,7 +563,7 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 
 	private ValueExtractor getValueExtractor(Object value) {
 		if (value instanceof Annotation) {
-			return ReflectionUtils::invoke;
+			return AnnotationUtils::invokeAnnotationMethod;
 		}
 		if (value instanceof Map) {
 			return TypeMappedAnnotation::extractFromMap;
@@ -571,11 +622,13 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 	static <A extends Annotation> MergedAnnotation<A> from(@Nullable Object source, A annotation) {
 		Assert.notNull(annotation, "Annotation must not be null");
 		AnnotationTypeMappings mappings = AnnotationTypeMappings.forAnnotationType(annotation.annotationType());
-		return new TypeMappedAnnotation<>(mappings.get(0), null, source, annotation, ReflectionUtils::invoke, 0);
+		return new TypeMappedAnnotation<>(mappings.get(0), null, source, annotation,
+				AnnotationUtils::invokeAnnotationMethod, 0);
 	}
 
 	static <A extends Annotation> MergedAnnotation<A> of(@Nullable ClassLoader classLoader, @Nullable Object source,
 			Class<A> annotationType, @Nullable Map<String, ?> attributes) {
+
 		Assert.notNull(annotationType, "Annotation type must not be null");
 		AnnotationTypeMappings mappings = AnnotationTypeMappings.forAnnotationType(annotationType);
 		return new TypeMappedAnnotation<>(mappings.get(0), classLoader, source, attributes,
@@ -584,7 +637,8 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 
 	@Nullable
 	static <A extends Annotation> TypeMappedAnnotation<A> createIfPossible(AnnotationTypeMapping mapping,
-			MergedAnnotation<?> annotation, LogProcessor logger) {
+			MergedAnnotation<?> annotation, IntrospectionFailureLogger logger) {
+
 		if (annotation instanceof TypeMappedAnnotation) {
 			TypeMappedAnnotation<?> typeMappedAnnotation = (TypeMappedAnnotation<?>) annotation;
 			return createIfPossible(mapping, typeMappedAnnotation.source, typeMappedAnnotation.rootAttributes,
@@ -596,14 +650,17 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 
 	@Nullable
 	static <A extends Annotation> TypeMappedAnnotation<A> createIfPossible(AnnotationTypeMapping mapping,
-			@Nullable Object source, Annotation annotation, int aggregateIndex, LogProcessor logger) {
-		return createIfPossible(mapping, source, annotation, ReflectionUtils::invoke, aggregateIndex, logger);
+			@Nullable Object source, Annotation annotation, int aggregateIndex, IntrospectionFailureLogger logger) {
+
+		return createIfPossible(mapping, source, annotation, AnnotationUtils::invokeAnnotationMethod, aggregateIndex,
+				logger);
 	}
 
 	@Nullable
 	private static <A extends Annotation> TypeMappedAnnotation<A> createIfPossible(AnnotationTypeMapping mapping,
 			@Nullable Object source, @Nullable Object rootAttribute, ValueExtractor valueExtractor, int aggregateIndex,
-			LogProcessor logger) {
+			IntrospectionFailureLogger logger) {
+
 		try {
 			return new TypeMappedAnnotation<>(mapping, null, source, rootAttribute, valueExtractor, aggregateIndex);
 		} catch (Exception ex) {
@@ -612,7 +669,7 @@ final class TypeMappedAnnotation<A extends Annotation> extends AbstractMergedAnn
 				String type = mapping.getAnnotationType().getName();
 				String item = (mapping.getDistance() == 0 ? "annotation " + type
 						: "meta-annotation " + type + " from " + mapping.getRoot().getAnnotationType().getName());
-				logger.log(ex, "Failed to introspect " + item + " on {}", source);
+				logger.log("Failed to introspect " + item, source, ex);
 			}
 			return null;
 		}

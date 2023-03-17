@@ -18,7 +18,7 @@ import io.basc.framework.context.support.ContextBeanDefinition;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.core.annotation.AnnotationUtils;
+import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanResolver;
@@ -59,7 +59,7 @@ public class AnnotationContextResolverExtend implements ContextResolverExtend, O
 
 	@Override
 	public String getId(TypeDescriptor typeDescriptor, BeanResolver chain) {
-		Bean bean = AnnotationUtils.getAnnotation(Bean.class, typeDescriptor, typeDescriptor.getType());
+		Bean bean = Annotations.getAnnotation(Bean.class, typeDescriptor, typeDescriptor.getType());
 		if (bean != null && StringUtils.isNotEmpty(bean.value())) {
 			return bean.value();
 		}
@@ -68,7 +68,7 @@ public class AnnotationContextResolverExtend implements ContextResolverExtend, O
 
 	@Override
 	public Collection<String> getNames(TypeDescriptor typeDescriptor, BeanResolver chain) {
-		Bean bean = AnnotationUtils.getAnnotation(Bean.class, typeDescriptor, typeDescriptor.getType());
+		Bean bean = Annotations.getAnnotation(Bean.class, typeDescriptor, typeDescriptor.getType());
 		if (bean != null && bean.names().length > 0) {
 			return Arrays.asList(bean.names());
 		}

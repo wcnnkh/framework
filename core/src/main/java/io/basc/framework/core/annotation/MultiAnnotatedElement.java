@@ -26,7 +26,7 @@ public class MultiAnnotatedElement implements AnnotatedElement {
 	public static Annotation[] toAnnotations(Collection<? extends AnnotatedElement> annotatedElements,
 			boolean isDeclared) {
 		if (CollectionUtils.isEmpty(annotatedElements)) {
-			return AnnotationUtils.EMPTY_ANNOTATION_ARRAY;
+			return Annotations.EMPTY_ANNOTATION_ARRAY;
 		}
 
 		if (annotatedElements.size() == 1) {

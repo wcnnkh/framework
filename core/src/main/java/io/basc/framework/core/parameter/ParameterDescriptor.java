@@ -5,7 +5,7 @@ import java.lang.reflect.Type;
 import java.util.function.Predicate;
 
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.core.annotation.AnnotatedElementUtils;
+import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.util.Named;
 
 public interface ParameterDescriptor extends AnnotatedElement, Named, Predicate<ParameterDescriptor> {
@@ -16,7 +16,7 @@ public interface ParameterDescriptor extends AnnotatedElement, Named, Predicate<
 	Type getGenericType();
 
 	default boolean isNullable() {
-		return AnnotatedElementUtils.isNullable(this);
+		return Annotations.isNullable(this);
 	}
 
 	default ParameterDescriptor rename(String name) {

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2002-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.basc.framework.core.annotation;
 
 import java.lang.annotation.Annotation;
@@ -11,24 +27,21 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.LogProcessor;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 
 /**
  * {@link MergedAnnotations} implementation backed by a {@link Collection} of
  * {@link MergedAnnotation} instances that represent direct annotations.
  *
- * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/annotation/MergedAnnotationsCollection.java
+ * @author Phillip Webb
  * @see MergedAnnotations#of(Collection)
  */
 final class MergedAnnotationsCollection implements MergedAnnotations {
-	private static Logger log = LoggerFactory.getLogger(MergedAnnotationsCollection.class);
 
 	private final MergedAnnotation<?>[] annotations;
 
 	private final AnnotationTypeMappings[] mappings;
+
 
 	private MergedAnnotationsCollection(Collection<MergedAnnotation<?>> annotations) {
 		Assert.notNull(annotations, "Annotations must not be null");
@@ -42,6 +55,7 @@ final class MergedAnnotationsCollection implements MergedAnnotations {
 			this.mappings[i] = AnnotationTypeMappings.forAnnotationType(annotation.getType());
 		}
 	}
+
 
 	@Override
 	public Iterator<MergedAnnotation<Annotation>> iterator() {
@@ -105,6 +119,7 @@ final class MergedAnnotationsCollection implements MergedAnnotations {
 	@Override
 	public <A extends Annotation> MergedAnnotation<A> get(Class<A> annotationType,
 			@Nullable Predicate<? super MergedAnnotation<A>> predicate) {
+
 		return get(annotationType, predicate, null);
 	}
 
@@ -112,6 +127,7 @@ final class MergedAnnotationsCollection implements MergedAnnotations {
 	public <A extends Annotation> MergedAnnotation<A> get(Class<A> annotationType,
 			@Nullable Predicate<? super MergedAnnotation<A>> predicate,
 			@Nullable MergedAnnotationSelector<A> selector) {
+
 		MergedAnnotation<A> result = find(annotationType, predicate, selector);
 		return (result != null ? result : MergedAnnotation.missing());
 	}
@@ -124,6 +140,7 @@ final class MergedAnnotationsCollection implements MergedAnnotations {
 	@Override
 	public <A extends Annotation> MergedAnnotation<A> get(String annotationType,
 			@Nullable Predicate<? super MergedAnnotation<A>> predicate) {
+
 		return get(annotationType, predicate, null);
 	}
 
@@ -131,6 +148,7 @@ final class MergedAnnotationsCollection implements MergedAnnotations {
 	public <A extends Annotation> MergedAnnotation<A> get(String annotationType,
 			@Nullable Predicate<? super MergedAnnotation<A>> predicate,
 			@Nullable MergedAnnotationSelector<A> selector) {
+
 		MergedAnnotation<A> result = find(annotationType, predicate, selector);
 		return (result != null ? result : MergedAnnotation.missing());
 	}
@@ -140,6 +158,7 @@ final class MergedAnnotationsCollection implements MergedAnnotations {
 	private <A extends Annotation> MergedAnnotation<A> find(Object requiredType,
 			@Nullable Predicate<? super MergedAnnotation<A>> predicate,
 			@Nullable MergedAnnotationSelector<A> selector) {
+
 		if (selector == null) {
 			selector = MergedAnnotationSelectors.nearest();
 		}
@@ -153,8 +172,8 @@ final class MergedAnnotationsCollection implements MergedAnnotations {
 				if (!isMappingForType(mapping, requiredType)) {
 					continue;
 				}
-				MergedAnnotation<A> candidate = (mappingIndex == 0 ? (MergedAnnotation<A>) root
-						: TypeMappedAnnotation.createIfPossible(mapping, root, log.toInfoProcessor()));
+				MergedAnnotation<A> candidate = (mappingIndex == 0 ? (MergedAnnotation<A>) root :
+						TypeMappedAnnotation.createIfPossible(mapping, root, IntrospectionFailureLogger.INFO));
 				if (candidate != null && (predicate == null || predicate.test(candidate))) {
 					if (selector.isBestCandidate(candidate)) {
 						return candidate;
@@ -197,10 +216,11 @@ final class MergedAnnotationsCollection implements MergedAnnotations {
 		return new MergedAnnotationsCollection(annotations);
 	}
 
+
 	private class AnnotationsSpliterator<A extends Annotation> implements Spliterator<MergedAnnotation<A>> {
 
 		@Nullable
-		private final Object requiredType;
+		private Object requiredType;
 
 		private final int[] mappingCursors;
 
@@ -224,8 +244,8 @@ final class MergedAnnotationsCollection implements MergedAnnotations {
 				}
 			}
 			if (annotationResult != -1) {
-				MergedAnnotation<A> mergedAnnotation = createMergedAnnotationIfPossible(annotationResult,
-						this.mappingCursors[annotationResult]);
+				MergedAnnotation<A> mergedAnnotation = createMergedAnnotationIfPossible(
+						annotationResult, this.mappingCursors[annotationResult]);
 				this.mappingCursors[annotationResult]++;
 				if (mergedAnnotation == null) {
 					return tryAdvance(action);
@@ -245,7 +265,8 @@ final class MergedAnnotationsCollection implements MergedAnnotations {
 					return mapping;
 				}
 				this.mappingCursors[annotationIndex]++;
-			} while (mapping != null);
+			}
+			while (mapping != null);
 			return null;
 		}
 
@@ -262,8 +283,10 @@ final class MergedAnnotationsCollection implements MergedAnnotations {
 			if (mappingIndex == 0) {
 				return (MergedAnnotation<A>) root;
 			}
-			LogProcessor logger = (this.requiredType != null ? log.toInfoProcessor() : log.toDebugProcessor());
-			return TypeMappedAnnotation.createIfPossible(mappings[annotationIndex].get(mappingIndex), root, logger);
+			IntrospectionFailureLogger logger = (this.requiredType != null ?
+					IntrospectionFailureLogger.INFO : IntrospectionFailureLogger.DEBUG);
+			return TypeMappedAnnotation.createIfPossible(
+					mappings[annotationIndex].get(mappingIndex), root, logger);
 		}
 
 		@Override

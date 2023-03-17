@@ -14,12 +14,12 @@ public class EmptyAnnotatedElement implements AnnotatedElement, Serializable {
 
 	@Override
 	public Annotation[] getAnnotations() {
-		return AnnotationUtils.EMPTY_ANNOTATION_ARRAY;
+		return Annotations.EMPTY_ANNOTATION_ARRAY;
 	}
 
 	@Override
 	public Annotation[] getDeclaredAnnotations() {
-		return AnnotationUtils.EMPTY_ANNOTATION_ARRAY;
+		return Annotations.EMPTY_ANNOTATION_ARRAY;
 	}
 
 }

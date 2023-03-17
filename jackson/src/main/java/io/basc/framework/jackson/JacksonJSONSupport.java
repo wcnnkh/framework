@@ -9,37 +9,42 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import io.basc.framework.core.annotation.Order;
 import io.basc.framework.env.Sys;
 import io.basc.framework.json.AbstractJsonSupport;
+import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonException;
 import io.basc.framework.json.JsonSupport;
-import io.basc.framework.json.JsonElement;
 
 public class JacksonJSONSupport extends AbstractJsonSupport {
 	public static final JsonSupport INSTANCE = new JacksonJSONSupport();
 
-	private ObjectMapper mapper;
+	private volatile ObjectMapper mapper;
 
-	@Order
-	public JacksonJSONSupport() {
-		this.mapper = Sys.getEnv().getServiceLoader(ObjectMapper.class).first();
+	public ObjectMapper getMapper() {
 		if (mapper == null) {
-			mapper = new ObjectMapper();
-			// 对于空的对象转json的时候不抛出错误
-			mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-			// 允许属性名称没有引号
-			mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-			// 允许单引号
-			mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-			// 设置输入时忽略在json字符串中存在但在java对象实际没有的属性
-			mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-			// 设置输出时包含属性的风格
-			mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+			synchronized (this) {
+				if (mapper == null) {
+					this.mapper = Sys.getEnv().getServiceLoader(ObjectMapper.class).first();
+					if (mapper == null) {
+						mapper = new ObjectMapper();
+						// 对于空的对象转json的时候不抛出错误
+						mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+						// 允许属性名称没有引号
+						mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+						// 允许单引号
+						mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+						// 设置输入时忽略在json字符串中存在但在java对象实际没有的属性
+						mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+						// 设置输出时包含属性的风格
+						mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+					}
+				}
+			}
 		}
+		return mapper;
 	}
 
-	public JacksonJSONSupport(ObjectMapper mapper) {
+	public void setMapper(ObjectMapper mapper) {
 		this.mapper = mapper;
 	}
 
@@ -47,19 +52,19 @@ public class JacksonJSONSupport extends AbstractJsonSupport {
 	public JsonElement parseJson(String text) {
 		JsonNode jsonNode;
 		try {
-			jsonNode = mapper.readTree(text);
+			jsonNode = getMapper().readTree(text);
 		} catch (JsonMappingException e) {
 			throw new JsonException(e);
 		} catch (JsonProcessingException e) {
 			throw new JsonException(e);
 		}
-		return new JacksonJsonElement(jsonNode, mapper);
+		return new JacksonJsonElement(jsonNode, getMapper());
 	}
 
 	@Override
 	protected String toJsonStringInternal(Object obj) {
 		try {
-			return mapper.writeValueAsString(obj);
+			return getMapper().writeValueAsString(obj);
 		} catch (JsonProcessingException e) {
 			throw new JsonException(e);
 		}

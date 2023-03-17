@@ -2,7 +2,7 @@ package io.basc.framework.mvc.security;
 
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.annotation.AnnotationUtils;
+import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -30,7 +30,7 @@ public final class IPSecurityActionInterceptor implements ActionInterceptor, Act
 	}
 
 	private IPSecurity getIPSecurity(Action action) {
-		return AnnotationUtils.getAnnotation(IPSecurity.class, action.getSourceClass(), action);
+		return Annotations.getAnnotation(IPSecurity.class, action.getSourceClass(), action);
 	}
 
 	public Object intercept(HttpChannel httpChannel, Action action, ActionParameters parameters,

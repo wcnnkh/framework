@@ -6,13 +6,13 @@ import io.basc.framework.context.Context;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.annotation.AnnotationUtils;
+import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.http.HttpHeaders;
-import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mvc.action.Action;
 import io.basc.framework.mvc.action.ActionInterceptor;
@@ -132,7 +132,7 @@ public class HttpControllerService implements HttpService, ServerHttpRequestAcce
 
 		if (action != null) {
 			// jsonp支持
-			Jsonp jsonp = AnnotationUtils.getAnnotation(Jsonp.class, action.getSourceClass(), action);
+			Jsonp jsonp = Annotations.getAnnotation(Jsonp.class, action.getSourceClass(), action);
 			if (jsonp != null && jsonp.value()) {
 				responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse);
 			}
