@@ -260,7 +260,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 		 * would have to expect AnnotatedElement.getAnnotations() // to return a copy of
 		 * the array, whereas we can do it more efficiently here. return false; }
 		 */
-		return AnnotatedElementUtils.isAnnotated(this.annotatedElement, annotationType);
+		return AnnotatedElementUtils.hasAnnotation(this.annotatedElement, annotationType);
 	}
 
 	/**
