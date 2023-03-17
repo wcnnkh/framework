@@ -10,12 +10,6 @@
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>jms</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.jms</groupId>
-					<artifactId>javax.jms-api</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-client -->
 		<dependency>

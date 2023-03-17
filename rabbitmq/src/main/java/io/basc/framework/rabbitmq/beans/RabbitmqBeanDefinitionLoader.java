@@ -1,4 +1,4 @@
-package io.basc.framework.rabbitmq;
+package io.basc.framework.rabbitmq.beans;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -23,6 +23,7 @@ import io.basc.framework.factory.support.BeanDefinitionLoader;
 import io.basc.framework.factory.support.BeanDefinitionLoaderChain;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.io.ResourceUtils;
+import io.basc.framework.rabbitmq.RabbitmqExchange;
 import io.basc.framework.util.ClassUtils;
 
 @Provider

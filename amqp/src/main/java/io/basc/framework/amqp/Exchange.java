@@ -1,43 +1,15 @@
 package io.basc.framework.amqp;
 
-import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.lang.Nullable;
+import io.basc.framework.codec.Codec;
+import io.basc.framework.util.Registration;
 
-public interface Exchange {
+public interface Exchange<T> {
+	Registration bind(String routingKey, QueueDeclare queueDeclare, MessageListener<T> messageListener)
+			throws ExchangeException;
 
-	void bind(String routingKey, QueueDeclare queueDeclare,
-			MessageListener messageListener) throws ExchangeException;
+	void push(String routingKey, Message<T> message) throws ExchangeException;
 
-	default void push(String routingKey, Message message)
-			throws ExchangeException {
-		push(routingKey, message, message.getBody());
-	}
-
-	default void push(String routingKey, byte[] body) throws ExchangeException {
-		push(routingKey, new MessageProperties(), body);
-	}
-
-	void push(String routingKey, MessageProperties messageProperties,
-			byte[] body) throws ExchangeException;
-
-	ArgsMessageCodec getMessageCodec();
-
-	default void bind(String routingKey, QueueDeclare queueDeclare,
-			MethodInvoker invoker) throws ExchangeException {
-		bind(routingKey, queueDeclare, new MethodInvokerMessageListener(
-				invoker, getMessageCodec()));
-	}
-
-	default void push(String routingKey, Object... args)
-			throws ExchangeException {
-		push(routingKey, null, args);
-	}
-
-	default void push(String routingKey,
-			@Nullable MessageProperties messageProperties, Object... args)
-			throws ExchangeException {
-		byte[] body = getMessageCodec().encode(args);
-		push(routingKey, messageProperties == null ? new MessageProperties()
-				: messageProperties, body);
+	default <R> Exchange<R> convert(Codec<Message<T>, Message<R>> codec) {
+		return new ConvertibleExchange<>(this, codec);
 	}
 }

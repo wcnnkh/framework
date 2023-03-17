@@ -4,14 +4,17 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 
 import io.basc.framework.codec.DecodeException;
+import io.basc.framework.event.BroadcastNamedEventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventPushException;
 import io.basc.framework.event.EventRegistrationException;
 import io.basc.framework.event.NamedEventDispatcher;
+import io.basc.framework.event.UnicastNamedEventDispatcher;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Registration;
 
-public class JmsNamedEventDispatcher<K, T> implements NamedEventDispatcher<K, T> {
+public class JmsNamedEventDispatcher<K, T>
+		implements UnicastNamedEventDispatcher<K, T>, BroadcastNamedEventDispatcher<K, T>, NamedEventDispatcher<K, T> {
 	private final JmsOperations jmsOperations;
 	private final MessageSelector<K> messageSelector;
 	private final MessageCodec<T> codec;

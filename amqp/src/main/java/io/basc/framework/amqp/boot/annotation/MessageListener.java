@@ -1,12 +1,12 @@
-package io.basc.framework.amqp.annotation;
-
-import io.basc.framework.amqp.Exchange;
-import io.basc.framework.context.annotation.Indexed;
+package io.basc.framework.amqp.boot.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import io.basc.framework.amqp.boot.MethodInvokerExchange;
+import io.basc.framework.context.annotation.Indexed;
 
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
@@ -22,5 +22,5 @@ public @interface MessageListener {
 
 	boolean autoDelete() default false;
 
-	Class<? extends Exchange> exchange() default Exchange.class;
+	Class<? extends MethodInvokerExchange> exchange() default MethodInvokerExchange.class;
 }

@@ -1,16 +1,8 @@
-package io.basc.framework.amqp.support;
+package io.basc.framework.amqp;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.amqp.ArgsMessageCodec;
-import io.basc.framework.amqp.Exchange;
-import io.basc.framework.amqp.ExchangeDeclare;
-import io.basc.framework.amqp.ExchangeException;
-import io.basc.framework.amqp.Message;
-import io.basc.framework.amqp.MessageListener;
-import io.basc.framework.amqp.MessageProperties;
-import io.basc.framework.amqp.QueueDeclare;
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.logger.Logger;
@@ -19,13 +11,14 @@ import io.basc.framework.retry.RetryCallback;
 import io.basc.framework.retry.RetryContext;
 import io.basc.framework.retry.RetryOperations;
 import io.basc.framework.retry.support.RetryTemplate;
+import io.basc.framework.transaction.Status;
 import io.basc.framework.transaction.Synchronization;
 import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionDefinition;
 import io.basc.framework.transaction.TransactionManager;
-import io.basc.framework.transaction.Status;
 import io.basc.framework.transaction.TransactionUtils;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.StringUtils;
 
 /**
@@ -34,11 +27,10 @@ import io.basc.framework.util.StringUtils;
  * @author wcnnkh
  *
  */
-public abstract class AbstractExchange implements Exchange {
+public abstract class AbstractExchange<T> implements Exchange<T> {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	private final ExchangeDeclare exchangeDeclare;
 	private RetryOperations retryOperations = new RetryTemplate();
-	private ArgsMessageCodec messageCodec = new SerializerArgsMessageCodec();
 
 	public AbstractExchange(ExchangeDeclare exchangeDeclare) {
 		this.exchangeDeclare = exchangeDeclare;
@@ -57,45 +49,33 @@ public abstract class AbstractExchange implements Exchange {
 		return exchangeDeclare;
 	}
 
-	public ArgsMessageCodec getMessageCodec() {
-		return messageCodec;
-	}
-
-	public void setMessageCodec(ArgsMessageCodec messageCodec) {
-		Assert.requiredArgument(messageCodec != null, "messageCodec");
-		this.messageCodec = messageCodec;
-	}
-
-	public final void bind(String routingKey, QueueDeclare queueDeclare, MessageListener messageListener) {
+	public final Registration bind(String routingKey, QueueDeclare queueDeclare, MessageListener<T> messageListener) {
 		logger.info("add message listener：{}, routingKey={}, queueDeclare={}", messageListener, routingKey,
 				queueDeclare);
 		try {
-			retryOperations.execute((context) -> {
-				bindInternal(routingKey, queueDeclare, new MessageListenerInternal(messageListener));
-				return null;
+			return retryOperations.execute((context) -> {
+				return bindInternal(routingKey, queueDeclare, new MessageListenerInternal(messageListener));
 			});
 		} catch (IOException e) {
 			throw new ExchangeException("bind error routingKey=" + routingKey, e);
 		}
 	}
 
-	protected abstract void bindInternal(String routingKey, QueueDeclare queueDeclare, MessageListener messageListener)
-			throws IOException;
+	protected abstract Registration bindInternal(String routingKey, QueueDeclare queueDeclare,
+			MessageListener<T> messageListener) throws IOException;
 
-	public final void push(String routingKey, MessageProperties messageProperties, byte[] body)
-			throws ExchangeException {
+	public final void push(String routingKey, Message<T> message) throws ExchangeException {
 		Assert.requiredArgument(routingKey != null, "routingKey");
-		Assert.requiredArgument(messageProperties != null, "messageProperties");
-		Assert.requiredArgument(body != null, "body");
+		Assert.requiredArgument(message != null, "message");
 		Transaction transaction = TransactionUtils.getManager().getTransaction();
-		final PushRetryCallback retryCallback = new PushRetryCallback(routingKey, messageProperties, body);
-		long transactionMessageConfirmDelay = messageProperties.getTransactionMessageConfirmDelay();
+		final PushRetryCallback retryCallback = new PushRetryCallback(routingKey, message);
+		long transactionMessageConfirmDelay = message.getTransactionMessageConfirmDelay();
 		if (transaction != null && transactionMessageConfirmDelay > 0) {
-			long delay = Math.max(0, messageProperties.getDelay()) + transactionMessageConfirmDelay;
-			MessageProperties confirmMessage = messageProperties.clone();
+			long delay = Math.max(0, message.getDelay()) + transactionMessageConfirmDelay;
+			Message<T> confirmMessage = message.clone();
 			confirmMessage.setDelay(delay, TimeUnit.MILLISECONDS);
 			// 发送延迟的确认消息
-			retryOperations.execute(new PushRetryCallback(routingKey, confirmMessage, body));
+			retryOperations.execute(new PushRetryCallback(routingKey, confirmMessage));
 			// 在事务提交后发送消息
 			transaction.registerSynchronization(new Synchronization() {
 
@@ -115,8 +95,7 @@ public abstract class AbstractExchange implements Exchange {
 		}
 	}
 
-	protected abstract void basicPublish(String routingKey, MessageProperties messageProperties, byte[] body)
-			throws ExchangeException;
+	protected abstract void basicPublish(String routingKey, Message<T> message) throws ExchangeException;
 
 	protected long getDefaultRetryDelay() {
 		return 10000;
@@ -131,22 +110,22 @@ public abstract class AbstractExchange implements Exchange {
 		return 0;
 	}
 
-	protected void forwardPush(String routingKey, MessageProperties messageProperties, byte[] body) throws IOException {
-		basicPublish(routingKey, messageProperties, body);
+	protected void forwardPush(String routingKey, Message<T> message) throws IOException {
+		basicPublish(routingKey, message);
 	}
 
-	protected void retryPush(String routingKey, MessageProperties messageProperties, byte[] body) throws IOException {
-		basicPublish(routingKey, messageProperties, body);
+	protected void retryPush(String routingKey, Message<T> message) throws IOException {
+		basicPublish(routingKey, message);
 	}
 
-	protected class MessageListenerInternal implements MessageListener {
-		private final MessageListener messageListener;
+	protected class MessageListenerInternal implements MessageListener<T> {
+		private final MessageListener<T> messageListener;
 
-		public MessageListenerInternal(MessageListener messageListener) {
+		public MessageListenerInternal(MessageListener<T> messageListener) {
 			this.messageListener = messageListener;
 		}
 
-		public void onMessage(String exchange, String routingKey, Message message) throws IOException {
+		public void onMessage(String exchange, String routingKey, Message<T> message) throws IOException {
 			String routingKeyToUse = message.getPublishRoutingKey();
 			if (StringUtils.isEmpty(routingKeyToUse)) {
 				routingKeyToUse = routingKey;
@@ -160,7 +139,7 @@ public abstract class AbstractExchange implements Exchange {
 				}
 
 				message.setDelay(0, TimeUnit.SECONDS);
-				forwardPush(routingKeyToUse, message, message.getBody());
+				forwardPush(routingKeyToUse, message);
 				return;
 			}
 
@@ -172,7 +151,7 @@ public abstract class AbstractExchange implements Exchange {
 						delayTimeUnit.toMillis(delay), exchange, routingKeyToUse,
 						JsonUtils.getSupport().toJsonString(message));
 				message.setDelay(delay, delayTimeUnit);
-				retryPush(routingKeyToUse, message, message.getBody());
+				retryPush(routingKeyToUse, message);
 				return;
 			}
 
@@ -217,7 +196,7 @@ public abstract class AbstractExchange implements Exchange {
 							"retry delay: {}, exchange={}, routingKey={}, message={}", retryDelay, exchange,
 							routingKeyToUse, JsonUtils.getSupport().toJsonString(message));
 					message.setDelay(retryDelay, TimeUnit.MILLISECONDS);
-					retryPush(routingKeyToUse, message, message.getBody());
+					retryPush(routingKeyToUse, message);
 				}
 			}
 		}
@@ -225,17 +204,15 @@ public abstract class AbstractExchange implements Exchange {
 
 	private class PushRetryCallback implements RetryCallback<Void, ExchangeException> {
 		private final String routingKey;
-		private final MessageProperties messageProperties;
-		private final byte[] body;
+		private final Message<T> message;
 
-		public PushRetryCallback(String routingKey, MessageProperties messageProperties, byte[] body) {
+		public PushRetryCallback(String routingKey, Message<T> message) {
 			this.routingKey = routingKey;
-			this.messageProperties = messageProperties;
-			this.body = body;
+			this.message = message;
 		}
 
 		public Void doWithRetry(RetryContext context) throws ExchangeException {
-			basicPublish(routingKey, messageProperties, body);
+			basicPublish(routingKey, message);
 			return null;
 		}
 	}

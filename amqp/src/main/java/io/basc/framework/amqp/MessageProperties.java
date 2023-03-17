@@ -38,27 +38,32 @@ public class MessageProperties implements Serializable, Cloneable {
 	private String userId;
 	private String appId;
 	private String clusterId;
+	
+	public MessageProperties() {
+	}
+
+	public MessageProperties(MessageProperties messageProperties) {
+		this.contentType = messageProperties.contentType;
+		this.contentEncoding = messageProperties.contentEncoding;
+		if (messageProperties.headers != null) {
+			this.headers = new LinkedHashMap<String, Object>(messageProperties.headers);
+		}
+		this.deliveryMode = messageProperties.deliveryMode;
+		this.priority = messageProperties.priority;
+		this.correlationId = messageProperties.correlationId;
+		this.replyTo = messageProperties.replyTo;
+		this.expiration = messageProperties.expiration;
+		this.messageId = messageProperties.messageId;
+		this.timestamp = messageProperties.timestamp;
+		this.type = messageProperties.type;
+		this.userId = messageProperties.userId;
+		this.appId = messageProperties.appId;
+		this.clusterId = messageProperties.clusterId;
+	}
 
 	@Override
 	public MessageProperties clone() {
-		MessageProperties properties = new MessageProperties();
-		properties.contentType = this.contentType;
-		properties.contentEncoding = this.contentEncoding;
-		if (headers != null) {
-			properties.headers = new LinkedHashMap<String, Object>(headers);
-		}
-		properties.deliveryMode = this.deliveryMode;
-		properties.priority = this.priority;
-		properties.correlationId = this.correlationId;
-		properties.replyTo = this.replyTo;
-		properties.expiration = this.expiration;
-		properties.messageId = this.messageId;
-		properties.timestamp = this.timestamp;
-		properties.type = this.type;
-		properties.userId = this.userId;
-		properties.appId = this.appId;
-		properties.clusterId = this.clusterId;
-		return properties;
+		return new MessageProperties(this);
 	}
 
 	public String getContentType() {
@@ -326,8 +331,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	}
 
 	/**
-	 * 获取事务消息确认延迟, 默认10分钟
-	 * 使用在消息发送前先发送延迟消息来保证消息一定会发送成功
+	 * 获取事务消息确认延迟, 默认10分钟 使用在消息发送前先发送延迟消息来保证消息一定会发送成功
 	 * 
 	 * @return
 	 */

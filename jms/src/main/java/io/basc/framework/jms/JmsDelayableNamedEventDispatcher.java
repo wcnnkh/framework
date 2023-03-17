@@ -5,8 +5,10 @@ import java.util.concurrent.TimeUnit;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
+import io.basc.framework.event.BroadcastDelayableNamedEventDispatcher;
 import io.basc.framework.event.DelayableNamedEventDispatcher;
 import io.basc.framework.event.EventPushException;
+import io.basc.framework.event.UnicastDelayableNamedEventDispatcher;
 
 /**
  * jms2.0开始支持延迟消息
@@ -17,7 +19,8 @@ import io.basc.framework.event.EventPushException;
  * @param <T> 事件内容类型
  */
 public class JmsDelayableNamedEventDispatcher<K, T> extends JmsNamedEventDispatcher<K, T>
-		implements DelayableNamedEventDispatcher<K, T> {
+		implements UnicastDelayableNamedEventDispatcher<K, T>, BroadcastDelayableNamedEventDispatcher<K, T>,
+		DelayableNamedEventDispatcher<K, T> {
 
 	public JmsDelayableNamedEventDispatcher(JmsOperations jmsOperations, MessageSelector<K> messageSelector,
 			MessageCodec<T> codec) {

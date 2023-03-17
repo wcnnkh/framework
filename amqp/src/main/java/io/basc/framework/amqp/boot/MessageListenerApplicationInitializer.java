@@ -1,9 +1,10 @@
-package io.basc.framework.amqp.annotation;
+package io.basc.framework.amqp.boot;
 
 import java.util.function.Supplier;
 
-import io.basc.framework.amqp.Exchange;
+import io.basc.framework.amqp.BinaryMessageListener;
 import io.basc.framework.amqp.QueueDeclare;
+import io.basc.framework.amqp.boot.annotation.MessageListener;
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.context.annotation.Provider;
@@ -20,9 +21,8 @@ public final class MessageListenerApplicationInitializer implements ApplicationP
 			if (io.basc.framework.amqp.MessageListener.class.isAssignableFrom(clazz)) {
 				MessageListener messageListener = clazz.getAnnotation(MessageListener.class);
 				if (messageListener != null) {
-					Exchange exchange = application.getInstance(messageListener.exchange());
-					io.basc.framework.amqp.MessageListener listener = application
-							.getInstance((Class<io.basc.framework.amqp.MessageListener>) clazz);
+					MethodInvokerExchange exchange = application.getInstance(messageListener.exchange());
+					BinaryMessageListener listener = application.getInstance((Class<BinaryMessageListener>) clazz);
 					exchange.bind(messageListener.routingKey(), createQueueDeclare(messageListener), listener);
 				}
 			}
@@ -30,10 +30,11 @@ public final class MessageListenerApplicationInitializer implements ApplicationP
 			ReflectionUtils.getDeclaredMethods(clazz).withAll().all().stream()
 					.filter((e) -> e.isAnnotationPresent(MessageListener.class)).forEach((method) -> {
 						MessageListener messageListener = method.getAnnotation(MessageListener.class);
-						Exchange exchange = application.getInstance(messageListener.exchange());
+						MethodInvokerExchange exchange = application.getInstance(messageListener.exchange());
 						Supplier<Object> supplier = new NameInstanceSupplier<Object>(application, clazz.getName());
 						MethodInvoker invoker = application.getAop().getProxyMethod(clazz, supplier, method);
-						exchange.bind(messageListener.routingKey(), createQueueDeclare(messageListener), invoker);
+						exchange.registerInvoker(messageListener.routingKey(), createQueueDeclare(messageListener),
+								invoker);
 					});
 		}
 	}

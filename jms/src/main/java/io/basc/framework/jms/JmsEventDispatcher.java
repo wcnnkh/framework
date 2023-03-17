@@ -3,14 +3,17 @@ package io.basc.framework.jms;
 import javax.jms.JMSException;
 
 import io.basc.framework.codec.DecodeException;
+import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.EventPushException;
 import io.basc.framework.event.EventRegistrationException;
+import io.basc.framework.event.UnicastEventDispatcher;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Registration;
 
-public class JmsEventDispatcher<T> implements EventDispatcher<T> {
+public class JmsEventDispatcher<T>
+		implements UnicastEventDispatcher<T>, BroadcastEventDispatcher<T>, EventDispatcher<T> {
 	private final JmsOperations jmsOperations;
 	private final MessageCodec<T> codec;
 

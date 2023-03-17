@@ -18,8 +18,8 @@ public class RabbitmqUitls {
 				.userId(messageProperties.getUserId()).build();
 	}
 
-	public static Message toMessage(com.rabbitmq.client.AMQP.BasicProperties basicProperties, byte[] body) {
-		Message message = new Message(body);
+	public static <T> Message<T> toMessage(com.rabbitmq.client.AMQP.BasicProperties basicProperties, T body) {
+		Message<T> message = new Message<T>(body);
 		message.setAppId(basicProperties.getAppId());
 		message.setClusterId(basicProperties.getClusterId());
 		message.setContentEncoding(basicProperties.getContentEncoding());
