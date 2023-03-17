@@ -23,7 +23,7 @@ public final class Annotations {
 	public static <T extends Annotation> T getAnnotation(Class<T> type, AnnotatedElement... annotatedElements) {
 		T old = null;
 		for (AnnotatedElement annotatedElement : annotatedElements) {
-			T a = AnnotationUtils.getAnnotation(annotatedElement, type);
+			T a = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, type);
 			if (a != null) {
 				old = a;
 			}

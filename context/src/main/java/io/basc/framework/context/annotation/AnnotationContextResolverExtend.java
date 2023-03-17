@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import io.basc.framework.context.Context;
@@ -24,7 +24,6 @@ import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanResolver;
 import io.basc.framework.factory.BeanResolverExtend;
 import io.basc.framework.lang.Ignore;
-import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
@@ -59,7 +58,7 @@ public class AnnotationContextResolverExtend implements ContextResolverExtend, O
 
 	@Override
 	public String getId(TypeDescriptor typeDescriptor, BeanResolver chain) {
-		Bean bean = Annotations.getAnnotation(Bean.class, typeDescriptor, typeDescriptor.getType());
+		Bean bean = Annotations.getAnnotation(Bean.class, typeDescriptor);
 		if (bean != null && StringUtils.isNotEmpty(bean.value())) {
 			return bean.value();
 		}
@@ -68,11 +67,38 @@ public class AnnotationContextResolverExtend implements ContextResolverExtend, O
 
 	@Override
 	public Collection<String> getNames(TypeDescriptor typeDescriptor, BeanResolver chain) {
+		Set<String> names = null;
 		Bean bean = Annotations.getAnnotation(Bean.class, typeDescriptor, typeDescriptor.getType());
 		if (bean != null && bean.names().length > 0) {
-			return Arrays.asList(bean.names());
+			if (names == null) {
+				names = new HashSet<>(8);
+			}
+			names.addAll(Arrays.asList(bean.names()));
 		}
-		return BeanResolverExtend.super.getNames(typeDescriptor, chain);
+
+		Collection<String> parentNames = BeanResolverExtend.super.getNames(typeDescriptor, chain);
+		if (!CollectionUtils.isEmpty(parentNames)) {
+			if (names == null) {
+				names = new HashSet<>(8);
+			}
+
+			names.addAll(parentNames);
+		}
+
+		if (CollectionUtils.isEmpty(names)) {
+			// 如果不存在bean定义，使用service方式定义别名
+			Service service = typeDescriptor.getAnnotation(Service.class);
+			if (service != null) {
+				Class<?> serviceInterface = getServiceInterface(typeDescriptor.getType());
+				if (serviceInterface != null) {
+					if (names == null) {
+						names = new HashSet<>(8);
+					}
+					names.add(serviceInterface.getName());
+				}
+			}
+		}
+		return names == null ? Collections.emptyList() : names;
 	}
 
 	@Override
@@ -86,28 +112,23 @@ public class AnnotationContextResolverExtend implements ContextResolverExtend, O
 
 	@Override
 	public Collection<BeanDefinition> resolveBeanDefinitions(Class<?> clazz, ContextResolver chain) {
-		java.util.List<BeanDefinition> definitions = null;
-		Service service = clazz.getAnnotation(Service.class);
-		if (service != null) {
+		List<BeanDefinition> definitions = null;
+		if (AnnotatedElementUtils.hasAnnotation(clazz, Indexed.class)) {
 			if (definitions == null) {
 				definitions = new ArrayList<BeanDefinition>(8);
 			}
-			ContextBeanDefinition definition = new ContextBeanDefinition(context, clazz);
-			Set<String> names = new LinkedHashSet<String>();
-			names.addAll(definition.getNames());
-			names.addAll(getInternalNames(clazz, service));
-			definition.setNames(names);
-			definitions.add(definition);
+
+			definitions.add(new ContextBeanDefinition(context, clazz));
 		}
 
 		for (Method method : clazz.getDeclaredMethods()) {
-			if (definitions == null) {
-				definitions = new ArrayList<BeanDefinition>(8);
-			}
-
 			Bean bean = method.getAnnotation(Bean.class);
 			if (bean == null) {
 				continue;
+			}
+
+			if (definitions == null) {
+				definitions = new ArrayList<BeanDefinition>(8);
 			}
 
 			BeanDefinition beanDefinition = new ExecutableBeanDefinition(context, clazz, method);
@@ -115,13 +136,13 @@ public class AnnotationContextResolverExtend implements ContextResolverExtend, O
 		}
 
 		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
-			if (definitions == null) {
-				definitions = new ArrayList<BeanDefinition>(8);
-			}
-
 			Bean bean = constructor.getAnnotation(Bean.class);
 			if (bean == null) {
 				continue;
+			}
+
+			if (definitions == null) {
+				definitions = new ArrayList<BeanDefinition>(8);
 			}
 
 			BeanDefinition beanDefinition = new ExecutableBeanDefinition(context, clazz, constructor);
@@ -137,21 +158,6 @@ public class AnnotationContextResolverExtend implements ContextResolverExtend, O
 			definitions.addAll(superDefinitions);
 		}
 		return definitions == null ? Collections.emptyList() : definitions;
-	}
-
-	private static Collection<String> getInternalNames(Class<?> clazz, Service service) {
-		if (!ArrayUtils.isEmpty(service.value())) {
-			return Collections.emptyList();
-		}
-
-		Class<?> serviceInterface = getServiceInterface(clazz);
-		if (serviceInterface == null) {
-			return Collections.emptyList();
-		}
-
-		HashSet<String> list = new HashSet<String>();
-		list.add(serviceInterface.getName());
-		return list;
 	}
 
 	private static Class<?> getServiceInterface(Class<?> clazz) {

@@ -180,11 +180,6 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 
 				super.init();
 
-				// 初始化所有单例
-				if (isInitializeAllSingletonObjects()) {
-					initializeAllSingletonObjects();
-				}
-
 				// 启动服务器
 				if (isEnableServer()) {
 					startServer();
@@ -196,6 +191,11 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 
 				for (ApplicationPostProcessor postProcessor : applicationPostProcessors) {
 					postProcessApplication(postProcessor);
+				}
+
+				// 初始化所有单例
+				if (isInitializeAllSingletonObjects()) {
+					initializeAllSingletonObjects();
 				}
 
 				getLogger()
@@ -219,12 +219,6 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 	 * 初始化所有单例
 	 */
 	public void initializeAllSingletonObjects() {
-		for (Class<?> clazz : getContextClasses()) {
-			if (isSingleton(clazz) && isInstance(clazz)) {
-				getInstance(clazz);
-			}
-		}
-
 		for (String id : getDefinitionIds()) {
 			if (isSingleton(id) && isInstance(id)) {
 				getInstance(id);

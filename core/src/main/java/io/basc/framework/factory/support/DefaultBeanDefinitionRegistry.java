@@ -92,12 +92,13 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 				}
 			}
 
-			boolean exist = beanDefinitionMap.containsKey(definitionToUse.getId());
+			String id = definitionToUse.getId();
+			boolean exist = beanDefinitionMap.containsKey(id);
 			if (isNew && exist) {
 				throw new AlreadyExistsException(definitionToUse.toString());
 			}
 
-			beanDefinitionMap.put(definitionToUse.getId(), definitionToUse);
+			beanDefinitionMap.put(id, definitionToUse);
 			if (logger.isDebugEnabled()) {
 				logger.debug("register [{}] -> definition: {}", name, definitionToUse);
 			}
@@ -108,7 +109,7 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 				}
 
 				try {
-					registerAlias(definitionToUse.getId(), alias);
+					registerAlias(id, alias);
 				} catch (IllegalStateException e) {
 					logger.error(e, "register [{}] definition {}", name, definitionToUse);
 				}

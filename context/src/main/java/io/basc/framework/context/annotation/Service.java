@@ -11,5 +11,4 @@ import java.lang.annotation.Target;
 @Inherited
 @Indexed
 public @interface Service {
-	String[] value() default {};
 }

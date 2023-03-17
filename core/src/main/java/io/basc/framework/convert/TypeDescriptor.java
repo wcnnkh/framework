@@ -596,7 +596,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 			type = Object.class;
 		}
 		TypeDescriptor desc = commonTypesCache.get(type);
-		return (desc != null ? desc : new TypeDescriptor(ResolvableType.forClass(type), null, null));
+		return (desc != null ? desc : new TypeDescriptor(ResolvableType.forClass(type), null, type));
 	}
 
 	public static TypeDescriptor valueOf(@Nullable Type type) {

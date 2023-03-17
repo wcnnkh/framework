@@ -64,7 +64,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 		// 这是为了执行init时重新选择parentBeanFactory
 		setParentBeanFactory(null);
 
-		// 扫描框架类，忽略(.test.)路径
+		// 扫描框架类
 		componentScan(Constants.SYSTEM_PACKAGE_NAME, null);
 	}
 
@@ -160,6 +160,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 							logger.warn("There are duplicate definitions {}", definition);
 							continue;
 						}
+
 						registerDefinition(definition);
 					}
 				}
