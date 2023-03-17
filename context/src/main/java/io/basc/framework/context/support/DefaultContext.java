@@ -157,7 +157,6 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 
 					for (BeanDefinition definition : definitions) {
 						if (containsDefinition(definition.getId())) {
-							logger.warn("There are duplicate definitions {}", definition);
 							continue;
 						}
 
