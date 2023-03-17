@@ -208,7 +208,7 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 	}
 
 	public boolean isInitializeAllSingletonObjects() {
-		return getProperties().getAsBoolean("application.initialize.all.singleton.objects.enable");
+		return getProperties().get("application.initialize.all.singleton.objects.enable").or(true).getAsBoolean();
 	}
 
 	public void setInitializeAllSingletonObjects(boolean enable) {
@@ -219,9 +219,15 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 	 * 初始化所有单例
 	 */
 	public void initializeAllSingletonObjects() {
+		for (Class<?> clazz : getContextClasses()) {
+			if (isSingleton(clazz) && isInstance(clazz)) {
+				getInstance(clazz);
+			}
+		}
+
 		for (String id : getDefinitionIds()) {
 			if (isSingleton(id) && isInstance(id)) {
-				getSingleton(id);
+				getInstance(id);
 			}
 		}
 	}
