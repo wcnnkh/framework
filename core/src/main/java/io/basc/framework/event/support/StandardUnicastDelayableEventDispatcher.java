@@ -14,18 +14,9 @@ public class StandardUnicastDelayableEventDispatcher<T> extends StandardDelayabl
 		this(Selector.roundRobin(), new DefaultDelayableExecutor());
 	}
 
-	public StandardUnicastDelayableEventDispatcher(Selector<EventListener<T>> selector) {
-		this(selector, new DefaultDelayableExecutor());
-	}
-
-	public StandardUnicastDelayableEventDispatcher(DelayableExecutor delayableExecutor) {
-		this(Selector.roundRobin(), delayableExecutor);
-	}
-
 	public StandardUnicastDelayableEventDispatcher(Selector<EventListener<T>> selector,
 			DelayableExecutor delayableExecutor) {
 		super(selector, delayableExecutor);
 		Assert.requiredArgument(selector != null, "selector");
 	}
-
 }

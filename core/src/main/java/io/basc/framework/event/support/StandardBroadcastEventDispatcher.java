@@ -14,5 +14,4 @@ public class StandardBroadcastEventDispatcher<T> extends StandardEventDispatcher
 	public StandardBroadcastEventDispatcher(Executor executor) {
 		super(null, executor);
 	}
-
 }

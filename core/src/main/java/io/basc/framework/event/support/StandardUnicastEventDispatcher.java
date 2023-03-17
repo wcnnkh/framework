@@ -14,10 +14,6 @@ public class StandardUnicastEventDispatcher<T> extends StandardEventDispatcher<T
 		this(Selector.roundRobin(), null);
 	}
 
-	public StandardUnicastEventDispatcher(@Nullable Executor executor) {
-		this(Selector.roundRobin(), executor);
-	}
-
 	public StandardUnicastEventDispatcher(Selector<EventListener<T>> selector) {
 		this(selector, null);
 	}
