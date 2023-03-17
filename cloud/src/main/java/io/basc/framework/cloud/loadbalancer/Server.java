@@ -1,9 +1,9 @@
 package io.basc.framework.cloud.loadbalancer;
 
-public interface Server<T>{
+import io.basc.framework.util.Weighted;
+
+public interface Server<T> extends Weighted {
 	String getId();
-	
-	int getWeight();
-	
+
 	T getService();
 }

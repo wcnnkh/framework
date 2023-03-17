@@ -3,9 +3,9 @@ package io.basc.framework.boot.servlet.support;
 import javax.servlet.ServletContext;
 
 import io.basc.framework.boot.support.DefaultApplication;
-import io.basc.framework.context.servlet.ServletContextPropertyFactory;
-import io.basc.framework.context.servlet.ServletContextResourceLoader;
 import io.basc.framework.context.support.DirectoryClassesLoader;
+import io.basc.framework.servlet.ServletContextPropertyFactory;
+import io.basc.framework.servlet.ServletContextResourceLoader;
 
 public class ServletApplication extends DefaultApplication {
 

@@ -1,17 +1,18 @@
 package io.basc.framework.util.concurrent;
 
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.XUtils;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import io.basc.framework.lang.Nullable;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.XUtils;
 
 /**
  * 任务队列 默认是一个守护线程自动退出
@@ -23,6 +24,7 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 	private static Logger logger = LoggerFactory.getLogger(TaskQueue.class);
 	private final BlockingQueue<Runnable> queue;
 	private boolean tryGet = true;
+	private AtomicBoolean started = new AtomicBoolean();
 
 	public TaskQueue() {
 		this(new LinkedBlockingQueue<>());
@@ -60,6 +62,17 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 		}
 	}
 
+	public boolean isStarted() {
+		return started.get();
+	}
+
+	@Override
+	public synchronized void start() {
+		if (started.compareAndSet(false, true)) {
+			super.start();
+		}
+	}
+
 	@Override
 	public void run() {
 		while (!Thread.currentThread().isInterrupted()) {
@@ -68,7 +81,7 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 				try {
 					task = queue.take();
 				} catch (InterruptedException e) {
-					continue;
+					break;
 				}
 			}
 
@@ -93,6 +106,10 @@ public class TaskQueue extends Thread implements AsyncExecutor {
 				return taskId + "[" + task.toString() + "]";
 			}
 		};
+
+		if (!isStarted()) {
+			start();
+		}
 
 		if (isInterrupted()) {
 			throw new RejectedExecutionException(String.valueOf(future));

@@ -1,4 +1,4 @@
-package io.basc.framework.context.servlet;
+package io.basc.framework.servlet;
 
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;

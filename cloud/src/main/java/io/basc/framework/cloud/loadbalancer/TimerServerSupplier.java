@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 
 public class TimerServerSupplier<T> extends TimerTask implements ServerSupplier<T> {
@@ -26,6 +27,7 @@ public class TimerServerSupplier<T> extends TimerTask implements ServerSupplier<
 	}
 
 	public TimerServerSupplier(ServerSupplier<T> serverSupplier, long period) {
+		Assert.requiredArgument(serverSupplier != null, "serverSupplier");
 		this.serverSupplier = serverSupplier;
 		this.period = period;
 	}

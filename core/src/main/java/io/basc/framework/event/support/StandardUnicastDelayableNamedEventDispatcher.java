@@ -12,7 +12,7 @@ public class StandardUnicastDelayableNamedEventDispatcher<K, T> extends Standard
 	}
 
 	public StandardUnicastDelayableNamedEventDispatcher(Matcher<K> matcher, DelayableExecutor delayableExecutor) {
-		super((k) -> new StandardUnicastEventDispatcher<>(null), matcher, delayableExecutor);
+		super((k) -> new StandardUnicastEventDispatcher<>(), matcher, delayableExecutor);
 	}
 
 }
