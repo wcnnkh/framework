@@ -25,15 +25,17 @@ public final class SharedResultSet<E> implements ResultSet<E>, Serializable {
 				if (list == null) {
 					list = new ArrayList<>();
 				}
-
-				if (list.contains(element)) {
-					return Registration.EMPTY;
-				}
-
-				list.add(element);
 			}
 		}
-		return new ElementRegistion(element, this.version);
+
+		synchronized (this) {
+			if (list.contains(element)) {
+				return Registration.EMPTY;
+			}
+
+			list.add(element);
+			return new ElementRegistion(element, this.version);
+		}
 	}
 
 	private void unregister(E element, int version) {
@@ -88,9 +90,9 @@ public final class SharedResultSet<E> implements ResultSet<E>, Serializable {
 	@Override
 	public <T, X extends Throwable> T export(Processor<? super Stream<E>, ? extends T, ? extends X> processor)
 			throws X {
-		if (isEmpty()) {
+		if (!isEmpty()) {
 			synchronized (this) {
-				if (isEmpty()) {
+				if (!isEmpty()) {
 					return ResultSet.super.export(processor);
 				}
 			}
@@ -106,7 +108,7 @@ public final class SharedResultSet<E> implements ResultSet<E>, Serializable {
 	public <X extends Throwable> void transfer(ConsumeProcessor<? super Stream<E>, ? extends X> processor) throws X {
 		if (!isEmpty()) {
 			synchronized (this) {
-				if (isEmpty()) {
+				if (!isEmpty()) {
 					ResultSet.super.transfer(processor);
 					return;
 				}

@@ -41,16 +41,17 @@ public class StandardNamedEventDispatcher<K, T> implements NamedEventDispatcher<
 				if (dispatcherMap == null) {
 					dispatcherMap = matcher == null ? new HashMap<>(8) : new TreeMap<>(matcher);
 				}
-
-				EventDispatcher<T> eventDispatcher = dispatcherMap.get(name);
-				if (eventDispatcher == null) {
-					eventDispatcher = creator.apply(name);
-					dispatcherMap.put(name, eventDispatcher);
-				}
-				return eventDispatcher.registerListener(eventListener);
 			}
 		}
-		return Registration.EMPTY;
+
+		synchronized (this) {
+			EventDispatcher<T> eventDispatcher = dispatcherMap.get(name);
+			if (eventDispatcher == null) {
+				eventDispatcher = creator.apply(name);
+				dispatcherMap.put(name, eventDispatcher);
+			}
+			return eventDispatcher.registerListener(eventListener);
+		}
 	}
 
 	@Override
