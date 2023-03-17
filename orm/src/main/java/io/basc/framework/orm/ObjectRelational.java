@@ -93,10 +93,6 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 	}
 
 	public ObjectRelational<T> setObjectRelationalResolver(ObjectRelationalResolver objectRelationalResolver) {
-		if (objectRelationalResolver == this.objectRelationalResolver) {
-			return this;
-		}
-
 		Members<T> members = map((e) -> {
 			T t = clone(e);
 			t.setObjectRelationalResolver(objectRelationalResolver);
