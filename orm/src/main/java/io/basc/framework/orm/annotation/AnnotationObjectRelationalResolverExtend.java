@@ -153,7 +153,7 @@ public class AnnotationObjectRelationalResolverExtend
 
 	@Override
 	public boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
-		if (AnnotatedElementUtils.isAnnotated(descriptor, PrimaryKey.class)) {
+		if (AnnotatedElementUtils.hasAnnotation(descriptor, PrimaryKey.class)) {
 			return true;
 		}
 
@@ -183,7 +183,7 @@ public class AnnotationObjectRelationalResolverExtend
 
 	@Override
 	public boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
-		if (AnnotatedElementUtils.isAnnotated(descriptor, Entity.class)) {
+		if (AnnotatedElementUtils.hasAnnotation(descriptor, Entity.class)) {
 			return true;
 		}
 		return chain.isEntity(entityClass, descriptor);
@@ -193,7 +193,7 @@ public class AnnotationObjectRelationalResolverExtend
 	public boolean isEntity(Class<?> entityClass, ObjectRelationalResolver chain) {
 		Class<?> clazz = entityClass;
 		while (clazz != null && clazz != Object.class) {
-			if (AnnotatedElementUtils.isAnnotated(clazz, Entity.class)) {
+			if (AnnotatedElementUtils.hasAnnotation(clazz, Entity.class)) {
 				return true;
 			}
 			clazz = clazz.getSuperclass();
@@ -204,7 +204,7 @@ public class AnnotationObjectRelationalResolverExtend
 	@Override
 	public boolean isVersionField(Class<?> entityClass, ParameterDescriptor descriptor,
 			ObjectRelationalResolver chain) {
-		if (AnnotatedElementUtils.isAnnotated(descriptor, Version.class)) {
+		if (AnnotatedElementUtils.hasAnnotation(descriptor, Version.class)) {
 			return true;
 		}
 		return chain.isVersionField(entityClass, descriptor);

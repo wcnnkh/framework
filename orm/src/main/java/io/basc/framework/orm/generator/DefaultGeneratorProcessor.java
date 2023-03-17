@@ -122,16 +122,16 @@ public class DefaultGeneratorProcessor implements GeneratorProcessor {
 
 	public <T> void process(Class<? extends T> entityClass, Object entity, Field field,
 			Map<Object, Object> contextMap) {
-		if (AnnotatedElementUtils.isAnnotated(field, UUID.class)) {
+		if (AnnotatedElementUtils.hasAnnotation(field, UUID.class)) {
 			field.getSetter().set(entity, getUUID(entityClass, entity, field, contextMap));
 			return;
 		}
 
-		if (AnnotatedElementUtils.isAnnotated(field, CreateTime.class)) {
+		if (AnnotatedElementUtils.hasAnnotation(field, CreateTime.class)) {
 			field.getSetter().set(entity, getCreateTime(entityClass, entity, field, contextMap));
 		}
 
-		if (AnnotatedElementUtils.isAnnotated(field, Generator.class)) {
+		if (AnnotatedElementUtils.hasAnnotation(field, Generator.class)) {
 			if (String.class == field.getSetter().getType()) {
 				SequenceId sequenceId = getSequenceId(entityClass, entity, field, contextMap);
 				field.getSetter().set(entity, sequenceId.getId());
