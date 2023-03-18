@@ -2,6 +2,8 @@ package io.basc.framework.core.parameter;
 
 import java.lang.reflect.Executable;
 
+import io.basc.framework.core.ParameterNameDiscoverer;
+
 public class ExecutableParameterDescriptors extends DefaultParameterDescriptors<Executable> {
 
 	public ExecutableParameterDescriptors(Class<?> targetClass, Executable executable) {

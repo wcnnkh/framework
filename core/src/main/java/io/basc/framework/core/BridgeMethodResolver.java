@@ -1,3 +1,19 @@
+/*
+ * Copyright 2002-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.basc.framework.core;
 
 import java.lang.reflect.Method;
@@ -31,7 +47,9 @@ import io.basc.framework.util.ConcurrentReferenceHashMap;
  * The Java Language Specification</a> for more details on the use of bridge
  * methods.
  *
- * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/BridgeMethodResolver.java
+ * @author Rob Harrop
+ * @author Juergen Hoeller
+ * @author Phillip Webb
  */
 public final class BridgeMethodResolver {
 
@@ -79,9 +97,9 @@ public final class BridgeMethodResolver {
 
 	/**
 	 * Returns {@code true} if the supplied '{@code candidateMethod}' can be
-	 * consider a validate candidate for the {@link Method} that is
+	 * considered a valid candidate for the {@link Method} that is
 	 * {@link Method#isBridge() bridged} by the supplied {@link Method bridge
-	 * Method}. This method performs inexpensive checks and can be used quickly
+	 * Method}. This method performs inexpensive checks and can be used quickly to
 	 * filter for a set of possible matches.
 	 */
 	private static boolean isBridgedCandidateFor(Method candidateMethod, Method bridgeMethod) {
@@ -117,8 +135,8 @@ public final class BridgeMethodResolver {
 	}
 
 	/**
-	 * Determines whether or not the bridge {@link Method} is the bridge for the
-	 * supplied candidate {@link Method}.
+	 * Determines whether the bridge {@link Method} is the bridge for the supplied
+	 * candidate {@link Method}.
 	 */
 	static boolean isBridgeMethodFor(Method bridgeMethod, Method candidateMethod, Class<?> declaringClass) {
 		if (isResolvedTypeMatch(candidateMethod, bridgeMethod, declaringClass)) {
@@ -214,7 +232,7 @@ public final class BridgeMethodResolver {
 	 * Compare the signatures of the bridge method and the method which it bridges.
 	 * If the parameter and return types are the same, it is a 'visibility' bridge
 	 * method introduced in Java 6 to fix
-	 * https://bugs.java.com/view_bug.do?bug_id=6342411. See also
+	 * https://bugs.openjdk.org/browse/JDK-6342411. See also
 	 * https://stas-blogspot.blogspot.com/2010/03/java-bridge-methods-explained.html
 	 * 
 	 * @return whether signatures match as described

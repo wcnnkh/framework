@@ -8,17 +8,19 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
+import io.basc.framework.core.DefaultParameterNameDiscoverer;
+import io.basc.framework.core.ParameterNameDiscoverer;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 
 public final class ParameterUtils {
-	private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new Jdk8ParameterNameDiscoverer();
+	private static final DefaultParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new DefaultParameterNameDiscoverer();
 
 	private ParameterUtils() {
 	};
 
-	public static ParameterNameDiscoverer getParameterNameDiscoverer() {
+	public static DefaultParameterNameDiscoverer getParameterNameDiscoverer() {
 		return PARAMETER_NAME_DISCOVERER;
 	}
 
