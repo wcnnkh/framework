@@ -7,7 +7,7 @@
 	</parent>
 	<artifactId>zookeeper</artifactId>
 	<properties>
-		<zookeeper.version>3.8.0</zookeeper.version>
+		<zookeeper.version>3.8.1</zookeeper.version>
 	</properties>
 	<dependencies>
 		<dependency>
