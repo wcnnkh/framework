@@ -9,6 +9,7 @@ import io.basc.framework.core.type.ClassMetadata;
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.core.type.classreading.MetadataReaderFactory;
 import io.basc.framework.core.type.filter.TypeFilter;
+import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.JavaVersion;
 import io.basc.framework.value.ValueFactory;
@@ -29,9 +30,18 @@ public class ContextTypeFilter implements TypeFilter {
 		}
 
 		AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
-		return (annotationMetadata.hasAnnotatedMethods(Indexed.class.getName())
-				|| annotationMetadata.hasMetaAnnotation(Indexed.class.getName()))
-				&& JavaVersion.isSupported(annotationMetadata)
+		if (annotationMetadata.hasAnnotation(Ignore.class.getName())) {
+			return false;
+		}
+
+		if ((annotationMetadata.getAnnotationTypes().isEmpty() || (annotationMetadata.getAnnotationTypes().size() == 1
+				&& annotationMetadata.hasAnnotation(FunctionalInterface.class.getName())))
+				&& !annotationMetadata.hasAnnotatedMethods(Indexed.class.getName())
+				&& !annotationMetadata.hasMetaAnnotation(Indexed.class.getName())) {
+			return false;
+		}
+
+		return classMetadata.isPublic() && JavaVersion.isSupported(annotationMetadata)
 				&& (propertyFactory == null || EnableConditionUtils.enable(metadataReader, propertyFactory));
 	}
 }
