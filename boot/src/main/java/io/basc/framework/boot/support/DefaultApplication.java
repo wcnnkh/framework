@@ -110,22 +110,14 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 			}
 
 			try {
-				if (isAutoImportResource()) {
-					boolean isImportResource = false;
-					for (Class<?> sourceClass : getSourceClasses()) {
-						if (AnnotatedElementUtils.hasAnnotation(sourceClass, ApplicationResource.class)) {
-							isImportResource = true;
-							break;
-						}
-					}
-
-					if (!isImportResource) {
-						// 如果没有注册过资源
-						ImportResource importResource = ApplicationResource.class.getAnnotation(ImportResource.class);
-						if (importResource != null) {
-							for (String location : importResource.value()) {
-								source(location);
-							}
+				if (isAutoImportResource() && !getSourceClasses().stream()
+						.filter((e) -> AnnotatedElementUtils.hasAnnotation(e, ApplicationResource.class)).findAny()
+						.isPresent()) {
+					// 如果没有注册过资源就将默认资源注册一次，目的是为了兼容在第三方容器运行时找不到默认配置问题
+					ImportResource importResource = ApplicationResource.class.getAnnotation(ImportResource.class);
+					if (importResource != null) {
+						for (String location : importResource.value()) {
+							source(location);
 						}
 					}
 				}

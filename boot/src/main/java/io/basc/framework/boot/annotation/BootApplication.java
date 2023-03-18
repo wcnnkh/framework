@@ -19,5 +19,4 @@ import io.basc.framework.context.annotation.Component;
 @Documented
 @Component
 public @interface BootApplication {
-
 }
