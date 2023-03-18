@@ -31,8 +31,8 @@ public class ContextTypeFilter extends AnnotationTypeFilter {
 			return false;
 		}
 
-		return super.matchSelf(metadataReader) && classMetadata.isPublic()
-				&& JavaVersion.isSupported(annotationMetadata)
-				&& (propertyFactory == null || EnableConditionUtils.enable(metadataReader, propertyFactory));
+		return classMetadata.isPublic() && JavaVersion.isSupported(annotationMetadata)
+				&& (propertyFactory == null || EnableConditionUtils.enable(metadataReader, propertyFactory))
+				&& super.matchSelf(metadataReader);
 	}
 }
