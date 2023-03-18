@@ -76,6 +76,10 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 	}
 
 	public BeanDefinition registerDefinition(String name, BeanDefinition beanDefinition) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("register name=" + name + ", id=" + beanDefinition.getId() + ", names="
+					+ beanDefinition.getNames());
+		}
 		synchronized (beanDefinitionMap) {
 			if (!beanDefinition.getId().equals(name) && !beanDefinition.getNames().contains(name)
 					&& !hasAlias(beanDefinition.getId(), name)) {
@@ -83,18 +87,17 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 			}
 
 			BeanDefinition definitionToUse = beanDefinition;
-			boolean isNew = false;
 			if (beanDefinition instanceof DefaultBeanDefinition) {
 				DefaultBeanDefinition definition = (DefaultBeanDefinition) beanDefinition;
-				if (definition.isNew()) {
-					isNew = true;
-					definitionToUse = definition.clone();
+				if (!definition.isNew()) {
+					return beanDefinition;
 				}
+
+				definitionToUse = definition.clone();
 			}
 
 			String id = definitionToUse.getId();
-			boolean exist = beanDefinitionMap.containsKey(id);
-			if (isNew && exist) {
+			if (beanDefinitionMap.containsKey(id)) {
 				throw new AlreadyExistsException(definitionToUse.toString());
 			}
 
@@ -108,11 +111,7 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 					continue;
 				}
 
-				try {
-					registerAlias(id, alias);
-				} catch (IllegalStateException e) {
-					logger.error(e, "register [{}] definition {}", name, definitionToUse);
-				}
+				registerAlias(id, alias);
 			}
 			return definitionToUse;
 		}

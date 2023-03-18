@@ -14,9 +14,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>cloud</artifactId>
+			<artifactId>context</artifactId>
 		</dependency>
-
 		<!-- feign相关 -->
 		<!-- https://mvnrepository.com/artifact/io.github.openfeign/feign-core -->
 		<dependency>

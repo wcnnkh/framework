@@ -14,7 +14,7 @@ public class RoundRobinSelector<E> implements Selector<E> {
 	private final AtomicInteger position = new AtomicInteger();
 
 	@Override
-	public E select(List<E> list) {
+	public E apply(List<E> list) {
 		if (CollectionUtils.isEmpty(list)) {
 			return null;
 		}

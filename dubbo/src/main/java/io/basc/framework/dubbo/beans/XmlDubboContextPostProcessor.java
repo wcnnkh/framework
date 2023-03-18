@@ -23,7 +23,7 @@ public class XmlDubboContextPostProcessor implements ContextPostProcessor {
 
 	@Override
 	public void postProcessContext(ConfigurableContext context) throws Throwable {
-		List<Resource> resources = context.getConfigurationResources().stream()
+		List<Resource> resources = context.getResources().stream()
 				.filter((e) -> e.exists() && e.getName().endsWith(".xml")).collect(Collectors.toList());
 		if (!context.containsDefinition(DubboConfigure.class.getName())) {
 			BeanDefinition definition = context.registerSupplier(TypeDescriptor.valueOf(XmlDubboConfigure.class), true,

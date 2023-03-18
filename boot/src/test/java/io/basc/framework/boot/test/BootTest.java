@@ -9,8 +9,11 @@ import org.junit.Test;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.support.MainApplication;
 import io.basc.framework.context.annotation.Bean;
+import io.basc.framework.context.annotation.Component;
+import io.basc.framework.context.annotation.ImportResource;
 
-@Bean(names = "testBean")
+@Component
+@ImportResource("test.properties")
 public class BootTest {
 	private int value = 1;
 
@@ -28,16 +31,14 @@ public class BootTest {
 
 		assertTrue(application.getPort().getAsInt() == 8888);
 
-		BootTest context1 = (BootTest) application.getInstance("testBean");
+		BootTest context1 = (BootTest) application.getInstance(BootTest.class);
 		assertTrue(context1.getValue() == 1);
 
-		BootTest context2 = (BootTest) application.getInstance("testBean2");
+		BootTest context2 = (BootTest) application.getInstance("testBean");
 		assertTrue(context2.getValue() == 2);
-
-		assertTrue(application.getInstance("testBean") == application.getInstance(BootTest.class));
 	}
 
-	@Bean("testBean2")
+	@Bean("testBean")
 	public BootTest getBootTest() {
 		return getBootTest(2);
 	}

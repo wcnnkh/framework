@@ -28,7 +28,6 @@ public class MainApplication extends DefaultApplication implements Runnable {
 
 		getProperties().getPropertyFactories().getFactories().addService(mainArgs);
 		setClassLoader(sourceClass.getClassLoader());
-		source(sourceClass);
 		setLogger(LoggerFactory.getLogger(sourceClass));
 		getLogger().debug("args:{}", this.mainArgs);
 	}
@@ -49,6 +48,12 @@ public class MainApplication extends DefaultApplication implements Runnable {
 			}
 		}
 		super.destroy();
+	}
+
+	@Override
+	public void init() {
+		source(sourceClass);
+		super.init();
 	}
 
 	@Override

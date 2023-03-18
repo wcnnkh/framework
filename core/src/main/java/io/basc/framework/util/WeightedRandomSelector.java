@@ -13,7 +13,7 @@ public class WeightedRandomSelector<E> implements Selector<E> {
 	private static final WeightedRandomSelector<?> SINGLETON = new WeightedRandomSelector<>();
 
 	@Override
-	public E select(List<E> list) {
+	public E apply(List<E> list) {
 		if (CollectionUtils.isEmpty(list)) {
 			return null;
 		}

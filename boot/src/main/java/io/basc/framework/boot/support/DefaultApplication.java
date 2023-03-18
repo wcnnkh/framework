@@ -7,10 +7,10 @@ import io.basc.framework.boot.ApplicationException;
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ApplicationServer;
 import io.basc.framework.boot.ConfigurableApplication;
-import io.basc.framework.boot.annotation.ComponentScan;
-import io.basc.framework.boot.annotation.ComponentScans;
+import io.basc.framework.boot.annotation.ApplicationResource;
+import io.basc.framework.context.annotation.ImportResource;
 import io.basc.framework.context.support.DefaultContext;
-import io.basc.framework.context.support.LinkedHashSetClassesLoader;
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.factory.BeanDefinition;
@@ -22,8 +22,6 @@ import io.basc.framework.util.OptionalInt;
 import io.basc.framework.util.SplitLine;
 
 public class DefaultApplication extends DefaultContext implements ConfigurableApplication {
-	private static final String APPLICATION_PREFIX_CONFIGURATION = "io.basc.framework.application.configuration";
-	private static final String APPLICATION_PREFIX = "application";
 	private static final String SERVER_PORT_PROPERTY = "server.port";
 
 	private final BroadcastEventDispatcher<ApplicationEvent> applicationEventDispathcer = new StandardBroadcastEventDispatcher<ApplicationEvent>();
@@ -32,66 +30,11 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 	private final ConfigurableServices<ApplicationPostProcessor> applicationPostProcessors = new ConfigurableServices<ApplicationPostProcessor>(
 			ApplicationPostProcessor.class);
 	private volatile boolean initialized;
-	private final LinkedHashSetClassesLoader sourceClasses = new LinkedHashSetClassesLoader();
 
 	public DefaultApplication() {
 		this.createTime = System.currentTimeMillis();
 		// 添加默认的类
-		getContextClasses().add(sourceClasses);
 		registerSingleton(Application.class.getName(), this);
-	}
-
-	@Override
-	public LinkedHashSetClassesLoader getSourceClasses() {
-		return sourceClasses;
-	}
-
-	@Override
-	public void source(Class<?> sourceClass) {
-		if (!sourceClasses.add(sourceClass)) {
-			throw new IllegalArgumentException("Already source " + sourceClass);
-		}
-
-		if (sourceClass.getPackage() != null) {
-			componentScan(sourceClass.getPackage().getName());
-		}
-
-		ComponentScan componentScan = sourceClass.getAnnotation(ComponentScan.class);
-		if (componentScan != null) {
-			componentScan(componentScan);
-		}
-
-		ComponentScans componentScans = sourceClass.getAnnotation(ComponentScans.class);
-		if (componentScans != null) {
-			for (ComponentScan scan : componentScans.value()) {
-				componentScan(scan);
-			}
-		}
-	}
-
-	private void componentScan(ComponentScan componentScan) {
-		for (String name : componentScan.value()) {
-			componentScan(name);
-		}
-
-		for (String name : componentScan.basePackages()) {
-			componentScan(name);
-		}
-	}
-
-	@Override
-	protected boolean useSpi(Class<?> serviceClass) {
-		for (Class<?> sourceClass : sourceClasses) {
-			Package pg = sourceClass.getPackage();
-			if (pg == null) {
-				continue;
-			}
-
-			if (serviceClass.getName().startsWith(pg.getName())) {
-				return true;
-			}
-		}
-		return super.useSpi(serviceClass);
 	}
 
 	public long getCreateTime() {
@@ -151,6 +94,14 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 		super.destroy();
 	}
 
+	public boolean isAutoImportResource() {
+		return getProperties().get("io.basc.framework.application.auto.import.resource").or(true).getAsBoolean();
+	}
+
+	public void setAutoImportResource(boolean autoImportResource) {
+		getProperties().put("io.basc.framework.application.auto.import.resource", autoImportResource);
+	}
+
 	@Override
 	public void init() {
 		synchronized (this) {
@@ -159,13 +110,23 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 			}
 
 			try {
-				String applicationConfiguration = getProperties().get(APPLICATION_PREFIX_CONFIGURATION)
-						.or(APPLICATION_PREFIX).getAsString();
-				for (String suffix : new String[] { ".properties", ".yaml", ".yml" }) {
-					String configPath = applicationConfiguration + suffix;
-					if (getResourceLoader().exists(configPath)) {
-						getLogger().info("Configure application resource: {}", configPath);
-						loadProperties(configPath);
+				if (isAutoImportResource()) {
+					boolean isImportResource = false;
+					for (Class<?> sourceClass : getSourceClasses()) {
+						if (AnnotatedElementUtils.hasAnnotation(sourceClass, ApplicationResource.class)) {
+							isImportResource = true;
+							break;
+						}
+					}
+
+					if (!isImportResource) {
+						// 如果没有注册过资源
+						ImportResource importResource = ApplicationResource.class.getAnnotation(ImportResource.class);
+						if (importResource != null) {
+							for (String location : importResource.value()) {
+								source(location);
+							}
+						}
 					}
 				}
 

@@ -26,8 +26,8 @@ public class XmlContextPostProcessor implements ContextPostProcessor {
 
 	@Override
 	public void postProcessContext(ConfigurableContext context) throws Throwable {
-		for (Resource resource : context.getConfigurationResources()) {
-			if (resource.exists() && resource.getName().endsWith("xml")) {
+		for (Resource resource : context.getResources()) {
+			if (resource.exists() && resource.getName().endsWith(".xml")) {
 				logger.info("Use config {}", resource.getDescription());
 
 				XmlBeanUtils.read(context.getResourceLoader(), resource, (nodeList) -> {
@@ -89,7 +89,7 @@ public class XmlContextPostProcessor implements ContextPostProcessor {
 					return properties;
 				});
 			}
-			environment.loadProperties(observableProperties);
+			environment.source(observableProperties);
 		}
 
 		String name = DomUtils.getNodeAttributeValue(node, "name").getAsString();

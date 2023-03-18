@@ -14,13 +14,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
-			<artifactId>cloud</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.basc.framework</groupId>
 			<artifactId>web</artifactId>
 		</dependency>
-		
 		<!-- testing-->
 		<dependency>
 			<groupId>io.basc.framework</groupId>

@@ -12,11 +12,16 @@ import io.basc.framework.context.ContextAware;
 import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.ProviderClassesLoader;
 import io.basc.framework.context.annotation.AnnotationContextResolverExtend;
+import io.basc.framework.context.annotation.ComponentScan;
+import io.basc.framework.context.annotation.ComponentScans;
+import io.basc.framework.context.annotation.ImportResource;
+import io.basc.framework.context.annotation.ImportSource;
 import io.basc.framework.context.ioc.ConfigurableIocResolver;
 import io.basc.framework.context.ioc.IocResolver;
 import io.basc.framework.context.ioc.annotation.IocBeanResolverExtend;
 import io.basc.framework.context.repository.annotation.RepositoryContextResolverExtend;
 import io.basc.framework.context.xml.XmlContextPostProcessor;
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.env.DefaultEnvironment;
 import io.basc.framework.env.Sys;
@@ -26,30 +31,28 @@ import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.FactoryException;
 import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.factory.support.BeanDefinitionLoaderChain;
-import io.basc.framework.io.Resource;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
-import io.basc.framework.util.Services;
+import io.basc.framework.util.Registration;
+import io.basc.framework.util.StringUtils;
 
 public class DefaultContext extends DefaultEnvironment implements ConfigurableContext {
-	private static final String BEANS_CONFIGURATION = "io.basc.framework.beans.configuration";
-	private static final String DEFAULT_BEANS_CONFIGURATION = "beans.xml";
-
 	private static Logger logger = LoggerFactory.getLogger(DefaultContext.class);
 	private final DefaultClassesLoaderFactory classesLoaderFactory;
 	private final DefaultClassesLoader contextClassesLoader = new DefaultClassesLoader();
 	private final ContextTypeFilter contextTypeFilter = new ContextTypeFilter(getProperties());
 	private final ConfigurableServices<ContextPostProcessor> contextPostProcessors = new ConfigurableServices<ContextPostProcessor>(
 			ContextPostProcessor.class);
-	private final Services<Resource> configurationResources = new Services<Resource>();
 	private final ConfigurableContextResolver contextResolver = new ConfigurableContextResolver();
 	private final ConfigurableIocResolver iocResolver = new ConfigurableIocResolver();
+	private final DefaultClassesLoader sourceClasses = new DefaultClassesLoader();
 
 	public DefaultContext() {
+		contextClassesLoader.registerLoader(sourceClasses);
 		IocBeanResolverExtend iocBeanResolverExtend = new IocBeanResolverExtend(this, iocResolver);
 		iocResolver.setAfterService(iocBeanResolverExtend);
 		this.classesLoaderFactory = new DefaultClassesLoaderFactory(getResourceLoader());
@@ -65,7 +68,69 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 		setParentBeanFactory(null);
 
 		// 扫描框架类
-		componentScan(Constants.SYSTEM_PACKAGE_NAME, null);
+		componentScan(Constants.SYSTEM_PACKAGE_NAME, contextTypeFilter);
+	}
+
+	@Override
+	public DefaultClassesLoader getSourceClasses() {
+		return sourceClasses;
+	}
+
+	@Override
+	public Registration source(Class<?> sourceClass) {
+		Registration registration = sourceClasses.register(sourceClass);
+		if (registration.isEmpty()) {
+			return Registration.EMPTY;
+		}
+
+		if (sourceClass.getPackage() != null) {
+			registration = registration.and(componentScan(sourceClass.getPackage().getName()));
+		}
+
+		ImportResource importResource = AnnotatedElementUtils.getMergedAnnotation(sourceClass, ImportResource.class);
+		if (importResource != null) {
+			String[] locations = importResource.value();
+			for (String location : locations) {
+				if (StringUtils.isEmpty(location)) {
+					continue;
+				}
+
+				String path = replacePlaceholders(location);
+				registration = registration.and(source(path));
+			}
+		}
+
+		ImportSource im = AnnotatedElementUtils.getMergedAnnotation(sourceClass, ImportSource.class);
+		if (im != null) {
+			for (Class<?> clazz : im.value()) {
+				registration = registration.and(source(clazz));
+			}
+		}
+
+		ComponentScan componentScan = AnnotatedElementUtils.getMergedAnnotation(sourceClass, ComponentScan.class);
+		if (componentScan != null) {
+			registration = registration.and(componentScan(componentScan));
+		}
+
+		ComponentScans componentScans = AnnotatedElementUtils.getMergedAnnotation(sourceClass, ComponentScans.class);
+		if (componentScans != null) {
+			for (ComponentScan scan : componentScans.value()) {
+				registration = registration.and(componentScan(scan));
+			}
+		}
+		return registration;
+	}
+
+	private Registration componentScan(ComponentScan componentScan) {
+		Registration registration = Registration.EMPTY;
+		for (String name : componentScan.value()) {
+			registration = registration.and(componentScan(name));
+		}
+
+		for (String name : componentScan.basePackages()) {
+			registration = registration.and(componentScan(name));
+		}
+		return registration;
 	}
 
 	@Override
@@ -122,6 +187,21 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 		return classesLoaderFactory;
 	}
 
+	@Override
+	protected boolean useSpi(Class<?> serviceClass) {
+		for (Class<?> sourceClass : sourceClasses) {
+			Package pg = sourceClass.getPackage();
+			if (pg == null) {
+				continue;
+			}
+
+			if (serviceClass.getName().startsWith(pg.getName())) {
+				return true;
+			}
+		}
+		return super.useSpi(serviceClass);
+	}
+
 	private volatile boolean initialized = false;
 
 	@Override
@@ -139,10 +219,6 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 					iocResolver.configure(this);
 				}
 
-				String beansConfiguration = getProperties().get(BEANS_CONFIGURATION).or(DEFAULT_BEANS_CONFIGURATION)
-						.getAsString();
-				getConfigurationResources().addService(getResourceLoader().getResource(beansConfiguration));
-
 				postProcessContext(new XmlContextPostProcessor());
 
 				if (!contextResolver.isConfigured()) {
@@ -156,10 +232,6 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 					}
 
 					for (BeanDefinition definition : definitions) {
-						if (containsDefinition(definition.getId())) {
-							continue;
-						}
-
 						registerDefinition(definition);
 					}
 				}
@@ -171,6 +243,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 				for (ContextPostProcessor postProcessor : contextPostProcessors) {
 					postProcessContext(postProcessor);
 				}
+
 				logger.debug("Started context[{}]!", this);
 			} finally {
 				initialized = true;
@@ -195,19 +268,19 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 		return super.isInitialized() && initialized;
 	}
 
-	public void componentScan(String packageName) {
+	public Registration componentScan(String packageName) {
 		if (packageName.startsWith(Constants.SYSTEM_PACKAGE_NAME)) {
 			// 已经默认包含了
-			return;
+			return Registration.EMPTY;
 		}
 
-		componentScan(packageName, null);
+		return componentScan(packageName, contextTypeFilter);
 	}
 
-	public void componentScan(String packageName, TypeFilter typeFilter) {
+	public Registration componentScan(String packageName, TypeFilter typeFilter) {
 		ClassesLoader classesLoader = getClassesLoaderFactory().getClassesLoader(packageName,
-				(e, m) -> contextTypeFilter.match(e, m) && (typeFilter == null || typeFilter.match(e, m)));
-		getContextClasses().add(classesLoader);
+				(e, m) -> typeFilter == null || typeFilter.match(e, m));
+		return getContextClasses().registerLoader(classesLoader);
 	}
 
 	private ConcurrentReferenceHashMap<Class<?>, ServiceLoader<?>> serviceLoaderCacheMap = new ConcurrentReferenceHashMap<Class<?>, ServiceLoader<?>>();
@@ -238,11 +311,6 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 			return (ServiceLoader<S>) old;
 		}
 		return (ServiceLoader<S>) serviceLoader;
-	}
-
-	@Override
-	public Services<Resource> getConfigurationResources() {
-		return configurationResources;
 	}
 
 	@Override

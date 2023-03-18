@@ -19,7 +19,7 @@ public class BeanResolverConfiguration implements BeanResolver {
 
 	@Override
 	public String getId(TypeDescriptor typeDescriptor) {
-		return typeDescriptor.getType().getName();
+		return null;
 	}
 
 	@Override

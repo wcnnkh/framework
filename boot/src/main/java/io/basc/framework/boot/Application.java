@@ -1,6 +1,5 @@
 package io.basc.framework.boot;
 
-import io.basc.framework.context.ClassesLoader;
 import io.basc.framework.context.Context;
 import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.factory.Destroy;
@@ -21,8 +20,6 @@ public interface Application extends Context, Init, Destroy {
 	Logger getLogger();
 
 	long getCreateTime();
-
-	ClassesLoader getSourceClasses();
 
 	default Optional<String> getName() {
 		return getProperties().getObservable(APPLICATION_NAME_PROPERTY).convert((e) -> e.getAsString());

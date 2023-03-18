@@ -1,4 +1,4 @@
-package io.basc.framework.feign;
+package io.basc.framework.feign.context;
 
 import feign.Feign;
 import feign.codec.Decoder;
@@ -6,15 +6,17 @@ import feign.codec.Encoder;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentBeanDefinition;
 import io.basc.framework.factory.BeansException;
+import io.basc.framework.feign.FeignDecoder;
+import io.basc.framework.feign.FeignEncoder;
+import io.basc.framework.feign.context.annotation.FeignClient;
 import io.basc.framework.net.message.convert.DefaultMessageConverters;
 import io.basc.framework.net.message.convert.MessageConverter;
 import io.basc.framework.util.StringUtils;
 
 public class FeignBeanDefinition extends EnvironmentBeanDefinition {
-	private io.basc.framework.feign.annotation.FeignClient feignClient;
+	private FeignClient feignClient;
 
-	public FeignBeanDefinition(Environment environment, Class<?> sourceClass,
-			io.basc.framework.feign.annotation.FeignClient feignClient) {
+	public FeignBeanDefinition(Environment environment, Class<?> sourceClass, FeignClient feignClient) {
 		super(environment, sourceClass);
 		this.feignClient = feignClient;
 	}

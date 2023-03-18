@@ -112,7 +112,7 @@ public interface Cursor<E> extends CloseableIterator<E>, Closeable<RuntimeExcept
 		return new StandardCursor<>(iterator);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SafeVarargs
 	static <T> Cursor<T> of(T... values) {
 		if (values == null) {
 			return empty();

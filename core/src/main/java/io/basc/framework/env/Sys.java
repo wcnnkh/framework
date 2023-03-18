@@ -78,10 +78,10 @@ public final class Sys extends DefaultEnvironment {
 		 * 加载配置文件
 		 */
 		try {
-			loadProperties("system.properties");
+			source("system.properties");
 			String resourceName = Optional.ofNullable(getProperties().getAsString("io.basc.framework.properties"))
 					.orElse("/private.properties");
-			loadProperties(resourceName);
+			source(resourceName);
 		} catch (Throwable e) {
 			logger.error(e, "Initialization profile exception");
 		}

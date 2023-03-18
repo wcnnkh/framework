@@ -16,9 +16,13 @@ public abstract class AbstractOptional<T> implements Optional<T> {
 	public T get() {
 		T value = getValue();
 		if (value == null) {
-			throw new NoSuchElementException("No value present");
+			throw noSuchElement();
 		}
 		return value;
+	}
+
+	protected RuntimeException noSuchElement() {
+		return new NoSuchElementException("No value present");
 	}
 
 	@Override

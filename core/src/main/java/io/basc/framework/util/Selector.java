@@ -1,6 +1,7 @@
 package io.basc.framework.util;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -13,18 +14,18 @@ import io.basc.framework.lang.Nullable;
  *
  * @param <E> 元素类型
  */
-public interface Selector<E> {
+public interface Selector<E> extends Function<Stream<E>, E> {
 	@Nullable
-	default E select(Stream<E> elements) {
+	default E apply(Stream<E> elements) {
 		if (elements == null) {
 			return null;
 		}
 
-		return select(elements.collect(Collectors.toList()));
+		return apply(elements.collect(Collectors.toList()));
 	}
 
 	@Nullable
-	E select(List<E> elements);
+	E apply(List<E> elements);
 
 	/**
 	 * 轮询选择器

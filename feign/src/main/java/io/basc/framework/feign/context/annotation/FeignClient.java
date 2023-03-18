@@ -1,4 +1,4 @@
-package io.basc.framework.rpc.http.annotation;
+package io.basc.framework.feign.context.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -10,6 +10,11 @@ import io.basc.framework.context.annotation.Indexed;
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Indexed
-public @interface HttpRemote {
-	String value();
+public @interface FeignClient {
+	/**
+	 * 默认不指明host，会去从配置文件中去查找feign.host
+	 * 
+	 * @return
+	 */
+	public String host() default "";
 }

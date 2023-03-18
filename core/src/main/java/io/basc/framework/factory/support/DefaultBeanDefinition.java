@@ -29,6 +29,7 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 
 public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
@@ -205,11 +206,18 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 	}
 
 	public String getId() {
-		BeanResolver beanResolver = getBeanResolver();
-		if (StringUtils.isEmpty(this.id) && beanResolver != null) {
-			return beanResolver.getId(typeDescriptor);
+		String id = this.id;
+		if (StringUtils.isEmpty(id)) {
+			BeanResolver beanResolver = getBeanResolver();
+			if (beanResolver != null) {
+				id = beanResolver.getId(typeDescriptor);
+			}
 		}
-		return StringUtils.isEmpty(this.id) ? typeDescriptor.getType().getName() : this.id;
+		return StringUtils.isEmpty(id) ? getDefaultId() : id;
+	}
+
+	protected String getDefaultId() {
+		return typeDescriptor.getType().getName();
 	}
 
 	public ConfigurableServices<BeanPostProcessor> getInitProcessors() {
@@ -221,11 +229,14 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 	}
 
 	public Collection<String> getNames() {
-		BeanResolver beanResolver = getBeanResolver();
-		if (this.names == null && beanResolver != null) {
-			return beanResolver.getNames(typeDescriptor);
+		Collection<String> names = this.names;
+		if (CollectionUtils.isEmpty(names)) {
+			BeanResolver beanResolver = getBeanResolver();
+			if (beanResolver != null) {
+				names = beanResolver.getNames(typeDescriptor);
+			}
 		}
-		return this.names == null ? Collections.emptyList() : this.names;
+		return CollectionUtils.isEmpty(names) ? Collections.emptyList() : names;
 	}
 
 	public ParameterDescriptors getParameterDescriptors(ParametersFactory parametersFactory) {

@@ -13,7 +13,7 @@ public abstract class MemoryLockFactory implements LockFactory {
 		Supplier<Lock> supplier = lockMap.get(name);
 		if (supplier == null) {
 			Supplier<Lock> newSupplier = new LockSupplier(name);
-			newSupplier = new CacheableSupplier<Lock>(newSupplier);
+			newSupplier = new CacheableSupplier<Lock>(newSupplier, null);
 			supplier = lockMap.putIfAbsent(name, newSupplier);
 			if (supplier == null) {
 				supplier = newSupplier;

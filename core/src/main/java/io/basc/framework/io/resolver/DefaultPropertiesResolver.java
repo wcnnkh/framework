@@ -24,8 +24,11 @@ public class DefaultPropertiesResolver implements PropertiesResolver {
 	public static final DefaultPropertiesResolver INSTANCE = new DefaultPropertiesResolver();
 
 	public boolean canResolveProperties(Resource resource) {
-		String name = resource.getName();
-		return name.endsWith(".xml") || name.endsWith(".properties");
+		if (!resource.exists()) {
+			return false;
+		}
+
+		return resource.getName().endsWith(".properties");
 	}
 
 	public void resolveProperties(Properties properties, Resource resource, Charset charset) {
@@ -44,7 +47,8 @@ public class DefaultPropertiesResolver implements PropertiesResolver {
 				} else {
 					Method method = ReflectionUtils.getDeclaredMethod(Properties.class, "load", Reader.class);
 					if (method == null) {
-						logger.warn("jdk1.6及以上的版本才支持指定字符集: " + resource.getDescription());
+						logger.warn("The specified character set is only supported in versions of jdk 1.6 and above: "
+								+ resource);
 						properties.load(is);
 					} else {
 						InputStreamReader isr = null;

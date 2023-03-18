@@ -8,7 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Function;
 
 import io.basc.framework.event.AbstractObservable;
 import io.basc.framework.event.EventDispatcher;
@@ -19,12 +18,13 @@ import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Cursor;
 import io.basc.framework.util.Registration;
+import io.basc.framework.util.Selector;
 
 public class StandardObservable<T> extends AbstractObservable<T> implements EventDispatcher<ObservableChangeEvent<T>> {
 	private final AtomicReference<T> valueReference = new AtomicReference<>();
 	private final EventDispatcher<ObservableChangeEvent<T>> eventDispatcher;
 	private volatile LinkedHashSet<Observable<? extends T>> sources;
-	private Function<? super List<T>, ? extends T> selector;
+	private Selector<T> selector;
 
 	public StandardObservable() {
 		this(new StandardBroadcastEventDispatcher<>());
@@ -35,13 +35,13 @@ public class StandardObservable<T> extends AbstractObservable<T> implements Even
 		this.eventDispatcher = eventDispatcher;
 	}
 
-	public final Function<? super List<T>, ? extends T> getSelector() {
-		return selector;
-	}
-
-	public void setSelector(Function<? super List<T>, ? extends T> selector) {
+	public void setSelector(Selector<T> selector) {
 		this.selector = selector;
 		touch(null);
+	}
+
+	public final Selector<T> getSelector() {
+		return selector;
 	}
 
 	public Registration registers(Iterator<? extends Observable<? extends T>> observables) {

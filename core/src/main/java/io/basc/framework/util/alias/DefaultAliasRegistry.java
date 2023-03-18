@@ -36,7 +36,7 @@ public class DefaultAliasRegistry implements AliasRegistry, Cloneable {
 	public void registerAlias(String name, String alias) {
 		Assert.hasText(name, "'name' must not be empty");
 		Assert.hasText(alias, "'alias' must not be empty");
-		Assert.requiredArgument(!hasAlias(name, alias), "");
+		Assert.requiredArgument(!hasAlias(name, alias), "name[" + name + "] -> alias[" + alias + "]");
 		register(name, alias);
 		register(alias, name);
 	}

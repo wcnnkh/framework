@@ -36,7 +36,8 @@ public class DefaultClassesLoaderFactory extends DefaultClassLoaderProvider impl
 		String[] packageNames = StringUtils.splitToArray(packageName);
 		DefaultClassesLoader editableClassesLoader = new DefaultClassesLoader();
 		for (String name : packageNames) {
-			editableClassesLoader.add(new PackageClassesLoader(resourcePatternResolver, name, this, typeFilter));
+			editableClassesLoader
+					.registerLoader(new PackageClassesLoader(resourcePatternResolver, name, this, typeFilter));
 		}
 		return editableClassesLoader;
 	}

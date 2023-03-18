@@ -36,5 +36,4 @@ public class ConfigurableContextResolver extends ConfigurableServices<ContextRes
 	public Collection<BeanDefinition> resolveBeanDefinitions(Class<?> clazz) {
 		return ContextResolverChain.build(iterator(), getDefaultResolver()).resolveBeanDefinitions(clazz);
 	}
-
 }

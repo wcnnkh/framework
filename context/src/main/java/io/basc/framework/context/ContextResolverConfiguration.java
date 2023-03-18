@@ -19,6 +19,6 @@ public class ContextResolverConfiguration implements ContextResolver {
 
 	@Override
 	public Collection<BeanDefinition> resolveBeanDefinitions(Class<?> clazz) {
-		return Collections.emptyList();
+		return Collections.emptySet();
 	}
 }

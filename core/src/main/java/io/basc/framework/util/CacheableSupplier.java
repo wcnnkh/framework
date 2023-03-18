@@ -2,51 +2,48 @@ package io.basc.framework.util;
 
 import java.util.function.Supplier;
 
-import io.basc.framework.lang.Nullable;
-
-public final class CacheableSupplier<T> implements Supplier<T> {
-	private final Supplier<? extends T> supplier;
-	private final Object lock;
-	private volatile Supplier<T> caching;
-
-	public CacheableSupplier(Supplier<? extends T> processor) {
-		this(null, processor);
+public class CacheableSupplier<T> extends CacheableSource<T, RuntimeException> implements Supplier<T> {
+	public CacheableSupplier(T source) {
+		super(source);
 	}
 
-	public CacheableSupplier(@Nullable Object lock, Supplier<? extends T> supplier) {
-		Assert.requiredArgument(supplier != null, "supplier");
-		this.lock = lock;
-		this.supplier = supplier;
+	public CacheableSupplier(Supplier<? extends T> supplier, Object lock) {
+		super(new InternalSource<>(supplier), lock);
 	}
 
-	public Supplier<? extends T> getSourceSupplier() {
-		return this.supplier;
-	}
+	private static class InternalSource<V> implements Source<V, RuntimeException> {
+		private final Supplier<? extends V> supplier;
 
-	@Override
-	public T get() {
-		if (this.caching == null) {
-			synchronized (this.lock == null ? this : this.lock) {
-				if (this.caching == null) {
-					T value = this.supplier.get();
-					this.caching = () -> value;
-				}
-			}
+		public InternalSource(Supplier<? extends V> supplier) {
+			Assert.requiredArgument(supplier != null, "supplier");
+			this.supplier = supplier;
 		}
-		return this.caching.get();
-	}
 
-	public void clear() {
-		if (this.caching != null) {
-			synchronized (this.lock == null ? this : this.lock) {
-				if (this.caching != null) {
-					this.caching = null;
-				}
-			}
+		@Override
+		public V get() {
+			return supplier.get();
 		}
-	}
 
-	public boolean isEmpty() {
-		return caching == null;
+		@Override
+		public String toString() {
+			return supplier.toString();
+		}
+
+		@Override
+		public int hashCode() {
+			return supplier.hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null) {
+				return false;
+			}
+
+			if (obj instanceof InternalSource) {
+				return ObjectUtils.equals(supplier, ((InternalSource<?>) obj).supplier);
+			}
+			return false;
+		}
 	}
 }

@@ -1,26 +1,28 @@
 package io.basc.framework.context.annotation;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ContextResolver;
 import io.basc.framework.context.ContextResolverExtend;
 import io.basc.framework.context.ProviderDefinition;
+import io.basc.framework.context.ioc.BeanMethodProcessor;
 import io.basc.framework.context.support.ContextBeanDefinition;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.factory.BeanPostProcessor;
 import io.basc.framework.factory.BeanResolver;
 import io.basc.framework.factory.BeanResolverExtend;
 import io.basc.framework.lang.Ignore;
@@ -58,9 +60,9 @@ public class AnnotationContextResolverExtend implements ContextResolverExtend, O
 
 	@Override
 	public String getId(TypeDescriptor typeDescriptor, BeanResolver chain) {
-		Bean bean = Annotations.getAnnotation(Bean.class, typeDescriptor);
-		if (bean != null && StringUtils.isNotEmpty(bean.value())) {
-			return bean.value();
+		Component component = AnnotatedElementUtils.getMergedAnnotation(typeDescriptor, Component.class);
+		if (component != null && StringUtils.isNotEmpty(component.value())) {
+			return component.value();
 		}
 		return BeanResolverExtend.super.getId(typeDescriptor, chain);
 	}
@@ -68,21 +70,12 @@ public class AnnotationContextResolverExtend implements ContextResolverExtend, O
 	@Override
 	public Collection<String> getNames(TypeDescriptor typeDescriptor, BeanResolver chain) {
 		Set<String> names = null;
-		Bean bean = Annotations.getAnnotation(Bean.class, typeDescriptor, typeDescriptor.getType());
-		if (bean != null && bean.names().length > 0) {
+		Bean bean = AnnotatedElementUtils.getMergedAnnotation(typeDescriptor, Bean.class);
+		if (bean != null && bean.name().length > 0) {
 			if (names == null) {
 				names = new HashSet<>(8);
 			}
-			names.addAll(Arrays.asList(bean.names()));
-		}
-
-		Collection<String> parentNames = BeanResolverExtend.super.getNames(typeDescriptor, chain);
-		if (!CollectionUtils.isEmpty(parentNames)) {
-			if (names == null) {
-				names = new HashSet<>(8);
-			}
-
-			names.addAll(parentNames);
+			names.addAll(Arrays.asList(bean.name()));
 		}
 
 		if (CollectionUtils.isEmpty(names)) {
@@ -98,66 +91,83 @@ public class AnnotationContextResolverExtend implements ContextResolverExtend, O
 				}
 			}
 		}
+
+		Collection<String> parentNames = BeanResolverExtend.super.getNames(typeDescriptor, chain);
+		if (!CollectionUtils.isEmpty(parentNames)) {
+			if (names == null) {
+				names = new HashSet<>(8);
+			}
+			names.addAll(parentNames);
+		}
 		return names == null ? Collections.emptyList() : names;
 	}
 
 	@Override
 	public boolean isAopEnable(TypeDescriptor typeDescriptor, BeanResolver chain) {
-		Service service = typeDescriptor.getType().getAnnotation(Service.class);
-		if (service != null) {
-			return true;
+		AopEnable aopEnable = AnnotatedElementUtils.getMergedAnnotation(typeDescriptor, AopEnable.class);
+		if (aopEnable != null) {
+			return aopEnable.value();
 		}
 		return BeanResolverExtend.super.isAopEnable(typeDescriptor, chain);
 	}
 
 	@Override
 	public Collection<BeanDefinition> resolveBeanDefinitions(Class<?> clazz, ContextResolver chain) {
-		List<BeanDefinition> definitions = null;
-		if (AnnotatedElementUtils.hasAnnotation(clazz, Indexed.class)) {
-			if (definitions == null) {
-				definitions = new ArrayList<BeanDefinition>(8);
+		Collection<BeanDefinition> beanDefinitions = null;
+		BeanDefinition clazzDefinition = resolveClassDefinition(clazz);
+		if (clazzDefinition != null) {
+			if (beanDefinitions == null) {
+				beanDefinitions = new HashSet<>(8);
 			}
 
-			definitions.add(new ContextBeanDefinition(context, clazz));
+			beanDefinitions.add(clazzDefinition);
 		}
 
-		for (Method method : clazz.getDeclaredMethods()) {
-			Bean bean = method.getAnnotation(Bean.class);
-			if (bean == null) {
-				continue;
+		for (Constructor<?> constructor : ReflectionUtils.getDeclaredConstructors(clazz)) {
+			BeanDefinition definition = resolveExecutableDefinition(clazz, constructor);
+			if (definition != null) {
+				if (beanDefinitions == null) {
+					beanDefinitions = new HashSet<>(8);
+				}
+				beanDefinitions.add(definition);
 			}
-
-			if (definitions == null) {
-				definitions = new ArrayList<BeanDefinition>(8);
-			}
-
-			BeanDefinition beanDefinition = new ExecutableBeanDefinition(context, clazz, method);
-			definitions.add(beanDefinition);
 		}
 
-		for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
-			Bean bean = constructor.getAnnotation(Bean.class);
-			if (bean == null) {
-				continue;
+		for (Method method : ReflectionUtils.getDeclaredMethods(clazz)) {
+			BeanDefinition definition = resolveExecutableDefinition(clazz, method);
+			if (definition != null) {
+				if (beanDefinitions == null) {
+					beanDefinitions = new HashSet<>(8);
+				}
+				beanDefinitions.add(definition);
 			}
-
-			if (definitions == null) {
-				definitions = new ArrayList<BeanDefinition>(8);
-			}
-
-			BeanDefinition beanDefinition = new ExecutableBeanDefinition(context, clazz, constructor);
-			definitions.add(beanDefinition);
 		}
 
-		Collection<BeanDefinition> superDefinitions = ContextResolverExtend.super.resolveBeanDefinitions(clazz, chain);
-		if (!CollectionUtils.isEmpty(superDefinitions)) {
-			if (definitions == null) {
-				definitions = new ArrayList<BeanDefinition>(8);
+		Collection<BeanDefinition> definitions = ContextResolverExtend.super.resolveBeanDefinitions(clazz, chain);
+		if (!CollectionUtils.isEmpty(definitions)) {
+			if (beanDefinitions == null) {
+				beanDefinitions = new HashSet<>(definitions.size());
 			}
-
-			definitions.addAll(superDefinitions);
+			beanDefinitions.addAll(definitions);
 		}
-		return definitions == null ? Collections.emptyList() : definitions;
+		return beanDefinitions == null ? Collections.emptySet() : beanDefinitions;
+	}
+
+	public BeanDefinition resolveClassDefinition(Class<?> clazz) {
+		Component component = AnnotatedElementUtils.getMergedAnnotation(clazz, Component.class);
+		if (component == null) {
+			return null;
+		}
+		return new ContextBeanDefinition(context, clazz);
+	}
+
+	public BeanDefinition resolveExecutableDefinition(Class<?> sourceClass, Executable executable) {
+		Bean bean = executable.getAnnotation(Bean.class);
+		if (bean == null) {
+			return null;
+		}
+
+		return new ExecutableBeanDefinition(context, sourceClass, executable);
 	}
 
 	private static Class<?> getServiceInterface(Class<?> clazz) {
@@ -214,5 +224,72 @@ public class AnnotationContextResolverExtend implements ContextResolverExtend, O
 			return defaultValue.value();
 		}
 		return chain.getDefaultParameter(parameterDescriptor);
+	}
+
+	private BeanPostProcessor getBeanPostProcessorByMethod(TypeDescriptor typeDescriptor, String name) {
+		Method method = ReflectionUtils.findMethod(typeDescriptor.getType(), name);
+		if (method == null) {
+			return null;
+		}
+		return new BeanMethodProcessor(context, method);
+	}
+
+	@Override
+	public Collection<BeanPostProcessor> resolveDestroyProcessors(TypeDescriptor typeDescriptor, BeanResolver chain) {
+		Bean bean = typeDescriptor.getAnnotation(Bean.class);
+		if (bean == null || bean.destroyMethod().length == 0) {
+			return BeanResolverExtend.super.resolveDestroyProcessors(typeDescriptor, chain);
+		}
+
+		Collection<BeanPostProcessor> beanPostProcessors = null;
+		for (String name : bean.destroyMethod()) {
+			BeanPostProcessor beanPostProcessor = getBeanPostProcessorByMethod(typeDescriptor, name);
+			if (beanPostProcessor != null) {
+				if (beanPostProcessors == null) {
+					beanPostProcessors = new ArrayList<>(8);
+				}
+				beanPostProcessors.add(beanPostProcessor);
+			}
+		}
+
+		Collection<BeanPostProcessor> sources = BeanResolverExtend.super.resolveDestroyProcessors(typeDescriptor,
+				chain);
+		if (!CollectionUtils.isEmpty(sources)) {
+			if (beanPostProcessors == null) {
+				beanPostProcessors = new ArrayList<>(sources.size());
+			}
+
+			beanPostProcessors.addAll(sources);
+		}
+		return CollectionUtils.isEmpty(beanPostProcessors) ? Collections.emptyList() : beanPostProcessors;
+	}
+
+	@Override
+	public Collection<BeanPostProcessor> resolveInitProcessors(TypeDescriptor typeDescriptor, BeanResolver chain) {
+		Bean bean = typeDescriptor.getAnnotation(Bean.class);
+		if (bean == null || bean.initMethod().length == 0) {
+			return BeanResolverExtend.super.resolveInitProcessors(typeDescriptor, chain);
+		}
+
+		Collection<BeanPostProcessor> beanPostProcessors = null;
+		for (String name : bean.initMethod()) {
+			BeanPostProcessor beanPostProcessor = getBeanPostProcessorByMethod(typeDescriptor, name);
+			if (beanPostProcessor != null) {
+				if (beanPostProcessors == null) {
+					beanPostProcessors = new ArrayList<>(8);
+				}
+				beanPostProcessors.add(beanPostProcessor);
+			}
+		}
+
+		Collection<BeanPostProcessor> sources = BeanResolverExtend.super.resolveInitProcessors(typeDescriptor, chain);
+		if (!CollectionUtils.isEmpty(sources)) {
+			if (beanPostProcessors == null) {
+				beanPostProcessors = new ArrayList<>(sources.size());
+			}
+
+			beanPostProcessors.addAll(sources);
+		}
+		return CollectionUtils.isEmpty(beanPostProcessors) ? Collections.emptyList() : beanPostProcessors;
 	}
 }

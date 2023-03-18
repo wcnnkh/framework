@@ -25,6 +25,6 @@ public class DefaultLoadBalancer<T> extends AbstractLoadBalancer<T> {
 			return null;
 		}
 
-		return accept == null ? selector.select(servers) : selector.select(servers.stream().filter(accept));
+		return accept == null ? selector.apply(servers) : selector.apply(servers.stream().filter(accept));
 	}
 }
