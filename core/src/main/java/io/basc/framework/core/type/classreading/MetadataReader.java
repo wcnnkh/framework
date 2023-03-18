@@ -1,22 +1,47 @@
-package io.basc.framework.core.type.classreading;
+/*
+ * Copyright 2002-2009 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import org.objectweb.asm.ClassReader;
+package io.basc.framework.core.type.classreading;
 
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.ClassMetadata;
 import io.basc.framework.io.Resource;
 
 /**
- * Simple facade for accessing class metadata, as read by an ASM
- * {@link ClassReader}.
+ * Simple facade for accessing class metadata,
+ * as read by an ASM {@link io.basc.framework.asm.ClassReader}.
  *
- * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/type/classreading/MetadataReader.java
+ * @author Juergen Hoeller
  */
 public interface MetadataReader {
 
+	/**
+	 * Return the resource reference for the class file.
+	 */
 	Resource getResource();
 
+	/**
+	 * Read basic class metadata for the underlying class.
+	 */
 	ClassMetadata getClassMetadata();
 
+	/**
+	 * Read full annotation metadata for the underlying class,
+	 * including metadata for annotated methods.
+	 */
 	AnnotationMetadata getAnnotationMetadata();
+
 }

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2002-2021 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.basc.framework.core.type.classreading;
 
 import java.util.Collections;
@@ -15,7 +31,8 @@ import io.basc.framework.lang.Nullable;
  * {@link AnnotationMetadata} created from a
  * {@link SimpleAnnotationMetadataReadingVisitor}.
  *
- * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/type/classreading/SimpleAnnotationMetadata.java
+ * @author Phillip Webb
+ * @author Sam Brannen
  */
 final class SimpleAnnotationMetadata implements AnnotationMetadata {
 
@@ -110,6 +127,11 @@ final class SimpleAnnotationMetadata implements AnnotationMetadata {
 	}
 
 	@Override
+	public MergedAnnotations getAnnotations() {
+		return this.annotations;
+	}
+
+	@Override
 	public Set<String> getAnnotationTypes() {
 		Set<String> annotationTypes = this.annotationTypes;
 		if (annotationTypes == null) {
@@ -130,12 +152,7 @@ final class SimpleAnnotationMetadata implements AnnotationMetadata {
 				annotatedMethods.add(annotatedMethod);
 			}
 		}
-		return annotatedMethods != null ? annotatedMethods : Collections.emptySet();
-	}
-
-	@Override
-	public MergedAnnotations getAnnotations() {
-		return this.annotations;
+		return (annotatedMethods != null ? annotatedMethods : Collections.emptySet());
 	}
 
 	@Override
@@ -155,13 +172,13 @@ final class SimpleAnnotationMetadata implements AnnotationMetadata {
 	}
 
 	@Override
-	public boolean isEnum() {
-		return (this.access & Opcodes.ACC_ENUM) != 0;
+	public boolean isPublic() {
+		return (this.access & Opcodes.ACC_PUBLIC) != 0;
 	}
 
 	@Override
-	public boolean isPublic() {
-		return (this.access & Opcodes.ACC_PUBLIC) != 0;
+	public boolean isEnum() {
+		return (this.access & Opcodes.ACC_ENUM) != 0;
 	}
 
 }

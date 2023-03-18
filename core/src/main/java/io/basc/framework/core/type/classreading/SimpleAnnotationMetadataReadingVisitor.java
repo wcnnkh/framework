@@ -1,3 +1,19 @@
+/*
+ * Copyright 2002-2021 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.basc.framework.core.type.classreading;
 
 import java.util.ArrayList;
@@ -22,7 +38,7 @@ import io.basc.framework.util.StringUtils;
 /**
  * ASM class visitor that creates {@link SimpleAnnotationMetadata}.
  *
- * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/type/classreading/SimpleAnnotationMetadataReadingVisitor.java
+ * @author Phillip Webb
  */
 final class SimpleAnnotationMetadataReadingVisitor extends ClassVisitor {
 
@@ -43,11 +59,11 @@ final class SimpleAnnotationMetadataReadingVisitor extends ClassVisitor {
 
 	private boolean independentInnerClass;
 
-	private final Set<String> memberClassNames = new LinkedHashSet<>(4);
+	private Set<String> memberClassNames = new LinkedHashSet<>(4);
 
-	private final List<MergedAnnotation<?>> annotations = new ArrayList<>();
+	private List<MergedAnnotation<?>> annotations = new ArrayList<>();
 
-	private final List<SimpleMethodMetadata> annotatedMethods = new ArrayList<>();
+	private List<SimpleMethodMetadata> annotatedMethods = new ArrayList<>();
 
 	@Nullable
 	private SimpleAnnotationMetadata metadata;

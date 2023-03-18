@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -101,6 +102,50 @@ public interface Streamy<E> extends Optional<E> {
 		try {
 			Iterator<E> iterator = stream.iterator();
 			return iterator.hasNext() ? iterator.next() : null;
+		} finally {
+			stream.close();
+		}
+	}
+
+	default Object[] toArray() {
+		return toList().toArray();
+	}
+
+	default <T> T[] toArray(T[] array) {
+		return toList().toArray(array);
+	}
+
+	/**
+	 * Returns an array containing the elements of this stream, using the provided
+	 * {@code generator} function to allocate the returned array, as well as any
+	 * additional arrays that might be required for a partitioned execution or for
+	 * resizing.
+	 *
+	 * <p>
+	 * This is a <a href="package-summary.html#StreamOps">terminal operation</a>.
+	 *
+	 * @apiNote The generator function takes an integer, which is the size of the
+	 *          desired array, and produces an array of the desired size. This can
+	 *          be concisely expressed with an array constructor reference:
+	 * 
+	 *          <pre>{@code
+	 *     Person[] men = people.stream()
+	 *                          .filter(p -> p.getGender() == MALE)
+	 *                          .toArray(Person[]::new);
+	 * }</pre>
+	 *
+	 * @param <A>       the element type of the resulting array
+	 * @param generator a function which produces a new array of the desired type
+	 *                  and the provided length
+	 * @return an array containing the elements in this stream
+	 * @throws ArrayStoreException if the runtime type of the array returned from
+	 *                             the array generator is not a supertype of the
+	 *                             runtime type of every element in this stream
+	 */
+	default <A> A[] toArray(IntFunction<A[]> generator) {
+		Stream<E> stream = stream();
+		try {
+			return stream.toArray(generator);
 		} finally {
 			stream.close();
 		}

@@ -1,9 +1,23 @@
+/*
+ * Copyright 2002-2018 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.basc.framework.core.type.classreading;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
-import org.objectweb.asm.ClassReader;
 
 import io.basc.framework.io.DefaultResourceLoader;
 import io.basc.framework.io.Resource;
@@ -13,9 +27,10 @@ import io.basc.framework.util.ClassUtils;
 
 /**
  * Simple implementation of the {@link MetadataReaderFactory} interface,
- * creating a new ASM {@link ClassReader} for every request.
+ * creating a new ASM {@link io.basc.framework.asm.ClassReader} for every
+ * request.
  *
- * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/type/classreading/SimpleMetadataReaderFactory.java
+ * @author Juergen Hoeller
  */
 public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 
@@ -31,7 +46,7 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 	/**
 	 * Create a new SimpleMetadataReaderFactory for the given resource loader.
 	 * 
-	 * @param resourceLoader the ResourceLoader to use (also determines the
+	 * @param resourceLoader the Spring ResourceLoader to use (also determines the
 	 *                       ClassLoader to use)
 	 */
 	public SimpleMetadataReaderFactory(@Nullable ResourceLoader resourceLoader) {
@@ -48,6 +63,10 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 				: new DefaultResourceLoader());
 	}
 
+	/**
+	 * Return the ResourceLoader that this MetadataReaderFactory has been
+	 * constructed with.
+	 */
 	public final ResourceLoader getResourceLoader() {
 		return this.resourceLoader;
 	}
