@@ -5,10 +5,10 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptors;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeansException;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.mapper.ParameterDescriptors;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 

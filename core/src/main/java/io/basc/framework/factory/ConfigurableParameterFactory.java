@@ -1,6 +1,6 @@
 package io.basc.framework.factory;
 
-import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.mapper.ParameterDescriptor;
 
 public class ConfigurableParameterFactory extends ConfigurableServices<ParameterFactory> implements ParameterFactory {
 

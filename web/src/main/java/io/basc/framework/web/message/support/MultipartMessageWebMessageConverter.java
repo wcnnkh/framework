@@ -5,11 +5,11 @@ import java.util.Collection;
 import java.util.List;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.net.message.multipart.MultipartMessage;
 import io.basc.framework.net.message.multipart.MultipartMessageConverter;
 import io.basc.framework.net.message.multipart.MultipartMessageResolver;

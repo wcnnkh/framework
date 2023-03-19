@@ -3,12 +3,12 @@ package io.basc.framework.web.message.support;
 import java.io.IOException;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.http.HttpInputMessage;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.io.IOUtils;
+import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.message.InputMessage;
 import io.basc.framework.web.ServerHttpRequest;

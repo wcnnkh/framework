@@ -3,8 +3,8 @@ package io.basc.framework.factory;
 import java.util.Collection;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.mapper.ParameterDescriptor;
 
 public interface BeanResolver extends DefaultParameterFactory, ParameterFactory {
 	boolean isSingleton(TypeDescriptor typeDescriptor);

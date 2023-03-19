@@ -3,8 +3,8 @@ package io.basc.framework.factory;
 import java.util.Collection;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptors;
+import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.mapper.ParameterDescriptors;
 
 public class ConfigurableBeanResolver extends ConfigurableServices<BeanResolverExtend> implements BeanResolver {
 	private BeanResolver defaultResolver;

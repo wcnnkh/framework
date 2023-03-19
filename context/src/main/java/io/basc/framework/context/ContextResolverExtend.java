@@ -2,8 +2,8 @@ package io.basc.framework.context;
 
 import java.util.Collection;
 
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.mapper.ParameterDescriptor;
 
 public interface ContextResolverExtend {
 	default ProviderDefinition getProviderDefinition(Class<?> clazz, ContextResolver chain) {

@@ -2,9 +2,9 @@ package io.basc.framework.security.limit;
 
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.core.reflect.MethodInvoker;
+import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.mapper.ParameterUtils;
 import io.basc.framework.security.limit.annotation.CountLimitParameter;
 import io.basc.framework.security.limit.annotation.CountLimitSecurity;
 

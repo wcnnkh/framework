@@ -18,7 +18,6 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;

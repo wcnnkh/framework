@@ -3,7 +3,7 @@ package io.basc.framework.orm.transfer;
 import java.util.Arrays;
 import java.util.Collection;
 
-import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
 import io.basc.framework.util.StringUtils;

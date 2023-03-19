@@ -5,12 +5,12 @@ import io.basc.framework.aop.MethodInterceptorAccept;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Annotations;
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.locks.LockFactory;
 import io.basc.framework.locks.ReentrantLockFactory;
+import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.mapper.ParameterUtils;
 
 /**
  * 实现方法级别的锁

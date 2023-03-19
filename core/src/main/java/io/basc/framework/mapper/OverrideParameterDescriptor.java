@@ -1,4 +1,4 @@
-package io.basc.framework.core.parameter;
+package io.basc.framework.mapper;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.value.Value;

@@ -1,4 +1,4 @@
-package io.basc.framework.core.parameter;
+package io.basc.framework.mapper;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;

@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.mapper.ParameterDescriptor;
 
 public class BeanResolverConfiguration implements BeanResolver {
 	private boolean aopEnable;

@@ -15,22 +15,19 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import io.basc.framework.core.Members;
-import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.lang.NestedExceptionUtils;
-import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.ConsumeProcessor;
 import io.basc.framework.util.ObjectUtils;
@@ -829,45 +826,6 @@ public abstract class ReflectionUtils {
 			return 0;
 		}
 		return hashCode(entity.getClass(), entity, deep);
-	}
-
-	public static <T> Object invoke(Class<T> type, Object instance, String name, Map<String, Object> parameterMap)
-			throws NoSuchMethodException {
-		if (CollectionUtils.isEmpty(parameterMap)) {
-			try {
-				return getDeclaredMethod(type, name).invoke(instance);
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException(e);
-			} catch (IllegalArgumentException e) {
-				throw new RuntimeException(e);
-			} catch (InvocationTargetException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
-		int size = parameterMap.size();
-		Iterator<Method> iterator = getDeclaredMethods(type).withAll().all().stream().iterator();
-		while (iterator.hasNext()) {
-			Method method = iterator.next();
-			if (size == method.getParameterTypes().length) {
-				String[] names = ParameterUtils.getParameterNames(method);
-				Object[] args = new Object[size];
-				boolean find = true;
-				for (int i = 0; i < names.length; i++) {
-					if (!parameterMap.containsKey(names[i])) {
-						find = false;
-						break;
-					}
-
-					args[i] = parameterMap.get(names[i]);
-				}
-
-				if (find) {
-					return invoke(method, instance, args);
-				}
-			}
-		}
-		throw new NoSuchMethodException(type.getName() + ", method=" + name);
 	}
 
 	/**

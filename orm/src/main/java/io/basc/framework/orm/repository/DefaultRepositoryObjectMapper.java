@@ -1,6 +1,6 @@
 package io.basc.framework.orm.repository;
 
-import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.orm.support.DefaultObjectMapper;
 import io.basc.framework.util.StringUtils;
 

@@ -16,7 +16,6 @@ import io.basc.framework.context.ioc.MethodIocDefinition;
 import io.basc.framework.context.ioc.ValueDefinition;
 import io.basc.framework.context.ioc.ValueIocProcessor;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.BeanPostProcessor;
 import io.basc.framework.factory.BeanResolver;
@@ -24,6 +23,7 @@ import io.basc.framework.factory.BeanResolverExtend;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.Fields;
+import io.basc.framework.mapper.ParameterDescriptor;
 
 public class IocBeanResolverExtend implements BeanResolverExtend, IocResolverExtend {
 	private final Context context;

@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.http.client.ClientHttpRequest;
+import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.message.WebMessagelConverterException;

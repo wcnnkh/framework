@@ -2,9 +2,9 @@ package io.basc.framework.context;
 
 import java.util.Collection;
 
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.ConfigurableServices;
+import io.basc.framework.mapper.ParameterDescriptor;
 
 public class ConfigurableContextResolver extends ConfigurableServices<ContextResolverExtend>
 		implements ContextResolver {

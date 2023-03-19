@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.concurrent.Callable;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ServiceLoaderFactory;
@@ -14,6 +13,7 @@ import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.mapper.ParameterUtils;
 import io.basc.framework.rpc.CallableFactory;
 import io.basc.framework.web.message.WebMessageConverters;
 import io.basc.framework.web.message.support.DefaultWebMessageConverters;

@@ -10,10 +10,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.mapper.Parameter;
+import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.Structure;
 import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.OrmException;

@@ -2,7 +2,7 @@ package io.basc.framework.context.ioc;
 
 import java.lang.reflect.Method;
 
-import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.mapper.ParameterDescriptor;
 
 public class IocResolverConfiguration implements IocResolver {
 

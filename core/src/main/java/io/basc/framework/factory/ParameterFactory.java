@@ -1,12 +1,12 @@
 package io.basc.framework.factory;
 
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptors;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.ParameterException;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.mapper.ParameterDescriptors;
 
 import java.util.logging.Level;
 
