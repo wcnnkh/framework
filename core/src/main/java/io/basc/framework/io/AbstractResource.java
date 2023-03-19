@@ -12,7 +12,7 @@ import java.net.URL;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.event.AbstractObservable;
-import io.basc.framework.event.EventDispatcher;
+import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.lang.NestedIOException;
@@ -32,14 +32,14 @@ import io.basc.framework.util.Registration;
  *
  */
 public abstract class AbstractResource extends AbstractObservable<Resource>
-		implements Resource, EventDispatcher<ObservableChangeEvent<Resource>> {
-	private static final Constructor<EventDispatcher<ObservableChangeEvent<Resource>>> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
+		implements Resource, BroadcastEventDispatcher<ObservableChangeEvent<Resource>> {
+	private static final Constructor<BroadcastEventDispatcher<ObservableChangeEvent<Resource>>> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
 			.getDeclaredConstructor("io.basc.framework.io.WatchServiceResourceEventDispatcher", null,
 					AbstractResource.class);
 
-	private volatile EventDispatcher<ObservableChangeEvent<Resource>> eventDispatcher;
+	private volatile BroadcastEventDispatcher<ObservableChangeEvent<Resource>> eventDispatcher;
 
-	private EventDispatcher<ObservableChangeEvent<Resource>> getEventDispatcher() {
+	private BroadcastEventDispatcher<ObservableChangeEvent<Resource>> getEventDispatcher() {
 		if (eventDispatcher == null) {
 			synchronized (this) {
 				if (eventDispatcher == null) {

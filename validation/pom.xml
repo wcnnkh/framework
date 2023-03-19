@@ -4,25 +4,22 @@
 	<parent>
 		<groupId>io.basc.framework</groupId>
 		<artifactId>framework</artifactId>
-		<version>1.8.1</version>
+		<version>1.8.2</version>
 	</parent>
 	<artifactId>validation</artifactId>
 	<properties>
-		<hibernate.validator.veersion>6.2.0.Final</hibernate.validator.veersion>
+		<hibernate.validator.version>6.2.5.Final</hibernate.validator.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>context</artifactId>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>${hibernate.validator.veersion}</version>
+			<version>${hibernate.validator.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-el</artifactId>

@@ -332,20 +332,26 @@ public class Property extends Field {
 
 	@Override
 	public boolean isSupportGetter() {
-		if (objectRelationalResolver != null && super.isSupportGetter()
-				&& objectRelationalResolver.isIgnore(getDeclaringClass(), super.getGetter())) {
-			return false;
+		if (super.isSupportGetter()) {
+			if (objectRelationalResolver != null
+					&& objectRelationalResolver.isIgnore(getDeclaringClass(), super.getGetter())) {
+				return false;
+			}
+			return true;
 		}
-		return super.isSupportGetter();
+		return false;
 	}
 
 	@Override
 	public boolean isSupportSetter() {
-		if (objectRelationalResolver != null && super.isSupportSetter()
-				&& objectRelationalResolver.isIgnore(getDeclaringClass(), super.getSetter())) {
-			return false;
+		if (super.isSupportSetter()) {
+			if (objectRelationalResolver != null
+					&& objectRelationalResolver.isIgnore(getDeclaringClass(), super.getSetter())) {
+				return false;
+			}
+			return true;
 		}
-		return super.isSupportSetter();
+		return false;
 	}
 
 	@Override

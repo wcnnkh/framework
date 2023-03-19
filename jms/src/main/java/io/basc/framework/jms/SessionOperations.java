@@ -1,25 +1,138 @@
 package io.basc.framework.jms;
 
+import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
+import javax.jms.MessageProducer;
 import javax.jms.Session;
 
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.ConsumeProcessor;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.Processor;
-import io.basc.framework.util.RunnableProcessor;
+import io.basc.framework.util.Registration;
+import io.basc.framework.util.RegistrationException;
 import io.basc.framework.util.Source;
-import io.basc.framework.util.StreamOperations;
 
-public class SessionOperations<T extends Session> extends JmsOperations<T, SessionOperations<T>> {
+public class SessionOperations<T extends Session, D extends Destination>
+		extends AbstractJmsOperations<T, SessionOperations<T, D>> {
 
-	public SessionOperations(Source<? extends T, ? extends JMSException> source) {
+	private volatile D destination;
+
+	private volatile MessageProducer messageProducer;
+
+	private final Processor<? super T, ? extends D, ? extends JMSException> processor;
+
+	private volatile T session;
+
+	public SessionOperations(Source<? extends T, ? extends JMSException> source,
+			Processor<? super T, ? extends D, ? extends JMSException> processor) {
 		super(source);
+		Assert.requiredArgument(processor != null, "processor");
+		this.processor = processor;
 	}
 
-	public <S> SessionOperations(StreamOperations<S, ? extends JMSException> sourceStreamOperations,
-			Processor<? super S, ? extends T, ? extends JMSException> processor,
-			@Nullable ConsumeProcessor<? super T, ? extends JMSException> closeProcessor,
-			@Nullable RunnableProcessor<? extends JMSException> closeHandler) {
-		super(sourceStreamOperations, processor, closeProcessor, closeHandler);
+	public Registration bind(MessageListener messageListener) throws JMSException {
+		return bind(getDefaultMessageSelector(), messageListener);
+	}
+
+	@Override
+	public Registration bind(String messageSelector, MessageListener messageListener) throws JMSException {
+		MessageConsumer consumer = createConsumer(messageSelector);
+		consumer.setMessageListener(messageListener);
+		return () -> {
+			try {
+				consumer.close();
+			} catch (JMSException e) {
+				throw new RegistrationException(e);
+			}
+		};
+	}
+
+	@Override
+	public void close() throws JMSException {
+		try {
+			super.close();
+		} finally {
+			if (session != null) {
+				synchronized (this) {
+					if (session != null) {
+						try {
+							close(session);
+						} finally {
+							session = null;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public MessageConsumer createConsumer(String messageSelector) throws JMSException {
+		return createConsumer(get(), getDestination(), messageSelector, getNoLocal());
+	}
+
+	public MessageConsumer createConsumer(T session, D destination, String messageSelector, Boolean noLocal)
+			throws JMSException {
+		MessageConsumer consumer;
+		if (messageSelector == null) {
+			consumer = session.createConsumer(destination);
+		} else {
+			if (noLocal == null) {
+				consumer = session.createConsumer(destination, messageSelector);
+			} else {
+				consumer = session.createConsumer(destination, messageSelector, noLocal);
+			}
+		}
+		return consumer;
+	}
+
+	public D createDestination(T session) throws JMSException {
+		return processor.process(session);
+	}
+
+	public MessageProducer createProducer(T session, D destination) throws JMSException {
+		return session.createProducer(destination);
+	}
+
+	@Override
+	public final T get() throws JMSException {
+		if (session == null) {
+			synchronized (this) {
+				if (session == null) {
+					session = super.get();
+				}
+			}
+		}
+		return session;
+	}
+
+	public final D getDestination() throws JMSException {
+		if (destination == null) {
+			synchronized (this) {
+				if (destination == null) {
+					destination = createDestination(get());
+				}
+			}
+		}
+		return destination;
+	}
+
+	public final MessageProducer getProducer() throws JMSException {
+		if (messageProducer == null) {
+			synchronized (this) {
+				if (messageProducer == null) {
+					messageProducer = createProducer(get(), getDestination());
+				}
+			}
+		}
+		return this.messageProducer;
+	}
+
+	@Override
+	public void send(MessageBuilder messageBuilder) throws JMSException {
+		MessageProducer producer = getProducer();
+		Message message = messageBuilder.build(get());
+		producer.send(message);
 	}
 }

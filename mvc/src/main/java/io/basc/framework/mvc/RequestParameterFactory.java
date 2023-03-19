@@ -1,8 +1,8 @@
 package io.basc.framework.mvc;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.factory.ParameterFactory;
+import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.message.WebMessageConverter;
 import io.basc.framework.web.message.WebMessageConverters;

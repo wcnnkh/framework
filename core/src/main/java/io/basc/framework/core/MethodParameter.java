@@ -1,20 +1,21 @@
 package io.basc.framework.core;
 
-import io.basc.framework.core.parameter.ParameterNameDiscoverer;
-import io.basc.framework.util.Assert;
-import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.ObjectUtils;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.ObjectUtils;
 
 /**
  * Helper class that encapsulates the specification of a method parameter, i.e.
@@ -648,23 +649,54 @@ public class MethodParameter {
 	/**
 	 * Create a new MethodParameter for the given method or constructor.
 	 * <p>
-	 * This is a convenience constructor for scenarios where a Method or Constructor
-	 * reference is treated in a generic fashion.
+	 * This is a convenience factory method for scenarios where a Method or
+	 * Constructor reference is treated in a generic fashion.
 	 * 
-	 * @param methodOrConstructor the Method or Constructor to specify a parameter
-	 *                            for
-	 * @param parameterIndex      the index of the parameter
+	 * @param executable     the Method or Constructor to specify a parameter for
+	 * @param parameterIndex the index of the parameter
 	 * @return the corresponding MethodParameter instance
 	 */
-	public static MethodParameter forMethodOrConstructor(Object methodOrConstructor, int parameterIndex) {
-		if (methodOrConstructor instanceof Method) {
-			return new MethodParameter((Method) methodOrConstructor, parameterIndex);
-		} else if (methodOrConstructor instanceof Constructor) {
-			return new MethodParameter((Constructor<?>) methodOrConstructor, parameterIndex);
+	public static MethodParameter forExecutable(Executable executable, int parameterIndex) {
+		if (executable instanceof Method) {
+			return new MethodParameter((Method) executable, parameterIndex);
+		} else if (executable instanceof Constructor) {
+			return new MethodParameter((Constructor<?>) executable, parameterIndex);
 		} else {
-			throw new IllegalArgumentException(
-					"Given object [" + methodOrConstructor + "] is neither a Method nor a Constructor");
+			throw new IllegalArgumentException("Not a Method/Constructor: " + executable);
 		}
+	}
+
+	/**
+	 * Create a new MethodParameter for the given parameter descriptor.
+	 * <p>
+	 * This is a convenience factory method for scenarios where a Java 8
+	 * {@link Parameter} descriptor is already available.
+	 * 
+	 * @param parameter the parameter descriptor
+	 * @return the corresponding MethodParameter instance
+	 */
+	public static MethodParameter forParameter(Parameter parameter) {
+		return forExecutable(parameter.getDeclaringExecutable(), findParameterIndex(parameter));
+	}
+
+	protected static int findParameterIndex(Parameter parameter) {
+		Executable executable = parameter.getDeclaringExecutable();
+		Parameter[] allParams = executable.getParameters();
+		// Try first with identity checks for greater performance.
+		for (int i = 0; i < allParams.length; i++) {
+			if (parameter == allParams[i]) {
+				return i;
+			}
+		}
+		// Potentially try again with object equality checks in order to avoid race
+		// conditions while invoking java.lang.reflect.Executable.getParameters().
+		for (int i = 0; i < allParams.length; i++) {
+			if (parameter.equals(allParams[i])) {
+				return i;
+			}
+		}
+		throw new IllegalArgumentException(
+				"Given parameter [" + parameter + "] does not match any parameter in the declaring executable");
 	}
 
 }

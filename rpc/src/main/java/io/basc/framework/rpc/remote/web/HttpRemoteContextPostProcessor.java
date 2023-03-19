@@ -71,7 +71,7 @@ public class HttpRemoteContextPostProcessor implements ContextPostProcessor {
 
 	@Override
 	public void postProcessContext(ConfigurableContext context) throws Throwable {
-		for (Resource resource : context.getConfigurationResources()) {
+		for (Resource resource : context.getResources()) {
 			if (resource.exists() && resource.getName().endsWith(".xml")) {
 				XmlBeanUtils.read(context.getResourceLoader(), resource, (nodeList) -> resolve(context, nodeList));
 			}

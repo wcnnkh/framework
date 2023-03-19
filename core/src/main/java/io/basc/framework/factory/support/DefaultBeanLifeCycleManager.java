@@ -2,15 +2,15 @@ package io.basc.framework.factory.support;
 
 import java.util.Collection;
 
-import io.basc.framework.event.EventDispatcher;
+import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.support.SimpleEventDispatcher;
+import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanDefinitionAware;
-import io.basc.framework.factory.BeanLifecycleManager;
-import io.basc.framework.factory.BeanPostProcessor;
 import io.basc.framework.factory.BeanLifecycleEvent;
 import io.basc.framework.factory.BeanLifecycleEvent.Step;
+import io.basc.framework.factory.BeanLifecycleManager;
+import io.basc.framework.factory.BeanPostProcessor;
 import io.basc.framework.factory.ConfigurableBeanResolver;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.DefaultParameterFactoryAware;
@@ -27,7 +27,7 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 			BeanPostProcessor.class);
 	private final ConfigurableServices<BeanPostProcessor> destroyProcessors = new ConfigurableServices<BeanPostProcessor>(
 			BeanPostProcessor.class);
-	private final EventDispatcher<BeanLifecycleEvent> eventDispatcher = new SimpleEventDispatcher<>();
+	private final BroadcastEventDispatcher<BeanLifecycleEvent> eventDispatcher = new StandardBroadcastEventDispatcher<>();
 	private final ConfigurableServices<BeanPostProcessor> initProcessors = new ConfigurableServices<BeanPostProcessor>(
 			BeanPostProcessor.class);
 	private final ConfigurableBeanResolver beanResolver = new ConfigurableBeanResolver();

@@ -5,7 +5,7 @@ import java.io.Serializable;
 import io.basc.framework.env.BascObject;
 import io.basc.framework.env.Sys;
 import io.basc.framework.event.Observable;
-import io.basc.framework.lang.NamedInheritableThreadLocal;
+import io.basc.framework.factory.InheritableThreadLocalConfigurator;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.page.PageSupport;
 
@@ -16,35 +16,34 @@ import io.basc.framework.util.page.PageSupport;
  *
  */
 public class PageRequest extends BascObject implements Serializable {
-	private static final long serialVersionUID = 1L;
+	private static final InheritableThreadLocalConfigurator<PageRequest> CONFIGURATOR = new InheritableThreadLocalConfigurator<>(PageRequest.class, Sys.getEnv());
 	private static final Observable<Long> DEFAULT_PAGE_SIZE = Sys.getEnv().getProperties()
 			.getObservable("data.page.request.size").map((e) -> e.or(10L).getAsLong());
 
-	private static final ThreadLocal<PageRequest> LOCAL = new NamedInheritableThreadLocal<PageRequest>(
-			PageRequest.class.getName(), true);
+	private static final long serialVersionUID = 1L;
 
-	public static ThreadLocal<PageRequest> getLocal() {
-		return LOCAL;
+	public static PageRequest build(long start, long limit) {
+		return new PageRequest(PageSupport.getPageNumber(start, limit), limit);
+	}
+
+	public static void clearPageRequest() {
+		CONFIGURATOR.remove();
+	}
+
+	public static InheritableThreadLocalConfigurator<PageRequest> getConfigurator() {
+		return CONFIGURATOR;
 	}
 
 	public static PageRequest getPageRequest() {
-		return LOCAL.get();
-	}
-
-	public static void startPageRequest(PageRequest request) {
-		LOCAL.set(request);
+		return CONFIGURATOR.get();
 	}
 
 	public static void startPageRequest(long start, long limit) {
 		startPageRequest(build(start, limit));
 	}
 
-	public static void clearPageRequest() {
-		LOCAL.remove();
-	}
-
-	public static PageRequest build(long start, long limit) {
-		return new PageRequest(PageSupport.getPageNumber(start, limit), limit);
+	public static void startPageRequest(PageRequest request) {
+		CONFIGURATOR.set(request);
 	}
 
 	private long pageNum;
@@ -73,21 +72,21 @@ public class PageRequest extends BascObject implements Serializable {
 		return pageNum;
 	}
 
+	public final long getPageSize() {
+		return pageSize;
+	}
+
+	public final long getStart() {
+		return PageSupport.getStart(pageNum, pageSize);
+	}
+
 	public void setPageNum(long pageNum) {
 		Assert.requiredArgument(pageNum > 0, "pageNum");
 		this.pageNum = pageNum;
 	}
 
-	public final long getPageSize() {
-		return pageSize;
-	}
-
 	public void setPageSize(long pageSize) {
 		Assert.requiredArgument(pageSize > 0, "pageSize");
 		this.pageSize = pageSize;
-	}
-
-	public final long getStart() {
-		return PageSupport.getStart(pageNum, pageSize);
 	}
 }

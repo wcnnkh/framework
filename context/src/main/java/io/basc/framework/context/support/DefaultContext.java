@@ -1,6 +1,7 @@
 package io.basc.framework.context.support;
 
 import java.util.Collection;
+import java.util.Set;
 
 import io.basc.framework.context.ClassesLoader;
 import io.basc.framework.context.ClassesLoaderFactory;
@@ -12,11 +13,16 @@ import io.basc.framework.context.ContextAware;
 import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.ProviderClassesLoader;
 import io.basc.framework.context.annotation.AnnotationContextResolverExtend;
+import io.basc.framework.context.annotation.ComponentScan;
+import io.basc.framework.context.annotation.ComponentScans;
+import io.basc.framework.context.annotation.Import;
+import io.basc.framework.context.annotation.ImportResource;
 import io.basc.framework.context.ioc.ConfigurableIocResolver;
 import io.basc.framework.context.ioc.IocResolver;
 import io.basc.framework.context.ioc.annotation.IocBeanResolverExtend;
 import io.basc.framework.context.repository.annotation.RepositoryContextResolverExtend;
 import io.basc.framework.context.xml.XmlContextPostProcessor;
+import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.env.DefaultEnvironment;
 import io.basc.framework.env.Sys;
@@ -26,30 +32,35 @@ import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.FactoryException;
 import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.factory.support.BeanDefinitionLoaderChain;
-import io.basc.framework.io.Resource;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
-import io.basc.framework.util.Services;
+import io.basc.framework.util.Registration;
+import io.basc.framework.util.StringUtils;
 
 public class DefaultContext extends DefaultEnvironment implements ConfigurableContext {
-	private static final String BEANS_CONFIGURATION = "io.basc.framework.beans.configuration";
-	private static final String DEFAULT_BEANS_CONFIGURATION = "beans.xml";
-
 	private static Logger logger = LoggerFactory.getLogger(DefaultContext.class);
 	private final DefaultClassesLoaderFactory classesLoaderFactory;
 	private final DefaultClassesLoader contextClassesLoader = new DefaultClassesLoader();
-	private final ContextTypeFilter contextTypeFilter = new ContextTypeFilter(getProperties());
 	private final ConfigurableServices<ContextPostProcessor> contextPostProcessors = new ConfigurableServices<ContextPostProcessor>(
 			ContextPostProcessor.class);
-	private final Services<Resource> configurationResources = new Services<Resource>();
 	private final ConfigurableContextResolver contextResolver = new ConfigurableContextResolver();
+	private final ContextTypeFilter contextTypeFilter = new ContextTypeFilter(getProperties());
+	private volatile boolean initialized = false;
 	private final ConfigurableIocResolver iocResolver = new ConfigurableIocResolver();
 
+	private final ConcurrentReferenceHashMap<Class<?>, ProviderClassesLoader> providerClassesLoaderMap = new ConcurrentReferenceHashMap<>(
+			128);
+
+	private ConcurrentReferenceHashMap<Class<?>, ServiceLoader<?>> serviceLoaderCacheMap = new ConcurrentReferenceHashMap<Class<?>, ServiceLoader<?>>();
+
+	private final DefaultClassesLoader sourceClasses = new DefaultClassesLoader();
+
 	public DefaultContext() {
+		contextClassesLoader.registerLoader(sourceClasses);
 		IocBeanResolverExtend iocBeanResolverExtend = new IocBeanResolverExtend(this, iocResolver);
 		iocResolver.setAfterService(iocBeanResolverExtend);
 		this.classesLoaderFactory = new DefaultClassesLoaderFactory(getResourceLoader());
@@ -64,30 +75,82 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 		// 这是为了执行init时重新选择parentBeanFactory
 		setParentBeanFactory(null);
 
-		// 扫描框架类，忽略(.test.)路径
-		componentScan(Constants.SYSTEM_PACKAGE_NAME, null);
+		// 扫描框架类
+		componentScan(Constants.SYSTEM_PACKAGE_NAME, contextTypeFilter);
 	}
 
 	@Override
-	public BeanDefinition load(BeanFactory beanFactory, ClassLoader classLoader, String name,
-			BeanDefinitionLoaderChain chain) throws FactoryException {
-		Class<?> clazz = ClassUtils.getClass(name, classLoader);
-		if (clazz == null) {
-			return super.load(beanFactory, classLoader, name, chain);
+	protected void _dependence(Object instance, BeanDefinition definition) throws FactoryException {
+		if (instance != null && definition != null) {
+			ContextConfigurator configurator = new ContextConfigurator(this);
+			configurator.configurationProperties(instance, definition.getTypeDescriptor());
 		}
 
-		ProviderClassesLoader providerClassesLoader = getProviderClassesLoader(clazz);
-		for (Class<?> providerClass : providerClassesLoader) {
-			if (beanFactory.isInstance(providerClass)) {
-				logger.info("The provider of {} is {}", clazz, providerClass);
-				return beanFactory.getDefinition(providerClass);
-			}
+		super._dependence(instance, definition);
+		if (instance instanceof ContextAware) {
+			((ContextAware) instance).setContext(this);
 		}
-		return super.load(beanFactory, classLoader, name, chain);
 	}
 
-	private final ConcurrentReferenceHashMap<Class<?>, ProviderClassesLoader> providerClassesLoaderMap = new ConcurrentReferenceHashMap<>(
-			128);
+	private Registration componentScan(ComponentScan componentScan) {
+		Registration registration = Registration.EMPTY;
+		for (String name : componentScan.value()) {
+			registration = registration.and(componentScan(name));
+		}
+
+		for (String name : componentScan.basePackages()) {
+			registration = registration.and(componentScan(name));
+		}
+		return registration;
+	}
+
+	public Registration componentScan(String packageName) {
+		if (packageName.startsWith(Constants.SYSTEM_PACKAGE_NAME)) {
+			// 已经默认包含了
+			return Registration.EMPTY;
+		}
+
+		return componentScan(packageName, contextTypeFilter);
+	}
+
+	public Registration componentScan(String packageName, TypeFilter typeFilter) {
+		ClassesLoader classesLoader = getClassesLoaderFactory().getClassesLoader(packageName,
+				(e, m) -> typeFilter == null || typeFilter.match(e, m));
+		return getContextClasses().registerLoader(classesLoader);
+	}
+
+	@Override
+	protected <S> ServiceLoader<S> getAfterServiceLoader(Class<S> serviceClass) {
+		return ServiceLoader.concat(new ClassesServiceLoader<S>(getProviderClassesLoader(serviceClass), this),
+				super.getAfterServiceLoader(serviceClass));
+	}
+
+	@Override
+	public ClassesLoaderFactory getClassesLoaderFactory() {
+		return classesLoaderFactory;
+	}
+
+	@Override
+	public ConfigurableClassesLoader getContextClasses() {
+		return contextClassesLoader;
+	}
+
+	public ConfigurableServices<ContextPostProcessor> getContextPostProcessors() {
+		return contextPostProcessors;
+	}
+
+	@Override
+	public ConfigurableContextResolver getContextResolver() {
+		return contextResolver;
+	}
+
+	public ContextTypeFilter getContextTypeFilter() {
+		return contextTypeFilter;
+	}
+
+	public ConfigurableIocResolver getIocResolver() {
+		return iocResolver;
+	}
 
 	public ProviderClassesLoader getProviderClassesLoader(Class<?> providerClass) {
 		ProviderClassesLoader classesLoader = providerClassesLoaderMap.get(providerClass);
@@ -106,116 +169,6 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 			}
 		}
 		return classesLoader;
-	}
-
-	public ContextTypeFilter getContextTypeFilter() {
-		return contextTypeFilter;
-	}
-
-	@Override
-	public ConfigurableClassesLoader getContextClasses() {
-		return contextClassesLoader;
-	}
-
-	@Override
-	public ClassesLoaderFactory getClassesLoaderFactory() {
-		return classesLoaderFactory;
-	}
-
-	private volatile boolean initialized = false;
-
-	@Override
-	public void init() throws FactoryException {
-		synchronized (this) {
-			if (isInitialized()) {
-				throw new FactoryException("Context has been initialized");
-			}
-
-			try {
-				super.init();
-				logger.debug("Start initializing context[{}]!", this);
-
-				if (!iocResolver.isConfigured()) {
-					iocResolver.configure(this);
-				}
-
-				String beansConfiguration = getProperties().get(BEANS_CONFIGURATION).or(DEFAULT_BEANS_CONFIGURATION)
-						.getAsString();
-				getConfigurationResources().addService(getResourceLoader().getResource(beansConfiguration));
-
-				postProcessContext(new XmlContextPostProcessor());
-
-				if (!contextResolver.isConfigured()) {
-					contextResolver.configure(this);
-				}
-
-				for (Class<?> clazz : getContextClasses()) {
-					Collection<BeanDefinition> definitions = contextResolver.resolveBeanDefinitions(clazz);
-					if (CollectionUtils.isEmpty(definitions)) {
-						continue;
-					}
-
-					for (BeanDefinition definition : definitions) {
-						if (containsDefinition(definition.getId())) {
-							logger.warn("There are duplicate definitions {}", definition);
-							continue;
-						}
-						registerDefinition(definition);
-					}
-				}
-
-				if (!contextPostProcessors.isConfigured()) {
-					contextPostProcessors.configure(this);
-				}
-
-				for (ContextPostProcessor postProcessor : contextPostProcessors) {
-					postProcessContext(postProcessor);
-				}
-				logger.debug("Started context[{}]!", this);
-			} finally {
-				initialized = true;
-			}
-		}
-	}
-
-	public void postProcessContext(ContextPostProcessor processor) {
-		try {
-			processor.postProcessContext(this);
-		} catch (Throwable e) {
-			throw new FactoryException("Post process context[" + processor + "]", e);
-		}
-	}
-
-	public ConfigurableServices<ContextPostProcessor> getContextPostProcessors() {
-		return contextPostProcessors;
-	}
-
-	@Override
-	public boolean isInitialized() {
-		return super.isInitialized() && initialized;
-	}
-
-	public void componentScan(String packageName) {
-		if (packageName.startsWith(Constants.SYSTEM_PACKAGE_NAME)) {
-			// 已经默认包含了
-			return;
-		}
-
-		componentScan(packageName, null);
-	}
-
-	public void componentScan(String packageName, TypeFilter typeFilter) {
-		ClassesLoader classesLoader = getClassesLoaderFactory().getClassesLoader(packageName,
-				(e, m) -> contextTypeFilter.match(e, m) && (typeFilter == null || typeFilter.match(e, m)));
-		getContextClasses().add(classesLoader);
-	}
-
-	private ConcurrentReferenceHashMap<Class<?>, ServiceLoader<?>> serviceLoaderCacheMap = new ConcurrentReferenceHashMap<Class<?>, ServiceLoader<?>>();
-
-	@Override
-	protected <S> ServiceLoader<S> getAfterServiceLoader(Class<S> serviceClass) {
-		return ServiceLoader.concat(new ClassesServiceLoader<S>(getProviderClassesLoader(serviceClass), this),
-				super.getAfterServiceLoader(serviceClass));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -241,29 +194,146 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	@Override
-	public Services<Resource> getConfigurationResources() {
-		return configurationResources;
+	public DefaultClassesLoader getSourceClasses() {
+		return sourceClasses;
 	}
 
 	@Override
-	public ConfigurableContextResolver getContextResolver() {
-		return contextResolver;
-	}
+	public void init() throws FactoryException {
+		synchronized (this) {
+			if (isInitialized()) {
+				throw new FactoryException("Context has been initialized");
+			}
 
-	public ConfigurableIocResolver getIocResolver() {
-		return iocResolver;
+			try {
+				super.init();
+				logger.debug("Start initializing context[{}]!", this);
+
+				if (!iocResolver.isConfigured()) {
+					iocResolver.configure(this);
+				}
+
+				postProcessContext(new XmlContextPostProcessor());
+
+				if (!contextResolver.isConfigured()) {
+					contextResolver.configure(this);
+				}
+
+				for (Class<?> clazz : getContextClasses()) {
+					Collection<BeanDefinition> definitions = contextResolver.resolveBeanDefinitions(clazz);
+					if (CollectionUtils.isEmpty(definitions)) {
+						continue;
+					}
+
+					for (BeanDefinition definition : definitions) {
+						registerDefinition(definition);
+					}
+				}
+
+				if (!contextPostProcessors.isConfigured()) {
+					contextPostProcessors.configure(this);
+				}
+
+				for (ContextPostProcessor postProcessor : contextPostProcessors) {
+					postProcessContext(postProcessor);
+				}
+
+				logger.debug("Started context[{}]!", this);
+			} finally {
+				initialized = true;
+			}
+		}
 	}
 
 	@Override
-	protected void _dependence(Object instance, BeanDefinition definition) throws FactoryException {
-		if (instance != null && definition != null) {
-			ContextConfigurator configurator = new ContextConfigurator(this);
-			configurator.configurationProperties(instance, definition.getTypeDescriptor());
+	public boolean isInitialized() {
+		return super.isInitialized() && initialized;
+	}
+
+	@Override
+	public BeanDefinition load(BeanFactory beanFactory, ClassLoader classLoader, String name,
+			BeanDefinitionLoaderChain chain) throws FactoryException {
+		Class<?> clazz = ClassUtils.getClass(name, classLoader);
+		if (clazz == null) {
+			return super.load(beanFactory, classLoader, name, chain);
 		}
 
-		super._dependence(instance, definition);
-		if (instance instanceof ContextAware) {
-			((ContextAware) instance).setContext(this);
+		ProviderClassesLoader providerClassesLoader = getProviderClassesLoader(clazz);
+		for (Class<?> providerClass : providerClassesLoader) {
+			if (beanFactory.isInstance(providerClass)) {
+				logger.info("The provider of {} is {}", clazz, providerClass);
+				return beanFactory.getDefinition(providerClass);
+			}
 		}
+		return super.load(beanFactory, classLoader, name, chain);
+	}
+
+	public void postProcessContext(ContextPostProcessor processor) {
+		try {
+			processor.postProcessContext(this);
+		} catch (Throwable e) {
+			throw new FactoryException("Post process context[" + processor + "]", e);
+		}
+	}
+
+	@Override
+	public Registration source(Class<?> sourceClass) {
+		Registration registration = sourceClasses.register(sourceClass);
+		if (registration.isEmpty()) {
+			return Registration.EMPTY;
+		}
+
+		if (sourceClass.getPackage() != null) {
+			registration = registration.and(componentScan(sourceClass.getPackage().getName()));
+		}
+
+		Set<ImportResource> importResources = AnnotatedElementUtils.getAllMergedAnnotations(sourceClass,
+				ImportResource.class);
+		for (ImportResource importResource : importResources) {
+			String[] locations = importResource.value();
+			for (String location : locations) {
+				if (StringUtils.isEmpty(location)) {
+					continue;
+				}
+
+				String path = replacePlaceholders(location);
+				registration = registration.and(source(path));
+			}
+		}
+
+		Set<Import> imports = AnnotatedElementUtils.getAllMergedAnnotations(sourceClass, Import.class);
+		for (Import im : imports) {
+			for (Class<?> clazz : im.value()) {
+				registration = registration.and(source(clazz));
+			}
+		}
+
+		ComponentScan componentScan = AnnotatedElementUtils.getMergedAnnotation(sourceClass, ComponentScan.class);
+		if (componentScan != null) {
+			registration = registration.and(componentScan(componentScan));
+		}
+
+		ComponentScans componentScans = AnnotatedElementUtils.getMergedAnnotation(sourceClass, ComponentScans.class);
+		if (componentScans != null) {
+			for (ComponentScan scan : componentScans.value()) {
+				registration = registration.and(componentScan(scan));
+			}
+		}
+		return registration;
+	}
+
+	@Override
+	protected boolean useSpi(Class<?> serviceClass) {
+		for (Class<?> sourceClass : sourceClasses) {
+			Package pg = sourceClass.getPackage();
+			if (pg == null) {
+				continue;
+			}
+
+			if (serviceClass.getName().startsWith(pg.getName())) {
+				return true;
+			}
+		}
+		return super.useSpi(serviceClass);
 	}
 }

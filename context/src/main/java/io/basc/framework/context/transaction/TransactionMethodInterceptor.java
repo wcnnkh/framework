@@ -3,7 +3,7 @@ package io.basc.framework.context.transaction;
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.annotation.AnnotationUtils;
+import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -46,7 +46,7 @@ public final class TransactionMethodInterceptor implements MethodInterceptor {
 
 	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
 		TransactionManager transactionManager = TransactionUtils.getManager();
-		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, invoker.getSourceClass(),
+		Transactional tx = Annotations.getAnnotation(Transactional.class, invoker.getSourceClass(),
 				invoker.getMethod());
 		if (tx == null && transactionManager.hasTransaction()) {
 			Object rtn = invoker.invoke(args);

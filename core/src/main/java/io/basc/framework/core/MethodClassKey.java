@@ -1,7 +1,24 @@
+/*
+ * Copyright 2002-2017 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.basc.framework.core;
 
 import java.lang.reflect.Method;
 
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
 
 /**
@@ -9,11 +26,13 @@ import io.basc.framework.util.ObjectUtils;
  * {@link #toString()} representation and {@link Comparable} support (as
  * suggested for custom {@code HashMap} keys as of Java 8).
  *
+ * @author Juergen Hoeller
  */
 public final class MethodClassKey implements Comparable<MethodClassKey> {
 
 	private final Method method;
 
+	@Nullable
 	private final Class<?> targetClass;
 
 	/**
@@ -23,13 +42,13 @@ public final class MethodClassKey implements Comparable<MethodClassKey> {
 	 * @param targetClass the target class that the method will be invoked on (may
 	 *                    be {@code null} if identical to the declaring class)
 	 */
-	public MethodClassKey(Method method, Class<?> targetClass) {
+	public MethodClassKey(Method method, @Nullable Class<?> targetClass) {
 		this.method = method;
 		this.targetClass = targetClass;
 	}
 
 	@Override
-	public boolean equals(Object other) {
+	public boolean equals(@Nullable Object other) {
 		if (this == other) {
 			return true;
 		}
@@ -50,6 +69,7 @@ public final class MethodClassKey implements Comparable<MethodClassKey> {
 		return this.method + (this.targetClass != null ? " on " + this.targetClass : "");
 	}
 
+	@Override
 	public int compareTo(MethodClassKey other) {
 		int result = this.method.getName().compareTo(other.method.getName());
 		if (result == 0) {

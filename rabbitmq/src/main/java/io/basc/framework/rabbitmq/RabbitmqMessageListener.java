@@ -14,25 +14,26 @@ import com.rabbitmq.client.Envelope;
 
 public class RabbitmqMessageListener extends DefaultConsumer {
 	private static Logger logger = LoggerFactory.getLogger(RabbitmqMessageListener.class);
-	private final MessageListener messageListener;
+	private final MessageListener<byte[]> messageListener;
 	private final boolean multiple;
 
-	public RabbitmqMessageListener(Channel channel, MessageListener messageListener, boolean multiple) {
+	public RabbitmqMessageListener(Channel channel, MessageListener<byte[]> messageListener, boolean multiple) {
 		super(channel);
 		this.messageListener = messageListener;
 		this.multiple = multiple;
 	}
- 
+
 	@Override
 	public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
 			throws IOException {
-		Message message = RabbitmqUitls.toMessage(properties, body);
+		Message<byte[]> message = RabbitmqUitls.toMessage(properties, body);
 		try {
 			messageListener.onMessage(envelope.getExchange(), envelope.getRoutingKey(), message);
 			getChannel().basicAck(envelope.getDeliveryTag(), multiple);
 		} catch (IOException e) {
-			logger.error(e, "consumerTag={}, envelope={}, properties={}, body={}", consumerTag, envelope, properties, body);
-			getChannel().basicReject(envelope.getDeliveryTag(), true);//将消息分配给其他消费者
+			logger.error(e, "consumerTag={}, envelope={}, properties={}, body={}", consumerTag, envelope, properties,
+					body);
+			getChannel().basicReject(envelope.getDeliveryTag(), true);// 将消息分配给其他消费者
 		}
 	}
 }

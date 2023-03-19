@@ -2,8 +2,8 @@ package io.basc.framework.context.ioc;
 
 import java.lang.reflect.Method;
 
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.factory.ConfigurableServices;
+import io.basc.framework.mapper.ParameterDescriptor;
 
 public class ConfigurableIocResolver extends ConfigurableServices<IocResolverExtend> implements IocResolver {
 	private IocResolver defaultResolver;

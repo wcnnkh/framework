@@ -40,4 +40,9 @@ public class AnnotatedElementWrapper<A extends AnnotatedElement> extends Wrapper
 	public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
 		return wrappedTarget.getDeclaredAnnotationsByType(annotationClass);
 	}
+
+	@Override
+	public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+		return wrappedTarget.isAnnotationPresent(annotationClass);
+	}
 }

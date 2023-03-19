@@ -94,7 +94,6 @@ public class AntPathMatcher implements PathMatcher {
 	 * A convenient, alternative constructor to use with a custom path separator.
 	 * 
 	 * @param pathSeparator the path separator to use, must not be {@code null}.
-	 * @since 4.1
 	 */
 	public AntPathMatcher(String pathSeparator) {
 		Assert.notNull(pathSeparator, "'pathSeparator' is required");
@@ -118,7 +117,6 @@ public class AntPathMatcher implements PathMatcher {
 	 * Default is {@code true}. Switch this to {@code false} for case-insensitive
 	 * matching.
 	 * 
-	 * @since 4.2
 	 */
 	public void setCaseSensitive(boolean caseSensitive) {
 		this.caseSensitive = caseSensitive;
@@ -144,7 +142,6 @@ public class AntPathMatcher implements PathMatcher {
 	 * is 65536), assuming that arbitrary permutations of patterns are coming in,
 	 * with little chance for encountering a recurring pattern.
 	 * 
-	 * @since 4.0.1
 	 * @see #getStringMatcher(String)
 	 */
 	public void setCachePatterns(boolean cachePatterns) {

@@ -7,13 +7,13 @@ import java.util.List;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.http.client.AbstractBufferingClientHttpRequest;
 import io.basc.framework.http.client.BufferingClientHttpRequestWrapper;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.lang.Constants;
+import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.value.Value;
 import io.basc.framework.web.ServerHttpRequest;

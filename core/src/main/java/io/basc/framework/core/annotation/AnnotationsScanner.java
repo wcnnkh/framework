@@ -1,3 +1,19 @@
+/*
+ * Copyright 2002-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.basc.framework.core.annotation;
 
 import java.lang.annotation.Annotation;
@@ -21,7 +37,8 @@ import io.basc.framework.util.ObjectUtils;
  * Scanner to search for relevant annotations in the annotation hierarchy of an
  * {@link AnnotatedElement}.
  *
- * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/annotation/AnnotationsScanner.java
+ * @author Phillip Webb
+ * @author Sam Brannen
  * @see AnnotationsProcessor
  */
 abstract class AnnotationsScanner {
@@ -52,6 +69,7 @@ abstract class AnnotationsScanner {
 	@Nullable
 	static <C, R> R scan(C context, AnnotatedElement source, SearchStrategy searchStrategy,
 			AnnotationsProcessor<C, R> processor) {
+
 		R result = process(context, source, searchStrategy, processor);
 		return processor.finish(result);
 	}
@@ -72,6 +90,7 @@ abstract class AnnotationsScanner {
 	@Nullable
 	private static <C, R> R processClass(C context, Class<?> source, SearchStrategy searchStrategy,
 			AnnotationsProcessor<C, R> processor) {
+
 		switch (searchStrategy) {
 		case DIRECT:
 			return processElement(context, source, processor);
@@ -90,6 +109,7 @@ abstract class AnnotationsScanner {
 	@Nullable
 	private static <C, R> R processClassInheritedAnnotations(C context, Class<?> source, SearchStrategy searchStrategy,
 			AnnotationsProcessor<C, R> processor) {
+
 		try {
 			if (isWithoutHierarchy(source, searchStrategy)) {
 				return processElement(context, source, processor);
@@ -141,12 +161,14 @@ abstract class AnnotationsScanner {
 	@Nullable
 	private static <C, R> R processClassHierarchy(C context, Class<?> source, AnnotationsProcessor<C, R> processor,
 			boolean includeInterfaces, boolean includeEnclosing) {
+
 		return processClassHierarchy(context, new int[] { 0 }, source, processor, includeInterfaces, includeEnclosing);
 	}
 
 	@Nullable
 	private static <C, R> R processClassHierarchy(C context, int[] aggregateIndex, Class<?> source,
 			AnnotationsProcessor<C, R> processor, boolean includeInterfaces, boolean includeEnclosing) {
+
 		try {
 			R result = processor.doWithAggregate(context, aggregateIndex[0]);
 			if (result != null) {
@@ -206,6 +228,7 @@ abstract class AnnotationsScanner {
 	@Nullable
 	private static <C, R> R processMethod(C context, Method source, SearchStrategy searchStrategy,
 			AnnotationsProcessor<C, R> processor) {
+
 		switch (searchStrategy) {
 		case DIRECT:
 		case INHERITED_ANNOTATIONS:
@@ -224,6 +247,7 @@ abstract class AnnotationsScanner {
 	@Nullable
 	private static <C, R> R processMethodInheritedAnnotations(C context, Method source,
 			AnnotationsProcessor<C, R> processor) {
+
 		try {
 			R result = processor.doWithAggregate(context, 0);
 			return (result != null ? result : processMethodAnnotations(context, 0, source, processor));
@@ -236,6 +260,7 @@ abstract class AnnotationsScanner {
 	@Nullable
 	private static <C, R> R processMethodHierarchy(C context, int[] aggregateIndex, Class<?> sourceClass,
 			AnnotationsProcessor<C, R> processor, Method rootMethod, boolean includeInterfaces) {
+
 		try {
 			R result = processor.doWithAggregate(context, aggregateIndex[0]);
 			if (result != null) {
@@ -300,8 +325,7 @@ abstract class AnnotationsScanner {
 		if (methods == null) {
 			boolean isInterface = baseType.isInterface();
 			methods = isInterface ? baseType.getMethods()
-					: ReflectionUtils.getDeclaredMethods(baseType).withInterfaces().all().stream()
-							.toArray(Method[]::new);
+					: ReflectionUtils.getDeclaredMethods(baseType).withAll().all().toArray(Method[]::new);
 			int cleared = 0;
 			for (int i = 0; i < methods.length; i++) {
 				if ((!isInterface && Modifier.isPrivate(methods[i].getModifiers()))
@@ -339,6 +363,7 @@ abstract class AnnotationsScanner {
 
 	private static boolean hasSameGenericTypeParameters(Method rootMethod, Method candidateMethod,
 			Class<?>[] rootParameterTypes) {
+
 		Class<?> sourceDeclaringClass = rootMethod.getDeclaringClass();
 		Class<?> candidateDeclaringClass = candidateMethod.getDeclaringClass();
 		if (!candidateDeclaringClass.isAssignableFrom(sourceDeclaringClass)) {
@@ -357,6 +382,7 @@ abstract class AnnotationsScanner {
 	@Nullable
 	private static <C, R> R processMethodAnnotations(C context, int aggregateIndex, Method source,
 			AnnotationsProcessor<C, R> processor) {
+
 		Annotation[] annotations = getDeclaredAnnotations(source, false);
 		R result = processor.doWithAnnotations(context, aggregateIndex, source, annotations);
 		if (result != null) {
@@ -377,6 +403,7 @@ abstract class AnnotationsScanner {
 
 	@Nullable
 	private static <C, R> R processElement(C context, AnnotatedElement source, AnnotationsProcessor<C, R> processor) {
+
 		try {
 			R result = processor.doWithAggregate(context, 0);
 			return (result != null ? result

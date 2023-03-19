@@ -21,7 +21,7 @@ import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
 import io.basc.framework.json.JsonUtils;
-import io.basc.framework.lang.NamedInheritableThreadLocal;
+import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -41,13 +41,13 @@ import io.basc.framework.xml.XmlUtils;
 
 public final class WebUtils {
 	private static Logger logger = LoggerFactory.getLogger(WebUtils.class);
-	private static final ThreadLocal<ServerHttpRequest> SERVER_HTTP_REQUEST_LOCAL = new NamedInheritableThreadLocal<ServerHttpRequest>(
-			ServerHttpRequest.class.getName(), true);
+	private static final ThreadLocal<ServerHttpRequest> SERVER_HTTP_REQUEST_lOCAL = new NamedThreadLocal<ServerHttpRequest>(
+			ServerHttpRequest.class.getName());
 	private static final String RESTFUL_PARAMETER_MAP = "io.basc.framework.web.restful.parameters";
 	public static final String PATH_SEPARATOR = "/";
 
 	public static ThreadLocal<ServerHttpRequest> getServerHttpRequestLocal() {
-		return SERVER_HTTP_REQUEST_LOCAL;
+		return SERVER_HTTP_REQUEST_lOCAL;
 	}
 
 	public static boolean isExpired(ServerHttpRequest request, ServerHttpResponse response, long lastModified) {
@@ -231,14 +231,14 @@ public final class WebUtils {
 
 	public static void setLocalServerHttpRequest(ServerHttpRequest request) {
 		if (request == null) {
-			SERVER_HTTP_REQUEST_LOCAL.remove();
+			SERVER_HTTP_REQUEST_lOCAL.remove();
 		} else {
-			SERVER_HTTP_REQUEST_LOCAL.set(request);
+			SERVER_HTTP_REQUEST_lOCAL.set(request);
 		}
 	}
 
 	public static ServerHttpRequest getLocalServerHttpRequest() {
-		return SERVER_HTTP_REQUEST_LOCAL.get();
+		return SERVER_HTTP_REQUEST_lOCAL.get();
 	}
 
 	public static void setRestfulParameterMap(ServerHttpRequest request, Map<String, String> restfulMap) {

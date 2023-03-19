@@ -1,3 +1,19 @@
+/*
+ * Copyright 2002-2018 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.basc.framework.core.type.classreading;
 
 import java.io.IOException;
@@ -11,10 +27,11 @@ import io.basc.framework.lang.Nullable;
 
 /**
  * Caching implementation of the {@link MetadataReaderFactory} interface,
- * caching a {@link MetadataReader} instance per {@link Resource} handle (i.e.
- * per ".class" file).
+ * caching a {@link MetadataReader} instance per Spring {@link Resource} handle
+ * (i.e. per ".class" file).
  *
- * @author https://github.com/spring-projects/spring-framework/blob/main/spring-core/src/main/java/org/springframework/core/type/classreading/CachingMetadataReaderFactory.java
+ * @author Juergen Hoeller
+ * @author Costin Leau
  */
 public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 
@@ -50,7 +67,7 @@ public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 	 * {@link ResourceLoader}, using a shared resource cache if supported or a local
 	 * resource cache otherwise.
 	 * 
-	 * @param resourceLoader the ResourceLoader to use (also determines the
+	 * @param resourceLoader the Spring ResourceLoader to use (also determines the
 	 *                       ClassLoader to use)
 	 */
 	public CachingMetadataReaderFactory(@Nullable ResourceLoader resourceLoader) {
@@ -58,6 +75,13 @@ public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 		setCacheLimit(DEFAULT_CACHE_LIMIT);
 	}
 
+	/**
+	 * Specify the maximum number of entries for the MetadataReader cache.
+	 * <p>
+	 * Default is 256 for a local cache, whereas a shared cache is typically
+	 * unbounded. This method enforces a local resource cache, even if the
+	 * {@link ResourceLoader} supports a shared resource cache.
+	 */
 	public void setCacheLimit(int cacheLimit) {
 		if (cacheLimit <= 0) {
 			this.metadataReaderCache = null;
@@ -68,6 +92,9 @@ public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 		}
 	}
 
+	/**
+	 * Return the maximum number of entries for the MetadataReader cache.
+	 */
 	public int getCacheLimit() {
 		if (this.metadataReaderCache instanceof LocalResourceCache) {
 			return ((LocalResourceCache) this.metadataReaderCache).getCacheLimit();
@@ -87,7 +114,6 @@ public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 			}
 			return metadataReader;
 		} else if (this.metadataReaderCache != null) {
-			// TODO 目前不可能到这里
 			synchronized (this.metadataReaderCache) {
 				MetadataReader metadataReader = this.metadataReaderCache.get(resource);
 				if (metadataReader == null) {
@@ -101,6 +127,10 @@ public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 		}
 	}
 
+	/**
+	 * Clear the local MetadataReader cache, if any, removing all cached class
+	 * metadata.
+	 */
 	public void clearCache() {
 		if (this.metadataReaderCache instanceof LocalResourceCache) {
 			synchronized (this.metadataReaderCache) {

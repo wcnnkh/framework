@@ -3,14 +3,13 @@ package io.basc.framework.context.annotation;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.core.parameter.ExecutableParameterDescriptors;
-import io.basc.framework.core.parameter.ExecutableParameterDescriptorsIterator;
-import io.basc.framework.core.parameter.ParameterDescriptors;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.BeanResolver;
@@ -19,6 +18,10 @@ import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.mapper.ExecutableParameterDescriptors;
+import io.basc.framework.mapper.ExecutableParameterDescriptorsIterator;
+import io.basc.framework.mapper.ParameterDescriptors;
+import io.basc.framework.util.CollectionUtils;
 
 public class ExecutableBeanDefinition extends FactoryBeanDefinition {
 	private static Logger logger = LoggerFactory.getLogger(ExecutableBeanDefinition.class);
@@ -32,6 +35,17 @@ public class ExecutableBeanDefinition extends FactoryBeanDefinition {
 		this.sourceClass = sourceClass;
 		this.executable = executable;
 		this.parameterDescriptors = new ExecutableParameterDescriptors(executable.getDeclaringClass(), executable);
+	}
+
+	@Override
+	protected String getDefaultId() {
+		return executable.getName();
+	}
+
+	@Override
+	public Collection<String> getNames() {
+		Collection<String> names = super.getNames();
+		return CollectionUtils.isEmpty(names) ? Arrays.asList(getTypeDescriptor().getName()) : names;
 	}
 
 	private final AtomicBoolean error = new AtomicBoolean();

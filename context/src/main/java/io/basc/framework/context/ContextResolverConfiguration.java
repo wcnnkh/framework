@@ -3,8 +3,8 @@ package io.basc.framework.context;
 import java.util.Collection;
 import java.util.Collections;
 
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.mapper.ParameterDescriptor;
 
 public class ContextResolverConfiguration implements ContextResolver {
 	@Override
@@ -19,6 +19,6 @@ public class ContextResolverConfiguration implements ContextResolver {
 
 	@Override
 	public Collection<BeanDefinition> resolveBeanDefinitions(Class<?> clazz) {
-		return Collections.emptyList();
+		return Collections.emptySet();
 	}
 }

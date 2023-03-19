@@ -12,8 +12,8 @@ public class AnnotationArrayAnnotatedElement implements AnnotatedElement, Serial
 
 	public AnnotationArrayAnnotatedElement(AnnotatedElement annotatedElement) {
 		if (annotatedElement == null || annotatedElement instanceof EmptyAnnotatedElement) {
-			this.annotations = AnnotationUtils.EMPTY_ANNOTATION_ARRAY;
-			this.declaredAnnotations = AnnotationUtils.EMPTY_ANNOTATION_ARRAY;
+			this.annotations = Annotations.EMPTY;
+			this.declaredAnnotations = Annotations.EMPTY;
 		} else if (annotatedElement instanceof AnnotationArrayAnnotatedElement) {
 			this.annotations = ((AnnotationArrayAnnotatedElement) annotatedElement).annotations;
 			this.declaredAnnotations = ((AnnotationArrayAnnotatedElement) annotatedElement).declaredAnnotations;
@@ -28,9 +28,8 @@ public class AnnotationArrayAnnotatedElement implements AnnotatedElement, Serial
 	}
 
 	public AnnotationArrayAnnotatedElement(Annotation[] annotations, Annotation[] declaredAnnotations) {
-		this.annotations = annotations == null ? AnnotationUtils.EMPTY_ANNOTATION_ARRAY : annotations;
-		this.declaredAnnotations = declaredAnnotations == null ? AnnotationUtils.EMPTY_ANNOTATION_ARRAY
-				: declaredAnnotations;
+		this.annotations = annotations == null ? Annotations.EMPTY : annotations;
+		this.declaredAnnotations = declaredAnnotations == null ? Annotations.EMPTY : declaredAnnotations;
 	}
 
 	@SuppressWarnings("unchecked")

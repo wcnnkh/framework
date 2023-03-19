@@ -6,14 +6,11 @@ import java.nio.charset.Charset;
 import java.util.Collection;
 
 import io.basc.framework.env.Sys;
+import io.basc.framework.factory.InheritableThreadLocalConfigurator;
 import io.basc.framework.http.client.DefaultHttpClient;
 import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.lang.Constants;
-import io.basc.framework.lang.NamedInheritableThreadLocal;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.uri.UriComponentsBuilder;
@@ -23,72 +20,27 @@ import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
 
 public final class HttpUtils {
-	private static Logger logger = LoggerFactory.getLogger(HttpUtils.class);
-
-	private HttpUtils() {
-	};
-
-	private static HttpClient defaultClient;
-
-	static {
-		try {
-			defaultClient = Sys.getEnv().getServiceLoader(HttpClient.class, DefaultHttpClient.class).first();
-		} catch (Throwable e) {
-			logger.error(e, "Initialize the default http client exception");
-		}
-	}
-
-	public static HttpClient getDefaultClient() {
-		return defaultClient;
-	}
-
-	public static void setDefaultClient(HttpClient defaultClient) {
-		Assert.requiredArgument(defaultClient != null, "defaultClient");
-		HttpUtils.defaultClient = defaultClient;
-	}
-
-	private static final ThreadLocal<HttpClient> LOCAL_CLIENT = new NamedInheritableThreadLocal<HttpClient>(
-			HttpClient.class.getName(), true) {
-
-		protected HttpClient initialValue() {
-			return getDefaultClient();
-		};
-	};
-
-	public static ThreadLocal<HttpClient> getLocalClient() {
-		return LOCAL_CLIENT;
-	}
+	private static final InheritableThreadLocalConfigurator<HttpClient> CONFIGURATOR = new InheritableThreadLocalConfigurator<>(HttpClient.class)
+			.ifAbsentDefaultService(
+					() -> Sys.getEnv().getServiceLoader(HttpClient.class, DefaultHttpClient.class).first());
 
 	public static HttpClient getClient() {
-		HttpClient client = LOCAL_CLIENT.get();
-		client = client == null ? getDefaultClient() : client;
-		if (client == null) {
-			throw new UnsupportedException(HttpClient.class.getName());
-		}
-		return client;
+		return CONFIGURATOR.get();
+	};
+
+	public static InheritableThreadLocalConfigurator<HttpClient> getConfigurator() {
+		return CONFIGURATOR;
 	}
 
-	public static HttpClient setLocalClient(HttpClient client) {
-		if (client == null) {
-			LOCAL_CLIENT.remove();
-			return defaultClient;
+	private static int getPort(String scheme, int port) {
+		if (port == -1) {
+			if ("http".equals(scheme) || "ws".equals(scheme)) {
+				port = 80;
+			} else if ("https".equals(scheme) || "wss".equals(scheme)) {
+				port = 443;
+			}
 		}
-		LOCAL_CLIENT.set(client);
-		return client;
-	}
-
-	public static boolean isValidOrigin(HttpRequest request, Collection<String> allowedOrigins) {
-		Assert.notNull(request, "Request must not be null");
-		Assert.notNull(allowedOrigins, "Allowed origins must not be null");
-
-		String origin = request.getHeaders().getOrigin();
-		if (origin == null || allowedOrigins.contains("*")) {
-			return true;
-		} else if (CollectionUtils.isEmpty(allowedOrigins)) {
-			return isSameOrigin(request);
-		} else {
-			return allowedOrigins.contains(origin);
-		}
+		return port;
 	}
 
 	public static boolean isSameOrigin(HttpRequest request) {
@@ -135,15 +87,18 @@ public final class HttpUtils {
 				&& getPort(uri1.getScheme(), uri1.getPort()) == getPort(uri2.getScheme(), uri2.getPort()));
 	}
 
-	private static int getPort(String scheme, int port) {
-		if (port == -1) {
-			if ("http".equals(scheme) || "ws".equals(scheme)) {
-				port = 80;
-			} else if ("https".equals(scheme) || "wss".equals(scheme)) {
-				port = 443;
-			}
+	public static boolean isValidOrigin(HttpRequest request, Collection<String> allowedOrigins) {
+		Assert.notNull(request, "Request must not be null");
+		Assert.notNull(allowedOrigins, "Allowed origins must not be null");
+
+		String origin = request.getHeaders().getOrigin();
+		if (origin == null || allowedOrigins.contains("*")) {
+			return true;
+		} else if (CollectionUtils.isEmpty(allowedOrigins)) {
+			return isSameOrigin(request);
+		} else {
+			return allowedOrigins.contains(origin);
 		}
-		return port;
 	}
 
 	public static void writeFileMessageHeaders(HttpOutputMessage outputMessage, String fileName,
@@ -167,5 +122,8 @@ public final class HttpUtils {
 		ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
 				.filename(fileName, charsetToUse).build();
 		outputMessage.getHeaders().setContentDisposition(contentDisposition);
+	}
+
+	private HttpUtils() {
 	}
 }

@@ -9,11 +9,11 @@ import java.util.Date;
 import org.w3c.dom.Node;
 
 import io.basc.framework.core.annotation.EmptyAnnotatedElement;
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.env.Environment;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeansException;
 import io.basc.framework.lang.NotFoundException;
+import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.Value;
 

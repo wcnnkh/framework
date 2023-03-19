@@ -18,7 +18,6 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
@@ -139,13 +138,13 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 
 	public <R> R convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType, @Nullable Field parentField)
 			throws E {
-		return convert(source, sourceType, targetType, parentField, this.context);
+		return convert(source, sourceType, targetType, parentField, getContext(targetType, this.context));
 	}
 
 	@Override
 	public Object convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
 			Structure<? extends Field> targetStructure) throws E {
-		return convert(source, sourceType, targetType, targetStructure, this.context);
+		return convert(source, sourceType, targetType, targetStructure, getContext(targetType, this.context));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -162,7 +161,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 	@Override
 	public <T> void copy(T source, TypeDescriptor sourceType, T target, TypeDescriptor targetType,
 			Iterator<? extends Field> properties) throws E {
-		copy(source, sourceType, target, targetType, properties, this.context);
+		copy(source, sourceType, target, targetType, properties, getContext(targetType, this.context));
 	}
 
 	public <T> void copy(T source, TypeDescriptor sourceType, T target, TypeDescriptor targetType,
@@ -187,7 +186,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 	@Override
 	public <T> void copy(T source, TypeDescriptor sourceType, T target, TypeDescriptor targetType,
 			Structure<? extends Field> structure) throws E {
-		copy(source, sourceType, target, targetType, structure, this.context);
+		copy(source, sourceType, target, targetType, structure, getContext(targetType, this.context));
 	}
 
 	public <T> void copy(T source, TypeDescriptor sourceType, T target, TypeDescriptor targetType,
@@ -203,7 +202,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 		return context;
 	}
 
-	protected ObjectMapperContext getContext(TypeDescriptor targetType, ObjectMapperContext parent) {
+	public ObjectMapperContext getContext(TypeDescriptor targetType, ObjectMapperContext parent) {
 		return parent;
 	}
 
@@ -270,7 +269,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 
 	public <R extends S> R invert(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
 			TypeDescriptor targetType) throws E {
-		return invert(source, sourceType, sourceStructure, targetType, this.context);
+		return invert(source, sourceType, sourceStructure, targetType, getContext(targetType, this.context));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -324,7 +323,8 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 	@Override
 	public void transform(Object source, TypeDescriptor sourceType, Iterator<? extends Field> sourceProperties,
 			Object target, TypeDescriptor targetType, Iterator<? extends Field> targetProperties) throws E {
-		transform(source, sourceType, sourceProperties, target, targetType, targetProperties, this.context);
+		transform(source, sourceType, sourceProperties, target, targetType, targetProperties,
+				getContext(targetType, this.context));
 	}
 
 	public void transform(Object source, TypeDescriptor sourceType, Iterator<? extends Field> sourceProperties,
@@ -514,7 +514,8 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 	@Override
 	public void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
 			Object target, TypeDescriptor targetType, Structure<? extends Field> targetStructure) throws E {
-		transform(source, sourceType, sourceStructure, target, targetType, targetStructure, this.context);
+		transform(source, sourceType, sourceStructure, target, targetType, targetStructure,
+				getContext(targetType, context));
 	}
 
 	public void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
@@ -541,7 +542,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 
 	@Override
 	public void transform(ObjectAccess<E> sourceAccess, Object target, TypeDescriptor targetType) throws E {
-		transform(sourceAccess, target, targetType, this.context);
+		transform(sourceAccess, target, targetType, getContext(targetType, this.context));
 	}
 
 	public void transform(ObjectAccess<E> sourceAccess, Object target, TypeDescriptor targetType, Field parentField,
@@ -560,7 +561,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 	@Override
 	public void transform(ObjectAccess<E> sourceAccess, Object target, TypeDescriptor targetType,
 			Iterator<? extends Field> targetProperties) throws E {
-		transform(sourceAccess, target, targetType, targetProperties, this.context);
+		transform(sourceAccess, target, targetType, targetProperties, getContext(targetType, context));
 	}
 
 	public void transform(ObjectAccess<E> sourceAccess, Object target, TypeDescriptor targetType,
@@ -626,7 +627,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 	@Override
 	public void transform(ObjectAccess<E> sourceAccess, Object target, TypeDescriptor targetType,
 			Structure<? extends Field> targetStructure) throws E {
-		transform(sourceAccess, target, targetType, targetStructure, this.context);
+		transform(sourceAccess, target, targetType, targetStructure, getContext(targetType, context));
 	}
 
 	public void transform(ObjectAccess<E> sourceAccess, Object target, TypeDescriptor targetType,

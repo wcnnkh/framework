@@ -6,8 +6,6 @@ import io.basc.framework.util.StringUtils;
 
 public interface ConfigurableApplication extends Application, ConfigurableContext {
 
-	void source(Class<?> sourceClass);
-
 	default void setPort(int port) {
 		getProperties().put(APPLICATION_PORT_PROPERTY, port);
 	}

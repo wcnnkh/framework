@@ -3,8 +3,8 @@ package io.basc.framework.context;
 import java.util.Collection;
 import java.util.Iterator;
 
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Assert;
 
 public class ContextResolverChain extends ContextResolverConfiguration implements ContextResolver {

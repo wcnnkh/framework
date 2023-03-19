@@ -468,7 +468,7 @@ public class YamlProcessor implements Function<Resource, Properties>, Properties
 
 	@Override
 	public boolean canResolveProperties(Resource resource) {
-		return resource.exists() && resource.getName().endsWith(".yaml") || resource.getName().endsWith(".yml");
+		return resource.exists() && (resource.getName().endsWith(".yaml") || resource.getName().endsWith(".yml"));
 	}
 
 	@Override

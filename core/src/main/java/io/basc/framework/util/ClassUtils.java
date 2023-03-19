@@ -19,9 +19,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import io.basc.framework.core.type.classreading.CachingMetadataReaderFactory;
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.core.type.classreading.MetadataReaderFactory;
-import io.basc.framework.core.type.classreading.SimpleMetadataReaderFactory;
 import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
@@ -117,7 +117,7 @@ public final class ClassUtils {
 	 * suitable for use with {@code Class.getResource} by prepending a slash ('/')
 	 * to the return value). Built by taking the package of the specified class
 	 * file, converting all dots ('.') to slashes ('/'), adding a trailing slash if
-	 * necessary, and concatenating the specified resource name to this. 
+	 * necessary, and concatenating the specified resource name to this.
 	 * 
 	 * @param clazz        the Class whose package will be used as the base
 	 * @param resourceName the resource name to append. A leading slash is optional.
@@ -363,7 +363,7 @@ public final class ClassUtils {
 
 		MetadataReaderFactory factory = metadataReaderFactory;
 		if (factory == null) {
-			factory = new SimpleMetadataReaderFactory(classLoader);
+			factory = new CachingMetadataReaderFactory(classLoader);
 		}
 
 		MetadataReader reader = factory.getMetadataReader(resource);
@@ -383,7 +383,7 @@ public final class ClassUtils {
 			@Nullable TypeFilter typeFilter) {
 		Assert.requiredArgument(resourceLoader != null, "resourceLoader");
 		Assert.requiredArgument(resources != null, "resources");
-		MetadataReaderFactory factory = metadataReaderFactory == null ? new SimpleMetadataReaderFactory(resourceLoader)
+		MetadataReaderFactory factory = metadataReaderFactory == null ? new CachingMetadataReaderFactory(resourceLoader)
 				: metadataReaderFactory;
 		ClassLoader cl = classLoader == null ? resourceLoader.getClassLoader() : classLoader;
 		Stream<Class<?>> stream = resources.map((resource) -> {
@@ -408,7 +408,7 @@ public final class ClassUtils {
 
 		MetadataReaderFactory factory = metadataReaderFactory;
 		if (factory == null) {
-			factory = new SimpleMetadataReaderFactory(resourcePatternResolver);
+			factory = new CachingMetadataReaderFactory(resourcePatternResolver);
 		}
 
 		ClassLoader cl = classLoader;
@@ -423,7 +423,7 @@ public final class ClassUtils {
 		Assert.requiredArgument(resources != null, "resources");
 		MetadataReaderFactory factory = metadataReaderFactory;
 		if (factory == null) {
-			factory = new SimpleMetadataReaderFactory(classLoader);
+			factory = new CachingMetadataReaderFactory(classLoader);
 		}
 
 		Stream<Class<?>> stream = resources.map((resource) -> {

@@ -1,5 +1,6 @@
 package io.basc.framework.factory.support;
 
+import java.util.Collections;
 import java.util.Iterator;
 
 import io.basc.framework.convert.TypeDescriptor;
@@ -40,7 +41,10 @@ public class BeanDefinitionLoaderChain {
 				return serviceLoaderBeanDefinition;
 			}
 
-			return new FactoryBeanDefinition(beanFactory, TypeDescriptor.valueOf(clazz));
+			FactoryBeanDefinition definition = new FactoryBeanDefinition(beanFactory, TypeDescriptor.valueOf(clazz));
+			definition.setId(name);
+			definition.setNames(Collections.emptyList());
+			return definition;
 		}
 		return nextChain.load(beanFactory, classLoader, name);
 	}

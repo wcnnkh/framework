@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2015 the original author or authors.
+ * Copyright 2002-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,13 +48,23 @@ import java.lang.annotation.Target;
  * annotation.</li>
  * </ul>
  *
+ * <h3>Usage Requirements</h3>
+ * <p>
+ * Like with any annotation in Java, the mere presence of {@code @AliasFor} on
+ * its own will not enforce alias semantics. For alias semantics to be enforced,
+ * annotations must be <em>loaded</em> via {@link MergedAnnotations}.
+ *
  * <h3>Implementation Requirements</h3>
  * <ul>
  * <li><strong>Explicit aliases within an annotation</strong>:
  * <ol>
- * <li>Each attribute that makes up an aliased pair must be annotated with
+ * <li>Each attribute that makes up an aliased pair should be annotated with
  * {@code @AliasFor}, and either {@link #attribute} or {@link #value} must
- * reference the <em>other</em> attribute in the pair.</li>
+ * reference the <em>other</em> attribute in the pair. Since Spring Framework
+ * 5.2.1 it is technically possible to annotate only one of the attributes in an
+ * aliased pair; however, it is recommended to annotate both attributes in an
+ * aliased pair for better documentation as well as compatibility with previous
+ * versions of the Spring Framework.</li>
  * <li>Aliased attributes must declare the same return type.</li>
  * <li>Aliased attributes must declare a default value.</li>
  * <li>Aliased attributes must declare the same default value.</li>
@@ -166,11 +176,16 @@ import java.lang.annotation.Target;
  * }
  * </pre>
  *
- * @see AnnotatedElementUtils
- * @see AnnotationUtils
- * @see AnnotationUtils#synthesizeAnnotation(Annotation,
- *      java.lang.reflect.AnnotatedElement)
- * @see SynthesizedAnnotation
+ * <h3>Spring Annotations Supporting Attribute Aliases</h3>
+ * <p>
+ * As of Spring Framework 4.2, several annotations within core Spring have been
+ * updated to use {@code @AliasFor} to configure their internal attribute
+ * aliases. Consult the Javadoc for individual annotations as well as the
+ * reference manual for details.
+ *
+ * @author Sam Brannen
+ * @see MergedAnnotations
+ * @see AnnotationUtils#isSynthesizedAnnotation(Annotation)
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

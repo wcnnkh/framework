@@ -11,10 +11,6 @@ import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.Proxy;
 import io.basc.framework.aop.support.ConfigurableMethodInterceptor;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ExecutableParameterDescriptorsIterator;
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptors;
-import io.basc.framework.core.parameter.ParameterUtils;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanPostProcessor;
@@ -27,8 +23,13 @@ import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.mapper.ExecutableParameterDescriptorsIterator;
+import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.mapper.ParameterDescriptors;
+import io.basc.framework.mapper.ParameterUtils;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 
 public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
@@ -205,11 +206,18 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 	}
 
 	public String getId() {
-		BeanResolver beanResolver = getBeanResolver();
-		if (StringUtils.isEmpty(this.id) && beanResolver != null) {
-			return beanResolver.getId(typeDescriptor);
+		String id = this.id;
+		if (StringUtils.isEmpty(id)) {
+			BeanResolver beanResolver = getBeanResolver();
+			if (beanResolver != null) {
+				id = beanResolver.getId(typeDescriptor);
+			}
 		}
-		return StringUtils.isEmpty(this.id) ? typeDescriptor.getType().getName() : this.id;
+		return StringUtils.isEmpty(id) ? getDefaultId() : id;
+	}
+
+	protected String getDefaultId() {
+		return typeDescriptor.getType().getName();
 	}
 
 	public ConfigurableServices<BeanPostProcessor> getInitProcessors() {
@@ -221,11 +229,14 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 	}
 
 	public Collection<String> getNames() {
-		BeanResolver beanResolver = getBeanResolver();
-		if (this.names == null && beanResolver != null) {
-			return beanResolver.getNames(typeDescriptor);
+		Collection<String> names = this.names;
+		if (CollectionUtils.isEmpty(names)) {
+			BeanResolver beanResolver = getBeanResolver();
+			if (beanResolver != null) {
+				names = beanResolver.getNames(typeDescriptor);
+			}
 		}
-		return this.names == null ? Collections.emptyList() : this.names;
+		return CollectionUtils.isEmpty(names) ? Collections.emptyList() : names;
 	}
 
 	public ParameterDescriptors getParameterDescriptors(ParametersFactory parametersFactory) {

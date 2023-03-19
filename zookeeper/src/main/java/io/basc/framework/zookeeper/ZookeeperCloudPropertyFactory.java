@@ -14,7 +14,7 @@ import org.apache.zookeeper.ZooKeeper;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventTypes;
-import io.basc.framework.event.support.SimpleNamedEventDispatcher;
+import io.basc.framework.event.support.StandardBroadcastNamedEventDispatcher;
 import io.basc.framework.io.JavaSerializer;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.logger.Logger;
@@ -32,7 +32,7 @@ import io.basc.framework.value.Value;
  *
  */
 @Provider(order = Integer.MIN_VALUE)
-public class ZookeeperCloudPropertyFactory extends SimpleNamedEventDispatcher<String, ChangeEvent<String>>
+public class ZookeeperCloudPropertyFactory extends StandardBroadcastNamedEventDispatcher<String, ChangeEvent<String>>
 		implements ConfigurablePropertyFactory, Watcher {
 	private static Logger logger = LoggerFactory.getLogger(ZookeeperCloudPropertyFactory.class);
 	private final ZooKeeper zooKeeper;

@@ -19,7 +19,7 @@ public interface Registration {
 		}
 	};
 
-	void unregister();
+	void unregister() throws RegistrationException;
 
 	default boolean isEmpty() {
 		return this == EMPTY;

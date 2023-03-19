@@ -6,9 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.core.parameter.DefaultParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
+import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.value.Value;
@@ -31,10 +29,10 @@ public class DefaultSetter extends AbstractFieldDescriptor implements Setter {
 		}
 
 		if (setterParameterDescriptor == null) {
-			this.nullable = AnnotatedElementUtils.isNullable(this);
+			this.nullable = Annotations.isNullable(this);
 		} else {
-			this.nullable = AnnotatedElementUtils.isNullable(setterParameterDescriptor,
-					() -> AnnotatedElementUtils.isNullable(DefaultSetter.this));
+			this.nullable = Annotations.isNullable(setterParameterDescriptor,
+					() -> Annotations.isNullable(DefaultSetter.this));
 		}
 	}
 

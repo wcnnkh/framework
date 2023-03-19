@@ -44,7 +44,7 @@ public final class EntityStructure extends ObjectRelationalDecorator<Property, E
 				return (Property) e;
 			}
 
-			return new Property(e);
+			return map.apply(e);
 		});
 	}
 

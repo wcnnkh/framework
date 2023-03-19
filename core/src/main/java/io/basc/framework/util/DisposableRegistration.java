@@ -12,11 +12,11 @@ public class DisposableRegistration implements Registration {
 
 	@Override
 	public void unregister() {
-		if (unregistred.compareAndSet(false, true)) {
+		if (!isEmpty() && unregistred.compareAndSet(false, true)) {
 			registration.unregister();
 		}
 	}
-
+	
 	public boolean isUnregistred() {
 		return unregistred.get();
 	}

@@ -25,12 +25,12 @@ public class JaxrsHttpPatternResolver extends AbstractHttpPatternResolver {
 
 	@Override
 	public boolean canResolve(Class<?> clazz) {
-		return AnnotatedElementUtils.isAnnotated(clazz, Path.class);
+		return AnnotatedElementUtils.hasAnnotation(clazz, Path.class);
 	}
 
 	@Override
 	public boolean canResolve(Method method) {
-		return AnnotatedElementUtils.isAnnotated(method, Path.class);
+		return AnnotatedElementUtils.hasAnnotation(method, Path.class);
 	}
 
 	protected Collection<HttpPattern> resolveByAnnotation(AnnotatedElement annotatedElement) {

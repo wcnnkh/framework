@@ -4,13 +4,13 @@ import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.MethodInterceptorAccept;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.annotation.AnnotationUtils;
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterUtils;
+import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.locks.LockFactory;
 import io.basc.framework.locks.ReentrantLockFactory;
+import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.mapper.ParameterUtils;
 
 /**
  * 实现方法级别的锁
@@ -31,11 +31,11 @@ public final class LockMethodInterceptor implements MethodInterceptor, MethodInt
 	}
 
 	public boolean isAccept(MethodInvoker invoker, Object[] args) {
-		return AnnotationUtils.getAnnotation(LockConfig.class, invoker.getMethod(), invoker.getSourceClass()) != null;
+		return Annotations.getAnnotation(LockConfig.class, invoker.getMethod(), invoker.getSourceClass()) != null;
 	}
 
 	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
-		LockConfig lockConfig = AnnotationUtils.getAnnotation(LockConfig.class, invoker.getMethod(),
+		LockConfig lockConfig = Annotations.getAnnotation(LockConfig.class, invoker.getMethod(),
 				invoker.getSourceClass());
 		if (lockConfig == null) {
 			return invoker.invoke(args);

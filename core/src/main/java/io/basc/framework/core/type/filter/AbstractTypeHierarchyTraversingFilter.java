@@ -1,12 +1,29 @@
+/*
+ * Copyright 2002-2022 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.basc.framework.core.type.filter;
+
+import java.io.IOException;
 
 import io.basc.framework.core.type.ClassMetadata;
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.core.type.classreading.MetadataReaderFactory;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-
-import java.io.IOException;
 
 /**
  * Type filter that is aware of traversing over hierarchy.
@@ -16,10 +33,12 @@ import java.io.IOException;
  * whole class/interface hierarchy. The algorithm employed uses a succeed-fast
  * strategy: if at any time a match is declared, no further processing is
  * carried out.
+ *
+ * @author Ramnivas Laddad
+ * @author Mark Fisher
  */
 public abstract class AbstractTypeHierarchyTraversingFilter implements TypeFilter {
-
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	private static Logger logger = LoggerFactory.getLogger(AbstractTypeHierarchyTraversingFilter.class);
 
 	private final boolean considerInherited;
 
@@ -30,6 +49,7 @@ public abstract class AbstractTypeHierarchyTraversingFilter implements TypeFilte
 		this.considerInterfaces = considerInterfaces;
 	}
 
+	@Override
 	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
 			throws IOException {
 
@@ -44,22 +64,23 @@ public abstract class AbstractTypeHierarchyTraversingFilter implements TypeFilte
 		}
 
 		if (this.considerInherited) {
-			if (metadata.hasSuperClass()) {
-				// Optimization to avoid creating ClassReader for super class.
-				Boolean superClassMatch = matchSuperClass(metadata.getSuperClassName());
+			String superClassName = metadata.getSuperClassName();
+			if (superClassName != null) {
+				// Optimization to avoid creating ClassReader for superclass.
+				Boolean superClassMatch = matchSuperClass(superClassName);
 				if (superClassMatch != null) {
 					if (superClassMatch.booleanValue()) {
 						return true;
 					}
 				} else {
-					// Need to read super class to determine a match...
+					// Need to read superclass to determine a match...
 					try {
 						if (match(metadata.getSuperClassName(), metadataReaderFactory)) {
 							return true;
 						}
 					} catch (IOException ex) {
 						if (logger.isDebugEnabled()) {
-							logger.debug("Could not read super class [" + metadata.getSuperClassName()
+							logger.debug("Could not read superclass [" + metadata.getSuperClassName()
 									+ "] of type-filtered class [" + metadata.getClassName() + "]");
 						}
 					}
@@ -69,7 +90,7 @@ public abstract class AbstractTypeHierarchyTraversingFilter implements TypeFilte
 
 		if (this.considerInterfaces) {
 			for (String ifc : metadata.getInterfaceNames()) {
-				// Optimization to avoid creating ClassReader for super class
+				// Optimization to avoid creating ClassReader for superclass
 				Boolean interfaceMatch = matchInterface(ifc);
 				if (interfaceMatch != null) {
 					if (interfaceMatch.booleanValue()) {
@@ -114,8 +135,9 @@ public abstract class AbstractTypeHierarchyTraversingFilter implements TypeFilte
 	}
 
 	/**
-	 * Override this to match on super type name.
+	 * Override this to match on supertype name.
 	 */
+	@Nullable
 	protected Boolean matchSuperClass(String superClassName) {
 		return null;
 	}
@@ -123,6 +145,7 @@ public abstract class AbstractTypeHierarchyTraversingFilter implements TypeFilte
 	/**
 	 * Override this to match on interface type name.
 	 */
+	@Nullable
 	protected Boolean matchInterface(String interfaceName) {
 		return null;
 	}

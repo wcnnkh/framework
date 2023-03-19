@@ -7,7 +7,6 @@ import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.core.annotation.Order;
 import io.basc.framework.data.TemporaryDataOperations;
 import io.basc.framework.data.memory.MemoryOperations;
 import io.basc.framework.env.Sys;
@@ -37,7 +36,6 @@ public class DefaultUserSessionFactory implements UserSessionFactory {
 		this(86400 * 7, dataOperations);
 	}
 
-	@Order
 	public DefaultUserSessionFactory(int maxInactiveInterval, TemporaryDataOperations dataOperations) {
 		this(dataOperations, new DefaultSessionFactory(maxInactiveInterval, dataOperations));
 	}

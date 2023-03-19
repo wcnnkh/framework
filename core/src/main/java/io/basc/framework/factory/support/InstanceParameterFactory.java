@@ -3,13 +3,13 @@ package io.basc.framework.factory.support;
 import java.util.Collection;
 import java.util.Map;
 
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptors;
 import io.basc.framework.factory.BeanResolver;
 import io.basc.framework.factory.BeanResolverExtend;
 import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.factory.ParameterFactory;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.mapper.ParameterDescriptors;
 import io.basc.framework.value.Value;
 
 public class InstanceParameterFactory extends AbstractParametersFactory

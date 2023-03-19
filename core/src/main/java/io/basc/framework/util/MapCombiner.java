@@ -3,14 +3,13 @@ package io.basc.framework.util;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
-public class MapCombiner<K, V> implements Function<List<Map<K, V>>, Map<K, V>> {
+public class MapCombiner<K, V> implements Selector<Map<K, V>> {
 
 	@Override
-	public Map<K, V> apply(List<Map<K, V>> t) {
+	public Map<K, V> apply(List<Map<K, V>> elements) {
 		Map<K, V> target = null;
-		for (Map<K, V> map : t) {
+		for (Map<K, V> map : elements) {
 			if (map == null || map.isEmpty()) {
 				continue;
 			}

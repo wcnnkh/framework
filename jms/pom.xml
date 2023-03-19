@@ -5,23 +5,19 @@
 	<parent>
 		<groupId>io.basc.framework</groupId>
 		<artifactId>framework</artifactId>
-		<version>1.8.1</version>
+		<version>1.8.2</version>
 	</parent>
 	<artifactId>jms</artifactId>
-	<properties>
-		<jms.api.version>1.1-rev-1</jms.api.version>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>boot</artifactId>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/javax.jms/jms-api -->
+		<!-- https://mvnrepository.com/artifact/javax.jms/javax.jms-api -->
 		<dependency>
 			<groupId>javax.jms</groupId>
-			<artifactId>jms-api</artifactId>
-			<version>${jms.api.version}</version>
+			<artifactId>javax.jms-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

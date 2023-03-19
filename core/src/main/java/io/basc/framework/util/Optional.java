@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public interface Optional<T> extends Supplier<T> {
-	public static final String NO_VALUE_PRESENT = "No value present";
 
 	public static <U> Optional<U> empty() {
 		return ofNullable(null);

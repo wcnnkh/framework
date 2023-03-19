@@ -10,6 +10,7 @@ import io.basc.framework.convert.resolve.ResourceResolver;
 import io.basc.framework.event.Observable;
 import io.basc.framework.event.support.ObservableProperties;
 import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.resolver.PropertiesResolver;
@@ -31,6 +32,8 @@ public interface Environment extends BeanFactory, PlaceholderFormat {
 	default String getCharsetName() {
 		return getProperties().get(CHARSET_PROPERTY).as(String.class).orElse(Constants.UTF_8_NAME);
 	}
+
+	ServiceLoader<Resource> getResources();
 
 	ConversionService getConversionService();
 

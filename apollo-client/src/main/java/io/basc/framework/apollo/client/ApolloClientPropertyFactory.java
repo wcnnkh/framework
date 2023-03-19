@@ -10,12 +10,12 @@ import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventTypes;
-import io.basc.framework.event.support.SimpleEventDispatcher;
+import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
 
 @Provider
-public class ApolloClientPropertyFactory extends SimpleEventDispatcher<ChangeEvent<Collection<String>>>
+public class ApolloClientPropertyFactory extends StandardBroadcastEventDispatcher<ChangeEvent<Collection<String>>>
 		implements PropertyFactory, ConfigChangeListener {
 	private final Config config;
 

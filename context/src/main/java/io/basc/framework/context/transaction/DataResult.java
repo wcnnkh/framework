@@ -27,11 +27,7 @@ public class DataResult<T> extends Result implements Return<T> {
 	@Override
 	public T get() {
 		if (data == null) {
-			String msg = getMsg();
-			if (msg == null) {
-				msg = NO_VALUE_PRESENT;
-			}
-			throw new NoSuchElementException(msg);
+			throw new NoSuchElementException(getMsg());
 		}
 		return data;
 	}

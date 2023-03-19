@@ -2,9 +2,8 @@ package io.basc.framework.util;
 
 import java.util.List;
 import java.util.Properties;
-import java.util.function.Function;
 
-public class PropertiesCombiner implements Function<List<Properties>, Properties> {
+public class PropertiesCombiner implements Selector<Properties> {
 	public static final PropertiesCombiner INSTANCE = new PropertiesCombiner();
 
 	@Override

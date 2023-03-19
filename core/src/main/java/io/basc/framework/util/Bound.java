@@ -164,4 +164,21 @@ public final class Bound<T> extends DefaultOptional<T> {
 		return map(Object::toString).orElse("unbounded");
 	}
 
+	@Override
+	public int hashCode() {
+		return ArrayUtils.hashCode(inclusive, super.hashCode());
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof Bound) {
+			Bound<?> other = (Bound<?>) obj;
+			return (inclusive == other.inclusive) && super.equals(obj);
+		}
+		return false;
+	}
 }

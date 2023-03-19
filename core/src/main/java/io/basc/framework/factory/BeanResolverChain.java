@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptors;
+import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.mapper.ParameterDescriptors;
 import io.basc.framework.util.Assert;
 
 public class BeanResolverChain extends BeanResolverConfiguration implements BeanResolver {

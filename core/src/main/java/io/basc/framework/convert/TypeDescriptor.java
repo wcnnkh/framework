@@ -14,9 +14,10 @@ import java.util.stream.Stream;
 import io.basc.framework.core.MethodParameter;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
+import io.basc.framework.core.annotation.AnnotatedElements;
 import io.basc.framework.core.annotation.AnnotationArrayAnnotatedElement;
-import io.basc.framework.core.parameter.ParameterDescriptor;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
@@ -105,7 +106,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 			@Nullable AnnotatedElement annotatedElement) {
 		this.resolvableType = resolvableType;
 		this.type = (type != null ? type : resolvableType.toClass());
-		this.annotatedElement = annotatedElement == null ? AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT
+		this.annotatedElement = annotatedElement == null ? AnnotatedElements.EMPTY
 				: (annotatedElement instanceof Serializable ? annotatedElement
 						: new AnnotationArrayAnnotatedElement(annotatedElement));
 	}
@@ -259,7 +260,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 		 * would have to expect AnnotatedElement.getAnnotations() // to return a copy of
 		 * the array, whereas we can do it more efficiently here. return false; }
 		 */
-		return AnnotatedElementUtils.isAnnotated(this.annotatedElement, annotationType);
+		return AnnotatedElementUtils.hasAnnotation(this.annotatedElement, annotationType);
 	}
 
 	/**
@@ -595,7 +596,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 			type = Object.class;
 		}
 		TypeDescriptor desc = commonTypesCache.get(type);
-		return (desc != null ? desc : new TypeDescriptor(ResolvableType.forClass(type), null, null));
+		return (desc != null ? desc : new TypeDescriptor(ResolvableType.forClass(type), null, type));
 	}
 
 	public static TypeDescriptor valueOf(@Nullable Type type) {

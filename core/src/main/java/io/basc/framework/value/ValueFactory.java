@@ -4,14 +4,14 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import io.basc.framework.event.BroadcastNamedEventRegistry;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.NamedEventRegistry;
 import io.basc.framework.event.Observable;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Registration;
 
-public interface ValueFactory<K> extends NamedEventRegistry<K, ChangeEvent<K>> {
+public interface ValueFactory<K> extends BroadcastNamedEventRegistry<K, ChangeEvent<K>> {
 
 	Value get(K key);
 

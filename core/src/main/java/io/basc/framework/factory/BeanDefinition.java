@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.parameter.ParameterDescriptors;
+import io.basc.framework.mapper.ParameterDescriptors;
 
 public interface BeanDefinition extends Iterable<ParameterDescriptors>, InstanceCreator<Object, BeansException> {
 	String getId();
