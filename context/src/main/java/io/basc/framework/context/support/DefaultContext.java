@@ -110,8 +110,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	public Registration componentScan(String packageName, TypeFilter typeFilter) {
-		ClassesLoader classesLoader = getClassesLoaderFactory().getClassesLoader(packageName,
-				(e, m) -> typeFilter == null || typeFilter.match(e, m));
+		ClassesLoader classesLoader = getClassesLoaderFactory().getClassesLoader(packageName, typeFilter);
 		return getContextClasses().registerLoader(classesLoader);
 	}
 
