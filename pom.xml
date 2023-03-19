@@ -847,6 +847,7 @@
 						</executions>
 					</plugin>
 					<plugin>
+						<!--如果控制台出现警告可以忽略，最后还是可以通过。但错误必须要解决！-->
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<executions>

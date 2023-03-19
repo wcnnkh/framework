@@ -5,20 +5,22 @@ package io.basc.framework.convert;
  * 
  * @author wcnnkh
  *
- * @param <S>
- * @param <T>
- * @param <E>
+ * @param <S> 来源
+ * @param <T> 目标
+ * @param <E> 异常
  */
 public interface ReverseTransformer<S, T, E extends Throwable> {
 	default void reverseTransform(S source, Class<? extends S> sourceType, T target) throws E {
 		reverseTransform(source, sourceType, target, TypeDescriptor.forObject(target));
 	}
 
-	default void reverseTransform(S source, Class<? extends S> sourceType, T target, Class<? extends T> targetType) throws E {
+	default void reverseTransform(S source, Class<? extends S> sourceType, T target, Class<? extends T> targetType)
+			throws E {
 		reverseTransform(source, TypeDescriptor.valueOf(sourceType), target, targetType);
 	}
 
-	default void reverseTransform(S source, Class<? extends S> sourceType, T target, TypeDescriptor targetType) throws E {
+	default void reverseTransform(S source, Class<? extends S> sourceType, T target, TypeDescriptor targetType)
+			throws E {
 		reverseTransform(source, TypeDescriptor.valueOf(sourceType), target, targetType);
 	}
 
@@ -38,18 +40,10 @@ public interface ReverseTransformer<S, T, E extends Throwable> {
 		reverseTransform(source, sourceType, target, TypeDescriptor.forObject(target));
 	}
 
-	default void reverseTransform(S source, TypeDescriptor sourceType, T target, Class<? extends T> targetType) throws E {
+	default void reverseTransform(S source, TypeDescriptor sourceType, T target, Class<? extends T> targetType)
+			throws E {
 		reverseTransform(source, sourceType, target, TypeDescriptor.valueOf(targetType));
 	}
 
-	/**
-	 * 和{@link Transformer#transform(Object, TypeDescriptor, Object, TypeDescriptor)}的行为相反
-	 * 
-	 * @param source
-	 * @param sourceType
-	 * @param target
-	 * @param targetType
-	 * @throws E
-	 */
 	void reverseTransform(S source, TypeDescriptor sourceType, T target, TypeDescriptor targetType) throws E;
 }

@@ -11,20 +11,10 @@ import io.basc.framework.io.FileUtils;
 import io.basc.framework.io.Resource;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.value.ValueFactory;
 
 public class DirectoryClassesLoader extends AbstractClassesLoader {
 	private final File directory;
 	private final TypeFilter typeFilter;
-
-	public DirectoryClassesLoader(String directory, @Nullable ValueFactory<String> propertyFactory) {
-		this(new File(directory), propertyFactory);
-	}
-
-	public DirectoryClassesLoader(File directory, @Nullable ValueFactory<String> propertyFactory) {
-		this.directory = directory;
-		this.typeFilter = new ContextTypeFilter(propertyFactory);
-	}
 
 	public DirectoryClassesLoader(String directory, @Nullable TypeFilter typeFilter) {
 		this(new File(directory), typeFilter);

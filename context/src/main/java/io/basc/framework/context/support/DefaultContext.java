@@ -48,7 +48,6 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	private final ConfigurableServices<ContextPostProcessor> contextPostProcessors = new ConfigurableServices<ContextPostProcessor>(
 			ContextPostProcessor.class);
 	private final ConfigurableContextResolver contextResolver = new ConfigurableContextResolver();
-	private final ContextTypeFilter contextTypeFilter = new ContextTypeFilter(getProperties());
 	private volatile boolean initialized = false;
 	private final ConfigurableIocResolver iocResolver = new ConfigurableIocResolver();
 
@@ -74,9 +73,6 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 		setParentEnvironment(Sys.getEnv());
 		// 这是为了执行init时重新选择parentBeanFactory
 		setParentBeanFactory(null);
-
-		// 扫描框架类
-		componentScan(Constants.SYSTEM_PACKAGE_NAME, contextTypeFilter);
 	}
 
 	@Override
@@ -110,7 +106,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 			return Registration.EMPTY;
 		}
 
-		return componentScan(packageName, contextTypeFilter);
+		return componentScan(packageName, contextResolver);
 	}
 
 	public Registration componentScan(String packageName, TypeFilter typeFilter) {
@@ -142,10 +138,6 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	@Override
 	public ConfigurableContextResolver getContextResolver() {
 		return contextResolver;
-	}
-
-	public ContextTypeFilter getContextTypeFilter() {
-		return contextTypeFilter;
 	}
 
 	public ConfigurableIocResolver getIocResolver() {
@@ -206,6 +198,9 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 			}
 
 			try {
+				// 扫描框架类
+				componentScan(Constants.SYSTEM_PACKAGE_NAME, contextResolver);
+
 				super.init();
 				logger.debug("Start initializing context[{}]!", this);
 

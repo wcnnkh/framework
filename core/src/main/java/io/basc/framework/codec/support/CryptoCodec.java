@@ -20,60 +20,23 @@ import io.basc.framework.io.BufferProcessor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 
+/**
+ * 需要encodeKey和decoderKey的为非对称加解密
+ * 
+ * @author wcnnkh
+ *
+ */
 public class CryptoCodec extends SecurityCodec implements Cloneable {
 	private final CipherFactory encoder;
 	private final CipherFactory decoder;
 
-	/**
-	 * 对称编码
-	 * 
-	 * @param transformation
-	 * @param key
-	 * @param params
-	 */
-	public CryptoCodec(String transformation, Object key, @Nullable Object params) {
-		this(transformation, null, key, params, null);
-	}
-
-	/**
-	 * 对称编码
-	 * 
-	 * @param transformation
-	 * @param provider
-	 * @param key
-	 * @param params
-	 * @param secureRandom
-	 */
-	public CryptoCodec(String transformation, @Nullable Object provider, Object key, @Nullable Object params,
+	public CryptoCodec(String transformation, Object key, @Nullable Object params,
 			@Nullable SecureRandom secureRandom) {
-		this(transformation, provider, key, key, params, secureRandom);
+		this(transformation, key, key, params, secureRandom);
 	}
 
-	/**
-	 * 非对称编码
-	 * 
-	 * @param transformation
-	 * @param encoderKey
-	 * @param decoderKey
-	 * @param params
-	 */
 	public CryptoCodec(String transformation, @Nullable Object encoderKey, @Nullable Object decoderKey,
-			@Nullable Object params) {
-		this(transformation, null, encoderKey, decoderKey, params, null);
-	}
-
-	/**
-	 * 非对称编码
-	 * 
-	 * @param transformation
-	 * @param provider
-	 * @param encoderKey
-	 * @param decoderKey
-	 * @param params
-	 * @param secureRandom
-	 */
-	public CryptoCodec(String transformation, @Nullable Object provider, @Nullable Object encoderKey,
-			@Nullable Object decoderKey, @Nullable Object params, @Nullable SecureRandom secureRandom) {
+			@Nullable Object params, @Nullable SecureRandom secureRandom) {
 		this(encoderKey == null ? null : new CipherFactory(transformation, Cipher.ENCRYPT_MODE, encoderKey, params),
 				decoderKey == null ? null : new CipherFactory(transformation, Cipher.DECRYPT_MODE, decoderKey, params));
 	}

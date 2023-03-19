@@ -20,12 +20,6 @@ import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.ClassMetadata;
 import io.basc.framework.io.Resource;
 
-/**
- * Simple facade for accessing class metadata,
- * as read by an ASM {@link io.basc.framework.asm.ClassReader}.
- *
- * @author Juergen Hoeller
- */
 public interface MetadataReader {
 
 	/**
@@ -39,8 +33,8 @@ public interface MetadataReader {
 	ClassMetadata getClassMetadata();
 
 	/**
-	 * Read full annotation metadata for the underlying class,
-	 * including metadata for annotated methods.
+	 * Read full annotation metadata for the underlying class, including metadata
+	 * for annotated methods.
 	 */
 	AnnotationMetadata getAnnotationMetadata();
 

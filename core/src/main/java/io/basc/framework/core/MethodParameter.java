@@ -17,20 +17,6 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
 
-/**
- * Helper class that encapsulates the specification of a method parameter, i.e.
- * a {@link Method} or {@link Constructor} plus a parameter index and a nested
- * type index for a declared generic type. Useful as a specification object to
- * pass along.
- *
- * <p>
- * As of 4.2, there is a
- * {@link io.basc.framework.core.annotation.SynthesizingMethodParameter}
- * subclass available which synthesizes annotations with attribute aliases. That
- * subclass is used for web and message endpoint processing, in particular.
- *
- * @see io.basc.framework.core.annotation.SynthesizingMethodParameter
- */
 public class MethodParameter {
 
 	private static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
@@ -181,9 +167,6 @@ public class MethodParameter {
 		return this.constructor;
 	}
 
-	/**
-	 * Return the class that declares the underlying Method or Constructor.
-	 */
 	public Class<?> getDeclaringClass() {
 		return getMember().getDeclaringClass();
 	}
@@ -241,61 +224,27 @@ public class MethodParameter {
 		this.nestingLevel++;
 	}
 
-	/**
-	 * Decrease this parameter's nesting level.
-	 * 
-	 * @see #getNestingLevel()
-	 */
 	public void decreaseNestingLevel() {
 		getTypeIndexesPerLevel().remove(this.nestingLevel);
 		this.nestingLevel--;
 	}
 
-	/**
-	 * Return the nesting level of the target type (typically 1; e.g. in case of a
-	 * List of Lists, 1 would indicate the nested List, whereas 2 would indicate the
-	 * element of the nested List).
-	 */
 	public int getNestingLevel() {
 		return this.nestingLevel;
 	}
 
-	/**
-	 * Set the type index for the current nesting level.
-	 * 
-	 * @param typeIndex the corresponding type index (or {@code null} for the
-	 *                  default type index)
-	 * @see #getNestingLevel()
-	 */
 	public void setTypeIndexForCurrentLevel(int typeIndex) {
 		getTypeIndexesPerLevel().put(this.nestingLevel, typeIndex);
 	}
 
-	/**
-	 * Return the type index for the current nesting level.
-	 * 
-	 * @return the corresponding type index, or {@code null} if none specified
-	 *         (indicating the default type index)
-	 * @see #getNestingLevel()
-	 */
 	public Integer getTypeIndexForCurrentLevel() {
 		return getTypeIndexForLevel(this.nestingLevel);
 	}
 
-	/**
-	 * Return the type index for the specified nesting level.
-	 * 
-	 * @param nestingLevel the nesting level to check
-	 * @return the corresponding type index, or {@code null} if none specified
-	 *         (indicating the default type index)
-	 */
 	public Integer getTypeIndexForLevel(int nestingLevel) {
 		return getTypeIndexesPerLevel().get(nestingLevel);
 	}
 
-	/**
-	 * Obtain the (lazily constructed) type-indexes-per-level Map.
-	 */
 	private Map<Integer, Integer> getTypeIndexesPerLevel() {
 		if (this.typeIndexesPerLevel == null) {
 			this.typeIndexesPerLevel = new HashMap<Integer, Integer>(4);
@@ -303,12 +252,6 @@ public class MethodParameter {
 		return this.typeIndexesPerLevel;
 	}
 
-	/**
-	 * Return a variant of this {@code MethodParameter} which points to the same
-	 * parameter but one nesting level deeper. This is effectively the same as
-	 * {@link #increaseNestingLevel()}, just with an independent
-	 * {@code MethodParameter} object (e.g. in case of the original being cached).
-	 */
 	public MethodParameter nested() {
 		if (this.nestedMethodParameter != null) {
 			return this.nestedMethodParameter;
@@ -319,29 +262,14 @@ public class MethodParameter {
 		return nestedParam;
 	}
 
-	/**
-	 * Return whether this method parameter is declared as optional in the form of
-	 * Java 8's {@link java.util.Optional}.
-	 */
 	public boolean isOptional() {
 		return (getParameterType() == javaUtilOptionalClass);
 	}
 
-	/**
-	 * Return a variant of this {@code MethodParameter} which points to the same
-	 * parameter but one nesting level deeper in case of a
-	 * {@link java.util.Optional} declaration.
-	 * 
-	 * @see #isOptional()
-	 * @see #nested()
-	 */
 	public MethodParameter nestedIfOptional() {
 		return (isOptional() ? nested() : this);
 	}
 
-	/**
-	 * Set a containing class to resolve the parameter type against.
-	 */
 	void setContainingClass(Class<?> containingClass) {
 		this.containingClass = containingClass;
 	}
@@ -357,9 +285,6 @@ public class MethodParameter {
 		return (this.containingClass != null ? this.containingClass : getDeclaringClass());
 	}
 
-	/**
-	 * Set a resolved (generic) parameter type.
-	 */
 	void setParameterType(Class<?> parameterType) {
 		this.parameterType = parameterType;
 	}
@@ -475,30 +400,14 @@ public class MethodParameter {
 		return adaptAnnotationArray(getAnnotatedElement().getAnnotations());
 	}
 
-	/**
-	 * Return the method/constructor annotation of the given type, if available.
-	 * 
-	 * @param annotationType the annotation type to look for
-	 * @return the annotation object, or {@code null} if not found
-	 */
 	public <A extends Annotation> A getMethodAnnotation(Class<A> annotationType) {
 		return adaptAnnotation(getAnnotatedElement().getAnnotation(annotationType));
 	}
 
-	/**
-	 * Return whether the method/constructor is annotated with the given type.
-	 * 
-	 * @param annotationType the annotation type to look for
-	 * @see #getMethodAnnotation(Class)
-	 */
 	public <A extends Annotation> boolean hasMethodAnnotation(Class<A> annotationType) {
 		return getAnnotatedElement().isAnnotationPresent(annotationType);
 	}
 
-	/**
-	 * Return the annotations associated with the specific method/constructor
-	 * parameter.
-	 */
 	public Annotation[] getParameterAnnotations() {
 		Annotation[] paramAnns = this.parameterAnnotations;
 		if (paramAnns == null) {
@@ -520,22 +429,10 @@ public class MethodParameter {
 		return paramAnns;
 	}
 
-	/**
-	 * Return {@code true} if the parameter has at least one annotation,
-	 * {@code false} if it has none.
-	 * 
-	 * @see #getParameterAnnotations()
-	 */
 	public boolean hasParameterAnnotations() {
 		return (getParameterAnnotations().length != 0);
 	}
 
-	/**
-	 * Return the parameter annotation of the given type, if available.
-	 * 
-	 * @param annotationType the annotation type to look for
-	 * @return the annotation object, or {@code null} if not found
-	 */
 	@SuppressWarnings("unchecked")
 	public <A extends Annotation> A getParameterAnnotation(Class<A> annotationType) {
 		Annotation[] anns = getParameterAnnotations();
@@ -547,23 +444,10 @@ public class MethodParameter {
 		return null;
 	}
 
-	/**
-	 * Return whether the parameter is declared with the given annotation type.
-	 * 
-	 * @param annotationType the annotation type to look for
-	 * @see #getParameterAnnotation(Class)
-	 */
 	public <A extends Annotation> boolean hasParameterAnnotation(Class<A> annotationType) {
 		return (getParameterAnnotation(annotationType) != null);
 	}
 
-	/**
-	 * Initialize parameter name discovery for this method parameter.
-	 * <p>
-	 * This method does not actually try to retrieve the parameter name at this
-	 * point; it just allows discovery to happen when the application calls
-	 * {@link #getParameterName()} (if ever).
-	 */
 	public void initParameterNameDiscovery(ParameterNameDiscoverer parameterNameDiscoverer) {
 		this.parameterNameDiscoverer = parameterNameDiscoverer;
 	}
@@ -589,15 +473,6 @@ public class MethodParameter {
 		return this.parameterName;
 	}
 
-	/**
-	 * A template method to post-process a given annotation instance before
-	 * returning it to the caller.
-	 * <p>
-	 * The default implementation simply returns the given annotation as-is.
-	 * 
-	 * @param annotation the annotation about to be returned
-	 * @return the post-processed annotation (or simply the original one)
-	 */
 	protected <A extends Annotation> A adaptAnnotation(A annotation) {
 		return annotation;
 	}

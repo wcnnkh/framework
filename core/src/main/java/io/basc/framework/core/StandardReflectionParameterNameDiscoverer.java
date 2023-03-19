@@ -22,21 +22,6 @@ import java.lang.reflect.Parameter;
 
 import io.basc.framework.lang.Nullable;
 
-/**
- * {@link ParameterNameDiscoverer} implementation which uses JDK 8's reflection
- * facilities for introspecting parameter names (based on the "-parameters"
- * compiler flag).
- *
- * <p>
- * This is a key element of {@link DefaultParameterNameDiscoverer} where it is
- * being combined with {@link KotlinReflectionParameterNameDiscoverer} if Kotlin
- * is present.
- *
- * @author Juergen Hoeller
- * @see java.lang.reflect.Method#getParameters()
- * @see java.lang.reflect.Parameter#getName()
- * @see DefaultParameterNameDiscoverer
- */
 public class StandardReflectionParameterNameDiscoverer implements ParameterNameDiscoverer {
 
 	@Override

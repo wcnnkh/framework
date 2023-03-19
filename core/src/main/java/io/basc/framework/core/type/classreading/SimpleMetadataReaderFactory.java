@@ -25,13 +25,6 @@ import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 
-/**
- * Simple implementation of the {@link MetadataReaderFactory} interface,
- * creating a new ASM {@link io.basc.framework.asm.ClassReader} for every
- * request.
- *
- * @author Juergen Hoeller
- */
 public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 
 	private final ResourceLoader resourceLoader;

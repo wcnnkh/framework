@@ -79,39 +79,12 @@ public abstract class MergedAnnotationPredicates {
 				.anyMatch(typeName -> typeName.equals(annotation.getType().getName()));
 	}
 
-	/**
-	 * Create a new stateful, single use {@link Predicate} that matches only the
-	 * first run of an extracted value. For example,
-	 * {@code MergedAnnotationPredicates.firstRunOf(MergedAnnotation::distance)}
-	 * will match the first annotation, and any subsequent runs that have the same
-	 * distance.
-	 * <p>
-	 * NOTE: This predicate only matches the first run. Once the extracted value
-	 * changes, the predicate always returns {@code false}. For example, if you have
-	 * a set of annotations with distances {@code [1, 1, 2, 1]} then only the first
-	 * two will match.
-	 * 
-	 * @param valueExtractor function used to extract the value to check
-	 * @return a {@link Predicate} that matches the first run of the extracted
-	 *         values
-	 */
 	public static <A extends Annotation> Predicate<MergedAnnotation<A>> firstRunOf(
 			Function<? super MergedAnnotation<A>, ?> valueExtractor) {
 
 		return new FirstRunOfPredicate<>(valueExtractor);
 	}
 
-	/**
-	 * Create a new stateful, single use {@link Predicate} that matches annotations
-	 * that are unique based on the extracted key. For example
-	 * {@code MergedAnnotationPredicates.unique(MergedAnnotation::getType)} will
-	 * match the first time a unique type is encountered.
-	 * 
-	 * @param keyExtractor function used to extract the key used to test for
-	 *                     uniqueness
-	 * @return a {@link Predicate} that matches a unique annotation based on the
-	 *         extracted key
-	 */
 	public static <A extends Annotation, K> Predicate<MergedAnnotation<A>> unique(
 			Function<? super MergedAnnotation<A>, K> keyExtractor) {
 

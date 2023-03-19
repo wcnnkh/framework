@@ -512,10 +512,6 @@ public abstract class AnnotationUtils {
 	/**
 	 * Retrieve the given annotation's attributes as an {@link AnnotationAttributes}
 	 * map.
-	 * <p>
-	 * This method provides fully recursive annotation reading capabilities on par
-	 * with the reflection-based
-	 * {@link io.basc.framework.core.type.StandardAnnotationMetadata}.
 	 * 
 	 * @param annotation             the annotation to retrieve the attributes for
 	 * @param classValuesAsString    whether to convert Class references into
@@ -564,10 +560,6 @@ public abstract class AnnotationUtils {
 	/**
 	 * Retrieve the given annotation's attributes as an {@link AnnotationAttributes}
 	 * map.
-	 * <p>
-	 * This method provides fully recursive annotation reading capabilities on par
-	 * with the reflection-based
-	 * {@link io.basc.framework.core.type.StandardAnnotationMetadata}.
 	 * 
 	 * @param annotatedElement       the element that is annotated with the supplied
 	 *                               annotation; may be {@code null} if unknown

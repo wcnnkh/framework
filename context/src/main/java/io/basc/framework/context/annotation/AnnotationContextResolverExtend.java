@@ -1,5 +1,6 @@
 package io.basc.framework.context.annotation;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
@@ -20,6 +21,11 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.core.type.AnnotationMetadata;
+import io.basc.framework.core.type.ClassMetadata;
+import io.basc.framework.core.type.classreading.MetadataReader;
+import io.basc.framework.core.type.classreading.MetadataReaderFactory;
+import io.basc.framework.core.type.filter.AnnotationTypeFilter;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanPostProcessor;
 import io.basc.framework.factory.BeanResolver;
@@ -30,10 +36,12 @@ import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.StringUtils;
 
-public class AnnotationContextResolverExtend implements ContextResolverExtend, Ordered, BeanResolverExtend {
+public class AnnotationContextResolverExtend extends AnnotationTypeFilter
+		implements ContextResolverExtend, Ordered, BeanResolverExtend {
 	private final Context context;
 
 	public AnnotationContextResolverExtend(Context context) {
+		super(Indexed.class);
 		this.context = context;
 	}
 
@@ -291,5 +299,30 @@ public class AnnotationContextResolverExtend implements ContextResolverExtend, O
 			beanPostProcessors.addAll(sources);
 		}
 		return CollectionUtils.isEmpty(beanPostProcessors) ? Collections.emptyList() : beanPostProcessors;
+	}
+
+	@Override
+	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory,
+			ContextResolver chain) throws IOException {
+		if (super.match(metadataReader, metadataReaderFactory)) {
+			return true;
+		}
+		return ContextResolverExtend.super.match(metadataReader, metadataReaderFactory, chain);
+	}
+
+	@Override
+	protected boolean matchSelf(MetadataReader metadataReader) {
+		ClassMetadata classMetadata = metadataReader.getClassMetadata();
+		if (classMetadata.isEnum() || classMetadata.isAnnotation()) {
+			return false;
+		}
+
+		AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
+		if (annotationMetadata.hasAnnotation(Ignore.class.getName())) {
+			return false;
+		}
+
+		return classMetadata.isPublic() && EnableConditionUtils.enable(metadataReader, context.getProperties())
+				&& super.matchSelf(metadataReader);
 	}
 }
