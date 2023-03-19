@@ -1,6 +1,7 @@
 package io.basc.framework.util;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Function;
 
@@ -195,6 +196,24 @@ public final class Range<T> implements Serializable {
 	@Override
 	public String toString() {
 		return String.format("%s-%s", toPrefixString(), toSuffixString());
+	}
+
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(new Object[] { lowerBound, upperBound });
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof Range) {
+			Range<?> other = (Range<?>) obj;
+			return ObjectUtils.equals(lowerBound, other.lowerBound) && ObjectUtils.equals(upperBound, other.upperBound);
+		}
+		return false;
 	}
 
 	/**

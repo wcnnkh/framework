@@ -72,7 +72,7 @@ class HttpPatternServices<T> implements Comparator<HttpPatternService<T>>, Serve
 		}
 
 		if (obj instanceof HttpPatternServices) {
-			return CollectionUtils.equals(services, ((HttpPatternServices<?>) obj).services, false);
+			return CollectionUtils.unorderedEquals(services, ((HttpPatternServices<?>) obj).services);
 		}
 		return false;
 	}

@@ -90,12 +90,13 @@ public interface Cursor<E> extends CloseableIterator<E>, Closeable<RuntimeExcept
 		return new StandardCursor<>(iterator);
 	}
 
-	static <T> Cursor<T> of(Stream<T> stream) {
+	static <T> Cursor<T> of(Stream<? extends T> stream) {
 		if (stream == null) {
 			return empty();
 		}
 
-		return of(stream.iterator()).onClose(() -> stream.close());
+		Cursor<T> cursor = of(stream.iterator());
+		return cursor.onClose(() -> stream.close());
 	}
 
 	static <T> Cursor<T> of(Iterable<? extends T> iterable) {

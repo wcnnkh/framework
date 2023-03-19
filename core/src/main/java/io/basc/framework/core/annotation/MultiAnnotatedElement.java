@@ -2,120 +2,162 @@ package io.basc.framework.core.annotation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Cursor;
+import io.basc.framework.util.UnsafeArrayList;
 
 public class MultiAnnotatedElement implements AnnotatedElement {
-	private final Collection<? extends AnnotatedElement> annotatedElements;
-
-	public MultiAnnotatedElement(AnnotatedElement... annotatedElements) {
-		this(Arrays.asList(annotatedElements));
-	}
-
-	public MultiAnnotatedElement(Collection<? extends AnnotatedElement> annotatedElements) {
-		this.annotatedElements = annotatedElements;
-	}
-
-	public static Annotation[] toAnnotations(Collection<? extends AnnotatedElement> annotatedElements,
-			boolean isDeclared) {
-		if (CollectionUtils.isEmpty(annotatedElements)) {
-			return Annotations.EMPTY_ANNOTATION_ARRAY;
-		}
-
-		if (annotatedElements.size() == 1) {
-			AnnotatedElement annotatedElement = Cursor.of(annotatedElements).first();
-			return isDeclared ? annotatedElement.getDeclaredAnnotations() : annotatedElement.getAnnotations();
-		}
-
-		List<Annotation> annotations = new ArrayList<Annotation>();
-		for (AnnotatedElement annotatedElement : annotatedElements) {
-			if (annotatedElement == null) {
-				continue;
-			}
-
-			Annotation[] as;
-			if (annotatedElement instanceof AnnotationArrayAnnotatedElement) {
-				AnnotationArrayAnnotatedElement arrayAnnotatedElement = (AnnotationArrayAnnotatedElement) annotatedElement;
-				as = isDeclared ? arrayAnnotatedElement.declaredAnnotations : arrayAnnotatedElement.annotations;
-			} else {
-				as = isDeclared ? annotatedElement.getDeclaredAnnotations() : annotatedElement.getAnnotations();
-			}
-
-			if (as == null || as.length == 0) {
-				continue;
-			}
-
-			annotations.addAll(new AnnotatedElementNoCopyList<Annotation>(as));
-		}
-		return annotations.toArray(new Annotation[annotations.size()]);
-	}
 
 	public static AnnotatedElement forAnnotatedElements(AnnotatedElement... annotatedElements) {
 		return new MultiAnnotatedElement(annotatedElements);
 	}
 
-	public Collection<AnnotatedElement> getAnnotatedElements() {
-		if (annotatedElements == null) {
-			return Collections.emptyList();
-		}
-
-		return Collections.unmodifiableCollection(annotatedElements);
-	}
-
-	public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-		for (AnnotatedElement annotatedElement : getAnnotatedElements()) {
+	public static <A extends AnnotatedElement, T extends Annotation> T getAnnotation(Iterator<? extends A> iterator,
+			Class<? extends T> annotationClass, Function<? super A, ? extends T> processor) {
+		T annotation = null;
+		List<T> list = null;
+		while (iterator.hasNext()) {
+			A annotatedElement = iterator.next();
 			if (annotatedElement == null) {
 				continue;
 			}
 
-			T annotation = annotatedElement.getAnnotation(annotationClass);
-			if (annotation != null) {
-				return annotation;
+			T ann = processor.apply(annotatedElement);
+			if (ann == null) {
+				continue;
+			}
+
+			if (annotation == null) {
+				annotation = ann;
+			} else {
+				if (list == null) {
+					list = new ArrayList<>(2);
+					list.add(annotation);
+				}
+				list.add(ann);
 			}
 		}
-		return null;
+
+		if (list == null) {
+			return annotation;
+		}
+		return MergedAnnotations.from(list.toArray(new Annotation[0])).get(annotationClass).synthesize();
+	}
+
+	public static <A extends AnnotatedElement, T> List<T> getAnnotations(Iterator<? extends A> iterator,
+			Function<? super A, ? extends T[]> processor) {
+		if (iterator == null || processor == null) {
+			return Collections.emptyList();
+		}
+
+		T[] first = null;
+		List<T> list = null;
+		while (iterator.hasNext()) {
+			A annotatedElement = iterator.next();
+			if (annotatedElement == null) {
+				continue;
+			}
+
+			T[] array = processor.apply(annotatedElement);
+			if (array == null || array.length == 0) {
+				continue;
+			}
+
+			if (first == null) {
+				first = array;
+			} else {
+				if (list == null) {
+					list = new ArrayList<>(4);
+					list.addAll(new UnsafeArrayList<>(first));
+				}
+				list.addAll(new UnsafeArrayList<>(array));
+			}
+		}
+		return list == null ? (first == null ? Collections.emptyList() : new UnsafeArrayList<>(first)) : list;
+	}
+
+	private final Iterable<? extends AnnotatedElement> annotatedElements;
+
+	public MultiAnnotatedElement(AnnotatedElement... annotatedElements) {
+		this.annotatedElements = annotatedElements == null ? Collections.emptyList() : Arrays.asList(annotatedElements);
+	}
+
+	public MultiAnnotatedElement(Iterable<? extends AnnotatedElement> annotatedElements) {
+		this.annotatedElements = annotatedElements == null ? Collections.emptyList() : annotatedElements;
+	}
+
+	public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+		return getAnnotation(annotatedElements.iterator(), annotationClass, (e) -> e.getAnnotation(annotationClass));
 	}
 
 	public Annotation[] getAnnotations() {
-		return toAnnotations(getAnnotatedElements(), false);
+		return getAnnotations(annotatedElements.iterator(), (e) -> e.getAnnotations()).toArray(new Annotation[0]);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
+		return (T[]) getAnnotations(annotatedElements.iterator(), (e) -> e.getAnnotationsByType(annotationClass))
+				.toArray();
+	}
+
+	@Override
+	public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
+		return getAnnotation(annotatedElements.iterator(), annotationClass,
+				(e) -> e.getDeclaredAnnotation(annotationClass));
 	}
 
 	public Annotation[] getDeclaredAnnotations() {
-		return toAnnotations(getAnnotatedElements(), true);
+		return getAnnotations(annotatedElements.iterator(), (e) -> e.getDeclaredAnnotations())
+				.toArray(new Annotation[0]);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
+		return (T[]) getAnnotations(annotatedElements.iterator(),
+				(e) -> e.getDeclaredAnnotationsByType(annotationClass)).toArray();
+	}
+
+	@Override
+	public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+		for (AnnotatedElement annotatedElement : annotatedElements) {
+			if (annotatedElement == null) {
+				continue;
+			}
+
+			if (annotatedElement.isAnnotationPresent(annotationClass)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return CollectionUtils.hashCode(annotatedElements);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof MultiAnnotatedElement) {
+			return CollectionUtils.equals(annotatedElements, ((MultiAnnotatedElement) obj).annotatedElements);
+		}
+		return false;
 	}
 
 	@Override
 	public String toString() {
 		return "MultiAnnotatedElement(annotatedElements=" + annotatedElements.toString() + ")";
-	}
-
-	private static final class AnnotatedElementNoCopyList<E> extends AbstractList<E> {
-		private final E[] a;
-
-		AnnotatedElementNoCopyList(E[] array) {
-			a = array;
-		}
-
-		@Override
-		public int size() {
-			return a.length;
-		}
-
-		@Override
-		public Object[] toArray() {
-			return a;
-		}
-
-		@Override
-		public E get(int index) {
-			return a[index];
-		}
 	}
 }

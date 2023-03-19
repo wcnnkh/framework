@@ -35,81 +35,54 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
+import java.util.stream.Collectors;
 
 public abstract class CollectionUtils {
+	/**
+	 * Iterator wrapping an Enumeration.
+	 */
+	private static class EnumerationIterator<E> implements Iterator<E> {
+
+		private Enumeration<? extends E> enumeration;
+
+		public EnumerationIterator(Enumeration<? extends E> enumeration) {
+			this.enumeration = enumeration;
+		}
+
+		public boolean hasNext() {
+			return this.enumeration.hasMoreElements();
+		}
+
+		public E next() {
+			return this.enumeration.nextElement();
+		}
+	}
+
+	private static final class PreviousIterator<E> implements Iterator<E> {
+		private final ListIterator<E> listIterator;
+
+		public PreviousIterator(ListIterator<E> listIterator) {
+			this.listIterator = listIterator;
+		}
+
+		public boolean hasNext() {
+			return listIterator.hasPrevious();
+		}
+
+		public E next() {
+			return listIterator.previous();
+		}
+
+		@Override
+		public void remove() {
+			listIterator.remove();
+		}
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static final MultiValueMap EMPTY_MULTI_VALUE_MAP = new MultiValueMapWrapper(Collections.emptyMap());
-
-	@SuppressWarnings("unchecked")
-	public static <K, V> MultiValueMap<K, V> emptyMultiValueMap() {
-		return EMPTY_MULTI_VALUE_MAP;
-	}
-
-	/**
-	 * Return {@code true} if the supplied Collection is {@code null} or empty.
-	 * Otherwise, return {@code false}.
-	 * 
-	 * @param collection the Collection to check
-	 * @return whether the given Collection is empty
-	 */
-	@SuppressWarnings("rawtypes")
-	public static boolean isEmpty(Collection collection) {
-		return (collection == null || collection.isEmpty());
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static boolean isEmptyAny(Collection... collections) {
-		for (Collection collection : collections) {
-			if (collection == null || collection.isEmpty()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static boolean isEmptyAll(Collection... collections) {
-		for (Collection collection : collections) {
-			if (collection == null || collection.isEmpty()) {
-				continue;
-			}
-			return false;
-		}
-		return true;
-	}
-
-	/**
-	 * Return {@code true} if the supplied Map is {@code null} or empty. Otherwise,
-	 * return {@code false}.
-	 * 
-	 * @param map the Map to check
-	 * @return whether the given Map is empty
-	 */
-	@SuppressWarnings("rawtypes")
-	public static boolean isEmpty(Map map) {
-		return (map == null || map.isEmpty());
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static boolean isEmptyAny(Map... map) {
-		for (Map m : map) {
-			if (m == null || m.isEmpty()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static boolean isEmptyAll(Map... map) {
-		for (Map m : map) {
-			if (m == null || m.isEmpty()) {
-				continue;
-			}
-			return false;
-		}
-		return true;
-	}
 
 	/**
 	 * Convert the supplied array into a List. A primitive array gets converted into
@@ -124,6 +97,568 @@ public abstract class CollectionUtils {
 	@SuppressWarnings("rawtypes")
 	public static List arrayToList(Object source) {
 		return Arrays.asList(ObjectUtils.toObjectArray(source));
+	}
+
+	public static <T> int compare(Collection<? extends T> collection1, Collection<? extends T> collection2,
+			Comparator<T> comparator) {
+		if (CollectionUtils.isEmpty(collection1)) {
+			return CollectionUtils.isEmpty(collection2) ? 0 : -1;
+		}
+
+		if (CollectionUtils.isEmpty(collection2)) {
+			return CollectionUtils.isEmpty(collection1) ? 0 : 1;
+		}
+
+		Iterator<? extends T> iterator1 = collection1.iterator();
+		Iterator<? extends T> iterator2 = collection2.iterator();
+		while (iterator1.hasNext() && iterator2.hasNext()) {
+			int v = comparator.compare(iterator1.next(), iterator2.next());
+			if (v != 0) {
+				return v;
+			}
+		}
+		return collection1.size() - collection2.size();
+	}
+
+	public static <T> int compare(Iterator<? extends T> iterator1, Iterator<? extends T> iterator2,
+			Comparator<T> comparator) {
+		if (CollectionUtils.isEmpty(iterator1)) {
+			return CollectionUtils.isEmpty(iterator2) ? 0 : -1;
+		}
+
+		if (CollectionUtils.isEmpty(iterator2)) {
+			return CollectionUtils.isEmpty(iterator1) ? 0 : 1;
+		}
+
+		while (iterator1.hasNext() && iterator2.hasNext()) {
+			int v = comparator.compare(iterator1.next(), iterator2.next());
+			if (v != 0) {
+				return v;
+			}
+		}
+		return iterator1.hasNext() ? 1 : (iterator2.hasNext() ? -1 : 0);
+	}
+
+	public static <E> Collection<E> complementary(Iterable<? extends E> universal, Iterable<? extends E> subaggregate) {
+		if (isEmpty(universal)) {
+			return Collections.emptyList();
+		}
+
+		if (isEmpty(subaggregate)) {
+			return XUtils.stream(universal.iterator()).collect(Collectors.toList());
+		}
+
+		if (universal instanceof Set) {
+			Set<E> universalSet = new LinkedHashSet<>();
+			universal.forEach(universalSet::add);
+			subaggregate.forEach(universalSet::remove);
+			return universalSet;
+		}
+		return complementary(universal.iterator(), subaggregate.iterator());
+	}
+
+	public static <E> Collection<E> complementary(Iterable<? extends E> universal, Iterable<? extends E> subaggregate,
+			Comparator<? super E> comparator) {
+		if (isEmpty(universal)) {
+			return Collections.emptyList();
+		}
+
+		return complementary(universal.iterator(),
+				subaggregate == null ? Collections.emptyIterator() : subaggregate.iterator(), comparator);
+	}
+
+	public static <E> Collection<E> complementary(Iterator<? extends E> universal, Iterator<? extends E> subaggregate) {
+		return complementary(universal, subaggregate, (o1, o2) -> ObjectUtils.equals(o1, o2) ? 0 : 1);
+	}
+
+	/**
+	 * 获取补集(一定有全集大于子集)
+	 * 
+	 * @param <E>          元素类型
+	 * @param universal    全集
+	 * @param subaggregate 子集
+	 * @param comparator   比较器
+	 * @return 返回补集
+	 */
+	public static <E> List<E> complementary(Iterator<? extends E> universal, Iterator<? extends E> subaggregate,
+			Comparator<? super E> comparator) {
+		Assert.requiredArgument(comparator != null, "comparator");
+		if (isEmpty(universal)) {
+			// 如果全集不存在那么也就没有补集
+			return Collections.emptyList();
+		}
+
+		List<E> universalSet = new ArrayList<>();
+		universal.forEachRemaining(universalSet::add);
+		if (isEmpty(subaggregate)) {
+			return universalSet;
+		}
+
+		while (subaggregate.hasNext()) {
+			E element = subaggregate.next();
+			Iterator<E> iterator = universalSet.iterator();
+			while (iterator.hasNext()) {
+				E source = iterator.next();
+				if (comparator.compare(source, element) == 0) {
+					iterator.remove();
+					break;
+				}
+			}
+		}
+		return universalSet;
+	}
+
+	/**
+	 * Return {@code true} if any element in '{@code candidates}' is contained in
+	 * '{@code source}'; otherwise returns {@code false}.
+	 * 
+	 * @param source     the source Collection
+	 * @param candidates the candidates to search for
+	 * @return whether any of the candidates has been found
+	 */
+	@SuppressWarnings("rawtypes")
+	public static boolean containsAny(Collection source, Collection candidates) {
+		if (isEmpty(source) || isEmpty(candidates)) {
+			return false;
+		}
+		for (Object candidate : candidates) {
+			if (source.contains(candidate)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Check whether the given Collection contains the given element instance.
+	 * <p>
+	 * Enforces the given instance to be present, rather than returning {@code true}
+	 * for an equal element as well.
+	 * 
+	 * @param collection the Collection to check
+	 * @param element    the element to look for
+	 * @return {@code true} if found, {@code false} else
+	 */
+	@SuppressWarnings("rawtypes")
+	public static boolean containsInstance(Collection collection, Object element) {
+		if (collection != null) {
+			for (Object candidate : collection) {
+				if (candidate == element) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <K, V> MultiValueMap<K, V> emptyMultiValueMap() {
+		return EMPTY_MULTI_VALUE_MAP;
+	}
+
+	public static <E> boolean equals(Iterable<? extends E> leftIterable, Iterable<? extends E> rightIterable) {
+		return equals(leftIterable, rightIterable, (o1, o2) -> ObjectUtils.equals(o1, o2) ? 0 : 1);
+	}
+
+	public static <E> boolean equals(Iterable<? extends E> leftIterable, Iterable<? extends E> rightIterable,
+			Comparator<? super E> comparator) {
+		if (isEmpty(leftIterable)) {
+			return isEmpty(rightIterable);
+		}
+
+		if (isEmpty(rightIterable)) {
+			return isEmpty(leftIterable);
+		}
+		return equals(leftIterable.iterator(), rightIterable.iterator(), comparator);
+	}
+
+	public static <E> boolean equals(Iterator<? extends E> leftIterator, Iterator<? extends E> rightIterator) {
+		return equals(leftIterator, rightIterator, (o1, o2) -> ObjectUtils.equals(o1, o2) ? 0 : 1);
+	}
+
+	public static <E> boolean equals(Iterator<? extends E> leftIterator, Iterator<? extends E> rightIterator,
+			Comparator<? super E> comparator) {
+		Assert.requiredArgument(comparator != null, "comparator");
+		if (isEmpty(leftIterator)) {
+			return isEmpty(rightIterator);
+		}
+
+		if (isEmpty(rightIterator)) {
+			return isEmpty(leftIterator);
+		}
+
+		while (leftIterator.hasNext() && rightIterator.hasNext()) {
+			if (comparator.compare(leftIterator.next(), rightIterator.next()) != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Find the common element type of the given Collection, if any.
+	 * 
+	 * @param collection the Collection to check
+	 * @return the common element type, or {@code null} if no clear common type has
+	 *         been found (or the collection was empty)
+	 */
+	@SuppressWarnings("rawtypes")
+	public static Class<?> findCommonElementType(Collection collection) {
+		if (isEmpty(collection)) {
+			return null;
+		}
+		Class<?> candidate = null;
+		for (Object val : collection) {
+			if (val != null) {
+				if (candidate == null) {
+					candidate = val.getClass();
+				} else if (candidate != val.getClass()) {
+					return null;
+				}
+			}
+		}
+		return candidate;
+	}
+
+	/**
+	 * Return the first element in '{@code candidates}' that is contained in '
+	 * {@code source}'. If no element in '{@code candidates}' is present in '
+	 * {@code source}' returns {@code null}. Iteration order is {@link Collection}
+	 * implementation specific.
+	 * 
+	 * @param source     the source Collection
+	 * @param candidates the candidates to search for
+	 * @return the first present object, or {@code null} if not found
+	 */
+	@SuppressWarnings("rawtypes")
+	public static Object findFirstMatch(Collection source, Collection candidates) {
+		if (isEmpty(source) || isEmpty(candidates)) {
+			return null;
+		}
+		for (Object candidate : candidates) {
+			if (source.contains(candidate)) {
+				return candidate;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Find a single value of one of the given types in the given Collection:
+	 * searching the Collection for a value of the first type, then searching for a
+	 * value of the second type, etc.
+	 * 
+	 * @param collection the collection to search
+	 * @param types      the types to look for, in prioritized order
+	 * @return a value of one of the given types found if there is a clear match, or
+	 *         {@code null} if none or more than one such value found
+	 */
+	public static Object findValueOfType(Collection<?> collection, Class<?>[] types) {
+		if (isEmpty(collection) || ObjectUtils.isEmpty(types)) {
+			return null;
+		}
+		for (Class<?> type : types) {
+			Object value = findValueOfType(collection, type);
+			if (value != null) {
+				return value;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Find a single value of the given type in the given Collection.
+	 * 
+	 * @param collection the Collection to search
+	 * @param type       the type to look for
+	 * @return a value of the given type found if there is a clear match, or
+	 *         {@code null} if none or more than one such value found
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T findValueOfType(Collection<?> collection, Class<T> type) {
+		if (isEmpty(collection)) {
+			return null;
+		}
+		T value = null;
+		for (Object element : collection) {
+			if (type == null || type.isInstance(element)) {
+				if (value != null) {
+					// More than one value found... no clear single value.
+					return null;
+				}
+				value = (T) element;
+			}
+		}
+		return value;
+	}
+
+	/**
+	 * 获取一个迭代器
+	 * 
+	 * @param list
+	 * @param previous 是否反向迭代
+	 * @return
+	 */
+	public static <E> Iterator<E> getIterator(List<E> list, boolean previous) {
+		if (isEmpty(list)) {
+			return Collections.emptyIterator();
+		}
+
+		if (previous) {
+			return new PreviousIterator<E>(list.listIterator(list.size()));
+		} else {
+			return list.iterator();
+		}
+	}
+
+	public static <E> int hashCode(Iterable<? extends E> iterable) {
+		return hashCode(iterable, (e) -> e.hashCode());
+	}
+
+	public static <E> int hashCode(Iterable<? extends E> iterable, ToIntFunction<? super E> hash) {
+		if (iterable == null) {
+			return 0;
+		}
+		return hashCode(iterable.iterator(), hash);
+	}
+
+	public static <E> int hashCode(Iterator<? extends E> iterator) {
+		return hashCode(iterator, (e) -> e.hashCode());
+	}
+
+	public static <E> int hashCode(Iterator<? extends E> iterator, ToIntFunction<? super E> hash) {
+		if (iterator == null) {
+			return 0;
+		}
+
+		int result = 1;
+		while (iterator.hasNext()) {
+			E element = iterator.next();
+			result = 31 * result + (element == null ? 0 : hash.applyAsInt(element));
+		}
+		return result;
+	}
+
+	/**
+	 * Determine whether the given Collection only contains a single unique object.
+	 * 
+	 * @param collection the Collection to check
+	 * @return {@code true} if the collection contains a single reference or
+	 *         multiple references to the same instance, {@code false} else
+	 */
+	@SuppressWarnings("rawtypes")
+	public static boolean hasUniqueObject(Collection collection) {
+		if (isEmpty(collection)) {
+			return false;
+		}
+		boolean hasCandidate = false;
+		Object candidate = null;
+		for (Object elem : collection) {
+			if (!hasCandidate) {
+				hasCandidate = true;
+				candidate = elem;
+			} else if (candidate != elem) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static <E> Collection<E> intersection(Iterable<? extends E> leftIterable,
+			Iterable<? extends E> rightIterable) {
+		if (isEmpty(leftIterable) || isEmpty(rightIterable)) {
+			return Collections.emptyList();
+		}
+
+		if (rightIterable instanceof Set) {
+			// 对set做优化
+			Set<E> rightSet = new LinkedHashSet<>();
+			rightIterable.forEach(rightSet::add);
+			List<E> list = null;
+			for (E left : leftIterable) {
+				if (rightSet.remove(left)) {
+					if (list == null) {
+						list = new ArrayList<>(rightSet.size());
+					}
+					list.add(left);
+				}
+			}
+			return list == null ? Collections.emptyList() : list;
+		}
+		return intersection(leftIterable.iterator(), rightIterable.iterator());
+	}
+
+	public static <E, T> Collection<T> intersection(Iterable<? extends E> leftIterable,
+			Iterable<? extends E> rightIterable, Comparator<? super E> comparator,
+			Combiner<? super E, ? super E, ? extends T> combiner) {
+		if (isEmpty(leftIterable) || isEmpty(rightIterable)) {
+			return Collections.emptyList();
+		}
+		return intersection(leftIterable.iterator(), rightIterable.iterator(), comparator, combiner);
+	}
+
+	public static <E> Collection<E> intersection(Iterator<? extends E> leftIterator,
+			Iterator<? extends E> rightIterator) {
+		return intersection(leftIterator, rightIterator, (o1, o2) -> ObjectUtils.equals(o1, o2) ? 0 : 1,
+				(o1, o2) -> o1);
+	}
+
+	/**
+	 * 交集
+	 * 
+	 * @param <E>           需要比较的元素类型
+	 * @param <T>           返回的元素类型
+	 * @param leftIterator  左边来源
+	 * @param rightIterator 右边来原
+	 * @param comparator    比较是否相同
+	 * @param combiner      将结果合并
+	 * @return 返回交集列表
+	 */
+	public static <E, T> Collection<T> intersection(Iterator<? extends E> leftIterator,
+			Iterator<? extends E> rightIterator, Comparator<? super E> comparator,
+			Combiner<? super E, ? super E, ? extends T> combiner) {
+		Assert.requiredArgument(comparator != null, "comparator");
+		Assert.requiredArgument(combiner != null, "combiner");
+		if (isEmpty(leftIterator) || isEmpty(rightIterator)) {
+			return Collections.emptyList();
+		}
+
+		List<E> rightList = new ArrayList<>();
+		rightIterator.forEachRemaining(rightList::add);
+		List<T> list = null;
+		while (leftIterator.hasNext()) {
+			E left = leftIterator.next();
+			Iterator<E> rightListIterator = rightList.iterator();
+			while (rightListIterator.hasNext()) {
+				E right = rightListIterator.next();
+				if (comparator.compare(left, right) == 0) {
+					if (list == null) {
+						list = new ArrayList<>(rightList.size());
+					}
+
+					T element = combiner.combine(left, right);
+					list.add(element);
+					rightListIterator.remove();
+					break;
+				}
+			}
+		}
+		return list == null ? Collections.emptyList() : list;
+	}
+
+	public static <E> boolean isAll(Iterable<? extends E> iterable, Predicate<? super E> predicate) {
+		if (iterable == null) {
+			return true;
+		}
+
+		return isAll(iterable.iterator(), predicate);
+	}
+
+	public static <E> boolean isAll(Iterator<? extends E> iterator, Predicate<? super E> predicate) {
+		Assert.requiredArgument(predicate != null, "predicate");
+		if (iterator == null) {
+			return true;
+		}
+
+		while (iterator.hasNext()) {
+			E element = iterator.next();
+			if (!predicate.test(element)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static <E> boolean isAny(Iterable<? extends E> iterable, Predicate<? super E> predicate) {
+		if (iterable == null) {
+			return false;
+		}
+
+		return isAny(iterable.iterator(), predicate);
+	}
+
+	public static <E> boolean isAny(Iterator<? extends E> iterator, Predicate<? super E> predicate) {
+		Assert.requiredArgument(predicate != null, "predicate");
+		if (iterator == null) {
+			return false;
+		}
+
+		while (iterator.hasNext()) {
+			E element = iterator.next();
+			if (predicate.test(element)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Return {@code true} if the supplied Collection is {@code null} or empty.
+	 * Otherwise, return {@code false}.
+	 * 
+	 * @param collection the Collection to check
+	 * @return whether the given Collection is empty
+	 */
+	@SuppressWarnings("rawtypes")
+	public static boolean isEmpty(Collection collection) {
+		return (collection == null || collection.isEmpty());
+	}
+
+	public static boolean isEmpty(Iterable<?> iterable) {
+		if (iterable == null) {
+			return true;
+		}
+
+		if (iterable instanceof Collection) {
+			return isEmpty((Collection<?>) iterable);
+		}
+
+		Iterator<?> iterator = iterable.iterator();
+		return isEmpty(iterator);
+	}
+
+	public static boolean isEmpty(Iterator<?> iterator) {
+		return iterator == null || !iterator.hasNext();
+	}
+
+	/**
+	 * Return {@code true} if the supplied Map is {@code null} or empty. Otherwise,
+	 * return {@code false}.
+	 * 
+	 * @param map the Map to check
+	 * @return whether the given Map is empty
+	 */
+	@SuppressWarnings("rawtypes")
+	public static boolean isEmpty(Map map) {
+		return (map == null || map.isEmpty());
+	}
+
+	public static boolean isUnmodifiable(Object collection) {
+		if (collection == null) {
+			return false;
+		}
+
+		if (collection instanceof Collection || collection instanceof Map) {
+			return collection.getClass().getSimpleName().startsWith("Unmodifiable");
+		}
+		return false;
+	}
+
+	public static <S, T> Iterator<T> iterator(Iterator<? extends S> iterator,
+			Function<? super S, ? extends Iterator<T>> converter) {
+		Assert.requiredArgument(converter != null, "converter");
+		if (iterator == null) {
+			return Collections.emptyIterator();
+		}
+		return new IterationIterator<>(iterator, converter);
+	}
+
+	public static <E> List<E> list(Iterator<? extends E> iterator) {
+		if (iterator == null || !iterator.hasNext()) {
+			return Collections.emptyList();
+		}
+
+		return Collections.list(CollectionUtils.toEnumeration(iterator));
 	}
 
 	/**
@@ -172,208 +707,44 @@ public abstract class CollectionUtils {
 	}
 
 	/**
-	 * Check whether the given Iterator contains the given element.
+	 * 颠倒一个集合的排列
 	 * 
-	 * @param iterator the Iterator to check
-	 * @param element  the element to look for
-	 * @return {@code true} if found, {@code false} else
-	 */
-	@SuppressWarnings("rawtypes")
-	public static boolean contains(Iterator iterator, Object element) {
-		if (iterator != null) {
-			while (iterator.hasNext()) {
-				Object candidate = iterator.next();
-				if (ObjectUtils.equals(candidate, element)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Check whether the given Enumeration contains the given element.
-	 * 
-	 * @param enumeration the Enumeration to check
-	 * @param element     the element to look for
-	 * @return {@code true} if found, {@code false} else
-	 */
-	@SuppressWarnings("rawtypes")
-	public static boolean contains(Enumeration enumeration, Object element) {
-		if (enumeration != null) {
-			while (enumeration.hasMoreElements()) {
-				Object candidate = enumeration.nextElement();
-				if (ObjectUtils.equals(candidate, element)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Check whether the given Collection contains the given element instance.
-	 * <p>
-	 * Enforces the given instance to be present, rather than returning {@code true}
-	 * for an equal element as well.
-	 * 
-	 * @param collection the Collection to check
-	 * @param element    the element to look for
-	 * @return {@code true} if found, {@code false} else
-	 */
-	@SuppressWarnings("rawtypes")
-	public static boolean containsInstance(Collection collection, Object element) {
-		if (collection != null) {
-			for (Object candidate : collection) {
-				if (candidate == element) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Return {@code true} if any element in '{@code candidates}' is contained in
-	 * '{@code source}'; otherwise returns {@code false}.
-	 * 
-	 * @param source     the source Collection
-	 * @param candidates the candidates to search for
-	 * @return whether any of the candidates has been found
-	 */
-	@SuppressWarnings("rawtypes")
-	public static boolean containsAny(Collection source, Collection candidates) {
-		if (isEmpty(source) || isEmpty(candidates)) {
-			return false;
-		}
-		for (Object candidate : candidates) {
-			if (source.contains(candidate)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Return the first element in '{@code candidates}' that is contained in '
-	 * {@code source}'. If no element in '{@code candidates}' is present in '
-	 * {@code source}' returns {@code null}. Iteration order is {@link Collection}
-	 * implementation specific.
-	 * 
-	 * @param source     the source Collection
-	 * @param candidates the candidates to search for
-	 * @return the first present object, or {@code null} if not found
-	 */
-	@SuppressWarnings("rawtypes")
-	public static Object findFirstMatch(Collection source, Collection candidates) {
-		if (isEmpty(source) || isEmpty(candidates)) {
-			return null;
-		}
-		for (Object candidate : candidates) {
-			if (source.contains(candidate)) {
-				return candidate;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Find a single value of the given type in the given Collection.
-	 * 
-	 * @param collection the Collection to search
-	 * @param type       the type to look for
-	 * @return a value of the given type found if there is a clear match, or
-	 *         {@code null} if none or more than one such value found
+	 * @param collection
+	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T findValueOfType(Collection<?> collection, Class<T> type) {
-		if (isEmpty(collection)) {
-			return null;
+	public static <E> List<E> reversal(Collection<E> collection) {
+		if (collection == null || collection.isEmpty()) {
+			return Collections.emptyList();
 		}
-		T value = null;
-		for (Object element : collection) {
-			if (type == null || type.isInstance(element)) {
-				if (value != null) {
-					// More than one value found... no clear single value.
-					return null;
-				}
-				value = (T) element;
-			}
-		}
-		return value;
+
+		Object[] values = collection.toArray();
+		values = ArrayUtils.reversal(values);
+		return Arrays.asList((E[]) values);
 	}
 
-	/**
-	 * Find a single value of one of the given types in the given Collection:
-	 * searching the Collection for a value of the first type, then searching for a
-	 * value of the second type, etc.
-	 * 
-	 * @param collection the collection to search
-	 * @param types      the types to look for, in prioritized order
-	 * @return a value of one of the given types found if there is a clear match, or
-	 *         {@code null} if none or more than one such value found
-	 */
-	public static Object findValueOfType(Collection<?> collection, Class<?>[] types) {
-		if (isEmpty(collection) || ObjectUtils.isEmpty(types)) {
-			return null;
-		}
-		for (Class<?> type : types) {
-			Object value = findValueOfType(collection, type);
-			if (value != null) {
-				return value;
-			}
-		}
-		return null;
+	public static int size(Collection<?> collection) {
+		return collection == null ? 0 : collection.size();
 	}
 
-	/**
-	 * Determine whether the given Collection only contains a single unique object.
-	 * 
-	 * @param collection the Collection to check
-	 * @return {@code true} if the collection contains a single reference or
-	 *         multiple references to the same instance, {@code false} else
-	 */
-	@SuppressWarnings("rawtypes")
-	public static boolean hasUniqueObject(Collection collection) {
-		if (isEmpty(collection)) {
-			return false;
-		}
-		boolean hasCandidate = false;
-		Object candidate = null;
-		for (Object elem : collection) {
-			if (!hasCandidate) {
-				hasCandidate = true;
-				candidate = elem;
-			} else if (candidate != elem) {
-				return false;
-			}
-		}
-		return true;
+	public static int size(Map<?, ?> map) {
+		return map == null ? 0 : map.size();
 	}
 
-	/**
-	 * Find the common element type of the given Collection, if any.
-	 * 
-	 * @param collection the Collection to check
-	 * @return the common element type, or {@code null} if no clear common type has
-	 *         been found (or the collection was empty)
-	 */
-	@SuppressWarnings("rawtypes")
-	public static Class<?> findCommonElementType(Collection collection) {
-		if (isEmpty(collection)) {
-			return null;
+	@SuppressWarnings("unchecked")
+	public static <K, V> Map<K, V> sort(Map<K, V> source) {
+		if (isEmpty(source)) {
+			return Collections.emptyMap();
 		}
-		Class<?> candidate = null;
-		for (Object val : collection) {
-			if (val != null) {
-				if (candidate == null) {
-					candidate = val.getClass();
-				} else if (candidate != val.getClass()) {
-					return null;
-				}
-			}
+
+		Object[] keys = source.keySet().toArray();
+		Arrays.sort(keys);
+		LinkedHashMap<K, V> map = new LinkedHashMap<K, V>(source.size());
+		for (int i = 0; i < keys.length; i++) {
+			Object key = keys[i];
+			map.put((K) key, source.get(key));
 		}
-		return candidate;
+		return map;
 	}
 
 	/**
@@ -387,20 +758,6 @@ public abstract class CollectionUtils {
 			elements.add(enumeration.nextElement());
 		}
 		return elements.toArray(array);
-	}
-
-	/**
-	 * Adapt an enumeration to an iterator.
-	 * 
-	 * @param enumeration the enumeration
-	 * @return the iterator
-	 */
-	public static <E> Iterator<E> toIterator(Enumeration<? extends E> enumeration) {
-		if (enumeration == null || !enumeration.hasMoreElements()) {
-			return Collections.emptyIterator();
-		}
-
-		return new EnumerationIterator<E>(enumeration);
 	}
 
 	public static <E> Enumeration<E> toEnumeration(final Iterator<? extends E> iterator) {
@@ -421,6 +778,20 @@ public abstract class CollectionUtils {
 	}
 
 	/**
+	 * Adapt an enumeration to an iterator.
+	 * 
+	 * @param enumeration the enumeration
+	 * @return the iterator
+	 */
+	public static <E> Iterator<E> toIterator(Enumeration<? extends E> enumeration) {
+		if (enumeration == null || !enumeration.hasMoreElements()) {
+			return Collections.emptyIterator();
+		}
+
+		return new EnumerationIterator<E>(enumeration);
+	}
+
+	/**
 	 * Adapts a {@code Map<K, List<V>>} to an {@code MultiValueMap<K,V>}.
 	 *
 	 * @param map the map
@@ -429,6 +800,35 @@ public abstract class CollectionUtils {
 	public static <K, V> MultiValueMap<K, V> toMultiValueMap(Map<K, List<V>> map) {
 		return new MultiValueMapWrapper<K, V>(map);
 
+	}
+
+	public static <E> Set<E> toSet(Iterable<E> iterable) {
+		Iterator<E> iterator = iterable.iterator();
+		if (!iterator.hasNext()) {
+			return Collections.emptySet();
+		}
+
+		Set<E> sets = new LinkedHashSet<E>();
+		while (iterator.hasNext()) {
+			sets.add(iterator.next());
+		}
+		return sets;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <K, V> Map<K, V> unmodifiableMap(Map<K, V> map) {
+		if (isUnmodifiable(map)) {
+			return map;
+		}
+
+		if (map instanceof NavigableMap) {
+			return Collections.unmodifiableNavigableMap((NavigableMap<K, V>) map);
+		} else if (map instanceof SortedMap) {
+			return Collections.unmodifiableSortedMap((SortedMap<K, V>) map);
+		} else if (map instanceof MultiValueMap) {
+			return (Map<K, V>) unmodifiableMultiValueMap((MultiValueMap<K, ?>) map);
+		}
+		return Collections.unmodifiableMap(map);
 	}
 
 	/**
@@ -448,303 +848,6 @@ public abstract class CollectionUtils {
 		return toMultiValueMap(unmodifiableMap);
 	}
 
-	/**
-	 * 颠倒一个集合的排列
-	 * 
-	 * @param collection
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <E> List<E> reversal(Collection<E> collection) {
-		if (collection == null || collection.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		Object[] values = collection.toArray();
-		values = ArrayUtils.reversal(values);
-		return Arrays.asList((E[]) values);
-	}
-
-	/**
-	 * Iterator wrapping an Enumeration.
-	 */
-	private static class EnumerationIterator<E> implements Iterator<E> {
-
-		private Enumeration<? extends E> enumeration;
-
-		public EnumerationIterator(Enumeration<? extends E> enumeration) {
-			this.enumeration = enumeration;
-		}
-
-		public boolean hasNext() {
-			return this.enumeration.hasMoreElements();
-		}
-
-		public E next() {
-			return this.enumeration.nextElement();
-		}
-	}
-
-	public static int size(Collection<?> collection) {
-		return collection == null ? 0 : collection.size();
-	}
-
-	public static int size(Map<?, ?> map) {
-		return map == null ? 0 : map.size();
-	}
-
-	public static <E> List<E> list(Iterator<E> iterator) {
-		if (iterator == null || !iterator.hasNext()) {
-			return Collections.emptyList();
-		}
-
-		return Collections.list(CollectionUtils.toEnumeration(iterator));
-	}
-
-	public static <E> Set<E> toSet(Iterable<E> iterable) {
-		Iterator<E> iterator = iterable.iterator();
-		if (!iterator.hasNext()) {
-			return Collections.emptySet();
-		}
-
-		Set<E> sets = new LinkedHashSet<E>();
-		while (iterator.hasNext()) {
-			sets.add(iterator.next());
-		}
-		return sets;
-	}
-
-	private static final class PreviousIterator<E> implements Iterator<E> {
-		private final ListIterator<E> listIterator;
-
-		public PreviousIterator(ListIterator<E> listIterator) {
-			this.listIterator = listIterator;
-		}
-
-		public boolean hasNext() {
-			return listIterator.hasPrevious();
-		}
-
-		public E next() {
-			return listIterator.previous();
-		}
-
-		@Override
-		public void remove() {
-			listIterator.remove();
-		}
-	}
-
-	/**
-	 * 获取一个迭代器
-	 * 
-	 * @param list
-	 * @param previous 是否反向迭代
-	 * @return
-	 */
-	public static <E> Iterator<E> getIterator(List<E> list, boolean previous) {
-		if (isEmpty(list)) {
-			return Collections.emptyIterator();
-		}
-
-		if (previous) {
-			return new PreviousIterator<E>(list.listIterator(list.size()));
-		} else {
-			return list.iterator();
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <K, V> Map<K, V> sort(Map<K, V> source) {
-		if (isEmpty(source)) {
-			return Collections.emptyMap();
-		}
-
-		Object[] keys = source.keySet().toArray();
-		Arrays.sort(keys);
-		LinkedHashMap<K, V> map = new LinkedHashMap<K, V>(source.size());
-		for (int i = 0; i < keys.length; i++) {
-			Object key = keys[i];
-			map.put((K) key, source.get(key));
-		}
-		return map;
-	}
-
-	public static <T> int compare(Collection<? extends T> collection1, Collection<? extends T> collection2,
-			Comparator<T> comparator) {
-		if (CollectionUtils.isEmpty(collection1)) {
-			return CollectionUtils.isEmpty(collection2) ? 0 : -1;
-		}
-
-		if (CollectionUtils.isEmpty(collection2)) {
-			return CollectionUtils.isEmpty(collection1) ? 0 : 1;
-		}
-
-		Iterator<? extends T> iterator1 = collection1.iterator();
-		Iterator<? extends T> iterator2 = collection2.iterator();
-		while (iterator1.hasNext() && iterator2.hasNext()) {
-			int v = comparator.compare(iterator1.next(), iterator2.next());
-			if (v != 0) {
-				return v;
-			}
-		}
-		return collection1.size() - collection2.size();
-	}
-
-	public static boolean isEmpty(Iterator<?> iterator) {
-		return iterator == null || !iterator.hasNext();
-	}
-
-	public static <T> int compare(Iterator<? extends T> iterator1, Iterator<? extends T> iterator2,
-			Comparator<T> comparator) {
-		if (CollectionUtils.isEmpty(iterator1)) {
-			return CollectionUtils.isEmpty(iterator2) ? 0 : -1;
-		}
-
-		if (CollectionUtils.isEmpty(iterator2)) {
-			return CollectionUtils.isEmpty(iterator1) ? 0 : 1;
-		}
-
-		while (iterator1.hasNext() && iterator2.hasNext()) {
-			int v = comparator.compare(iterator1.next(), iterator2.next());
-			if (v != 0) {
-				return v;
-			}
-		}
-		return iterator1.hasNext() ? 1 : (iterator2.hasNext() ? -1 : 0);
-	}
-
-	public static <T> int compare(Iterable<? extends T> iterable1, Iterable<? extends T> iterable2, T defaultValue,
-			Comparator<T> comparator) {
-		return compare(iterable1 == null ? Collections.emptyIterator() : iterable1.iterator(),
-				iterable2 == null ? Collections.emptyIterator() : iterable2.iterator(), defaultValue, comparator);
-	}
-
-	public static <T> int compare(Iterator<? extends T> iterator1, Iterator<? extends T> iterator2, T defaultValue,
-			Comparator<T> comparator) {
-		Iterator<? extends T> useIterator1 = iterator1 == null ? Collections.emptyIterator() : iterator1;
-		Iterator<? extends T> useIterator2 = iterator2 == null ? Collections.emptyIterator() : iterator2;
-		while (useIterator1.hasNext() || useIterator2.hasNext()) {
-			T v1 = useIterator1.hasNext() ? useIterator1.next() : defaultValue;
-			T v2 = useIterator2.hasNext() ? useIterator2.next() : defaultValue;
-			int v = comparator.compare(v1, v2);
-			if (v != 0) {
-				return v;
-			}
-		}
-		return 0;
-	}
-
-	/**
-	 * 判断两个集合内容是否相同
-	 * 
-	 * @param left
-	 * @param right
-	 * @return
-	 */
-	public static boolean equals(Collection<?> left, Collection<?> right) {
-		return equals(left, right, true);
-	}
-
-	/**
-	 * @param left
-	 * @param right
-	 * @param strict 是否关心顺序
-	 * @return
-	 */
-	public static boolean equals(Collection<?> left, Collection<?> right, boolean strict) {
-		return equals(left, right, strict, (o1, o2) -> ObjectUtils.equals(o1, o2) ? 0 : 1);
-	}
-
-	/**
-	 * 判断两个集合内容是否相同
-	 * 
-	 * @param left
-	 * @param right
-	 * @param strict     是否关心顺序
-	 * @param comparator 返回0就认为相等，忽略其他值
-	 * @return
-	 */
-	public static boolean equals(Collection<?> left, Collection<?> right, boolean strict,
-			Comparator<Object> comparator) {
-		Assert.requiredArgument(comparator != null, "comparator");
-		if (isEmpty(left)) {
-			return isEmpty(right);
-		}
-
-		if (isEmpty(right)) {
-			return isEmpty(left);
-		}
-
-		if (left.size() != right.size()) {
-			return false;
-		}
-
-		if (strict) {
-			Iterator<?> iterator1 = left.iterator();
-			Iterator<?> iterator2 = right.iterator();
-			while (iterator1.hasNext() && iterator2.hasNext()) {
-				if (comparator.compare(iterator1.next(), iterator2.next()) != 0) {
-					return false;
-				}
-			}
-			return true;
-		}
-
-		List<?> leftValues = new ArrayList<>(left);
-		List<?> rightValues = new ArrayList<>(right);
-		Iterator<?> leftIterator = leftValues.iterator();
-		while (leftIterator.hasNext()) {
-			Object leftValue = leftIterator.next();
-			Iterator<?> rightIterator = rightValues.iterator();
-			while (rightIterator.hasNext()) {
-				Object rightValue = rightIterator.next();
-				if (comparator.compare(leftValue, rightValue) == 0) {
-					leftIterator.remove();
-					rightIterator.remove();
-					break;
-				}
-			}
-		}
-		return leftValues.isEmpty() && rightValues.isEmpty();
-	}
-
-	public static <S, T> Iterator<T> iterator(Iterator<? extends S> iterator,
-			Function<? super S, ? extends Iterator<T>> converter) {
-		Assert.requiredArgument(converter != null, "converter");
-		if (iterator == null) {
-			return Collections.emptyIterator();
-		}
-		return new IterationIterator<>(iterator, converter);
-	}
-
-	public static boolean isUnmodifiable(Object collection) {
-		if (collection == null) {
-			return false;
-		}
-
-		if (collection instanceof Collection || collection instanceof Map) {
-			return collection.getClass().getSimpleName().startsWith("Unmodifiable");
-		}
-		return false;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <K, V> Map<K, V> unmodifiableMap(Map<K, V> map) {
-		if (isUnmodifiable(map)) {
-			return map;
-		}
-
-		if (map instanceof NavigableMap) {
-			return Collections.unmodifiableNavigableMap((NavigableMap<K, V>) map);
-		} else if (map instanceof SortedMap) {
-			return Collections.unmodifiableSortedMap((SortedMap<K, V>) map);
-		} else if (map instanceof MultiValueMap) {
-			return (Map<K, V>) unmodifiableMultiValueMap((MultiValueMap<K, ?>) map);
-		}
-		return Collections.unmodifiableMap(map);
-	}
-
 	public static <E> Set<E> unmodifiableSet(Set<E> set) {
 		if (isUnmodifiable(set)) {
 			return set;
@@ -756,5 +859,27 @@ public abstract class CollectionUtils {
 			return Collections.unmodifiableSortedSet((SortedSet<E>) set);
 		}
 		return Collections.unmodifiableSet(set);
+	}
+
+	/**
+	 * 无序的判断是否一致
+	 * 
+	 * @param <E>
+	 * @param leftColllection
+	 * @param rightCollection
+	 * @return
+	 */
+	public static <E> boolean unorderedEquals(Collection<? extends E> leftColllection,
+			Collection<? extends E> rightCollection) {
+		if (isEmpty(leftColllection)) {
+			return isEmpty(rightCollection);
+		}
+
+		if (isEmpty(rightCollection)) {
+			return isEmpty(leftColllection);
+		}
+
+		return leftColllection.size() == rightCollection.size()
+				&& intersection(leftColllection, rightCollection).size() == leftColllection.size();
 	}
 }

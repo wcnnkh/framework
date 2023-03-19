@@ -81,11 +81,9 @@ public final class ArrayUtils {
 		if (array instanceof Object[]) {
 			if (deep) {
 				int len = Array.getLength(array);
-				Object clone = Array.newInstance(array.getClass()
-						.getComponentType(), len);
+				Object clone = Array.newInstance(array.getClass().getComponentType(), len);
 				for (int i = 0; i < len; i++) {
-					Array.set(clone, i,
-							ObjectUtils.clone(Array.get(array, i), deep));
+					Array.set(clone, i, ObjectUtils.clone(Array.get(array, i), deep));
 				}
 				return (T) clone;
 			} else {
@@ -135,8 +133,7 @@ public final class ArrayUtils {
 			return null;
 		}
 
-		Object target = Array.newInstance(first.getClass().getComponentType(),
-				total);
+		Object target = Array.newInstance(first.getClass().getComponentType(), total);
 		for (int i = 0, start = 0; i < arrays.length; i++) {
 			T array = arrays[i];
 			if (array == null) {
@@ -157,8 +154,7 @@ public final class ArrayUtils {
 		}
 
 		int len = Array.getLength(array);
-		Object newArray = Array.newInstance(
-				array.getClass().getComponentType(), len);
+		Object newArray = Array.newInstance(array.getClass().getComponentType(), len);
 		for (int i = len - 1, index = 0; i >= 0; i--) {
 			Array.set(newArray, index++, Array.get(array, i));
 		}
@@ -174,8 +170,7 @@ public final class ArrayUtils {
 	 * @param comparator
 	 * @return
 	 */
-	public static <T> int compare(T[] array1, T[] array2,
-			Comparator<T> comparator) {
+	public static <T> int compare(T[] array1, T[] array2, Comparator<T> comparator) {
 		if (ArrayUtils.isEmpty(array1)) {
 			return ArrayUtils.isEmpty(array2) ? 0 : -1;
 		}
@@ -221,8 +216,7 @@ public final class ArrayUtils {
 		return 0;
 	}
 
-	public static int compare(double[] array1, double[] array2,
-			double defaultValue) {
+	public static int compare(double[] array1, double[] array2, double defaultValue) {
 		int size1 = array1 == null ? 0 : array1.length;
 		int size2 = array2 == null ? 0 : array2.length;
 		for (int i = 0, size = Math.max(size1, size2); i < size; i++) {
@@ -236,8 +230,7 @@ public final class ArrayUtils {
 		return 0;
 	}
 
-	public static int compare(Number[] array1, Number[] array2,
-			Number defaultValue, Comparator<Number> comparator) {
+	public static int compare(Number[] array1, Number[] array2, Number defaultValue, Comparator<Number> comparator) {
 		int size1 = array1 == null ? 0 : array1.length;
 		int size2 = array2 == null ? 0 : array2.length;
 		for (int i = 0, size = Math.max(size1, size2); i < size; i++) {
@@ -257,8 +250,7 @@ public final class ArrayUtils {
 		}
 
 		if (array instanceof Object[]) {
-			return deep ? Arrays.deepToString((Object[]) array) : Arrays
-					.toString((Object[]) array);
+			return deep ? Arrays.deepToString((Object[]) array) : Arrays.toString((Object[]) array);
 		} else if (array instanceof byte[]) {
 			return Arrays.toString((byte[]) array);
 		} else if (array instanceof short[]) {
@@ -289,8 +281,7 @@ public final class ArrayUtils {
 		}
 
 		if (array instanceof Object[]) {
-			return deep ? Arrays.deepHashCode((Object[]) array) : Arrays
-					.hashCode((Object[]) array);
+			return deep ? Arrays.deepHashCode((Object[]) array) : Arrays.hashCode((Object[]) array);
 		} else if (array instanceof byte[]) {
 			return Arrays.hashCode((byte[]) array);
 		} else if (array instanceof short[]) {
@@ -352,5 +343,37 @@ public final class ArrayUtils {
 
 	public static boolean equals(Object left, Object right) {
 		return equals(left, right, true);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T empty(Class<?> componentType) {
+		Assert.requiredArgument(componentType != null, "componentType");
+		if (componentType == int.class) {
+			return (T) new int[0];
+		} else if (componentType == byte.class) {
+			return (T) new byte[0];
+		} else if (componentType == short.class) {
+			return (T) new short[0];
+		} else if (componentType == char.class) {
+			return (T) new char[0];
+		} else if (componentType == long.class) {
+			return (T) new long[0];
+		} else if (componentType == float.class) {
+			return (T) new float[0];
+		} else if (componentType == double.class) {
+			return (T) new double[0];
+		} else if (componentType == boolean.class) {
+			return (T) new boolean[0];
+		} else {
+			return (T) Array.newInstance(componentType, 0);
+		}
+	}
+
+	public static int hashCode(Object... objects) {
+		if (objects == null) {
+			return 0;
+		}
+
+		return Arrays.hashCode(objects);
 	}
 }
