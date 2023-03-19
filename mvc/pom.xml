@@ -8,18 +8,11 @@
 		<version>1.8.2</version>
 	</parent>
 	<artifactId>mvc</artifactId>
-
 	<dependencies>
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>web</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>context</artifactId>
-		</dependency>
-
 		<dependency>
 			<groupId>io.basc.framework</groupId>
 			<artifactId>testing</artifactId>
