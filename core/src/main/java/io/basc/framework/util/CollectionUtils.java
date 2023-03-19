@@ -592,25 +592,13 @@ public abstract class CollectionUtils {
 		return false;
 	}
 
-	/**
-	 * Return {@code true} if the supplied Collection is {@code null} or empty.
-	 * Otherwise, return {@code false}.
-	 * 
-	 * @param collection the Collection to check
-	 * @return whether the given Collection is empty
-	 */
-	@SuppressWarnings("rawtypes")
-	public static boolean isEmpty(Collection collection) {
-		return (collection == null || collection.isEmpty());
-	}
-
 	public static boolean isEmpty(Iterable<?> iterable) {
 		if (iterable == null) {
 			return true;
 		}
 
 		if (iterable instanceof Collection) {
-			return isEmpty((Collection<?>) iterable);
+			return ((Collection<?>) iterable).isEmpty();
 		}
 
 		Iterator<?> iterator = iterable.iterator();
