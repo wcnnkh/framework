@@ -1,24 +1,21 @@
 package io.basc.framework.mapper;
 
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import io.basc.framework.core.annotation.AnnotatedElementWrapper;
 import io.basc.framework.core.annotation.MultiAnnotatedElement;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.lang.UnsupportedException;
 
-public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<AnnotatedElement>
-		implements FieldDescriptor {
+public abstract class AbstractFieldDescriptor extends MultiAnnotatedElement implements FieldDescriptor {
 	private final Class<?> sourceClass;
 	private final Field field;
 	private final Method method;
 
 	public AbstractFieldDescriptor(Class<?> sourceClass, Field field, Method method) {
-		super(MultiAnnotatedElement.forAnnotatedElements(method, field));
+		super(method, field);
 		this.sourceClass = sourceClass;
 		this.field = field;
 		this.method = method;

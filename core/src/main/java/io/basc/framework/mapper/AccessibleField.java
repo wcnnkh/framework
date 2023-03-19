@@ -1,19 +1,19 @@
 package io.basc.framework.mapper;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
-import io.basc.framework.core.annotation.Annotations;
-import io.basc.framework.core.annotation.MultiAnnotatedElement;
+import io.basc.framework.core.annotation.AnnotatedElements;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
 
-public class AccessibleField implements AnnotatedElement, Cloneable {
+public class AccessibleField extends AnnotatedElements implements Cloneable {
 	public static final AccessibleField[] EMPTY_ARRAY = new AccessibleField[0];
 	private Getter getter;
 	private Setter setter;
@@ -28,6 +28,22 @@ public class AccessibleField implements AnnotatedElement, Cloneable {
 	public AccessibleField(Getter getter, Setter setter) {
 		this.getter = getter;
 		this.setter = setter;
+	}
+
+	@Override
+	protected Iterator<? extends AnnotatedElement> annotationElementIterator() {
+		if (isSupportGetter() && isSupportSetter()) {
+			return Arrays.asList(getter, setter).iterator();
+		}
+
+		if (isSupportGetter()) {
+			return Arrays.asList(getter).iterator();
+		}
+
+		if (isSupportGetter()) {
+			return Arrays.asList(setter).iterator();
+		}
+		return Collections.emptyIterator();
 	}
 
 	@Override
@@ -104,51 +120,6 @@ public class AccessibleField implements AnnotatedElement, Cloneable {
 			return "setter {" + setter + "}";
 		}
 		return super.toString();
-	}
-
-	@Override
-	public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-		T annotation = null;
-		if (isSupportGetter()) {
-			annotation = getGetter().getAnnotation(annotationClass);
-		}
-
-		if (annotation == null && isSupportSetter()) {
-			annotation = getSetter().getAnnotation(annotationClass);
-		}
-		return annotation;
-	}
-
-	@Override
-	public Annotation[] getAnnotations() {
-		if (isSupportGetter() && isSupportSetter()) {
-			return new MultiAnnotatedElement(getGetter(), getSetter()).getAnnotations();
-		}
-
-		if (isSupportGetter()) {
-			return getGetter().getAnnotations();
-		}
-
-		if (isSupportSetter()) {
-			return getSetter().getAnnotations();
-		}
-		return Annotations.EMPTY_ANNOTATED_ELEMENT.getAnnotations();
-	}
-
-	@Override
-	public Annotation[] getDeclaredAnnotations() {
-		if (isSupportGetter() && isSupportSetter()) {
-			return new MultiAnnotatedElement(getGetter(), getSetter()).getDeclaredAnnotations();
-		}
-
-		if (isSupportGetter()) {
-			return getGetter().getDeclaredAnnotations();
-		}
-
-		if (isSupportSetter()) {
-			return getSetter().getDeclaredAnnotations();
-		}
-		return Annotations.EMPTY_ANNOTATED_ELEMENT.getDeclaredAnnotations();
 	}
 
 	public Object get(Object instance) {

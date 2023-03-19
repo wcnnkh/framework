@@ -153,7 +153,7 @@ public class AnnotationObjectRelationalResolverExtend
 
 	@Override
 	public boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor, ObjectRelationalResolver chain) {
-		if (AnnotatedElementUtils.hasAnnotation(descriptor, PrimaryKey.class)) {
+		if (descriptor.isAnnotationPresent(PrimaryKey.class)) {
 			return true;
 		}
 

@@ -8,9 +8,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.StringUtils;
 
 public final class Annotations {
-	public static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
-
-	public static AnnotatedElement EMPTY_ANNOTATED_ELEMENT = new EmptyAnnotatedElement();
+	public static final Annotation[] EMPTY = new Annotation[0];
 
 	/**
 	 * 获取一个注解，后面覆盖前面
