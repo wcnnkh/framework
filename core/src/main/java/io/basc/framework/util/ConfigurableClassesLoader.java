@@ -1,6 +1,4 @@
-package io.basc.framework.context;
-
-import io.basc.framework.factory.ConfigurableServiceLoader;
+package io.basc.framework.util;
 
 public interface ConfigurableClassesLoader extends ClassesLoader, ConfigurableServiceLoader<Class<?>> {
 }

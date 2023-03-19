@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Cursor;
 import io.basc.framework.util.Cursors;
+import io.basc.framework.util.ServiceLoader;
 
 public class ServiceLoaders<S> implements ServiceLoader<S> {
 	private List<ServiceLoader<S>> serviceLoaders;

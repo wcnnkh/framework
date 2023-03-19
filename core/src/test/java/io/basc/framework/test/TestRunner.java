@@ -4,11 +4,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.junit.runner.JUnitCore;
 
-import io.basc.framework.io.ResourceUtils;
+import io.basc.framework.io.PackageClassesLoader;
 import io.basc.framework.io.support.PathMatchingResourcePatternResolver;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -19,10 +18,9 @@ public class TestRunner {
 
 	public static void main(String[] args) throws IOException {
 		long t = System.currentTimeMillis();
-		Set<Class<?>> classes = ResourceUtils
-				.getClassesByPckageName(new PathMatchingResourcePatternResolver(),
-						ClassUtils.getPackageName(TestRunner.class), TestRunner.class.getClassLoader(), null, null)
-				.collect(Collectors.toSet());
+		PackageClassesLoader classesLoader = new PackageClassesLoader(new PathMatchingResourcePatternResolver(),
+				ClassUtils.getPackageName(TestRunner.class));
+		Set<Class<?>> classes = classesLoader.toSet();
 		logger.info((System.currentTimeMillis() - t) + "ms");
 		assertTrue(!classes.isEmpty());
 		JUnitCore.runClasses(classes.toArray(new Class<?>[0]));

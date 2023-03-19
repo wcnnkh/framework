@@ -1,4 +1,4 @@
-package io.basc.framework.factory;
+package io.basc.framework.util;
 
 import java.util.Arrays;
 import java.util.List;
@@ -6,8 +6,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.CacheableSupplier;
-import io.basc.framework.util.Cursor;
 
 public final class SingletonServiceLoader<S> extends CacheableSupplier<S> implements ServiceLoader<S> {
 

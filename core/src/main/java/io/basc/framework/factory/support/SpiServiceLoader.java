@@ -21,12 +21,12 @@ import java.util.ServiceConfigurationError;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.InstanceFactory;
-import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Cursor;
 import io.basc.framework.util.DefaultClassLoaderProvider;
+import io.basc.framework.util.ServiceLoader;
 
 public final class SpiServiceLoader<S> extends DefaultClassLoaderProvider
 		implements ServiceLoader<S>, ClassLoaderProvider {

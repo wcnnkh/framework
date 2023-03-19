@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import io.basc.framework.context.ClassesLoader;
 import io.basc.framework.context.ClassesLoaderFactory;
 import io.basc.framework.context.support.DefaultClassesLoaderFactory;
 import io.basc.framework.logger.Logger;
@@ -16,6 +15,7 @@ import io.basc.framework.sql.orm.TableChanges;
 import io.basc.framework.sql.orm.annotation.Table;
 import io.basc.framework.sql.orm.support.DefaultSqlTemplate;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.ClassesLoader;
 import io.basc.framework.util.CollectionUtils;
 
 public class DefaultDB extends DefaultSqlTemplate implements DB {

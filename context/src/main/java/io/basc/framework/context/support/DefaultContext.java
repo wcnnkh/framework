@@ -3,9 +3,7 @@ package io.basc.framework.context.support;
 import java.util.Collection;
 import java.util.Set;
 
-import io.basc.framework.context.ClassesLoader;
 import io.basc.framework.context.ClassesLoaderFactory;
-import io.basc.framework.context.ConfigurableClassesLoader;
 import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.ConfigurableContextResolver;
 import io.basc.framework.context.Context;
@@ -30,15 +28,18 @@ import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.FactoryException;
-import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.factory.support.BeanDefinitionLoaderChain;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.ClassesLoader;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
+import io.basc.framework.util.ConfigurableClassesLoader;
+import io.basc.framework.util.DefaultClassesLoader;
 import io.basc.framework.util.Registration;
+import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.StringUtils;
 
 public class DefaultContext extends DefaultEnvironment implements ConfigurableContext {
@@ -62,7 +63,8 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 		contextClassesLoader.registerLoader(sourceClasses);
 		IocBeanResolverExtend iocBeanResolverExtend = new IocBeanResolverExtend(this, iocResolver);
 		iocResolver.setAfterService(iocBeanResolverExtend);
-		this.classesLoaderFactory = new DefaultClassesLoaderFactory(getResourceLoader());
+		this.classesLoaderFactory = new DefaultClassesLoaderFactory();
+		this.classesLoaderFactory.setClassLoaderProvider(this);
 		contextResolver.addService(new AnnotationContextResolverExtend(this));
 		contextResolver.addService(new RepositoryContextResolverExtend(this));
 		getBeanResolver().addService(new AnnotationContextResolverExtend(this));
@@ -206,6 +208,9 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 				if (!iocResolver.isConfigured()) {
 					iocResolver.configure(this);
 				}
+
+				// 因为typeFilter可能发生变化
+				contextClassesLoader.reload();
 
 				postProcessContext(new XmlContextPostProcessor());
 

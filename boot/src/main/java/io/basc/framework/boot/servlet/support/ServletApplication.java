@@ -3,7 +3,7 @@ package io.basc.framework.boot.servlet.support;
 import javax.servlet.ServletContext;
 
 import io.basc.framework.boot.support.DefaultApplication;
-import io.basc.framework.context.support.DirectoryClassesLoader;
+import io.basc.framework.io.DirectoryClassesLoader;
 import io.basc.framework.servlet.ServletContextPropertyFactory;
 import io.basc.framework.servlet.ServletContextResourceLoader;
 
@@ -14,7 +14,9 @@ public class ServletApplication extends DefaultApplication {
 		String webRoot = ServletContextUtils.getWebRoot(servletContext);
 		if (webRoot != null) {
 			setWorkPath(webRoot);
-			getContextClasses().registerLoader(new DirectoryClassesLoader(webRoot, getContextResolver()));
+			DirectoryClassesLoader directoryClassesLoader = new DirectoryClassesLoader(webRoot);
+			directoryClassesLoader.setTypeFilter(getContextResolver());
+			getContextClasses().registerLoader(directoryClassesLoader);
 		}
 
 		getProperties().getPropertyFactories().getFactories()

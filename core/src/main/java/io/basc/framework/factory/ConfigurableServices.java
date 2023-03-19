@@ -12,6 +12,7 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Cursor;
+import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.Services;
 
 public class ConfigurableServices<T> extends Services<T> implements Configurable, ServiceLoader<T> {

@@ -3,8 +3,8 @@ package io.basc.framework.factory.support;
 import java.util.Arrays;
 
 import io.basc.framework.factory.InstanceFactory;
-import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.util.Cursor;
+import io.basc.framework.util.ServiceLoader;
 
 public final class NamedServiceLoader<S> implements ServiceLoader<S> {
 	private final Iterable<String> names;

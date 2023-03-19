@@ -16,10 +16,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
-import io.basc.framework.core.type.classreading.MetadataReaderFactory;
-import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.io.resolver.PropertiesResolver;
 import io.basc.framework.lang.NestedRuntimeException;
 import io.basc.framework.lang.Nullable;
@@ -766,35 +763,5 @@ public final class ResourceUtils {
 			propertiesResolver.resolveProperties(properties, o, charset);
 			return properties;
 		};
-	}
-
-	public static Stream<Class<?>> getClasses(ResourcePatternResolver resourcePatternResolver, String locationPattern,
-			@Nullable ClassLoader classLoader, @Nullable MetadataReaderFactory metadataReaderFactory,
-			@Nullable TypeFilter typeFilter) throws IOException {
-		Assert.requiredArgument(StringUtils.isNotEmpty(locationPattern), "locationPattern");
-		String pattern = locationPattern.endsWith(ClassUtils.CLASS_FILE_SUFFIX) ? locationPattern
-				: (locationPattern.endsWith("/") ? (locationPattern + "**/*" + ClassUtils.CLASS_FILE_SUFFIX)
-						: (locationPattern + "/**/*" + ClassUtils.CLASS_FILE_SUFFIX));
-		return ClassUtils.forResources(resourcePatternResolver, pattern, classLoader, metadataReaderFactory,
-				typeFilter);
-	}
-
-	public static Stream<Class<?>> getClassesByClassPath(ResourcePatternResolver resourcePatternResolver,
-			String locationPattern, @Nullable ClassLoader classLoader,
-			@Nullable MetadataReaderFactory metadataReaderFactory, @Nullable TypeFilter typeFilter) throws IOException {
-		Assert.requiredArgument(StringUtils.isNotEmpty(locationPattern), "locationPattern");
-		String pattern = (locationPattern.startsWith(CLASSPATH_URL_PREFIX)
-				|| locationPattern.startsWith(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX)) ? locationPattern
-						: (ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + locationPattern);
-		return getClasses(resourcePatternResolver, pattern, classLoader, metadataReaderFactory, typeFilter);
-	}
-
-	public static Stream<Class<?>> getClassesByPckageName(ResourcePatternResolver resourcePatternResolver,
-			String packageName, @Nullable ClassLoader classLoader,
-			@Nullable MetadataReaderFactory metadataReaderFactory, @Nullable TypeFilter typeFilter) throws IOException {
-		Assert.requiredArgument(StringUtils.isNotEmpty(packageName), "packageName");
-		String locationPattern = ClassUtils.convertClassNameToResourcePath(packageName);
-		return getClassesByClassPath(resourcePatternResolver, locationPattern, classLoader, metadataReaderFactory,
-				typeFilter);
 	}
 }
