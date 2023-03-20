@@ -13,11 +13,13 @@
 			<groupId>io.basc.framework</groupId>
 			<artifactId>boot</artifactId>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/javax.jms/javax.jms-api -->
 		<dependency>
 			<groupId>javax.jms</groupId>
 			<artifactId>javax.jms-api</artifactId>
-			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.management.j2ee</groupId>
+			<artifactId>javax.management.j2ee-api</artifactId>
 		</dependency>
 	</dependencies>
 </project>
