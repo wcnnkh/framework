@@ -1,8 +1,11 @@
 package io.basc.framework.context;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import io.basc.framework.core.type.classreading.MetadataReader;
+import io.basc.framework.core.type.classreading.MetadataReaderFactory;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Assert;
@@ -43,6 +46,16 @@ public class ContextResolverChain extends ContextResolverConfiguration implement
 			return iterator.next().resolveBeanDefinitions(clazz, this);
 		}
 		return nextChain == null ? super.resolveBeanDefinitions(clazz) : nextChain.resolveBeanDefinitions(clazz);
+	}
+
+	@Override
+	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+			throws IOException {
+		if (iterator.hasNext()) {
+			return iterator.next().match(metadataReader, metadataReaderFactory, this);
+		}
+		return nextChain == null ? super.match(metadataReader, metadataReaderFactory)
+				: nextChain.match(metadataReader, metadataReaderFactory);
 	}
 
 	public static ContextResolverChain build(Iterator<? extends ContextResolverExtend> iterator) {

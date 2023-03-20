@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.basc.framework.context.annotation.Component;
+import io.basc.framework.context.annotation.Configuration;
 
 /**
  * 启动类
@@ -17,6 +17,6 @@ import io.basc.framework.context.annotation.Component;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Component
+@Configuration
 public @interface BootApplication {
 }

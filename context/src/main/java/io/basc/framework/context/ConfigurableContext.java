@@ -1,6 +1,7 @@
 package io.basc.framework.context;
 
 import io.basc.framework.env.ConfigurableEnvironment;
+import io.basc.framework.util.ConfigurableClassesLoader;
 import io.basc.framework.util.Registration;
 
 public interface ConfigurableContext extends Context, ConfigurableEnvironment {

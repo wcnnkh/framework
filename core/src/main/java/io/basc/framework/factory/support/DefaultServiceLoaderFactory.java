@@ -3,10 +3,10 @@ package io.basc.framework.factory.support;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.basc.framework.factory.DefaultServiceLoader;
 import io.basc.framework.factory.ConfigurableServiceLoaderFactory;
-import io.basc.framework.factory.ServiceLoader;
+import io.basc.framework.util.DefaultServiceLoader;
 import io.basc.framework.util.Registration;
+import io.basc.framework.util.ServiceLoader;
 
 public class DefaultServiceLoaderFactory extends DefaultInstanceFactory implements ConfigurableServiceLoaderFactory {
 	private final Map<Class<?>, DefaultServiceLoader<?>> serviceLoaderMap = new HashMap<>();

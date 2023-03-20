@@ -1,7 +1,7 @@
 package io.basc.framework.factory.support;
 
-import io.basc.framework.factory.ServiceLoader;
 import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.util.ServiceLoader;
 
 /**
  * @see SpiServiceLoader

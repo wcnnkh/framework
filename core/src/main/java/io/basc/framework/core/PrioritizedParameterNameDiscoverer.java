@@ -25,28 +25,12 @@ import java.util.List;
 import io.basc.framework.factory.support.SimpleServiceLoaderFactory;
 import io.basc.framework.lang.Nullable;
 
-/**
- * {@link ParameterNameDiscoverer} implementation that tries several discoverer
- * delegates in succession. Those added first in the {@code addDiscoverer}
- * method have the highest priority. If one returns {@code null}, the next will
- * be tried.
- *
- * <p>
- * The default behavior is to return {@code null} if no discoverer matches.
- *
- * @author Rod Johnson
- * @author Juergen Hoeller
- */
 public class PrioritizedParameterNameDiscoverer implements ParameterNameDiscoverer {
 	private static final ParameterNameDiscoverer[] PARAMETER_NAME_DISCOVERERS = SimpleServiceLoaderFactory.INSTANCE
 			.getServiceLoader(ParameterNameDiscoverer.class).toArray(ParameterNameDiscoverer[]::new);
 
 	private final List<ParameterNameDiscoverer> parameterNameDiscoverers = new ArrayList<>(2);
 
-	/**
-	 * Add a further {@link ParameterNameDiscoverer} delegate to the list of
-	 * discoverers that this {@code PrioritizedParameterNameDiscoverer} checks.
-	 */
 	public void addDiscoverer(ParameterNameDiscoverer pnd) {
 		this.parameterNameDiscoverers.add(pnd);
 	}

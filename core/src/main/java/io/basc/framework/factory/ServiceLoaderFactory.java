@@ -7,6 +7,7 @@ import io.basc.framework.factory.support.ServiceLoaders;
 import io.basc.framework.factory.support.NamedServiceLoader;
 import io.basc.framework.util.ClassToString;
 import io.basc.framework.util.ConvertibleIterable;
+import io.basc.framework.util.ServiceLoader;
 
 public interface ServiceLoaderFactory extends InstanceFactory {
 	<S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass);

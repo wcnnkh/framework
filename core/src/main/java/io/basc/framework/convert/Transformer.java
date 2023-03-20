@@ -1,5 +1,14 @@
 package io.basc.framework.convert;
 
+/**
+ * 和{@link ReverseTransformer}的行为相反
+ * 
+ * @author wcnnkh
+ *
+ * @param <S> 来源
+ * @param <T> 目标
+ * @param <E> 异常
+ */
 public interface Transformer<S, T, E extends Throwable> {
 
 	default void transform(S source, Class<? extends S> sourceType, T target) throws E {
@@ -34,14 +43,5 @@ public interface Transformer<S, T, E extends Throwable> {
 		transform(source, sourceType, target, TypeDescriptor.valueOf(targetType));
 	}
 
-	/**
-	 * 和{@link ReverseTransformer#reverseTransform(Object, TypeDescriptor, Object, TypeDescriptor)}的行为相反
-	 * 
-	 * @param source
-	 * @param sourceType
-	 * @param target
-	 * @param targetType
-	 * @throws E
-	 */
 	void transform(S source, TypeDescriptor sourceType, T target, TypeDescriptor targetType) throws E;
 }

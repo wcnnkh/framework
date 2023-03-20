@@ -10,9 +10,8 @@ import io.basc.framework.io.BufferProcessor;
 import io.basc.framework.lang.Nullable;
 
 /**
- * 非对称加密 一次能加密的明文长度与密钥长度成正比：
- * len_in_byte(raw_data) = len_in_bit(key)/8 -11，如 1024bit 的密钥，一次能加密的内容长度为
- * 1024/8 -11 = 117 byte。
+ * 非对称加密 一次能加密的明文长度与密钥长度成正比： len_in_byte(raw_data) = len_in_bit(key)/8 -11，如
+ * 1024bit 的密钥，一次能加密的内容长度为 1024/8 -11 = 117 byte。
  * 所以非对称加密一般都用于加密对称加密算法的密钥，而不是直接加密内容。
  * 
  * @author wcnnkh
@@ -23,14 +22,8 @@ public class AsymmetricCodec extends CryptoCodec {
 
 	private final int maxBlock;
 
-	/**
-	 * @param algorithm ['ælgərɪð(ə)m] 算法的意思
-	 * @param encodeKey
-	 * @param decodeKey
-	 * @param maxBlock
-	 */
 	public AsymmetricCodec(String algorithm, @Nullable Key encodeKey, @Nullable Key decodeKey, int maxBlock) {
-		super(algorithm, encodeKey, decodeKey, null);
+		super(algorithm, encodeKey, decodeKey, null, null);
 		this.maxBlock = maxBlock;
 	}
 

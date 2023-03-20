@@ -13,6 +13,7 @@ import io.basc.framework.core.OrderComparator;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.ClassesLoader;
 import io.basc.framework.util.Cursor;
 
 public class ProviderClassesLoader implements ClassesLoader, Comparator<Class<?>> {

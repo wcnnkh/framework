@@ -1,7 +1,6 @@
 package io.basc.framework.util;
 
 import java.beans.Introspector;
-import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
@@ -17,15 +16,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
 
-import io.basc.framework.core.type.classreading.CachingMetadataReaderFactory;
-import io.basc.framework.core.type.classreading.MetadataReader;
-import io.basc.framework.core.type.classreading.MetadataReaderFactory;
-import io.basc.framework.core.type.filter.TypeFilter;
-import io.basc.framework.io.Resource;
-import io.basc.framework.io.ResourceLoader;
-import io.basc.framework.io.ResourcePatternResolver;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.page.Pageables;
@@ -352,88 +343,6 @@ public final class ClassUtils {
 			types[i] = forName(className[i], classLoader);
 		}
 		return types;
-	}
-
-	@Nullable
-	public static Class<?> forResource(@Nullable Resource resource, @Nullable ClassLoader classLoader,
-			@Nullable MetadataReaderFactory metadataReaderFactory, @Nullable TypeFilter typeFilter) throws IOException {
-		if (resource == null) {
-			return null;
-		}
-
-		MetadataReaderFactory factory = metadataReaderFactory;
-		if (factory == null) {
-			factory = new CachingMetadataReaderFactory(classLoader);
-		}
-
-		MetadataReader reader = factory.getMetadataReader(resource);
-		if (reader == null) {
-			return null;
-		}
-
-		if (typeFilter != null && !typeFilter.match(reader, factory)) {
-			return null;
-		}
-
-		return ClassUtils.getClass(reader.getClassMetadata().getClassName(), classLoader);
-	}
-
-	public static Stream<Class<?>> forResources(ResourceLoader resourceLoader, Stream<Resource> resources,
-			@Nullable ClassLoader classLoader, @Nullable MetadataReaderFactory metadataReaderFactory,
-			@Nullable TypeFilter typeFilter) {
-		Assert.requiredArgument(resourceLoader != null, "resourceLoader");
-		Assert.requiredArgument(resources != null, "resources");
-		MetadataReaderFactory factory = metadataReaderFactory == null ? new CachingMetadataReaderFactory(resourceLoader)
-				: metadataReaderFactory;
-		ClassLoader cl = classLoader == null ? resourceLoader.getClassLoader() : classLoader;
-		Stream<Class<?>> stream = resources.map((resource) -> {
-			try {
-				return forResource(resource, cl, factory, typeFilter);
-			} catch (IOException e) {
-				return null;
-			}
-		});
-		return stream.filter((e) -> e != null);
-	}
-
-	public static Stream<Class<?>> forResources(ResourcePatternResolver resourcePatternResolver, String locationPattern,
-			@Nullable ClassLoader classLoader, @Nullable MetadataReaderFactory metadataReaderFactory,
-			@Nullable TypeFilter typeFilter) throws IOException {
-		Assert.requiredArgument(resourcePatternResolver != null, "resourcePatternResolver");
-		Assert.requiredArgument(StringUtils.isNotEmpty(locationPattern), "locationPattern");
-		Resource[] resources = resourcePatternResolver.getResources(locationPattern);
-		if (resources == null || resources.length == 0) {
-			return XUtils.emptyStream();
-		}
-
-		MetadataReaderFactory factory = metadataReaderFactory;
-		if (factory == null) {
-			factory = new CachingMetadataReaderFactory(resourcePatternResolver);
-		}
-
-		ClassLoader cl = classLoader;
-		if (cl == null) {
-			cl = resourcePatternResolver.getClassLoader();
-		}
-		return forResources(Arrays.asList(resources).stream(), classLoader, factory, typeFilter);
-	}
-
-	public static Stream<Class<?>> forResources(Stream<Resource> resources, @Nullable ClassLoader classLoader,
-			@Nullable MetadataReaderFactory metadataReaderFactory, @Nullable TypeFilter typeFilter) {
-		Assert.requiredArgument(resources != null, "resources");
-		MetadataReaderFactory factory = metadataReaderFactory;
-		if (factory == null) {
-			factory = new CachingMetadataReaderFactory(classLoader);
-		}
-
-		Stream<Class<?>> stream = resources.map((resource) -> {
-			try {
-				return forResource(resource, classLoader, metadataReaderFactory, typeFilter);
-			} catch (IOException e) {
-				return null;
-			}
-		});
-		return stream.filter((e) -> e != null);
 	}
 
 	/**

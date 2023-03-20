@@ -1,4 +1,4 @@
-package io.basc.framework.factory;
+package io.basc.framework.util;
 
 import java.util.ServiceConfigurationError;
 import java.util.function.Function;
@@ -10,8 +10,6 @@ import io.basc.framework.core.OrderComparator;
 import io.basc.framework.factory.support.EmptyServiceLoader;
 import io.basc.framework.factory.support.ServiceLoaders;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Cursor;
-import io.basc.framework.util.ResultSet;
 
 /**
  * A simple service-provider loading facility.

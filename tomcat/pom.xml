@@ -17,10 +17,6 @@
 			<artifactId>mvc</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.basc.framework</groupId>
-			<artifactId>testing</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-websocket</artifactId>
 		</dependency>
@@ -40,5 +36,9 @@
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>-->
+		<dependency>
+			<groupId>io.basc.framework</groupId>
+			<artifactId>testing</artifactId>
+		</dependency>
 	</dependencies>
 </project>

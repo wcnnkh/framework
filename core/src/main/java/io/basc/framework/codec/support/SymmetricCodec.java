@@ -76,7 +76,7 @@ public class SymmetricCodec extends CryptoCodec {
 			AlgorithmParameterSpec algorithmParameterSpec) {
 		super(algorithm + "/" + (StringUtils.isEmpty(workMode) ? WORK_MODE : workMode) + "/"
 				+ (StringUtils.isEmpty(fillStyle) ? FILL_STYLE : fillStyle), getSecretKey(algorithm, secretKey),
-				algorithmParameterSpec);
+				algorithmParameterSpec, null);
 	}
 
 	protected SymmetricCodec(SymmetricCodec codec) {

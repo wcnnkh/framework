@@ -1,7 +1,10 @@
 package io.basc.framework.context;
 
+import java.io.IOException;
 import java.util.Collection;
 
+import io.basc.framework.core.type.classreading.MetadataReader;
+import io.basc.framework.core.type.classreading.MetadataReaderFactory;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.mapper.ParameterDescriptor;
 
@@ -16,5 +19,10 @@ public interface ContextResolverExtend {
 
 	default Collection<BeanDefinition> resolveBeanDefinitions(Class<?> clazz, ContextResolver chain) {
 		return chain.resolveBeanDefinitions(clazz);
+	}
+
+	default boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory,
+			ContextResolver chain) throws IOException {
+		return chain.match(metadataReader, metadataReaderFactory);
 	}
 }

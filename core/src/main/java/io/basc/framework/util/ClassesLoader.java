@@ -1,9 +1,6 @@
-package io.basc.framework.context;
+package io.basc.framework.util;
 
 import java.util.function.Predicate;
-
-import io.basc.framework.factory.ServiceLoader;
-import io.basc.framework.util.Cursor;
 
 public interface ClassesLoader extends ServiceLoader<Class<?>> {
 	static final String SUFFIX = ".class";
