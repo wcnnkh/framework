@@ -17,7 +17,7 @@ public class ResourceClassesLoader extends DefaultClassLoaderProvider implements
 	private static Logger logger = LoggerFactory.getLogger(ResourceClassesLoader.class);
 	private volatile Set<Class<?>> caching;
 
-	private boolean disableCache;
+	private boolean disableCache = Boolean.getBoolean("classes.loader.cache.disable");
 
 	private volatile MetadataReaderFactory metadataReaderFactory;
 
@@ -30,7 +30,7 @@ public class ResourceClassesLoader extends DefaultClassLoaderProvider implements
 	/**
 	 * 不进行反射校验
 	 */
-	private boolean notPerformReflectionVerification;
+	private boolean notPerformReflectionVerification = Boolean.getBoolean("perform.reflection.verification.disable");
 
 	public ResourceClassesLoader(ResultSet<Resource> resources) {
 		Assert.requiredArgument(resources != null, "resources");
