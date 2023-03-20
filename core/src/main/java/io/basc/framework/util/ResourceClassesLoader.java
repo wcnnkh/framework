@@ -1,8 +1,10 @@
 package io.basc.framework.util;
 
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.core.type.classreading.CachingMetadataReaderFactory;
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.core.type.classreading.MetadataReaderFactory;
@@ -22,6 +24,13 @@ public class ResourceClassesLoader extends DefaultClassLoaderProvider implements
 	private final ResultSet<Resource> resources;
 
 	private TypeFilter typeFilter;
+
+	private Predicate<? super Class<?>> classFilter;
+
+	/**
+	 * 不进行反射校验
+	 */
+	private boolean notPerformReflectionVerification;
 
 	public ResourceClassesLoader(ResultSet<Resource> resources) {
 		Assert.requiredArgument(resources != null, "resources");
@@ -62,6 +71,14 @@ public class ResourceClassesLoader extends DefaultClassLoaderProvider implements
 		return disableCache;
 	}
 
+	public Predicate<? super Class<?>> getClassFilter() {
+		return classFilter;
+	}
+
+	public void setClassFilter(Predicate<? super Class<?>> classFilter) {
+		this.classFilter = classFilter;
+	}
+
 	@Override
 	public Cursor<Class<?>> iterator() {
 		if (isDisableCache()) {
@@ -88,13 +105,36 @@ public class ResourceClassesLoader extends DefaultClassLoaderProvider implements
 					return null;
 				}
 
-				return ClassUtils.getClass(reader.getClassMetadata().getClassName(), getClassLoader());
+				Class<?> clazz = ClassUtils.getClass(reader.getClassMetadata().getClassName(), getClassLoader());
+				if (clazz == null) {
+					return null;
+				}
+
+				Predicate<? super Class<?>> classFilter = getClassFilter();
+				if (classFilter != null && !classFilter.test(clazz)) {
+					return null;
+				}
+
+				// 反射校验相关类是否可用
+				if (!isNotPerformReflectionVerification() && !ReflectionUtils.isAvailable(clazz, logger)) {
+					return null;
+				}
+
+				return clazz;
 			} catch (Throwable e) {
 				logger.error(e, "Failed to load class from resource {}", resource);
 				return null;
 			}
 		});
 		return Cursor.of(stream.filter((e) -> e != null));
+	}
+
+	public boolean isNotPerformReflectionVerification() {
+		return notPerformReflectionVerification;
+	}
+
+	public void setNotPerformReflectionVerification(boolean notPerformReflectionVerification) {
+		this.notPerformReflectionVerification = notPerformReflectionVerification;
 	}
 
 	@Override

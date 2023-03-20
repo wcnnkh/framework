@@ -10,5 +10,7 @@ import io.basc.framework.mvc.action.ActionInterceptor;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ActionInterceptors {
-	Class<? extends ActionInterceptor>[] value();
+	Class<? extends ActionInterceptor>[] value() default {};
+
+	String[] name() default {};
 }

@@ -1,7 +1,8 @@
-package io.basc.framework.mvc.action;
+package io.basc.framework.mvc.context;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 
 import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.Context;
@@ -14,13 +15,17 @@ import io.basc.framework.event.ObjectEvent;
 import io.basc.framework.factory.BeanLifecycleEvent.Step;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.mvc.ActionResolver;
+import io.basc.framework.mvc.action.Action;
+import io.basc.framework.mvc.action.ActionManager;
+import io.basc.framework.mvc.action.BeanAction;
 import io.basc.framework.mvc.security.HttpActionAuthorityManager;
 import io.basc.framework.web.pattern.DefaultHttpPatternResolvers;
 import io.basc.framework.web.pattern.HttpPatternResolvers;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
-public class ActionManagerContextPostProcesser implements ContextPostProcessor {
-	private static Logger logger = LoggerFactory.getLogger(ActionManagerContextPostProcesser.class);
+public class ActionContextPostProcesser implements ContextPostProcessor {
+	private static Logger logger = LoggerFactory.getLogger(ActionContextPostProcesser.class);
 
 	@Override
 	public void postProcessContext(ConfigurableContext context) {
@@ -34,13 +39,14 @@ public class ActionManagerContextPostProcesser implements ContextPostProcessor {
 				return;
 			}
 
+			ActionResolver actionResolver = context.getInstance(ActionResolver.class);
 			if (source instanceof ActionManager) {
-				actionManagerInit(context, (ActionManager) source);
+				actionManagerInit(context, (ActionManager) source, actionResolver);
 			}
 		});
 	}
 
-	private void actionManagerInit(Context context, ActionManager actionManager) {
+	private void actionManagerInit(Context context, ActionManager actionManager, ActionResolver actionResolver) {
 		HttpPatternResolvers patternResolver = new DefaultHttpPatternResolvers();
 		patternResolver.setPlaceholderFormat(context);
 		patternResolver.configure(context);
@@ -58,18 +64,19 @@ public class ActionManagerContextPostProcesser implements ContextPostProcessor {
 					continue;
 				}
 
-				// 如果是非静态方法，说明要使用beanFactory进行实体化，此时应该判断是否可以实例化
-				if (!Modifier.isStatic(method.getModifiers()) && !context.isInstance(clz)) {
-					if (logger.isDebugEnabled()) {
-						logger.debug("Unsupported controller: {}", method);
+				String controllerId = actionResolver.getControllerId(clz, method);
+				if (!Modifier.isStatic(method.getModifiers())) {
+					if (!context.isInstance(controllerId)) {
+						continue;
 					}
-					continue;
 				}
 
+				Collection<String> filterNames = actionResolver.getActionInterceptorNames(clz, method);
 				if (logger.isTraceEnabled()) {
 					logger.trace("Register controller: {}", method);
 				}
-				Action action = new BeanAction(context, clz, method, patternResolver);
+
+				Action action = new BeanAction(context, clz, method, patternResolver, controllerId, filterNames);
 				actionManager.register(action);
 			}
 		}

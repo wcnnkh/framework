@@ -1,54 +1,39 @@
 package io.basc.framework.mvc.action;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
+import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.function.Supplier;
 
-import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.NameInstanceSupplier;
 import io.basc.framework.factory.support.InstanceIterable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.mvc.annotation.ActionInterceptors;
-import io.basc.framework.mvc.annotation.Controller;
 import io.basc.framework.util.SingletonSupplier;
-import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.pattern.HttpPatternResolver;
 
 public class BeanAction extends AbstractAction {
-	private static Logger logger = LoggerFactory.getLogger(BeanAction.class);
 	private final BeanFactory beanFactory;
 	private final MethodInvoker invoker;
 	private Iterable<ActionInterceptor> actionInterceptors;
 
 	public BeanAction(BeanFactory beanFactory, Class<?> targetClass, Method method,
-			HttpPatternResolver httpPatternResolver) {
+			HttpPatternResolver httpPatternResolver, String controllerId, Collection<String> actionInterceptorNames) {
 		super(targetClass, method, httpPatternResolver);
 		this.beanFactory = beanFactory;
 		Supplier<Object> instanceSupplier;
 
-		String controllerName = getControllerName(targetClass, method);
-		if (beanFactory.isSingleton(controllerName)) {
+		if (Modifier.isStatic(method.getModifiers())) {
+			// 静态方法不需要实例
+			instanceSupplier = new SingletonSupplier<Object>(null);
+		} else if (beanFactory.isSingleton(controllerId)) {
 			// 提高一丢丢性能
-			instanceSupplier = new SingletonSupplier<Object>(beanFactory.getInstance(controllerName));
+			instanceSupplier = new SingletonSupplier<Object>(beanFactory.getInstance(controllerId));
 		} else {
-			instanceSupplier = new NameInstanceSupplier<Object>(beanFactory, controllerName);
+			instanceSupplier = new NameInstanceSupplier<Object>(beanFactory, controllerId);
 		}
 		this.invoker = beanFactory.getAop().getProxyMethod(targetClass, instanceSupplier, method);
-		String[] names = getActionInterceptorNames();
-		this.actionInterceptors = new InstanceIterable<ActionInterceptor>(beanFactory, Arrays.asList(names));
-	}
-
-	private String getControllerName(Class<?> targetClass, Method method) {
-		Controller controller = Annotations.getAnnotation(Controller.class, targetClass, method);
-		if (controller == null) {
-			return targetClass.getName();
-		}
-		return StringUtils.isEmpty(controller.value()) ? targetClass.getName() : controller.value();
+		this.actionInterceptors = new InstanceIterable<ActionInterceptor>(beanFactory, actionInterceptorNames);
 	}
 
 	public BeanFactory getBeanFactory() {
@@ -65,38 +50,5 @@ public class BeanAction extends AbstractAction {
 
 	public Object getInstance() {
 		return invoker.getInstance();
-	}
-
-	protected String[] getActionInterceptorNames() {
-		LinkedHashSet<String> sets = new LinkedHashSet<String>();
-		ActionInterceptors actionInterceptors = getSourceClass().getAnnotation(ActionInterceptors.class);
-		if (actionInterceptors != null) {
-			for (Class<? extends ActionInterceptor> f : actionInterceptors.value()) {
-				BeanDefinition definition = getBeanFactory().getDefinition(f);
-				if (definition == null) {
-					logger.warn("not support interceptor: {}", f);
-					continue;
-				}
-
-				sets.remove(definition.getId());
-				sets.add(definition.getId());
-			}
-		}
-
-		actionInterceptors = getMethod().getAnnotation(ActionInterceptors.class);
-		if (actionInterceptors != null) {
-			sets.clear();
-			for (Class<? extends ActionInterceptor> f : actionInterceptors.value()) {
-				BeanDefinition definition = getBeanFactory().getDefinition(f);
-				if (definition == null) {
-					logger.warn("not support interceptor: {}", f);
-					continue;
-				}
-
-				sets.remove(definition.getId());
-				sets.add(definition.getId());
-			}
-		}
-		return sets.toArray(new String[0]);
 	}
 }

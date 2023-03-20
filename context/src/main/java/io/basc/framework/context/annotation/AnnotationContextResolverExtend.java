@@ -129,23 +129,25 @@ public class AnnotationContextResolverExtend extends AnnotationTypeFilter
 			beanDefinitions.add(clazzDefinition);
 		}
 
-		for (Constructor<?> constructor : ReflectionUtils.getDeclaredConstructors(clazz)) {
-			BeanDefinition definition = resolveExecutableDefinition(clazz, constructor);
-			if (definition != null) {
-				if (beanDefinitions == null) {
-					beanDefinitions = new HashSet<>(8);
+		if (AnnotatedElementUtils.isAnnotated(clazz, Configuration.class)) {
+			for (Constructor<?> constructor : ReflectionUtils.getDeclaredConstructors(clazz)) {
+				BeanDefinition definition = resolveExecutableDefinition(clazz, constructor);
+				if (definition != null) {
+					if (beanDefinitions == null) {
+						beanDefinitions = new HashSet<>(8);
+					}
+					beanDefinitions.add(definition);
 				}
-				beanDefinitions.add(definition);
 			}
-		}
 
-		for (Method method : ReflectionUtils.getDeclaredMethods(clazz)) {
-			BeanDefinition definition = resolveExecutableDefinition(clazz, method);
-			if (definition != null) {
-				if (beanDefinitions == null) {
-					beanDefinitions = new HashSet<>(8);
+			for (Method method : ReflectionUtils.getDeclaredMethods(clazz)) {
+				BeanDefinition definition = resolveExecutableDefinition(clazz, method);
+				if (definition != null) {
+					if (beanDefinitions == null) {
+						beanDefinitions = new HashSet<>(8);
+					}
+					beanDefinitions.add(definition);
 				}
-				beanDefinitions.add(definition);
 			}
 		}
 
