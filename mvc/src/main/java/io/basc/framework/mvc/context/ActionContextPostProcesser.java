@@ -67,6 +67,7 @@ public class ActionContextPostProcesser implements ContextPostProcessor {
 				String controllerId = actionResolver.getControllerId(clz, method);
 				if (!Modifier.isStatic(method.getModifiers())) {
 					if (!context.isInstance(controllerId)) {
+						logger.info("Unable to support this action {}", method);
 						continue;
 					}
 				}
