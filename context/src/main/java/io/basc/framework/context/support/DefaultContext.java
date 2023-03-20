@@ -209,14 +209,14 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 					iocResolver.configure(this);
 				}
 
-				// 因为typeFilter可能发生变化
-				contextClassesLoader.reload();
-
 				postProcessContext(new XmlContextPostProcessor());
 
 				if (!contextResolver.isConfigured()) {
 					contextResolver.configure(this);
 				}
+
+				// 因为typeFilter可能发生变化
+				contextClassesLoader.reload();
 
 				for (Class<?> clazz : getContextClasses()) {
 					Collection<BeanDefinition> definitions = contextResolver.resolveBeanDefinitions(clazz);
