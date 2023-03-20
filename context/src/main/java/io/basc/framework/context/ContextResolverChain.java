@@ -1,7 +1,7 @@
 package io.basc.framework.context;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.lang.reflect.Executable;
 import java.util.Iterator;
 
 import io.basc.framework.core.type.classreading.MetadataReader;
@@ -11,7 +11,17 @@ import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Assert;
 
 public class ContextResolverChain extends ContextResolverConfiguration implements ContextResolver {
+	public static ContextResolverChain build(Iterator<? extends ContextResolverExtend> iterator) {
+		return new ContextResolverChain(iterator);
+	}
+
+	public static ContextResolverChain build(Iterator<? extends ContextResolverExtend> iterator,
+			ContextResolver nextChain) {
+		return new ContextResolverChain(iterator, nextChain);
+	}
+
 	private final Iterator<? extends ContextResolverExtend> iterator;
+
 	private final ContextResolver nextChain;
 
 	public ContextResolverChain(Iterator<? extends ContextResolverExtend> iterator) {
@@ -41,14 +51,6 @@ public class ContextResolverChain extends ContextResolverConfiguration implement
 	}
 
 	@Override
-	public Collection<BeanDefinition> resolveBeanDefinitions(Class<?> clazz) {
-		if (iterator.hasNext()) {
-			return iterator.next().resolveBeanDefinitions(clazz, this);
-		}
-		return nextChain == null ? super.resolveBeanDefinitions(clazz) : nextChain.resolveBeanDefinitions(clazz);
-	}
-
-	@Override
 	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
 			throws IOException {
 		if (iterator.hasNext()) {
@@ -58,13 +60,31 @@ public class ContextResolverChain extends ContextResolverConfiguration implement
 				: nextChain.match(metadataReader, metadataReaderFactory);
 	}
 
-	public static ContextResolverChain build(Iterator<? extends ContextResolverExtend> iterator) {
-		return new ContextResolverChain(iterator);
+	@Override
+	public BeanDefinition resolveBeanDefinition(Class<?> sourceClass) {
+		if (iterator.hasNext()) {
+			return iterator.next().resolveBeanDefinition(sourceClass, this);
+		}
+		return nextChain == null ? super.resolveBeanDefinition(sourceClass)
+				: nextChain.resolveBeanDefinition(sourceClass);
 	}
 
-	public static ContextResolverChain build(Iterator<? extends ContextResolverExtend> iterator,
-			ContextResolver nextChain) {
-		return new ContextResolverChain(iterator, nextChain);
+	@Override
+	public BeanDefinition resolveBeanDefinition(Class<?> sourceClass, Executable executable) {
+		if (iterator.hasNext()) {
+			return iterator.next().resolveBeanDefinition(sourceClass, executable, this);
+		}
+		return nextChain == null ? super.resolveBeanDefinition(sourceClass, executable)
+				: nextChain.resolveBeanDefinition(sourceClass, executable);
+	}
+
+	@Override
+	public boolean canResolveExecutable(Class<?> sourceClass) {
+		if (iterator.hasNext()) {
+			return iterator.next().canResolveExecutable(sourceClass, this);
+		}
+		return nextChain == null ? super.canResolveExecutable(sourceClass)
+				: nextChain.canResolveExecutable(sourceClass);
 	}
 
 }

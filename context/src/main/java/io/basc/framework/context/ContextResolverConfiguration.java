@@ -1,8 +1,7 @@
 package io.basc.framework.context;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
+import java.lang.reflect.Executable;
 
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.core.type.classreading.MetadataReaderFactory;
@@ -10,7 +9,6 @@ import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.mapper.ParameterDescriptor;
 
 public class ContextResolverConfiguration implements ContextResolver {
-	private boolean matchAll;
 
 	@Override
 	public ProviderDefinition getProviderDefinition(Class<?> clazz) {
@@ -23,21 +21,23 @@ public class ContextResolverConfiguration implements ContextResolver {
 	}
 
 	@Override
-	public Collection<BeanDefinition> resolveBeanDefinitions(Class<?> clazz) {
-		return Collections.emptySet();
+	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+			throws IOException {
+		return false;
 	}
 
 	@Override
-	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
-			throws IOException {
-		return matchAll;
+	public BeanDefinition resolveBeanDefinition(Class<?> sourceClass) {
+		return null;
 	}
 
-	public boolean isMatchAll() {
-		return matchAll;
+	@Override
+	public BeanDefinition resolveBeanDefinition(Class<?> sourceClass, Executable executable) {
+		return null;
 	}
 
-	public void setMatchAll(boolean matchAll) {
-		this.matchAll = matchAll;
+	@Override
+	public boolean canResolveExecutable(Class<?> sourceClass) {
+		return false;
 	}
 }
