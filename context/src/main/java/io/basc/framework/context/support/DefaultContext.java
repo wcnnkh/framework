@@ -1,6 +1,7 @@
 package io.basc.framework.context.support;
 
-import java.util.Collection;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Set;
 
 import io.basc.framework.context.ClassesLoaderFactory;
@@ -34,7 +35,6 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ClassesLoader;
-import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.ConfigurableClassesLoader;
 import io.basc.framework.util.DefaultClassesLoader;
@@ -219,13 +219,25 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 				contextClassesLoader.reload();
 
 				for (Class<?> clazz : getContextClasses()) {
-					Collection<BeanDefinition> definitions = contextResolver.resolveBeanDefinitions(clazz);
-					if (CollectionUtils.isEmpty(definitions)) {
-						continue;
+					BeanDefinition beanDefinition = contextResolver.resolveBeanDefinition(clazz);
+					if (beanDefinition != null) {
+						registerDefinition(beanDefinition);
 					}
 
-					for (BeanDefinition definition : definitions) {
-						registerDefinition(definition);
+					if (contextResolver.canResolveExecutable(clazz)) {
+						for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+							beanDefinition = contextResolver.resolveBeanDefinition(clazz, constructor);
+							if (beanDefinition != null) {
+								registerDefinition(beanDefinition);
+							}
+						}
+
+						for (Method method : clazz.getDeclaredMethods()) {
+							beanDefinition = contextResolver.resolveBeanDefinition(clazz, method);
+							if (beanDefinition != null) {
+								registerDefinition(beanDefinition);
+							}
+						}
 					}
 				}
 

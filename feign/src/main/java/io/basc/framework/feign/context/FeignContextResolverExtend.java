@@ -1,8 +1,5 @@
 package io.basc.framework.feign.context;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ContextResolver;
 import io.basc.framework.context.ContextResolverExtend;
@@ -19,12 +16,11 @@ public class FeignContextResolverExtend implements ContextResolverExtend {
 	}
 
 	@Override
-	public Collection<BeanDefinition> resolveBeanDefinitions(Class<?> clazz, ContextResolver chain) {
-		FeignClient feignClient = clazz.getAnnotation(FeignClient.class);
-		if (feignClient == null) {
-			return chain.resolveBeanDefinitions(clazz);
+	public BeanDefinition resolveBeanDefinition(Class<?> sourceClass, ContextResolver chain) {
+		FeignClient feignClient = sourceClass.getAnnotation(FeignClient.class);
+		if (feignClient != null) {
+			return new FeignBeanDefinition(context, sourceClass, feignClient);
 		}
-
-		return Arrays.asList(new FeignBeanDefinition(context, clazz, feignClient));
+		return ContextResolverExtend.super.resolveBeanDefinition(sourceClass, chain);
 	}
 }

@@ -47,11 +47,12 @@
 		<jersey.version>1.19.4</jersey.version>
 		<jackson.version>2.13.5</jackson.version>
 		<slf4j.version>1.7.36</slf4j.version>
-		<activemq.version>5.16.5</activemq.version>
+		<activemq.version>5.16.6</activemq.version>
 		<lombok.version>1.18.26</lombok.version>
 		<jakarta.validation-api.version>2.0.2</jakarta.validation-api.version>
 		<validation-api.version>2.0.1.Final</validation-api.version>
-		<jms-api.version>2.0.1</jms-api.version>
+		<jms-api.version>2.0.3</jms-api.version>
+		<management.j2ee-api.version>1.1.4</management.j2ee-api.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -61,9 +62,10 @@
 				<version>${lombok.version}</version>
 				<scope>provided</scope>
 			</dependency>
+			<!-- https://mvnrepository.com/artifact/jakarta.jms/jakarta.jms-api -->
 			<dependency>
-				<groupId>javax.jms</groupId>
-				<artifactId>javax.jms-api</artifactId>
+				<groupId>jakarta.jms</groupId>
+				<artifactId>jakarta.jms-api</artifactId>
 				<version>${jms-api.version}</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
@@ -77,11 +79,27 @@
 				<artifactId>validation-api</artifactId>
 				<version>${validation-api.version}</version>
 			</dependency>
+			<!-- https://mvnrepository.com/artifact/jakarta.management.j2ee/jakarta.management.j2ee-api -->
+			<dependency>
+				<groupId>jakarta.management.j2ee</groupId>
+				<artifactId>jakarta.management.j2ee-api</artifactId>
+				<version>${management.j2ee-api.version}</version>
+			</dependency>
 			<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-client -->
 			<dependency>
 				<groupId>org.apache.activemq</groupId>
 				<artifactId>activemq-client</artifactId>
 				<version>${activemq.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.geronimo.specs</groupId>
+						<artifactId>geronimo-jms_1.1_spec</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.geronimo.specs</groupId>
+						<artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-broker -->

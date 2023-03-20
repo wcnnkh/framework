@@ -1,7 +1,7 @@
 package io.basc.framework.context;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.lang.reflect.Executable;
 
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.ClassMetadata;
@@ -36,25 +36,22 @@ public class ConfigurableContextResolver extends ConfigurableServices<ContextRes
 		super(ContextResolverExtend.class);
 	}
 
+	@Override
+	public boolean canResolveExecutable(Class<?> sourceClass) {
+		return ContextResolverChain.build(iterator(), getDefaultResolver()).canResolveExecutable(sourceClass);
+	}
+
 	public ContextResolver getDefaultResolver() {
 		return defaultResolver;
-	}
-
-	public void setDefaultResolver(ContextResolver defaultResolver) {
-		this.defaultResolver = defaultResolver;
-	}
-
-	public TypeFilter getTypeFilter() {
-		return typeFilter;
-	}
-
-	public void setTypeFilter(TypeFilter typeFilter) {
-		this.typeFilter = typeFilter;
 	}
 
 	@Override
 	public ProviderDefinition getProviderDefinition(Class<?> clazz) {
 		return ContextResolverChain.build(iterator(), getDefaultResolver()).getProviderDefinition(clazz);
+	}
+
+	public TypeFilter getTypeFilter() {
+		return typeFilter;
 	}
 
 	@Override
@@ -63,15 +60,29 @@ public class ConfigurableContextResolver extends ConfigurableServices<ContextRes
 	}
 
 	@Override
-	public Collection<BeanDefinition> resolveBeanDefinitions(Class<?> clazz) {
-		return ContextResolverChain.build(iterator(), getDefaultResolver()).resolveBeanDefinitions(clazz);
-	}
-
-	@Override
 	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
 			throws IOException {
 		return (typeFilter == null || typeFilter.match(metadataReader, metadataReaderFactory))
 				&& JavaVersion.isSupported(metadataReader.getAnnotationMetadata()) && ContextResolverChain
 						.build(iterator(), getDefaultResolver()).match(metadataReader, metadataReaderFactory);
+	}
+
+	@Override
+	public BeanDefinition resolveBeanDefinition(Class<?> sourceClass) {
+		return ContextResolverChain.build(iterator(), getDefaultResolver()).resolveBeanDefinition(sourceClass);
+	}
+
+	@Override
+	public BeanDefinition resolveBeanDefinition(Class<?> sourceClass, Executable executable) {
+		return ContextResolverChain.build(iterator(), getDefaultResolver()).resolveBeanDefinition(sourceClass,
+				executable);
+	}
+
+	public void setDefaultResolver(ContextResolver defaultResolver) {
+		this.defaultResolver = defaultResolver;
+	}
+
+	public void setTypeFilter(TypeFilter typeFilter) {
+		this.typeFilter = typeFilter;
 	}
 }

@@ -1,7 +1,7 @@
 package io.basc.framework.context;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.lang.reflect.Executable;
 
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.core.type.classreading.MetadataReaderFactory;
@@ -17,12 +17,20 @@ public interface ContextResolverExtend {
 		return chain.hasContext(parameterDescriptor);
 	}
 
-	default Collection<BeanDefinition> resolveBeanDefinitions(Class<?> clazz, ContextResolver chain) {
-		return chain.resolveBeanDefinitions(clazz);
+	default boolean canResolveExecutable(Class<?> sourceClass, ContextResolver chain) {
+		return chain.canResolveExecutable(sourceClass);
 	}
 
 	default boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory,
 			ContextResolver chain) throws IOException {
 		return chain.match(metadataReader, metadataReaderFactory);
+	}
+
+	default BeanDefinition resolveBeanDefinition(Class<?> sourceClass, Executable executable, ContextResolver chain) {
+		return chain.resolveBeanDefinition(sourceClass, executable);
+	}
+
+	default BeanDefinition resolveBeanDefinition(Class<?> sourceClass, ContextResolver chain) {
+		return chain.resolveBeanDefinition(sourceClass);
 	}
 }

@@ -1,7 +1,6 @@
 package io.basc.framework.context.annotation;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -118,63 +117,28 @@ public class AnnotationContextResolverExtend extends AnnotationTypeFilter
 	}
 
 	@Override
-	public Collection<BeanDefinition> resolveBeanDefinitions(Class<?> clazz, ContextResolver chain) {
-		Collection<BeanDefinition> beanDefinitions = null;
-		BeanDefinition clazzDefinition = resolveClassDefinition(clazz);
-		if (clazzDefinition != null) {
-			if (beanDefinitions == null) {
-				beanDefinitions = new HashSet<>(8);
-			}
-
-			beanDefinitions.add(clazzDefinition);
+	public boolean canResolveExecutable(Class<?> sourceClass, ContextResolver chain) {
+		if (AnnotatedElementUtils.hasAnnotation(sourceClass, Configuration.class)) {
+			return true;
 		}
-
-		if (AnnotatedElementUtils.isAnnotated(clazz, Configuration.class)) {
-			for (Constructor<?> constructor : ReflectionUtils.getDeclaredConstructors(clazz)) {
-				BeanDefinition definition = resolveExecutableDefinition(clazz, constructor);
-				if (definition != null) {
-					if (beanDefinitions == null) {
-						beanDefinitions = new HashSet<>(8);
-					}
-					beanDefinitions.add(definition);
-				}
-			}
-
-			for (Method method : ReflectionUtils.getDeclaredMethods(clazz)) {
-				BeanDefinition definition = resolveExecutableDefinition(clazz, method);
-				if (definition != null) {
-					if (beanDefinitions == null) {
-						beanDefinitions = new HashSet<>(8);
-					}
-					beanDefinitions.add(definition);
-				}
-			}
-		}
-
-		Collection<BeanDefinition> definitions = ContextResolverExtend.super.resolveBeanDefinitions(clazz, chain);
-		if (!CollectionUtils.isEmpty(definitions)) {
-			if (beanDefinitions == null) {
-				beanDefinitions = new HashSet<>(definitions.size());
-			}
-			beanDefinitions.addAll(definitions);
-		}
-		return beanDefinitions == null ? Collections.emptySet() : beanDefinitions;
+		return ContextResolverExtend.super.canResolveExecutable(sourceClass, chain);
 	}
 
-	public BeanDefinition resolveClassDefinition(Class<?> clazz) {
-		Component component = AnnotatedElementUtils.getMergedAnnotation(clazz, Component.class);
+	@Override
+	public BeanDefinition resolveBeanDefinition(Class<?> sourceClass, ContextResolver chain) {
+		Component component = AnnotatedElementUtils.getMergedAnnotation(sourceClass, Component.class);
 		if (component == null) {
-			return null;
+			return chain.resolveBeanDefinition(sourceClass);
 		}
-		return new ContextBeanDefinition(context, clazz);
+		return new ContextBeanDefinition(context, sourceClass);
 	}
 
-	public BeanDefinition resolveExecutableDefinition(Class<?> sourceClass, Executable executable) {
+	@Override
+	public BeanDefinition resolveBeanDefinition(Class<?> sourceClass, Executable executable, ContextResolver chain) {
 		Bean bean = executable.getAnnotation(Bean.class);
 		if (bean == null) {
-			return null;
+			return chain.resolveBeanDefinition(sourceClass, executable);
 		}
-
 		return new ExecutableBeanDefinition(context, sourceClass, executable);
 	}
 
