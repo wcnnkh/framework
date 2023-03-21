@@ -9,5 +9,5 @@ public interface Configurable {
 
 	boolean isConfigured();
 
-	void configure(ServiceLoaderFactory serviceLoaderFactory) throws BeansException;
+	void configure(ServiceLoaderFactory serviceLoaderFactory);
 }

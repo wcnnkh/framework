@@ -12,7 +12,7 @@ import io.basc.framework.util.XUtils;
 public class Log4j2Test {
 	@Test
 	public void test() {
-		LoggerFactory.getLevelManager().getSourceMap().put("io.basc.framework.log4j2", CustomLevel.DEBUG);
+		LoggerFactory.getSource().getLevelManager().getSourceMap().put("io.basc.framework.log4j2", CustomLevel.DEBUG);
 		Logger logger = LoggerFactory.getLogger(Log4j2Test.class.getName());
 		// assertTrue(logger.isInfoEnabled());
 		logger.info(XUtils.getUUID());

@@ -1,13 +1,12 @@
 package io.basc.framework.slf4j;
 
-import io.basc.framework.logger.CustomLevel;
-import io.basc.framework.logger.CustomLogger;
-import io.basc.framework.util.PlaceholderMessage;
-
-import java.util.function.Supplier;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 import org.slf4j.Logger;
+
+import io.basc.framework.logger.CustomLevel;
+import io.basc.framework.util.PlaceholderMessage;
 
 /**
  * 并非支持所有的日志等级, 仅支持常规的info, debug, trace, warn, error
@@ -15,7 +14,7 @@ import org.slf4j.Logger;
  * @author wcnnkh
  *
  */
-public class Slf4jLogger extends CustomLogger {
+public class Slf4jLogger implements io.basc.framework.logger.Logger {
 	private static final String FORMAT = "{}";
 	private final Logger logger;
 	private final String placeholder;
@@ -43,38 +42,39 @@ public class Slf4jLogger extends CustomLogger {
 		} else if (level.getName().equalsIgnoreCase(CustomLevel.ERROR.getName())) {
 			return logger.isErrorEnabled();
 		} else {
-			return super.isLoggable(level);
+			return io.basc.framework.logger.Logger.super.isLoggable(level);
 		}
 	}
 
 	@Override
-	public void log(Level level, Throwable e, String msg, Object... args) {
-		PlaceholderMessage message = new PlaceholderMessage(msg, placeholder, args);
-		if (level.getName().equalsIgnoreCase(Level.INFO.getName())) {
+	public void log(LogRecord record) {
+		PlaceholderMessage message = new PlaceholderMessage(record.getMessage(), placeholder, record.getParameters());
+		Throwable e = record.getThrown();
+		if (record.getLevel().getName().equalsIgnoreCase(Level.INFO.getName())) {
 			if (e == null) {
 				logger.info(FORMAT, message);
 			} else {
 				logger.info(message.toString(), e);
 			}
-		} else if (level.getName().equalsIgnoreCase(CustomLevel.DEBUG.getName())) {
+		} else if (record.getLevel().getName().equalsIgnoreCase(CustomLevel.DEBUG.getName())) {
 			if (e == null) {
 				logger.debug(FORMAT, message);
 			} else {
 				logger.debug(message.toString(), e);
 			}
-		} else if (level.getName().equalsIgnoreCase(CustomLevel.TRACE.getName())) {
+		} else if (record.getLevel().getName().equalsIgnoreCase(CustomLevel.TRACE.getName())) {
 			if (e == null) {
 				logger.trace(FORMAT, message);
 			} else {
 				logger.trace(message.toString(), e);
 			}
-		} else if (level.getName().equalsIgnoreCase(CustomLevel.WARN.getName())) {
+		} else if (record.getLevel().getName().equalsIgnoreCase(CustomLevel.WARN.getName())) {
 			if (e == null) {
 				logger.warn(FORMAT, message);
 			} else {
 				logger.warn(message.toString(), e);
 			}
-		} else if (level.getName().equalsIgnoreCase(CustomLevel.ERROR.getName())) {
+		} else if (record.getLevel().getName().equalsIgnoreCase(CustomLevel.ERROR.getName())) {
 			if (e == null) {
 				logger.error(FORMAT, message);
 			} else {
@@ -82,16 +82,10 @@ public class Slf4jLogger extends CustomLogger {
 			}
 		} else {
 			if (e == null) {
-				logger.info("Unsupported {} | {}", level, message);
+				logger.info("Unsupported {} | {}", record.getLevel(), message);
 			} else {
-				logger.info("Unsupported " + level + " | " + message, e);
+				logger.info("Unsupported " + record.getLevel() + " | " + message, e);
 			}
 		}
 	}
-
-	@Override
-	public void log(Level level, Throwable e, Supplier<String> msg, Object... args) {
-		log(level, e, msg.get(), args);
-	}
-
 }

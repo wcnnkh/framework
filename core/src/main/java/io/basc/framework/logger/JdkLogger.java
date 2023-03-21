@@ -1,7 +1,8 @@
 package io.basc.framework.logger;
 
-import java.util.function.Supplier;
+import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import io.basc.framework.util.FormatUtils;
@@ -12,20 +13,11 @@ import io.basc.framework.util.FormatUtils;
  * @author wcnnkh
  *
  */
-public class JdkLogger extends CustomLogger {
+public class JdkLogger implements io.basc.framework.logger.Logger {
 	private final Logger logger;
 
 	public JdkLogger(Logger logger) {
 		this.logger = logger;
-		Level level = LoggerFactory.getLevelManager().getLevel(logger.getName());
-		if (level != null) {
-			setLevel(level);
-		}
-		registerListener();
-	}
-
-	public Logger getTargetLogger() {
-		return logger;
 	}
 
 	@Override
@@ -34,23 +26,12 @@ public class JdkLogger extends CustomLogger {
 	}
 
 	@Override
-	public void setLevel(Level level) {
-		logger.setLevel(level);
-		super.setLevel(level);
-	}
-
-	@Override
 	public String getName() {
 		return logger.getName();
 	}
 
-	@Override
-	public void log(Level level, Throwable e, String format, Object... args) {
-		if (!isLoggable(level)) {
-			return;
-		}
-
-		logger.logp(level, null, null, e, () -> FormatUtils.formatPlaceholder(format, null, args));
+	public Logger getTargetLogger() {
+		return logger;
 	}
 
 	@Override
@@ -59,11 +40,27 @@ public class JdkLogger extends CustomLogger {
 	}
 
 	@Override
-	public void log(Level level, Throwable e, Supplier<String> msg, Object... args) {
-		if (!isLoggable(level)) {
-			return;
-		}
+	public void log(LogRecord record) {
+		String message = FormatUtils.formatPlaceholder(record.getMessage(), null, record.getParameters());
+		record.setMessage(message);
+		record.setParameters(null);
+		logger.log(record);
+	}
 
-		logger.logp(level, null, null, e, () -> FormatUtils.formatPlaceholder(msg.get(), null, args));
+	@Override
+	public void setLevel(Level level) {
+		logger.setLevel(level);
+		Logger parent = this.logger;
+		while (parent != null) {
+			for (Handler handler : parent.getHandlers()) {
+				handler.setLevel(level);
+			}
+
+			if (parent.getUseParentHandlers()) {
+				parent = parent.getParent();
+			} else {
+				break;
+			}
+		}
 	}
 }

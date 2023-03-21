@@ -6,14 +6,14 @@ import io.basc.framework.util.Assert;
 
 public class CustomLevel extends Level {
 	private static final long serialVersionUID = 1L;
-	public static final CustomLevel TRACE = new CustomLevel("TRACE", java.util.logging.Level.FINER.intValue(),
-			java.util.logging.Level.FINE.getResourceBundleName());
-	public static final CustomLevel DEBUG = new CustomLevel("DEBUG", java.util.logging.Level.FINE.intValue(),
-			java.util.logging.Level.CONFIG.getResourceBundleName());
-	public static final CustomLevel WARN = new CustomLevel("WARN", java.util.logging.Level.WARNING.intValue(),
-			java.util.logging.Level.WARNING.getResourceBundleName());
-	public static final CustomLevel ERROR = new CustomLevel("ERROR", java.util.logging.Level.SEVERE.intValue(),
-			java.util.logging.Level.SEVERE.getResourceBundleName());
+	public static final CustomLevel TRACE = new CustomLevel("TRACE", Level.FINER.intValue(),
+			Level.FINE.getResourceBundleName());
+	public static final CustomLevel DEBUG = new CustomLevel("DEBUG", FINE.intValue(),
+			Level.CONFIG.getResourceBundleName());
+	public static final CustomLevel WARN = new CustomLevel("WARN", Level.WARNING.intValue(),
+			Level.WARNING.getResourceBundleName());
+	public static final CustomLevel ERROR = new CustomLevel("ERROR", Level.SEVERE.intValue(),
+			Level.SEVERE.getResourceBundleName());
 
 	public CustomLevel(String name, int value) {
 		super(name, value);

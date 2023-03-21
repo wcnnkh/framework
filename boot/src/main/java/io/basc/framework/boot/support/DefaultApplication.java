@@ -90,7 +90,7 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 
 	@Override
 	public void destroy() {
-		getLogger().info(new SplitLine("Start destroying application[{}]"), this);
+		getLogger().info(new SplitLine("Start destroying application[{}]").toString(), this);
 		super.destroy();
 	}
 

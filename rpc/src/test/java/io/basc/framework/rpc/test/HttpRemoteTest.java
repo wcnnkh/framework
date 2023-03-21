@@ -14,7 +14,8 @@ public class HttpRemoteTest {
 
 	@Test
 	public void test() throws Throwable {
-		LoggerFactory.getLevelManager().getSourceMap().put("io.basc.framework.rpc", Levels.DEBUG.getValue());
+		LoggerFactory.getSource().getLevelManager().getSourceMap().put("io.basc.framework.rpc",
+				Levels.DEBUG.getValue());
 		DefaultContext beanFactory = new DefaultContext();
 		beanFactory.init();
 		TestRemoteInterface test = beanFactory.getInstance(TestRemoteInterface.class);

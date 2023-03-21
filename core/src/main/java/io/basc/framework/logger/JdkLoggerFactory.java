@@ -1,7 +1,14 @@
 package io.basc.framework.logger;
 
+import java.util.logging.ConsoleHandler;
+
 public class JdkLoggerFactory implements ILoggerFactory {
 	private final java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger(getClass().getName());
+
+	public JdkLoggerFactory() {
+		rootLogger.addHandler(new ConsoleHandler());
+		rootLogger.setUseParentHandlers(false);
+	}
 
 	@Override
 	public Logger getLogger(String name) {

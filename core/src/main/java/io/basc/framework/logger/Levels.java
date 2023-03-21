@@ -14,8 +14,4 @@ public enum Levels {
 	public java.util.logging.Level getValue() {
 		return value;
 	}
-
-	public LogProcessor wrap(Logger logger) {
-		return new WrapLogProcessor(logger, value);
-	}
 }
