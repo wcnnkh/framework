@@ -1139,6 +1139,23 @@ public final class ClassUtils {
 		return collection.toArray(new Class<?>[collection.size()]);
 	}
 
+	/**
+	 * Determine if the supplied {@link Class} is a JVM-generated implementation
+	 * class for a lambda expression or method reference.
+	 * <p>
+	 * This method makes a best-effort attempt at determining this, based on checks
+	 * that work on modern, mainstream JVMs.
+	 * <p>
+	 * 如果要判断是否是指定类型的lambda表达式可以通过{@link Class#getInterfaces()}解决
+	 * 
+	 * @param clazz the class to check
+	 * @return {@code true} if the class is a lambda implementation class
+	 */
+	public static boolean isLambdaClass(Class<?> clazz) {
+		return (clazz.isSynthetic() && (clazz.getSuperclass() == Object.class) && (clazz.getInterfaces().length > 0)
+				&& clazz.getName().contains("$$Lambda"));
+	}
+
 	private ClassUtils() {
 	}
 }

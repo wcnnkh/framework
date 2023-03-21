@@ -9,7 +9,7 @@ import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.EventTypes;
+import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
@@ -37,6 +37,6 @@ public class ApolloClientPropertyFactory extends StandardBroadcastEventDispatche
 
 	@Override
 	public void onChange(ConfigChangeEvent changeEvent) {
-		publishEvent(new ChangeEvent<Collection<String>>(EventTypes.UPDATE, changeEvent.changedKeys()));
+		publishEvent(new ChangeEvent<Collection<String>>(ChangeType.UPDATE, changeEvent.changedKeys()));
 	}
 }

@@ -2,8 +2,9 @@ package io.basc.framework.event;
 
 import java.util.EventObject;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.util.TimeUtils;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * 这和jdk自身提供的区别是source字段可以被序列化
@@ -13,6 +14,9 @@ import io.basc.framework.util.TimeUtils;
  *
  * @param <T>
  */
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class ObjectEvent<T> extends BasicEvent {
 	private static final long serialVersionUID = 1L;
 	private final T source;
@@ -32,10 +36,5 @@ public class ObjectEvent<T> extends BasicEvent {
 
 	public T getSource() {
 		return source;
-	}
-
-	@Override
-	public String toString() {
-		return TimeUtils.format(getCreateTime(), "yyyy-MM-dd HH:mm:ss") + " <" + ReflectionUtils.toString(this) + ">";
 	}
 }

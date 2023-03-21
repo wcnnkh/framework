@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.basc.framework.lang.AlreadyExistsException;
+import io.basc.framework.util.DisposableRegistration;
 import io.basc.framework.util.Registration;
 import io.basc.framework.web.ServerHttpRequest;
 
@@ -35,7 +36,7 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 			}
 		}
 
-		return () -> {
+		return DisposableRegistration.of(() -> {
 			synchronized (matcherMap) {
 				Map<String, HttpPatternServices<T>> map = matcherMap.get(pattern);
 				if (map == null) {
@@ -49,7 +50,7 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 
 				httpPatterns.remove(service);
 			}
-		};
+		});
 	}
 
 	public Registration add(String pattern, String method, T service) throws AlreadyExistsException {
@@ -67,11 +68,11 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 			}
 		}
 
-		return () -> {
+		return DisposableRegistration.of(() -> {
 			synchronized (matchers) {
 				matchers.remove(pattern);
 			}
-		};
+		});
 	}
 
 	public Registration add(HttpPattern httpPattern, T service) throws AlreadyExistsException {

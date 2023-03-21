@@ -1,12 +1,14 @@
 package io.basc.framework.security.authority.http;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.security.authority.DefaultAuthorityManager;
+import io.basc.framework.util.DisposableRegistration;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.StringUtils;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends DefaultAuthorityManager<T>
 		implements HttpAuthorityManager<T> {
@@ -26,32 +28,47 @@ public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends Defaul
 		return getAuthority(id);
 	}
 
-	public synchronized void register(T authority) {
-		if (StringUtils.isNotEmpty(authority.getPath())) {
+	public void unregister(T authority) {
+		if (StringUtils.isEmpty(authority.getPath())) {
+			return;
+		}
+
+		synchronized (this) {
 			Map<String, String> map = pathMap.get(authority.getPath());
 			if (map == null) {
-				map = new HashMap<String, String>();
+				return;
 			}
-
-			if (map.containsKey(authority.getMethod())) {
-				throw new AlreadyExistsException(JsonUtils.getSupport().toJsonString(authority));
-			}
-
-			map.put(authority.getMethod(), authority.getId());
-			pathMap.put(authority.getPath(), map);
+			map.remove(authority.getMethod());
 		}
-		super.register(authority);
-	};
-
-	@Override
-	public void remove(T authority) {
-		if (StringUtils.isNotEmpty(authority.getPath())) {
-			Map<String, String> map = pathMap.get(authority.getPath());
-			if (map != null) {
-				map.remove(authority.getMethod());
-			}
-		}
-		super.remove(authority);
 	}
 
+	public Registration register(T authority) {
+		Registration registration = Registration.EMPTY;
+		if (StringUtils.isNotEmpty(authority.getPath())) {
+			synchronized (this) {
+				Map<String, String> map = pathMap.get(authority.getPath());
+				if (map == null) {
+					map = new HashMap<String, String>();
+				}
+
+				if (map.containsKey(authority.getMethod())) {
+					throw new AlreadyExistsException(JsonUtils.getSupport().toJsonString(authority));
+				}
+
+				map.put(authority.getMethod(), authority.getId());
+				pathMap.put(authority.getPath(), map);
+				registration = registration.and(DisposableRegistration.of(() -> {
+					unregister(authority);
+				}));
+			}
+		}
+
+		try {
+			return registration.and(super.register(authority));
+		} catch (Throwable e) {
+			registration.unregister();
+			throw e;
+		}
+
+	};
 }

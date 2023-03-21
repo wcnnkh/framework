@@ -5,6 +5,10 @@ import java.util.Collection;
 
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.factory.ConfigurableServices;
+import io.basc.framework.mvc.action.Action;
+import io.basc.framework.security.authority.http.HttpAuthority;
+import io.basc.framework.security.authority.http.HttpAuthorityManager;
+import io.basc.framework.util.Registration;
 
 @Provider(value = ActionResolver.class)
 public class ConfigurableActiontResolver extends ConfigurableServices<ActionResolverExtend> implements ActionResolver {
@@ -31,5 +35,12 @@ public class ConfigurableActiontResolver extends ConfigurableServices<ActionReso
 	public Collection<String> getActionInterceptorNames(Class<?> sourceClass, Method method) {
 		return ActionResolverChain.build(iterator(), getDefaultResolver()).getActionInterceptorNames(sourceClass,
 				method);
+	}
+
+	@Override
+	public Registration registerHttpAuthority(HttpAuthorityManager<? super HttpAuthority> httpAuthorityManager,
+			Action action) {
+		return ActionResolverChain.build(iterator(), getDefaultResolver()).registerHttpAuthority(httpAuthorityManager,
+				action);
 	}
 }

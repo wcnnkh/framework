@@ -6,7 +6,7 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventTypes;
+import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.logger.Logger;
@@ -105,11 +105,11 @@ public class SimpleResourceEventDispatcher extends StandardBroadcastEventDispatc
 				if (exist != this.exist) {
 					this.last = last;
 					this.exist = exist;
-					publishEvent(new ObservableChangeEvent<Resource>(exist ? EventTypes.CREATE : EventTypes.DELETE,
+					publishEvent(new ObservableChangeEvent<Resource>(exist ? ChangeType.CREATE : ChangeType.DELETE,
 							resource, resource));
 				} else if (this.last != last) {
 					this.last = last;
-					publishEvent(new ObservableChangeEvent<Resource>(EventTypes.UPDATE, resource, resource));
+					publishEvent(new ObservableChangeEvent<Resource>(ChangeType.UPDATE, resource, resource));
 				}
 			} catch (Exception e) {
 				logger.error(e, resource.toString());

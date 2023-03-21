@@ -4,7 +4,11 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 
+import io.basc.framework.mvc.action.Action;
+import io.basc.framework.security.authority.http.HttpAuthority;
+import io.basc.framework.security.authority.http.HttpAuthorityManager;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Registration;
 
 public class ActionResolverChain extends ActionResolverConfiguration implements ActionResolver {
 	private final Iterator<? extends ActionResolverExtend> iterator;
@@ -35,6 +39,20 @@ public class ActionResolverChain extends ActionResolverConfiguration implements 
 		}
 		return nextChain == null ? super.getActionInterceptorNames(sourceClass, method)
 				: nextChain.getActionInterceptorNames(sourceClass, method);
+	}
+
+	@Override
+	public Registration registerHttpAuthority(HttpAuthorityManager<? super HttpAuthority> httpAuthorityManager,
+			Action action) {
+		if (iterator.hasNext()) {
+			return iterator.next().registerHttpAuthority(httpAuthorityManager, action, this);
+		}
+
+		if (nextChain == null) {
+			return super.registerHttpAuthority(httpAuthorityManager, action);
+		} else {
+			return nextChain.registerHttpAuthority(httpAuthorityManager, action);
+		}
 	}
 
 	public static ActionResolverChain build(Iterator<? extends ActionResolverExtend> iterator) {

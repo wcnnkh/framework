@@ -6,7 +6,7 @@ import com.alibaba.nacos.api.config.listener.Listener;
 
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventTypes;
+import io.basc.framework.event.ChangeType;
 
 public class NacosConfigListener implements Listener {
 	private final EventListener<ChangeEvent<String>> eventListener;
@@ -25,7 +25,7 @@ public class NacosConfigListener implements Listener {
 	}
 
 	public void receiveConfigInfo(String configInfo) {
-		eventListener.onEvent(new ChangeEvent<String>(EventTypes.UPDATE, configInfo));
+		eventListener.onEvent(new ChangeEvent<String>(ChangeType.UPDATE, configInfo));
 	}
 
 }

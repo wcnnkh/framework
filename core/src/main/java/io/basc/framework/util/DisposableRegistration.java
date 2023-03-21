@@ -7,6 +7,7 @@ public class DisposableRegistration implements Registration {
 	private final AtomicBoolean unregistred = new AtomicBoolean(false);
 
 	public DisposableRegistration(Registration registration) {
+		Assert.requiredArgument(registration != null, "registration");
 		this.registration = registration;
 	}
 
@@ -16,7 +17,7 @@ public class DisposableRegistration implements Registration {
 			registration.unregister();
 		}
 	}
-	
+
 	public boolean isUnregistred() {
 		return unregistred.get();
 	}
@@ -30,5 +31,12 @@ public class DisposableRegistration implements Registration {
 	public Registration and(Registration registration) {
 		this.registration = this.registration.and(registration);
 		return this;
+	}
+
+	public static Registration of(Registration registration) {
+		if (registration instanceof DisposableRegistration) {
+			return (DisposableRegistration) registration;
+		}
+		return new DisposableRegistration(registration);
 	}
 }

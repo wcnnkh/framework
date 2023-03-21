@@ -1,35 +1,38 @@
 package io.basc.framework.event;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class ChangeEvent<T> extends ObjectEvent<T> {
 	private static final long serialVersionUID = 1L;
-	private final EventType eventType;
+	private final ChangeType changeType;
 
-	public ChangeEvent(EventType eventType, ObjectEvent<T> event) {
+	public ChangeEvent(ChangeType changeType, ObjectEvent<T> event) {
 		super(event);
-		this.eventType = eventType;
+		this.changeType = changeType;
 	}
 
-	public ChangeEvent(long createTime, EventType eventType, T source) {
+	public ChangeEvent(long createTime, ChangeType changeType, T source) {
 		super(source, createTime);
-		this.eventType = eventType;
+		this.changeType = changeType;
 	}
 
-	public ChangeEvent(EventType eventType, T source) {
+	public ChangeEvent(ChangeType changeType, T source) {
 		super(source);
-		this.eventType = eventType;
+		this.changeType = changeType;
 	}
 
 	public ChangeEvent(ChangeEvent<T> event) {
 		super(event);
-		this.eventType = event.eventType;
+		this.changeType = event.changeType;
 	}
 
 	public ChangeEvent(ChangeEvent<?> event, T source) {
 		super(source, event.getCreateTime());
-		this.eventType = event.eventType;
-	}
-
-	public EventType getEventType() {
-		return eventType;
+		this.changeType = event.changeType;
 	}
 }

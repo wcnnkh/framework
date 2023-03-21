@@ -14,17 +14,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.basc.framework.event.EventType;
-import io.basc.framework.event.EventTypes;
+import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.lang.RequiredJavaVersion;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 
 /**
- * 使用WatchService实现resource监听
- * 需要jdk7(包含)以上
- * 事件可能会重复触发，这与操作系统的实现有关
+ * 使用WatchService实现resource监听 需要jdk7(包含)以上 事件可能会重复触发，这与操作系统的实现有关
  * 
  * @author wcnnkh
  *
@@ -128,10 +125,10 @@ public class WatchServiceResourceEventDispatcher extends SimpleResourceEventDisp
 		}
 		return false;
 	}
-	
+
 	@Override
 	public void publishEvent(ObservableChangeEvent<Resource> event) {
-		if (event.getEventType() == EventTypes.CREATE) {
+		if (event.getChangeType() == ChangeType.CREATE) {
 			// 如果资源创建了，那么尝试重新注册
 			if (watchServiceRegister()) {
 				cancelListener();
@@ -220,13 +217,13 @@ public class WatchServiceResourceEventDispatcher extends SimpleResourceEventDisp
 						continue;
 					}
 
-					EventType eventType = null;
+					ChangeType eventType = null;
 					if (StandardWatchEventKinds.ENTRY_CREATE.equals(event.kind())) {
-						eventType = EventTypes.CREATE;
+						eventType = ChangeType.CREATE;
 					} else if (StandardWatchEventKinds.ENTRY_MODIFY.equals(event.kind())) {
-						eventType = EventTypes.UPDATE;
+						eventType = ChangeType.UPDATE;
 					} else if (StandardWatchEventKinds.ENTRY_DELETE.equals(event.kind())) {
-						eventType = EventTypes.DELETE;
+						eventType = ChangeType.DELETE;
 					}
 
 					if (eventType == null) {

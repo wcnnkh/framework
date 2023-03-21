@@ -17,6 +17,18 @@ public interface Registration {
 		public boolean isEmpty() {
 			return true;
 		}
+
+		@Override
+		public Registration and(Registration registration) {
+			if (registration == null) {
+				return this;
+			}
+
+			if (ClassUtils.isLambdaClass(registration.getClass())) {
+				return DisposableRegistration.of(registration);
+			}
+			return registration;
+		}
 	};
 
 	void unregister() throws RegistrationException;
@@ -26,24 +38,10 @@ public interface Registration {
 	}
 
 	default Registration disposable() {
-		return new DisposableRegistration(this);
+		return DisposableRegistration.of(this);
 	}
 
 	default Registration and(Registration registration) {
-		if (registration == null || registration == EMPTY) {
-			return this;
-		}
-
-		if (this == EMPTY) {
-			return registration;
-		}
-
-		return () -> {
-			try {
-				unregister();
-			} finally {
-				registration.unregister();
-			}
-		};
+		return MergedRegistration.merge(this, registration);
 	}
 }

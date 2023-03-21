@@ -16,10 +16,12 @@ import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.DisposableRegistration;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.StringUtils;
 
 public class DefaultAuthorityManager<T extends Authority> implements AuthorityManager<T> {
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	private static Logger logger = LoggerFactory.getLogger(DefaultAuthorityManager.class);
 	public Map<String, T> authorityMap = new HashMap<String, T>();
 
 	public T getAuthority(String id) {
@@ -99,25 +101,34 @@ public class DefaultAuthorityManager<T extends Authority> implements AuthorityMa
 		return treeList;
 	}
 
-	public synchronized void register(T authority) {
+	public void unregister(T authority) {
+		synchronized (this) {
+			authorityMap.remove(authority.getId());
+		}
+	}
+
+	public synchronized Registration register(T authority) {
 		if (authority == null) {
-			return;
+			return Registration.EMPTY;
 		}
 
-		if (authorityMap.containsKey(authority.getId())) {
-			throw new AlreadyExistsException(authority.toString());
-		}
+		synchronized (this) {
+			if (authorityMap.containsKey(authority.getId())) {
+				throw new AlreadyExistsException(authority.toString());
+			}
 
-		if (authority.getId().equals(authority.getParentId())) {
-			throw new RuntimeException(
-					"ID and parentid cannot be the same：" + JsonUtils.getSupport().toJsonString(authority));
-		}
+			if (authority.getId().equals(authority.getParentId())) {
+				throw new RuntimeException(
+						"ID and parentid cannot be the same：" + JsonUtils.getSupport().toJsonString(authority));
+			}
 
-		if (logger.isTraceEnabled()) {
-			logger.trace("register authority:{}", JsonUtils.getSupport().toJsonString(authority));
-		}
+			if (logger.isTraceEnabled()) {
+				logger.trace("register authority:{}", JsonUtils.getSupport().toJsonString(authority));
+			}
 
-		authorityMap.put(authority.getId(), authority);
+			authorityMap.put(authority.getId(), authority);
+		}
+		return DisposableRegistration.of(() -> unregister(authority));
 	}
 
 	public List<T> getParentList(String id, Predicate<T> authorityFilter) {
@@ -207,10 +218,5 @@ public class DefaultAuthorityManager<T extends Authority> implements AuthorityMa
 			list.add(new AuthorityTree<T>(t, getAuthorityTreeList(subList, ids, authorityFilter)));
 		}
 		return list;
-	}
-
-	@Override
-	public void remove(T authority) {
-		authorityMap.remove(authority.getId());
 	}
 }

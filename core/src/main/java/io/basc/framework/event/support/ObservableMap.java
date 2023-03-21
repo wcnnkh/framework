@@ -10,9 +10,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.basc.framework.event.AbstractObservable;
 import io.basc.framework.event.ChangeEvent;
+import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventTypes;
 import io.basc.framework.event.NamedEventRegistry;
 import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.util.Assert;
@@ -63,7 +63,7 @@ public class ObservableMap<K, V> extends AbstractObservable<Map<K, V>>
 	public V put(K key, V value) {
 		V oldValue = targetMap.put(key, value);
 		if (oldValue != value) {
-			publishEvent(new ObservableChangeEvent<Map<K, V>>(oldValue == null ? EventTypes.CREATE : EventTypes.UPDATE,
+			publishEvent(new ObservableChangeEvent<Map<K, V>>(oldValue == null ? ChangeType.CREATE : ChangeType.UPDATE,
 					Collections.singletonMap(key, oldValue), Collections.singletonMap(key, value)));
 		}
 		return oldValue;
@@ -72,7 +72,7 @@ public class ObservableMap<K, V> extends AbstractObservable<Map<K, V>>
 	public V putIfAbsent(K key, V value) {
 		V oldValue = targetMap.putIfAbsent(key, value);
 		if (oldValue == null && oldValue != value) {
-			publishEvent(new ObservableChangeEvent<Map<K, V>>(EventTypes.CREATE, null,
+			publishEvent(new ObservableChangeEvent<Map<K, V>>(ChangeType.CREATE, null,
 					Collections.singletonMap(key, value)));
 		}
 		return oldValue;
@@ -81,7 +81,7 @@ public class ObservableMap<K, V> extends AbstractObservable<Map<K, V>>
 	public V putIfPresent(K key, V value) {
 		V oldValue = targetMap.computeIfPresent(key, (k, v) -> value);
 		if (oldValue != null && oldValue != value) {
-			publishEvent(new ObservableChangeEvent<>(EventTypes.UPDATE, Collections.singletonMap(key, oldValue),
+			publishEvent(new ObservableChangeEvent<>(ChangeType.UPDATE, Collections.singletonMap(key, oldValue),
 					Collections.singletonMap(key, value)));
 		}
 		return oldValue;
@@ -96,7 +96,7 @@ public class ObservableMap<K, V> extends AbstractObservable<Map<K, V>>
 		all.putAll(map);
 		targetMap.putAll(all);
 		// 因为无法原子性的判断是否存在变更，所以直接认定为更新
-		publishEvent(new ObservableChangeEvent<>(EventTypes.UPDATE, null, all));
+		publishEvent(new ObservableChangeEvent<>(ChangeType.UPDATE, null, all));
 	}
 
 	public void clear() {
@@ -109,7 +109,7 @@ public class ObservableMap<K, V> extends AbstractObservable<Map<K, V>>
 				iterator.remove();
 			}
 		}
-		publishEvent(new ObservableChangeEvent<>(EventTypes.DELETE, all, null));
+		publishEvent(new ObservableChangeEvent<>(ChangeType.DELETE, all, null));
 	}
 
 	public int size() {
@@ -135,7 +135,7 @@ public class ObservableMap<K, V> extends AbstractObservable<Map<K, V>>
 	public V remove(K key) {
 		V value = targetMap.remove(key);
 		if (value != null) {
-			publishEvent(new ObservableChangeEvent<Map<K, V>>(EventTypes.DELETE, Collections.singletonMap(key, value),
+			publishEvent(new ObservableChangeEvent<Map<K, V>>(ChangeType.DELETE, Collections.singletonMap(key, value),
 					null));
 		}
 		return value;
@@ -162,7 +162,7 @@ public class ObservableMap<K, V> extends AbstractObservable<Map<K, V>>
 			}
 
 			ConsumeProcessor.consumeAll(changeMap.entrySet().iterator(),
-					(e) -> eventListener.onEvent(new ChangeEvent<>(event.getEventType(), e.getKey())));
+					(e) -> eventListener.onEvent(new ChangeEvent<>(event.getChangeType(), e.getKey())));
 		});
 	}
 }

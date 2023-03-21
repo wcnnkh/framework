@@ -2,9 +2,11 @@ package io.basc.framework.event;
 
 import java.io.Serializable;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.TimeUtils;
+import lombok.Data;
+import lombok.ToString.Include;
 
+@Data
 public class BasicEvent implements Event, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final long createTime;
@@ -21,11 +23,8 @@ public class BasicEvent implements Event, Serializable {
 		this.createTime = createTime;
 	}
 
-	public final long getCreateTime() {
-		return createTime;
+	@Include(name = "createTimeDescribe")
+	public String getCreateTimeDescribe() {
+		return TimeUtils.format(createTime, "yyyy-MM-dd HH:mm:ss,SSS");
 	}
-
-	public String toString() {
-		return TimeUtils.MILLISECOND.format(createTime) + " <" + ReflectionUtils.toString(this) + ">";
-	};
 }
