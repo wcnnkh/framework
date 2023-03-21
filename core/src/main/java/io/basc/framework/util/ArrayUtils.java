@@ -327,7 +327,7 @@ public final class ArrayUtils {
 			return clone(leftArray, deep);
 		}
 
-		Object target = Array.newInstance(leftArray.getClass().getComponentType(), leftLength);
+		Object target = Array.newInstance(leftArray.getClass().getComponentType(), leftLength + rightLength);
 		copy(leftArray, 0, target, 0, leftLength, deep);
 		copy(rightArray, 0, target, leftLength, rightLength, deep);
 		return (T) target;
