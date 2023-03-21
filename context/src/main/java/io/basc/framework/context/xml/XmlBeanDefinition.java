@@ -56,11 +56,10 @@ public class XmlBeanDefinition extends FactoryBeanDefinition {
 		setSingleton(XmlBeanUtils.isSingleton(beanNode));
 	}
 
-	@SuppressWarnings("unchecked")
 	protected Collection<String> getFilters(Node node) {
 		String filters = DomUtils.getNodeAttributeValue(node, "filters").getAsString();
 		if (StringUtils.isEmpty(filters)) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
 
 		return Arrays.asList(StringUtils.splitToArray(filters));
@@ -84,7 +83,7 @@ public class XmlBeanDefinition extends FactoryBeanDefinition {
 			return super.isInstance();
 		}
 
-		for (ParameterDescriptors parameterDescriptors : this) { 
+		for (ParameterDescriptors parameterDescriptors : this) {
 			if (xmlParameterFactory.isAccept(parameterDescriptors)) {
 				return true;
 			}

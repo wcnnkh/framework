@@ -37,24 +37,6 @@ public final class StringUtils {
 	private static final String WINDOWS_FOLDER_SEPARATOR = "\\";
 
 	/**
-	 * Append the given String to the given String array, returning a new array
-	 * consisting of the input array contents plus the given String.
-	 * 
-	 * @param array the array to append to (can be {@code null})
-	 * @param str   the String to append
-	 * @return the new array (never {@code null})
-	 */
-	public static String[] addStringToArray(String[] array, String str) {
-		if (ObjectUtils.isEmpty(array)) {
-			return new String[] { str };
-		}
-		String[] newArr = new String[array.length + 1];
-		System.arraycopy(array, 0, newArr, 0, array.length);
-		newArr[array.length] = str;
-		return newArr;
-	};
-
-	/**
 	 * Apply the given relative path to the given path, assuming standard Java
 	 * folder separation (i.e. "/" separators).
 	 * 

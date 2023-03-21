@@ -34,6 +34,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
@@ -465,7 +466,7 @@ public abstract class CollectionUtils {
 
 	public static <E, T> Collection<T> intersection(Iterable<? extends E> leftIterable,
 			Iterable<? extends E> rightIterable, Comparator<? super E> comparator,
-			Combiner<? super E, ? super E, ? extends T> combiner) {
+			BiFunction<? super E, ? super E, ? extends T> combiner) {
 		if (isEmpty(leftIterable) || isEmpty(rightIterable)) {
 			return Collections.emptyList();
 		}
@@ -491,7 +492,7 @@ public abstract class CollectionUtils {
 	 */
 	public static <E, T> Collection<T> intersection(Iterator<? extends E> leftIterator,
 			Iterator<? extends E> rightIterator, Comparator<? super E> comparator,
-			Combiner<? super E, ? super E, ? extends T> combiner) {
+			BiFunction<? super E, ? super E, ? extends T> combiner) {
 		Assert.requiredArgument(comparator != null, "comparator");
 		Assert.requiredArgument(combiner != null, "combiner");
 		if (isEmpty(leftIterator) || isEmpty(rightIterator)) {
@@ -511,7 +512,7 @@ public abstract class CollectionUtils {
 						list = new ArrayList<>(rightList.size());
 					}
 
-					T element = combiner.combine(left, right);
+					T element = combiner.apply(left, right);
 					list.add(element);
 					rightListIterator.remove();
 					break;
