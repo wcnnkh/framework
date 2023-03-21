@@ -1,25 +1,26 @@
 package io.basc.framework.logger;
 
 import java.util.logging.ConsoleHandler;
+import java.util.logging.Logger;
 
 public class JdkLoggerFactory implements ILoggerFactory {
-	private final java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger(getClass().getName());
+	private static final Logger ROOT_LOGGER = Logger.getLogger(JdkLoggerFactory.class.getName());
 
-	public JdkLoggerFactory() {
-		rootLogger.addHandler(new ConsoleHandler());
-		rootLogger.setUseParentHandlers(false);
+	static {
+		ROOT_LOGGER.addHandler(new ConsoleHandler());
+		ROOT_LOGGER.setUseParentHandlers(false);
+	}
+
+	public static Logger getRootLogger() {
+		return ROOT_LOGGER;
 	}
 
 	@Override
-	public Logger getLogger(String name) {
-		java.util.logging.Logger jdkLogger = java.util.logging.Logger.getLogger(name);
-		if (jdkLogger != rootLogger) {
-			jdkLogger.setParent(rootLogger);
+	public io.basc.framework.logger.Logger getLogger(String name) {
+		Logger jdkLogger = Logger.getLogger(name);
+		if (jdkLogger != ROOT_LOGGER) {
+			jdkLogger.setParent(ROOT_LOGGER);
 		}
 		return new JdkLogger(jdkLogger);
-	}
-
-	public java.util.logging.Logger getRootLogger() {
-		return rootLogger;
 	}
 }
