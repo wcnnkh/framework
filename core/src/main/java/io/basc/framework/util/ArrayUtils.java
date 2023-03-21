@@ -368,12 +368,4 @@ public final class ArrayUtils {
 			return (T) Array.newInstance(componentType, 0);
 		}
 	}
-
-	public static int hashCode(Object... objects) {
-		if (objects == null) {
-			return 0;
-		}
-
-		return Arrays.hashCode(objects);
-	}
 }

@@ -1,5 +1,6 @@
 package io.basc.framework.util;
 
+import java.util.Arrays;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -166,7 +167,7 @@ public final class Bound<T> extends DefaultOptional<T> {
 
 	@Override
 	public int hashCode() {
-		return ArrayUtils.hashCode(inclusive, super.hashCode());
+		return CollectionUtils.hashCode(Arrays.asList(inclusive, super.hashCode()));
 	}
 
 	@Override

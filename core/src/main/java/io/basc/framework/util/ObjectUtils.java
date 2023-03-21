@@ -256,10 +256,6 @@ public abstract class ObjectUtils {
 		}
 	}
 
-	public static int hash(Object... sources) {
-		return ArrayUtils.hashCode(sources);
-	}
-
 	public static int hashCode(Object source) {
 		return hashCode(source, true);
 	}
