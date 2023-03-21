@@ -3,7 +3,6 @@ package io.basc.framework.security.authority.http;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.basc.framework.json.JsonUtils;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.security.authority.DefaultAuthorityManager;
 import io.basc.framework.util.DisposableRegistration;
@@ -52,7 +51,7 @@ public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends Defaul
 				}
 
 				if (map.containsKey(authority.getMethod())) {
-					throw new AlreadyExistsException(JsonUtils.getSupport().toJsonString(authority));
+					throw new AlreadyExistsException(authority.toString());
 				}
 
 				map.put(authority.getMethod(), authority.getId());

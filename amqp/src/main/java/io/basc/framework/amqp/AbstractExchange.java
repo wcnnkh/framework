@@ -3,7 +3,6 @@ package io.basc.framework.amqp;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.json.JsonUtils;
 import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -135,7 +134,7 @@ public abstract class AbstractExchange<T> implements Exchange<T> {
 				// 这是一个延迟消息
 				if (logger.isDebugEnabled()) {
 					logger.debug("delay message forward exchange:{}, routingKey:{}, message:{}", exchange, routingKey,
-							JsonUtils.getSupport().toJsonString(message));
+							message);
 				}
 
 				message.setDelay(0, TimeUnit.SECONDS);
@@ -148,8 +147,7 @@ public abstract class AbstractExchange<T> implements Exchange<T> {
 				int delay = 1;
 				TimeUnit delayTimeUnit = TimeUnit.SECONDS;
 				logger.error("retry delay: {}, Unable to consume exchange:{}, routingKey:{}, message:{}",
-						delayTimeUnit.toMillis(delay), exchange, routingKeyToUse,
-						JsonUtils.getSupport().toJsonString(message));
+						delayTimeUnit.toMillis(delay), exchange, routingKeyToUse, message);
 				message.setDelay(delay, delayTimeUnit);
 				retryPush(routingKeyToUse, message);
 				return;
@@ -157,7 +155,7 @@ public abstract class AbstractExchange<T> implements Exchange<T> {
 
 			if (logger.isDebugEnabled()) {
 				logger.debug("handleDelivery exchange:{}, routingKey:{}, message:{}", exchange, routingKeyToUse,
-						JsonUtils.getSupport().toJsonString(message));
+						message);
 			}
 
 			// 开始消费消息
@@ -190,11 +188,10 @@ public abstract class AbstractExchange<T> implements Exchange<T> {
 						|| (maxRetryCount > 0 && message.getRetryCount() > maxRetryCount)) {// 不重试
 					logger.error(NestedExceptionUtils.getRootCause(e),
 							"Don't try again: exchange={}, routingKey={}, message={}", exchange, routingKeyToUse,
-							JsonUtils.getSupport().toJsonString(message));
+							message);
 				} else {
 					logger.error(NestedExceptionUtils.getRootCause(e),
-							"retry delay: {}, exchange={}, routingKey={}, message={}", retryDelay, exchange,
-							routingKeyToUse, JsonUtils.getSupport().toJsonString(message));
+							"retry delay: {}, exchange={}, routingKey={}, message={}", retryDelay, exchange, message);
 					message.setDelay(retryDelay, TimeUnit.MILLISECONDS);
 					retryPush(routingKeyToUse, message);
 				}

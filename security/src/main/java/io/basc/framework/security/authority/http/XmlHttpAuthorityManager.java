@@ -10,7 +10,6 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.io.Resource;
-import io.basc.framework.json.JsonUtils;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.StringUtils;
@@ -64,7 +63,7 @@ public class XmlHttpAuthorityManager extends DefaultHttpAuthorityManager<HttpAut
 	private void addAuthority(Map<String, String> map, String defParentId, String prefix) {
 		String id = map.remove("id");
 		if (id == null) {
-			throw new NullPointerException("id不能为空：" + JsonUtils.getSupport().toJsonString(map));
+			throw new NullPointerException("id不能为空：" + map);
 		}
 
 		if (StringUtils.isNotEmpty(prefix)) {
@@ -73,7 +72,7 @@ public class XmlHttpAuthorityManager extends DefaultHttpAuthorityManager<HttpAut
 
 		String name = map.remove("name");
 		if (StringUtils.isEmpty(name)) {
-			throw new NullPointerException("name不能为空或空字符串：" + JsonUtils.getSupport().toJsonString(map));
+			throw new NullPointerException("name不能为空或空字符串：" + map);
 		}
 
 		String parentId = map.remove("parentId");

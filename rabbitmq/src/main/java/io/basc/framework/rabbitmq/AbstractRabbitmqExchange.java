@@ -12,7 +12,6 @@ import io.basc.framework.amqp.Message;
 import io.basc.framework.amqp.MessageListener;
 import io.basc.framework.amqp.QueueDeclare;
 import io.basc.framework.factory.Init;
-import io.basc.framework.json.JsonUtils;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.RegistrationException;
 
@@ -131,7 +130,7 @@ public abstract class AbstractRabbitmqExchange extends AbstractExchange<byte[]> 
 		ExchangeDeclare exchangeDeclare = message.getDelay() > 0 ? getDelayExchangeDeclare() : getExchangeDeclare();
 		if (logger.isDebugEnabled()) {
 			logger.debug("push exchange={}, routingKey={}, properties={}, body={}", exchangeDeclare.getName(),
-					routingKey, JsonUtils.getSupport().toJsonString(message));
+					routingKey, message);
 		}
 
 		if (message.getDeliveryMode() == null) {
