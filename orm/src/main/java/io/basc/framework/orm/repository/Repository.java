@@ -109,8 +109,8 @@ public interface Repository extends CurdOperations {
 				new Condition(conditionKeywords.getInKeywords().getFirst(), column)));
 		Conditions conditions = ConditionsBuilder.build(pairs);
 		ResultSet<T> resultSet = query(resultsTypeDescriptor, entityClass, conditions, null);
-		return new PrimaryKeyResultSet<K, T>(() -> resultSet.iterator(), getObjectKeyFormat(), entityStructure, inPrimaryKeys,
-				primaryKeys);
+		return new PrimaryKeyResultSet<K, T>(() -> resultSet.iterator(), getObjectKeyFormat(), entityStructure,
+				inPrimaryKeys, primaryKeys);
 	}
 
 	RepositoryResolver getMapper();
@@ -160,12 +160,12 @@ public interface Repository extends CurdOperations {
 		return query(resultsTypeDescriptor, entityClass, null, null);
 	}
 
-	<E> long save(Class<? extends E> entityClass, Collection<? extends Parameter> columns) throws OrmException;
+	<E> long saveColumns(Class<? extends E> entityClass, Collection<? extends Parameter> columns) throws OrmException;
 
 	@Override
 	default <T> void save(Class<? extends T> entityClass, T entity) throws OrmException {
 		List<Parameter> columns = getMapper().parseValues(entityClass, entity, getMapper().getStructure(entityClass));
-		save(entityClass, columns);
+		saveColumns(entityClass, columns);
 	}
 
 	<E> long update(Class<? extends E> entityClass, Collection<? extends Parameter> columns, Conditions conditions)

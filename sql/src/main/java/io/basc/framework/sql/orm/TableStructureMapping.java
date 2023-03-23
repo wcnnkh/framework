@@ -8,5 +8,5 @@ import io.basc.framework.sql.Sql;
 public interface TableStructureMapping {
 	Sql getSql();
 
-	Column getName(ResultSet resultSet) throws SQLException;
+	Column getColumn(ResultSet resultSet) throws SQLException;
 }

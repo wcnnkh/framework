@@ -7,6 +7,8 @@ import java.lang.annotation.Target;
 
 /**
  * 自增字段
+ * <p>
+ * 请注意不要使用基本数据类型，那样自增不会生效
  * 
  * @author wcnnkh
  *

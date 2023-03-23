@@ -233,7 +233,8 @@ public interface LuceneTemplate extends Repository {
 	}
 
 	@Override
-	default <E> long save(Class<? extends E> entityClass, Collection<? extends Parameter> columns) throws OrmException {
+	default <E> long saveColumns(Class<? extends E> entityClass, Collection<? extends Parameter> columns)
+			throws OrmException {
 		List<Parameter> list = getMapper().open(entityClass, columns, null);
 		if (CollectionUtils.isEmpty(list)) {
 			return 0L;

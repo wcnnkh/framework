@@ -120,7 +120,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 				return new SimpleSql("pragma table_info(" + tableStructure.getName() + ")");
 			}
 
-			public Column getName(ResultSet resultSet) throws SQLException {
+			public Column getColumn(ResultSet resultSet) throws SQLException {
 				Column column = new Column();
 				column.setObjectRelationalResolver(SQLiteDialect.this);
 				column.setName(resultSet.getString("name"));

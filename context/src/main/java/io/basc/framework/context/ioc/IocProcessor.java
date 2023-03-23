@@ -9,7 +9,6 @@ import io.basc.framework.factory.BeanPostProcessor;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.MapperUtils;
 
 public abstract class IocProcessor implements BeanPostProcessor {
 	protected static Logger logger = LoggerFactory.getLogger(IocProcessor.class);
@@ -39,11 +38,6 @@ public abstract class IocProcessor implements BeanPostProcessor {
 	public void checkField(Object obj, Field field) {
 		if (Modifier.isStatic(field.getSetter().getModifiers())) {
 			logger.warn("class [{}] field [{}] is a static", field.getSetter().getDeclaringClass(),
-					field.getSetter().getName());
-		}
-
-		if (MapperUtils.isExistValue(field, obj)) {
-			logger.warn("class[{}] fieldName[{}] existence default value", field.getSetter().getDeclaringClass(),
 					field.getSetter().getName());
 		}
 	}

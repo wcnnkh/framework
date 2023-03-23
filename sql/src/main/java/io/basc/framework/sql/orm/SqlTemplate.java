@@ -179,13 +179,13 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	default TableChanges getTableChanges(TableStructure tableStructure) {
 		TableStructureMapping tableStructureMapping = getMapper().getTableStructureMapping(tableStructure);
-		List<Column> list = query(tableStructureMapping.getSql(), (rs) -> tableStructureMapping.getName(rs)).toList();
+		List<Column> list = query(tableStructureMapping.getSql(), (rs) -> tableStructureMapping.getColumn(rs)).toList();
 		HashSet<String> hashSet = new HashSet<String>();
 		List<String> deleteList = new ArrayList<String>();
 		TableStructure oldStructure = getMapper().getStructure(tableStructure.getSourceClass());
 		for (Column column : list) {
 			hashSet.add(column.getName());
-			Column oldName = oldStructure.getByName(column.getName(), null);
+			Column oldName = oldStructure.getByName(column.getName());
 			if (oldName == null) {// 在现在的表结构中不存在，应该删除
 				deleteList.add(column.getName());
 			}
@@ -199,6 +199,12 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 			}
 		}
 		return new TableChanges(deleteList, addList);
+	}
+
+	@Override
+	default <T> Query<T> query(Class<? extends T> entityClass, Conditions conditions,
+			List<? extends OrderColumn> orders) throws OrmException {
+		return query(TypeDescriptor.valueOf(entityClass), entityClass, conditions, orders);
 	}
 
 	@Override
@@ -230,9 +236,9 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	@Override
-	default <T> Query<T> query(Class<? extends T> entityClass, Conditions conditions,
-			List<? extends OrderColumn> orders) throws OrmException {
-		return query(TypeDescriptor.valueOf(entityClass), entityClass, conditions, orders);
+	default <T, E> Query<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
+			Conditions conditions, List<? extends OrderColumn> orderColumns) throws OrmException {
+		return query(resultsTypeDescriptor, getMapper().getStructure(entityClass), conditions, orderColumns);
 	}
 
 	@Override
@@ -243,12 +249,6 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 				getMapper().parseConditions(entityClass, getMapper().getStructure(entityClass).columns().iterator(),
 						orderColumns, (e) -> e.get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue())),
 				orderColumns);
-	}
-
-	@Override
-	default <T, E> Query<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
-			Conditions conditions, List<? extends OrderColumn> orderColumns) throws OrmException {
-		return query(resultsTypeDescriptor, getMapper().getStructure(entityClass), conditions, orderColumns);
 	}
 
 	@Override
@@ -297,11 +297,6 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	@Override
-	default <E> long save(Class<? extends E> entityClass, Collection<? extends Parameter> columns) throws OrmException {
-		return save(getMapper().getStructure(entityClass), columns);
-	}
-
-	@Override
 	default <T> void save(Class<? extends T> entityClass, T entity) {
 		save(entityClass, entity, null);
 	}
@@ -309,11 +304,6 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	default <T> void save(Class<? extends T> entityClass, T entity, @Nullable String tableName) {
 		Assert.requiredArgument(entityClass != null, "entityClass");
 		save(getMapper().getStructure(entityClass, entity, tableName), entity);
-	}
-
-	default int save(TableStructure structure, Collection<? extends Parameter> requestColumns) throws OrmException {
-		Sql sql = getMapper().toSaveSql(structure, getMapper().open(structure.getSourceClass(), requestColumns, null));
-		return update(sql);
 	}
 
 	default <T> void save(TableStructure tableStructure, T entity) {
@@ -326,6 +316,19 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 			setAutoIncrementLastId(ps.getConnection(), tableStructure, entity, updateCount);
 			return updateCount;
 		});
+	}
+
+	@Override
+	default <E> long saveColumns(Class<? extends E> entityClass, Collection<? extends Parameter> columns)
+			throws OrmException {
+		return saveColumns(getMapper().getStructure(entityClass), columns);
+	}
+
+	default int saveColumns(TableStructure structure, Collection<? extends Parameter> requestColumns)
+			throws OrmException {
+		Sql sql = getMapper().toSaveColumnsSql(structure,
+				getMapper().open(structure.getSourceClass(), requestColumns, null));
+		return update(sql);
 	}
 
 	default <T> boolean saveIfAbsent(Class<? extends T> entityClass, T entity) {

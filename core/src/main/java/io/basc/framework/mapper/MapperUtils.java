@@ -68,7 +68,7 @@ public class MapperUtils {
 	/**
 	 * @param field
 	 * @param instance
-	 * @return 如果字段类型是基本数据类型，那么0也会是认为是没有值
+	 * @return value != null
 	 */
 	public static boolean isExistValue(io.basc.framework.mapper.Field field, Object instance) {
 		if (!field.isSupportGetter()) {
@@ -80,30 +80,6 @@ public class MapperUtils {
 		}
 
 		if (field.getGetter().getType().isPrimitive()) {
-			Object value = field.get(instance);
-			if (value != null && value instanceof Number) {
-				return ((Number) value).doubleValue() != 0;
-			}
-			return false;
-		}
-		return field.get(instance) != null;
-	}
-
-	/**
-	 * @param field
-	 * @param instance
-	 * @return value != null
-	 */
-	public static boolean isExistDefaultValue(io.basc.framework.mapper.Field field, Object instance) {
-		if (!field.isSupportGetter()) {
-			return false;
-		}
-
-		if (!field.isSupportGetter()) {
-			return false;
-		}
-
-		if (field.getGetter().getType().isPrimitive()) {
 			return true;
 		}
 
@@ -114,23 +90,6 @@ public class MapperUtils {
 	 * @param getter
 	 * @param instance
 	 * @return value != null
-	 */
-	public static boolean isExistDefaultValue(Getter getter, Object instance) {
-		if (getter == null) {
-			return false;
-		}
-
-		if (getter.getType().isPrimitive()) {
-			return true;
-		}
-
-		return getter.get(instance) != null;
-	}
-
-	/**
-	 * @param getter
-	 * @param instance
-	 * @return 如果字段类型是基本数据类型，那么0也会是认为是没有值
 	 */
 	public static boolean isExistValue(Getter getter, Object instance) {
 		if (getter == null) {
@@ -138,11 +97,7 @@ public class MapperUtils {
 		}
 
 		if (getter.getType().isPrimitive()) {
-			Object value = getter.get(instance);
-			if (value != null && value instanceof Number) {
-				return ((Number) value).doubleValue() != 0;
-			}
-			return false;
+			return true;
 		}
 
 		return getter.get(instance) != null;

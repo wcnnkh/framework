@@ -184,7 +184,7 @@ public class CustomRepositoryMethodAdapter extends CurdRepositoryMethodAdapter i
 				// delete
 				value = repository.delete(entityClass, conditions);
 			} else if (operationKeywords.getSaveKeywords().exists(operation)) {
-				value = repository.save(entityClass, columns);
+				value = repository.saveColumns(entityClass, columns);
 			} else if (operationKeywords.getUpdateKeywords().exists(operation)) {
 				value = repository.update(entityClass, columns, conditions);
 			} else {

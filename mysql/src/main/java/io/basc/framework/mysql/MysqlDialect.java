@@ -255,7 +255,7 @@ public class MysqlDialect extends StandardSqlDialect {
 						tableStructure.getName());
 			}
 
-			public Column getName(ResultSet resultSet) throws SQLException {
+			public Column getColumn(ResultSet resultSet) throws SQLException {
 				Column column = new Column();
 				column.setName(resultSet.getString("COLUMN_NAME"));
 				column.setObjectRelationalResolver(MysqlDialect.this);

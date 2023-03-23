@@ -1,6 +1,5 @@
 package io.basc.framework.test;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
@@ -22,8 +21,7 @@ public class MapperTest {
 	public void util() {
 		A entity = new A();
 		Field field = Fields.getFields(A.class).byName("v").first();
-		assertTrue(MapperUtils.isExistDefaultValue(field, entity));
-		assertFalse(MapperUtils.isExistValue(field, entity));
+		assertTrue(MapperUtils.isExistValue(field, entity));
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("k", XUtils.getUUID());
