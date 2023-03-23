@@ -48,7 +48,7 @@ public final class TransactionUtils {
 	@Nullable
 	public static FacadeTransaction getTransaction(TransactionManager manager,
 			@Nullable TransactionDefinition definition) {
-		Assert.requiredArgument(manager == null, "manager");
+		Assert.requiredArgument(manager != null, "manager");
 		Transaction transaction = definition == null ? manager.getTransaction() : manager.getTransaction(definition);
 		if (transaction == null) {
 			return null;
