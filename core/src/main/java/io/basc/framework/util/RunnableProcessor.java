@@ -6,6 +6,7 @@ package io.basc.framework.util;
  *
  * @param <E>
  */
+@FunctionalInterface
 public interface RunnableProcessor<E extends Throwable> {
 	void process() throws E;
 }

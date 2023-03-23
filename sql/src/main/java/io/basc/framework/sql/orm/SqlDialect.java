@@ -13,63 +13,61 @@ import io.basc.framework.sql.Sql;
 import io.basc.framework.value.Value;
 
 public interface SqlDialect extends TableMapper, EnvironmentAware {
-	SqlType getSqlType(Class<?> javaType);
-
-	Environment getEnvironment();
-
-	Object toDataBaseValue(Value value);
+	Sql condition(Sql condition, Sql left, Sql right);
 
 	Collection<Sql> createTable(TableStructure tableStructure) throws SqlDialectException;
 
-	Sql toSelectByIdsSql(TableStructure tableStructure, Object... ids) throws SqlDialectException;
-
-	Sql toSaveSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
-
-	Sql toSaveIfAbsentSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
-
-	Sql toInsertSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
-
-	Sql toDeleteSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
-
-	Sql toDeleteByIdSql(TableStructure tableStructure, Object... ids) throws SqlDialectException;
-
-	Sql toUpdateSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
-
-	<T> Sql toUpdateSql(TableStructure tableStructure, T entity, T oldEntity) throws SqlDialectException;
-
-	Sql toUpdatePartSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
-
-	Sql toLastInsertIdSql(TableStructure tableStructure) throws SqlDialectException;
-
-	Sql toCountSql(Sql sql) throws SqlDialectException;
-
-	Sql toLimitSql(Sql sql, long start, long limit) throws SqlDialectException;
+	Environment getEnvironment();
 
 	Sql getInIds(TableStructure tableStructure, Object[] primaryKeys, Collection<?> inPrimaryKeys)
 			throws SqlDialectException;
 
-	Sql toCopyTableStructureSql(Class<?> entityClass, String newTableName, String oldTableName)
-			throws SqlDialectException;
-
-	Sql toMaxIdSql(TableStructure tableStructure, Field field) throws SqlDialectException;
+	SqlType getSqlType(Class<?> javaType);
 
 	TableStructureMapping getTableStructureMapping(TableStructure tableStructure);
 
-	Sql toQuerySqlByPrimaryKeys(TableStructure tableStructure, Object query);
+	Sql toCopyTableStructureSql(Class<?> entityClass, String newTableName, String oldTableName)
+			throws SqlDialectException;
 
-	Sql toQuerySqlByIndexs(TableStructure tableStructure, Object query);
+	Sql toCountSql(Sql sql) throws SqlDialectException;
 
-	Sql toQuerySql(TableStructure tableStructure, Object query);
+	Object toDataBaseValue(Value value);
 
-	Sql condition(Sql condition, Sql left, Sql right);
-
-	Sql toSql(Conditions conditions);
-
-	Sql toSaveSql(TableStructure structure, Collection<? extends Parameter> columns);
+	Sql toDeleteByIdSql(TableStructure tableStructure, Object... ids) throws SqlDialectException;
 
 	Sql toDeleteSql(TableStructure structure, Conditions conditions);
 
-	Sql toUpdateSql(TableStructure structure, Collection<? extends Parameter> columns, Conditions conditions);
+	Sql toDeleteSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
+
+	Sql toLastInsertIdSql(TableStructure tableStructure) throws SqlDialectException;
+
+	Sql toLimitSql(Sql sql, long start, long limit) throws SqlDialectException;
+
+	Sql toMaxIdSql(TableStructure tableStructure, Field field) throws SqlDialectException;
+
+	Sql toQuerySql(TableStructure tableStructure, Object query);
+
+	Sql toQuerySqlByIndexs(TableStructure tableStructure, Object query);
+
+	Sql toQuerySqlByPrimaryKeys(TableStructure tableStructure, Object query);
+
+	Sql toSaveColumnsSql(TableStructure structure, Collection<? extends Parameter> columns);
+
+	Sql toSaveIfAbsentSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
+
+	Sql toSaveSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
+
+	Sql toSelectByIdsSql(TableStructure tableStructure, Object... ids) throws SqlDialectException;
 
 	Sql toSelectSql(TableStructure structure, Conditions conditions, List<? extends OrderColumn> orders);
+
+	Sql toSql(Conditions conditions);
+
+	Sql toUpdatePartSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
+
+	Sql toUpdateSql(TableStructure structure, Collection<? extends Parameter> columns, Conditions conditions);
+
+	Sql toUpdateSql(TableStructure tableStructure, Object entity) throws SqlDialectException;
+
+	<T> Sql toUpdateSql(TableStructure tableStructure, T entity, T oldEntity) throws SqlDialectException;
 }

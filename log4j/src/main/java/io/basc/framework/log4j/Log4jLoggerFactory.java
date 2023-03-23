@@ -9,5 +9,5 @@ public class Log4jLoggerFactory implements ILoggerFactory {
 		org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(name);
 		return new Log4jLogger(logger, null);
 	}
-	
+
 }

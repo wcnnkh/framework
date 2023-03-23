@@ -38,7 +38,7 @@ public final class Sys extends DefaultEnvironment {
 					.ofNullable(env.getProperties().getAsString("io.basc.framework.logger.level.properties"))
 					.orElse("/logger-level.properties");
 			Observable<Properties> observable = env.getProperties(resourceName);
-			LoggerFactory.getLevelManager().registerProperties(observable);
+			LoggerFactory.getSource().getLevelManager().registerProperties(observable);
 		} catch (Throwable e) {
 			logger.error(e, "Initialization log level configuration exception");
 		}

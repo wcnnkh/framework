@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import io.basc.framework.event.AbstractObservable;
 import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventTypes;
+import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.Observable;
 import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.util.Assert;
@@ -109,7 +109,7 @@ public class StandardObservable<T> extends AbstractObservable<T> implements Even
 			}
 		} else {
 			if (event == null) {
-				publishEvent(new ObservableChangeEvent<T>(EventTypes.DELETE, value, select()));
+				publishEvent(new ObservableChangeEvent<T>(ChangeType.DELETE, value, select()));
 			} else {
 				publishEvent(event);
 			}
@@ -189,15 +189,15 @@ public class StandardObservable<T> extends AbstractObservable<T> implements Even
 				return;
 			} else {
 				// 创建
-				publishEvent(new ObservableChangeEvent<>(EventTypes.CREATE, oldValue, newValue));
+				publishEvent(new ObservableChangeEvent<>(ChangeType.CREATE, oldValue, newValue));
 			}
 		} else {
 			if (newValue == null) {
 				// 删除
-				publishEvent(new ObservableChangeEvent<>(EventTypes.DELETE, oldValue, newValue));
+				publishEvent(new ObservableChangeEvent<>(ChangeType.DELETE, oldValue, newValue));
 			} else {
 				// 更新
-				publishEvent(new ObservableChangeEvent<>(EventTypes.UPDATE, oldValue, newValue));
+				publishEvent(new ObservableChangeEvent<>(ChangeType.UPDATE, oldValue, newValue));
 			}
 		}
 	}

@@ -980,10 +980,6 @@ public abstract class ReflectionUtils {
 		return (paramTypes.length == 1 && paramTypes[0] == Object.class);
 	}
 
-	private static boolean isGroovyObjectMethod(Method method) {
-		return method.getDeclaringClass().getName().equals("groovy.lang.GroovyObject");
-	}
-
 	/**
 	 * Determine whether the given method is a "hashCode" method.
 	 * 
@@ -1044,26 +1040,6 @@ public abstract class ReflectionUtils {
 	 */
 	public static boolean isToStringMethod(Method method) {
 		return (method != null && method.getName().equals("toString") && method.getParameterTypes().length == 0);
-	}
-
-	/**
-	 * Determine whether the given method is declared by the user or at least
-	 * pointing to a user-declared method.
-	 * <p>
-	 * Checks {@link Method#isSynthetic()} (for implementation methods) as well as
-	 * the {@code GroovyObject} interface (for interface methods; on an
-	 * implementation class, implementations of the {@code GroovyObject} methods
-	 * will be marked as synthetic anyway). Note that, despite being synthetic,
-	 * bridge methods ({@link Method#isBridge()}) are considered as user-level
-	 * methods since they are eventually pointing to a user-declared generic method.
-	 * 
-	 * @param method the method to check
-	 * @return {@code true} if the method can be considered as user-declared; [@code
-	 *         false} otherwise
-	 */
-	public static boolean isUserLevelMethod(Method method) {
-		Assert.notNull(method, "Method must not be null");
-		return (method.isBridge() || (!method.isSynthetic() && !isGroovyObjectMethod(method)));
 	}
 
 	/**

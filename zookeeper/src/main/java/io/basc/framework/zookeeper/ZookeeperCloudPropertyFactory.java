@@ -13,7 +13,7 @@ import org.apache.zookeeper.ZooKeeper;
 
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.EventTypes;
+import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.support.StandardBroadcastNamedEventDispatcher;
 import io.basc.framework.io.JavaSerializer;
 import io.basc.framework.io.Serializer;
@@ -125,13 +125,13 @@ public class ZookeeperCloudPropertyFactory extends StandardBroadcastNamedEventDi
 		ChangeEvent<String> changeEvent;
 		switch (event.getType()) {
 		case NodeDeleted:
-			changeEvent = new ChangeEvent<String>(EventTypes.DELETE, key);
+			changeEvent = new ChangeEvent<String>(ChangeType.DELETE, key);
 			break;
 		case NodeCreated:
-			changeEvent = new ChangeEvent<String>(EventTypes.CREATE, key);
+			changeEvent = new ChangeEvent<String>(ChangeType.CREATE, key);
 			break;
 		default:
-			changeEvent = new ChangeEvent<String>(EventTypes.UPDATE, key);
+			changeEvent = new ChangeEvent<String>(ChangeType.UPDATE, key);
 			break;
 		}
 

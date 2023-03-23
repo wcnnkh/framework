@@ -16,6 +16,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.mapper.ObjectMapperContext;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.Structure;
 import io.basc.framework.orm.EntityStructure;
@@ -328,5 +329,11 @@ public class DefaultObjectMapper<S, E extends Throwable> extends io.basc.framewo
 		}
 
 		transform(source, sourceType, target, targetType);
+	}
+
+	@Override
+	public boolean hasEffectiveValue(Object entity, Parameter parameter) {
+		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+				.hasEffectiveValue(entity, parameter);
 	}
 }

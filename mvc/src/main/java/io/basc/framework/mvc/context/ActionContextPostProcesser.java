@@ -10,8 +10,7 @@ import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.EnableConditionUtils;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.event.EventListener;
-import io.basc.framework.event.ObjectEvent;
+import io.basc.framework.event.ChangeType;
 import io.basc.framework.factory.BeanLifecycleEvent.Step;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -89,11 +88,11 @@ public class ActionContextPostProcesser implements ContextPostProcessor {
 				actionAuthorityManager.register(action);
 			}
 
-			actionManager.registerListener(new EventListener<ObjectEvent<Action>>() {
-
-				@Override
-				public void onEvent(ObjectEvent<Action> event) {
+			actionManager.registerListener((event) -> {
+				if (event.getChangeType() == ChangeType.CREATE) {
 					actionAuthorityManager.register(event.getSource());
+				} else if (event.getChangeType() == ChangeType.DELETE) {
+					actionAuthorityManager.unregister(event.getSource());
 				}
 			});
 		}

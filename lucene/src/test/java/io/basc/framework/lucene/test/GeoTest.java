@@ -36,7 +36,7 @@ public class GeoTest {
 
 	@Test
 	public void test() throws LuceneWriteException, InterruptedException, ExecutionException {
-		LoggerFactory.getLevelManager().getSourceMap().put("io.basc.framework.util.concurrent.TaskQueue",
+		LoggerFactory.getSource().getLevelManager().getSourceMap().put("io.basc.framework.util.concurrent.TaskQueue",
 				Levels.DEBUG.getValue());
 
 		// SpatialPrefixTree也可以通过SpatialPrefixTreeFactory工厂类构建

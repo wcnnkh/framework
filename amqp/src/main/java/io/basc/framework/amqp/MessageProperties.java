@@ -12,7 +12,9 @@ import io.basc.framework.math.NumberHolder;
 import io.basc.framework.script.MathScriptEngine;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.Value;
+import lombok.Data;
 
+@Data
 public class MessageProperties implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private static final String DELAY_MESSAGE = "framework.amqp.message.delay";
@@ -38,7 +40,7 @@ public class MessageProperties implements Serializable, Cloneable {
 	private String userId;
 	private String appId;
 	private String clusterId;
-	
+
 	public MessageProperties() {
 	}
 
@@ -66,120 +68,8 @@ public class MessageProperties implements Serializable, Cloneable {
 		return new MessageProperties(this);
 	}
 
-	public String getContentType() {
-		return contentType;
-	}
-
-	public void setContentType(String contentType) {
-		this.contentType = contentType;
-	}
-
-	public String getContentEncoding() {
-		return contentEncoding;
-	}
-
-	public void setContentEncoding(String contentEncoding) {
-		this.contentEncoding = contentEncoding;
-	}
-
-	public Map<String, Object> getHeaders() {
-		return headers;
-	}
-
-	public void setHeaders(Map<String, Object> headers) {
-		this.headers = headers;
-	}
-
-	public Integer getDeliveryMode() {
-		return deliveryMode;
-	}
-
-	public void setDeliveryMode(Integer deliveryMode) {
-		this.deliveryMode = deliveryMode;
-	}
-
-	public Integer getPriority() {
-		return priority;
-	}
-
-	public void setPriority(Integer priority) {
-		this.priority = priority;
-	}
-
-	public String getCorrelationId() {
-		return correlationId;
-	}
-
-	public void setCorrelationId(String correlationId) {
-		this.correlationId = correlationId;
-	}
-
-	public String getReplyTo() {
-		return replyTo;
-	}
-
-	public void setReplyTo(String replyTo) {
-		this.replyTo = replyTo;
-	}
-
-	public String getExpiration() {
-		return expiration;
-	}
-
-	public void setExpiration(Long expiration) {
+	public void setLongExpiration(Long expiration) {
 		this.expiration = expiration == null ? null : ("" + expiration);
-	}
-
-	public void setExpiration(String expiration) {
-		this.expiration = expiration;
-	}
-
-	public String getMessageId() {
-		return messageId;
-	}
-
-	public void setMessageId(String messageId) {
-		this.messageId = messageId;
-	}
-
-	public Date getTimestamp() {
-		return timestamp;
-	}
-
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
-	public String getAppId() {
-		return appId;
-	}
-
-	public void setAppId(String appId) {
-		this.appId = appId;
-	}
-
-	public String getClusterId() {
-		return clusterId;
-	}
-
-	public void setClusterId(String clusterId) {
-		this.clusterId = clusterId;
 	}
 
 	public Object getHeader(String name) {
@@ -226,7 +116,7 @@ public class MessageProperties implements Serializable, Cloneable {
 			removeHeader(DELAY_MESSAGE);
 			setExpiration((String) null);
 		} else {
-			setExpiration(timeUnit.toMillis(delay));
+			setLongExpiration(timeUnit.toMillis(delay));
 			setHeader(DELAY_MESSAGE, getExpiration());
 		}
 		return this;

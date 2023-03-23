@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventTypes;
+import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.NamedEventRegistry;
 import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.util.CollectionFactory;
@@ -79,18 +79,18 @@ public class StandardObservableMap<K, V> extends StandardObservable<Map<K, V>>
 					return;
 				} else {
 					ConsumeProcessor.consumeAll(newMap.keySet(), (key) -> eventListener
-							.onEvent(new ChangeEvent<>(e.getCreateTime(), EventTypes.CREATE, key)));
+							.onEvent(new ChangeEvent<>(e.getCreateTime(), ChangeType.CREATE, key)));
 				}
 			} else {
 				if (CollectionUtils.isEmpty(newMap)) {
 					ConsumeProcessor.consumeAll(oldMap.keySet(), (key) -> eventListener
-							.onEvent(new ChangeEvent<>(e.getCreateTime(), EventTypes.DELETE, key)));
+							.onEvent(new ChangeEvent<>(e.getCreateTime(), ChangeType.DELETE, key)));
 				} else {
 					List<K> keys = Stream.concat(oldMap.keySet().stream(), newMap.keySet().stream())
 							.filter((key) -> !Objects.equals(oldMap.get(key), newMap.get(key)))
 							.collect(Collectors.toList());
 					ConsumeProcessor.consumeAll(keys, (key) -> eventListener
-							.onEvent(new ChangeEvent<>(e.getCreateTime(), EventTypes.UPDATE, key)));
+							.onEvent(new ChangeEvent<>(e.getCreateTime(), ChangeType.UPDATE, key)));
 				}
 			}
 		});

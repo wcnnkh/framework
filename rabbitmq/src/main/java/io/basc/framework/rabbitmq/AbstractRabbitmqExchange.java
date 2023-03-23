@@ -1,6 +1,7 @@
 package io.basc.framework.rabbitmq;
 
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 import com.rabbitmq.client.Channel;
 
@@ -12,7 +13,8 @@ import io.basc.framework.amqp.Message;
 import io.basc.framework.amqp.MessageListener;
 import io.basc.framework.amqp.QueueDeclare;
 import io.basc.framework.factory.Init;
-import io.basc.framework.json.JsonUtils;
+import io.basc.framework.lang.NamedThreadLocal;
+import io.basc.framework.util.DisposableRegistration;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.RegistrationException;
 
@@ -20,6 +22,8 @@ public abstract class AbstractRabbitmqExchange extends AbstractExchange<byte[]> 
 	static final String DIX_ROUTING_KEY = "io.basc.framework.dix.routingKey";
 	static final String X_DEAD_LETTER_EXCHANGE = "x-dead-letter-exchange";
 	static final String DELAY_ROUTING_KEY = "io.basc.framework.delay.routingKey";
+	private final ThreadLocal<Channel> channelThreadLocal = new NamedThreadLocal<Channel>(
+			RabbitmqExchange.class.getSimpleName() + "-channel");
 
 	/**
 	 * 默认持久化
@@ -70,7 +74,18 @@ public abstract class AbstractRabbitmqExchange extends AbstractExchange<byte[]> 
 		}
 	}
 
-	protected abstract Channel getChannel() throws IOException;
+	protected abstract Channel createChannel() throws IOException;
+
+	public Channel getChannel() throws IOException {
+		Channel channel = channelThreadLocal.get();
+		if (channel != null && channel.isOpen()) {
+			return channel;
+		}
+
+		channel = createChannel();
+		channelThreadLocal.set(channel);
+		return channel;
+	}
 
 	private final void declare(ExchangeDeclare exchangeDeclare, QueueDeclare queueDeclare) throws IOException {
 		if (exchangeDeclare != null) {
@@ -91,23 +106,23 @@ public abstract class AbstractRabbitmqExchange extends AbstractExchange<byte[]> 
 					routingKey);
 		}
 
-		getChannel().queueBind(queueDeclare.getName(), exchangeDeclare.getName(), routingKey);
+		Channel channel = createChannel();
+		channel.queueBind(queueDeclare.getName(), exchangeDeclare.getName(), routingKey);
 		if (messageListener != null) {
-			getChannel().basicConsume(queueDeclare.getName(), false,
-					new RabbitmqMessageListener(getChannel(), messageListener, isMultiple()));
+			channel.basicConsume(queueDeclare.getName(), false,
+					new RabbitmqMessageListener(channel, messageListener, isMultiple()));
 		}
 
-		return () -> {
+		return DisposableRegistration.of(() -> {
 			try {
-				com.rabbitmq.client.AMQP.Queue.UnbindOk unbindOk = getChannel().queueUnbind(queueDeclare.getName(),
-						exchangeDeclare.getName(), routingKey);
 				logger.info("unbind exchangeDeclare:{}, queueDeclare:{}, routingKey:{}, result:{}", exchangeDeclare,
-						queueDeclare, routingKey, unbindOk);
-			} catch (IOException e) {
+						queueDeclare, routingKey);
+				channel.close();
+			} catch (IOException | TimeoutException e) {
 				throw new RegistrationException("unbind exchangeDeclare:" + exchangeDeclare + ", queueDeclare:"
 						+ queueDeclare + ", routingKey:" + routingKey, e);
 			}
-		};
+		});
 	}
 
 	@Override
@@ -131,7 +146,7 @@ public abstract class AbstractRabbitmqExchange extends AbstractExchange<byte[]> 
 		ExchangeDeclare exchangeDeclare = message.getDelay() > 0 ? getDelayExchangeDeclare() : getExchangeDeclare();
 		if (logger.isDebugEnabled()) {
 			logger.debug("push exchange={}, routingKey={}, properties={}, body={}", exchangeDeclare.getName(),
-					routingKey, JsonUtils.getSupport().toJsonString(message));
+					routingKey, message);
 		}
 
 		if (message.getDeliveryMode() == null) {

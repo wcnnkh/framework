@@ -19,17 +19,6 @@ import io.basc.framework.lang.Nullable;
  *
  */
 public class LevelManager extends StandardObservableProperties<String, Level> {
-
-	private static final Comparator<String> LEVEL_NAME_COMPARATOR = new Comparator<String>() {
-		public int compare(String o1, String o2) {
-			if (o1.equals(o2)) {
-				return 0;
-			}
-
-			return o1.length() > o2.length() ? -1 : 1;
-		};
-	};
-
 	private static final Function<Properties, Map<String, Level>> CONVERTER = (properties) -> {
 		Map<String, Level> map = new HashMap<>();
 		for (Entry<Object, Object> entry : properties.entrySet()) {
@@ -51,6 +40,16 @@ public class LevelManager extends StandardObservableProperties<String, Level> {
 			map.put(String.valueOf(key), level);
 		}
 		return map;
+	};
+
+	private static final Comparator<String> LEVEL_NAME_COMPARATOR = new Comparator<String>() {
+		public int compare(String o1, String o2) {
+			if (o1.equals(o2)) {
+				return 0;
+			}
+
+			return o1.length() > o2.length() ? -1 : 1;
+		};
 	};
 
 	public LevelManager() {

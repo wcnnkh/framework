@@ -11,6 +11,7 @@ import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.ObjectMapperContext;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.orm.ObjectRelationalResolver;
 import io.basc.framework.orm.support.ObjectRelationalResolverExtend;
@@ -367,5 +368,23 @@ public class AnnotationObjectRelationalResolverExtend
 		context.setNamePrefix(prefix);
 		context.setLoggerLevel(configurationProperties.loggerLevel().getValue());
 		return context;
+	}
+
+	@Override
+	public boolean hasEffectiveValue(Object entity, Parameter parameter, ObjectRelationalResolver chain) {
+		InvalidBaseTypeValue invalidBaseTypeValue = AnnotatedElementUtils.getMergedAnnotation(parameter,
+				InvalidBaseTypeValue.class);
+		if (invalidBaseTypeValue != null && invalidBaseTypeValue.value().length > 0) {
+			Object value = parameter.getSource();
+			if (value instanceof Number) {
+				double dv = ((Number) value).doubleValue();
+				for (double invalid : invalidBaseTypeValue.value()) {
+					if (dv == invalid) {
+						return false;
+					}
+				}
+			}
+		}
+		return ObjectRelationalResolverExtend.super.hasEffectiveValue(entity, parameter, chain);
 	}
 }

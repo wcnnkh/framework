@@ -1,7 +1,7 @@
 package io.basc.framework.logger;
 
 /**
- * 扩展logger的一种方式,会使用spi机制加载
+ * 扩展logger的一种方式,默认会使用spi机制加载
  * 
  * @author wcnnkh
  * @see LoggerFactory

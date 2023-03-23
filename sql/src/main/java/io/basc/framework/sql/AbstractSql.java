@@ -1,12 +1,15 @@
 package io.basc.framework.sql;
 
+import java.util.Arrays;
+
+import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ObjectUtils;
 
 public abstract class AbstractSql implements Sql {
 
 	@Override
 	public int hashCode() {
-		return ObjectUtils.hash(getSql(), getParams());
+		return CollectionUtils.hashCode(Arrays.asList(getSql(), getParams()));
 	}
 
 	@Override

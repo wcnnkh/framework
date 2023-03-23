@@ -10,10 +10,11 @@ import io.basc.framework.logger.Levels;
 import io.basc.framework.logger.LoggerFactory;
 
 public class TimerTest {
-	
+
 	@Test
 	public void test() throws InterruptedException, ExecutionException {
-		LoggerFactory.getLevelManager().getSourceMap().put("io.basc.framework.context", Levels.DEBUG.getValue());
+		LoggerFactory.getSource().getLevelManager().getSourceMap().put("io.basc.framework.context",
+				Levels.DEBUG.getValue());
 		Application application = MainApplication.run(TimerTest.class).get();
 		application.destroy();
 	}

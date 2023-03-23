@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import io.basc.framework.event.BroadcastNamedEventDispatcher;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.EventTypes;
+import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.support.StandardBroadcastNamedEventDispatcher;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
@@ -32,7 +32,7 @@ public class PropertyFactories implements PropertyFactory, Configurable {
 				if (super.addService(service, targetServices)) {
 					long t = System.currentTimeMillis();
 					ConsumeProcessor.consumeAll(service.iterator(), (e) -> namedEventDispatcher.publishEvent(e,
-							new ChangeEvent<String>(t, EventTypes.CREATE, e)));
+							new ChangeEvent<String>(t, ChangeType.CREATE, e)));
 					return true;
 				}
 				return false;

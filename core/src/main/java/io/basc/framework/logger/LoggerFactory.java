@@ -1,24 +1,23 @@
 package io.basc.framework.logger;
 
+import io.basc.framework.factory.support.SimpleServiceLoaderFactory;
+
 public final class LoggerFactory {
-	private static final DynamicLoggerFactory LOGGER_FACTORY = new DynamicLoggerFactory();
-	private static final LevelManager LEVEL_MANAGER = LOGGER_FACTORY.getServiceLoaderFactory()
-			.getServiceLoader(LevelManager.class).findFirst().orElseGet(() -> new LevelManager());
-
-	public static LevelManager getLevelManager() {
-		return LEVEL_MANAGER;
-	}
-
-	public static ILoggerFactory getLoggerFactory() {
-		return LOGGER_FACTORY;
-	}
-
-	public static Logger getLogger(String name) {
-		return LOGGER_FACTORY.getLogger(name);
-	}
+	private static final DynamicLoggerFactory SOURCE = new DynamicLoggerFactory();
 
 	public static Logger getLogger(Class<?> clazz) {
 		return getLogger(clazz.getName());
+	}
+
+	public static Logger getLogger(String name) {
+		if (!SOURCE.isConfigured()) {
+			SOURCE.configure(SimpleServiceLoaderFactory.INSTANCE);
+		}
+		return SOURCE.getLogger(name);
+	}
+
+	public static DynamicLoggerFactory getSource() {
+		return SOURCE;
 	}
 
 	private LoggerFactory() {

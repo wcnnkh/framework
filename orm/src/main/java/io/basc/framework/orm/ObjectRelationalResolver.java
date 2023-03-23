@@ -1,13 +1,15 @@
 package io.basc.framework.orm;
 
+import java.util.Collection;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.ObjectMapperContext;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.comparator.Sort;
-
-import java.util.Collection;
 
 public interface ObjectRelationalResolver {
 	boolean isIgnore(Class<?> entityClass);
@@ -62,4 +64,31 @@ public interface ObjectRelationalResolver {
 	boolean isConfigurable(TypeDescriptor sourceType);
 
 	ObjectMapperContext getContext(TypeDescriptor sourceType, ObjectMapperContext parent);
+
+	/**
+	 * 是否存在有效值
+	 * 
+	 * @param entity
+	 * @param field
+	 * @return
+	 */
+	default boolean hasEffectiveValue(Object entity, Field field) {
+		if (!field.isSupportGetter()) {
+			return false;
+		}
+
+		Object value = field.get(entity);
+		if (value == null) {
+			return false;
+		}
+
+		Parameter parameter = new Parameter(field.getName(), value, new TypeDescriptor(field.getGetter()));
+		if (!parameter.isPresent()) {
+			return false;
+		}
+
+		return hasEffectiveValue(entity, parameter);
+	}
+
+	boolean hasEffectiveValue(Object entity, Parameter parameter);
 }

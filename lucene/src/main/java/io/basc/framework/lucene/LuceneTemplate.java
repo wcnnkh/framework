@@ -57,19 +57,20 @@ public interface LuceneTemplate extends Repository {
 		if (entity instanceof Query) {
 			// TODO 应该支持这个吗，有点违背本意, 应该是删除单个
 			try {
-				write((indexWriter) -> indexWriter.deleteDocuments((Query) entity)).get();
+				return write((indexWriter) -> indexWriter.deleteDocuments((Query) entity)).get() > 0;
 			} catch (InterruptedException | ExecutionException e) {
 				throw new LuceneException(e);
 			}
 		} else if (entity instanceof Term) {
 			// 同步
 			try {
-				write((indexWriter) -> indexWriter.deleteDocuments((Term) entity)).get();
+				return write((indexWriter) -> indexWriter.deleteDocuments((Term) entity)).get() > 0;
 			} catch (InterruptedException | ExecutionException e) {
 				throw new LuceneException(e);
 			}
+		} else {
+			return Repository.super.delete(entity);
 		}
-		return Repository.super.delete(entity);
 	}
 
 	default Future<Long> delete(Query query) throws LuceneWriteException {
@@ -232,7 +233,8 @@ public interface LuceneTemplate extends Repository {
 	}
 
 	@Override
-	default <E> long save(Class<? extends E> entityClass, Collection<? extends Parameter> columns) throws OrmException {
+	default <E> long saveColumns(Class<? extends E> entityClass, Collection<? extends Parameter> columns)
+			throws OrmException {
 		List<Parameter> list = getMapper().open(entityClass, columns, null);
 		if (CollectionUtils.isEmpty(list)) {
 			return 0L;
