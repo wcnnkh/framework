@@ -12,7 +12,7 @@ import io.basc.framework.orm.ObjectRelationalResolver;
  * 
  * @author wcnnkh
  * @see ObjectRelationalResolver#hasEffectiveValue(Object,
- *      io.basc.framework.mapper.Field)
+ *      io.basc.framework.mapper.Parameter)
  */
 @Target({ ElementType.FIELD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)

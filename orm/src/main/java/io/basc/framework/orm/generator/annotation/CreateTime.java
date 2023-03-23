@@ -13,5 +13,5 @@ import io.basc.framework.orm.annotation.InvalidBaseTypeValue;
 @InvalidBaseTypeValue
 public @interface CreateTime {
 	@AliasFor(annotation = InvalidBaseTypeValue.class)
-	double[] value() default {0};
+	double[] value() default { 0 };
 }
