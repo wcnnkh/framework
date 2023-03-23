@@ -7,6 +7,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
 
 public interface Logger {
+
 	default LogRecord createRecord(Level level, Throwable thrown, String msg, Object... args) {
 		LogRecord logRecord = new LogRecord(level, msg);
 		if (thrown != null) {

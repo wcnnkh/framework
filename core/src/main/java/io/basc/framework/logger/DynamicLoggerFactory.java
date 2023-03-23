@@ -10,6 +10,7 @@ import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.ConsumeProcessor;
 import io.basc.framework.util.Registration;
 
 public class DynamicLoggerFactory extends StandardBroadcastEventDispatcher<LevelManager>
@@ -72,8 +73,7 @@ public class DynamicLoggerFactory extends StandardBroadcastEventDispatcher<Level
 					if (source instanceof DynamicLogger) {
 						logger = (DynamicLogger) source;
 					} else {
-						logger = new DynamicLogger();
-						logger.setSource(source);
+						logger = new DynamicLogger(source);
 					}
 
 					Level level = levelManager.getLevel(name);
@@ -155,6 +155,18 @@ public class DynamicLoggerFactory extends StandardBroadcastEventDispatcher<Level
 				}
 			}
 			return old;
+		}
+	}
+
+	public <E extends Throwable> void update(ConsumeProcessor<? super DynamicLogger, ? extends E> updateProcessor) {
+		synchronized (this) {
+			for (Entry<String, DynamicLogger> entry : loggerMap.entrySet()) {
+				try {
+					updateProcessor.process(entry.getValue());
+				} catch (Throwable e) {
+					entry.getValue().error(e, "Failed to close the old logger {}", entry.getKey());
+				}
+			}
 		}
 	}
 }

@@ -12,6 +12,7 @@ public class JdkLoggerTest {
 	public void test() {
 		JdkLoggerFactory loggerFactory = new JdkLoggerFactory();
 		Logger logger = loggerFactory.getLogger(JdkLoggerTest.class.getName());
+		logger.info("AAA");
 		assertTrue(logger.isInfoEnabled());
 	}
 }
