@@ -11,18 +11,12 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.mapper.DefaultObjectMapper;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.Fields;
-import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.mapper.Structure;
 import io.basc.framework.util.XUtils;
 
 public class MapperTest {
 	@Test
 	public void util() {
-		A entity = new A();
-		Field field = Fields.getFields(A.class).byName("v").first();
-		assertTrue(MapperUtils.isExistValue(field, entity));
-
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("k", XUtils.getUUID());
 		map.put("b.bk", XUtils.getUUID());

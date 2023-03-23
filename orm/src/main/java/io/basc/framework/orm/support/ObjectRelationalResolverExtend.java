@@ -1,15 +1,16 @@
 package io.basc.framework.orm.support;
 
+import java.util.Collection;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.ObjectMapperContext;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.orm.ObjectRelationalResolver;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.comparator.Sort;
-
-import java.util.Collection;
 
 public interface ObjectRelationalResolverExtend {
 	default boolean isIgnore(Class<?> entityClass, ObjectRelationalResolver chain) {
@@ -120,8 +121,12 @@ public interface ObjectRelationalResolverExtend {
 			ObjectRelationalResolver chain) {
 		return chain.getContext(sourceType, parent);
 	}
-	
+
 	default boolean isConfigurable(TypeDescriptor sourceType, ObjectRelationalResolver chain) {
 		return chain.isConfigurable(sourceType);
+	}
+
+	default boolean hasEffectiveValue(Object entity, Parameter parameter, ObjectRelationalResolver chain) {
+		return chain.hasEffectiveValue(entity, parameter);
 	}
 }

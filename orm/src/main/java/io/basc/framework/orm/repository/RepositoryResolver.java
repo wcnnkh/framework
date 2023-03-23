@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.Structure;
@@ -69,7 +68,7 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 			getStructure(column.getType()).columns().filter((e) -> {
 				resolveOrders(column.getType(), e.getGetter(), appendableOrders);
 				return true;
-			}).filter((e) -> !e.isAutoIncrement() || MapperUtils.isExistValue(e, column.getSource())).forEach((c) -> {
+			}).filter((e) -> !e.isAutoIncrement() || hasEffectiveValue(column.getSource(), e)).forEach((c) -> {
 				Parameter repositoryColumn = c.getParameter(column.getSource());
 				list.add(repositoryColumn);
 			});

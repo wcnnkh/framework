@@ -5,20 +5,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.basc.framework.core.annotation.AliasFor;
+import io.basc.framework.orm.ObjectRelationalResolver;
 
 /**
- * 自增字段
- * <p>
- * 一般情况下不要使用基本数据类型
+ * 无效的基本数据类型值
  * 
  * @author wcnnkh
- *
+ * @see ObjectRelationalResolver#hasEffectiveValue(Object,
+ *      io.basc.framework.mapper.Field)
  */
-@Target(ElementType.FIELD)
+@Target({ ElementType.FIELD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-@InvalidBaseTypeValue
-public @interface AutoIncrement {
-	@AliasFor(annotation = InvalidBaseTypeValue.class)
+public @interface InvalidBaseTypeValue {
 	double[] value() default {};
 }

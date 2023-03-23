@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.sql.EasySql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
@@ -162,7 +161,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column, entity)) {
+			if (column.isAutoIncrement() && !hasEffectiveValue(entity, column)) {
 				continue;
 			}
 
@@ -196,7 +195,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column, entity)) {
+			if (column.isAutoIncrement() && !hasEffectiveValue(entity, column)) {
 				continue;
 			}
 

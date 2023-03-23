@@ -66,44 +66,6 @@ public class MapperUtils {
 	}
 
 	/**
-	 * @param field
-	 * @param instance
-	 * @return value != null
-	 */
-	public static boolean isExistValue(io.basc.framework.mapper.Field field, Object instance) {
-		if (!field.isSupportGetter()) {
-			return false;
-		}
-
-		if (!field.isSupportGetter()) {
-			return false;
-		}
-
-		if (field.getGetter().getType().isPrimitive()) {
-			return true;
-		}
-
-		return field.get(instance) != null;
-	}
-
-	/**
-	 * @param getter
-	 * @param instance
-	 * @return value != null
-	 */
-	public static boolean isExistValue(Getter getter, Object instance) {
-		if (getter == null) {
-			return false;
-		}
-
-		if (getter.getType().isPrimitive()) {
-			return true;
-		}
-
-		return getter.get(instance) != null;
-	}
-
-	/**
 	 * 递归解析
 	 * 
 	 * @param instance

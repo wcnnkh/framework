@@ -1,17 +1,18 @@
 package io.basc.framework.orm.support;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.ObjectMapperContext;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.orm.ObjectRelationalResolver;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.comparator.Sort;
-
-import java.util.Collection;
-import java.util.Iterator;
 
 public class ObjectRelationalResolverExtendChain implements ObjectRelationalResolver {
 
@@ -229,5 +230,14 @@ public class ObjectRelationalResolverExtendChain implements ObjectRelationalReso
 			return iterator.next().isConfigurable(sourceType, this);
 		}
 		return nextChain == null ? false : nextChain.isConfigurable(sourceType);
+	}
+
+	@Override
+	public boolean hasEffectiveValue(Object entity, Parameter parameter) {
+		if (iterator.hasNext()) {
+			return iterator.next().hasEffectiveValue(entity, parameter, this);
+		}
+
+		return nextChain == null ? parameter.isPresent() : nextChain.hasEffectiveValue(entity, parameter);
 	}
 }

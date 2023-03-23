@@ -15,7 +15,6 @@ import io.basc.framework.locks.ReentrantLockFactory;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.orm.MaxValueFactory;
 import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.generator.annotation.CreateTime;
@@ -50,7 +49,7 @@ public class DefaultGeneratorProcessor implements GeneratorProcessor {
 	public <T> void process(Class<? extends T> entityClass, Object entity) {
 		Map<Object, Object> contextMap = new HashMap<Object, Object>();
 		for (Field field : objectRelationalMapping.getStructure(entityClass)) {
-			if (MapperUtils.isExistValue(field, entity)) {
+			if (objectRelationalMapping.hasEffectiveValue(entity, field)) {
 				// 存在默认值 ，忽略
 				continue;
 			}

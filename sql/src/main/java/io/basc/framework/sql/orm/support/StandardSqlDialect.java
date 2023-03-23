@@ -17,7 +17,6 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.ParameterException;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.orm.repository.Condition;
 import io.basc.framework.orm.repository.ConditionKeywords;
@@ -651,7 +650,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column, entity)) {
+			if (column.isAutoIncrement() && !hasEffectiveValue(entity, column)) {
 				continue;
 			}
 
@@ -794,7 +793,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			}
 
 			// 如果字段不能为空，且实体字段没有值就忽略
-			if (!column.isNullable() && !MapperUtils.isExistValue(column, entity)) {
+			if (!column.isNullable() && !hasEffectiveValue(entity, column)) {
 				return false;
 			}
 			return true;

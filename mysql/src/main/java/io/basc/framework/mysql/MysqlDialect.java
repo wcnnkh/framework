@@ -16,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
-import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.sql.EasySql;
 import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
@@ -85,7 +84,7 @@ public class MysqlDialect extends StandardSqlDialect {
 		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column, entity)) {
+			if (column.isAutoIncrement() && !hasEffectiveValue(entity, column)) {
 				continue;
 			}
 
@@ -113,7 +112,7 @@ public class MysqlDialect extends StandardSqlDialect {
 		iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column, entity)) {
+			if (column.isAutoIncrement() && !hasEffectiveValue(entity, column)) {
 				continue;
 			}
 
@@ -286,7 +285,7 @@ public class MysqlDialect extends StandardSqlDialect {
 		Iterator<Column> iterator = tableStructure.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.isAutoIncrement() && !MapperUtils.isExistValue(column, entity)) {
+			if (column.isAutoIncrement() && !hasEffectiveValue(entity, column)) {
 				continue;
 			}
 
