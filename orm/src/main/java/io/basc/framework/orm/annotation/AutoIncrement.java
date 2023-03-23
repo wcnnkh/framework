@@ -10,7 +10,7 @@ import io.basc.framework.core.annotation.AliasFor;
 /**
  * 自增字段
  * <p>
- * 一般情况下不要使用基本数据类型
+ * 默认忽略值为0的数据{@link #value()}
  * 
  * @author wcnnkh
  *
@@ -20,5 +20,5 @@ import io.basc.framework.core.annotation.AliasFor;
 @InvalidBaseTypeValue
 public @interface AutoIncrement {
 	@AliasFor(annotation = InvalidBaseTypeValue.class)
-	double[] value() default {};
+	double[] value() default { 0 };
 }

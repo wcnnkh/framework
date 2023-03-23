@@ -42,6 +42,7 @@ public class OrmTest {
 	}
 
 	private static void saveOrUpdate() {
+		System.out.println("------------------saveOrUpdate");
 		LoggerFactory.getSource().getLevelManager().getSourceMap().put("io.basc.framework.sql",
 				Levels.DEBUG.getValue());
 		for (int i = 0; i < 5; i++) {

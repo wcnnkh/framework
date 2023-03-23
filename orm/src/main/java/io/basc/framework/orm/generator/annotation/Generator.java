@@ -13,5 +13,5 @@ import io.basc.framework.orm.annotation.InvalidBaseTypeValue;
 @InvalidBaseTypeValue
 public @interface Generator {
 	@AliasFor(annotation = InvalidBaseTypeValue.class)
-	double[] value() default {};
+	double[] value() default { 0 };
 }

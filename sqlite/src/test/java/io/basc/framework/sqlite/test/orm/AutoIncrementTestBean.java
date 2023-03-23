@@ -8,7 +8,7 @@ import lombok.Data;
 public class AutoIncrementTestBean {
 	@AutoIncrement
 	@PrimaryKey
-	private Integer id;
+	private int id;
 	
 	private String value;
 }
