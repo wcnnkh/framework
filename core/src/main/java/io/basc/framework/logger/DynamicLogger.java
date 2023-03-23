@@ -140,10 +140,11 @@ public class DynamicLogger implements Logger, EventListener<LevelManager> {
 
 	public void setSource(Logger source) {
 		Assert.requiredArgument(source != null, "source");
-		info("Logger change from {} to {}", this.source, source);
+		Logger oldLogger = this.source;
 		this.source = source;
 		if (level != null) {
-			source.setLevel(level);
+			this.source.setLevel(level);
 		}
+		info("Logger change from {} to {}", oldLogger, this.source);
 	}
 }
