@@ -6,7 +6,7 @@
 	<!-- generateBackupPoms 是否备份旧的pom.xml -->
 	<!-- newVersion 新的版本号 -->
 	<!-- mvn versions:set -DnewVersion=1.8.0 -DgenerateBackupPoms=false -->
-	<version>1.8.3</version>
+	<version>1.8.4</version>
 	<packaging>pom</packaging>
 	<name>framework</name>
 	<description>一些常见的实现</description>
@@ -312,343 +312,343 @@
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>core</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>context</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>transaction</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>tcc</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>messageing</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>boot</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>sql</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>log4j</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>log4j2</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>cloud</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>lucene</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>web</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>rpc</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>orm</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>yaml</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>mysql</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>oracle</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>sqlserver</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>sqlite</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>websocket</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>dubbo</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>timer</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>mvc</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>security</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>data</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>memcached</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>xmemcached</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>redis</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>jedis</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>druid</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>hikaricp</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>hibernate</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>ibatis</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>db</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>amqp</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>jms</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>activemq-client</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>microsoft</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>freemarker</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>mail</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>rabbitmq</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>upload</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>zookeeper</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>zookeeper-server</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>netflix-eureka-client</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>netflix-eureka-server</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>netflix-hystrix</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>feign</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>tomcat</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>quartz</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>rmi</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>protobuf</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>kryo</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>fastjson</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>hessian</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>slf4j</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>consistency</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>jackson</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>seata</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>apollo-client</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>dom</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>xml</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>swagger</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>jpa</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>validation</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>csv</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>console</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 			</dependency>
 			<!-- 测试 -->
 			<dependency>
 				<groupId>io.basc.framework</groupId>
 				<artifactId>testing</artifactId>
-				<version>1.8.3</version>
+				<version>1.8.4</version>
 				<scope>test</scope>
 			</dependency>
 			<!-- 测试 -->
