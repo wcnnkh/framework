@@ -636,6 +636,11 @@
 			</dependency>
 			<dependency>
 				<groupId>io.basc.framework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>1.8.4</version>
+			</dependency>
+			<dependency>
+				<groupId>io.basc.framework</groupId>
 				<artifactId>csv</artifactId>
 				<version>1.8.4</version>
 			</dependency>
@@ -822,6 +827,7 @@
 		<module>csv</module>
 		<module>activemq-broker</module>
 		<module>activemq-client</module>
+		<module>spring-context</module>
 	</modules>
 	<profiles>
 		<profile>

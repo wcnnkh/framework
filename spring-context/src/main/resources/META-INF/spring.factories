@@ -1,0 +1,2 @@
+org.springframework.context.ApplicationListener=io.basc.framework.spring.context.boot.SpringBootApplicationListener
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=io.basc.framework.spring.context.FrameworkConfiguration
