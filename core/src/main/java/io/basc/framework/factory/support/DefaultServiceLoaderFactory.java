@@ -4,38 +4,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.basc.framework.factory.ConfigurableServiceLoaderFactory;
-import io.basc.framework.util.DefaultServiceLoader;
-import io.basc.framework.util.Registration;
+import io.basc.framework.util.ConfigurableServiceLoader1;
 import io.basc.framework.util.ServiceLoader;
 
 public class DefaultServiceLoaderFactory extends DefaultInstanceFactory implements ConfigurableServiceLoaderFactory {
-	private final Map<Class<?>, DefaultServiceLoader<?>> serviceLoaderMap = new HashMap<>();
-
-	protected <S> ServiceLoader<S> getBeforeServiceLoader(Class<S> serviceClass) {
-		return getConfigurableServiceLoader(serviceClass);
-	}
-
-	protected <S> ServiceLoader<S> getAfterServiceLoader(Class<S> serviceClass) {
-		return new SpiServiceLoader<S>(serviceClass, this);
-	}
-
-	@Override
-	public <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass) {
-		return ServiceLoader.concat(getBeforeServiceLoader(serviceClass), getAfterServiceLoader(serviceClass));
-	}
+	private volatile Map<Class<?>, ConfigurableServiceLoader1<?>> serviceLoaderMap = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
-	public <S> DefaultServiceLoader<S> getConfigurableServiceLoader(Class<? extends S> serviceClass) {
-		return (DefaultServiceLoader<S>) serviceLoaderMap.get(serviceClass);
-	}
-
 	@Override
-	public <T> Registration registerService(Class<? extends T> type, T service) {
-		DefaultServiceLoader<T> serviceLoader = getConfigurableServiceLoader(type);
+	public <S> ConfigurableServiceLoader1<S> getServiceLoader(Class<S> serviceClass) {
+		ConfigurableServiceLoader1<S> serviceLoader = (ConfigurableServiceLoader1<S>) serviceLoaderMap
+				.get(serviceClass);
 		if (serviceLoader == null) {
-			serviceLoader = new DefaultServiceLoader<>();
+			synchronized (this) {
+				serviceLoader = (ConfigurableServiceLoader1<S>) serviceLoaderMap.get(serviceClass);
+				if (serviceLoader == null) {
+					serviceLoader = new ConfigurableServiceLoader1<>();
+					serviceLoaderMap.putIfAbsent(serviceClass, serviceLoader);
+				}
+				serviceLoader.register(getServiceLoaderInternal(serviceClass));
+			}
 		}
-		return serviceLoader.register(service);
+		return serviceLoader;
 	}
 
+	protected <S> ServiceLoader<S> getServiceLoaderInternal(Class<S> serviceClass) {
+		return new SpiServiceLoader<S>(serviceClass, this);
+	}
 }

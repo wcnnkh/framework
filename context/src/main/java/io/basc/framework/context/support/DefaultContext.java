@@ -34,7 +34,7 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
-import io.basc.framework.util.DefaultServiceLoader;
+import io.basc.framework.util.ConfigurableServiceLoader1;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.StringUtils;
@@ -42,7 +42,7 @@ import io.basc.framework.util.StringUtils;
 public class DefaultContext extends DefaultEnvironment implements ConfigurableContext {
 	private static Logger logger = LoggerFactory.getLogger(DefaultContext.class);
 	private final DefaultClassScanner classScanner = new DefaultClassScanner();
-	private final DefaultServiceLoader<Class<?>> contextClassesLoader = new DefaultServiceLoader<>();
+	private final ConfigurableServiceLoader1<Class<?>> contextClassesLoader = new ConfigurableServiceLoader1<>();
 	private final ConfigurableServices<ContextPostProcessor> contextPostProcessors = new ConfigurableServices<ContextPostProcessor>(
 			ContextPostProcessor.class);
 	private final ConfigurableContextResolver contextResolver = new ConfigurableContextResolver();
@@ -52,12 +52,10 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	private final ConcurrentReferenceHashMap<Class<?>, ProviderClassesLoader> providerClassesLoaderMap = new ConcurrentReferenceHashMap<>(
 			128);
 
-	private ConcurrentReferenceHashMap<Class<?>, ServiceLoader<?>> serviceLoaderCacheMap = new ConcurrentReferenceHashMap<Class<?>, ServiceLoader<?>>();
-
-	private final DefaultServiceLoader<Class<?>> sourceClasses = new DefaultServiceLoader<Class<?>>();
+	private final ConfigurableServiceLoader1<Class<?>> sourceClasses = new ConfigurableServiceLoader1<Class<?>>();
 
 	public DefaultContext() {
-		contextClassesLoader.registerLoader(sourceClasses);
+		contextClassesLoader.register(sourceClasses);
 		IocBeanResolverExtend iocBeanResolverExtend = new IocBeanResolverExtend(this, iocResolver);
 		iocResolver.setAfterService(iocBeanResolverExtend);
 		this.classScanner.setClassLoaderProvider(this);
@@ -109,13 +107,13 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 
 	public Registration componentScan(String packageName, TypeFilter typeFilter) {
 		ServiceLoader<Class<?>> classesLoader = getClassScanner().scan(packageName, typeFilter);
-		return getContextClasses().registerLoader(classesLoader);
+		return getContextClasses().register(classesLoader);
 	}
 
 	@Override
-	protected <S> ServiceLoader<S> getAfterServiceLoader(Class<S> serviceClass) {
+	protected <S> ServiceLoader<S> getServiceLoaderInternal(Class<S> serviceClass) {
 		return ServiceLoader.concat(new ClassesServiceLoader<S>(getProviderClassesLoader(serviceClass), this),
-				super.getAfterServiceLoader(serviceClass));
+				super.getServiceLoaderInternal(serviceClass));
 	}
 
 	@Override
@@ -124,7 +122,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	@Override
-	public DefaultServiceLoader<Class<?>> getContextClasses() {
+	public ConfigurableServiceLoader1<Class<?>> getContextClasses() {
 		return contextClassesLoader;
 	}
 
@@ -160,30 +158,8 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 		return classesLoader;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass) {
-		ServiceLoader<?> serviceLoader = serviceLoaderCacheMap.get(serviceClass);
-		if (serviceLoader == null) {
-			serviceLoader = serviceLoaderCacheMap.get(serviceClass);
-			if (serviceLoader != null) {
-				return (ServiceLoader<S>) serviceLoader;
-			}
-
-			ServiceLoader<S> created = super.getServiceLoader(serviceClass);
-			ServiceLoader<?> old = serviceLoaderCacheMap.putIfAbsent(serviceClass, created);
-			if (old == null) {
-				old = created;
-			} else {
-				// 出现新的时清理缓存
-				serviceLoaderCacheMap.purgeUnreferencedEntries();
-			}
-			return (ServiceLoader<S>) old;
-		}
-		return (ServiceLoader<S>) serviceLoader;
-	}
-
 	@Override
-	public DefaultServiceLoader<Class<?>> getSourceClasses() {
+	public ConfigurableServiceLoader1<Class<?>> getSourceClasses() {
 		return sourceClasses;
 	}
 
@@ -285,7 +261,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 
 	@Override
 	public Registration source(Class<?> sourceClass) {
-		Registration registration = sourceClasses.register(sourceClass);
+		Registration registration = sourceClasses.registerService(sourceClass);
 		if (registration.isEmpty()) {
 			return Registration.EMPTY;
 		}

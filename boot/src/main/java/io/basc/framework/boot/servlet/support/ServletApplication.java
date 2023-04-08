@@ -16,7 +16,7 @@ public class ServletApplication extends DefaultApplication {
 			setWorkPath(webRoot);
 			DirectoryClassesLoader directoryClassesLoader = new DirectoryClassesLoader(webRoot);
 			directoryClassesLoader.setTypeFilter(getContextResolver());
-			getContextClasses().registerLoader(directoryClassesLoader);
+			getContextClasses().register(directoryClassesLoader);
 		}
 
 		getProperties().getPropertyFactories().getFactories()

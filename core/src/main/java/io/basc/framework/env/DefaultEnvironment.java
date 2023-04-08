@@ -29,12 +29,10 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.AntPathMatcher;
-import io.basc.framework.util.ConfigurableServiceLoader;
-import io.basc.framework.util.DefaultServiceLoader;
+import io.basc.framework.util.ConfigurableServiceLoader1;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.ServiceLoaders;
 import io.basc.framework.util.StringMatchers;
 import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
 import io.basc.framework.util.placeholder.support.DefaultPlaceholderReplacer;
@@ -85,7 +83,7 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	private final ResourceResolvers resourceResolvers = new ResourceResolvers(propertiesResolvers, conversionService,
 			getObservableCharset());
 
-	private final DefaultServiceLoader<Resource> resources = new DefaultServiceLoader<>();
+	private final ConfigurableServiceLoader1<Resource> resources = new ConfigurableServiceLoader1<>();
 
 	public DefaultEnvironment() {
 		conversionService.addService(new ConverterConversionService(Resource.class, Properties.class,
@@ -148,17 +146,12 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	}
 
 	@Override
-	protected <S> ServiceLoader<S> getAfterServiceLoader(Class<S> serviceClass) {
+	protected <S> ServiceLoader<S> getServiceLoaderInternal(Class<S> serviceClass) {
+		ServiceLoader<S> configServiceLoader = new ConfigServiceLoader<S>(serviceClass, getProperties(), this);
 		if (isForceSpi() || serviceClass.getName().startsWith(Constants.SYSTEM_PACKAGE_NAME) || useSpi(serviceClass)) {
-			return super.getAfterServiceLoader(serviceClass);
+			return ServiceLoader.concat(configServiceLoader, super.getServiceLoaderInternal(serviceClass));
 		}
-		return null;
-	}
-
-	@Override
-	protected <S> ServiceLoader<S> getBeforeServiceLoader(Class<S> serviceClass) {
-		return new ServiceLoaders<>(new ConfigServiceLoader<S>(serviceClass, getProperties(), this),
-				super.getBeforeServiceLoader(serviceClass));
+		return configServiceLoader;
 	}
 
 	@Override
@@ -200,7 +193,7 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	}
 
 	@Override
-	public ConfigurableServiceLoader<Resource> getResources() {
+	public ConfigurableServiceLoader1<Resource> getResources() {
 		return resources;
 	}
 
@@ -288,7 +281,7 @@ public class DefaultEnvironment extends DefaultBeanFactory
 			return Registration.EMPTY;
 		}
 
-		Registration registration = resources.register(resource);
+		Registration registration = resources.registerService(resource);
 		if (registration.isEmpty()) {
 			return registration;
 		}

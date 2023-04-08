@@ -5,44 +5,35 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @EqualsAndHashCode
+@ToString
 public class StandardElements<E> implements Elements<E> {
 	private final Iterable<E> iterable;
 
 	public StandardElements(Iterable<E> iterable) {
+		Assert.requiredArgument(iterable != null, "iterable");
 		this.iterable = iterable;
 	}
 
 	@Override
 	public Iterator<E> iterator() {
-		if (iterable == null) {
-			return Collections.emptyIterator();
-		}
-
 		return iterable.iterator();
 	}
 
 	@Override
 	public Spliterator<E> spliterator() {
-		if (iterable == null) {
-			return Spliterators.emptySpliterator();
-		}
-
 		return iterable.spliterator();
 	}
 
 	@Override
 	public void forEach(Consumer<? super E> action) {
 		Assert.requiredArgument(action != null, "action");
-		if (iterable == null) {
-			return;
-		}
 		iterable.forEach(action);
 	}
 
@@ -60,11 +51,6 @@ public class StandardElements<E> implements Elements<E> {
 			return Collections.unmodifiableSet((Set<E>) iterable);
 		}
 		return Elements.super.toSet();
-	}
-
-	@Override
-	public String toString() {
-		return iterable.toString();
 	}
 
 	@Override

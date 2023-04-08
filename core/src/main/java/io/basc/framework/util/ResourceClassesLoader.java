@@ -1,7 +1,6 @@
 package io.basc.framework.util;
 
 import java.util.Iterator;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,10 +18,6 @@ public class ResourceClassesLoader extends DefaultClassLoaderProvider implements
 	public static final String FILE_SUFFIX = ".class";
 
 	private static Logger logger = LoggerFactory.getLogger(ResourceClassesLoader.class);
-	private volatile Set<Class<?>> caching;
-
-	private boolean disableCache = Boolean.getBoolean("classes.loader.cache.disable");
-
 	private volatile MetadataReaderFactory metadataReaderFactory;
 
 	private final Streamable<Resource> resources;
@@ -39,17 +34,6 @@ public class ResourceClassesLoader extends DefaultClassLoaderProvider implements
 	public ResourceClassesLoader(Streamable<Resource> resources) {
 		Assert.requiredArgument(resources != null, "resources");
 		this.resources = resources;
-	}
-
-	public Set<Class<?>> getCaching() {
-		if (caching == null) {
-			synchronized (this) {
-				if (caching == null) {
-					caching = load().collect(Collectors.toSet());
-				}
-			}
-		}
-		return caching;
 	}
 
 	public MetadataReaderFactory getMetadataReaderFactory() {
@@ -71,10 +55,6 @@ public class ResourceClassesLoader extends DefaultClassLoaderProvider implements
 		return typeFilter;
 	}
 
-	public boolean isDisableCache() {
-		return disableCache;
-	}
-
 	public Predicate<? super Class<?>> getClassFilter() {
 		return classFilter;
 	}
@@ -85,13 +65,16 @@ public class ResourceClassesLoader extends DefaultClassLoaderProvider implements
 
 	@Override
 	public Iterator<Class<?>> iterator() {
-		if (isDisableCache()) {
-			return load().iterator();
+		Stream<Class<?>> stream = stream();
+		try {
+			return stream.collect(Collectors.toList()).iterator();
+		} finally {
+			stream.close();
 		}
-		return getCaching().iterator();
 	}
 
-	public Stream<Class<?>> load() {
+	@Override
+	public Stream<Class<?>> stream() {
 		Stream<Class<?>> stream = resources.stream().map((resource) -> {
 			if (resource == null) {
 				return null;
@@ -146,24 +129,6 @@ public class ResourceClassesLoader extends DefaultClassLoaderProvider implements
 		if (metadataReaderFactory instanceof CachingMetadataReaderFactory) {
 			((CachingMetadataReaderFactory) metadataReaderFactory).clearCache();
 		}
-
-		if (isDisableCache()) {
-			synchronized (this) {
-				this.caching = null;
-			}
-		} else {
-			if (caching != null) {
-				synchronized (this) {
-					if (caching != null) {
-						this.caching = load().collect(Collectors.toSet());
-					}
-				}
-			}
-		}
-	}
-
-	public void setDisableCache(boolean disableCache) {
-		this.disableCache = disableCache;
 	}
 
 	public void setMetadataReaderFactory(MetadataReaderFactory metadataReaderFactory) {
