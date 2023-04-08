@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,8 +14,9 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Structure;
 import io.basc.framework.mapper.StructureDecorator;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.Streamable;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
 
 public class ObjectRelational<T extends Property> extends StructureDecorator<T, ObjectRelational<T>> {
 	private static Logger logger = LoggerFactory.getLogger(ObjectRelational.class);
@@ -29,7 +29,7 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 		super(sourceClass, parent, (s) -> {
 			Stream<T> stream = processor.apply(s);
 			if (stream == null) {
-				return XUtils.emptyStream();
+				return Stream.empty();
 			}
 			return stream.filter((o) -> o.isSupportGetter() || o.isSupportSetter())
 					.filter((o) -> !Modifier.isStatic(o.getModifiers()));
@@ -118,8 +118,8 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 		return super.getAliasNames();
 	}
 
-	public Stream<T> columns() {
-		return all().stream().filter((e) -> !e.isEntity());
+	public Elements<T> columns() {
+		return Elements.of(() -> all().stream().filter((e) -> !e.isEntity()));
 	}
 
 	public final List<T> getPrimaryKeys() {
@@ -202,7 +202,7 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 			return this;
 		}
 
-		List<Supplier<Stream<T>>> withs = new LinkedList<>();
+		List<Streamable<T>> withs = new LinkedList<>();
 		ObjectRelational<T> objectRelational = this.filter((property) -> {
 			if (property == null || !property.isEntity()) {
 				return true;
@@ -220,7 +220,7 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 			return false;
 		}).shared();// 此处因为在filter中进行了逻辑处理，所以此处需要执行shared防止重复执行
 
-		for (Supplier<Stream<T>> with : withs) {
+		for (Streamable<T> with : withs) {
 			objectRelational = objectRelational.concat(with);
 		}
 		return objectRelational;

@@ -1,13 +1,14 @@
 package io.basc.framework.util.page;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Cursor;
-import io.basc.framework.util.ResultSet;
+import io.basc.framework.util.Elements;
 
-public interface Pageable<K, T> extends ResultSet<T> {
+public interface Pageable<K, T> extends Elements<T> {
 	/**
 	 * 获取当前页的使用的开始游标
 	 * 
@@ -24,11 +25,16 @@ public interface Pageable<K, T> extends ResultSet<T> {
 	@Nullable
 	K getNextCursorId();
 
-	@Override
-	Cursor<T> iterator();
+	List<T> getList();
 
-	default List<T> getList() {
-		return iterator().toList();
+	@Override
+	default Iterator<T> iterator() {
+		return getList().iterator();
+	}
+
+	@Override
+	default Stream<T> stream() {
+		return getList().stream();
 	}
 
 	/**
@@ -44,12 +50,12 @@ public interface Pageable<K, T> extends ResultSet<T> {
 		return new SharedPageable<>(this);
 	}
 
-	default <TT> Pageable<K, TT> map(Function<? super T, ? extends TT> map) {
-		return map(Function.identity(), map);
+	default <TT> Pageable<K, TT> map(Function<? super T, ? extends TT> valueMapper) {
+		return map(Function.identity(), valueMapper);
 	}
 
-	default <TK, TT> Pageable<TK, TT> map(Function<? super K, ? extends TK> keyMap,
-			Function<? super T, ? extends TT> valueMap) {
-		return new MapPageable<>(this, keyMap, valueMap);
+	default <TK, TT> Pageable<TK, TT> map(Function<? super K, ? extends TK> keyMapper,
+			Function<? super T, ? extends TT> valueMapper) {
+		return new ConvertiblePageable<>(this, keyMapper, valueMapper);
 	}
 }

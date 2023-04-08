@@ -5,7 +5,7 @@ import java.util.List;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.orm.EntityOperations;
 import io.basc.framework.orm.OrmException;
-import io.basc.framework.util.ResultSet;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.page.Paginations;
 
 public interface CurdOperations extends EntityOperations {
@@ -21,12 +21,12 @@ public interface CurdOperations extends EntityOperations {
 	<T, E> T getById(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass, Object... primaryKeys)
 			throws OrmException;
 
-	default <K, T> ResultSet<T> getInIds(Class<? extends T> entityClass, List<? extends K> inPrimaryKeys,
+	default <K, T> Elements<T> getInIds(Class<? extends T> entityClass, List<? extends K> inPrimaryKeys,
 			Object... primaryKeys) throws OrmException {
 		return getInIds(TypeDescriptor.valueOf(entityClass), entityClass, inPrimaryKeys, primaryKeys);
 	}
 
-	<K, T> ResultSet<T> getInIds(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
+	<K, T> Elements<T> getInIds(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
 			List<? extends K> inPrimaryKeys, Object... primaryKeys) throws OrmException;
 
 	default <T> Paginations<T> query(Class<? extends T> entityClass, T conditions) throws OrmException {

@@ -1,12 +1,12 @@
 package io.basc.framework.orm;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import io.basc.framework.mapper.Field;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.Range;
-import io.basc.framework.util.ReversibleIterator;
 import io.basc.framework.util.StringUtils;
 
 public class Property extends Field {
@@ -137,7 +137,7 @@ public class Property extends Field {
 			if (StringUtils.isNotEmpty(name)) {
 				if (hasParent() && this.nameNestingDepth > 0) {
 					StringBuilder sb = new StringBuilder();
-					ReversibleIterator<Field> parents = parents().invert();
+					Iterator<Field> parents = parents().reverse().iterator();
 					int i = 0;
 					while (parents.hasNext() && (i++ < this.nameNestingDepth)) {
 						Field parent = parents.next();

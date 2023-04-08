@@ -1,9 +1,6 @@
 package io.basc.framework.mapper;
 
-import java.util.Collections;
-import java.util.Enumeration;
-
-import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Elements;
 import io.basc.framework.value.ConfigurablePropertyFactory;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
@@ -16,12 +13,11 @@ public class PropertyFactoryAccess<E extends Throwable> implements ObjectAccess<
 	}
 
 	@Override
-	public Enumeration<String> keys() throws E {
+	public Elements<String> keys() throws E {
 		if (propertyFactory == null) {
-			return Collections.emptyEnumeration();
+			return Elements.empty();
 		}
-
-		return CollectionUtils.toEnumeration(propertyFactory.stream().iterator());
+		return propertyFactory.keys();
 	}
 
 	@Override

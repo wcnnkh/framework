@@ -1,8 +1,7 @@
 package io.basc.framework.util.page;
 
-import java.util.stream.Stream;
-
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Elements;
 
 public class SharedPaginations<T> extends SharedPagination<T> implements Paginations<T> {
 	private static final long serialVersionUID = 1L;
@@ -71,7 +70,7 @@ public class SharedPaginations<T> extends SharedPagination<T> implements Paginat
 	}
 
 	@Override
-	public Stream<? extends Pages<Long, T>> pages() {
+	public Elements<? extends Page<Long, T>> pages() {
 		return paginations.pages();
 	}
 

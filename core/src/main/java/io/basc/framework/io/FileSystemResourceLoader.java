@@ -30,14 +30,14 @@ public class FileSystemResourceLoader extends DefaultResourceLoader {
 		if (ignoreClassPathResource(fileSystemResource)) {
 			return fileSystemResource;
 		}
-		
+
 		if (path != null && path.startsWith("/")) {
 			path = path.substring(1);
 		}
 		Resource resource = super.getResourceByPath(path);
 		Resources resources = new Resources();
-		resources.register(fileSystemResource);
-		resources.register(resource);
+		resources.registerResource(fileSystemResource);
+		resources.registerResource(resource);
 		return resources;
 	}
 

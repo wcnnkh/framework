@@ -2,12 +2,14 @@ package io.basc.framework.microsoft;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Iterator;
+import java.util.stream.Stream;
 
-import io.basc.framework.util.Cursor;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.PositionIterator;
-import io.basc.framework.util.ResultSet;
+import io.basc.framework.util.Streams;
 
-public interface Sheet extends ResultSet<String[]> {
+public interface Sheet extends Elements<String[]> {
 	String getName();
 
 	int getRows();
@@ -16,14 +18,21 @@ public interface Sheet extends ResultSet<String[]> {
 
 	String read(int rowIndex, int colIndex) throws IOException, ExcelException;
 
-	default Cursor<String[]> iterator() {
-		PositionIterator<String[]> iterator = new PositionIterator<>(BigInteger.valueOf(getRows()), (e) -> {
+	default Iterator<String[]> iterator() {
+		return new PositionIterator<>(BigInteger.valueOf(getRows()), (e) -> {
 			try {
 				return read(e.intValue());
 			} catch (IOException ex) {
 				throw new ExcelException(ex);
 			}
 		});
-		return Cursor.of(iterator);
+	}
+
+	/**
+	 * 默认使用{@link #iterator()}
+	 */
+	@Override
+	default Stream<String[]> stream() {
+		return Streams.stream(spliterator());
 	}
 }

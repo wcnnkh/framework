@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.lang.RequiredJavaVersion;
@@ -127,7 +128,7 @@ public class WatchServiceResourceEventDispatcher extends SimpleResourceEventDisp
 	}
 
 	@Override
-	public void publishEvent(ObservableChangeEvent<Resource> event) {
+	public void publishEvent(ChangeEvent<Resource> event) {
 		if (event.getChangeType() == ChangeType.CREATE) {
 			// 如果资源创建了，那么尝试重新注册
 			if (watchServiceRegister()) {

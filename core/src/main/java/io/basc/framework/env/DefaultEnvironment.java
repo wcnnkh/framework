@@ -12,6 +12,7 @@ import io.basc.framework.convert.resolve.ResourceResolverConversionService;
 import io.basc.framework.convert.resolve.ResourceResolvers;
 import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.event.Observable;
+import io.basc.framework.event.support.ObservableResource;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
@@ -19,7 +20,6 @@ import io.basc.framework.factory.FactoryException;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.factory.support.ConfigServiceLoader;
 import io.basc.framework.factory.support.DefaultBeanFactory;
-import io.basc.framework.factory.support.ServiceLoaders;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.resolver.PropertiesResolver;
@@ -34,6 +34,7 @@ import io.basc.framework.util.DefaultServiceLoader;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.ServiceLoaders;
 import io.basc.framework.util.StringMatchers;
 import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
 import io.basc.framework.util.placeholder.support.DefaultPlaceholderReplacer;
@@ -294,7 +295,7 @@ public class DefaultEnvironment extends DefaultBeanFactory
 
 		logger.info("Import resource {}", resource);
 		if (propertiesResolver.canResolveProperties(resource)) {
-			Observable<Properties> observable = resource
+			Observable<Properties> observable = new ObservableResource(resource)
 					.map(ResourceUtils.toPropertiesConverter(getPropertiesResolver()));
 			registration = registration.and(source(observable));
 		}

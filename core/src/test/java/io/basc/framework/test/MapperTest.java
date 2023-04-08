@@ -35,7 +35,7 @@ public class MapperTest {
 		Field firstField = structure.first();
 		structure = structure.setParentField(firstField);
 		structure = structure.setNameNestingDepth(1);
-		structure.limit(0, 1).forEach((e) -> assertTrue(e.getName().startsWith(firstField.getName())));
+		structure.stream().limit(1).forEach((e) -> assertTrue(e.getName().startsWith(firstField.getName())));
 	}
 
 	public static class A extends B {

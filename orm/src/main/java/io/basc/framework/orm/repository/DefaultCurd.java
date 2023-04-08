@@ -4,7 +4,7 @@ import java.util.List;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.orm.OrmException;
-import io.basc.framework.util.ResultSet;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.page.Paginations;
 
 public class DefaultCurd<V> implements Curd<V> {
@@ -37,7 +37,7 @@ public class DefaultCurd<V> implements Curd<V> {
 	}
 
 	@Override
-	public <K> ResultSet<V> getInIds(List<? extends K> inIds, Object... ids) {
+	public <K> Elements<V> getInIds(List<? extends K> inIds, Object... ids) {
 		return repository.getInIds(TypeDescriptor.valueOf(entityClass), entityClass, inIds, ids);
 	}
 
@@ -87,7 +87,7 @@ public class DefaultCurd<V> implements Curd<V> {
 	}
 
 	@Override
-	public <K, T> ResultSet<T> getInIds(TypeDescriptor resultsTypeDescriptor, List<? extends K> entityInIds,
+	public <K, T> Elements<T> getInIds(TypeDescriptor resultsTypeDescriptor, List<? extends K> entityInIds,
 			Object... entityIds) throws OrmException {
 		return repository.getInIds(resultsTypeDescriptor, entityClass, entityInIds, entityIds);
 	}

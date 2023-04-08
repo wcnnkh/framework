@@ -1,18 +1,19 @@
 package io.basc.framework.value.support;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import io.basc.framework.event.support.StandardObservableProperties;
+import io.basc.framework.event.support.ObservableMapRegistry;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.ElementSet;
+import io.basc.framework.util.Elements;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.PropertyWrapper;
 import io.basc.framework.value.Value;
 
-public class ObservablePropertyFactory extends StandardObservableProperties<String, Value> implements PropertyFactory {
+public class ObservablePropertyFactory extends ObservableMapRegistry<String, Value> implements PropertyFactory {
 
 	public ObservablePropertyFactory() {
 		this(null);
@@ -42,12 +43,12 @@ public class ObservablePropertyFactory extends StandardObservableProperties<Stri
 
 	@Override
 	public Value get(String key) {
-		Value value = super.get(key);
+		Value value = super.getReadonlyMap().get(key);
 		return value == null ? Value.EMPTY : value;
 	}
 
 	@Override
-	public Iterator<String> iterator() {
-		return keySet().iterator();
+	public Elements<String> keys() {
+		return new ElementSet<>(getReadonlyMap().keySet());
 	}
 }

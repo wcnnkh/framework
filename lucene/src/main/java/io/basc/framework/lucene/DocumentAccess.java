@@ -1,12 +1,10 @@
 package io.basc.framework.lucene;
 
-import java.util.Enumeration;
-
 import org.apache.lucene.document.Document;
 
 import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.Parameter;
-import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Elements;
 
 public class DocumentAccess implements ObjectAccess<LuceneException> {
 	private final Document document;
@@ -18,8 +16,8 @@ public class DocumentAccess implements ObjectAccess<LuceneException> {
 	}
 
 	@Override
-	public Enumeration<String> keys() throws LuceneException {
-		return CollectionUtils.toEnumeration(this.document.getFields().stream().map((e) -> e.name()).iterator());
+	public Elements<String> keys() throws LuceneException {
+		return Elements.of(() -> this.document.getFields().stream().map((e) -> e.name()));
 	}
 
 	@Override

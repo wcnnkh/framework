@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.stream.Stream;
 
 public interface ExcelExport extends Flushable, Closeable {
 	boolean isEmpty();
@@ -18,13 +17,20 @@ public interface ExcelExport extends Flushable, Closeable {
 	}
 
 	default void putAll(Iterator<? extends String[]> iterator) throws ExcelException, IOException {
+		if (iterator == null) {
+			return;
+		}
+
 		while (iterator.hasNext()) {
 			String[] values = iterator.next();
 			put(values);
 		}
 	}
 
-	default void putAll(Stream<? extends String[]> stream) throws ExcelException, IOException {
-		putAll(stream.iterator());
+	default void putAll(Iterable<? extends String[]> iterable) throws ExcelException, IOException {
+		if (iterable == null) {
+			return;
+		}
+		putAll(iterable.iterator());
 	}
 }

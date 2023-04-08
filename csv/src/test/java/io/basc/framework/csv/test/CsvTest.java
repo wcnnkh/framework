@@ -26,7 +26,7 @@ public class CsvTest {
 		System.out.println(list);
 		File file = File.createTempFile("test", ".csv");
 		try {
-			template.process(list, file);
+			template.write(list.iterator(), file);
 			List<String> readList = template.read(file, String.class).collect(Collectors.toList());
 			System.out.println(readList);
 			assertTrue(readList.equals(list));

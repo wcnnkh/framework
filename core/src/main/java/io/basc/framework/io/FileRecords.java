@@ -3,13 +3,16 @@ package io.basc.framework.io;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.stream.Stream;
 
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.support.RecordCodec;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ConsumeProcessor;
 import io.basc.framework.util.Creator;
-import io.basc.framework.util.Cursor;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.Streams;
 import io.basc.framework.util.XUtils;
 
 /**
@@ -19,7 +22,7 @@ import io.basc.framework.util.XUtils;
  *
  * @param <T>
  */
-public final class FileRecords<T> implements Iterable<T> {
+public final class FileRecords<T> implements Elements<T> {
 	private final Creator<? extends File, ? extends IOException> lazyCreator;
 	private volatile File file;
 	private final RecordCodec<T> codec;
@@ -72,16 +75,21 @@ public final class FileRecords<T> implements Iterable<T> {
 	}
 
 	@Override
-	public Cursor<T> iterator() {
+	public Stream<T> stream() {
 		if (file != null) {
 			synchronized (this) {
 				if (file != null) {
 					RecordIterator<T> iterator = new RecordIterator<T>(file, codec);
-					return Cursor.of(iterator);
+					return Streams.stream(iterator);
 				}
 			}
 		}
-		return Cursor.empty();
+		return Stream.empty();
+	}
+
+	@Override
+	public final Iterator<T> iterator() {
+		return toList().iterator();
 	}
 
 	/**

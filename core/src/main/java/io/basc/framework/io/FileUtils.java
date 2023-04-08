@@ -32,8 +32,7 @@ import java.util.zip.Checksum;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Cursor;
-import io.basc.framework.util.XUtils;
+import io.basc.framework.util.Streams;
 
 public final class FileUtils {
 
@@ -1298,7 +1297,7 @@ public final class FileUtils {
 	 * @throws java.io.UnsupportedEncodingException if the encoding is not supported
 	 *                                              by the VM
 	 */
-	public static Cursor<String> readLines(File file, String encoding) throws IOException {
+	public static Stream<String> readLines(File file, String encoding) throws IOException {
 		InputStream in = openInputStream(file);
 		return IOUtils.readLines(in, encoding).onClose(() -> IOUtils.closeQuietly(in));
 	}
@@ -1312,7 +1311,7 @@ public final class FileUtils {
 	 *         <code>null</code>
 	 * @throws IOException in case of an I/O error
 	 */
-	public static Cursor<String> readLines(File file) throws IOException {
+	public static Stream<String> readLines(File file) throws IOException {
 		return readLines(file, null);
 	}
 
@@ -2300,7 +2299,7 @@ public final class FileUtils {
 	public static Stream<IterationFile<File>> stream(File directory, int maxDepth, @Nullable FileFilter filter) {
 		Assert.isTrue(directory.isDirectory(), directory + " is not a directory");
 		ListFileIterator iterator = new ListFileIterator(directory, filter, maxDepth);
-		return XUtils.stream(iterator);
+		return Streams.stream(iterator);
 	}
 
 	/**
@@ -2314,7 +2313,7 @@ public final class FileUtils {
 	public static Stream<IterationFile<String>> stream(File directory, int maxDepth, @Nullable FilenameFilter filter) {
 		Assert.isTrue(directory.isDirectory(), directory + " is not a directory");
 		ListFilenameIterator iterator = new ListFilenameIterator(directory, filter, maxDepth);
-		return XUtils.stream(iterator);
+		return Streams.stream(iterator);
 	}
 
 	public static long write(Iterator<? extends byte[]> sourceIterator, File target) throws IOException {

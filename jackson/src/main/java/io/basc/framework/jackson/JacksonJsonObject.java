@@ -1,7 +1,6 @@
 package io.basc.framework.jackson;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -14,6 +13,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
+import io.basc.framework.util.Elements;
 
 public class JacksonJsonObject extends AbstractJson<String> implements JsonObject, JsonSerializable {
 	private final ObjectNode objectNode;
@@ -41,8 +41,8 @@ public class JacksonJsonObject extends AbstractJson<String> implements JsonObjec
 	}
 
 	@Override
-	public Iterator<String> iterator() {
-		return objectNode.fieldNames();
+	public Elements<String> keys() {
+		return Elements.of(() -> objectNode.fieldNames());
 	}
 
 	@Override

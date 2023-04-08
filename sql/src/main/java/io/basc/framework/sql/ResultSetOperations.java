@@ -8,12 +8,13 @@ import java.util.function.Supplier;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.CloseableIterator;
 import io.basc.framework.util.ConsumeProcessor;
-import io.basc.framework.util.Cursor;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.RunnableProcessor;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.StaticSupplier;
 import io.basc.framework.util.StreamOperations;
+import io.basc.framework.util.Streams;
 
 public class ResultSetOperations extends Operations<ResultSet, ResultSetOperations> {
 
@@ -46,14 +47,16 @@ public class ResultSetOperations extends Operations<ResultSet, ResultSetOperatio
 		super(sourceStreamOperations, processor, closeProcessor, closeHandler);
 	}
 
-	public <E> Cursor<E> rows(Processor<? super ResultSet, ? extends E, ? extends Throwable> rowMapper) {
-		ResultSetIterator resultSetIterator = new ResultSetIterator();
-		return Cursor.of(resultSetIterator).map((e) -> {
-			try {
-				return rowMapper.process(e);
-			} catch (Throwable err) {
-				throw SqlUtils.throwableSqlException(err, () -> ResultSetOperations.this.toString());
-			}
+	public <E> Elements<E> rows(Processor<? super ResultSet, ? extends E, ? extends Throwable> rowMapper) {
+		return Elements.of(() -> {
+			ResultSetIterator resultSetIterator = new ResultSetIterator();
+			return Streams.stream(resultSetIterator).map((e) -> {
+				try {
+					return rowMapper.process(e);
+				} catch (Throwable err) {
+					throw SqlUtils.throwableSqlException(err, () -> ResultSetOperations.this.toString());
+				}
+			});
 		});
 	}
 

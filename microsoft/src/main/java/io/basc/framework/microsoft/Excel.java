@@ -1,9 +1,12 @@
 package io.basc.framework.microsoft;
 
 import java.io.Closeable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Stream;
 
-import io.basc.framework.util.Cursor;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.page.Page;
 import io.basc.framework.util.page.Paginations;
 
 public interface Excel extends Closeable, Paginations<String[]> {
@@ -30,13 +33,18 @@ public interface Excel extends Closeable, Paginations<String[]> {
 	Excel jumpTo(Long cursorId, long count);
 
 	@Override
-	default long getCount() {
+	default long count() {
 		return getSheet(getCursorId().intValue()).getRows();
 	}
 
 	@Override
 	default long getTotal() {
-		return pages().mapToLong((e) -> getSheet(e.getCursorId().intValue()).getRows()).sum();
+		Stream<? extends Page<Long, String[]>> stream = pages().stream();
+		try {
+			return stream.mapToLong((e) -> getSheet(e.getCursorId().intValue()).getRows()).sum();
+		} finally {
+			stream.close();
+		}
 	}
 
 	@Override
@@ -52,7 +60,17 @@ public interface Excel extends Closeable, Paginations<String[]> {
 		return sheets;
 	}
 
-	default Cursor<String[]> iterator() {
+	default Iterator<String[]> iterator() {
 		return getSheet(getCursorId().intValue()).iterator();
+	}
+
+	@Override
+	default Stream<String[]> stream() {
+		return getSheet(getCursorId().intValue()).stream();
+	}
+
+	@Override
+	default List<String[]> getList() {
+		return toList();
 	}
 }

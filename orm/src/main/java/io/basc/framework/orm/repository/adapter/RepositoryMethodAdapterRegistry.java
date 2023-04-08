@@ -5,9 +5,8 @@ import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.orm.repository.RepositoryTemplate;
 
-public class RepositoryMethodAdapterRegistry extends
-		ConfigurableServices<RepositoryMethodAdapter> implements
-		RepositoryMethodAdapter {
+public class RepositoryMethodAdapterRegistry extends ConfigurableServices<RepositoryMethodAdapter>
+		implements RepositoryMethodAdapter {
 
 	public RepositoryMethodAdapterRegistry() {
 		super(RepositoryMethodAdapter.class);
@@ -40,8 +39,7 @@ public class RepositoryMethodAdapterRegistry extends
 	}
 
 	@Override
-	public Object intercept(RepositoryTemplate repository,
-			MethodInvoker invoker, Object[] args) throws Throwable {
+	public Object intercept(RepositoryTemplate repository, MethodInvoker invoker, Object[] args) throws Throwable {
 		for (RepositoryMethodAdapter adapter : this) {
 			if (adapter.test(invoker)) {
 				return adapter.intercept(repository, invoker, args);

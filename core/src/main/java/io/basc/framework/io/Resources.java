@@ -7,57 +7,57 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 
-import io.basc.framework.event.support.StandardObservable;
+import io.basc.framework.event.support.ObservableResourceRegistry;
 
-public class Resources extends StandardObservable<Resource> implements Resource {
+public class Resources extends ObservableResourceRegistry implements Resource {
 
 	@Override
 	public InputStream getInputStream() throws IOException {
-		return get().getInputStream();
+		return getResource().getInputStream();
 	}
 
 	@Override
 	public boolean exists() {
-		return isPresent();
+		return getResource().exists();
 	}
 
 	@Override
 	public URL getURL() throws IOException {
-		return get().getURL();
+		return getResource().getURL();
 	}
 
 	@Override
 	public URI getURI() throws IOException {
-		return get().getURI();
+		return getResource().getURI();
 	}
 
 	@Override
 	public File getFile() throws IOException, FileNotFoundException {
-		return get().getFile();
+		return getResource().getFile();
 	}
 
 	@Override
 	public long contentLength() throws IOException {
-		return get().contentLength();
+		return getResource().contentLength();
 	}
 
 	@Override
 	public long lastModified() throws IOException {
-		return get().lastModified();
+		return getResource().lastModified();
 	}
 
 	@Override
 	public Resource createRelative(String relativePath) throws IOException {
-		return get().createRelative(relativePath);
+		return getResource().createRelative(relativePath);
 	}
 
 	@Override
 	public String getName() {
-		return get().getName();
+		return getResource().getName();
 	}
 
 	@Override
 	public String getDescription() {
-		return get().getDescription();
+		return getResource().getDescription();
 	}
 }

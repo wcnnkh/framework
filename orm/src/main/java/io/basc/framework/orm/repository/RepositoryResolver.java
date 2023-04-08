@@ -21,8 +21,8 @@ import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.Processor;
+import io.basc.framework.util.Streams;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
 import io.basc.framework.util.comparator.Sort;
 
 public interface RepositoryResolver extends ObjectRelationalFactory {
@@ -128,7 +128,7 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 			Iterator<? extends P> properties, @Nullable List<OrderColumn> orders,
 			Processor<P, Object, OrmException> valueProcessor, @Nullable Predicate<Pair<P, Object>> predicate)
 			throws OrmException {
-		return XUtils.stream(properties).filter((e) -> {
+		return Streams.stream(properties).filter((e) -> {
 			resolveOrders(entityClass, e.getGetter(), orders);
 			return true;
 		}).map((e) -> new Pair<P, Object>(e, valueProcessor.process(e)))
@@ -139,7 +139,7 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 	default Conditions parseConditions(Class<?> entityClass, Iterator<? extends Parameter> iterator) {
 		RelationshipKeywords relationshipKeywords = getRelationshipKeywords();
 		ConditionKeywords conditionKeywords = getConditionKeywords();
-		return ConditionsBuilder.build(XUtils.stream(iterator).map((column) -> {
+		return ConditionsBuilder.build(Streams.stream(iterator).map((column) -> {
 			String relationship = getRelationship(entityClass, column);
 			if (StringUtils.isEmpty(relationship)) {
 				relationship = relationshipKeywords.getAndKeywords().getFirst();
@@ -166,8 +166,8 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 
 	default <T> List<Parameter> parseValues(Class<? extends T> entityClass, T entity,
 			Structure<? extends Property> structure) {
-		return parseParameters(entityClass, structure.stream().filter((e) -> !e.isEntity()).iterator(), null,
-				(e) -> e.get(entity), (e) -> e.getKey().isNullable() || StringUtils.isNotEmpty(e.getValue()))
+		return parseParameters(entityClass, structure.filter((e) -> !e.isEntity()).iterator(),
+				null, (e) -> e.get(entity), (e) -> e.getKey().isNullable() || StringUtils.isNotEmpty(e.getValue()))
 				.collect(Collectors.toList());
 	}
 }

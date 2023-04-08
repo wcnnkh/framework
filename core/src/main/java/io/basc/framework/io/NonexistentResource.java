@@ -8,10 +8,11 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 
-import io.basc.framework.event.EmptyObservable;
 import io.basc.framework.lang.UnsupportedException;
 
-public final class NonexistentResource extends EmptyObservable<Resource> implements Resource {
+public class NonexistentResource implements Resource {
+	public static final NonexistentResource INSTANCE = new NonexistentResource();
+
 	public InputStream getInputStream() throws IOException {
 		throw new UnsupportedException("empty resource");
 	}
@@ -25,10 +26,6 @@ public final class NonexistentResource extends EmptyObservable<Resource> impleme
 	}
 
 	public boolean isReadable() {
-		return false;
-	}
-
-	public boolean isWritable() {
 		return false;
 	}
 
@@ -66,9 +63,5 @@ public final class NonexistentResource extends EmptyObservable<Resource> impleme
 
 	public String getDescription() {
 		return "empty resource";
-	}
-
-	public boolean isSupportEventDispatcher() {
-		return false;
 	}
 }

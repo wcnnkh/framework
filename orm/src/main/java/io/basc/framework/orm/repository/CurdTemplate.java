@@ -7,7 +7,7 @@ import java.util.Map;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.ResultSet;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.page.Paginations;
 
 public class CurdTemplate implements CurdOperations {
@@ -107,7 +107,7 @@ public class CurdTemplate implements CurdOperations {
 	}
 
 	@Override
-	public <K, T> ResultSet<T> getInIds(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
+	public <K, T> Elements<T> getInIds(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
 			List<? extends K> inPrimaryKeys, Object... primaryKeys) throws OrmException {
 		Curd<?> curd = getCurd(entityClass);
 		return curd.getInIds(resultsTypeDescriptor, inPrimaryKeys, primaryKeys);

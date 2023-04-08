@@ -2,38 +2,33 @@ package io.basc.framework.microsoft;
 
 import java.io.IOException;
 
-public class WritableExcelWrapper extends ExcelWrapper implements WritableExcel {
+public class WritableExcelWrapper<W extends WritableExcel> extends ExcelWrapper<W> implements WritableExcel {
 
-	public WritableExcelWrapper(WritableExcel writableExcel) {
+	public WritableExcelWrapper(W writableExcel) {
 		super(writableExcel);
 	}
 
-	@Override
-	public WritableExcel getExcel() {
-		return (WritableExcel) super.getExcel();
-	}
-
 	public WritableSheet getSheet(int sheetIndex) {
-		return getExcel().getSheet(sheetIndex);
+		return wrappedTarget.getSheet(sheetIndex);
 	}
 
 	public WritableSheet getSheet(String sheetName) {
-		return getExcel().getSheet(sheetName);
+		return wrappedTarget.getSheet(sheetName);
 	}
 
 	public WritableSheet createSheet(String sheetName) {
-		return getExcel().createSheet(sheetName);
+		return wrappedTarget.createSheet(sheetName);
 	}
 
 	public void flush() throws IOException {
-		getExcel().flush();
+		wrappedTarget.flush();
 	}
 
 	public WritableSheet createSheet() {
-		return getExcel().createSheet();
+		return wrappedTarget.createSheet();
 	}
 
 	public void removeSheet(int sheetIndex) {
-		getExcel().removeSheet(sheetIndex);
+		wrappedTarget.removeSheet(sheetIndex);
 	}
 }

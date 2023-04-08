@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.ObjectMapper;
-import io.basc.framework.util.ResultSet;
+import io.basc.framework.util.Elements;
 
 @SuppressWarnings("unchecked")
 public interface SqlOperations extends ConnectionFactory {
@@ -23,27 +23,27 @@ public interface SqlOperations extends ConnectionFactory {
 
 	ObjectMapper<java.sql.ResultSet, SQLException> getMapper();
 
-	default <T> ResultSet<T> query(Class<? extends T> resultType, Sql sql) {
+	default <T> Elements<T> query(Class<? extends T> resultType, Sql sql) {
 		return query(sql, (rs) -> getMapper().convert(rs, resultType));
 	}
 
-	default <T> ResultSet<T> query(Class<? extends T> resultType, String sql) {
+	default <T> Elements<T> query(Class<? extends T> resultType, String sql) {
 		return query(resultType, new SimpleSql(sql));
 	}
 
-	default <T> ResultSet<T> query(Class<? extends T> resultType, String sql, Object... sqlParams) {
+	default <T> Elements<T> query(Class<? extends T> resultType, String sql, Object... sqlParams) {
 		return query(resultType, new SimpleSql(sql, sqlParams));
 	}
 
-	default <T> ResultSet<T> query(TypeDescriptor resultType, Sql sql) {
+	default <T> Elements<T> query(TypeDescriptor resultType, Sql sql) {
 		return query(sql, (rs) -> (T) getMapper().convert(rs, resultType));
 	}
 
-	default <T> ResultSet<T> query(TypeDescriptor resultType, String sql) {
+	default <T> Elements<T> query(TypeDescriptor resultType, String sql) {
 		return query(resultType, new SimpleSql(sql));
 	}
 
-	default <T> ResultSet<T> query(TypeDescriptor resultType, String sql, Object... sqlParams) {
+	default <T> Elements<T> query(TypeDescriptor resultType, String sql, Object... sqlParams) {
 		return query(resultType, new SimpleSql(sql, sqlParams));
 	}
 

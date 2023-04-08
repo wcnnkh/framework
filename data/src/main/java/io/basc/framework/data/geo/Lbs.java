@@ -1,7 +1,7 @@
 package io.basc.framework.data.geo;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Cursor;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.comparator.Sort;
 
 /**
@@ -21,5 +21,5 @@ public interface Lbs<K> {
 
 	boolean exists(K key);
 
-	Cursor<Marker<K>> getNearbyMarkers(Point point, Distance radius, int count, Sort sort);
+	Elements<Marker<K>> getNearbyMarkers(Point point, Distance radius, int count, Sort sort);
 }

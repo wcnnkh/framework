@@ -1,14 +1,13 @@
 package io.basc.framework.mapper;
 
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Map;
 
 import io.basc.framework.convert.ConversionException;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.CollectionFactory;
-import io.basc.framework.util.ConvertibleEnumeration;
+import io.basc.framework.util.ElementSet;
+import io.basc.framework.util.Elements;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class AnyMapAccess<E extends Throwable> implements ObjectAccess<E> {
@@ -23,13 +22,12 @@ public class AnyMapAccess<E extends Throwable> implements ObjectAccess<E> {
 	}
 
 	@Override
-	public Enumeration<String> keys() throws ConversionException {
+	public Elements<String> keys() throws ConversionException {
 		if (map == null || map.isEmpty()) {
-			return Collections.emptyEnumeration();
+			return Elements.empty();
 		}
-
-		return new ConvertibleEnumeration<Object, String>(Collections.enumeration(map.keySet()),
-				(e) -> conversionService.convert(e, mapType.getElementTypeDescriptor(), String.class));
+		return new ElementSet<>(map.keySet())
+				.map((e) -> conversionService.convert(e, mapType.getElementTypeDescriptor(), String.class));
 	}
 
 	@Override

@@ -26,9 +26,9 @@ import io.basc.framework.orm.repository.Repository;
 import io.basc.framework.orm.repository.RepositoryTemplate;
 import io.basc.framework.orm.repository.WithCondition;
 import io.basc.framework.util.CharSequenceSplitSegment;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Keywords;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.ResultSet;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.comparator.Sort;
 import io.basc.framework.util.page.Pagination;
@@ -168,8 +168,9 @@ public class CustomRepositoryMethodAdapter extends CurdRepositoryMethodAdapter i
 					|| responseTypeDescriptor.getType() == Pagination.class) {
 				return repository.query(responseTypeDescriptor.getGeneric(0), entityClass, conditions, orders);
 			} else if (responseTypeDescriptor.isArray() || responseTypeDescriptor.isCollection()) {
-				ResultSet<?> cursor = repository.query(responseTypeDescriptor.getElementTypeDescriptor(), entityClass,
-						conditions, orders);
+				Elements<?> cursor = repository
+						.query(responseTypeDescriptor.getElementTypeDescriptor(), entityClass, conditions, orders)
+						;
 				if (responseTypeDescriptor.isArray()) {
 					return cursor.toList().toArray();
 				} else {

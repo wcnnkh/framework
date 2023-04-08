@@ -35,7 +35,7 @@ public final class Sys extends DefaultEnvironment {
 
 		try {
 			String resourceName = Optional
-					.ofNullable(env.getProperties().getAsString("io.basc.framework.logger.level.properties"))
+					.of(env.getProperties().getAsString("io.basc.framework.logger.level.properties"))
 					.orElse("/logger-level.properties");
 			Observable<Properties> observable = env.getProperties(resourceName);
 			LoggerFactory.getSource().getLevelManager().registerProperties(observable);
@@ -79,7 +79,7 @@ public final class Sys extends DefaultEnvironment {
 		 */
 		try {
 			source("system.properties");
-			String resourceName = Optional.ofNullable(getProperties().getAsString("io.basc.framework.properties"))
+			String resourceName = Optional.of(getProperties().getAsString("io.basc.framework.properties"))
 					.orElse("/private.properties");
 			source(resourceName);
 		} catch (Throwable e) {

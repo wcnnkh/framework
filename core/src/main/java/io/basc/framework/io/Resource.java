@@ -7,15 +7,16 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 
+import io.basc.framework.event.BroadcastEventRegistry;
+import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.Observable;
-import io.basc.framework.event.ObservableChangeEvent;
+import io.basc.framework.event.EventRegistrationException;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.Registration;
 
-public interface Resource extends InputStreamSource, Observable<Resource> {
+public interface Resource extends InputStreamSource, BroadcastEventRegistry<ChangeEvent<Resource>> {
 	/**
 	 * 是否存在
 	 * 
@@ -67,17 +68,18 @@ public interface Resource extends InputStreamSource, Observable<Resource> {
 
 	String getDescription();
 
-	default boolean isPresent() {
-		return exists();
-	}
-
+	/**
+	 * 监听资源修改
+	 */
 	@Override
-	default Registration registerListener(EventListener<ObservableChangeEvent<Resource>> eventListener) {
+	default Registration registerListener(EventListener<ChangeEvent<Resource>> eventListener)
+			throws EventRegistrationException {
 		return Registration.EMPTY;
 	}
 
 	@Override
-	default <T, E extends Throwable> T read(Processor<? super InputStream, ? extends T, ? extends E> processor) throws IOException, E {
+	default <T, E extends Throwable> T read(Processor<? super InputStream, ? extends T, ? extends E> processor)
+			throws IOException, E {
 		if (!exists()) {
 			throw new NotFoundException("not found: " + getDescription());
 		}

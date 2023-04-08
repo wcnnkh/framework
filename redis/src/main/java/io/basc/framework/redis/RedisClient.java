@@ -15,7 +15,7 @@ import io.basc.framework.redis.convert.DefaultConvertibleRedisClient;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.page.Pageables;
-import io.basc.framework.util.page.StreamPageables;
+import io.basc.framework.util.page.StandardPageables;
 
 @SuppressWarnings("unchecked")
 public interface RedisClient<K, V> extends RedisConnectionCommands<K, V>, RedisGeoCommands<K, V>,
@@ -415,7 +415,7 @@ public interface RedisClient<K, V> extends RedisConnectionCommands<K, V>, RedisG
 
 	@Override
 	default Pageables<Long, K> scan(long cursorId, ScanOptions<K> options) {
-		return new StreamPageables<Long, K>(cursorId,
+		return new StandardPageables<Long, K>(cursorId,
 				(cursor) -> execute((commands) -> commands.scan(cursor, options)));
 	}
 
@@ -1202,7 +1202,7 @@ public interface RedisClient<K, V> extends RedisConnectionCommands<K, V>, RedisG
 
 	@Override
 	default Pageables<Long, K> sScan(long cursorId, K key, ScanOptions<K> options) {
-		return new StreamPageables<Long, K>(cursorId,
+		return new StandardPageables<Long, K>(cursorId,
 				(cursor) -> execute((commands) -> commands.sScan(cursor, key, options)));
 	}
 

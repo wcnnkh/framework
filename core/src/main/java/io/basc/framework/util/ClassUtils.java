@@ -20,8 +20,8 @@ import java.util.Set;
 import io.basc.framework.lang.Ignore;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.page.Pageables;
-import io.basc.framework.util.page.SharedPageable;
-import io.basc.framework.util.page.StreamPageables;
+import io.basc.framework.util.page.StandardPageable;
+import io.basc.framework.util.page.StandardPageables;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -553,10 +553,10 @@ public final class ClassUtils {
 
 	public static Pageables<Class<?>, Class<?>> getInterfaces(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
-		return new StreamPageables<Class<?>, Class<?>>(sourceClass, (c) -> {
+		return new StandardPageables<Class<?>, Class<?>>(sourceClass, (c) -> {
 			Class<?>[] interfaces = c.getInterfaces();
 			List<Class<?>> list = interfaces == null ? Collections.emptyList() : Arrays.asList(interfaces);
-			return new SharedPageable<>(c, list, c.getSuperclass());
+			return new StandardPageable<>(c, new ElementList<>(list), c.getSuperclass());
 		});
 	}
 

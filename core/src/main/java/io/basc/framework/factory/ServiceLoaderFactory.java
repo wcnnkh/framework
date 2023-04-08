@@ -3,11 +3,11 @@ package io.basc.framework.factory;
 import java.util.Arrays;
 import java.util.List;
 
-import io.basc.framework.factory.support.ServiceLoaders;
 import io.basc.framework.factory.support.NamedServiceLoader;
 import io.basc.framework.util.ClassToString;
 import io.basc.framework.util.ConvertibleIterable;
 import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.ServiceLoaders;
 
 public interface ServiceLoaderFactory extends InstanceFactory {
 	<S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass);

@@ -7,18 +7,18 @@ import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.io.PackageClassesLoader;
 import io.basc.framework.io.ResourcePatternResolver;
 import io.basc.framework.io.support.PathMatchingResourcePatternResolver;
-import io.basc.framework.util.ClassesLoader;
 import io.basc.framework.util.DefaultClassLoaderProvider;
-import io.basc.framework.util.DefaultClassesLoader;
+import io.basc.framework.util.DefaultServiceLoader;
+import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.StringUtils;
 
 public class DefaultClassesLoaderFactory extends DefaultClassLoaderProvider implements ClassesLoaderFactory {
 	private volatile MetadataReaderFactory metadataReaderFactory;
 	private volatile ResourcePatternResolver resourcePatternResolver;
 
-	public ClassesLoader getClassesLoader(final String packageName, TypeFilter typeFilter) {
+	public ServiceLoader<Class<?>> getClassesLoader(final String packageName, TypeFilter typeFilter) {
 		String[] packageNames = StringUtils.splitToArray(packageName);
-		DefaultClassesLoader editableClassesLoader = new DefaultClassesLoader();
+		DefaultServiceLoader<Class<?>> editableClassesLoader = new DefaultServiceLoader<Class<?>>();
 		for (String name : packageNames) {
 			PackageClassesLoader packageClassesLoader = new PackageClassesLoader(getResourcePatternResolver(), name);
 			packageClassesLoader.setTypeFilter(typeFilter);

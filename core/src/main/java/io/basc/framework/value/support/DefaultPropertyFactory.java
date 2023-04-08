@@ -1,7 +1,12 @@
 package io.basc.framework.value.support;
 
-import java.util.Iterator;
-import java.util.stream.Stream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.function.Function;
 
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
@@ -9,6 +14,9 @@ import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.MultiElements;
 import io.basc.framework.util.Registration;
 import io.basc.framework.value.ConfigurablePropertyFactory;
 import io.basc.framework.value.PropertyFactories;
@@ -18,6 +26,18 @@ import io.basc.framework.value.Value;
 
 public class DefaultPropertyFactory extends DefaultValueFactory<String, PropertyFactory>
 		implements ConfigurablePropertyFactory, Configurable {
+	private static final Function<Properties, Map<String, Value>> CONVERTER = (properties) -> {
+		if (CollectionUtils.isEmpty(properties)) {
+			return Collections.emptyMap();
+		}
+
+		Map<String, Value> map = new LinkedHashMap<>(properties.size());
+		for (Entry<?, ?> entry : properties.entrySet()) {
+			map.put(String.valueOf(entry.getKey()), Value.of(entry.getValue()));
+		}
+		return map;
+	};
+
 	private final PropertyWrapper propertyWrapper;
 	private final PropertyFactories propertyFactories = new PropertyFactories();
 	private final ObservablePropertyFactory observable;
@@ -27,12 +47,9 @@ public class DefaultPropertyFactory extends DefaultValueFactory<String, Property
 	}
 
 	public DefaultPropertyFactory(@Nullable PropertyWrapper propertyWrapper) {
+		super(CONVERTER);
 		this.propertyWrapper = propertyWrapper;
 		this.observable = new ObservablePropertyFactory(propertyWrapper);
-	}
-
-	public Iterator<String> iterator() {
-		return stream().iterator();
 	}
 
 	public ObservablePropertyFactory getObservable() {
@@ -54,10 +71,9 @@ public class DefaultPropertyFactory extends DefaultValueFactory<String, Property
 	}
 
 	@Override
-	public Stream<String> stream() {
-		Stream<String> stream = super.keySet().stream();
-		stream = Stream.concat(stream, propertyFactories.stream());
-		return Stream.concat(stream, observable.stream()).distinct();
+	public Elements<String> keys() {
+		return new MultiElements<>(Arrays.asList(Elements.of(super.getReadonlyMap().keySet()), propertyFactories.keys(),
+				observable.keys()));
 	}
 
 	@Override
@@ -78,7 +94,8 @@ public class DefaultPropertyFactory extends DefaultValueFactory<String, Property
 
 	@Override
 	public boolean containsKey(String key) {
-		return super.containsKey(key) || propertyFactories.containsKey(key) || observable.containsKey(key);
+		return super.getReadonlyMap().containsKey(key) || propertyFactories.containsKey(key)
+				|| observable.containsKey(key);
 	}
 
 	@Override

@@ -41,6 +41,6 @@ public class SharedPagination<T> extends SharedPage<Long, T> implements Paginati
 	}
 
 	public void setPageNumber(long pageNumber) {
-		setCursorId(PageSupport.getStart(pageNumber, getCount()));
+		setCursorId(PageSupport.getStart(pageNumber, getLimit()));
 	}
 }

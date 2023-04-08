@@ -101,8 +101,8 @@ public interface ConvertibleRedisSetsPipelineCommands<SK, K, SV, V>
 
 	@Override
 	default RedisResponse<Pageable<Long, K>> sScan(long cursorId, K key, ScanOptions<K> options) {
-		return getSourceRedisSetsCommands()
-				.sScan(cursorId, getKeyCodec().encode(key), options.convert(getKeyCodec().toEncodeProcessor()))
-				.map((p) -> p.map((v) -> getKeyCodec().decode(v)));
+		RedisResponse<Pageable<Long, SK>> response = getSourceRedisSetsCommands().sScan(cursorId,
+				getKeyCodec().encode(key), options.convert(getKeyCodec().toEncodeProcessor()));
+		return response.map((p) -> p.map((v) -> getKeyCodec().decode(v)));
 	}
 }

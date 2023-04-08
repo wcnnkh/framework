@@ -34,8 +34,8 @@ import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.LinkedMultiValueMap;
 import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.Pair;
+import io.basc.framework.util.Streams;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
 
 public final class SqlUtils {
 	private static final String PATTERN = "(|_([a-zA-Z0-9]_?)*$)|(^[a-zA-Z](_?[a-zA-Z0-9])*_?$)";
@@ -215,7 +215,7 @@ public final class SqlUtils {
 
 	public static Stream<SqlSplitSegment> split(Sql sql, int start, int end,
 			Collection<? extends CharSequence> filters) {
-		return XUtils.stream(new SqlSplitIterator(sql, filters, start, end));
+		return Streams.stream(new SqlSplitIterator(sql, filters, start, end));
 	}
 
 	public static Sql sub(Sql sql, int start) {

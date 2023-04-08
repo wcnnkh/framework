@@ -5,6 +5,7 @@ import java.util.Properties;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.support.ContextBeanDefinition;
 import io.basc.framework.context.support.ContextConfigurator;
+import io.basc.framework.event.Observable;
 import io.basc.framework.factory.BeanResolver;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.redis.RedisConfiguration;
@@ -31,7 +32,7 @@ public class RedisConfigBeanDefinition extends ContextBeanDefinition {
 	@Override
 	public Object create() throws InstanceException {
 		RedisConfiguration redisConfiguration = new RedisConfiguration();
-		io.basc.framework.event.Observable<Properties> observable = getEnvironment()
+		Observable<Properties> observable = getEnvironment()
 				.getProperties(DEFAULT_CONFIGURATION);
 		ContextConfigurator mapper = new ContextConfigurator(getContext());
 		mapper.setConversionService(getEnvironment().getConversionService());

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,17 +14,16 @@ import io.basc.framework.core.OrderComparator;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.ClassesLoader;
-import io.basc.framework.util.Cursor;
+import io.basc.framework.util.ServiceLoader;
 
-public class ProviderClassesLoader implements ClassesLoader, Comparator<Class<?>> {
+public class ProviderClassesLoader implements ServiceLoader<Class<?>>, Comparator<Class<?>> {
 	private static Logger logger = LoggerFactory.getLogger(ProviderClassesLoader.class);
-	private final ClassesLoader classesLoader;
-	private volatile Set<Class<?>> providers;
+	private final ServiceLoader<Class<?>> classesLoader;
 	private final Class<?> serviceClass;
 	private final ContextResolver contextResolver;
 
-	public ProviderClassesLoader(ClassesLoader classesLoader, Class<?> serviceClass, ContextResolver contextResolver) {
+	public ProviderClassesLoader(ServiceLoader<Class<?>> classesLoader, Class<?> serviceClass,
+			ContextResolver contextResolver) {
 		this.classesLoader = classesLoader;
 		this.serviceClass = serviceClass;
 		this.contextResolver = contextResolver;
@@ -31,11 +31,41 @@ public class ProviderClassesLoader implements ClassesLoader, Comparator<Class<?>
 
 	public void reload() {
 		classesLoader.reload();
-		this.providers = getProivders();
 	}
 
-	public Set<Class<?>> getProivders() {
-		Set<Class<?>> list = new LinkedHashSet<Class<?>>();
+	private boolean isAssignable(Class<?> clazz) {
+		if (clazz == null || clazz == Object.class) {
+			return false;
+		}
+
+		Class<?>[] interfaceClasses = clazz.getInterfaces();
+		if (interfaceClasses != null) {
+			for (Class<?> interfaceClass : interfaceClasses) {
+				if (ClassUtils.isAssignable(serviceClass, interfaceClass)) {
+					return true;
+				}
+			}
+		}
+
+		if (clazz == serviceClass) {
+			return true;
+		}
+
+		return isAssignable(clazz.getSuperclass());
+	}
+
+	public boolean isAssignable(Collection<Class<?>> services) {
+		for (Class<?> clazz : services) {
+			if (isAssignable(clazz)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public Iterator<Class<?>> iterator() {
+		Set<Class<?>> list = new LinkedHashSet<>();
 		for (Class<?> clazz : classesLoader) {
 			if (clazz.getName().equals(serviceClass.getName())) {// 防止死循环
 				continue;
@@ -77,62 +107,21 @@ public class ProviderClassesLoader implements ClassesLoader, Comparator<Class<?>
 		}
 
 		if (list.isEmpty()) {
-			return Collections.emptySet();
+			return Collections.emptyIterator();
 		}
 
-		List<Class<?>> classes = new ArrayList<Class<?>>(list);
+		List<Class<?>> classes = new ArrayList<>(list);
 		Collections.sort(classes, this);
 		if (logger.isDebugEnabled()) {
 			logger.debug("[{}] providers is {}", serviceClass, classes);
 		}
-		return new LinkedHashSet<Class<?>>(classes);
+		return classes.iterator();
 	}
 
-	private boolean isAssignable(Class<?> clazz) {
-		if (clazz == null || clazz == Object.class) {
-			return false;
-		}
-
-		Class<?>[] interfaceClasses = clazz.getInterfaces();
-		if (interfaceClasses != null) {
-			for (Class<?> interfaceClass : interfaceClasses) {
-				if (ClassUtils.isAssignable(serviceClass, interfaceClass)) {
-					return true;
-				}
-			}
-		}
-
-		if (clazz == serviceClass) {
-			return true;
-		}
-
-		return isAssignable(clazz.getSuperclass());
-	}
-
-	public boolean isAssignable(Collection<Class<?>> services) {
-		for (Class<?> clazz : services) {
-			if (isAssignable(clazz)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
+	@Override
 	public int compare(Class<?> o1, Class<?> o2) {
 		ProviderDefinition c1 = contextResolver.getProviderDefinition(o1);
 		ProviderDefinition c2 = contextResolver.getProviderDefinition(o2);
 		return OrderComparator.INSTANCE.compare(c1.getOrder(), c2.getOrder());
 	}
-
-	public Cursor<Class<?>> iterator() {
-		if (providers == null) {
-			synchronized (this) {
-				if (providers == null) {
-					this.providers = getProivders();
-				}
-			}
-		}
-		return Cursor.of(providers);
-	}
-
 }

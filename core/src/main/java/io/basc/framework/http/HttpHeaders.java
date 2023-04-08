@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import io.basc.framework.env.Sys;
-import io.basc.framework.event.support.StandardObservableMap;
+import io.basc.framework.event.support.ObservableMapRegistry;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -532,20 +532,19 @@ public class HttpHeaders extends Headers {
 		};
 	};
 
-	private static final StandardObservableMap<String, String[]> AJAX_HEADERS = new StandardObservableMap<>();
+	private static final ObservableMapRegistry<String, String[]> AJAX_HEADERS = new ObservableMapRegistry<>(CONVERTER);
 
 	static {
 		try {
-			AJAX_HEADERS.register(Sys.getEnv().getProperties("/io/basc/framework/net/headers/ajax.headers.properties")
-					.convert(CONVERTER));
+			AJAX_HEADERS.registerProperties(
+					Sys.getEnv().getProperties("/io/basc/framework/net/headers/ajax.headers.properties"));
 		} catch (Throwable e) {
 			logger.error(e, "Failed to load ajax.headers.properties file");
 		}
 
 		try {
-			AJAX_HEADERS.register(
-					Sys.getEnv().getProperties(Sys.getEnv().getProperties().get("io.basc.framework.net.ajax.headers")
-							.or("/ajax-headers.properties").getAsString()).convert(CONVERTER));
+			AJAX_HEADERS.registerProperties(Sys.getEnv().getProperties(Sys.getEnv().getProperties()
+					.get("io.basc.framework.net.ajax.headers").or("/ajax-headers.properties").getAsString()));
 		} catch (Exception e) {
 			logger.error(e, "Failed to load {io.basc.framework.net.ajax.headers} file");
 		}

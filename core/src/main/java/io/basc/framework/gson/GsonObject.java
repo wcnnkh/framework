@@ -1,6 +1,5 @@
 package io.basc.framework.gson;
 
-import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -9,6 +8,8 @@ import com.google.gson.Gson;
 import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
+import io.basc.framework.util.ElementSet;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Pair;
 
 public final class GsonObject extends AbstractJson<String> implements JsonObject {
@@ -80,7 +81,8 @@ public final class GsonObject extends AbstractJson<String> implements JsonObject
 		return new Pair<String, JsonElement>(k.getKey(), new GsonElement(k.getValue(), gson));
 	}
 
-	public Iterator<String> iterator() {
-		return gsonJsonObject.keySet().iterator();
+	@Override
+	public Elements<String> keys() {
+		return new ElementSet<>(gsonJsonObject.keySet());
 	}
 }

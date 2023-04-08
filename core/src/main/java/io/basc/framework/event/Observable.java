@@ -7,10 +7,11 @@ import java.util.function.Supplier;
 
 import io.basc.framework.util.Optional;
 
-public interface Observable<T> extends Optional<T>, BroadcastEventRegistry<ObservableChangeEvent<T>> {
+public interface Observable<T> extends Optional<T>, BroadcastEventRegistry<ChangeEvent<T>> {
 
+	@SuppressWarnings("unchecked")
 	public static <U> Observable<U> empty() {
-		return new EmptyObservable<>();
+		return (Observable<U>) EmptyObservable.INSTANCE;
 	}
 
 	@Override
@@ -22,13 +23,13 @@ public interface Observable<T> extends Optional<T>, BroadcastEventRegistry<Obser
 	@Override
 	default Observable<T> filter(Predicate<? super T> predicate) {
 		Objects.requireNonNull(predicate);
-		return new FilterObservable<T>(this, predicate);
+		return convert((e) -> (e == null || predicate.test(e)) ? e : null);
 	}
 
 	@Override
 	default Observable<T> ifAbsentGet(Supplier<? extends T> other) {
 		Objects.requireNonNull(other);
-		return new IfAbsentObservable<>(this, other);
+		return convert((e) -> e == null ? other.get() : e);
 	}
 
 	@Override

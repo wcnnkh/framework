@@ -13,7 +13,9 @@ import io.basc.framework.io.Resource;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 
-public class ResourceClassesLoader extends DefaultClassLoaderProvider implements ClassesLoader {
+public class ResourceClassesLoader extends DefaultClassLoaderProvider implements ServiceLoader<Class<?>> {
+	public static final String FILE_SUFFIX = ".class";
+
 	private static Logger logger = LoggerFactory.getLogger(ResourceClassesLoader.class);
 	private volatile Set<Class<?>> caching;
 
@@ -21,7 +23,7 @@ public class ResourceClassesLoader extends DefaultClassLoaderProvider implements
 
 	private volatile MetadataReaderFactory metadataReaderFactory;
 
-	private final ResultSet<Resource> resources;
+	private final Streamable<Resource> resources;
 
 	private TypeFilter typeFilter;
 
@@ -32,7 +34,7 @@ public class ResourceClassesLoader extends DefaultClassLoaderProvider implements
 	 */
 	private boolean notPerformReflectionVerification = Boolean.getBoolean("perform.reflection.verification.disable");
 
-	public ResourceClassesLoader(ResultSet<Resource> resources) {
+	public ResourceClassesLoader(Streamable<Resource> resources) {
 		Assert.requiredArgument(resources != null, "resources");
 		this.resources = resources;
 	}
@@ -59,7 +61,7 @@ public class ResourceClassesLoader extends DefaultClassLoaderProvider implements
 		return metadataReaderFactory;
 	}
 
-	public ResultSet<Resource> getResources() {
+	public Streamable<Resource> getResources() {
 		return resources;
 	}
 

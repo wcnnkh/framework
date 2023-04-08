@@ -8,7 +8,8 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.resolve.ResourceResolver;
 import io.basc.framework.event.Observable;
-import io.basc.framework.event.support.ObservableProperties;
+import io.basc.framework.event.support.ObservablePropertiesRegistry;
+import io.basc.framework.event.support.ObservableResource;
 import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
@@ -121,10 +122,10 @@ public interface Environment extends BeanFactory, PlaceholderFormat {
 
 	default Observable<Properties> toObservableProperties(PropertiesResolver propertiesResolver,
 			@Nullable Charset charset, Resource... resources) {
-		ObservableProperties properties = new ObservableProperties();
+		ObservablePropertiesRegistry properties = new ObservablePropertiesRegistry();
 		Function<Resource, Properties> converter = ResourceUtils.toPropertiesConverter(propertiesResolver, charset);
 		for (Resource resource : resources) {
-			properties.register(resource.map(converter));
+			properties.register(new ObservableResource(resource).map(converter));
 		}
 		return properties;
 	}

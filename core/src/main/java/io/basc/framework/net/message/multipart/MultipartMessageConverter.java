@@ -1,5 +1,9 @@
 package io.basc.framework.net.message.multipart;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.http.DefaultHttpInputMessage;
 import io.basc.framework.http.HttpInputMessage;
@@ -9,11 +13,7 @@ import io.basc.framework.net.message.InputMessage;
 import io.basc.framework.net.message.convert.MessageConvertException;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.Cursor;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
+import io.basc.framework.util.Elements;
 
 public class MultipartMessageConverter extends MultipartMessageWriter {
 
@@ -63,7 +63,7 @@ public class MultipartMessageConverter extends MultipartMessageWriter {
 			collections.addAll(messages);
 			return collections;
 		} else {
-			return Cursor.of(messages).first();
+			return Elements.of(messages).first();
 		}
 	}
 

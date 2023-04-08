@@ -4,7 +4,7 @@ import java.util.List;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.orm.OrmException;
-import io.basc.framework.util.ResultSet;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.page.Paginations;
 
 public interface Curd<V> {
@@ -20,9 +20,9 @@ public interface Curd<V> {
 
 	<T> T getById(TypeDescriptor resultsTypeDescriptor, Object... primaryKeys) throws OrmException;
 
-	<K> ResultSet<V> getInIds(List<? extends K> inPrimaryKeys, Object... primaryKeys);
+	<K> Elements<V> getInIds(List<? extends K> inPrimaryKeys, Object... primaryKeys);
 
-	<K, T> ResultSet<T> getInIds(TypeDescriptor resultsTypeDescriptor, List<? extends K> inPrimaryKeys,
+	<K, T> Elements<T> getInIds(TypeDescriptor resultsTypeDescriptor, List<? extends K> inPrimaryKeys,
 			Object... primaryKeys) throws OrmException;
 
 	boolean isPresentById(Object... primaryKeys);

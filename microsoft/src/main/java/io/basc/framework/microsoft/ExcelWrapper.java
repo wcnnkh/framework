@@ -2,50 +2,30 @@ package io.basc.framework.microsoft;
 
 import java.io.IOException;
 
-public class ExcelWrapper implements Excel {
-	private final Excel excel;
+import io.basc.framework.util.page.PaginationsWrapper;
 
-	public ExcelWrapper(Excel excel) {
-		this.excel = excel;
-	}
+public class ExcelWrapper<W extends Excel> extends PaginationsWrapper<String[], W> implements Excel {
 
-	public Excel getExcel() {
-		return excel;
+	public ExcelWrapper(W excel) {
+		super(excel);
 	}
 
 	public void close() throws IOException {
-		excel.close();
+		wrappedTarget.close();
 	}
 
+	@Override
 	public Sheet getSheet(int sheetIndex) {
-		return excel.getSheet(sheetIndex);
+		return wrappedTarget.getSheet(sheetIndex);
 	}
 
-	public Sheet getSheet(String sheetName) {
-		return excel.getSheet(sheetName);
-	}
-
+	@Override
 	public int getNumberOfSheets() {
-		return excel.getNumberOfSheets();
+		return wrappedTarget.getNumberOfSheets();
 	}
 
 	@Override
 	public Excel jumpTo(Long cursorId, long count) {
-		return excel.jumpTo(cursorId, count);
-	}
-
-	@Override
-	public long getTotal() {
-		return excel.getTotal();
-	}
-
-	@Override
-	public long getCount() {
-		return excel.getCount();
-	}
-
-	@Override
-	public Long getCursorId() {
-		return excel.getCursorId();
+		return wrappedTarget.jumpTo(cursorId, count);
 	}
 }

@@ -1,7 +1,7 @@
 package io.basc.framework.context;
 
 import io.basc.framework.env.ConfigurableEnvironment;
-import io.basc.framework.util.ConfigurableClassesLoader;
+import io.basc.framework.util.ConfigurableServiceLoader;
 import io.basc.framework.util.Registration;
 
 public interface ConfigurableContext extends Context, ConfigurableEnvironment {
@@ -9,12 +9,12 @@ public interface ConfigurableContext extends Context, ConfigurableEnvironment {
 	Registration componentScan(String packageName);
 
 	@Override
-	ConfigurableClassesLoader getContextClasses();
+	ConfigurableServiceLoader<Class<?>> getContextClasses();
 
 	@Override
 	ConfigurableContextResolver getContextResolver();
 
-	ConfigurableClassesLoader getSourceClasses();
+	ConfigurableServiceLoader<Class<?>> getSourceClasses();
 
 	Registration source(Class<?> sourceClass);
 }

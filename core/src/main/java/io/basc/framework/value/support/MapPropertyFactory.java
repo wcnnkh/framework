@@ -1,9 +1,10 @@
 package io.basc.framework.value.support;
 
-import io.basc.framework.value.PropertyFactory;
-
-import java.util.Iterator;
 import java.util.Map;
+
+import io.basc.framework.util.ElementSet;
+import io.basc.framework.util.Elements;
+import io.basc.framework.value.PropertyFactory;
 
 public class MapPropertyFactory extends MapValueFactory<String> implements PropertyFactory {
 
@@ -11,8 +12,9 @@ public class MapPropertyFactory extends MapValueFactory<String> implements Prope
 		super(map);
 	}
 
-	public Iterator<String> iterator() {
-		return map.keySet().iterator();
+	@Override
+	public Elements<String> keys() {
+		return new ElementSet<>(map.keySet());
 	}
 
 	public boolean containsKey(String key) {

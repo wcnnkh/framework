@@ -1,14 +1,14 @@
 package io.basc.framework.mapper;
 
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.function.Function;
 
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 
 public interface ObjectAccess<E extends Throwable> {
-	Enumeration<String> keys() throws E;
+	Elements<String> keys() throws E;
 
 	Parameter get(String name) throws E;
 
@@ -50,13 +50,7 @@ public interface ObjectAccess<E extends Throwable> {
 			return;
 		}
 
-		Enumeration<String> keys = keys();
-		if (keys == null) {
-			return;
-		}
-
-		while (keys.hasMoreElements()) {
-			String key = keys.nextElement();
+		for (String key : keys()) {
 			if (key == null) {
 				continue;
 			}

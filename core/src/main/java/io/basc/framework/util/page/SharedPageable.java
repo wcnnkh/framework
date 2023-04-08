@@ -2,17 +2,13 @@ package io.basc.framework.util.page;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.util.Cursor;
+import io.basc.framework.util.ElementList;
+import io.basc.framework.util.Elements;
 
-public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
+public class SharedPageable<K, T> extends StandardPageable<K, T> implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private K cursorId;
-	private K nextCursorId;
-	private List<T> list;
 
 	/**
 	 * 默认的构造方法，cursorId为空
@@ -24,14 +20,8 @@ public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 		this(cursorId, Collections.emptyList(), null);
 	}
 
-	protected Iterator<? extends T> getIterator() {
-		return Collections.emptyIterator();
-	}
-
 	public SharedPageable(K cursorId, List<T> list, K nextCursorId) {
-		this.cursorId = cursorId;
-		this.nextCursorId = nextCursorId;
-		this.list = list;
+		super(cursorId, new ElementList<>(list), nextCursorId);
 	}
 
 	public SharedPageable(Pageable<K, T> pageable) {
@@ -39,38 +29,16 @@ public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 	}
 
 	@Override
-	public K getCursorId() {
-		return cursorId;
+	public ElementList<T> getElements() {
+		return (ElementList<T>) super.getElements();
 	}
 
 	@Override
-	public K getNextCursorId() {
-		return nextCursorId;
-	}
-
-	public void setCursorId(K cursorId) {
-		this.cursorId = cursorId;
-	}
-
-	public void setNextCursorId(K nextCursorId) {
-		this.nextCursorId = nextCursorId;
-	}
-
-	public List<T> getList() {
-		return list == null ? Collections.emptyList() : Collections.unmodifiableList(list);
+	public final void setElements(Elements<T> elements) {
+		setList(elements.toList());
 	}
 
 	public void setList(List<T> list) {
-		this.list = list;
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionUtils.toString(this);
-	}
-
-	@Override
-	public Cursor<T> iterator() {
-		return Cursor.of(list);
+		super.setElements(new ElementList<>(list));
 	}
 }

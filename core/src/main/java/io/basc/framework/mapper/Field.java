@@ -6,6 +6,7 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -17,7 +18,6 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ParentDiscover;
 import io.basc.framework.util.Processor;
-import io.basc.framework.util.ReversibleIterator;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.alias.AliasRegistry;
 import io.basc.framework.value.Value;
@@ -103,7 +103,7 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 		}
 
 		Object parentValue = instance;
-		ReversibleIterator<Field> enumeration = parents().invert();
+		Iterator<Field> enumeration = parents().reverse().iterator();
 		while (enumeration.hasNext()) {
 			Field parentField = enumeration.next();
 			if (!parentField.isSupportGetter()) {
@@ -147,7 +147,7 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 		}
 
 		Object parentValue = instance;
-		ReversibleIterator<Field> enumeration = parents().invert();
+		Iterator<Field> enumeration = parents().reverse().iterator();
 		while (enumeration.hasNext()) {
 			Field parentField = enumeration.next();
 			boolean isStatic = Modifier.isStatic(parentField.getGetter().getModifiers());
@@ -223,7 +223,7 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 
 		if (hasParent() && this.nameNestingDepth > 0) {
 			StringBuilder sb = new StringBuilder();
-			ReversibleIterator<Field> parents = parents().invert();
+			Iterator<Field> parents = parents().reverse().iterator();
 			int i = 0;
 			while (parents.hasNext() && (i++ < this.nameNestingDepth)) {
 				Field parent = parents.next();

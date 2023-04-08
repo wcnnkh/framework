@@ -1,6 +1,6 @@
 package io.basc.framework.dom;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -9,6 +9,7 @@ import io.basc.framework.convert.Converter;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.Parameter;
+import io.basc.framework.util.Elements;
 
 public class NodeListAccess<E extends Throwable> implements ObjectAccess<E> {
 	private final NodeList nodeList;
@@ -25,8 +26,8 @@ public class NodeListAccess<E extends Throwable> implements ObjectAccess<E> {
 	}
 
 	@Override
-	public Enumeration<String> keys() throws E {
-		return new NodeNameEnumeration(nodeList);
+	public Elements<String> keys() throws E {
+		return Elements.of(() -> new NodeNameEnumeration(nodeList));
 	}
 
 	@Override
@@ -48,7 +49,7 @@ public class NodeListAccess<E extends Throwable> implements ObjectAccess<E> {
 		throw new UnsupportedOperationException(String.valueOf(parameter));
 	}
 
-	private static final class NodeNameEnumeration implements Enumeration<String> {
+	private static final class NodeNameEnumeration implements Iterator<String> {
 		private final NodeList nodeList;
 		private int i = 0;
 		private int len;
@@ -58,11 +59,13 @@ public class NodeListAccess<E extends Throwable> implements ObjectAccess<E> {
 			this.len = nodeList.getLength();
 		}
 
-		public boolean hasMoreElements() {
+		@Override
+		public boolean hasNext() {
 			return i < len;
 		}
 
-		public String nextElement() {
+		@Override
+		public String next() {
 			Node node = nodeList.item(i++);
 			return node.getNodeName();
 		}

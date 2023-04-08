@@ -96,7 +96,7 @@ public interface LuceneTemplate extends Repository {
 	 * @return
 	 */
 	default boolean isPresent(Term term) {
-		return search(new SearchParameters(new TermQuery(term), 1), (search, d) -> d.doc).all().stream().findAny()
+		return search(new SearchParameters(new TermQuery(term), 1), (search, d) -> d.doc).all().findAny()
 				.isPresent();
 	}
 

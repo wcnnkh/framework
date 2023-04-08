@@ -4,11 +4,11 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
 
 import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.Parameter;
+import io.basc.framework.util.ElementList;
+import io.basc.framework.util.Elements;
 
 public class ResultSetAccess implements ObjectAccess<SQLException> {
 	private final ResultSet resultSet;
@@ -18,10 +18,10 @@ public class ResultSetAccess implements ObjectAccess<SQLException> {
 	}
 
 	@Override
-	public Enumeration<String> keys() throws SQLException {
+	public Elements<String> keys() throws SQLException {
 		ResultSetMetaData metaData = resultSet.getMetaData();
 		String[] names = SqlUtils.getColumnNames(metaData, metaData.getColumnCount());
-		return Collections.enumeration(Arrays.asList(names));
+		return new ElementList<>(Arrays.asList(names));
 	}
 
 	@Override

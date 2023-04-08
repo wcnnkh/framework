@@ -6,12 +6,12 @@ import java.io.OutputStream;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
-import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Cursor;
+import io.basc.framework.util.Elements;
 
 public final class MicrosoftUtils {
 	private static Logger logger = LoggerFactory.getLogger(MicrosoftUtils.class);
@@ -55,17 +55,8 @@ public final class MicrosoftUtils {
 		return new ExcelMapper(export);
 	}
 
-	public static Cursor<String[]> read(Object source) throws IOException, ExcelException {
+	public static Elements<String[]> read(File source) throws IOException, ExcelException {
 		ExcelTemplate reader = new ExcelTemplate();
-		return reader.read(source);
-	}
-
-	public static <T> Cursor<T> read(Object source, Class<? extends T> targetType) throws ExcelException, IOException {
-		return read(source, TypeDescriptor.valueOf(targetType));
-	}
-
-	public static <T> Cursor<T> read(Object source, TypeDescriptor targetType) throws ExcelException, IOException {
-		ExcelTemplate reader = new ExcelTemplate();
-		return reader.read(source, targetType);
+		return reader.read(source, TypeDescriptor.valueOf(String[].class));
 	}
 }

@@ -13,10 +13,10 @@ import io.basc.framework.core.Members;
 import io.basc.framework.core.MembersDecorator;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.LinkedMultiValueMap;
 import io.basc.framework.util.MultiValueMap;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
 import io.basc.framework.util.page.PageablesIterator;
 
 /**
@@ -131,8 +131,8 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 	}
 
 	@Override
-	public Stream<? extends Structure<T>> pages() {
-		return XUtils.stream(new PageablesIterator<>(this, (e) -> e.next()));
+	public Elements<? extends Structure<T>> pages() {
+		return Elements.of(() -> new PageablesIterator<>(this, (e) -> e.next()));
 	}
 
 	public Structure<T> setNameNestingDepth(int nameNestingDepth) {

@@ -13,8 +13,8 @@ import io.basc.framework.util.StaticSupplier;
 public class LocationClassesLoader extends LocationPatternClassesLoader {
 
 	public static String cleanPath(String location) {
-		return location.endsWith(SUFFIX) ? location
-				: (location.endsWith("/") ? (location + "**/*" + SUFFIX) : (location + "/**/*" + SUFFIX));
+		return location.endsWith(FILE_SUFFIX) ? location
+				: (location.endsWith("/") ? (location + "**/*" + FILE_SUFFIX) : (location + "/**/*" + FILE_SUFFIX));
 	}
 
 	public LocationClassesLoader(ResourcePatternResolver resourcePatternResolver, String location) {

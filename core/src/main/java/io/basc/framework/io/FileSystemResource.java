@@ -182,6 +182,10 @@ public class FileSystemResource extends AbstractResource implements WritableReso
 		}
 	}
 
+	public boolean delete() throws IOException {
+		return Files.deleteIfExists(this.filePath);
+	}
+
 	/**
 	 * This implementation checks whether the underlying file is marked as writable
 	 * (and corresponds to an actual file with content, not to a directory).

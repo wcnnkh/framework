@@ -4,13 +4,13 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import io.basc.framework.core.Members;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
+import io.basc.framework.util.Streamable;
 
 public abstract class ObjectRelationalDecorator<S extends Property, T extends ObjectRelationalDecorator<S, T>>
 		extends ObjectRelational<S> {
@@ -198,8 +198,8 @@ public abstract class ObjectRelationalDecorator<S extends Property, T extends Ob
 	}
 
 	@Override
-	public T concat(Supplier<? extends Stream<? extends S>> streamSupplier) {
-		return decorate(super.concat(streamSupplier));
+	public T concat(Streamable<? extends S> streamable) {
+		return decorate(super.concat(streamable));
 	}
 
 	@Override

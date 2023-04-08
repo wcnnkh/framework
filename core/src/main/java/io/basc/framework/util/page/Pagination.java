@@ -9,16 +9,16 @@ public interface Pagination<T> extends Page<Long, T> {
 	 * @return
 	 */
 	default long getPageNumber() {
-		return PageSupport.getPageNumber(getCursorId(), getCount());
+		return PageSupport.getPageNumber(getCursorId(), getLimit());
 	}
-	
+
 	/**
 	 * 总页数
 	 * 
 	 * @return
 	 */
 	default long getPages() {
-		return PageSupport.getPages(getTotal(), getCount());
+		return PageSupport.getPages(getTotal(), getLimit());
 	}
 
 	default boolean hasPrevious() {
@@ -32,11 +32,11 @@ public interface Pagination<T> extends Page<Long, T> {
 			return null;
 		}
 
-		if (!PageSupport.hasMore(getTotal(), start, getCount())) {
+		if (!PageSupport.hasMore(getTotal(), start, getLimit())) {
 			return null;
 		}
 
-		return PageSupport.getNextStart(start, getCount());
+		return PageSupport.getNextStart(start, getLimit());
 	}
 
 	@Override
@@ -46,6 +46,6 @@ public interface Pagination<T> extends Page<Long, T> {
 
 	@Override
 	default <TT> Pagination<TT> map(Function<? super T, ? extends TT> map) {
-		return new MapPagination<>(this, map);
+		return new ConvertiblePagination<>(this, map);
 	}
 }

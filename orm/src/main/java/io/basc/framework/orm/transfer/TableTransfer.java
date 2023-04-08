@@ -1,7 +1,8 @@
 package io.basc.framework.orm.transfer;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -12,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import io.basc.framework.codec.support.CharsetCodec;
 import io.basc.framework.codec.support.ListRecordCodec;
@@ -29,10 +31,9 @@ import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ConsumeProcessor;
 import io.basc.framework.util.ConvertibleIterator;
-import io.basc.framework.util.Cursor;
 import io.basc.framework.util.Pair;
+import io.basc.framework.util.Streams;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
 import io.basc.framework.value.Value;
 
 public abstract class TableTransfer implements Importer, ExportProcessor<Object> {
@@ -77,29 +78,40 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 		this.header = header;
 	}
 
-	public abstract Cursor<String[]> read(Object source) throws IOException;
+	public abstract Stream<String[]> read(InputStream inputStream) throws IOException;
+
+	public abstract Stream<String[]> read(Reader reader) throws IOException;
 
 	@Override
-	public final <T> Cursor<T> read(File source, TypeDescriptor targetType) throws IOException {
-		return read((Object) source, targetType);
+	public <T> Stream<T> read(InputStream inputStream, TypeDescriptor targetType) throws IOException {
+		Assert.requiredArgument(targetType != null, "type");
+		Stream<String[]> stream = read(inputStream);
+		return mapEntity(stream, targetType);
+	}
+
+	@Override
+	public <T> Stream<T> read(Reader reader, TypeDescriptor targetType) throws IOException {
+		Assert.requiredArgument(reader != null, "type");
+		Stream<String[]> stream = read(reader);
+		return mapEntity(stream, targetType);
 	}
 
 	@SuppressWarnings("unchecked")
-	public final <T> Cursor<T> read(Object source, TypeDescriptor targetType) throws IOException {
+	public final <T> Stream<T> mapEntity(Stream<String[]> source, TypeDescriptor targetType) {
 		Assert.requiredArgument(targetType != null, "type");
-		Cursor<String[]> cursor = read(source);
 		if (Value.isBaseType(targetType.getType())) {
-			return cursor.map((values) -> ArrayUtils.isEmpty(values) ? null
+			return source.map((values) -> ArrayUtils.isEmpty(values) ? null
 					: (T) conversionService.convert(values[0], TypeDescriptor.valueOf(String.class), targetType));
 		} else if (targetType.isArray() || targetType.isCollection()) {
-			return cursor.map((values) -> {
+			return source.map((values) -> {
 				return (T) conversionService.convert(values, TypeDescriptor.forObject(values), targetType);
 			});
 		} else if (targetType.isMap()) {
 			if (isHeader()) {
 				String[] titles = null;
-				while (cursor.hasNext()) {
-					String[] contents = cursor.next();
+				Iterator<String[]> iterator = source.iterator();
+				while (iterator.hasNext()) {
+					String[] contents = iterator.next();
 					if (titles == null && contents != null && contents.length > 0) {
 						titles = contents.clone();
 						break;
@@ -107,21 +119,21 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 				}
 
 				if (titles == null) {
-					return Cursor.empty();
+					return Stream.empty();
 				}
 
 				final String[] titleUes = titles.clone();
 				// 映射
-				return cursor.map((contents) -> {
+				return Streams.stream(iterator).map((contents) -> {
 					Map<String, String> columnMap = new LinkedHashMap<>();
 					for (int i = 0; i < contents.length; i++) {
 						columnMap.put(titleUes[i], contents[i]);
 					}
 					return (T) conversionService.convert(columnMap,
 							TypeDescriptor.map(LinkedHashMap.class, String.class, String.class), targetType);
-				});
+				}).onClose(() -> source.close());
 			} else {
-				return cursor.map((e) -> {
+				return source.map((e) -> {
 					Map<Integer, String> columnMap = new LinkedHashMap<Integer, String>();
 					for (int i = 0; i < e.length; i++) {
 						columnMap.put(i, e[i]);
@@ -131,24 +143,20 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 				});
 			}
 		} else {
-			return mapEntity(cursor, mapper.getStructure(targetType.getType()));
+			Structure<? extends Property> structure = mapper.getStructure(targetType.getType());
+			return mapEntity(source, structure);
 		}
 	}
 
-	public final <T> Cursor<T> read(Object source, Structure<? extends Property> structure) throws IOException {
-		Assert.requiredArgument(structure != null, "structure");
-		Assert.requiredArgument(source != null, "source");
-		return mapEntity(read(source), structure);
-	}
-
 	@SuppressWarnings("unchecked")
-	public final <T> Cursor<T> mapEntity(Cursor<String[]> source, Structure<? extends Property> structure) {
+	public final <T> Stream<T> mapEntity(Stream<String[]> source, Structure<? extends Property> structure) {
 		Assert.requiredArgument(structure != null, "structure");
 		Assert.requiredArgument(source != null, "source");
 		if (isHeader()) {
 			Map<String, Integer> nameToIndexMap = new HashMap<String, Integer>();
-			while (source.hasNext()) {
-				String[] contents = source.next();
+			Iterator<String[]> iterator = source.iterator();
+			while (iterator.hasNext()) {
+				String[] contents = iterator.next();
 				if (nameToIndexMap.isEmpty() && contents != null && contents.length > 0) {
 					for (int i = 0; i < contents.length; i++) {
 						nameToIndexMap.put(contents[i], i);
@@ -160,7 +168,7 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 			List<Property> properties = structure.stream().filter((e) -> e.isSupportSetter())
 					.collect(Collectors.toList());
 			// 映射
-			return source.map((contents) -> {
+			return Streams.stream(iterator).map((contents) -> {
 				T instance = (T) ReflectionApi.newInstance(structure.getSourceClass());
 				properties.forEach((property) -> {
 					Integer index = nameToIndexMap.get(property.getName());
@@ -180,13 +188,12 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 					property.getSetter().set(instance, contents[index], conversionService);
 				});
 				return instance;
-			});
+			}).onClose(() -> source.close());
 		} else {
 			return source.map((e) -> {
 				T instance = (T) ReflectionApi.newInstance(structure.getSourceClass());
 				int i = 0;
-				Iterator<? extends Property> iterator = structure.stream().filter((p) -> p.isSupportSetter())
-						.iterator();
+				Iterator<? extends Property> iterator = structure.filter((p) -> p.isSupportSetter()).iterator();
 				while (iterator.hasNext() && i < e.length) {
 					Property property = iterator.next();
 					property.getSetter().set(instance, e[i++], conversionService);
@@ -244,7 +251,7 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 	}
 
 	public final TransfColumns<String, String> mapColumns(Object source, Structure<? extends Property> structure) {
-		return structure.stream().filter((e) -> e.isSupportGetter()).map((property) -> {
+		return structure.filter((e) -> e.isSupportGetter()).map((property) -> {
 			Object value = property.get(source);
 			if (value == null) {
 				return new Pair<String, String>(property.getName(), null);
@@ -256,13 +263,13 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 	}
 
 	public final Iterator<TransfColumns<String, String>> exportAll(Iterator<?> source) {
-		return XUtils
-				.stream(new ConvertibleIterator<Object, TransfColumns<String, String>>(source, (e) -> mapColumns(e)))
-				.filter((e) -> e != null).iterator();
+		Iterator<TransfColumns<String, String>> iterator = new ConvertibleIterator<Object, TransfColumns<String, String>>(
+				source, (e) -> mapColumns(e));
+		return Streams.stream(iterator).filter((e) -> e != null).iterator();
 	}
 
-	public final java.util.List<TransfColumns<String, String>> exportAll(Collection<?> source) {
-		return XUtils.stream(exportAll(source.iterator())).collect(Collectors.toList());
+	public final List<TransfColumns<String, String>> exportAll(Collection<?> source) {
+		return Streams.stream(exportAll(source.iterator())).collect(Collectors.toList());
 	}
 
 	public final <E extends Throwable> void exportAll(Iterator<?> source,

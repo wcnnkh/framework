@@ -3,7 +3,6 @@ package io.basc.framework.value;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.NoSuchElementException;
 import java.util.function.DoubleSupplier;
 import java.util.function.IntSupplier;
 import java.util.function.LongSupplier;
@@ -51,13 +50,13 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 		return of(value, null, null);
 	}
 
-	static Value of(@Nullable Object value, @Nullable TypeDescriptor type) {
-		return of(value, type, null);
-	}
-
 	static Value of(@Nullable Object value,
 			@Nullable Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
 		return of(value, null, converter);
+	}
+
+	static Value of(@Nullable Object value, @Nullable TypeDescriptor type) {
+		return of(value, type, null);
 	}
 
 	static Value of(@Nullable Object value, @Nullable TypeDescriptor type,
@@ -137,24 +136,6 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			}
 			throw e;
 		}
-	}
-
-	@Override
-	default Value get() {
-		Object value = getSource();
-		if (value == null) {
-			throw new NoSuchElementException("No value present");
-		}
-
-		if (value instanceof Value) {
-			return (Value) value;
-		}
-
-		return transform(value, getTypeDescriptor());
-	}
-
-	default StringConverter getStringConverter() {
-		return StringConverter.DEFAULT;
 	}
 
 	@Nullable
@@ -460,15 +441,15 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 		return (T) v;
 	}
 
+	default Object getAsObject(ResolvableType type) {
+		return getAsObject(TypeDescriptor.valueOf(type));
+	}
+
 	@Nullable
 	default Object getAsObject(Type type) {
 		if (type instanceof Class) {
 			return getAsObject((Class<?>) type);
 		}
-		return getAsObject(TypeDescriptor.valueOf(type));
-	}
-
-	default Object getAsObject(ResolvableType type) {
 		return getAsObject(TypeDescriptor.valueOf(type));
 	}
 
@@ -563,6 +544,10 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 	@Nullable
 	Object getSource();
 
+	default StringConverter getStringConverter() {
+		return StringConverter.DEFAULT;
+	}
+
 	default TypeDescriptor getTypeDescriptor() {
 		Object value = getSource();
 		if (value == null) {
@@ -617,6 +602,20 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 			return ((Value) value).isPresent();
 		}
 		return true;
+	}
+
+	@Override
+	default Value orElse(Value other) {
+		Object value = getSource();
+		if (value == null) {
+			return other;
+		}
+
+		if (value instanceof Value) {
+			return ((Value) value).orElse(other);
+		}
+
+		return transform(value, getTypeDescriptor());
 	}
 
 	default Value or(Object other) {

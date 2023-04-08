@@ -1,8 +1,10 @@
 package io.basc.framework.util;
 
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import io.basc.framework.core.OrderComparator;
 
@@ -33,16 +35,15 @@ public class DefaultServiceLoader<S> implements ConfigurableServiceLoader<S> {
 	}
 
 	@Override
-	public Cursor<S> iterator() {
+	public Iterator<S> iterator() {
 		if (serviceLoaders != null) {
 			synchronized (this) {
 				if (serviceLoaders != null) {
+					Stream<S> stream = serviceLoaders.stream().flatMap((e) -> e.stream());
 					if (comparator == null) {
-						return Cursor.of(new Cursors<>(serviceLoaders.stream().map((e) -> e.iterator()).iterator())
-								.stream().distinct());
+						return stream.distinct().iterator();
 					} else {
-						return Cursor.of(new Cursors<>(serviceLoaders.stream().map((e) -> e.iterator()).iterator())
-								.stream().sorted(comparator).distinct());
+						return stream.sorted(comparator).distinct().iterator();
 					}
 				}
 			}

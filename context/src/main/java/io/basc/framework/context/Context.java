@@ -1,12 +1,12 @@
 package io.basc.framework.context;
 
 import io.basc.framework.env.Environment;
-import io.basc.framework.util.ClassesLoader;
+import io.basc.framework.util.ServiceLoader;
 
 public interface Context extends Environment {
-	ClassesLoader getSourceClasses();
+	ServiceLoader<Class<?>> getSourceClasses();
 
-	ClassesLoader getContextClasses();
+	ServiceLoader<Class<?>> getContextClasses();
 
 	ClassesLoaderFactory getClassesLoaderFactory();
 

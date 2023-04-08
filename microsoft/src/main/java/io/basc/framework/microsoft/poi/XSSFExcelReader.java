@@ -25,12 +25,12 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import io.basc.framework.io.IOUtils;
-import io.basc.framework.microsoft.AbstractExcelReader;
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.ExcelReader;
 import io.basc.framework.microsoft.ExcelRow;
+import io.basc.framework.microsoft.ResponsiveExcelReader;
 
-public class XSSFExcelReader extends AbstractExcelReader implements ExcelReader {
+public class XSSFExcelReader extends ResponsiveExcelReader implements ExcelReader {
 	private boolean firstSheet = false;
 	private boolean formulasNotResults = true;
 
@@ -48,7 +48,7 @@ public class XSSFExcelReader extends AbstractExcelReader implements ExcelReader 
 		return xmlReader;
 	}
 
-	public void read(OPCPackage opcPackage, Consumer<ExcelRow> consumer) throws IOException, ExcelException {
+	public void read(OPCPackage opcPackage, Consumer<? super ExcelRow> consumer) throws IOException, ExcelException {
 		XSSFReader reader;
 		SharedStringsTable sst = null;
 		XMLReader xmlReader;
@@ -86,12 +86,12 @@ public class XSSFExcelReader extends AbstractExcelReader implements ExcelReader 
 	}
 
 	private static class XssfSheetContentsHandler implements SheetContentsHandler {
-		private Consumer<ExcelRow> consumer;
+		private Consumer<? super ExcelRow> consumer;
 		private List<String> contents = new ArrayList<String>();
 		private int sheetIndex = 0;
 		private String sheetName;
 
-		public XssfSheetContentsHandler(Consumer<ExcelRow> consumer) {
+		public XssfSheetContentsHandler(Consumer<? super ExcelRow> consumer) {
 			this.consumer = consumer;
 		}
 
@@ -120,7 +120,7 @@ public class XSSFExcelReader extends AbstractExcelReader implements ExcelReader 
 		}
 	}
 
-	public void read(InputStream input, Consumer<ExcelRow> consumer) throws IOException {
+	public void read(InputStream input, Consumer<? super ExcelRow> consumer) throws IOException {
 		OPCPackage opcPackage = null;
 		try {
 			opcPackage = OPCPackage.open(input);
@@ -132,7 +132,7 @@ public class XSSFExcelReader extends AbstractExcelReader implements ExcelReader 
 		}
 	}
 
-	public void read(File file, Consumer<ExcelRow> consumer) throws IOException, ExcelException {
+	public void read(File file, Consumer<? super ExcelRow> consumer) throws IOException, ExcelException {
 		OPCPackage opcPackage = null;
 		try {
 			opcPackage = OPCPackage.open(file, PackageAccess.READ);

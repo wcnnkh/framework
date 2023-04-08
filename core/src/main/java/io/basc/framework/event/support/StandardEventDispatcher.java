@@ -6,29 +6,30 @@ import io.basc.framework.event.EventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.ElementRegistry;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.Select;
 import io.basc.framework.util.Selector;
-import io.basc.framework.util.SharedResultSet;
 
 public class StandardEventDispatcher<T> implements EventDispatcher<T> {
-	private final SharedResultSet<EventListener<T>> listeners = new SharedResultSet<>();
-	private final Select<EventListener<T>> select;
-	private final Executor executor;
+	private final ElementRegistry<EventListener<T>> registry = new ElementRegistry<>();
+	@Nullable
+	private Select<EventListener<T>> select;
+	private Executor executor;
 
 	/**
 	 * @param selector 如果为空说明不存在选择器，那么将消息推给所有的监听
 	 * @param executor 异步执行器
 	 */
 	public StandardEventDispatcher(@Nullable Selector<EventListener<T>> selector, @Nullable Executor executor) {
-		this.select = new Select<>(listeners, selector);
+		this.select = new Select<>(registry.getElements(), selector);
 		this.executor = executor;
 	}
 
 	@Override
 	public Registration registerListener(EventListener<T> eventListener) {
 		Assert.requiredArgument(eventListener != null, "eventListener");
-		return listeners.register(eventListener);
+		return registry.register(eventListener);
 	}
 
 	@Override
@@ -44,8 +45,8 @@ public class StandardEventDispatcher<T> implements EventDispatcher<T> {
 		select.consume((e) -> e.onEvent(event));
 	}
 
-	public SharedResultSet<EventListener<T>> getListeners() {
-		return listeners;
+	public ElementRegistry<EventListener<T>> getRegistry() {
+		return registry;
 	}
 
 	public Select<EventListener<T>> getSelect() {
@@ -53,6 +54,6 @@ public class StandardEventDispatcher<T> implements EventDispatcher<T> {
 	}
 
 	public void unregisterListeners() {
-		listeners.clear();
+		registry.clear();
 	}
 }

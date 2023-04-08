@@ -47,7 +47,8 @@ public class EntityTest {
 		ObjectRelational<? extends Property> objectRelational = orm.getStructure(EntityTest.class)
 				.withEntitysAfter((e) -> e.setNameNestingDepth(1));
 		objectRelational.forEach((e) -> System.out.println(e.getName()));
-		assertTrue(objectRelational.filter((e) -> e.getName().startsWith("entity")).findAny().isPresent());
+		assertTrue(
+				objectRelational.filter((e) -> e.getName().startsWith("entity")).findAny().isPresent());
 	}
 
 	@Entity

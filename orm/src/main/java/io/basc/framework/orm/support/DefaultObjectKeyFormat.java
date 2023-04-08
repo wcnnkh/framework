@@ -28,7 +28,7 @@ public class DefaultObjectKeyFormat implements ObjectKeyFormat {
 	public String getObjectKeyByIds(Structure<? extends Property> structure, Iterator<?> ids) {
 		StringBuilder sb = new StringBuilder(128);
 		sb.append(structure.getName());
-		Iterator<? extends Property> primaryKeys = structure.stream().filter((e) -> e.isPrimaryKey()).iterator();
+		Iterator<? extends Property> primaryKeys = structure.filter((e) -> e.isPrimaryKey()).iterator();
 		while (primaryKeys.hasNext() && ids.hasNext()) {
 			appendObjectKeyByValue(sb, primaryKeys.next(), ids.next());
 		}

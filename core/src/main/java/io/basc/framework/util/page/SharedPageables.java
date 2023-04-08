@@ -1,7 +1,5 @@
 package io.basc.framework.util.page;
 
-import java.util.stream.Stream;
-
 import io.basc.framework.lang.Nullable;
 
 public class SharedPageables<K, T> extends SharedPageable<K, T> implements Pageables<K, T> {
@@ -35,11 +33,6 @@ public class SharedPageables<K, T> extends SharedPageable<K, T> implements Pagea
 	public Pageables<K, T> next() {
 		Pageables<K, T> pageables = this.pageables.next();
 		return new SharedPageables<>(pageables);
-	}
-
-	@Override
-	public Stream<? extends Pageables<K, T>> pages() {
-		return pageables.pages();
 	}
 
 	public Pageables<K, T> getPageables() {

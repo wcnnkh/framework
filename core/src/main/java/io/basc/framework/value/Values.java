@@ -1,14 +1,15 @@
 package io.basc.framework.value;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Cursor;
-import io.basc.framework.util.ResultSet;
+import io.basc.framework.util.Elements;
 
-public class Values implements ResultSet<Value> {
+public final class Values implements Elements<Value> {
 	public static Values of(Object... args) {
 		Assert.requiredArgument(args != null, "args");
 		Value[] values = new Value[args.length];
@@ -29,44 +30,40 @@ public class Values implements ResultSet<Value> {
 		return new Values(values);
 	}
 
-	protected final ResultSet<Value> resultSet;
+	protected final Value[] array;
 
-	public Values(Value... values) {
-		Assert.requiredArgument(values != null, "values");
-		this.resultSet = ResultSet.of(Arrays.asList(values));
-	}
-
-	public Values(ResultSet<Value> resultSet) {
-		Assert.requiredArgument(resultSet != null, "resultSet");
-		this.resultSet = resultSet;
+	public Values(Value... array) {
+		Assert.requiredArgument(array != null, "array");
+		this.array = array;
 	}
 
 	@Override
 	public Value first() {
-		return resultSet.first();
+		return array[0];
 	}
 
 	@Override
 	public Value last() {
-		return resultSet.last();
+		return array[array.length - 1];
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return array.length == 0;
 	}
 
 	@Override
 	public List<Value> toList() {
-		return resultSet.toList();
-	}
-
-	public Object[] toArray() {
-		List<Value> values = resultSet.toList();
-		Object[] args = new Object[values.size()];
-		for (int i = 0; i < args.length; i++) {
-			args[i] = values.get(i).getSource();
-		}
-		return args;
+		return Arrays.asList(array);
 	}
 
 	@Override
-	public Cursor<Value> iterator() {
-		return resultSet.iterator();
+	public Iterator<Value> iterator() {
+		return toList().iterator();
+	}
+
+	@Override
+	public Stream<Value> stream() {
+		return Stream.of(array);
 	}
 }

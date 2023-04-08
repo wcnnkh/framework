@@ -7,19 +7,19 @@ import java.util.function.Consumer;
 
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
-import io.basc.framework.microsoft.AbstractExcelReader;
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.ExcelReader;
 import io.basc.framework.microsoft.ExcelRow;
+import io.basc.framework.microsoft.ResponsiveExcelReader;
 
-public class HSSFExcelReader extends AbstractExcelReader implements ExcelReader {
+public class HSSFExcelReader extends ResponsiveExcelReader implements ExcelReader {
 
-	public void read(POIFSFileSystem poifsFileSystem, Consumer<ExcelRow> consumer) throws IOException, ExcelException {
+	public void read(POIFSFileSystem poifsFileSystem, Consumer<? super ExcelRow> consumer) throws IOException, ExcelException {
 		DefaultHSSFListener hssfReader = new DefaultHSSFListener(poifsFileSystem, consumer);
 		hssfReader.process();
 	}
 
-	public void read(InputStream inputStream, Consumer<ExcelRow> consumer) throws IOException, ExcelException {
+	public void read(InputStream inputStream, Consumer<? super ExcelRow> consumer) throws IOException, ExcelException {
 		POIFSFileSystem poifsFileSystem = new POIFSFileSystem(inputStream);
 		try {
 			read(poifsFileSystem, consumer);
@@ -28,7 +28,7 @@ public class HSSFExcelReader extends AbstractExcelReader implements ExcelReader 
 		}
 	}
 
-	public void read(File file, Consumer<ExcelRow> consumer) throws IOException, ExcelException {
+	public void read(File file, Consumer<? super ExcelRow> consumer) throws IOException, ExcelException {
 		POIFSFileSystem poifsFileSystem = new POIFSFileSystem(file, true);
 		try {
 			read(poifsFileSystem, consumer);

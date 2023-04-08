@@ -12,10 +12,10 @@ import io.basc.framework.mapper.Parameter;
 import io.basc.framework.orm.ObjectKeyFormat;
 import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.orm.OrmException;
+import io.basc.framework.orm.PrimaryKeyElements;
 import io.basc.framework.orm.Property;
-import io.basc.framework.orm.PrimaryKeyResultSet;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.ResultSet;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.page.Paginations;
 
@@ -80,13 +80,14 @@ public interface Repository extends CurdOperations {
 	}
 
 	@Override
-	default <K, T> PrimaryKeyResultSet<K, T> getInIds(Class<? extends T> entityClass, List<? extends K> inPrimaryKeys,
+	default <K, T> PrimaryKeyElements<K, T> getInIds(Class<? extends T> entityClass, List<? extends K> inPrimaryKeys,
 			Object... primaryKeys) throws OrmException {
 		return getInIds(TypeDescriptor.valueOf(entityClass), entityClass, inPrimaryKeys, primaryKeys);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	default <K, T> PrimaryKeyResultSet<K, T> getInIds(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
+	default <K, T> PrimaryKeyElements<K, T> getInIds(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
 			List<? extends K> inPrimaryKeys, Object... primaryKeys) throws OrmException {
 		ObjectRelational<? extends Property> entityStructure = getMapper().getStructure(entityClass);
 		List<? extends Property> list = entityStructure.getPrimaryKeys();
@@ -108,9 +109,9 @@ public interface Repository extends CurdOperations {
 		pairs.add(new Pair<String, Condition>(relationshipKeywords.getAndKeywords().getFirst(),
 				new Condition(conditionKeywords.getInKeywords().getFirst(), column)));
 		Conditions conditions = ConditionsBuilder.build(pairs);
-		ResultSet<T> resultSet = query(resultsTypeDescriptor, entityClass, conditions, null);
-		return new PrimaryKeyResultSet<K, T>(() -> resultSet.iterator(), getObjectKeyFormat(), entityStructure,
-				inPrimaryKeys, primaryKeys);
+		Elements<T> resultSet = (Elements<T>) query(resultsTypeDescriptor, entityClass, conditions, null);
+		return new PrimaryKeyElements<K, T>(resultSet, getObjectKeyFormat(), entityStructure, inPrimaryKeys,
+				primaryKeys);
 	}
 
 	RepositoryResolver getMapper();
@@ -119,21 +120,21 @@ public interface Repository extends CurdOperations {
 
 	@Override
 	default <T> boolean isPresent(Class<? extends T> entityClass, T conditions) {
-		return query(TypeDescriptor.valueOf(entityClass), entityClass,
+		return !query(TypeDescriptor.valueOf(entityClass), entityClass,
 				getMapper().parseConditions(entityClass,
 						getMapper().getStructure(entityClass).getPrimaryKeys().iterator(), null,
 						(e) -> e.get(conditions), null),
-				null).isPresent();
+				null).isEmpty();
 	}
 
 	@Override
 	default <E> boolean isPresentById(Class<? extends E> entityClass, Object... ids) {
 		AtomicInteger index = new AtomicInteger();
-		return query(TypeDescriptor.valueOf(entityClass), entityClass,
+		return !query(TypeDescriptor.valueOf(entityClass), entityClass,
 				getMapper().parseConditions(entityClass,
 						getMapper().getStructure(entityClass).getPrimaryKeys().iterator(), null,
 						(e) -> ids[index.getAndIncrement()], null),
-				null).isPresent();
+				null).isEmpty();
 	}
 
 	default <T> Paginations<T> query(Class<? extends T> entityClass, @Nullable Conditions conditions,

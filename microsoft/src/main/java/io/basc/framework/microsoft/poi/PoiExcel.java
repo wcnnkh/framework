@@ -2,20 +2,22 @@ package io.basc.framework.microsoft.poi;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Iterator;
+import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.Workbook;
 
 import io.basc.framework.microsoft.Excel;
 import io.basc.framework.microsoft.WritableExcel;
 import io.basc.framework.microsoft.WritableSheet;
-import io.basc.framework.util.Cursor;
+import io.basc.framework.util.Streams;
 
 public class PoiExcel implements WritableExcel {
 	private final Workbook workbook;
 	private final OutputStream outputStream;
 	private final boolean closeStream;
 	private final long cursorId;
-	private final long count;
+	private final long limit;
 
 	public PoiExcel(Workbook workbook) {
 		this(workbook, null, false);
@@ -25,12 +27,12 @@ public class PoiExcel implements WritableExcel {
 		this(workbook, outputStream, closeStream, 0, -1);
 	}
 
-	private PoiExcel(Workbook workbook, OutputStream outputStream, boolean closeStream, long cursorId, long count) {
+	private PoiExcel(Workbook workbook, OutputStream outputStream, boolean closeStream, long cursorId, long limit) {
 		this.workbook = workbook;
 		this.outputStream = outputStream;
 		this.closeStream = closeStream;
 		this.cursorId = cursorId;
-		this.count = count;
+		this.limit = limit;
 	}
 
 	public void close() throws IOException {
@@ -106,16 +108,25 @@ public class PoiExcel implements WritableExcel {
 	}
 
 	@Override
-	public long getCount() {
-		return count > 0 ? count : WritableExcel.super.getCount();
+	public long getLimit() {
+		return limit > 0 ? limit : count();
 	}
 
 	@Override
-	public Cursor<String[]> iterator() {
-		Cursor<String[]> cursor = WritableExcel.super.iterator();
-		if (count > 0) {
-			return cursor.limit(0, count);
+	public Iterator<String[]> iterator() {
+		Iterator<String[]> cursor = WritableExcel.super.iterator();
+		if (limit > 0) {
+			return Streams.stream(cursor).limit(limit).iterator();
 		}
 		return cursor;
+	}
+
+	@Override
+	public Stream<String[]> stream() {
+		Stream<String[]> stream = WritableExcel.super.stream();
+		if (limit > 0) {
+			return stream.limit(limit);
+		}
+		return stream;
 	}
 }

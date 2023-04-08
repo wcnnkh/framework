@@ -13,6 +13,7 @@ import org.junit.Test;
 import io.basc.framework.convert.annotation.DateFormat;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.microsoft.ExcelException;
+import io.basc.framework.microsoft.ExcelTemplate;
 import io.basc.framework.microsoft.ExcelVersion;
 import io.basc.framework.microsoft.MicrosoftUtils;
 import io.basc.framework.orm.transfer.TransfColumn;
@@ -28,10 +29,10 @@ public class ExcelResolverTest {
 			exportList.add(new TestBean(XUtils.getUUID(), RandomUtils.random(0, i), new Date()));
 		}
 		File file = File.createTempFile("export", ExcelVersion.XLSX.getFileSuffixName());
-
+		System.out.println(file);
+		ExcelTemplate excelTemplate = new ExcelTemplate();
 		MicrosoftUtils.export(file).putAll(exportList).close();
-
-		List<TestBean> readList = MicrosoftUtils.read(file, TestBean.class).toList();
+		List<TestBean> readList = excelTemplate.read(file, TestBean.class).toList();
 		assertTrue(exportList.equals(readList));
 		file.delete();
 	}

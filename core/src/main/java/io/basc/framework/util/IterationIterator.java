@@ -6,10 +6,11 @@ import java.util.function.Function;
 
 public class IterationIterator<S, T> implements Iterator<T> {
 	private final Iterator<? extends S> iterator;
-	private final Function<? super S, ? extends Iterator<T>> converter;
+	private final Function<? super S, ? extends Iterator<? extends T>> converter;
 	private Iterator<? extends T> valueIterator;
 
-	public IterationIterator(Iterator<? extends S> iterator, Function<? super S, ? extends Iterator<T>> converter) {
+	public IterationIterator(Iterator<? extends S> iterator,
+			Function<? super S, ? extends Iterator<? extends T>> converter) {
 		Assert.requiredArgument(iterator != null, "iterator");
 		Assert.requiredArgument(converter != null, "converter");
 		this.iterator = iterator;
@@ -18,23 +19,23 @@ public class IterationIterator<S, T> implements Iterator<T> {
 
 	@Override
 	public boolean hasNext() {
-		if (valueIterator == null) {
-			if (!iterator.hasNext()) {
-				return false;
+		if (valueIterator == null || !valueIterator.hasNext()) {
+			while (iterator.hasNext()) {
+				S s = iterator.next();
+				if (s == null) {
+					continue;
+				}
+				valueIterator = converter.apply(s);
+				if (valueIterator == null) {
+					continue;
+				}
+
+				if (valueIterator.hasNext()) {
+					return true;
+				}
 			}
-			S s = iterator.next();
-			valueIterator = converter.apply(s);
 		}
-
-		if (valueIterator.hasNext()) {
-			return true;
-		}
-
-		if (iterator.hasNext()) {
-			valueIterator = null;
-			return hasNext();
-		}
-		return false;
+		return valueIterator != null && valueIterator.hasNext();
 	}
 
 	@Override

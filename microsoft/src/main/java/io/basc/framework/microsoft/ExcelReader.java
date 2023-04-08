@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import io.basc.framework.util.Elements;
+
 /**
  * 逐行读取(内存消耗小)
  * 
@@ -14,11 +16,11 @@ import java.util.stream.Stream;
  */
 public interface ExcelReader {
 
-	void read(InputStream inputStream, Consumer<ExcelRow> consumer) throws IOException, ExcelException;
+	void read(InputStream inputStream, Consumer<? super ExcelRow> consumer) throws IOException, ExcelException;
 
-	void read(File file, Consumer<ExcelRow> consumer) throws IOException, ExcelException;
+	void read(File file, Consumer<? super ExcelRow> consumer) throws IOException, ExcelException;
 
-	Stream<ExcelRow> read(File source) throws IOException, ExcelException;
+	Elements<ExcelRow> read(File source) throws IOException, ExcelException;
 
 	Stream<ExcelRow> read(InputStream source) throws IOException, ExcelException;
 }

@@ -10,19 +10,19 @@ import java.util.function.Consumer;
 
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.microsoft.AbstractExcelReader;
 import io.basc.framework.microsoft.Excel;
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.ExcelExport;
 import io.basc.framework.microsoft.ExcelOperations;
 import io.basc.framework.microsoft.ExcelRow;
 import io.basc.framework.microsoft.ExcelVersion;
+import io.basc.framework.microsoft.ResponsiveExcelReader;
 import io.basc.framework.microsoft.WritableExcel;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
 import jxl.write.WritableWorkbook;
 
-public class JxlExcelOperations extends AbstractExcelReader implements ExcelOperations {
+public class JxlExcelOperations extends ResponsiveExcelReader implements ExcelOperations {
 
 	public Excel create(InputStream inputStream) throws IOException, ExcelException {
 		Workbook workbook;
@@ -49,7 +49,7 @@ public class JxlExcelOperations extends AbstractExcelReader implements ExcelOper
 		return new JxlWritableExcel(workbook);
 	}
 
-	public void read(InputStream inputStream, Consumer<ExcelRow> consumer) throws IOException, ExcelException {
+	public void read(InputStream inputStream, Consumer<? super ExcelRow> consumer) throws IOException, ExcelException {
 		Excel excel = create(inputStream);
 		try {
 			for (int i = 0; i < excel.getNumberOfSheets(); i++) {
@@ -63,7 +63,7 @@ public class JxlExcelOperations extends AbstractExcelReader implements ExcelOper
 		}
 	}
 
-	public void read(File file, Consumer<ExcelRow> consumer) throws IOException, ExcelException {
+	public void read(File file, Consumer<? super ExcelRow> consumer) throws IOException, ExcelException {
 		FileInputStream fileInputStream = new FileInputStream(file);
 		try {
 			read(fileInputStream, consumer);

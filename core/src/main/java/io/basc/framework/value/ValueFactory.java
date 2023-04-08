@@ -109,6 +109,6 @@ public interface ValueFactory<K> extends BroadcastNamedEventRegistry<K, ChangeEv
 	}
 
 	default Observable<Value> getObservable(K key) {
-		return new ObservableValue<K>(key, this);
+		return new DynamicValue<K>(key, this);
 	}
 }

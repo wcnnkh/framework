@@ -34,10 +34,8 @@ import io.basc.framework.lang.Constants;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.ClassesLoader;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
-import io.basc.framework.util.ConfigurableClassesLoader;
-import io.basc.framework.util.DefaultClassesLoader;
+import io.basc.framework.util.DefaultServiceLoader;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.StringUtils;
@@ -45,7 +43,7 @@ import io.basc.framework.util.StringUtils;
 public class DefaultContext extends DefaultEnvironment implements ConfigurableContext {
 	private static Logger logger = LoggerFactory.getLogger(DefaultContext.class);
 	private final DefaultClassesLoaderFactory classesLoaderFactory;
-	private final DefaultClassesLoader contextClassesLoader = new DefaultClassesLoader();
+	private final DefaultServiceLoader<Class<?>> contextClassesLoader = new DefaultServiceLoader<>();
 	private final ConfigurableServices<ContextPostProcessor> contextPostProcessors = new ConfigurableServices<ContextPostProcessor>(
 			ContextPostProcessor.class);
 	private final ConfigurableContextResolver contextResolver = new ConfigurableContextResolver();
@@ -57,7 +55,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 
 	private ConcurrentReferenceHashMap<Class<?>, ServiceLoader<?>> serviceLoaderCacheMap = new ConcurrentReferenceHashMap<Class<?>, ServiceLoader<?>>();
 
-	private final DefaultClassesLoader sourceClasses = new DefaultClassesLoader();
+	private final DefaultServiceLoader<Class<?>> sourceClasses = new DefaultServiceLoader<Class<?>>();
 
 	public DefaultContext() {
 		contextClassesLoader.registerLoader(sourceClasses);
@@ -112,7 +110,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	public Registration componentScan(String packageName, TypeFilter typeFilter) {
-		ClassesLoader classesLoader = getClassesLoaderFactory().getClassesLoader(packageName, typeFilter);
+		ServiceLoader<Class<?>> classesLoader = getClassesLoaderFactory().getClassesLoader(packageName, typeFilter);
 		return getContextClasses().registerLoader(classesLoader);
 	}
 
@@ -128,7 +126,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	@Override
-	public ConfigurableClassesLoader getContextClasses() {
+	public DefaultServiceLoader<Class<?>> getContextClasses() {
 		return contextClassesLoader;
 	}
 
@@ -187,7 +185,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	@Override
-	public DefaultClassesLoader getSourceClasses() {
+	public DefaultServiceLoader<Class<?>> getSourceClasses() {
 		return sourceClasses;
 	}
 

@@ -33,7 +33,7 @@ public class StringConverter extends ConversionFactory<String, ConversionExcepti
 
 	public static <T> Optional<T> parse(String source, Class<T> type) {
 		T value = DEFAULT.convert(source, type);
-		return Optional.ofNullable(value);
+		return Optional.of(value);
 	}
 
 	public static boolean parseBoolean(String source) {

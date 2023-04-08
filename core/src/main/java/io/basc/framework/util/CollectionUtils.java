@@ -609,7 +609,7 @@ public abstract class CollectionUtils {
 	}
 
 	public static <S, T> Iterator<T> iterator(Iterator<? extends S> iterator,
-			Function<? super S, ? extends Iterator<T>> converter) {
+			Function<? super S, ? extends Iterator<? extends T>> converter) {
 		Assert.requiredArgument(converter != null, "converter");
 		if (iterator == null) {
 			return Collections.emptyIterator();

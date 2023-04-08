@@ -2,11 +2,11 @@ package io.basc.framework.io;
 
 import java.io.IOException;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import io.basc.framework.core.type.classreading.CachingMetadataReaderFactory;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.Cursor;
 import io.basc.framework.util.ResourceClassesLoader;
 import io.basc.framework.util.StaticSupplier;
 
@@ -22,7 +22,7 @@ public class LocationPatternClassesLoader extends ResourceClassesLoader {
 		super(() -> {
 			String location = locationPatternSupplier.get();
 			if (location == null) {
-				return Cursor.empty();
+				return Stream.empty();
 			}
 
 			Resource[] resources = null;
@@ -33,10 +33,10 @@ public class LocationPatternClassesLoader extends ResourceClassesLoader {
 			}
 
 			if (resources == null || resources.length == 0) {
-				return Cursor.empty();
+				return Stream.empty();
 			}
 
-			return Cursor.of(resources);
+			return Stream.of(resources);
 		});
 		setMetadataReaderFactory(new CachingMetadataReaderFactory(resourcePatternResolver));
 	}

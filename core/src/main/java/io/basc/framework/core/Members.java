@@ -1,18 +1,19 @@
 package io.basc.framework.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.Cursor;
-import io.basc.framework.util.XUtils;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.Streamable;
+import io.basc.framework.util.page.Pageable;
 import io.basc.framework.util.page.Pageables;
 import io.basc.framework.util.page.PageablesIterator;
 
@@ -43,7 +44,7 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	private Function<Class<?>, ? extends Stream<T>> processor;
 	private Class<?> sourceClass;
 	@Nullable
-	private Supplier<? extends Stream<T>> streamSupplier;
+	private Streamable<T> streamable;
 
 	@Nullable
 	private Members<T> with;
@@ -61,7 +62,7 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 		Assert.requiredArgument(members != null, "members");
 		this.sourceClass = members.sourceClass;
 		this.processor = members.processor;
-		this.streamSupplier = members.streamSupplier;
+		this.streamable = members.streamable;
 		this.with = members.with;
 		this.members = members.members == null ? null : new ArrayList<T>(members.members);
 		this.withMethod = members.withMethod;
@@ -79,10 +80,15 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	}
 
 	@Override
+	public Elements<? extends Pageable<Class<?>, T>> pages() {
+		return Elements.of(() -> new PageablesIterator<>(this, (e) -> e.next()));
+	}
+
+	@Override
 	public Members<T> all() {
 		Members<T> members = new Members<T>(this.sourceClass, this.processor);
 		members.withMethod = this.withMethod;
-		members.streamSupplier = () -> Pageables.super.all().stream();
+		members.streamable = Pageables.super.all();
 		return members;
 	}
 
@@ -93,8 +99,8 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 			clone.with = this.with.clone();
 		}
 
-		if (this.streamSupplier != null) {
-			clone.streamSupplier = this.streamSupplier;
+		if (this.streamable != null) {
+			clone.streamable = this.streamable;
 		}
 
 		if (this.members != null) {
@@ -127,7 +133,7 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	 */
 	public Members<T> distinct() {
 		Members<T> members = new Members<T>(this.sourceClass, this.processor);
-		members.streamSupplier = () -> stream().distinct();
+		members.streamable = () -> stream().distinct();
 		if (members.with != null) {
 			members.with = this.with.distinct();
 		}
@@ -168,11 +174,6 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	}
 
 	@Override
-	public Cursor<T> iterator() {
-		return Cursor.of(stream());
-	}
-
-	@Override
 	public final Class<?> getNextCursorId() {
 		return with == null ? null : with.sourceClass;
 	}
@@ -195,7 +196,6 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 		return new Members<>(sourceClass, this.processor);
 	}
 
-	@Override
 	public <TT> Members<TT> map(Function<? super T, ? extends TT> map) {
 		return mapProcessor((s) -> s == null ? null : s.map(map));
 	}
@@ -220,8 +220,8 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 			members.with = this.with.mapProcessor(processor, rootMapProcessor, rootProcessor);
 		}
 
-		if (this.streamSupplier != null) {
-			members.streamSupplier = () -> (processor.apply(this.streamSupplier.get()));
+		if (this.streamable != null) {
+			members.streamable = streamable.convert(processor);
 		}
 
 		if (this.members != null) {
@@ -236,11 +236,6 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 		return with;
 	}
 
-	@Override
-	public Stream<? extends Members<T>> pages() {
-		return XUtils.stream(new PageablesIterator<>(this, (e) -> e.next()));
-	}
-
 	/**
 	 * 直接设置当前的members
 	 * 
@@ -253,7 +248,7 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	public Members<T> shared() {
 		Members<T> members = clone();
 		if (members.members == null) {
-			members.members = members.getList();
+			members.members = members.toList();
 		}
 
 		if (members.with != null) {
@@ -262,24 +257,28 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 		return members;
 	}
 
-	/**
-	 * 只获取当前的操作流
-	 * 
-	 * @return
-	 */
+	@Override
+	public List<T> getList() {
+		if (members != null) {
+			return Collections.unmodifiableList(members);
+		}
+		return stream().collect(Collectors.toList());
+	}
+
+	@Override
 	public Stream<T> stream() {
 		if (members != null) {
 			return members.stream();
 		}
 
 		Stream<T> stream;
-		if (streamSupplier == null) {
+		if (streamable == null) {
 			stream = this.processor.apply(sourceClass);
 		} else {
-			stream = streamSupplier.get();
+			stream = streamable.stream();
 		}
 
-		return stream == null ? XUtils.emptyStream() : stream;
+		return stream == null ? Stream.empty() : stream;
 	}
 
 	public Members<T> with(Members<T> with) {
@@ -384,19 +383,19 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 		return members;
 	}
 
-	public Members<T> concat(Supplier<? extends Stream<? extends T>> streamSupplier) {
-		Assert.requiredArgument(streamSupplier != null, "streamSupplier");
+	public Members<T> concat(Streamable<? extends T> streamable) {
+		Assert.requiredArgument(streamable != null, "streamable");
 		Members<T> clone = clone();
 		if (clone.members != null) {
-			Stream<? extends T> stream = streamSupplier.get();
+			Stream<? extends T> stream = streamable.stream();
 			if (stream != null) {
 				clone.members = Stream.concat(this.members.stream(), stream).collect(Collectors.toList());
 			}
 			return clone;
 		}
 
-		clone.streamSupplier = () -> {
-			Stream<? extends T> stream = streamSupplier.get();
+		clone.streamable = () -> {
+			Stream<? extends T> stream = streamable.stream();
 			return stream == null ? this.stream() : Stream.concat(this.stream(), stream);
 		};
 		return clone;
@@ -530,12 +529,12 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 						use = true;
 						if (targetWith == target) {
 							// 如果是父级，不能替换
-							targetWith.members = item.getList();
+							targetWith.members = item.toList();
 						} else {
 							targetWith.sourceClass = item.sourceClass;
 							targetWith.members = item.members;
 							targetWith.processor = item.processor;
-							targetWith.streamSupplier = item.streamSupplier;
+							targetWith.streamable = item.streamable;
 						}
 						break;
 					}

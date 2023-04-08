@@ -7,6 +7,7 @@ import java.util.OptionalInt;
 
 import io.basc.framework.core.Ordered;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.PropertyFactory;
@@ -104,8 +105,9 @@ public class MainArgs implements PropertyFactory, Ordered {
 		return Value.of(value);
 	}
 
-	public Iterator<String> iterator() {
-		return new PropertyIterator();
+	@Override
+	public Elements<String> keys() {
+		return Elements.of(() -> new PropertyIterator());
 	}
 
 	public boolean containsKey(String key) {

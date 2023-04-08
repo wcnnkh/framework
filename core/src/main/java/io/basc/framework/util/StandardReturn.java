@@ -1,6 +1,5 @@
 package io.basc.framework.util;
 
-import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 import io.basc.framework.lang.Nullable;
@@ -30,20 +29,8 @@ public class StandardReturn<T> extends StandardStatus implements Return<T> {
 	}
 
 	@Override
-	public T get() {
-		if (value == null) {
-			String msg = getMsg();
-			if (msg == null) {
-				msg = "No value present";
-			}
-			throw new NoSuchElementException(msg);
-		}
-		return value;
-	}
-
-	@Override
-	public boolean isPresent() {
-		return value != null;
+	public T orElse(T other) {
+		return value == null ? other : value;
 	}
 
 	@Override

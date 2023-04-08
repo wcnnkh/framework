@@ -14,7 +14,7 @@ import io.basc.framework.orm.EntityOperations;
 import io.basc.framework.orm.MaxValueFactory;
 import io.basc.framework.orm.ObjectKeyFormat;
 import io.basc.framework.orm.OrmException;
-import io.basc.framework.orm.PrimaryKeyResultSet;
+import io.basc.framework.orm.PrimaryKeyElements;
 import io.basc.framework.orm.repository.Conditions;
 import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.Repository;
@@ -23,14 +23,13 @@ import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.SqlOperations;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.ResultSet;
 import io.basc.framework.util.StringUtils;
 
 @SuppressWarnings("unchecked")
 public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFactory, Repository {
 	default long count(Sql sql) {
 		Sql countSql = getMapper().toCountSql(sql);
-		return query(long.class, countSql).first();
+		return query(long.class, countSql).getElements().first();
 	}
 
 	default void createTable(Class<?> entityClass) {
@@ -115,7 +114,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	@Nullable
 	default <T> T getById(TableStructure tableStructure, Object... ids) {
 		Sql sql = getMapper().toSelectByIdsSql(tableStructure, ids);
-		return (T) query(tableStructure, sql).first();
+		return (T) query(tableStructure, sql).getElements().first();
 	}
 
 	default <T> List<T> getByIdList(Class<? extends T> entityClass, Object... ids) {
@@ -128,26 +127,26 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	default <T> List<T> getByIdList(TableStructure tableStructure, Object... ids) {
 		Sql sql = getMapper().toSelectByIdsSql(tableStructure, ids);
-		return (List<T>) query(tableStructure, sql).toList();
+		return (List<T>) query(tableStructure, sql).getElements().toList();
 	}
 
 	@Override
-	default <K, T> PrimaryKeyResultSet<K, T> getInIds(Class<? extends T> entityClass, List<? extends K> inPrimaryKeys,
+	default <K, T> PrimaryKeyElements<K, T> getInIds(Class<? extends T> entityClass, List<? extends K> inPrimaryKeys,
 			Object... primaryKeys) throws OrmException {
 		return getInIds((String) null, entityClass, inPrimaryKeys, primaryKeys);
 	}
 
-	default <K, V> PrimaryKeyResultSet<K, V> getInIds(@Nullable String tableName, Class<? extends V> entityClass,
+	default <K, V> PrimaryKeyElements<K, V> getInIds(@Nullable String tableName, Class<? extends V> entityClass,
 			List<? extends K> inPrimaryKeys, Object... primaryKeys) {
 		return getInIds(getMapper().getStructure(entityClass, null, tableName), inPrimaryKeys, primaryKeys);
 	}
 
-	default <K, V> PrimaryKeyResultSet<K, V> getInIds(TableStructure tableStructure, List<? extends K> inPrimaryKeys,
+	default <K, V> PrimaryKeyElements<K, V> getInIds(TableStructure tableStructure, List<? extends K> inPrimaryKeys,
 			Object... primaryKeys) {
 		Sql sql = getMapper().getInIds(tableStructure, primaryKeys, inPrimaryKeys);
-		ResultSet<V> resultSet = query(tableStructure, sql);
-		return new PrimaryKeyResultSet<>(() -> resultSet.iterator(), getObjectKeyFormat(), tableStructure,
-				inPrimaryKeys, primaryKeys);
+		Query<V> resultSet = query(tableStructure, sql);
+		return new PrimaryKeyElements<>(resultSet.getElements(), getObjectKeyFormat(), tableStructure, inPrimaryKeys,
+				primaryKeys);
 	}
 
 	SqlDialect getMapper();
@@ -164,7 +163,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	default <T> T getMaxValue(TableStructure tableStructure, Class<? extends T> type, Field field) {
 		Sql sql = getMapper().toMaxIdSql(tableStructure, field);
-		return query(type, sql).first();
+		return query(type, sql).getElements().first();
 	}
 
 	ObjectKeyFormat getObjectKeyFormat();

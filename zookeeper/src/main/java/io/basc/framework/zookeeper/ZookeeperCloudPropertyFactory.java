@@ -1,8 +1,6 @@
 package io.basc.framework.zookeeper;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.zookeeper.CreateMode;
@@ -21,6 +19,8 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ElementList;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.ConfigurablePropertyFactory;
 import io.basc.framework.value.Value;
@@ -61,17 +61,18 @@ public class ZookeeperCloudPropertyFactory extends StandardBroadcastNamedEventDi
 		return key;
 	}
 
-	public Iterator<String> iterator() {
+	@Override
+	public Elements<String> keys() {
 		List<String> paths = ZooKeeperUtils.getChildren(zooKeeper, parentPath);
 		if (CollectionUtils.isEmpty(paths)) {
-			return Collections.emptyIterator();
+			return Elements.empty();
 		}
 
 		List<String> list = new ArrayList<String>();
 		for (String path : paths) {
 			list.add(getKey(path));
 		}
-		return list.iterator();
+		return new ElementList<>(paths);
 	}
 
 	public boolean containsKey(String key) {

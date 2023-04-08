@@ -2,7 +2,6 @@ package io.basc.framework.fastjson;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
-import java.util.Iterator;
 import java.util.Set;
 
 import com.alibaba.fastjson.JSON;
@@ -13,6 +12,8 @@ import io.basc.framework.json.AbstractJson;
 import io.basc.framework.json.JsonArray;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
+import io.basc.framework.util.ElementSet;
+import io.basc.framework.util.Elements;
 
 public final class FastJsonObject extends AbstractJson<String> implements JsonObject, JSONAware, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -96,7 +97,8 @@ public final class FastJsonObject extends AbstractJson<String> implements JsonOb
 		return jsonObject.remove(key) != null;
 	}
 
-	public Iterator<String> iterator() {
-		return jsonObject.keySet().iterator();
+	@Override
+	public Elements<String> keys() {
+		return new ElementSet<>(jsonObject.keySet());
 	}
 }

@@ -1,7 +1,6 @@
 package io.basc.framework.apollo.client;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigChangeListener;
@@ -11,6 +10,8 @@ import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
+import io.basc.framework.util.ElementSet;
+import io.basc.framework.util.Elements;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
 
@@ -25,8 +26,8 @@ public class ApolloClientPropertyFactory extends StandardBroadcastEventDispatche
 	}
 
 	@Override
-	public Iterator<String> iterator() {
-		return config.getPropertyNames().iterator();
+	public Elements<String> keys() {
+		return new ElementSet<>(config.getPropertyNames());
 	}
 
 	@Override

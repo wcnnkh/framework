@@ -1,21 +1,21 @@
 package io.basc.framework.microsoft;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import io.basc.framework.io.Resource;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.orm.transfer.TableTransfer;
 import io.basc.framework.orm.transfer.TransfColumns;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Cursor;
 
 public class ExcelTemplate extends TableTransfer {
 	private ExcelOperations excelOperations;
@@ -39,7 +39,7 @@ public class ExcelTemplate extends TableTransfer {
 	}
 
 	@Override
-	public final void process(Iterator<? extends Object> source, File target) throws IOException {
+	public void write(Iterator<? extends Object> source, OutputStream target) throws IOException {
 		if (!source.hasNext()) {
 			return;
 		}
@@ -50,6 +50,11 @@ public class ExcelTemplate extends TableTransfer {
 		} finally {
 			export.close();
 		}
+	}
+
+	@Override
+	public void write(Iterator<? extends Object> source, Writer target) throws IOException {
+		throw new UnsupportedException("write to Writer");
 	}
 
 	public final void putAll(Iterator<? extends Object> source, ExcelExport export) throws IOException {
@@ -82,18 +87,13 @@ public class ExcelTemplate extends TableTransfer {
 		export.put(titles);
 	}
 
-	public Cursor<String[]> read(Object source) throws ExcelException, IOException {
-		Assert.requiredArgument(source != null, "source");
-		Stream<ExcelRow> stream;
-		if (source instanceof InputStream) {
-			stream = excelOperations.read((InputStream) source);
-		} else if (source instanceof File) {
-			stream = excelOperations.read((File) source);
-		} else if (source instanceof Resource) {
-			stream = ((Resource) source).read((input) -> excelOperations.read(input));
-		} else {
-			throw new UnsupportedException(source.getClass().getName());
-		}
-		return Cursor.of(stream).map((e) -> e.getValues());
+	@Override
+	public Stream<String[]> read(InputStream inputStream) throws IOException {
+		return excelOperations.read(inputStream).map((e) -> e.getValues());
+	}
+
+	@Override
+	public Stream<String[]> read(Reader reader) throws IOException {
+		throw new UnsupportedException("read by Reader");
 	}
 }

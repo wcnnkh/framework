@@ -5,15 +5,16 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import io.basc.framework.event.EventListener;
+import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.ChangeType;
+import io.basc.framework.event.EventListener;
 import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Registration;
 
-public class SimpleResourceEventDispatcher extends StandardBroadcastEventDispatcher<ObservableChangeEvent<Resource>> {
+public class SimpleResourceEventDispatcher extends StandardBroadcastEventDispatcher<ChangeEvent<Resource>> {
 	private static Logger logger = LoggerFactory.getLogger(SimpleResourceEventDispatcher.class);
 	/**
 	 * 默认的监听周期5s(经过多次尝试，在性能和实时性间取舍)
@@ -60,7 +61,7 @@ public class SimpleResourceEventDispatcher extends StandardBroadcastEventDispatc
 	}
 
 	@Override
-	public void publishEvent(ObservableChangeEvent<Resource> event) {
+	public void publishEvent(ChangeEvent<Resource> event) {
 		if (logger.isDebugEnabled()) {
 			logger.debug(event.toString());
 		}
@@ -68,7 +69,7 @@ public class SimpleResourceEventDispatcher extends StandardBroadcastEventDispatc
 	}
 
 	@Override
-	public Registration registerListener(EventListener<ObservableChangeEvent<Resource>> eventListener) {
+	public Registration registerListener(EventListener<ChangeEvent<Resource>> eventListener) {
 		if (!lock.get() && lock.compareAndSet(false, true)) {
 			listener();
 		}

@@ -13,7 +13,6 @@ import org.apache.lucene.search.TotalHits;
 import org.apache.lucene.search.TotalHits.Relation;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.util.Cursor;
 import io.basc.framework.util.page.Pages;
 
 public class SearchResults<T> extends TopFieldDocs implements Pages<ScoreDoc, T> {
@@ -68,7 +67,7 @@ public class SearchResults<T> extends TopFieldDocs implements Pages<ScoreDoc, T>
 	}
 
 	@Override
-	public long getCount() {
+	public long getLimit() {
 		return parameters.getTop();
 	}
 
@@ -78,18 +77,13 @@ public class SearchResults<T> extends TopFieldDocs implements Pages<ScoreDoc, T>
 	}
 
 	@Override
-	public Cursor<T> iterator() {
-		return Cursor.of(list);
-	}
-
-	@Override
 	public List<T> getList() {
-		return list;
+		return Collections.unmodifiableList(list);
 	}
 
 	@Override
 	public boolean hasNext() {
-		return scoreDocs.length >= getCount();
+		return scoreDocs.length >= getLimit();
 	}
 
 	@Override

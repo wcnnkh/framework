@@ -4,7 +4,7 @@ import java.util.function.Function;
 
 import io.basc.framework.util.Registration;
 
-class ConvertObservable<S, T> extends AbstractObservable<T> {
+class ConvertObservable<S, T> implements Observable<T> {
 	private final Observable<S> source;
 	private final Function<? super S, ? extends T> mapper;
 
@@ -14,14 +14,18 @@ class ConvertObservable<S, T> extends AbstractObservable<T> {
 	}
 
 	@Override
-	public Registration registerListener(EventListener<ObservableChangeEvent<T>> eventListener) {
-		return source.registerListener((e) -> eventListener.onEvent(new ObservableChangeEvent<>(e, mapper)));
+	public Registration registerListener(EventListener<ChangeEvent<T>> eventListener) {
+		return source.registerListener((e) -> {
+			S source = e.getSource();
+			T target = mapper.apply(source);
+			eventListener.onEvent(new ChangeEvent<>(e, target));
+		});
 	}
 
 	@Override
-	protected T getValue() {
+	public T orElse(T other) {
 		S value = source.orElse(null);
-		return mapper.apply(value);
+		return value == null ? other : mapper.apply(value);
 	}
 
 }

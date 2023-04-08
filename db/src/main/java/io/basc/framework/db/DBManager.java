@@ -45,11 +45,11 @@ public final class DBManager {
 	}
 
 	public static <T> List<T> select(Class<T> type, Sql sql) {
-		return getDB(type).query(type, sql).toList();
+		return getDB(type).query(type, sql).getElements().toList();
 	}
 
 	public static <T> T selectOne(Class<T> type, Sql sql) {
-		return getDB(type).query(type, sql).first();
+		return getDB(type).query(type, sql).getElements().first();
 	}
 
 	public static <T> T getById(Class<T> clz, Object... params) {

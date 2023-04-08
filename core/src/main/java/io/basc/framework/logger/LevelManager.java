@@ -9,7 +9,7 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.logging.Level;
 
-import io.basc.framework.event.support.StandardObservableProperties;
+import io.basc.framework.event.support.ObservableMapRegistry;
 import io.basc.framework.lang.Nullable;
 
 /**
@@ -18,7 +18,7 @@ import io.basc.framework.lang.Nullable;
  * @author wcnnkh
  *
  */
-public class LevelManager extends StandardObservableProperties<String, Level> {
+public class LevelManager extends ObservableMapRegistry<String, Level> {
 	private static final Function<Properties, Map<String, Level>> CONVERTER = (properties) -> {
 		Map<String, Level> map = new HashMap<>();
 		for (Entry<Object, Object> entry : properties.entrySet()) {
@@ -57,11 +57,11 @@ public class LevelManager extends StandardObservableProperties<String, Level> {
 	}
 
 	public boolean exists(String name) {
-		if (containsKey(name)) {
+		if (getReadonlyMap().containsKey(name)) {
 			return true;
 		}
 
-		for (String key : keySet()) {
+		for (String key : getReadonlyMap().keySet()) {
 			if (name.startsWith(key)) {
 				return true;
 			}
@@ -71,12 +71,12 @@ public class LevelManager extends StandardObservableProperties<String, Level> {
 
 	@Nullable
 	public Level getLevel(String name) {
-		Level level = get(name);
+		Level level = getReadonlyMap().get(name);
 		if (level != null) {
 			return level;
 		}
 
-		for (Entry<String, Level> entry : entrySet()) {
+		for (Entry<String, Level> entry : getReadonlyMap().entrySet()) {
 			if (name.startsWith(entry.getKey())) {
 				return entry.getValue();
 			}

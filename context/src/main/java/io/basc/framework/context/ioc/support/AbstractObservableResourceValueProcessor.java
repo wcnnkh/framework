@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ioc.ValueDefinition;
 import io.basc.framework.event.Observable;
+import io.basc.framework.event.support.ObservableResource;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.io.Resource;
 import io.basc.framework.mapper.Field;
@@ -18,6 +19,6 @@ public abstract class AbstractObservableResourceValueProcessor extends AbstractO
 		if (valueDefinition.isRequired() && (resource == null || !resource.exists())) {
 			return null;
 		}
-		return resource;
+		return new ObservableResource(resource);
 	}
 }

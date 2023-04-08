@@ -4,19 +4,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.event.AbstractObservable;
 import io.basc.framework.event.BroadcastEventDispatcher;
+import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.event.ObservableChangeEvent;
 import io.basc.framework.lang.NestedIOException;
-import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.JavaVersion;
 import io.basc.framework.util.Registration;
@@ -31,15 +28,14 @@ import io.basc.framework.util.Registration;
  * and "toString" will return the description.
  *
  */
-public abstract class AbstractResource extends AbstractObservable<Resource>
-		implements Resource, BroadcastEventDispatcher<ObservableChangeEvent<Resource>> {
-	private static final Constructor<BroadcastEventDispatcher<ObservableChangeEvent<Resource>>> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
+public abstract class AbstractResource implements Resource, BroadcastEventDispatcher<ChangeEvent<Resource>> {
+	private static final Constructor<BroadcastEventDispatcher<ChangeEvent<Resource>>> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
 			.getDeclaredConstructor("io.basc.framework.io.WatchServiceResourceEventDispatcher", null,
 					AbstractResource.class);
 
-	private volatile BroadcastEventDispatcher<ObservableChangeEvent<Resource>> eventDispatcher;
+	private volatile BroadcastEventDispatcher<ChangeEvent<Resource>> eventDispatcher;
 
-	private BroadcastEventDispatcher<ObservableChangeEvent<Resource>> getEventDispatcher() {
+	private BroadcastEventDispatcher<ChangeEvent<Resource>> getEventDispatcher() {
 		if (eventDispatcher == null) {
 			synchronized (this) {
 				if (eventDispatcher == null) {
@@ -78,7 +74,7 @@ public abstract class AbstractResource extends AbstractObservable<Resource>
 	}
 
 	@Override
-	public Registration registerListener(EventListener<ObservableChangeEvent<Resource>> eventListener) {
+	public Registration registerListener(EventListener<ChangeEvent<Resource>> eventListener) {
 		if (!isObservable()) {
 			return Registration.EMPTY;
 		}
@@ -86,7 +82,7 @@ public abstract class AbstractResource extends AbstractObservable<Resource>
 	}
 
 	@Override
-	public void publishEvent(ObservableChangeEvent<Resource> event) {
+	public void publishEvent(ChangeEvent<Resource> event) {
 		getEventDispatcher().publishEvent(event);
 	}
 
@@ -251,18 +247,5 @@ public abstract class AbstractResource extends AbstractObservable<Resource>
 	 */
 	public int hashCode() {
 		return getDescription().hashCode();
-	}
-
-	public boolean isWritable() {
-		return false;
-	}
-
-	public OutputStream getOutputStream() throws IOException {
-		throw new UnsupportedException(getDescription());
-	}
-
-	@Override
-	public Resource getValue() {
-		return exists() ? this : null;
 	}
 }

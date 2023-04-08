@@ -5,8 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import io.basc.framework.util.ConsumeProcessor;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Processor;
-import io.basc.framework.util.ResultSet;
 
 @FunctionalInterface
 public interface ConnectionFactory {
@@ -25,8 +25,8 @@ public interface ConnectionFactory {
 		operations().prepare(sql).consume(processor);
 	}
 
-	default <T> ResultSet<T> query(Sql sql,
+	default <T> Elements<T> query(Sql sql,
 			Processor<? super java.sql.ResultSet, ? extends T, ? extends Throwable> rowMapper) {
-		return ResultSet.of(() -> operations().prepare(sql).query().rows(rowMapper));
+		return operations().prepare(sql).query().rows(rowMapper);
 	}
 }

@@ -1,9 +1,10 @@
 package io.basc.framework.rmi.beans;
 
+import java.util.stream.Stream;
+
 import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.util.Cursor;
 import io.basc.framework.util.StringUtils;
 
 @Provider
@@ -18,7 +19,8 @@ public class RmiClientContextPostProcessor implements ContextPostProcessor {
 			}
 
 			if (!context.containsDefinition(clazz.getName())) {
-				String host = Cursor.of(client.host(), client.value()).filter((e) -> StringUtils.isNotEmpty(e)).first();
+				String host = Stream.of(client.host(), client.value()).filter((e) -> StringUtils.isNotEmpty(e))
+						.findFirst().get();
 				context.registerDefinition(new RmiClientBeanDefinition(context, clazz, host));
 			}
 		}

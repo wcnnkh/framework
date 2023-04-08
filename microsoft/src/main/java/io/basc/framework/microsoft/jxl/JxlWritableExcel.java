@@ -1,33 +1,35 @@
 package io.basc.framework.microsoft.jxl;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.stream.Stream;
 
 import io.basc.framework.microsoft.Excel;
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.WritableExcel;
 import io.basc.framework.microsoft.WritableSheet;
-import io.basc.framework.util.Cursor;
+import io.basc.framework.util.Streams;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
 public class JxlWritableExcel implements WritableExcel {
 	private WritableWorkbook workbook;
 	private final long cursorId;
-	private final long count;
+	private final long limit;
 
 	public JxlWritableExcel(WritableWorkbook workbook) {
 		this(workbook, 0, -1);
 	}
 
-	private JxlWritableExcel(WritableWorkbook workbook, long cursorId, long count) {
+	private JxlWritableExcel(WritableWorkbook workbook, long cursorId, long limit) {
 		this.workbook = workbook;
 		this.cursorId = cursorId;
-		this.count = count;
+		this.limit = limit;
 	}
 
 	@Override
-	public long getCount() {
-		return count > 0 ? count : WritableExcel.super.getCount();
+	public long getLimit() {
+		return limit > 0 ? limit : WritableExcel.super.count();
 	}
 
 	public void close() throws IOException {
@@ -83,12 +85,21 @@ public class JxlWritableExcel implements WritableExcel {
 	}
 
 	@Override
-	public Cursor<String[]> iterator() {
-		Cursor<String[]> cursor = WritableExcel.super.iterator();
-		if (count > 0) {
-			return cursor.limit(0, count);
+	public Iterator<String[]> iterator() {
+		Iterator<String[]> iterator = WritableExcel.super.iterator();
+		if (limit > 0) {
+			return Streams.stream(iterator).limit(limit).iterator();
 		}
-		return cursor;
+		return iterator;
+	}
+
+	@Override
+	public Stream<String[]> stream() {
+		Stream<String[]> iterator = WritableExcel.super.stream();
+		if (limit > 0) {
+			return iterator.limit(limit);
+		}
+		return iterator;
 	}
 
 	@Override

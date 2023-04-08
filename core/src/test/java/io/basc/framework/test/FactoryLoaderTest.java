@@ -15,7 +15,7 @@ import io.basc.framework.logger.LoggerFactory;
 public class FactoryLoaderTest {
 	@Test
 	public void test() throws Throwable {
-		LoggerFactory.getSource().getLevelManager().getSourceMap().put(FactoryLoader.class.getName(), Level.ALL);
+		LoggerFactory.getSource().getLevelManager().getMaster().put(FactoryLoader.class.getName(), Level.ALL);
 		DefaultBeanFactory beanFactory = new DefaultBeanFactory();
 		beanFactory.init();
 		test(beanFactory);

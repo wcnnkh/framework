@@ -1,6 +1,6 @@
 package io.basc.framework.json;
 
-import java.util.Iterator;
+import io.basc.framework.util.Elements;
 
 public class JsonObjectWrapper extends JsonWrapper<String, JsonObject> implements JsonObject {
 
@@ -20,7 +20,8 @@ public class JsonObjectWrapper extends JsonWrapper<String, JsonObject> implement
 		return wrappedTarget.put(key, value);
 	}
 
-	public Iterator<String> iterator() {
-		return wrappedTarget.iterator();
+	@Override
+	public Elements<String> keys() {
+		return wrappedTarget.keys();
 	}
 }

@@ -10,8 +10,8 @@ public interface ParentDiscover<T extends ParentDiscover<T>> {
 		return getParent() != null;
 	}
 
-	default ReversibleIterator<T> parents() {
-		return new Parents<>(this);
+	default Elements<T> parents() {
+		return Elements.of(() -> new ParentIterator<>(this));
 	}
 
 	default boolean isParents(T parent) {

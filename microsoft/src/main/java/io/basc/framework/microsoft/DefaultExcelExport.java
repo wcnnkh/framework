@@ -1,9 +1,9 @@
 package io.basc.framework.microsoft;
 
-import io.basc.framework.util.CollectionUtils;
-
 import java.io.IOException;
 import java.util.Collection;
+
+import io.basc.framework.util.CollectionUtils;
 
 /**
  * excel导出
@@ -11,7 +11,7 @@ import java.util.Collection;
  * @author wcnnkh
  *
  */
-public final class DefaultExcelExport extends WritableExcelWrapper implements ExcelExport {
+public final class DefaultExcelExport extends WritableExcelWrapper<WritableExcel> implements ExcelExport {
 	private final int maxSheets;
 	private final int maxRows;
 	private final int maxColumns;

@@ -1,13 +1,11 @@
 package io.basc.framework.nacos.client;
 
-import java.util.Collections;
-import java.util.Iterator;
-
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;
 
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Registration;
 import io.basc.framework.value.ConfigurablePropertyFactory;
 import io.basc.framework.value.Value;
@@ -15,6 +13,7 @@ import io.basc.framework.value.Value;
 /**
  * 使用nacos实现配置中心
  * 
+ * @deprecated
  * @author wcnnkh
  *
  */
@@ -29,8 +28,9 @@ public class NacosPropertyFactory implements ConfigurablePropertyFactory {
 		this.timeoutMs = timeoutMs;
 	}
 
-	public Iterator<String> iterator() {
-		return Collections.emptyIterator();
+	@Override
+	public Elements<String> keys() {
+		return Elements.empty();
 	}
 
 	public boolean containsKey(String key) {

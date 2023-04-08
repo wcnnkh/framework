@@ -25,10 +25,11 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Cursor;
+import io.basc.framework.util.Streams;
 import io.basc.framework.util.StringUtils;
 
 public final class IOUtils {
@@ -366,7 +367,7 @@ public final class IOUtils {
 		closeQuietly(closeable, null);
 	}
 
-	public static void closeQuietly(final Closeable closeable, final Consumer<IOException> consumer) {
+	public static void closeQuietly(final Closeable closeable, final Consumer<? super IOException> consumer) {
 		if (closeable != null) {
 			try {
 				closeable.close();
@@ -694,7 +695,7 @@ public final class IOUtils {
 	 * @return the list of Strings, never null
 	 * @throws NullPointerException if the input is null
 	 */
-	public static Cursor<String> readLines(InputStream input) {
+	public static Stream<String> readLines(InputStream input) {
 		InputStreamReader reader = new InputStreamReader(input);
 		return readLines(reader).onClose(() -> closeQuietly(reader));
 	}
@@ -715,7 +716,7 @@ public final class IOUtils {
 	 * @throws UnsupportedEncodingException
 	 * @throws NullPointerException         if the input is null
 	 */
-	public static Cursor<String> readLines(InputStream input, @Nullable String encoding)
+	public static Stream<String> readLines(InputStream input, @Nullable String encoding)
 			throws UnsupportedEncodingException {
 		if (encoding == null) {
 			return readLines(input);
@@ -736,7 +737,7 @@ public final class IOUtils {
 	 * @return the cursor of Strings, never null
 	 * @throws NullPointerException if the input is null
 	 */
-	public static Cursor<String> readLines(Reader reader) {
+	public static Stream<String> readLines(Reader reader) {
 		if (reader instanceof BufferedReader) {
 			return readLines((BufferedReader) reader);
 		}
@@ -745,9 +746,9 @@ public final class IOUtils {
 		return readLines(bufferedReader).onClose(() -> closeQuietly(bufferedReader));
 	}
 
-	public static Cursor<String> readLines(BufferedReader bufferedReader) {
+	public static Stream<String> readLines(BufferedReader bufferedReader) {
 		LineIterator iterator = new LineIterator(bufferedReader);
-		return Cursor.of(iterator);
+		return Streams.stream(iterator);
 	}
 
 	// -----------------------------------------------------------------------

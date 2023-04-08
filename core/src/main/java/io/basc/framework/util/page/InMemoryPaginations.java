@@ -1,10 +1,10 @@
 package io.basc.framework.util.page;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Cursor;
 
 /**
  * 在内存中分页
@@ -15,11 +15,11 @@ import io.basc.framework.util.Cursor;
  */
 public class InMemoryPaginations<T> implements Paginations<T>, Serializable {
 	private static final long serialVersionUID = 1L;
-	private final List<? extends T> source;
+	private final List<T> source;
 	private final int start;
 	private final int count;
 
-	public InMemoryPaginations(List<? extends T> source, int start, int count) {
+	public InMemoryPaginations(List<T> source, int start, int count) {
 		Assert.requiredArgument(source != null, "source");
 		Assert.isTrue(start >= 0, "start[" + start + "] cannot be less than 0");
 		Assert.isTrue(count > 0, "count[" + count + "] greater than 0 is required");
@@ -34,7 +34,7 @@ public class InMemoryPaginations<T> implements Paginations<T>, Serializable {
 	}
 
 	@Override
-	public long getCount() {
+	public long getLimit() {
 		return count;
 	}
 
@@ -54,13 +54,13 @@ public class InMemoryPaginations<T> implements Paginations<T>, Serializable {
 	}
 
 	@Override
-	public Cursor<T> iterator() {
+	public List<T> getList() {
 		int end = Math.min(start + count, source.size());
 		if (start >= end) {
-			return Cursor.empty();
+			return Collections.emptyList();
 		}
 
-		return Cursor.of(source.subList(start, end).iterator());
+		return source.subList(start, end);
 	}
 
 	@Override

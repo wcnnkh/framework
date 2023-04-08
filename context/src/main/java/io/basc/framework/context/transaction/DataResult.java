@@ -1,6 +1,5 @@
 package io.basc.framework.context.transaction;
 
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -24,22 +23,9 @@ public class DataResult<T> extends Result implements Return<T> {
 		this.data = data;
 	}
 
-	@Override
-	public T get() {
-		if (data == null) {
-			throw new NoSuchElementException(getMsg());
-		}
-		return data;
-	}
-
 	@Nullable
 	public T getData() {
 		return data;
-	}
-
-	@Override
-	public boolean isPresent() {
-		return data != null;
 	}
 
 	@Override
@@ -83,5 +69,10 @@ public class DataResult<T> extends Result implements Return<T> {
 
 	public static <U> DataResult<U> error(long code, @Nullable String msg, @Nullable U value) {
 		return new DataResult<U>(false, code, msg, true, value);
+	}
+
+	@Override
+	public T orElse(T other) {
+		return data == null ? other : data;
 	}
 }

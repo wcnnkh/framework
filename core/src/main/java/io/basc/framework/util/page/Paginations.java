@@ -7,7 +7,7 @@ public interface Paginations<T> extends Pagination<T>, Pages<Long, T> {
 	}
 
 	default Paginations<T> jumpToPage(long pageNumber) {
-		return jumpToPage(pageNumber, getCount());
+		return jumpToPage(pageNumber, getLimit());
 	}
 
 	default Paginations<T> jumpToPage(long pageNumber, long count) {
@@ -15,13 +15,13 @@ public interface Paginations<T> extends Pagination<T>, Pages<Long, T> {
 	}
 
 	default Paginations<T> limit(long maxPageNumber) {
-		return new StreamPaginations<>(getTotal(),
-				Math.min(getTotal(), PageSupport.getStart(maxPageNumber, getCount())), getCount(),
-				(k, c) -> jumpTo(k, c).iterator());
+		return new StandardPaginations<>(getTotal(),
+				Math.min(getTotal(), PageSupport.getStart(maxPageNumber, getLimit())), getLimit(),
+				(k, c) -> jumpTo(k, c).stream());
 	}
 
 	default Paginations<T> jumpTo(Long cursorId) {
-		return jumpTo(cursorId, getCount());
+		return jumpTo(cursorId, getLimit());
 	}
 
 	@Override

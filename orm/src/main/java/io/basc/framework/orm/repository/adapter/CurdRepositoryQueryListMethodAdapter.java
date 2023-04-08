@@ -1,10 +1,10 @@
 package io.basc.framework.orm.repository.adapter;
 
+import java.lang.reflect.Method;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.orm.repository.RepositoryTemplate;
-
-import java.lang.reflect.Method;
 
 public final class CurdRepositoryQueryListMethodAdapter extends CurdRepositoryMethodAdapter {
 

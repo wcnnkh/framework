@@ -6,7 +6,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.UnsupportedException;
 
 public final class Select<E> implements Supplier<E> {
-	private final ResultSet<E> elements;
+	private final Elements<E> elements;
 	@Nullable
 	private final Selector<E> selector;
 
@@ -14,13 +14,13 @@ public final class Select<E> implements Supplier<E> {
 	 * @param elements
 	 * @param selector 如果为空，那么消费所以元素{@link #consume(ConsumeProcessor)}
 	 */
-	public Select(ResultSet<E> elements, @Nullable Selector<E> selector) {
+	public Select(Elements<E> elements, @Nullable Selector<E> selector) {
 		Assert.requiredArgument(elements != null, "elements");
 		this.elements = elements;
 		this.selector = selector;
 	}
 
-	public ResultSet<E> getElements() {
+	public Elements<E> getElements() {
 		return elements;
 	}
 

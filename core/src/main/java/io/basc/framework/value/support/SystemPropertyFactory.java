@@ -1,9 +1,8 @@
 package io.basc.framework.value.support;
 
-import java.util.Iterator;
-
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConvertibleEnumeration;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.MultiIterator;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
@@ -20,10 +19,11 @@ public class SystemPropertyFactory implements PropertyFactory {
 		return Value.of(value);
 	}
 
-	public Iterator<String> iterator() {
-		return new MultiIterator<String>(
+	@Override
+	public Elements<String> keys() {
+		return Elements.of(() -> new MultiIterator<String>(
 				CollectionUtils
 						.toIterator(ConvertibleEnumeration.convertToStringEnumeration(System.getProperties().keys())),
-				System.getenv().keySet().iterator());
+				System.getenv().keySet().iterator()));
 	}
 }

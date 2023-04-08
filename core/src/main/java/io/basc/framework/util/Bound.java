@@ -23,7 +23,7 @@ public final class Bound<T> extends DefaultOptional<T> {
 
 	@Override
 	public <U> Bound<U> convert(Function<? super T, ? extends U> converter) {
-		return new Bound<U>(converter.apply(getValue()), inclusive);
+		return new Bound<U>(converter.apply(orElse(null)), inclusive);
 	}
 
 	@Override

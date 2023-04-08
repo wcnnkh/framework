@@ -4,11 +4,11 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import io.basc.framework.core.Members;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Streamable;
 
 public abstract class StructureDecorator<S extends Field, T extends StructureDecorator<S, T>> extends Structure<S> {
 
@@ -199,8 +199,8 @@ public abstract class StructureDecorator<S extends Field, T extends StructureDec
 	}
 
 	@Override
-	public T concat(Supplier<? extends Stream<? extends S>> streamSupplier) {
-		return decorate(super.concat(streamSupplier));
+	public T concat(Streamable<? extends S> streamable) {
+		return decorate(super.concat(streamable));
 	}
 
 	@Override

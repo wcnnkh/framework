@@ -92,7 +92,7 @@ class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader
 			}
 
 			Resources rs = new Resources();
-			rs.registers(Arrays.asList(resources));
+			rs.registerResources(Arrays.asList(resources));
 			return rs;
 		}
 		return super.getResource(location);

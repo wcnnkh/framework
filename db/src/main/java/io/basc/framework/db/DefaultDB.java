@@ -15,25 +15,25 @@ import io.basc.framework.sql.orm.TableChanges;
 import io.basc.framework.sql.orm.annotation.Table;
 import io.basc.framework.sql.orm.support.DefaultSqlTemplate;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.ClassesLoader;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ServiceLoader;
 
 public class DefaultDB extends DefaultSqlTemplate implements DB {
 	private static Logger logger = LoggerFactory.getLogger(DefaultDB.class);
 	private boolean checkTableChange = true;
-	private ClassesLoaderFactory classesLoaderFactory = new DefaultClassesLoaderFactory();
+	private ClassesLoaderFactory classScanner = new DefaultClassesLoaderFactory();
 
 	public DefaultDB(ConnectionFactory connectionFactory, SqlDialect sqlDialect) {
 		super(connectionFactory, sqlDialect);
 	}
 
-	public ClassesLoaderFactory getClassesLoaderFactory() {
-		return classesLoaderFactory;
+	public ClassesLoaderFactory getClassScanner() {
+		return classScanner;
 	}
 
-	public void setClassesLoaderFactory(ClassesLoaderFactory classesLoaderFactory) {
-		Assert.requiredArgument(classesLoaderFactory != null, "classesLoaderFactory");
-		this.classesLoaderFactory = classesLoaderFactory;
+	public void setClassScanner(ClassesLoaderFactory classScanner) {
+		Assert.requiredArgument(classScanner != null, "classesLoaderFactory");
+		this.classScanner = classScanner;
 	}
 
 	public boolean isCheckTableChange() {
@@ -67,7 +67,7 @@ public class DefaultDB extends DefaultSqlTemplate implements DB {
 	}
 
 	public void createTables(String packageName, boolean registerManager) {
-		ClassesLoader classesLoader = getClassesLoaderFactory().getClassesLoader(packageName, (e, m) -> {
+		ServiceLoader<Class<?>> classesLoader = getClassScanner().getClassesLoader(packageName, (e, m) -> {
 			return e.getAnnotationMetadata().hasAnnotation(Table.class.getName());
 		});
 

@@ -3,7 +3,6 @@ package io.basc.framework.mapper;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -87,9 +86,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 
 	protected void appendMapProperty(Map<String, Object> valueMap, String prefix, ObjectAccess<E> objectAccess,
 			ObjectMapperContext context) throws E {
-		Enumeration<String> keys = objectAccess.keys();
-		while (keys.hasMoreElements()) {
-			String key = keys.nextElement();
+		for (String key : objectAccess.keys()) {
 			if (StringUtils.isNotEmpty(prefix) && (key.equals(prefix) || valueMap.containsKey(key))) {
 				continue;
 			}

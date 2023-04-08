@@ -13,7 +13,7 @@ public class TimerTest {
 
 	@Test
 	public void test() throws InterruptedException, ExecutionException {
-		LoggerFactory.getSource().getLevelManager().getSourceMap().put("io.basc.framework.context",
+		LoggerFactory.getSource().getLevelManager().getMaster().put("io.basc.framework.context",
 				Levels.DEBUG.getValue());
 		Application application = MainApplication.run(TimerTest.class).get();
 		application.destroy();

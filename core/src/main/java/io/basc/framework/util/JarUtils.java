@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 import io.basc.framework.io.IOUtils;
 
@@ -34,7 +35,7 @@ public abstract class JarUtils {
 
 	private static Map<String, String> formatManifestFile(InputStream inputStream) {
 		Map<String, String> map = new HashMap<String, String>(8);
-		List<String> list = IOUtils.readLines(inputStream).toList();
+		List<String> list = IOUtils.readLines(inputStream).collect(Collectors.toList());
 		for (String content : list) {
 			content = content.trim();
 			if (StringUtils.isEmpty(content)) {

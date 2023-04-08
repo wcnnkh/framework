@@ -2,15 +2,22 @@ package io.basc.framework.util;
 
 import java.io.Serializable;
 
-public class DefaultOptional<T> extends AbstractOptional<T> implements Serializable {
+import lombok.ToString;
+
+@ToString
+public class DefaultOptional<T> implements Optional<T>, Serializable {
 	private static final long serialVersionUID = 1L;
+
+	public static final DefaultOptional<Object> EMPTY = new DefaultOptional<>(null);
+
 	private final T value;
 
 	public DefaultOptional(T value) {
 		this.value = value;
 	}
 
-	protected T getValue() {
-		return value;
+	@Override
+	public T orElse(T other) {
+		return value == null ? other : value;
 	}
 }

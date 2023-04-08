@@ -32,7 +32,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import io.basc.framework.microsoft.ExcelRow;
 
 public class DefaultHSSFListener implements HSSFListener {
-	private final Consumer<ExcelRow> consumer;
+	private final Consumer<? super ExcelRow> consumer;
 	private final List<String> values = new ArrayList<String>(8);
 
 	private final int minColumns;
@@ -62,11 +62,11 @@ public class DefaultHSSFListener implements HSSFListener {
 	private int nextColumn;
 	private boolean outputNextStringRecord;
 
-	public DefaultHSSFListener(POIFSFileSystem fs, Consumer<ExcelRow> consumer) {
+	public DefaultHSSFListener(POIFSFileSystem fs, Consumer<? super ExcelRow> consumer) {
 		this(fs, -1, consumer);
 	}
 
-	public DefaultHSSFListener(POIFSFileSystem fs, int minColumns, Consumer<ExcelRow> consumer) {
+	public DefaultHSSFListener(POIFSFileSystem fs, int minColumns, Consumer<? super ExcelRow> consumer) {
 		this.fs = fs;
 		this.minColumns = minColumns;
 		this.consumer = consumer;

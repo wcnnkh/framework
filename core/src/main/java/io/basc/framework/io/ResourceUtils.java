@@ -16,6 +16,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import io.basc.framework.io.resolver.PropertiesResolver;
 import io.basc.framework.lang.NestedRuntimeException;
@@ -24,7 +25,7 @@ import io.basc.framework.net.InetUtils;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.Cursor;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 
 /**
@@ -677,25 +678,27 @@ public final class ResourceUtils {
 		return list;
 	}
 
-	public static Cursor<String> readLines(Resource resource, String charsetName) {
+	public static Elements<String> readLines(Resource resource, String charsetName) {
 		if (resource == null || !resource.exists()) {
-			return Cursor.empty();
+			return Elements.empty();
 		}
 
-		InputStream is;
-		try {
-			is = resource.getInputStream();
-			return IOUtils.readLines(is, charsetName).onClose(() -> {
-				if (is != null && !resource.isOpen()) {
-					IOUtils.closeQuietly(is);
-				}
-			});
-		} catch (IOException ignore) {
-		}
-		return Cursor.empty();
+		return Elements.of(() -> {
+			InputStream is;
+			try {
+				is = resource.getInputStream();
+				return IOUtils.readLines(is, charsetName).onClose(() -> {
+					if (is != null && !resource.isOpen()) {
+						IOUtils.closeQuietly(is);
+					}
+				});
+			} catch (IOException ignore) {
+			}
+			return Stream.empty();
+		});
 	}
 
-	public static Cursor<String> readLines(Resource resource, Charset charset) {
+	public static Elements<String> readLines(Resource resource, Charset charset) {
 		return readLines(resource, charset.name());
 	}
 

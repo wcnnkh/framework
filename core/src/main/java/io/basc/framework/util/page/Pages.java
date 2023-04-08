@@ -1,10 +1,6 @@
 package io.basc.framework.util.page;
 
-import java.util.Iterator;
-import java.util.stream.Stream;
-
-import io.basc.framework.util.Cursor;
-import io.basc.framework.util.XUtils;
+import io.basc.framework.util.Elements;
 
 public interface Pages<K, T> extends Page<K, T>, Pageables<K, T> {
 
@@ -14,7 +10,7 @@ public interface Pages<K, T> extends Page<K, T>, Pageables<K, T> {
 	}
 
 	default Pages<K, T> jumpTo(K cursorId) {
-		return jumpTo(cursorId, getCount());
+		return jumpTo(cursorId, getLimit());
 	}
 
 	@Override
@@ -22,15 +18,17 @@ public interface Pages<K, T> extends Page<K, T>, Pageables<K, T> {
 		return new SharedPages<>(this);
 	}
 
-	default Stream<? extends Pages<K, T>> pages() {
-		Iterator<Pages<K, T>> iterator = new PagesIterator<>(this);
-		return XUtils.stream(iterator);
+	/**
+	 * 获取所有页
+	 */
+	default Elements<? extends Page<K, T>> pages() {
+		return Elements.of(() -> new PageablesIterator<>(this, (e) -> e.next()));
 	}
 
 	Pages<K, T> jumpTo(K cursorId, long count);
 
 	@Override
-	default Pageable<K, T> all() {
+	default Page<K, T> all() {
 		return new AllPage<>(this);
 	}
 
@@ -42,7 +40,7 @@ public interface Pages<K, T> extends Page<K, T>, Pageables<K, T> {
 	 * @return
 	 */
 	default Paginations<T> toPaginations(long start, long limit) {
-		return new StreamPaginations<>(getTotal(), start, limit,
-				(s, count) -> Cursor.of(Pages.this.all()).limit(s, count));
+		return new StandardPaginations<>(getTotal(), start, limit,
+				(s, count) -> Pages.this.all().stream().skip(start).limit(limit));
 	}
 }
