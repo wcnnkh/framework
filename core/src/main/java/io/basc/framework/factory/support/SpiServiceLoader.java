@@ -24,7 +24,6 @@ import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.Cursor;
 import io.basc.framework.util.DefaultClassLoaderProvider;
 import io.basc.framework.util.ServiceLoader;
 
@@ -305,8 +304,8 @@ public final class SpiServiceLoader<S> extends DefaultClassLoaderProvider
 	 *
 	 * @return An iterator that lazily loads providers for this loader's service
 	 */
-	public Cursor<S> iterator() {
-		return Cursor.of(new Iterator<S>() {
+	public Iterator<S> iterator() {
+		return new Iterator<S>() {
 
 			Iterator<Map.Entry<String, S>> knownProviders = providers == null ? Collections.emptyIterator()
 					: providers.entrySet().iterator();
@@ -322,7 +321,7 @@ public final class SpiServiceLoader<S> extends DefaultClassLoaderProvider
 					return knownProviders.next().getValue();
 				return lookupIterator.next();
 			}
-		});
+		};
 	}
 
 	/**

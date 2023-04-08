@@ -23,8 +23,8 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Processor;
+import io.basc.framework.util.Streams;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
 import io.basc.framework.util.comparator.TypeComparator;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
@@ -339,11 +339,11 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 		};
 
 		try {
-			List<Field> targetFields = XUtils.stream(targetProperties)
+			List<Field> targetFields = Streams.stream(targetProperties)
 					.filter((e) -> e.isSupportSetter() && accept(e, e.getSetter(), context))
 					.sorted((left, right) -> comparator.compare(left.getGetter(), right.getGetter()))
 					.collect(Collectors.toList());
-			List<Field> sourceFields = XUtils.stream(sourceProperties)
+			List<Field> sourceFields = Streams.stream(sourceProperties)
 					.filter((e) -> e.isSupportGetter() && accept(e, e.getGetter(), context))
 					.sorted((left, right) -> comparator.compare(left.getSetter(), right.getSetter()))
 					.collect(Collectors.toList());

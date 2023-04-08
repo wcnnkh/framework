@@ -1,7 +1,9 @@
 package io.basc.framework.util;
 
+import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
@@ -43,7 +45,7 @@ public class ResourceClassesLoader extends DefaultClassLoaderProvider implements
 		if (caching == null) {
 			synchronized (this) {
 				if (caching == null) {
-					caching = load().toSet();
+					caching = load().collect(Collectors.toSet());
 				}
 			}
 		}
@@ -82,14 +84,14 @@ public class ResourceClassesLoader extends DefaultClassLoaderProvider implements
 	}
 
 	@Override
-	public Cursor<Class<?>> iterator() {
+	public Iterator<Class<?>> iterator() {
 		if (isDisableCache()) {
-			return load();
+			return load().iterator();
 		}
-		return Cursor.of(getCaching());
+		return getCaching().iterator();
 	}
 
-	public Cursor<Class<?>> load() {
+	public Stream<Class<?>> load() {
 		Stream<Class<?>> stream = resources.stream().map((resource) -> {
 			if (resource == null) {
 				return null;
@@ -128,7 +130,7 @@ public class ResourceClassesLoader extends DefaultClassLoaderProvider implements
 				return null;
 			}
 		});
-		return Cursor.of(stream.filter((e) -> e != null));
+		return stream.filter((e) -> e != null);
 	}
 
 	public boolean isNotPerformReflectionVerification() {
@@ -153,7 +155,7 @@ public class ResourceClassesLoader extends DefaultClassLoaderProvider implements
 			if (caching != null) {
 				synchronized (this) {
 					if (caching != null) {
-						this.caching = load().toSet();
+						this.caching = load().collect(Collectors.toSet());
 					}
 				}
 			}

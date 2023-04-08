@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.util.XUtils;
 import io.basc.framework.util.alias.AliasFactory;
 
 public interface BeanDefinitionFactory extends AliasFactory {
@@ -26,7 +25,7 @@ public interface BeanDefinitionFactory extends AliasFactory {
 	default Stream<BeanDefinition> matchType(ResolvableType type) {
 		String[] names = getDefinitionIds();
 		if (names == null || names.length == 0) {
-			return XUtils.emptyStream();
+			return Stream.empty();
 		}
 
 		return Arrays.asList(names).stream().map((name) -> getDefinition(name))

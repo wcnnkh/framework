@@ -1,9 +1,9 @@
 package io.basc.framework.factory.support;
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 import io.basc.framework.factory.InstanceFactory;
-import io.basc.framework.util.Cursor;
 import io.basc.framework.util.ServiceLoader;
 
 public final class NamedServiceLoader<S> implements ServiceLoader<S> {
@@ -22,8 +22,8 @@ public final class NamedServiceLoader<S> implements ServiceLoader<S> {
 	public void reload() {
 	}
 
-	public Cursor<S> iterator() {
-		return Cursor.of(new InstanceIterator<S>(instanceFactory, names.iterator()));
+	public Iterator<S> iterator() {
+		return new InstanceIterator<S>(instanceFactory, names.iterator());
 	}
 
 }

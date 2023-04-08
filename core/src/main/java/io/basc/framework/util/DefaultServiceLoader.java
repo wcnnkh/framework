@@ -1,5 +1,6 @@
 package io.basc.framework.util;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -48,7 +49,7 @@ public class DefaultServiceLoader<S> implements ConfigurableServiceLoader<S> {
 				}
 			}
 		}
-		return Cursor.empty();
+		return Collections.emptyIterator();
 	}
 
 	@Override

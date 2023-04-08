@@ -154,7 +154,7 @@ public class Services<T> implements Iterable<T>, Consumer<T> {
 	}
 
 	public Stream<T> stream() {
-		return XUtils.stream(iterator());
+		return Streams.stream(iterator());
 	}
 
 	@Override

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.ReversibleMapperFactory;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.util.XUtils;
+import io.basc.framework.util.Streams;
 
 public interface ObjectMapper<S, E extends Throwable>
 		extends ReversibleMapperFactory<S, E>, StructureFactory, ObjectAccessFactoryRegistry<E> {
@@ -149,10 +149,10 @@ public interface ObjectMapper<S, E extends Throwable>
 			return right.getDeclaringClass().isAssignableFrom(left.getDeclaringClass()) ? 1 : -1;
 		};
 
-		List<Field> targetFields = XUtils.stream(targetProperties).filter((e) -> e.isSupportSetter())
+		List<Field> targetFields = Streams.stream(targetProperties).filter((e) -> e.isSupportSetter())
 				.sorted((left, right) -> comparator.compare(left.getGetter(), right.getGetter()))
 				.collect(Collectors.toList());
-		XUtils.stream(sourceProperties).filter((e) -> e.isSupportGetter())
+		Streams.stream(sourceProperties).filter((e) -> e.isSupportGetter())
 				.sorted((left, right) -> comparator.compare(left.getSetter(), right.getSetter()))
 				.forEachOrdered((sourceField) -> {
 					Parameter value = sourceField.getParameter(source);

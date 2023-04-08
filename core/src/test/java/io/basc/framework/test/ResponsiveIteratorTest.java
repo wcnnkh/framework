@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 
 import io.basc.framework.util.ResponsiveIterator;
+import io.basc.framework.util.Streams;
 import io.basc.framework.util.XUtils;
 
 public class ResponsiveIteratorTest {
@@ -18,7 +19,7 @@ public class ResponsiveIteratorTest {
 	public void test() throws InterruptedException {
 		ResponsiveIterator<Object> iterator = new ResponsiveIterator<>();
 		new PushThread(iterator).start();
-		assertTrue(pushList.equals(XUtils.stream(iterator).collect(Collectors.toList())));
+		assertTrue(pushList.equals(Streams.stream(iterator).collect(Collectors.toList())));
 	}
 
 	private static class PushThread extends Thread {

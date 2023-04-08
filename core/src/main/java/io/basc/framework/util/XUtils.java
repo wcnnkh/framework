@@ -3,18 +3,11 @@ package io.basc.framework.util;
 import java.io.File;
 import java.io.Serializable;
 import java.net.URL;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import io.basc.framework.io.FileUtils;
 import io.basc.framework.lang.Nullable;
@@ -175,18 +168,6 @@ public final class XUtils {
 		return System.getProperty("os.name");
 	}
 
-	/**
-	 * 将一次迭代变为操作流
-	 * 
-	 * @param <T>
-	 * @param iterator
-	 * @return
-	 */
-	public static <T> Stream<T> stream(Iterator<? extends T> iterator) {
-		Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
-		return StreamSupport.stream(spliterator, false);
-	}
-
 	public static Object toString(Supplier<String> supplier) {
 		return new StringObject(supplier);
 	}
@@ -237,10 +218,5 @@ public final class XUtils {
 			}
 			b.process();
 		};
-	}
-
-	public static <T> Stream<T> emptyStream() {
-		List<T> list = Collections.emptyList();
-		return list.stream();
 	}
 }

@@ -17,7 +17,6 @@ import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.XUtils;
 
 public class AccessibleFieldFunction implements Function<Class<?>, Stream<AccessibleField>> {
 	private final ConcurrentReferenceHashMap<Class<?>, AccessibleField[]> cacheMap = new ConcurrentReferenceHashMap<>();
@@ -164,14 +163,14 @@ public class AccessibleFieldFunction implements Function<Class<?>, Stream<Access
 	@Override
 	public Stream<AccessibleField> apply(Class<?> sourceClass) {
 		if (sourceClass == null || sourceClass == Object.class) {
-			return XUtils.emptyStream();
+			return Stream.empty();
 		}
 
 		AccessibleField[] metadatas = cacheMap.get(sourceClass);
 		if (metadatas == null) {
 			List<AccessibleField> list = getFieldMetadataList(sourceClass);
 			if (CollectionUtils.isEmpty(list)) {
-				return XUtils.emptyStream();
+				return Stream.empty();
 			}
 			metadatas = list.toArray(new AccessibleField[0]);
 			AccessibleField[] old = cacheMap.putIfAbsent(sourceClass, metadatas);

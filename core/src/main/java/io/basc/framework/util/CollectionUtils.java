@@ -146,7 +146,7 @@ public abstract class CollectionUtils {
 		}
 
 		if (isEmpty(subaggregate)) {
-			return XUtils.stream(universal.iterator()).collect(Collectors.toList());
+			return Streams.stream(universal.iterator()).collect(Collectors.toList());
 		}
 
 		if (universal instanceof Set) {

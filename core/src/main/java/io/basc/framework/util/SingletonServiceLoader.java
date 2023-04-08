@@ -1,6 +1,7 @@
 package io.basc.framework.util;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -38,7 +39,7 @@ public final class SingletonServiceLoader<S> extends CacheableSupplier<S> implem
 	}
 
 	@Override
-	public Cursor<S> iterator() {
-		return Cursor.of(get());
+	public Iterator<S> iterator() {
+		return Arrays.asList(get()).iterator();
 	}
 }

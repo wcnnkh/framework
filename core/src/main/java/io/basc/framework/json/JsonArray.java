@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.Processor;
-import io.basc.framework.util.XUtils;
+import io.basc.framework.util.Streams;
 
 public interface JsonArray extends Json<Integer>, Iterable<JsonElement> {
 	static final String PREFIX = "[";
@@ -22,7 +22,7 @@ public interface JsonArray extends Json<Integer>, Iterable<JsonElement> {
 	boolean remove(int index);
 
 	default Stream<JsonElement> stream() {
-		return XUtils.stream(this.iterator());
+		return Streams.stream(this.iterator());
 	}
 
 	default <T, E extends Throwable> List<T> convert(Processor<JsonElement, T, E> converter) throws E {

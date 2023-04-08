@@ -2,6 +2,7 @@ package io.basc.framework.factory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -11,7 +12,6 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Cursor;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.Services;
 
@@ -105,8 +105,8 @@ public class ConfigurableServices<T> extends Services<T> implements Configurable
 	}
 
 	@Override
-	public Cursor<T> iterator() {
-		return Cursor.of(super.iterator());
+	public Iterator<T> iterator() {
+		return super.iterator();
 	}
 
 	@Override

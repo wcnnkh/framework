@@ -1,12 +1,10 @@
 package io.basc.framework.util;
 
-import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
-public interface ReverseIterator<E> extends Streamy<E> {
+public interface ReverseIterator<E> {
 	/**
 	 * Returns {@code true} if this list iterator has more elements when traversing
 	 * the list in the reverse direction. (In other words, returns {@code true} if
@@ -39,8 +37,8 @@ public interface ReverseIterator<E> extends Streamy<E> {
 	 * @throws UnsupportedOperationException if the {@code remove} operation is not
 	 *                                       supported by this iterator
 	 *
-	 * @throws IllegalStateException         if the {@code previous} method has not yet
-	 *                                       been called, or the {@code remove}
+	 * @throws IllegalStateException         if the {@code previous} method has not
+	 *                                       yet been called, or the {@code remove}
 	 *                                       method has already been called after
 	 *                                       the last call to the {@code previous}
 	 *                                       method
@@ -62,31 +60,5 @@ public interface ReverseIterator<E> extends Streamy<E> {
 		Objects.requireNonNull(action);
 		while (hasPrevious())
 			action.accept(previous());
-	}
-
-	@Override
-	default Stream<E> stream() {
-		Iterator<E> iterator = new Iterator<E>() {
-			@Override
-			public boolean hasNext() {
-				return hasPrevious();
-			}
-
-			@Override
-			public E next() {
-				return previous();
-			}
-
-			@Override
-			public void remove() {
-				ReverseIterator.this.remove();
-			}
-
-			@Override
-			public void forEachRemaining(Consumer<? super E> action) {
-				ReverseIterator.this.forEachRemaining(action);
-			}
-		};
-		return XUtils.stream(iterator);
 	}
 }
