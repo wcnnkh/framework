@@ -25,7 +25,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.context.ClassesLoaderFactory;
+import io.basc.framework.context.ClassScanner;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.xml.XmlBeanUtils;
 import io.basc.framework.core.reflect.ReflectionApi;
@@ -213,14 +213,14 @@ public class DubboRegistry {
 
 	@SuppressWarnings("rawtypes")
 	public static List<ReferenceConfig> parseReferenceConfigList(final Environment environment, NodeList nodeList,
-			ReferenceConfig<?> defaultConfig, final ClassesLoaderFactory classesLoaderFactory) {
+			ReferenceConfig<?> defaultConfig, final ClassScanner classScanner) {
 		return parseConfigList(ReferenceConfig.class, environment, nodeList, defaultConfig,
 				new ConfigFilter<ReferenceConfig>() {
 					@Override
 					public boolean doFilter(List<ReferenceConfig> list, Node node, ReferenceConfig config) {
 						String packageName = getPackageName(environment, node);
 						if (StringUtils.isNotEmpty(packageName)) {
-							for (Class<?> clazz : classesLoaderFactory.getClassesLoader(packageName,
+							for (Class<?> clazz : classScanner.scan(packageName,
 									(e, m) -> e.getClassMetadata().isInterface())) {
 								ReferenceConfig<?> referenceConfig = Copy.copy(config, ReferenceConfig.class);
 								referenceConfig.setInterface(clazz);
@@ -269,7 +269,7 @@ public class DubboRegistry {
 
 						String packageName = getPackageName(context, node);
 						if (StringUtils.isNotEmpty(packageName)) {
-							for (Class<?> clazz : context.getClassesLoaderFactory().getClassesLoader(packageName,
+							for (Class<?> clazz : context.getClassScanner().scan(packageName,
 									(e, m) -> e.getAnnotationMetadata().isInterface())) {
 								if (!context.isInstance(clazz)) {
 									logger.warn("{} not supported get instance", clazz);

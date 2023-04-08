@@ -8,7 +8,7 @@ public interface Context extends Environment {
 
 	ServiceLoader<Class<?>> getContextClasses();
 
-	ClassesLoaderFactory getClassesLoaderFactory();
+	ClassScanner getClassScanner();
 
 	ContextResolver getContextResolver();
 }

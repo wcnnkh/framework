@@ -1532,7 +1532,7 @@ public final class StringUtils {
 
 	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence, CharSequence... filters) {
 		if (charSequence == null) {
-			return XUtils.emptyStream();
+			return Stream.empty();
 		}
 		return split(charSequence, 0, charSequence.length(), Arrays.asList(filters));
 	}
@@ -1540,7 +1540,7 @@ public final class StringUtils {
 	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence,
 			Collection<? extends CharSequence> filters) {
 		if (charSequence == null) {
-			return XUtils.emptyStream();
+			return Stream.empty();
 		}
 		return split(charSequence, 0, charSequence.length(), filters);
 	}
@@ -1548,7 +1548,7 @@ public final class StringUtils {
 	public static Stream<CharSequenceSplitSegment> split(CharSequence charSequence, int beginIndex, int endIndex,
 			Collection<? extends CharSequence> filters) {
 		if (StringUtils.isEmpty(charSequence)) {
-			return XUtils.emptyStream();
+			return Stream.empty();
 		}
 
 		boolean find = false;
@@ -1562,7 +1562,7 @@ public final class StringUtils {
 		if (!find) {
 			return Arrays.asList(new CharSequenceSplitSegment(charSequence)).stream();
 		}
-		return XUtils.stream(new CharSequenceSplitIterator(charSequence, filters, beginIndex, endIndex));
+		return Streams.stream(new CharSequenceSplitIterator(charSequence, filters, beginIndex, endIndex));
 	}
 
 	public static String[] splitToArray(CharSequence charSequence) {
@@ -1667,7 +1667,7 @@ public final class StringUtils {
 
 	public static Stream<String> tokenize(String text, String delimiters) {
 		if (StringUtils.isEmpty(text)) {
-			return XUtils.emptyStream();
+			return Stream.empty();
 		}
 
 		return tokenize(new StringTokenizer(text, delimiters));
@@ -1681,7 +1681,7 @@ public final class StringUtils {
 
 	public static Stream<String> tokenize(StringTokenizer tokenizer) {
 		if (tokenizer == null) {
-			return XUtils.emptyStream();
+			return Stream.empty();
 		}
 
 		Iterator<String> iterator = new Iterator<String>() {
@@ -1695,7 +1695,7 @@ public final class StringUtils {
 				return tokenizer.nextToken();
 			}
 		};
-		return XUtils.stream(iterator);
+		return Streams.stream(iterator);
 	}
 
 	/**
@@ -2050,6 +2050,21 @@ public final class StringUtils {
 	 */
 	public static String unqualify(String qualifiedName, char separator) {
 		return qualifiedName.substring(qualifiedName.lastIndexOf(separator) + 1);
+	}
+
+	/**
+	 * 验证包名是否合法
+	 * 
+	 * @param packageName
+	 * @return
+	 */
+	public static boolean verifyPackageName(CharSequence packageName) {
+		if(isEmpty(packageName)) {
+			return false;
+		}
+		
+		return split(packageName, ".")
+				.allMatch((e) -> e.getSource().length() > 0 && Character.isAlphabetic(e.charAt(0)));
 	}
 
 	private StringUtils() {

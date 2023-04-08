@@ -17,4 +17,7 @@ public interface ConfigurableContext extends Context, ConfigurableEnvironment {
 	ConfigurableServiceLoader<Class<?>> getSourceClasses();
 
 	Registration source(Class<?> sourceClass);
+	
+	@Override
+	ConfigurableClassScanner getClassScanner();
 }

@@ -1,6 +1,11 @@
 package io.basc.framework.util;
 
+import io.basc.framework.lang.Nullable;
+
 public interface ConfigurableClassLoaderProvider extends ClassLoaderProvider {
+
+	@Nullable
+	ClassLoaderProvider getClassLoaderProvider();
 
 	void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider);
 
@@ -12,4 +17,9 @@ public interface ConfigurableClassLoaderProvider extends ClassLoaderProvider {
 		setClassLoaderProvider(clazz == null ? null : (() -> clazz.getClassLoader()));
 	}
 
+	@Override
+	default ClassLoader getClassLoader() {
+		ClassLoaderProvider classLoaderProvider = getClassLoaderProvider();
+		return classLoaderProvider == null ? ClassUtils.getDefaultClassLoader() : classLoaderProvider.getClassLoader();
+	}
 }

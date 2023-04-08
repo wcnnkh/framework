@@ -42,7 +42,7 @@ public class HttpRemoteContextPostProcessor implements ContextPostProcessor {
 			CallableFactorySupplier supplier = new CallableFactorySupplier();
 			supplier.config(node, context);
 			if (!StringUtils.isEmpty(packageName)) {
-				for (Class<?> clz : context.getClassesLoaderFactory().getClassesLoader(packageName,
+				for (Class<?> clz : context.getClassScanner().scan(packageName,
 						(e, m) -> e.getClassMetadata().isInterface())) {
 					RemoteCallableBeanDefinition definition = new RemoteCallableBeanDefinition(context, supplier, clz);
 					context.registerDefinition(definition);

@@ -4,7 +4,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Set;
 
-import io.basc.framework.context.ClassesLoaderFactory;
 import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.ConfigurableContextResolver;
 import io.basc.framework.context.Context;
@@ -42,7 +41,7 @@ import io.basc.framework.util.StringUtils;
 
 public class DefaultContext extends DefaultEnvironment implements ConfigurableContext {
 	private static Logger logger = LoggerFactory.getLogger(DefaultContext.class);
-	private final DefaultClassesLoaderFactory classesLoaderFactory;
+	private final DefaultClassScanner classScanner = new DefaultClassScanner();
 	private final DefaultServiceLoader<Class<?>> contextClassesLoader = new DefaultServiceLoader<>();
 	private final ConfigurableServices<ContextPostProcessor> contextPostProcessors = new ConfigurableServices<ContextPostProcessor>(
 			ContextPostProcessor.class);
@@ -61,8 +60,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 		contextClassesLoader.registerLoader(sourceClasses);
 		IocBeanResolverExtend iocBeanResolverExtend = new IocBeanResolverExtend(this, iocResolver);
 		iocResolver.setAfterService(iocBeanResolverExtend);
-		this.classesLoaderFactory = new DefaultClassesLoaderFactory();
-		this.classesLoaderFactory.setClassLoaderProvider(this);
+		this.classScanner.setClassLoaderProvider(this);
 		contextResolver.addService(new AnnotationContextResolverExtend(this));
 		contextResolver.addService(new RepositoryContextResolverExtend(this));
 		getBeanResolver().addService(new AnnotationContextResolverExtend(this));
@@ -110,7 +108,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	public Registration componentScan(String packageName, TypeFilter typeFilter) {
-		ServiceLoader<Class<?>> classesLoader = getClassesLoaderFactory().getClassesLoader(packageName, typeFilter);
+		ServiceLoader<Class<?>> classesLoader = getClassScanner().scan(packageName, typeFilter);
 		return getContextClasses().registerLoader(classesLoader);
 	}
 
@@ -121,8 +119,8 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	@Override
-	public ClassesLoaderFactory getClassesLoaderFactory() {
-		return classesLoaderFactory;
+	public DefaultClassScanner getClassScanner() {
+		return classScanner;
 	}
 
 	@Override

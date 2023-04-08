@@ -31,7 +31,7 @@ public class IbatisContextPostProcessor implements ContextPostProcessor {
 			MapperScan mapperScan = clazz.getAnnotation(MapperScan.class);
 			if (mapperScan != null) {
 				for (String scan : mapperScan.value()) {
-					for (Class<?> mapperClass : context.getClassesLoaderFactory().getClassesLoader(scan,
+					for (Class<?> mapperClass : context.getClassScanner().scan(scan,
 							(e, m) -> e.getClassMetadata().isInterface())) {
 						ConfigurationUtils.registerMapperDefinition(context, mapperClass);
 					}

@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import io.basc.framework.context.ClassesLoaderFactory;
-import io.basc.framework.context.support.DefaultClassesLoaderFactory;
+import io.basc.framework.context.ClassScanner;
+import io.basc.framework.context.support.DefaultClassScanner;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
@@ -21,18 +21,18 @@ import io.basc.framework.util.ServiceLoader;
 public class DefaultDB extends DefaultSqlTemplate implements DB {
 	private static Logger logger = LoggerFactory.getLogger(DefaultDB.class);
 	private boolean checkTableChange = true;
-	private ClassesLoaderFactory classScanner = new DefaultClassesLoaderFactory();
+	private ClassScanner classScanner = new DefaultClassScanner();
 
 	public DefaultDB(ConnectionFactory connectionFactory, SqlDialect sqlDialect) {
 		super(connectionFactory, sqlDialect);
 	}
 
-	public ClassesLoaderFactory getClassScanner() {
+	public ClassScanner getClassScanner() {
 		return classScanner;
 	}
 
-	public void setClassScanner(ClassesLoaderFactory classScanner) {
-		Assert.requiredArgument(classScanner != null, "classesLoaderFactory");
+	public void setClassScanner(ClassScanner classScanner) {
+		Assert.requiredArgument(classScanner != null, "classScanner");
 		this.classScanner = classScanner;
 	}
 
@@ -67,7 +67,7 @@ public class DefaultDB extends DefaultSqlTemplate implements DB {
 	}
 
 	public void createTables(String packageName, boolean registerManager) {
-		ServiceLoader<Class<?>> classesLoader = getClassScanner().getClassesLoader(packageName, (e, m) -> {
+		ServiceLoader<Class<?>> classesLoader = getClassScanner().scan(packageName, (e, m) -> {
 			return e.getAnnotationMetadata().hasAnnotation(Table.class.getName());
 		});
 

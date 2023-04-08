@@ -45,7 +45,7 @@ public class DefaultDubboReferenceRegistry extends DubboRegistry implements Dubb
 		List<ReferenceConfig<?>> referenceConfigs = XmlBeanUtils
 				.parse(context.getResourceLoader(), resource,
 						(nodeList) -> parseReferenceConfigList(context, nodeList, null,
-								context.getClassesLoaderFactory()))
+								context.getClassScanner()))
 				.stream().map((e) -> (ReferenceConfig<?>) e).collect(Collectors.toList());
 		for (ReferenceConfig<?> referenceConfig : referenceConfigs) {
 			register(referenceConfig);
