@@ -29,7 +29,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.AntPathMatcher;
-import io.basc.framework.util.ConfigurableServiceLoader1;
+import io.basc.framework.util.CacheServiceLoader;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
@@ -83,7 +83,7 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	private final ResourceResolvers resourceResolvers = new ResourceResolvers(propertiesResolvers, conversionService,
 			getObservableCharset());
 
-	private final ConfigurableServiceLoader1<Resource> resources = new ConfigurableServiceLoader1<>();
+	private final CacheServiceLoader<Resource> resources = new CacheServiceLoader<>();
 
 	public DefaultEnvironment() {
 		conversionService.addService(new ConverterConversionService(Resource.class, Properties.class,
@@ -193,7 +193,7 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	}
 
 	@Override
-	public ConfigurableServiceLoader1<Resource> getResources() {
+	public CacheServiceLoader<Resource> getResources() {
 		return resources;
 	}
 

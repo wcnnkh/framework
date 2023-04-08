@@ -34,7 +34,7 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
-import io.basc.framework.util.ConfigurableServiceLoader1;
+import io.basc.framework.util.CacheServiceLoader;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.StringUtils;
@@ -42,7 +42,7 @@ import io.basc.framework.util.StringUtils;
 public class DefaultContext extends DefaultEnvironment implements ConfigurableContext {
 	private static Logger logger = LoggerFactory.getLogger(DefaultContext.class);
 	private final DefaultClassScanner classScanner = new DefaultClassScanner();
-	private final ConfigurableServiceLoader1<Class<?>> contextClassesLoader = new ConfigurableServiceLoader1<>();
+	private final CacheServiceLoader<Class<?>> contextClassesLoader = new CacheServiceLoader<>();
 	private final ConfigurableServices<ContextPostProcessor> contextPostProcessors = new ConfigurableServices<ContextPostProcessor>(
 			ContextPostProcessor.class);
 	private final ConfigurableContextResolver contextResolver = new ConfigurableContextResolver();
@@ -52,7 +52,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	private final ConcurrentReferenceHashMap<Class<?>, ProviderClassesLoader> providerClassesLoaderMap = new ConcurrentReferenceHashMap<>(
 			128);
 
-	private final ConfigurableServiceLoader1<Class<?>> sourceClasses = new ConfigurableServiceLoader1<Class<?>>();
+	private final CacheServiceLoader<Class<?>> sourceClasses = new CacheServiceLoader<Class<?>>();
 
 	public DefaultContext() {
 		contextClassesLoader.register(sourceClasses);
@@ -122,7 +122,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	@Override
-	public ConfigurableServiceLoader1<Class<?>> getContextClasses() {
+	public CacheServiceLoader<Class<?>> getContextClasses() {
 		return contextClassesLoader;
 	}
 
@@ -159,7 +159,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	@Override
-	public ConfigurableServiceLoader1<Class<?>> getSourceClasses() {
+	public CacheServiceLoader<Class<?>> getSourceClasses() {
 		return sourceClasses;
 	}
 
