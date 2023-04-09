@@ -1,4 +1,6 @@
-package io.basc.framework.util;
+package io.basc.framework.convert.lang;
+
+import io.basc.framework.util.StringUtils;
 
 public class StringToShort extends StringToNumber {
 	public static final StringToShort DEFAULT = new StringToShort(10, (short) 0);

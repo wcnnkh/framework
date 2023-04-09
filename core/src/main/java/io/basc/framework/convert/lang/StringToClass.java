@@ -1,6 +1,10 @@
-package io.basc.framework.util;
+package io.basc.framework.convert.lang;
 
 import java.util.function.Function;
+
+import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.DefaultClassLoaderAccessor;
+import io.basc.framework.util.StringUtils;
 
 public class StringToClass extends DefaultClassLoaderAccessor implements Function<String, Class<?>> {
 	public static final StringToClass DEFAULT = new StringToClass();

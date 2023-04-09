@@ -13,20 +13,6 @@ import io.basc.framework.convert.ConversionFailedException;
 import io.basc.framework.io.Resource;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Optional;
-import io.basc.framework.util.StringToBoolean;
-import io.basc.framework.util.StringToByte;
-import io.basc.framework.util.StringToCharacter;
-import io.basc.framework.util.StringToCharset;
-import io.basc.framework.util.StringToClass;
-import io.basc.framework.util.StringToCurrency;
-import io.basc.framework.util.StringToDouble;
-import io.basc.framework.util.StringToFloat;
-import io.basc.framework.util.StringToInteger;
-import io.basc.framework.util.StringToLocale;
-import io.basc.framework.util.StringToLong;
-import io.basc.framework.util.StringToNumber;
-import io.basc.framework.util.StringToShort;
-import io.basc.framework.util.StringToTimeZone;
 
 public class StringConverter extends ConversionFactory<String, ConversionException> {
 	public static final StringConverter DEFAULT = new StringConverter();

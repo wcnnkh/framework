@@ -1,4 +1,4 @@
-package io.basc.framework.util;
+package io.basc.framework.convert.lang;
 
 import java.util.Locale;
 import java.util.function.Function;

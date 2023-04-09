@@ -1,4 +1,4 @@
-package io.basc.framework.util;
+package io.basc.framework.convert.lang;
 
 import java.nio.charset.Charset;
 import java.util.function.Function;

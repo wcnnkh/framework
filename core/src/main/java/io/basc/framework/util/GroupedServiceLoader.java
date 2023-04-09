@@ -12,16 +12,15 @@ import lombok.ToString;
 
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class ConfigurableServiceLoader<S> extends SortableServiceLoader<S> {
+public class GroupedServiceLoader<S> extends SortableServiceLoader<S> {
 	private final SortableServiceLoader<S> first;
 	private final SortableServiceLoader<S> last;
 
-	public ConfigurableServiceLoader() {
+	public GroupedServiceLoader() {
 		this(new StandardBroadcastEventDispatcher<>());
 	}
 
-	public ConfigurableServiceLoader(
-			BroadcastEventDispatcher<ChangeEvent<Elements<ServiceLoader<S>>>> eventDispatcher) {
+	public GroupedServiceLoader(BroadcastEventDispatcher<ChangeEvent<Elements<ServiceLoader<S>>>> eventDispatcher) {
 		super(eventDispatcher);
 		this.first = new SortableServiceLoader<>(eventDispatcher);
 		this.last = new SortableServiceLoader<>(eventDispatcher);

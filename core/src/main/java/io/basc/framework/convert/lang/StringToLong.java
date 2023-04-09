@@ -1,6 +1,8 @@
-package io.basc.framework.util;
+package io.basc.framework.convert.lang;
 
 import java.util.function.ToLongFunction;
+
+import io.basc.framework.util.StringUtils;
 
 public class StringToLong extends StringToNumber implements ToLongFunction<String> {
 	public static final StringToLong DEFAULT = new StringToLong(false, 10, 0);

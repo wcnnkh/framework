@@ -2,16 +2,22 @@ package io.basc.framework.test;
 
 import org.junit.Test;
 
+import io.basc.framework.factory.support.SpiServiceLoader;
+import io.basc.framework.http.client.ClientHttpRequestFactory;
 import io.basc.framework.util.Services;
-import io.basc.framework.util.XUtils;
 
 public class ServiceLoaderTest {
 	@Test
 	public void test() {
-		Services<String> serviceLoader = new Services<>();
-		serviceLoader.registerService(XUtils.getUUID());
-		serviceLoader.registerService(XUtils.getUUID());
-		serviceLoader.setLast(XUtils.getUUID());
-		System.out.println(serviceLoader);
+		SpiServiceLoader<ClientHttpRequestFactory> loader = new SpiServiceLoader<>(ClientHttpRequestFactory.class);
+		Services<ClientHttpRequestFactory> serviceLoader = new Services<>();
+		serviceLoader.register(loader);
+		
+		Services<ClientHttpRequestFactory> serviceLoader1 = new Services<>();
+		serviceLoader1.register(serviceLoader);
+		for (ClientHttpRequestFactory clientHttpRequestFactory : serviceLoader1) {
+			System.out.println(clientHttpRequestFactory);
+		}
+		System.out.println(serviceLoader1);
 	}
 }

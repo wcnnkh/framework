@@ -1,10 +1,11 @@
-package io.basc.framework.util;
+package io.basc.framework.convert.lang;
 
 import java.math.BigDecimal;
 import java.util.function.Function;
 import java.util.function.IntPredicate;
 
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.StringUtils;
 
 public class StringToNumber implements Function<String, Number> {
 

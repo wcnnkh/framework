@@ -1,6 +1,8 @@
-package io.basc.framework.util;
+package io.basc.framework.convert.lang;
 
 import java.math.BigInteger;
+
+import io.basc.framework.util.StringUtils;
 
 public class StringToBigInteger extends StringToNumber {
 

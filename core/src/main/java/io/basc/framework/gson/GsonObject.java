@@ -1,6 +1,5 @@
 package io.basc.framework.gson;
 
-import java.util.Map.Entry;
 import java.util.Set;
 
 import com.google.gson.Gson;
@@ -10,7 +9,6 @@ import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonObject;
 import io.basc.framework.util.ElementSet;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Pair;
 
 public final class GsonObject extends AbstractJson<String> implements JsonObject {
 	private com.google.gson.JsonObject gsonJsonObject;
@@ -75,10 +73,6 @@ public final class GsonObject extends AbstractJson<String> implements JsonObject
 
 	public boolean remove(String key) {
 		return gsonJsonObject.remove(key) != null;
-	}
-
-	public Pair<String, JsonElement> convert(Entry<String, com.google.gson.JsonElement> k) {
-		return new Pair<String, JsonElement>(k.getKey(), new GsonElement(k.getValue(), gson));
 	}
 
 	@Override

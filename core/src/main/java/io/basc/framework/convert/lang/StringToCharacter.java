@@ -1,6 +1,8 @@
-package io.basc.framework.util;
+package io.basc.framework.convert.lang;
 
 import java.util.function.Function;
+
+import io.basc.framework.util.StringUtils;
 
 public class StringToCharacter implements Function<String, Character> {
 	public static final StringToCharacter DEFAULT = new StringToCharacter(0, (char) 0);

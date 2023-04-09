@@ -1,8 +1,8 @@
 package io.basc.framework.factory;
 
-import io.basc.framework.util.ConfigurableServiceLoader;
+import io.basc.framework.util.GroupedServiceLoader;
 
 public interface ConfigurableServiceLoaderFactory extends ServiceLoaderFactory {
 	@Override
-	<S> ConfigurableServiceLoader<S> getServiceLoader(Class<S> serviceClass);
+	<S> GroupedServiceLoader<S> getServiceLoader(Class<S> serviceClass);
 }

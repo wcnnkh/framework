@@ -10,7 +10,7 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.AntPathMatcher;
 import io.basc.framework.util.ParentDiscover;
-import io.basc.framework.util.StringStrategy;
+import io.basc.framework.util.MatcherStrategy;
 import io.basc.framework.util.alias.AliasRegistry;
 import io.basc.framework.util.attribute.SimpleAttributes;
 
@@ -30,9 +30,9 @@ public class ObjectMapperContext extends SimpleAttributes<String, Object>
 	private String namePrefix;
 	private final ObjectMapperContext parent;
 	private Boolean ignoreNull;
-	private final StringStrategy<Boolean> entityTypeMatcher;
-	private final StringStrategy<Boolean> ignoreAnnotationNameMatcher;
-	private final StringStrategy<Boolean> ignoreNameMatcher;
+	private final MatcherStrategy<Boolean> entityTypeMatcher;
+	private final MatcherStrategy<Boolean> ignoreAnnotationNameMatcher;
+	private final MatcherStrategy<Boolean> ignoreNameMatcher;
 	private Integer entityNestingMaxiumDepth;
 
 	public ObjectMapperContext() {
@@ -41,11 +41,11 @@ public class ObjectMapperContext extends SimpleAttributes<String, Object>
 
 	public ObjectMapperContext(ObjectMapperContext parent) {
 		this.parent = parent;
-		this.entityTypeMatcher = new StringStrategy<Boolean>(AntPathMatcher.POINT_PATH_MATCHER,
+		this.entityTypeMatcher = new MatcherStrategy<Boolean>(AntPathMatcher.POINT_PATH_MATCHER,
 				parent == null ? null : parent.entityTypeMatcher);
-		this.ignoreAnnotationNameMatcher = new StringStrategy<Boolean>(AntPathMatcher.POINT_PATH_MATCHER,
+		this.ignoreAnnotationNameMatcher = new MatcherStrategy<Boolean>(AntPathMatcher.POINT_PATH_MATCHER,
 				parent == null ? null : parent.ignoreAnnotationNameMatcher);
-		this.ignoreNameMatcher = new StringStrategy<Boolean>(AntPathMatcher.POINT_PATH_MATCHER,
+		this.ignoreNameMatcher = new MatcherStrategy<Boolean>(AntPathMatcher.POINT_PATH_MATCHER,
 				parent == null ? null : parent.ignoreNameMatcher);
 	}
 
@@ -218,15 +218,15 @@ public class ObjectMapperContext extends SimpleAttributes<String, Object>
 		this.ignoreNull = ignoreNull;
 	}
 
-	public StringStrategy<Boolean> getEntityTypeMatcher() {
+	public MatcherStrategy<Boolean> getEntityTypeMatcher() {
 		return entityTypeMatcher;
 	}
 
-	public StringStrategy<Boolean> getIgnoreAnnotationNameMatcher() {
+	public MatcherStrategy<Boolean> getIgnoreAnnotationNameMatcher() {
 		return ignoreAnnotationNameMatcher;
 	}
 
-	public StringStrategy<Boolean> getIgnoreNameMatcher() {
+	public MatcherStrategy<Boolean> getIgnoreNameMatcher() {
 		return ignoreNameMatcher;
 	}
 

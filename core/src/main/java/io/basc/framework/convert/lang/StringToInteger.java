@@ -1,6 +1,8 @@
-package io.basc.framework.util;
+package io.basc.framework.convert.lang;
 
 import java.util.function.ToIntFunction;
+
+import io.basc.framework.util.StringUtils;
 
 public class StringToInteger extends StringToNumber implements ToIntFunction<String> {
 	public static final StringToInteger DEFAULT = new StringToInteger(false, 10, 0);

@@ -1,4 +1,6 @@
-package io.basc.framework.util;
+package io.basc.framework.convert.lang;
+
+import io.basc.framework.util.StringUtils;
 
 public class StringToFloat extends StringToNumber {
 	public static final StringToFloat DEFAULT = new StringToFloat(0f);

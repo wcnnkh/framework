@@ -1,6 +1,8 @@
-package io.basc.framework.util;
+package io.basc.framework.convert.lang;
 
 import java.util.function.ToDoubleFunction;
+
+import io.basc.framework.util.StringUtils;
 
 public class StringToDouble extends StringToNumber implements ToDoubleFunction<String> {
 	public static final StringToDouble DEFAULT = new StringToDouble(0d);

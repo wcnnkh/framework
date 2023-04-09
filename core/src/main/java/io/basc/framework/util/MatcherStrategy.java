@@ -6,16 +6,16 @@ import java.util.TreeMap;
 
 import io.basc.framework.lang.Nullable;
 
-public final class StringStrategy<T> {
+public final class MatcherStrategy<T> {
 	private TreeMap<String, T> strategyMap;
 	private final StringMatcher matcher;
-	private final StringStrategy<T> parent;
+	private final MatcherStrategy<T> parent;
 
-	public StringStrategy(StringMatcher matcher) {
+	public MatcherStrategy(StringMatcher matcher) {
 		this(matcher, null);
 	}
 
-	public StringStrategy(StringMatcher matcher, @Nullable StringStrategy<T> parent) {
+	public MatcherStrategy(StringMatcher matcher, @Nullable MatcherStrategy<T> parent) {
 		this.matcher = matcher;
 		this.parent = parent;
 	}
