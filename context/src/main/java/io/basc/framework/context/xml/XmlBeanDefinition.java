@@ -42,10 +42,11 @@ public class XmlBeanDefinition extends FactoryBeanDefinition {
 		}
 
 		NodeList nodeList = beanNode.getChildNodes();
-		getInitProcessors().addServices(XmlBeanUtils.getInitMethodIocProcessors(context, targetClass, nodeList));
-		getDestroyProcessors().addServices(XmlBeanUtils.getDestroyMethodIocProcessors(context, targetClass, nodeList));
+		getInitProcessors().registerServices(XmlBeanUtils.getInitMethodIocProcessors(context, targetClass, nodeList));
+		getDestroyProcessors()
+				.registerServices(XmlBeanUtils.getDestroyMethodIocProcessors(context, targetClass, nodeList));
 		getDependenceProcessors()
-				.addServices(XmlBeanUtils.getBeanPropertiesIocProcessors(context, targetClass, nodeList));
+				.registerServices(XmlBeanUtils.getBeanPropertiesIocProcessors(context, targetClass, nodeList));
 		this.xmlParameterFactory = new XmlParametersFactory(context,
 				XmlBeanUtils.getConstructorParameters(nodeList, context.getClassLoader()));
 		setId(getId(beanNode));

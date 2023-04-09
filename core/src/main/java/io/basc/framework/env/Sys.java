@@ -72,7 +72,7 @@ public final class Sys extends DefaultEnvironment {
 
 		super.init();
 
-		getProperties().getPropertyFactories().getFactories().addService(SystemPropertyFactory.INSTANCE);
+		getProperties().getPropertyFactories().getFactories().registerService(SystemPropertyFactory.INSTANCE);
 
 		/**
 		 * 加载配置文件

@@ -10,22 +10,22 @@ public class RepositoryMethodAdapterRegistry extends ConfigurableServices<Reposi
 
 	public RepositoryMethodAdapterRegistry() {
 		super(RepositoryMethodAdapter.class);
-		addService(new CurdRepositoryDeleteAdapter());
-		addService(new CurdRepositoryDeleteAllAdapter());
-		addService(new CurdRepositoryDeleteByIdAdapter());
-		addService(new CurdRepositoryGetByIdMethodAdapter());
-		addService(new CurdRepositoryGetInIdsMethodAdapter());
-		addService(new CurdRepositoryIsPresentAnyMethodAdapter());
-		addService(new CurdRepositoryIsPresentMethodAdapter());
-		addService(new CurdRepositoryPagingQueryMethodAdapter());
-		addService(new CurdRepositoryQueryAllMethodAdapter());
-		addService(new CurdRepositoryQueryListMethodAdapter());
-		addService(new CurdRepositoryQueryMethodAdapter());
-		addService(new CurdRepositorySaveMethodAdapter());
-		addService(new CurdRepositoryUpdateAllMethodAdapter());
-		addService(new CurdRepositoryUpdateMethodAdapter());
-		addService(new CurdRepositorySaveIfAbsentAdapter());
-		setAfterService(new CustomRepositoryMethodAdapter());
+		registerService(new CurdRepositoryDeleteAdapter());
+		registerService(new CurdRepositoryDeleteAllAdapter());
+		registerService(new CurdRepositoryDeleteByIdAdapter());
+		registerService(new CurdRepositoryGetByIdMethodAdapter());
+		registerService(new CurdRepositoryGetInIdsMethodAdapter());
+		registerService(new CurdRepositoryIsPresentAnyMethodAdapter());
+		registerService(new CurdRepositoryIsPresentMethodAdapter());
+		registerService(new CurdRepositoryPagingQueryMethodAdapter());
+		registerService(new CurdRepositoryQueryAllMethodAdapter());
+		registerService(new CurdRepositoryQueryListMethodAdapter());
+		registerService(new CurdRepositoryQueryMethodAdapter());
+		registerService(new CurdRepositorySaveMethodAdapter());
+		registerService(new CurdRepositoryUpdateAllMethodAdapter());
+		registerService(new CurdRepositoryUpdateMethodAdapter());
+		registerService(new CurdRepositorySaveIfAbsentAdapter());
+		setLast(new CustomRepositoryMethodAdapter());
 	}
 
 	@Override

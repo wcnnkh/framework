@@ -221,7 +221,7 @@ public class TomcatApplicationServer implements ApplicationServer, Destroy {
 		}
 
 		application.getProperties().getPropertyFactories().getFactories()
-				.addService(new ServletContextPropertyFactory(context.getServletContext()));
+				.registerService(new ServletContextPropertyFactory(context.getServletContext()));
 
 		configureJSP(context, application);
 		configureServlet(context, application);

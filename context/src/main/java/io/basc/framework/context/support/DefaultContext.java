@@ -34,9 +34,9 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
-import io.basc.framework.util.Services;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.Services;
 import io.basc.framework.util.StringUtils;
 
 public class DefaultContext extends DefaultEnvironment implements ConfigurableContext {
@@ -57,12 +57,12 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	public DefaultContext() {
 		contextClassesLoader.register(sourceClasses);
 		IocBeanResolverExtend iocBeanResolverExtend = new IocBeanResolverExtend(this, iocResolver);
-		iocResolver.setAfterService(iocBeanResolverExtend);
+		iocResolver.setLast(iocBeanResolverExtend);
 		this.classScanner.setClassLoaderProvider(this);
-		contextResolver.addService(new AnnotationContextResolverExtend(this));
-		contextResolver.addService(new RepositoryContextResolverExtend(this));
-		getBeanResolver().addService(new AnnotationContextResolverExtend(this));
-		getBeanResolver().addService(iocBeanResolverExtend);
+		contextResolver.registerService(new AnnotationContextResolverExtend(this));
+		contextResolver.registerService(new RepositoryContextResolverExtend(this));
+		getBeanResolver().registerService(new AnnotationContextResolverExtend(this));
+		getBeanResolver().registerService(iocBeanResolverExtend);
 
 		registerSingleton(Context.class.getName(), this);
 		registerSingleton(IocResolver.class.getName(), iocResolver);

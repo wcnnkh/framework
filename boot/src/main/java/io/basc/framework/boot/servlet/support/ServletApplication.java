@@ -20,7 +20,7 @@ public class ServletApplication extends DefaultApplication {
 		}
 
 		getProperties().getPropertyFactories().getFactories()
-				.addService(new ServletContextPropertyFactory(servletContext));
-		getResourceLoader().getResourceLoaders().addService(new ServletContextResourceLoader(servletContext));
+				.registerService(new ServletContextPropertyFactory(servletContext));
+		getResourceLoader().getResourceLoaders().registerService(new ServletContextResourceLoader(servletContext));
 	}
 }

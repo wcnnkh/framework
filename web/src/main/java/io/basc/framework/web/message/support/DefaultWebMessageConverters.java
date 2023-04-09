@@ -22,26 +22,26 @@ public class DefaultWebMessageConverters extends WebMessageConverters {
 	private final WebMessageConverters afters = new WebMessageConverters();
 
 	public DefaultWebMessageConverters(Environment environment) {
-		super.setAfterService(afters);
-		afters.getConsumers().addService(this);
+		super.setLast(afters);
+		afters.getConsumers().registerService(this);
 		this.messageConverters = new DefaultMessageConverters(environment.getConversionService());
 		this.environment = environment;
 		LastWebMessageConverter lastWebMessageConverter = new LastWebMessageConverter();
 		accept(lastWebMessageConverter);
-		afters.setAfterService(lastWebMessageConverter);
-		addService(new MultipartMessageWebMessageConverter(InetUtils.getMultipartMessageResolver()));
-		addService(new EntityMessageConverter());
-		addService(new InputMessageConverter());
-		addService(new ResourceMessageConverter());
-		addService(new RequestBodyMessageConverter());
-		addService(new QueryParamsWebMessageConverter());
-		addService(new IpAddressWebMessageConverter());
-		addService(new AttributeWebMessageConverter());
+		afters.setLast(lastWebMessageConverter);
+		registerService(new MultipartMessageWebMessageConverter(InetUtils.getMultipartMessageResolver()));
+		registerService(new EntityMessageConverter());
+		registerService(new InputMessageConverter());
+		registerService(new ResourceMessageConverter());
+		registerService(new RequestBodyMessageConverter());
+		registerService(new QueryParamsWebMessageConverter());
+		registerService(new IpAddressWebMessageConverter());
+		registerService(new AttributeWebMessageConverter());
 	}
 
 	@Override
-	public void setAfterService(WebMessageConverter afterService) {
-		afters.addService(afterService);
+	public void setLast(WebMessageConverter afterService) {
+		afters.registerService(afterService);
 	}
 
 	public MessageConverters getMessageConverters() {

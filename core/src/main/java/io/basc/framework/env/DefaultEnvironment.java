@@ -86,11 +86,11 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	private final Services<Resource> resources = new Services<>();
 
 	public DefaultEnvironment() {
-		conversionService.addService(new ConverterConversionService(Resource.class, Properties.class,
+		conversionService.registerService(new ConverterConversionService(Resource.class, Properties.class,
 				Processor.of(new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers()))));
-		conversionService.addService(new ResourceResolverConversionService(resourceResolvers));
+		conversionService.registerService(new ResourceResolverConversionService(resourceResolvers));
 		registerSingleton(Environment.class.getName(), this);
-		this.properties.getPropertyFactories().getFactories().getConsumers().addService(this);
+		this.properties.getPropertyFactories().getFactories().getConsumers().registerService(this);
 	}
 
 	@Override
@@ -248,14 +248,14 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	public void setParentEnvironment(Environment environment) {
 		setParentBeanFactory(environment);
 		this.parentEnvironment = environment;
-		placeholderReplacer.setAfterService(environment == null ? null : environment.getPlaceholderReplacer());
-		conversionService.setAfterService(environment == null ? null : environment.getConversionService());
+		placeholderReplacer.setLast(environment == null ? null : environment.getPlaceholderReplacer());
+		conversionService.setLast(environment == null ? null : environment.getConversionService());
 		properties.getPropertyFactories().getFactories()
-				.setAfterService(environment == null ? null : environment.getProperties());
+				.setLast(environment == null ? null : environment.getProperties());
 		environmentResourceLoader.getResourceLoaders()
-				.setAfterService(environment == null ? null : environment.getResourceLoader());
-		resourceResolvers.setAfterService(environment == null ? null : environment.getResourceResolver());
-		propertiesResolvers.setAfterService(environment == null ? null : environment.getPropertiesResolver());
+				.setLast(environment == null ? null : environment.getResourceLoader());
+		resourceResolvers.setLast(environment == null ? null : environment.getResourceResolver());
+		propertiesResolvers.setLast(environment == null ? null : environment.getPropertiesResolver());
 	}
 
 	public Registration source(Observable<Properties> properties) {

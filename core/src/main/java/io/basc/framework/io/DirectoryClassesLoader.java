@@ -19,7 +19,7 @@ public class DirectoryClassesLoader extends ResourceClassesLoader {
 		});
 		Assert.requiredArgument(resourceLoader != null, "resourceLoader");
 		DefaultResourceLoader defaultResourceLoader = new DefaultResourceLoader();
-		defaultResourceLoader.getResourceLoaders().addService(resourceLoader);
+		defaultResourceLoader.getResourceLoaders().registerService(resourceLoader);
 		setMetadataReaderFactory(new CachingMetadataReaderFactory(defaultResourceLoader));
 	}
 

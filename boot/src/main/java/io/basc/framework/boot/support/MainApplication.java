@@ -26,7 +26,7 @@ public class MainApplication extends DefaultApplication implements Runnable {
 			setPort(port.getAsInt());
 		}
 
-		getProperties().getPropertyFactories().getFactories().addService(mainArgs);
+		getProperties().getPropertyFactories().getFactories().registerService(mainArgs);
 		setClassLoader(sourceClass.getClassLoader());
 		setLogger(LoggerFactory.getLogger(sourceClass));
 		getLogger().debug("args:{}", this.mainArgs);

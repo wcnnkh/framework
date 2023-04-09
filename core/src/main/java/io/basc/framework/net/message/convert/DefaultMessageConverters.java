@@ -18,17 +18,17 @@ public class DefaultMessageConverters extends MessageConverters {
 
 	public DefaultMessageConverters(ConversionService conversionService) {
 		this.conversionService = new ConfigurableConversionService();
-		this.conversionService.setAfterService(conversionService);
+		this.conversionService.setLast(conversionService);
 		afterConfigure();
 	}
 
 	protected void afterConfigure() {
-		addService(new JsonMessageConverter());
-		addService(new StringMessageConverter(conversionService));
-		addService(new ByteArrayMessageConverter());
-		addService(new HttpFormMessageConveter());
-		addService(new MultipartMessageConverter(InetUtils.getMultipartMessageResolver()));
-		addService(new ResourceMessageConverter());
+		registerService(new JsonMessageConverter());
+		registerService(new StringMessageConverter(conversionService));
+		registerService(new ByteArrayMessageConverter());
+		registerService(new HttpFormMessageConveter());
+		registerService(new MultipartMessageConverter(InetUtils.getMultipartMessageResolver()));
+		registerService(new ResourceMessageConverter());
 	}
 
 	@Override

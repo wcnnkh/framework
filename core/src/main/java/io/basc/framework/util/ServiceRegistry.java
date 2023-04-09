@@ -43,7 +43,7 @@ public class ServiceRegistry<T> implements Iterable<T>, Consumer<T> {
 		}
 	}
 
-	public final boolean addService(T service) {
+	public final boolean registerService(T service) {
 		if (service == null) {
 			return false;
 		}
@@ -63,7 +63,7 @@ public class ServiceRegistry<T> implements Iterable<T>, Consumer<T> {
 		return targetServices.add(service);
 	}
 
-	public final boolean addServices(Iterable<? extends T> services) {
+	public final boolean registerServices(Iterable<? extends T> services) {
 		if (services == null) {
 			return false;
 		}
@@ -145,12 +145,12 @@ public class ServiceRegistry<T> implements Iterable<T>, Consumer<T> {
 		}
 	}
 
-	public void setAfterService(T afterService) {
+	public void setLast(T afterService) {
 		this.afterService = afterService;
 	}
 
-	public void setBeforeService(T beforeService) {
-		this.beforeService = beforeService;
+	public final void setFirst(T first) {
+		this.beforeService = first;
 	}
 
 	public Stream<T> stream() {

@@ -73,7 +73,7 @@ public class ConfigurableServices<T> extends ServiceRegistry<T> implements Confi
 			}
 
 			clear();
-			addServices(newServices);
+			registerServices(newServices);
 		}
 	}
 

@@ -12,7 +12,7 @@ public class PropertiesResolvers extends ConfigurableServices<PropertiesResolver
 
 	public PropertiesResolvers() {
 		super(PropertiesResolver.class);
-		setAfterService(DefaultPropertiesResolver.INSTANCE);
+		setLast(DefaultPropertiesResolver.INSTANCE);
 	}
 
 	public boolean canResolveProperties(Resource resource) {

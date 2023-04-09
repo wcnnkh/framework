@@ -4,6 +4,6 @@ import io.basc.framework.rpc.http.annotation.AnnotationHttpRemoteResolver;
 
 public class DefaultHttpRemoteResolvers extends HttpRemoteResolvers {
 	public DefaultHttpRemoteResolvers() {
-		setAfterService(new AnnotationHttpRemoteResolver());
+		setLast(new AnnotationHttpRemoteResolver());
 	}
 }
