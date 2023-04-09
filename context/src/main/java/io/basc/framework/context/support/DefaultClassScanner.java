@@ -9,11 +9,11 @@ import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.io.PackageClassesLoader;
 import io.basc.framework.io.ResourcePatternResolver;
 import io.basc.framework.io.support.PathMatchingResourcePatternResolver;
+import io.basc.framework.util.ClassLoaderAccessor;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.ClassLoaderAccessor;
-import io.basc.framework.util.DefaultServiceLoader;
 import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.ServiceLoaderRegistry;
 import io.basc.framework.util.StringUtils;
 
 public class DefaultClassScanner extends ConfigurableClassScanner implements ClassLoaderAccessor {
@@ -46,7 +46,7 @@ public class DefaultClassScanner extends ConfigurableClassScanner implements Cla
 		}
 
 		String[] packageNames = StringUtils.splitToArray(pattern);
-		DefaultServiceLoader<Class<?>> editableClassesLoader = new DefaultServiceLoader<>();
+		ServiceLoaderRegistry<Class<?>> editableClassesLoader = new ServiceLoaderRegistry<>();
 		for (String name : packageNames) {
 			if (!StringUtils.verifyPackageName(name)) {
 				continue;
@@ -54,7 +54,7 @@ public class DefaultClassScanner extends ConfigurableClassScanner implements Cla
 			PackageClassesLoader packageClassesLoader = new PackageClassesLoader(getResourcePatternResolver(), name);
 			packageClassesLoader.setTypeFilter(filter);
 			packageClassesLoader.setMetadataReaderFactory(getMetadataReaderFactory());
-			editableClassesLoader.registerLoader(packageClassesLoader);
+			editableClassesLoader.register(packageClassesLoader);
 		}
 		return editableClassesLoader.isEmpty() ? ServiceLoader.empty() : editableClassesLoader;
 	}

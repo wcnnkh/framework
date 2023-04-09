@@ -12,7 +12,7 @@ import java.util.stream.Stream;
  *
  * @param <S>
  */
-public class Services<S> extends HierarchicalServiceLoader<S> implements Consumer<S> {
+public class Services<S> extends ConfigurableServiceLoader<S> implements Consumer<S> {
 	private volatile LinkedHashSet<S> cache;
 	private final ServiceLoaderRegistry<Consumer<? super S>> aware = new ServiceLoaderRegistry<>();
 
