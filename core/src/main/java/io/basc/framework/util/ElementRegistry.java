@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import io.basc.framework.event.ChangeType;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
@@ -24,12 +25,12 @@ public class ElementRegistry<E> {
 		this.elements = new ElementCollection<>(elements);
 	}
 
-	public Elements<E> clear() {
+	public ElementRegistration<E> clear() {
 		synchronized (lock) {
 			Elements<E> elements = new ElementCollection<>(new ArrayList<>(this.elements.toList()));
 			this.elements.clear();
 			this.version++;
-			return elements;
+			return new Registration(elements, version, ChangeType.CREATE);
 		}
 	}
 
@@ -55,10 +56,7 @@ public class ElementRegistry<E> {
 	}
 
 	public ElementRegistration<E> registers(Iterable<? extends E> elements) {
-		if (elements == null) {
-			return new Registration(Elements.empty(), version);
-		}
-
+		Assert.requiredArgument(elements != null, "elements");
 		ElementCollection<E> changes = new ElementCollection<>(new ArrayList<>(8));
 		long version;
 		synchronized (lock) {
@@ -73,7 +71,7 @@ public class ElementRegistry<E> {
 				}
 			}
 		}
-		return new Registration(changes, version);
+		return new Registration(changes, version, ChangeType.DELETE);
 	}
 
 	public void setLock(Object lock) {
@@ -81,12 +79,16 @@ public class ElementRegistry<E> {
 		this.lock = lock;
 	}
 
-	private void unregister(long version, Elements<E> elements) {
+	private void unregister(long version, Elements<E> elements, ChangeType changeType) {
 		if (version == this.version) {
 			synchronized (lock) {
 				if (version == this.version) {
 					for (E element : elements) {
-						this.elements.remove(element);
+						if (changeType == ChangeType.DELETE) {
+							this.elements.remove(element);
+						} else if (changeType == ChangeType.CREATE) {
+							this.elements.add(element);
+						}
 					}
 				}
 			}
@@ -95,10 +97,12 @@ public class ElementRegistry<E> {
 
 	private class Registration extends ElementRegistration<E> {
 		private final long version;
+		private final ChangeType changeType;
 
-		Registration(Elements<E> elements, long version) {
+		Registration(Elements<E> elements, long version, ChangeType changeType) {
 			super(elements);
 			this.version = version;
+			this.changeType = changeType;
 		}
 
 		@Override
@@ -108,7 +112,7 @@ public class ElementRegistry<E> {
 
 		@Override
 		protected void unregister(Elements<E> elements) {
-			ElementRegistry.this.unregister(version, elements);
+			ElementRegistry.this.unregister(version, elements, changeType);
 		}
 	}
 }

@@ -41,9 +41,13 @@ public class DynamicElementRegistry<E> extends ElementRegistry<E> {
 				.publishEvent(new ChangeEvent<>(ChangeType.DELETE, registration.getElements())));
 	}
 
-	public Elements<E> clear() {
-		Elements<E> elements = super.clear();
-		elementEventDispatcher.publishEvent(new ChangeEvent<>(ChangeType.DELETE, elements));
-		return elements;
+	public ElementRegistration<E> clear() {
+		ElementRegistration<E> registration = super.clear();
+		if (registration.isEmpty()) {
+			return registration;
+		}
+		elementEventDispatcher.publishEvent(new ChangeEvent<>(ChangeType.DELETE, registration.getElements()));
+		return registration.and(() -> elementEventDispatcher
+				.publishEvent(new ChangeEvent<>(ChangeType.CREATE, registration.getElements())));
 	}
 }

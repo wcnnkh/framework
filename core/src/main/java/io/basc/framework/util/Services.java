@@ -16,16 +16,6 @@ public class Services<S> extends GroupedServiceLoader<S> implements Consumer<S> 
 	private volatile LinkedHashSet<S> cache;
 	private final ServiceLoaderRegistry<Consumer<? super S>> aware = new ServiceLoaderRegistry<>();
 
-	public Services() {
-		getElementEventDispatcher().registerListener((event) -> {
-			reloadCache(false);
-		});
-
-		aware.getElementEventDispatcher().registerListener((event) -> {
-			reloadCache(true);
-		});
-	}
-
 	/**
 	 * 服务的初始化行为
 	 */
@@ -96,7 +86,7 @@ public class Services<S> extends GroupedServiceLoader<S> implements Consumer<S> 
 		}
 	}
 
-	private void reloadCache(boolean forceAware) {
+	public void reloadCache(boolean forceAware) {
 		if (cache != null) {
 			synchronized (this) {
 				if (cache != null) {
