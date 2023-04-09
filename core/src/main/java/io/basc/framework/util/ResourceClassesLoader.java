@@ -14,7 +14,7 @@ import io.basc.framework.io.Resource;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 
-public class ResourceClassesLoader extends DefaultClassLoaderProvider implements ServiceLoader<Class<?>> {
+public class ResourceClassesLoader extends DefaultClassLoaderAccessor implements ServiceLoader<Class<?>> {
 	public static final String FILE_SUFFIX = ".class";
 
 	private static Logger logger = LoggerFactory.getLogger(ResourceClassesLoader.class);

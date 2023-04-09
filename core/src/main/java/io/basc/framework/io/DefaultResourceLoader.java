@@ -8,10 +8,10 @@ import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassLoaderProvider;
-import io.basc.framework.util.DefaultClassLoaderProvider;
+import io.basc.framework.util.DefaultClassLoaderAccessor;
 import io.basc.framework.util.StringUtils;
 
-public class DefaultResourceLoader extends DefaultClassLoaderProvider
+public class DefaultResourceLoader extends DefaultClassLoaderAccessor
 		implements ConfigurableResourceLoader, Configurable {
 	private final ConfigurableServices<ProtocolResolver> protocolResolvers = new ConfigurableServices<>(
 			ProtocolResolver.class);

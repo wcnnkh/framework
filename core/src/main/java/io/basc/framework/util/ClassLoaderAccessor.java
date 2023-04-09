@@ -1,18 +1,25 @@
 package io.basc.framework.util;
 
-public class ClassLoaderAccessor implements ClassLoaderProvider {
-	private ClassLoaderProvider classLoaderProvider;
+import io.basc.framework.lang.Nullable;
 
-	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
-		this.classLoaderProvider = classLoaderProvider;
+public interface ClassLoaderAccessor extends ClassLoaderProvider {
+
+	@Nullable
+	ClassLoaderProvider getClassLoaderProvider();
+
+	void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider);
+
+	default void setClassLoader(ClassLoader classLoader) {
+		setClassLoaderProvider(classLoader == null ? null : (() -> classLoader));
 	}
 
-	public void setClassLoader(ClassLoader classLoader) {
-		setClassLoaderProvider(new DefaultClassLoaderProvider(classLoader));
+	default void setClassLoader(Class<?> clazz) {
+		setClassLoaderProvider(clazz == null ? null : (() -> clazz.getClassLoader()));
 	}
 
 	@Override
-	public ClassLoader getClassLoader() {
-		return ClassUtils.getClassLoader(classLoaderProvider);
+	default ClassLoader getClassLoader() {
+		ClassLoaderProvider classLoaderProvider = getClassLoaderProvider();
+		return classLoaderProvider == null ? ClassUtils.getDefaultClassLoader() : classLoaderProvider.getClassLoader();
 	}
 }

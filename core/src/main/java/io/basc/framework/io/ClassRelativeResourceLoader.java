@@ -1,7 +1,7 @@
 package io.basc.framework.io;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.DefaultClassLoaderProvider;
+import io.basc.framework.util.DefaultClassLoaderAccessor;
 import io.basc.framework.util.StringUtils;
 
 /**
@@ -21,7 +21,7 @@ public class ClassRelativeResourceLoader extends DefaultResourceLoader {
 	public ClassRelativeResourceLoader(Class<?> clazz) {
 		Assert.notNull(clazz, "Class must not be null");
 		this.clazz = clazz;
-		setClassLoaderProvider(new DefaultClassLoaderProvider(clazz));
+		setClassLoaderProvider(new DefaultClassLoaderAccessor(clazz));
 	}
 
 	@Override

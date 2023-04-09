@@ -8,7 +8,7 @@ import io.basc.framework.event.Observable;
 import io.basc.framework.factory.ConfigurableBeanFactory;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.PropertiesResolvers;
-import io.basc.framework.util.CacheServiceLoader;
+import io.basc.framework.util.Services;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
 
@@ -29,7 +29,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableBeanFa
 	ResourceResolvers getResourceResolver();
 
 	@Override
-	CacheServiceLoader<Resource> getResources();
+	Services<Resource> getResources();
 
 	default void setWorkPath(String path) {
 		getProperties().put(WORK_PATH_PROPERTY, path);

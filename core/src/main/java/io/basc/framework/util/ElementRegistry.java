@@ -38,7 +38,7 @@ public class ElementRegistry<E> {
 	 * 
 	 * @return
 	 */
-	public ElementCollection<E> getElements() {
+	public final ElementCollection<E> getElements() {
 		return elements;
 	}
 

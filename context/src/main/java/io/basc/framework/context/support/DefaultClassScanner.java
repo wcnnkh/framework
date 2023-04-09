@@ -11,12 +11,12 @@ import io.basc.framework.io.ResourcePatternResolver;
 import io.basc.framework.io.support.PathMatchingResourcePatternResolver;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.CollectionUtils;
-import io.basc.framework.util.ConfigurableClassLoaderProvider;
+import io.basc.framework.util.ClassLoaderAccessor;
 import io.basc.framework.util.DefaultServiceLoader;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.StringUtils;
 
-public class DefaultClassScanner extends ConfigurableClassScanner implements ConfigurableClassLoaderProvider {
+public class DefaultClassScanner extends ConfigurableClassScanner implements ClassLoaderAccessor {
 	private volatile MetadataReaderFactory metadataReaderFactory;
 	private volatile ResourcePatternResolver resourcePatternResolver;
 	private ClassLoaderProvider classLoaderProvider;

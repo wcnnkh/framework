@@ -4,22 +4,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.basc.framework.factory.ConfigurableServiceLoaderFactory;
-import io.basc.framework.util.CacheServiceLoader;
+import io.basc.framework.util.Services;
 import io.basc.framework.util.ServiceLoader;
 
 public class DefaultServiceLoaderFactory extends DefaultInstanceFactory implements ConfigurableServiceLoaderFactory {
-	private volatile Map<Class<?>, CacheServiceLoader<?>> serviceLoaderMap = new HashMap<>();
+	private volatile Map<Class<?>, Services<?>> serviceLoaderMap = new HashMap<>();
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <S> CacheServiceLoader<S> getServiceLoader(Class<S> serviceClass) {
-		CacheServiceLoader<S> serviceLoader = (CacheServiceLoader<S>) serviceLoaderMap
+	public <S> Services<S> getServiceLoader(Class<S> serviceClass) {
+		Services<S> serviceLoader = (Services<S>) serviceLoaderMap
 				.get(serviceClass);
 		if (serviceLoader == null) {
 			synchronized (this) {
-				serviceLoader = (CacheServiceLoader<S>) serviceLoaderMap.get(serviceClass);
+				serviceLoader = (Services<S>) serviceLoaderMap.get(serviceClass);
 				if (serviceLoader == null) {
-					serviceLoader = new CacheServiceLoader<>();
+					serviceLoader = new Services<>();
 					serviceLoaderMap.putIfAbsent(serviceClass, serviceLoader);
 				}
 				serviceLoader.register(getServiceLoaderInternal(serviceClass));

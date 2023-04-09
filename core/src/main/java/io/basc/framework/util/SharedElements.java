@@ -13,10 +13,10 @@ import lombok.ToString;
 
 @EqualsAndHashCode
 @ToString
-public class StandardElements<E> implements Elements<E> {
+public class SharedElements<E> implements Elements<E> {
 	private final Iterable<E> iterable;
 
-	public StandardElements(Iterable<E> iterable) {
+	public SharedElements(Iterable<E> iterable) {
 		Assert.requiredArgument(iterable != null, "iterable");
 		this.iterable = iterable;
 	}

@@ -5,9 +5,9 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.FactoryException;
 import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.DefaultClassLoaderProvider;
+import io.basc.framework.util.DefaultClassLoaderAccessor;
 
-public class SimpleInstanceFactory extends DefaultClassLoaderProvider implements InstanceFactory {
+public class SimpleInstanceFactory extends DefaultClassLoaderAccessor implements InstanceFactory {
 	private final boolean unsafe;
 
 	public SimpleInstanceFactory() {

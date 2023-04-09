@@ -1,20 +1,20 @@
 package io.basc.framework.util;
 
-public class DefaultClassLoaderProvider implements ConfigurableClassLoaderProvider {
+public class DefaultClassLoaderAccessor implements ClassLoaderAccessor {
 	private ClassLoaderProvider classLoaderProvider;
 
-	public DefaultClassLoaderProvider() {
+	public DefaultClassLoaderAccessor() {
 	}
 
-	public DefaultClassLoaderProvider(Class<?> clazz) {
+	public DefaultClassLoaderAccessor(Class<?> clazz) {
 		this.classLoaderProvider = clazz == null ? null : (() -> clazz.getClassLoader());
 	}
 
-	public DefaultClassLoaderProvider(ClassLoader classLoader) {
+	public DefaultClassLoaderAccessor(ClassLoader classLoader) {
 		this.classLoaderProvider = classLoader == null ? null : (() -> classLoader);
 	}
 
-	public DefaultClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
+	public DefaultClassLoaderAccessor(ClassLoaderProvider classLoaderProvider) {
 		this.classLoaderProvider = classLoaderProvider;
 	}
 

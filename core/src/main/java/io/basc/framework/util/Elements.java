@@ -5,10 +5,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import io.basc.framework.lang.Nullable;
 
 /**
  * 和{@link Streamable}类似，但此接口可以返回无需关闭的{@link Iterator}
@@ -39,17 +42,41 @@ public interface Elements<E> extends Streamable<E>, Iterable<E> {
 		return (Elements<T>) EmptyElements.INSTANCE;
 	}
 
+	public static <T> Elements<T> singleton(@Nullable T element) {
+		return of(Collections.singleton(element));
+	}
+
 	public static <T> Elements<T> of(Iterable<T> iterable) {
 		if (iterable == null) {
 			return empty();
 		}
 
-		return new StandardElements<>(iterable);
+		if (iterable instanceof Elements) {
+			return (Elements<T>) iterable;
+		}
+
+		if (iterable instanceof List) {
+			return new ElementList<>((List<T>) iterable);
+		}
+
+		if (iterable instanceof Set) {
+			return new ElementSet<>((Set<T>) iterable);
+		}
+
+		if (iterable instanceof Collection) {
+			return new ElementCollection<>((Collection<T>) iterable);
+		}
+
+		return new SharedElements<>(iterable);
 	}
 
 	public static <T> Elements<T> of(Streamable<T> streamable) {
 		if (streamable == null) {
 			return empty();
+		}
+
+		if (streamable instanceof Elements) {
+			return (Elements<T>) streamable;
 		}
 
 		return new StreamElements<>(streamable);

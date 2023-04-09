@@ -34,7 +34,7 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
-import io.basc.framework.util.CacheServiceLoader;
+import io.basc.framework.util.Services;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.StringUtils;
@@ -42,7 +42,7 @@ import io.basc.framework.util.StringUtils;
 public class DefaultContext extends DefaultEnvironment implements ConfigurableContext {
 	private static Logger logger = LoggerFactory.getLogger(DefaultContext.class);
 	private final DefaultClassScanner classScanner = new DefaultClassScanner();
-	private final CacheServiceLoader<Class<?>> contextClassesLoader = new CacheServiceLoader<>();
+	private final Services<Class<?>> contextClassesLoader = new Services<>();
 	private final ConfigurableServices<ContextPostProcessor> contextPostProcessors = new ConfigurableServices<ContextPostProcessor>(
 			ContextPostProcessor.class);
 	private final ConfigurableContextResolver contextResolver = new ConfigurableContextResolver();
@@ -52,7 +52,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	private final ConcurrentReferenceHashMap<Class<?>, ProviderClassesLoader> providerClassesLoaderMap = new ConcurrentReferenceHashMap<>(
 			128);
 
-	private final CacheServiceLoader<Class<?>> sourceClasses = new CacheServiceLoader<Class<?>>();
+	private final Services<Class<?>> sourceClasses = new Services<Class<?>>();
 
 	public DefaultContext() {
 		contextClassesLoader.register(sourceClasses);
@@ -112,8 +112,10 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 
 	@Override
 	protected <S> ServiceLoader<S> getServiceLoaderInternal(Class<S> serviceClass) {
-		return ServiceLoader.concat(new ClassesServiceLoader<S>(getProviderClassesLoader(serviceClass), this),
-				super.getServiceLoaderInternal(serviceClass));
+		@SuppressWarnings("unchecked")
+		ServiceLoader<S> providerServices = (ServiceLoader<S>) getProviderClassesLoader(serviceClass)
+				.filter((e) -> isInstance(e)).map((e) -> getInstance(e));
+		return ServiceLoader.concat(providerServices, super.getServiceLoaderInternal(serviceClass));
 	}
 
 	@Override
@@ -122,7 +124,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	@Override
-	public CacheServiceLoader<Class<?>> getContextClasses() {
+	public Services<Class<?>> getContextClasses() {
 		return contextClassesLoader;
 	}
 
@@ -159,7 +161,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	@Override
-	public CacheServiceLoader<Class<?>> getSourceClasses() {
+	public Services<Class<?>> getSourceClasses() {
 		return sourceClasses;
 	}
 

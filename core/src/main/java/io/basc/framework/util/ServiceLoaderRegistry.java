@@ -35,15 +35,15 @@ public class ServiceLoaderRegistry<S> extends DynamicElementRegistry<ServiceLoad
 		return registerServices(Arrays.asList(service));
 	}
 
-	public final Registration registerServices(Iterable<S> services) {
+	public final Registration registerServices(Iterable<? extends S> services) {
 		Assert.requiredArgument(services != null, "services");
-		Elements<S> elements = Elements.of(services);
+		Elements<? extends S> elements = Elements.of(services);
 		return registerElements(elements);
 	}
 
-	public final Registration registerElements(Elements<S> services) {
-		Assert.requiredArgument(services != null, "services");
-		return register(new StaticServiceLoader<>(services));
+	public final Registration registerElements(Elements<? extends S> elements) {
+		Assert.requiredArgument(elements != null, "elements");
+		return register(new SharedServiceLoader<>(elements.map((e) -> e)));
 	}
 
 	@Override
