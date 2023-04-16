@@ -1,10 +1,9 @@
 package io.basc.framework.util;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-public class ElementList<E> extends ListWrapper<E> implements Elements<E>, Serializable {
+public class ElementList<E> extends ListWrapper<E> implements Elements<E> {
 	private static final long serialVersionUID = 1L;
 
 	public ElementList(List<E> wrappedTarget) {
@@ -14,11 +13,6 @@ public class ElementList<E> extends ListWrapper<E> implements Elements<E>, Seria
 	@Override
 	public List<E> toList() {
 		return Collections.unmodifiableList(wrappedTarget);
-	}
-
-	@Override
-	public Elements<E> clone() {
-		return new ElementList<>(CollectionFactory.clone(wrappedTarget));
 	}
 
 	@Override

@@ -29,7 +29,11 @@ public class ElementCollection<E> extends CollectionWrapper<E, Collection<E>> im
 	}
 
 	@Override
-	public Elements<E> clone() {
-		return new ElementCollection<>(CollectionFactory.clone(wrappedTarget));
+	public Elements<E> reverse() {
+		if (wrappedTarget instanceof List) {
+			return Elements.of(() -> CollectionUtils.getIterator((List<E>) wrappedTarget, true));
+		}
+		return Elements.super.reverse();
 	}
+
 }
