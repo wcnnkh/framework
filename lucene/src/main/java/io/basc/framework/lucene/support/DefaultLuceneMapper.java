@@ -46,7 +46,7 @@ public class DefaultLuceneMapper extends DefaultObjectMapper<Document, LuceneExc
 			LuceneResolverExtend.class);
 
 	public DefaultLuceneMapper() {
-		luceneResolverExtends.registerService(new AnnotationLuceneResolverExtend());
+		luceneResolverExtends.register(new AnnotationLuceneResolverExtend());
 		registerObjectAccessFactory(Document.class, (s, e) -> new DocumentAccess(s, this));
 	}
 

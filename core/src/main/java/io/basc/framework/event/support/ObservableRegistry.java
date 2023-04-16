@@ -1,34 +1,21 @@
 package io.basc.framework.event.support;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArraySet;
 
-import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.Observable;
-import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.Selector;
 
-public class ObservableRegistry<T> extends DynamicElementRegistry<Observable<T>> implements Observable<T> {
-	private final ObservableValue<T> value;
+public class ObservableRegistry<T> extends DefaultDynamicElementRegistry<Observable<? extends T>> implements Observable<T> {
+	private final ObservableValue<T> value = new ObservableValue<>();
 	private Selector<T> selector;
 
 	public ObservableRegistry() {
-		this(new CopyOnWriteArraySet<>(), new StandardBroadcastEventDispatcher<>(), new ObservableValue<>());
-	}
-
-	public ObservableRegistry(Collection<Observable<T>> elements,
-			BroadcastEventDispatcher<ChangeEvent<Elements<Observable<T>>>> elementEventDispatcher,
-			ObservableValue<T> value) {
-		super(elements, elementEventDispatcher);
-		Assert.requiredArgument(value != null, "value");
-		this.value = value;
-		elementEventDispatcher.registerListener((event) -> touchValue());
+		getElementEventDispatcher().registerListener((event) -> touchValue());
 	}
 
 	public ObservableValue<T> getValue() {
@@ -65,7 +52,7 @@ public class ObservableRegistry<T> extends DynamicElementRegistry<Observable<T>>
 		}
 
 		List<T> values = new ArrayList<>();
-		for (Observable<T> observable : getElements()) {
+		for (Observable<? extends T> observable : getElements()) {
 			if (observable == null || observable == this) {
 				continue;
 			}
@@ -81,7 +68,7 @@ public class ObservableRegistry<T> extends DynamicElementRegistry<Observable<T>>
 			return values.get(0);
 		}
 
-		return selector.apply(values);
+		return selector.apply(Elements.of(values));
 	}
 
 	public void setSelector(Selector<T> selector) {

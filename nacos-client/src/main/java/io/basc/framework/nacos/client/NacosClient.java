@@ -1,12 +1,5 @@
 package io.basc.framework.nacos.client;
 
-import io.basc.framework.cloud.DiscoveryClient;
-import io.basc.framework.cloud.DiscoveryClientException;
-import io.basc.framework.cloud.ServiceInstance;
-import io.basc.framework.cloud.ServiceRegistry;
-import io.basc.framework.cloud.ServiceRegistryException;
-import io.basc.framework.util.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,13 +9,20 @@ import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.api.naming.pojo.ServiceInfo;
 
+import io.basc.framework.cloud.DiscoveryClient;
+import io.basc.framework.cloud.DiscoveryClientException;
+import io.basc.framework.cloud.Service;
+import io.basc.framework.cloud.ServiceRegistry;
+import io.basc.framework.cloud.ServiceRegistryException;
+import io.basc.framework.util.CollectionUtils;
+
 /**
  * nacos客户端
  * 
  * @author wcnnkh
  *
  */
-public class NacosClient implements ServiceRegistry<ServiceInstance>, DiscoveryClient {
+public class NacosClient implements ServiceRegistry<Service>, DiscoveryClient {
 	private final NamingService namingService;
 	private final String groupName;
 
@@ -35,7 +35,7 @@ public class NacosClient implements ServiceRegistry<ServiceInstance>, DiscoveryC
 		this.groupName = groupName;
 	}
 
-	public List<ServiceInstance> getInstances(String name) {
+	public List<Service> getInstances(String name) {
 		List<Instance> instances;
 		try {
 			instances = groupName == null ? namingService.getAllInstances(name)
@@ -48,7 +48,7 @@ public class NacosClient implements ServiceRegistry<ServiceInstance>, DiscoveryC
 			return Collections.emptyList();
 		}
 
-		List<ServiceInstance> list = new ArrayList<ServiceInstance>(instances.size());
+		List<Service> list = new ArrayList<Service>(instances.size());
 		for (Instance instance : instances) {
 			list.add(new NacosServiceInstance(instance));
 		}
@@ -76,7 +76,7 @@ public class NacosClient implements ServiceRegistry<ServiceInstance>, DiscoveryC
 		return names;
 	}
 
-	public void register(ServiceInstance instance) {
+	public void register(Service instance) {
 		Instance registion = new Instance();
 		registion.setInstanceId(instance.getId());
 		registion.setServiceName(instance.getName());
@@ -95,7 +95,7 @@ public class NacosClient implements ServiceRegistry<ServiceInstance>, DiscoveryC
 		}
 	}
 
-	public void deregister(ServiceInstance instance) {
+	public void deregister(Service instance) {
 		Instance registion = new Instance();
 		registion.setInstanceId(instance.getId());
 		registion.setServiceName(instance.getName());

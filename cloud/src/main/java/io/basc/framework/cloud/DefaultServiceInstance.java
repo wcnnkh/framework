@@ -6,8 +6,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
+import lombok.Data;
 
-public class DefaultServiceInstance implements ServiceInstance, Serializable {
+@Data
+public class DefaultServiceInstance implements Service, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String id;
@@ -23,6 +25,8 @@ public class DefaultServiceInstance implements ServiceInstance, Serializable {
 	private Map<String, String> metadata = new LinkedHashMap<String, String>();
 
 	private URI uri;
+
+	private int weight;
 
 	/**
 	 * @param id       the id of the instance.
@@ -62,7 +66,7 @@ public class DefaultServiceInstance implements ServiceInstance, Serializable {
 	 * @param instance the ServiceInstance.
 	 * @return URI of the form (secure)?https:http + "host:port".
 	 */
-	public static URI getUri(ServiceInstance instance) {
+	public static URI getUri(Service instance) {
 		String scheme = (instance.isSecure()) ? "https" : "http";
 		String uri = String.format("%s://%s:%s", scheme, instance.getHost(), instance.getPort());
 		return URI.create(uri);
@@ -70,46 +74,6 @@ public class DefaultServiceInstance implements ServiceInstance, Serializable {
 
 	public URI getUri() {
 		return getUri(this);
-	}
-
-	public Map<String, String> getMetadata() {
-		return metadata;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getHost() {
-		return host;
-	}
-
-	public int getPort() {
-		return port;
-	}
-
-	public boolean isSecure() {
-		return secure;
-	}
-
-	public void setInstanceId(String id) {
-		this.id = id;
-	}
-
-	public void setServiceId(String name) {
-		this.name = name;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
 	}
 
 	public void setUri(URI uri) {

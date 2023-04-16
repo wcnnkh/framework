@@ -27,4 +27,9 @@ public class ElementCollection<E> extends CollectionWrapper<E, Collection<E>> im
 		}
 		return Elements.super.toSet();
 	}
+
+	@Override
+	public Elements<E> clone() {
+		return new ElementCollection<>(CollectionFactory.clone(wrappedTarget));
+	}
 }

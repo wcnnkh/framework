@@ -10,10 +10,14 @@ import java.util.List;
  * @param <E>
  */
 public class WeightedRandomSelector<E> implements Selector<E> {
-	private static final WeightedRandomSelector<?> SINGLETON = new WeightedRandomSelector<>();
+	public static final WeightedRandomSelector<?> INSTANCE = new WeightedRandomSelector<>();
 
 	@Override
-	public E apply(List<E> list) {
+	public E apply(Elements<E> elements) {
+		if (elements == null) {
+			return null;
+		}
+		List<E> list = elements.toList();
 		if (CollectionUtils.isEmpty(list)) {
 			return null;
 		}
@@ -23,10 +27,5 @@ public class WeightedRandomSelector<E> implements Selector<E> {
 		}
 
 		return RandomUtils.random(list, (e) -> (e instanceof Weighted) ? ((Weighted) e).getWeight() : 1, null);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> WeightedRandomSelector<T> getSingleton() {
-		return (WeightedRandomSelector<T>) SINGLETON;
 	}
 }

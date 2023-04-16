@@ -8,8 +8,8 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.function.Function;
 
+import io.basc.framework.event.BroadcastEventRegistry;
 import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.EventListener;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.lang.Nullable;
@@ -17,7 +17,6 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.MultiElements;
-import io.basc.framework.util.Registration;
 import io.basc.framework.value.ConfigurablePropertyFactory;
 import io.basc.framework.value.PropertyFactories;
 import io.basc.framework.value.PropertyFactory;
@@ -99,9 +98,12 @@ public class DefaultPropertyFactory extends DefaultValueFactory<String, Property
 	}
 
 	@Override
-	public Registration registerListener(String name, EventListener<ChangeEvent<String>> eventListener) {
-		return super.registerListener(name, eventListener).and(propertyFactories.registerListener(name, eventListener))
-				.and(observable.registerListener(name, eventListener));
+	public BroadcastEventRegistry<ChangeEvent<Elements<String>>> getKeyEventRegistry() {
+		return (e) -> {
+			return super.getKeyEventRegistry().registerListener(e)
+					.and(propertyFactories.getKeyEventRegistry().registerListener(e))
+					.and(observable.getKeyEventRegistry().registerListener(e));
+		};
 	}
 
 	public void put(String key, Object value) {

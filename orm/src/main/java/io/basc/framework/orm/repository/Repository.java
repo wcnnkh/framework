@@ -15,8 +15,8 @@ import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.PrimaryKeyElements;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.page.Paginations;
 
 /**
@@ -44,7 +44,7 @@ public interface Repository extends CurdOperations {
 	default <T> long deleteAll(Class<? extends T> entityClass, T conditions) {
 		Conditions conditionsToUse = getMapper().parseConditions(entityClass,
 				getMapper().getStructure(entityClass).columns().iterator(), null, (e) -> e.get(conditions),
-				(e) -> !StringUtils.isEmpty(e));
+				(e) -> ObjectUtils.isNotEmpty(e));
 		return delete(entityClass, conditionsToUse);
 	}
 
@@ -151,7 +151,7 @@ public interface Repository extends CurdOperations {
 		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
 		return query(resultsTypeDescriptor, entityClass,
 				getMapper().parseConditions(entityClass, getMapper().getStructure(entityClass).columns().iterator(),
-						orderColumns, (e) -> e.get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue())),
+						orderColumns, (e) -> e.get(conditions), (e) -> ObjectUtils.isNotEmpty(e.getValue())),
 				orderColumns);
 	}
 
@@ -186,7 +186,7 @@ public interface Repository extends CurdOperations {
 		ObjectRelational<? extends Property> entityStructure = getMapper().getStructure(entityClass);
 		List<Parameter> columns = getMapper().parseValues(entityClass, entity, entityStructure);
 		Conditions conditionsToUse = getMapper().parseConditions(entityClass, entityStructure.columns().iterator(),
-				null, (e) -> e.get(conditions), (e) -> e.getKey().isNullable() || StringUtils.isNotEmpty(e.getValue()));
+				null, (e) -> e.get(conditions), (e) -> e.getKey().isNullable() || ObjectUtils.isNotEmpty(e.getValue()));
 		return update(entityClass, columns, conditionsToUse);
 	}
 }

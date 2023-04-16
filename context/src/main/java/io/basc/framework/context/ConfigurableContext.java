@@ -1,8 +1,8 @@
 package io.basc.framework.context;
 
 import io.basc.framework.env.ConfigurableEnvironment;
-import io.basc.framework.util.Services;
 import io.basc.framework.util.Registration;
+import io.basc.framework.util.Services;
 
 public interface ConfigurableContext extends Context, ConfigurableEnvironment {
 
@@ -17,7 +17,7 @@ public interface ConfigurableContext extends Context, ConfigurableEnvironment {
 	Services<Class<?>> getSourceClasses();
 
 	Registration source(Class<?> sourceClass);
-	
+
 	@Override
 	ConfigurableClassScanner getClassScanner();
 }

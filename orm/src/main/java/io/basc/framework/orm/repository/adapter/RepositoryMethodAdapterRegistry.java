@@ -10,22 +10,22 @@ public class RepositoryMethodAdapterRegistry extends ConfigurableServices<Reposi
 
 	public RepositoryMethodAdapterRegistry() {
 		super(RepositoryMethodAdapter.class);
-		registerService(new CurdRepositoryDeleteAdapter());
-		registerService(new CurdRepositoryDeleteAllAdapter());
-		registerService(new CurdRepositoryDeleteByIdAdapter());
-		registerService(new CurdRepositoryGetByIdMethodAdapter());
-		registerService(new CurdRepositoryGetInIdsMethodAdapter());
-		registerService(new CurdRepositoryIsPresentAnyMethodAdapter());
-		registerService(new CurdRepositoryIsPresentMethodAdapter());
-		registerService(new CurdRepositoryPagingQueryMethodAdapter());
-		registerService(new CurdRepositoryQueryAllMethodAdapter());
-		registerService(new CurdRepositoryQueryListMethodAdapter());
-		registerService(new CurdRepositoryQueryMethodAdapter());
-		registerService(new CurdRepositorySaveMethodAdapter());
-		registerService(new CurdRepositoryUpdateAllMethodAdapter());
-		registerService(new CurdRepositoryUpdateMethodAdapter());
-		registerService(new CurdRepositorySaveIfAbsentAdapter());
-		setLast(new CustomRepositoryMethodAdapter());
+		register(new CurdRepositoryDeleteAdapter());
+		register(new CurdRepositoryDeleteAllAdapter());
+		register(new CurdRepositoryDeleteByIdAdapter());
+		register(new CurdRepositoryGetByIdMethodAdapter());
+		register(new CurdRepositoryGetInIdsMethodAdapter());
+		register(new CurdRepositoryIsPresentAnyMethodAdapter());
+		register(new CurdRepositoryIsPresentMethodAdapter());
+		register(new CurdRepositoryPagingQueryMethodAdapter());
+		register(new CurdRepositoryQueryAllMethodAdapter());
+		register(new CurdRepositoryQueryListMethodAdapter());
+		register(new CurdRepositoryQueryMethodAdapter());
+		register(new CurdRepositorySaveMethodAdapter());
+		register(new CurdRepositoryUpdateAllMethodAdapter());
+		register(new CurdRepositoryUpdateMethodAdapter());
+		register(new CurdRepositorySaveIfAbsentAdapter());
+		registerLast(new CustomRepositoryMethodAdapter());
 	}
 
 	@Override

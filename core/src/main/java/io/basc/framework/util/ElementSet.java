@@ -14,4 +14,9 @@ public class ElementSet<E> extends SetWrapper<E> implements Elements<E> {
 	public Set<E> toSet() {
 		return Collections.unmodifiableSet(wrappedTarget);
 	}
+
+	@Override
+	public Elements<E> clone() {
+		return new ElementSet<>(CollectionFactory.clone(wrappedTarget));
+	}
 }

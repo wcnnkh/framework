@@ -15,4 +15,14 @@ public class ElementList<E> extends ListWrapper<E> implements Elements<E>, Seria
 	public List<E> toList() {
 		return Collections.unmodifiableList(wrappedTarget);
 	}
+
+	@Override
+	public Elements<E> clone() {
+		return new ElementList<>(CollectionFactory.clone(wrappedTarget));
+	}
+
+	@Override
+	public Elements<E> reverse() {
+		return Elements.of(() -> CollectionUtils.getIterator(wrappedTarget, true));
+	}
 }

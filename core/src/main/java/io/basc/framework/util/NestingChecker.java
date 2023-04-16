@@ -1,5 +1,8 @@
 package io.basc.framework.util;
 
+import java.util.Arrays;
+import java.util.function.Predicate;
+
 /**
  * 嵌套检查器
  * 
@@ -22,6 +25,17 @@ public interface NestingChecker<E> {
 	}
 
 	/**
+	 * 使用断言来创建一个嵌套检查
+	 * 
+	 * @param <T>
+	 * @param predicate 返回true表示存在嵌套
+	 * @return
+	 */
+	public static <T> NestingChecker<T> predicate(Predicate<? super T> predicate) {
+		return new PredicateNestingChecker<>(predicate);
+	}
+
+	/**
 	 * 判断是否存在嵌套
 	 * 
 	 * @param element
@@ -36,4 +50,40 @@ public interface NestingChecker<E> {
 	 * @return
 	 */
 	Registration registerNestedElement(E element);
+
+	/**
+	 * 任意一个存在嵌套都认为存在嵌套
+	 * 
+	 * @param right
+	 * @return
+	 */
+	default NestingChecker<E> or(NestingChecker<E> right) {
+		if (right == null || right == EmptyNestingChecker.EMPTY) {
+			return this;
+		}
+
+		if (this == EmptyNestingChecker.EMPTY) {
+			return right;
+		}
+
+		return new NestingCheckers<>(Elements.of(Arrays.asList(this, right)));
+	}
+
+	/**
+	 * 任意一个存在嵌套都认为存在嵌套
+	 * 
+	 * @param predicate 返回true表示存在嵌套
+	 * @return
+	 */
+	default NestingChecker<E> or(Predicate<? super E> predicate) {
+		if (predicate == null) {
+			return this;
+		}
+
+		if (this == EmptyNestingChecker.EMPTY) {
+			return predicate(predicate);
+		}
+
+		return or(predicate(predicate));
+	}
 }

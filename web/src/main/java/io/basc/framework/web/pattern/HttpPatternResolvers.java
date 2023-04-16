@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 
 import io.basc.framework.env.Sys;
 import io.basc.framework.factory.ConfigurableServices;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.util.placeholder.PlaceholderFormatAware;
 
@@ -15,6 +16,14 @@ public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolv
 
 	public HttpPatternResolvers() {
 		super(HttpPatternResolver.class);
+		getServiceInjectors().register((service) -> {
+			if (placeholderFormat != null) {
+				if (service instanceof PlaceholderFormatAware) {
+					((PlaceholderFormatAware) service).setPlaceholderFormat(placeholderFormat);
+				}
+			}
+			return Registration.EMPTY;
+		});
 	}
 
 	public PlaceholderFormat getPlaceholderFormat() {
@@ -23,16 +32,6 @@ public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolv
 
 	public void setPlaceholderFormat(PlaceholderFormat placeholderFormat) {
 		this.placeholderFormat = placeholderFormat;
-	}
-
-	@Override
-	public void accept(HttpPatternResolver service) {
-		if (placeholderFormat != null) {
-			if (service instanceof PlaceholderFormatAware) {
-				((PlaceholderFormatAware) service).setPlaceholderFormat(placeholderFormat);
-			}
-		}
-		super.accept(service);
 	}
 
 	@Override

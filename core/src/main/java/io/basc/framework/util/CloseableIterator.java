@@ -1,19 +1,9 @@
 package io.basc.framework.util;
 
-import java.util.NoSuchElementException;
+import java.util.Iterator;
 
-public interface CloseableIterator<E> extends AutoCloseable, ReversibleIterator<E> {
+public interface CloseableIterator<E> extends AutoCloseable, Iterator<E> {
 
 	@Override
 	void close();
-
-	@Override
-	default boolean hasPrevious() {
-		return false;
-	}
-
-	@Override
-	default E previous() {
-		throw new NoSuchElementException(CloseableIterator.class.getName() + "#previous");
-	}
 }

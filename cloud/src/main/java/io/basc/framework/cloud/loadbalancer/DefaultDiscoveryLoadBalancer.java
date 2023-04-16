@@ -1,77 +1,100 @@
 package io.basc.framework.cloud.loadbalancer;
 
-import java.util.Map.Entry;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
 
-import io.basc.framework.boot.Application;
 import io.basc.framework.cloud.DiscoveryClient;
-import io.basc.framework.cloud.ServiceInstance;
+import io.basc.framework.cloud.Service;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Optional;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Selector;
 
-/**
- * 轮询方案
- * 
- * @author wcnnkh
- *
- */
 @Provider(value = DiscoveryLoadBalancer.class, assignableValue = false)
-public class DefaultDiscoveryLoadBalancer implements DiscoveryLoadBalancer {
+public class DefaultDiscoveryLoadBalancer extends AbstractLoadBalancer<Service> implements DiscoveryLoadBalancer {
 	private final DiscoveryClient discoveryClient;
-	private final Optional<String> name;
-	private ConcurrentHashMap<String, LoadBalancer<ServiceInstance>> loadBalancerMap = new ConcurrentHashMap<String, LoadBalancer<ServiceInstance>>();
-	private final Selector<Server<ServiceInstance>> selector;
+	private volatile Map<String, Service[]> serviceMap;
+	private final ConcurrentHashMap<String, State> stateMap = new ConcurrentHashMap<>();
 
-	public DefaultDiscoveryLoadBalancer(DiscoveryClient discoveryClient, Application application) {
+	public DefaultDiscoveryLoadBalancer(DiscoveryClient discoveryClient) {
 		// 默认使用轮询
-		this(discoveryClient, application, Selector.roundRobin());
+		this(Selector.roundRobin(), discoveryClient);
 	}
 
-	public DefaultDiscoveryLoadBalancer(DiscoveryClient discoveryClient, Application application,
-			Selector<Server<ServiceInstance>> selector) {
-		this(discoveryClient, application.getName(), selector);
-	}
-
-	public DefaultDiscoveryLoadBalancer(DiscoveryClient discoveryClient, Optional<String> name,
-			Selector<Server<ServiceInstance>> selector) {
+	public DefaultDiscoveryLoadBalancer(Selector<Service> selector, DiscoveryClient discoveryClient) {
+		super(selector);
 		Assert.requiredArgument(discoveryClient != null, "discoveryClient");
-		Assert.requiredArgument(name != null, "name");
-		Assert.requiredArgument(selector != null, "selector");
 		this.discoveryClient = discoveryClient;
-		this.name = name;
-		this.selector = selector;
 	}
 
-	public LoadBalancer<ServiceInstance> getLoadBalancer(String name) {
-		LoadBalancer<ServiceInstance> loadBalancer = loadBalancerMap.get(name);
-		if (loadBalancer == null) {
-			loadBalancer = new DefaultLoadBalancer<ServiceInstance>(new DiscoverySupplier(discoveryClient, name),
-					selector);
-			LoadBalancer<ServiceInstance> old = loadBalancerMap.putIfAbsent(name, loadBalancer);
-			if (old != null) {
-				loadBalancer = old;
+	private void init() {
+		if (CollectionUtils.isEmpty(serviceMap)) {
+			synchronized (this) {
+				if (CollectionUtils.isEmpty(serviceMap)) {
+					reload();
+				}
 			}
 		}
-		return loadBalancer;
 	}
 
-	public Server<ServiceInstance> choose(Predicate<Server<ServiceInstance>> accept) {
-		if (!name.isPresent()) {
-			return null;
+	@Override
+	public Iterator<Service> iterator() {
+		init();
+		if (CollectionUtils.isEmpty(serviceMap)) {
+			return Collections.emptyIterator();
 		}
-		return choose(name.get(), accept);
+
+		return serviceMap.values().stream().flatMap((e) -> Arrays.asList(e).stream())
+				.filter((e) -> getState(e) != State.FAILED).iterator();
 	}
 
-	public Server<ServiceInstance> choose(String name, Predicate<Server<ServiceInstance>> accept) {
-		return getLoadBalancer(name).choose(accept);
+	public State getState(Service service) {
+		return service == null ? null : stateMap.get(service.getId());
 	}
 
-	public void stat(Server<ServiceInstance> server, State state) {
-		for (Entry<String, LoadBalancer<ServiceInstance>> entry : loadBalancerMap.entrySet()) {
-			entry.getValue().stat(server, state);
+	@Override
+	public void reload() {
+		stateMap.clear();
+		List<String> names = discoveryClient.getServices();
+		Map<String, Service[]> serviceMap = new HashMap<>();
+		if (!CollectionUtils.isEmpty(serviceMap)) {
+			for (String name : names) {
+				List<Service> instances = discoveryClient.getInstances(name);
+				if (CollectionUtils.isEmpty(instances)) {
+					continue;
+				}
+				serviceMap.put(name, instances.toArray(new Service[0]));
+			}
 		}
+		this.serviceMap = serviceMap.isEmpty() ? Collections.emptyMap() : serviceMap;
+	}
+
+	@Override
+	public Elements<Service> chooses(String name) {
+		// 初始化
+		init();
+		if (CollectionUtils.isEmpty(serviceMap)) {
+			return Elements.empty();
+		}
+
+		Service[] instances = serviceMap.get(name);
+		if (instances == null) {
+			return Elements.empty();
+		}
+
+		return Elements.of(Arrays.asList(instances)).filter((e) -> getState(e) != State.FAILED);
+	}
+
+	@Override
+	public void stat(Service service, State state) {
+		Assert.requiredArgument(service != null, "service");
+		Assert.requiredArgument(state != null, "state");
+		stateMap.put(service.getId(), state);
 	}
 }

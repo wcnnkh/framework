@@ -14,7 +14,7 @@ import io.basc.framework.value.PropertyWrapper;
 import io.basc.framework.value.Value;
 
 public class ObservablePropertyFactory extends ObservableMapRegistry<String, Value> implements PropertyFactory {
-
+	
 	public ObservablePropertyFactory() {
 		this(null);
 	}

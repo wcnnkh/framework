@@ -2,7 +2,6 @@ package io.basc.framework.net.message.convert;
 
 import java.io.IOException;
 import java.util.Comparator;
-import java.util.TreeSet;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.factory.ConfigurableServices;
@@ -17,7 +16,7 @@ public class MessageConverters extends ConfigurableServices<MessageConverter> im
 	private static Logger logger = LoggerFactory.getLogger(MessageConverters.class);
 
 	public MessageConverters() {
-		super(MessageConverter.class, () -> new TreeSet<MessageConverter>(new ComparatorMessageConverter()));
+		super(new ComparatorMessageConverter(), MessageConverter.class);
 	}
 
 	private static class ComparatorMessageConverter implements Comparator<MessageConverter> {

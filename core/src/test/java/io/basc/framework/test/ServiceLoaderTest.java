@@ -11,10 +11,10 @@ public class ServiceLoaderTest {
 	public void test() {
 		SpiServiceLoader<ClientHttpRequestFactory> loader = new SpiServiceLoader<>(ClientHttpRequestFactory.class);
 		Services<ClientHttpRequestFactory> serviceLoader = new Services<>();
-		serviceLoader.register(loader);
-		
+		serviceLoader.getServiceLoaders().register(loader);
+
 		Services<ClientHttpRequestFactory> serviceLoader1 = new Services<>();
-		serviceLoader1.register(serviceLoader);
+		serviceLoader1.getServiceLoaders().register(serviceLoader);
 		for (ClientHttpRequestFactory clientHttpRequestFactory : serviceLoader1) {
 			System.out.println(clientHttpRequestFactory);
 		}

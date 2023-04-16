@@ -7,6 +7,7 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ElementRegistration;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Registration;
+import io.basc.framework.util.Registrations;
 import io.basc.framework.util.Selector;
 
 public class ObservableResourceRegistry extends ObservableRegistry<Resource> {
@@ -37,7 +38,8 @@ public class ObservableResourceRegistry extends ObservableRegistry<Resource> {
 		return register(new ObservableResource(resource));
 	}
 
-	public final ElementRegistration<Observable<Resource>> registerResources(Iterable<? extends Resource> resources) {
+	public final Registrations<ElementRegistration<Observable<? extends Resource>>> registerResources(
+			Iterable<? extends Resource> resources) {
 		Elements<Observable<Resource>> elements = Elements.of(resources).map((e) -> new ObservableResource(e));
 		return registers(elements);
 	}

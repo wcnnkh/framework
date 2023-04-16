@@ -1048,19 +1048,6 @@ public final class StringUtils {
 		return true;
 	}
 
-	public static boolean isAllEmpty(Object... values) {
-		if (values == null || values.length == 0) {
-			return true;
-		}
-
-		for (Object value : values) {
-			if (isNotEmpty(value)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	/**
 	 * any is empty
 	 * 
@@ -1073,19 +1060,6 @@ public final class StringUtils {
 		}
 
 		for (CharSequence s : values) {
-			if (isEmpty(s)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public static boolean isAnyEmpty(Object... values) {
-		if (values == null || values.length == 0) {
-			return true;
-		}
-
-		for (Object s : values) {
 			if (isEmpty(s)) {
 				return true;
 			}
@@ -1112,15 +1086,7 @@ public final class StringUtils {
 		return value == null || value.length() == 0;
 	}
 
-	public static boolean isEmpty(Object value) {
-		return value == null || "".equals(value);
-	}
-
 	public static boolean isNotEmpty(CharSequence value) {
-		return !isEmpty(value);
-	}
-
-	public static boolean isNotEmpty(Object value) {
 		return !isEmpty(value);
 	}
 
@@ -2059,10 +2025,10 @@ public final class StringUtils {
 	 * @return
 	 */
 	public static boolean verifyPackageName(CharSequence packageName) {
-		if(isEmpty(packageName)) {
+		if (isEmpty(packageName)) {
 			return false;
 		}
-		
+
 		return split(packageName, ".")
 				.allMatch((e) -> e.getSource().length() > 0 && Character.isAlphabetic(e.charAt(0)));
 	}

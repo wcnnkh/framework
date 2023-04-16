@@ -38,7 +38,7 @@ public class DefaultConfigurableAop extends AbstractAop implements ConfigurableA
 	}
 
 	public void addAopPolicy(AopPolicy aopPolicy) {
-		policies.registerService(aopPolicy);
+		policies.register(aopPolicy);
 	}
 
 	public Iterator<AopPolicy> getPolicyIterator() {

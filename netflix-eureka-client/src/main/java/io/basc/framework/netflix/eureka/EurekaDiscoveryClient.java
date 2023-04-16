@@ -1,11 +1,5 @@
 package io.basc.framework.netflix.eureka;
 
-import io.basc.framework.cloud.DiscoveryClient;
-import io.basc.framework.cloud.ServiceInstance;
-import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.Ordered;
-import io.basc.framework.util.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +8,12 @@ import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.shared.Application;
 import com.netflix.discovery.shared.Applications;
+
+import io.basc.framework.cloud.DiscoveryClient;
+import io.basc.framework.cloud.Service;
+import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.core.Ordered;
+import io.basc.framework.util.CollectionUtils;
 
 /**
  * A {@link DiscoveryClient} implementation for Eureka.
@@ -29,9 +29,9 @@ public class EurekaDiscoveryClient implements DiscoveryClient {
 	}
 
 	@Override
-	public List<ServiceInstance> getInstances(String serviceId) {
+	public List<Service> getInstances(String serviceId) {
 		List<InstanceInfo> infos = this.eurekaClient.getInstancesByVipAddress(serviceId, false);
-		List<ServiceInstance> instances = new ArrayList<>();
+		List<Service> instances = new ArrayList<>();
 		for (InstanceInfo info : infos) {
 			instances.add(new EurekaServiceInstance(info));
 		}

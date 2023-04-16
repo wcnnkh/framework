@@ -10,6 +10,7 @@ import io.basc.framework.event.Observable;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.placeholder.PlaceholderReplacer;
 
 public class EnvironmentValueProceor extends AbstractValueProcessor {
@@ -59,7 +60,10 @@ public class EnvironmentValueProceor extends AbstractValueProcessor {
 			io.basc.framework.value.Value v = context.getProperties().get(name);
 			set(context.getConversionService(), bean, field, name, v);
 			if (isRegisterListener(beanDefinition, field, valueDefinition)) {
-				context.getProperties().registerListener(name, (event) -> {
+				context.getProperties().getKeyEventRegistry().registerListener((event) -> {
+					if (!event.getSource().anyMatch((e) -> StringUtils.equals(e, name))) {
+						return;
+					}
 					try {
 						set(context.getConversionService(), bean, field, name, context.getProperties().get(name));
 					} catch (Exception e) {

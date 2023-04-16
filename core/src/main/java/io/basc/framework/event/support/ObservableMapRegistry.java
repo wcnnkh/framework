@@ -31,16 +31,12 @@ import io.basc.framework.util.Selector;
  * @param <V>
  */
 public class ObservableMapRegistry<K, V> extends ObservableRegistry<Map<K, V>> {
+	private final BroadcastEventDispatcher<ChangeEvent<Elements<K>>> keyEventDispatcher;
 	/**
 	 * 主节点，控制map类型和最高优先级数据
 	 */
 	private final DynamicMap<K, V> master;
-	private final BroadcastEventDispatcher<ChangeEvent<Elements<K>>> keyEventDispatcher;
 	private final Function<? super Properties, ? extends Map<K, V>> propertiesMapper;
-
-	public ObservableMapRegistry(Function<? super Properties, ? extends Map<K, V>> propertiesMapper) {
-		this(new ConcurrentHashMap<>(), propertiesMapper);
-	}
 
 	public ObservableMapRegistry(DynamicMap<K, V> master,
 			BroadcastEventDispatcher<ChangeEvent<Elements<K>>> keyEventDispatcher,
@@ -52,7 +48,7 @@ public class ObservableMapRegistry<K, V> extends ObservableRegistry<Map<K, V>> {
 		this.keyEventDispatcher = keyEventDispatcher;
 		this.propertiesMapper = propertiesMapper;
 		// 默认使用合并策略
-		setSelector(new MapCombiner<>());
+		setSelector(MapCombiner.getSingleton());
 
 		master.getEventDispatcher().registerListener((e) -> {
 			Set<K> changeKeys = e.getChangeType() == ChangeType.DELETE ? e.getOldSource().keySet()
@@ -64,26 +60,25 @@ public class ObservableMapRegistry<K, V> extends ObservableRegistry<Map<K, V>> {
 
 		getElementEventDispatcher().registerListener((e) -> {
 			Set<K> keys = new LinkedHashSet<>();
-			for (Observable<Map<K, V>> observable : e.getSource()) {
-				Map<K, V> map = observable.orElse(Collections.emptyMap());
+			for (Observable<? extends Map<K, V>> observable : e.getSource()) {
+				Map<K, V> map = observable.orElse(null);
+				if (map == null) {
+					continue;
+				}
+
 				keys.addAll(map.keySet());
 			}
 			keyEventDispatcher.publishEvent(new ChangeEvent<>(e, new ElementSet<>(keys)));
 		});
 	}
 
+	public ObservableMapRegistry(Function<? super Properties, ? extends Map<K, V>> propertiesMapper) {
+		this(new ConcurrentHashMap<>(), propertiesMapper);
+	}
+
 	public ObservableMapRegistry(Map<K, V> customMap,
 			Function<? super Properties, ? extends Map<K, V>> propertiesMapper) {
 		this(new DynamicMap<>(customMap), new StandardBroadcastEventDispatcher<>(), propertiesMapper);
-	}
-
-	/**
-	 * 主要数据, 默认情况下此优先级最高，对此进行修改会触发数据重新收集
-	 * 
-	 * @return
-	 */
-	public DynamicMap<K, V> getMaster() {
-		return master;
 	}
 
 	/**
@@ -93,6 +88,15 @@ public class ObservableMapRegistry<K, V> extends ObservableRegistry<Map<K, V>> {
 	 */
 	public BroadcastEventDispatcher<ChangeEvent<Elements<K>>> getKeyEventDispatcher() {
 		return keyEventDispatcher;
+	}
+
+	/**
+	 * 主要数据, 默认情况下此优先级最高，对此进行修改会触发数据重新收集
+	 * 
+	 * @return
+	 */
+	public DynamicMap<K, V> getMaster() {
+		return master;
 	}
 
 	public Function<? super Properties, ? extends Map<K, V>> getPropertiesMapper() {
@@ -118,14 +122,13 @@ public class ObservableMapRegistry<K, V> extends ObservableRegistry<Map<K, V>> {
 		}
 
 		Map<K, V> approximateMap = CollectionFactory.createApproximateMap(master.getUnsafeMap(), 16);
-		Map<K, V> applyMap = getSelector().apply(Arrays.asList(map, master.getUnsafeMap()));
+		Map<K, V> applyMap = getSelector().apply(Elements.of(Arrays.asList(map, master.getUnsafeMap())));
 		approximateMap.putAll(applyMap);
 		return Collections.unmodifiableMap(approximateMap);
 	}
 
 	@Override
 	public void setSelector(Selector<Map<K, V>> selector) {
-		Assert.requiredArgument(selector != null, "selector");
-		super.setSelector(selector);
+		super.setSelector(selector == null ? MapCombiner.getSingleton() : selector);
 	}
 }

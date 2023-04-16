@@ -2,7 +2,6 @@ package io.basc.framework.env;
 
 import java.nio.charset.Charset;
 import java.util.Properties;
-import java.util.function.Consumer;
 
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.lang.ConfigurableConversionService;
@@ -29,20 +28,20 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.AntPathMatcher;
-import io.basc.framework.util.Services;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.ServiceLoaders;
+import io.basc.framework.util.Services;
 import io.basc.framework.util.StringMatchers;
 import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
 import io.basc.framework.util.placeholder.support.DefaultPlaceholderReplacer;
 import io.basc.framework.value.AnyValue;
-import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.PropertyWrapper;
 import io.basc.framework.value.Value;
 
 public class DefaultEnvironment extends DefaultBeanFactory
-		implements ConfigurableEnvironment, PropertyWrapper, Consumer<PropertyFactory>, Configurable {
+		implements ConfigurableEnvironment, PropertyWrapper, Configurable {
 	private class AnyFormatValue extends AnyValue {
 
 		public AnyFormatValue(Object value) {
@@ -86,11 +85,16 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	private final Services<Resource> resources = new Services<>();
 
 	public DefaultEnvironment() {
-		conversionService.registerService(new ConverterConversionService(Resource.class, Properties.class,
+		conversionService.register(new ConverterConversionService(Resource.class, Properties.class,
 				Processor.of(new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers()))));
-		conversionService.registerService(new ResourceResolverConversionService(resourceResolvers));
+		conversionService.register(new ResourceResolverConversionService(resourceResolvers));
 		registerSingleton(Environment.class.getName(), this);
-		this.properties.getPropertyFactories().getFactories().getConsumers().registerService(this);
+		this.properties.getPropertyFactories().getServiceInjectors().register((instance) -> {
+			if (instance instanceof EnvironmentAware) {
+				((EnvironmentAware) instance).setEnvironment(this);
+			}
+			return Registration.EMPTY;
+		});
 	}
 
 	@Override
@@ -98,17 +102,6 @@ public class DefaultEnvironment extends DefaultBeanFactory
 		super._dependence(instance, definition);
 		if (instance instanceof ConversionServiceAware) {
 			((ConversionServiceAware) instance).setConversionService(getConversionService());
-		}
-	}
-
-	@Override
-	public void accept(PropertyFactory instance) {
-		if (instance == null) {
-			return;
-		}
-
-		if (instance instanceof EnvironmentAware) {
-			((EnvironmentAware) instance).setEnvironment(this);
 		}
 	}
 
@@ -149,7 +142,10 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	protected <S> ServiceLoader<S> getServiceLoaderInternal(Class<S> serviceClass) {
 		ServiceLoader<S> configServiceLoader = new ConfigServiceLoader<S>(serviceClass, getProperties(), this);
 		if (isForceSpi() || serviceClass.getName().startsWith(Constants.SYSTEM_PACKAGE_NAME) || useSpi(serviceClass)) {
-			return ServiceLoader.concat(configServiceLoader, super.getServiceLoaderInternal(serviceClass));
+			ServiceLoaders<S> registry = new ServiceLoaders<>();
+			registry.register(configServiceLoader);
+			registry.register(super.getServiceLoaderInternal(serviceClass));
+			return registry;
 		}
 		return configServiceLoader;
 	}
@@ -248,14 +244,14 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	public void setParentEnvironment(Environment environment) {
 		setParentBeanFactory(environment);
 		this.parentEnvironment = environment;
-		placeholderReplacer.setLast(environment == null ? null : environment.getPlaceholderReplacer());
-		conversionService.setLast(environment == null ? null : environment.getConversionService());
-		properties.getPropertyFactories().getFactories()
-				.setLast(environment == null ? null : environment.getProperties());
-		environmentResourceLoader.getResourceLoaders()
-				.setLast(environment == null ? null : environment.getResourceLoader());
-		resourceResolvers.setLast(environment == null ? null : environment.getResourceResolver());
-		propertiesResolvers.setLast(environment == null ? null : environment.getPropertiesResolver());
+		if (environment != null) {
+			placeholderReplacer.registerLast(environment.getPlaceholderReplacer());
+			conversionService.registerLast(environment.getConversionService());
+			properties.getPropertyFactories().registerLast(environment.getProperties());
+			environmentResourceLoader.getResourceLoaders().registerLast(environment.getResourceLoader());
+			resourceResolvers.registerLast(environment.getResourceResolver());
+			propertiesResolvers.registerLast(environment.getPropertiesResolver());
+		}
 	}
 
 	public Registration source(Observable<Properties> properties) {
@@ -281,7 +277,7 @@ public class DefaultEnvironment extends DefaultBeanFactory
 			return Registration.EMPTY;
 		}
 
-		Registration registration = resources.registerService(resource);
+		Registration registration = resources.register(resource);
 		if (registration.isEmpty()) {
 			return registration;
 		}

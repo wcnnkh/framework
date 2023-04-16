@@ -36,6 +36,7 @@ import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.ServiceLoaders;
 import io.basc.framework.util.Services;
 import io.basc.framework.util.StringUtils;
 
@@ -55,14 +56,14 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	private final Services<Class<?>> sourceClasses = new Services<Class<?>>();
 
 	public DefaultContext() {
-		contextClassesLoader.register(sourceClasses);
+		contextClassesLoader.getServiceLoaders().register(sourceClasses);
 		IocBeanResolverExtend iocBeanResolverExtend = new IocBeanResolverExtend(this, iocResolver);
-		iocResolver.setLast(iocBeanResolverExtend);
+		iocResolver.registerLast(iocBeanResolverExtend);
 		this.classScanner.setClassLoaderProvider(this);
-		contextResolver.registerService(new AnnotationContextResolverExtend(this));
-		contextResolver.registerService(new RepositoryContextResolverExtend(this));
-		getBeanResolver().registerService(new AnnotationContextResolverExtend(this));
-		getBeanResolver().registerService(iocBeanResolverExtend);
+		contextResolver.register(new AnnotationContextResolverExtend(this));
+		contextResolver.register(new RepositoryContextResolverExtend(this));
+		getBeanResolver().register(new AnnotationContextResolverExtend(this));
+		getBeanResolver().register(iocBeanResolverExtend);
 
 		registerSingleton(Context.class.getName(), this);
 		registerSingleton(IocResolver.class.getName(), iocResolver);
@@ -107,15 +108,18 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 
 	public Registration componentScan(String packageName, TypeFilter typeFilter) {
 		ServiceLoader<Class<?>> classesLoader = getClassScanner().scan(packageName, typeFilter);
-		return getContextClasses().register(classesLoader);
+		return getContextClasses().getServiceLoaders().register(classesLoader);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected <S> ServiceLoader<S> getServiceLoaderInternal(Class<S> serviceClass) {
-		@SuppressWarnings("unchecked")
+		ServiceLoaders<S> registry = new ServiceLoaders<>();
 		ServiceLoader<S> providerServices = (ServiceLoader<S>) getProviderClassesLoader(serviceClass)
 				.filter((e) -> isInstance(e)).map((e) -> getInstance(e));
-		return ServiceLoader.concat(providerServices, super.getServiceLoaderInternal(serviceClass));
+		registry.register(providerServices);
+		registry.register(super.getServiceLoaderInternal(serviceClass));
+		return registry;
 	}
 
 	@Override
@@ -263,7 +267,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 
 	@Override
 	public Registration source(Class<?> sourceClass) {
-		Registration registration = sourceClasses.registerService(sourceClass);
+		Registration registration = sourceClasses.register(sourceClass);
 		if (registration.isEmpty()) {
 			return Registration.EMPTY;
 		}

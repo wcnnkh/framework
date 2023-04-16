@@ -8,7 +8,7 @@ import java.util.Objects;
 
 import com.netflix.appinfo.InstanceInfo;
 
-import io.basc.framework.cloud.ServiceInstance;
+import io.basc.framework.cloud.Service;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.Assert;
 
@@ -16,7 +16,7 @@ import io.basc.framework.util.Assert;
  * An Eureka-specific {@link ServiceInstance} implementation.
  *
  */
-public class EurekaServiceInstance implements ServiceInstance {
+public class EurekaServiceInstance implements Service {
 
 	private InstanceInfo instance;
 

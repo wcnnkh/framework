@@ -22,7 +22,7 @@ package io.basc.framework.cloud;
  * @author wcnnkh
  *
  */
-public interface ServiceRegistry<T extends ServiceInstance> {
+public interface ServiceRegistry<T extends Service> {
 
 	void register(T instance) throws ServiceRegistryException;
 

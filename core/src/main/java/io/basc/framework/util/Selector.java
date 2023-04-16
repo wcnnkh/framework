@@ -1,9 +1,6 @@
 package io.basc.framework.util;
 
-import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
 
@@ -14,18 +11,29 @@ import io.basc.framework.lang.Nullable;
  *
  * @param <E> 元素类型
  */
-public interface Selector<E> extends Function<Stream<E>, E> {
-	@Nullable
-	default E apply(Stream<E> elements) {
-		if (elements == null) {
-			return null;
-		}
-
-		return apply(elements.collect(Collectors.toList()));
+@FunctionalInterface
+public interface Selector<E> extends Function<Elements<E>, E> {
+	/**
+	 * 选择第一个
+	 * 
+	 * @param <T>
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> Selector<T> first() {
+		return (Selector<T>) FirstSelector.INSTANCE;
 	}
 
-	@Nullable
-	E apply(List<E> elements);
+	/**
+	 * 随机选择器
+	 * 
+	 * @param <T> 任意类型
+	 * @return 返回随机选择器
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> Selector<T> random() {
+		return (Selector<T>) WeightedRandomSelector.INSTANCE;
+	}
 
 	/**
 	 * 轮询选择器
@@ -37,13 +45,6 @@ public interface Selector<E> extends Function<Stream<E>, E> {
 		return new RoundRobinSelector<>();
 	}
 
-	/**
-	 * 随机选择器
-	 * 
-	 * @param <T> 任意类型
-	 * @return 返回随机选择器
-	 */
-	public static <T> Selector<T> random() {
-		return WeightedRandomSelector.getSingleton();
-	}
+	@Nullable
+	E apply(Elements<E> elements);
 }

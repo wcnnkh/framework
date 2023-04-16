@@ -97,6 +97,36 @@ public abstract class ObjectUtils {
 		return false;
 	}
 
+	public static boolean isNotEmpty(Object value) {
+		return !isEmpty(value);
+	}
+
+	public static boolean isAllEmpty(Object... values) {
+		if (values == null || values.length == 0) {
+			return true;
+		}
+
+		for (Object value : values) {
+			if (isNotEmpty(value)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static boolean isAnyEmpty(Object... values) {
+		if (values == null || values.length == 0) {
+			return true;
+		}
+
+		for (Object s : values) {
+			if (isEmpty(s)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Check whether the given array contains the given element.
 	 * 

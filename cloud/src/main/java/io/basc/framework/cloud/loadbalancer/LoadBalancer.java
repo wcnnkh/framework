@@ -7,18 +7,83 @@ import io.basc.framework.http.client.HttpClientException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.retry.ExhaustedRetryException;
 import io.basc.framework.retry.RetryOperations;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.StringUtils;
 
-public interface LoadBalancer<T> {
+/**
+ * 负载均衡
+ * 
+ * @author wcnnkh
+ *
+ * @param <T>
+ */
+public interface LoadBalancer<T extends Node> extends ServiceLoader<T> {
+
+	/**
+	 * 选择一个服务
+	 * 
+	 * @return
+	 */
 	@Nullable
-	Server<T> choose(Predicate<Server<T>> accept);
+	default T choose() {
+		return choose((e) -> true);
+	}
 
-	void stat(Server<T> server, State state);
+	/**
+	 * 选择一个服务
+	 * 
+	 * @param accept
+	 * @return
+	 */
+	@Nullable
+	T choose(@Nullable Predicate<? super T> accept);
+
+	/**
+	 * 选取一组服务中的一个
+	 * 
+	 * @param name
+	 * @return
+	 */
+	default T choose(String name) {
+		return choose(name, null);
+	}
+
+	/**
+	 * 选取一组服务中的一个
+	 * 
+	 * @param name
+	 * @param accept
+	 * @return
+	 */
+	default T choose(String name, @Nullable Predicate<? super T> accept) {
+		return choose(
+				(service) -> StringUtils.equals(service.getName(), name) && (accept == null || accept.test(service)));
+	}
+
+	/**
+	 * 选择一组服务
+	 * 
+	 * @param name
+	 * @return
+	 */
+	default Elements<T> chooses(String name) {
+		return filter((service) -> StringUtils.equals(service.getName(), name));
+	}
+
+	/**
+	 * 统计服务状态
+	 * 
+	 * @param service
+	 * @param state
+	 */
+	void stat(T service, State state);
 
 	default <V, E extends Throwable> V execute(RetryOperations retryOperations, LoadConsumer<T, V, E> consumer)
 			throws E, ExhaustedRetryException {
 		HashSet<String> errorSets = new HashSet<String>();
 		return retryOperations.execute((context) -> {
-			Server<T> server = choose((s) -> {
+			T server = choose((s) -> {
 				return !errorSets.contains(s.getId());
 			});
 
@@ -35,6 +100,32 @@ public interface LoadBalancer<T> {
 			} catch (HttpClientException e) {
 				errorSets.add(server.getId());
 				stat(server, State.FAILED);
+				throw e;
+			}
+		});
+	}
+
+	default <V, E extends Throwable> V execute(String name, RetryOperations retryOperations,
+			LoadConsumer<T, V, E> consumer) throws E, ExhaustedRetryException {
+		HashSet<String> errorSets = new HashSet<String>();
+		return retryOperations.execute((context) -> {
+			T service = choose(name, (s) -> {
+				return !errorSets.contains(s.getId());
+			});
+
+			if (service == null) {
+				try {
+					return consumer.accept(context, service);
+				} finally {
+					context.setExhaustedOnly();
+				}
+			}
+
+			try {
+				return consumer.accept(context, service);
+			} catch (HttpClientException e) {
+				errorSets.add(service.getId());
+				stat(service, State.FAILED);
 				throw e;
 			}
 		});

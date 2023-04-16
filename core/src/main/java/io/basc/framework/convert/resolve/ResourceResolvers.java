@@ -12,6 +12,7 @@ import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.PropertiesResolvers;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.StaticSupplier;
 
 public class ResourceResolvers extends ConfigurableServices<ResourceResolver> implements ResourceResolver {
@@ -38,14 +39,12 @@ public class ResourceResolvers extends ConfigurableServices<ResourceResolver> im
 		this.propertiesResolvers = propertiesResolvers;
 		this.conversionService = conversionService;
 		this.charset = charset;
-	}
-	
-	@Override
-	public void accept(ResourceResolver service) {
-		if (service instanceof ConversionServiceAware) {
-			((ConversionServiceAware) service).setConversionService(getConversionService());
-		}
-		super.accept(service);
+		getServiceInjectors().register((service) -> {
+			if (service instanceof ConversionServiceAware) {
+				((ConversionServiceAware) service).setConversionService(getConversionService());
+			}
+			return Registration.EMPTY;
+		});
 	}
 
 	@Override

@@ -1,24 +1,24 @@
 package io.basc.framework.util;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.LongSupplier;
 
-public abstract class ElementRegistration<E> implements Registration {
-	private final Elements<E> elements;
-	private final AtomicBoolean unregister = new AtomicBoolean();
+public class ElementRegistration<E> extends DisposableRegistration {
+	private static ElementRegistration<?> EMPTY = new ElementRegistration<>(null, Registration.EMPTY);
 
-	public ElementRegistration(Elements<E> elements) {
-		this.elements = elements;
+	@SuppressWarnings("unchecked")
+	public static <R> ElementRegistration<R> empty() {
+		return (ElementRegistration<R>) EMPTY;
 	}
 
-	public Elements<E> getElements() {
-		return elements;
+	private final E element;
+
+	public ElementRegistration(E element, Registration registration) {
+		super(registration);
+		this.element = element;
 	}
 
-	@Override
-	public final void unregister() throws RegistrationException {
-		if (!isEmpty() && unregister.compareAndSet(false, true)) {
-			unregister(elements);
-		}
+	public E getElement() {
+		return element;
 	}
 
 	@Override
@@ -26,44 +26,40 @@ public abstract class ElementRegistration<E> implements Registration {
 		if (registration == null || registration.isEmpty()) {
 			return this;
 		}
-
-		return new AndRegistration<>(this, registration);
+		return new AndElementRegistration<>(this, registration);
 	}
-
-	/**
-	 * 只会执行一次
-	 * 
-	 * @param elements
-	 */
-	protected abstract void unregister(Elements<E> elements);
 
 	@Override
-	public boolean isEmpty() {
-		return unregister.get();
+	public ElementRegistration<E> version(LongSupplier versionSuppler) {
+		return new VersionRegistration<>(this, versionSuppler);
 	}
 
-	private static class AndRegistration<T> extends ElementRegistration<T> {
-		private final Registration and;
-		private final ElementRegistration<T> registration;
+	private static class VersionRegistration<R> extends ElementRegistration<R> {
+		private final LongSupplier versionSupplier;
+		private final long version;
 
-		public AndRegistration(ElementRegistration<T> registration, Registration and) {
-			super(registration.elements);
-			this.registration = registration;
-			this.and = and;
-		}
-
-		@Override
-		protected void unregister(Elements<T> elements) {
-			try {
-				registration.unregister(elements);
-			} finally {
-				and.unregister();
-			}
+		public VersionRegistration(ElementRegistration<R> elementRegistration, LongSupplier versionSupplier) {
+			super(elementRegistration.element, elementRegistration);
+			this.version = versionSupplier.getAsLong();
+			this.versionSupplier = versionSupplier;
 		}
 
 		@Override
 		public boolean isEmpty() {
-			return registration.isEmpty() || super.isEmpty();
+			return version != versionSupplier.getAsLong() || super.isEmpty();
+		}
+	}
+
+	private static class AndElementRegistration<R> extends ElementRegistration<R> {
+
+		public AndElementRegistration(ElementRegistration<R> elementRegistration, Registration registration) {
+			super(elementRegistration.element, () -> {
+				try {
+					registration.unregister();
+				} finally {
+					elementRegistration.unregister();
+				}
+			});
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package io.basc.framework.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -146,7 +147,16 @@ public interface Elements<E> extends Streamable<E>, Iterable<E> {
 	 */
 	default Elements<E> reverse() {
 		List<E> list = toList();
+		if (CollectionUtils.isEmpty(list)) {
+			return Elements.empty();
+		}
+
+		list = new ArrayList<>(list);
 		Collections.reverse(list);
 		return new ElementList<>(list);
+	}
+
+	default boolean contains(E element) {
+		return anyMatch((e) -> e == element || ObjectUtils.equals(e, element));
 	}
 }

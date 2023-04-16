@@ -1,5 +1,7 @@
 package io.basc.framework.web.message;
 
+import java.io.IOException;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.http.HttpMessage;
@@ -8,10 +10,9 @@ import io.basc.framework.http.client.ClientHttpResponse;
 import io.basc.framework.lang.LinkedThreadLocal;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.net.uri.UriComponentsBuilder;
+import io.basc.framework.util.Registration;
 import io.basc.framework.web.ServerHttpRequest;
 import io.basc.framework.web.ServerHttpResponse;
-
-import java.io.IOException;
 
 public class WebMessageConverters extends ConfigurableServices<WebMessageConverter> implements WebMessageConverter {
 	private static final LinkedThreadLocal<WebMessageConverter> NESTED = new LinkedThreadLocal<WebMessageConverter>(
@@ -19,14 +20,12 @@ public class WebMessageConverters extends ConfigurableServices<WebMessageConvert
 
 	public WebMessageConverters() {
 		super(WebMessageConverter.class);
-	}
-
-	@Override
-	public void accept(WebMessageConverter service) {
-		if (service instanceof WebMessageConverterAware) {
-			((WebMessageConverterAware) service).setWebMessageConverter(this);
-		}
-		super.accept(service);
+		getServiceInjectors().register((service) -> {
+			if (service instanceof WebMessageConverterAware) {
+				((WebMessageConverterAware) service).setWebMessageConverter(this);
+			}
+			return Registration.EMPTY;
+		});
 	}
 
 	@Override

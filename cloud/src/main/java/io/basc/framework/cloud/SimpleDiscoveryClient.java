@@ -25,16 +25,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.basc.framework.util.CollectionUtils;
 
-public class SimpleDiscoveryClient<T extends ServiceInstance> implements DiscoveryClient, ServiceRegistry<T> {
+public class SimpleDiscoveryClient<T extends Service> implements DiscoveryClient, ServiceRegistry<T> {
 	private final ConcurrentHashMap<String, Map<String, T>> instanceMap = new ConcurrentHashMap<String, Map<String, T>>();
 
-	public List<ServiceInstance> getInstances(String name) {
+	public List<Service> getInstances(String name) {
 		Map<String, T> serviceInstanceForService = instanceMap.get(name);
 		if (CollectionUtils.isEmpty(serviceInstanceForService)) {
 			return Collections.emptyList();
 		}
 
-		return new ArrayList<ServiceInstance>(serviceInstanceForService.values());
+		return new ArrayList<Service>(serviceInstanceForService.values());
 	}
 
 	public List<String> getServices() {

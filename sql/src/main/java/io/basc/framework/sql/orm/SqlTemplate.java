@@ -23,7 +23,7 @@ import io.basc.framework.sql.SimpleSql;
 import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.SqlOperations;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.ObjectUtils;
 
 @SuppressWarnings("unchecked")
 public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFactory, Repository {
@@ -246,7 +246,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
 		return query(resultsTypeDescriptor, entityClass,
 				getMapper().parseConditions(entityClass, getMapper().getStructure(entityClass).columns().iterator(),
-						orderColumns, (e) -> e.get(conditions), (e) -> StringUtils.isNotEmpty(e.getValue())),
+						orderColumns, (e) -> e.get(conditions), (e) -> ObjectUtils.isNotEmpty(e.getValue())),
 				orderColumns);
 	}
 

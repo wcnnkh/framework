@@ -13,4 +13,8 @@ public class EmptyNestingChecker<E> implements NestingChecker<E> {
 		return Registration.EMPTY;
 	}
 
+	@Override
+	public NestingChecker<E> or(NestingChecker<E> right) {
+		return right == null ? this : right;
+	}
 }

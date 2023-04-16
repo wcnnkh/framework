@@ -5,25 +5,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import io.basc.framework.lang.Nullable;
-
 public interface ServiceLoader<S> extends Elements<S> {
-	public static <T> ServiceLoader<T> concat(@Nullable ServiceLoader<T> before, @Nullable ServiceLoader<T> after) {
-		if (before == null) {
-			if (after == null) {
-				return empty();
-			} else {
-				return after;
-			}
-		} else {
-			if (after == null) {
-				return before;
-			} else {
-				return new ServiceLoaders<>(before, after);
-			}
-		}
-	}
-
 	@SuppressWarnings("unchecked")
 	public static <T> ServiceLoader<T> empty() {
 		return (ServiceLoader<T>) EmptyServiceLoader.EMPTY;

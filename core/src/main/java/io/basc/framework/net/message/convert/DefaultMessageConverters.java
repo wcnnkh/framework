@@ -7,6 +7,7 @@ import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.net.message.multipart.MultipartMessageConverter;
+import io.basc.framework.util.Registration;
 
 public class DefaultMessageConverters extends MessageConverters {
 	private final ConfigurableConversionService conversionService;
@@ -18,22 +19,28 @@ public class DefaultMessageConverters extends MessageConverters {
 
 	public DefaultMessageConverters(ConversionService conversionService) {
 		this.conversionService = new ConfigurableConversionService();
-		this.conversionService.setLast(conversionService);
+		this.conversionService.registerLast(conversionService);
 		afterConfigure();
 	}
 
 	protected void afterConfigure() {
-		registerService(new JsonMessageConverter());
-		registerService(new StringMessageConverter(conversionService));
-		registerService(new ByteArrayMessageConverter());
-		registerService(new HttpFormMessageConveter());
-		registerService(new MultipartMessageConverter(InetUtils.getMultipartMessageResolver()));
-		registerService(new ResourceMessageConverter());
+		getServiceInjectors().register((service) -> {
+			if (service instanceof ConversionServiceAware) {
+				((ConversionServiceAware) service).setConversionService(conversionService);
+			}
+			return Registration.EMPTY;
+		});
+		register(new JsonMessageConverter());
+		register(new StringMessageConverter(conversionService));
+		register(new ByteArrayMessageConverter());
+		register(new HttpFormMessageConveter());
+		register(new MultipartMessageConverter(InetUtils.getMultipartMessageResolver()));
+		register(new ResourceMessageConverter());
 	}
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		if (conversionService.getAfterService() == null) {
+		if (!conversionService.isConfigured()) {
 			conversionService.configure(serviceLoaderFactory);
 		}
 		super.configure(serviceLoaderFactory);
@@ -42,13 +49,4 @@ public class DefaultMessageConverters extends MessageConverters {
 	public ConfigurableConversionService getConversionService() {
 		return conversionService;
 	}
-
-	@Override
-	public void accept(MessageConverter service) {
-		if (service instanceof ConversionServiceAware) {
-			((ConversionServiceAware) service).setConversionService(conversionService);
-		}
-		super.accept(service);
-	}
-
 }

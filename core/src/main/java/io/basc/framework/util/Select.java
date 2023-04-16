@@ -35,7 +35,7 @@ public final class Select<E> implements Supplier<E> {
 			throw new UnsupportedException("Selector not found");
 		}
 
-		return elements.export((e) -> selector.apply(e));
+		return selector.apply(elements);
 	}
 
 	public <T, X extends Throwable> T process(Processor<? super E, ? extends T, ? extends X> processor) throws X {
@@ -44,7 +44,7 @@ public final class Select<E> implements Supplier<E> {
 			throw new UnsupportedException("Selector not found");
 		}
 
-		E element = elements.export((e) -> selector.apply(e));
+		E element = selector.apply(elements);
 		if (element == null) {
 			return null;
 		}
@@ -64,7 +64,7 @@ public final class Select<E> implements Supplier<E> {
 		if (selector == null) {
 			elements.transfer((e) -> ConsumeProcessor.consumeAll(e.iterator(), consumer));
 		} else {
-			E element = elements.export((e) -> selector.apply(e));
+			E element = selector.apply(elements);
 			if (element == null) {
 				return;
 			}

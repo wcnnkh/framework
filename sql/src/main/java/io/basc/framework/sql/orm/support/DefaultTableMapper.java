@@ -21,8 +21,8 @@ public class DefaultTableMapper extends ResultSetMapper implements TableMapper {
 
 	public DefaultTableMapper() {
 		AnnotationTableResolverExtend tableResolverExtend = new AnnotationTableResolverExtend();
-		getObjectRelationalResolverExtendServices().registerService(tableResolverExtend);
-		tableResolverExtends.registerService(tableResolverExtend);
+		getObjectRelationalResolverExtendServices().register(tableResolverExtend);
+		tableResolverExtends.register(tableResolverExtend);
 	}
 
 	public ConfigurableServices<TableResolverExtend> getTableResolverExtends() {

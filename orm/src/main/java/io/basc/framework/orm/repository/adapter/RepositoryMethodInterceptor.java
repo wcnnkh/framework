@@ -14,7 +14,7 @@ public class RepositoryMethodInterceptor extends RepositoryMethodAdapterRegistry
 	public RepositoryMethodInterceptor(RepositoryTemplate template) {
 		Assert.requiredArgument(template != null, "template");
 		this.template = template;
-		setLast(new CustomRepositoryMethodAdapter());
+		registerLast(new CustomRepositoryMethodAdapter());
 	}
 
 	public final RepositoryTemplate getTemplate() {

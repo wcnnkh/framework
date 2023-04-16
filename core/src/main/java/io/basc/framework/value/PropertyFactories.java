@@ -1,60 +1,34 @@
 package io.basc.framework.value;
 
-import java.util.Collection;
+import java.util.Set;
 
-import io.basc.framework.event.BroadcastNamedEventDispatcher;
+import io.basc.framework.event.BroadcastEventDispatcher;
+import io.basc.framework.event.BroadcastEventRegistry;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.ChangeType;
-import io.basc.framework.event.EventListener;
-import io.basc.framework.event.support.StandardBroadcastNamedEventDispatcher;
+import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.factory.Configurable;
-import io.basc.framework.factory.ConfigurableServices;
-import io.basc.framework.factory.ServiceLoaderFactory;
-import io.basc.framework.util.ConsumeProcessor;
+import io.basc.framework.util.ElementSet;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Registration;
+import io.basc.framework.util.RegistrationException;
 
-public class PropertyFactories implements PropertyFactory, Configurable {
-	private final BroadcastNamedEventDispatcher<String, ChangeEvent<String>> namedEventDispatcher;
-	private final ConfigurableServices<PropertyFactory> factories;
+public class PropertyFactories extends ValueFactories<String, PropertyFactory>
+		implements PropertyFactory, Configurable {
+	private final BroadcastEventDispatcher<ChangeEvent<Elements<String>>> keyEventDispatcher;
 
 	public PropertyFactories() {
-		this(new StandardBroadcastNamedEventDispatcher<>());
+		this(new StandardBroadcastEventDispatcher<>());
 	}
 
-	public PropertyFactories(BroadcastNamedEventDispatcher<String, ChangeEvent<String>> namedEventDispatcher) {
-		this.namedEventDispatcher = namedEventDispatcher;
-		this.factories = new ConfigurableServices<PropertyFactory>(PropertyFactory.class) {
-			@Override
-			protected boolean addService(PropertyFactory service, Collection<PropertyFactory> targetServices) {
-				if (super.addService(service, targetServices)) {
-					long t = System.currentTimeMillis();
-					ConsumeProcessor.consumeAll(service.keys(), (e) -> namedEventDispatcher.publishEvent(e,
-							new ChangeEvent<String>(t, ChangeType.CREATE, e)));
-					return true;
-				}
-				return false;
-			}
-		};
-	}
-
-	public ConfigurableServices<PropertyFactory> getFactories() {
-		return factories;
-	}
-
-	@Override
-	public boolean isConfigured() {
-		return factories.isConfigured();
-	}
-
-	@Override
-	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		factories.configure(serviceLoaderFactory);
+	public PropertyFactories(BroadcastEventDispatcher<ChangeEvent<Elements<String>>> keyEventDispatcher) {
+		this.keyEventDispatcher = keyEventDispatcher;
+		setServiceClass(PropertyFactory.class);
 	}
 
 	@Override
 	public Value get(String key) {
-		for (PropertyFactory factory : factories) {
+		for (PropertyFactory factory : this) {
 			if (factory == null || factory == this) {
 				continue;
 			}
@@ -69,7 +43,7 @@ public class PropertyFactories implements PropertyFactory, Configurable {
 
 	@Override
 	public boolean containsKey(String key) {
-		for (PropertyFactory factory : factories) {
+		for (PropertyFactory factory : this) {
 			if (factory == null || factory == this) {
 				continue;
 			}
@@ -83,11 +57,25 @@ public class PropertyFactories implements PropertyFactory, Configurable {
 
 	@Override
 	public Elements<String> keys() {
-		return Elements.of(() -> factories.stream().flatMap((e) -> e.keys().stream()));
+		return Elements.of(() -> stream().flatMap((e) -> e.keys().stream()).distinct());
 	}
 
 	@Override
-	public Registration registerListener(String name, EventListener<ChangeEvent<String>> eventListener) {
-		return namedEventDispatcher.registerListener(name, eventListener);
+	public Registration register(PropertyFactory element, int weight) throws RegistrationException {
+		Registration registration = super.register(element, weight);
+		if (registration.isEmpty()) {
+			return registration;
+		}
+
+		Set<String> registerKeys = element.keys().toSet();
+		ElementSet<String> changeKeys = new ElementSet<>(registerKeys);
+		keyEventDispatcher.publishEvent(new ChangeEvent<>(ChangeType.CREATE, changeKeys));
+		return registration
+				.and(() -> keyEventDispatcher.publishEvent(new ChangeEvent<>(ChangeType.DELETE, changeKeys)));
+	}
+
+	@Override
+	public BroadcastEventRegistry<ChangeEvent<Elements<String>>> getKeyEventRegistry() {
+		return keyEventDispatcher;
 	}
 }

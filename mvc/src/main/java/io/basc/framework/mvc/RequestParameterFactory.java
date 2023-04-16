@@ -14,7 +14,7 @@ public class RequestParameterFactory implements ParameterFactory {
 
 	public RequestParameterFactory(ServerHttpRequest request, WebMessageConverter messageConverter) {
 		this.request = request;
-		messageConverters.setLast(messageConverter);
+		messageConverters.registerLast(messageConverter);
 	}
 
 	public ServerHttpRequest getRequest() {

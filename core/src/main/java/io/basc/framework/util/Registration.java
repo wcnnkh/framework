@@ -1,5 +1,7 @@
 package io.basc.framework.util;
 
+import java.util.function.LongSupplier;
+
 public interface Registration {
 
 	static final Registration EMPTY = new Registration() {
@@ -29,6 +31,11 @@ public interface Registration {
 			}
 			return registration;
 		}
+
+		@Override
+		public Registration version(LongSupplier versionSuppler) {
+			return this;
+		}
 	};
 
 	void unregister() throws RegistrationException;
@@ -39,6 +46,10 @@ public interface Registration {
 
 	default Registration disposable() {
 		return DisposableRegistration.of(this);
+	}
+
+	default Registration version(LongSupplier versionSuppler) {
+		return new VersionRegistration(versionSuppler, this);
 	}
 
 	default Registration and(Registration registration) {

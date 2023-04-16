@@ -6,6 +6,7 @@ import java.util.Properties;
 import io.basc.framework.event.Observable;
 import io.basc.framework.util.PropertiesCombiner;
 import io.basc.framework.util.Registration;
+import io.basc.framework.util.Selector;
 
 public class ObservablePropertiesRegistry extends ObservableRegistry<Properties> {
 
@@ -14,12 +15,17 @@ public class ObservablePropertiesRegistry extends ObservableRegistry<Properties>
 		setSelector(PropertiesCombiner.INSTANCE);
 	}
 
-	public Registration registerObservableMap(Observable<? extends Map<?, ?>> observableMap) {
+	public Registration registerMap(Observable<? extends Map<?, ?>> observableMap) {
 		Observable<Properties> observableProperties = observableMap.map((e) -> {
 			Properties properties = new Properties();
 			properties.putAll(e);
 			return properties;
 		});
 		return register(observableProperties);
+	}
+
+	@Override
+	public void setSelector(Selector<Properties> selector) {
+		super.setSelector(selector == null ? PropertiesCombiner.INSTANCE : selector);
 	}
 }

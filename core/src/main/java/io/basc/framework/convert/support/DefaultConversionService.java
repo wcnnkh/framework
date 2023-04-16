@@ -12,32 +12,32 @@ import io.basc.framework.util.ClassUtils;
 public class DefaultConversionService extends ConfigurableConversionService {
 
 	public DefaultConversionService() {
-		registerService(new ArrayToArrayConversionService(this));
-		registerService(new ArrayToCollectionConversionService(this));
+		register(new ArrayToArrayConversionService(this));
+		register(new ArrayToCollectionConversionService(this));
 
-		registerService(new ByteBufferConversionService(this));
+		register(new ByteBufferConversionService(this));
 
-		registerService(new CollectionToArrayConversionService(this));
-		registerService(new CollectionToCollectionConversionService(this));
-		registerService(new CollectionToObjectConversionService(this));
+		register(new CollectionToArrayConversionService(this));
+		register(new CollectionToCollectionConversionService(this));
+		register(new CollectionToObjectConversionService(this));
 
-		registerService(new DateFormatConversionService());
-		registerService(new LocalDateTimeConversion());
+		register(new DateFormatConversionService());
+		register(new LocalDateTimeConversion());
 
-		registerService(new MapToMapConversionService(this));
+		register(new MapToMapConversionService(this));
 
-		registerService(new ValueConversionService(this));
-		registerService(new JsonConversionService());
-		registerService(new JsonToObjectConversionService());
+		register(new ValueConversionService(this));
+		register(new JsonConversionService());
+		register(new JsonToObjectConversionService());
 
-		registerService(StringConversionService.DEFAULT);
+		register(StringConversionService.DEFAULT);
 
-		registerService(new ObjectToArrayConversionService(this));
-		registerService(new ObjectToCollectionConversionService(this));
+		register(new ObjectToArrayConversionService(this));
+		register(new ObjectToCollectionConversionService(this));
 
 		// 并非所有的环境都支持sql类型
 		if (ClassUtils.isPresent("io.basc.framework.convert.lang.SqlDateConversionService", null)) {
-			registerService((ConversionService) ReflectionUtils
+			register((ConversionService) ReflectionUtils
 					.newInstance(ClassUtils.getClass("io.basc.framework.convert.lang.SqlDateConversionService", null)));
 		}
 	}

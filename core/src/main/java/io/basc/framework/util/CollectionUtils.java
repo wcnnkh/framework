@@ -34,6 +34,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -845,5 +846,30 @@ public abstract class CollectionUtils {
 
 		return leftColllection.size() == rightCollection.size()
 				&& intersection(leftColllection, rightCollection).size() == leftColllection.size();
+	}
+
+	/**
+	 * 当comparator返回0进，会实际检验对象是还相等
+	 * 
+	 * @param <K>
+	 * @param <V>
+	 * @param comparator
+	 * @return
+	 */
+	public static <K, V> TreeMap<K, V> newStrictTreeMap(Comparator<? super K> comparator) {
+		Assert.requiredArgument(comparator != null, "comparator");
+		return new TreeMap<>((o1, o2) -> {
+			int order = comparator.compare(o1, o2);
+			if (order == 0) {
+				// 当排序认为相等时并不代表对象是相同的
+				if (o1 == o2 || ObjectUtils.equals(o1, o2)) {
+					return 0;
+				}
+
+				// 返回1,后添加的放在后面
+				return 1;
+			}
+			return order;
+		});
 	}
 }

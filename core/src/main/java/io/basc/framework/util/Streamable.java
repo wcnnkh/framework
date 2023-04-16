@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -31,6 +32,28 @@ public interface Streamable<E> {
 	@SuppressWarnings("unchecked")
 	public static <T> Streamable<T> empty() {
 		return (Streamable<T>) EmptyStreamable.INSTANCE;
+	}
+
+	default boolean allMatch(Predicate<? super E> predicate) {
+		Stream<E> stream = stream();
+		try {
+			return stream.allMatch(predicate);
+		} finally {
+			stream.close();
+		}
+	}
+
+	default boolean anyMatch(Predicate<? super E> predicate) {
+		Stream<E> stream = stream();
+		try {
+			return stream.anyMatch(predicate);
+		} finally {
+			stream.close();
+		}
+	}
+
+	default <T> boolean anyMatch(Streamable<T> target, BiPredicate<? super E, ? super T> predicate) {
+		return anyMatch((s) -> target.anyMatch(((t) -> predicate.test(s, t))));
 	}
 
 	/**
@@ -84,21 +107,6 @@ public interface Streamable<E> {
 	}
 
 	/**
-	 * 默认使用{@link #stream()}的调用
-	 * 
-	 * @see Stream#forEachOrdered(Consumer)
-	 */
-	default void forEach(Consumer<? super E> action) {
-		Assert.requiredArgument(action != null, "action");
-		Stream<E> stream = stream();
-		try {
-			stream.forEachOrdered(action);
-		} finally {
-			stream.close();
-		}
-	}
-
-	/**
 	 * 调用{@link #export(Processor)}
 	 * 
 	 * @return
@@ -139,6 +147,21 @@ public interface Streamable<E> {
 				return streamy == null ? Stream.empty() : streamy.stream();
 			});
 		});
+	}
+
+	/**
+	 * 默认使用{@link #stream()}的调用
+	 * 
+	 * @see Stream#forEachOrdered(Consumer)
+	 */
+	default void forEach(Consumer<? super E> action) {
+		Assert.requiredArgument(action != null, "action");
+		Stream<E> stream = stream();
+		try {
+			stream.forEachOrdered(action);
+		} finally {
+			stream.close();
+		}
 	}
 
 	default E last() {

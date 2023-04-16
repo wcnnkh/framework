@@ -5,10 +5,10 @@ import java.util.Map;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
 
-import io.basc.framework.cloud.ServiceInstance;
+import io.basc.framework.cloud.Service;
 import io.basc.framework.core.reflect.ReflectionUtils;
 
-public class NacosServiceInstance implements ServiceInstance {
+public class NacosServiceInstance implements Service {
 	private final Instance instance;
 
 	public NacosServiceInstance(Instance instance) {

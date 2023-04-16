@@ -1,20 +1,20 @@
 package io.basc.framework.zookeeper;
 
-import io.basc.framework.cloud.ServiceInstance;
-import io.basc.framework.cloud.SimpleDiscoveryClient;
-import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.io.JavaSerializer;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
+import io.basc.framework.cloud.Service;
+import io.basc.framework.cloud.SimpleDiscoveryClient;
+import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.io.JavaSerializer;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
+
 @Provider(order=Integer.MIN_VALUE + 1)
-public class ZooKeeperServiceDiscovery extends SimpleDiscoveryClient<ServiceInstance> implements Watcher {
+public class ZooKeeperServiceDiscovery extends SimpleDiscoveryClient<Service> implements Watcher {
 	private static Logger logger = LoggerFactory.getLogger(ZooKeeperServiceDiscovery.class);
 	public static final String DEFAULT_PARENT_PATH = "/io/basc/framework/zookeeper/service/discovery";
 	private final ZooKeeper zooKeeper;
@@ -30,7 +30,7 @@ public class ZooKeeperServiceDiscovery extends SimpleDiscoveryClient<ServiceInst
 		zooKeeper.register(this);
 	}
 
-	private ServiceInstance getInstanceInfo(String path) {
+	private Service getInstanceInfo(String path) {
 		byte[] data = ZooKeeperUtils.getData(zooKeeper, path);
 		if (data != null && data.length != 0) {
 			try {
@@ -52,7 +52,7 @@ public class ZooKeeperServiceDiscovery extends SimpleDiscoveryClient<ServiceInst
 			return;
 		}
 
-		ServiceInstance instance = getInstanceInfo(eventPath);
+		Service instance = getInstanceInfo(eventPath);
 		switch (event.getType()) {
 		case NodeDeleted:
 			super.deregister(instance);
@@ -70,7 +70,7 @@ public class ZooKeeperServiceDiscovery extends SimpleDiscoveryClient<ServiceInst
 		}
 	}
 
-	public void register(ServiceInstance instance) {
+	public void register(Service instance) {
 		if (instance.getName().indexOf("/") != -1 || instance.getId().indexOf("/") != -1) {
 			throw new IllegalArgumentException("The name or ID cannot have characters '/'");
 		}
@@ -84,7 +84,7 @@ public class ZooKeeperServiceDiscovery extends SimpleDiscoveryClient<ServiceInst
 		super.register(instance);
 	}
 
-	public void deregister(ServiceInstance instance) {
+	public void deregister(Service instance) {
 		String path = ZooKeeperUtils.cleanPath(parentPath, instance.getName(), instance.getId());
 		ZooKeeperUtils.delete(zooKeeper, path, -1);
 		super.deregister(instance);

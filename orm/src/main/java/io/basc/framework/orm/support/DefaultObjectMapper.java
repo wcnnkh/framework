@@ -53,7 +53,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends io.basc.framewo
 			}
 			return true;
 		});
-		objectRelationalResolverExtendServices.registerService(annotationObjectRelationalResolverExtend);
+		objectRelationalResolverExtendServices.register(annotationObjectRelationalResolverExtend);
 	}
 
 	private void appendDefaultAliasNames(Collection<String> names, String name) {

@@ -1,5 +1,7 @@
 package io.basc.framework.netflix.eureka.server;
 
+import java.util.Arrays;
+
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.eureka.EurekaServerConfig;
@@ -12,8 +14,11 @@ import com.netflix.eureka.transport.JerseyReplicationClient;
 import io.basc.framework.env.Environment;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.EventListener;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.StringUtils;
 
-public class RefreshablePeerEurekaNodes extends PeerEurekaNodes implements EventListener<ChangeEvent<String>> {
+public class RefreshablePeerEurekaNodes extends PeerEurekaNodes
+		implements EventListener<ChangeEvent<Elements<String>>> {
 	private static final String[] KEYS = new String[] { "eureka.client.region*", "eureka.client.service-url.*",
 			"eureka.client.availability-zones." };
 
@@ -26,9 +31,7 @@ public class RefreshablePeerEurekaNodes extends PeerEurekaNodes implements Event
 		super(registry, serverConfig, clientConfig, serverCodecs, applicationInfoManager);
 		this.replicationClientAdditionalFilters = replicationClientAdditionalFilters;
 
-		for (String key : KEYS) {
-			environment.getProperties().registerListener(key, this);
-		}
+		environment.getProperties().getKeyEventRegistry().registerListener(this);
 	}
 
 	@Override
@@ -46,7 +49,11 @@ public class RefreshablePeerEurekaNodes extends PeerEurekaNodes implements Event
 	}
 
 	@Override
-	public void onEvent(ChangeEvent<String> event) {
+	public void onEvent(ChangeEvent<Elements<String>> event) {
+		if (!event.getSource().anyMatch(() -> Arrays.asList(KEYS).stream(), StringUtils::equals)) {
+			return;
+		}
+
 		if (clientConfig.shouldUseDnsForFetchingServiceUrls()) {
 			return;
 		}

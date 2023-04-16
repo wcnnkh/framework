@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * @author wcnnkh
  *
  */
-@Target(ElementType.FIELD)
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PrimaryKey {
 }

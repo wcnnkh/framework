@@ -34,11 +34,11 @@ public class DefaultBeanFactory extends DefaultServiceLoaderFactory
 	private BeanFactory parent;
 
 	public DefaultBeanFactory() {
-		beanDefinitionLoaders.setLast(this);
+		beanDefinitionLoaders.registerLast(this);
 		aop.addAopPolicy((instance) -> RuntimeBean.getRuntimeBean(instance) != null);
 		registerSingleton(BeanFactory.class.getName(), this);
 		registerAlias(BeanFactory.class.getName(), InstanceFactory.class.getName());
-		getBeanResolver().registerService(new InstanceParameterFactory(this));
+		getBeanResolver().register(new InstanceParameterFactory(this));
 	}
 
 	@Override

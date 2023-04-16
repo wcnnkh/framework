@@ -1,45 +1,13 @@
 package io.basc.framework.cloud.loadbalancer;
 
 import java.net.URI;
-import java.util.HashSet;
-import java.util.function.Predicate;
 
-import io.basc.framework.cloud.ServiceInstance;
-import io.basc.framework.http.client.HttpClientException;
-import io.basc.framework.lang.Nullable;
+import io.basc.framework.cloud.Service;
 import io.basc.framework.net.uri.UriComponentsBuilder;
 import io.basc.framework.retry.ExhaustedRetryException;
 import io.basc.framework.retry.RetryOperations;
 
-public interface DiscoveryLoadBalancer extends LoadBalancer<ServiceInstance> {
-	@Nullable
-	Server<ServiceInstance> choose(String name, Predicate<Server<ServiceInstance>> accept);
-
-	default <V, E extends Throwable> V execute(String name, RetryOperations retryOperations,
-			LoadConsumer<ServiceInstance, V, E> consumer) throws E, ExhaustedRetryException {
-		HashSet<String> errorSets = new HashSet<String>();
-		return retryOperations.execute((context) -> {
-			Server<ServiceInstance> server = choose(name, (s) -> {
-				return !errorSets.contains(s.getId());
-			});
-
-			if (server == null) {
-				try {
-					return consumer.accept(context, server);
-				} finally {
-					context.setExhaustedOnly();
-				}
-			}
-
-			try {
-				return consumer.accept(context, server);
-			} catch (HttpClientException e) {
-				errorSets.add(server.getId());
-				stat(server, State.FAILED);
-				throw e;
-			}
-		});
-	}
+public interface DiscoveryLoadBalancer extends LoadBalancer<Service> {
 
 	default <V, E extends Throwable> V execute(URI uri, RetryOperations retryOperations, LoadUriConsumer<V, E> consumer)
 			throws E, ExhaustedRetryException {
@@ -49,10 +17,10 @@ public interface DiscoveryLoadBalancer extends LoadBalancer<ServiceInstance> {
 			}
 
 			UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-			builder = builder.host(server.getService().getHost());
+			builder = builder.host(server.getHost());
 			int port = builder.build().getPort();
 			if (port == -1) {
-				builder = builder.port(server.getService().getPort());
+				builder = builder.port(server.getPort());
 			}
 			return consumer.accept(context, server, builder.build().toUri());
 		});

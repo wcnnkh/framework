@@ -1,13 +1,12 @@
 package io.basc.framework.convert.lang;
 
-import java.util.TreeSet;
-
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.lang.LinkedThreadLocal;
+import io.basc.framework.util.Registration;
 import io.basc.framework.value.Value;
 
 public class ConfigurableConversionService extends ConfigurableServices<ConversionService>
@@ -16,15 +15,13 @@ public class ConfigurableConversionService extends ConfigurableServices<Conversi
 			ConfigurableConversionService.class.getName());
 
 	public ConfigurableConversionService() {
-		super(ConversionService.class, () -> new TreeSet<>(ConversionComparator.INSTANCE));
-	}
-
-	@Override
-	public void accept(ConversionService service) {
-		if (service instanceof ConversionServiceAware) {
-			((ConversionServiceAware) service).setConversionService(this);
-		}
-		super.accept(service);
+		super(ConversionComparator.INSTANCE, ConversionService.class);
+		getServiceInjectors().register((service) -> {
+			if (service instanceof ConversionServiceAware) {
+				((ConversionServiceAware) service).setConversionService(this);
+			}
+			return Registration.EMPTY;
+		});
 	}
 
 	public final boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {

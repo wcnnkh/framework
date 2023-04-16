@@ -1,40 +1,33 @@
 package io.basc.framework.factory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Supplier;
+import java.util.Comparator;
 
+import io.basc.framework.core.OrderComparator;
 import io.basc.framework.core.ParameterizedTypeReference;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.Assert;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.ServiceRegistry;
+import io.basc.framework.util.Services;
 
-public class ConfigurableServices<T> extends ServiceRegistry<T> implements Configurable, ServiceLoader<T> {
-	private static Logger LOGGER = LoggerFactory.getLogger(ConfigurableServices.class);
-	private volatile List<? extends T> defaultServices;
-	private Logger logger = LOGGER;
-
+public class ConfigurableServices<T> extends Services<T> implements Configurable {
+	private Registration configurableRegistration;
 	private Class<T> serviceClass;
 
-	private volatile ServiceLoaderFactory serviceLoaderFactory;
-
 	public ConfigurableServices() {
-		this(null, null);
+	}
+
+	public ConfigurableServices(Comparator<? super T> comparator) {
+		this(comparator, null);
 	}
 
 	public ConfigurableServices(Class<T> serviceClass) {
-		this(serviceClass, null);
+		this(OrderComparator.INSTANCE, serviceClass);
 	}
 
 	@SuppressWarnings("unchecked")
-	public ConfigurableServices(@Nullable Class<T> serviceClass, @Nullable Supplier<Collection<T>> supplier) {
-		super(supplier);
+	public ConfigurableServices(Comparator<? super T> comparator, @Nullable Class<T> serviceClass) {
+		super(comparator);
 		this.serviceClass = serviceClass;
 		if (this.serviceClass == null) {
 			try {
@@ -48,51 +41,31 @@ public class ConfigurableServices<T> extends ServiceRegistry<T> implements Confi
 		}
 	}
 
-	public ConfigurableServices(Supplier<Collection<T>> supplier) {
-		this(null, supplier);
-	}
-
-	public void configure(Class<? extends T> serviceClass, ServiceLoaderFactory serviceLoaderFactory) {
+	public void configure(Class<T> serviceClass, ServiceLoaderFactory serviceLoaderFactory) {
 		if (serviceLoaderFactory == null || serviceClass == null) {
 			return;
 		}
 
 		synchronized (this) {
-			List<T> newServices = new ArrayList<T>();
-			newServices.addAll(getTargetServices());
-			if (defaultServices != null) {
-				newServices.removeAll(defaultServices);
+			ServiceLoader<T> serviceLoader = serviceLoaderFactory.getServiceLoader(serviceClass);
+			if (configurableRegistration != null) {
+				configurableRegistration.unregister();
 			}
-			this.defaultServices = serviceLoaderFactory.getServiceLoader(serviceClass).toList();
-			if (logger.isDebugEnabled()) {
-				logger.debug("Configure [{}] services {}", serviceClass, defaultServices);
-			}
-
-			if (this.defaultServices != null) {
-				newServices.addAll(this.defaultServices);
-			}
-
-			clear();
-			registerServices(newServices);
+			configurableRegistration = getServiceLoaders().register(serviceLoader);
 		}
 	}
 
 	public boolean isConfigured() {
 		synchronized (this) {
-			return serviceLoaderFactory != null;
+			return configurableRegistration != null;
 		}
 	}
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		synchronized (this) {
-			this.serviceLoaderFactory = serviceLoaderFactory;
 			configure(this.serviceClass, serviceLoaderFactory);
 		}
-	}
-
-	public Logger getLogger() {
-		return logger;
 	}
 
 	@Nullable
@@ -105,27 +78,10 @@ public class ConfigurableServices<T> extends ServiceRegistry<T> implements Confi
 	}
 
 	@Override
-	public Iterator<T> iterator() {
-		return super.iterator();
-	}
-
-	@Override
-	public void reload() {
-		if (serviceLoaderFactory != null) {
-			configure(serviceLoaderFactory);
-		}
-	}
-
-	public void setLogger(Logger logger) {
-		Assert.requiredArgument(logger != null, "logger");
-		this.logger = logger;
-	}
-
-	@Override
 	public String toString() {
 		if (this.serviceClass == null) {
-			return super.toString();
+			return toList().toString();
 		}
-		return "[" + serviceClass.getName() + "] services " + super.toString();
+		return "[" + serviceClass.getName() + "] services " + toList();
 	}
 }

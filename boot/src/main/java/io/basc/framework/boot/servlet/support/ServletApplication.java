@@ -16,11 +16,10 @@ public class ServletApplication extends DefaultApplication {
 			setWorkPath(webRoot);
 			DirectoryClassesLoader directoryClassesLoader = new DirectoryClassesLoader(webRoot);
 			directoryClassesLoader.setTypeFilter(getContextResolver());
-			getContextClasses().register(directoryClassesLoader);
+			getContextClasses().getServiceLoaders().register(directoryClassesLoader);
 		}
 
-		getProperties().getPropertyFactories().getFactories()
-				.registerService(new ServletContextPropertyFactory(servletContext));
-		getResourceLoader().getResourceLoaders().registerService(new ServletContextResourceLoader(servletContext));
+		getProperties().getPropertyFactories().register(new ServletContextPropertyFactory(servletContext));
+		getResourceLoader().getResourceLoaders().register(new ServletContextResourceLoader(servletContext));
 	}
 }

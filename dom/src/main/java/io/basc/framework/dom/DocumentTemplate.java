@@ -35,10 +35,10 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 	protected final ConfigurableServices<DocumentParser> parsers = new ConfigurableServices<>(DocumentParser.class);
 
 	public DocumentTemplate() {
-		writers.registerService(new MapWriter(this));
-		writers.registerService(new CollectionWriter(this));
-		writers.registerService(new ArrayWriter(this));
-		writers.registerService(new ToMapWriter(this));
+		writers.register(new MapWriter(this));
+		writers.register(new CollectionWriter(this));
+		writers.register(new ArrayWriter(this));
+		writers.register(new ToMapWriter(this));
 	}
 
 	private boolean configured;

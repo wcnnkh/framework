@@ -8,8 +8,8 @@ import io.basc.framework.event.Observable;
 import io.basc.framework.factory.ConfigurableBeanFactory;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.PropertiesResolvers;
-import io.basc.framework.util.Services;
 import io.basc.framework.util.Registration;
+import io.basc.framework.util.Services;
 import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
 
 public interface ConfigurableEnvironment extends Environment, ConfigurableBeanFactory {

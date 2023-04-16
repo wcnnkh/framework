@@ -19,6 +19,7 @@ import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.Streams;
@@ -167,7 +168,7 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 	default <T> List<Parameter> parseValues(Class<? extends T> entityClass, T entity,
 			Structure<? extends Property> structure) {
 		return parseParameters(entityClass, structure.filter((e) -> !e.isEntity()).iterator(),
-				null, (e) -> e.get(entity), (e) -> e.getKey().isNullable() || StringUtils.isNotEmpty(e.getValue()))
+				null, (e) -> e.get(entity), (e) -> e.getKey().isNullable() || ObjectUtils.isNotEmpty(e.getValue()))
 				.collect(Collectors.toList());
 	}
 }

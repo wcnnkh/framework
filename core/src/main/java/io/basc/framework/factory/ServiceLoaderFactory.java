@@ -13,15 +13,20 @@ public interface ServiceLoaderFactory extends InstanceFactory {
 	<S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass);
 
 	default <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, String... defaultNames) {
-		ServiceLoader<S> staticServiceLoader = new NamedServiceLoader<S>(this, defaultNames);
-		return new ServiceLoaders<S>(getServiceLoader(serviceClass), staticServiceLoader);
+		ServiceLoaders<S> serviceLoaderRegistry = new ServiceLoaders<>();
+		serviceLoaderRegistry.register(new NamedServiceLoader<>(this, defaultNames));
+		serviceLoaderRegistry.register(getServiceLoader(serviceClass));
+		return serviceLoaderRegistry;
 	}
 
 	default <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, Class<?>... defaultClasses) {
+		ServiceLoaders<S> serviceLoaderRegistry = new ServiceLoaders<>();
 		List<Class<?>> classes = Arrays.asList(defaultClasses);
 		ConvertibleIterable<Class<?>, String> nameIterator = new ConvertibleIterable<Class<?>, String>(classes,
 				ClassToString.NAME);
 		ServiceLoader<S> staticServiceLoader = new NamedServiceLoader<S>(this, nameIterator);
-		return new ServiceLoaders<S>(getServiceLoader(serviceClass), staticServiceLoader);
+		serviceLoaderRegistry.register(staticServiceLoader);
+		serviceLoaderRegistry.register(getServiceLoader(serviceClass));
+		return serviceLoaderRegistry;
 	}
 }

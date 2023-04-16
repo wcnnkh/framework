@@ -34,6 +34,7 @@ import io.basc.framework.sql.orm.SqlType;
 import io.basc.framework.sql.orm.TableStructure;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
@@ -68,7 +69,7 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 		while (columns.hasNext()) {
 			Column column = columns.next();
 			Object value = toDataBaseValue(column.getGetter().getValue(entity));
-			if (StringUtils.isEmpty(value)) {
+			if (ObjectUtils.isEmpty(value)) {
 				continue;
 			}
 

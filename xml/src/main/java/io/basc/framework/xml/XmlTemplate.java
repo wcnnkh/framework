@@ -12,8 +12,8 @@ public class XmlTemplate extends DocumentTemplate {
 	private final XmlParser parser = new XmlParser();
 
 	public XmlTemplate() {
-		parsers.registerService(parser);
-		transformers.registerService(transformer);
+		parsers.register(parser);
+		transformers.register(transformer);
 	}
 
 	public XmlTransformer getTransformer() {
