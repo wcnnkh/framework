@@ -47,7 +47,7 @@ public class ActionContextPostProcesser implements ContextPostProcessor {
 
 	private void actionManagerInit(Context context, ActionManager actionManager, ActionResolver actionResolver) {
 		HttpPatternResolvers patternResolver = new DefaultHttpPatternResolvers();
-		patternResolver.setPlaceholderFormat(context);
+		patternResolver.setPlaceholderFormat(context.getProperties());
 		patternResolver.configure(context);
 		for (Class<?> clz : context.getContextClasses()) {
 			if (!patternResolver.canResolve(clz)) {

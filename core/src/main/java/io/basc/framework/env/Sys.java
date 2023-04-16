@@ -9,7 +9,7 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Optional;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.value.support.SystemPropertyFactory;
+import io.basc.framework.value.SystemPropertyFactory;
 
 /**
  * 不使用System这个名称的原因是名称冲突
@@ -72,7 +72,7 @@ public final class Sys extends DefaultEnvironment {
 
 		super.init();
 
-		getProperties().getPropertyFactories().register(SystemPropertyFactory.INSTANCE);
+		getProperties().registerLast(SystemPropertyFactory.INSTANCE);
 
 		/**
 		 * 加载配置文件

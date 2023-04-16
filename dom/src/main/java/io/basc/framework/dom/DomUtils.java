@@ -10,12 +10,12 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.value.Value;
 
 public final class DomUtils {
@@ -190,7 +190,7 @@ public final class DomUtils {
 		return properties;
 	}
 
-	public static String formatNodeValue(PlaceholderFormat placeholderFormat, Node node, String value) {
+	public static String formatNodeValue(Environment environment, Node node, String value) {
 		if (StringUtils.isEmpty(value)) {
 			return value;
 		}
@@ -199,41 +199,39 @@ public final class DomUtils {
 			return value;
 		}
 
-		return placeholderFormat.replacePlaceholders(value);
+		return environment.getProperties().replacePlaceholders(value);
 	}
 
-	public static Value getNodeAttributeValue(PlaceholderFormat placeholderFormat, Node node, String name) {
+	public static Value getNodeAttributeValue(Environment environment, Node node, String name) {
 		Value value = getNodeAttributeValue(node, name);
 		if (value.isEmpty()) {
 			return value;
 		}
 
 		String str = value.getAsString();
-		str = formatNodeValue(placeholderFormat, node, str);
+		str = formatNodeValue(environment, node, str);
 		return Value.of(str);
 	}
 
-	public static String getNodeAttributeValueOrNodeContent(PlaceholderFormat placeholderFormat, Node node,
-			String name) {
+	public static String getNodeAttributeValueOrNodeContent(Environment environment, Node node, String name) {
 		String value = getNodeAttributeValueOrNodeContent(node, name);
 		if (StringUtils.isEmpty(value)) {
 			return null;
 		}
 
-		return formatNodeValue(placeholderFormat, node, value);
+		return formatNodeValue(environment, node, value);
 	}
 
-	public static String getRequireNodeAttributeValueOrNodeContent(PlaceholderFormat placeholderFormat, Node node,
-			String name) {
+	public static String getRequireNodeAttributeValueOrNodeContent(Environment environment, Node node, String name) {
 		String value = getNodeAttributeValueOrNodeContent(node, name);
 		if (StringUtils.isEmpty(value)) {
 			throw new NotFoundException("not found attribute " + name);
 		}
-		return formatNodeValue(placeholderFormat, node, value);
+		return formatNodeValue(environment, node, value);
 	}
 
-	public static Value getRequireNodeAttributeValue(PlaceholderFormat placeholderFormat, Node node, String name) {
-		Value value = getNodeAttributeValue(placeholderFormat, node, name);
+	public static Value getRequireNodeAttributeValue(Environment environment, Node node, String name) {
+		Value value = getNodeAttributeValue(environment, node, name);
 		if (value.isEmpty()) {
 			throw new NotFoundException("not found attribute " + name);
 		}

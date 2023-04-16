@@ -1,9 +1,6 @@
-package io.basc.framework.value.support;
+package io.basc.framework.value;
 
 import java.util.Properties;
-
-import io.basc.framework.value.Value;
-import io.basc.framework.value.ValueFactory;
 
 public class PropertiesValueFactory<K> implements ValueFactory<K> {
 	protected final Properties properties;

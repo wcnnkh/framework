@@ -8,7 +8,7 @@ import io.basc.framework.env.Environment;
 import io.basc.framework.event.Observable;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
-import io.basc.framework.value.support.PropertiesPropertyFactory;
+import io.basc.framework.value.PropertiesPropertyFactory;
 
 public class ConfigurableDefinition extends FactoryBeanDefinition {
 	private final Environment environment;

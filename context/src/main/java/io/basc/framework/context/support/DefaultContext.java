@@ -285,7 +285,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 					continue;
 				}
 
-				String path = replacePlaceholders(location);
+				String path = getProperties().replacePlaceholders(location);
 				registration = registration.and(source(path));
 			}
 		}

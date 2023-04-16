@@ -12,6 +12,7 @@ import io.basc.framework.convert.lang.StringConverter;
 import io.basc.framework.env.Sys;
 import io.basc.framework.json.JsonSupport;
 import io.basc.framework.json.JsonUtils;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
 
@@ -26,16 +27,17 @@ public class AnyValue implements Value, Cloneable {
 		this(value, null, null);
 	}
 
-	public AnyValue(Object value, Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
+	public AnyValue(Object value,
+			@Nullable Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
 		this(value, null, converter);
 	}
 
-	public AnyValue(Object value, TypeDescriptor type) {
+	public AnyValue(Object value, @Nullable TypeDescriptor type) {
 		this(value, type, null);
 	}
 
-	public AnyValue(Object value, TypeDescriptor type,
-			Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
+	public AnyValue(Object value, @Nullable TypeDescriptor type,
+			@Nullable Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
 		setValue(value, type);
 		setConverter(converter);
 	}

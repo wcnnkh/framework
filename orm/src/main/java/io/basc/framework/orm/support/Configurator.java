@@ -20,7 +20,7 @@ public class Configurator extends DefaultObjectRelationalMapper {
 
 	public Configurator(Environment environment) {
 		this(environment.getProperties(), TypeDescriptor.valueOf(PropertyFactory.class));
-		setPlaceholderFormat(environment);
+		setPlaceholderFormat(environment.getProperties());
 	}
 
 	public Configurator(Object source, @Nullable TypeDescriptor sourceType) {

@@ -3,11 +3,11 @@ package io.basc.framework.context.xml;
 import org.w3c.dom.Node;
 
 import io.basc.framework.dom.DomUtils;
+import io.basc.framework.env.Environment;
 import io.basc.framework.http.HttpUtils;
 import io.basc.framework.io.ResourceLoader;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.xml.XmlUtils;
 
 public class XmlValue {
@@ -54,8 +54,8 @@ public class XmlValue {
 		return DomUtils.getNodeAttributeValue(node, name).getAsString();
 	}
 
-	public String formatValue(final PlaceholderFormat format) {
-		return DomUtils.formatNodeValue(format, node, value);
+	public String formatValue(final Environment environment) {
+		return DomUtils.formatNodeValue(environment, node, value);
 	}
 
 	@Override

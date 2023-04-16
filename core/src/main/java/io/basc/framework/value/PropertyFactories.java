@@ -5,16 +5,18 @@ import java.util.Set;
 import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.event.BroadcastEventRegistry;
 import io.basc.framework.event.ChangeEvent;
-import io.basc.framework.event.ChangeType;
 import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
-import io.basc.framework.factory.Configurable;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.ElementSet;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Registration;
-import io.basc.framework.util.RegistrationException;
 
-public class PropertyFactories extends ValueFactories<String, PropertyFactory>
-		implements PropertyFactory, Configurable {
+/**
+ * 频繁修改属性建议使用此类, 不会触发数据收集
+ * 
+ * @author wcnnkh
+ *
+ */
+public class PropertyFactories extends ValueFactories<String, PropertyFactory> implements DynamicPropertyFactory {
 	private final BroadcastEventDispatcher<ChangeEvent<Elements<String>>> keyEventDispatcher;
 
 	public PropertyFactories() {
@@ -22,23 +24,18 @@ public class PropertyFactories extends ValueFactories<String, PropertyFactory>
 	}
 
 	public PropertyFactories(BroadcastEventDispatcher<ChangeEvent<Elements<String>>> keyEventDispatcher) {
+		Assert.requiredArgument(keyEventDispatcher != null, "keyEventDispatcher");
 		this.keyEventDispatcher = keyEventDispatcher;
 		setServiceClass(PropertyFactory.class);
+		getElementEventDispatcher().registerListener((e) -> {
+			Set<String> registerKeys = e.getSource().flatMap((p) -> p.keys()).toSet();
+			ElementSet<String> changeKeys = new ElementSet<>(registerKeys);
+			keyEventDispatcher.publishEvent(new ChangeEvent<>(e, changeKeys));
+		});
 	}
 
-	@Override
-	public Value get(String key) {
-		for (PropertyFactory factory : this) {
-			if (factory == null || factory == this) {
-				continue;
-			}
-
-			Value value = factory.get(key);
-			if (value != null && value.isPresent()) {
-				return value;
-			}
-		}
-		return Value.EMPTY;
+	public BroadcastEventDispatcher<ChangeEvent<Elements<String>>> getKeyEventDispatcher() {
+		return keyEventDispatcher;
 	}
 
 	@Override
@@ -58,20 +55,6 @@ public class PropertyFactories extends ValueFactories<String, PropertyFactory>
 	@Override
 	public Elements<String> keys() {
 		return Elements.of(() -> stream().flatMap((e) -> e.keys().stream()).distinct());
-	}
-
-	@Override
-	public Registration register(PropertyFactory element, int weight) throws RegistrationException {
-		Registration registration = super.register(element, weight);
-		if (registration.isEmpty()) {
-			return registration;
-		}
-
-		Set<String> registerKeys = element.keys().toSet();
-		ElementSet<String> changeKeys = new ElementSet<>(registerKeys);
-		keyEventDispatcher.publishEvent(new ChangeEvent<>(ChangeType.CREATE, changeKeys));
-		return registration
-				.and(() -> keyEventDispatcher.publishEvent(new ChangeEvent<>(ChangeType.DELETE, changeKeys)));
 	}
 
 	@Override

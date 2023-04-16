@@ -27,7 +27,7 @@ public class HttpPatternResolvers extends ConfigurableServices<HttpPatternResolv
 	}
 
 	public PlaceholderFormat getPlaceholderFormat() {
-		return placeholderFormat == null ? Sys.getEnv() : placeholderFormat;
+		return placeholderFormat == null ? Sys.getEnv().getProperties() : placeholderFormat;
 	}
 
 	public void setPlaceholderFormat(PlaceholderFormat placeholderFormat) {

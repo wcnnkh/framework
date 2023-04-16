@@ -1,11 +1,9 @@
-package io.basc.framework.value.support;
+package io.basc.framework.value;
 
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConvertibleEnumeration;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.MultiIterator;
-import io.basc.framework.value.PropertyFactory;
-import io.basc.framework.value.Value;
 
 public class SystemPropertyFactory implements PropertyFactory {
 	public static final SystemPropertyFactory INSTANCE = new SystemPropertyFactory();

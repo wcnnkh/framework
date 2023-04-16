@@ -220,8 +220,7 @@ public class TomcatApplicationServer implements ApplicationServer, Destroy {
 			context.addLifecycleListener(new AprLifecycleListener());
 		}
 
-		application.getProperties().getPropertyFactories()
-				.register(new ServletContextPropertyFactory(context.getServletContext()));
+		application.getProperties().register(new ServletContextPropertyFactory(context.getServletContext()));
 
 		configureJSP(context, application);
 		configureServlet(context, application);

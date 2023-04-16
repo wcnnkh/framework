@@ -4,18 +4,21 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
+import io.basc.framework.env.Environment;
 import io.basc.framework.mapper.AbstractMapping;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
-import io.basc.framework.util.placeholder.PlaceholderFormat;
+import io.basc.framework.util.Assert;
 import io.basc.framework.value.Value;
 
 public class DomMapping extends AbstractMapping {
-	private final PlaceholderFormat placeholderFormat;
+	private final Environment environment;
 	private final Map<String, Node> nodeMap;
 
-	public DomMapping(PlaceholderFormat placeholderFormat, Map<String, Node> nodeMap) {
-		this.placeholderFormat = placeholderFormat;
+	public DomMapping(Environment environment, Map<String, Node> nodeMap) {
+		Assert.requiredArgument(environment != null, "environment");
+		Assert.requiredArgument(nodeMap != null, "nodeMap");
+		this.environment = environment;
 		this.nodeMap = nodeMap;
 	}
 
@@ -32,7 +35,7 @@ public class DomMapping extends AbstractMapping {
 			return null;
 		}
 
-		String value = DomUtils.formatNodeValue(placeholderFormat, node, node.getNodeValue());
+		String value = DomUtils.formatNodeValue(environment, node, node.getNodeValue());
 		if (value == null) {
 			return null;
 		}

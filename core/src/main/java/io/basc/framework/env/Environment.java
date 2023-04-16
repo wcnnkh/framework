@@ -19,10 +19,8 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.placeholder.PlaceholderFormat;
-import io.basc.framework.util.placeholder.PlaceholderReplacer;
 
-public interface Environment extends BeanFactory, PlaceholderFormat {
+public interface Environment extends BeanFactory {
 	public static final String CHARSET_PROPERTY = "io.basc.framework.charset.name";
 	public static final String WORK_PATH_PROPERTY = "io.basc.framework.work.path";
 
@@ -50,8 +48,6 @@ public interface Environment extends BeanFactory, PlaceholderFormat {
 	default Observable<String> getObservableWorkPath() {
 		return getProperties().getObservable(WORK_PATH_PROPERTY).map((e) -> e.getAsString());
 	}
-
-	PlaceholderReplacer getPlaceholderReplacer();
 
 	default Observable<Properties> getProperties(PropertiesResolver propertiesResolver, String location) {
 		return getProperties(propertiesResolver, location, (String) null);
@@ -96,19 +92,6 @@ public interface Environment extends BeanFactory, PlaceholderFormat {
 
 	default String getWorkPath() {
 		return getProperties().getAsString(WORK_PATH_PROPERTY);
-	}
-
-	/**
-	 * 解析并替换文本
-	 */
-	@Override
-	default String replacePlaceholders(String text) {
-		return getPlaceholderReplacer().replacePlaceholders(text, (name) -> getProperties().getAsString(name));
-	}
-
-	@Override
-	default String replaceRequiredPlaceholders(String text) throws IllegalArgumentException {
-		return getPlaceholderReplacer().replaceRequiredPlaceholders(text, (name) -> getProperties().getAsString(name));
 	}
 
 	default Object resolveResource(String location, TypeDescriptor targetType) {

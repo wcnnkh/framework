@@ -1,15 +1,13 @@
 package io.basc.framework.value;
 
 import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Stream;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.ElementsWrapper;
 
-public final class Values implements Elements<Value> {
+public class Values extends ElementsWrapper<Value, Elements<Value>> implements Elements<Value> {
 	public static Values of(Object... args) {
 		Assert.requiredArgument(args != null, "args");
 		Value[] values = new Value[args.length];
@@ -30,40 +28,11 @@ public final class Values implements Elements<Value> {
 		return new Values(values);
 	}
 
-	protected final Value[] array;
-
-	public Values(Value... array) {
-		Assert.requiredArgument(array != null, "array");
-		this.array = array;
+	public Values(Value... values) {
+		this(Elements.of(Arrays.asList(values)));
 	}
 
-	@Override
-	public Value first() {
-		return array[0];
-	}
-
-	@Override
-	public Value last() {
-		return array[array.length - 1];
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return array.length == 0;
-	}
-
-	@Override
-	public List<Value> toList() {
-		return Arrays.asList(array);
-	}
-
-	@Override
-	public Iterator<Value> iterator() {
-		return toList().iterator();
-	}
-
-	@Override
-	public Stream<Value> stream() {
-		return Stream.of(array);
+	public Values(Elements<Value> elements) {
+		super(elements);
 	}
 }

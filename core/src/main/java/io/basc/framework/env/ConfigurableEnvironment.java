@@ -10,13 +10,10 @@ import io.basc.framework.io.Resource;
 import io.basc.framework.io.resolver.PropertiesResolvers;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.Services;
-import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
 
 public interface ConfigurableEnvironment extends Environment, ConfigurableBeanFactory {
 
 	ConfigurableConversionService getConversionService();
-
-	ConfigurablePlaceholderReplacer getPlaceholderReplacer();
 
 	@Override
 	ConfigurableEnvironmentProperties getProperties();
@@ -40,6 +37,8 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableBeanFa
 	Registration source(Resource resource);
 
 	default Registration source(String location) {
-		return source(getResourceLoader().getResource(location));
+		String locationUse = getProperties().replacePlaceholders(location);
+		Resource resource = getResourceLoader().getResource(locationUse);
+		return source(resource);
 	}
 }

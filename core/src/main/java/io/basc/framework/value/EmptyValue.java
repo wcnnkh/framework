@@ -19,4 +19,9 @@ public class EmptyValue implements Value, Serializable {
 			throws ConversionException {
 		throw new ConversionFailedException(sourceType, targetType, source, null);
 	}
+	
+	@Override
+	public Value orElse(Value other) {
+		return other;
+	}
 }

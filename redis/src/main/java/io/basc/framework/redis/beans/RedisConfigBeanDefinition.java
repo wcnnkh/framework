@@ -9,8 +9,8 @@ import io.basc.framework.event.Observable;
 import io.basc.framework.factory.BeanResolver;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.redis.RedisConfiguration;
+import io.basc.framework.value.PropertiesPropertyFactory;
 import io.basc.framework.value.PropertyFactory;
-import io.basc.framework.value.support.PropertiesPropertyFactory;
 
 public class RedisConfigBeanDefinition extends ContextBeanDefinition {
 	public static final String DEFAULT_CONFIGURATION = "/redis/redis.properties";
@@ -23,7 +23,7 @@ public class RedisConfigBeanDefinition extends ContextBeanDefinition {
 	public boolean isInstance() {
 		return getEnvironment().getResourceLoader().exists(DEFAULT_CONFIGURATION);
 	}
-	
+
 	@Override
 	public boolean isAopEnable(BeanResolver beanResolver) {
 		return false;
@@ -32,8 +32,7 @@ public class RedisConfigBeanDefinition extends ContextBeanDefinition {
 	@Override
 	public Object create() throws InstanceException {
 		RedisConfiguration redisConfiguration = new RedisConfiguration();
-		Observable<Properties> observable = getEnvironment()
-				.getProperties(DEFAULT_CONFIGURATION);
+		Observable<Properties> observable = getEnvironment().getProperties(DEFAULT_CONFIGURATION);
 		ContextConfigurator mapper = new ContextConfigurator(getContext());
 		mapper.setConversionService(getEnvironment().getConversionService());
 		mapper.configure(getBeanFactory());

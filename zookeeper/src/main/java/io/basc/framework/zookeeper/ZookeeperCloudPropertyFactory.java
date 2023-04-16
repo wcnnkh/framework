@@ -10,9 +10,9 @@ import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.event.BroadcastEventRegistry;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.ChangeType;
-import io.basc.framework.event.support.StandardBroadcastNamedEventDispatcher;
 import io.basc.framework.io.JavaSerializer;
 import io.basc.framework.io.Serializer;
 import io.basc.framework.logger.Logger;
@@ -22,7 +22,7 @@ import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ElementList;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.ConfigurablePropertyFactory;
+import io.basc.framework.value.AbstractEditablePropertyFactory;
 import io.basc.framework.value.Value;
 
 /**
@@ -32,8 +32,7 @@ import io.basc.framework.value.Value;
  *
  */
 @Provider(order = Integer.MIN_VALUE)
-public class ZookeeperCloudPropertyFactory extends StandardBroadcastNamedEventDispatcher<String, ChangeEvent<String>>
-		implements ConfigurablePropertyFactory, Watcher {
+public class ZookeeperCloudPropertyFactory extends AbstractEditablePropertyFactory implements Watcher {
 	private static Logger logger = LoggerFactory.getLogger(ZookeeperCloudPropertyFactory.class);
 	private final ZooKeeper zooKeeper;
 	private final String parentPath;
@@ -123,21 +122,21 @@ public class ZookeeperCloudPropertyFactory extends StandardBroadcastNamedEventDi
 		}
 
 		String key = getKey(eventPath);
-		ChangeEvent<String> changeEvent;
+		ChangeType changeType;
 		switch (event.getType()) {
 		case NodeDeleted:
-			changeEvent = new ChangeEvent<String>(ChangeType.DELETE, key);
+			changeType = ChangeType.DELETE;
 			break;
 		case NodeCreated:
-			changeEvent = new ChangeEvent<String>(ChangeType.CREATE, key);
+			changeType = ChangeType.CREATE;
 			break;
 		default:
-			changeEvent = new ChangeEvent<String>(ChangeType.UPDATE, key);
+			changeType = ChangeType.UPDATE;
 			break;
 		}
 
 		try {
-			publishEvent(key, changeEvent);
+			getKeyEventDispatcher().publishEvent(new ChangeEvent<>(changeType, Elements.singleton(key)));
 		} catch (Exception e) {
 			logger.error(e, "zookeeper config publish error");
 		}
@@ -172,6 +171,12 @@ public class ZookeeperCloudPropertyFactory extends StandardBroadcastNamedEventDi
 		}
 		byte[] data = getSerializer().serialize(value);
 		return ZooKeeperUtils.setData(zooKeeper, path, data);
+	}
+
+	@Override
+	public BroadcastEventRegistry<ChangeEvent<Elements<String>>> getKeyEventRegistry() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

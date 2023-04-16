@@ -34,25 +34,8 @@ import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.ServiceLoaders;
 import io.basc.framework.util.Services;
 import io.basc.framework.util.StringMatchers;
-import io.basc.framework.util.placeholder.ConfigurablePlaceholderReplacer;
-import io.basc.framework.util.placeholder.support.DefaultPlaceholderReplacer;
-import io.basc.framework.value.AnyValue;
-import io.basc.framework.value.PropertyWrapper;
-import io.basc.framework.value.Value;
 
-public class DefaultEnvironment extends DefaultBeanFactory
-		implements ConfigurableEnvironment, PropertyWrapper, Configurable {
-	private class AnyFormatValue extends AnyValue {
-
-		public AnyFormatValue(Object value) {
-			super(value, null, DefaultEnvironment.this.getConversionService());
-		}
-
-		public String getAsString() {
-			return replacePlaceholders(super.getAsString());
-		};
-	}
-
+public class DefaultEnvironment extends DefaultBeanFactory implements ConfigurableEnvironment, Configurable {
 	private static final String ENABLE_PREFIX = "io.basc.framework.spi";
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
@@ -74,9 +57,8 @@ public class DefaultEnvironment extends DefaultBeanFactory
 
 	private Environment parentEnvironment;
 
-	private final DefaultPlaceholderReplacer placeholderReplacer = new DefaultPlaceholderReplacer();
 	// properties和environmentResourceLoader不能更换顺序
-	private final DefaultEnvironmentProperties properties = new DefaultEnvironmentProperties(this);
+	private final ConfigurableEnvironmentProperties properties = new ConfigurableEnvironmentProperties();
 	private final PropertiesResolvers propertiesResolvers = new PropertiesResolvers();
 
 	private final ResourceResolvers resourceResolvers = new ResourceResolvers(propertiesResolvers, conversionService,
@@ -85,11 +67,12 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	private final Services<Resource> resources = new Services<>();
 
 	public DefaultEnvironment() {
+		properties.setConversionService(conversionService);
 		conversionService.register(new ConverterConversionService(Resource.class, Properties.class,
 				Processor.of(new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers()))));
 		conversionService.register(new ResourceResolverConversionService(resourceResolvers));
 		registerSingleton(Environment.class.getName(), this);
-		this.properties.getPropertyFactories().getServiceInjectors().register((instance) -> {
+		this.properties.getServiceInjectors().register((instance) -> {
 			if (instance instanceof EnvironmentAware) {
 				((EnvironmentAware) instance).setEnvironment(this);
 			}
@@ -119,10 +102,6 @@ public class DefaultEnvironment extends DefaultBeanFactory
 
 		if (!properties.isConfigured()) {
 			properties.configure(serviceLoaderFactory);
-		}
-
-		if (!placeholderReplacer.isConfigured()) {
-			placeholderReplacer.configure(this);
 		}
 
 		if (!environmentPostProcessors.isConfigured()) {
@@ -164,12 +143,7 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	}
 
 	@Override
-	public ConfigurablePlaceholderReplacer getPlaceholderReplacer() {
-		return placeholderReplacer;
-	}
-
-	@Override
-	public DefaultEnvironmentProperties getProperties() {
+	public ConfigurableEnvironmentProperties getProperties() {
 		return this.properties;
 	}
 
@@ -245,9 +219,8 @@ public class DefaultEnvironment extends DefaultBeanFactory
 		setParentBeanFactory(environment);
 		this.parentEnvironment = environment;
 		if (environment != null) {
-			placeholderReplacer.registerLast(environment.getPlaceholderReplacer());
 			conversionService.registerLast(environment.getConversionService());
-			properties.getPropertyFactories().registerLast(environment.getProperties());
+			properties.setParentProperties(environment.getProperties());
 			environmentResourceLoader.getResourceLoaders().registerLast(environment.getResourceLoader());
 			resourceResolvers.registerLast(environment.getResourceResolver());
 			propertiesResolvers.registerLast(environment.getPropertiesResolver());
@@ -255,7 +228,7 @@ public class DefaultEnvironment extends DefaultBeanFactory
 	}
 
 	public Registration source(Observable<Properties> properties) {
-		return this.getProperties().getObservable().registerProperties(properties);
+		return this.getProperties().getArchive().registerProperties(properties);
 	}
 
 	@Override
@@ -265,11 +238,6 @@ public class DefaultEnvironment extends DefaultBeanFactory
 
 	public Registration source(Resource resource, @Nullable Charset charset) {
 		return source(resource, getPropertiesResolver(), charset);
-	}
-
-	@Override
-	public Registration source(String location) {
-		return ConfigurableEnvironment.super.source(replacePlaceholders(location));
 	}
 
 	public Registration source(Resource resource, PropertiesResolver propertiesResolver, @Nullable Charset charset) {
@@ -304,16 +272,5 @@ public class DefaultEnvironment extends DefaultBeanFactory
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public Value wrap(String key, Object value) {
-		Value v;
-		if (value instanceof Value) {
-			return (Value) value;
-		} else {
-			v = new AnyFormatValue(value);
-		}
-		return v;
 	}
 }

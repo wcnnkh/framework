@@ -26,7 +26,8 @@ public class MainApplication extends DefaultApplication implements Runnable {
 			setPort(port.getAsInt());
 		}
 
-		getProperties().getPropertyFactories().register(mainArgs);
+		// 设置最高优先级
+		getProperties().registerFirst(mainArgs);
 		setClassLoader(sourceClass.getClassLoader());
 		setLogger(LoggerFactory.getLogger(sourceClass));
 		getLogger().debug("args:{}", this.mainArgs);

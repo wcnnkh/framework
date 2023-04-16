@@ -76,7 +76,7 @@ public class DubboRegistry {
 				continue;
 			}
 
-			value = environment.replacePlaceholders(value);
+			value = environment.getProperties().replacePlaceholders(value);
 			Field field = fields.getBySetterName(name, null);
 			if (field == null) {
 				logger.warn("{} ignore attribute name={}, value={}", instance.getClass(), name, value);

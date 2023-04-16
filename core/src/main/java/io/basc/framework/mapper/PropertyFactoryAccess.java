@@ -1,7 +1,7 @@
 package io.basc.framework.mapper;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.value.ConfigurablePropertyFactory;
+import io.basc.framework.value.EditablePropertyFactory;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
 
@@ -32,11 +32,11 @@ public class PropertyFactoryAccess<E extends Throwable> implements ObjectAccess<
 
 	@Override
 	public void set(Parameter parameter) throws E {
-		if (propertyFactory == null || !(propertyFactory instanceof ConfigurablePropertyFactory)) {
+		if (propertyFactory == null || !(propertyFactory instanceof EditablePropertyFactory)) {
 			throw new UnsupportedOperationException(String.valueOf(parameter));
 		}
 
-		((ConfigurablePropertyFactory) propertyFactory).put(parameter.getName(), parameter);
+		((EditablePropertyFactory) propertyFactory).put(parameter.getName(), parameter);
 	}
 
 }

@@ -101,7 +101,7 @@ class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader
 	@Override
 	public Resource[] getResources(String locationPattern) {
 		Collection<String> names = profilesResolver.resolve(environment.getProperties(),
-				environment.replacePlaceholders(locationPattern));
+				environment.getProperties().replacePlaceholders(locationPattern));
 		List<Resource> resources = new ArrayList<Resource>(names.size());
 		for (String name : names) {
 			Resource res = getResourceByCache(name);
