@@ -11,6 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import io.basc.framework.cloud.DiscoveryClient;
 import io.basc.framework.cloud.Service;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.logger.Logger;
+import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
@@ -18,6 +20,7 @@ import io.basc.framework.util.Selector;
 
 @Provider(value = DiscoveryLoadBalancer.class, assignableValue = false)
 public class DefaultDiscoveryLoadBalancer extends AbstractLoadBalancer<Service> implements DiscoveryLoadBalancer {
+	private static Logger logger = LoggerFactory.getLogger(DefaultDiscoveryLoadBalancer.class);
 	private final DiscoveryClient discoveryClient;
 	private volatile Map<String, Service[]> serviceMap;
 	private final ConcurrentHashMap<String, State> stateMap = new ConcurrentHashMap<>();
@@ -33,7 +36,7 @@ public class DefaultDiscoveryLoadBalancer extends AbstractLoadBalancer<Service> 
 		this.discoveryClient = discoveryClient;
 	}
 
-	private void init() {
+	private void touch() {
 		if (CollectionUtils.isEmpty(serviceMap)) {
 			synchronized (this) {
 				if (CollectionUtils.isEmpty(serviceMap)) {
@@ -45,7 +48,7 @@ public class DefaultDiscoveryLoadBalancer extends AbstractLoadBalancer<Service> 
 
 	@Override
 	public Iterator<Service> iterator() {
-		init();
+		touch();
 		if (CollectionUtils.isEmpty(serviceMap)) {
 			return Collections.emptyIterator();
 		}
@@ -63,14 +66,14 @@ public class DefaultDiscoveryLoadBalancer extends AbstractLoadBalancer<Service> 
 		stateMap.clear();
 		List<String> names = discoveryClient.getServices();
 		Map<String, Service[]> serviceMap = new HashMap<>();
-		if (!CollectionUtils.isEmpty(serviceMap)) {
-			for (String name : names) {
-				List<Service> instances = discoveryClient.getInstances(name);
-				if (CollectionUtils.isEmpty(instances)) {
-					continue;
-				}
-				serviceMap.put(name, instances.toArray(new Service[0]));
+		for (String name : names) {
+			List<Service> instances = discoveryClient.getInstances(name);
+			if (CollectionUtils.isEmpty(instances)) {
+				continue;
 			}
+
+			logger.info("reload application[{}] services {}", name, instances);
+			serviceMap.put(name, instances.toArray(new Service[0]));
 		}
 		this.serviceMap = serviceMap.isEmpty() ? Collections.emptyMap() : serviceMap;
 	}
@@ -78,7 +81,7 @@ public class DefaultDiscoveryLoadBalancer extends AbstractLoadBalancer<Service> 
 	@Override
 	public Elements<Service> chooses(String name) {
 		// 初始化
-		init();
+		touch();
 		if (CollectionUtils.isEmpty(serviceMap)) {
 			return Elements.empty();
 		}
@@ -96,5 +99,10 @@ public class DefaultDiscoveryLoadBalancer extends AbstractLoadBalancer<Service> 
 		Assert.requiredArgument(service != null, "service");
 		Assert.requiredArgument(state != null, "state");
 		stateMap.put(service.getId(), state);
+	}
+
+	@Override
+	public String toString() {
+		return serviceMap == null ? "{}" : serviceMap.toString();
 	}
 }

@@ -7,12 +7,12 @@ import javax.ws.rs.Path;
 
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.support.MainApplication;
+import io.basc.framework.cloud.loadbalancer.DiscoveryLoadBalancer;
 import io.basc.framework.context.ioc.annotation.Autowired;
 import io.basc.framework.http.HttpResponseEntity;
 import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.netflix.eureka.EurekaDiscoveryClient;
 import io.basc.framework.netflix.eureka.boot.EnableEurekaClient;
 import io.basc.framework.util.XUtils;
 
@@ -25,14 +25,14 @@ public class EurekaClientStart {
 
 	public static void main(String[] args) throws InterruptedException, ExecutionException {
 		Application application = MainApplication.run(EurekaClientStart.class, args).get();
-		EurekaDiscoveryClient client = application.getInstance(EurekaDiscoveryClient.class);
+		DiscoveryLoadBalancer client = application.getInstance(DiscoveryLoadBalancer.class);
 		HttpClient httpClient = application.getInstance(HttpClient.class);
 		EurekaTestClient eurekaTestClient = application.getInstance(EurekaTestClient.class);
 		while (true) {
 			try {
-				logger.info(client.getServices().toString());
+				logger.info(client.toString());
 				Thread.sleep(1000);
-				if (client.getServices().isEmpty()) {
+				if (client.isEmpty()) {
 					continue;
 				}
 				HttpResponseEntity<String> response = httpClient.get(String.class,
