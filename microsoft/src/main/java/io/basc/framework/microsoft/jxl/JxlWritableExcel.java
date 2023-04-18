@@ -1,14 +1,12 @@
 package io.basc.framework.microsoft.jxl;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.stream.Stream;
 
 import io.basc.framework.microsoft.Excel;
 import io.basc.framework.microsoft.ExcelException;
 import io.basc.framework.microsoft.WritableExcel;
 import io.basc.framework.microsoft.WritableSheet;
-import io.basc.framework.util.Streams;
+import io.basc.framework.util.Elements;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
@@ -29,7 +27,7 @@ public class JxlWritableExcel implements WritableExcel {
 
 	@Override
 	public long getLimit() {
-		return limit > 0 ? limit : WritableExcel.super.count();
+		return limit > 0 ? limit : getTotal();
 	}
 
 	public void close() throws IOException {
@@ -85,21 +83,12 @@ public class JxlWritableExcel implements WritableExcel {
 	}
 
 	@Override
-	public Iterator<String[]> iterator() {
-		Iterator<String[]> iterator = WritableExcel.super.iterator();
+	public Elements<String[]> getElements() {
+		Elements<String[]> elements = WritableExcel.super.getElements();
 		if (limit > 0) {
-			return Streams.stream(iterator).limit(limit).iterator();
+			return elements.limit(limit);
 		}
-		return iterator;
-	}
-
-	@Override
-	public Stream<String[]> stream() {
-		Stream<String[]> iterator = WritableExcel.super.stream();
-		if (limit > 0) {
-			return iterator.limit(limit);
-		}
-		return iterator;
+		return elements;
 	}
 
 	@Override

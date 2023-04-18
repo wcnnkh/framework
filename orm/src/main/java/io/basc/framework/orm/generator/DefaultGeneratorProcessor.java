@@ -48,7 +48,7 @@ public class DefaultGeneratorProcessor implements GeneratorProcessor {
 	@Override
 	public <T> void process(Class<? extends T> entityClass, Object entity) {
 		Map<Object, Object> contextMap = new HashMap<Object, Object>();
-		for (Field field : objectRelationalMapping.getStructure(entityClass)) {
+		for (Field field : objectRelationalMapping.getStructure(entityClass).getElements()) {
 			if (objectRelationalMapping.hasEffectiveValue(entity, field)) {
 				// 存在默认值 ，忽略
 				continue;

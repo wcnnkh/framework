@@ -2,15 +2,13 @@ package io.basc.framework.microsoft.poi;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
-import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.Workbook;
 
 import io.basc.framework.microsoft.Excel;
 import io.basc.framework.microsoft.WritableExcel;
 import io.basc.framework.microsoft.WritableSheet;
-import io.basc.framework.util.Streams;
+import io.basc.framework.util.Elements;
 
 public class PoiExcel implements WritableExcel {
 	private final Workbook workbook;
@@ -109,24 +107,15 @@ public class PoiExcel implements WritableExcel {
 
 	@Override
 	public long getLimit() {
-		return limit > 0 ? limit : count();
+		return limit > 0 ? limit : getTotal();
 	}
 
 	@Override
-	public Iterator<String[]> iterator() {
-		Iterator<String[]> cursor = WritableExcel.super.iterator();
+	public Elements<String[]> getElements() {
+		Elements<String[]> elements = WritableExcel.super.getElements();
 		if (limit > 0) {
-			return Streams.stream(cursor).limit(limit).iterator();
+			elements = elements.limit(limit);
 		}
-		return cursor;
-	}
-
-	@Override
-	public Stream<String[]> stream() {
-		Stream<String[]> stream = WritableExcel.super.stream();
-		if (limit > 0) {
-			return stream.limit(limit);
-		}
-		return stream;
+		return elements;
 	}
 }

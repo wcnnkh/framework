@@ -41,6 +41,6 @@ public interface Pages<K, T> extends Page<K, T>, Pageables<K, T> {
 	 */
 	default Paginations<T> toPaginations(long start, long limit) {
 		return new StandardPaginations<>(getTotal(), start, limit,
-				(s, count) -> Pages.this.all().stream().skip(start).limit(limit));
+				(s, count) -> Pages.this.all().getElements().convert((e) -> e.skip(start).limit(limit)));
 	}
 }

@@ -1,11 +1,11 @@
 package io.basc.framework.util.page;
 
-import java.util.List;
 import java.util.function.Function;
 
-import io.basc.framework.util.ElementsWrapper;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.Wrapper;
 
-public class PageableWrapper<K, T, W extends Pageable<K, T>> extends ElementsWrapper<T, W> implements Pageable<K, T> {
+public class PageableWrapper<K, T, W extends Pageable<K, T>> extends Wrapper<W> implements Pageable<K, T> {
 
 	public PageableWrapper(W wrappedTarget) {
 		super(wrappedTarget);
@@ -17,13 +17,8 @@ public class PageableWrapper<K, T, W extends Pageable<K, T>> extends ElementsWra
 	}
 
 	@Override
-	public K getNextCursorId() {
-		return wrappedTarget.getNextCursorId();
-	}
-
-	@Override
-	public List<T> getList() {
-		return wrappedTarget.getList();
+	public Elements<T> getElements() {
+		return wrappedTarget.getElements();
 	}
 
 	@Override
@@ -45,5 +40,10 @@ public class PageableWrapper<K, T, W extends Pageable<K, T>> extends ElementsWra
 	@Override
 	public Pageable<K, T> shared() {
 		return wrappedTarget.shared();
+	}
+
+	@Override
+	public K getNextCursorId() {
+		return wrappedTarget.getNextCursorId();
 	}
 }

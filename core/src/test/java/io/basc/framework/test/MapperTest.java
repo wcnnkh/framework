@@ -32,10 +32,11 @@ public class MapperTest {
 		System.out.println(a);
 
 		Structure<? extends Field> structure = mapper.getStructure(A.class);
-		Field firstField = structure.first();
+		Field firstField = structure.getElements().first();
 		structure = structure.setParentField(firstField);
 		structure = structure.setNameNestingDepth(1);
-		structure.stream().limit(1).forEach((e) -> assertTrue(e.getName().startsWith(firstField.getName())));
+		structure.getElements().convert((e) -> e.limit(1))
+				.forEach((e) -> assertTrue(e.getName().startsWith(firstField.getName())));
 	}
 
 	public static class A extends B {

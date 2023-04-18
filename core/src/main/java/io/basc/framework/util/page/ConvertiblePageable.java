@@ -1,12 +1,8 @@
 package io.basc.framework.util.page;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import io.basc.framework.util.ConvertibleIterator;
+import io.basc.framework.util.Elements;
 
 public class ConvertiblePageable<M extends Pageable<SK, ST>, SK, ST, K, T> implements Pageable<K, T> {
 	protected final M source;
@@ -38,17 +34,7 @@ public class ConvertiblePageable<M extends Pageable<SK, ST>, SK, ST, K, T> imple
 	}
 
 	@Override
-	public Iterator<T> iterator() {
-		return new ConvertibleIterator<>(source.iterator(), valueMap);
-	}
-
-	@Override
-	public List<T> getList() {
-		return source.getList().stream().map(valueMap).collect(Collectors.toList());
-	}
-
-	@Override
-	public Stream<T> stream() {
-		return source.stream().map(valueMap);
+	public Elements<T> getElements() {
+		return source.getElements().map(valueMap);
 	}
 }

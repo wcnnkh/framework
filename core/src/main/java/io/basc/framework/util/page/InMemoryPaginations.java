@@ -1,10 +1,9 @@
 package io.basc.framework.util.page;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
 
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Elements;
 
 /**
  * 在内存中分页
@@ -15,59 +14,69 @@ import io.basc.framework.util.Assert;
  */
 public class InMemoryPaginations<T> implements Paginations<T>, Serializable {
 	private static final long serialVersionUID = 1L;
-	private final List<T> source;
-	private final int start;
-	private final int count;
+	private final Elements<T> elements;
+	private long cursorId;
+	private long limit;
 
-	public InMemoryPaginations(List<T> source, int start, int count) {
-		Assert.requiredArgument(source != null, "source");
-		Assert.isTrue(start >= 0, "start[" + start + "] cannot be less than 0");
-		Assert.isTrue(count > 0, "count[" + count + "] greater than 0 is required");
-		this.start = start;
-		this.source = source;
-		this.count = count;
+	public InMemoryPaginations(Elements<T> elements) {
+		Assert.requiredArgument(elements != null, "elements");
+		this.elements = elements;
+	}
+
+	public void setCursorId(long cursorId) {
+		Assert.isTrue(cursorId >= 0, "cursorId[" + cursorId + "] cannot be less than 0");
+		this.cursorId = cursorId;
+	}
+
+	public void setLimit(long limit) {
+		Assert.isTrue(limit > 0, "limit[" + limit + "] greater than 0 is required");
+		this.limit = limit;
 	}
 
 	@Override
 	public long getTotal() {
-		return source.size();
+		return elements.count();
 	}
 
 	@Override
 	public long getLimit() {
-		return count;
+		return limit > 0 ? limit : getTotal();
 	}
 
 	@Override
 	public Long getCursorId() {
-		return (long) start;
+		return cursorId;
 	}
 
 	@Override
 	public Long getNextCursorId() {
-		int end = start + count;
-		if (end <= 0 || end >= source.size()) {
-			// 超过数量或int溢出了
+		long end = cursorId + limit;
+		long total = getTotal();
+		if (end <= 0 || end >= total) {
 			return null;
 		}
-		return (long) Math.min(end, source.size());
+		return Math.min(end, total);
 	}
 
 	@Override
-	public List<T> getList() {
-		int end = Math.min(start + count, source.size());
-		if (start >= end) {
-			return Collections.emptyList();
+	public Elements<T> getElements() {
+		Elements<T> elements = this.elements;
+		if (cursorId > 0) {
+			elements = elements.convert((e) -> e.skip(cursorId));
 		}
 
-		return source.subList(start, end);
+		if (limit > 0) {
+			elements = elements.convert((e) -> e.limit(limit));
+		}
+		return elements;
 	}
 
 	@Override
 	public Paginations<T> jumpTo(Long cursorId, long count) {
 		Assert.requiredArgument(cursorId != null, "cursorId");
-		Assert.isTrue(cursorId <= Integer.MAX_VALUE);
-		Assert.isTrue(count <= Integer.MAX_VALUE);
-		return new InMemoryPaginations<T>(source, cursorId.intValue(), (int) count);
+		InMemoryPaginations<T> inMemoryPaginations = new InMemoryPaginations<T>(this.elements);
+		inMemoryPaginations.setCursorId(cursorId);
+		inMemoryPaginations.setLimit(count);
+		return inMemoryPaginations;
 	}
 }

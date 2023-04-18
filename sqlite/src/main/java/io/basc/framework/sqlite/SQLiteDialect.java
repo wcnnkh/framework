@@ -19,6 +19,7 @@ import io.basc.framework.sql.orm.TableStructure;
 import io.basc.framework.sql.orm.TableStructureMapping;
 import io.basc.framework.sql.orm.support.StandardSqlDialect;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.StringUtils;
 
@@ -41,7 +42,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 
 	@Override
 	public Collection<Sql> createTable(TableStructure tableStructure) throws SqlDialectException {
-		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
+		Elements<Column> primaryKeys = tableStructure.getPrimaryKeys();
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCreateTablePrefix());
 		sb.append(" ");
@@ -59,7 +60,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 				sb.append("(" + sqlType.getLength() + ")");
 			}
 
-			if (primaryKeys.size() == 1) {
+			if (primaryKeys.count() == 1) {
 				if (col.isPrimaryKey()) {
 					sb.append(" PRIMARY KEY");
 				}
@@ -88,7 +89,7 @@ public class SQLiteDialect extends StandardSqlDialect {
 		}
 
 		// primary keys
-		if (primaryKeys.size() > 1) {
+		if (primaryKeys.count() > 1) {
 			// 多主键
 			sb.append(",primary key(");
 			iterator = tableStructure.getPrimaryKeys().iterator();

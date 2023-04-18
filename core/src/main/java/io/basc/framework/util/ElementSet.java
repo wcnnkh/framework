@@ -1,6 +1,5 @@
 package io.basc.framework.util;
 
-import java.util.Collections;
 import java.util.Set;
 
 public class ElementSet<E> extends SetWrapper<E> implements Elements<E> {
@@ -11,7 +10,22 @@ public class ElementSet<E> extends SetWrapper<E> implements Elements<E> {
 	}
 
 	@Override
-	public Set<E> toSet() {
-		return Collections.unmodifiableSet(wrappedTarget);
+	public ElementSet<E> toSet() {
+		return this;
+	}
+
+	@Override
+	public long count() {
+		return wrappedTarget.size();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return wrappedTarget.isEmpty();
+	}
+
+	@Override
+	public Elements<E> cacheable() {
+		return this;
 	}
 }

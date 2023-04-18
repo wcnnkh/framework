@@ -1,8 +1,13 @@
 package io.basc.framework.util;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -18,24 +23,39 @@ public class StreamableWrapper<E, W extends Streamable<E>> extends Wrapper<W> im
 	}
 
 	@Override
+	public boolean allMatch(Predicate<? super E> predicate) {
+		return wrappedTarget.allMatch(predicate);
+	}
+
+	@Override
+	public boolean anyMatch(Predicate<? super E> predicate) {
+		return wrappedTarget.anyMatch(predicate);
+	}
+
+	@Override
+	public <T> boolean anyMatch(Streamable<T> target, BiPredicate<? super E, ? super T> predicate) {
+		return wrappedTarget.anyMatch(target, predicate);
+	}
+
+	@Override
 	public <R, A> R collect(Collector<? super E, A, R> collector) {
 		return wrappedTarget.collect(collector);
 	}
 
 	@Override
-	public <U> Streamable<U> convert(Function<? super Stream<E>, ? extends Stream<U>> converter) {
-		return wrappedTarget.convert(converter);
+	public boolean contains(E element) {
+		return wrappedTarget.contains(element);
+	}
+
+	@Override
+	public long count() {
+		return wrappedTarget.count();
 	}
 
 	@Override
 	public <T, X extends Throwable> T export(Processor<? super Stream<E>, ? extends T, ? extends X> processor)
 			throws X {
 		return wrappedTarget.export(processor);
-	}
-
-	@Override
-	public Streamable<E> filter(Predicate<? super E> predicate) {
-		return wrappedTarget.filter(predicate);
 	}
 
 	@Override
@@ -54,8 +74,18 @@ public class StreamableWrapper<E, W extends Streamable<E>> extends Wrapper<W> im
 	}
 
 	@Override
-	public <U> Streamable<U> flatMap(Function<? super E, ? extends Streamable<U>> mapper) {
-		return wrappedTarget.flatMap(mapper);
+	public void forEach(Consumer<? super E> action) {
+		wrappedTarget.forEach(action);
+	}
+
+	@Override
+	public void forEachOrdered(Consumer<? super E> action) {
+		wrappedTarget.forEachOrdered(action);
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return wrappedTarget.isEmpty();
 	}
 
 	@Override
@@ -64,8 +94,33 @@ public class StreamableWrapper<E, W extends Streamable<E>> extends Wrapper<W> im
 	}
 
 	@Override
-	public <U> Streamable<U> map(Function<? super E, ? extends U> mapper) {
-		return wrappedTarget.map(mapper);
+	public Optional<E> max(Comparator<? super E> comparator) {
+		return wrappedTarget.max(comparator);
+	}
+
+	@Override
+	public Optional<E> min(Comparator<? super E> comparator) {
+		return wrappedTarget.min(comparator);
+	}
+
+	@Override
+	public boolean noneMatch(Predicate<? super E> predicate) {
+		return wrappedTarget.noneMatch(predicate);
+	}
+
+	@Override
+	public Optional<E> reduce(BinaryOperator<E> accumulator) {
+		return wrappedTarget.reduce(accumulator);
+	}
+
+	@Override
+	public E reduce(E identity, BinaryOperator<E> accumulator) {
+		return wrappedTarget.reduce(identity, accumulator);
+	}
+
+	@Override
+	public <U> U reduce(U identity, BiFunction<U, ? super E, U> accumulator, BinaryOperator<U> combiner) {
+		return wrappedTarget.reduce(identity, accumulator, combiner);
 	}
 
 	@Override
@@ -74,8 +129,8 @@ public class StreamableWrapper<E, W extends Streamable<E>> extends Wrapper<W> im
 	}
 
 	@Override
-	public void forEach(Consumer<? super E> action) {
-		wrappedTarget.forEach(action);
+	public boolean test(Predicate<? super Stream<E>> predicate) {
+		return wrappedTarget.test(predicate);
 	}
 
 	@Override

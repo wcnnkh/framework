@@ -34,6 +34,7 @@ import io.basc.framework.sql.orm.SqlType;
 import io.basc.framework.sql.orm.TableStructure;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.Range;
@@ -336,9 +337,9 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 			throw new SqlDialectException("in 语句至少要有一个in条件");
 		}
 
-		List<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
+		Elements<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
 		int whereSize = ArrayUtils.isEmpty(primaryKeys) ? 0 : primaryKeys.length;
-		if (whereSize > primaryKeyColumns.size()) {
+		if (whereSize > primaryKeyColumns.count()) {
 			throw new NullPointerException("primaryKeys length  greater than primary key lenght");
 		}
 
@@ -441,12 +442,12 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 
 	@Override
 	public Sql toDeleteByIdSql(TableStructure tableStructure, Object... ids) throws SqlDialectException {
-		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
-		if (primaryKeys.size() == 0) {
+		Elements<Column> primaryKeys = tableStructure.getPrimaryKeys();
+		if (primaryKeys.count() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
 
-		if (primaryKeys.size() != ids.length) {
+		if (primaryKeys.count() != ids.length) {
 			throw new ParameterException("主键数量不一致:" + tableStructure.getName());
 		}
 
@@ -489,8 +490,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 
 	@Override
 	public Sql toDeleteSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
-		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
-		if (primaryKeys.size() == 0) {
+		Elements<Column> primaryKeys = tableStructure.getPrimaryKeys();
+		if (primaryKeys.count() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
 
@@ -678,8 +679,8 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 
 	@Override
 	public Sql toSelectByIdsSql(TableStructure tableStructure, Object... ids) throws SqlDialectException {
-		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
-		if (ids.length > primaryKeys.size()) {
+		Elements<Column> primaryKeys = tableStructure.getPrimaryKeys();
+		if (ids.length > primaryKeys.count()) {
 			throw new SqlDialectException("Wrong number of primary key parameters");
 		}
 
@@ -836,12 +837,12 @@ public abstract class StandardSqlDialect extends DefaultTableMapper implements S
 
 	protected Sql toUpdateSql(TableStructure tableStructure, Object entity, Map<String, Object> changeMap,
 			Predicate<Column> accept) throws SqlDialectException {
-		List<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
-		if (primaryKeyColumns.size() == 0) {
+		Elements<Column> primaryKeyColumns = tableStructure.getPrimaryKeys();
+		if (primaryKeyColumns.count() == 0) {
 			throw new SqlDialectException(tableStructure.getName() + " not found primary key");
 		}
 
-		List<Column> notPrimaryKeys = tableStructure.getNotPrimaryKeys();
+		Elements<Column> notPrimaryKeys = tableStructure.getNotPrimaryKeys();
 		StringBuilder sb = new StringBuilder(512);
 		sb.append(UPDATE_PREFIX);
 		keywordProcessing(sb, tableStructure.getName());

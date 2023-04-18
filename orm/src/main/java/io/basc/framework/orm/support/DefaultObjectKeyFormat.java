@@ -28,7 +28,7 @@ public class DefaultObjectKeyFormat implements ObjectKeyFormat {
 	public String getObjectKeyByIds(Structure<? extends Property> structure, Iterator<?> ids) {
 		StringBuilder sb = new StringBuilder(128);
 		sb.append(structure.getName());
-		Iterator<? extends Property> primaryKeys = structure.filter((e) -> e.isPrimaryKey()).iterator();
+		Iterator<? extends Property> primaryKeys = structure.filter((e) -> e.isPrimaryKey()).getElements().iterator();
 		while (primaryKeys.hasNext() && ids.hasNext()) {
 			appendObjectKeyByValue(sb, primaryKeys.next(), ids.next());
 		}
@@ -48,7 +48,7 @@ public class DefaultObjectKeyFormat implements ObjectKeyFormat {
 	public <T> String getObjectKey(Structure<? extends Property> structure, T bean) {
 		StringBuilder sb = new StringBuilder(128);
 		sb.append(structure.getName());
-		structure.filter((e) -> e.isPrimaryKey()).forEach((column) -> {
+		structure.filter((e) -> e.isPrimaryKey()).getElements().forEach((column) -> {
 			appendObjectKeyByValue(sb, column, column.get(bean));
 		});
 		return sb.toString();

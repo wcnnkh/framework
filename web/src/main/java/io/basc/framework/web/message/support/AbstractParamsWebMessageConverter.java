@@ -63,7 +63,7 @@ public abstract class AbstractParamsWebMessageConverter extends AbstractWebMessa
 				: new BufferingClientHttpRequestWrapper(request);
 		ObjectRelationalFactory mapping = getMapper();
 		ObjectRelational<? extends Property> fields = mapping.getStructure(parameterDescriptor.getType()).all();
-		for (Field field : fields) {
+		for (Field field : fields.getElements()) {
 			if (!field.isSupportGetter()) {
 				continue;
 			}
@@ -88,7 +88,7 @@ public abstract class AbstractParamsWebMessageConverter extends AbstractWebMessa
 			Object parameter) throws WebMessagelConverterException {
 		ObjectRelationalFactory mapping = getMapper();
 		ObjectRelational<? extends Property> fields = mapping.getStructure(parameterDescriptor.getType()).all();
-		for (Field field : fields) {
+		for (Field field : fields.getElements()) {
 			if (!field.isSupportGetter()) {
 				continue;
 			}

@@ -191,7 +191,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 		Iterator<? extends Structure<? extends Field>> iterator = structure.pages().iterator();
 		while (iterator.hasNext()) {
 			Structure<? extends Field> useStructure = iterator.next();
-			copy(source, sourceType, target, targetType, useStructure.iterator(), context);
+			copy(source, sourceType, target, targetType, useStructure.getElements().iterator(), context);
 		}
 	}
 
@@ -518,8 +518,8 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 	public void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
 			Object target, TypeDescriptor targetType, Structure<? extends Field> targetStructure,
 			ObjectMapperContext context) throws E {
-		transform(source, sourceType, sourceStructure.all().stream().iterator(), target, targetType,
-				targetStructure.all().stream().iterator(), context);
+		transform(source, sourceType, sourceStructure.all().getElements().iterator(), target, targetType,
+				targetStructure.all().getElements().iterator(), context);
 	}
 
 	@Override
@@ -533,7 +533,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 		Iterator<? extends Structure<? extends Field>> iterator = sourceStructure.pages().iterator();
 		while (iterator.hasNext()) {
 			Structure<? extends Field> structure = iterator.next();
-			transform(source, sourceType, structure.iterator(), targetAccess, context);
+			transform(source, sourceType, structure.getElements().iterator(), targetAccess, context);
 		}
 	}
 
@@ -635,7 +635,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 			Structure<? extends Field> structure = iterator.next();
 			useContext = getContext(targetType.convert(ResolvableType.forClass(structure.getSourceClass())),
 					useContext);
-			transform(sourceAccess, target, targetType, structure.iterator(), useContext);
+			transform(sourceAccess, target, targetType, structure.getElements().iterator(), useContext);
 		}
 	}
 

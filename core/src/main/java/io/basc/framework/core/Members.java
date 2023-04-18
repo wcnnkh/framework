@@ -1,18 +1,13 @@
 package io.basc.framework.core;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.Streamable;
 import io.basc.framework.util.page.Pageable;
 import io.basc.framework.util.page.Pageables;
 import io.basc.framework.util.page.PageablesIterator;
@@ -39,19 +34,15 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	 */
 	public static final WithMethod COVER = new Cover();
 
-	@Nullable
-	private List<T> members;
-	private Function<Class<?>, ? extends Stream<T>> processor;
+	private Function<Class<?>, ? extends Elements<T>> processor;
 	private Class<?> sourceClass;
 	@Nullable
-	private Streamable<T> streamable;
-
+	private volatile Elements<T> elements;
+	private WithMethod withMethod = REFUSE;
 	@Nullable
 	private Members<T> with;
 
-	private WithMethod withMethod = REFUSE;
-
-	public Members(Class<?> sourceClass, Function<Class<?>, ? extends Stream<T>> processor) {
+	public Members(Class<?> sourceClass, Function<Class<?>, ? extends Elements<T>> processor) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		Assert.requiredArgument(processor != null, "processor");
 		this.sourceClass = sourceClass;
@@ -62,9 +53,8 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 		Assert.requiredArgument(members != null, "members");
 		this.sourceClass = members.sourceClass;
 		this.processor = members.processor;
-		this.streamable = members.streamable;
+		this.elements = members.elements;
 		this.with = members.with;
-		this.members = members.members == null ? null : new ArrayList<T>(members.members);
 		this.withMethod = members.withMethod;
 	}
 
@@ -88,7 +78,7 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	public Members<T> all() {
 		Members<T> members = new Members<T>(this.sourceClass, this.processor);
 		members.withMethod = this.withMethod;
-		members.streamable = Pageables.super.all();
+		members.elements = Pageables.super.all().getElements();
 		return members;
 	}
 
@@ -99,12 +89,8 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 			clone.with = this.with.clone();
 		}
 
-		if (this.streamable != null) {
-			clone.streamable = this.streamable;
-		}
-
-		if (this.members != null) {
-			clone.members = this.members;
+		if (this.elements != null) {
+			clone.elements = this.elements;
 		}
 
 		clone.withMethod = this.withMethod;
@@ -132,12 +118,7 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	 * @return
 	 */
 	public Members<T> distinct() {
-		Members<T> members = new Members<T>(this.sourceClass, this.processor);
-		members.streamable = () -> stream().distinct();
-		if (members.with != null) {
-			members.with = this.with.distinct();
-		}
-		return members;
+		return convert((e) -> e.convert((s) -> s.distinct()));
 	}
 
 	/**
@@ -165,7 +146,7 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 		if (predicate == null) {
 			return this;
 		}
-		return mapProcessor((s) -> s == null ? s : s.filter(predicate));
+		return convert((s) -> s == null ? s : s.filter(predicate));
 	}
 
 	@Override
@@ -178,7 +159,7 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 		return with == null ? null : with.sourceClass;
 	}
 
-	public Function<Class<?>, ? extends Stream<T>> getProcessor() {
+	public Function<Class<?>, ? extends Elements<T>> getProcessor() {
 		return processor;
 	}
 
@@ -197,7 +178,7 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	}
 
 	public <TT> Members<TT> map(Function<? super T, ? extends TT> map) {
-		return mapProcessor((s) -> s == null ? null : s.map(map));
+		return convert((s) -> s == null ? null : s.map(map));
 	}
 
 	/**
@@ -206,28 +187,24 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	 * @param processor
 	 * @return 返回一个新的
 	 */
-	public <S> Members<S> mapProcessor(Function<Stream<T>, ? extends Stream<S>> processor) {
+	public <S> Members<S> convert(Function<? super Elements<T>, ? extends Elements<S>> processor) {
 		Assert.requiredArgument(processor != null, "processor");
-		return mapProcessor(processor, (e) -> processor.apply(this.processor.apply(e)), this.processor);
+		return convert(processor, (e) -> processor.apply(this.processor.apply(e)), this.processor);
 	}
 
-	private <S> Members<S> mapProcessor(Function<Stream<T>, ? extends Stream<S>> processor,
-			Function<Class<?>, ? extends Stream<S>> rootMapProcessor,
-			Function<Class<?>, ? extends Stream<T>> rootProcessor) {
+	private <S> Members<S> convert(Function<? super Elements<T>, ? extends Elements<S>> processor,
+			Function<Class<?>, ? extends Elements<S>> rootMapProcessor,
+			Function<Class<?>, ? extends Elements<T>> rootProcessor) {
 		Members<S> members = new Members<S>(this.sourceClass,
 				this.processor == rootProcessor ? rootMapProcessor : ((e) -> processor.apply(this.processor.apply(e))));
+		members.withMethod = this.withMethod;
 		if (this.with != null) {
-			members.with = this.with.mapProcessor(processor, rootMapProcessor, rootProcessor);
+			members.with = this.with.convert(processor, rootMapProcessor, rootProcessor);
 		}
 
-		if (this.streamable != null) {
-			members.streamable = streamable.convert(processor);
+		if (this.elements != null) {
+			members.elements = processor.apply(this.elements);
 		}
-
-		if (this.members != null) {
-			members.members = processor.apply(this.members.stream()).collect(Collectors.toList());
-		}
-
 		return members;
 	}
 
@@ -236,49 +213,20 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 		return with;
 	}
 
-	/**
-	 * 直接设置当前的members
-	 * 
-	 * @param members
-	 */
-	public void setMembers(List<T> members) {
-		this.members = members;
-	}
-
 	public Members<T> shared() {
-		Members<T> members = clone();
-		if (members.members == null) {
-			members.members = members.toList();
-		}
-
-		if (members.with != null) {
-			members.with = members.with.shared();
-		}
-		return members;
+		return convert((e) -> e.toList());
 	}
 
 	@Override
-	public List<T> getList() {
-		if (members != null) {
-			return Collections.unmodifiableList(members);
+	public Elements<T> getElements() {
+		if (elements == null) {
+			synchronized (this) {
+				if (elements == null) {
+					elements = processor.apply(sourceClass);
+				}
+			}
 		}
-		return stream().collect(Collectors.toList());
-	}
-
-	@Override
-	public Stream<T> stream() {
-		if (members != null) {
-			return members.stream();
-		}
-
-		Stream<T> stream;
-		if (streamable == null) {
-			stream = this.processor.apply(sourceClass);
-		} else {
-			stream = streamable.stream();
-		}
-
-		return stream == null ? Stream.empty() : stream;
+		return elements;
 	}
 
 	public Members<T> with(Members<T> with) {
@@ -310,7 +258,7 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	}
 
 	public Members<T> withAll(@Nullable Predicate<Class<?>> predicate,
-			Function<Class<?>, ? extends Stream<T>> processor) {
+			Function<Class<?>, ? extends Elements<T>> processor) {
 		return withInterfaces(predicate, processor).withSuperclass(predicate, processor);
 	}
 
@@ -365,7 +313,7 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	 * @return
 	 */
 	public Members<T> withInterfaces(@Nullable Predicate<Class<?>> predicate,
-			Function<Class<?>, ? extends Stream<T>> processor) {
+			Function<Class<?>, ? extends Elements<T>> processor) {
 		Assert.requiredArgument(processor != null, "processor");
 		Class<?>[] interfaces = this.sourceClass.getInterfaces();
 		if (interfaces == null || interfaces.length == 0) {
@@ -383,21 +331,10 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 		return members;
 	}
 
-	public Members<T> concat(Streamable<? extends T> streamable) {
-		Assert.requiredArgument(streamable != null, "streamable");
+	public Members<T> concat(Elements<? extends T> elements) {
+		Assert.requiredArgument(elements != null, "elements");
 		Members<T> clone = clone();
-		if (clone.members != null) {
-			Stream<? extends T> stream = streamable.stream();
-			if (stream != null) {
-				clone.members = Stream.concat(this.members.stream(), stream).collect(Collectors.toList());
-			}
-			return clone;
-		}
-
-		clone.streamable = () -> {
-			Stream<? extends T> stream = streamable.stream();
-			return stream == null ? this.stream() : Stream.concat(this.stream(), stream);
-		};
+		clone.elements = Elements.concat(this.elements, elements);
 		return clone;
 	}
 
@@ -441,7 +378,7 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	 * @return
 	 */
 	public Members<T> withSuperclass(boolean interfaces, @Nullable Predicate<Class<?>> predicate,
-			Function<Class<?>, ? extends Stream<T>> processor) {
+			Function<Class<?>, ? extends Elements<T>> processor) {
 		Assert.requiredArgument(processor != null, "processor");
 		Class<?> superclass = this.sourceClass.getSuperclass();
 		Members<T> members = this;
@@ -470,7 +407,7 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	}
 
 	public Members<T> withSuperclass(@Nullable Predicate<Class<?>> predicate,
-			Function<Class<?>, ? extends Stream<T>> processor) {
+			Function<Class<?>, ? extends Elements<T>> processor) {
 		return withSuperclass(false, predicate, processor);
 	}
 
@@ -529,12 +466,11 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 						use = true;
 						if (targetWith == target) {
 							// 如果是父级，不能替换
-							targetWith.members = item.toList();
+							targetWith.elements = item.getElements();
 						} else {
 							targetWith.sourceClass = item.sourceClass;
-							targetWith.members = item.members;
 							targetWith.processor = item.processor;
-							targetWith.streamable = item.streamable;
+							targetWith.elements = item.elements;
 						}
 						break;
 					}

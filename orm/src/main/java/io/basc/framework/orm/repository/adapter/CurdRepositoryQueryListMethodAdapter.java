@@ -17,9 +17,9 @@ public final class CurdRepositoryQueryListMethodAdapter extends CurdRepositoryMe
 	protected Object intercept(RepositoryTemplate template, MethodInvoker invoker, Object[] args, Class<?> entityClass,
 			TypeDescriptor resultsTypeDescriptor, String methodName) throws Throwable {
 		if (args.length == 2) {
-			return template.query((TypeDescriptor) args[0], entityClass, args[1]).toList();
+			return template.query((TypeDescriptor) args[0], entityClass, args[1]).getElements().toList();
 		}
-		return template.query(resultsTypeDescriptor, entityClass, args[0]).toList();
+		return template.query(resultsTypeDescriptor, entityClass, args[0]).getElements().toList();
 	}
 
 }

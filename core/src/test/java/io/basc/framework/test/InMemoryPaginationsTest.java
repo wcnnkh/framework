@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.XUtils;
 import io.basc.framework.util.page.InMemoryPaginations;
 
@@ -19,10 +20,12 @@ public class InMemoryPaginationsTest {
 		}
 
 		for (int i = 1; i < count; i++) {
-			InMemoryPaginations<String> paginations = new InMemoryPaginations<String>(list, 0, i);
-			Assert.assertTrue(paginations.jumpToPage(paginations.getPages() + 1).getList().size() == 0);
+			InMemoryPaginations<String> paginations = new InMemoryPaginations<String>(Elements.of(list));
+			paginations.setLimit(i);
+			Assert.assertTrue(paginations.jumpToPage(paginations.getPages() + 1).getElements().count() == 0);
 			Assert.assertTrue(!paginations.jumpToPage(paginations.getPages()).hasNext());
-			Assert.assertArrayEquals(list.toArray(new String[0]), paginations.all().stream().toArray(String[]::new));
+			Assert.assertArrayEquals(list.toArray(new String[0]),
+					paginations.all().getElements().toArray(String[]::new));
 		}
 	}
 }

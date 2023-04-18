@@ -6,7 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import io.basc.framework.core.Members;
 import io.basc.framework.mapper.AccessibleField;
@@ -18,6 +17,7 @@ import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.ObjectRelationalResolver;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 
 public final class TableStructure extends ObjectRelationalDecorator<Column, TableStructure> {
@@ -30,7 +30,7 @@ public final class TableStructure extends ObjectRelationalDecorator<Column, Tabl
 	}
 
 	public TableStructure(Class<?> sourceClass, ObjectRelationalResolver objectRelationalResolver, Column parent,
-			Function<Class<?>, ? extends Stream<? extends AccessibleField>> processor) {
+			Function<Class<?>, ? extends Elements<? extends AccessibleField>> processor) {
 		super(sourceClass, objectRelationalResolver, parent,
 				new ColumnsFunction(objectRelationalResolver, parent, processor));
 	}

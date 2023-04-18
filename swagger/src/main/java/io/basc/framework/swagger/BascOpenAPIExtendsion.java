@@ -65,7 +65,7 @@ public class BascOpenAPIExtendsion extends AbstractOpenAPIExtension {
 			Components components, boolean includeRequestBody, JsonView jsonViewAnnotation) {
 		ObjectRelational<? extends Property> fields = OrmUtils.getMapper()
 				.getStructure(constructType(type).getRawClass()).all();
-		for (final Field field : fields) {
+		for (final Field field : fields.getElements()) {
 			final Iterator<OpenAPIExtension> extensions = OpenAPIExtensions.chain();
 			// skip hidden properties
 			boolean hidden = field.isAnnotationPresent(Hidden.class);

@@ -16,6 +16,6 @@ public final class CurdRepositoryIsPresentAnyMethodAdapter extends CurdRepositor
 	@Override
 	protected Object intercept(RepositoryTemplate template, MethodInvoker invoker, Object[] args, Class<?> entityClass,
 			TypeDescriptor resultsTypeDescriptor, String methodName) throws Throwable {
-		return !template.query(entityClass, args[0]).isEmpty();
+		return !template.query(entityClass, args[0]).getElements().isEmpty();
 	}
 }

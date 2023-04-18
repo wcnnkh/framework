@@ -5,9 +5,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class StreamElements<E> extends StreamableWrapper<E, Streamable<E>> implements Elements<E> {
+public class StreamableElements<E> extends StreamableWrapper<E, Streamable<E>> implements Elements<E> {
 
-	public StreamElements(Streamable<E> streamable) {
+	public StreamableElements(Streamable<E> streamable) {
 		super(streamable);
 	}
 
@@ -34,5 +34,15 @@ public class StreamElements<E> extends StreamableWrapper<E, Streamable<E>> imple
 	@Override
 	public Iterator<E> iterator() {
 		return wrappedTarget.toList().iterator();
+	}
+
+	@Override
+	public ElementList<E> toList() {
+		return Elements.super.toList();
+	}
+
+	@Override
+	public ElementSet<E> toSet() {
+		return Elements.super.toSet();
 	}
 }

@@ -34,7 +34,8 @@ class NodeListToMapConversionService extends AbstractConversionService implement
 
 	public boolean hasPrimaryKeys(Class<?> entityClass) {
 		return getMapper().getStructure(entityClass).filter(FieldFeature.SUPPORT_GETTER).withAll().all()
-				.filter((field) -> getMapper().isPrimaryKey(entityClass, field.getGetter())).findAny().isPresent();
+				.filter((field) -> getMapper().isPrimaryKey(entityClass, field.getGetter())).getElements().findAny()
+				.isPresent();
 	}
 
 	@Override

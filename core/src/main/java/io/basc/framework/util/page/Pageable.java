@@ -1,14 +1,11 @@
 package io.basc.framework.util.page;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
 
-public interface Pageable<K, T> extends Elements<T> {
+public interface Pageable<K, T> {
 	/**
 	 * 获取当前页的使用的开始游标
 	 * 
@@ -25,17 +22,7 @@ public interface Pageable<K, T> extends Elements<T> {
 	@Nullable
 	K getNextCursorId();
 
-	List<T> getList();
-
-	@Override
-	default Iterator<T> iterator() {
-		return getList().iterator();
-	}
-
-	@Override
-	default Stream<T> stream() {
-		return getList().stream();
-	}
+	Elements<T> getElements();
 
 	/**
 	 * 是否还有更多数据

@@ -116,7 +116,7 @@ public final class ParameterUtils {
 		}
 
 		int size = parameterMap.size();
-		Iterator<Method> iterator = ReflectionUtils.getDeclaredMethods(type).withAll().all().stream().iterator();
+		Iterator<Method> iterator = ReflectionUtils.getDeclaredMethods(type).withAll().all().getElements().iterator();
 		while (iterator.hasNext()) {
 			Method method = iterator.next();
 			if (size == method.getParameterTypes().length) {

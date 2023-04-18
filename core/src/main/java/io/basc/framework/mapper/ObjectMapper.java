@@ -67,7 +67,7 @@ public interface ObjectMapper<S, E extends Throwable>
 		Iterator<? extends Structure<? extends Field>> iterator = structure.pages().iterator();
 		while (iterator.hasNext()) {
 			Structure<? extends Field> useStructure = iterator.next();
-			copy(source, sourceType, target, targetType, useStructure.iterator());
+			copy(source, sourceType, target, targetType, useStructure.getElements().iterator());
 		}
 	}
 
@@ -221,8 +221,8 @@ public interface ObjectMapper<S, E extends Throwable>
 
 	default void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
 			Object target, TypeDescriptor targetType, Structure<? extends Field> targetStructure) throws E {
-		transform(source, sourceType, sourceStructure.all().stream().iterator(), target, targetType,
-				targetStructure.all().stream().iterator());
+		transform(source, sourceType, sourceStructure.all().getElements().iterator(), target, targetType,
+				targetStructure.all().getElements().iterator());
 	}
 
 	default void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
@@ -230,7 +230,7 @@ public interface ObjectMapper<S, E extends Throwable>
 		Iterator<? extends Structure<? extends Field>> iterator = sourceStructure.pages().iterator();
 		while (iterator.hasNext()) {
 			Structure<? extends Field> structure = iterator.next();
-			transform(source, sourceType, structure.iterator(), targetAccess);
+			transform(source, sourceType, structure.getElements().iterator(), targetAccess);
 		}
 	}
 
@@ -266,7 +266,7 @@ public interface ObjectMapper<S, E extends Throwable>
 		Iterator<? extends Structure<? extends Field>> iterator = targetStructure.pages().iterator();
 		while (iterator.hasNext()) {
 			Structure<? extends Field> structure = iterator.next();
-			transform(sourceAccess, target, targetType, structure.iterator());
+			transform(sourceAccess, target, targetType, structure.getElements().iterator());
 		}
 	}
 

@@ -27,6 +27,7 @@ import io.basc.framework.sql.orm.TableStructure;
 import io.basc.framework.sql.orm.TableStructureMapping;
 import io.basc.framework.sql.orm.support.StandardSqlDialect;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 
 public class MysqlDialect extends StandardSqlDialect {
@@ -72,8 +73,8 @@ public class MysqlDialect extends StandardSqlDialect {
 
 	@Override
 	public Sql toSaveSql(TableStructure tableStructure, Object entity) throws SqlDialectException {
-		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
-		if (primaryKeys.size() == 0) {
+		Elements<Column> primaryKeys = tableStructure.getPrimaryKeys();
+		if (primaryKeys.count() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
 
@@ -134,7 +135,7 @@ public class MysqlDialect extends StandardSqlDialect {
 		keywordProcessing(sb, tableStructure.getName());
 		sb.append(" (");
 
-		List<Column> primaryKeys = tableStructure.getPrimaryKeys();
+		Elements<Column> primaryKeys = tableStructure.getPrimaryKeys();
 		Iterator<Column> iterator = tableStructure.columns().iterator();
 		while (iterator.hasNext()) {
 			Column col = iterator.next();
@@ -147,7 +148,7 @@ public class MysqlDialect extends StandardSqlDialect {
 				sb.append("(" + sqlType.getLength() + ")");
 			}
 
-			if (primaryKeys.size() == 1) {
+			if (primaryKeys.count() == 1) {
 				if (col.isPrimaryKey()) {
 					sb.append(" PRIMARY KEY");
 				}
@@ -193,7 +194,7 @@ public class MysqlDialect extends StandardSqlDialect {
 		}
 
 		// primary keys
-		if (primaryKeys.size() > 1) {
+		if (primaryKeys.count() > 1) {
 			// 多主键
 			sb.append(",primary key(");
 			iterator = primaryKeys.iterator();
@@ -282,7 +283,7 @@ public class MysqlDialect extends StandardSqlDialect {
 		StringBuilder values = new StringBuilder();
 		StringBuilder sql = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
-		Iterator<Column> iterator = tableStructure.iterator();
+		Iterator<Column> iterator = tableStructure.getElements().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			if (column.isAutoIncrement() && !hasEffectiveValue(entity, column)) {

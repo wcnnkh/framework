@@ -1,10 +1,6 @@
 package io.basc.framework.util.page;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Stream;
-
-import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Elements;
 
 public class AllPageable<S extends Pageables<K, T>, K, T> implements Pageable<K, T> {
 	protected final S source;
@@ -29,17 +25,7 @@ public class AllPageable<S extends Pageables<K, T>, K, T> implements Pageable<K,
 	}
 
 	@Override
-	public Iterator<T> iterator() {
-		return CollectionUtils.iterator(source.pages().iterator(), (e) -> e.iterator());
-	}
-
-	@Override
-	public final List<T> getList() {
-		return toList();
-	}
-
-	@Override
-	public Stream<T> stream() {
-		return source.pages().stream().flatMap((e) -> e.stream());
+	public Elements<T> getElements() {
+		return source.pages().flatMap((e) -> e.getElements());
 	}
 }

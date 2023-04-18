@@ -1,10 +1,11 @@
 package io.basc.framework.mapper;
 
 import java.util.function.Function;
-import java.util.stream.Stream;
+
+import io.basc.framework.util.Elements;
 
 public final class Fields extends StructureDecorator<Field, Fields> {
-	public static final Function<Class<?>, Stream<AccessibleField>> DEFAULT = new AccessibleFieldFunction();
+	public static final Function<Class<?>, Elements<AccessibleField>> DEFAULT = new AccessibleFieldFunction();
 
 	public static Fields getFields(Class<?> sourceClass) {
 		return new Fields(sourceClass).withSuperclass();
@@ -23,7 +24,7 @@ public final class Fields extends StructureDecorator<Field, Fields> {
 	}
 
 	public Fields(Class<?> sourceClass, Field parent,
-			Function<Class<?>, ? extends Stream<? extends AccessibleField>> processor) {
+			Function<Class<?>, ? extends Elements<? extends AccessibleField>> processor) {
 		super(sourceClass, parent, processor.andThen((e) -> e.map((o) -> new Field(parent, sourceClass, o))));
 	}
 

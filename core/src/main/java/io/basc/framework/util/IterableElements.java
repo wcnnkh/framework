@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -17,11 +17,11 @@ import lombok.ToString;
 
 @EqualsAndHashCode
 @ToString
-public class SharedElements<E> implements Elements<E>, Serializable {
+public class IterableElements<E> implements Elements<E>, Serializable {
 	private static final long serialVersionUID = 1L;
-	private Iterable<E> iterable;
+	private volatile Iterable<E> iterable;
 
-	public SharedElements(Iterable<E> iterable) {
+	public IterableElements(Iterable<E> iterable) {
 		Assert.requiredArgument(iterable != null, "iterable");
 		this.iterable = iterable;
 	}
@@ -43,17 +43,17 @@ public class SharedElements<E> implements Elements<E>, Serializable {
 	}
 
 	@Override
-	public List<E> toList() {
+	public ElementList<E> toList() {
 		if (iterable instanceof List) {
-			return Collections.unmodifiableList((List<E>) iterable);
+			return new ElementList<>((List<E>) iterable);
 		}
 		return Elements.super.toList();
 	}
 
 	@Override
-	public Set<E> toSet() {
+	public ElementSet<E> toSet() {
 		if (iterable instanceof Set) {
-			return Collections.unmodifiableSet((Set<E>) iterable);
+			return new ElementSet<>((Set<E>) iterable);
 		}
 		return Elements.super.toSet();
 	}
@@ -67,8 +67,32 @@ public class SharedElements<E> implements Elements<E>, Serializable {
 	}
 
 	@Override
+	public long count() {
+		if (iterable instanceof Collection) {
+			return ((Collection<E>) iterable).size();
+		}
+		return Elements.super.count();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		if (iterable instanceof Collection) {
+			return ((Collection<E>) iterable).isEmpty();
+		}
+		return Elements.super.isEmpty();
+	}
+
+	@Override
 	public Stream<E> stream() {
 		return Streams.stream(spliterator());
+	}
+
+	@Override
+	public Elements<E> cacheable() {
+		if (iterable instanceof Collection) {
+			return this;
+		}
+		return Elements.super.cacheable();
 	}
 
 	private void writeObject(ObjectOutputStream output) throws IOException {

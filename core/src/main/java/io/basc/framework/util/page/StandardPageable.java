@@ -1,8 +1,5 @@
 package io.basc.framework.util.page;
 
-import java.util.Iterator;
-import java.util.List;
-
 import io.basc.framework.util.Elements;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,16 +14,7 @@ public class StandardPageable<K, T> implements Pageable<K, T> {
 	private K nextCursorId;
 
 	public StandardPageable(Pageable<K, T> pageable) {
-		this(pageable.getCursorId(), pageable, pageable.getNextCursorId());
+		this(pageable.getCursorId(), pageable.getElements(), pageable.getNextCursorId());
 	}
 
-	@Override
-	public Iterator<T> iterator() {
-		return elements.iterator();
-	}
-
-	@Override
-	public List<T> getList() {
-		return elements.toList();
-	}
 }

@@ -1,12 +1,10 @@
 package io.basc.framework.microsoft.jxl;
 
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.stream.Stream;
 
 import io.basc.framework.microsoft.Excel;
 import io.basc.framework.microsoft.Sheet;
-import io.basc.framework.util.Streams;
+import io.basc.framework.util.Elements;
 import jxl.Workbook;
 
 public class JxlExcel implements Excel {
@@ -46,21 +44,12 @@ public class JxlExcel implements Excel {
 
 	@Override
 	public long getLimit() {
-		return limit > 0 ? limit : count();
+		return limit > 0 ? limit : getTotal();
 	}
 
 	@Override
-	public Iterator<String[]> iterator() {
-		Iterator<String[]> cursor = Excel.super.iterator();
-		if (limit > 0) {
-			return Streams.stream(cursor).limit(limit).iterator();
-		}
-		return cursor;
-	}
-
-	@Override
-	public Stream<String[]> stream() {
-		Stream<String[]> cursor = Excel.super.stream();
+	public Elements<String[]> getElements() {
+		Elements<String[]> cursor = Excel.super.getElements();
 		if (limit > 0) {
 			return cursor.limit(limit);
 		}

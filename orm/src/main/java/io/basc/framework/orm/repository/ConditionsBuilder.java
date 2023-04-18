@@ -6,6 +6,7 @@ import java.util.List;
 
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.Processor;
 
@@ -130,7 +131,7 @@ public final class ConditionsBuilder {
 		return new Conditions(condition, withs);
 	}
 
-	public static Conditions build(List<Pair<String, Condition>> conditions) {
+	public static Conditions build(Elements<Pair<String, Condition>> conditions) {
 		return build(conditions.iterator());
 	}
 

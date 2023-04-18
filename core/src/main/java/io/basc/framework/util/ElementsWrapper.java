@@ -1,5 +1,6 @@
 package io.basc.framework.util;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.function.Function;
@@ -13,13 +14,13 @@ public class ElementsWrapper<E, W extends Elements<E>> extends StreamableWrapper
 	}
 
 	@Override
-	public <U> Elements<U> convert(Function<? super Stream<E>, ? extends Stream<U>> converter) {
-		return wrappedTarget.convert(converter);
+	public Elements<E> cacheable() {
+		return wrappedTarget.cacheable();
 	}
 
 	@Override
-	public long count() {
-		return wrappedTarget.count();
+	public <U> Elements<U> convert(Function<? super Stream<E>, ? extends Stream<U>> converter) {
+		return wrappedTarget.convert(converter);
 	}
 
 	@Override
@@ -33,13 +34,13 @@ public class ElementsWrapper<E, W extends Elements<E>> extends StreamableWrapper
 	}
 
 	@Override
-	public boolean isEmpty() {
-		return wrappedTarget.isEmpty();
+	public Iterator<E> iterator() {
+		return wrappedTarget.iterator();
 	}
 
 	@Override
-	public Iterator<E> iterator() {
-		return wrappedTarget.iterator();
+	public Elements<E> limit(long maxSize) {
+		return wrappedTarget.limit(maxSize);
 	}
 
 	@Override
@@ -48,7 +49,38 @@ public class ElementsWrapper<E, W extends Elements<E>> extends StreamableWrapper
 	}
 
 	@Override
+	public Elements<E> reverse() {
+		return wrappedTarget.reverse();
+	}
+
+	@Override
+	public Elements<E> skip(long n) {
+		return wrappedTarget.skip(n);
+	}
+
+	@Override
+	public Elements<E> sorted() {
+		return wrappedTarget.sorted();
+	}
+
+	@Override
+	public Elements<E> sorted(Comparator<? super E> comparator) {
+		return wrappedTarget.sorted(comparator);
+	}
+
+	@Override
 	public Spliterator<E> spliterator() {
 		return wrappedTarget.spliterator();
 	}
+
+	@Override
+	public ElementList<E> toList() {
+		return wrappedTarget.toList();
+	}
+
+	@Override
+	public ElementSet<E> toSet() {
+		return wrappedTarget.toSet();
+	}
+
 }

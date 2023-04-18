@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import io.basc.framework.core.Members;
 import io.basc.framework.core.MembersDecorator;
@@ -47,7 +46,7 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 		}
 	}
 
-	public Structure(Class<?> sourceClass, T parent, Function<Class<?>, ? extends Stream<T>> processor) {
+	public Structure(Class<?> sourceClass, T parent, Function<Class<?>, ? extends Elements<T>> processor) {
 		super(sourceClass, processor);
 		this.parent = parent;
 	}
@@ -86,8 +85,8 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 	}
 
 	@Override
-	public <S> Members<S> mapProcessor(Function<Stream<T>, ? extends Stream<S>> processor) {
-		return super.mapProcessor((s) -> processor.apply(s.map((e) -> map(e))));
+	public <S> Members<S> convert(Function<? super Elements<T>, ? extends Elements<S>> processor) {
+		return super.convert((s) -> processor.apply(s.map((e) -> map(e))));
 	}
 
 	@Override
@@ -261,12 +260,12 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 
 	@Nullable
 	public T getByGetterName(String name, @Nullable Type type) {
-		return byGetterName(name, type).first();
+		return byGetterName(name, type).getElements().first();
 	}
 
 	@Nullable
 	public T getByName(String name, @Nullable Type type) {
-		return byName(name, type).first();
+		return byName(name, type).getElements().first();
 	}
 
 	public T getByName(String name) {
@@ -275,7 +274,7 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 
 	@Nullable
 	public T getBySetterName(String name, @Nullable Type type) {
-		return bySetterName(name, type).first();
+		return bySetterName(name, type).getElements().first();
 	}
 
 	public T getBySetterName(String name) {
@@ -290,7 +289,7 @@ public class Structure<T extends Field> extends MembersDecorator<T, Structure<T>
 	 */
 	public MultiValueMap<String, Object> getMultiValueMap(Object instance) {
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-		for (Field field : this) {
+		for (Field field : this.getElements()) {
 			if (!field.isSupportGetter()) {
 				continue;
 			}

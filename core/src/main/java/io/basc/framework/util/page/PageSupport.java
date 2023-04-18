@@ -78,16 +78,4 @@ public class PageSupport {
 	public static <T> Paginations<T> emptyPaginations(long start, long count) {
 		return new SharedPaginations<T>(emptyPagination(start, count), null);
 	}
-
-	/**
-	 * 分页
-	 * 
-	 * @param <T>      元素类型
-	 * @param list     需要分面的列表
-	 * @param pageSize 每页数量
-	 * @return 分页对象
-	 */
-	public static <T> Paginations<T> paging(List<T> list, int pageSize) {
-		return new InMemoryPaginations<>(list, 0, pageSize);
-	}
 }

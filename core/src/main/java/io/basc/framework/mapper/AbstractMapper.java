@@ -50,7 +50,8 @@ public abstract class AbstractMapper<S, T, E extends Throwable> implements Mappe
 
 	public void transform(S source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType,
 			Field parentField) throws E {
-		for (Field field : Fields.getFields(targetType.getType(), parentField).withSuperclass().entity().all()) {
+		for (Field field : Fields.getFields(targetType.getType(), parentField).withSuperclass().entity().all()
+				.getElements()) {
 			Object value;
 			if (isEntity(field.getSetter().getType())) {
 				value = convert(source, sourceType, new TypeDescriptor(field.getSetter()), field);

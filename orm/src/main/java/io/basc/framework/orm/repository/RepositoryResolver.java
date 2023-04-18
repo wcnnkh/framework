@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
@@ -19,10 +18,10 @@ import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.Processor;
-import io.basc.framework.util.Streams;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.comparator.Sort;
 
@@ -125,11 +124,11 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 		appendable.add(new OrderColumn(descriptor.getName(), sort, null));
 	}
 
-	default <T, P extends Property> Stream<Parameter> parseParameters(Class<?> entityClass,
-			Iterator<? extends P> properties, @Nullable List<OrderColumn> orders,
+	default <T, P extends Property> Elements<Parameter> parseParameters(Class<?> entityClass,
+			Elements<? extends P> parameters, @Nullable List<OrderColumn> orders,
 			Processor<P, Object, OrmException> valueProcessor, @Nullable Predicate<Pair<P, Object>> predicate)
 			throws OrmException {
-		return Streams.stream(properties).filter((e) -> {
+		return parameters.filter((e) -> {
 			resolveOrders(entityClass, e.getGetter(), orders);
 			return true;
 		}).map((e) -> new Pair<P, Object>(e, valueProcessor.process(e)))
@@ -137,10 +136,10 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 				.map((e) -> parseParameter(entityClass, e.getKey(), e.getValue()));
 	}
 
-	default Conditions parseConditions(Class<?> entityClass, Iterator<? extends Parameter> iterator) {
+	default Conditions parseConditions(Class<?> entityClass, Elements<? extends Parameter> parameters) {
 		RelationshipKeywords relationshipKeywords = getRelationshipKeywords();
 		ConditionKeywords conditionKeywords = getConditionKeywords();
-		return ConditionsBuilder.build(Streams.stream(iterator).map((column) -> {
+		return ConditionsBuilder.build(parameters.map((column) -> {
 			String relationship = getRelationship(entityClass, column);
 			if (StringUtils.isEmpty(relationship)) {
 				relationship = relationshipKeywords.getAndKeywords().getFirst();
@@ -151,24 +150,20 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 				condition = conditionKeywords.getEqualKeywords().getFirst();
 			}
 			return new Pair<String, Condition>(relationship, new Condition(condition, column));
-		}).iterator());
+		}));
 	}
 
-	default <T, P extends Property> Conditions parseConditions(Class<?> entityClass, Iterator<? extends P> properties,
+	default <T, P extends Property> Conditions parseConditions(Class<?> entityClass, Elements<? extends P> parameters,
 			@Nullable List<OrderColumn> orders, Processor<P, Object, OrmException> valueProcessor,
 			@Nullable Predicate<Pair<P, Object>> predicate) throws OrmException {
-		Stream<Parameter> stream = parseParameters(entityClass, properties, orders, valueProcessor, predicate);
-		try {
-			return parseConditions(entityClass, stream.iterator());
-		} finally {
-			stream.close();
-		}
+		Elements<Parameter> ps = parseParameters(entityClass, parameters, orders, valueProcessor, predicate);
+		return parseConditions(entityClass, ps);
 	}
 
 	default <T> List<Parameter> parseValues(Class<? extends T> entityClass, T entity,
 			Structure<? extends Property> structure) {
-		return parseParameters(entityClass, structure.filter((e) -> !e.isEntity()).iterator(),
-				null, (e) -> e.get(entity), (e) -> e.getKey().isNullable() || ObjectUtils.isNotEmpty(e.getValue()))
+		return parseParameters(entityClass, structure.filter((e) -> !e.isEntity()).getElements(), null,
+				(e) -> e.get(entity), (e) -> e.getKey().isNullable() || ObjectUtils.isNotEmpty(e.getValue()))
 				.collect(Collectors.toList());
 	}
 }

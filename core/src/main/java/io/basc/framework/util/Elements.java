@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -43,8 +44,12 @@ public interface Elements<E> extends Streamable<E>, Iterable<E> {
 		return (Elements<T>) EmptyElements.INSTANCE;
 	}
 
-	public static <T> Elements<T> singleton(@Nullable T element) {
-		return of(Collections.singleton(element));
+	@SuppressWarnings("unchecked")
+	public static <T> Elements<T> forArray(T... elements) {
+		if (elements == null || elements.length == 0) {
+			return empty();
+		}
+		return Elements.of(Arrays.asList(elements));
 	}
 
 	public static <T> Elements<T> of(Iterable<T> iterable) {
@@ -68,7 +73,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E> {
 			return new ElementCollection<>((Collection<T>) iterable);
 		}
 
-		return new SharedElements<>(iterable);
+		return new IterableElements<>(iterable);
 	}
 
 	public static <T> Elements<T> of(Streamable<T> streamable) {
@@ -80,29 +85,39 @@ public interface Elements<E> extends Streamable<E>, Iterable<E> {
 			return (Elements<T>) streamable;
 		}
 
-		return new StreamElements<>(streamable);
+		return new StreamableElements<>(streamable);
 	}
 
-	@Override
+	public static <T> Elements<T> singleton(@Nullable T element) {
+		return of(Collections.singleton(element));
+	}
+
+	/**
+	 * 对动态的elements进行缓存
+	 * 
+	 * @return
+	 */
+	default Elements<E> cacheable() {
+		return new CachedElements<>(this);
+	}
+
+	default Elements<E> concat(Elements<? extends E> elements) {
+		Assert.requiredArgument(elements != null, "elements");
+		return new MultiElements<>(Arrays.asList(this, elements));
+	}
+
 	default <U> Elements<U> convert(Function<? super Stream<E>, ? extends Stream<U>> converter) {
 		return new ConvertibleElements<>(this, converter);
 	}
 
-	default long count() {
-		Stream<E> stream = stream();
-		try {
-			return stream.count();
-		} finally {
-			stream.close();
-		}
+	default Elements<E> distinct() {
+		return convert((e) -> e.distinct());
 	}
 
-	@Override
 	default Elements<E> filter(Predicate<? super E> predicate) {
 		return convert((stream) -> stream.filter(predicate));
 	}
 
-	@Override
 	default <U> Elements<U> flatMap(Function<? super E, ? extends Streamable<U>> mapper) {
 		return convert((stream) -> {
 			return stream.flatMap((e) -> {
@@ -112,32 +127,24 @@ public interface Elements<E> extends Streamable<E>, Iterable<E> {
 		});
 	}
 
-	/**
-	 * 默认使用{@link #stream()}的调用
-	 * 
-	 * @see Stream#forEachOrdered(Consumer)
-	 */
 	@Override
 	default void forEach(Consumer<? super E> action) {
-		Assert.requiredArgument(action != null, "action");
-		Stream<E> stream = stream();
-		try {
-			stream.forEachOrdered(action);
-		} finally {
-			stream.close();
-		}
-	}
-
-	default boolean isEmpty() {
-		return !findAny().isPresent();
+		Streamable.super.forEach(action);
 	}
 
 	@Override
 	Iterator<E> iterator();
 
-	@Override
+	default Elements<E> limit(long maxSize) {
+		return convert((e) -> e.limit(maxSize));
+	}
+
 	default <U> Elements<U> map(Function<? super E, ? extends U> mapper) {
 		return convert((stream) -> stream.map(mapper));
+	}
+
+	default Elements<E> peek(Consumer<? super E> action) {
+		return convert((e) -> e.peek(action));
 	}
 
 	/**
@@ -156,7 +163,28 @@ public interface Elements<E> extends Streamable<E>, Iterable<E> {
 		return new ElementList<>(list);
 	}
 
-	default boolean contains(E element) {
-		return anyMatch((e) -> e == element || ObjectUtils.equals(e, element));
+	default Elements<E> skip(long n) {
+		return convert((e) -> e.skip(n));
+	}
+
+	default Elements<E> sorted() {
+		return convert((e) -> e.sorted());
+	}
+
+	default Elements<E> sorted(Comparator<? super E> comparator) {
+		Assert.requiredArgument(comparator != null, "comparator");
+		return convert((e) -> e.sorted(comparator));
+	}
+
+	@Override
+	default ElementList<E> toList() {
+		List<E> list = Streamable.super.toList();
+		return new ElementList<>(list);
+	}
+
+	@Override
+	default ElementSet<E> toSet() {
+		Set<E> set = Streamable.super.toSet();
+		return new ElementSet<>(set);
 	}
 }

@@ -4,15 +4,14 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import io.basc.framework.core.Members;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.Streamable;
+import io.basc.framework.util.Elements;
 
 public abstract class StructureDecorator<S extends Field, T extends StructureDecorator<S, T>> extends Structure<S> {
 
-	public StructureDecorator(Class<?> sourceClass, S parent, Function<Class<?>, ? extends Stream<S>> processor) {
+	public StructureDecorator(Class<?> sourceClass, S parent, Function<Class<?>, ? extends Elements<S>> processor) {
 		super(sourceClass, parent, processor);
 	}
 
@@ -164,7 +163,7 @@ public abstract class StructureDecorator<S extends Field, T extends StructureDec
 	}
 
 	@Override
-	public T withAll(Predicate<Class<?>> predicate, Function<Class<?>, ? extends Stream<S>> processor) {
+	public T withAll(Predicate<Class<?>> predicate, Function<Class<?>, ? extends Elements<S>> processor) {
 		return decorate(super.withAll(predicate, processor));
 	}
 
@@ -194,13 +193,13 @@ public abstract class StructureDecorator<S extends Field, T extends StructureDec
 	}
 
 	@Override
-	public T withInterfaces(Predicate<Class<?>> predicate, Function<Class<?>, ? extends Stream<S>> processor) {
+	public T withInterfaces(Predicate<Class<?>> predicate, Function<Class<?>, ? extends Elements<S>> processor) {
 		return decorate(super.withInterfaces(predicate, processor));
 	}
 
 	@Override
-	public T concat(Streamable<? extends S> streamable) {
-		return decorate(super.concat(streamable));
+	public T concat(Elements<? extends S> elements) {
+		return decorate(super.concat(elements));
 	}
 
 	@Override
@@ -220,7 +219,7 @@ public abstract class StructureDecorator<S extends Field, T extends StructureDec
 
 	@Override
 	public T withSuperclass(boolean interfaces, Predicate<Class<?>> predicate,
-			Function<Class<?>, ? extends Stream<S>> processor) {
+			Function<Class<?>, ? extends Elements<S>> processor) {
 		return decorate(super.withSuperclass(interfaces, predicate, processor));
 	}
 
@@ -230,7 +229,7 @@ public abstract class StructureDecorator<S extends Field, T extends StructureDec
 	}
 
 	@Override
-	public T withSuperclass(Predicate<Class<?>> predicate, Function<Class<?>, ? extends Stream<S>> processor) {
+	public T withSuperclass(Predicate<Class<?>> predicate, Function<Class<?>, ? extends Elements<S>> processor) {
 		return decorate(super.withSuperclass(predicate, processor));
 	}
 

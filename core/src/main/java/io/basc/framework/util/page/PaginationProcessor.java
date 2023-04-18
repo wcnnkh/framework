@@ -1,7 +1,6 @@
 package io.basc.framework.util.page;
 
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.Elements;
 
 public class PaginationProcessor<K, T> implements PageableProcessor<Long, T> {
 	private final long total;
@@ -15,7 +14,7 @@ public class PaginationProcessor<K, T> implements PageableProcessor<Long, T> {
 
 	@Override
 	public Pageable<Long, T> process(Long start, long limit) {
-		return new StandardPageable<>(start, Elements.of(() -> pager.process(start, limit)),
+		return new StandardPageable<>(start, pager.paging(start, limit),
 				PageSupport.hasMore(total, start, limit) ? PageSupport.getNextStart(start, limit) : null);
 	}
 

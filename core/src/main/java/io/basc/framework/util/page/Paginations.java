@@ -17,7 +17,7 @@ public interface Paginations<T> extends Pagination<T>, Pages<Long, T> {
 	default Paginations<T> limit(long maxPageNumber) {
 		return new StandardPaginations<>(getTotal(),
 				Math.min(getTotal(), PageSupport.getStart(maxPageNumber, getLimit())), getLimit(),
-				(k, c) -> jumpTo(k, c).stream());
+				(k, c) -> jumpTo(k, c).getElements());
 	}
 
 	default Paginations<T> jumpTo(Long cursorId) {

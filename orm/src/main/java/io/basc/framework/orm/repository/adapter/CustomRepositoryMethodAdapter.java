@@ -170,14 +170,14 @@ public class CustomRepositoryMethodAdapter extends CurdRepositoryMethodAdapter i
 			} else if (responseTypeDescriptor.isArray() || responseTypeDescriptor.isCollection()) {
 				Elements<?> cursor = repository
 						.query(responseTypeDescriptor.getElementTypeDescriptor(), entityClass, conditions, orders)
-						;
+						.getElements();
 				if (responseTypeDescriptor.isArray()) {
 					return cursor.toList().toArray();
 				} else {
 					return cursor.toList();
 				}
 			} else {
-				return repository.query(responseTypeDescriptor, entityClass, conditions, orders).first();
+				return repository.query(responseTypeDescriptor, entityClass, conditions, orders).getElements().first();
 			}
 		} else {
 			long value;

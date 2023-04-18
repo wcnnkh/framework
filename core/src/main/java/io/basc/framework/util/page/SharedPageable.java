@@ -25,7 +25,7 @@ public class SharedPageable<K, T> extends StandardPageable<K, T> implements Seri
 	}
 
 	public SharedPageable(Pageable<K, T> pageable) {
-		this(pageable.getCursorId(), pageable.getList(), pageable.getNextCursorId());
+		super(pageable.getCursorId(), pageable.getElements().toList(), pageable.getNextCursorId());
 	}
 
 	@Override

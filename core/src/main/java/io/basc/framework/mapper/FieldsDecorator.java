@@ -5,19 +5,19 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import io.basc.framework.core.Members;
 import io.basc.framework.core.MembersDecorator;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.LinkedMultiValueMap;
 import io.basc.framework.util.MultiValueMap;
 
 public abstract class FieldsDecorator<S extends Field, T extends FieldsDecorator<S, T>> extends MembersDecorator<S, T> {
 	protected S parent;
 
-	public FieldsDecorator(S parent, Class<?> sourceClass, Function<Class<?>, ? extends Stream<S>> processor) {
+	public FieldsDecorator(S parent, Class<?> sourceClass, Function<Class<?>, ? extends Elements<S>> processor) {
 		super(sourceClass, processor);
 		this.parent = parent;
 	}
@@ -100,17 +100,17 @@ public abstract class FieldsDecorator<S extends Field, T extends FieldsDecorator
 
 	@Nullable
 	public S getByGetterName(String name, @Nullable Type type) {
-		return byGetterName(name, type).first();
+		return byGetterName(name, type).getElements().first();
 	}
 
 	@Nullable
 	public S getByName(String name, @Nullable Type type) {
-		return byName(name, type).first();
+		return byName(name, type).getElements().first();
 	}
 
 	@Nullable
 	public S getBySetterName(String name, @Nullable Type type) {
-		return bySetterName(name, type).first();
+		return bySetterName(name, type).getElements().first();
 	}
 
 	/**
@@ -121,7 +121,7 @@ public abstract class FieldsDecorator<S extends Field, T extends FieldsDecorator
 	 */
 	public MultiValueMap<String, Object> getMultiValueMap(Object instance) {
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-		for (Field field : this) {
+		for (Field field : this.getElements()) {
 			if (!field.isSupportGetter()) {
 				continue;
 			}

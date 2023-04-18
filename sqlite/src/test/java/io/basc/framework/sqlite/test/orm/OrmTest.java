@@ -53,7 +53,7 @@ public class OrmTest {
 			TestTable1 query = db.getById(TestTable1.class, i);
 			assertTrue(query.getKey().equals(table1.getKey()));
 			// 使用queryAll的原因是为了测试全部
-			query = db.queryAll(TestTable1.class).filter((e) -> e.getId() == table1.getId()).findAny().get();
+			query = db.queryAll(TestTable1.class).getElements().filter((e) -> e.getId() == table1.getId()).findAny().get();
 			assertTrue(query.getKey().equals(table1.getKey()));
 		}
 	}

@@ -194,7 +194,7 @@ public final class Copy implements Cloneable {
 		}
 
 		Fields sourceFilterFields = sourceFields.getters().shared();
-		targetFields.setters().stream().forEach((targetField) -> sourceFilterFields
+		targetFields.setters().getElements().forEach((targetField) -> sourceFilterFields.getElements()
 				.forEach((sourceField) -> copy(sourceField, source, targetField, target)));
 	}
 
@@ -204,14 +204,14 @@ public final class Copy implements Cloneable {
 			return;
 		}
 
-		fields.strict().forEach((field) -> copy(field, source, field, target));
+		fields.strict().getElements().forEach((field) -> copy(field, source, field, target));
 	}
 
 	/**
 	 * 复制，要求get和set都存在字段{@link java.lang.reflect.Field}
 	 * 
 	 * @see FieldFeature#EXISTING_FIELD
-	 * @param             <T>
+	 * @param <T>
 	 * @param entityClass
 	 * @param parentField
 	 * @param source
@@ -229,8 +229,8 @@ public final class Copy implements Cloneable {
 	/**
 	 * 复制,要求sourceClass字段满足{@link FieldFeature#EXISTING_GETTER_FIELD }和targetClass字段满足{@link FieldFeature#EXISTING_SETTER_FIELD }
 	 * 
-	 * @param                   <T>
-	 * @param                   <S>
+	 * @param <T>
+	 * @param <S>
 	 * @param sourceClass
 	 * @param source
 	 * @param sourceParentField
@@ -261,8 +261,8 @@ public final class Copy implements Cloneable {
 	 * 创建实例并复制到对应的属性
 	 * 
 	 * @see #copy(Class, Object, Field, Class, Object, Field)
-	 * @param                   <T>
-	 * @param                   <S>
+	 * @param <T>
+	 * @param <S>
 	 * @param sourceType
 	 * @param source
 	 * @param sourceParentField
@@ -354,7 +354,7 @@ public final class Copy implements Cloneable {
 	/**
 	 * 克隆一个实例
 	 * 
-	 * @param             <T>
+	 * @param <T>
 	 * @param source
 	 * @param parentField
 	 * @return
@@ -370,7 +370,7 @@ public final class Copy implements Cloneable {
 	/**
 	 * 克隆一个实体，
 	 * 
-	 * @param             <T>
+	 * @param <T>
 	 * @param sourceType
 	 * @param source
 	 * @param parentField
@@ -439,7 +439,7 @@ public final class Copy implements Cloneable {
 	 * 浅拷贝
 	 * 
 	 * @see #SHALLOW
-	 * @param             <T>
+	 * @param <T>
 	 * @param targetClass
 	 * @param source
 	 * @return
@@ -454,7 +454,7 @@ public final class Copy implements Cloneable {
 	 * 浅拷贝
 	 * 
 	 * @see #SHALLOW
-	 * @param        <T>
+	 * @param <T>
 	 * @param source
 	 * @param target
 	 * @return
@@ -470,7 +470,7 @@ public final class Copy implements Cloneable {
 	 * 拷贝(浅拷贝)一个对象并对对应的字段插入值
 	 * 
 	 * @see #copy(Object, Class)
-	 * @param             <T>
+	 * @param <T>
 	 * @param sourceClass
 	 * @param source
 	 * @param field

@@ -1,7 +1,6 @@
 package io.basc.framework.util;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -13,17 +12,27 @@ public class ElementCollection<E> extends CollectionWrapper<E, Collection<E>> im
 	}
 
 	@Override
-	public List<E> toList() {
+	public long count() {
+		return wrappedTarget.size();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return wrappedTarget.isEmpty();
+	}
+
+	@Override
+	public ElementList<E> toList() {
 		if (wrappedTarget instanceof List) {
-			return Collections.unmodifiableList((List<E>) wrappedTarget);
+			return new ElementList<>((List<E>) wrappedTarget);
 		}
 		return Elements.super.toList();
 	}
 
 	@Override
-	public Set<E> toSet() {
+	public ElementSet<E> toSet() {
 		if (wrappedTarget instanceof Set) {
-			return Collections.unmodifiableSet((Set<E>) wrappedTarget);
+			return new ElementSet<>((Set<E>) wrappedTarget);
 		}
 		return Elements.super.toSet();
 	}
@@ -34,6 +43,11 @@ public class ElementCollection<E> extends CollectionWrapper<E, Collection<E>> im
 			return Elements.of(() -> CollectionUtils.getIterator((List<E>) wrappedTarget, true));
 		}
 		return Elements.super.reverse();
+	}
+
+	@Override
+	public Elements<E> cacheable() {
+		return this;
 	}
 
 }

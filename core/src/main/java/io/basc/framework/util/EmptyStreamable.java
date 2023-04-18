@@ -1,7 +1,6 @@
 package io.basc.framework.util;
 
 import java.io.Serializable;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class EmptyStreamable<E> implements Streamable<E>, Serializable {
@@ -11,10 +10,5 @@ public class EmptyStreamable<E> implements Streamable<E>, Serializable {
 	@Override
 	public Stream<E> stream() {
 		return Stream.empty();
-	}
-
-	@Override
-	public Streamable<E> filter(Predicate<? super E> predicate) {
-		return this;
 	}
 }

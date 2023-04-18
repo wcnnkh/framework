@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import io.basc.framework.mapper.Structure;
-import io.basc.framework.util.StreamElements;
 import io.basc.framework.util.Streamable;
+import io.basc.framework.util.StreamableElements;
 
-public class ObjectElements<E> extends StreamElements<E> {
+public class ObjectElements<E> extends StreamableElements<E> {
 	private final ObjectKeyFormat objectKeyFormat;
 	private final Structure<? extends Property> structure;
 

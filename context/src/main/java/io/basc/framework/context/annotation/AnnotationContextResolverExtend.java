@@ -143,7 +143,7 @@ public class AnnotationContextResolverExtend extends AnnotationTypeFilter
 	}
 
 	private static Class<?> getServiceInterface(Class<?> clazz) {
-		return ClassUtils.getInterfaces(clazz).all().stream().filter((i) -> {
+		return ClassUtils.getInterfaces(clazz).all().getElements().filter((i) -> {
 			if (i.isAnnotationPresent(Ignore.class) || i.getMethods().length == 0) {
 				return false;
 			}

@@ -18,6 +18,7 @@ import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionFactory;
+import io.basc.framework.util.Elements;
 
 public class CollectionToMapConversionService extends AbstractConversionService
 		implements ConditionalConversionService {
@@ -63,7 +64,7 @@ public class CollectionToMapConversionService extends AbstractConversionService
 			}
 
 			Object value = getConversionService().convert(item, sourceType.narrow(item), itemType);
-			List<? extends Property> primaryKeys = getMapper().getStructure(itemType.getType()).getPrimaryKeys();
+			Elements<? extends Property> primaryKeys = getMapper().getStructure(itemType.getType()).getPrimaryKeys();
 			Iterator<? extends Property> primaryKeyIterator = primaryKeys.iterator();
 			Map nestMap = map;
 			TypeDescriptor keyType = targetType.getMapKeyTypeDescriptor();

@@ -39,7 +39,8 @@ public class IocBeanResolverExtend implements BeanResolverExtend, IocResolverExt
 			BeanResolver chain) {
 		List<BeanPostProcessor> postProcessors = new ArrayList<BeanPostProcessor>();
 		postProcessors.addAll(BeanResolverExtend.super.resolveDependenceProcessors(typeDescriptor, chain));
-		for (Field field : Fields.getFields(typeDescriptor.getType()).filter(FieldFeature.SUPPORT_SETTER).all()) {
+		for (Field field : Fields.getFields(typeDescriptor.getType()).filter(FieldFeature.SUPPORT_SETTER).all()
+				.getElements()) {
 			if (iocResolver.resolveAutowiredDefinition(field.getSetter()) != null) {
 				postProcessors.add(new AutowiredIocProcessor(context, iocResolver, field));
 			}
@@ -55,7 +56,7 @@ public class IocBeanResolverExtend implements BeanResolverExtend, IocResolverExt
 	public Collection<BeanPostProcessor> resolveDestroyProcessors(TypeDescriptor typeDescriptor, BeanResolver chain) {
 		List<BeanPostProcessor> postProcessors = new ArrayList<BeanPostProcessor>();
 		postProcessors.addAll(BeanResolverExtend.super.resolveDestroyProcessors(typeDescriptor, chain));
-		ReflectionUtils.getDeclaredMethods(typeDescriptor.getType()).stream().forEach((method) -> {
+		ReflectionUtils.getDeclaredMethods(typeDescriptor.getType()).getElements().forEach((method) -> {
 			if (iocResolver.resolveDestroyDefinition(method) != null) {
 				BeanMethodProcessor iocProcessor = new BeanMethodProcessor(context, method);
 				postProcessors.add(iocProcessor);
@@ -68,7 +69,7 @@ public class IocBeanResolverExtend implements BeanResolverExtend, IocResolverExt
 	public Collection<BeanPostProcessor> resolveInitProcessors(TypeDescriptor typeDescriptor, BeanResolver chain) {
 		List<BeanPostProcessor> postProcessors = new ArrayList<BeanPostProcessor>();
 		postProcessors.addAll(BeanResolverExtend.super.resolveInitProcessors(typeDescriptor, chain));
-		ReflectionUtils.getDeclaredMethods(typeDescriptor.getType()).stream().forEach((method) -> {
+		ReflectionUtils.getDeclaredMethods(typeDescriptor.getType()).getElements().forEach((method) -> {
 			ReflectionUtils.makeAccessible(method);
 			if (iocResolver.resolveInitDefinition(method) != null) {
 				BeanMethodProcessor iocProcessor = new BeanMethodProcessor(context, method);

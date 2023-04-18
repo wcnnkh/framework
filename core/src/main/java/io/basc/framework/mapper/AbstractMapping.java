@@ -14,7 +14,7 @@ public abstract class AbstractMapping implements Mapping {
 
 	public <T> T mapping(Class<T> entityClass, Fields fields) {
 		T entity = newInstance(entityClass);
-		for (Field field : fields) {
+		for (Field field : fields.getElements()) {
 			Object value;
 			if (isNesting(field.getSetter())) {
 				value = mapping(field.getSetter().getType(), Fields.getFields(field.getSetter().getType(), field));

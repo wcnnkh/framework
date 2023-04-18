@@ -30,12 +30,13 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.ConsumeProcessor;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Source;
 import io.basc.framework.util.StringUtils;
 
 public abstract class ReflectionUtils {
-	private static final Method[] CLASS_PRESENT_METHODS = getMethods(Class.class).stream().filter((method) -> {
+	private static final Method[] CLASS_PRESENT_METHODS = getMethods(Class.class).getElements().filter((method) -> {
 		return !Modifier.isStatic(method.getModifiers()) && !Modifier.isNative(method.getModifiers())
 				&& Modifier.isPublic(method.getModifiers()) && method.getName().startsWith("get")
 				&& method.getParameterTypes().length == 0;
@@ -90,7 +91,7 @@ public abstract class ReflectionUtils {
 			return;
 		}
 
-		members.all().stream().filter(ENTITY_MEMBER).forEach((f) -> {
+		members.all().getElements().filter(ENTITY_MEMBER).forEach((f) -> {
 			try {
 				Object value = get(f, source);
 				if (value == source) {
@@ -180,7 +181,7 @@ public abstract class ReflectionUtils {
 			return false;
 		}
 
-		Iterator<Field> iterator = members.all().stream().filter(ENTITY_MEMBER).iterator();
+		Iterator<Field> iterator = members.all().getElements().filter(ENTITY_MEMBER).iterator();
 		while (iterator.hasNext()) {
 			Field field = iterator.next();
 			if (!ObjectUtils.equals(get(field, left), get(field, right), deep)) {
@@ -222,10 +223,10 @@ public abstract class ReflectionUtils {
 	public static Method findMethod(Class<?> clazz, String name, Class<?>... paramTypes) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(name, "Method name must not be null");
-		return getDeclaredMethods(clazz).withAll().all().stream().filter((method) -> {
+		return getDeclaredMethods(clazz).withAll().all().getElements().filter((method) -> {
 			return name.equals(method.getName()) && (paramTypes == null || ClassUtils
 					.isAssignable(paramTypes == null ? new Class[0] : paramTypes, method.getParameterTypes()));
-		}).findFirst().orElse(null);
+		}).first();
 	}
 
 	/**
@@ -257,15 +258,15 @@ public abstract class ReflectionUtils {
 	 * 
 	 * @see #matchParams(Stream, boolean, Object...)
 	 * @param <T>
-	 * @param sourceStream
-	 * @param strict       true表示严格的验证参数(包含有效长度、类型等)
+	 * @param elements
+	 * @param strict   true表示严格的验证参数(包含有效长度、类型等)
 	 * @param params
 	 * @return
 	 * @throws NoSuchMethodException
 	 */
-	public static <T extends Executable> ExecutableMatchingResults<T> getByParams(Stream<T> sourceStream,
-			boolean strict, Object... params) throws NoSuchMethodException {
-		Stream<ExecutableMatchingResults<T>> stream = matchParams(sourceStream, strict, params);
+	public static <T extends Executable> ExecutableMatchingResults<T> getByParams(Elements<T> elements, boolean strict,
+			Object... params) throws NoSuchMethodException {
+		Elements<ExecutableMatchingResults<T>> stream = matchParams(elements, strict, params);
 		try {
 			return stream.findFirst().get();
 		} catch (NoSuchElementException e) {
@@ -320,7 +321,7 @@ public abstract class ReflectionUtils {
 		} catch (NoSuchMethodException | SecurityException e) {
 		}
 
-		return (Constructor<T>) getConstructors(type).all().stream()
+		return (Constructor<T>) getConstructors(type).all().getElements()
 				.filter((e) -> ClassUtils.isAssignable(e.getParameterTypes(), parameterTypes)).findFirst().orElse(null);
 	}
 
@@ -357,7 +358,7 @@ public abstract class ReflectionUtils {
 
 			Constructor<?>[] constructors = c.getConstructors();
 			List<Constructor<?>> list = constructors == null ? Collections.emptyList() : Arrays.asList(constructors);
-			return list.stream();
+			return Elements.of(list);
 		});
 	}
 
@@ -416,7 +417,7 @@ public abstract class ReflectionUtils {
 		} catch (NoSuchMethodException | SecurityException e) {
 		}
 
-		return (Constructor<T>) getDeclaredConstructors(type).all().stream()
+		return (Constructor<T>) getDeclaredConstructors(type).all().getElements()
 				.filter((e) -> ClassUtils.isAssignable(e.getParameterTypes(), parameterTypes)).findFirst().orElse(null);
 	}
 
@@ -453,7 +454,7 @@ public abstract class ReflectionUtils {
 
 			Constructor<?>[] constructors = c.getDeclaredConstructors();
 			List<Constructor<?>> list = constructors == null ? Collections.emptyList() : Arrays.asList(constructors);
-			return list.stream();
+			return Elements.of(list);
 		});
 	}
 
@@ -485,7 +486,7 @@ public abstract class ReflectionUtils {
 
 			Field[] fields = c.getDeclaredFields();
 			List<Field> list = fields == null ? Collections.emptyList() : Arrays.asList(fields);
-			return list.stream();
+			return Elements.of(list);
 		});
 	}
 
@@ -501,9 +502,9 @@ public abstract class ReflectionUtils {
 			return clazz.getDeclaredMethod(name, parameterTypes);
 		} catch (NoSuchMethodException | SecurityException e) {
 		}
-		return getDeclaredMethods(clazz).all().stream().filter(
+		return getDeclaredMethods(clazz).all().getElements().filter(
 				(e) -> e.getName().equals(name) && ClassUtils.isAssignable(e.getParameterTypes(), parameterTypes))
-				.findFirst().orElse(null);
+				.first();
 	}
 
 	/**
@@ -534,13 +535,13 @@ public abstract class ReflectionUtils {
 		return new Members<>(sourceClass, (c) -> {
 			Method[] methods = c.getDeclaredMethods();
 			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
-			return list.stream();
+			return Elements.of(list);
 		});
 	}
 
 	public static <M extends Member> Members<M> getEntityMembers(Class<?> entityClass,
-			Function<Class<?>, ? extends M[]> processor) {
-		return new Members<M>(entityClass, (c) -> Arrays.asList(processor.apply(c)).stream().filter(ENTITY_MEMBER));
+			Function<Class<?>, ? extends Elements<M>> processor) {
+		return new Members<M>(entityClass, (c) -> processor.apply(c).filter(ENTITY_MEMBER));
 	}
 
 	private static <T extends Executable> ExecutableMatchingResults<T> getExecutableMatchingResults(T executable,
@@ -600,7 +601,7 @@ public abstract class ReflectionUtils {
 
 			Field[] fields = c.getFields();
 			List<Field> list = fields == null ? Collections.emptyList() : Arrays.asList(fields);
-			return list.stream();
+			return Elements.of(list);
 		});
 	}
 
@@ -627,9 +628,9 @@ public abstract class ReflectionUtils {
 			return clazz.getMethod(name, parameterTypes);
 		} catch (NoSuchMethodException | SecurityException e) {
 		}
-		return getMethods(clazz).all().stream().filter(
+		return getMethods(clazz).all().getElements().filter(
 				(e) -> e.getName().equals(name) && ClassUtils.isAssignable(e.getParameterTypes(), parameterTypes))
-				.findFirst().orElse(null);
+				.first();
 	}
 
 	/**
@@ -660,7 +661,7 @@ public abstract class ReflectionUtils {
 		return new Members<>(sourceClass, (c) -> {
 			Method[] methods = c.getMethods();
 			List<Method> list = methods == null ? Collections.emptyList() : Arrays.asList(methods);
-			return list.stream();
+			return Elements.of(list);
 		});
 	}
 
@@ -706,7 +707,7 @@ public abstract class ReflectionUtils {
 	public static ExecutableMatchingResults<Method> getOverloadMethod(Class<?> sourceClass, String methodName,
 			boolean strict, Predicate<Method> predicate, Object... args) throws NoSuchMethodException {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
-		Stream<Method> methods = getMethods(sourceClass).withAll().all().stream()
+		Elements<Method> methods = getMethods(sourceClass).withAll().all().getElements()
 				.filter((m) -> StringUtils.isEmpty(methodName) || methodName.equals(m.getName())).filter(predicate);
 		return getByParams(methods, strict, args);
 	}
@@ -809,7 +810,7 @@ public abstract class ReflectionUtils {
 		}
 
 		int hashCode = 1;
-		Iterator<Field> iterator = members.all().stream().filter(ENTITY_MEMBER).iterator();
+		Iterator<Field> iterator = members.all().getElements().filter(ENTITY_MEMBER).iterator();
 		while (iterator.hasNext()) {
 			Field field = iterator.next();
 			hashCode = 31 * hashCode + ObjectUtils.hashCode(get(field, entity), deep);
@@ -873,7 +874,7 @@ public abstract class ReflectionUtils {
 	public static <T> T invokeOverloadConstructor(Class<? extends T> sourceClass, boolean strict, Object... args)
 			throws NoSuchMethodException {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
-		Stream<Constructor<?>> constructors = getConstructors(sourceClass).all().stream();
+		Elements<Constructor<?>> constructors = getConstructors(sourceClass).all().getElements();
 		ExecutableMatchingResults<Constructor<?>> results = getByParams(constructors, strict, args);
 		return (T) newInstance(results.getExecutable(), results.getUnsafeParams());
 	}
@@ -1117,29 +1118,29 @@ public abstract class ReflectionUtils {
 	 * 通过参数获取可以调用的{@link java.lang.reflect.Executable}
 	 * 
 	 * @param <T>
-	 * @param sourceStream
-	 * @param strict       true表示严格的验证参数(包含有效长度、类型等)
+	 * @param elements
+	 * @param strict   true表示严格的验证参数(包含有效长度、类型等)
 	 * @param params
 	 * @return
 	 */
-	public static <T extends Executable> Stream<ExecutableMatchingResults<T>> matchParams(Stream<T> sourceStream,
+	public static <T extends Executable> Elements<ExecutableMatchingResults<T>> matchParams(Elements<T> elements,
 			boolean strict, Object... params) {
-		Stream<ExecutableMatchingResults<T>> stream;
+		Elements<ExecutableMatchingResults<T>> stream;
 		if (strict) {
 			long validParametersCount = Arrays.asList(params).stream().filter((e) -> e != null).count();
-			stream = matchParams(sourceStream, (int) validParametersCount, params)
+			stream = matchParams(elements, (int) validParametersCount, params)
 					.filter((e) -> e.getMatchingResultes() == validParametersCount);
 		} else {
-			stream = matchParams(sourceStream, params.length, params);
+			stream = matchParams(elements, params.length, params);
 		}
 		return stream;
 	}
 
-	public static <T extends Executable> Stream<ExecutableMatchingResults<T>> matchParams(Stream<T> sourceStream,
+	public static <T extends Executable> Elements<ExecutableMatchingResults<T>> matchParams(Elements<T> elements,
 			int validParametersCount, Object... params) {
-		Assert.requiredArgument(sourceStream != null, "sourceStream");
+		Assert.requiredArgument(elements != null, "elements");
 		Assert.requiredArgument(params != null, "params");
-		return sourceStream.filter((e) -> e.getParameterCount() <= validParametersCount).sorted(MEMBER_SCOPE_COMPARATOR)
+		return elements.filter((e) -> e.getParameterCount() <= validParametersCount).sorted(MEMBER_SCOPE_COMPARATOR)
 				.sorted((e1, e2) -> {
 					Class<?>[] parameterTypes1 = e1.getParameterTypes();
 					Class<?>[] parameterTypes2 = e2.getParameterTypes();
@@ -1214,16 +1215,13 @@ public abstract class ReflectionUtils {
 	@SuppressWarnings("unchecked")
 	public static <T> T newInstanceWithNullValues(Class<T> entityClass) throws UnsupportedException {
 		Assert.requiredArgument(entityClass != null, "entityClass");
-		Stream<Constructor<?>> stream = ReflectionUtils.getDeclaredConstructors(entityClass).all().stream()
-				.sorted(MEMBER_SCOPE_COMPARATOR).sorted(Comparator.comparingInt(Constructor::getParameterCount));
-		try {
-			Iterator<Constructor<?>> iterator = stream.iterator();
-			while (iterator.hasNext()) {
-				Constructor<?> constructor = iterator.next();
-				return (T) newInstance(constructor, new Object[constructor.getParameterCount()]);
-			}
-		} finally {
-			stream.close();
+		Elements<Constructor<?>> elements = ReflectionUtils.getDeclaredConstructors(entityClass).all().getElements()
+				.convert((s) -> s.sorted(MEMBER_SCOPE_COMPARATOR)
+						.sorted(Comparator.comparingInt(Constructor::getParameterCount)));
+		Iterator<Constructor<?>> iterator = elements.iterator();
+		while (iterator.hasNext()) {
+			Constructor<?> constructor = iterator.next();
+			return (T) newInstance(constructor, new Object[constructor.getParameterCount()]);
 		}
 		throw new UnsupportedException(entityClass.getName());
 	}
@@ -1241,20 +1239,16 @@ public abstract class ReflectionUtils {
 	public static <T> T newInstanceWithParams(Class<T> entityClass, Object... params) throws UnsupportedException {
 		Assert.requiredArgument(entityClass != null, "entityClass");
 		Assert.requiredArgument(params != null, "params");
-		Stream<ExecutableMatchingResults<Constructor<?>>> stream = matchParams(
-				ReflectionUtils.getDeclaredConstructors(entityClass).all().stream(), false, params);
-		try {
-			Iterator<ExecutableMatchingResults<Constructor<?>>> iterator = stream.iterator();
-			if (iterator.hasNext()) {
-				ExecutableMatchingResults<Constructor<?>> results = iterator.next();
-				try {
-					return (T) ReflectionUtils.newInstance(results.getExecutable(), results.getParams());
-				} catch (Exception e) {
-					// 忽略
-				}
+		Elements<ExecutableMatchingResults<Constructor<?>>> elements = matchParams(
+				ReflectionUtils.getDeclaredConstructors(entityClass).all().getElements(), false, params);
+		Iterator<ExecutableMatchingResults<Constructor<?>>> iterator = elements.iterator();
+		if (iterator.hasNext()) {
+			ExecutableMatchingResults<Constructor<?>> results = iterator.next();
+			try {
+				return (T) ReflectionUtils.newInstance(results.getExecutable(), results.getParams());
+			} catch (Exception e) {
+				// 忽略
 			}
-		} finally {
-			stream.close();
 		}
 		throw new UnsupportedException(entityClass.getName());
 	}
@@ -1349,7 +1343,7 @@ public abstract class ReflectionUtils {
 		StringBuilder builder = new StringBuilder();
 		builder.append(members.getSourceClass().getSimpleName());
 		builder.append('(');
-		Iterator<Field> iterator = members.all().stream().filter(ENTITY_MEMBER).iterator();
+		Iterator<Field> iterator = members.all().getElements().filter(ENTITY_MEMBER).iterator();
 		while (iterator.hasNext()) {
 			Field field = iterator.next();
 			builder.append(field.getName());
@@ -1387,7 +1381,7 @@ public abstract class ReflectionUtils {
 
 		sb.append(entityClass.getSimpleName());
 		sb.append('(');
-		Iterator<Field> iterator = getDeclaredFields(entityClass).stream().filter(ENTITY_MEMBER).iterator();
+		Iterator<Field> iterator = getDeclaredFields(entityClass).getElements().filter(ENTITY_MEMBER).iterator();
 		Class<?> superclass = entityClass.getSuperclass();
 		if (superclass != null && superclass != Object.class) {
 			sb.append("super=");

@@ -1,12 +1,12 @@
 package io.basc.framework.orm;
 
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import io.basc.framework.core.Members;
 import io.basc.framework.mapper.AccessibleField;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Fields;
+import io.basc.framework.util.Elements;
 
 /**
  * 实体结构
@@ -25,7 +25,7 @@ public final class EntityStructure extends ObjectRelationalDecorator<Property, E
 	}
 
 	public EntityStructure(Class<?> sourceClass, ObjectRelationalResolver objectRelationalResolver, Property parent,
-			Function<Class<?>, ? extends Stream<? extends AccessibleField>> processor) {
+			Function<Class<?>, ? extends Elements<? extends AccessibleField>> processor) {
 		super(sourceClass, objectRelationalResolver, parent,
 				new PropertiesFunction(objectRelationalResolver, parent, processor));
 	}

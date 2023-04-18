@@ -31,6 +31,7 @@ import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ConsumeProcessor;
 import io.basc.framework.util.ConvertibleIterator;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.Streams;
 import io.basc.framework.util.StringUtils;
@@ -165,8 +166,7 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 				}
 			}
 
-			List<Property> properties = structure.stream().filter((e) -> e.isSupportSetter())
-					.collect(Collectors.toList());
+			Elements<? extends Property> properties = structure.getElements().filter((e) -> e.isSupportSetter());
 			// 映射
 			return Streams.stream(iterator).map((contents) -> {
 				T instance = (T) ReflectionApi.newInstance(structure.getSourceClass());
@@ -193,7 +193,8 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 			return source.map((e) -> {
 				T instance = (T) ReflectionApi.newInstance(structure.getSourceClass());
 				int i = 0;
-				Iterator<? extends Property> iterator = structure.filter((p) -> p.isSupportSetter()).iterator();
+				Iterator<? extends Property> iterator = structure.filter((p) -> p.isSupportSetter()).getElements()
+						.iterator();
 				while (iterator.hasNext() && i < e.length) {
 					Property property = iterator.next();
 					property.getSetter().set(instance, e[i++], conversionService);
@@ -251,7 +252,7 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 	}
 
 	public final TransfColumns<String, String> mapColumns(Object source, Structure<? extends Property> structure) {
-		return structure.filter((e) -> e.isSupportGetter()).map((property) -> {
+		return structure.getElements().filter((e) -> e.isSupportGetter()).map((property) -> {
 			Object value = property.get(source);
 			if (value == null) {
 				return new Pair<String, String>(property.getName(), null);

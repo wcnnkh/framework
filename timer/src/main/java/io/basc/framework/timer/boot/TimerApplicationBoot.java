@@ -30,14 +30,14 @@ public final class TimerApplicationBoot implements ApplicationPostProcessor {
 	public void postProcessApplication(ConfigurableApplication application) {
 		Timer timer = application.getInstance(Timer.class);
 		for (Class<?> clz : application.getContextClasses()) {
-			ReflectionUtils.getDeclaredMethods(clz).all().stream().filter((m) -> m.isAnnotationPresent(Schedule.class))
-					.forEach((method) -> {
+			ReflectionUtils.getDeclaredMethods(clz).all().getElements()
+					.filter((m) -> m.isAnnotationPresent(Schedule.class)).forEach((method) -> {
 						Schedule schedule = method.getAnnotation(Schedule.class);
 						schedule(application, clz, method, timer, schedule);
 					});
 
-			ReflectionUtils.getDeclaredMethods(clz).all().stream().filter((m) -> m.isAnnotationPresent(Crontab.class))
-					.forEach((method) -> {
+			ReflectionUtils.getDeclaredMethods(clz).all().getElements()
+					.filter((m) -> m.isAnnotationPresent(Crontab.class)).forEach((method) -> {
 						Crontab c = method.getAnnotation(Crontab.class);
 						crontab(application, clz, method, timer, c);
 					});

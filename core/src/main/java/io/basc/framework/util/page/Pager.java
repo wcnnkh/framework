@@ -1,8 +1,8 @@
 package io.basc.framework.util.page;
 
-import java.util.stream.Stream;
+import io.basc.framework.util.Elements;
 
 @FunctionalInterface
 public interface Pager<K, T> {
-	Stream<T> process(K start, long count);
+	Elements<T> paging(K start, long count);
 }

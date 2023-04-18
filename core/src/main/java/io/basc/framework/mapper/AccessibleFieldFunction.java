@@ -3,22 +3,21 @@ package io.basc.framework.mapper;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 
-public class AccessibleFieldFunction implements Function<Class<?>, Stream<AccessibleField>> {
+public class AccessibleFieldFunction implements Function<Class<?>, Elements<AccessibleField>> {
 	private final ConcurrentReferenceHashMap<Class<?>, AccessibleField[]> cacheMap = new ConcurrentReferenceHashMap<>();
 	private final String[] getterMethodPrefixs;
 	private final String[] setterMethodPrefixs;
@@ -161,16 +160,16 @@ public class AccessibleFieldFunction implements Function<Class<?>, Stream<Access
 	}
 
 	@Override
-	public Stream<AccessibleField> apply(Class<?> sourceClass) {
+	public Elements<AccessibleField> apply(Class<?> sourceClass) {
 		if (sourceClass == null || sourceClass == Object.class) {
-			return Stream.empty();
+			return Elements.empty();
 		}
 
 		AccessibleField[] metadatas = cacheMap.get(sourceClass);
 		if (metadatas == null) {
 			List<AccessibleField> list = getFieldMetadataList(sourceClass);
 			if (CollectionUtils.isEmpty(list)) {
-				return Stream.empty();
+				return Elements.empty();
 			}
 			metadatas = list.toArray(new AccessibleField[0]);
 			AccessibleField[] old = cacheMap.putIfAbsent(sourceClass, metadatas);
@@ -179,6 +178,6 @@ public class AccessibleFieldFunction implements Function<Class<?>, Stream<Access
 				metadatas = old;
 			}
 		}
-		return Arrays.asList(metadatas).stream();
+		return Elements.forArray(metadatas);
 	}
 }
