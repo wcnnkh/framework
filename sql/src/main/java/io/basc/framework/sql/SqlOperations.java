@@ -3,8 +3,8 @@ package io.basc.framework.sql;
 import java.sql.SQLException;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.domain.Query;
 import io.basc.framework.mapper.ObjectMapper;
-import io.basc.framework.util.page.Paginations;
 
 @SuppressWarnings("unchecked")
 public interface SqlOperations extends ConnectionFactory {
@@ -23,27 +23,27 @@ public interface SqlOperations extends ConnectionFactory {
 
 	ObjectMapper<java.sql.ResultSet, SQLException> getMapper();
 
-	default <T> Paginations<T> query(Class<? extends T> resultType, Sql sql) {
-		return new Query<>(this, sql, (rs) -> getMapper().convert(rs, resultType));
+	default <T> Query<T> query(Class<? extends T> resultType, Sql sql) {
+		return query(sql, (rs) -> getMapper().convert(rs, resultType));
 	}
 
-	default <T> Paginations<T> query(Class<? extends T> resultType, String sql) {
+	default <T> Query<T> query(Class<? extends T> resultType, String sql) {
 		return query(resultType, new SimpleSql(sql));
 	}
 
-	default <T> Paginations<T> query(Class<? extends T> resultType, String sql, Object... sqlParams) {
+	default <T> Query<T> query(Class<? extends T> resultType, String sql, Object... sqlParams) {
 		return query(resultType, new SimpleSql(sql, sqlParams));
 	}
 
-	default <T> Paginations<T> query(TypeDescriptor resultType, Sql sql) {
-		return new Query<>(this, sql, (rs) -> (T) getMapper().convert(rs, resultType));
+	default <T> Query<T> query(TypeDescriptor resultType, Sql sql) {
+		return query(sql, (rs) -> (T) getMapper().convert(rs, resultType));
 	}
 
-	default <T> Paginations<T> query(TypeDescriptor resultType, String sql) {
+	default <T> Query<T> query(TypeDescriptor resultType, String sql) {
 		return query(resultType, new SimpleSql(sql));
 	}
 
-	default <T> Paginations<T> query(TypeDescriptor resultType, String sql, Object... sqlParams) {
+	default <T> Query<T> query(TypeDescriptor resultType, String sql, Object... sqlParams) {
 		return query(resultType, new SimpleSql(sql, sqlParams));
 	}
 

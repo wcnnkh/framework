@@ -13,6 +13,7 @@ import org.apache.lucene.search.TotalHits;
 import org.apache.lucene.search.TotalHits.Relation;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.page.Pages;
 
 public class SearchResults<T> extends TopFieldDocs implements Pages<ScoreDoc, T> {
@@ -77,8 +78,8 @@ public class SearchResults<T> extends TopFieldDocs implements Pages<ScoreDoc, T>
 	}
 
 	@Override
-	public List<T> getList() {
-		return Collections.unmodifiableList(list);
+	public Elements<T> getElements() {
+		return Elements.of(list);
 	}
 
 	@Override

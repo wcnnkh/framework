@@ -5,32 +5,22 @@ import java.io.OutputStream;
 
 import org.apache.poi.ss.usermodel.Workbook;
 
-import io.basc.framework.microsoft.Excel;
 import io.basc.framework.microsoft.WritableExcel;
 import io.basc.framework.microsoft.WritableSheet;
-import io.basc.framework.util.Elements;
 
 public class PoiExcel implements WritableExcel {
 	private final Workbook workbook;
 	private final OutputStream outputStream;
 	private final boolean closeStream;
-	private final long cursorId;
-	private final long limit;
 
 	public PoiExcel(Workbook workbook) {
 		this(workbook, null, false);
 	}
 
 	PoiExcel(Workbook workbook, OutputStream outputStream, boolean closeStream) {
-		this(workbook, outputStream, closeStream, 0, -1);
-	}
-
-	private PoiExcel(Workbook workbook, OutputStream outputStream, boolean closeStream, long cursorId, long limit) {
 		this.workbook = workbook;
 		this.outputStream = outputStream;
 		this.closeStream = closeStream;
-		this.cursorId = cursorId;
-		this.limit = limit;
 	}
 
 	public void close() throws IOException {
@@ -93,29 +83,5 @@ public class PoiExcel implements WritableExcel {
 
 	public void removeSheet(int sheetIndex) {
 		workbook.removeSheetAt(sheetIndex);
-	}
-
-	@Override
-	public Excel jumpTo(Long cursorId, long count) {
-		return new PoiExcel(workbook, outputStream, closeStream, cursorId, count);
-	}
-
-	@Override
-	public Long getCursorId() {
-		return cursorId;
-	}
-
-	@Override
-	public long getLimit() {
-		return limit > 0 ? limit : getTotal();
-	}
-
-	@Override
-	public Elements<String[]> getElements() {
-		Elements<String[]> elements = WritableExcel.super.getElements();
-		if (limit > 0) {
-			elements = elements.limit(limit);
-		}
-		return elements;
 	}
 }

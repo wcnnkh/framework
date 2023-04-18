@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import io.basc.framework.data.domain.Query;
 import io.basc.framework.util.ConsumeProcessor;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Processor;
@@ -25,8 +26,10 @@ public interface ConnectionFactory {
 		operations().prepare(sql).consume(processor);
 	}
 
-	default <T> Elements<T> query(Sql sql,
+	default <T> Query<T> query(Sql sql,
 			Processor<? super java.sql.ResultSet, ? extends T, ? extends Throwable> rowMapper) {
-		return operations().prepare(sql).query().rows(rowMapper);
+		Elements<T> elements = operations().prepare(sql).query().rows(rowMapper);
+		// 数据库操作是耗时的，启用缓存
+		return new Query<>(elements.cacheable());
 	}
 }

@@ -41,7 +41,7 @@ public interface Elements<E> extends Streamable<E>, Iterable<E> {
 
 	@SuppressWarnings("unchecked")
 	public static <T> Elements<T> empty() {
-		return (Elements<T>) EmptyElements.INSTANCE;
+		return (Elements<T>) ElementList.EMPTY;
 	}
 
 	@SuppressWarnings("unchecked")

@@ -1,8 +1,11 @@
 package io.basc.framework.util;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ElementList<E> extends ListWrapper<E> implements Elements<E> {
+	public static final ElementList<?> EMPTY = new ElementList<>(Collections.emptyList());
+
 	private static final long serialVersionUID = 1L;
 
 	public ElementList(List<E> wrappedTarget) {
@@ -10,13 +13,8 @@ public class ElementList<E> extends ListWrapper<E> implements Elements<E> {
 	}
 
 	@Override
-	public ElementList<E> toList() {
+	public Elements<E> cacheable() {
 		return this;
-	}
-
-	@Override
-	public Elements<E> reverse() {
-		return Elements.of(() -> CollectionUtils.getIterator(wrappedTarget, true));
 	}
 
 	@Override
@@ -30,7 +28,12 @@ public class ElementList<E> extends ListWrapper<E> implements Elements<E> {
 	}
 
 	@Override
-	public Elements<E> cacheable() {
+	public Elements<E> reverse() {
+		return Elements.of(() -> CollectionUtils.getIterator(wrappedTarget, true));
+	}
+
+	@Override
+	public ElementList<E> toList() {
 		return this;
 	}
 }

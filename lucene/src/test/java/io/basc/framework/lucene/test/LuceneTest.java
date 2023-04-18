@@ -34,12 +34,14 @@ public class LuceneTest {
 			Future<Long> future = templete.saveOrUpdate(term, bean2);
 			System.out.println(future.get());
 		}
-		
-		for(int i=0; i<100; i++) {
+
+		for (int i = 0; i < 100; i++) {
 			new Thread(() -> {
-				TestBean testBean = templete.search(SearchParameters.top(new TermQuery(term), 1), TestBean.class).first();
+				TestBean testBean = templete.search(SearchParameters.top(new TermQuery(term), 1), TestBean.class)
+						.getElements().first();
 				System.out.println(testBean);
-			}).start();;
+			}).start();
+			;
 		}
 		Thread.sleep(Integer.MAX_VALUE);
 	}

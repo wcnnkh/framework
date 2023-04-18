@@ -1,0 +1,98 @@
+package io.basc.framework.sql.orm;
+
+import java.sql.ResultSet;
+import java.util.Iterator;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.domain.Query;
+import io.basc.framework.sql.ConnectionFactory;
+import io.basc.framework.sql.Sql;
+import io.basc.framework.util.Elements;
+import io.basc.framework.util.ElementsWrapper;
+import io.basc.framework.util.Processor;
+import io.basc.framework.util.page.Paginations;
+
+public class SqlQuery<T> extends Query<T> {
+	private static final long serialVersionUID = 1L;
+	private transient final ConnectionFactory connectionFactory;
+	private transient final SqlDialect sqlDialect;
+	private transient final Sql sql;
+	private transient final Processor<ResultSet, T, ? extends Throwable> mapProcessor;
+
+	@SuppressWarnings("unchecked")
+	public SqlQuery(ConnectionFactory connectionFactory, Sql sql, SqlDialect sqlDialect, TypeDescriptor resultType) {
+		this(connectionFactory, sql, (e) -> (T) sqlDialect.convert(e, resultType), sqlDialect);
+	}
+
+	public SqlQuery(ConnectionFactory connectionFactory, Sql sql,
+			Processor<ResultSet, T, ? extends Throwable> mapProcessor, SqlDialect sqlDialect) {
+		super(connectionFactory.operations().prepare(sql).query().rows(mapProcessor));
+		this.sql = sql;
+		this.connectionFactory = connectionFactory;
+		this.sqlDialect = sqlDialect;
+		this.mapProcessor = mapProcessor;
+	}
+
+	public Elements<T> getElements() {
+		if (connectionFactory == null) {
+			return super.getElements();
+		}
+
+		Sql iteratorSql = sql;
+		if (getLimit() > 0) {
+			iteratorSql = sqlDialect.toLimitSql(iteratorSql, getCursorId(), getLimit());
+		}
+		Elements<T> elements = connectionFactory.operations().prepare(sql).query().rows(mapProcessor);
+		return new Results(elements);
+	}
+
+	@Override
+	public Paginations<T> jumpTo(Long cursorId, long count) {
+		if (connectionFactory != null) {
+			return super.jumpTo(cursorId, count);
+		}
+
+		SqlQuery<T> query = new SqlQuery<>(connectionFactory, sql, mapProcessor, sqlDialect);
+		query.setCursorId(cursorId);
+		query.setLimit(count);
+		return query;
+	}
+
+	private class Results extends ElementsWrapper<T, Elements<T>> {
+
+		public Results(Elements<T> wrappedTarget) {
+			super(wrappedTarget);
+		}
+
+		@Override
+		public Stream<T> stream() {
+			return getElements().stream();
+		}
+
+		@Override
+		public Iterator<T> iterator() {
+			return getElements().iterator();
+		}
+
+		@Override
+		public long count() {
+			Sql totalSql = sqlDialect.toCountSql(sql);
+			return connectionFactory.query(totalSql, (e) -> e.getLong(1)).getElements().first();
+		}
+
+		@Override
+		public Optional<T> findFirst() {
+			Sql firstSql = sqlDialect.toLimitSql(sql, 0, 1);
+			return connectionFactory.query(firstSql, mapProcessor).getElements().findFirst();
+		}
+
+		@Override
+		public Optional<T> findAny() {
+			return findFirst();
+		}
+
+		// TODO 优化其他方法
+	}
+}

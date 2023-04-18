@@ -3,9 +3,9 @@ package io.basc.framework.orm.repository;
 import java.util.List;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.domain.Query;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.page.Paginations;
 
 public interface Curd<V> {
 	boolean delete(V entity);
@@ -29,13 +29,13 @@ public interface Curd<V> {
 
 	boolean isPresent(V conditions);
 
-	<T> Paginations<T> query(TypeDescriptor resultsTypeDescriptor, V conditions) throws OrmException;
+	<T> Query<T> query(TypeDescriptor resultsTypeDescriptor, V conditions) throws OrmException;
 
-	Paginations<V> query(V conditions);
+	Query<V> query(V conditions);
 
-	Paginations<V> queryAll();
+	Query<V> queryAll();
 
-	<T> Paginations<T> queryAll(TypeDescriptor resultsTypeDescriptor) throws OrmException;
+	<T> Query<T> queryAll(TypeDescriptor resultsTypeDescriptor) throws OrmException;
 
 	void save(V entity);
 

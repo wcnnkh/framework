@@ -59,7 +59,7 @@ public class GeoTest {
 		Query luceneQuery = strategy.makeQuery(args);
 		SearchParameters parameters = new SearchParameters(luceneQuery, 10);
 		SearchResults<Document> results = luceneTemplate.search(parameters, Document.class);
-		List<Document> list = results.all().getList();
+		List<Document> list = results.all().getElements().toList();
 		for (Document d : list) {
 			System.out.println(d.getFields());
 		}

@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.XUtils;
-import io.basc.framework.util.page.InMemoryPaginations;
+import io.basc.framework.util.page.Paginations;
 
 public class InMemoryPaginationsTest {
 	@Test
@@ -20,7 +20,7 @@ public class InMemoryPaginationsTest {
 		}
 
 		for (int i = 1; i < count; i++) {
-			InMemoryPaginations<String> paginations = new InMemoryPaginations<String>(Elements.of(list));
+			Paginations<String> paginations = new Paginations<String>(Elements.of(list));
 			paginations.setLimit(i);
 			Assert.assertTrue(paginations.jumpToPage(paginations.getPages() + 1).getElements().count() == 0);
 			Assert.assertTrue(!paginations.jumpToPage(paginations.getPages()).hasNext());

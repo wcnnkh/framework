@@ -96,7 +96,7 @@ public interface LuceneTemplate extends Repository {
 	 * @return
 	 */
 	default boolean isPresent(Term term) {
-		return search(new SearchParameters(new TermQuery(term), 1), (search, d) -> d.doc).all().findAny()
+		return search(new SearchParameters(new TermQuery(term), 1), (search, d) -> d.doc).all().getElements().findAny()
 				.isPresent();
 	}
 
@@ -263,7 +263,7 @@ public interface LuceneTemplate extends Repository {
 		try {
 			return write((writer) -> {
 				SearchResults<Document> searchResults = search(new SearchParameters(query, 100), (e) -> e);
-				Stream<Document> stream = searchResults.all().stream();
+				Stream<Document> stream = searchResults.all().getElements().stream();
 				try {
 					Iterator<Document> iterator = stream.iterator();
 					while (iterator.hasNext()) {
@@ -309,8 +309,9 @@ public interface LuceneTemplate extends Repository {
 	}
 
 	@Override
-	default <T, E> Paginations<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
-			Conditions conditions, List<? extends OrderColumn> orders) throws OrmException {
+	default <T, E> io.basc.framework.data.domain.Query<T> query(TypeDescriptor resultsTypeDescriptor,
+			Class<? extends E> entityClass, Conditions conditions, List<? extends OrderColumn> orders)
+			throws OrmException {
 		PageRequest request = PageRequest.getPageRequest();
 		if (request == null) {
 			request = new PageRequest();
@@ -318,6 +319,7 @@ public interface LuceneTemplate extends Repository {
 
 		SearchResults<T> results = search(resultsTypeDescriptor, entityClass, conditions, orders,
 				(int) request.getPageSize());
-		return results.toPaginations(request.getStart(), request.getPageSize());
+		Paginations<T> pagination = results.toPaginations(request.getStart(), request.getPageSize());
+		return new io.basc.framework.data.domain.Query<>(pagination);
 	}
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.domain.Query;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.orm.ObjectKeyFormat;
@@ -17,7 +18,6 @@ import io.basc.framework.orm.Property;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Pair;
-import io.basc.framework.util.page.Paginations;
 
 /**
  * 存储库
@@ -135,16 +135,16 @@ public interface Repository extends CurdOperations {
 				null).getElements().isEmpty();
 	}
 
-	default <T> Paginations<T> query(Class<? extends T> entityClass, @Nullable Conditions conditions,
+	default <T> Query<T> query(Class<? extends T> entityClass, @Nullable Conditions conditions,
 			List<? extends OrderColumn> orders) throws OrmException {
 		return query(TypeDescriptor.valueOf(entityClass), entityClass, conditions, orders);
 	}
 
-	<T, E> Paginations<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
+	<T, E> Query<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
 			@Nullable Conditions conditions, List<? extends OrderColumn> orders) throws OrmException;
 
 	@Override
-	default <T, E> Paginations<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
+	default <T, E> Query<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
 			E conditions) throws OrmException {
 		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
 		return query(resultsTypeDescriptor, entityClass,
@@ -154,7 +154,7 @@ public interface Repository extends CurdOperations {
 	}
 
 	@Override
-	default <T, E> Paginations<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass)
+	default <T, E> Query<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass)
 			throws OrmException {
 		return query(resultsTypeDescriptor, entityClass, null, null);
 	}

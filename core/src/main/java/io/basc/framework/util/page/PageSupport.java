@@ -1,7 +1,6 @@
 package io.basc.framework.util.page;
 
 import java.util.Collections;
-import java.util.List;
 
 import io.basc.framework.util.Assert;
 
@@ -51,10 +50,6 @@ public class PageSupport {
 		return Math.max(start, start + limit);
 	}
 
-	public static <T> Pagination<T> toPage(long total, long pageNumber, long limit, List<T> list) {
-		return new SharedPagination<>(getStart(pageNumber, limit), list, limit, total);
-	}
-
 	public static <K, T> Pageable<K, T> emptyPageable(K cursorId) {
 		return new SharedPageable<K, T>(cursorId);
 	}
@@ -69,13 +64,5 @@ public class PageSupport {
 
 	public static <K, T> Pages<K, T> emptyPages(K cursorId, Long count) {
 		return new SharedPages<K, T>(emptyPage(cursorId, count), null);
-	}
-
-	public static <T> Pagination<T> emptyPagination(long start, long count) {
-		return new SharedPagination<T>(start, count);
-	}
-
-	public static <T> Paginations<T> emptyPaginations(long start, long count) {
-		return new SharedPaginations<T>(emptyPagination(start, count), null);
 	}
 }

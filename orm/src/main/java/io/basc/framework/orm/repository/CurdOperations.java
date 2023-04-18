@@ -3,10 +3,10 @@ package io.basc.framework.orm.repository;
 import java.util.List;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.domain.Query;
 import io.basc.framework.orm.EntityOperations;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.page.Paginations;
 
 public interface CurdOperations extends EntityOperations {
 
@@ -29,19 +29,18 @@ public interface CurdOperations extends EntityOperations {
 	<K, T> Elements<T> getInIds(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
 			List<? extends K> inPrimaryKeys, Object... primaryKeys) throws OrmException;
 
-	default <T> Paginations<T> query(Class<? extends T> entityClass, T conditions) throws OrmException {
+	default <T> Query<T> query(Class<? extends T> entityClass, T conditions) throws OrmException {
 		return query(TypeDescriptor.valueOf(entityClass), entityClass, conditions);
 	}
 
-	<T, E> Paginations<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass, E conditions)
+	<T, E> Query<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass, E conditions)
 			throws OrmException;
 
-	default <T> Paginations<T> queryAll(Class<? extends T> entityClass) throws OrmException {
+	default <T> Query<T> queryAll(Class<? extends T> entityClass) throws OrmException {
 		return queryAll(TypeDescriptor.valueOf(entityClass), entityClass);
 	}
 
-	<T, E> Paginations<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass)
-			throws OrmException;
+	<T, E> Query<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass) throws OrmException;
 
 	<T> long updateAll(Class<? extends T> entityClass, T entity, T conditions);
 }

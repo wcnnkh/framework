@@ -1,38 +1,85 @@
 package io.basc.framework.util.page;
 
-public interface Paginations<T> extends Pagination<T>, Pages<Long, T> {
+import io.basc.framework.util.Elements;
 
-	default Paginations<T> previous() {
+/**
+ * 分页操作
+ * <p>
+ * 默认使用的内存分页实现，如果有更好的实现请重写{@link Paginations#getElements()}和{@link #jumpTo(Long, long)}
+ * 
+ * @author wcnnkh
+ *
+ * @param <T>
+ */
+public class Paginations<T> extends Pagination<T> implements Pages<Long, T> {
+	private static final long serialVersionUID = 1L;
+
+	public Paginations(Elements<T> elements) {
+		setElements(elements);
+	}
+
+	public Paginations(Pagination<T> pagination) {
+		super(pagination);
+	}
+
+	@Override
+	public Paginations<T> clone() {
+		return new Paginations<>(this);
+	}
+
+	public Paginations<T> previous() {
 		return jumpToPage(getPageNumber() - 1);
 	}
 
-	default Paginations<T> jumpToPage(long pageNumber) {
+	public Paginations<T> jumpToPage(long pageNumber) {
 		return jumpToPage(pageNumber, getLimit());
 	}
 
-	default Paginations<T> jumpToPage(long pageNumber, long count) {
+	public Paginations<T> jumpToPage(long pageNumber, long count) {
 		return jumpTo(PageSupport.getStart(pageNumber, count), count);
 	}
 
-	default Paginations<T> limit(long maxPageNumber) {
-		return new StandardPaginations<>(getTotal(),
-				Math.min(getTotal(), PageSupport.getStart(maxPageNumber, getLimit())), getLimit(),
-				(k, c) -> jumpTo(k, c).getElements());
-	}
-
-	default Paginations<T> jumpTo(Long cursorId) {
+	public Paginations<T> jumpTo(Long cursorId) {
 		return jumpTo(cursorId, getLimit());
 	}
 
 	@Override
-	default Paginations<T> shared() {
-		return new SharedPaginations<T>(this);
+	public Pagination<T> all() {
+		Pagination<T> pagination = new Pagination<>();
+		pagination.setTotal(getTotal());
+		pagination.setCursorId(0);
+		pagination.setLimit(pagination.getTotal());
+		pagination.setElements(pages().flatMap((e) -> e.getElements()));
+		return pagination;
 	}
 
 	@Override
-	default Pagination<T> all() {
-		return new AllPagination<>(this);
+	public Paginations<T> next() {
+		return jumpTo(getNextCursorId());
 	}
 
-	Paginations<T> jumpTo(Long cursorId, long count);
+	@Override
+	public Elements<? extends Pagination<T>> pages() {
+		return Elements.of(() -> new PageablesIterator<>(this, (e) -> e.next()));
+	}
+
+	@Override
+	public Elements<T> getElements() {
+		Elements<T> elements = super.getElements();
+		if (getCursorId() > 0) {
+			elements = elements.skip(getCursorId());
+		}
+
+		if (getLimit() > 0) {
+			elements = elements.limit(getLimit());
+		}
+		return elements;
+	}
+
+	public Paginations<T> jumpTo(Long cursorId, long count) {
+		Paginations<T> paginations = clone();
+		paginations.setCursorId(cursorId);
+		paginations.setLimit(count);
+		return paginations;
+	}
 }

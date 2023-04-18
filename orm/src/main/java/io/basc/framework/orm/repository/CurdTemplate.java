@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.domain.Query;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.page.Paginations;
 
 public class CurdTemplate implements CurdOperations {
 	private final Map<Class<?>, Curd<?>> repositoryMap = new HashMap<Class<?>, Curd<?>>();
@@ -114,14 +114,14 @@ public class CurdTemplate implements CurdOperations {
 	}
 
 	@Override
-	public <T, E> Paginations<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
+	public <T, E> Query<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
 			E conditions) throws OrmException {
 		Curd<E> curd = getCurd(entityClass);
 		return curd.query(resultsTypeDescriptor, conditions);
 	}
 
 	@Override
-	public <T, E> Paginations<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass)
+	public <T, E> Query<T> queryAll(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass)
 			throws OrmException {
 		Curd<E> curd = getCurd(entityClass);
 		return curd.queryAll(resultsTypeDescriptor);

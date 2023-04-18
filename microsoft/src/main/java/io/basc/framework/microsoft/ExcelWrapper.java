@@ -2,9 +2,9 @@ package io.basc.framework.microsoft;
 
 import java.io.IOException;
 
-import io.basc.framework.util.page.PaginationsWrapper;
+import io.basc.framework.util.Wrapper;
 
-public class ExcelWrapper<W extends Excel> extends PaginationsWrapper<String[], W> implements Excel {
+public class ExcelWrapper<W extends Excel> extends Wrapper<W> implements Excel {
 
 	public ExcelWrapper(W excel) {
 		super(excel);
@@ -22,10 +22,5 @@ public class ExcelWrapper<W extends Excel> extends PaginationsWrapper<String[], 
 	@Override
 	public int getNumberOfSheets() {
 		return wrappedTarget.getNumberOfSheets();
-	}
-
-	@Override
-	public Excel jumpTo(Long cursorId, long count) {
-		return wrappedTarget.jumpTo(cursorId, count);
 	}
 }

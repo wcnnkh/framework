@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.domain.Query;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Parameter;
@@ -24,7 +25,6 @@ import io.basc.framework.sql.Sql;
 import io.basc.framework.sql.SqlOperations;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.page.Pagination;
 
 @SuppressWarnings("unchecked")
 public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFactory, Repository {
@@ -145,7 +145,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	default <K, V> PrimaryKeyElements<K, V> getInIds(TableStructure tableStructure, List<? extends K> inPrimaryKeys,
 			Object... primaryKeys) {
 		Sql sql = getMapper().getInIds(tableStructure, primaryKeys, inPrimaryKeys);
-		PageableQuery<V> resultSet = query(tableStructure, sql);
+		Query<V> resultSet = query(tableStructure, sql);
 		return new PrimaryKeyElements<>(resultSet.getElements(), getObjectKeyFormat(), tableStructure, inPrimaryKeys,
 				primaryKeys);
 	}
@@ -179,7 +179,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	default TableChanges getTableChanges(TableStructure tableStructure) {
 		TableStructureMapping tableStructureMapping = getMapper().getTableStructureMapping(tableStructure);
-		List<Column> list = query(tableStructureMapping.getSql(), (rs) -> tableStructureMapping.getColumn(rs)).toList();
+		List<Column> list = query(tableStructureMapping.getSql(), (rs) -> tableStructureMapping.getColumn(rs))
+				.getElements().toList();
 		HashSet<String> hashSet = new HashSet<String>();
 		List<String> deleteList = new ArrayList<String>();
 		TableStructure oldStructure = getMapper().getStructure(tableStructure.getSourceClass());
@@ -202,71 +203,71 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	@Override
-	default <T> Pagination<T> query(Class<? extends T> entityClass, Conditions conditions,
+	default <T> Query<T> query(Class<? extends T> entityClass, Conditions conditions,
 			List<? extends OrderColumn> orders) throws OrmException {
 		return query(TypeDescriptor.valueOf(entityClass), entityClass, conditions, orders);
 	}
 
 	@Override
-	default <T> Pagination<T> query(Class<? extends T> resultType, Sql sql) {
+	default <T> Query<T> query(Class<? extends T> resultType, Sql sql) {
 		return query(TypeDescriptor.valueOf(resultType), sql);
 	}
 
 	@Override
-	default <T> PageablePaginationQuery<T> query(Class<? extends T> resultType, String sql) {
+	default <T> Query<T> query(Class<? extends T> resultType, String sql) {
 		return query(resultType, new SimpleSql(sql));
 	}
 
 	@Override
-	default <T> Pagination<T> query(Class<? extends T> resultType, String sql, Object... sqlParams) {
+	default <T> Query<T> query(Class<? extends T> resultType, String sql, Object... sqlParams) {
 		return query(resultType, new SimpleSql(sql, sqlParams));
 	}
 
-	default <T> Pagination<T> query(Class<? extends T> queryClass, T query) {
+	default <T> Query<T> query(Class<? extends T> queryClass, T query) {
 		return query(getMapper().getStructure(queryClass, query, null), query);
 	}
 
-	default <T> Pagination<T> query(TableStructure structure, Sql sql) {
-		return new PageableQuery<>(this, sql, (rs) -> (T) getMapper().convert(rs, structure), getMapper());
+	default <T> Query<T> query(TableStructure structure, Sql sql) {
+		return new SqlQuery<>(this, sql, (rs) -> (T) getMapper().convert(rs, structure), getMapper());
 	}
 
-	default <T> Pagination<T> query(TableStructure tableStructure, T query) {
+	default <T> Query<T> query(TableStructure tableStructure, T query) {
 		Sql sql = getMapper().toQuerySql(tableStructure, query);
-		return new PageableQuery<>(this, sql, (rs) -> (T) getMapper().convert(rs, tableStructure), getMapper());
+		return new SqlQuery<>(this, sql, (rs) -> (T) getMapper().convert(rs, tableStructure), getMapper());
 	}
 
 	@Override
-	default <T, E> Pagination<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
+	default <T, E> Query<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass,
 			Conditions conditions, List<? extends OrderColumn> orderColumns) throws OrmException {
 		return query(resultsTypeDescriptor, getMapper().getStructure(entityClass), conditions, orderColumns);
 	}
 
 	@Override
-	default <T, E> PageableQuery<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass, E conditions)
+	default <T, E> Query<T> query(TypeDescriptor resultsTypeDescriptor, Class<? extends E> entityClass, E conditions)
 			throws OrmException {
 		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
 		return query(resultsTypeDescriptor, entityClass,
-				getMapper().parseConditions(entityClass, getMapper().getStructure(entityClass).columns().iterator(),
-						orderColumns, (e) -> e.get(conditions), (e) -> ObjectUtils.isNotEmpty(e.getValue())),
+				getMapper().parseConditions(entityClass, getMapper().getStructure(entityClass).columns(), orderColumns,
+						(e) -> e.get(conditions), (e) -> ObjectUtils.isNotEmpty(e.getValue())),
 				orderColumns);
 	}
 
 	@Override
-	default <T> PageableQuery<T> query(TypeDescriptor resultType, Sql sql) {
-		return new PageableQuery<>(this, getMapper(), sql, resultType);
+	default <T> Query<T> query(TypeDescriptor resultType, Sql sql) {
+		return new SqlQuery<>(this, sql, getMapper(), resultType);
 	}
 
 	@Override
-	default <T> PageableQuery<T> query(TypeDescriptor resultType, String sql) {
+	default <T> Query<T> query(TypeDescriptor resultType, String sql) {
 		return query(resultType, new SimpleSql(sql));
 	}
 
 	@Override
-	default <T> PageableQuery<T> query(TypeDescriptor resultType, String sql, Object... sqlParams) {
+	default <T> Query<T> query(TypeDescriptor resultType, String sql, Object... sqlParams) {
 		return query(resultType, new SimpleSql(sql, sqlParams));
 	}
 
-	default <T> PageableQuery<T> query(TypeDescriptor resultsTypeDescriptor, TableStructure structure, Conditions conditions,
+	default <T> Query<T> query(TypeDescriptor resultsTypeDescriptor, TableStructure structure, Conditions conditions,
 			List<? extends OrderColumn> orders) throws OrmException {
 		List<OrderColumn> orderColumns = new ArrayList<OrderColumn>(8);
 		if (orders != null) {
@@ -278,20 +279,20 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		return query(resultsTypeDescriptor, sql);
 	}
 
-	default <T> PageableQuery<T> queryByIndexs(Class<? extends T> queryClass, T query) {
+	default <T> Query<T> queryByIndexs(Class<? extends T> queryClass, T query) {
 		return queryByIndexs(getMapper().getStructure(queryClass, query, null), query);
 	}
 
-	default <T> PageableQuery<T> queryByIndexs(TableStructure tableStructure, T query) {
+	default <T> Query<T> queryByIndexs(TableStructure tableStructure, T query) {
 		Sql sql = getMapper().toQuerySqlByIndexs(tableStructure, query);
 		return query(tableStructure, sql);
 	}
 
-	default <T> PageableQuery<T> queryByPrimaryKeys(Class<? extends T> queryClass, T query) {
+	default <T> Query<T> queryByPrimaryKeys(Class<? extends T> queryClass, T query) {
 		return queryByPrimaryKeys(getMapper().getStructure(queryClass, query, null), query);
 	}
 
-	default <T> PageableQuery<T> queryByPrimaryKeys(TableStructure tableStructure, T query) {
+	default <T> Query<T> queryByPrimaryKeys(TableStructure tableStructure, T query) {
 		Sql sql = getMapper().toQuerySqlByPrimaryKeys(tableStructure, query);
 		return query(tableStructure, sql);
 	}
@@ -372,7 +373,7 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 			return;
 		}
 
-		for (Column column : tableStructure) {
+		for (Column column : tableStructure.getElements()) {
 			if (column.isAutoIncrement() && column.isSupportSetter()) {
 				Object lastId = getAutoIncrementLastId(connection, tableStructure);
 				column.getSetter().set(entity, lastId, getMapper().getEnvironment().getConversionService());
