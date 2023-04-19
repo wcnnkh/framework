@@ -20,9 +20,4 @@ public class StandardPages<K, T> extends PageWrapper<K, T, Page<K, T>> implement
 	public Pages<K, T> jumpTo(K cursorId, long count) {
 		return new StandardPages<>(getTotal(), cursorId, count, processor);
 	}
-
-	@Override
-	public Pages<K, T> shared() {
-		return Pages.super.shared();
-	}
 }

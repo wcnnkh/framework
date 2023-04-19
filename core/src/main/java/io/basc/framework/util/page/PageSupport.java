@@ -1,7 +1,5 @@
 package io.basc.framework.util.page;
 
-import java.util.Collections;
-
 import io.basc.framework.util.Assert;
 
 public class PageSupport {
@@ -48,21 +46,5 @@ public class PageSupport {
 		Assert.isTrue(limit > 0, "required limit > 0");
 		Assert.isTrue(start >= 0, "required start >= 0");
 		return Math.max(start, start + limit);
-	}
-
-	public static <K, T> Pageable<K, T> emptyPageable(K cursorId) {
-		return new SharedPageable<K, T>(cursorId);
-	}
-
-	public static <K, T> Pageables<K, T> emptyPageables(K cursorId) {
-		return new SharedPageables<K, T>(emptyPageables(cursorId), null);
-	}
-
-	public static <K, T> Page<K, T> emptyPage(K cursorId, long count) {
-		return new SharedPage<K, T>(cursorId, Collections.emptyList(), count, 0);
-	}
-
-	public static <K, T> Pages<K, T> emptyPages(K cursorId, Long count) {
-		return new SharedPages<K, T>(emptyPage(cursorId, count), null);
 	}
 }

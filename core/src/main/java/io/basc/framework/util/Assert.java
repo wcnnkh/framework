@@ -2,6 +2,7 @@ package io.basc.framework.util;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import io.basc.framework.io.FilenameUtils;
@@ -131,6 +132,12 @@ public abstract class Assert {
 	 */
 	public static void requiredArgument(boolean expression, String name) {
 		isTrue(expression, "[Assertion failed] - [" + name + "] argument is required");
+	}
+
+	public static <T> T requiredArgument(T element, String name, Predicate<? super T> predicate) {
+		requiredArgument(predicate != null, "predicate");
+		requiredArgument(predicate.test(element), name);
+		return element;
 	}
 
 	/**

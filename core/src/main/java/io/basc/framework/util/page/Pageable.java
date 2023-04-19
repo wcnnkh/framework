@@ -1,8 +1,10 @@
 package io.basc.framework.util.page;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 
 public interface Pageable<K, T> {
@@ -37,12 +39,68 @@ public interface Pageable<K, T> {
 		return new SharedPageable<>(this);
 	}
 
-	default <TT> Pageable<K, TT> map(Function<? super T, ? extends TT> valueMapper) {
-		return map(Function.identity(), valueMapper);
+	/**
+	 * 默认调用{@link #convert(Function)}
+	 * 
+	 * @param predicate
+	 * @return
+	 */
+	default Pageable<K, T> filter(Predicate<? super T> predicate) {
+		Assert.requiredArgument(predicate != null, "predicate");
+		return convert((elements) -> elements.filter(predicate));
 	}
 
-	default <TK, TT> Pageable<TK, TT> map(Function<? super K, ? extends TK> keyMapper,
-			Function<? super T, ? extends TT> valueMapper) {
-		return new ConvertiblePageable<>(this, keyMapper, valueMapper);
+	/**
+	 * 默认调用{@link #map(Function, Function)}
+	 * 
+	 * @param <TT>
+	 * @param elementMapper
+	 * @return
+	 */
+	default <TT> Pageable<K, TT> map(Function<? super T, ? extends TT> elementMapper) {
+		return map(Function.identity(), elementMapper);
+	}
+
+	/**
+	 * 默认调用{@link #convert(Function, Function)}
+	 * 
+	 * @param <TK>
+	 * @param <TT>
+	 * @param cursorIdMapper
+	 * @param elementMapper
+	 * @return
+	 */
+	default <TK, TT> Pageable<TK, TT> map(Function<? super K, ? extends TK> cursorIdMapper,
+			Function<? super T, ? extends TT> elementMapper) {
+		Assert.requiredArgument(elementMapper != null, "elementMapper");
+		return convert(cursorIdMapper, (elements) -> elements.map(elementMapper));
+	}
+
+	/**
+	 * 默认调用{@link #convert(Function)}
+	 * 
+	 * @param <TT>
+	 * @param mapper
+	 * @return
+	 */
+	default <TT> Pageable<K, TT> flatMap(Function<? super T, ? extends Elements<TT>> mapper) {
+		Assert.requiredArgument(mapper != null, "mapper");
+		return convert((elements) -> elements.flatMap(mapper));
+	}
+
+	/**
+	 * 默认调用{@link #convert(Function, Function)}
+	 * 
+	 * @param <TT>
+	 * @param elementsConverter
+	 * @return
+	 */
+	default <TT> Pageable<K, TT> convert(Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
+		return convert(Function.identity(), elementsConverter);
+	}
+
+	default <TK, TT> Pageable<TK, TT> convert(Function<? super K, ? extends TK> cursorIdConverter,
+			Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
+		return new ConvertiblePageable<>(this, cursorIdConverter, elementsConverter);
 	}
 }

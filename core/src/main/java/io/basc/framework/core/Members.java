@@ -17,9 +17,86 @@ import io.basc.framework.util.page.PageablesIterator;
  * 
  * @author wcnnkh
  *
- * @param <T>
+ * @param <M>
  */
-public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
+public class Members<M> implements Cloneable, Pageables<Class<?>, M> {
+	private static class Cover implements WithMethod {
+		@Override
+		public <M> void with(Members<M> source, Members<M> target) {
+			if (source == null) {
+				return;
+			}
+
+			Members<M> with = source;
+			while (with != null) {
+				Members<M> item = with.clone();
+				item.with = null;
+
+				boolean use = false;
+				Members<M> targetWith = target;
+				while (targetWith != null) {
+					if (ClassUtils.sameName(item.sourceClass, targetWith.sourceClass)) {
+						use = true;
+						if (targetWith == target) {
+							// 如果是父级，不能替换
+							targetWith.elements = item.getElements();
+						} else {
+							targetWith.sourceClass = item.sourceClass;
+							targetWith.elements = item.elements;
+						}
+						break;
+					}
+					targetWith = targetWith.with;
+				}
+
+				if (!use) {
+					targetWith.with = item;
+				}
+				with = with.with;
+			}
+		}
+	}
+
+	private static class Direct implements WithMethod {
+
+		@Override
+		public <M> void with(Members<M> source, Members<M> target) {
+			if (source == null) {
+				return;
+			}
+
+			// 使用循环而不使用递归
+			Members<M> with = target;
+			while (with.with != null) {
+				with = with.with;
+			}
+			with.with = source;
+		}
+	}
+
+	private static class Refuse extends Direct {
+		@Override
+		public <M> void with(Members<M> source, Members<M> target) {
+			if (source == null) {
+				return;
+			}
+
+			if (target.contains(source.sourceClass)) {
+				with(source.with, target);
+				return;
+			}
+			super.with(source, target);
+		}
+	}
+
+	public static interface WithMethod {
+		<M> void with(Members<M> source, Members<M> target);
+	}
+
+	/**
+	 * 相同的sourceClass进行覆盖(代价较高)
+	 */
+	public static final WithMethod COVER = new Cover();
 	/**
 	 * 直接关联不做任何限制
 	 */
@@ -29,71 +106,52 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	 */
 	public static final WithMethod REFUSE = new Refuse();
 
-	/**
-	 * 相同的sourceClass进行覆盖(代价较高)
-	 */
-	public static final WithMethod COVER = new Cover();
+	private volatile Elements<M> elements;
 
-	private Function<Class<?>, ? extends Elements<T>> processor;
 	private Class<?> sourceClass;
-	@Nullable
-	private volatile Elements<T> elements;
-	private WithMethod withMethod = REFUSE;
-	@Nullable
-	private Members<T> with;
 
-	public Members(Class<?> sourceClass, Function<Class<?>, ? extends Elements<T>> processor) {
+	@Nullable
+	private Members<M> with;
+
+	private WithMethod withMethod = REFUSE;
+
+	public Members(Class<?> sourceClass, Elements<M> elements) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
-		Assert.requiredArgument(processor != null, "processor");
+		Assert.requiredArgument(elements != null, "elements");
 		this.sourceClass = sourceClass;
-		this.processor = processor;
+		this.elements = elements;
 	}
 
-	public Members(Members<T> members) {
+	public Members(Members<M> members) {
 		Assert.requiredArgument(members != null, "members");
 		this.sourceClass = members.sourceClass;
-		this.processor = members.processor;
 		this.elements = members.elements;
 		this.with = members.with;
 		this.withMethod = members.withMethod;
 	}
 
-	public Members<T> withMethod(WithMethod method) {
-		Assert.requiredArgument(method != null, "method");
-		Members<T> members = clone();
-		members.withMethod = method;
-		return members;
-	}
-
-	public WithMethod getWithMethod() {
-		return withMethod;
-	}
-
 	@Override
-	public Elements<? extends Pageable<Class<?>, T>> pages() {
-		return Elements.of(() -> new PageablesIterator<>(this, (e) -> e.next()));
-	}
-
-	@Override
-	public Members<T> all() {
-		Members<T> members = new Members<T>(this.sourceClass, this.processor);
+	public Members<M> all() {
+		Members<M> members = new Members<M>(this.sourceClass, Pageables.super.all().getElements());
 		members.withMethod = this.withMethod;
-		members.elements = Pageables.super.all().getElements();
 		return members;
 	}
 
 	@Override
-	public Members<T> clone() {
-		Members<T> clone = new Members<T>(this.sourceClass, this.processor);
+	public Members<M> clone() {
+		Members<M> clone = new Members<M>(this.sourceClass, this.elements);
 		if (this.with != null) {
 			clone.with = this.with.clone();
 		}
 
-		if (this.elements != null) {
-			clone.elements = this.elements;
-		}
-
 		clone.withMethod = this.withMethod;
+		return clone;
+	}
+
+	public Members<M> concat(Elements<? extends M> elements) {
+		Assert.requiredArgument(elements != null, "elements");
+		Members<M> clone = clone();
+		clone.elements = Elements.concat(this.elements, elements);
 		return clone;
 	}
 
@@ -102,7 +160,7 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 			return false;
 		}
 
-		Members<T> members = this;
+		Members<M> members = this;
 		while (members != null) {
 			if (ClassUtils.sameName(members.sourceClass, sourceClass)) {
 				return true;
@@ -113,11 +171,28 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	}
 
 	/**
+	 * 映射
+	 * 
+	 * @param processor
+	 * @return 返回一个新的
+	 */
+	@Override
+	public <S> Members<S> convert(Function<? super Elements<M>, ? extends Elements<S>> processor) {
+		Assert.requiredArgument(processor != null, "processor");
+		Members<S> members = new Members<S>(this.sourceClass, processor.apply(this.elements));
+		members.withMethod = this.withMethod;
+		if (this.with != null) {
+			members.with = this.with.convert(processor);
+		}
+		return members;
+	}
+
+	/**
 	 * 去重
 	 * 
 	 * @return
 	 */
-	public Members<T> distinct() {
+	public Members<M> distinct() {
 		return convert((e) -> e.convert((s) -> s.distinct()));
 	}
 
@@ -127,7 +202,7 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	 * @param predicate
 	 * @return
 	 */
-	public Members<T> exclude(Predicate<? super T> predicate) {
+	public Members<M> exclude(Predicate<? super M> predicate) {
 		if (predicate == null) {
 			return this;
 		}
@@ -142,11 +217,16 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	 * @param predicate
 	 * @return
 	 */
-	public Members<T> filter(Predicate<? super T> predicate) {
+	public Members<M> filter(Predicate<? super M> predicate) {
 		if (predicate == null) {
 			return this;
 		}
 		return convert((s) -> s == null ? s : s.filter(predicate));
+	}
+
+	@Override
+	public <TT> Pageables<Class<?>, TT> flatMap(Function<? super M, ? extends Elements<TT>> mapper) {
+		return convert((elements) -> elements.flatMap(mapper));
 	}
 
 	@Override
@@ -155,16 +235,21 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	}
 
 	@Override
+	public Elements<M> getElements() {
+		return elements;
+	}
+
+	@Override
 	public final Class<?> getNextCursorId() {
 		return with == null ? null : with.sourceClass;
 	}
 
-	public Function<Class<?>, ? extends Elements<T>> getProcessor() {
-		return processor;
-	}
-
 	public final Class<?> getSourceClass() {
 		return sourceClass;
+	}
+
+	public WithMethod getWithMethod() {
+		return withMethod;
 	}
 
 	@Override
@@ -172,64 +257,38 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 		return with != null;
 	}
 
+	@Nullable
 	@Override
-	public Members<T> jumpTo(Class<?> cursorId) {
-		return new Members<>(sourceClass, this.processor);
+	public Members<M> jumpTo(Class<?> cursorId) {
+		Members<M> members = this;
+		while (members != null) {
+			if (members.sourceClass == cursorId) {
+				return members;
+			}
+			members = members.with;
+		}
+		return null;
 	}
 
-	public <TT> Members<TT> map(Function<? super T, ? extends TT> map) {
+	public <TT> Members<TT> map(Function<? super M, ? extends TT> map) {
 		return convert((s) -> s == null ? null : s.map(map));
 	}
 
-	/**
-	 * 映射
-	 * 
-	 * @param processor
-	 * @return 返回一个新的
-	 */
-	public <S> Members<S> convert(Function<? super Elements<T>, ? extends Elements<S>> processor) {
-		Assert.requiredArgument(processor != null, "processor");
-		return convert(processor, (e) -> processor.apply(this.processor.apply(e)), this.processor);
-	}
-
-	private <S> Members<S> convert(Function<? super Elements<T>, ? extends Elements<S>> processor,
-			Function<Class<?>, ? extends Elements<S>> rootMapProcessor,
-			Function<Class<?>, ? extends Elements<T>> rootProcessor) {
-		Members<S> members = new Members<S>(this.sourceClass,
-				this.processor == rootProcessor ? rootMapProcessor : ((e) -> processor.apply(this.processor.apply(e))));
-		members.withMethod = this.withMethod;
-		if (this.with != null) {
-			members.with = this.with.convert(processor, rootMapProcessor, rootProcessor);
-		}
-
-		if (this.elements != null) {
-			members.elements = processor.apply(this.elements);
-		}
-		return members;
-	}
-
 	@Override
-	public Members<T> next() {
+	public Members<M> next() {
 		return with;
 	}
 
-	public Members<T> shared() {
+	@Override
+	public Elements<? extends Pageable<Class<?>, M>> pages() {
+		return Elements.of(() -> new PageablesIterator<>(this, (e) -> e.next()));
+	}
+
+	public Members<M> shared() {
 		return convert((e) -> e.toList());
 	}
 
-	@Override
-	public Elements<T> getElements() {
-		if (elements == null) {
-			synchronized (this) {
-				if (elements == null) {
-					elements = processor.apply(sourceClass);
-				}
-			}
-		}
-		return elements;
-	}
-
-	public Members<T> with(Members<T> with) {
+	public Members<M> with(Members<M> with) {
 		if (with == null) {
 			return this;
 		}
@@ -238,38 +297,20 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 		return this;
 	}
 
-	/**
-	 * 关联所有(不关联父类接口)
-	 * 
-	 * @return
-	 */
-	public Members<T> withAll() {
-		return withAll(null, this.processor);
+	public Members<M> withAll(Function<Class<?>, ? extends Elements<M>> processor) {
+		return withAll(processor, null);
 	}
 
 	/**
 	 * 关联所有的接口和父类(不关联父类接口)
 	 * 
 	 * @param predicate
+	 * @param processor
 	 * @return
 	 */
-	public Members<T> withAll(@Nullable Predicate<Class<?>> predicate) {
-		return withInterfaces(predicate).withSuperclass(predicate);
-	}
-
-	public Members<T> withAll(@Nullable Predicate<Class<?>> predicate,
-			Function<Class<?>, ? extends Elements<T>> processor) {
-		return withInterfaces(predicate, processor).withSuperclass(predicate, processor);
-	}
-
-	/**
-	 * 关联类
-	 * 
-	 * @param sourceClass
-	 * @return
-	 */
-	public Members<T> withClass(Class<?> sourceClass) {
-		return with(new Members<T>(sourceClass, this.processor));
+	public Members<M> withAll(Function<Class<?>, ? extends Elements<M>> processor,
+			@Nullable Predicate<Class<?>> predicate) {
+		return withInterfaces(processor, predicate).withSuperclass(processor, predicate);
 	}
 
 	/**
@@ -279,51 +320,35 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	 * @param predicate
 	 * @return
 	 */
-	public Members<T> withClass(Class<?> sourceClass, Predicate<? super T> predicate) {
-		Members<T> members = new Members<T>(sourceClass,
-				this.processor.andThen((e) -> e == null ? e : e.filter(predicate)));
+	public Members<M> withClass(Class<?> sourceClass, Function<Class<?>, ? extends Elements<M>> processor) {
+		Members<M> members = new Members<M>(sourceClass, processor.apply(sourceClass));
 		return with(members);
+	}
+
+	public Members<M> withInterfaces(Function<Class<?>, ? extends Elements<M>> processor) {
+		return withInterfaces(processor, null);
+
 	}
 
 	/**
 	 * 该类上的所有接口(此方法不支持superclass的原因的，无法获取一个接口的父类，尝试获取一个接口的父类时始终为空)
 	 * 
-	 * @see Class#getInterfaces()
-	 * @return
-	 */
-	public Members<T> withInterfaces() {
-		return withInterfaces(null, this.processor);
-	}
-
-	/**
-	 * 关联接口
-	 * 
-	 * @param predicate
-	 * @return
-	 */
-	public Members<T> withInterfaces(@Nullable Predicate<Class<?>> predicate) {
-		return withInterfaces(predicate, this.processor);
-	}
-
-	/**
-	 * 关联接口
-	 * 
 	 * @param predicate
 	 * @param processor
 	 * @return
 	 */
-	public Members<T> withInterfaces(@Nullable Predicate<Class<?>> predicate,
-			Function<Class<?>, ? extends Elements<T>> processor) {
+	public Members<M> withInterfaces(Function<Class<?>, ? extends Elements<M>> processor,
+			@Nullable Predicate<Class<?>> predicate) {
 		Assert.requiredArgument(processor != null, "processor");
 		Class<?>[] interfaces = this.sourceClass.getInterfaces();
 		if (interfaces == null || interfaces.length == 0) {
 			return this;
 		}
 
-		Members<T> members = this;
+		Members<M> members = this;
 		for (Class<?> interfaceClass : interfaces) {
 			if (predicate == null || predicate.test(interfaceClass)) {
-				members = members.with(new Members<T>(interfaceClass, processor));
+				members = members.with(new Members<M>(interfaceClass, processor.apply(interfaceClass)));
 			} else {
 				break;
 			}
@@ -331,42 +356,19 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 		return members;
 	}
 
-	public Members<T> concat(Elements<? extends T> elements) {
-		Assert.requiredArgument(elements != null, "elements");
-		Members<T> clone = clone();
-		clone.elements = Elements.concat(this.elements, elements);
-		return clone;
+	public Members<M> withMethod(WithMethod method) {
+		Assert.requiredArgument(method != null, "method");
+		Members<M> members = clone();
+		members.withMethod = method;
+		return members;
 	}
 
-	/**
-	 * 关联所有父类(不关联父类接口)
-	 * 
-	 * @return
-	 */
-	public Members<T> withSuperclass() {
-		return withSuperclass(false);
+	public Members<M> withSuperclass(Function<Class<?>, ? extends Elements<M>> processor) {
+		return withSuperclass(processor, false);
 	}
 
-	/**
-	 * 关联所有父类
-	 * 
-	 * @param interfaces 是否关联父类的接口
-	 *                   {@link Members#withInterfaces(Predicate, Function)}
-	 * @return
-	 */
-	public Members<T> withSuperclass(boolean interfaces) {
-		return withSuperclass(interfaces, null, this.processor);
-	}
-
-	/**
-	 * 关联父类
-	 * 
-	 * @param interfaces 是否也关联父类的接口
-	 * @param predicate
-	 * @return
-	 */
-	public Members<T> withSuperclass(boolean interfaces, @Nullable Predicate<Class<?>> predicate) {
-		return withSuperclass(interfaces, predicate, this.processor);
+	public Members<M> withSuperclass(Function<Class<?>, ? extends Elements<M>> processor, boolean interfaces) {
+		return withSuperclass(processor, interfaces, null);
 	}
 
 	/**
@@ -377,16 +379,16 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	 * @param processor
 	 * @return
 	 */
-	public Members<T> withSuperclass(boolean interfaces, @Nullable Predicate<Class<?>> predicate,
-			Function<Class<?>, ? extends Elements<T>> processor) {
+	public Members<M> withSuperclass(Function<Class<?>, ? extends Elements<M>> processor, boolean interfaces,
+			@Nullable Predicate<Class<?>> predicate) {
 		Assert.requiredArgument(processor != null, "processor");
 		Class<?> superclass = this.sourceClass.getSuperclass();
-		Members<T> members = this;
+		Members<M> members = this;
 		while (superclass != null) {
 			if (predicate == null || predicate.test(superclass)) {
-				members = members.with(new Members<T>(superclass, processor));
+				members = members.with(new Members<M>(superclass, processor.apply(superclass)));
 				if (interfaces) {
-					members = members.withInterfaces(predicate, processor);
+					members = members.withInterfaces(processor, predicate);
 				}
 			} else {
 				break;
@@ -399,89 +401,12 @@ public class Members<T> implements Cloneable, Pageables<Class<?>, T> {
 	/**
 	 * 关联父类(不关联父类接口)
 	 * 
+	 * @param processor
 	 * @param predicate
 	 * @return
 	 */
-	public Members<T> withSuperclass(@Nullable Predicate<Class<?>> predicate) {
-		return withSuperclass(false, predicate);
-	}
-
-	public Members<T> withSuperclass(@Nullable Predicate<Class<?>> predicate,
-			Function<Class<?>, ? extends Elements<T>> processor) {
-		return withSuperclass(false, predicate, processor);
-	}
-
-	public static interface WithMethod {
-		<T> void with(Members<T> source, Members<T> target);
-	}
-
-	private static class Direct implements WithMethod {
-
-		@Override
-		public <T> void with(Members<T> source, Members<T> target) {
-			if (source == null) {
-				return;
-			}
-
-			// 使用循环而不使用递归
-			Members<T> with = target;
-			while (with.with != null) {
-				with = with.with;
-			}
-			with.with = source;
-		}
-	}
-
-	private static class Refuse extends Direct {
-		@Override
-		public <T> void with(Members<T> source, Members<T> target) {
-			if (source == null) {
-				return;
-			}
-
-			if (target.contains(source.sourceClass)) {
-				with(source.with, target);
-				return;
-			}
-			super.with(source, target);
-		}
-	}
-
-	private static class Cover implements WithMethod {
-		@Override
-		public <T> void with(Members<T> source, Members<T> target) {
-			if (source == null) {
-				return;
-			}
-
-			Members<T> with = source;
-			while (with != null) {
-				Members<T> item = with.clone();
-				item.with = null;
-
-				boolean use = false;
-				Members<T> targetWith = target;
-				while (targetWith != null) {
-					if (ClassUtils.sameName(item.sourceClass, targetWith.sourceClass)) {
-						use = true;
-						if (targetWith == target) {
-							// 如果是父级，不能替换
-							targetWith.elements = item.getElements();
-						} else {
-							targetWith.sourceClass = item.sourceClass;
-							targetWith.processor = item.processor;
-							targetWith.elements = item.elements;
-						}
-						break;
-					}
-					targetWith = targetWith.with;
-				}
-
-				if (!use) {
-					targetWith.with = item;
-				}
-				with = with.with;
-			}
-		}
+	public Members<M> withSuperclass(Function<Class<?>, ? extends Elements<M>> processor,
+			@Nullable Predicate<Class<?>> predicate) {
+		return withSuperclass(processor, false, predicate);
 	}
 }

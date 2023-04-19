@@ -1,6 +1,7 @@
 package io.basc.framework.util.page;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Wrapper;
@@ -45,5 +46,26 @@ public class PageableWrapper<K, T, W extends Pageable<K, T>> extends Wrapper<W> 
 	@Override
 	public K getNextCursorId() {
 		return wrappedTarget.getNextCursorId();
+	}
+
+	@Override
+	public <TT> Pageable<K, TT> convert(Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
+		return wrappedTarget.convert(elementsConverter);
+	}
+
+	@Override
+	public <TK, TT> Pageable<TK, TT> convert(Function<? super K, ? extends TK> cursorIdConverter,
+			Function<? super Elements<T>, ? extends Elements<TT>> elementsConverter) {
+		return wrappedTarget.convert(cursorIdConverter, elementsConverter);
+	}
+
+	@Override
+	public Pageable<K, T> filter(Predicate<? super T> predicate) {
+		return wrappedTarget.filter(predicate);
+	}
+
+	@Override
+	public <TT> Pageable<K, TT> flatMap(Function<? super T, ? extends Elements<TT>> mapper) {
+		return wrappedTarget.flatMap(mapper);
 	}
 }

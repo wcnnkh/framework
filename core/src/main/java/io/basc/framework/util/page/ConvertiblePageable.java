@@ -2,30 +2,34 @@ package io.basc.framework.util.page;
 
 import java.util.function.Function;
 
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 
 public class ConvertiblePageable<M extends Pageable<SK, ST>, SK, ST, K, T> implements Pageable<K, T> {
 	protected final M source;
-	private final Function<? super SK, ? extends K> keyMap;
-	private final Function<? super ST, ? extends T> valueMap;
+	protected final Function<? super SK, ? extends K> cursorIdConverter;
+	protected final Function<? super Elements<ST>, ? extends Elements<T>> elementsConverter;
 
-	public ConvertiblePageable(M source, Function<? super SK, ? extends K> keyMap,
-			Function<? super ST, ? extends T> valueMap) {
+	public ConvertiblePageable(M source, Function<? super SK, ? extends K> cursorIdConverter,
+			Function<? super Elements<ST>, ? extends Elements<T>> elementsConverter) {
+		Assert.requiredArgument(source != null, "source");
+		Assert.requiredArgument(cursorIdConverter != null, "cursorIdConverter");
+		Assert.requiredArgument(elementsConverter != null, "elementsConverter");
 		this.source = source;
-		this.keyMap = keyMap;
-		this.valueMap = valueMap;
+		this.cursorIdConverter = cursorIdConverter;
+		this.elementsConverter = elementsConverter;
 	}
 
 	@Override
 	public K getCursorId() {
 		SK value = source.getCursorId();
-		return value == null ? null : keyMap.apply(value);
+		return value == null ? null : cursorIdConverter.apply(value);
 	}
 
 	@Override
 	public K getNextCursorId() {
 		SK value = source.getNextCursorId();
-		return value == null ? null : keyMap.apply(value);
+		return value == null ? null : cursorIdConverter.apply(value);
 	}
 
 	@Override
@@ -35,6 +39,6 @@ public class ConvertiblePageable<M extends Pageable<SK, ST>, SK, ST, K, T> imple
 
 	@Override
 	public Elements<T> getElements() {
-		return source.getElements().map(valueMap);
+		return elementsConverter.apply(source.getElements());
 	}
 }

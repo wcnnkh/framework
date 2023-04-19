@@ -14,10 +14,10 @@ public class AllPage<S extends Pages<K, T>, K, T> extends AllPageable<S, K, T> i
 	}
 
 	@Override
-	public long getLimit() {
+	public long getPageSize() {
 		Stream<? extends Page<K, T>> stream = source.pages().stream();
 		try {
-			return stream.mapToLong((e) -> e.getLimit()).sum();
+			return stream.mapToLong((e) -> e.getPageSize()).sum();
 		} finally {
 			stream.close();
 		}

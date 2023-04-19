@@ -7,7 +7,7 @@ import io.basc.framework.lang.Nullable;
 public class SharedPage<K, T> extends SharedPageable<K, T> implements Page<K, T> {
 	private static final long serialVersionUID = 1L;
 	private long total;
-	private long limit;
+	private long pageSize;
 
 	/**
 	 * 默认的构造方法
@@ -20,23 +20,23 @@ public class SharedPage<K, T> extends SharedPageable<K, T> implements Page<K, T>
 		super(cursorId);
 	}
 
-	public SharedPage(K cursorId, long limit) {
-		this(cursorId, null, limit, 0);
+	public SharedPage(K cursorId, long pageSize) {
+		this(cursorId, null, pageSize, 0);
 	}
 
-	public SharedPage(K cursorId, List<T> rows, long limit, long total) {
-		this(cursorId, rows, null, limit, total);
+	public SharedPage(K cursorId, List<T> rows, long pageSize, long total) {
+		this(cursorId, rows, null, pageSize, total);
 	}
 
-	public SharedPage(K cursorId, List<T> rows, @Nullable K nextCursorId, long limit, long total) {
+	public SharedPage(K cursorId, List<T> rows, @Nullable K nextCursorId, long pageSize, long total) {
 		super(cursorId, rows, nextCursorId);
-		this.limit = limit;
+		this.pageSize = pageSize;
 		this.total = total;
 	}
 
 	public SharedPage(Page<K, T> page) {
 		super(page);
-		this.limit = page.getLimit();
+		this.pageSize = page.getPageSize();
 		this.total = page.getTotal();
 	}
 
@@ -58,12 +58,12 @@ public class SharedPage<K, T> extends SharedPageable<K, T> implements Page<K, T>
 	}
 
 	@Override
-	public long getLimit() {
-		return limit;
+	public long getPageSize() {
+		return pageSize;
 	}
 
-	public void setLimit(long limit) {
-		this.limit = limit;
+	public void setPageSize(long pageSize) {
+		this.pageSize = pageSize;
 	}
 
 }

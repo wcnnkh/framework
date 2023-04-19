@@ -32,7 +32,7 @@ public class Paginations<T> extends Pagination<T> implements Pages<Long, T> {
 	}
 
 	public Paginations<T> jumpToPage(long pageNumber) {
-		return jumpToPage(pageNumber, getLimit());
+		return jumpToPage(pageNumber, getPageSize());
 	}
 
 	public Paginations<T> jumpToPage(long pageNumber, long count) {
@@ -40,7 +40,7 @@ public class Paginations<T> extends Pagination<T> implements Pages<Long, T> {
 	}
 
 	public Paginations<T> jumpTo(Long cursorId) {
-		return jumpTo(cursorId, getLimit());
+		return jumpTo(cursorId, getPageSize());
 	}
 
 	@Override
@@ -70,8 +70,8 @@ public class Paginations<T> extends Pagination<T> implements Pages<Long, T> {
 			elements = elements.skip(getCursorId());
 		}
 
-		if (getLimit() > 0) {
-			elements = elements.limit(getLimit());
+		if (getPageSize() > 0) {
+			elements = elements.limit(getPageSize());
 		}
 		return elements;
 	}

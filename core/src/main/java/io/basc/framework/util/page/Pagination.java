@@ -11,7 +11,7 @@ import io.basc.framework.util.Elements;
 public class Pagination<T> implements Page<Long, T>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private long cursorId;
-	private long limit;
+	private long pageSize;
 	private Long total;
 	private Elements<T> elements = Elements.empty();
 
@@ -20,7 +20,7 @@ public class Pagination<T> implements Page<Long, T>, Serializable, Cloneable {
 
 	public Pagination(Pagination<T> pagination) {
 		this.cursorId = pagination.cursorId;
-		this.limit = pagination.limit;
+		this.pageSize = pagination.pageSize;
 		this.total = pagination.total;
 		this.elements = pagination.elements;
 	}
@@ -39,13 +39,13 @@ public class Pagination<T> implements Page<Long, T>, Serializable, Cloneable {
 		this.cursorId = cursorId;
 	}
 
-	public long getLimit() {
-		return limit;
+	public long getPageSize() {
+		return pageSize;
 	}
 
-	public void setLimit(long limit) {
-		Assert.isTrue(limit > 0, "limit[" + limit + "] greater than 0 is required");
-		this.limit = limit;
+	public void setLimit(long pageSize) {
+		Assert.isTrue(pageSize > 0, "limit[" + pageSize + "] greater than 0 is required");
+		this.pageSize = pageSize;
 	}
 
 	public long getTotal() {
@@ -72,7 +72,7 @@ public class Pagination<T> implements Page<Long, T>, Serializable, Cloneable {
 	 * @return
 	 */
 	public long getPageNumber() {
-		return PageSupport.getPageNumber(getCursorId(), getLimit());
+		return PageSupport.getPageNumber(getCursorId(), getPageSize());
 	}
 
 	/**
@@ -81,7 +81,7 @@ public class Pagination<T> implements Page<Long, T>, Serializable, Cloneable {
 	 * @return
 	 */
 	public long getPages() {
-		return PageSupport.getPages(getTotal(), getLimit());
+		return PageSupport.getPages(getTotal(), getPageSize());
 	}
 
 	public boolean hasPrevious() {
@@ -90,16 +90,16 @@ public class Pagination<T> implements Page<Long, T>, Serializable, Cloneable {
 
 	@Override
 	public Long getNextCursorId() {
-		if (!PageSupport.hasMore(getTotal(), cursorId, getLimit())) {
+		if (!PageSupport.hasMore(getTotal(), cursorId, getPageSize())) {
 			return null;
 		}
 
-		return PageSupport.getNextStart(cursorId, getLimit());
+		return PageSupport.getNextStart(cursorId, getPageSize());
 	}
 
 	private void writeObject(ObjectOutputStream output) throws IOException {
 		output.writeLong(cursorId);
-		output.writeLong(limit);
+		output.writeLong(pageSize);
 		output.writeLong(total);
 		if (elements instanceof Serializable) {
 			output.writeObject(elements);
@@ -111,7 +111,7 @@ public class Pagination<T> implements Page<Long, T>, Serializable, Cloneable {
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream input) throws IOException, ClassNotFoundException {
 		this.cursorId = input.readLong();
-		this.limit = input.readLong();
+		this.pageSize = input.readLong();
 		this.total = input.readLong();
 		this.elements = (Elements<T>) input.readObject();
 	}

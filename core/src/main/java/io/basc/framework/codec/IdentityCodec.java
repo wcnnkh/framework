@@ -1,6 +1,7 @@
 package io.basc.framework.codec;
 
 public final class IdentityCodec<T> implements Codec<T, T> {
+	public static final IdentityCodec<?> INSTANCE = new IdentityCodec<>();
 
 	@Override
 	public T encode(T source) throws EncodeException {

@@ -9,22 +9,22 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class StandardPage<K, T> extends StandardPageable<K, T> implements Page<K, T> {
 	private final long total;
-	private long limit;
+	private long pageSize;
 
-	public StandardPage(long total, long limit) {
+	public StandardPage(long total, long pageSize) {
 		this.total = total;
-		this.limit = limit;
+		this.pageSize = pageSize;
 	}
 
-	public StandardPage(long total, long limit, Pageable<K, T> pageable) {
+	public StandardPage(long total, long pageSize, Pageable<K, T> pageable) {
 		super(pageable);
 		this.total = total;
-		this.limit = limit;
+		this.pageSize = pageSize;
 	}
 
 	public StandardPage(Page<K, T> page) {
 		super(page);
 		this.total = page.getTotal();
-		this.limit = page.getLimit();
+		this.pageSize = page.getPageSize();
 	}
 }
