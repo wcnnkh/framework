@@ -12,7 +12,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.mapper.Structure;
+import io.basc.framework.mapper.Mapping;
 import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
@@ -161,7 +161,7 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 	}
 
 	default <T> List<Parameter> parseValues(Class<? extends T> entityClass, T entity,
-			Structure<? extends Property> structure) {
+			Mapping<? extends Property> structure) {
 		return parseParameters(entityClass, structure.filter((e) -> !e.isEntity()).getElements(), null,
 				(e) -> e.get(entity), (e) -> e.getKey().isNullable() || ObjectUtils.isNotEmpty(e.getValue()))
 				.collect(Collectors.toList());

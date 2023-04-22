@@ -19,7 +19,7 @@ public interface StructureFactory {
 	 * @return
 	 */
 	@Nullable
-	default Structure<? extends Field> getStructure(Class<?> entityClass) {
+	default Mapping<? extends Field> getStructure(Class<?> entityClass) {
 		return Fields.getFields(entityClass);
 	}
 
@@ -28,7 +28,7 @@ public interface StructureFactory {
 	 * @param entityClass
 	 * @param structure
 	 */
-	void registerStructure(Class<?> entityClass, Structure<? extends Field> structure);
+	void registerStructure(Class<?> entityClass, Mapping<? extends Field> structure);
 
 	default boolean isEntity(Class<?> type) {
 		return (!Value.isBaseType(type) && !type.isArray() && type != Object.class && ReflectionUtils.isInstance(type)

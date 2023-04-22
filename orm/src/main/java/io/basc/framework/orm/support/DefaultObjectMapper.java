@@ -18,7 +18,7 @@ import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.mapper.ObjectMapperContext;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.mapper.Structure;
+import io.basc.framework.mapper.Mapping;
 import io.basc.framework.orm.EntityStructure;
 import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.orm.ObjectRelational;
@@ -213,7 +213,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends io.basc.framewo
 			return ObjectRelationalFactory.super.getStructure(entityClass);
 		}
 
-		Structure<? extends Field> structure = super.getStructure(entityClass);
+		Mapping<? extends Field> structure = super.getStructure(entityClass);
 		if (structure instanceof EntityStructure) {
 			return (EntityStructure) structure;
 		}

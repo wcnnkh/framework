@@ -115,10 +115,17 @@ public interface Elements<E> extends Streamable<E>, Iterable<E> {
 	}
 
 	default Elements<E> filter(Predicate<? super E> predicate) {
+		Assert.requiredArgument(predicate != null, "predicate");
 		return convert((stream) -> stream.filter(predicate));
 	}
 
+	default Elements<E> exclude(Predicate<? super E> predicate) {
+		Assert.requiredArgument(predicate != null, "predicate");
+		return filter(predicate.negate());
+	}
+
 	default <U> Elements<U> flatMap(Function<? super E, ? extends Streamable<U>> mapper) {
+		Assert.requiredArgument(mapper != null, "mapper");
 		return convert((stream) -> {
 			return stream.flatMap((e) -> {
 				Streamable<U> streamy = mapper.apply(e);
@@ -140,10 +147,16 @@ public interface Elements<E> extends Streamable<E>, Iterable<E> {
 	}
 
 	default <U> Elements<U> map(Function<? super E, ? extends U> mapper) {
+		Assert.requiredArgument(mapper != null, "mapper");
 		return convert((stream) -> stream.map(mapper));
 	}
 
+	default Elements<E> parallel() {
+		return convert((e) -> e.parallel());
+	}
+
 	default Elements<E> peek(Consumer<? super E> action) {
+		Assert.requiredArgument(action != null, "action");
 		return convert((e) -> e.peek(action));
 	}
 
@@ -161,6 +174,10 @@ public interface Elements<E> extends Streamable<E>, Iterable<E> {
 		list = new ArrayList<>(list);
 		Collections.reverse(list);
 		return new ElementList<>(list);
+	}
+
+	default Elements<E> sequential() {
+		return convert((e) -> e.sequential());
 	}
 
 	default Elements<E> skip(long n) {
@@ -186,5 +203,9 @@ public interface Elements<E> extends Streamable<E>, Iterable<E> {
 	default ElementSet<E> toSet() {
 		Set<E> set = Streamable.super.toSet();
 		return new ElementSet<>(set);
+	}
+
+	default Elements<E> unordered() {
+		return convert((e) -> e.unordered());
 	}
 }

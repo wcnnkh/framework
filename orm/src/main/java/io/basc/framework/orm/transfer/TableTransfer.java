@@ -22,7 +22,7 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.env.Sys;
 import io.basc.framework.io.FileRecords;
-import io.basc.framework.mapper.Structure;
+import io.basc.framework.mapper.Mapping;
 import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.OrmException;
@@ -144,13 +144,13 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 				});
 			}
 		} else {
-			Structure<? extends Property> structure = mapper.getStructure(targetType.getType());
+			Mapping<? extends Property> structure = mapper.getStructure(targetType.getType());
 			return mapEntity(source, structure);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public final <T> Stream<T> mapEntity(Stream<String[]> source, Structure<? extends Property> structure) {
+	public final <T> Stream<T> mapEntity(Stream<String[]> source, Mapping<? extends Property> structure) {
 		Assert.requiredArgument(structure != null, "structure");
 		Assert.requiredArgument(source != null, "source");
 		if (isHeader()) {
@@ -251,7 +251,7 @@ public abstract class TableTransfer implements Importer, ExportProcessor<Object>
 		}
 	}
 
-	public final TransfColumns<String, String> mapColumns(Object source, Structure<? extends Property> structure) {
+	public final TransfColumns<String, String> mapColumns(Object source, Mapping<? extends Property> structure) {
 		return structure.getElements().filter((e) -> e.isSupportGetter()).map((property) -> {
 			Object value = property.get(source);
 			if (value == null) {

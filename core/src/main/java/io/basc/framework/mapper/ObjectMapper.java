@@ -13,7 +13,7 @@ import io.basc.framework.util.Streams;
 public interface ObjectMapper<S, E extends Throwable>
 		extends ReversibleMapperFactory<S, E>, StructureFactory, ObjectAccessFactoryRegistry<E> {
 
-	default Object convert(S source, Structure<? extends Field> targetStructure) throws E {
+	default Object convert(S source, Mapping<? extends Field> targetStructure) throws E {
 		return convert(source, TypeDescriptor.forObject(source),
 				TypeDescriptor.valueOf(targetStructure.getSourceClass()), targetStructure);
 	}
@@ -38,7 +38,7 @@ public interface ObjectMapper<S, E extends Throwable>
 	}
 
 	default Object convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
-			Structure<? extends Field> targetStructure) throws E {
+			Mapping<? extends Field> targetStructure) throws E {
 		Object target = newInstance(targetType);
 		if (target == null) {
 			return null;
@@ -63,16 +63,16 @@ public interface ObjectMapper<S, E extends Throwable>
 	}
 
 	default <T> void copy(T source, TypeDescriptor sourceType, T target, TypeDescriptor targetType,
-			Structure<? extends Field> structure) throws E {
-		Iterator<? extends Structure<? extends Field>> iterator = structure.pages().iterator();
+			Mapping<? extends Field> structure) throws E {
+		Iterator<? extends Mapping<? extends Field>> iterator = structure.pages().iterator();
 		while (iterator.hasNext()) {
-			Structure<? extends Field> useStructure = iterator.next();
+			Mapping<? extends Field> useStructure = iterator.next();
 			copy(source, sourceType, target, targetType, useStructure.getElements().iterator());
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	default <R extends S> R invert(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
+	default <R extends S> R invert(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceStructure,
 			TypeDescriptor targetType) throws E {
 		R target = (R) newInstance(targetType);
 		if (target == null) {
@@ -131,7 +131,7 @@ public interface ObjectMapper<S, E extends Throwable>
 				getStructure(sourceType.getType()));
 	}
 
-	default void transform(Object source, Structure<? extends Field> sourceStructure, Object target) throws E {
+	default void transform(Object source, Mapping<? extends Field> sourceStructure, Object target) throws E {
 		transform(source, TypeDescriptor.valueOf(sourceStructure.getSourceClass()), sourceStructure, target,
 				TypeDescriptor.forObject(target));
 	}
@@ -188,7 +188,7 @@ public interface ObjectMapper<S, E extends Throwable>
 	}
 
 	default void transform(Object source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType,
-			Structure<? extends Field> targetStructure) throws E {
+			Mapping<? extends Field> targetStructure) throws E {
 		if (isObjectAccessFactoryRegistred(sourceType.getType())) {
 			transform(getObjectAccess(source, sourceType), target, targetType, targetStructure);
 		} else {
@@ -206,11 +206,11 @@ public interface ObjectMapper<S, E extends Throwable>
 			return;
 		}
 
-		Structure<? extends Field> sourceStructure = getStructure(sourceType.getType());
+		Mapping<? extends Field> sourceStructure = getStructure(sourceType.getType());
 		transform(source, sourceType, sourceStructure, targetAccess);
 	}
 
-	default void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
+	default void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceStructure,
 			Object target, TypeDescriptor targetType) throws E {
 		if (isObjectAccessFactoryRegistred(targetType.getType())) {
 			transform(source, sourceType, sourceStructure, getObjectAccess(target, targetType));
@@ -219,17 +219,17 @@ public interface ObjectMapper<S, E extends Throwable>
 		}
 	}
 
-	default void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
-			Object target, TypeDescriptor targetType, Structure<? extends Field> targetStructure) throws E {
+	default void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceStructure,
+			Object target, TypeDescriptor targetType, Mapping<? extends Field> targetStructure) throws E {
 		transform(source, sourceType, sourceStructure.all().getElements().iterator(), target, targetType,
 				targetStructure.all().getElements().iterator());
 	}
 
-	default void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
+	default void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceStructure,
 			ObjectAccess<? extends E> targetAccess) throws E {
-		Iterator<? extends Structure<? extends Field>> iterator = sourceStructure.pages().iterator();
+		Iterator<? extends Mapping<? extends Field>> iterator = sourceStructure.pages().iterator();
 		while (iterator.hasNext()) {
-			Structure<? extends Field> structure = iterator.next();
+			Mapping<? extends Field> structure = iterator.next();
 			transform(source, sourceType, structure.getElements().iterator(), targetAccess);
 		}
 	}
@@ -240,7 +240,7 @@ public interface ObjectMapper<S, E extends Throwable>
 			return;
 		}
 
-		Structure<? extends Field> targetStructure = getStructure(targetType.getType());
+		Mapping<? extends Field> targetStructure = getStructure(targetType.getType());
 		transform(sourceAccess, target, targetType, targetStructure);
 	}
 
@@ -262,10 +262,10 @@ public interface ObjectMapper<S, E extends Throwable>
 	}
 
 	default void transform(ObjectAccess<E> sourceAccess, Object target, TypeDescriptor targetType,
-			Structure<? extends Field> targetStructure) throws E {
-		Iterator<? extends Structure<? extends Field>> iterator = targetStructure.pages().iterator();
+			Mapping<? extends Field> targetStructure) throws E {
+		Iterator<? extends Mapping<? extends Field>> iterator = targetStructure.pages().iterator();
 		while (iterator.hasNext()) {
-			Structure<? extends Field> structure = iterator.next();
+			Mapping<? extends Field> structure = iterator.next();
 			transform(sourceAccess, target, targetType, structure.getElements().iterator());
 		}
 	}

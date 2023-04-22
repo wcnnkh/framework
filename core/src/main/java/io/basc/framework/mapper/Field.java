@@ -338,13 +338,13 @@ public class Field extends AccessibleField implements Member, ParentDiscover<Fie
 	 * @param structure
 	 * @return
 	 */
-	public <T extends Field, E extends Throwable> Structure<T> withEntityTo(Structure<T> structure,
-			@Nullable Processor<Field, Structure<T>, E> processor) throws E {
+	public <T extends Field, E extends Throwable> Mapping<T> withEntityTo(Mapping<T> structure,
+			@Nullable Processor<Field, Mapping<T>, E> processor) throws E {
 		if (processor == null) {
 			return structure;
 		}
 
-		Structure<T> entity = processor.process(this);
+		Mapping<T> entity = processor.process(this);
 		if (entity == null) {
 			return structure;
 		}

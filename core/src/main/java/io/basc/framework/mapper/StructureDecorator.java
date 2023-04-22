@@ -9,7 +9,7 @@ import io.basc.framework.core.Members;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
 
-public abstract class StructureDecorator<S extends Field, T extends StructureDecorator<S, T>> extends Structure<S> {
+public abstract class StructureDecorator<S extends Field, T extends StructureDecorator<S, T>> extends Mapping<S> {
 
 	public StructureDecorator(Class<?> sourceClass, S parent, Function<Class<?>, ? extends Elements<S>> processor) {
 		super(sourceClass, parent, processor);
@@ -60,11 +60,11 @@ public abstract class StructureDecorator<S extends Field, T extends StructureDec
 	}
 
 	@Override
-	protected Structure<S> decorate(Members<S> members) {
+	protected Mapping<S> decorate(Members<S> members) {
 		return super.decorate(members);
 	}
 
-	protected abstract T decorate(Structure<S> structure);
+	protected abstract T decorate(Mapping<S> structure);
 
 	@Override
 	public T distinct() {

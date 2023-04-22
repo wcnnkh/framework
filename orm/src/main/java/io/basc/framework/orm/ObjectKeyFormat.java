@@ -6,25 +6,25 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import io.basc.framework.mapper.Structure;
+import io.basc.framework.mapper.Mapping;
 import io.basc.framework.util.CollectionUtils;
 
 public interface ObjectKeyFormat {
-	String getObjectKeyByIds(Structure<? extends Property> structure, Iterator<?> ids);
+	String getObjectKeyByIds(Mapping<? extends Property> structure, Iterator<?> ids);
 
-	default String getObjectKeyByIds(Structure<? extends Property> structure, Iterable<?> ids) {
+	default String getObjectKeyByIds(Mapping<? extends Property> structure, Iterable<?> ids) {
 		return getObjectKeyByIds(structure, ids == null ? Collections.emptyIterator() : ids.iterator());
 	}
 
-	<T> String getObjectKey(Structure<? extends Property> structure, T bean);
+	<T> String getObjectKey(Mapping<? extends Property> structure, T bean);
 
-	default <K> Map<String, K> getInIdsKeyMap(Structure<? extends Property> structure,
+	default <K> Map<String, K> getInIdsKeyMap(Mapping<? extends Property> structure,
 			Iterable<? extends K> lastPrimaryKeys, Object[] primaryKey) {
 		return getInIdsKeyMap(structure,
 				lastPrimaryKeys == null ? Collections.emptyIterator() : lastPrimaryKeys.iterator(), primaryKey);
 	}
 
-	default <K> Map<String, K> getInIdsKeyMap(Structure<? extends Property> structure,
+	default <K> Map<String, K> getInIdsKeyMap(Mapping<? extends Property> structure,
 			Iterator<? extends K> lastPrimaryKeys, Object[] primaryKeys) {
 		if (CollectionUtils.isEmpty(lastPrimaryKeys)) {
 			return Collections.emptyMap();

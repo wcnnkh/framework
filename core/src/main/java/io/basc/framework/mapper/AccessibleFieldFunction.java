@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 
+import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.CollectionUtils;
@@ -17,7 +18,9 @@ import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 
-public class AccessibleFieldFunction implements Function<Class<?>, Elements<AccessibleField>> {
+public class AccessibleFieldFunction implements Function<ResolvableType, Elements<AccessibleField>> {
+	public static final AccessibleFieldFunction DEFAULT = new AccessibleFieldFunction();
+
 	private final ConcurrentReferenceHashMap<Class<?>, AccessibleField[]> cacheMap = new ConcurrentReferenceHashMap<>();
 	private final String[] getterMethodPrefixs;
 	private final String[] setterMethodPrefixs;
@@ -39,6 +42,10 @@ public class AccessibleFieldFunction implements Function<Class<?>, Elements<Acce
 				continue;
 			}
 
+			if (field.getDeclaringClass() != currentClass) {
+				continue;
+			}
+
 			Method getterMethod = ReflectionUtils.getDeclaredMethod(currentClass,
 					MapperUtils.getGetterMethodName(field));
 			if (getterMethod != null && Modifier.isStatic(getterMethod.getModifiers())
@@ -52,6 +59,10 @@ public class AccessibleFieldFunction implements Function<Class<?>, Elements<Acce
 		}
 
 		for (Method method : methods) {
+			if (method.getDeclaringClass() != currentClass) {
+				continue;
+			}
+
 			if (ArrayUtils.isEmpty(method.getParameterTypes())) {
 				for (String methodPrefix : getterMethodPrefixs) {
 					if (method.getName().startsWith(methodPrefix)
@@ -160,7 +171,8 @@ public class AccessibleFieldFunction implements Function<Class<?>, Elements<Acce
 	}
 
 	@Override
-	public Elements<AccessibleField> apply(Class<?> sourceClass) {
+	public Elements<AccessibleField> apply(ResolvableType source) {
+		Class<?> sourceClass = source.getRawClass();
 		if (sourceClass == null || sourceClass == Object.class) {
 			return Elements.empty();
 		}

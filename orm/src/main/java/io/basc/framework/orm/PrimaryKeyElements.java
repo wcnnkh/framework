@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import io.basc.framework.mapper.Structure;
+import io.basc.framework.mapper.Mapping;
 import io.basc.framework.util.Streamable;
 
 public class PrimaryKeyElements<K, V> extends ObjectElements<V> {
@@ -12,7 +12,7 @@ public class PrimaryKeyElements<K, V> extends ObjectElements<V> {
 	private final Object[] primaryKeys;
 
 	public PrimaryKeyElements(Streamable<V> streamable, ObjectKeyFormat objectKeyFormat,
-			Structure<? extends Property> structure, List<? extends K> inPrimaryKeys, Object... primaryKeys) {
+			Mapping<? extends Property> structure, List<? extends K> inPrimaryKeys, Object... primaryKeys) {
 		super(streamable, objectKeyFormat, structure);
 		this.inPrimaryKeys = inPrimaryKeys;
 		this.primaryKeys = primaryKeys;

@@ -10,7 +10,7 @@ import io.basc.framework.core.Members;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.Structure;
+import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.StructureDecorator;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
@@ -73,7 +73,7 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 		return t;
 	}
 
-	protected ObjectRelational<T> decorate(Structure<T> structure) {
+	protected ObjectRelational<T> decorate(Mapping<T> structure) {
 		ObjectRelational<T> objectRelational = new ObjectRelational<T>(structure);
 		if (objectRelational.objectRelationalResolver == null) {
 			objectRelational.objectRelationalResolver = this.objectRelationalResolver;
@@ -95,7 +95,7 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 			t.setObjectRelationalResolver(objectRelationalResolver);
 			return t;
 		});
-		Structure<T> structure = decorate(members);
+		Mapping<T> structure = decorate(members);
 		return decorate(structure);
 	}
 

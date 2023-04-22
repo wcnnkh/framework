@@ -41,7 +41,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 	private final ObjectMapperContext context = new ObjectMapperContext();
 	private final Map<Class<?>, ObjectAccessFactory<?, ? extends E>> objectAccessFactoryMap = new TreeMap<>(
 			TypeComparator.DEFAULT);
-	private final Map<Class<?>, Structure<? extends Field>> structureMap = new ConcurrentHashMap<>();
+	private final Map<Class<?>, Mapping<? extends Field>> structureMap = new ConcurrentHashMap<>();
 
 	public DefaultObjectMapper() {
 		registerObjectAccessFactory(PropertyFactory.class, (s, e) -> new PropertyFactoryAccess<>(s));
@@ -140,13 +140,13 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 
 	@Override
 	public Object convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
-			Structure<? extends Field> targetStructure) throws E {
+			Mapping<? extends Field> targetStructure) throws E {
 		return convert(source, sourceType, targetType, targetStructure, getContext(targetType, this.context));
 	}
 
 	@SuppressWarnings("unchecked")
 	public <R> R convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
-			Structure<? extends Field> targetStructure, ObjectMapperContext context) throws E {
+			Mapping<? extends Field> targetStructure, ObjectMapperContext context) throws E {
 		R target = (R) newInstance(targetType);
 		if (target == null) {
 			return null;
@@ -182,15 +182,15 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 
 	@Override
 	public <T> void copy(T source, TypeDescriptor sourceType, T target, TypeDescriptor targetType,
-			Structure<? extends Field> structure) throws E {
+			Mapping<? extends Field> structure) throws E {
 		copy(source, sourceType, target, targetType, structure, getContext(targetType, this.context));
 	}
 
 	public <T> void copy(T source, TypeDescriptor sourceType, T target, TypeDescriptor targetType,
-			Structure<? extends Field> structure, ObjectMapperContext context) throws E {
-		Iterator<? extends Structure<? extends Field>> iterator = structure.pages().iterator();
+			Mapping<? extends Field> structure, ObjectMapperContext context) throws E {
+		Iterator<? extends Mapping<? extends Field>> iterator = structure.pages().iterator();
 		while (iterator.hasNext()) {
-			Structure<? extends Field> useStructure = iterator.next();
+			Mapping<? extends Field> useStructure = iterator.next();
 			copy(source, sourceType, target, targetType, useStructure.getElements().iterator(), context);
 		}
 	}
@@ -223,8 +223,8 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 	}
 
 	@Override
-	public Structure<? extends Field> getStructure(Class<?> entityClass) {
-		Structure<? extends Field> structure = structureMap.get(entityClass);
+	public Mapping<? extends Field> getStructure(Class<?> entityClass) {
+		Mapping<? extends Field> structure = structureMap.get(entityClass);
 		if (structure == null) {
 			structure = ObjectMapper.super.getStructure(entityClass);
 		}
@@ -264,13 +264,13 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 		};
 	}
 
-	public <R extends S> R invert(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
+	public <R extends S> R invert(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceStructure,
 			TypeDescriptor targetType) throws E {
 		return invert(source, sourceType, sourceStructure, targetType, getContext(targetType, this.context));
 	}
 
 	@SuppressWarnings("unchecked")
-	public <R extends S> R invert(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
+	public <R extends S> R invert(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceStructure,
 			TypeDescriptor targetType, ObjectMapperContext context) throws E {
 		R target = (R) newInstance(targetType);
 		if (target == null) {
@@ -303,7 +303,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 	}
 
 	@Override
-	public void registerStructure(Class<?> entityClass, Structure<? extends Field> structure) {
+	public void registerStructure(Class<?> entityClass, Mapping<? extends Field> structure) {
 		Assert.requiredArgument(entityClass != null, "entityClass");
 		if (structure == null) {
 			structureMap.remove(entityClass);
@@ -439,7 +439,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 			return;
 		}
 
-		Structure<? extends Field> targetStructure = getStructure(targetType.getType());
+		Mapping<? extends Field> targetStructure = getStructure(targetType.getType());
 		if (parentField != null) {
 			targetStructure = targetStructure.setParentField(parentField);
 		}
@@ -454,12 +454,12 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 
 	@Override
 	public void transform(Object source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType,
-			Structure<? extends Field> targetStructure) throws E {
+			Mapping<? extends Field> targetStructure) throws E {
 		transform(source, sourceType, target, targetType, targetStructure);
 	}
 
 	public void transform(Object source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType,
-			Structure<? extends Field> targetStructure, ObjectMapperContext context) throws E {
+			Mapping<? extends Field> targetStructure, ObjectMapperContext context) throws E {
 		if (isObjectAccessFactoryRegistred(sourceType.getType())) {
 			transform(getObjectAccess(source, sourceType), target, targetType, targetStructure, context);
 		} else {
@@ -484,12 +484,12 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 			return;
 		}
 
-		Structure<? extends Field> sourceStructure = getStructure(sourceType.getType());
+		Mapping<? extends Field> sourceStructure = getStructure(sourceType.getType());
 		transform(source, sourceType, sourceStructure, targetAccess, context);
 	}
 
 	@Override
-	public void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
+	public void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceStructure,
 			Object target, TypeDescriptor targetType) throws E {
 		if (isObjectAccessFactoryRegistred(targetType.getType())) {
 			transform(source, sourceType, sourceStructure, getObjectAccess(target, targetType));
@@ -498,7 +498,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 		}
 	}
 
-	public void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
+	public void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceStructure,
 			Object target, TypeDescriptor targetType, ObjectMapperContext context) throws E {
 		if (isObjectAccessFactoryRegistred(targetType.getType())) {
 			transform(source, sourceType, sourceStructure, getObjectAccess(target, targetType), context);
@@ -509,30 +509,30 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 	}
 
 	@Override
-	public void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
-			Object target, TypeDescriptor targetType, Structure<? extends Field> targetStructure) throws E {
+	public void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceStructure,
+			Object target, TypeDescriptor targetType, Mapping<? extends Field> targetStructure) throws E {
 		transform(source, sourceType, sourceStructure, target, targetType, targetStructure,
 				getContext(targetType, context));
 	}
 
-	public void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
-			Object target, TypeDescriptor targetType, Structure<? extends Field> targetStructure,
+	public void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceStructure,
+			Object target, TypeDescriptor targetType, Mapping<? extends Field> targetStructure,
 			ObjectMapperContext context) throws E {
 		transform(source, sourceType, sourceStructure.all().getElements().iterator(), target, targetType,
 				targetStructure.all().getElements().iterator(), context);
 	}
 
 	@Override
-	public void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
+	public void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceStructure,
 			ObjectAccess<? extends E> targetAccess) throws E {
 		transform(source, sourceType, sourceStructure, targetAccess, this.context);
 	}
 
-	public void transform(Object source, TypeDescriptor sourceType, Structure<? extends Field> sourceStructure,
+	public void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceStructure,
 			ObjectAccess<? extends E> targetAccess, ObjectMapperContext context) throws E {
-		Iterator<? extends Structure<? extends Field>> iterator = sourceStructure.pages().iterator();
+		Iterator<? extends Mapping<? extends Field>> iterator = sourceStructure.pages().iterator();
 		while (iterator.hasNext()) {
-			Structure<? extends Field> structure = iterator.next();
+			Mapping<? extends Field> structure = iterator.next();
 			transform(source, sourceType, structure.getElements().iterator(), targetAccess, context);
 		}
 	}
@@ -547,7 +547,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 		if (isObjectAccessFactoryRegistred(targetType.getType())) {
 			transform(sourceAccess, getObjectAccess(target, targetType), context);
 		} else {
-			Structure<? extends Field> targetStructure = getStructure(targetType.getType());
+			Mapping<? extends Field> targetStructure = getStructure(targetType.getType());
 			if (parentField != null) {
 				targetStructure = targetStructure.setParentField(parentField);
 			}
@@ -617,22 +617,22 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 			return;
 		}
 
-		Structure<? extends Field> targetStructure = getStructure(targetType.getType());
+		Mapping<? extends Field> targetStructure = getStructure(targetType.getType());
 		transform(sourceAccess, target, targetType, targetStructure, context);
 	}
 
 	@Override
 	public void transform(ObjectAccess<E> sourceAccess, Object target, TypeDescriptor targetType,
-			Structure<? extends Field> targetStructure) throws E {
+			Mapping<? extends Field> targetStructure) throws E {
 		transform(sourceAccess, target, targetType, targetStructure, getContext(targetType, context));
 	}
 
 	public void transform(ObjectAccess<E> sourceAccess, Object target, TypeDescriptor targetType,
-			Structure<? extends Field> targetStructure, ObjectMapperContext context) throws E {
-		Iterator<? extends Structure<? extends Field>> iterator = targetStructure.pages().iterator();
+			Mapping<? extends Field> targetStructure, ObjectMapperContext context) throws E {
+		Iterator<? extends Mapping<? extends Field>> iterator = targetStructure.pages().iterator();
 		ObjectMapperContext useContext = context;
 		while (iterator.hasNext()) {
-			Structure<? extends Field> structure = iterator.next();
+			Mapping<? extends Field> structure = iterator.next();
 			useContext = getContext(targetType.convert(ResolvableType.forClass(structure.getSourceClass())),
 					useContext);
 			transform(sourceAccess, target, targetType, structure.getElements().iterator(), useContext);

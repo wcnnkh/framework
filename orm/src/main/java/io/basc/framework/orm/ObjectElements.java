@@ -3,16 +3,16 @@ package io.basc.framework.orm;
 import java.util.List;
 import java.util.Map;
 
-import io.basc.framework.mapper.Structure;
+import io.basc.framework.mapper.Mapping;
 import io.basc.framework.util.Streamable;
 import io.basc.framework.util.StreamableElements;
 
 public class ObjectElements<E> extends StreamableElements<E> {
 	private final ObjectKeyFormat objectKeyFormat;
-	private final Structure<? extends Property> structure;
+	private final Mapping<? extends Property> structure;
 
 	public ObjectElements(Streamable<E> streamable, ObjectKeyFormat objectKeyFormat,
-			Structure<? extends Property> structure) {
+			Mapping<? extends Property> structure) {
 		super(streamable);
 		this.objectKeyFormat = objectKeyFormat;
 		this.structure = structure;
@@ -22,7 +22,7 @@ public class ObjectElements<E> extends StreamableElements<E> {
 		return objectKeyFormat;
 	}
 
-	public Structure<? extends Property> getStructure() {
+	public Mapping<? extends Property> getStructure() {
 		return structure;
 	}
 

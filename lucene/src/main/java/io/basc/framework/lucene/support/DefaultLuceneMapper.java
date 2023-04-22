@@ -29,7 +29,7 @@ import io.basc.framework.lucene.LuceneException;
 import io.basc.framework.lucene.LuceneMapper;
 import io.basc.framework.lucene.annotation.AnnotationLuceneResolverExtend;
 import io.basc.framework.mapper.Parameter;
-import io.basc.framework.mapper.Structure;
+import io.basc.framework.mapper.Mapping;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.repository.Condition;
 import io.basc.framework.orm.repository.ConditionKeywords;
@@ -233,7 +233,7 @@ public class DefaultLuceneMapper extends DefaultObjectMapper<Document, LuceneExc
 	}
 
 	@Override
-	public Sort parseSort(Structure<? extends Property> structure, List<? extends OrderColumn> orders) {
+	public Sort parseSort(Mapping<? extends Property> structure, List<? extends OrderColumn> orders) {
 		if (CollectionUtils.isEmpty(orders)) {
 			return null;
 		}
@@ -243,7 +243,7 @@ public class DefaultLuceneMapper extends DefaultObjectMapper<Document, LuceneExc
 		return new Sort(sortFields.toArray(new SortField[0]));
 	}
 
-	private void appendSort(Structure<? extends Property> structure, List<SortField> sortFields,
+	private void appendSort(Mapping<? extends Property> structure, List<SortField> sortFields,
 			List<? extends OrderColumn> orders) {
 		if (CollectionUtils.isEmpty(orders)) {
 			return;

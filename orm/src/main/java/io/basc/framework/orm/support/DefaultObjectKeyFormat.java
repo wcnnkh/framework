@@ -3,7 +3,7 @@ package io.basc.framework.orm.support;
 import java.util.Iterator;
 
 import io.basc.framework.env.Sys;
-import io.basc.framework.mapper.Structure;
+import io.basc.framework.mapper.Mapping;
 import io.basc.framework.orm.ObjectKeyFormat;
 import io.basc.framework.orm.Property;
 
@@ -25,7 +25,7 @@ public class DefaultObjectKeyFormat implements ObjectKeyFormat {
 	}
 
 	@Override
-	public String getObjectKeyByIds(Structure<? extends Property> structure, Iterator<?> ids) {
+	public String getObjectKeyByIds(Mapping<? extends Property> structure, Iterator<?> ids) {
 		StringBuilder sb = new StringBuilder(128);
 		sb.append(structure.getName());
 		Iterator<? extends Property> primaryKeys = structure.filter((e) -> e.isPrimaryKey()).getElements().iterator();
@@ -45,7 +45,7 @@ public class DefaultObjectKeyFormat implements ObjectKeyFormat {
 	}
 
 	@Override
-	public <T> String getObjectKey(Structure<? extends Property> structure, T bean) {
+	public <T> String getObjectKey(Mapping<? extends Property> structure, T bean) {
 		StringBuilder sb = new StringBuilder(128);
 		sb.append(structure.getName());
 		structure.filter((e) -> e.isPrimaryKey()).getElements().forEach((column) -> {
