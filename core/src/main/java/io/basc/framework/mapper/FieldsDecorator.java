@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.core.Members;
-import io.basc.framework.core.MembersDecorator;
+import io.basc.framework.core.DefaultStructure;
+import io.basc.framework.core.DefaultStructure;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
@@ -22,7 +22,7 @@ public abstract class FieldsDecorator<S extends Field, T extends FieldsDecorator
 		this.parent = parent;
 	}
 
-	public FieldsDecorator(Members<S> members) {
+	public FieldsDecorator(DefaultStructure<S> members) {
 		super(members);
 	}
 
@@ -42,7 +42,7 @@ public abstract class FieldsDecorator<S extends Field, T extends FieldsDecorator
 	 * @return
 	 */
 	public T setParent(S parent) {
-		Members<S> members = map((e) -> {
+		DefaultStructure<S> members = map((e) -> {
 			S t = ReflectionUtils.invokeCloneMethod(e);
 			if (t == null) {
 				t = e;

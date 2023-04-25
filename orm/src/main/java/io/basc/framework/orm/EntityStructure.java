@@ -2,7 +2,7 @@ package io.basc.framework.orm;
 
 import java.util.function.Function;
 
-import io.basc.framework.core.Members;
+import io.basc.framework.core.Structure;
 import io.basc.framework.mapper.AccessibleField;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Fields;
@@ -30,11 +30,11 @@ public final class EntityStructure extends ObjectRelationalDecorator<Property, E
 				new PropertiesFunction(objectRelationalResolver, parent, processor));
 	}
 
-	public EntityStructure(Members<Property> members) {
+	public EntityStructure(Structure<Property> members) {
 		super(members);
 	}
 
-	public EntityStructure(Members<? extends Field> members, Function<? super Field, ? extends Property> map) {
+	public EntityStructure(Structure<? extends Field> members, Function<? super Field, ? extends Property> map) {
 		super(members, (e) -> {
 			if (e == null) {
 				return null;

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import io.basc.framework.core.Members;
+import io.basc.framework.core.Structure;
 import io.basc.framework.mapper.AccessibleField;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Fields;
@@ -35,7 +35,7 @@ public final class TableStructure extends ObjectRelationalDecorator<Column, Tabl
 				new ColumnsFunction(objectRelationalResolver, parent, processor));
 	}
 
-	public TableStructure(Members<Column> members) {
+	public TableStructure(Structure<Column> members) {
 		super(members);
 		if (members instanceof TableStructure) {
 			this.engine = ((TableStructure) members).engine;
@@ -44,7 +44,7 @@ public final class TableStructure extends ObjectRelationalDecorator<Column, Tabl
 		}
 	}
 
-	public TableStructure(Members<? extends Field> members, Function<? super Field, ? extends Column> map) {
+	public TableStructure(Structure<? extends Field> members, Function<? super Field, ? extends Column> map) {
 		super(members, (e) -> {
 			if (e == null) {
 				return null;

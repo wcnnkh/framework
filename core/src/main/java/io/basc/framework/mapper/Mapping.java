@@ -1,8 +1,9 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.core.Members;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.LinkedMultiValueMap;
+import io.basc.framework.util.MultiValueMap;
+import io.basc.framework.value.Value;
 
 /**
  * 映射
@@ -16,7 +17,28 @@ public interface Mapping<T extends Field> {
 
 	Elements<String> getAliasNames();
 
-	TypeDescriptor getTypeDescriptor();
+	Elements<T> getElements();
 
-	Members<T> getMembers();
+	/**
+	 * 获取字段的值
+	 * 
+	 * @param instance
+	 * @return 可能存在相同的字段名
+	 */
+	default MultiValueMap<String, Value> getMultiValueMap(Value source) {
+		MultiValueMap<String, Value> map = new LinkedMultiValueMap<>();
+		for (Field field : this.getElements()) {
+			if (!field.isSupportGetter()) {
+				continue;
+			}
+
+			Value value = field.get(source);
+			if (value == null) {
+				continue;
+			}
+
+			map.add(field.getName(), value);
+		}
+		return map;
+	}
 }

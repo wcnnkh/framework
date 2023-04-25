@@ -49,6 +49,18 @@ public class ObjectMapperContext extends SimpleAttributes<String, Object>
 				parent == null ? null : parent.ignoreNameMatcher);
 	}
 
+	public void addFilter(Predicate<Field> filter) {
+		if (filter == null) {
+			return;
+		}
+
+		if (this.filter == null) {
+			this.filter = filter;
+		} else {
+			this.filter.and(filter);
+		}
+	}
+
 	public AliasRegistry getAliasRegistry() {
 		if (this.aliasRegistry != null) {
 			return this.aliasRegistry;
@@ -72,6 +84,19 @@ public class ObjectMapperContext extends SimpleAttributes<String, Object>
 		return Sys.getEnv().getConversionService();
 	}
 
+	public int getEntityNestingMaxiumDepth() {
+		if (this.entityNestingMaxiumDepth == null) {
+			if (this.parent != null) {
+				return this.parent.getEntityNestingMaxiumDepth();
+			}
+		}
+		return entityNestingMaxiumDepth == null ? DEFAULT_ENTITY_NESTING_MAXIUM_DEPTH : entityNestingMaxiumDepth;
+	}
+
+	public MatcherStrategy<Boolean> getEntityTypeMatcher() {
+		return entityTypeMatcher;
+	}
+
 	public Predicate<Field> getFilter() {
 		if (this.filter == null) {
 			if (this.parent == null) {
@@ -93,16 +118,12 @@ public class ObjectMapperContext extends SimpleAttributes<String, Object>
 		}
 	}
 
-	public void addFilter(Predicate<Field> filter) {
-		if (filter == null) {
-			return;
-		}
+	public MatcherStrategy<Boolean> getIgnoreAnnotationNameMatcher() {
+		return ignoreAnnotationNameMatcher;
+	}
 
-		if (this.filter == null) {
-			this.filter = filter;
-		} else {
-			this.filter.and(filter);
-		}
+	public MatcherStrategy<Boolean> getIgnoreNameMatcher() {
+		return ignoreNameMatcher;
 	}
 
 	public Logger getLogger() {
@@ -158,6 +179,17 @@ public class ObjectMapperContext extends SimpleAttributes<String, Object>
 		return parent;
 	}
 
+	public boolean isIgnoreNull() {
+		if (this.ignoreNull != null) {
+			return this.ignoreNull;
+		}
+
+		if (this.parent != null) {
+			return this.parent.isIgnoreNull();
+		}
+		return true;
+	}
+
 	public boolean isNameNesting() {
 		if (this.nameNesting != null) {
 			return this.nameNesting;
@@ -170,17 +202,6 @@ public class ObjectMapperContext extends SimpleAttributes<String, Object>
 		return true;
 	}
 
-	public boolean isIgnoreNull() {
-		if (this.ignoreNull != null) {
-			return this.ignoreNull;
-		}
-
-		if (this.parent != null) {
-			return this.parent.isIgnoreNull();
-		}
-		return true;
-	}
-
 	public void setAliasRegistry(AliasRegistry aliasRegistry) {
 		this.aliasRegistry = aliasRegistry;
 	}
@@ -190,8 +211,16 @@ public class ObjectMapperContext extends SimpleAttributes<String, Object>
 		this.conversionService = conversionService;
 	}
 
+	public void setEntityNestingMaxiumDepth(Integer entityNestingMaxiumDepth) {
+		this.entityNestingMaxiumDepth = entityNestingMaxiumDepth;
+	}
+
 	public void setFilter(Predicate<Field> filter) {
 		this.filter = filter;
+	}
+
+	public void setIgnoreNull(Boolean ignoreNull) {
+		this.ignoreNull = ignoreNull;
 	}
 
 	public void setLogger(Logger logger) {
@@ -212,34 +241,5 @@ public class ObjectMapperContext extends SimpleAttributes<String, Object>
 
 	public void setNamePrefix(String namePrefix) {
 		this.namePrefix = namePrefix;
-	}
-
-	public void setIgnoreNull(Boolean ignoreNull) {
-		this.ignoreNull = ignoreNull;
-	}
-
-	public MatcherStrategy<Boolean> getEntityTypeMatcher() {
-		return entityTypeMatcher;
-	}
-
-	public MatcherStrategy<Boolean> getIgnoreAnnotationNameMatcher() {
-		return ignoreAnnotationNameMatcher;
-	}
-
-	public MatcherStrategy<Boolean> getIgnoreNameMatcher() {
-		return ignoreNameMatcher;
-	}
-
-	public int getEntityNestingMaxiumDepth() {
-		if (this.entityNestingMaxiumDepth == null) {
-			if (this.parent != null) {
-				return this.parent.getEntityNestingMaxiumDepth();
-			}
-		}
-		return entityNestingMaxiumDepth == null ? DEFAULT_ENTITY_NESTING_MAXIUM_DEPTH : entityNestingMaxiumDepth;
-	}
-
-	public void setEntityNestingMaxiumDepth(Integer entityNestingMaxiumDepth) {
-		this.entityNestingMaxiumDepth = entityNestingMaxiumDepth;
 	}
 }

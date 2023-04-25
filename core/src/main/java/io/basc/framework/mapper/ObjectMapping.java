@@ -1,56 +1,42 @@
 package io.basc.framework.mapper;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 
-import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.core.DecorationStructure;
+import io.basc.framework.core.DefaultStructure;
 import io.basc.framework.core.Members;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.core.Structure;
-import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
-@ToString
-@Getter
-@Setter
-public class ObjectMapping<T extends Field> extends Structure<T> implements Mapping<T>, Consumer<T> {
-	private String name;
+public abstract class ObjectMapping<T extends Field, R extends ObjectMapping<T, R>> extends DecorationStructure<T, R>
+		implements Mapping<T> {
+
 	private Elements<String> aliasNames;
-	private T parent;
-	private int nameNestingDepth = -1;
-	private String nameNestingConnector = "_";
-	private final TypeDescriptor typeDescriptor;
 
-	public ObjectMapping(TypeDescriptor typeDescriptor, Members<T> members) {
+	private String name;
+
+	private final Function<? super DefaultStructure<T>, ? extends R> structureDecorator = (members) -> {
+		ObjectMapping<T, R> mapping = new SimpleObjectMapping<>(members, getStructureDecorator());
+		mapping.name = this.name;
+		mapping.aliasNames = this.aliasNames;
+		return getObjectMappingDecorator().apply(mapping);
+	};
+
+	public ObjectMapping(Class<?> source, Function<? super Class<?>, ? extends Elements<T>> processor) {
+		super(source, processor);
+	}
+
+	public ObjectMapping(DefaultStructure<T> members) {
 		super(members);
-		Assert.requiredArgument(typeDescriptor != null, "typeDescriptor");
-		this.typeDescriptor = typeDescriptor;
 	}
 
-	public ObjectMapping(TypeDescriptor typeDescriptor,
-			Function<? super ResolvableType, ? extends Members<T>> processor) {
-		super(typeDescriptor.getResolvableType(), processor);
-		Assert.requiredArgument(typeDescriptor != null, "typeDescriptor");
-		this.typeDescriptor = typeDescriptor;
+	public ObjectMapping(Members<T> members, Function<? super ResolvableType, ? extends Elements<T>> processor) {
+		super(members, processor);
 	}
 
-	public ObjectMapping(TypeDescriptor typeDescriptor, Structure<T> structure) {
-		super(structure);
-		Assert.requiredArgument(typeDescriptor != null, "typeDescriptor");
-		this.typeDescriptor = typeDescriptor;
-	}
-
-	@Override
-	public String getName() {
-		if (StringUtils.isNotEmpty(name)) {
-			return name;
-		}
-
-		return typeDescriptor.getType().getSimpleName();
+	public ObjectMapping(ResolvableType source, Function<? super ResolvableType, ? extends Elements<T>> processor) {
+		super(source, processor);
 	}
 
 	@Override
@@ -59,36 +45,25 @@ public class ObjectMapping<T extends Field> extends Structure<T> implements Mapp
 			return aliasNames;
 		}
 
-		String name = typeDescriptor.getType().getSimpleName();
+		String name = getSource().getRawClass().getSimpleName();
 		name = StringUtils.toLowerCase(name, 0, 1);
 		name = StringUtils.humpNamingReplacement(name, "_");
 		return Elements.singleton(name);
 	}
 
 	@Override
-	public TypeDescriptor getTypeDescriptor() {
-		return typeDescriptor;
+	public String getName() {
+		if (StringUtils.isNotEmpty(name)) {
+			return name;
+		}
+
+		return getSource().getRawClass().getSimpleName();
 	}
 
-	@Override
-	public Members<T> getMembers() {
-		return super.getMembers().peek(this);
-	}
+	public abstract Function<? super ObjectMapping<T, R>, ? extends R> getObjectMappingDecorator();
 
 	@Override
-	public Structure<T> getSuperclass() {
-		Structure<T> structure = super.getSuperclass();
-		return structure == null ? null : structure.peek(this);
-	}
-
-	@Override
-	public Elements<Structure<T>> getInterfaces() {
-		Elements<Structure<T>> elements = super.getInterfaces();
-		return elements == null ? null : elements.map((e) -> e.peek(this));
-	}
-
-	@Override
-	public void accept(T t) {
-		// TODO
+	public final Function<? super DefaultStructure<T>, ? extends R> getStructureDecorator() {
+		return structureDecorator;
 	}
 }

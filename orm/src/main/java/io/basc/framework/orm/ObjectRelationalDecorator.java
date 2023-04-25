@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.core.Members;
+import io.basc.framework.core.Structure;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
@@ -19,11 +19,11 @@ public abstract class ObjectRelationalDecorator<S extends Property, T extends Ob
 		super(sourceClass, objectRelationalResolver, parent, processor);
 	}
 
-	public ObjectRelationalDecorator(Members<S> members) {
+	public ObjectRelationalDecorator(Structure<S> members) {
 		super(members);
 	}
 
-	public ObjectRelationalDecorator(Members<? extends Field> members, Function<? super Field, ? extends S> map) {
+	public ObjectRelationalDecorator(Structure<? extends Field> members, Function<? super Field, ? extends S> map) {
 		super(members, map);
 	}
 
@@ -147,7 +147,7 @@ public abstract class ObjectRelationalDecorator<S extends Property, T extends Ob
 	}
 
 	@Override
-	public T with(Members<S> with) {
+	public T with(Structure<S> with) {
 		return decorate(super.with(with));
 	}
 

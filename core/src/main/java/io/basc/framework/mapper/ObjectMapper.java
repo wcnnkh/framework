@@ -8,14 +8,54 @@ import java.util.stream.Collectors;
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.ReversibleMapperFactory;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.util.Streams;
 
 public interface ObjectMapper<S, E extends Throwable>
-		extends ReversibleMapperFactory<S, E>, StructureFactory, ObjectAccessFactoryRegistry<E> {
+		extends ReversibleMapperFactory<S, E>, MappingFactory, ObjectAccessFactoryRegistry<E> {
 
-	default Object convert(S source, Mapping<? extends Field> targetStructure) throws E {
-		return convert(source, TypeDescriptor.forObject(source),
-				TypeDescriptor.valueOf(targetStructure.getSourceClass()), targetStructure);
+	default Object convert(S source, TypeDescriptor targetType, Mapping<? extends Field> targetMapping) throws E {
+		return convert(source, TypeDescriptor.forObject(source), targetType, targetMapping);
+	}
+
+	default Object convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
+			Mapping<? extends Field> targetMapping) throws E {
+		if (isObjectAccessFactoryRegistred(sourceType.getType())) {
+			ObjectAccess<E> sourceAccess = getObjectAccess(source, sourceType);
+			return convert(sourceAccess, targetType, targetMapping);
+		}
+		return convert(source, sourceType, getMapping(sourceType.getType()), targetType, targetMapping);
+	}
+
+	default Object convert(ObjectAccess<E> sourceAccess, TypeDescriptor targetType) throws E {
+		Object target = newInstance(targetType);
+		if (isObjectAccessFactoryRegistred(targetType.getType())) {
+			ObjectAccess<E> targetAccess = getObjectAccess(target, targetType);
+			transform(sourceAccess, targetAccess);
+		} else {
+			transform(sourceAccess, target, targetType, getMapping(targetType.getType()));
+		}
+		return target;
+	}
+
+	default Object convert(ObjectAccess<E> sourceAccess, TypeDescriptor targetType,
+			Mapping<? extends Field> targetMapping) throws E {
+		Object target = newInstance(targetType);
+		if (target == null) {
+			return null;
+		}
+
+		transform(sourceAccess, target, targetType, targetMapping);
+		return target;
+	}
+
+	default Object convert(S source, TypeDescriptor sourceType, Mapping<? extends Field> sourceMapping,
+			TypeDescriptor targetType, Mapping<? extends Field> targetMapping) throws E {
+		Object target = newInstance(targetType);
+		if (target == null) {
+			return null;
+		}
+
+		transform(source, sourceType, sourceMapping, target, targetType, targetMapping);
+		return target;
 	}
 
 	@Override
@@ -35,40 +75,6 @@ public interface ObjectMapper<S, E extends Throwable>
 
 		transform(source, sourceType, target, targetType);
 		return target;
-	}
-
-	default Object convert(S source, TypeDescriptor sourceType, TypeDescriptor targetType,
-			Mapping<? extends Field> targetStructure) throws E {
-		Object target = newInstance(targetType);
-		if (target == null) {
-			return null;
-		}
-		transform(source, sourceType, target, targetType, targetStructure);
-		return target;
-	}
-
-	default <T> void copy(T source, TypeDescriptor sourceType, T target, TypeDescriptor targetType,
-			Iterator<? extends Field> properties) throws E {
-		while (properties.hasNext()) {
-			Field field = properties.next();
-			if (field.isSupportGetter() && field.isSupportSetter()) {
-				Parameter value = field.getParameter(source);
-				if (value == null || !value.isPresent()) {
-					continue;
-				}
-
-				field.set(target, value);
-			}
-		}
-	}
-
-	default <T> void copy(T source, TypeDescriptor sourceType, T target, TypeDescriptor targetType,
-			Mapping<? extends Field> structure) throws E {
-		Iterator<? extends Mapping<? extends Field>> iterator = structure.pages().iterator();
-		while (iterator.hasNext()) {
-			Mapping<? extends Field> useStructure = iterator.next();
-			copy(source, sourceType, target, targetType, useStructure.getElements().iterator());
-		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -123,21 +129,16 @@ public interface ObjectMapper<S, E extends Throwable>
 
 		if (targetType.getType() == sourceType.getType()
 				|| sourceType.getType().isAssignableFrom(targetType.getType())) {
-			copy(target, targetType, source, sourceType, getStructure(targetType.getType()));
+			copy(target, targetType, source, sourceType, getMapping(targetType.getType()));
 			return;
 		}
 
-		transform(target, targetType, getStructure(targetType.getType()), source, sourceType,
-				getStructure(sourceType.getType()));
+		transform(target, targetType, getMapping(targetType.getType()), source, sourceType,
+				getMapping(sourceType.getType()));
 	}
 
-	default void transform(Object source, Mapping<? extends Field> sourceStructure, Object target) throws E {
-		transform(source, TypeDescriptor.valueOf(sourceStructure.getSourceClass()), sourceStructure, target,
-				TypeDescriptor.forObject(target));
-	}
-
-	default void transform(Object source, TypeDescriptor sourceType, Iterator<? extends Field> sourceProperties,
-			Object target, TypeDescriptor targetType, Iterator<? extends Field> targetProperties) throws E {
+	default void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceMapping,
+			Object target, TypeDescriptor targetType, Mapping<? extends Field> targetMapping) {
 		Comparator<FieldDescriptor> comparator = (left, right) -> {
 			if (left.getDeclaringClass() == right.getDeclaringClass()) {
 				if (left.getType() == right.getType()) {
@@ -149,10 +150,10 @@ public interface ObjectMapper<S, E extends Throwable>
 			return right.getDeclaringClass().isAssignableFrom(left.getDeclaringClass()) ? 1 : -1;
 		};
 
-		List<Field> targetFields = Streams.stream(targetProperties).filter((e) -> e.isSupportSetter())
+		List<Field> targetFields = targetMapping.getElements().filter((e) -> e.isSupportSetter())
 				.sorted((left, right) -> comparator.compare(left.getGetter(), right.getGetter()))
 				.collect(Collectors.toList());
-		Streams.stream(sourceProperties).filter((e) -> e.isSupportGetter())
+		sourceMapping.getElements().filter((e) -> e.isSupportGetter())
 				.sorted((left, right) -> comparator.compare(left.getSetter(), right.getSetter()))
 				.forEachOrdered((sourceField) -> {
 					Parameter value = sourceField.getParameter(source);
@@ -170,29 +171,12 @@ public interface ObjectMapper<S, E extends Throwable>
 				});
 	}
 
-	default void transform(Object source, TypeDescriptor sourceType, Iterator<? extends Field> sourceProperties,
-			ObjectAccess<? extends E> targetAccess) throws E {
-		while (sourceProperties.hasNext()) {
-			Field field = sourceProperties.next();
-			if (!field.isSupportGetter()) {
-				continue;
-			}
-
-			Parameter parameter = field.getParameter(source);
-			if (parameter == null || !parameter.isPresent()) {
-				continue;
-			}
-
-			targetAccess.set(parameter);
-		}
-	}
-
 	default void transform(Object source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType,
-			Mapping<? extends Field> targetStructure) throws E {
+			Mapping<? extends Field> targetMapping) throws E {
 		if (isObjectAccessFactoryRegistred(sourceType.getType())) {
-			transform(getObjectAccess(source, sourceType), target, targetType, targetStructure);
+			transform(getObjectAccess(source, sourceType), target, targetType, targetMapping);
 		} else {
-			transform(source, sourceType, getStructure(sourceType.getType()), target, targetType, targetStructure);
+			transform(source, sourceType, getMapping(sourceType.getType()), target, targetType, targetMapping);
 		}
 	}
 
@@ -206,31 +190,32 @@ public interface ObjectMapper<S, E extends Throwable>
 			return;
 		}
 
-		Mapping<? extends Field> sourceStructure = getStructure(sourceType.getType());
-		transform(source, sourceType, sourceStructure, targetAccess);
+		Mapping<? extends Field> sourceMapping = getMapping(sourceType.getType());
+		transform(source, sourceType, sourceMapping, targetAccess);
 	}
 
-	default void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceStructure,
+	default void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceMapping,
 			Object target, TypeDescriptor targetType) throws E {
 		if (isObjectAccessFactoryRegistred(targetType.getType())) {
-			transform(source, sourceType, sourceStructure, getObjectAccess(target, targetType));
+			transform(source, sourceType, sourceMapping, getObjectAccess(target, targetType));
 		} else {
-			transform(source, sourceType, sourceStructure, target, targetType, getStructure(targetType.getType()));
+			transform(source, sourceType, getMapping(targetType.getType()), target, targetType,
+					getMapping(targetType.getType()));
 		}
 	}
 
-	default void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceStructure,
-			Object target, TypeDescriptor targetType, Mapping<? extends Field> targetStructure) throws E {
-		transform(source, sourceType, sourceStructure.all().getElements().iterator(), target, targetType,
-				targetStructure.all().getElements().iterator());
-	}
-
-	default void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceStructure,
+	default void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceMapping,
 			ObjectAccess<? extends E> targetAccess) throws E {
-		Iterator<? extends Mapping<? extends Field>> iterator = sourceStructure.pages().iterator();
-		while (iterator.hasNext()) {
-			Mapping<? extends Field> structure = iterator.next();
-			transform(source, sourceType, structure.getElements().iterator(), targetAccess);
+		for (Field field : sourceMapping.getElements()) {
+			if (!field.isSupportGetter()) {
+				continue;
+			}
+
+			Parameter parameter = field.getParameter(source);
+			if (parameter == null || !parameter.isPresent()) {
+				continue;
+			}
+			targetAccess.set(parameter);
 		}
 	}
 
@@ -240,14 +225,12 @@ public interface ObjectMapper<S, E extends Throwable>
 			return;
 		}
 
-		Mapping<? extends Field> targetStructure = getStructure(targetType.getType());
-		transform(sourceAccess, target, targetType, targetStructure);
+		transform(sourceAccess, target, targetType, getMapping(targetType.getType()));
 	}
 
 	default void transform(ObjectAccess<E> sourceAccess, Object target, TypeDescriptor targetType,
-			Iterator<? extends Field> targetProperties) throws E {
-		while (targetProperties.hasNext()) {
-			Field field = targetProperties.next();
+			Mapping<? extends Field> targetMapping) throws E {
+		for (Field field : targetMapping.getElements()) {
 			if (!field.isSupportSetter()) {
 				continue;
 			}
@@ -258,15 +241,6 @@ public interface ObjectMapper<S, E extends Throwable>
 			}
 
 			field.set(target, parameter);
-		}
-	}
-
-	default void transform(ObjectAccess<E> sourceAccess, Object target, TypeDescriptor targetType,
-			Mapping<? extends Field> targetStructure) throws E {
-		Iterator<? extends Mapping<? extends Field>> iterator = targetStructure.pages().iterator();
-		while (iterator.hasNext()) {
-			Mapping<? extends Field> structure = iterator.next();
-			transform(sourceAccess, target, targetType, structure.getElements().iterator());
 		}
 	}
 
@@ -294,11 +268,25 @@ public interface ObjectMapper<S, E extends Throwable>
 
 		if (targetType.getType() == sourceType.getType()
 				|| targetType.getType().isAssignableFrom(sourceType.getType())) {
-			copy(source, sourceType, target, targetType, getStructure(targetType.getType()));
+			copy(source, sourceType, target, targetType, getMapping(targetType.getType()));
 			return;
 		}
 
-		transform(source, sourceType, getStructure(sourceType.getType()), target, targetType,
-				getStructure(targetType.getType()));
+		transform(source, sourceType, getMapping(sourceType.getType()), target, targetType,
+				getMapping(targetType.getType()));
+	}
+
+	default <T> void copy(T source, TypeDescriptor sourceType, T target, TypeDescriptor targetType,
+			Mapping<? extends Field> mapping) throws E {
+		for (Field field : mapping.getElements()) {
+			if (field.isSupportGetter() && field.isSupportSetter()) {
+				Parameter value = field.getParameter(source);
+				if (value == null || !value.isPresent()) {
+					continue;
+				}
+
+				field.set(target, value);
+			}
+		}
 	}
 }

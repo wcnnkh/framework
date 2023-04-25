@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Function;
 
-import io.basc.framework.core.Members;
+import io.basc.framework.core.Structure;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
@@ -34,7 +34,7 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 		this.objectRelationalResolver = objectRelationalResolver;
 	}
 
-	public ObjectRelational(Members<T> members) {
+	public ObjectRelational(Structure<T> members) {
 		super(members);
 		if (members instanceof ObjectRelational) {
 			this.comment = ((ObjectRelational<?>) members).comment;
@@ -43,7 +43,7 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 		}
 	}
 
-	public ObjectRelational(Members<? extends Field> members, Function<? super Field, ? extends T> map) {
+	public ObjectRelational(Structure<? extends Field> members, Function<? super Field, ? extends T> map) {
 		super(members, map);
 		if (members instanceof ObjectRelational) {
 			this.comment = ((ObjectRelational<?>) members).comment;
@@ -90,7 +90,7 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 	}
 
 	public ObjectRelational<T> setObjectRelationalResolver(ObjectRelationalResolver objectRelationalResolver) {
-		Members<T> members = map((e) -> {
+		Structure<T> members = map((e) -> {
 			T t = clone(e);
 			t.setObjectRelationalResolver(objectRelationalResolver);
 			return t;
@@ -140,7 +140,7 @@ public class ObjectRelational<T extends Property> extends StructureDecorator<T, 
 			return decorate(this);
 		}
 
-		Members<T> members = map((e) -> {
+		Structure<T> members = map((e) -> {
 			T t = clone(e);
 			t.setParent(parent);
 			return t;

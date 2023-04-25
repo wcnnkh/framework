@@ -166,12 +166,11 @@ public interface Elements<E> extends Streamable<E>, Iterable<E> {
 	 * @return
 	 */
 	default Elements<E> reverse() {
-		List<E> list = toList();
-		if (CollectionUtils.isEmpty(list)) {
-			return Elements.empty();
+		List<E> list = new ArrayList<>();
+		iterator().forEachRemaining(list::add);
+		if (list.isEmpty()) {
+			return empty();
 		}
-
-		list = new ArrayList<>(list);
 		Collections.reverse(list);
 		return new ElementList<>(list);
 	}

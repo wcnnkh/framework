@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.core.Members;
+import io.basc.framework.core.DefaultStructure;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
 
@@ -15,11 +15,11 @@ public abstract class StructureDecorator<S extends Field, T extends StructureDec
 		super(sourceClass, parent, processor);
 	}
 
-	public StructureDecorator(Members<S> members) {
+	public StructureDecorator(DefaultStructure<S> members) {
 		super(members);
 	}
 
-	public StructureDecorator(Members<? extends Field> members, Function<? super Field, ? extends S> map) {
+	public StructureDecorator(DefaultStructure<? extends Field> members, Function<? super Field, ? extends S> map) {
 		super(members, map);
 	}
 
@@ -60,7 +60,7 @@ public abstract class StructureDecorator<S extends Field, T extends StructureDec
 	}
 
 	@Override
-	protected Mapping<S> decorate(Members<S> members) {
+	protected Mapping<S> decorate(DefaultStructure<S> members) {
 		return super.decorate(members);
 	}
 
@@ -148,7 +148,7 @@ public abstract class StructureDecorator<S extends Field, T extends StructureDec
 	}
 
 	@Override
-	public T with(Members<S> with) {
+	public T with(DefaultStructure<S> with) {
 		return decorate(super.with(with));
 	}
 
