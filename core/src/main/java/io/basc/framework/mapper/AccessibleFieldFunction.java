@@ -96,7 +96,7 @@ public class AccessibleFieldFunction implements Function<ResolvableType, Element
 				setterMethod = null;
 			}
 
-			Setter setter = new DefaultSetter(currentClass, field.getName(), field, setterMethod);
+			Setter setter = new ReflectionSetter(currentClass, field.getName(), field, setterMethod);
 			setters.add(setter);
 		}
 
@@ -106,7 +106,7 @@ public class AccessibleFieldFunction implements Function<ResolvableType, Element
 					if (method.getName().startsWith(methodPrefix)
 							&& method.getName().length() > methodPrefix.length()) {
 						String name = method.getName().substring(methodPrefix.length());
-						Setter setter = new DefaultSetter(currentClass, StringUtils.toLowerCase(name, 0, 1), null,
+						Setter setter = new ReflectionSetter(currentClass, StringUtils.toLowerCase(name, 0, 1), null,
 								method);
 						if (setters.contains(setter)) {
 							continue;

@@ -5,46 +5,20 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.Elements;
 
-public interface ParameterDescriptors extends AnnotatedElement, Iterable<ParameterDescriptor> {
+public interface ParameterDescriptors extends AnnotatedElement {
 	Class<?> getDeclaringClass();
-
-	int size();
 
 	Object getSource();
 
-	Class<?>[] getTypes();
-
-	ParameterDescriptor[] toArray();
-
-	default ParameterDescriptor getParameterDescriptor(int index) {
-		int i = 0;
-		Iterator<ParameterDescriptor> iterator = iterator();
-		while (iterator.hasNext()) {
-			ParameterDescriptor descriptor = iterator.next();
-			if (i == index) {
-				return descriptor;
-			}
-			i++;
-		}
-		return null;
-	}
-
-	default ParameterDescriptor getParameterDescriptor(String name) {
-		for (ParameterDescriptor descriptor : this) {
-			if (StringUtils.equals(descriptor.getName(), name)) {
-				return descriptor;
-			}
-		}
-		return null;
-	}
+	Elements<ParameterDescriptor> getElements();
 
 	default Map<String, Object> getParameterMap(Object[] args) {
-		int size = size();
-		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(size);
-		for (int i = 0; i < size; i++) {
-			ParameterDescriptor parameterDescriptor = getParameterDescriptor(i);
+		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(args.length);
+		Iterator<ParameterDescriptor> iterator = getElements().iterator();
+		for (int i = 0; i < args.length && iterator.hasNext(); i++) {
+			ParameterDescriptor parameterDescriptor = iterator.next();
 			map.put(parameterDescriptor.getName(), args[i]);
 		}
 		return map;

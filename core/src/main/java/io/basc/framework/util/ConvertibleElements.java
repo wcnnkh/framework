@@ -5,9 +5,19 @@ import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+/**
+ * TODO 重写equals hash方法
+ * 
+ * @author wcnnkh
+ *
+ * @param <S>
+ * @param <E>
+ */
+@Getter
+@Setter
 public class ConvertibleElements<S, E> implements Elements<E> {
 	private final Elements<S> source;
 	private final Function<? super Stream<S>, ? extends Stream<E>> converter;

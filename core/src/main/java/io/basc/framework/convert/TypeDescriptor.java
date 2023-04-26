@@ -17,11 +17,9 @@ import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.annotation.AnnotatedElements;
 import io.basc.framework.core.annotation.AnnotationArrayAnnotatedElement;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ObjectUtils;
-import io.basc.framework.util.XUtils;
 
 /**
  * Contextual descriptor about a type to convert from or to. Capable of
@@ -80,15 +78,6 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 		this.resolvableType = ResolvableType.forField(field);
 		this.type = this.resolvableType.resolve(field.getType());
 		this.annotatedElement = new AnnotationArrayAnnotatedElement(field);
-	}
-
-	public TypeDescriptor(ParameterDescriptor parameterDescriptor) {
-		this.resolvableType = ResolvableType.forType(parameterDescriptor.getGenericType());
-		this.type = this.resolvableType.resolve(parameterDescriptor.getType());
-		AnnotatedElement arrayAnnnotation = XUtils.getDelegate(parameterDescriptor,
-				AnnotationArrayAnnotatedElement.class);
-		this.annotatedElement = arrayAnnnotation == null ? new AnnotationArrayAnnotatedElement(parameterDescriptor)
-				: arrayAnnnotation;
 	}
 
 	/**

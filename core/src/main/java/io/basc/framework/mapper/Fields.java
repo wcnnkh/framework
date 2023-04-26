@@ -3,53 +3,27 @@ package io.basc.framework.mapper;
 import java.util.function.Function;
 
 import io.basc.framework.core.DefaultStructure;
-import io.basc.framework.core.ResolvableType;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.LinkedMultiValueMap;
-import io.basc.framework.util.MultiValueMap;
-import lombok.NonNull;
 
-public abstract class Fields<E extends Field, R extends Fields<E, R>> extends DefaultStructure<E, R> {
-	private final Function<? super DefaultStructure<E, R>, ? extends R> membersWrapper = (members) -> {
-		Fields<E, R> fields = new DefaultFields<>(getFieldsWrapper(), getSource(), getElements());
-		return getFieldsWrapper().apply(fields);
-	};
+public final class Fields extends ObjectMapping<DefaultField, Fields> {
+	private final Function<? super ObjectMapping<DefaultField, Fields>, ? extends Fields> objectMappingDecorator = (
+			mapping) -> new Fields(mapping);
 
-	public Fields(@NonNull ResolvableType source, @NonNull Elements<E> elements) {
-		super(source, elements);
+	public Fields(Class<?> source, Function<? super Class<?>, ? extends Elements<DefaultField>> processor) {
+		super(source, processor);
 	}
 
-	public Fields(Fields<E, R> fields) {
-		super(fields);
+	private Fields(DefaultStructure<DefaultField> members) {
+		super(members);
 	}
 
 	@Override
-	public final Function<? super DefaultStructure<E, R>, ? extends R> getMembersWrapper() {
-		return membersWrapper;
+	public final Function<? super ObjectMapping<DefaultField, Fields>, ? extends Fields> getObjectMappingDecorator() {
+		return objectMappingDecorator;
 	}
 
-	public abstract Function<? super Fields<E, R>, ? extends R> getFieldsWrapper();
-
-	/**
-	 * 获取字段的值
-	 * 
-	 * @param instance
-	 * @return 可能存在相同的字段名
-	 */
-	public MultiValueMap<String, Object> getMultiValueMap(Object instance) {
-		MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-		for (Field field : this.getElements()) {
-			if (!field.isSupportGetter()) {
-				continue;
-			}
-
-			Object value = field.get(instance);
-			if (value == null) {
-				continue;
-			}
-
-			map.add(field.getGetter().getName(), value);
-		}
-		return map;
+	public static Fields getFields(Class<?> clazz) {
+		// TODO 待实现
+		return null;
 	}
 }

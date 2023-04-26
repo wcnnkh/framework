@@ -1,13 +1,12 @@
 package io.basc.framework.mapper;
 
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.ReversibleMapperFactory;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.value.Value;
 
 public interface ObjectMapper<S, E extends Throwable>
 		extends ReversibleMapperFactory<S, E>, MappingFactory, ObjectAccessFactoryRegistry<E> {
@@ -139,36 +138,38 @@ public interface ObjectMapper<S, E extends Throwable>
 
 	default void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceMapping,
 			Object target, TypeDescriptor targetType, Mapping<? extends Field> targetMapping) {
-		Comparator<FieldDescriptor> comparator = (left, right) -> {
-			if (left.getDeclaringClass() == right.getDeclaringClass()) {
-				if (left.getType() == right.getType()) {
-					return 0;
+		List<? extends Field> sourceFields = sourceMapping.getElements().toList();
+		List<? extends Field> targetFields = targetMapping.getElements().toList();
+		Value sourceInstance = Value.of(source, sourceType);
+		Value targetInstance = Value.of(target, targetType);
+		// source元素是否比right元素多
+		boolean sourceGtRight = sourceFields.size() > targetFields.size();
+		// 用少的元素做迭代
+		for (Field f1 : sourceGtRight ? targetFields : sourceFields) {
+			Iterator<? extends Field> iterator = sourceGtRight ? sourceFields.iterator() : targetFields.iterator();
+			while (iterator.hasNext()) {
+				Field f2 = iterator.next();
+				Field sourceField;
+				Field targetField;
+				if (sourceGtRight) {
+					targetField = f1;
+					sourceField = f2;
+				} else {
+					targetField = f2;
+					sourceField = f1;
 				}
 
-				return right.getType().isAssignableFrom(left.getType()) ? 1 : -1;
+				if (!targetField.test(sourceField)) {
+					continue;
+				}
+
+				Parameter sourceValue = sourceField.get(sourceInstance);
+				if (sourceValue == null) {
+					continue;
+				}
+				targetField.set(targetInstance, sourceValue);
 			}
-			return right.getDeclaringClass().isAssignableFrom(left.getDeclaringClass()) ? 1 : -1;
-		};
-
-		List<Field> targetFields = targetMapping.getElements().filter((e) -> e.isSupportSetter())
-				.sorted((left, right) -> comparator.compare(left.getGetter(), right.getGetter()))
-				.collect(Collectors.toList());
-		sourceMapping.getElements().filter((e) -> e.isSupportGetter())
-				.sorted((left, right) -> comparator.compare(left.getSetter(), right.getSetter()))
-				.forEachOrdered((sourceField) -> {
-					Parameter value = sourceField.getParameter(source);
-					if (value == null || !value.isPresent()) {
-						return;
-					}
-
-					Iterator<Field> iterator = targetFields.iterator();
-					while (iterator.hasNext()) {
-						Field targetField = iterator.next();
-						if (sourceField.test(targetField)) {
-							targetField.set(target, value);
-						}
-					}
-				});
+		}
 	}
 
 	default void transform(Object source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType,
@@ -206,13 +207,10 @@ public interface ObjectMapper<S, E extends Throwable>
 
 	default void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceMapping,
 			ObjectAccess<? extends E> targetAccess) throws E {
+		Value sourceInstance = Value.of(source, sourceType);
 		for (Field field : sourceMapping.getElements()) {
-			if (!field.isSupportGetter()) {
-				continue;
-			}
-
-			Parameter parameter = field.getParameter(source);
-			if (parameter == null || !parameter.isPresent()) {
+			Parameter parameter = field.get(sourceInstance);
+			if (parameter == null) {
 				continue;
 			}
 			targetAccess.set(parameter);
@@ -230,17 +228,14 @@ public interface ObjectMapper<S, E extends Throwable>
 
 	default void transform(ObjectAccess<E> sourceAccess, Object target, TypeDescriptor targetType,
 			Mapping<? extends Field> targetMapping) throws E {
+		Value targetInstance = Value.of(target, targetType);
 		for (Field field : targetMapping.getElements()) {
-			if (!field.isSupportSetter()) {
-				continue;
-			}
-
 			Parameter parameter = sourceAccess.get(field.getName());
-			if (parameter == null || !parameter.isPresent()) {
+			if (parameter == null) {
 				continue;
 			}
 
-			field.set(target, parameter);
+			field.set(targetInstance, parameter);
 		}
 	}
 
@@ -278,15 +273,14 @@ public interface ObjectMapper<S, E extends Throwable>
 
 	default <T> void copy(T source, TypeDescriptor sourceType, T target, TypeDescriptor targetType,
 			Mapping<? extends Field> mapping) throws E {
+		Value sourceInstance = Value.of(source, sourceType);
+		Value targetInstance = Value.of(target, targetType);
 		for (Field field : mapping.getElements()) {
-			if (field.isSupportGetter() && field.isSupportSetter()) {
-				Parameter value = field.getParameter(source);
-				if (value == null || !value.isPresent()) {
-					continue;
-				}
-
-				field.set(target, value);
+			Parameter value = field.get(sourceInstance);
+			if (value == null) {
+				continue;
 			}
+			field.set(targetInstance, value);
 		}
 	}
 }

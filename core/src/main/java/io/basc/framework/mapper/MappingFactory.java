@@ -25,7 +25,7 @@ public interface MappingFactory {
 	 */
 	@Nullable
 	default Mapping<? extends Field> getMapping(Class<?> entityClass) {
-		// TODO
+		return Fields.getFields(entityClass);
 	}
 
 	/**

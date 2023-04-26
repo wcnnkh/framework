@@ -8,16 +8,21 @@ import io.basc.framework.core.Members;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
+import lombok.Getter;
+import lombok.Setter;
 
-public abstract class ObjectMapping<T extends Field, R extends ObjectMapping<T, R>> extends DecorationStructure<T, R>
-		implements Mapping<T> {
-
+@Getter
+@Setter
+public abstract class ObjectMapping<T extends DefaultField, R extends ObjectMapping<T, R>>
+		extends DecorationStructure<T, R> implements Mapping<T> {
 	private Elements<String> aliasNames;
-
 	private String name;
+	private T parent;
+	private int nameNestingDepth = -1;
+	private String nameNestingConnector = "_";
 
 	private final Function<? super DefaultStructure<T>, ? extends R> structureDecorator = (members) -> {
-		ObjectMapping<T, R> mapping = new SimpleObjectMapping<>(members, getStructureDecorator());
+		ObjectMapping<T, R> mapping = new DefaultObjectMapping<>(members, getStructureDecorator());
 		mapping.name = this.name;
 		mapping.aliasNames = this.aliasNames;
 		return getObjectMappingDecorator().apply(mapping);
@@ -37,6 +42,13 @@ public abstract class ObjectMapping<T extends Field, R extends ObjectMapping<T, 
 
 	public ObjectMapping(ResolvableType source, Function<? super ResolvableType, ? extends Elements<T>> processor) {
 		super(source, processor);
+	}
+
+	@Override
+	public void accept(T t) {
+		t.setParent(parent);
+		t.setNameNestingConnector(nameNestingConnector);
+		t.setNameNestingDepth(nameNestingDepth);
 	}
 
 	@Override

@@ -75,7 +75,7 @@ public class CachedElements<E> implements Elements<E>, Serializable {
 		}
 		return new ElementList<>(list);
 	}
-	
+
 	@Override
 	public Elements<E> cacheable() {
 		return this;
@@ -84,6 +84,11 @@ public class CachedElements<E> implements Elements<E>, Serializable {
 	@Override
 	public ElementSet<E> toSet() {
 		return toList().toSet();
+	}
+
+	@Override
+	public String toString() {
+		return list == null ? elements.toString() : list.toString();
 	}
 
 	private void writeObject(ObjectOutputStream output) throws IOException {

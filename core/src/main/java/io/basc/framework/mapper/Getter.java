@@ -1,30 +1,17 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.lang.Nullable;
 import io.basc.framework.value.Value;
 
-public interface Getter extends FieldDescriptor {
-	public static final String BOOLEAN_GETTER_METHOD_PREFIX = "is";
-	public static final String DEFAULT_GETTER_METHOD_PREFIX = "get";
+public interface Getter extends ParameterDescriptor {
 
-	Object get(Object instance);
+	/**
+	 * 从给定来源中获取值
+	 * 
+	 * @param source
+	 * @return
+	 */
+	Object get(Value source);
 
-	@Nullable
-	default Value getValue(Object instance) {
-		Object value = get(instance);
-		if (value == null) {
-			return null;
-		}
-
-		if (value instanceof Value) {
-			return (Value) value;
-		}
-
-		return Value.of(value, new TypeDescriptor(this));
-	}
-
-	default Parameter getParameter(Object instance) {
-		return new Parameter(getName(), getValue(instance));
-	}
+	@Override
+	Getter rename(String name);
 }

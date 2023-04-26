@@ -16,6 +16,7 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -276,6 +277,25 @@ public interface Streamable<E> {
 		Stream<E> stream = stream();
 		try {
 			processor.process(stream);
+		} finally {
+			stream.close();
+		}
+	}
+
+	default int hashCode(ToIntFunction<? super E> hash) {
+		Stream<E> stream = stream();
+		try {
+			Iterator<E> iterator = stream.iterator();
+			if (!iterator.hasNext()) {
+				return 0;
+			}
+
+			int result = 1;
+			while (iterator.hasNext()) {
+				E element = iterator.next();
+				result = 31 * result + (element == null ? 0 : hash.applyAsInt(element));
+			}
+			return result;
 		} finally {
 			stream.close();
 		}

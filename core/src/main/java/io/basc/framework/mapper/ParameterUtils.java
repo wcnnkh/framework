@@ -1,23 +1,24 @@
 package io.basc.framework.mapper;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.DefaultParameterNameDiscoverer;
+import io.basc.framework.core.MethodParameter;
 import io.basc.framework.core.ParameterNameDiscoverer;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Elements;
 
 public final class ParameterUtils {
 	private static final DefaultParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new DefaultParameterNameDiscoverer();
@@ -42,20 +43,17 @@ public final class ParameterUtils {
 		throw Assert.shouldNeverGetHere();
 	}
 
-	public static ParameterDescriptor[] getParameters(ParameterNameDiscoverer parameterNameDiscoverer,
+	public static Elements<ParameterDescriptor> getParameters(ParameterNameDiscoverer parameterNameDiscoverer,
 			Executable executable) {
 		String[] names = getParameterNames(parameterNameDiscoverer, executable);
 		if (ArrayUtils.isEmpty(names)) {
 			return ParameterDescriptor.EMPTY_ARRAY;
 		}
 
-		Annotation[][] parameterAnnoatations = executable.getParameterAnnotations();
-		Type[] parameterGenericTypes = executable.getGenericParameterTypes();
-		Class<?>[] parameterTypes = executable.getParameterTypes();
 		ParameterDescriptor[] parameterDefinitions = new ParameterDescriptor[names.length];
 		for (int i = 0; i < names.length; i++) {
-			parameterDefinitions[i] = new DefaultParameterDescriptor(names[i], parameterAnnoatations[i],
-					parameterTypes[i], parameterGenericTypes[i]);
+			MethodParameter parameter = MethodParameter.forExecutable(executable, i);
+			parameterDefinitions[i] = new DefaultParameterDescriptor(names[i], new TypeDescriptor(parameter));
 		}
 		return parameterDefinitions;
 	}

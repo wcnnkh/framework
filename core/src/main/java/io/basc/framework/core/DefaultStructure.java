@@ -2,6 +2,7 @@ package io.basc.framework.core;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -16,7 +17,7 @@ import io.basc.framework.util.Elements;
  *
  * @param <E>
  */
-public class DefaultStructure<E> implements Structure<E>, Cloneable {
+public class DefaultStructure<E> implements Structure<E>, Cloneable, Consumer<E> {
 	@Nullable
 	private volatile Elements<? extends DefaultStructure<E>> interfaces;
 	private final Members<E> members;
@@ -24,6 +25,17 @@ public class DefaultStructure<E> implements Structure<E>, Cloneable {
 	private final Function<? super ResolvableType, ? extends Elements<E>> processor;
 	@Nullable
 	private volatile DefaultStructure<E> superclass;
+
+	/**
+	 * 接受此element
+	 * <p>
+	 * 
+	 * 通过processor创建的element都会经过此方法
+	 */
+	@Override
+	public void accept(E t) {
+		// 默认没有实现
+	}
 
 	public DefaultStructure(Class<?> source, @Nullable Function<? super Class<?>, ? extends Elements<E>> processor) {
 		this(ResolvableType.forClass(Assert.requiredArgument(source != null, "source", source)),
@@ -48,8 +60,14 @@ public class DefaultStructure<E> implements Structure<E>, Cloneable {
 	public DefaultStructure(ResolvableType source,
 			@Nullable Function<? super ResolvableType, ? extends Elements<E>> processor) {
 		Assert.requiredArgument(source != null, "source");
-		this.members = new DefaultMembers<>(source, processor);
-		this.processor = processor;
+		this.processor = processor == null ? null : (s) -> {
+			Elements<E> elements = processor.apply(s);
+			if (elements == null) {
+				return null;
+			}
+			return elements.peek(this);
+		};
+		this.members = new DefaultMembers<>(source, this.processor);
 	}
 
 	@Override
@@ -121,7 +139,7 @@ public class DefaultStructure<E> implements Structure<E>, Cloneable {
 		return new DefaultStructure<>(this.members, null);
 	}
 
-	public Function<? super ResolvableType, ? extends Elements<E>> getProcessor() {
+	public final Function<? super ResolvableType, ? extends Elements<E>> getProcessor() {
 		return processor;
 	}
 
