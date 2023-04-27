@@ -54,4 +54,27 @@ public class ConvertibleElements<S, E> implements Elements<E> {
 		Stream<S> sourceStream = source.stream();
 		return converter.apply(sourceStream);
 	}
+
+	@Override
+	public int hashCode() {
+		return Elements.super.hashCode((e) -> e.hashCode());
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof Streamable) {
+			Streamable<?> streamable = (Streamable<?>) obj;
+			return equals(streamable, ObjectUtils::equals);
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return toList().toString();
+	}
 }

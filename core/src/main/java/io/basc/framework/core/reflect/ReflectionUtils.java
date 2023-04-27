@@ -9,7 +9,6 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.security.AccessControlException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -90,28 +89,6 @@ public abstract class ReflectionUtils {
 	}
 
 	/**
-	 * Attempt to find a {@link Method} on the supplied class with the supplied name
-	 * and parameter types. Searches all superclasses up to {@code Object}.
-	 * <p>
-	 * Returns {@code null} if no {@link Method} can be found.
-	 * 
-	 * @param clazz      the class to introspect
-	 * @param name       the name of the method
-	 * @param paramTypes the parameter types of the method (may be {@code null} to
-	 *                   indicate any signature)
-	 * @return the Method object, or {@code null} if none found
-	 */
-	@Nullable
-	public static Method findMethod(Class<?> clazz, String name, Class<?>... paramTypes) {
-		Assert.notNull(clazz, "Class must not be null");
-		Assert.notNull(name, "Method name must not be null");
-		return getDeclaredMethods(clazz).getElements().filter((method) -> {
-			return name.equals(method.getName()) && (paramTypes == null || ClassUtils
-					.isAssignable(paramTypes == null ? new Class[0] : paramTypes, method.getParameterTypes()));
-		}).first();
-	}
-
-	/**
 	 * Get the field represented by the supplied {@link Field field object} on the
 	 * specified {@link Object target object}. In accordance with
 	 * {@link Field#get(Object)} semantics, the returned value is automatically
@@ -162,7 +139,7 @@ public abstract class ReflectionUtils {
 			return null;
 		}
 
-		Method method = findMethod(source.getClass(), "clone");
+		Method method = getDeclaredMethods(source.getClass()).find("clone");
 		if (method == null) {
 			return null;
 		}
@@ -473,9 +450,7 @@ public abstract class ReflectionUtils {
 			return clazz.getMethod(name, parameterTypes);
 		} catch (NoSuchMethodException | SecurityException e) {
 		}
-		return getMethods(clazz).all().getElements().filter(
-				(e) -> e.getName().equals(name) && ClassUtils.isAssignable(e.getParameterTypes(), parameterTypes))
-				.first();
+		return getMethods(clazz).find(name, parameterTypes);
 	}
 
 	/**
@@ -505,45 +480,6 @@ public abstract class ReflectionUtils {
 	public static Methods getMethods(Class<?> sourceClass) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		return new Methods(sourceClass, Class::getMethods);
-	}
-
-	/**
-	 * Given a method, which may come from an interface, and a target class used in
-	 * the current reflective invocation, find the corresponding target method if
-	 * there is one. E.g. the method may be {@code IFoo.bar()} and the target class
-	 * may be {@code DefaultFoo}. In this case, the method may be
-	 * {@code DefaultFoo.bar()}. This enables attributes on that method to be found.
-	 * <p>
-	 * <b>NOTE:</b> In contrast to this method does <i>not</i> resolve Java 5 bridge
-	 * methods automatically. Call if bridge method resolution is desirable (e.g.
-	 * for obtaining metadata from the original method definition).
-	 * 
-	 * @param method      the method to be invoked, which may come from an interface
-	 * @param targetClass the target class for the current invocation. May be
-	 *                    {@code null} or may not even implement the method.
-	 * @return the specific target method, or the original method if the
-	 *         {@code targetClass} doesn't implement it or is {@code null}
-	 */
-	public static Method getMostSpecificMethod(Method method, Class<?> targetClass) {
-		if (method != null && isOverridable(method, targetClass) && targetClass != null
-				&& !targetClass.equals(method.getDeclaringClass())) {
-			try {
-				if (Modifier.isPublic(method.getModifiers())) {
-					try {
-						return targetClass.getMethod(method.getName(), method.getParameterTypes());
-					} catch (NoSuchMethodException ex) {
-						return method;
-					}
-				} else {
-					Method specificMethod = findMethod(targetClass, method.getName(), method.getParameterTypes());
-					return (specificMethod != null ? specificMethod : method);
-				}
-			} catch (AccessControlException ex) {
-				// Security settings are disallowing reflective access; fall
-				// back to 'method' below.
-			}
-		}
-		return method;
 	}
 
 	public static ExecutableMatchingResults<Method> getOverloadMethod(Class<?> sourceClass, String methodName,
@@ -810,23 +746,6 @@ public abstract class ReflectionUtils {
 	 */
 	public static boolean isObjectMethod(Method method) {
 		return getDeclaredMethod(Object.class, method.getName(), method.getParameterTypes()) != null;
-	}
-
-	/**
-	 * Determine whether the given method is overridable in the given target class.
-	 * 
-	 * @param method      the method to check
-	 * @param targetClass the target class to check against
-	 */
-	@SuppressWarnings("rawtypes")
-	private static boolean isOverridable(Method method, Class targetClass) {
-		if (Modifier.isPrivate(method.getModifiers())) {
-			return false;
-		}
-		if (Modifier.isPublic(method.getModifiers()) || Modifier.isProtected(method.getModifiers())) {
-			return true;
-		}
-		return ClassUtils.getPackageName(method.getDeclaringClass()).equals(ClassUtils.getPackageName(targetClass));
 	}
 
 	public static boolean isSerialVersionUIDField(Field field) {

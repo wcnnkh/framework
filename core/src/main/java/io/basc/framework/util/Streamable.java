@@ -66,7 +66,7 @@ public interface Streamable<E> {
 		return export((stream) -> stream.collect(collector));
 	}
 
-	default boolean contains(E element) {
+	default boolean contains(Object element) {
 		return anyMatch((e) -> e == element || ObjectUtils.equals(e, element));
 	}
 
@@ -283,6 +283,7 @@ public interface Streamable<E> {
 	}
 
 	default int hashCode(ToIntFunction<? super E> hash) {
+		Assert.requiredArgument(hash != null, "hash");
 		Stream<E> stream = stream();
 		try {
 			Iterator<E> iterator = stream.iterator();
@@ -296,6 +297,43 @@ public interface Streamable<E> {
 				result = 31 * result + (element == null ? 0 : hash.applyAsInt(element));
 			}
 			return result;
+		} finally {
+			stream.close();
+		}
+	}
+
+	default <T> boolean equals(Streamable<? extends T> streamable, BiPredicate<? super E, ? super T> predicate) {
+		Assert.requiredArgument(streamable != null, "streamable");
+		Assert.requiredArgument(predicate != null, "predicate");
+		Stream<E> stream = stream();
+		try {
+			Stream<? extends T> targetStream = streamable.stream();
+			try {
+				Iterator<E> sourceIterator = stream.iterator();
+				Iterator<? extends T> targetIterator = targetStream.iterator();
+				while (sourceIterator.hasNext() && targetIterator.hasNext()) {
+					E source = sourceIterator.next();
+					T target = targetIterator.next();
+					if (source == target) {
+						continue;
+					}
+
+					// 如果都为空已经在上一步拦截了
+					if (source == null || target == null) {
+						return false;
+					}
+
+					if (predicate.test(source, target)) {
+						continue;
+					}
+					return false;
+				}
+
+				// 都没有了才算相等
+				return !sourceIterator.hasNext() && !targetIterator.hasNext();
+			} finally {
+				targetStream.close();
+			}
 		} finally {
 			stream.close();
 		}

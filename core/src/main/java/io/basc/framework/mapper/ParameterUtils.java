@@ -4,7 +4,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -47,7 +46,7 @@ public final class ParameterUtils {
 			Executable executable) {
 		String[] names = getParameterNames(parameterNameDiscoverer, executable);
 		if (ArrayUtils.isEmpty(names)) {
-			return ParameterDescriptor.EMPTY_ARRAY;
+			return Elements.empty();
 		}
 
 		ParameterDescriptor[] parameterDefinitions = new ParameterDescriptor[names.length];
@@ -55,10 +54,10 @@ public final class ParameterUtils {
 			MethodParameter parameter = MethodParameter.forExecutable(executable, i);
 			parameterDefinitions[i] = new DefaultParameterDescriptor(names[i], new TypeDescriptor(parameter));
 		}
-		return parameterDefinitions;
+		return Elements.forArray(parameterDefinitions);
 	}
 
-	public static ParameterDescriptor[] getParameters(Executable executable) {
+	public static Elements<ParameterDescriptor> getParameters(Executable executable) {
 		return getParameters(PARAMETER_NAME_DISCOVERER, executable);
 	}
 
@@ -92,11 +91,12 @@ public final class ParameterUtils {
 
 	public static boolean isisAssignable(ParameterDescriptors parameterDescriptors, Class<?>[] types) {
 		// 异或运算，如果两个不同则结果为1
-		if (parameterDescriptors.size() == 0 ^ ArrayUtils.isEmpty(types)) {
+		if (parameterDescriptors.getElements().count() == 0 ^ ArrayUtils.isEmpty(types)) {
 			return false;
 		}
 
-		return ClassUtils.isAssignable(Arrays.asList(parameterDescriptors.getTypes()), Arrays.asList(types));
+		return parameterDescriptors.getElements().equals(Elements.forArray(types),
+				(l, r) -> ClassUtils.isAssignable(l.getTypeDescriptor().getType(), r));
 	}
 
 	public static <T> Object invoke(Class<T> type, Object instance, String name, Map<String, Object> parameterMap)

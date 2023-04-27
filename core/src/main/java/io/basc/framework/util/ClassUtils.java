@@ -765,25 +765,6 @@ public final class ClassUtils {
 		return true;
 	}
 
-	public static boolean isAssignable(Collection<Class<?>> lhsTypes, Collection<Class<?>> rhsTypes) {
-		if (CollectionUtils.isEmpty(lhsTypes)) {
-			return CollectionUtils.isEmpty(rhsTypes);
-		}
-
-		if (lhsTypes.size() != (CollectionUtils.isEmpty(rhsTypes) ? 0 : rhsTypes.size())) {
-			return false;
-		}
-
-		Iterator<Class<?>> lhsIterator = lhsTypes.iterator();
-		Iterator<Class<?>> rhsIterator = rhsTypes.iterator();
-		while (lhsIterator.hasNext() && rhsIterator.hasNext()) {
-			if (!isAssignable(lhsIterator.next(), rhsIterator.next())) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	/**
 	 * Determine if the given type is assignable from the given value, assuming
 	 * setting by reflection. Considers primitive wrapper classes as assignable to

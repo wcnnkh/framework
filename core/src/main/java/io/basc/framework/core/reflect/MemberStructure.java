@@ -11,7 +11,6 @@ import io.basc.framework.core.ResolvableType;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.StringUtils;
 
 public abstract class MemberStructure<E extends Member, R extends MemberStructure<E, R>>
 		extends DecorationStructure<E, R> {
@@ -19,16 +18,6 @@ public abstract class MemberStructure<E extends Member, R extends MemberStructur
 		MemberStructure<E, R> memberStructure = new DefaultMemberStructure<E, R>(source, getMemberStructureDecorator());
 		return getMemberStructureDecorator().apply(memberStructure);
 	};
-
-	public MemberStructure(MemberStructure<E, R> memberStructure) {
-		super(memberStructure);
-		// 预留扩展
-	}
-
-	public MemberStructure(Members<E> members,
-			@Nullable Function<? super ResolvableType, ? extends Elements<E>> processor) {
-		super(members, processor);
-	}
 
 	public MemberStructure(Class<?> source, Function<? super Class<?>, ? extends E[]> processor) {
 		super(ResolvableType.forClass(Assert.requiredArgument(source != null, "source", source)),
@@ -46,6 +35,20 @@ public abstract class MemberStructure<E extends Member, R extends MemberStructur
 				}));
 	}
 
+	public MemberStructure(DefaultStructure<E> members) {
+		super(members);
+	}
+
+	public MemberStructure(Members<E> members,
+			@Nullable Function<? super ResolvableType, ? extends Elements<E>> processor) {
+		super(members, processor);
+	}
+
+	public MemberStructure(MemberStructure<E, R> memberStructure) {
+		super(memberStructure);
+		// 预留扩展
+	}
+
 	public MemberStructure(ResolvableType source, Function<? super ResolvableType, ? extends Elements<E>> processor) {
 		super(source, Assert.requiredArgument(processor != null, "processor", (type) -> {
 			Elements<E> elements = processor.apply(type);
@@ -57,18 +60,18 @@ public abstract class MemberStructure<E extends Member, R extends MemberStructur
 		}));
 	}
 
-	public MemberStructure(DefaultStructure<E> members) {
-		super(members);
+	/**
+	 * 排除静态
+	 * 
+	 * @return
+	 */
+	public R entity() {
+		return exclude((e) -> Modifier.isStatic(e.getModifiers()));
 	}
 
-	public R include(String name) {
-		Assert.requiredArgument(StringUtils.hasText(name), "name");
-		return filter((e) -> StringUtils.equals(e.getName(), name));
-	}
-
-	public R exclude(String name) {
-		Assert.requiredArgument(StringUtils.hasText(name), "name");
-		return exclude((e) -> StringUtils.equals(e.getName(), name));
+	public R exclude(Elements<? extends String> names) {
+		Assert.requiredArgument(names != null, "names");
+		return exclude((e) -> names.contains(e));
 	}
 
 	public abstract Function<? super MemberStructure<E, R>, ? extends R> getMemberStructureDecorator();
@@ -78,12 +81,8 @@ public abstract class MemberStructure<E extends Member, R extends MemberStructur
 		return strutureDecoratro;
 	}
 
-	/**
-	 * 排除静态
-	 * 
-	 * @return
-	 */
-	public R entity() {
-		return exclude((e) -> Modifier.isStatic(e.getModifiers()));
+	public R include(Elements<? extends String> names) {
+		Assert.requiredArgument(names != null, "names");
+		return filter((e) -> names.contains(e));
 	}
 }

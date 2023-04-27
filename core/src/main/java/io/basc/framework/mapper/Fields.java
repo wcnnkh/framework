@@ -22,8 +22,7 @@ public final class Fields extends ObjectMapping<DefaultField, Fields> {
 		return objectMappingDecorator;
 	}
 
-	public static Fields getFields(Class<?> clazz) {
-		// TODO 待实现
-		return null;
+	public static Fields getFields(Class<?> sourceClass) {
+		return new Fields(sourceClass, FieldsGenerator.DEFAULT);
 	}
 }

@@ -94,7 +94,7 @@ public class ExecutableParameterDescriptorsIterator implements Iterator<Paramete
 
 	public ExecutableParameterDescriptorsIterator(Class<?> clazz) {
 		this(ParameterUtils.getParameterNameDiscoverer(), clazz, ReflectionUtils.getDeclaredConstructors(clazz)
-				.getElements().sorted((o1, o2) -> compare(o1, o2, CONSTRUCTOR_COMPARATOR)).iterator());
+				.sorted((o1, o2) -> compare(o1, o2, CONSTRUCTOR_COMPARATOR)).iterator());
 	}
 
 	public ExecutableParameterDescriptorsIterator(Class<?> targetClass, final Method method, boolean polymorphic) {

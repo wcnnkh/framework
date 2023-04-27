@@ -7,10 +7,18 @@ import java.util.Map;
 
 import io.basc.framework.util.Elements;
 
-public interface ParameterDescriptors extends AnnotatedElement {
-	Class<?> getDeclaringClass();
+/**
+ * 参数描述列表
+ * 
+ * @author wcnnkh
+ *
+ */
+public interface ParameterDescriptors {
+	Class<?> getSourceClass();
 
 	Object getSource();
+
+	AnnotatedElement getSourceAnnotatedElement();
 
 	Elements<ParameterDescriptor> getElements();
 

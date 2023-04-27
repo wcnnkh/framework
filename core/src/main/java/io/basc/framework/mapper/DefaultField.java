@@ -5,8 +5,10 @@ import java.util.Iterator;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.CircularDependencyException;
 import io.basc.framework.util.Elements;
+import lombok.ToString;
 
-public class DefaultField implements Field, Cloneable {
+@ToString
+public class DefaultField extends AbstractGetter implements Field, Cloneable {
 	private volatile String name;
 	private volatile TypeDescriptor typeDescriptor;
 	private Elements<? extends Getter> getters;
@@ -14,14 +16,24 @@ public class DefaultField implements Field, Cloneable {
 	private Field parent;
 	private int nameNestingDepth = -1;
 	private String nameNestingConnector = "_";
+	private Boolean nullable;
 
-	private DefaultField(DefaultField field) {
+	public DefaultField() {
+	}
+
+	public DefaultField(DefaultField field) {
 		this.name = field.name;
 		this.typeDescriptor = field.typeDescriptor;
 		this.getters = field.getters;
 		this.parent = field.parent;
 		this.nameNestingConnector = field.nameNestingConnector;
 		this.nameNestingDepth = field.nameNestingDepth;
+		this.nullable = field.nullable;
+	}
+
+	@Override
+	public DefaultField clone() {
+		return new DefaultField(this);
 	}
 
 	public final int getNameNestingDepth() {
@@ -41,7 +53,7 @@ public class DefaultField implements Field, Cloneable {
 	}
 
 	@Override
-	public Elements<? extends Getter> getters() {
+	public Elements<? extends Getter> getGetters() {
 		return getters == null ? Elements.empty() : getters;
 	}
 
@@ -57,7 +69,7 @@ public class DefaultField implements Field, Cloneable {
 	}
 
 	@Override
-	public Elements<? extends Setter> setters() {
+	public Elements<? extends Setter> getSetters() {
 		// TODO 重新定义解析名
 		return setters == null ? Elements.empty() : setters;
 	}
@@ -101,21 +113,40 @@ public class DefaultField implements Field, Cloneable {
 	}
 
 	@Override
-	public String toString() {
-		if (parent == null) {
-			return super.toString();
-		}
-
-		StringBuilder sb = new StringBuilder();
-		sb.append("parent[").append(parent).append("] ");
-		sb.append(super.toString());
-		return sb.toString();
-	}
-
-	@Override
 	public Field rename(String name) {
 		DefaultField field = new DefaultField(this);
 		field.name = name;
 		return field;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setTypeDescriptor(TypeDescriptor typeDescriptor) {
+		this.typeDescriptor = typeDescriptor;
+	}
+
+	public void setGetters(Elements<? extends Getter> getters) {
+		this.getters = getters;
+	}
+
+	public void setSetters(Elements<? extends Setter> setters) {
+		this.setters = setters;
+	}
+
+	public boolean isNullable() {
+		if (nullable == null) {
+			synchronized (this) {
+				if (nullable == null) {
+					nullable = Field.super.isNullable();
+				}
+			}
+		}
+		return nullable;
+	}
+
+	public void setNullable(Boolean nullable) {
+		this.nullable = nullable;
 	}
 }

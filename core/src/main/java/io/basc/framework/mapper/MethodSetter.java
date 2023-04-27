@@ -8,12 +8,12 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.Value;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@EqualsAndHashCode(of = "method")
-public class MethodSetter implements Setter {
+@Getter
+@Setter
+public class MethodSetter extends AbstractSetter {
 	public static final String METHOD_PREFIX = "set";
 	private final Method method;
 	private volatile TypeDescriptor typeDescriptor;
@@ -60,7 +60,7 @@ public class MethodSetter implements Setter {
 	}
 
 	@Override
-	public Setter rename(String name) {
+	public MethodSetter rename(String name) {
 		MethodSetter methodSetter = new MethodSetter(this.method);
 		methodSetter.typeDescriptor = this.typeDescriptor;
 		methodSetter.name = name;

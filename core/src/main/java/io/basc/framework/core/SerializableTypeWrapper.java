@@ -372,7 +372,7 @@ abstract class SerializableTypeWrapper {
 		// 在进行反序列化时使用反射获取方法
 		private void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
 			inputStream.defaultReadObject();
-			this.method = ReflectionUtils.findMethod(this.declaringClass, this.methodName);
+			this.method = ReflectionUtils.getDeclaredMethods(this.declaringClass).find(this.methodName);
 			if (this.method.getReturnType() != Type.class && this.method.getReturnType() != Type[].class) {
 				throw new IllegalStateException(
 						"Invalid return type on deserialized method - needs to be Type or Type[]: " + this.method);

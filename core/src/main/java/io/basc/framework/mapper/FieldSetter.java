@@ -6,8 +6,12 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.value.Value;
+import lombok.Getter;
+import lombok.Setter;
 
-public class FieldSetter implements Setter {
+@Getter
+@Setter
+public class FieldSetter extends AbstractSetter {
 	private final Field field;
 	private volatile String name;
 	private volatile TypeDescriptor typeDescriptor;

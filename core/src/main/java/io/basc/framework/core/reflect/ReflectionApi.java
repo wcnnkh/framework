@@ -7,8 +7,8 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
-import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
@@ -66,7 +66,7 @@ public class ReflectionApi implements Supplier<Object> {
 		if (this.declaringClass == null) {
 			return null;
 		}
-		return ReflectionUtils.findMethod(this.declaringClass, name, parameterTypes);
+		return ReflectionUtils.getDeclaredMethods(this.declaringClass).find(name, parameterTypes);
 	}
 
 	public Object invoke(Method method, Object... args) {

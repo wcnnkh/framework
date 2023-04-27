@@ -8,11 +8,9 @@ import io.basc.framework.util.Assert;
 import io.basc.framework.value.Value;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
 public class FieldGetter extends AbstractGetter {
 	private final Field field;
 	private volatile String name;

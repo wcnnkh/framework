@@ -22,6 +22,8 @@ public final class XUtils {
 	private static final Executor COMMON_EXECUTOR = ENABLE_COMMON_POOL ? ForkJoinPool.commonPool()
 			: new ThreadPerTaskExecutor();
 
+	private static final Predicate<?> ALWAYS_TRUE_PREDICATE = (e) -> true;
+
 	private XUtils() {
 	};
 
@@ -218,5 +220,16 @@ public final class XUtils {
 			}
 			b.process();
 		};
+	}
+
+	/**
+	 * 永远返回true的Predicate
+	 * 
+	 * @param <T>
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> Predicate<T> alwaysTruePredicate() {
+		return (Predicate<T>) ALWAYS_TRUE_PREDICATE;
 	}
 }

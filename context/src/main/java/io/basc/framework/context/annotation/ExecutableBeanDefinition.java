@@ -74,8 +74,8 @@ public class ExecutableBeanDefinition extends FactoryBeanDefinition {
 	protected Object createInternal(BeanResolver beanResolver, TypeDescriptor typeDescriptor,
 			ParameterDescriptors parameterDescriptors, Object[] params) {
 		if (executable instanceof Method) {
-			Method method = ReflectionUtils.findMethod(sourceClass, executable.getName(),
-					parameterDescriptors.getTypes());
+			Method method = ReflectionUtils.getDeclaredMethods(sourceClass).find(executable.getName(),
+					parameterDescriptors.getElements().map((e) -> e.getTypeDescriptor().getType()));
 			Object bean = ReflectionUtils.invoke(method,
 					Modifier.isStatic(method.getModifiers()) ? null : getBeanFactory().getInstance(sourceClass));
 			if (getBeanFactory().getAop().isProxy(bean)) {

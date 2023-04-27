@@ -9,6 +9,7 @@ import io.basc.framework.core.Structure;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
+import io.basc.framework.util.StringUtils;
 
 public final class Fields extends MemberStructure<Field, Fields> {
 	@SuppressWarnings("unchecked")
@@ -202,5 +203,10 @@ public final class Fields extends MemberStructure<Field, Fields> {
 
 	public String toString(Object instance, boolean deep) {
 		return toString(this, instance, deep);
+	}
+
+	public Field find(String name) {
+		Assert.requiredArgument(StringUtils.hasText(name), "name");
+		return getElements().filter((e) -> e.getName().equals(name)).first();
 	}
 }

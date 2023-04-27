@@ -1,15 +1,13 @@
 package io.basc.framework.net.message.convert;
 
+import java.io.IOException;
+
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.json.JsonSupport;
-import io.basc.framework.mapper.MapperUtils;
-import io.basc.framework.mapper.ToMap;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.net.MimeTypeUtils;
 import io.basc.framework.net.message.InputMessage;
 import io.basc.framework.net.message.OutputMessage;
-
-import java.io.IOException;
 
 public final class JsonMessageConverter extends AbstractMessageConverter<Object> {
 	public static final MimeType JSON_ALL = new MimeType("application", "*+json");
@@ -48,10 +46,6 @@ public final class JsonMessageConverter extends AbstractMessageConverter<Object>
 			return null;
 		}
 
-		if (body instanceof ToMap) {
-			return jsonSupport.toJsonString(MapperUtils.toMap(body));
-		} else {
-			return jsonSupport.toJsonString(body);
-		}
+		return jsonSupport.toJsonString(body);
 	}
 }

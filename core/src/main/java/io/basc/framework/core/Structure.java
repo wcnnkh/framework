@@ -78,10 +78,9 @@ public interface Structure<E> extends Members<E> {
 	 * 递归获取所有元素
 	 * 
 	 * @see #recursion()
-	 * @see Elements#distinct()
 	 * @return
 	 */
 	default Elements<E> getElements() {
-		return recursion().flatMap((e) -> e.getElements()).distinct();
+		return recursion().flatMap((e) -> e.getElements());
 	}
 }

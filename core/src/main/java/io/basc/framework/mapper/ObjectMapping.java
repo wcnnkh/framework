@@ -17,9 +17,6 @@ public abstract class ObjectMapping<T extends DefaultField, R extends ObjectMapp
 		extends DecorationStructure<T, R> implements Mapping<T> {
 	private Elements<String> aliasNames;
 	private String name;
-	private T parent;
-	private int nameNestingDepth = -1;
-	private String nameNestingConnector = "_";
 
 	private final Function<? super DefaultStructure<T>, ? extends R> structureDecorator = (members) -> {
 		ObjectMapping<T, R> mapping = new DefaultObjectMapping<>(members, getStructureDecorator());
@@ -42,13 +39,6 @@ public abstract class ObjectMapping<T extends DefaultField, R extends ObjectMapp
 
 	public ObjectMapping(ResolvableType source, Function<? super ResolvableType, ? extends Elements<T>> processor) {
 		super(source, processor);
-	}
-
-	@Override
-	public void accept(T t) {
-		t.setParent(parent);
-		t.setNameNestingConnector(nameNestingConnector);
-		t.setNameNestingDepth(nameNestingDepth);
 	}
 
 	@Override
@@ -77,5 +67,11 @@ public abstract class ObjectMapping<T extends DefaultField, R extends ObjectMapp
 	@Override
 	public final Function<? super DefaultStructure<T>, ? extends R> getStructureDecorator() {
 		return structureDecorator;
+	}
+
+	@Override
+	public Elements<T> getElements() {
+		// TODO 组合所有结构中的field
+		return super.getElements();
 	}
 }

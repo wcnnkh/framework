@@ -9,11 +9,9 @@ import io.basc.framework.util.StringUtils;
 import io.basc.framework.value.Value;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
 public class MethodGetter extends AbstractGetter {
 	public static final String BOOLEAN_METHOD_PREFIX = "is";
 	public static final String METHOD_PREFIX = "get";

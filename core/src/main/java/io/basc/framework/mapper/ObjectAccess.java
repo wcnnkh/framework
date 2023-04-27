@@ -3,11 +3,14 @@ package io.basc.framework.mapper;
 import java.util.Iterator;
 import java.util.function.Function;
 
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 
 public interface ObjectAccess<E extends Throwable> {
+	TypeDescriptor getTypeDescriptor();
+	
 	Elements<String> keys() throws E;
 
 	Parameter get(String name) throws E;

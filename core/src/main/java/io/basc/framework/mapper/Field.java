@@ -16,35 +16,13 @@ import io.basc.framework.value.Value;
 public interface Field extends Getter, ParentDiscover<Field> {
 
 	/**
-	 * 默认情况下和{@link Getter#getName()}相同
-	 */
-	@Override
-	default String getName() {
-		Getter getter = getters().first();
-		if (getter == null) {
-			throw new UnsupportedException("getter");
-		}
-		return getter.getName();
-	}
-
-	/**
-	 * 默认情况下和{@link Getter#getTypeDescriptor()}相同
-	 */
-	@Override
-	default TypeDescriptor getTypeDescriptor() {
-		Getter getter = getters().first();
-		if (getter == null) {
-			throw new UnsupportedException("getter");
-		}
-		return getter.getTypeDescriptor();
-	}
-
-	/**
+	 * 获取数据
+	 * <p>
 	 * 默认情况下和{@link Getter#get(Value)}相同
 	 */
 	@Override
 	default Parameter get(Value source) {
-		Getter getter = getters().first();
+		Getter getter = getGetters().first();
 		if (getter == null) {
 			throw new UnsupportedException("getter");
 		}
@@ -53,46 +31,76 @@ public interface Field extends Getter, ParentDiscover<Field> {
 		return new Parameter(getter.getName(), value, getter.getTypeDescriptor());
 	}
 
+	/**
+	 * 可以存在多种get方案， 默认选择第一个
+	 * 
+	 * @return
+	 */
+	Elements<? extends Getter> getGetters();
+
+	/**
+	 * 默认情况下和{@link Getter#getName()}相同
+	 */
+	@Override
+	default String getName() {
+		Getter getter = getGetters().first();
+		if (getter == null) {
+			throw new UnsupportedException("getter");
+		}
+		return getter.getName();
+	}
+
+	/**
+	 * 可能存在多种set方案,选择其中一种方式插入
+	 * 
+	 * @return
+	 */
+	Elements<? extends Setter> getSetters();
+
+	/**
+	 * 默认情况下和{@link Getter#getTypeDescriptor()}相同
+	 */
+	@Override
+	default TypeDescriptor getTypeDescriptor() {
+		Getter getter = getGetters().first();
+		if (getter == null) {
+			throw new UnsupportedException("getter");
+		}
+		return getter.getTypeDescriptor();
+	}
+
+	/**
+	 * 
+	 * 是否可以调用{@link #get(Value)}
+	 * 
+	 * @return
+	 */
+	default boolean isSupportGetter() {
+		return !getGetters().isEmpty();
+	}
+
+	/**
+	 * 是否可以调用{@link #set(Value, Parameter)}
+	 * 
+	 * @return
+	 */
+	default boolean isSupportSetter() {
+		return !getSetters().isEmpty();
+	}
+
 	@Override
 	Field rename(String name);
 
 	/**
-	 * 默认是判断是否存在Getter
-	 * 
-	 * @see #getter()
-	 * @return
-	 */
-	default boolean isSupportGetter() {
-		return !getters().isEmpty();
-	}
-
-	/**
-	 * 默认选择第一个
-	 * 
-	 * @return
-	 */
-	Elements<? extends Getter> getters();
-
-	/**
-	 * 默认是判断是否存在Setter
-	 * 
-	 * @see #setters()
-	 * @return
-	 */
-	default boolean isSupportSetter() {
-		return !setters().isEmpty();
-	}
-
-	/**
-	 * 根据名称选择Setter执行
+	 * 插入数据
 	 * 
 	 * @param target
 	 * @param parameter
-	 * @return 如果为空说明找不到对应的Setter
+	 * @return
 	 */
 	@Nullable
-	default Setter set(Value target, Parameter parameter) {
-		for (Setter setter : setters()) {
+	default void set(Value target, Parameter parameter) {
+		for (Setter setter : getSetters()) {
 			if (setter.getName().equals(parameter.getName())
 					&& setter.getTypeDescriptor().isAssignableTo(parameter.getTypeDescriptor())) {
 				// 开始插入
@@ -102,7 +110,7 @@ public interface Field extends Getter, ParentDiscover<Field> {
 					for (Field parent : parents().reverse()) {
 						// 获取到父级字段的值
 						Object parentValue = parent.get(instance);
-						Setter parentSetter = parent.setters()
+						Setter parentSetter = parent.getSetters()
 								.filter((e) -> e.getTypeDescriptor().isAssignableTo(parent.getTypeDescriptor()))
 								.first();
 						parentSetter.set(instance, parentValue);
@@ -110,18 +118,10 @@ public interface Field extends Getter, ParentDiscover<Field> {
 					}
 				}
 				setter.set(target, parameter.getSource());
-				return setter;
+				return;
 			}
 		}
-		return null;
 	}
-
-	/**
-	 * 可能存在多种set方案,选择其中一种方式插入
-	 * 
-	 * @return
-	 */
-	Elements<? extends Setter> setters();
 
 	/**
 	 * 测试此来源类型是否可以写入
@@ -133,8 +133,8 @@ public interface Field extends Getter, ParentDiscover<Field> {
 		}
 
 		String name = getName();
-		if (name.equals(source.getName()) || setters().anyMatch((e) -> e.getName().equals(name))) {
-			return setters().anyMatch((e) -> e.test(source));
+		if (name.equals(source.getName()) || getSetters().anyMatch((e) -> e.getName().equals(name))) {
+			return getSetters().anyMatch((e) -> e.test(source));
 		}
 		return false;
 	}
