@@ -10,9 +10,10 @@ import io.basc.framework.util.StringUtils;
 
 public interface ObjectAccess<E extends Throwable> {
 	TypeDescriptor getTypeDescriptor();
-	
+
 	Elements<String> keys() throws E;
 
+	@Nullable
 	Parameter get(String name) throws E;
 
 	void set(Parameter parameter) throws E;

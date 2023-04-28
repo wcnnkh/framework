@@ -11,9 +11,6 @@ public interface Setter extends ParameterDescriptor {
 	 */
 	void set(Value target, Object value);
 
-	/**
-	 * 重命名
-	 */
 	@Override
 	Setter rename(String name);
 }

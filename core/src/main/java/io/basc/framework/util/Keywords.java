@@ -6,11 +6,12 @@ import java.util.LinkedList;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import io.basc.framework.env.BascObject;
 import io.basc.framework.lang.LinkedThreadLocal;
 import io.basc.framework.lang.Nullable;
+import lombok.Data;
 
-public final class Keywords extends BascObject implements Predicate<String>, Iterable<String>, Cloneable, Serializable {
+@Data
+public final class Keywords implements Predicate<String>, Iterable<String>, Cloneable, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static final LinkedThreadLocal<Object> NESTED = new LinkedThreadLocal<Object>(Keywords.class.getName());

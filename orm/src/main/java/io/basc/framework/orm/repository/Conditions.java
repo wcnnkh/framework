@@ -6,8 +6,10 @@ import java.util.List;
 
 import io.basc.framework.env.BascObject;
 import io.basc.framework.util.Assert;
+import lombok.Data;
 
-public class Conditions extends BascObject implements Serializable {
+@Data
+public class Conditions implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private final Condition condition;

@@ -17,9 +17,7 @@ import io.basc.framework.util.LinkedMultiValueMap;
  * @author wcnnkh
  *
  */
-public class FieldsGenerator implements Function<Class<?>, Elements<DefaultField>> {
-	public static final FieldsGenerator DEFAULT = new FieldsGenerator();
-
+final class FieldsGenerator implements Function<Class<?>, Elements<DefaultField>> {
 	@Override
 	public Elements<DefaultField> apply(Class<?> sourceClass) {
 		// 相同的字段名视为同一个getter

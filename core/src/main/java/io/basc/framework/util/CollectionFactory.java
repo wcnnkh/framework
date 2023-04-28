@@ -25,6 +25,7 @@ import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import io.basc.framework.core.reflect.Fields;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
 
@@ -470,11 +471,7 @@ public final class CollectionFactory {
 	public static <M extends Map<K, V>, K, V> M clone(M map, boolean deep) {
 		Assert.requiredArgument(map != null, "map");
 		if (!deep) {
-			M m = ReflectionUtils.invokeCloneMethod(map);
-			if (m != null) {
-				return m;
-			}
-			return ReflectionUtils.clone(m);
+			return ReflectionUtils.clone(map, false);
 		}
 
 		Class<?> mapType = map.getClass();
@@ -489,11 +486,15 @@ public final class CollectionFactory {
 			}
 		}
 
-		ReflectionUtils.clone(
-				ReflectionUtils.getDeclaredFields(mapType)
-						.withAll((e) -> e != Object.class
-								&& !(e.getName().startsWith("java.util.") && e.getName().endsWith("Map"))),
-				map, cloneMap, deep);
+		for (Fields fields : ReflectionUtils.getDeclaredFields(mapType).entity().recursion()) {
+			Class<?> sourceClass = fields.getSource().getRawClass();
+			if (sourceClass == Object.class || sourceClass.getName().startsWith("java.util.")
+					|| sourceClass.getName().endsWith("Map")) {
+				continue;
+			}
+
+			fields.copy(map, cloneMap, deep);
+		}
 
 		for (Entry<K, V> entry : map.entrySet()) {
 			cloneMap.put(ObjectUtils.clone(entry.getKey(), deep), ObjectUtils.clone(entry.getValue(), deep));
@@ -539,7 +540,7 @@ public final class CollectionFactory {
 			if (value != null) {
 				return value;
 			}
-			return ReflectionUtils.clone(collection);
+			return ReflectionUtils.clone(collection, deep);
 		}
 
 		C cloneCollection;
@@ -555,11 +556,15 @@ public final class CollectionFactory {
 			}
 		}
 
-		ReflectionUtils.clone(
-				ReflectionUtils.getDeclaredFields(collectionClass)
-						.withAll((e) -> e != Object.class && !(e.getName().startsWith("java.util.")
-								&& (e.getName().endsWith("Set") || e.getName().endsWith("List")))),
-				collection, cloneCollection, deep);
+		for (Fields fields : ReflectionUtils.getDeclaredFields(collectionClass).entity().recursion()) {
+			Class<?> sourceClass = fields.getSource().getRawClass();
+			if (sourceClass == Object.class || sourceClass.getName().startsWith("java.util.")
+					|| sourceClass.getName().endsWith("Set") || sourceClass.getName().endsWith("List")) {
+				continue;
+			}
+
+			fields.copy(collection, cloneCollection, deep);
+		}
 
 		for (E e : collection) {
 			cloneCollection.add(ObjectUtils.clone(e, deep));

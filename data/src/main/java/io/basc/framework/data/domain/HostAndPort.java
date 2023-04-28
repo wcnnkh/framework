@@ -2,8 +2,9 @@ package io.basc.framework.data.domain;
 
 import java.io.Serializable;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
+import lombok.Data;
 
+@Data
 public class HostAndPort implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String host;
@@ -31,10 +32,5 @@ public class HostAndPort implements Serializable {
 
 	public void setPort(int port) {
 		this.port = port;
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionUtils.toString(this);
 	}
 }

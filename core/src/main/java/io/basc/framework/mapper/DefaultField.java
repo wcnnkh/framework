@@ -8,7 +8,7 @@ import io.basc.framework.util.Elements;
 import lombok.ToString;
 
 @ToString
-public class DefaultField extends AbstractGetter implements Field, Cloneable {
+public class DefaultField implements Field, Cloneable {
 	private volatile String name;
 	private volatile TypeDescriptor typeDescriptor;
 	private Elements<? extends Getter> getters;

@@ -22,7 +22,7 @@ import io.basc.framework.factory.BeanResolver;
 import io.basc.framework.factory.BeanResolverExtend;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.mapper.Fields;
+import io.basc.framework.mapper.ObjectMapping;
 import io.basc.framework.mapper.ParameterDescriptor;
 
 public class IocBeanResolverExtend implements BeanResolverExtend, IocResolverExtend {
@@ -39,7 +39,7 @@ public class IocBeanResolverExtend implements BeanResolverExtend, IocResolverExt
 			BeanResolver chain) {
 		List<BeanPostProcessor> postProcessors = new ArrayList<BeanPostProcessor>();
 		postProcessors.addAll(BeanResolverExtend.super.resolveDependenceProcessors(typeDescriptor, chain));
-		for (Field field : Fields.getFields(typeDescriptor.getType()).filter(FieldFeature.SUPPORT_SETTER).all()
+		for (Field field : ObjectMapping.getFields(typeDescriptor.getType()).filter(FieldFeature.SUPPORT_SETTER).all()
 				.getElements()) {
 			if (iocResolver.resolveAutowiredDefinition(field.getSetter()) != null) {
 				postProcessors.add(new AutowiredIocProcessor(context, iocResolver, field));

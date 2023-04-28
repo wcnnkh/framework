@@ -1,10 +1,11 @@
 package io.basc.framework.orm;
 
-import io.basc.framework.env.BascObject;
-
 import java.io.Serializable;
 
-public class ForeignKey extends BascObject implements Serializable {
+import lombok.Data;
+
+@Data
+public class ForeignKey implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Class<?> entityClass;
 	private String name;

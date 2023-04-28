@@ -1,6 +1,7 @@
 package io.basc.framework.mapper;
 
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,63 +9,23 @@ import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.logger.Logger;
-import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.PredicateRegistry;
 import io.basc.framework.util.StringUtils;
+import io.basc.framework.util.alias.AliasFactory;
 import io.basc.framework.value.Value;
-import lombok.Setter;
+import lombok.Data;
 
-@Setter
+@Data
 public class DefaultMappingStrategy<E extends Throwable> implements MappingStrategy<E> {
-	private static Logger logger = LoggerFactory.getLogger(DefaultMappingStrategy.class);
 	private String sourceNamePrefix;
-	private String nameConnector;
+	private String nameConnector = ".";
 	private ConversionService conversionService;
 	private final PredicateRegistry<Field> predicateRegistry = new PredicateRegistry<>();
 	private final DefaultMappingStrategy<E> parentMappingStrategy;
-
-	public String getSourceNamePrefix() {
-		if (sourceNamePrefix != null) {
-			return sourceNamePrefix;
-		}
-		return parentMappingStrategy == null ? null : parentMappingStrategy.getSourceNamePrefix();
-	}
-
-	private boolean testSourceField(Field field) {
-		if (sourceNamePrefix == null) {
-			return true;
-		}
-
-		if (!field.getName().startsWith(sourceNamePrefix)) {
-			return false;
-		}
-
-		if (!predicateRegistry.test(field)) {
-			return false;
-		}
-
-		return parentMappingStrategy == null ? true : parentMappingStrategy.testSourceField(field);
-	}
-
-	private boolean testTargetField(Field field) {
-		if (!predicateRegistry.test(field)) {
-			return false;
-		}
-
-		return parentMappingStrategy == null ? true : parentMappingStrategy.testTargetField(field);
-	}
-
-	private boolean testSourceName(String name) {
-		if (sourceNamePrefix == null) {
-			return true;
-		}
-
-		if (!name.startsWith(sourceNamePrefix)) {
-			return false;
-		}
-		return parentMappingStrategy == null ? true : parentMappingStrategy.testSourceName(name);
-	}
+	private Boolean ignoreNull;
+	private AliasFactory aliasFactory;
 
 	public DefaultMappingStrategy() {
 		this(null);
@@ -72,6 +33,50 @@ public class DefaultMappingStrategy<E extends Throwable> implements MappingStrat
 
 	public DefaultMappingStrategy(@Nullable DefaultMappingStrategy<E> parentMappingStrategy) {
 		this.parentMappingStrategy = parentMappingStrategy;
+	}
+
+	private Elements<String> getAliasNames(Elements<String> names) {
+		Elements<String> aliasNames = aliasFactory == null ? names : names.flatMap((name) -> {
+			String[] aliasArray = aliasFactory.getAliases(name);
+			if (aliasArray == null || aliasArray.length == 0) {
+				return Elements.singleton(name);
+			}
+
+			return Elements.forArray(aliasArray).concat(Elements.singleton(name));
+		});
+
+		return parentMappingStrategy == null ? aliasNames : parentMappingStrategy.getAliasNames(aliasNames);
+	}
+
+	private void appendMapProperty(Map<String, Object> valueMap, String prefix, ObjectAccess<E> sourceAccess,
+			String nameConnector) throws E {
+		for (String key : sourceAccess.keys()) {
+			if (!testSourceName(key)) {
+				continue;
+			}
+
+			if (StringUtils.isNotEmpty(prefix) && (key.equals(prefix) || valueMap.containsKey(key))) {
+				continue;
+			}
+
+			if (key.startsWith(prefix)) {
+				Parameter parameter = sourceAccess.get(key);
+				if (parameter == null) {
+					continue;
+				}
+
+				if (isIgnoreNull() && !parameter.isPresent()) {
+					continue;
+				}
+
+				parameter.setConverterIfAbsent(getConversionService());
+				valueMap.put(
+						StringUtils.isEmpty(prefix) ? key
+								: key.substring(prefix.length()
+										+ (prefix.endsWith(nameConnector) ? 0 : nameConnector.length())),
+						parameter.get());
+			}
+		}
 	}
 
 	public ConversionService getConversionService() {
@@ -86,31 +91,113 @@ public class DefaultMappingStrategy<E extends Throwable> implements MappingStrat
 		return Sys.getEnv().getConversionService();
 	}
 
+	public String getSourceNamePrefix() {
+		if (sourceNamePrefix != null) {
+			return sourceNamePrefix;
+		}
+		return parentMappingStrategy == null ? null : parentMappingStrategy.getSourceNamePrefix();
+	}
+
+	public boolean isIgnoreNull() {
+		if (ignoreNull != null) {
+			return ignoreNull;
+		}
+
+		return parentMappingStrategy == null ? false : parentMappingStrategy.isIgnoreNull();
+	}
+
+	private boolean set(ObjectAccess<? extends E> targetAccess, Parameter targetValue) throws E {
+		if (targetValue == null) {
+			return false;
+		}
+
+		if (isIgnoreNull() && !targetValue.isPresent()) {
+			// 如果忽略空，但目标为空就忽略
+			return false;
+		}
+
+		targetValue.setConverterIfAbsent(getConversionService());
+		targetAccess.set(targetValue);
+		return true;
+	}
+
+	private Setter set(Value target, Field targetField, Parameter targetValue) {
+		if (targetValue == null) {
+			return null;
+		}
+
+		if (isIgnoreNull() && !targetValue.isPresent()) {
+			// 如果忽略空，但目标为空就忽略
+			return null;
+		}
+
+		targetValue.setConverterIfAbsent(getConversionService());
+		return targetField.set(target, targetValue);
+	}
+
+	private boolean testSourceField(Field field) {
+		if (!field.isSupportGetter()) {
+			return false;
+		}
+
+		if (!testSourceName(field.getName())) {
+			return false;
+		}
+
+		if (!predicateRegistry.test(field)) {
+			return false;
+		}
+
+		return parentMappingStrategy == null ? true : parentMappingStrategy.testSourceField(field);
+	}
+
+	private boolean testSourceName(String name) {
+		if (sourceNamePrefix == null) {
+			return true;
+		}
+
+		if (!name.startsWith(sourceNamePrefix)) {
+			return false;
+		}
+		return parentMappingStrategy == null ? true : parentMappingStrategy.testSourceName(name);
+	}
+
+	private boolean testTargetField(Field field) {
+		if (!field.isSupportSetter()) {
+			return false;
+		}
+
+		if (!predicateRegistry.test(field)) {
+			return false;
+		}
+
+		return parentMappingStrategy == null ? true : parentMappingStrategy.testTargetField(field);
+	}
+
 	public void transform(Object source, TypeDescriptor sourceType, Mapping<? extends Field> sourceMapping,
 			Object target, TypeDescriptor targetType, Mapping<? extends Field> targetMapping) throws E {
-		List<? extends Field> sourceFields = sourceMapping.getElements().toList();
 		List<? extends Field> targetFields = targetMapping.getElements().toList();
+		if (targetFields.isEmpty()) {
+			return;
+		}
+
 		Value sourceInstance = Value.of(source, sourceType);
 		Value targetInstance = Value.of(target, targetType);
-		// source元素是否比right元素多
-		boolean sourceGtRight = sourceFields.size() > targetFields.size();
-		ConversionService conversionService = getConversionService();
-		// 用少的元素做迭代
-		for (Field f1 : sourceGtRight ? targetFields : sourceFields) {
-			Iterator<? extends Field> iterator = sourceGtRight ? sourceFields.iterator() : targetFields.iterator();
+		for (Field sourceField : sourceMapping.getElements()) {
+			if (!testSourceField(sourceField)) {
+				continue;
+			}
+
+			Iterator<? extends Field> iterator = targetFields.iterator();
 			while (iterator.hasNext()) {
-				Field f2 = iterator.next();
-				Field sourceField;
-				Field targetField;
-				if (sourceGtRight) {
-					targetField = f1;
-					sourceField = f2;
-				} else {
-					targetField = f2;
-					sourceField = f1;
+				Field targetField = iterator.next();
+				if (!testTargetField(targetField)) {
+					iterator.remove();
+					continue;
 				}
 
-				if (!testSourceField(sourceField) || !testTargetField(targetField)) {
+				Elements<String> setterNames = getAliasNames(targetField.getSetters().map((e) -> e.getName()));
+				if (!setterNames.contains(sourceField.getName())) {
 					continue;
 				}
 
@@ -119,8 +206,9 @@ public class DefaultMappingStrategy<E extends Throwable> implements MappingStrat
 					continue;
 				}
 
-				sourceValue.setConverter(conversionService);
-				targetField.set(targetInstance, sourceValue);
+				if (set(targetInstance, targetField, sourceValue) != null) {
+					iterator.remove();
+				}
 			}
 		}
 	}
@@ -129,62 +217,80 @@ public class DefaultMappingStrategy<E extends Throwable> implements MappingStrat
 			ObjectAccess<? extends E> targetAccess) throws E {
 		Value sourceInstance = Value.of(source, sourceType);
 		for (Field field : sourceMapping.getElements()) {
+			if (!testSourceField(field)) {
+				continue;
+			}
+
 			Parameter parameter = field.get(sourceInstance);
 			if (parameter == null) {
 				continue;
 			}
 
-			targetAccess.set(parameter);
+			set(targetAccess, parameter);
 		}
 	}
 
 	public void transform(ObjectAccess<E> sourceAccess, Object target, TypeDescriptor targetType,
 			Mapping<? extends Field> targetMapping) throws E {
 		Value targetInstance = Value.of(target, targetType);
-		ConversionService conversionService = getConversionService();
+		// 不选择将elements转为map的原因是可能存在多相相同的field name
 		for (Field field : targetMapping.getElements()) {
 			if (!testTargetField(field)) {
 				continue;
 			}
 
-			// TODO 应该以插入为准
-			Parameter parameter = sourceAccess.get(field.getName());
+			Elements<String> setterName = getAliasNames(field.getSetters().map((e) -> e.getName()));
+			Parameter parameter = null;
+			for (String name : setterName) {
+				parameter = sourceAccess.get(name);
+				if (parameter != null) {
+					break;
+				}
+			}
+
+			if (parameter == null) {
+				// 如果没有找到对应的值
+				for (Setter setter : field.getSetters()) {
+					// 如果是map类型
+					if (setter.getTypeDescriptor().isMap()) {
+						Map<String, Object> valueMap = new LinkedHashMap<String, Object>();
+						for (String name : getAliasNames(Elements.singleton(field.getName()))) {
+							appendMapProperty(valueMap, name + nameConnector, sourceAccess, nameConnector);
+						}
+						if (!CollectionUtils.isEmpty(valueMap)) {
+							Value value = Value.of(valueMap,
+									TypeDescriptor.map(LinkedHashMap.class, String.class, Object.class));
+							parameter = new Parameter(setter.getName(), value);
+							break;
+						}
+					}
+				}
+			}
+
 			if (parameter == null) {
 				continue;
 			}
 
-			parameter.setConverter(conversionService);
-			field.set(targetInstance, parameter);
+			set(targetInstance, field, parameter);
 		}
 	}
 
 	public void transform(ObjectAccess<E> sourceAccess, ObjectAccess<? extends E> targetAccess) throws E {
-		sourceAccess.copy(targetAccess);
-	}
-
-	protected void appendMapProperty(Map<String, Object> valueMap, String prefix, ObjectAccess<E> objectAccess,
-			ObjectMapperContext context) throws E {
-		for (String key : objectAccess.keys()) {
-			if (StringUtils.isNotEmpty(prefix) && (key.equals(prefix) || valueMap.containsKey(key))) {
+		for (String key : sourceAccess.keys()) {
+			if (key == null) {
 				continue;
 			}
 
-			if (key.startsWith(prefix)) {
-				Value value = objectAccess.get(key);
-				if (value == null) {
-					continue;
-				}
-
-				if (context.isIgnoreNull() && !value.isPresent()) {
-					continue;
-				}
-
-				valueMap.put(
-						StringUtils.isEmpty(prefix) ? key
-								: key.substring(prefix.length()
-										+ (prefix.endsWith(getNameConnector()) ? 0 : getNameConnector().length())),
-						value.get());
+			if (!testSourceName(key)) {
+				continue;
 			}
+
+			Parameter parameter = sourceAccess.get(key);
+			if (parameter == null) {
+				continue;
+			}
+
+			set(targetAccess, parameter);
 		}
 	}
 }

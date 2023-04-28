@@ -2,12 +2,12 @@ package io.basc.framework.data.domain;
 
 import java.io.Serializable;
 
-import io.basc.framework.env.BascObject;
 import io.basc.framework.env.Sys;
 import io.basc.framework.event.Observable;
 import io.basc.framework.factory.InheritableThreadLocalConfigurator;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.page.PageSupport;
+import lombok.Data;
 
 /**
  * 分页请求
@@ -15,8 +15,10 @@ import io.basc.framework.util.page.PageSupport;
  * @author wcnnkh
  *
  */
-public class PageRequest extends BascObject implements Serializable {
-	private static final InheritableThreadLocalConfigurator<PageRequest> CONFIGURATOR = new InheritableThreadLocalConfigurator<>(PageRequest.class, Sys.getEnv());
+@Data
+public class PageRequest implements Serializable {
+	private static final InheritableThreadLocalConfigurator<PageRequest> CONFIGURATOR = new InheritableThreadLocalConfigurator<>(
+			PageRequest.class, Sys.getEnv());
 	private static final Observable<Long> DEFAULT_PAGE_SIZE = Sys.getEnv().getProperties()
 			.getObservable("data.page.request.size").map((e) -> e.or(10L).getAsLong());
 

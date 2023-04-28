@@ -2,76 +2,30 @@ package io.basc.framework.mapper;
 
 import java.util.function.Function;
 
-import io.basc.framework.core.DecorationStructure;
 import io.basc.framework.core.DefaultStructure;
-import io.basc.framework.core.Members;
-import io.basc.framework.core.ResolvableType;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.StringUtils;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
-public abstract class ObjectMapping<T extends DefaultField, R extends ObjectMapping<T, R>>
-		extends DecorationStructure<T, R> implements Mapping<T> {
-	private Elements<String> aliasNames;
-	private String name;
+public final class ObjectMapping extends StrctureMapping<DefaultField, ObjectMapping> {
+	private static final FieldsGenerator FIELDS_GENERATOR = new FieldsGenerator();
 
-	private final Function<? super DefaultStructure<T>, ? extends R> structureDecorator = (members) -> {
-		ObjectMapping<T, R> mapping = new DefaultObjectMapping<>(members, getStructureDecorator());
-		mapping.name = this.name;
-		mapping.aliasNames = this.aliasNames;
-		return getObjectMappingDecorator().apply(mapping);
-	};
+	private final Function<? super StrctureMapping<DefaultField, ObjectMapping>, ? extends ObjectMapping> objectMappingDecorator = (
+			mapping) -> new ObjectMapping(mapping);
 
-	public ObjectMapping(Class<?> source, Function<? super Class<?>, ? extends Elements<T>> processor) {
+	public ObjectMapping(Class<?> source, Function<? super Class<?>, ? extends Elements<DefaultField>> processor) {
 		super(source, processor);
 	}
 
-	public ObjectMapping(DefaultStructure<T> members) {
+	private ObjectMapping(DefaultStructure<DefaultField> members) {
 		super(members);
 	}
 
-	public ObjectMapping(Members<T> members, Function<? super ResolvableType, ? extends Elements<T>> processor) {
-		super(members, processor);
-	}
-
-	public ObjectMapping(ResolvableType source, Function<? super ResolvableType, ? extends Elements<T>> processor) {
-		super(source, processor);
-	}
-
 	@Override
-	public Elements<String> getAliasNames() {
-		if (aliasNames != null) {
-			return aliasNames;
-		}
-
-		String name = getSource().getRawClass().getSimpleName();
-		name = StringUtils.toLowerCase(name, 0, 1);
-		name = StringUtils.humpNamingReplacement(name, "_");
-		return Elements.singleton(name);
+	public final Function<? super StrctureMapping<DefaultField, ObjectMapping>, ? extends ObjectMapping> getObjectMappingDecorator() {
+		return objectMappingDecorator;
 	}
 
-	@Override
-	public String getName() {
-		if (StringUtils.isNotEmpty(name)) {
-			return name;
-		}
-
-		return getSource().getRawClass().getSimpleName();
+	public static ObjectMapping getMapping(Class<?> sourceClass) {
+		return new ObjectMapping(sourceClass, FIELDS_GENERATOR);
 	}
 
-	public abstract Function<? super ObjectMapping<T, R>, ? extends R> getObjectMappingDecorator();
-
-	@Override
-	public final Function<? super DefaultStructure<T>, ? extends R> getStructureDecorator() {
-		return structureDecorator;
-	}
-
-	@Override
-	public Elements<T> getElements() {
-		// TODO 组合所有结构中的field
-		return super.getElements();
-	}
 }

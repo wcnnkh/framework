@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import io.basc.framework.env.BascObject;
 import io.basc.framework.util.comparator.Sort;
+import lombok.Data;
 
 /**
  * 排序
@@ -13,7 +13,8 @@ import io.basc.framework.util.comparator.Sort;
  * @author wcnnkh
  *
  */
-public class OrderColumn extends BascObject implements Serializable {
+@Data
+public class OrderColumn implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final String name;
 	private final Sort sort;

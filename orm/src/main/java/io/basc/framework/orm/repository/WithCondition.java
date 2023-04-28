@@ -2,9 +2,10 @@ package io.basc.framework.orm.repository;
 
 import java.io.Serializable;
 
-import io.basc.framework.env.BascObject;
+import lombok.Data;
 
-public class WithCondition extends BascObject implements Serializable {
+@Data
+public class WithCondition implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final String with;
 	private final Conditions condition;

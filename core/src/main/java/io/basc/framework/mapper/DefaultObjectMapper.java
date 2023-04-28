@@ -24,7 +24,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends ConversionFacto
 
 	public DefaultObjectMapper() {
 		registerObjectAccessFactory(PropertyFactory.class, (s, e) -> new PropertyFactoryAccess<>(s));
-		registerObjectAccessFactory(Map.class, (s, e) -> new AnyMapAccess<>(s, e, getConversionService()));
+		registerObjectAccessFactory(Map.class, (s, e) -> new MapAccess<>(s, e, getConversionService()));
 	}
 
 	public final ObjectMapperContext getContext() {

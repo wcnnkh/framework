@@ -184,6 +184,12 @@ public class AnyValue implements Value, Cloneable {
 		this.converter = converter;
 	}
 
+	public void setConverterIfAbsent(Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
+		if (converter == null) {
+			this.converter = converter;
+		}
+	}
+
 	public void setJsonSupport(JsonSupport jsonSupport) {
 		this.jsonSupport = jsonSupport;
 	}

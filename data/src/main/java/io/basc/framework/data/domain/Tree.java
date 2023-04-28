@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import io.basc.framework.env.BascObject;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.Processor;
+import lombok.Data;
 
 /**
  * 树
@@ -22,7 +22,8 @@ import io.basc.framework.util.Processor;
  *
  * @param <T> 节点类型
  */
-public class Tree<T> extends BascObject implements Serializable {
+@Data
+public class Tree<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private T node;
 	private List<Tree<T>> childNodes;

@@ -26,4 +26,30 @@ public class MultiElements<E> implements Elements<E> {
 		return CollectionUtils.iterator(elements.iterator(), (e) -> e.iterator());
 	}
 
+	@Override
+	public int hashCode() {
+		return elements.hashCode((e) -> e.hashCode());
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof MultiElements) {
+			MultiElements<?> multiElements = (MultiElements<?>) obj;
+			return elements.equals(multiElements.elements, ObjectUtils::equals);
+		}
+
+		if (obj instanceof Elements) {
+			return equals((Elements<?>) obj, ObjectUtils::equals);
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return elements.toString();
+	}
 }

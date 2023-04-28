@@ -1,6 +1,7 @@
 package io.basc.framework.core;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
@@ -83,4 +84,7 @@ public interface Structure<E> extends Members<E> {
 	default Elements<E> getElements() {
 		return recursion().flatMap((e) -> e.getElements());
 	}
+
+	@Override
+	<T> Structure<T> convert(Function<? super Elements<E>, ? extends Elements<T>> converter);
 }

@@ -43,7 +43,7 @@ public class StreamableWrapper<E, W extends Streamable<E>> extends Wrapper<W> im
 	}
 
 	@Override
-	public boolean contains(E element) {
+	public boolean contains(Object element) {
 		return wrappedTarget.contains(element);
 	}
 

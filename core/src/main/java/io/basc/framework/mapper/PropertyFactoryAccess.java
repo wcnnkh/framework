@@ -1,5 +1,6 @@
 package io.basc.framework.mapper;
 
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.util.Elements;
 import io.basc.framework.value.EditablePropertyFactory;
 import io.basc.framework.value.PropertyFactory;
@@ -10,6 +11,11 @@ public class PropertyFactoryAccess<E extends Throwable> implements ObjectAccess<
 
 	public PropertyFactoryAccess(PropertyFactory propertyFactory) {
 		this.propertyFactory = propertyFactory;
+	}
+
+	@Override
+	public TypeDescriptor getTypeDescriptor() {
+		return TypeDescriptor.valueOf(PropertyFactory.class);
 	}
 
 	@Override

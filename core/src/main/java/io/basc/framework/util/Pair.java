@@ -8,9 +8,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import io.basc.framework.env.BascObject;
+import lombok.Data;
 
-public class Pair<K, V> extends BascObject implements Serializable {
+@Data
+public class Pair<K, V> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private K key;
 	private V value;
