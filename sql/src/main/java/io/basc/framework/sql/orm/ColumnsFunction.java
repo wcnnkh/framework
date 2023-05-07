@@ -5,16 +5,16 @@ import java.util.function.Function;
 
 import io.basc.framework.mapper.AccessibleField;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.orm.ObjectRelationalResolver;
+import io.basc.framework.orm.EntityMappingResolver;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.Elements;
 
 public class ColumnsFunction implements Function<Class<?>, Elements<Column>> {
 	private final Function<Class<?>, ? extends Elements<? extends AccessibleField>> processor;
-	private final ObjectRelationalResolver objectRelationalResolver;
+	private final EntityMappingResolver objectRelationalResolver;
 	private final Column parent;
 
-	public ColumnsFunction(ObjectRelationalResolver objectRelationalResolver, Column parnet,
+	public ColumnsFunction(EntityMappingResolver objectRelationalResolver, Column parnet,
 			Function<Class<?>, ? extends Elements<? extends AccessibleField>> processor) {
 		this.objectRelationalResolver = objectRelationalResolver;
 		this.parent = parnet;
@@ -34,7 +34,7 @@ public class ColumnsFunction implements Function<Class<?>, Elements<Column>> {
 		return processor;
 	}
 
-	public ObjectRelationalResolver getObjectRelationalResolver() {
+	public EntityMappingResolver getObjectRelationalResolver() {
 		return objectRelationalResolver;
 	}
 

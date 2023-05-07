@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 import org.junit.Test;
 
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
-import io.basc.framework.mapper.Fields;
+import io.basc.framework.mapper.ObjectMapping;
 import io.basc.framework.orm.annotation.AutoIncrement;
 import io.basc.framework.orm.annotation.InvalidBaseTypeValue;
 import io.basc.framework.orm.support.OrmUtils;
@@ -43,13 +43,13 @@ public class InvalidBaseTypeValueTest {
 		}
 
 		A entity = new A();
-		boolean b = OrmUtils.getMapper().hasEffectiveValue(entity, Fields.getFields(A.class).getByName("a"));
+		boolean b = OrmUtils.getMapper().hasEffectiveValue(entity, ObjectMapping.getFields(A.class).getByName("a"));
 		assertTrue(b);
-		b = OrmUtils.getMapper().hasEffectiveValue(entity, Fields.getFields(A.class).getByName("b"));
+		b = OrmUtils.getMapper().hasEffectiveValue(entity, ObjectMapping.getFields(A.class).getByName("b"));
 		assertFalse(b);
-		b = OrmUtils.getMapper().hasEffectiveValue(entity, Fields.getFields(A.class).getByName("c"));
+		b = OrmUtils.getMapper().hasEffectiveValue(entity, ObjectMapping.getFields(A.class).getByName("c"));
 		assertFalse(b);
-		b = OrmUtils.getMapper().hasEffectiveValue(entity, Fields.getFields(A.class).getByName("e"));
+		b = OrmUtils.getMapper().hasEffectiveValue(entity, ObjectMapping.getFields(A.class).getByName("e"));
 		assertTrue(b);
 	}
 

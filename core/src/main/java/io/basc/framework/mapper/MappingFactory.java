@@ -1,8 +1,6 @@
 package io.basc.framework.mapper;
 
-import java.util.Collection;
-import java.util.Map;
-
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.value.Value;
@@ -25,7 +23,7 @@ public interface MappingFactory {
 	 */
 	@Nullable
 	default Mapping<? extends Field> getMapping(Class<?> entityClass) {
-		return ObjectMapping.getMapping(entityClass);
+		return DefaultObjectMapping.getMapping(entityClass).all();
 	}
 
 	/**
@@ -43,9 +41,9 @@ public interface MappingFactory {
 	 * @param type
 	 * @return
 	 */
-	default boolean isEntity(Class<?> type) {
-		return (!Value.isBaseType(type) && !type.isArray() && type != Object.class && ReflectionUtils.isInstance(type)
-				&& !Map.class.isAssignableFrom(type) && !Collection.class.isAssignableFrom(type))
-				|| isMappingRegistred(type);
+	default boolean isEntity(TypeDescriptor source) {
+		return (!Value.isBaseType(source.getType()) && !source.isArray() && source.getType() != Object.class
+				&& ReflectionUtils.isInstance(source.getType()) && !source.isMap() && !source.isCollection())
+				|| isMappingRegistred(source.getType());
 	}
 }

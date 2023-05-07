@@ -1,5 +1,6 @@
 package io.basc.framework.orm;
 
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.util.Elements;
 
@@ -11,6 +12,7 @@ import io.basc.framework.util.Elements;
  * @param <T>
  */
 public interface EntityMapping<T extends Property> extends Mapping<T> {
+
 	default Elements<T> getPrimaryKeys() {
 		return getElements().filter((e) -> e.isPrimaryKey());
 	}
@@ -19,7 +21,9 @@ public interface EntityMapping<T extends Property> extends Mapping<T> {
 		return getElements().filter((e) -> !e.isPrimaryKey());
 	}
 
+	@Nullable
 	String getComment();
 
+	@Nullable
 	String getCharsetName();
 }

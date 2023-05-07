@@ -1,15 +1,15 @@
 package io.basc.framework.sql.orm;
 
-import java.util.Collection;
-
-import io.basc.framework.mapper.FieldDescriptor;
+import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.util.Elements;
 
 public interface TableResolver {
-	Collection<IndexInfo> getIndexs(Class<?> entityClass, FieldDescriptor descriptor);
+	Elements<IndexInfo> getIndexs(TypeDescriptor source, ParameterDescriptor descriptor);
 
-	String getEngine(Class<?> entityClass);
+	String getEngine(TypeDescriptor source);
 
-	String getRowFormat(Class<?> entityClass);
+	String getRowFormat(TypeDescriptor source);
 
-	Boolean isAutoCreate(Class<?> entityClass);
+	boolean isAutoCreate(TypeDescriptor source);
 }

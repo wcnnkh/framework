@@ -14,7 +14,7 @@ import io.basc.framework.util.Processor;
 
 public final class OrmUtils {
 	private static final ObjectRelationalMapper MAPPER = Sys.getEnv()
-			.getServiceLoader(ObjectRelationalMapper.class, DefaultObjectRelationalMapper.class).first();
+			.getServiceLoader(ObjectRelationalMapper.class, DefaultEntityMapper1.class).first();
 
 	private OrmUtils() {
 		throw new UnsupportedException(getClass().getName());

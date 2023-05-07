@@ -10,7 +10,7 @@ import io.basc.framework.util.ElementSet;
 import io.basc.framework.util.Elements;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class MapAccess<E extends Throwable> implements ObjectAccess<E> {
+public class MapAccess implements ObjectAccess {
 	private final ConversionService conversionService;
 	private Map map;
 	private final TypeDescriptor typeDescriptor;

@@ -8,17 +8,17 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 
-public interface ObjectAccess<E extends Throwable> {
+public interface ObjectAccess {
 	TypeDescriptor getTypeDescriptor();
 
-	Elements<String> keys() throws E;
+	Elements<String> keys() throws MappingException;
 
 	@Nullable
-	Parameter get(String name) throws E;
+	Parameter get(String name) throws MappingException;
 
-	void set(Parameter parameter) throws E;
+	void set(Parameter parameter) throws MappingException;
 
-	default void set(Iterable<? extends Parameter> parameters) throws E {
+	default void set(Iterable<? extends Parameter> parameters) throws MappingException {
 		if (parameters == null) {
 			return;
 		}
@@ -26,7 +26,7 @@ public interface ObjectAccess<E extends Throwable> {
 		set(parameters.iterator());
 	}
 
-	default void set(Iterator<? extends Parameter> parameters) throws E {
+	default void set(Iterator<? extends Parameter> parameters) throws MappingException {
 		if (parameters == null) {
 			return;
 		}
@@ -36,11 +36,11 @@ public interface ObjectAccess<E extends Throwable> {
 		}
 	}
 
-	default void copy(ObjectAccess<? extends E> targetAccess) throws E {
+	default void copy(ObjectAccess targetAccess) throws MappingException {
 		copy(targetAccess, Function.identity());
 	}
 
-	default void copyByPrefix(ObjectAccess<? extends E> targetAccess, String prefix) throws E {
+	default void copyByPrefix(ObjectAccess targetAccess, String prefix) throws MappingException {
 		copy(targetAccess, StringUtils.isEmpty(prefix) ? null : (key) -> {
 			if (prefix == null || key.startsWith(prefix)) {
 				return key.substring(prefix.length());
@@ -49,7 +49,8 @@ public interface ObjectAccess<E extends Throwable> {
 		});
 	}
 
-	default void copy(ObjectAccess<? extends E> targetAccess, @Nullable Function<String, String> keyFunction) throws E {
+	default void copy(ObjectAccess targetAccess, @Nullable Function<String, String> keyFunction)
+			throws MappingException {
 		if (targetAccess == null) {
 			return;
 		}

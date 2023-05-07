@@ -1,45 +1,44 @@
 package io.basc.framework.codec.support;
 
-import java.util.Locale;
-
 import io.basc.framework.codec.Codec;
 import io.basc.framework.codec.DecodeException;
 import io.basc.framework.codec.EncodeException;
-import io.basc.framework.lang.Nullable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
- * 大小写转换,默认是小写--&gt;大写
+ * 大小写转换
  * 
  * @author wcnnkh
  *
  */
+@Data
+@AllArgsConstructor
 public class CaseCodec implements Codec<String, String> {
-	public static final CaseCodec DEFAULT = new CaseCodec();
+	/**
+	 * 首字母大小写转换
+	 */
+	public static final CaseCodec FIRST_CASE_CODEC = new CaseCodec(0, 1);
 
-	private final Locale locale;
+	private final int formIndex;
+	private final int endIndex;
 
-	public CaseCodec() {
-		this(null);
-	}
-
-	public CaseCodec(@Nullable Locale locale) {
-		this.locale = locale;
-	}
-
+	@Override
 	public String encode(String source) throws EncodeException {
-		if (locale == null) {
-			return source.toUpperCase();
-		} else {
-			return source.toUpperCase(locale);
+		char[] chars = source.toCharArray();
+		for (int i = formIndex; i < endIndex; i++) {
+			chars[i] = Character.toLowerCase(chars[i]);
 		}
+		return new String(chars);
 	}
 
+	@Override
 	public String decode(String source) throws DecodeException {
-		if (locale == null) {
-			return source.toLowerCase();
-		} else {
-			return source.toLowerCase(locale);
+		char[] chars = source.toCharArray();
+		for (int i = formIndex; i < endIndex; i++) {
+			chars[i] = Character.toUpperCase(chars[i]);
 		}
+		return new String(chars);
 	}
 
 }

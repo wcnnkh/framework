@@ -5,10 +5,10 @@ import java.util.Collection;
 
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.orm.ObjectRelationalFactory;
-import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
+import io.basc.framework.orm.support.DefaultEntityMapper1;
 import io.basc.framework.util.StringUtils;
 
-public class TransfRelationalMapping extends DefaultObjectRelationalMapper {
+public class TransfRelationalMapping extends DefaultEntityMapper1 {
 
 	public static final ObjectRelationalFactory INSTANCE = new TransfRelationalMapping();
 

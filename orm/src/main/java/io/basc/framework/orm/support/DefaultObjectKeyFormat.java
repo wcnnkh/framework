@@ -3,9 +3,10 @@ package io.basc.framework.orm.support;
 import java.util.Iterator;
 
 import io.basc.framework.env.Sys;
-import io.basc.framework.mapper.Mapping;
+import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.ObjectKeyFormat;
 import io.basc.framework.orm.Property;
+import io.basc.framework.value.Value;
 
 public class DefaultObjectKeyFormat implements ObjectKeyFormat {
 	/**
@@ -25,10 +26,10 @@ public class DefaultObjectKeyFormat implements ObjectKeyFormat {
 	}
 
 	@Override
-	public String getObjectKeyByIds(Mapping<? extends Property> structure, Iterator<?> ids) {
+	public String getObjectKeyByIds(EntityMapping<? extends Property> structure, Iterator<?> ids) {
 		StringBuilder sb = new StringBuilder(128);
 		sb.append(structure.getName());
-		Iterator<? extends Property> primaryKeys = structure.filter((e) -> e.isPrimaryKey()).getElements().iterator();
+		Iterator<? extends Property> primaryKeys = structure.getPrimaryKeys().iterator();
 		while (primaryKeys.hasNext() && ids.hasNext()) {
 			appendObjectKeyByValue(sb, primaryKeys.next(), ids.next());
 		}
@@ -45,11 +46,11 @@ public class DefaultObjectKeyFormat implements ObjectKeyFormat {
 	}
 
 	@Override
-	public <T> String getObjectKey(Mapping<? extends Property> structure, T bean) {
+	public <T> String getObjectKey(EntityMapping<? extends Property> structure, Value bean) {
 		StringBuilder sb = new StringBuilder(128);
 		sb.append(structure.getName());
-		structure.filter((e) -> e.isPrimaryKey()).getElements().forEach((column) -> {
-			appendObjectKeyByValue(sb, column, column.get(bean));
+		structure.getPrimaryKeys().forEach((column) -> {
+			appendObjectKeyByValue(sb, column, column.getGetters().first().get(bean));
 		});
 		return sb.toString();
 	}

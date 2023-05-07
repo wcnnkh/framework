@@ -41,8 +41,8 @@ public class DefaultObjectMapper<S, E extends Throwable> extends io.basc.framewo
 	 */
 	private boolean humpNamingReplacement = false;
 
-	private final ConfigurableServices<ObjectRelationalResolverExtend> objectRelationalResolverExtendServices = new ConfigurableServices<ObjectRelationalResolverExtend>(
-			ObjectRelationalResolverExtend.class);
+	private final ConfigurableServices<EntityMappingResolverExtend> objectRelationalResolverExtendServices = new ConfigurableServices<EntityMappingResolverExtend>(
+			EntityMappingResolverExtend.class);
 
 	public DefaultObjectMapper() {
 		registerObjectAccessFactory(NodeList.class, (s, e) -> new NodeListAccess<>(s));
@@ -82,7 +82,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends io.basc.framewo
 
 	@Override
 	public Collection<String> getAliasNames(Class<?> entityClass) {
-		Collection<String> names = ObjectRelationalResolverExtendChain
+		Collection<String> names = EntityMappingResolverExtendChain
 				.build(objectRelationalResolverExtendServices.iterator()).getAliasNames(entityClass);
 		if (CollectionUtils.isEmpty(names)) {
 			names = new LinkedHashSet<String>(8);
@@ -96,7 +96,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends io.basc.framewo
 
 	@Override
 	public Collection<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor) {
-		Collection<String> names = ObjectRelationalResolverExtendChain
+		Collection<String> names = EntityMappingResolverExtendChain
 				.build(objectRelationalResolverExtendServices.iterator()).getAliasNames(entityClass, descriptor);
 		if (CollectionUtils.isEmpty(names)) {
 			names = new LinkedHashSet<String>();
@@ -113,37 +113,37 @@ public class DefaultObjectMapper<S, E extends Throwable> extends io.basc.framewo
 
 	@Override
 	public String getCharsetName(Class<?> entityClass) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.getCharsetName(entityClass);
 	}
 
 	@Override
 	public String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.getCharsetName(entityClass, descriptor);
 	}
 
 	@Override
 	public String getComment(Class<?> entityClass) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.getComment(entityClass);
 	}
 
 	@Override
 	public String getComment(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.getComment(entityClass, descriptor);
 	}
 
 	@Override
 	public String getCondition(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.getCondition(entityClass, descriptor);
 	}
 
 	@Override
 	public ObjectMapperContext getContext(TypeDescriptor sourceType, ObjectMapperContext parent) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.getContext(sourceType, parent);
 	}
 
@@ -159,13 +159,13 @@ public class DefaultObjectMapper<S, E extends Throwable> extends io.basc.framewo
 
 	@Override
 	public ForeignKey getForeignKey(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.getForeignKey(entityClass, descriptor);
 	}
 
 	@Override
 	public String getName(Class<?> entityClass) {
-		String name = ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		String name = EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.getName(entityClass);
 		if (StringUtils.isEmpty(name)) {
 			name = getDefaultEntityName(entityClass);
@@ -175,18 +175,18 @@ public class DefaultObjectMapper<S, E extends Throwable> extends io.basc.framewo
 
 	@Override
 	public String getName(Class<?> entityClass, ParameterDescriptor descriptor) {
-		String name = ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		String name = EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.getName(entityClass, descriptor);
 		return StringUtils.isEmpty(name) ? getDefaultName(descriptor) : name;
 	}
 
 	@Override
 	public Collection<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.getNumberRanges(entityClass, descriptor);
 	}
 
-	public final ConfigurableServices<ObjectRelationalResolverExtend> getObjectRelationalResolverExtendServices() {
+	public final ConfigurableServices<EntityMappingResolverExtend> getObjectRelationalResolverExtendServices() {
 		return objectRelationalResolverExtendServices;
 	}
 
@@ -197,13 +197,13 @@ public class DefaultObjectMapper<S, E extends Throwable> extends io.basc.framewo
 
 	@Override
 	public String getRelationship(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.getRelationship(entityClass, descriptor);
 	}
 
 	@Override
 	public Sort getSort(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.getSort(entityClass, descriptor);
 	}
 
@@ -223,31 +223,31 @@ public class DefaultObjectMapper<S, E extends Throwable> extends io.basc.framewo
 
 	@Override
 	public boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isAutoIncrement(entityClass, descriptor);
 	}
 
 	@Override
 	public boolean isConfigurable(TypeDescriptor sourceType) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isConfigurable(sourceType);
 	}
 
 	@Override
 	public boolean isDisplay(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isDisplay(entityClass, descriptor);
 	}
 
 	@Override
 	public boolean isEntity(Class<?> entityClass) {
-		return super.isEntity(entityClass) || ObjectRelationalResolverExtendChain
+		return super.isEntity(entityClass) || EntityMappingResolverExtendChain
 				.build(objectRelationalResolverExtendServices.iterator()).isEntity(entityClass);
 	}
 
 	@Override
 	public boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return isEntity(descriptor.getType()) || ObjectRelationalResolverExtendChain
+		return isEntity(descriptor.getType()) || EntityMappingResolverExtendChain
 				.build(objectRelationalResolverExtendServices.iterator()).isEntity(entityClass, descriptor);
 	}
 
@@ -269,43 +269,43 @@ public class DefaultObjectMapper<S, E extends Throwable> extends io.basc.framewo
 
 	@Override
 	public boolean isIgnore(Class<?> entityClass) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isIgnore(entityClass);
 	}
 
 	@Override
 	public boolean isIgnore(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isIgnore(entityClass, descriptor);
 	}
 
 	@Override
 	public boolean isIncrement(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isIncrement(entityClass, descriptor);
 	}
 
 	@Override
 	public boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return !isPrimaryKey(entityClass, descriptor) && ObjectRelationalResolverExtendChain
+		return !isPrimaryKey(entityClass, descriptor) && EntityMappingResolverExtendChain
 				.build(objectRelationalResolverExtendServices.iterator()).isNullable(entityClass, descriptor);
 	}
 
 	@Override
 	public boolean isPrimaryKey(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isPrimaryKey(entityClass, descriptor);
 	}
 
 	@Override
 	public boolean isUnique(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isUnique(entityClass, descriptor);
 	}
 
 	@Override
 	public boolean isVersionField(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isVersionField(entityClass, descriptor);
 	}
 
@@ -333,7 +333,7 @@ public class DefaultObjectMapper<S, E extends Throwable> extends io.basc.framewo
 
 	@Override
 	public boolean hasEffectiveValue(Object entity, Parameter parameter) {
-		return ObjectRelationalResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.hasEffectiveValue(entity, parameter);
 	}
 }

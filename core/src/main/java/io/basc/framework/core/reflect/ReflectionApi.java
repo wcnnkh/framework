@@ -66,7 +66,7 @@ public class ReflectionApi implements Supplier<Object> {
 		if (this.declaringClass == null) {
 			return null;
 		}
-		return ReflectionUtils.getDeclaredMethods(this.declaringClass).find(name, parameterTypes);
+		return ReflectionUtils.getDeclaredMethods(this.declaringClass).all().find(name, parameterTypes);
 	}
 
 	public Object invoke(Method method, Object... args) {

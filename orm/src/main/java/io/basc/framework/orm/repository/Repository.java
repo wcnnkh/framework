@@ -13,7 +13,7 @@ import io.basc.framework.mapper.Parameter;
 import io.basc.framework.orm.ObjectKeyFormat;
 import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.orm.OrmException;
-import io.basc.framework.orm.PrimaryKeyElements;
+import io.basc.framework.orm.PrimaryKeyQuery;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
@@ -80,14 +80,14 @@ public interface Repository extends CurdOperations {
 	}
 
 	@Override
-	default <K, T> PrimaryKeyElements<K, T> getInIds(Class<? extends T> entityClass, List<? extends K> inPrimaryKeys,
+	default <K, T> PrimaryKeyQuery<K, T> getInIds(Class<? extends T> entityClass, List<? extends K> inPrimaryKeys,
 			Object... primaryKeys) throws OrmException {
 		return getInIds(TypeDescriptor.valueOf(entityClass), entityClass, inPrimaryKeys, primaryKeys);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default <K, T> PrimaryKeyElements<K, T> getInIds(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
+	default <K, T> PrimaryKeyQuery<K, T> getInIds(TypeDescriptor resultsTypeDescriptor, Class<?> entityClass,
 			List<? extends K> inPrimaryKeys, Object... primaryKeys) throws OrmException {
 		ObjectRelational<? extends Property> entityStructure = getMapper().getStructure(entityClass);
 		Elements<? extends Property> list = entityStructure.getPrimaryKeys();
@@ -110,7 +110,7 @@ public interface Repository extends CurdOperations {
 				new Condition(conditionKeywords.getInKeywords().getFirst(), column)));
 		Conditions conditions = ConditionsBuilder.build(Elements.of(pairs));
 		Elements<T> resultSet = (Elements<T>) query(resultsTypeDescriptor, entityClass, conditions, null);
-		return new PrimaryKeyElements<K, T>(resultSet, getObjectKeyFormat(), entityStructure, inPrimaryKeys,
+		return new PrimaryKeyQuery<K, T>(resultSet, getObjectKeyFormat(), entityStructure, inPrimaryKeys,
 				primaryKeys);
 	}
 

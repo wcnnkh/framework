@@ -5,13 +5,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import io.basc.framework.orm.ObjectRelationalResolver;
+import io.basc.framework.orm.EntityMappingResolver;
 
 /**
  * 无效的基本数据类型值
  * 
  * @author wcnnkh
- * @see ObjectRelationalResolver#hasEffectiveValue(Object,
+ * @see EntityMappingResolver#hasEffectiveValue(Object,
  *      io.basc.framework.mapper.Parameter)
  */
 @Target({ ElementType.FIELD, ElementType.ANNOTATION_TYPE })

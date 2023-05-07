@@ -38,7 +38,7 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Copy;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.mapper.Fields;
+import io.basc.framework.mapper.ObjectMapping;
 import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.StringUtils;
 
@@ -63,7 +63,7 @@ public class DubboRegistry {
 
 	private static <T> void loader(Object instance, Environment environment, Node node) {
 		NamedNodeMap namedNodeMap = node.getAttributes();
-		Fields fields = Fields.getFields(instance.getClass()).all().filter(FieldFeature.SETTER);
+		ObjectMapping fields = ObjectMapping.getFields(instance.getClass()).all().filter(FieldFeature.SETTER);
 		for (int i = 0, len = namedNodeMap.getLength(); i < len; i++) {
 			Node n = namedNodeMap.item(i);
 			String name = n.getNodeName();

@@ -5,9 +5,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -24,7 +26,17 @@ import io.basc.framework.lang.Nullable;
  *
  * @param <E>
  */
-public interface Elements<E> extends Streamable<E>, Iterable<E> {
+public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
+
+	@Override
+	default Enumeration<E> enumeration() {
+		Iterator<E> iterator = iterator();
+		if (iterator == null) {
+			// 理论上不会为空
+			return null;
+		}
+		return new IteratorToEnumeration<>(iterator, Function.identity());
+	}
 
 	/**
 	 * @see MultiElements
@@ -50,6 +62,19 @@ public interface Elements<E> extends Streamable<E>, Iterable<E> {
 			return empty();
 		}
 		return Elements.of(Arrays.asList(elements));
+	}
+
+	public static <T> Elements<T> of(Enumerable<T> enumerable) {
+		if (enumerable == null) {
+			return empty();
+		}
+
+		if (enumerable instanceof Elements) {
+			return (Elements<T>) enumerable;
+		}
+
+		Iterable<T> iterable = new EnumerableToIterable<>(enumerable, Function.identity());
+		return new IterableElements<>(iterable);
 	}
 
 	public static <T> Elements<T> of(Iterable<T> iterable) {
@@ -206,5 +231,13 @@ public interface Elements<E> extends Streamable<E>, Iterable<E> {
 
 	default Elements<E> unordered() {
 		return convert((e) -> e.unordered());
+	}
+
+	default Elements<Indexed<E>> index() {
+		return Elements.of(() -> {
+			// 在性能中取舍，使用AtomicLong实现，而不使用BigDecimal,使用BigDecimal可以迭代更多的数据
+			AtomicLong lineNumber = new AtomicLong();
+			return stream().sequential().map((e) -> new Indexed<>(lineNumber.getAndIncrement(), e));
+		});
 	}
 }

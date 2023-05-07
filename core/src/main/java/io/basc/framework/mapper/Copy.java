@@ -186,19 +186,19 @@ public final class Copy implements Cloneable {
 		setValue(getter, setter, target, value);
 	}
 
-	public <T, S> void copy(ObjectMapping sourceFields, S source, ObjectMapping targetFields, T target) {
+	public <T, S> void copy(DefaultObjectMapping sourceFields, S source, DefaultObjectMapping targetFields, T target) {
 		Assert.requiredArgument(sourceFields != null, "sourceFields");
 		Assert.requiredArgument(targetFields != null, "targetFields");
 		if (source == null || target == null) {
 			return;
 		}
 
-		ObjectMapping sourceFilterFields = sourceFields.getters().shared();
+		DefaultObjectMapping sourceFilterFields = sourceFields.getters().shared();
 		targetFields.setters().getElements().forEach((targetField) -> sourceFilterFields.getElements()
 				.forEach((sourceField) -> copy(sourceField, source, targetField, target)));
 	}
 
-	public <T> void copy(ObjectMapping fields, T source, T target) {
+	public <T> void copy(DefaultObjectMapping fields, T source, T target) {
 		Assert.requiredArgument(fields != null, "fields");
 		if (source == null || target == null) {
 			return;
@@ -222,7 +222,7 @@ public final class Copy implements Cloneable {
 		if (source == null || target == null) {
 			return;
 		}
-		copy(ObjectMapping.getFields(entityClass, parentField).filter(FieldFeature.EXISTING_FIELD).withSuperclass().all(),
+		copy(DefaultObjectMapping.getFields(entityClass, parentField).filter(FieldFeature.EXISTING_FIELD).withSuperclass().all(),
 				source, target);
 	}
 
@@ -249,9 +249,9 @@ public final class Copy implements Cloneable {
 		if (sourceParentField == null && targetParentField == null && targetClass.isAssignableFrom(sourceClass)) {
 			copy(targetClass, sourceParentField == targetParentField ? targetParentField : null, source, target);
 		} else {
-			copy(ObjectMapping.getFields(sourceClass).peek((e) -> e.setParent(sourceParentField))
+			copy(DefaultObjectMapping.getFields(sourceClass).peek((e) -> e.setParent(sourceParentField))
 					.filter(FieldFeature.EXISTING_GETTER_FIELD).withSuperclass().all(), source,
-					ObjectMapping.getFields(targetClass, targetParentField).filter(FieldFeature.EXISTING_SETTER_FIELD)
+					DefaultObjectMapping.getFields(targetClass, targetParentField).filter(FieldFeature.EXISTING_SETTER_FIELD)
 							.withSuperclass().all(),
 					target);
 		}

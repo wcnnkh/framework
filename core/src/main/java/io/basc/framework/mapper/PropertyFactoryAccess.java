@@ -6,7 +6,7 @@ import io.basc.framework.value.EditablePropertyFactory;
 import io.basc.framework.value.PropertyFactory;
 import io.basc.framework.value.Value;
 
-public class PropertyFactoryAccess<E extends Throwable> implements ObjectAccess<E> {
+public class PropertyFactoryAccess implements ObjectAccess {
 	private final PropertyFactory propertyFactory;
 
 	public PropertyFactoryAccess(PropertyFactory propertyFactory) {
@@ -19,7 +19,7 @@ public class PropertyFactoryAccess<E extends Throwable> implements ObjectAccess<
 	}
 
 	@Override
-	public Elements<String> keys() throws E {
+	public Elements<String> keys() {
 		if (propertyFactory == null) {
 			return Elements.empty();
 		}
@@ -27,7 +27,7 @@ public class PropertyFactoryAccess<E extends Throwable> implements ObjectAccess<
 	}
 
 	@Override
-	public Parameter get(String name) throws E {
+	public Parameter get(String name) {
 		if (propertyFactory == null) {
 			return null;
 		}
@@ -37,7 +37,7 @@ public class PropertyFactoryAccess<E extends Throwable> implements ObjectAccess<
 	}
 
 	@Override
-	public void set(Parameter parameter) throws E {
+	public void set(Parameter parameter) {
 		if (propertyFactory == null || !(propertyFactory instanceof EditablePropertyFactory)) {
 			throw new UnsupportedOperationException(String.valueOf(parameter));
 		}

@@ -139,7 +139,7 @@ public abstract class ReflectionUtils {
 			return null;
 		}
 
-		Method method = getDeclaredMethods(source.getClass()).find("clone");
+		Method method = getDeclaredMethods(source.getClass()).all().find("clone");
 		if (method == null) {
 			return null;
 		}
@@ -589,7 +589,7 @@ public abstract class ReflectionUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T invokeCloneMethod(Object source) {
+	public static <T> T invokeCloneMethod(T source) {
 		if (source == null) {
 			return null;
 		}
@@ -604,6 +604,16 @@ public abstract class ReflectionUtils {
 		}
 
 		return (T) invoke(method, source);
+	}
+
+	public static <T> T clone(T source, boolean deep) {
+		if (!deep) {
+			T target = invokeCloneMethod(source);
+			if (target != null) {
+				return target;
+			}
+		}
+		return getDeclaredFields(source.getClass()).all().clone(source, deep);
 	}
 
 	@SuppressWarnings("unchecked")

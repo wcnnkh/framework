@@ -1,6 +1,5 @@
 package io.basc.framework.orm.support;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 import io.basc.framework.convert.TypeDescriptor;
@@ -9,26 +8,28 @@ import io.basc.framework.mapper.ObjectMapperContext;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.orm.ForeignKey;
-import io.basc.framework.orm.ObjectRelationalResolver;
+import io.basc.framework.orm.EntityMappingResolver;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.comparator.Sort;
+import io.basc.framework.value.Value;
 
-public class ObjectRelationalResolverExtendChain implements ObjectRelationalResolver {
+public class EntityMappingResolverExtendChain implements EntityMappingResolver {
 
-	public static ObjectRelationalResolverExtendChain build(Iterator<ObjectRelationalResolverExtend> iterator) {
-		return new ObjectRelationalResolverExtendChain(iterator);
+	public static EntityMappingResolverExtendChain build(Iterator<EntityMappingResolverExtend> iterator) {
+		return new EntityMappingResolverExtendChain(iterator);
 	}
 
-	private final Iterator<ObjectRelationalResolverExtend> iterator;
-	private final ObjectRelationalResolver nextChain;
+	private final Iterator<EntityMappingResolverExtend> iterator;
+	private final EntityMappingResolver nextChain;
 
-	public ObjectRelationalResolverExtendChain(Iterator<ObjectRelationalResolverExtend> iterator) {
+	public EntityMappingResolverExtendChain(Iterator<EntityMappingResolverExtend> iterator) {
 		this(iterator, null);
 	}
 
-	public ObjectRelationalResolverExtendChain(Iterator<ObjectRelationalResolverExtend> iterator,
-			@Nullable ObjectRelationalResolver nextChain) {
+	public EntityMappingResolverExtendChain(Iterator<EntityMappingResolverExtend> iterator,
+			@Nullable EntityMappingResolver nextChain) {
 		Assert.requiredArgument(iterator != null, "iterator");
 		this.iterator = iterator;
 		this.nextChain = nextChain;
@@ -48,7 +49,7 @@ public class ObjectRelationalResolverExtendChain implements ObjectRelationalReso
 		return nextChain == null ? null : nextChain.getName(entityClass, descriptor);
 	}
 
-	public Collection<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor) {
+	public Elements<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
 			return iterator.next().getAliasNames(entityClass, descriptor, this);
 		}
@@ -62,7 +63,7 @@ public class ObjectRelationalResolverExtendChain implements ObjectRelationalReso
 		return nextChain == null ? null : nextChain.getName(entityClass);
 	}
 
-	public Collection<String> getAliasNames(Class<?> entityClass) {
+	public Elements<String> getAliasNames(Class<?> entityClass) {
 		if (iterator.hasNext()) {
 			return iterator.next().getAliasNames(entityClass, this);
 		}
@@ -97,15 +98,15 @@ public class ObjectRelationalResolverExtendChain implements ObjectRelationalReso
 		return nextChain == null ? false : nextChain.isEntity(entityClass);
 	}
 
-	public boolean isVersionField(Class<?> entityClass, ParameterDescriptor descriptor) {
+	public boolean isVersion(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
 			return iterator.next().isVersionField(entityClass, descriptor, this);
 		}
-		return nextChain == null ? false : nextChain.isVersionField(entityClass, descriptor);
+		return nextChain == null ? false : nextChain.isVersion(entityClass, descriptor);
 	}
 
 	@Override
-	public Collection<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor) {
+	public Elements<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
 			return iterator.next().getNumberRanges(entityClass, descriptor, this);
 		}
@@ -233,11 +234,11 @@ public class ObjectRelationalResolverExtendChain implements ObjectRelationalReso
 	}
 
 	@Override
-	public boolean hasEffectiveValue(Object entity, Parameter parameter) {
+	public boolean hasEffectiveValue(Value source, Parameter parameter) {
 		if (iterator.hasNext()) {
-			return iterator.next().hasEffectiveValue(entity, parameter, this);
+			return iterator.next().hasEffectiveValue(source, parameter, this);
 		}
 
-		return nextChain == null ? parameter.isPresent() : nextChain.hasEffectiveValue(entity, parameter);
+		return nextChain == null ? parameter.isPresent() : nextChain.hasEffectiveValue(source, parameter);
 	}
 }

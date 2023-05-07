@@ -5,47 +5,37 @@ import java.util.Iterator;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.convert.Converter;
-import io.basc.framework.lang.Nullable;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.ObjectAccess;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.Elements;
 
-public class NodeListAccess<E extends Throwable> implements ObjectAccess<E> {
+public class NodeListAccess implements ObjectAccess {
 	private final NodeList nodeList;
-	private final @Nullable Converter<? super Object, ? super Object, ? extends RuntimeException> converter;
+	private final TypeDescriptor typeDescriptor;
 
-	public NodeListAccess(NodeList nodeList) {
-		this(nodeList, null);
-	}
-
-	public NodeListAccess(NodeList nodeList,
-			@Nullable Converter<? super Object, ? super Object, ? extends RuntimeException> converter) {
+	public NodeListAccess(NodeList nodeList, TypeDescriptor typeDescriptor) {
 		this.nodeList = nodeList;
-		this.converter = converter;
+		this.typeDescriptor = typeDescriptor;
 	}
 
 	@Override
-	public Elements<String> keys() throws E {
+	public Elements<String> keys() {
 		return Elements.of(() -> new NodeNameEnumeration(nodeList));
 	}
 
 	@Override
-	public Parameter get(String name) throws E {
+	public Parameter get(String name) {
 		Node node = DomUtils.findNode(nodeList, (e) -> e.getNodeName().equals(name));
 		if (node == null) {
 			return null;
 		}
 
-		Parameter parameter = new Parameter(name, node);
-		if (converter != null) {
-			parameter.setConverter(converter);
-		}
-		return parameter;
+		return new Parameter(name, node);
 	}
 
 	@Override
-	public void set(Parameter parameter) throws E {
+	public void set(Parameter parameter) {
 		throw new UnsupportedOperationException(String.valueOf(parameter));
 	}
 
@@ -70,6 +60,11 @@ public class NodeListAccess<E extends Throwable> implements ObjectAccess<E> {
 			return node.getNodeName();
 		}
 
+	}
+
+	@Override
+	public TypeDescriptor getTypeDescriptor() {
+		return typeDescriptor;
 	}
 
 }

@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import io.basc.framework.core.Structure;
+import io.basc.framework.core.Members;
 import io.basc.framework.mapper.AccessibleField;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.Fields;
+import io.basc.framework.mapper.ObjectMapping;
 import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.orm.ObjectRelationalDecorator;
 import io.basc.framework.orm.ObjectRelationalFactory;
-import io.basc.framework.orm.ObjectRelationalResolver;
+import io.basc.framework.orm.EntityMappingResolver;
 import io.basc.framework.orm.Property;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
@@ -25,17 +25,17 @@ public final class TableStructure extends ObjectRelationalDecorator<Column, Tabl
 	private String rowFormat;
 	private Boolean autoCreate;
 
-	public TableStructure(Class<?> sourceClass, ObjectRelationalResolver objectRelationalResolver, Column parent) {
-		this(sourceClass, objectRelationalResolver, parent, Fields.DEFAULT);
+	public TableStructure(Class<?> sourceClass, EntityMappingResolver objectRelationalResolver, Column parent) {
+		this(sourceClass, objectRelationalResolver, parent, ObjectMapping.DEFAULT);
 	}
 
-	public TableStructure(Class<?> sourceClass, ObjectRelationalResolver objectRelationalResolver, Column parent,
+	public TableStructure(Class<?> sourceClass, EntityMappingResolver objectRelationalResolver, Column parent,
 			Function<Class<?>, ? extends Elements<? extends AccessibleField>> processor) {
 		super(sourceClass, objectRelationalResolver, parent,
 				new ColumnsFunction(objectRelationalResolver, parent, processor));
 	}
 
-	public TableStructure(Structure<Column> members) {
+	public TableStructure(Members<Column> members) {
 		super(members);
 		if (members instanceof TableStructure) {
 			this.engine = ((TableStructure) members).engine;
@@ -44,7 +44,7 @@ public final class TableStructure extends ObjectRelationalDecorator<Column, Tabl
 		}
 	}
 
-	public TableStructure(Structure<? extends Field> members, Function<? super Field, ? extends Column> map) {
+	public TableStructure(Members<? extends Field> members, Function<? super Field, ? extends Column> map) {
 		super(members, (e) -> {
 			if (e == null) {
 				return null;

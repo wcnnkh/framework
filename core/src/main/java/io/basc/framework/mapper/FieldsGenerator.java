@@ -24,14 +24,14 @@ final class FieldsGenerator implements Function<Class<?>, Elements<DefaultField>
 		LinkedMultiValueMap<String, Getter> getterMap = new LinkedMultiValueMap<>();
 		LinkedMultiValueMap<String, Setter> setterMap = new LinkedMultiValueMap<>();
 
-		for (Field field : ReflectionUtils.getDeclaredFields(sourceClass).getMembers().getElements()) {
+		for (Field field : ReflectionUtils.getDeclaredFields(sourceClass).getElements()) {
 			Getter getter = new FieldGetter(field);
 			getterMap.add(getter.getName(), getter);
 			Setter setter = new FieldSetter(field);
 			setterMap.add(setter.getName(), setter);
 		}
 
-		for (Method method : ReflectionUtils.getDeclaredMethods(sourceClass).getMembers().getElements()) {
+		for (Method method : ReflectionUtils.getDeclaredMethods(sourceClass).all().getElements()) {
 			if (method.getName().startsWith(MethodSetter.METHOD_PREFIX)) {
 				if (method.getParameterCount() == 1) {
 					Setter setter = new MethodSetter(method);
@@ -55,7 +55,7 @@ final class FieldsGenerator implements Function<Class<?>, Elements<DefaultField>
 		for (Entry<String, List<Getter>> entry : getterMap.entrySet()) {
 			// 将对应的setter移除
 			List<Setter> setters = setterMap.remove(entry.getKey());
-			DefaultField field = new DefaultField();
+			DefaultField field = new DefaultField(entry.getKey());
 			field.setGetters(Elements.of(entry.getValue()));
 			if (setters != null) {
 				field.setSetters(Elements.of(setters));
@@ -65,7 +65,7 @@ final class FieldsGenerator implements Function<Class<?>, Elements<DefaultField>
 
 		// 剩下的setter都是没有找到对应getter
 		for (Entry<String, List<Setter>> entry : setterMap.entrySet()) {
-			DefaultField field = new DefaultField();
+			DefaultField field = new DefaultField(entry.getKey());
 			field.setSetters(Elements.of(entry.getValue()));
 		}
 		return Elements.of(list);

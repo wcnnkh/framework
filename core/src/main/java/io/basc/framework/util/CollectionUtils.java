@@ -42,26 +42,6 @@ import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 public abstract class CollectionUtils {
-	/**
-	 * Iterator wrapping an Enumeration.
-	 */
-	private static class EnumerationIterator<E> implements Iterator<E> {
-
-		private Enumeration<? extends E> enumeration;
-
-		public EnumerationIterator(Enumeration<? extends E> enumeration) {
-			this.enumeration = enumeration;
-		}
-
-		public boolean hasNext() {
-			return this.enumeration.hasMoreElements();
-		}
-
-		public E next() {
-			return this.enumeration.nextElement();
-		}
-	}
-
 	private static final class PreviousIterator<E> implements Iterator<E> {
 		private final ListIterator<E> listIterator;
 
@@ -730,16 +710,7 @@ public abstract class CollectionUtils {
 			return Collections.emptyEnumeration();
 		}
 
-		return new Enumeration<E>() {
-
-			public boolean hasMoreElements() {
-				return iterator.hasNext();
-			}
-
-			public E nextElement() {
-				return iterator.next();
-			}
-		};
+		return new IteratorToEnumeration<>(iterator, Function.identity());
 	}
 
 	/**
@@ -753,7 +724,7 @@ public abstract class CollectionUtils {
 			return Collections.emptyIterator();
 		}
 
-		return new EnumerationIterator<E>(enumeration);
+		return new EnumerationToIterator<>(enumeration, Function.identity());
 	}
 
 	/**

@@ -5,9 +5,11 @@ import java.util.function.Function;
 
 public class ConvertibleEnumeration<T, E> implements Enumeration<E> {
 	private Enumeration<? extends T> enumeration;
-	private Function<T, E> converter;
+	private Function<? super T, ? extends E> converter;
 
-	public ConvertibleEnumeration(Enumeration<? extends T> enumeration, Function<T, E> converter) {
+	public ConvertibleEnumeration(Enumeration<? extends T> enumeration, Function<? super T, ? extends E> converter) {
+		Assert.requiredArgument(enumeration != null, "enumeration");
+		Assert.requiredArgument(converter != null, "converter");
 		this.enumeration = enumeration;
 		this.converter = converter;
 	}

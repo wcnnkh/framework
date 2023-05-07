@@ -22,7 +22,7 @@ import io.basc.framework.factory.BeanResolver;
 import io.basc.framework.factory.BeanResolverExtend;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.mapper.ObjectMapping;
+import io.basc.framework.mapper.DefaultObjectMapping;
 import io.basc.framework.mapper.ParameterDescriptor;
 
 public class IocBeanResolverExtend implements BeanResolverExtend, IocResolverExtend {
@@ -39,7 +39,7 @@ public class IocBeanResolverExtend implements BeanResolverExtend, IocResolverExt
 			BeanResolver chain) {
 		List<BeanPostProcessor> postProcessors = new ArrayList<BeanPostProcessor>();
 		postProcessors.addAll(BeanResolverExtend.super.resolveDependenceProcessors(typeDescriptor, chain));
-		for (Field field : ObjectMapping.getFields(typeDescriptor.getType()).filter(FieldFeature.SUPPORT_SETTER).all()
+		for (Field field : DefaultObjectMapping.getFields(typeDescriptor.getType()).filter(FieldFeature.SUPPORT_SETTER).all()
 				.getElements()) {
 			if (iocResolver.resolveAutowiredDefinition(field.getSetter()) != null) {
 				postProcessors.add(new AutowiredIocProcessor(context, iocResolver, field));
@@ -56,7 +56,7 @@ public class IocBeanResolverExtend implements BeanResolverExtend, IocResolverExt
 	public Collection<BeanPostProcessor> resolveDestroyProcessors(TypeDescriptor typeDescriptor, BeanResolver chain) {
 		List<BeanPostProcessor> postProcessors = new ArrayList<BeanPostProcessor>();
 		postProcessors.addAll(BeanResolverExtend.super.resolveDestroyProcessors(typeDescriptor, chain));
-		ReflectionUtils.getDeclaredMethods(typeDescriptor.getType()).getElements().forEach((method) -> {
+		ReflectionUtils.getDeclaredMethods(typeDescriptor.getType()).all().getElements().forEach((method) -> {
 			if (iocResolver.resolveDestroyDefinition(method) != null) {
 				BeanMethodProcessor iocProcessor = new BeanMethodProcessor(context, method);
 				postProcessors.add(iocProcessor);
@@ -69,7 +69,7 @@ public class IocBeanResolverExtend implements BeanResolverExtend, IocResolverExt
 	public Collection<BeanPostProcessor> resolveInitProcessors(TypeDescriptor typeDescriptor, BeanResolver chain) {
 		List<BeanPostProcessor> postProcessors = new ArrayList<BeanPostProcessor>();
 		postProcessors.addAll(BeanResolverExtend.super.resolveInitProcessors(typeDescriptor, chain));
-		ReflectionUtils.getDeclaredMethods(typeDescriptor.getType()).getElements().forEach((method) -> {
+		ReflectionUtils.getDeclaredMethods(typeDescriptor.getType()).all().getElements().forEach((method) -> {
 			ReflectionUtils.makeAccessible(method);
 			if (iocResolver.resolveInitDefinition(method) != null) {
 				BeanMethodProcessor iocProcessor = new BeanMethodProcessor(context, method);

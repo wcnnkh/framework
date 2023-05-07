@@ -20,7 +20,7 @@ public interface Property extends Field {
 
 	boolean isIncrement();
 
-	Elements<Range<Double>> getNumberRanges();
+	Elements<? extends Range<Double>> getNumberRanges();
 
 	boolean isPrimaryKey();
 

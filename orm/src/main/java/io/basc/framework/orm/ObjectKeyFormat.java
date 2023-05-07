@@ -1,30 +1,26 @@
 package io.basc.framework.orm;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import io.basc.framework.mapper.Mapping;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Elements;
 
 public interface ObjectKeyFormat {
-	String getObjectKeyByIds(Mapping<? extends Property> structure, Iterator<?> ids);
 
-	default String getObjectKeyByIds(Mapping<? extends Property> structure, Iterable<?> ids) {
-		return getObjectKeyByIds(structure, ids == null ? Collections.emptyIterator() : ids.iterator());
-	}
+	String getObjectKeyByIds(EntityMapping<? extends Property> entityMapping, Elements<?> ids);
 
-	<T> String getObjectKey(Mapping<? extends Property> structure, T bean);
+	<T> String getObjectKey(EntityMapping<? extends Property> structure, Object bean);
 
-	default <K> Map<String, K> getInIdsKeyMap(Mapping<? extends Property> structure,
-			Iterable<? extends K> lastPrimaryKeys, Object[] primaryKey) {
+	default <K> Map<String, K> getInIdsKeyMap(EntityMapping<? extends Property> structure,
+			Elements<? extends K> lastPrimaryKeys, Object[] primaryKey) {
 		return getInIdsKeyMap(structure,
 				lastPrimaryKeys == null ? Collections.emptyIterator() : lastPrimaryKeys.iterator(), primaryKey);
 	}
 
-	default <K> Map<String, K> getInIdsKeyMap(Mapping<? extends Property> structure,
+	default <K> Map<String, K> getInIdsKeyMap(EntityMapping<? extends Property> structure,
 			Iterator<? extends K> lastPrimaryKeys, Object[] primaryKeys) {
 		if (CollectionUtils.isEmpty(lastPrimaryKeys)) {
 			return Collections.emptyMap();
@@ -41,7 +37,7 @@ public interface ObjectKeyFormat {
 				System.arraycopy(primaryKeys, 0, ids, 0, primaryKeys.length);
 				ids[ids.length - 1] = k;
 			}
-			keyMap.put(getObjectKeyByIds(structure, Arrays.asList(ids)), k);
+			keyMap.put(getObjectKeyByIds(structure, Elements.forArray(ids)), k);
 		}
 		return keyMap;
 	}

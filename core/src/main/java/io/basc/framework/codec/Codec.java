@@ -11,8 +11,8 @@ public interface Codec<D, E> extends Encoder<D, E>, Decoder<E, D> {
 		return new NestedCodec<>(codec, this);
 	}
 
-	default Codec<E, D> reversal() {
-		return new ReversalCodec<E, D>(this);
+	default Codec<E, D> reverse() {
+		return new ReverseCodec<E, D>(this);
 	}
 
 	default <T> Codec<D, T> to(Codec<E, T> codec) {

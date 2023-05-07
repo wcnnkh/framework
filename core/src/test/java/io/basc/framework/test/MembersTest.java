@@ -7,15 +7,15 @@ import java.lang.reflect.Field;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.basc.framework.core.DefaultStructure;
+import io.basc.framework.core.Members;
 import io.basc.framework.core.reflect.ReflectionUtils;
 
 public class MembersTest {
 
 	@Test
 	public void test() {
-		DefaultStructure<Field> members = ReflectionUtils.getDeclaredFields(B.class).withAll().all().all().all().all()
-				.withMethod(DefaultStructure.DIRECT).withAll().withMethod(DefaultStructure.REFUSE).all();
+		Members<Field> members = ReflectionUtils.getDeclaredFields(B.class).withAll().all().all().all().all()
+				.withMethod(Members.DIRECT).withAll().withMethod(Members.REFUSE).all();
 		assertTrue(members.getElements().count() == 7);
 		System.out.println(ReflectionUtils.getDeclaredFields(B.class).withAll().withInterfaces().withSuperclass()
 				.concat(ReflectionUtils.getFields(B.class).getElements()).all().map((e) -> e.getName()).all()

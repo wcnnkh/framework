@@ -1,31 +1,26 @@
 package io.basc.framework.mapper;
 
-/**
- * 主要是为了重写hash和equals
- * 
- * @author wcnnkh
- *
- */
 public abstract class AbstractParameterDescriptor implements ParameterDescriptor {
+	private volatile Boolean nullable;
+
 	@Override
-	public int hashCode() {
-		return getTypeDescriptor().getType().hashCode() + getName().hashCode();
+	public boolean isNullable() {
+		if (nullable == null) {
+			synchronized (this) {
+				if (nullable == null) {
+					nullable = ParameterDescriptor.super.isNullable();
+				}
+			}
+		}
+		return nullable;
 	}
 
-	/**
-	 * 名称为类型(不比较泛型)相同就认为是同一个
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-
-		if (obj instanceof Getter) {
-			Getter getter = (Getter) obj;
-			return getTypeDescriptor().getType() == getter.getTypeDescriptor().getType()
-					&& getName() == getter.getName();
-		}
-		return false;
+	public Boolean getNullable() {
+		return nullable;
 	}
+
+	public void setNullable(Boolean nullable) {
+		this.nullable = nullable;
+	}
+
 }

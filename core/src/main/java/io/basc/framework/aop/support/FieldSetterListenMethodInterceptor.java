@@ -5,13 +5,13 @@ import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.mapper.Copy;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.mapper.ObjectMapping;
+import io.basc.framework.mapper.DefaultObjectMapping;
 
 public class FieldSetterListenMethodInterceptor extends FieldSetterListenImpl implements MethodInterceptor {
 	private static final long serialVersionUID = 1L;
 
 	private Field getField(Class<?> clazz, String name, Class<?> type) {
-		return ObjectMapping.getFields(clazz).entity().all().filter(FieldFeature.SUPPORT_GETTER).getByName(name, type);
+		return DefaultObjectMapping.getFields(clazz).entity().all().filter(FieldFeature.SUPPORT_GETTER).getByName(name, type);
 	}
 
 	private final Object change(MethodInvoker invoker, Object[] args, Field field) throws Throwable {

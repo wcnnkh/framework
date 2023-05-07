@@ -4,14 +4,13 @@ import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.function.Function;
 
-import io.basc.framework.core.DefaultStructure;
-import io.basc.framework.core.Structure;
+import io.basc.framework.core.Members;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
 
-public final class Fields extends MemberStructure<Field, Fields> {
+public final class Fields extends ReflectionMembers<Field, Fields> {
 	@SuppressWarnings("unchecked")
 	public static <T> T clone(Elements<Field> fields, T source, boolean deep) {
 		Assert.requiredArgument(fields != null, "fields");
@@ -80,7 +79,7 @@ public final class Fields extends MemberStructure<Field, Fields> {
 		return hashCode;
 	}
 
-	public static String toString(Structure<Field> structure, Object entity, boolean deep) {
+	public static String toString(Members<Field> structure, Object entity, boolean deep) {
 		Assert.requiredArgument(structure != null, "structure");
 		if (entity == null) {
 			return null;
@@ -91,19 +90,19 @@ public final class Fields extends MemberStructure<Field, Fields> {
 		return builder.toString();
 	}
 
-	private static void toString(Structure<Field> structure, StringBuilder sb, Object entity, boolean deep) {
+	private static void toString(Members<Field> members, StringBuilder sb, Object entity, boolean deep) {
 		if (entity == null) {
 			return;
 		}
 
-		Iterator<Field> iterator = structure.getMembers().getElements().iterator();
+		Iterator<Field> iterator = members.getElements().iterator();
 		if (!iterator.hasNext()) {
 			return;
 		}
 
-		sb.append(structure.getSource().getRawClass().getSimpleName());
+		sb.append(members.getSource().getRawClass().getSimpleName());
 		sb.append('(');
-		Structure<Field> superStructure = structure.getSuperclass();
+		Members<Field> superStructure = members.getSuperclass();
 		if (superStructure != null && superStructure.getSource().getRawClass() != Object.class) {
 			sb.append("super=");
 			toString(superStructure, sb, entity, deep);
@@ -129,14 +128,14 @@ public final class Fields extends MemberStructure<Field, Fields> {
 		sb.append(')');
 	}
 
-	private final Function<? super MemberStructure<Field, Fields>, ? extends Fields> structureDecorator = (
+	private final Function<? super ReflectionMembers<Field, Fields>, ? extends Fields> structureDecorator = (
 			source) -> new Fields(source);
 
 	public Fields(Class<?> source, Function<? super Class<?>, ? extends Field[]> processor) {
 		super(source, processor);
 	}
 
-	private Fields(DefaultStructure<Field> members) {
+	private Fields(Members<Field> members) {
 		super(members);
 	}
 
@@ -182,7 +181,7 @@ public final class Fields extends MemberStructure<Field, Fields> {
 	}
 
 	@Override
-	public Function<? super MemberStructure<Field, Fields>, ? extends Fields> getMemberStructureDecorator() {
+	public Function<? super ReflectionMembers<Field, Fields>, ? extends Fields> getMemberStructureDecorator() {
 		return structureDecorator;
 	}
 

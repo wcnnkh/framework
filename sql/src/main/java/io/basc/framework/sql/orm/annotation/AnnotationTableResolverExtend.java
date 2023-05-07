@@ -3,8 +3,8 @@ package io.basc.framework.sql.orm.annotation;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.mapper.FieldDescriptor;
-import io.basc.framework.orm.ObjectRelationalResolver;
-import io.basc.framework.orm.support.ObjectRelationalResolverExtend;
+import io.basc.framework.orm.EntityMappingResolver;
+import io.basc.framework.orm.support.EntityMappingResolverExtend;
 import io.basc.framework.sql.orm.IndexInfo;
 import io.basc.framework.sql.orm.TableResolver;
 import io.basc.framework.sql.orm.support.TableResolverExtend;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class AnnotationTableResolverExtend implements
-		ObjectRelationalResolverExtend, TableResolverExtend, Ordered {
+		EntityMappingResolverExtend, TableResolverExtend, Ordered {
 
 	@Override
 	public int getOrder() {
@@ -23,24 +23,24 @@ public class AnnotationTableResolverExtend implements
 
 	@Override
 	public String getCharsetName(Class<?> entityClass,
-			ObjectRelationalResolver chain) {
+			EntityMappingResolver chain) {
 		Table table = AnnotatedElementUtils.getMergedAnnotation(entityClass,
 				Table.class);
 		if (table != null && StringUtils.hasText(table.charset())) {
 			return table.charset();
 		}
-		return ObjectRelationalResolverExtend.super.getCharsetName(entityClass,
+		return EntityMappingResolverExtend.super.getCharsetName(entityClass,
 				chain);
 	}
 
 	@Override
-	public String getName(Class<?> entityClass, ObjectRelationalResolver chain) {
+	public String getName(Class<?> entityClass, EntityMappingResolver chain) {
 		Table table = AnnotatedElementUtils.getMergedAnnotation(entityClass,
 				Table.class);
 		if (table != null && StringUtils.hasText(table.name())) {
 			return table.name();
 		}
-		return ObjectRelationalResolverExtend.super.getName(entityClass, chain);
+		return EntityMappingResolverExtend.super.getName(entityClass, chain);
 	}
 
 	@Override

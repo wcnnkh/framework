@@ -11,7 +11,7 @@ import io.basc.framework.convert.lang.StringConverter;
 import io.basc.framework.env.Sys;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.mapper.ObjectMapping;
+import io.basc.framework.mapper.DefaultObjectMapping;
 import io.basc.framework.math.BigDecimalHolder;
 import io.basc.framework.math.Calculator;
 import io.basc.framework.math.Calculators;
@@ -246,12 +246,12 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	 */
 	public static final class ObjectFieldScriptResolver implements ScriptResolver<NumberHolder> {
 		private Object instance;
-		private ObjectMapping fields;
+		private DefaultObjectMapping fields;
 
 		public ObjectFieldScriptResolver(Object instance) {
 			this.instance = instance;
 			this.fields = instance == null ? null
-					: ObjectMapping.getFields(instance.getClass()).filter(FieldFeature.SUPPORT_GETTER).shared();
+					: DefaultObjectMapping.getFields(instance.getClass()).filter(FieldFeature.SUPPORT_GETTER).shared();
 		}
 
 		public boolean isSupport(String script) {

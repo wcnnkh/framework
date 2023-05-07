@@ -2,10 +2,10 @@ package io.basc.framework.orm;
 
 import java.util.function.Function;
 
-import io.basc.framework.core.Structure;
+import io.basc.framework.core.Members;
 import io.basc.framework.mapper.AccessibleField;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.Fields;
+import io.basc.framework.mapper.ObjectMapping;
 import io.basc.framework.util.Elements;
 
 /**
@@ -20,21 +20,21 @@ public final class EntityStructure extends ObjectRelationalDecorator<Property, E
 		this(sourceClass, null, null);
 	}
 
-	public EntityStructure(Class<?> sourceClass, ObjectRelationalResolver objectRelationalResolver, Property parent) {
-		this(sourceClass, objectRelationalResolver, parent, Fields.DEFAULT);
+	public EntityStructure(Class<?> sourceClass, EntityMappingResolver objectRelationalResolver, Property parent) {
+		this(sourceClass, objectRelationalResolver, parent, ObjectMapping.DEFAULT);
 	}
 
-	public EntityStructure(Class<?> sourceClass, ObjectRelationalResolver objectRelationalResolver, Property parent,
+	public EntityStructure(Class<?> sourceClass, EntityMappingResolver objectRelationalResolver, Property parent,
 			Function<Class<?>, ? extends Elements<? extends AccessibleField>> processor) {
 		super(sourceClass, objectRelationalResolver, parent,
 				new PropertiesFunction(objectRelationalResolver, parent, processor));
 	}
 
-	public EntityStructure(Structure<Property> members) {
+	public EntityStructure(Members<Property> members) {
 		super(members);
 	}
 
-	public EntityStructure(Structure<? extends Field> members, Function<? super Field, ? extends Property> map) {
+	public EntityStructure(Members<? extends Field> members, Function<? super Field, ? extends Property> map) {
 		super(members, (e) -> {
 			if (e == null) {
 				return null;

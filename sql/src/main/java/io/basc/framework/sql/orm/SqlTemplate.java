@@ -15,7 +15,7 @@ import io.basc.framework.orm.EntityOperations;
 import io.basc.framework.orm.MaxValueFactory;
 import io.basc.framework.orm.ObjectKeyFormat;
 import io.basc.framework.orm.OrmException;
-import io.basc.framework.orm.PrimaryKeyElements;
+import io.basc.framework.orm.PrimaryKeyQuery;
 import io.basc.framework.orm.repository.Conditions;
 import io.basc.framework.orm.repository.OrderColumn;
 import io.basc.framework.orm.repository.Repository;
@@ -132,21 +132,21 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	}
 
 	@Override
-	default <K, T> PrimaryKeyElements<K, T> getInIds(Class<? extends T> entityClass, List<? extends K> inPrimaryKeys,
+	default <K, T> PrimaryKeyQuery<K, T> getInIds(Class<? extends T> entityClass, List<? extends K> inPrimaryKeys,
 			Object... primaryKeys) throws OrmException {
 		return getInIds((String) null, entityClass, inPrimaryKeys, primaryKeys);
 	}
 
-	default <K, V> PrimaryKeyElements<K, V> getInIds(@Nullable String tableName, Class<? extends V> entityClass,
+	default <K, V> PrimaryKeyQuery<K, V> getInIds(@Nullable String tableName, Class<? extends V> entityClass,
 			List<? extends K> inPrimaryKeys, Object... primaryKeys) {
 		return getInIds(getMapper().getStructure(entityClass, null, tableName), inPrimaryKeys, primaryKeys);
 	}
 
-	default <K, V> PrimaryKeyElements<K, V> getInIds(TableStructure tableStructure, List<? extends K> inPrimaryKeys,
+	default <K, V> PrimaryKeyQuery<K, V> getInIds(TableStructure tableStructure, List<? extends K> inPrimaryKeys,
 			Object... primaryKeys) {
 		Sql sql = getMapper().getInIds(tableStructure, primaryKeys, inPrimaryKeys);
 		Query<V> resultSet = query(tableStructure, sql);
-		return new PrimaryKeyElements<>(resultSet.getElements(), getObjectKeyFormat(), tableStructure, inPrimaryKeys,
+		return new PrimaryKeyQuery<>(resultSet.getElements(), getObjectKeyFormat(), tableStructure, inPrimaryKeys,
 				primaryKeys);
 	}
 

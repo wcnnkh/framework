@@ -1,10 +1,10 @@
 package io.basc.framework.orm.repository;
 
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.orm.support.DefaultObjectMapper;
+import io.basc.framework.orm.support.DefaultEntityMapper;
 import io.basc.framework.util.StringUtils;
 
-public abstract class DefaultRepositoryObjectMapper<S, E extends Throwable> extends DefaultObjectMapper<S, E>
+public abstract class DefaultRepositoryObjectMapper<S, E extends Throwable> extends DefaultEntityMapper<S, E>
 		implements RepositoryMapper<S, E> {
 	private ConditionKeywords conditionKeywords;
 	private RelationshipKeywords relationshipKeywords;

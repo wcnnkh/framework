@@ -100,7 +100,7 @@ public class ExecutableParameterDescriptorsIterator implements Iterator<Paramete
 	public ExecutableParameterDescriptorsIterator(Class<?> targetClass, final Method method, boolean polymorphic) {
 		this(ParameterUtils.getParameterNameDiscoverer(), targetClass,
 				polymorphic
-						? ReflectionUtils.getDeclaredMethods(targetClass).getElements()
+						? ReflectionUtils.getDeclaredMethods(targetClass).all().getElements()
 								.sorted((o1, o2) -> compare(o1, o2, METHOD_COMPARATOR)).iterator()
 						: Arrays.asList(method).iterator());
 	}

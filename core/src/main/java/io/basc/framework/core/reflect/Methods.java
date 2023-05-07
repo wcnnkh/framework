@@ -5,27 +5,27 @@ import java.lang.reflect.Parameter;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.core.DefaultStructure;
+import io.basc.framework.core.Members;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 
-public final class Methods extends MemberStructure<Method, Methods> {
-	private final Function<? super MemberStructure<Method, Methods>, ? extends Methods> memberDecorator = (
+public final class Methods extends ReflectionMembers<Method, Methods> {
+	private final Function<? super ReflectionMembers<Method, Methods>, ? extends Methods> memberDecorator = (
 			source) -> new Methods(source);
 
 	public Methods(Class<?> source, Function<? super Class<?>, ? extends Method[]> processor) {
 		super(source, processor);
 	}
 
-	private Methods(DefaultStructure<Method> members) {
+	private Methods(Members<Method> members) {
 		super(members);
 	}
 
 	@Override
-	public Function<? super MemberStructure<Method, Methods>, ? extends Methods> getMemberStructureDecorator() {
+	public Function<? super ReflectionMembers<Method, Methods>, ? extends Methods> getMemberStructureDecorator() {
 		return memberDecorator;
 	}
 

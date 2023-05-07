@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import io.basc.framework.core.Structure;
+import io.basc.framework.core.Members;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldDescriptor;
@@ -14,16 +14,16 @@ import io.basc.framework.util.Elements;
 public abstract class ObjectRelationalDecorator<S extends Property, T extends ObjectRelationalDecorator<S, T>>
 		extends ObjectRelational<S> {
 
-	public ObjectRelationalDecorator(Class<?> sourceClass, ObjectRelationalResolver objectRelationalResolver, S parent,
+	public ObjectRelationalDecorator(Class<?> sourceClass, EntityMappingResolver objectRelationalResolver, S parent,
 			Function<Class<?>, ? extends Elements<S>> processor) {
 		super(sourceClass, objectRelationalResolver, parent, processor);
 	}
 
-	public ObjectRelationalDecorator(Structure<S> members) {
+	public ObjectRelationalDecorator(Members<S> members) {
 		super(members);
 	}
 
-	public ObjectRelationalDecorator(Structure<? extends Field> members, Function<? super Field, ? extends S> map) {
+	public ObjectRelationalDecorator(Members<? extends Field> members, Function<? super Field, ? extends S> map) {
 		super(members, map);
 	}
 
@@ -45,7 +45,7 @@ public abstract class ObjectRelationalDecorator<S extends Property, T extends Ob
 	}
 
 	@Override
-	public T setObjectRelationalResolver(ObjectRelationalResolver objectRelationalResolver) {
+	public T setObjectRelationalResolver(EntityMappingResolver objectRelationalResolver) {
 		return decorate(super.setObjectRelationalResolver(objectRelationalResolver));
 	}
 
@@ -147,7 +147,7 @@ public abstract class ObjectRelationalDecorator<S extends Property, T extends Ob
 	}
 
 	@Override
-	public T with(Structure<S> with) {
+	public T with(Members<S> with) {
 		return decorate(super.with(with));
 	}
 

@@ -76,7 +76,7 @@ public final class BridgeMethodResolver {
 		Method bridgedMethod = cache.get(bridgeMethod);
 		if (bridgedMethod == null) {
 			// Gather all methods with matching name and parameter size.
-			List<Method> candidateMethods = ReflectionUtils.getDeclaredMethods(bridgeMethod.getDeclaringClass())
+			List<Method> candidateMethods = ReflectionUtils.getDeclaredMethods(bridgeMethod.getDeclaringClass()).all()
 					.getElements().filter((candidateMethod) -> isBridgedCandidateFor(candidateMethod, bridgeMethod))
 					.toList();
 			if (!candidateMethods.isEmpty()) {

@@ -6,7 +6,8 @@ package io.basc.framework.mapper;
  * @author wcnnkh
  *
  */
-public abstract class AbstractGetter implements Getter {
+public abstract class AbstractGetter extends AbstractParameterDescriptor implements Getter {
+
 	@Override
 	public int hashCode() {
 		return getName().hashCode();

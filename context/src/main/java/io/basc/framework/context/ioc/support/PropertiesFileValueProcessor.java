@@ -10,7 +10,7 @@ import io.basc.framework.event.Observable;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.mapper.ObjectMapping;
+import io.basc.framework.mapper.DefaultObjectMapping;
 import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.value.Value;
@@ -35,7 +35,7 @@ public final class PropertiesFileValueProcessor extends AbstractObservableValueP
 		} else {
 			Class<?> fieldType = field.getSetter().getType();
 			Object obj = ReflectionApi.newInstance(fieldType);
-			ObjectMapping fields = ObjectMapping.getFields(fieldType).all().filter(FieldFeature.SUPPORT_SETTER).shared();
+			DefaultObjectMapping fields = DefaultObjectMapping.getFields(fieldType).all().filter(FieldFeature.SUPPORT_SETTER).shared();
 			for (final Object key : properties.keySet()) {
 				Field keyField = fields.getBySetterName(key.toString(), null);
 				if (keyField == null) {

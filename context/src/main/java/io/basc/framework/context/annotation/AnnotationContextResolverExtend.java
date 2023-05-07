@@ -199,7 +199,7 @@ public class AnnotationContextResolverExtend extends AnnotationTypeFilter
 	}
 
 	private BeanPostProcessor getBeanPostProcessorByMethod(TypeDescriptor typeDescriptor, String name) {
-		Method method = ReflectionUtils.getDeclaredMethods(typeDescriptor.getType()).find(name);
+		Method method = ReflectionUtils.getDeclaredMethods(typeDescriptor.getType()).all().find(name);
 		if (method == null) {
 			return null;
 		}

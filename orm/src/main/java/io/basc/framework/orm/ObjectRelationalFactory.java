@@ -8,7 +8,7 @@ import io.basc.framework.mapper.StructureFactory;
  * @author wcnnkh
  *
  */
-public interface ObjectRelationalFactory extends ObjectRelationalResolver, StructureFactory {
+public interface ObjectRelationalFactory extends EntityMappingResolver, StructureFactory {
 
 	@Override
 	default boolean isEntity(Class<?> entityClass) {

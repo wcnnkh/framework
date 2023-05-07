@@ -2,6 +2,7 @@ package io.basc.framework.mapper;
 
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Named;
 import io.basc.framework.util.StringUtils;
 
 /**
@@ -11,21 +12,22 @@ import io.basc.framework.util.StringUtils;
  *
  * @param <T>
  */
-public interface Mapping<T extends Field> {
+public interface Mapping<T extends Field> extends Named {
 	String getName();
 
 	Elements<String> getAliasNames();
 
-	Elements<T> getElements();
-
 	/**
 	 * 可能存在多个重名的element
 	 * 
+	 * @see Field#getName()
 	 * @param name
 	 * @return
 	 */
 	default Elements<T> getElements(String name) {
 		Assert.requiredArgument(StringUtils.hasText(name), "name");
-		return getElements().filter((e) -> e.getName().equals(name));
+		return getElements().filter((field) -> field.getName().equals(name));
 	}
+
+	Elements<T> getElements();
 }

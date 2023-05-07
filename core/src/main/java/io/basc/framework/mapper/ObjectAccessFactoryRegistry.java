@@ -2,22 +2,22 @@ package io.basc.framework.mapper;
 
 import io.basc.framework.convert.TypeDescriptor;
 
-public interface ObjectAccessFactoryRegistry<E extends Throwable> extends ObjectAccessFactory<Object, E> {
+public interface ObjectAccessFactoryRegistry extends ObjectAccessFactory<Object> {
 	default boolean isObjectAccessFactoryRegistred(Class<?> type) {
 		return getObjectAccessFactory(type) != null;
 	}
 
-	<S> void registerObjectAccessFactory(Class<S> type, ObjectAccessFactory<? super S, ? extends E> factory);
+	<S> void registerObjectAccessFactory(Class<S> type, ObjectAccessFactory<? super S> factory);
 
-	<S> ObjectAccessFactory<S, E> getObjectAccessFactory(Class<? extends S> type);
+	<S> ObjectAccessFactory<S> getObjectAccessFactory(Class<? extends S> type);
 
 	@Override
-	default ObjectAccess<E> getObjectAccess(Object source, TypeDescriptor sourceType) throws E {
+	default ObjectAccess getObjectAccess(Object source, TypeDescriptor sourceType) {
 		if (source == null || sourceType == null) {
 			return null;
 		}
 
-		ObjectAccessFactory<Object, E> factory = getObjectAccessFactory(sourceType.getType());
+		ObjectAccessFactory<Object> factory = getObjectAccessFactory(sourceType.getType());
 		if (factory == null) {
 			return null;
 		}

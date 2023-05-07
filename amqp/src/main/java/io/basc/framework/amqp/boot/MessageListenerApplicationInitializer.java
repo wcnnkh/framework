@@ -27,7 +27,7 @@ public final class MessageListenerApplicationInitializer implements ApplicationP
 				}
 			}
 
-			ReflectionUtils.getDeclaredMethods(clazz).withAll().all().getElements()
+			ReflectionUtils.getDeclaredMethods(clazz).all().getElements()
 					.filter((e) -> e.isAnnotationPresent(MessageListener.class)).forEach((method) -> {
 						MessageListener messageListener = method.getAnnotation(MessageListener.class);
 						MethodInvokerExchange exchange = application.getInstance(messageListener.exchange());

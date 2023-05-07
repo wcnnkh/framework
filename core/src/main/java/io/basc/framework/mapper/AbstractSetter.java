@@ -2,7 +2,7 @@ package io.basc.framework.mapper;
 
 import io.basc.framework.util.ObjectUtils;
 
-public abstract class AbstractSetter implements Setter {
+public abstract class AbstractSetter extends AbstractParameterDescriptor implements Setter {
 	@Override
 	public int hashCode() {
 		return getName().hashCode() + getTypeDescriptor().getType().hashCode();

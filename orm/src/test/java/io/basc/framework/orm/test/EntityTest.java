@@ -8,7 +8,7 @@ import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.annotation.Entity;
-import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
+import io.basc.framework.orm.support.DefaultEntityMapper1;
 
 @Entity
 public class EntityTest {
@@ -42,7 +42,7 @@ public class EntityTest {
 
 	@Test
 	public void test() {
-		ObjectRelationalFactory orm = new DefaultObjectRelationalMapper();
+		ObjectRelationalFactory orm = new DefaultEntityMapper1();
 		assertTrue(orm.isEntity(EntityTest.class));
 		ObjectRelational<? extends Property> objectRelational = orm.getStructure(EntityTest.class)
 				.withEntitysAfter((e) -> e.setNameNestingDepth(1));

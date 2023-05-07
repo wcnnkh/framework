@@ -5,8 +5,9 @@ import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import io.basc.framework.util.ObjectUtils;
+import lombok.Data;
 
+@Data
 public class SimpleAttributes<K, V> implements EditableAttributes<K, V> {
 	private Map<K, V> attributeMap;
 
@@ -47,33 +48,5 @@ public class SimpleAttributes<K, V> implements EditableAttributes<K, V> {
 		if (attributeMap != null) {
 			attributeMap.clear();
 		}
-	}
-
-	@Override
-	public String toString() {
-		return attributeMap == null ? "{}" : attributeMap.toString();
-	}
-
-	@Override
-	public int hashCode() {
-		return attributeMap == null ? 0 : attributeMap.hashCode();
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-
-		if (obj == this) {
-			return true;
-		}
-
-		if (obj instanceof SimpleAttributes) {
-			return ObjectUtils.equals(attributeMap, ((SimpleAttributes) obj).attributeMap);
-		}
-
-		return false;
 	}
 }
