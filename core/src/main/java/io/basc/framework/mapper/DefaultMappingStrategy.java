@@ -206,6 +206,7 @@ public class DefaultMappingStrategy implements MappingStrategy {
 				if (mapper.isEntity(setter.getTypeDescriptor())) {
 					// 发现是一个实体对象，进行解析
 					Object entity = mapper.newInstance(setter.getTypeDescriptor());
+					mapper.transform(sourceAccess, sourceContext, sourceAccess);
 				}
 			}
 
