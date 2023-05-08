@@ -12,8 +12,8 @@ import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeansException;
 import io.basc.framework.factory.FactoryException;
 import io.basc.framework.json.JsonUtils;
-import io.basc.framework.mapper.ExecutableParameterDescriptors;
 import io.basc.framework.mapper.ParameterDescriptors;
+import io.basc.framework.mapper.support.ExecutableParameterDescriptors;
 
 public class XmlMethodIocProcessor extends IocProcessor {
 	private Class<?> type;

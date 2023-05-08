@@ -23,13 +23,15 @@ import io.basc.framework.lang.NotFoundException;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.mapper.ExecutableParameterDescriptorsIterator;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterDescriptors;
 import io.basc.framework.mapper.ParameterUtils;
+import io.basc.framework.mapper.support.ExecutableParameterDescriptorsIterator;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 
 public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
@@ -69,7 +71,7 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 
 	protected ParameterDescriptors checkParameterDescriptors(ParametersFactory parametersFactory) {
 		for (ParameterDescriptors parameterDescriptors : this) {
-			if (parameterDescriptors.size() == 0
+			if (parameterDescriptors.getElements().count() == 0
 					|| (parametersFactory != null && parametersFactory.isAccept(parameterDescriptors))) {
 				return parameterDescriptors;
 			}
@@ -102,7 +104,7 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 		BeanResolver beanResolver = getBeanResolver();
 		ParameterDescriptors parameterDescriptors = getParameterDescriptors(beanResolver);
 		return createInternal(beanResolver, typeDescriptor, parameterDescriptors,
-				parameterDescriptors.size() == 0 ? new Object[0] : beanResolver.getParameters(parameterDescriptors));
+				beanResolver.getParameters(parameterDescriptors));
 	}
 
 	public Object create(Class<?>[] parameterTypes, Object[] params) throws InstanceException {
@@ -138,14 +140,14 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 	}
 
 	protected Object createInternal(BeanResolver beanResolver, TypeDescriptor typeDescriptor,
-			ParameterDescriptors parameterDescriptors, Object[] params) {
+			Elements<Parameter> params) {
 		Aop aop = getAop();
 		if (aop != null && isAopEnable(typeDescriptor, beanResolver)) {
-			return createProxyInstance(aop, typeDescriptor, parameterDescriptors.getTypes(), params);
+			return createProxyInstance(aop, typeDescriptor, params);
 		}
 
 		Constructor<?> constructor = ReflectionUtils.getDeclaredConstructor(typeDescriptor.getType(),
-				parameterDescriptors.getTypes());
+				params.map((e) -> e.getTypeDescriptor().getType()).toArray(new Class[0]));
 		Object instance = ReflectionUtils.newInstance(constructor, params);
 		return instance;
 	}
@@ -169,13 +171,15 @@ public class DefaultBeanDefinition implements BeanDefinition, Cloneable {
 		return aop.getProxy(typeDescriptor.getType(), interfacesToUse, interceptors);
 	}
 
-	protected Object createProxyInstance(Aop aop, TypeDescriptor typeDescriptor, Class<?>[] parameterTypes,
-			Object[] args) {
+	protected Object createProxyInstance(Aop aop, TypeDescriptor typeDescriptor,
+			Elements<? extends Parameter> parameters) {
 		if (typeDescriptor.getType().isInterface() && methodInterceptors.isEmpty()) {
 			logger.warn("empty filter: {}", typeDescriptor.getName());
 		}
 
 		Proxy proxy = createProxy(aop, typeDescriptor, null);
+		Class<?>[] parameterTypes = parameters.map((e) -> e.getTypeDescriptor().getType()).toArray(new Class[0]);
+		Object[] args = parameters.map((e) -> e.getSource()).toArray();
 		return proxy.create(parameterTypes, args);
 	}
 

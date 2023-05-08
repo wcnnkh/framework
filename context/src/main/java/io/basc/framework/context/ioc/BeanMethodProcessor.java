@@ -7,8 +7,8 @@ import io.basc.framework.context.Context;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.FactoryException;
-import io.basc.framework.mapper.ExecutableParameterDescriptors;
 import io.basc.framework.mapper.ParameterDescriptors;
+import io.basc.framework.mapper.support.ExecutableParameterDescriptors;
 
 public class BeanMethodProcessor extends IocProcessor {
 	private final Method method;

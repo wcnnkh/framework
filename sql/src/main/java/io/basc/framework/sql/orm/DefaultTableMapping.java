@@ -2,7 +2,6 @@ package io.basc.framework.sql.orm;
 
 import java.util.function.Function;
 
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.orm.DefaultEntityMapping;
@@ -23,17 +22,17 @@ public class DefaultTableMapping<T extends Column> extends DefaultEntityMapping<
 	public DefaultTableMapping() {
 	}
 
-	public DefaultTableMapping(TypeDescriptor source, EntityMappingResolver relationalResolver,
+	public DefaultTableMapping(Class<?> sourceClass, EntityMappingResolver relationalResolver,
 			TableResolver tableResolver) {
-		super(source, relationalResolver);
-		this.engine = tableResolver.getEngine(source);
-		this.rowFormat = tableResolver.getRowFormat(source);
-		this.autoCreate = tableResolver.isAutoCreate(source);
+		super(sourceClass, relationalResolver);
+		this.engine = tableResolver.getEngine(sourceClass);
+		this.rowFormat = tableResolver.getRowFormat(sourceClass);
+		this.autoCreate = tableResolver.isAutoCreate(sourceClass);
 	}
 
-	public <S extends Field> DefaultTableMapping(TypeDescriptor source, EntityMappingResolver relationalResolver,
+	public <S extends Field> DefaultTableMapping(Class<?> sourceClass, EntityMappingResolver relationalResolver,
 			TableResolver tableResolver, Mapping<? extends S> mapping, Function<? super S, ? extends T> converter) {
-		this(source, relationalResolver, tableResolver);
+		this(sourceClass, relationalResolver, tableResolver);
 		Assert.requiredArgument(mapping != null, "mapping");
 		Assert.requiredArgument(converter != null, "converter");
 		MultiValueMap<String, T> propertyMap = new LinkedMultiValueMap<>();

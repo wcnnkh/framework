@@ -1,10 +1,10 @@
 package io.basc.framework.aop.support;
 
+import java.util.Map;
+
 import io.basc.framework.aop.WriteReplaceInterface;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.mapper.Field;
-
-import java.util.Map;
+import io.basc.framework.mapper.Setter;
 
 public interface FieldSetterListen extends WriteReplaceInterface {
 	public static final String GET_CHANGE_MAP = "_getFieldSetterMap";
@@ -17,7 +17,7 @@ public interface FieldSetterListen extends WriteReplaceInterface {
 	 */
 	Map<String, Object> _getFieldSetterMap();
 
-	void _fieldSet(MethodInvoker invoker, Field field, Object oldValue);
+	void _fieldSet(MethodInvoker invoker, Setter setter, Object oldValue);
 
 	/**
 	 * 清空监听数据

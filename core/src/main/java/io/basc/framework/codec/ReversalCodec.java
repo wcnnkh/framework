@@ -8,7 +8,7 @@ final class ReversalCodec<E, D> implements Codec<E, D> {
 	}
 
 	@Override
-	public Codec<D, E> reversal() {
+	public Codec<D, E> reverse() {
 		return codec;
 	}
 

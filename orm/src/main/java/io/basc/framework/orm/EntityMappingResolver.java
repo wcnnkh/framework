@@ -31,7 +31,7 @@ public interface EntityMappingResolver extends MappingStrategyFactory {
 
 	boolean isEntity(Class<?> sourceClass, ParameterDescriptor descriptor);
 
-	boolean isEntity(Class<?> sourceClass);
+	boolean isEntity(TypeDescriptor source);
 
 	boolean isVersion(Class<?> sourceClass, ParameterDescriptor descriptor);
 

@@ -3,8 +3,10 @@ package io.basc.framework.factory;
 import java.util.Collection;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterDescriptors;
+import io.basc.framework.util.Elements;
 
 public class ConfigurableBeanResolver extends ConfigurableServices<BeanResolverExtend> implements BeanResolver {
 	private BeanResolver defaultResolver;
@@ -43,8 +45,7 @@ public class ConfigurableBeanResolver extends ConfigurableServices<BeanResolverE
 
 	@Override
 	public Collection<BeanPostProcessor> resolveDependenceProcessors(TypeDescriptor typeDescriptor) {
-		return BeanResolverChain.build(iterator(), getDefaultResolver())
-				.resolveDependenceProcessors(typeDescriptor);
+		return BeanResolverChain.build(iterator(), getDefaultResolver()).resolveDependenceProcessors(typeDescriptor);
 	}
 
 	@Override
@@ -78,7 +79,7 @@ public class ConfigurableBeanResolver extends ConfigurableServices<BeanResolverE
 	}
 
 	@Override
-	public Object[] getParameters(ParameterDescriptors parameterDescriptors) {
+	public Elements<? extends Parameter> getParameters(ParameterDescriptors parameterDescriptors) {
 		return BeanResolverChain.build(iterator(), getDefaultResolver()).getParameters(parameterDescriptors);
 	}
 

@@ -2,19 +2,16 @@ package io.basc.framework.aop.support;
 
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.core.reflect.MethodInvoker;
+import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.mapper.Copy;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.mapper.DefaultObjectMapping;
+import io.basc.framework.mapper.Getter;
+import io.basc.framework.mapper.Setter;
 
 public class FieldSetterListenMethodInterceptor extends FieldSetterListenImpl implements MethodInterceptor {
 	private static final long serialVersionUID = 1L;
 
-	private Field getField(Class<?> clazz, String name, Class<?> type) {
-		return DefaultObjectMapping.getFields(clazz).entity().all().filter(FieldFeature.SUPPORT_GETTER).getByName(name, type);
-	}
-
-	private final Object change(MethodInvoker invoker, Object[] args, Field field) throws Throwable {
+	private final Object change(MethodInvoker invoker, Object[] args, Getter getter, Setter setter) throws Throwable {
 		Object oldValue = field.getGetter().get(invoker.getInstance());
 		if (FieldSetterListen.class.isAssignableFrom(invoker.getSourceClass())) {
 			((FieldSetterListen) invoker.getInstance())._fieldSet(invoker, field, oldValue);
@@ -26,7 +23,7 @@ public class FieldSetterListenMethodInterceptor extends FieldSetterListenImpl im
 
 	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
 		if (ProxyUtils.isWriteReplaceMethod(invoker, false)) {
-			return Copy.copy(invoker.getInstance(), invoker.getSourceClass());
+			return ReflectionUtils.clone(invoker.getInstance(), false);
 		}
 
 		if (args.length == 0) {

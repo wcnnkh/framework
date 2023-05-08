@@ -9,9 +9,9 @@ import org.junit.Test;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.json.JsonUtils;
-import io.basc.framework.mapper.DefaultObjectMapper;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Mapping;
+import io.basc.framework.mapper.support.DefaultObjectMapper;
 import io.basc.framework.util.XUtils;
 
 public class MapperTest {

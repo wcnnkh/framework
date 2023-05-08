@@ -1,11 +1,8 @@
 package io.basc.framework.orm.repository;
 
 import io.basc.framework.mapper.ObjectMapper;
+import io.basc.framework.orm.EntityMapper;
 
-public interface RepositoryMapper<S, E extends Throwable> extends RepositoryResolver, ObjectMapper<S, E> {
+public interface RepositoryMapper extends RepositoryResolver, EntityMapper {
 
-	@Override
-	default boolean isEntity(Class<?> entityClass) {
-		return RepositoryResolver.super.isEntity(entityClass);
-	}
 }

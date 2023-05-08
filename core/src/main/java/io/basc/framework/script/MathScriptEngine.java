@@ -9,13 +9,13 @@ import java.util.List;
 
 import io.basc.framework.convert.lang.StringConverter;
 import io.basc.framework.env.Sys;
-import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.mapper.DefaultObjectMapping;
+import io.basc.framework.mapper.ObjectAccess;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.math.BigDecimalHolder;
 import io.basc.framework.math.Calculator;
 import io.basc.framework.math.Calculators;
 import io.basc.framework.math.NumberHolder;
+import io.basc.framework.util.Assert;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.StringUtils;
 
@@ -244,41 +244,31 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	 * @author wcnnkh
 	 *
 	 */
-	public static final class ObjectFieldScriptResolver implements ScriptResolver<NumberHolder> {
-		private Object instance;
-		private DefaultObjectMapping fields;
+	public static final class ObjectAccessScriptResolver implements ScriptResolver<NumberHolder> {
+		private final ObjectAccess objectAccess;
 
-		public ObjectFieldScriptResolver(Object instance) {
-			this.instance = instance;
-			this.fields = instance == null ? null
-					: DefaultObjectMapping.getFields(instance.getClass()).filter(FieldFeature.SUPPORT_GETTER).shared();
+		public ObjectAccessScriptResolver(ObjectAccess objectAccess) {
+			Assert.requiredArgument(objectAccess != null, "objectAccess");
+			this.objectAccess = objectAccess;
 		}
 
 		public boolean isSupport(String script) {
-			if (instance == null) {
-				return false;
-			}
-
-			return getField(script) != null;
-		}
-
-		public Field getField(final String name) {
-			return fields == null ? null : fields.getByName(name, null);
+			return objectAccess.keys().contains(script);
 		}
 
 		public NumberHolder eval(ScriptEngine<NumberHolder> engine, String script) throws ScriptException {
-			Field field = getField(script);
-			Object value = field.get(instance);
-			if (value == null) {
+			Parameter parameter = objectAccess.get(script);
+			if (parameter == null || !parameter.isPresent()) {
 				throw new ScriptException(script);
 			}
 
+			Object value = parameter.getSource();
 			if (value instanceof BigDecimal) {
 				return new BigDecimalHolder((BigDecimal) value);
 			} else if (value instanceof NumberHolder) {
 				return (NumberHolder) value;
 			} else {
-				return new BigDecimalHolder(value.toString());
+				return new BigDecimalHolder(parameter.getAsString());
 			}
 		}
 	}

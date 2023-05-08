@@ -18,9 +18,9 @@ import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.mapper.ExecutableParameterDescriptors;
-import io.basc.framework.mapper.ExecutableParameterDescriptorsIterator;
 import io.basc.framework.mapper.ParameterDescriptors;
+import io.basc.framework.mapper.support.ExecutableParameterDescriptors;
+import io.basc.framework.mapper.support.ExecutableParameterDescriptorsIterator;
 import io.basc.framework.util.CollectionUtils;
 
 public class ExecutableBeanDefinition extends FactoryBeanDefinition {

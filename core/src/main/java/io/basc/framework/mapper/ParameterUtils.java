@@ -13,6 +13,7 @@ import io.basc.framework.core.DefaultParameterNameDiscoverer;
 import io.basc.framework.core.MethodParameter;
 import io.basc.framework.core.ParameterNameDiscoverer;
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.mapper.support.DefaultParameterDescriptor;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;

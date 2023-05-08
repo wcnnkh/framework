@@ -2,9 +2,9 @@ package io.basc.framework.orm;
 
 import java.util.function.Function;
 
-import io.basc.framework.mapper.DefaultMapping;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Mapping;
+import io.basc.framework.mapper.support.DefaultMapping;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.LinkedMultiValueMap;
 import io.basc.framework.util.MultiValueMap;

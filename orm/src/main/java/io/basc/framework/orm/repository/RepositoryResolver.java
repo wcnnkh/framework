@@ -59,7 +59,7 @@ public interface RepositoryResolver extends ObjectRelationalFactory {
 				continue;
 			}
 
-			if (!isEntity(column.getType(), column)) {
+			if (!isEntity(column.getTypeDescriptor().getType(), column)) {
 				list.add(column);
 				continue;
 			}

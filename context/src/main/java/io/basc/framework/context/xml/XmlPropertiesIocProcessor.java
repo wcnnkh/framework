@@ -6,7 +6,7 @@ import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeansException;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.mapper.DefaultObjectMapping;
+import io.basc.framework.mapper.support.DefaultObjectMapping;
 
 public class XmlPropertiesIocProcessor extends FieldIocProcessor {
 	private XmlBeanParameter xmlBeanParameter;

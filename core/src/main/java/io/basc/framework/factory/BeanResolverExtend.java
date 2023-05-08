@@ -3,8 +3,10 @@ package io.basc.framework.factory;
 import java.util.Collection;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterDescriptors;
+import io.basc.framework.util.Elements;
 
 public interface BeanResolverExtend {
 	default boolean isSingleton(TypeDescriptor type, BeanResolver chain) {
@@ -39,7 +41,7 @@ public interface BeanResolverExtend {
 		return chain.isAccept(parameterDescriptors);
 	}
 
-	default Object[] getParameters(ParameterDescriptors parameterDescriptors, BeanResolver chain) {
+	default Elements<? extends Parameter> getParameters(ParameterDescriptors parameterDescriptors, BeanResolver chain) {
 		return chain.getParameters(parameterDescriptors);
 	}
 

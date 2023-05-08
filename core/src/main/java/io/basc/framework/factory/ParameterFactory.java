@@ -1,14 +1,16 @@
 package io.basc.framework.factory;
 
+import java.util.logging.Level;
+
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.lang.ParameterException;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterDescriptors;
-
-import java.util.logging.Level;
+import io.basc.framework.util.Elements;
 
 public interface ParameterFactory extends ParametersFactory {
 	/**
@@ -23,7 +25,7 @@ public interface ParameterFactory extends ParametersFactory {
 
 	default boolean isAccept(ParameterDescriptors parameterDescriptors) {
 		int index = 0;
-		for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
+		for (ParameterDescriptor parameterDescriptor : parameterDescriptors.getElements()) {
 			try {
 				boolean auto = isAccept(parameterDescriptor);
 				Level level = auto ? Levels.TRACE.getValue() : Levels.DEBUG.getValue();
@@ -36,7 +38,7 @@ public interface ParameterFactory extends ParametersFactory {
 				}
 			} catch (StackOverflowError e) {
 				$log.error(e, "There are circular references clazz [{}] parameterName [{}] in [{}]",
-						parameterDescriptors.getDeclaringClass(), parameterDescriptor.getName(),
+						parameterDescriptors.getSourceClass(), parameterDescriptor.getName(),
 						parameterDescriptors.getSource());
 				return false;
 			} finally {
@@ -46,22 +48,16 @@ public interface ParameterFactory extends ParametersFactory {
 		return true;
 	}
 
-	/**
-	 * 
-	 * @return 不可以返回空
-	 */
-	default Object[] getParameters(ParameterDescriptors parameterDescriptors) {
-		Object[] args = new Object[parameterDescriptors.size()];
-		int index = 0;
-		for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
+	default Elements<? extends Parameter> getParameters(ParameterDescriptors parameterDescriptors) {
+		return parameterDescriptors.getElements().index().map((row) -> {
+			ParameterDescriptor parameterDescriptor = row.getElement();
 			try {
-				args[index] = getParameter(parameterDescriptor);
+				Object value = getParameter(parameterDescriptor);
+				return new Parameter(parameterDescriptor.getName(), value, parameterDescriptor.getTypeDescriptor());
 			} catch (Exception e) {
-				throw new ParameterException(parameterDescriptors.getSource() + " parameter index " + index
+				throw new ParameterException(parameterDescriptors.getSource() + " parameter index " + row.getIndex()
 						+ " descriptor " + parameterDescriptor, e);
 			}
-			index++;
-		}
-		return args;
+		});
 	}
 }

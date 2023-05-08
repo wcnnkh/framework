@@ -1,6 +1,7 @@
 package io.basc.framework.core.reflect;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.function.Function;
 
@@ -29,7 +30,7 @@ public final class Fields extends ReflectionMembers<Field, Fields> {
 			return;
 		}
 
-		fields.forEach((f) -> {
+		fields.filter((e) -> !Modifier.isStatic(e.getModifiers())).forEach((f) -> {
 			try {
 				Object value = ReflectionUtils.get(f, source);
 				if (value == source) {
@@ -57,6 +58,10 @@ public final class Fields extends ReflectionMembers<Field, Fields> {
 		Iterator<Field> iterator = fields.iterator();
 		while (iterator.hasNext()) {
 			Field field = iterator.next();
+			if (Modifier.isStatic(field.getModifiers())) {
+				continue;
+			}
+
 			if (!ObjectUtils.equals(ReflectionUtils.get(field, left), ReflectionUtils.get(field, right), deep)) {
 				return false;
 			}
@@ -74,6 +79,10 @@ public final class Fields extends ReflectionMembers<Field, Fields> {
 		Iterator<Field> iterator = fields.iterator();
 		while (iterator.hasNext()) {
 			Field field = iterator.next();
+			if (Modifier.isStatic(field.getModifiers())) {
+				continue;
+			}
+
 			hashCode = 31 * hashCode + ObjectUtils.hashCode(ReflectionUtils.get(field, entity), deep);
 		}
 		return hashCode;
@@ -95,7 +104,7 @@ public final class Fields extends ReflectionMembers<Field, Fields> {
 			return;
 		}
 
-		Iterator<Field> iterator = members.getElements().iterator();
+		Iterator<Field> iterator = members.getElements().filter((e) -> !Modifier.isStatic(e.getModifiers())).iterator();
 		if (!iterator.hasNext()) {
 			return;
 		}
@@ -180,6 +189,11 @@ public final class Fields extends ReflectionMembers<Field, Fields> {
 		return equals(getElements(), left, right, deep);
 	}
 
+	public Field find(String name) {
+		Assert.requiredArgument(StringUtils.hasText(name), "name");
+		return getElements().filter((e) -> e.getName().equals(name)).first();
+	}
+
 	@Override
 	public Function<? super ReflectionMembers<Field, Fields>, ? extends Fields> getMemberStructureDecorator() {
 		return structureDecorator;
@@ -202,10 +216,5 @@ public final class Fields extends ReflectionMembers<Field, Fields> {
 
 	public String toString(Object instance, boolean deep) {
 		return toString(this, instance, deep);
-	}
-
-	public Field find(String name) {
-		Assert.requiredArgument(StringUtils.hasText(name), "name");
-		return getElements().filter((e) -> e.getName().equals(name)).first();
 	}
 }

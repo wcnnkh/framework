@@ -1,32 +1,25 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.lang.Nullable;
+import io.basc.framework.value.Value;
 
 /**
  * 映射策略
  * 
  * @author wcnnkh
- *
- * @param <E>
  */
 public interface MappingStrategy {
+	void transform(ObjectMapper objectMapper, ObjectAccess sourceAccess, MappingContext sourceContext, String name,
+			ObjectAccess targetAccess, MappingContext targetContext) throws MappingException;
 
-	<S extends Field, T extends Field> void transform(ObjectMapper mapper, Object source, TypeDescriptor sourceType,
-			@Nullable MappingContext<? extends S> sourceContext, Mapping<? extends S> sourceMapping, Object target,
-			TypeDescriptor targetType, @Nullable MappingContext<? extends T> targetContext,
-			Mapping<? extends T> targetMapping) throws MappingException;
-
-	<S extends Field, T extends Field> void transform(ObjectMapper mapper, Object source, TypeDescriptor sourceType,
-			@Nullable MappingContext<? extends Field> sourceContext, Mapping<? extends S> sourceMapping,
-			ObjectAccess targetAccess, @Nullable MappingContext<? extends T> targetContext) throws MappingException;
-
-	<S extends Field, T extends Field> void transform(ObjectMapper mapper, ObjectAccess sourceAccess,
-			@Nullable MappingContext<? extends S> sourceContext, Object target, TypeDescriptor targetType,
-			@Nullable MappingContext<? extends T> targetContext, Mapping<? extends T> targetMapping)
+	void transform(ObjectMapper objectMapper, ObjectAccess sourceAccess, MappingContext sourceContext, Value target,
+			MappingContext targetContext, Mapping<? extends Field> targetMapping, Field targetField)
 			throws MappingException;
 
-	<S extends Field, T extends Field> void transform(ObjectMapper mapper, ObjectAccess sourceAccess,
-			@Nullable MappingContext<? extends S> sourceContext, ObjectAccess targetAccess,
-			@Nullable MappingContext<? extends T> targetContext) throws MappingException;
+	void transform(ObjectMapper objectMapper, Value source, MappingContext sourceContext,
+			Mapping<? extends Field> sourceMapping, Field sourceField, ObjectAccess targetAccess,
+			MappingContext targetContext) throws MappingException;
+
+	void transform(ObjectMapper objectMapper, Value source, MappingContext sourceContext,
+			Mapping<? extends Field> sourceMapping, Value target, MappingContext targetContext,
+			Mapping<? extends Field> targetMapping, Field targetField) throws MappingException;
 }

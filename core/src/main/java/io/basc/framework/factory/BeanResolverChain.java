@@ -4,9 +4,11 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterDescriptors;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Elements;
 
 public class BeanResolverChain extends BeanResolverConfiguration implements BeanResolver {
 	private final Iterator<? extends BeanResolverExtend> iterator;
@@ -114,7 +116,7 @@ public class BeanResolverChain extends BeanResolverConfiguration implements Bean
 	}
 
 	@Override
-	public Object[] getParameters(ParameterDescriptors parameterDescriptors) {
+	public Elements<? extends Parameter> getParameters(ParameterDescriptors parameterDescriptors) {
 		if (iterator.hasNext()) {
 			return iterator.next().getParameters(parameterDescriptors, this);
 		}

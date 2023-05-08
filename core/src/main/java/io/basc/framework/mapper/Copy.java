@@ -12,6 +12,7 @@ import io.basc.framework.core.reflect.ReflectionApi;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.NestedExceptionUtils;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.mapper.support.DefaultObjectMapping;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.CollectionFactory;
 

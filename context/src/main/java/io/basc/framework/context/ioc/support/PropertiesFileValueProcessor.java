@@ -10,8 +10,8 @@ import io.basc.framework.event.Observable;
 import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.mapper.DefaultObjectMapping;
 import io.basc.framework.mapper.MapperUtils;
+import io.basc.framework.mapper.support.DefaultObjectMapping;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.value.Value;
 

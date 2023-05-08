@@ -7,9 +7,9 @@ import io.basc.framework.util.Elements;
 public interface TableResolver {
 	Elements<IndexInfo> getIndexs(TypeDescriptor source, ParameterDescriptor descriptor);
 
-	String getEngine(TypeDescriptor source);
+	String getEngine(Class<?> sourceClass);
 
-	String getRowFormat(TypeDescriptor source);
+	String getRowFormat(Class<?> sourceClass);
 
-	boolean isAutoCreate(TypeDescriptor source);
+	boolean isAutoCreate(Class<?> sourceClass);
 }
