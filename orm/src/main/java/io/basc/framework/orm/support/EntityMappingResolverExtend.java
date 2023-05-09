@@ -2,12 +2,11 @@ package io.basc.framework.orm.support;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.MappingStrategyFactory;
-import io.basc.framework.mapper.ObjectMapperContext;
+import io.basc.framework.mapper.MappingStrategy;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.orm.EntityMappingResolver;
+import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.comparator.Sort;
@@ -51,13 +50,12 @@ public interface EntityMappingResolverExtend {
 		return chain.isEntity(entityClass, descriptor);
 	}
 
-	default boolean isEntity(Class<?> entityClass, EntityMappingResolver chain) {
-		return chain.isEntity(entityClass);
+	default boolean isEntity(TypeDescriptor source, EntityMappingResolver chain) {
+		return chain.isEntity(source);
 	}
 
-	default boolean isVersionField(Class<?> entityClass, ParameterDescriptor descriptor,
-			EntityMappingResolver chain) {
-		return chain.isVersionField(entityClass, descriptor);
+	default boolean isVersion(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
+		return chain.isVersion(entityClass, descriptor);
 	}
 
 	default Elements<Range<Double>> getNumberRanges(Class<?> entityClass, ParameterDescriptor descriptor,
@@ -65,8 +63,7 @@ public interface EntityMappingResolverExtend {
 		return chain.getNumberRanges(entityClass, descriptor);
 	}
 
-	default boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor,
-			EntityMappingResolver chain) {
+	default boolean isAutoIncrement(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
 		return chain.isAutoIncrement(entityClass, descriptor);
 	}
 
@@ -82,8 +79,7 @@ public interface EntityMappingResolverExtend {
 		return chain.getCharsetName(entityClass);
 	}
 
-	default String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor,
-			EntityMappingResolver chain) {
+	default String getCharsetName(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
 		return chain.getCharsetName(entityClass, descriptor);
 	}
 
@@ -104,8 +100,7 @@ public interface EntityMappingResolverExtend {
 		return chain.getCondition(entityClass, descriptor);
 	}
 
-	default String getRelationship(Class<?> entityClass, ParameterDescriptor descriptor,
-			EntityMappingResolver chain) {
+	default String getRelationship(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
 		return chain.getRelationship(entityClass, descriptor);
 	}
 
@@ -118,9 +113,8 @@ public interface EntityMappingResolverExtend {
 		return chain.isDisplay(entityClass, descriptor);
 	}
 
-	default MappingStrategy getContext(TypeDescriptor sourceType, ObjectMapperContext parent,
-			EntityMappingResolver chain) {
-		return chain.getContext(sourceType, parent);
+	default MappingStrategy getMappingStrategy(TypeDescriptor sourceType, EntityMappingResolver chain) {
+		return chain.getMappingStrategy(sourceType);
 	}
 
 	default boolean isConfigurable(TypeDescriptor sourceType, EntityMappingResolver chain) {

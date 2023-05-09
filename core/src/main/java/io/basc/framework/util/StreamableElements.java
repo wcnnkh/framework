@@ -1,48 +1,34 @@
 package io.basc.framework.util;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class StreamableElements<E> extends StreamableWrapper<E, Streamable<E>> implements Elements<E> {
+public class StreamableElements<E> extends SerializableElements<E> implements Elements<E> {
+	private static final long serialVersionUID = 1L;
+	private final transient Streamable<E> streamable;
 
 	public StreamableElements(Streamable<E> streamable) {
-		super(streamable);
+		Assert.requiredArgument(streamable != null, "streamble");
+		this.streamable = streamable;
 	}
 
 	@Override
-	public <U> Elements<U> convert(Function<? super Stream<E>, ? extends Stream<U>> converter) {
-		return Elements.super.convert(converter);
-	}
-
-	@Override
-	public Elements<E> filter(Predicate<? super E> predicate) {
-		return Elements.super.filter(predicate);
-	}
-
-	@Override
-	public <U> Elements<U> map(Function<? super E, ? extends U> mapper) {
-		return Elements.super.map(mapper);
-	}
-
-	@Override
-	public <U> Elements<U> flatMap(Function<? super E, ? extends Streamable<U>> mapper) {
-		return Elements.super.flatMap(mapper);
+	protected ArrayList<E> create() {
+		return streamable.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
 	public Iterator<E> iterator() {
-		return wrappedTarget.toList().iterator();
+		return super.iterator();
 	}
 
 	@Override
-	public ElementList<E> toList() {
-		return Elements.super.toList();
-	}
-
-	@Override
-	public ElementSet<E> toSet() {
-		return Elements.super.toSet();
+	public Stream<E> stream() {
+		if (streamable != null) {
+			return streamable.stream();
+		}
+		return super.stream();
 	}
 }

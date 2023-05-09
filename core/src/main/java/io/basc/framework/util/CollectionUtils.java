@@ -233,6 +233,34 @@ public abstract class CollectionUtils {
 		return false;
 	}
 
+	/**
+	 * 深度递归
+	 * 
+	 * @param <T>
+	 * @param source
+	 * @return 返回所有路径
+	 */
+	public static <T> List<List<T>> depthFirstTraversal(List<? extends Iterable<? extends T>> source) {
+		List<List<T>> target = new ArrayList<>();
+		depthFirstTraversal(source, target, new ArrayList<>(source.size()), 0);
+		return target;
+	}
+
+	private static <T> void depthFirstTraversal(List<? extends Iterable<? extends T>> source, List<List<T>> target,
+			List<T> results, int deep) {
+		for (T element : source.get(deep)) {
+			results.add(element);
+			if (deep == source.size()) {
+				// 最后一层了
+				target.add(results);
+			} else {
+				List<T> copyList = new ArrayList<>(source.size());
+				copyList.addAll(results);
+				depthFirstTraversal(source, target, copyList, deep + 1);
+			}
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <K, V> MultiValueMap<K, V> emptyMultiValueMap() {
 		return EMPTY_MULTI_VALUE_MAP;
@@ -652,6 +680,31 @@ public abstract class CollectionUtils {
 	}
 
 	/**
+	 * 当comparator返回0进，会实际检验对象是还相等
+	 * 
+	 * @param <K>
+	 * @param <V>
+	 * @param comparator
+	 * @return
+	 */
+	public static <K, V> TreeMap<K, V> newStrictTreeMap(Comparator<? super K> comparator) {
+		Assert.requiredArgument(comparator != null, "comparator");
+		return new TreeMap<>((o1, o2) -> {
+			int order = comparator.compare(o1, o2);
+			if (order == 0) {
+				// 当排序认为相等时并不代表对象是相同的
+				if (o1 == o2 || ObjectUtils.equals(o1, o2)) {
+					return 0;
+				}
+
+				// 返回1,后添加的放在后面
+				return 1;
+			}
+			return order;
+		});
+	}
+
+	/**
 	 * 颠倒一个集合的排列
 	 * 
 	 * @param collection
@@ -817,30 +870,5 @@ public abstract class CollectionUtils {
 
 		return leftColllection.size() == rightCollection.size()
 				&& intersection(leftColllection, rightCollection).size() == leftColllection.size();
-	}
-
-	/**
-	 * 当comparator返回0进，会实际检验对象是还相等
-	 * 
-	 * @param <K>
-	 * @param <V>
-	 * @param comparator
-	 * @return
-	 */
-	public static <K, V> TreeMap<K, V> newStrictTreeMap(Comparator<? super K> comparator) {
-		Assert.requiredArgument(comparator != null, "comparator");
-		return new TreeMap<>((o1, o2) -> {
-			int order = comparator.compare(o1, o2);
-			if (order == 0) {
-				// 当排序认为相等时并不代表对象是相同的
-				if (o1 == o2 || ObjectUtils.equals(o1, o2)) {
-					return 0;
-				}
-
-				// 返回1,后添加的放在后面
-				return 1;
-			}
-			return order;
-		});
 	}
 }

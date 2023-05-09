@@ -7,12 +7,13 @@ import java.util.Map;
 
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
+import io.basc.framework.value.Value;
 
 public interface ObjectKeyFormat {
 
 	String getObjectKeyByIds(EntityMapping<? extends Property> entityMapping, Elements<?> ids);
 
-	<T> String getObjectKey(EntityMapping<? extends Property> structure, Object bean);
+	<T> String getObjectKey(EntityMapping<? extends Property> structure, Value source);
 
 	default <K> Map<String, K> getInIdsKeyMap(EntityMapping<? extends Property> structure,
 			Elements<? extends K> lastPrimaryKeys, Object[] primaryKey) {

@@ -5,6 +5,7 @@ import java.util.Map;
 import io.basc.framework.data.domain.Query;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.page.Pagination;
+import io.basc.framework.value.Value;
 
 public class EntityQuery<E> extends Query<E> {
 	private static final long serialVersionUID = 1L;
@@ -36,7 +37,7 @@ public class EntityQuery<E> extends Query<E> {
 	public <K> Map<K, E> toMap(Elements<? extends K> inPrimaryKeys, Object... primaryKeys) {
 		Map<String, K> keyMap = objectKeyFormat.getInIdsKeyMap(entityMapping, inPrimaryKeys, primaryKeys);
 		return getElements().toMap((e) -> {
-			String key = objectKeyFormat.getObjectKey(entityMapping, e);
+			String key = objectKeyFormat.getObjectKey(entityMapping, Value.of(e));
 			return keyMap.get(key);
 		});
 	}

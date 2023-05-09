@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import io.basc.framework.data.repository.ConditionSymbol;
+import io.basc.framework.data.repository.RelationshipSymbol;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
@@ -11,48 +13,35 @@ import io.basc.framework.util.Pair;
 import io.basc.framework.util.Processor;
 
 public final class ConditionsBuilder {
-	private final RelationshipKeywords relationshipKeywords;
-	private final ConditionKeywords conditionKeywords;
 	private final Condition condition;
 	private List<WithCondition> withs = new ArrayList<WithCondition>();
 
-	public ConditionsBuilder(RelationshipKeywords relationshipKeywords, ConditionKeywords conditionKeywords) {
-		this(relationshipKeywords, conditionKeywords,
-				new Condition(conditionKeywords.getEqualKeywords().getFirst(), Parameter.INVALID));
+	public ConditionsBuilder() {
+		this(new Condition(ConditionSymbol.EQU, Parameter.INVALID));
 	}
 
-	public ConditionsBuilder(RelationshipKeywords relationshipKeywords, ConditionKeywords conditionKeywords,
-			Condition condition) {
-		Assert.requiredArgument(relationshipKeywords != null, "relationshipKeywords");
-		Assert.requiredArgument(conditionKeywords != null, "conditionKeywords");
+	public ConditionsBuilder(Condition condition) {
 		Assert.requiredArgument(condition != null, "condition");
-		this.relationshipKeywords = relationshipKeywords;
-		this.conditionKeywords = conditionKeywords;
 		this.condition = condition;
 	}
 
-	public <E extends Throwable> ConditionsBuilder(RelationshipKeywords relationshipKeywords,
-			ConditionKeywords conditionKeywords,
+	public <E extends Throwable> ConditionsBuilder(
 			Processor<? super ConditionBuilder, ? extends Condition, ? extends E> conditionBuilder) throws E {
-		Assert.requiredArgument(relationshipKeywords != null, "relationshipKeywords");
-		Assert.requiredArgument(conditionKeywords != null, "conditionKeywords");
 		Assert.requiredArgument(conditionBuilder != null, "conditionBuilder");
-		this.relationshipKeywords = relationshipKeywords;
-		this.conditionKeywords = conditionKeywords;
-		this.condition = conditionBuilder.process(new ConditionBuilder(conditionKeywords));
+		this.condition = conditionBuilder.process(new ConditionBuilder());
 	}
 
 	public ConditionsBuilder newBuilder() {
-		return new ConditionsBuilder(relationshipKeywords, conditionKeywords);
+		return new ConditionsBuilder();
 	}
 
 	public ConditionsBuilder newBuilder(Condition condition) {
-		return new ConditionsBuilder(relationshipKeywords, conditionKeywords, condition);
+		return new ConditionsBuilder(condition);
 	}
 
 	public <E extends Throwable> ConditionsBuilder newBuilder(
 			Processor<ConditionBuilder, Condition, E> conditionBuilder) throws E {
-		return newBuilder(conditionBuilder.process(new ConditionBuilder(conditionKeywords)));
+		return newBuilder(conditionBuilder.process(new ConditionBuilder()));
 	}
 
 	public ConditionsBuilder with(WithCondition condition) {
@@ -60,86 +49,86 @@ public final class ConditionsBuilder {
 		return this;
 	}
 
-	public ConditionsBuilder withConditions(String relationship, Conditions conditions) {
+	public ConditionsBuilder withConditions(RelationshipSymbol relationship, Conditions conditions) {
 		return with(new WithCondition(relationship, conditions));
 	}
 
-	public <E extends Throwable> ConditionsBuilder withConditions(String relationship,
+	public <E extends Throwable> ConditionsBuilder withConditions(RelationshipSymbol relationship,
 			Processor<ConditionsBuilder, Conditions, E> conditionsBuilder) throws E {
-		return withConditions(relationship,
-				conditionsBuilder.process(new ConditionsBuilder(relationshipKeywords, conditionKeywords)));
+		return withConditions(relationship, conditionsBuilder.process(new ConditionsBuilder()));
 	}
 
 	public ConditionsBuilder and(Conditions conditions) {
-		return withConditions(relationshipKeywords.getAndKeywords().getFirst(), conditions);
+		return withConditions(RelationshipSymbol.AND, conditions);
 	}
 
 	public ConditionsBuilder or(Conditions conditions) {
-		return withConditions(relationshipKeywords.getOrKeywords().getFirst(), conditions);
+		return withConditions(RelationshipSymbol.OR, conditions);
 	}
 
 	public <E extends Throwable> ConditionsBuilder andConditions(Processor<ConditionsBuilder, Conditions, E> processor)
 			throws E {
-		return and(processor.process(new ConditionsBuilder(relationshipKeywords, conditionKeywords)));
+		return and(processor.process(new ConditionsBuilder()));
 	}
 
 	public <E extends Throwable> ConditionsBuilder orConditions(Processor<ConditionsBuilder, Conditions, E> processor)
 			throws E {
-		return or(processor.process(new ConditionsBuilder(relationshipKeywords, conditionKeywords)));
+		return or(processor.process(new ConditionsBuilder()));
 	}
 
-	public ConditionsBuilder withCondition(String relationship, Condition conditions) {
+	public ConditionsBuilder withCondition(RelationshipSymbol relationship, Condition conditions) {
 		return withConditions(relationship, new Conditions(conditions, null));
 	}
 
-	public <E extends Throwable> ConditionsBuilder withCondition(String relationship,
+	public <E extends Throwable> ConditionsBuilder withCondition(RelationshipSymbol relationship,
 			Processor<ConditionBuilder, Condition, E> conditionBuilder) throws E {
-		return withCondition(relationship, conditionBuilder.process(new ConditionBuilder(this.conditionKeywords)));
+		return withCondition(relationship, conditionBuilder.process(new ConditionBuilder()));
 	}
 
-	public ConditionsBuilder with(String relationship, String name, String condition, Object value) {
-		return withCondition(relationship, new Condition(name, new Parameter(name, value)));
+	public ConditionsBuilder with(RelationshipSymbol relationship, String name, ConditionSymbol condition,
+			Object value) {
+		return withCondition(relationship, new Condition(condition, new Parameter(name, value)));
 	}
 
 	public ConditionsBuilder and(Condition condition) {
-		return withCondition(relationshipKeywords.getAndKeywords().getFirst(), condition);
+		return withCondition(RelationshipSymbol.AND, condition);
 	}
 
 	public <E extends Throwable> ConditionsBuilder and(Processor<ConditionBuilder, Condition, E> conditionBuilder)
 			throws E {
-		return and(conditionBuilder.process(new ConditionBuilder(conditionKeywords)));
+		return and(conditionBuilder.process(new ConditionBuilder()));
 	}
 
 	public ConditionsBuilder or(Condition condition) {
-		return withCondition(relationshipKeywords.getOrKeywords().getFirst(), condition);
+		return withCondition(RelationshipSymbol.OR, condition);
 	}
 
 	public <E extends Throwable> ConditionsBuilder or(Processor<ConditionBuilder, Condition, E> conditionBuilder)
 			throws E {
-		return or(conditionBuilder.process(new ConditionBuilder(this.conditionKeywords)));
+		return or(conditionBuilder.process(new ConditionBuilder()));
 	}
 
-	public ConditionsBuilder and(String name, String condition, Object value) {
-		return and(new Condition(name, new Parameter(name, value)));
+	public ConditionsBuilder and(String name, ConditionSymbol condition, Object value) {
+		return and(new Condition(condition, new Parameter(name, value)));
 	}
 
-	public ConditionsBuilder or(String name, String condition, Object value) {
-		return or(new Condition(name, new Parameter(name, value)));
+	public ConditionsBuilder or(String name, ConditionSymbol condition, Object value) {
+		return or(new Condition(condition, new Parameter(name, value)));
 	}
 
 	public Conditions build() {
 		return new Conditions(condition, withs);
 	}
 
-	public static Conditions build(Elements<Pair<String, Condition>> conditions) {
+	public static Conditions build(Elements<Pair<RelationshipSymbol, Condition>> conditions) {
 		return build(conditions.iterator());
 	}
 
-	public static Conditions build(Iterator<Pair<String, Condition>> iterator) {
+	public static Conditions build(Iterator<Pair<RelationshipSymbol, Condition>> iterator) {
 		if (iterator == null || !iterator.hasNext()) {
 			return null;
 		}
-		Pair<String, Condition> pair = iterator.next();
+		Pair<RelationshipSymbol, Condition> pair = iterator.next();
 		Condition root = pair.getValue();
 		List<WithCondition> list = new ArrayList<WithCondition>();
 		while (iterator.hasNext()) {

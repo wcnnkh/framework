@@ -6,6 +6,7 @@ import io.basc.framework.env.Sys;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.ObjectKeyFormat;
 import io.basc.framework.orm.Property;
+import io.basc.framework.util.Elements;
 import io.basc.framework.value.Value;
 
 public class DefaultObjectKeyFormat implements ObjectKeyFormat {
@@ -26,12 +27,13 @@ public class DefaultObjectKeyFormat implements ObjectKeyFormat {
 	}
 
 	@Override
-	public String getObjectKeyByIds(EntityMapping<? extends Property> structure, Iterator<?> ids) {
+	public String getObjectKeyByIds(EntityMapping<? extends Property> entityMapping, Elements<?> ids) {
 		StringBuilder sb = new StringBuilder(128);
-		sb.append(structure.getName());
-		Iterator<? extends Property> primaryKeys = structure.getPrimaryKeys().iterator();
-		while (primaryKeys.hasNext() && ids.hasNext()) {
-			appendObjectKeyByValue(sb, primaryKeys.next(), ids.next());
+		sb.append(entityMapping.getName());
+		Iterator<? extends Property> primaryKeys = entityMapping.getPrimaryKeys().iterator();
+		Iterator<? extends Object> idIterator = ids.iterator();
+		while (primaryKeys.hasNext() && idIterator.hasNext()) {
+			appendObjectKeyByValue(sb, primaryKeys.next(), idIterator.next());
 		}
 		return sb.toString();
 	}

@@ -4,11 +4,11 @@ import java.util.Iterator;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.ObjectMapperContext;
+import io.basc.framework.mapper.MappingStrategy;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.orm.EntityMappingResolver;
+import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
@@ -91,16 +91,16 @@ public class EntityMappingResolverExtendChain implements EntityMappingResolver {
 		return nextChain == null ? false : nextChain.isEntity(entityClass, descriptor);
 	}
 
-	public boolean isEntity(Class<?> entityClass) {
+	public boolean isEntity(TypeDescriptor source) {
 		if (iterator.hasNext()) {
-			return iterator.next().isEntity(entityClass, this);
+			return iterator.next().isEntity(source, this);
 		}
-		return nextChain == null ? false : nextChain.isEntity(entityClass);
+		return nextChain == null ? false : nextChain.isEntity(source);
 	}
 
 	public boolean isVersion(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
-			return iterator.next().isVersionField(entityClass, descriptor, this);
+			return iterator.next().isVersion(entityClass, descriptor, this);
 		}
 		return nextChain == null ? false : nextChain.isVersion(entityClass, descriptor);
 	}
@@ -218,11 +218,11 @@ public class EntityMappingResolverExtendChain implements EntityMappingResolver {
 	}
 
 	@Override
-	public ObjectMapperContext getContext(TypeDescriptor sourceType, ObjectMapperContext parent) {
+	public MappingStrategy getMappingStrategy(TypeDescriptor source) {
 		if (iterator.hasNext()) {
-			return iterator.next().getContext(sourceType, parent, this);
+			return iterator.next().getMappingStrategy(source, this);
 		}
-		return nextChain == null ? new ObjectMapperContext(parent) : nextChain.getContext(sourceType, parent);
+		return nextChain == null ? null : nextChain.getMappingStrategy(source);
 	}
 
 	@Override

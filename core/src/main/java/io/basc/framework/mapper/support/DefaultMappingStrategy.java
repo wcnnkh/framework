@@ -1,10 +1,11 @@
 package io.basc.framework.mapper.support;
 
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import io.basc.framework.convert.ConversionService;
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Getter;
@@ -105,11 +106,35 @@ public class DefaultMappingStrategy implements MappingStrategy {
 	public void transform(ObjectMapper objectMapper, ObjectAccess sourceAccess, MappingContext sourceContext,
 			Value target, MappingContext targetContext, Mapping<? extends Field> targetMapping, Field targetField)
 			throws MappingException {
+		Elements<Field> fields = targetContext.parents().map((e) -> e.getContext()).filter((e) -> e != null).concat(Elements.singleton(targetField));
+		
+		
+		Elements<Elements<String>> parentAliasNames = targetContext.parents().map((e) -> e.getContext().getAliasNames());
+		//组合出各种别名
+		
+		for(Elements<String> alisNames : parentAliasNames) {
+			List<String> list = new ArrayList<>();
+			Iterator<String> iterator = alisNames.iterator();
+			while(iterator.hasNext()) {
+				
+			}
+			for(String name : alisNames) {
+				list.add(name);
+			}
+		}
+		
+		targetContext.parents().map((e) -> e.getContext()).flatMap((e) -> e.getAliasNames())
+		
+		Elements<Setter> setters = targetField.getSetters().map((e) -> e.rename(targetField.getName())).toList();
+		
 		for (Setter setter : targetField.getSetters()) {
 			if (!predicateRegistry.test(setter.rename(targetField.getName()))) {
-				continue;
+				// 只要有一个校验不通过就直接return
+				return;
 			}
+		}
 
+		for (Setter setter : targetField.getSetters()) {
 			if (objectMapper.isEntity(setter.getTypeDescriptor())) {
 				Object entity = objectMapper.newInstance(setter.getTypeDescriptor());
 				MappingContext entityContext = new MappingContext(targetMapping, targetField, targetContext);

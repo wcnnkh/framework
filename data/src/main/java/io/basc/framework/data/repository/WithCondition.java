@@ -1,8 +1,7 @@
-package io.basc.framework.orm.repository;
+package io.basc.framework.data.repository;
 
 import java.io.Serializable;
 
-import io.basc.framework.data.repository.RelationshipSymbol;
 import lombok.Data;
 
 @Data
