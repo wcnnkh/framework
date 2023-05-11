@@ -2,27 +2,28 @@ package io.basc.framework.beans.support;
 
 import java.lang.reflect.Constructor;
 
-import io.basc.framework.beans.Executable;
+import io.basc.framework.aop.Aop;
+import io.basc.framework.aop.Proxy;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.MethodParameter;
-import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.mapper.Parameter;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import io.basc.framework.value.Value;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@AllArgsConstructor
-public class ExecutableConstructor implements Executable {
+@Getter
+@Setter
+public class ConstructorExecutor extends AbstractBeanExecutor {
+	private Aop aop;
 	private final Constructor<?> constructor;
 	private volatile TypeDescriptor typeDescriptor;
 	private volatile Elements<? extends ParameterDescriptor> parameterDescriptors;
 
-	public ExecutableConstructor(Constructor<?> constructor) {
+	public ConstructorExecutor(Constructor<?> constructor) {
 		Assert.requiredArgument(constructor != null, "constructor");
 		this.constructor = constructor;
 	}
@@ -53,35 +54,29 @@ public class ExecutableConstructor implements Executable {
 	}
 
 	@Override
-	public boolean isExecuted() {
-		return constructor.getParameterCount() == 0;
+	public boolean isExecutable(Elements<? extends TypeDescriptor> types) {
+		if (aop != null && !aop.canProxy(getTypeDescriptor().getType())) {
+			return false;
+		}
+		return super.isExecutable(types);
 	}
 
 	@Override
-	public Object execute() {
-		return ReflectionUtils.newInstance(constructor);
+	public Object execute(Elements<? extends Value> args) {
+		if (aop != null && !aop.canProxy(getTypeDescriptor().getType())) {
+			throw new UnsupportedException(constructor.toString());
+		}
+
+		Proxy proxy = aop.getProxy(getTypeDescriptor().getType());
+		return proxy.create(args.map((e) -> e.getTypeDescriptor().getType()).toArray(new Class[0]),
+				args.map((e) -> e.getSource()).toArray());
 	}
 
 	@Override
-	public boolean isExecutedByTypes(Elements<? extends TypeDescriptor> types) {
-		return getParameterDescriptors().equals(types, (param, type) -> type.isAssignableTo(param.getTypeDescriptor()));
+	public boolean isExecutableByParameters(Elements<? extends Value> parameters) {
+		if (aop != null && !aop.canProxy(getTypeDescriptor().getType())) {
+			return false;
+		}
+		return super.isExecutableByParameters(parameters);
 	}
-
-	@Override
-	public Object executeByTypes(Elements<? extends Value> args) {
-		return ReflectionUtils.newInstance(constructor, args.map((e) -> e.getSource()).toArray());
-	}
-
-	@Override
-	public boolean isExecuteByParameters(Elements<? extends Parameter> parameters) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Object executeByParameters(Elements<? extends Parameter> parameters) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

@@ -12,7 +12,7 @@ import io.basc.framework.value.Value;
  * @author wcnnkh
  *
  */
-public interface Executable {
+public interface BeanExecutor {
 	TypeDescriptor getTypeDescriptor();
 
 	Elements<? extends ParameterDescriptor> getParameterDescriptors();
@@ -22,7 +22,7 @@ public interface Executable {
 	 * 
 	 * @return
 	 */
-	boolean isExecuted();
+	boolean isExecutable();
 
 	/**
 	 * 是否可以无参数执行
@@ -37,7 +37,7 @@ public interface Executable {
 	 * @param types
 	 * @return
 	 */
-	boolean isExecutedByTypes(Elements<? extends TypeDescriptor> types);
+	boolean isExecutable(Elements<? extends TypeDescriptor> types);
 
 	/**
 	 * 根据参数类型执行
@@ -45,21 +45,25 @@ public interface Executable {
 	 * @param args
 	 * @return
 	 */
-	Object executeByTypes(Elements<? extends Value> args);
+	Object execute(Elements<? extends Value> args);
 
 	/**
 	 * 根据参数判断是否可以执行
 	 * 
 	 * @param parameters
 	 * @return
+	 * @see Value
+	 * @see Parameter
 	 */
-	boolean isExecuteByParameters(Elements<? extends Parameter> parameters);
+	boolean isExecutableByParameters(Elements<? extends Value> parameters);
 
 	/**
 	 * 根据参数执行
 	 * 
 	 * @param parameters
 	 * @return
+	 * @see Value
+	 * @see Parameter
 	 */
-	Object executeByParameters(Elements<? extends Parameter> parameters);
+	Object executeByParameters(Elements<? extends Value> parameters);
 }

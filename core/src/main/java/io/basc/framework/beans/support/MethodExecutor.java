@@ -4,25 +4,29 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.function.Supplier;
 
-import io.basc.framework.beans.Executable;
+import io.basc.framework.aop.Aop;
+import io.basc.framework.aop.Proxy;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.mapper.Parameter;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import io.basc.framework.value.Value;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-public class ExecutableMethod implements Executable {
+@Getter
+@Setter
+public class MethodExecutor extends AbstractBeanExecutor {
 	private final Supplier<? extends Object> targetSupplier;
 	private final Method method;
 	private volatile TypeDescriptor typeDescriptor;
 	private volatile Elements<? extends ParameterDescriptor> parameterDescriptors;
+	private Aop aop;
 
-	public ExecutableMethod(Supplier<? extends Object> targetSupplier, Method method) {
+	public MethodExecutor(Supplier<? extends Object> targetSupplier, Method method) {
 		Assert.requiredArgument(targetSupplier != null, "targetSupplier");
 		Assert.requiredArgument(method != null, "method");
 		this.targetSupplier = targetSupplier;
@@ -54,36 +58,41 @@ public class ExecutableMethod implements Executable {
 	}
 
 	@Override
-	public boolean isExecuted() {
-		return method.getParameterCount() == 0;
+	public boolean isExecutable(Elements<? extends TypeDescriptor> types) {
+		if (aop != null && !aop.canProxy(getTypeDescriptor().getType())) {
+			return false;
+		}
+		return super.isExecutable(types);
 	}
 
 	@Override
-	public Object execute() {
-		Object target = Modifier.isStatic(method.getModifiers()) ? null : targetSupplier.get();
-		return ReflectionUtils.invoke(method, target);
-	}
-
-	@Override
-	public boolean isExecutedByTypes(Elements<? extends TypeDescriptor> types) {
-		return getParameterDescriptors().equals(types, (param, type) -> type.isAssignableTo(param.getTypeDescriptor()));
-	}
-
-	@Override
-	public Object executeByTypes(Elements<? extends Value> args) {
+	public Object execute(Elements<? extends Value> args) {
+		if (aop != null && !aop.canProxy(getTypeDescriptor().getType())) {
+			throw new UnsupportedException("Proxy " + getTypeDescriptor().getType());
+		}
 		Object source = Modifier.isStatic(method.getModifiers()) ? null : targetSupplier.get();
-		return ReflectionUtils.invoke(method, source, args.map((e) -> e.getSource()).toArray());
+		Object bean = ReflectionUtils.invoke(method, source, args.map((e) -> e.getSource()).toArray());
+		if (aop == null) {
+			return bean;
+		}
+
+		Proxy proxy = aop.getProxy(getTypeDescriptor().getType(), bean);
+		return proxy.create();
 	}
 
 	@Override
-	public boolean isExecuteByParameters(Elements<? extends Parameter> parameters) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isExecutableByParameters(Elements<? extends Value> parameters) {
+		if (aop != null && !aop.canProxy(getTypeDescriptor().getType())) {
+			return false;
+		}
+		return super.isExecutableByParameters(parameters);
 	}
 
 	@Override
-	public Object executeByParameters(Elements<? extends Parameter> parameters) {
-		// TODO Auto-generated method stub
-		return null;
+	public Object executeByParameters(Elements<? extends Value> parameters) {
+		if (aop != null && !aop.canProxy(getTypeDescriptor().getType())) {
+			throw new UnsupportedException(method.toString());
+		}
+		return super.executeByParameters(parameters);
 	}
 }
