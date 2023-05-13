@@ -1,8 +1,5 @@
-package io.basc.framework.orm.repository;
+package io.basc.framework.data.repository;
 
-import io.basc.framework.data.repository.DeleteOperation;
-import io.basc.framework.data.repository.InsertOperation;
-import io.basc.framework.data.repository.UpdateOperation;
 import io.basc.framework.value.Value;
 
 public interface RepositoryResolver {

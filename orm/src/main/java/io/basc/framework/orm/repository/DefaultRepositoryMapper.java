@@ -18,22 +18,41 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.Parameter;
-import io.basc.framework.orm.EntityMapper;
+import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.OrmException;
 import io.basc.framework.orm.Property;
+import io.basc.framework.orm.support.DefaultEntityMapper;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.Pair;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.comparator.Sort;
 
-public interface RepositoryMapper extends EntityMapper {
+public abstract class DefaultRepositoryMapper<S, E extends Throwable> extends DefaultEntityMapper
+		implements RepositoryMapper {
 
-	default List<Parameter> open(Class<?> entityClass, Collection<? extends Parameter> columns,
+	@Override
+	public String getRelationship(Class<?> entityClass, ParameterDescriptor descriptor) {
+		String relationship = RepositorySetting.getLocalRelationship().get(descriptor.getName());
+		if (StringUtils.isNotEmpty(relationship)) {
+			return relationship;
+		}
+		return super.getRelationship(entityClass, descriptor);
+	}
+
+	@Override
+	public String getCondition(Class<?> entityClass, ParameterDescriptor descriptor) {
+		String condition = RepositorySetting.getLocalConditions().get(descriptor.getName());
+		if (StringUtils.isNotEmpty(condition)) {
+			return condition;
+		}
+		return super.getCondition(entityClass, descriptor);
+	}
+
+	public List<Parameter> open(Class<?> entityClass, Collection<? extends Parameter> columns,
 			List<OrderColumn> appendableOrders) {
 		if (CollectionUtils.isEmpty(columns)) {
 			return Collections.emptyList();
@@ -64,7 +83,7 @@ public interface RepositoryMapper extends EntityMapper {
 		return list;
 	}
 
-	default Conditions open(Class<?> entityClass, Conditions conditions, List<OrderColumn> appendableOrders) {
+	public Conditions open(Class<?> entityClass, Conditions conditions, List<OrderColumn> appendableOrders) {
 		if (conditions == null) {
 			return null;
 		}
@@ -93,7 +112,7 @@ public interface RepositoryMapper extends EntityMapper {
 		return new Conditions(condition, withConditions);
 	}
 
-	default Parameter parseParameter(Class<?> entityClass, Property property, @Nullable Object value) {
+	public Parameter parseParameter(Class<?> entityClass, Property property, @Nullable Object value) {
 		TypeDescriptor valueTypeDescriptor = new TypeDescriptor(property.getGetter());
 		if (value != null && !ClassUtils.isAssignableValue(valueTypeDescriptor.getType(), value)) {
 			valueTypeDescriptor = valueTypeDescriptor.narrow(value);
@@ -101,7 +120,7 @@ public interface RepositoryMapper extends EntityMapper {
 		return new Parameter(property.getName(), value, valueTypeDescriptor);
 	}
 
-	default void resolveOrders(Class<?> entityClass, Property property, List<OrderColumn> appendable) {
+	public void resolveOrders(Class<?> entityClass, Property property, List<OrderColumn> appendable) {
 		if (appendable == null) {
 			return;
 		}
@@ -114,7 +133,7 @@ public interface RepositoryMapper extends EntityMapper {
 		appendable.add(new OrderColumn(property.getName(), sort, null));
 	}
 
-	default <T, P extends Property> Elements<Parameter> parseParameters(Class<?> entityClass,
+	public <T, P extends Property> Elements<Parameter> parseParameters(Class<?> entityClass,
 			Elements<? extends P> parameters, @Nullable List<OrderColumn> orders,
 			Processor<P, Object, OrmException> valueProcessor, @Nullable Predicate<Pair<P, Object>> predicate)
 			throws OrmException {
@@ -126,7 +145,7 @@ public interface RepositoryMapper extends EntityMapper {
 				.map((e) -> parseParameter(entityClass, e.getKey(), e.getValue()));
 	}
 
-	default Conditions parseConditions(Class<?> entityClass, Elements<? extends Parameter> parameters) {
+	public Conditions parseConditions(Class<?> entityClass, Elements<? extends Parameter> parameters) {
 		return ConditionsBuilder.build(parameters.map((column) -> {
 			RelationshipSymbol relationship = getRelationship(entityClass, column);
 			if (StringUtils.isEmpty(relationship)) {
@@ -142,14 +161,14 @@ public interface RepositoryMapper extends EntityMapper {
 		}));
 	}
 
-	default <T, P extends Property> Conditions parseConditions(Class<?> entityClass, Elements<? extends P> parameters,
+	public <T, P extends Property> Conditions parseConditions(Class<?> entityClass, Elements<? extends P> parameters,
 			@Nullable List<OrderColumn> orders, Processor<P, Object, OrmException> valueProcessor,
 			@Nullable Predicate<Pair<P, Object>> predicate) throws OrmException {
 		Elements<Parameter> ps = parseParameters(entityClass, parameters, orders, valueProcessor, predicate);
 		return parseConditions(entityClass, ps);
 	}
 
-	default <T> List<Parameter> parseValues(Class<? extends T> entityClass, T entity,
+	public <T> List<Parameter> parseValues(Class<? extends T> entityClass, T entity,
 			Mapping<? extends Property> structure) {
 		return parseParameters(entityClass, structure.filter((e) -> !e.isEntity()).getElements(), null,
 				(e) -> e.get(entity), (e) -> e.getKey().isNullable() || ObjectUtils.isNotEmpty(e.getValue()))

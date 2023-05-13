@@ -1,5 +1,6 @@
 package io.basc.framework.orm.repository;
 
+import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.ConditionSymbol;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.Assert;

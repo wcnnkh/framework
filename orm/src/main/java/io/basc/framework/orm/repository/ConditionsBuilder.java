@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import io.basc.framework.data.repository.Condition;
 import io.basc.framework.data.repository.ConditionSymbol;
+import io.basc.framework.data.repository.Conditions;
 import io.basc.framework.data.repository.RelationshipSymbol;
+import io.basc.framework.data.repository.WithCondition;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;

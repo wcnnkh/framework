@@ -64,4 +64,8 @@ public class ConditionSymbol extends RepositorySymbol {
 	public ConditionSymbol(String name) {
 		super(name);
 	}
+	
+	public static Elements<ConditionSymbol> getConditionSymbols(String name){
+		return getSymbols(ConditionSymbol.class, name);
+	}
 }

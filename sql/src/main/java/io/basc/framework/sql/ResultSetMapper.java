@@ -5,9 +5,9 @@ import java.sql.SQLException;
 
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.orm.repository.DefaultRepositoryObjectMapper;
+import io.basc.framework.orm.repository.DefaultRepositoryMapper;
 
-public class ResultSetMapper extends DefaultRepositoryObjectMapper<ResultSet, SQLException> {
+public class ResultSetMapper extends DefaultRepositoryMapper<ResultSet, SQLException> {
 
 	public ResultSetMapper() {
 		registerObjectAccessFactory(ResultSet.class, (s, e) -> new ResultSetAccess(s));

@@ -7,7 +7,7 @@ import io.basc.framework.util.Elements;
 import io.basc.framework.value.Value;
 
 /**
- * 可执行的
+ * bean的执行器
  * 
  * @author wcnnkh
  *
