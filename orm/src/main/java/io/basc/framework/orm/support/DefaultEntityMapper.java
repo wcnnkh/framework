@@ -9,6 +9,11 @@ import org.w3c.dom.NodeList;
 import io.basc.framework.aop.support.ProxyUtils;
 import io.basc.framework.convert.ConverterNotFoundException;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.data.repository.Column;
+import io.basc.framework.data.repository.Condition;
+import io.basc.framework.data.repository.Expression;
+import io.basc.framework.data.repository.OperationSymbol;
+import io.basc.framework.data.repository.Repository;
 import io.basc.framework.dom.NodeListAccess;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
@@ -16,10 +21,8 @@ import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Mapping;
-import io.basc.framework.mapper.ObjectMapperContext;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.mapper.filter.ParameterDescriptorFilter;
 import io.basc.framework.mapper.support.DefaultObjectMapper;
 import io.basc.framework.orm.DefaultEntityMapping;
 import io.basc.framework.orm.DefaultProperty;
@@ -32,10 +35,8 @@ import io.basc.framework.orm.annotation.IgnoreConfigurationProperty;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.util.comparator.Sort;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.util.placeholder.PlaceholderFormatAware;
-import io.basc.framework.value.Value;
 
 public class DefaultEntityMapper extends DefaultObjectMapper
 		implements EntityMapper, Configurable, PlaceholderFormatAware {
@@ -50,11 +51,11 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 
 	public DefaultEntityMapper() {
 		registerObjectAccessFactory(NodeList.class, (s, e) -> new NodeListAccess(s, e));
-		getDefaultMappingStrategy().getPredicateRegistry().and((field) -> {
-			return field.getGetters()
-					.noneMatch((e) -> e.getTypeDescriptor().getAnnotation(IgnoreConfigurationProperty.class) != null)
-					&& field.getSetters().noneMatch(
-							(e) -> e.getTypeDescriptor().getAnnotation(IgnoreConfigurationProperty.class) != null);
+		getMappingStrategy().getPredicateRegistry().and((parameter) -> {
+			if (parameter.getTypeDescriptor().isAnnotationPresent(IgnoreConfigurationProperty.class)) {
+				return false;
+			}
+			return true;
 		});
 		objectRelationalResolverExtendServices.register(annotationObjectRelationalResolverExtend);
 	}
@@ -135,15 +136,10 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 	}
 
 	@Override
-	public String getCondition(Class<?> entityClass, ParameterDescriptor descriptor) {
+	public Elements<? extends Condition> getConditions(OperationSymbol operationSymbol, TypeDescriptor source,
+			Parameter parameter) {
 		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
-				.getCondition(entityClass, descriptor);
-	}
-
-	@Override
-	public ObjectMapperContext getContext(TypeDescriptor sourceType, ObjectMapperContext parent) {
-		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
-				.getContext(sourceType, parent);
+				.getConditions(operationSymbol, source, parameter);
 	}
 
 	private String getDefaultEntityName(Class<?> entityClass) {
@@ -195,15 +191,10 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 	}
 
 	@Override
-	public String getRelationship(Class<?> entityClass, ParameterDescriptor descriptor) {
+	public Elements<? extends io.basc.framework.data.repository.Sort> getSorts(OperationSymbol operationSymbol,
+			TypeDescriptor source, ParameterDescriptor descriptor) {
 		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
-				.getRelationship(entityClass, descriptor);
-	}
-
-	@Override
-	public Sort getSort(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
-				.getSort(entityClass, descriptor);
+				.getSorts(operationSymbol, source, descriptor);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -260,16 +251,16 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isDisplay(entityClass, descriptor);
 	}
-
+	
 	@Override
-	public boolean isEntity(Class<?> entityClass) {
-		return super.isEntity(entityClass) || EntityMappingResolverExtendChain
-				.build(objectRelationalResolverExtendServices.iterator()).isEntity(entityClass);
+	public boolean isEntity(TypeDescriptor source) {
+		return super.isEntity(source) || EntityMappingResolverExtendChain
+				.build(objectRelationalResolverExtendServices.iterator()).isEntity(source);
 	}
-
+	
 	@Override
 	public boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
-		return isEntity(descriptor.getTypeDescriptor().getType()) || EntityMappingResolverExtendChain
+		return isEntity(descriptor.getTypeDescriptor()) || EntityMappingResolverExtendChain
 				.build(objectRelationalResolverExtendServices.iterator()).isEntity(entityClass, descriptor);
 	}
 
@@ -314,9 +305,9 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 	}
 
 	@Override
-	public boolean isVersionField(Class<?> entityClass, ParameterDescriptor descriptor) {
+	public boolean isVersion(Class<?> entityClass, ParameterDescriptor descriptor) {
 		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
-				.isVersionField(entityClass, descriptor);
+				.isVersion(entityClass, descriptor);
 	}
 
 	public void setHumpNamingReplacement(boolean humpNamingReplacement) {
@@ -342,8 +333,28 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 	}
 
 	@Override
-	public boolean hasEffectiveValue(Value source, Parameter parameter) {
+	public boolean hasEffectiveValue(TypeDescriptor source, Parameter parameter) {
 		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.hasEffectiveValue(source, parameter);
+	}
+
+	@Override
+	public Elements<? extends Expression> getExpressions(OperationSymbol operationSymbol, TypeDescriptor source,
+			Parameter parameter) {
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator()).getExpressions(operationSymbol, source, parameter);
+	}
+
+	@Override
+	public Elements<? extends Column> getColumns(OperationSymbol operationSymbol, TypeDescriptor source,
+			Parameter parameter) {
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+				.getColumns(operationSymbol, source, parameter);
+	}
+
+	@Override
+	public Elements<? extends Repository> getRepositorys(OperationSymbol operationSymbol,
+			TypeDescriptor entityTypeDescriptor, EntityMapping<? extends Property> entityMapping) {
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+				.getRepositorys(operationSymbol, entityTypeDescriptor, entityMapping);
 	}
 }

@@ -10,7 +10,7 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Assert;
 import io.basc.framework.value.PropertyFactory;
 
-public class Configurator extends DefaultEntityMapper1 {
+public class Configurator extends DefaultEntityMapper {
 	protected final Object source;
 	private final TypeDescriptor sourceType;
 

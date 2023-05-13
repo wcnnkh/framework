@@ -1,16 +1,17 @@
 package io.basc.framework.orm;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.Getter;
+import io.basc.framework.data.repository.Column;
+import io.basc.framework.data.repository.Condition;
+import io.basc.framework.data.repository.Expression;
+import io.basc.framework.data.repository.OperationSymbol;
+import io.basc.framework.data.repository.Repository;
+import io.basc.framework.data.repository.Sort;
 import io.basc.framework.mapper.MappingStrategyFactory;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
-import io.basc.framework.util.comparator.Sort;
-import io.basc.framework.value.Value;
 
 public interface EntityMappingResolver extends MappingStrategyFactory {
 	boolean isIgnore(Class<?> sourceClass);
@@ -51,48 +52,25 @@ public interface EntityMappingResolver extends MappingStrategyFactory {
 
 	boolean isIncrement(Class<?> sourceClass, ParameterDescriptor descriptor);
 
-	@Nullable
-	Sort getSort(Class<?> sourceClass, ParameterDescriptor descriptor);
-
-	String getCondition(Class<?> sourceClass, ParameterDescriptor descriptor);
-
-	String getRelationship(Class<?> sourceClass, ParameterDescriptor descriptor);
-
 	ForeignKey getForeignKey(Class<?> sourceClass, ParameterDescriptor descriptor);
 
 	boolean isDisplay(Class<?> sourceClass, ParameterDescriptor descriptor);
 
 	boolean isConfigurable(TypeDescriptor source);
 
-	/**
-	 * 是否存在有效值
-	 * 
-	 * @param entity
-	 * @param field
-	 * @return
-	 */
-	default boolean hasEffectiveValue(Value source, Field field) {
-		if (!field.isSupportGetter()) {
-			return false;
-		}
+	boolean hasEffectiveValue(TypeDescriptor source, Parameter parameter);
 
-		for (Getter getter : field.getGetters()) {
-			Object value = getter.get(source);
-			if (value == null) {
-				continue;
-			}
+	Elements<? extends Expression> getExpressions(OperationSymbol operationSymbol, TypeDescriptor source,
+			Parameter parameter);
 
-			Parameter parameter = new Parameter(getter.getName(), value, getter.getTypeDescriptor());
-			if (!parameter.isPresent()) {
-				continue;
-			}
+	Elements<? extends Column> getColumns(OperationSymbol operationSymbol, TypeDescriptor source, Parameter parameter);
 
-			if (hasEffectiveValue(source, field)) {
-				return true;
-			}
-		}
-		return false;
-	}
+	Elements<? extends Repository> getRepositorys(OperationSymbol operationSymbol, TypeDescriptor entityTypeDescriptor,
+			EntityMapping<? extends Property> entityMapping);
 
-	boolean hasEffectiveValue(Value source, Parameter parameter);
+	Elements<? extends Condition> getConditions(OperationSymbol operationSymbol, TypeDescriptor source,
+			Parameter parameter);
+
+	Elements<? extends Sort> getSorts(OperationSymbol operationSymbol, TypeDescriptor source,
+			ParameterDescriptor descriptor);
 }

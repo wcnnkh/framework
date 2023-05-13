@@ -17,6 +17,15 @@ public class InsertOperation extends Operation {
 	private Elements<? extends Column> columns;
 
 	public InsertOperation() {
-		super(OperationSymbol.INSERT);
+		this(InsertOperationSymbol.INSERT);
+	}
+
+	public InsertOperation(InsertOperationSymbol insertOperationSymbol) {
+		super(insertOperationSymbol);
+	}
+
+	public InsertOperation(InsertOperationSymbol insertOperationSymbol, InsertOperation operation) {
+		super(insertOperationSymbol, operation);
+		this.columns = operation.columns;
 	}
 }

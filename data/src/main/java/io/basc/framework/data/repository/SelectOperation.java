@@ -27,6 +27,19 @@ public class SelectOperation extends Operation {
 	private Elements<? extends Sort> sorts;
 
 	public SelectOperation() {
-		super(OperationSymbol.SELECT);
+		super(SelectOperationSymbol.SELECT);
 	}
+
+	public SelectOperation(SelectOperationSymbol selectOperationSymbol) {
+		super(selectOperationSymbol);
+	}
+
+	public SelectOperation(Operation operation) {
+		this(SelectOperationSymbol.SELECT, operation);
+	}
+
+	public SelectOperation(SelectOperationSymbol selectOperationSymbol, Operation operation) {
+		super(selectOperationSymbol, operation);
+	}
+
 }

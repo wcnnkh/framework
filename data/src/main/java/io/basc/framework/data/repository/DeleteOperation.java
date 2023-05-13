@@ -15,6 +15,10 @@ public class DeleteOperation extends Operation {
 	private static final long serialVersionUID = 1L;
 
 	public DeleteOperation() {
-		super(OperationSymbol.DELETE);
+		this(DeleteOperationSymbol.DELETE);
+	}
+
+	public DeleteOperation(DeleteOperationSymbol deleteOperationSymbol) {
+		super(deleteOperationSymbol);
 	}
 }

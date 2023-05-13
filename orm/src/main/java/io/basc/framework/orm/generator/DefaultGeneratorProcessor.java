@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.data.Counter;
 import io.basc.framework.data.generator.SequenceId;
@@ -15,30 +16,32 @@ import io.basc.framework.locks.ReentrantLockFactory;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;
+import io.basc.framework.orm.EntityMapper;
 import io.basc.framework.orm.MaxValueFactory;
-import io.basc.framework.orm.ObjectRelationalFactory;
+import io.basc.framework.orm.Property;
 import io.basc.framework.orm.generator.annotation.CreateTime;
 import io.basc.framework.orm.generator.annotation.Generator;
 import io.basc.framework.orm.generator.annotation.UUID;
 import io.basc.framework.util.NumberUtils;
 import io.basc.framework.util.XUtils;
+import io.basc.framework.value.Value;
 
 public class DefaultGeneratorProcessor implements GeneratorProcessor {
 	private static Logger logger = LoggerFactory.getLogger(DefaultGeneratorProcessor.class);
-	private final ObjectRelationalFactory objectRelationalMapping;
+	private final EntityMapper entityMapper;
 	private final SequenceIdGenerator sequeueIdGenerator;
 	private final Counter counter;
 	private final LockFactory lockFactory;
 	private final MaxValueFactory maxValueFactory;
 
-	public DefaultGeneratorProcessor(ObjectRelationalFactory objectRelationalMapping, MaxValueFactory maxValueFactory) {
-		this(objectRelationalMapping, maxValueFactory, new SequenceIdGenerator(), new MemoryOperations(),
+	public DefaultGeneratorProcessor(EntityMapper entityMapper, MaxValueFactory maxValueFactory) {
+		this(entityMapper, maxValueFactory, new SequenceIdGenerator(), new MemoryOperations(),
 				new ReentrantLockFactory());
 	}
 
-	public DefaultGeneratorProcessor(ObjectRelationalFactory objectRelationalMapping, MaxValueFactory maxValueFactory,
+	public DefaultGeneratorProcessor(EntityMapper entityMapper, MaxValueFactory maxValueFactory,
 			SequenceIdGenerator sequeueIdGenerator, Counter counter, LockFactory lockFactory) {
-		this.objectRelationalMapping = objectRelationalMapping;
+		this.entityMapper = entityMapper;
 		this.maxValueFactory = maxValueFactory;
 		this.sequeueIdGenerator = sequeueIdGenerator;
 		this.counter = counter;
@@ -47,9 +50,10 @@ public class DefaultGeneratorProcessor implements GeneratorProcessor {
 
 	@Override
 	public <T> void process(Class<? extends T> entityClass, Object entity) {
+		Value source = Value.of(entity, TypeDescriptor.valueOf(entityClass));
 		Map<Object, Object> contextMap = new HashMap<Object, Object>();
-		for (Field field : objectRelationalMapping.getStructure(entityClass).getElements()) {
-			if (objectRelationalMapping.hasEffectiveValue(entity, field)) {
+		for (Property field : entityMapper.getMapping(entityClass).getElements()) {
+			if (entityMapper.hasEffectiveValue(source, field)) {
 				// 存在默认值 ，忽略
 				continue;
 			}
@@ -92,24 +96,24 @@ public class DefaultGeneratorProcessor implements GeneratorProcessor {
 		return number == null ? 0 : number;
 	};
 
-	protected <T> String getCacheKey(Class<? extends T> entityClass, Object entity, Field field) {
+	protected <T> String getCacheKey(Class<? extends T> entityClass, Object entity, Property property) {
 		StringBuilder sb = new StringBuilder(64);
 		sb.append("generator:");
 		sb.append(entityClass);
 		sb.append(":");
-		sb.append(field.getSetter().getName());
+		sb.append(property.getName());
 		return sb.toString();
 	}
 
-	public <T> Number generateNumber(Class<? extends T> entityClass, Object entity, Field field) {
-		String key = getCacheKey(entityClass, entity, field);
+	public <T> Number generateNumber(Class<? extends T> entityClass, Object entity, Property property) {
+		String key = getCacheKey(entityClass, entity, property);
 		if (!counter.exists(key)) {
 			// 不存在
 			Lock lock = lockFactory.getLock(key + "&lock");
 			try {
 				lock.lock();
 				if (!counter.exists(key)) {
-					Number maxId = getMaxId(entityClass, entity, field);
+					Number maxId = getMaxId(entityClass, entity, property);
 					return counter.incr(key, 1, maxId.longValue() + 1);
 				}
 			} finally {
@@ -119,7 +123,7 @@ public class DefaultGeneratorProcessor implements GeneratorProcessor {
 		return counter.incr(key, 1);
 	}
 
-	public <T> void process(Class<? extends T> entityClass, Object entity, Field field,
+	public <T> void process(Class<? extends T> entityClass, Object entity, Property property,
 			Map<Object, Object> contextMap) {
 		if (AnnotatedElementUtils.hasAnnotation(field, UUID.class)) {
 			field.getSetter().set(entity, getUUID(entityClass, entity, field, contextMap));

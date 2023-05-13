@@ -3,6 +3,7 @@ package io.basc.framework.data.repository;
 import java.io.Serializable;
 
 import io.basc.framework.util.Elements;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
@@ -12,6 +13,7 @@ import lombok.Data;
  *
  */
 @Data
+@AllArgsConstructor
 public class Operation implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final OperationSymbol operationSymbol;
@@ -27,6 +29,10 @@ public class Operation implements Serializable {
 	private Elements<? extends Condition> conditions;
 
 	public Operation(OperationSymbol operationSymbol) {
-		this.operationSymbol = operationSymbol;
+		this(operationSymbol, null);
+	}
+
+	public Operation(OperationSymbol operationSymbol, Operation operation) {
+		this(operationSymbol, operation.repositorys, operation.conditions);
 	}
 }

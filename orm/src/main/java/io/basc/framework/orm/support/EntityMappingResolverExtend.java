@@ -1,16 +1,21 @@
 package io.basc.framework.orm.support;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.lang.Nullable;
+import io.basc.framework.data.repository.Column;
+import io.basc.framework.data.repository.Condition;
+import io.basc.framework.data.repository.Expression;
+import io.basc.framework.data.repository.OperationSymbol;
+import io.basc.framework.data.repository.Repository;
+import io.basc.framework.data.repository.Sort;
 import io.basc.framework.mapper.MappingStrategy;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.EntityMappingResolver;
 import io.basc.framework.orm.ForeignKey;
+import io.basc.framework.orm.Property;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
-import io.basc.framework.util.comparator.Sort;
-import io.basc.framework.value.Value;
 
 public interface EntityMappingResolverExtend {
 	default boolean isIgnore(Class<?> entityClass, EntityMappingResolver chain) {
@@ -91,19 +96,6 @@ public interface EntityMappingResolverExtend {
 		return chain.isIncrement(entityClass, descriptor);
 	}
 
-	@Nullable
-	default Sort getSort(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
-		return chain.getSort(entityClass, descriptor);
-	}
-
-	default String getCondition(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
-		return chain.getCondition(entityClass, descriptor);
-	}
-
-	default String getRelationship(Class<?> entityClass, ParameterDescriptor descriptor, EntityMappingResolver chain) {
-		return chain.getRelationship(entityClass, descriptor);
-	}
-
 	default ForeignKey getForeignKey(Class<?> entityClass, ParameterDescriptor descriptor,
 			EntityMappingResolver chain) {
 		return chain.getForeignKey(entityClass, descriptor);
@@ -121,7 +113,33 @@ public interface EntityMappingResolverExtend {
 		return chain.isConfigurable(sourceType);
 	}
 
-	default boolean hasEffectiveValue(Value source, Parameter parameter, EntityMappingResolver chain) {
+	default boolean hasEffectiveValue(TypeDescriptor source, Parameter parameter, EntityMappingResolver chain) {
 		return chain.hasEffectiveValue(source, parameter);
+	}
+
+	default Elements<? extends Expression> getExpressions(OperationSymbol operationSymbol, TypeDescriptor source,
+			Parameter parameter, EntityMappingResolver chain) {
+		return chain.getExpressions(operationSymbol, source, parameter);
+	}
+
+	default Elements<? extends Column> getColumns(OperationSymbol operationSymbol, TypeDescriptor source,
+			Parameter parameter, EntityMappingResolver chain) {
+		return chain.getColumns(operationSymbol, source, parameter);
+	}
+
+	default Elements<? extends Repository> getRepositorys(OperationSymbol operationSymbol,
+			TypeDescriptor entityTypeDescriptor, EntityMapping<? extends Property> entityMapping,
+			EntityMappingResolver chain) {
+		return chain.getRepositorys(operationSymbol, entityTypeDescriptor, entityMapping);
+	}
+
+	default Elements<? extends Condition> getConditions(OperationSymbol operationSymbol, TypeDescriptor source,
+			Parameter parameter, EntityMappingResolver chain) {
+		return chain.getConditions(operationSymbol, source, parameter);
+	}
+
+	default Elements<? extends Sort> getSorts(OperationSymbol operationSymbol, TypeDescriptor source,
+			ParameterDescriptor descriptor, EntityMappingResolver chain) {
+		return chain.getSorts(operationSymbol, source, descriptor);
 	}
 }
