@@ -1,27 +1,15 @@
-package io.basc.framework.beans.support;
+package io.basc.framework.exec;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import io.basc.framework.beans.BeanExecutor;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Elements;
 import io.basc.framework.value.Value;
 
-public abstract class AbstractBeanExecutor implements BeanExecutor {
-
-	@Override
-	public final boolean isExecutable() {
-		return isExecutable(Elements.empty());
-	}
-
-	@Override
-	public final Object execute() {
-		return execute(Elements.empty());
-	}
+public abstract class AbstractExecutor extends AbstractExecutable implements Executor {
 
 	@Override
 	public boolean isExecutable(Elements<? extends TypeDescriptor> types) {
@@ -79,19 +67,4 @@ public abstract class AbstractBeanExecutor implements BeanExecutor {
 		}
 		return !parameterDescriptorIterator.hasNext() && list.isEmpty();
 	}
-
-	@Override
-	public boolean isExecutableByParameters(Elements<? extends Value> parameters) {
-		return organizeParameters(parameters, null);
-	}
-
-	@Override
-	public Object executeByParameters(Elements<? extends Value> parameters) {
-		List<Value> params = new ArrayList<>();
-		if (!organizeParameters(parameters, params)) {
-			throw new IllegalArgumentException(parameters.toString());
-		}
-		return execute(Elements.of(params));
-	}
-
 }
