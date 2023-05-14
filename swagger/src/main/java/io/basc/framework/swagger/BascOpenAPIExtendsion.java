@@ -2,7 +2,6 @@ package io.basc.framework.swagger;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -16,9 +15,10 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Copy;
 import io.basc.framework.mapper.Field;
-import io.basc.framework.orm.ObjectRelational;
+import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.support.OrmUtils;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.message.annotation.QueryParams;
 import io.swagger.v3.core.util.Json;
@@ -63,14 +63,15 @@ public class BascOpenAPIExtendsion extends AbstractOpenAPIExtension {
 	public void resoleQueryParams(List<Parameter> parameters, List<Parameter> formParameters, final Type type,
 			Set<Type> typesToSkip, javax.ws.rs.Consumes classConsumes, javax.ws.rs.Consumes methodConsumes,
 			Components components, boolean includeRequestBody, JsonView jsonViewAnnotation) {
-		ObjectRelational<? extends Property> fields = OrmUtils.getMapper()
-				.getStructure(constructType(type).getRawClass()).all();
+		EntityMapping<? extends Property> fields = OrmUtils.getMapper().getMapping(constructType(type).getRawClass());
 		for (final Field field : fields.getElements()) {
 			final Iterator<OpenAPIExtension> extensions = OpenAPIExtensions.chain();
 			// skip hidden properties
-			boolean hidden = field.isAnnotationPresent(Hidden.class);
+			boolean hidden = field.getGetters()
+					.anyMatch((e) -> e.getTypeDescriptor().isAnnotationPresent(Hidden.class));
 			if (!hidden) {
-				Schema schema = field.getAnnotation(Schema.class);
+				Schema schema = field.getGetters().map((e) -> e.getTypeDescriptor().getAnnotation(Schema.class))
+						.filter((e) -> e != null).first();
 				if (schema != null) {
 					if (schema.hidden()) {
 						hidden = true;
@@ -81,8 +82,9 @@ public class BascOpenAPIExtendsion extends AbstractOpenAPIExtension {
 				continue;
 			}
 
-			List<Annotation> paramAnnotations = Arrays.asList(field.getAnnotations());
-			Type paramType = field.getGetter().getGenericType();
+			List<Annotation> paramAnnotations = field.getGetters()
+					.flatMap((e) -> Elements.forArray(e.getTypeDescriptor().getAnnotations())).toList();
+			Type paramType = field.getGetters().first().getTypeDescriptor().getResolvableType().getType();
 
 			// Re-process all Bean fields and let the default
 			// swagger-jaxrs/swagger-jersey-jaxrs processors do their thing
@@ -114,9 +116,8 @@ public class BascOpenAPIExtendsion extends AbstractOpenAPIExtension {
 
 			// request body
 			if (resolvedParameter.requestBody != null) {
-				Parameter processedParam = ParameterProcessor.applyAnnotations(resolvedParameter.requestBody,
-						field.getGetter().getGenericType(), paramAnnotations, components,
-						classConsumes == null ? new String[0] : classConsumes.value(),
+				Parameter processedParam = ParameterProcessor.applyAnnotations(resolvedParameter.requestBody, paramType,
+						paramAnnotations, components, classConsumes == null ? new String[0] : classConsumes.value(),
 						methodConsumes == null ? new String[0] : methodConsumes.value(), jsonViewAnnotation);
 				if (processedParam != null) {
 					Parameter parameter = requestBodyToQueryParameter(paramAnnotations, type, processedParam, field);
@@ -135,10 +136,11 @@ public class BascOpenAPIExtendsion extends AbstractOpenAPIExtension {
 		if (source.getSchema() != null) {
 			Copy.copy(source.getSchema(), target);
 		}
+
 		Copy.copy(source, target);
 
 		if (StringUtils.isEmpty(target.getName())) {
-			target.setName(field.getGetter().getName());
+			target.setName(field.getName());
 		}
 
 		if (StringUtils.isNotEmpty(target.get$ref())

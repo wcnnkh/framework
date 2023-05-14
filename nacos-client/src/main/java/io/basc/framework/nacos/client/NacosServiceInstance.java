@@ -6,8 +6,9 @@ import java.util.Map;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 
 import io.basc.framework.cloud.Service;
-import io.basc.framework.core.reflect.ReflectionUtils;
+import lombok.Data;
 
+@Data
 public class NacosServiceInstance implements Service {
 	private final Instance instance;
 
@@ -47,10 +48,5 @@ public class NacosServiceInstance implements Service {
 
 	public Map<String, String> getMetadata() {
 		return instance.getMetadata();
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionUtils.toString(this);
 	}
 }

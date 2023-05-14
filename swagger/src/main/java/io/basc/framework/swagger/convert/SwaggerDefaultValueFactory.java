@@ -14,7 +14,7 @@ public class SwaggerDefaultValueFactory implements BeanResolverExtend {
 
 	@Override
 	public Object getDefaultParameter(ParameterDescriptor parameterDescriptor, BeanResolver chain) {
-		Schema defaultValue = AnnotatedElementUtils.getMergedAnnotation(parameterDescriptor, Schema.class);
+		Schema defaultValue = AnnotatedElementUtils.getMergedAnnotation(parameterDescriptor.getTypeDescriptor(), Schema.class);
 		if (defaultValue != null && StringUtils.isNotEmpty(defaultValue.defaultValue())) {
 			return defaultValue.defaultValue();
 		}

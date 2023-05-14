@@ -3,8 +3,8 @@ package io.basc.framework.security;
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.StringUtils;
+import lombok.ToString;
 
 /**
  * 一个令牌的定义
@@ -12,6 +12,7 @@ import io.basc.framework.util.StringUtils;
  * @author wcnnkh
  *
  */
+@ToString
 public class Token implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private final String token;
@@ -84,11 +85,6 @@ public class Token implements Serializable, Cloneable {
 	@Override
 	public Token clone() {
 		return new Token(token, expireAtTime, createTime, false);
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionUtils.toString(this);
 	}
 
 	@Override

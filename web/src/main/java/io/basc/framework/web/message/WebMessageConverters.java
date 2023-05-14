@@ -88,7 +88,7 @@ public class WebMessageConverters extends ConfigurableServices<WebMessageConvert
 	@Override
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
-		TypeDescriptor typeDescriptor = new TypeDescriptor(parameterDescriptor);
+		TypeDescriptor typeDescriptor = parameterDescriptor.getTypeDescriptor();
 		for (WebMessageConverter converter : this) {
 			if (NESTED.isCurrent(converter)) {
 				continue;
@@ -109,7 +109,7 @@ public class WebMessageConverters extends ConfigurableServices<WebMessageConvert
 	@Override
 	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
 			throws IOException, WebMessagelConverterException {
-		TypeDescriptor typeDescriptor = new TypeDescriptor(parameterDescriptor);
+		TypeDescriptor typeDescriptor = parameterDescriptor.getTypeDescriptor();
 		for (WebMessageConverter converter : this) {
 			if (NESTED.isCurrent(converter)) {
 				continue;
@@ -130,7 +130,7 @@ public class WebMessageConverters extends ConfigurableServices<WebMessageConvert
 	@Override
 	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
 			Object parameter) throws WebMessagelConverterException {
-		TypeDescriptor typeDescriptor = new TypeDescriptor(parameterDescriptor);
+		TypeDescriptor typeDescriptor = parameterDescriptor.getTypeDescriptor();
 		for (WebMessageConverter converter : this) {
 			if (NESTED.isCurrent(converter)) {
 				continue;

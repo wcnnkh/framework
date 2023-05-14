@@ -20,6 +20,7 @@ import io.basc.framework.tcc.annotation.TccStage;
 import io.basc.framework.tcc.annotation.TryResult;
 import io.basc.framework.transaction.Transaction;
 import io.basc.framework.transaction.TransactionUtils;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 
@@ -146,19 +147,16 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 	}
 
 	public Object[] getStepArgs(Method tryMethod, Object tryResult, Object[] tryArgs, Method stepMethod) {
-		ParameterDescriptor[] parameterDescriptors = ParameterUtils.getParameters(stepMethod);
-		if (parameterDescriptors.length == 0) {
+		Elements<ParameterDescriptor> parameterDescriptors = ParameterUtils.getParameters(stepMethod);
+		if (parameterDescriptors.isEmpty()) {
 			return new Object[0];
 		}
 
 		LinkedHashMap<String, Object> parameterMap = ParameterUtils.getParameterMap(tryMethod, tryArgs);
-		Object[] args = new Object[parameterDescriptors.length];
-		for (int i = 0; i < parameterDescriptors.length; i++) {
-			ParameterDescriptor descriptor = parameterDescriptors[i];
-			TryResult tryResultAnnotation = descriptor.getAnnotation(TryResult.class);
+		return parameterDescriptors.map((descriptor) -> {
+			TryResult tryResultAnnotation = descriptor.getTypeDescriptor().getAnnotation(TryResult.class);
 			if (tryResultAnnotation != null) {
-				args[i] = tryResult;
-				continue;
+				return tryResult;
 			}
 
 			if (!parameterMap.containsKey(descriptor.getName())) {
@@ -166,8 +164,7 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 						"Undefined parameter [" + descriptor.getName() + "] in method:" + stepMethod.toString());
 			}
 
-			args[i] = parameterMap.get(descriptor.getName());
-		}
-		return args;
+			return parameterMap.get(descriptor.getName());
+		}).toArray();
 	}
 }

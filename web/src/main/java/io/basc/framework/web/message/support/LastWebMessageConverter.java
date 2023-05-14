@@ -65,7 +65,7 @@ class LastWebMessageConverter extends AbstractWebMessageConverter implements Ord
 			throws IOException, WebMessagelConverterException {
 		Object source = readValue(parameterDescriptor, request);
 		return getConversionService().convert(source, TypeDescriptor.forObject(source),
-				new TypeDescriptor(parameterDescriptor));
+				parameterDescriptor.getTypeDescriptor());
 	}
 
 	@Override
@@ -78,7 +78,7 @@ class LastWebMessageConverter extends AbstractWebMessageConverter implements Ord
 			throws IOException, WebMessagelConverterException {
 		MediaType mediaType = request.getContentType();
 		if (mediaType != null && !mediaType.equalsTypeAndSubtype(MediaType.APPLICATION_FORM_URLENCODED)) {
-			getMessageConverter().write(new TypeDescriptor(parameterDescriptor), parameter, mediaType, request);
+			getMessageConverter().write(parameterDescriptor.getTypeDescriptor(), parameter, mediaType, request);
 			return request;
 		}
 
@@ -100,7 +100,7 @@ class LastWebMessageConverter extends AbstractWebMessageConverter implements Ord
 			bufferingClientHttpRequest.getOutputStream().write("&".getBytes(charset));
 		}
 
-		String value = (String) getConversionService().convert(parameter, new TypeDescriptor(parameterDescriptor),
+		String value = (String) getConversionService().convert(parameter, parameterDescriptor.getTypeDescriptor(),
 				TypeDescriptor.valueOf(String.class));
 		bufferingClientHttpRequest.getOutputStream().write(parameterDescriptor.getName().getBytes(charset));
 		bufferingClientHttpRequest.getOutputStream().write("=".getBytes(charset));

@@ -1,7 +1,8 @@
 package io.basc.framework.microsoft;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
+import lombok.Data;
 
+@Data
 public class ExcelRow {
 	private final int sheetIndex;
 	private final String sheetName;
@@ -29,10 +30,5 @@ public class ExcelRow {
 
 	public String[] getValues() {
 		return values;
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionUtils.toString(this);
 	}
 }

@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.io.IOUtils;
 import io.basc.framework.io.Resource;
@@ -13,22 +12,20 @@ import io.basc.framework.mvc.HttpChannel;
 import io.basc.framework.net.FileMimeTypeUitls;
 import io.basc.framework.net.MimeType;
 import io.basc.framework.web.ServerHttpResponse;
+import lombok.Data;
 
+@Data
 public final class DownloadView implements View {
 	private String encoding;
-	private Resource resource;
+	private final Resource resource;
 
 	public DownloadView(Resource resource) {
 		this.resource = resource;
 	}
 
-	public void setEncoding(String encoding) {
-		this.encoding = encoding;
-	}
-
 	public void render(HttpChannel httpChannel) throws IOException {
 		MimeType mimeType = FileMimeTypeUitls.getMimeType(resource);
-		if(mimeType.getCharset() == null && encoding != null){
+		if (mimeType.getCharset() == null && encoding != null) {
 			mimeType = new MediaType(mimeType, encoding);
 		}
 		httpChannel.getResponse().setContentType(mimeType);
@@ -44,14 +41,10 @@ public final class DownloadView implements View {
 			IOUtils.close(is, os);
 		}
 	}
-	
-	public static void setResponseFileDisposition(String fileName, ServerHttpResponse serverHttpResponse) throws UnsupportedEncodingException{
+
+	public static void setResponseFileDisposition(String fileName, ServerHttpResponse serverHttpResponse)
+			throws UnsupportedEncodingException {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 		serverHttpResponse.getHeaders().set("Content-Disposition", "attachment;filename=" + fileName);
-	}
-	
-	@Override
-	public String toString() {
-		return ReflectionUtils.toString(this);
 	}
 }

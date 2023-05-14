@@ -23,7 +23,7 @@ public class JaxrsCookieParamMessageConverter extends AbstractCookieWebMessageCo
 	@Override
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
-		CookieParam headerParam = parameterDescriptor.getAnnotation(CookieParam.class);
+		CookieParam headerParam = parameterDescriptor.getTypeDescriptor().getAnnotation(CookieParam.class);
 		if (headerParam == null || StringUtils.isEmpty(headerParam.value())) {
 			return super.read(request, parameterDescriptor);
 		}

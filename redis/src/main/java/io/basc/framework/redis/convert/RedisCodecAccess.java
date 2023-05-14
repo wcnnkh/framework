@@ -1,7 +1,7 @@
 package io.basc.framework.redis.convert;
 
 import io.basc.framework.codec.Codec;
-import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.Assert;
 
 public class RedisCodecAccess<SK, K, SV, V, T extends RedisCodecAccess<SK, K, SV, V, T>>
@@ -25,7 +25,7 @@ public class RedisCodecAccess<SK, K, SV, V, T extends RedisCodecAccess<SK, K, SV
 		try {
 			return (T) super.clone();
 		} catch (CloneNotSupportedException e) {
-			return (T) ReflectionUtils.clone(this);
+			throw new UnsupportedException(e);
 		}
 	}
 

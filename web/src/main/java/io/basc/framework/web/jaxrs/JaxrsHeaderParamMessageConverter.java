@@ -25,7 +25,7 @@ public class JaxrsHeaderParamMessageConverter extends AbstractHeaderWebMessageCo
 	@Override
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
-		HeaderParam param = parameterDescriptor.getAnnotation(HeaderParam.class);
+		HeaderParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(HeaderParam.class);
 		if (param == null || StringUtils.isEmpty(param.value())) {
 			return super.read(request, parameterDescriptor);
 		}
@@ -40,7 +40,7 @@ public class JaxrsHeaderParamMessageConverter extends AbstractHeaderWebMessageCo
 	@Override
 	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
 			throws IOException, WebMessagelConverterException {
-		HeaderParam param = parameterDescriptor.getAnnotation(HeaderParam.class);
+		HeaderParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(HeaderParam.class);
 		if (param == null || StringUtils.isEmpty(param.value())) {
 			return super.write(request, parameterDescriptor, parameter);
 		}

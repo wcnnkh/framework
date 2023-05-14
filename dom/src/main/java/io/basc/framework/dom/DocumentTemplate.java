@@ -15,14 +15,13 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.dom.writer.ArrayWriter;
 import io.basc.framework.dom.writer.CollectionWriter;
 import io.basc.framework.dom.writer.MapWriter;
-import io.basc.framework.dom.writer.ToMapWriter;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceLoader;
-import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.lang.Nullable;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.ConsumeProcessor;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.StringUtils;
@@ -38,7 +37,6 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 		writers.register(new MapWriter(this));
 		writers.register(new CollectionWriter(this));
 		writers.register(new ArrayWriter(this));
-		writers.register(new ToMapWriter(this));
 	}
 
 	private boolean configured;

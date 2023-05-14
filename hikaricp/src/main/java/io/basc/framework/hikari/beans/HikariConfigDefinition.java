@@ -8,6 +8,7 @@ import io.basc.framework.context.support.ContextConfigurator;
 import io.basc.framework.db.Configurable;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.hikari.HikariUtils;
+import io.basc.framework.mapper.filter.ParameterNamePrefixFilter;
 
 public class HikariConfigDefinition extends ContextBeanDefinition {
 
@@ -26,7 +27,7 @@ public class HikariConfigDefinition extends ContextBeanDefinition {
 		HikariConfig hikariConfig = new HikariConfig();
 		HikariUtils.config(hikariConfig, configurable);
 		ContextConfigurator configurator = new ContextConfigurator(getContext());
-		configurator.getContext().setNamePrefix("hikari.");
+		configurator.getFilters().register(new ParameterNamePrefixFilter("hikari."));
 		configurator.transform(hikariConfig);
 		return hikariConfig;
 	}

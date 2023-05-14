@@ -14,11 +14,11 @@ import io.basc.framework.util.Elements;
 public interface EntityMapping<T extends Property> extends Mapping<T> {
 
 	default Elements<T> getPrimaryKeys() {
-		return getElements().filter((e) -> e.isPrimaryKey());
+		return columns().filter((e) -> e.isPrimaryKey());
 	}
 
 	default Elements<T> getNotPrimaryKeys() {
-		return getElements().filter((e) -> !e.isPrimaryKey());
+		return columns().filter((e) -> !e.isPrimaryKey());
 	}
 
 	@Nullable
@@ -26,4 +26,13 @@ public interface EntityMapping<T extends Property> extends Mapping<T> {
 
 	@Nullable
 	String getCharsetName();
+
+	/**
+	 * 所有列，默认不包含实体字段
+	 * 
+	 * @return
+	 */
+	default Elements<T> columns() {
+		return getElements().filter((e) -> !e.isEntity());
+	}
 }

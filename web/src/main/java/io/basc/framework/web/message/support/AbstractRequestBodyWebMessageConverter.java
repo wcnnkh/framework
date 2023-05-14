@@ -25,7 +25,7 @@ public abstract class AbstractRequestBodyWebMessageConverter extends AbstractWeb
 			return getDefaultValue(parameterDescriptor);
 		}
 		return getConversionService().convert(body, TypeDescriptor.forObject(body),
-				new TypeDescriptor(parameterDescriptor));
+				parameterDescriptor.getTypeDescriptor());
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public abstract class AbstractRequestBodyWebMessageConverter extends AbstractWeb
 			throws IOException, WebMessagelConverterException {
 		MediaType mediaType = request.getContentType();
 		if (mediaType != null && !mediaType.equalsTypeAndSubtype(MediaType.APPLICATION_FORM_URLENCODED)) {
-			getMessageConverter().write(new TypeDescriptor(parameterDescriptor), parameter, mediaType, request);
+			getMessageConverter().write(parameterDescriptor.getTypeDescriptor(), parameter, mediaType, request);
 			return request;
 		}
 
@@ -55,7 +55,7 @@ public abstract class AbstractRequestBodyWebMessageConverter extends AbstractWeb
 			bufferingClientHttpRequest.getOutputStream().write("&".getBytes(charset));
 		}
 
-		String value = (String) getConversionService().convert(parameter, new TypeDescriptor(parameterDescriptor),
+		String value = (String) getConversionService().convert(parameter, parameterDescriptor.getTypeDescriptor(),
 				TypeDescriptor.valueOf(String.class));
 		bufferingClientHttpRequest.getOutputStream().write(parameterDescriptor.getName().getBytes(charset));
 		bufferingClientHttpRequest.getOutputStream().write("=".getBytes(charset));

@@ -26,7 +26,7 @@ public class JaxrsQueryParamWebMessageConverter extends AbstractParamWebMessageC
 	@Override
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
-		QueryParam param = parameterDescriptor.getAnnotation(QueryParam.class);
+		QueryParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(QueryParam.class);
 		if (param == null || StringUtils.isEmpty(param.value())) {
 			return super.read(request, parameterDescriptor);
 		}
@@ -46,7 +46,7 @@ public class JaxrsQueryParamWebMessageConverter extends AbstractParamWebMessageC
 	@Override
 	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
 			Object parameter) throws WebMessagelConverterException {
-		QueryParam param = parameterDescriptor.getAnnotation(QueryParam.class);
+		QueryParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(QueryParam.class);
 		if (param == null || StringUtils.isEmpty(param.value())) {
 			return super.write(builder, parameterDescriptor, parameter);
 		}

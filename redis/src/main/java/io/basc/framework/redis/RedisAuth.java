@@ -2,8 +2,9 @@ package io.basc.framework.redis;
 
 import java.io.Serializable;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
+import lombok.Data;
 
+@Data
 public class RedisAuth implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String username;
@@ -31,10 +32,5 @@ public class RedisAuth implements Serializable {
 
 	public void setPassword(String password) {
 		this.password = password;
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionUtils.toString(this);
 	}
 }

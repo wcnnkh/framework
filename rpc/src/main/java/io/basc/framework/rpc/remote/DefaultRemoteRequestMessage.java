@@ -4,15 +4,14 @@ import java.lang.reflect.Method;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
 
-public class DefaultRemoteRequestMessage extends RemoteRequestMessage{
+public class DefaultRemoteRequestMessage extends RemoteRequestMessage {
 	private static final long serialVersionUID = 1L;
 	private final Class<?> targetClass;
 	private final String methodName;
 	private final Class<?>[] parameterTypes;
 	private final Object[] args;
 
-	public DefaultRemoteRequestMessage(Class<?> targetClass,
-			Method method, Object[] args) {
+	public DefaultRemoteRequestMessage(Class<?> targetClass, Method method, Object[] args) {
 		this.targetClass = targetClass;
 		this.methodName = method.getName();
 		this.parameterTypes = method.getParameterTypes();
@@ -36,8 +35,7 @@ public class DefaultRemoteRequestMessage extends RemoteRequestMessage{
 	}
 
 	public Method getMethod() {
-		return ReflectionUtils.findMethod(targetClass, methodName,
-				parameterTypes);
+		return ReflectionUtils.getDeclaredMethods(targetClass).find(methodName, parameterTypes);
 	}
 
 	@Override

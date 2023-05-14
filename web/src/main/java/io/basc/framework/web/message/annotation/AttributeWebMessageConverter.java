@@ -23,7 +23,7 @@ public class AttributeWebMessageConverter implements WebMessageConverter {
 	@Override
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
-		Attribute attribute = parameterDescriptor.getAnnotation(Attribute.class);
+		Attribute attribute = parameterDescriptor.getTypeDescriptor().getAnnotation(Attribute.class);
 		if (attribute == null) {
 			return null;
 		}

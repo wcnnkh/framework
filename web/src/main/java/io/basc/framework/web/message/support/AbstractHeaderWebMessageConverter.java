@@ -16,7 +16,7 @@ public abstract class AbstractHeaderWebMessageConverter extends AbstractWebMessa
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
 		Object value;
-		if (ClassUtils.isMultipleValues(parameterDescriptor.getType())) {
+		if (ClassUtils.isMultipleValues(parameterDescriptor.getTypeDescriptor().getType())) {
 			value = request.getHeaders().get(parameterDescriptor.getName());
 		} else {
 			value = request.getHeaders().getFirst(parameterDescriptor.getName());
@@ -26,19 +26,19 @@ public abstract class AbstractHeaderWebMessageConverter extends AbstractWebMessa
 			value = getDefaultValue(parameterDescriptor);
 		}
 		return getConversionService().convert(value, TypeDescriptor.forObject(value),
-				new TypeDescriptor(parameterDescriptor));
+				parameterDescriptor.getTypeDescriptor());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
 			throws IOException, WebMessagelConverterException {
-		if (ClassUtils.isMultipleValues(parameterDescriptor.getType())) {
+		if (ClassUtils.isMultipleValues(parameterDescriptor.getTypeDescriptor().getType())) {
 			List<String> values = (List<String>) getConversionService().convert(parameter,
-					new TypeDescriptor(parameterDescriptor), TypeDescriptor.collection(List.class, String.class));
+					parameterDescriptor.getTypeDescriptor(), TypeDescriptor.collection(List.class, String.class));
 			request.getHeaders().put(parameterDescriptor.getName(), values);
 		} else {
-			String value = (String) getConversionService().convert(parameter, new TypeDescriptor(parameterDescriptor),
+			String value = (String) getConversionService().convert(parameter, parameterDescriptor.getTypeDescriptor(),
 					TypeDescriptor.valueOf(String.class));
 			request.getHeaders().add(parameterDescriptor.getName(), value);
 		}

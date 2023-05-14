@@ -4,18 +4,18 @@ import static com.netflix.appinfo.InstanceInfo.PortType.SECURE;
 
 import java.net.URI;
 import java.util.Map;
-import java.util.Objects;
 
 import com.netflix.appinfo.InstanceInfo;
 
 import io.basc.framework.cloud.Service;
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.Assert;
+import lombok.Data;
 
 /**
  * An Eureka-specific {@link ServiceInstance} implementation.
  *
  */
+@Data
 public class EurekaServiceInstance implements Service {
 
 	private InstanceInfo instance;
@@ -62,27 +62,5 @@ public class EurekaServiceInstance implements Service {
 	@Override
 	public Map<String, String> getMetadata() {
 		return this.instance.getMetadata();
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		EurekaServiceInstance that = (EurekaServiceInstance) o;
-		return Objects.equals(this.instance, that.instance);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.instance);
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionUtils.toString(this);
 	}
 }

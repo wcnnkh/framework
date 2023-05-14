@@ -2,13 +2,14 @@ package io.basc.framework.web.cors;
 
 import java.util.Arrays;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.web.ServerHttpRequest;
+import lombok.Data;
 
+@Data
 public class Cors {
 	private static final String[] DEFAULT_HEADERS = new String[] { HttpHeaders.X_REQUESTED_WITH,
 			HttpHeaders.CONTENT_TYPE, HttpHeaders.X_FORWARDED_FOR, HttpHeaders.COOKIE,
@@ -153,10 +154,5 @@ public class Cors {
 		if (credentials != null) {
 			headers.set(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, credentials + "");
 		}
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionUtils.toString(this);
 	}
 }

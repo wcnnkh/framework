@@ -16,16 +16,17 @@ import io.basc.framework.aop.ProxyInstanceTarget;
 import io.basc.framework.boot.Application;
 import io.basc.framework.cloud.DefaultServiceInstance;
 import io.basc.framework.cloud.Service;
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
+import lombok.Data;
 
 /**
  * Eureka-specific implementation of service instance {@link Registration}.
  *
  */
+@Data
 public class EurekaRegistration implements Service {
 	private static final Logger log = LoggerFactory.getLogger(EurekaRegistration.class);
 
@@ -140,11 +141,6 @@ public class EurekaRegistration implements Service {
 
 	public int getSecurePort() {
 		return this.instanceConfig.getSecurePort();
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionUtils.toString(this);
 	}
 
 	/**

@@ -4,9 +4,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.TimeUtils;
+import lombok.Data;
 
+@Data
 public class KindFileItem implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private boolean dir;
@@ -83,10 +84,5 @@ public class KindFileItem implements Serializable {
 		map.put("filename", getName());
 		map.put("datetime", TimeUtils.format(getDateTime(), "yyyy-MM-dd HH:mm:ss"));
 		return map;
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionUtils.toString(this);
 	}
 }

@@ -20,19 +20,19 @@ public abstract class AbstractIpAddressWebMessageConverter extends AbstractWebMe
 			ip = getDefaultValue(parameterDescriptor);
 		}
 		return getConversionService().convert(ip, TypeDescriptor.forObject(ip),
-				new TypeDescriptor(parameterDescriptor));
+				parameterDescriptor.getTypeDescriptor());
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
 			throws IOException, WebMessagelConverterException {
-		if (ClassUtils.isMultipleValues(parameterDescriptor.getType())) {
+		if (ClassUtils.isMultipleValues(parameterDescriptor.getTypeDescriptor().getType())) {
 			List<String> ips = (List<String>) getConversionService().convert(parameter,
-					new TypeDescriptor(parameterDescriptor), TypeDescriptor.collection(List.class, String.class));
+					parameterDescriptor.getTypeDescriptor(), TypeDescriptor.collection(List.class, String.class));
 			request.getHeaders().put(parameterDescriptor.getName(), ips);
 		} else {
-			String ip = (String) getConversionService().convert(parameter, new TypeDescriptor(parameterDescriptor),
+			String ip = (String) getConversionService().convert(parameter, parameterDescriptor.getTypeDescriptor(),
 					TypeDescriptor.valueOf(String.class));
 			request.getHeaders().set(parameterDescriptor.getName(), ip);
 		}

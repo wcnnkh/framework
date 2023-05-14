@@ -80,7 +80,8 @@ public class DefaultHttpChannel extends RequestBeanFactory implements HttpChanne
 	}
 
 	public final Value get(String name) {
-		ParameterDescriptor parameterDescriptor = new DefaultParameterDescriptor(name, Value.class);
+		ParameterDescriptor parameterDescriptor = new DefaultParameterDescriptor(name,
+				TypeDescriptor.valueOf(Value.class));
 		try {
 			return (Value) getMessageConverters().read(getRequest(), parameterDescriptor);
 		} catch (IOException e) {
@@ -102,22 +103,22 @@ public class DefaultHttpChannel extends RequestBeanFactory implements HttpChanne
 	}
 
 	protected Object getExtend(ParameterDescriptor parameterDescriptor) {
-		Object target = XUtils.getDelegate(this, parameterDescriptor.getType());
+		Object target = XUtils.getDelegate(this, parameterDescriptor.getTypeDescriptor().getType());
 		if (target != null) {
 			return target;
 		}
 
-		if (parameterDescriptor.getType().isInstance(this)) {
+		if (parameterDescriptor.getTypeDescriptor().getType().isInstance(this)) {
 			return this;
 		}
 
-		if (UserToken.class == parameterDescriptor.getType()) {
-			ResolvableType resolvableType = ResolvableType.forType(parameterDescriptor.getGenericType());
+		if (UserToken.class == parameterDescriptor.getTypeDescriptor().getType()) {
+			ResolvableType resolvableType = parameterDescriptor.getTypeDescriptor().getResolvableType();
 			return getUserToken(resolvableType.getGeneric(0).getRawClass());
 		}
 
-		if (UserSession.class == parameterDescriptor.getType()) {
-			ResolvableType resolvableType = ResolvableType.forType(parameterDescriptor.getGenericType());
+		if (UserSession.class == parameterDescriptor.getTypeDescriptor().getType()) {
+			ResolvableType resolvableType = parameterDescriptor.getTypeDescriptor().getResolvableType();
 			return getUserSession(resolvableType.getGeneric(0).getRawClass());
 		}
 		return null;

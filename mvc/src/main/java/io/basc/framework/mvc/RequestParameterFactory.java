@@ -1,6 +1,5 @@
 package io.basc.framework.mvc;
 
-import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.factory.ParameterFactory;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.web.ServerHttpRequest;
@@ -27,7 +26,7 @@ public class RequestParameterFactory implements ParameterFactory {
 
 	@Override
 	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
-		return messageConverters.canRead(request, new TypeDescriptor(parameterDescriptor));
+		return messageConverters.canRead(request, parameterDescriptor.getTypeDescriptor());
 	}
 
 	@Override

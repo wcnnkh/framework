@@ -14,7 +14,7 @@ public class JaxrsDefaultValueFactory implements BeanResolverExtend {
 
 	@Override
 	public Object getDefaultParameter(ParameterDescriptor parameterDescriptor, BeanResolver chain) {
-		DefaultValue defaultValue = AnnotatedElementUtils.getMergedAnnotation(parameterDescriptor, DefaultValue.class);
+		DefaultValue defaultValue = AnnotatedElementUtils.getMergedAnnotation(parameterDescriptor.getTypeDescriptor(), DefaultValue.class);
 		if (defaultValue != null) {
 			return defaultValue.value();
 		}

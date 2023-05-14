@@ -26,7 +26,7 @@ public class JaxrsPathParamWebMessageConverter extends AbstractPathParamWebMessa
 	@Override
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
-		PathParam param = parameterDescriptor.getAnnotation(PathParam.class);
+		PathParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(PathParam.class);
 		if (param == null || StringUtils.isEmpty(param.value())) {
 			return super.read(request, parameterDescriptor);
 		}
@@ -36,7 +36,7 @@ public class JaxrsPathParamWebMessageConverter extends AbstractPathParamWebMessa
 	@Override
 	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
 			Object parameter) throws WebMessagelConverterException {
-		PathParam param = parameterDescriptor.getAnnotation(PathParam.class);
+		PathParam param = parameterDescriptor.getTypeDescriptor().getAnnotation(PathParam.class);
 		if (param == null || StringUtils.isEmpty(param.value())) {
 			return super.write(builder, parameterDescriptor, parameter);
 		}

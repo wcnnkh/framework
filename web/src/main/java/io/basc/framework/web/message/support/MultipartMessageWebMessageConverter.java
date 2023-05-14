@@ -42,7 +42,7 @@ public class MultipartMessageWebMessageConverter extends MultipartMessageConvert
 		} else {
 			messages = getMultipartMessageResolver().resolve(request);
 		}
-		return convert(messages, new TypeDescriptor(parameterDescriptor));
+		return convert(messages, parameterDescriptor.getTypeDescriptor());
 	}
 
 	@Override

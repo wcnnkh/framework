@@ -14,7 +14,7 @@ public class Indexed<E> implements Serializable {
 	/**
 	 * 索引，从0开始
 	 */
-	private final Number index;
+	private final long index;
 	/**
 	 * 对应的元素
 	 */

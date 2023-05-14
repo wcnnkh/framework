@@ -29,7 +29,7 @@ public class EntityMessageConverter extends AbstractWebMessageConverter {
 	@Override
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
-		TypeDescriptor typeDescriptor = new TypeDescriptor(parameterDescriptor);
+		TypeDescriptor typeDescriptor = parameterDescriptor.getTypeDescriptor();
 		if (typeDescriptor.isGeneric()) {
 			typeDescriptor = typeDescriptor.getNested(1);
 		} else {
@@ -77,7 +77,7 @@ public class EntityMessageConverter extends AbstractWebMessageConverter {
 	@Override
 	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
 			throws IOException, WebMessagelConverterException {
-		getMessageConverter().write(new TypeDescriptor(parameterDescriptor), parameter, request.getContentType(),
+		getMessageConverter().write(parameterDescriptor.getTypeDescriptor(), parameter, request.getContentType(),
 				request);
 		return request;
 	}

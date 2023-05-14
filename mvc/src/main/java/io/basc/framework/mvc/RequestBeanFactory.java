@@ -154,16 +154,16 @@ public class RequestBeanFactory extends RequestParameterFactory implements Insta
 
 	@Override
 	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
-		if (parameterDescriptor.getType().isAnnotationPresent(RequestBody.class)) {
-			return isInstance(parameterDescriptor.getType());
+		if (parameterDescriptor.getTypeDescriptor().getType().isAnnotationPresent(RequestBody.class)) {
+			return isInstance(parameterDescriptor.getTypeDescriptor().getType());
 		}
 		return super.isAccept(parameterDescriptor);
 	}
 
 	@Override
 	public Object getParameter(ParameterDescriptor parameterDescriptor) {
-		if (parameterDescriptor.getType().isAnnotationPresent(RequestBody.class)) {
-			return getInstance(parameterDescriptor.getType());
+		if (parameterDescriptor.getTypeDescriptor().getType().isAnnotationPresent(RequestBody.class)) {
+			return getInstance(parameterDescriptor.getTypeDescriptor().getType());
 		}
 		return super.getParameter(parameterDescriptor);
 	}

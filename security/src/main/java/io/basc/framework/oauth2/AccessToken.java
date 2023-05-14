@@ -2,9 +2,10 @@ package io.basc.framework.oauth2;
 
 import java.io.Serializable;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.security.Token;
+import lombok.Data;
 
+@Data
 public class AccessToken implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private final Token token;
@@ -67,10 +68,5 @@ public class AccessToken implements Serializable, Cloneable {
 	public AccessToken clone() {
 		return new AccessToken(this.token == null ? null : token.clone(), type,
 				this.refreshToken == null ? null : refreshToken.clone(), scope, state);
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionUtils.toString(this);
 	}
 }

@@ -30,7 +30,7 @@ public abstract class AbstractPathParamWebMessageConverter extends AbstractWebMe
 		}
 
 		return getConversionService().convert(value, TypeDescriptor.forObject(value),
-				new TypeDescriptor(parameterDescriptor));
+				parameterDescriptor.getTypeDescriptor());
 	}
 
 	@Override
@@ -52,11 +52,11 @@ public abstract class AbstractPathParamWebMessageConverter extends AbstractWebMe
 	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
 			Object parameter) throws WebMessagelConverterException {
 		Map<String, String> uriVariables;
-		if (Map.class.isAssignableFrom(parameterDescriptor.getType())) {
+		if (parameterDescriptor.getTypeDescriptor().isMap()) {
 			uriVariables = (Map<String, String>) getConversionService().convert(parameter,
-					new TypeDescriptor(parameterDescriptor), TypeDescriptor.map(Map.class, String.class, String.class));
+					parameterDescriptor.getTypeDescriptor(), TypeDescriptor.map(Map.class, String.class, String.class));
 		} else {
-			String value = (String) getConversionService().convert(parameter, new TypeDescriptor(parameterDescriptor),
+			String value = (String) getConversionService().convert(parameter, parameterDescriptor.getTypeDescriptor(),
 					TypeDescriptor.valueOf(String.class));
 			uriVariables = Collections.singletonMap(parameterDescriptor.getName(), value);
 		}

@@ -5,7 +5,6 @@ import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import lombok.Data;
 
 @Data
@@ -84,10 +83,5 @@ public class DefaultServiceInstance implements Service, Serializable {
 		if ("https".equals(scheme)) {
 			this.secure = true;
 		}
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionUtils.toString(this);
 	}
 }

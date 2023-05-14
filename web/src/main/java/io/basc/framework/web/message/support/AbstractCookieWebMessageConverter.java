@@ -26,13 +26,13 @@ public abstract class AbstractCookieWebMessageConverter extends AbstractWebMessa
 			value = httpCookie.getValue();
 		}
 		return getConversionService().convert(value, TypeDescriptor.forObject(value),
-				new TypeDescriptor(parameterDescriptor));
+				parameterDescriptor.getTypeDescriptor());
 	}
 
 	@Override
 	public ClientHttpRequest write(ClientHttpRequest request, ParameterDescriptor parameterDescriptor, Object parameter)
 			throws IOException, WebMessagelConverterException {
-		String value = (String) getConversionService().convert(parameter, new TypeDescriptor(parameterDescriptor),
+		String value = (String) getConversionService().convert(parameter, parameterDescriptor.getTypeDescriptor(),
 				TypeDescriptor.valueOf(String.class));
 		Cookie cookie = new Cookie(parameterDescriptor.getName(), value);
 		request.getHeaders().set(HttpHeaders.COOKIE, cookie.toString());

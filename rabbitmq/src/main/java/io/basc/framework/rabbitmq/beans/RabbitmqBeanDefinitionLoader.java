@@ -23,6 +23,7 @@ import io.basc.framework.factory.support.BeanDefinitionLoader;
 import io.basc.framework.factory.support.BeanDefinitionLoaderChain;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.io.ResourceUtils;
+import io.basc.framework.mapper.filter.ParameterNamePrefixFilter;
 import io.basc.framework.rabbitmq.RabbitmqExchange;
 import io.basc.framework.util.ClassUtils;
 
@@ -141,7 +142,7 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 			ContextConfigurator mapper = new ContextConfigurator(getContext());
 			mapper.setConversionService(getEnvironment().getConversionService());
 			mapper.configure(getBeanFactory());
-			mapper.getContext().setNamePrefix("exchange");
+			mapper.getFilters().register(new ParameterNamePrefixFilter("exchange"));
 			mapper.transform(properties, exchangeDeclare);
 			return exchangeDeclare;
 		}

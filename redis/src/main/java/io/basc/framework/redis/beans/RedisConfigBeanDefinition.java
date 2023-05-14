@@ -8,6 +8,7 @@ import io.basc.framework.context.support.ContextConfigurator;
 import io.basc.framework.event.Observable;
 import io.basc.framework.factory.BeanResolver;
 import io.basc.framework.factory.InstanceException;
+import io.basc.framework.mapper.filter.ParameterNamePrefixFilter;
 import io.basc.framework.redis.RedisConfiguration;
 import io.basc.framework.value.PropertiesPropertyFactory;
 import io.basc.framework.value.PropertyFactory;
@@ -38,7 +39,7 @@ public class RedisConfigBeanDefinition extends ContextBeanDefinition {
 		mapper.configure(getBeanFactory());
 		PropertyFactory properties = new PropertiesPropertyFactory(observable.get());
 		mapper.transform(properties, redisConfiguration);
-		mapper.getContext().setNamePrefix("redis");
+		mapper.getFilters().register(new ParameterNamePrefixFilter("redis"));
 		mapper.transform(properties, redisConfiguration);
 		return redisConfiguration;
 	}

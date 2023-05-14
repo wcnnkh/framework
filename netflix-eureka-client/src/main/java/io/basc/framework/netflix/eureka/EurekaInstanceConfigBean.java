@@ -1,9 +1,7 @@
 package io.basc.framework.netflix.eureka;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import com.netflix.appinfo.DataCenterInfo;
 import com.netflix.appinfo.InstanceInfo.InstanceStatus;
@@ -13,10 +11,11 @@ import io.basc.framework.boot.Application;
 import io.basc.framework.boot.ApplicationAware;
 import io.basc.framework.cloud.commons.util.InetUtils;
 import io.basc.framework.cloud.commons.util.InetUtils.HostInfo;
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.orm.annotation.ConfigurationProperties;
+import lombok.Data;
 
 @ConfigurationProperties("eureka.instance")
+@Data
 public class EurekaInstanceConfigBean implements CloudEurekaInstanceConfig, ApplicationAware {
 	private static final String UNKNOWN = "unknown";
 
@@ -533,52 +532,4 @@ public class EurekaInstanceConfigBean implements CloudEurekaInstanceConfig, Appl
 	public void setDefaultAddressResolutionOrder(String[] defaultAddressResolutionOrder) {
 		this.defaultAddressResolutionOrder = defaultAddressResolutionOrder;
 	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		EurekaInstanceConfigBean that = (EurekaInstanceConfigBean) o;
-		return Objects.equals(hostInfo, that.hostInfo) && Objects.equals(inetUtils, that.inetUtils)
-				&& Objects.equals(appname, that.appname) && Objects.equals(appGroupName, that.appGroupName)
-				&& instanceEnabledOnit == that.instanceEnabledOnit && nonSecurePort == that.nonSecurePort
-				&& securePort == that.securePort && nonSecurePortEnabled == that.nonSecurePortEnabled
-				&& securePortEnabled == that.securePortEnabled
-				&& leaseRenewalIntervalInSeconds == that.leaseRenewalIntervalInSeconds
-				&& leaseExpirationDurationInSeconds == that.leaseExpirationDurationInSeconds
-				&& Objects.equals(virtualHostName, that.virtualHostName) && Objects.equals(instanceId, that.instanceId)
-				&& Objects.equals(secureVirtualHostName, that.secureVirtualHostName)
-				&& Objects.equals(aSGName, that.aSGName) && Objects.equals(metadataMap, that.metadataMap)
-				&& Objects.equals(dataCenterInfo, that.dataCenterInfo) && Objects.equals(ipAddress, that.ipAddress)
-				&& Objects.equals(statusPageUrlPath, that.statusPageUrlPath)
-				&& Objects.equals(statusPageUrl, that.statusPageUrl)
-				&& Objects.equals(homePageUrlPath, that.homePageUrlPath)
-				&& Objects.equals(homePageUrl, that.homePageUrl)
-				&& Objects.equals(healthCheckUrlPath, that.healthCheckUrlPath)
-				&& Objects.equals(healthCheckUrl, that.healthCheckUrl)
-				&& Objects.equals(secureHealthCheckUrl, that.secureHealthCheckUrl)
-				&& Objects.equals(namespace, that.namespace) && Objects.equals(hostname, that.hostname)
-				&& preferIpAddress == that.preferIpAddress && Objects.equals(initialStatus, that.initialStatus)
-				&& Arrays.equals(defaultAddressResolutionOrder, that.defaultAddressResolutionOrder);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(hostInfo, inetUtils, appname, appGroupName, instanceEnabledOnit, nonSecurePort, securePort,
-				nonSecurePortEnabled, securePortEnabled, leaseRenewalIntervalInSeconds,
-				leaseExpirationDurationInSeconds, virtualHostName, instanceId, secureVirtualHostName, aSGName,
-				metadataMap, dataCenterInfo, ipAddress, statusPageUrlPath, statusPageUrl, homePageUrlPath, homePageUrl,
-				healthCheckUrlPath, healthCheckUrl, secureHealthCheckUrl, namespace, hostname, preferIpAddress,
-				initialStatus, defaultAddressResolutionOrder);
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionUtils.toString(this);
-	}
-
 }

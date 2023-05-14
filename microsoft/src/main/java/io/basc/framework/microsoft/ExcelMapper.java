@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.orm.EntityMapping;
 import io.basc.framework.orm.ObjectRelational;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.Assert;
@@ -85,12 +86,12 @@ public class ExcelMapper extends ExcelTemplate implements AutoCloseable {
 		});
 	}
 
-	public final ExcelMapper titles(ObjectRelational<?> structure) throws ExcelException, IOException {
-		if (structure == null) {
+	public final ExcelMapper titles(EntityMapping<?> entityMapping) throws ExcelException, IOException {
+		if (entityMapping == null) {
 			return this;
 		}
 
-		return process(() -> titles(structure.columns().map((e) -> e.getName()).collect(Collectors.toList())));
+		return process(() -> titles(entityMapping.columns().map((e) -> e.getName()).collect(Collectors.toList())));
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -134,14 +135,14 @@ public class ExcelMapper extends ExcelTemplate implements AutoCloseable {
 		});
 	}
 
-	public ExcelMapper put(Object row, ObjectRelational<?> structure) throws ExcelException, IOException {
-		if (structure == null || row == null) {
+	public ExcelMapper put(Object row, EntityMapping<?> entityMapping) throws ExcelException, IOException {
+		if (entityMapping == null || row == null) {
 			return this;
 		}
 
 		return process(() -> {
-			titles(structure);
-			List<String> values = structure.columns().map((property) -> {
+			titles(entityMapping);
+			List<String> values = entityMapping.columns().map((property) -> {
 				if (!property.isSupportGetter()) {
 					return null;
 				}

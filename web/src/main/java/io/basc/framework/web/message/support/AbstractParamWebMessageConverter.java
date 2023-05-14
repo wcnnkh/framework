@@ -30,7 +30,7 @@ public abstract class AbstractParamWebMessageConverter extends AbstractWebMessag
 	public Object read(ServerHttpRequest request, ParameterDescriptor parameterDescriptor)
 			throws IOException, WebMessagelConverterException {
 		Object value;
-		if (ClassUtils.isMultipleValues(parameterDescriptor.getType())) {
+		if (ClassUtils.isMultipleValues(parameterDescriptor.getTypeDescriptor().getType())) {
 			List<String> values = request.getParameterMap().get(parameterDescriptor.getName());
 			if (CollectionUtils.isEmpty(values)) {
 				value = getDefaultValue(parameterDescriptor);
@@ -44,7 +44,7 @@ public abstract class AbstractParamWebMessageConverter extends AbstractWebMessag
 			}
 		}
 		return getConversionService().convert(value, TypeDescriptor.forObject(value),
-				new TypeDescriptor(parameterDescriptor));
+				parameterDescriptor.getTypeDescriptor());
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public abstract class AbstractParamWebMessageConverter extends AbstractWebMessag
 			bufferingClientHttpRequest.getOutputStream().write("&".getBytes(charset));
 		}
 
-		String value = (String) getConversionService().convert(parameter, new TypeDescriptor(parameterDescriptor),
+		String value = (String) getConversionService().convert(parameter, parameterDescriptor.getTypeDescriptor(),
 				TypeDescriptor.valueOf(String.class));
 		bufferingClientHttpRequest.getOutputStream().write(parameterDescriptor.getName().getBytes(charset));
 		bufferingClientHttpRequest.getOutputStream().write("=".getBytes(charset));
@@ -81,12 +81,12 @@ public abstract class AbstractParamWebMessageConverter extends AbstractWebMessag
 	@Override
 	public UriComponentsBuilder write(UriComponentsBuilder builder, ParameterDescriptor parameterDescriptor,
 			Object parameter) throws WebMessagelConverterException {
-		if (ClassUtils.isMultipleValues(parameterDescriptor.getType())) {
+		if (ClassUtils.isMultipleValues(parameterDescriptor.getTypeDescriptor().getType())) {
 			List<String> values = (List<String>) getConversionService().convert(parameter,
-					new TypeDescriptor(parameterDescriptor), TypeDescriptor.collection(List.class, String.class));
+					parameterDescriptor.getTypeDescriptor(), TypeDescriptor.collection(List.class, String.class));
 			return builder.queryParam(parameterDescriptor.getName(), values.toArray());
 		} else {
-			String value = (String) getConversionService().convert(parameter, new TypeDescriptor(parameterDescriptor),
+			String value = (String) getConversionService().convert(parameter, parameterDescriptor.getTypeDescriptor(),
 					TypeDescriptor.valueOf(String.class));
 			return builder.queryParam(parameterDescriptor.getName(), value);
 		}
