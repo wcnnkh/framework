@@ -25,4 +25,8 @@ public class RelationshipSymbol extends Symbol {
 	public static Elements<RelationshipSymbol> getRelationshipSymbol() {
 		return getSymbols(RelationshipSymbol.class);
 	}
+
+	public static Elements<RelationshipSymbol> getRelationshipSymbol(String name) {
+		return getSymbols(RelationshipSymbol.class, name);
+	}
 }

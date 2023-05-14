@@ -1,21 +1,24 @@
 package io.basc.framework.sql.orm;
 
-import io.basc.framework.mapper.Field;
 import io.basc.framework.orm.DefaultProperty;
-import io.basc.framework.orm.EntityMappingResolver;
+import io.basc.framework.orm.Property;
 import io.basc.framework.util.Elements;
 
 public class DefaultColumn extends DefaultProperty implements Column {
 	private Elements<IndexInfo> indexs;
 
-	public DefaultColumn(Field field) {
-		super(field);
+	public DefaultColumn(Property property) {
+		super(property);
 	}
 
-	public DefaultColumn(Field field, Class<?> sourceClass, EntityMappingResolver resolver,
-			TableResolver tableResolver) {
-		super(field, sourceClass, resolver);
-		this.indexs = field.getSetters().map((e) -> tableResolver.getIndexs(sourceClass, e)).first();
+	public DefaultColumn(Column column) {
+		super(column);
+		this.indexs = column.getIndexs();
+	}
+
+	public DefaultColumn(Property property, Class<?> sourceClass, TableResolver tableResolver) {
+		super(property);
+		this.indexs = property.getSetters().map((e) -> tableResolver.getIndexs(sourceClass, e)).first();
 	}
 
 	@Override

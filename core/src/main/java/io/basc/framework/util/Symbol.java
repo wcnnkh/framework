@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -171,6 +172,25 @@ public class Symbol implements Serializable, Named {
 		} finally {
 			lock.unlock();
 		}
+	}
+	
+	public static <T> T getOrCreate(Supplier<? extends T> supplier, Supplier<T> creator) {
+		Assert.requiredArgument(supplier != null, "supplier");
+		Assert.requiredArgument(creator != null, "creator");
+		T value = supplier.get();
+		if (value == null) {
+			WriteLock lock = READ_WRITE_LOCK.writeLock();
+			lock.lock();
+			try {
+				value = supplier.get();
+				if (value == null) {
+					value = creator.get();
+				}
+			} finally {
+				lock.unlock();
+			}
+		}
+		return value;
 	}
 
 	private final String name;

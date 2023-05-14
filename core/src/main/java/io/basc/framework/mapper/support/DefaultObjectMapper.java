@@ -20,7 +20,7 @@ import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.MappingStrategy;
 import io.basc.framework.mapper.ObjectAccessFactory;
 import io.basc.framework.mapper.ObjectMapper;
-import io.basc.framework.mapper.filter.MappingStrategyChain;
+import io.basc.framework.mapper.filter.FilterableMappingStrategy;
 import io.basc.framework.mapper.filter.MappingStrategyFilters;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
@@ -40,12 +40,49 @@ public class DefaultObjectMapper extends ConversionFactory<Object, ConversionExc
 		registerObjectAccessFactory(Map.class, (s, e) -> new MapAccess(s, e, mappingStrategy.getConversionService()));
 	}
 
+	@Override
+	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (sourceType == null || targetType == null) {
+			return false;
+		}
+
+		boolean b = !canDirectlyConvert(sourceType, targetType)
+				&& ConditionalConversionService.super.canConvert(sourceType, targetType)
+				&& (isEntity(targetType) || isEntity(sourceType));
+		return b;
+	}
+
+	@Override
+	public Set<ConvertiblePair> getConvertibleTypes() {
+		return convertiblePairs == null ? Collections.emptySet() : convertiblePairs;
+	}
+
 	public MappingStrategyFilters getFilters() {
 		return filters;
 	}
 
+	@Override
+	public Mapping<? extends Field> getMapping(Class<?> entityClass) {
+		Mapping<? extends Field> structure = mappingMap.get(entityClass);
+		if (structure == null) {
+			synchronized (this) {
+				structure = mappingMap.get(entityClass);
+				if (structure == null) {
+					structure = ObjectMapper.super.getMapping(entityClass);
+					mappingMap.put(entityClass, structure);
+				}
+			}
+		}
+		return structure;
+	}
+
 	public DefaultMappingStrategy getMappingStrategy() {
 		return mappingStrategy;
+	}
+
+	@Override
+	public MappingStrategy getMappingStrategy(TypeDescriptor typeDescriptor) {
+		return new FilterableMappingStrategy(getFilters(), getMappingStrategy());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -64,23 +101,18 @@ public class DefaultObjectMapper extends ConversionFactory<Object, ConversionExc
 	}
 
 	@Override
-	public Mapping<? extends Field> getMapping(Class<?> entityClass) {
-		Mapping<? extends Field> structure = mappingMap.get(entityClass);
-		if (structure == null) {
-			synchronized (this) {
-				structure = mappingMap.get(entityClass);
-				if (structure == null) {
-					structure = ObjectMapper.super.getMapping(entityClass);
-					mappingMap.put(entityClass, structure);
-				}
-			}
-		}
-		return structure;
+	public boolean isMappingRegistred(Class<?> entityClass) {
+		return mappingMap.containsKey(entityClass);
 	}
 
 	@Override
-	public boolean isMappingRegistred(Class<?> entityClass) {
-		return mappingMap.containsKey(entityClass);
+	public void registerMapping(Class<?> entityClass, Mapping<? extends Field> mapping) {
+		Assert.requiredArgument(entityClass != null, "entityClass");
+		if (mapping == null) {
+			mappingMap.remove(entityClass);
+		} else {
+			mappingMap.put(entityClass, mapping);
+		}
 	}
 
 	@Override
@@ -105,39 +137,11 @@ public class DefaultObjectMapper extends ConversionFactory<Object, ConversionExc
 	}
 
 	@Override
-	public void registerMapping(Class<?> entityClass, Mapping<? extends Field> structure) {
-		Assert.requiredArgument(entityClass != null, "entityClass");
-		if (structure == null) {
-			mappingMap.remove(entityClass);
-		} else {
-			mappingMap.put(entityClass, structure);
-		}
-	}
-
-	@Override
 	public void setConversionService(ConversionService conversionService) {
 		mappingStrategy.setConversionService(conversionService);
 	}
 
-	@Override
-	public MappingStrategy getMappingStrategy(TypeDescriptor typeDescriptor) {
-		return new MappingStrategyChain(getFilters().iterator(), getMappingStrategy());
-	}
-
-	@Override
-	public Set<ConvertiblePair> getConvertibleTypes() {
-		return convertiblePairs == null ? Collections.emptySet() : convertiblePairs;
-	}
-
-	@Override
-	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (sourceType == null || targetType == null) {
-			return false;
-		}
-
-		boolean b = !canDirectlyConvert(sourceType, targetType)
-				&& ConditionalConversionService.super.canConvert(sourceType, targetType)
-				&& (isEntity(targetType) || isEntity(sourceType));
-		return b;
+	public ConversionService getConversionService() {
+		return mappingStrategy.getConversionService();
 	}
 }

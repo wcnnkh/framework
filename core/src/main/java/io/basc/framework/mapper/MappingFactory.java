@@ -29,7 +29,7 @@ public interface MappingFactory {
 	 * 
 	 * @see #getStructure(Class)
 	 * @param entityClass
-	 * @param structure
+	 * @param mapping
 	 */
-	void registerMapping(Class<?> entityClass, Mapping<? extends Field> structure);
+	void registerMapping(Class<?> entityClass, Mapping<? extends Field> mapping);
 }

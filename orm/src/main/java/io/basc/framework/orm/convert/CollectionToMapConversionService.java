@@ -14,6 +14,8 @@ import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.mapper.Field;
+import io.basc.framework.mapper.ObjectMapper;
+import io.basc.framework.orm.EntityMapper;
 import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.support.OrmUtils;
@@ -23,13 +25,13 @@ import io.basc.framework.util.Elements;
 public class CollectionToMapConversionService extends AbstractConversionService
 		implements ConditionalConversionService {
 	public static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
-	private ObjectRelationalFactory mapper;
+	private EntityMapper mapper;
 
-	public ObjectRelationalFactory getMapper() {
+	public EntityMapper getMapper() {
 		return mapper == null ? OrmUtils.getMapper() : mapper;
 	}
 
-	public void setMapper(ObjectRelationalFactory mapper) {
+	public void setMapper(EntityMapper mapper) {
 		this.mapper = mapper;
 	}
 
@@ -64,13 +66,13 @@ public class CollectionToMapConversionService extends AbstractConversionService
 			}
 
 			Object value = getConversionService().convert(item, sourceType.narrow(item), itemType);
-			Elements<? extends Property> primaryKeys = getMapper().getStructure(itemType.getType()).getPrimaryKeys();
+			Elements<? extends Property> primaryKeys = getMapper().getMapping(itemType.getType()).getPrimaryKeys();
 			Iterator<? extends Property> primaryKeyIterator = primaryKeys.iterator();
 			Map nestMap = map;
 			TypeDescriptor keyType = targetType.getMapKeyTypeDescriptor();
 			TypeDescriptor valueType = targetType.getMapValueTypeDescriptor();
 			while (primaryKeyIterator.hasNext()) {
-				Field primaryKeyField = primaryKeyIterator.next();
+				Property primaryKeyField = primaryKeyIterator.next();
 				Object key = primaryKeyField.get(value);
 
 				key = getConversionService().convert(key, new TypeDescriptor(primaryKeyField.getGetter()), keyType);

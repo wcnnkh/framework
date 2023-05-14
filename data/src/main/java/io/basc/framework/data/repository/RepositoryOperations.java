@@ -14,6 +14,26 @@ import io.basc.framework.util.Elements;
  */
 public interface RepositoryOperations {
 	/**
+	 * 执行操作
+	 * 
+	 * @param operation
+	 * @return
+	 * @throws RepositoryException
+	 */
+	default OptionalLong execute(Operation operation) throws RepositoryException {
+		return batchExecute(Elements.singleton(operation)).first();
+	}
+
+	/**
+	 * 批量执行操作
+	 * 
+	 * @param operations
+	 * @return
+	 * @throws RepositoryException
+	 */
+	Elements<OptionalLong> batchExecute(Elements<? extends Operation> operations) throws RepositoryException;
+
+	/**
 	 * 删除操作
 	 * 
 	 * @param operation
@@ -23,7 +43,10 @@ public interface RepositoryOperations {
 		return batchDelete(Elements.forArray(operation)).first();
 	}
 
-	Elements<OptionalLong> batchDelete(Elements<? extends DeleteOperation> operations) throws RepositoryException;
+	default Elements<OptionalLong> batchDelete(Elements<? extends DeleteOperation> operations)
+			throws RepositoryException {
+		return batchExecute(operations);
+	}
 
 	/**
 	 * 保存操作
@@ -35,65 +58,9 @@ public interface RepositoryOperations {
 		return batchInsert(Elements.forArray(operation)).first();
 	}
 
-	Elements<OptionalLong> batchInsert(Elements<? extends InsertOperation> operations) throws RepositoryException;
-
-	/**
-	 * 不存在就插入
-	 * 
-	 * @param operation
-	 * @return {@link OptionalLong#isPresent()}为false则说明数据已经存在
-	 */
-	default OptionalLong insertIfAbsent(InsertOperation operation) throws RepositoryException {
-		SelectOperation selectOperation = new SelectOperation(operation);
-		Query<Object> query = select(TypeDescriptor.valueOf(Object.class), selectOperation);
-		if (query.getElements().isEmpty()) {
-			// 如果不存在就进行插入
-			InsertOperation insertOperation = new InsertOperation(InsertOperationSymbol.INSERT_IF_ABSENT, operation);
-			return insertIfAbsent(insertOperation);
-		}
-		return OptionalLong.empty();
-	}
-
-	/**
-	 * 默认调用{@link RepositoryOperations#insertIfAbsent(InsertOperation)}
-	 * 
-	 * @param operations
-	 * @return
-	 */
-	default Elements<OptionalLong> batchInsertIfAbsent(Elements<? extends InsertOperation> operations)
+	default Elements<OptionalLong> batchInsert(Elements<? extends InsertOperation> operations)
 			throws RepositoryException {
-		return operations.map((e) -> insertIfAbsent(e));
-	}
-
-	/**
-	 * 插入或更新
-	 * 
-	 * @param operation
-	 * @return
-	 */
-	default OptionalLong insertOrUpdate(InsertOperation operation) throws RepositoryException {
-		SelectOperation selectOperation = new SelectOperation(operation);
-		Query<Object> query = select(TypeDescriptor.valueOf(Object.class), selectOperation);
-		if (query.getElements().isEmpty()) {
-			// 如果不存在就进行插入
-			InsertOperation insertOperation = new InsertOperation(InsertOperationSymbol.INSERT_IF_ABSENT, operation);
-			return insertIfAbsent(insertOperation);
-		} else {
-			// 如果存在就更新
-			UpdateOperation updateOperation = new UpdateOperation(UpdateOperationSymbol.INSERT_OR_UPDATE, operation);
-			return update(updateOperation);
-		}
-	}
-
-	/**
-	 * 默认调用{@link RepositoryOperations#insertOrUpdate(InsertOperation)}
-	 * 
-	 * @param operations
-	 * @return
-	 */
-	default Elements<OptionalLong> batchInsertOrUpdate(Elements<? extends InsertOperation> operations)
-			throws RepositoryException {
-		return operations.map((e) -> insertOrUpdate(e));
+		return batchExecute(operations);
 	}
 
 	/**
@@ -116,5 +83,7 @@ public interface RepositoryOperations {
 		return batchUpdate(Elements.singleton(operation)).first();
 	}
 
-	Elements<OptionalLong> batchUpdate(Elements<? extends UpdateOperation> operations);
+	default Elements<OptionalLong> batchUpdate(Elements<? extends UpdateOperation> operations) {
+		return batchExecute(operations);
+	}
 }

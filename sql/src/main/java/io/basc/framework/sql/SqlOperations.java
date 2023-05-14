@@ -1,10 +1,8 @@
 package io.basc.framework.sql;
 
-import java.sql.SQLException;
-
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.data.domain.Query;
-import io.basc.framework.mapper.ObjectMapper;
+import io.basc.framework.orm.EntityMapper;
 
 @SuppressWarnings("unchecked")
 public interface SqlOperations extends ConnectionFactory {
@@ -21,7 +19,7 @@ public interface SqlOperations extends ConnectionFactory {
 		return execute(new SimpleSql(sql, sqlParams));
 	}
 
-	ObjectMapper<java.sql.ResultSet, SQLException> getMapper();
+	EntityMapper getMapper();
 
 	default <T> Query<T> query(Class<? extends T> resultType, Sql sql) {
 		return query(sql, (rs) -> getMapper().convert(rs, resultType));

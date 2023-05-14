@@ -41,8 +41,8 @@ public class SqlQuery<T> extends Query<T> {
 		}
 
 		Sql iteratorSql = sql;
-		if (getLimit() > 0) {
-			iteratorSql = sqlDialect.toLimitSql(iteratorSql, getCursorId(), getLimit());
+		if (getPageSize() > 0) {
+			iteratorSql = sqlDialect.toLimitSql(iteratorSql, getCursorId(), getPageSize());
 		}
 		Elements<T> elements = connectionFactory.operations().prepare(sql).query().rows(mapProcessor);
 		return new Results(elements);

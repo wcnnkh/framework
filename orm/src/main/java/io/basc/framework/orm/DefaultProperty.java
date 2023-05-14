@@ -18,13 +18,29 @@ public class DefaultProperty implements Property {
 	private boolean entity;
 	private boolean increment;
 	private boolean nullable;
-	private Elements<Range<Double>> numberRanges;
+	private Elements<? extends Range<Double>> numberRanges;
 	private boolean primaryKey;
 	private boolean unique;
 	private boolean version;
 
 	public DefaultProperty(Field field) {
 		this.field = field;
+	}
+
+	public DefaultProperty(Property property) {
+		this.field = property;
+		this.name = property.getName();
+		this.aliasNames = property.getAliasNames();
+		this.autoIncrement = property.isAutoIncrement();
+		this.charsetName = property.getCharsetName();
+		this.comment = property.getComment();
+		this.entity = property.isEntity();
+		this.increment = property.isIncrement();
+		this.nullable = property.isNullable();
+		this.numberRanges = property.getNumberRanges();
+		this.primaryKey = property.isPrimaryKey();
+		this.unique = property.isUnique();
+		this.version = property.isVersion();
 	}
 
 	public DefaultProperty(Field field, Class<?> sourceClass, EntityMappingResolver resolver) {

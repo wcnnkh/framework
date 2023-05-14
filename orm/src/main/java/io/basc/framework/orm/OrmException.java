@@ -1,8 +1,8 @@
 package io.basc.framework.orm;
 
-import io.basc.framework.convert.ConversionException;
+import io.basc.framework.mapper.MappingException;
 
-public class OrmException extends ConversionException {
+public class OrmException extends MappingException {
 	private static final long serialVersionUID = 1L;
 
 	public OrmException(String msg) {

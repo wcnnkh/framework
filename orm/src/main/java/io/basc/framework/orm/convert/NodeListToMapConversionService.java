@@ -14,28 +14,25 @@ import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.dom.DomUtils;
-import io.basc.framework.mapper.FieldFeature;
-import io.basc.framework.orm.ObjectRelationalFactory;
+import io.basc.framework.orm.EntityMapper;
 import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionFactory;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 class NodeListToMapConversionService extends AbstractConversionService implements ConditionalConversionService {
 	private static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
-	private ObjectRelationalFactory mapper;
+	private EntityMapper mapper;
 
-	public ObjectRelationalFactory getMapper() {
+	public EntityMapper getMapper() {
 		return mapper == null ? OrmUtils.getMapper() : mapper;
 	}
 
-	public void setObjectRelationalMapping(ObjectRelationalFactory objectRelationalMapping) {
-		this.mapper = objectRelationalMapping;
+	public void setMapper(EntityMapper mapper) {
+		this.mapper = mapper;
 	}
 
 	public boolean hasPrimaryKeys(Class<?> entityClass) {
-		return getMapper().getStructure(entityClass).filter(FieldFeature.SUPPORT_GETTER).withAll().all()
-				.filter((field) -> getMapper().isPrimaryKey(entityClass, field.getGetter())).getElements().findAny()
-				.isPresent();
+		return !getMapper().getMapping(entityClass).getPrimaryKeys().isEmpty();
 	}
 
 	@Override

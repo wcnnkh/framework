@@ -16,12 +16,13 @@ import io.basc.framework.data.repository.DeleteOperationSymbol;
 import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.InsertOperation;
 import io.basc.framework.data.repository.InsertOperationSymbol;
+import io.basc.framework.data.repository.Operation;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.SelectOperation;
 import io.basc.framework.data.repository.SelectOperationSymbol;
 import io.basc.framework.data.repository.Sort;
 import io.basc.framework.data.repository.UpdateOperation;
-import io.basc.framework.data.repository.UpdateOperationSymbol;
+import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Getter;
 import io.basc.framework.mapper.Mapping;
@@ -31,6 +32,19 @@ import io.basc.framework.util.Elements;
 import io.basc.framework.value.Value;
 
 public interface EntityMapper extends ObjectMapper, EntityMappingResolver {
+
+	default Operation getOperation(OperationSymbol operationSymbol, Value entity,
+			EntityMapping<? extends Property> entityMapping) {
+		if (operationSymbol instanceof SelectOperationSymbol) {
+			return getSelectOperation((SelectOperationSymbol) operationSymbol, entity, entityMapping);
+		} else if (operationSymbol instanceof InsertOperationSymbol) {
+			return getInsertOperation((InsertOperationSymbol) operationSymbol, entityMapping, entity);
+		} else if (operationSymbol instanceof DeleteOperationSymbol) {
+			return getDeleteOperation((DeleteOperationSymbol) operationSymbol, entity, entityMapping);
+		}
+		throw new UnsupportedException(operationSymbol.toString());
+	}
+
 	default Elements<? extends Column> getColumns(OperationSymbol operationSymbol, Value entity,
 			EntityMapping<? extends Property> entityMapping) {
 		return resolveParameters(operationSymbol, entity, entityMapping,
@@ -83,12 +97,11 @@ public interface EntityMapper extends ObjectMapper, EntityMappingResolver {
 		return deleteOperation;
 	}
 
-	default DeleteOperation getDeleteOperationByPrimaryKeys(DeleteOperationSymbol deleteOperationSymbol, Value entity,
+	default DeleteOperation getDeleteOperationByPrimaryKeys(OperationSymbol operationSymbol, Value entity,
 			EntityMapping<? extends Property> entityMapping) {
-		DeleteOperation deleteOperation = new DeleteOperation(deleteOperationSymbol);
-		deleteOperation
-				.setRepositorys(getRepositorys(deleteOperationSymbol, entity.getTypeDescriptor(), entityMapping));
-		deleteOperation.setConditions(getConditionsByPrimaryKeys(deleteOperationSymbol, entity, entityMapping));
+		DeleteOperation deleteOperation = new DeleteOperation();
+		deleteOperation.setRepositorys(getRepositorys(operationSymbol, entity.getTypeDescriptor(), entityMapping));
+		deleteOperation.setConditions(getConditionsByPrimaryKeys(operationSymbol, entity, entityMapping));
 		return deleteOperation;
 	}
 
@@ -111,7 +124,7 @@ public interface EntityMapper extends ObjectMapper, EntityMappingResolver {
 	@Override
 	default EntityMapping<? extends Property> getMapping(Class<?> entityClass) {
 		Mapping<? extends Field> mapping = ObjectMapper.super.getMapping(entityClass);
-		return new DefaultEntityMapping<>(entityClass, this, mapping, (e) -> new DefaultProperty(e, entityClass, this));
+		return new DefaultEntityMapping<>(mapping, (e) -> new DefaultProperty(e, entityClass, this), entityClass, this);
 	}
 
 	default Elements<Parameter> getParameters(Iterator<? extends Property> properties, Iterator<? extends Value> args) {
@@ -205,24 +218,23 @@ public interface EntityMapper extends ObjectMapper, EntityMappingResolver {
 				(parameter) -> getSorts(operationSymbol, entity.getTypeDescriptor(), parameter));
 	}
 
-	default UpdateOperation getUpdateOperation(UpdateOperationSymbol updateOperationSymbol, Value oldEntity,
-			EntityMapping<? extends Property> oldEntityMapping, Value newEntity,
-			EntityMapping<? extends Property> newEntityMapping) {
-		UpdateOperation updateOperation = new UpdateOperation();
-		updateOperation
-				.setRepositorys(getRepositorys(updateOperationSymbol, oldEntity.getTypeDescriptor(), oldEntityMapping));
-		updateOperation.setColumns(getColumns(updateOperationSymbol, newEntity, newEntityMapping));
-		updateOperation.setConditions(getConditions(updateOperationSymbol, oldEntity, oldEntityMapping));
-		return updateOperation;
-	}
-
-	default UpdateOperation getUpdateOperationByPrimaryKeys(UpdateOperationSymbol updateOperationSymbol, Value entity,
+	default UpdateOperation getUpdateOperation(OperationSymbol operationSymbol, Value matchEntity,
+			EntityMapping<? extends Property> matchEntityMapping, Value entity,
 			EntityMapping<? extends Property> entityMapping) {
 		UpdateOperation updateOperation = new UpdateOperation();
 		updateOperation
-				.setRepositorys(getRepositorys(updateOperationSymbol, entity.getTypeDescriptor(), entityMapping));
-		updateOperation.setColumns(getColumns(updateOperationSymbol, entity, entityMapping));
-		updateOperation.setConditions(getConditionsByPrimaryKeys(updateOperationSymbol, entity, entityMapping));
+				.setRepositorys(getRepositorys(operationSymbol, matchEntity.getTypeDescriptor(), matchEntityMapping));
+		updateOperation.setColumns(getColumns(operationSymbol, entity, entityMapping));
+		updateOperation.setConditions(getConditions(operationSymbol, matchEntity, matchEntityMapping));
+		return updateOperation;
+	}
+
+	default UpdateOperation getUpdateOperationByPrimaryKeys(OperationSymbol operationSymbol, Value entity,
+			EntityMapping<? extends Property> entityMapping) {
+		UpdateOperation updateOperation = new UpdateOperation();
+		updateOperation.setRepositorys(getRepositorys(operationSymbol, entity.getTypeDescriptor(), entityMapping));
+		updateOperation.setColumns(getColumns(operationSymbol, entity, entityMapping));
+		updateOperation.setConditions(getConditionsByPrimaryKeys(operationSymbol, entity, entityMapping));
 		return updateOperation;
 	}
 

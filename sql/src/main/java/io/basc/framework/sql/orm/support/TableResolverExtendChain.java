@@ -1,13 +1,13 @@
 package io.basc.framework.sql.orm.support;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.mapper.FieldDescriptor;
+import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.sql.orm.IndexInfo;
 import io.basc.framework.sql.orm.TableResolver;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Elements;
 
 public class TableResolverExtendChain implements TableResolver {
 	private final Iterator<TableResolverExtend> iterator;
@@ -28,11 +28,11 @@ public class TableResolverExtendChain implements TableResolver {
 	}
 
 	@Override
-	public Collection<IndexInfo> getIndexs(Class<?> entityClass, FieldDescriptor descriptor) {
+	public Elements<IndexInfo> getIndexs(Class<?> entityClass, ParameterDescriptor descriptor) {
 		if (iterator.hasNext()) {
 			return iterator.next().getIndexs(entityClass, descriptor, this);
 		}
-		return nextChain == null ? null : nextChain.getIndexs(entityClass, descriptor);
+		return nextChain == null ? Elements.empty() : nextChain.getIndexs(entityClass, descriptor);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class TableResolverExtendChain implements TableResolver {
 		return nextChain == null ? null : nextChain.getRowFormat(entityClass);
 	}
 
-	public Boolean isAutoCreate(Class<?> entityClass) {
+	public boolean isAutoCreate(Class<?> entityClass) {
 		if (iterator.hasNext()) {
 			return iterator.next().isAutoCreate(entityClass, this);
 		}

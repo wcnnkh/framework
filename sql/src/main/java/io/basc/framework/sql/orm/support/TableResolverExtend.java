@@ -1,14 +1,13 @@
 package io.basc.framework.sql.orm.support;
 
-import java.util.Collection;
-
-import io.basc.framework.mapper.FieldDescriptor;
+import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.sql.orm.IndexInfo;
 import io.basc.framework.sql.orm.TableResolver;
+import io.basc.framework.util.Elements;
 
 public interface TableResolverExtend {
 
-	default Collection<IndexInfo> getIndexs(Class<?> entityClass, FieldDescriptor descriptor, TableResolver chain) {
+	default Elements<IndexInfo> getIndexs(Class<?> entityClass, ParameterDescriptor descriptor, TableResolver chain) {
 		return chain.getIndexs(entityClass, descriptor);
 	}
 

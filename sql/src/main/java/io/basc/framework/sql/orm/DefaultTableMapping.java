@@ -2,13 +2,10 @@ package io.basc.framework.sql.orm;
 
 import java.util.function.Function;
 
-import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.Mapping;
 import io.basc.framework.orm.DefaultEntityMapping;
-import io.basc.framework.orm.EntityMappingResolver;
+import io.basc.framework.orm.EntityMapping;
+import io.basc.framework.orm.Property;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.LinkedMultiValueMap;
-import io.basc.framework.util.MultiValueMap;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -22,24 +19,21 @@ public class DefaultTableMapping<T extends Column> extends DefaultEntityMapping<
 	public DefaultTableMapping() {
 	}
 
-	public DefaultTableMapping(Class<?> sourceClass, EntityMappingResolver relationalResolver,
-			TableResolver tableResolver) {
-		super(sourceClass, relationalResolver);
+	public <S extends Property> DefaultTableMapping(EntityMapping<? extends S> mapping,
+			Function<? super S, ? extends T> converter, Class<?> sourceClass, TableResolver tableResolver) {
+		super(mapping, converter);
+		Assert.requiredArgument(sourceClass != null, "sourceClass");
+		Assert.requiredArgument(tableResolver != null, "tableResolver");
 		this.engine = tableResolver.getEngine(sourceClass);
 		this.rowFormat = tableResolver.getRowFormat(sourceClass);
 		this.autoCreate = tableResolver.isAutoCreate(sourceClass);
 	}
 
-	public <S extends Field> DefaultTableMapping(Class<?> sourceClass, EntityMappingResolver relationalResolver,
-			TableResolver tableResolver, Mapping<? extends S> mapping, Function<? super S, ? extends T> converter) {
-		this(sourceClass, relationalResolver, tableResolver);
-		Assert.requiredArgument(mapping != null, "mapping");
-		Assert.requiredArgument(converter != null, "converter");
-		MultiValueMap<String, T> propertyMap = new LinkedMultiValueMap<>();
-		for (S field : mapping.getElements()) {
-			T property = converter.apply(field);
-			propertyMap.add(property.getName(), property);
-		}
-		setElementMap(propertyMap);
+	public <S extends Column> DefaultTableMapping(TableMapping<? extends S> mapping,
+			Function<? super S, ? extends T> converter) {
+		super(mapping, converter);
+		this.engine = mapping.getEngine();
+		this.rowFormat = mapping.getRowFormat();
+		this.autoCreate = mapping.isAutoCreate();
 	}
 }

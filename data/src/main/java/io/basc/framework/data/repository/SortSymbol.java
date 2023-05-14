@@ -23,4 +23,8 @@ public class SortSymbol extends Symbol {
 	public static Elements<SortSymbol> getSortSymbols() {
 		return getSymbols(SortSymbol.class);
 	}
+
+	public static Elements<SortSymbol> getSortSymbols(String name) {
+		return getSymbols(SortSymbol.class, name);
+	}
 }

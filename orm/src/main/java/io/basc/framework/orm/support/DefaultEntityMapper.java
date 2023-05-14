@@ -21,6 +21,7 @@ import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Mapping;
+import io.basc.framework.mapper.MappingStrategy;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.support.DefaultObjectMapper;
@@ -32,6 +33,7 @@ import io.basc.framework.orm.ForeignKey;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.annotation.AnnotationObjectRelationalResolverExtend;
 import io.basc.framework.orm.annotation.IgnoreConfigurationProperty;
+import io.basc.framework.orm.filter.EntityOperationFilter;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
 import io.basc.framework.util.StringUtils;
@@ -48,6 +50,15 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 
 	private final ConfigurableServices<EntityMappingResolverExtend> objectRelationalResolverExtendServices = new ConfigurableServices<EntityMappingResolverExtend>(
 			EntityMappingResolverExtend.class);
+
+	private final ConfigurableServices<EntityOperationFilter> entityOperationFilters = new ConfigurableServices<>(
+			EntityOperationFilter.class);
+
+	private boolean configured;
+
+	public ConfigurableServices<EntityOperationFilter> getEntityOperationFilters() {
+		return entityOperationFilters;
+	}
 
 	public DefaultEntityMapper() {
 		registerObjectAccessFactory(NodeList.class, (s, e) -> new NodeListAccess(s, e));
@@ -72,16 +83,23 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 		}
 	}
 
-	private boolean configured;
+	public void configurationProperties(Object source, TypeDescriptor sourceType, Object target,
+			TypeDescriptor targetType) throws ConverterNotFoundException {
+		if (source == null || target == null) {
+			return;
+		}
+
+		if (!isConfigurable(targetType)) {
+			return;
+		}
+
+		transform(source, sourceType, target, targetType);
+	}
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
 		this.objectRelationalResolverExtendServices.configure(serviceLoaderFactory);
 		configured = true;
-	}
-
-	public boolean isConfigured() {
-		return configured;
 	}
 
 	@Override
@@ -124,6 +142,13 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 	}
 
 	@Override
+	public Elements<? extends Column> getColumns(OperationSymbol operationSymbol, TypeDescriptor source,
+			Parameter parameter) {
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+				.getColumns(operationSymbol, source, parameter);
+	}
+
+	@Override
 	public String getComment(Class<?> entityClass) {
 		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.getComment(entityClass);
@@ -153,9 +178,65 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 	}
 
 	@Override
+	public Elements<? extends Expression> getExpressions(OperationSymbol operationSymbol, TypeDescriptor source,
+			Parameter parameter) {
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+				.getExpressions(operationSymbol, source, parameter);
+	}
+
+	@Override
 	public ForeignKey getForeignKey(Class<?> entityClass, ParameterDescriptor descriptor) {
 		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.getForeignKey(entityClass, descriptor);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public EntityMapping<? extends Property> getMapping(Class<?> entityClass) {
+		Mapping<? extends Field> mapping = super.getMapping(entityClass);
+		if (mapping == null) {
+			synchronized (this) {
+				mapping = super.getMapping(entityClass);
+				if (mapping == null) {
+					EntityMapping<? extends Property> entityMapping = EntityMapper.super.getMapping(entityClass);
+					registerMapping(entityClass, entityMapping);
+					return entityMapping;
+				}
+			}
+		}
+
+		if (mapping instanceof EntityMapping) {
+			return (EntityMapping<? extends Property>) mapping;
+		}
+
+		if (isMappingRegistred(entityClass)) {
+			// 递归
+			return getMapping(entityClass);
+		}
+
+		synchronized (this) {
+			if (isMappingRegistred(entityClass)) {
+				// 递归
+				return getMapping(entityClass);
+			}
+
+			EntityMapping<? extends Property> entityMapping = new DefaultEntityMapping<>(mapping,
+					(e) -> new DefaultProperty(e, entityClass, this), entityClass, this);
+			registerMapping(entityClass, entityMapping);
+			return entityMapping;
+		}
+	}
+
+	@Override
+	public MappingStrategy getMappingStrategy(TypeDescriptor typeDescriptor) {
+		MappingStrategy dottomlessMappingStrategy = super.getMappingStrategy(typeDescriptor);
+		return getMappingStrategy(typeDescriptor, dottomlessMappingStrategy);
+	}
+
+	@Override
+	public MappingStrategy getMappingStrategy(TypeDescriptor source, MappingStrategy dottomlessMappingStrategy) {
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+				.getMappingStrategy(source, dottomlessMappingStrategy);
 	}
 
 	@Override
@@ -191,47 +272,23 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 	}
 
 	@Override
+	public Elements<? extends Repository> getRepositorys(OperationSymbol operationSymbol,
+			TypeDescriptor entityTypeDescriptor, EntityMapping<? extends Property> entityMapping) {
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+				.getRepositorys(operationSymbol, entityTypeDescriptor, entityMapping);
+	}
+
+	@Override
 	public Elements<? extends io.basc.framework.data.repository.Sort> getSorts(OperationSymbol operationSymbol,
 			TypeDescriptor source, ParameterDescriptor descriptor) {
 		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.getSorts(operationSymbol, source, descriptor);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public EntityMapping<? extends Property> getMapping(Class<?> entityClass) {
-		Mapping<? extends Field> mapping = super.getMapping(entityClass);
-		if (mapping == null) {
-			synchronized (this) {
-				mapping = super.getMapping(entityClass);
-				if (mapping == null) {
-					EntityMapping<? extends Property> entityMapping = EntityMapper.super.getMapping(entityClass);
-					registerMapping(entityClass, entityMapping);
-					return entityMapping;
-				}
-			}
-		}
-
-		if (mapping instanceof EntityMapping) {
-			return (EntityMapping<? extends Property>) mapping;
-		}
-
-		if (isMappingRegistred(entityClass)) {
-			// 递归
-			return getMapping(entityClass);
-		}
-
-		synchronized (this) {
-			if (isMappingRegistred(entityClass)) {
-				// 递归
-				return getMapping(entityClass);
-			}
-
-			EntityMapping<? extends Property> entityMapping = new DefaultEntityMapping<>(entityClass, this, mapping,
-					(e) -> new DefaultProperty(e, entityClass, this));
-			registerMapping(entityClass, entityMapping);
-			return entityMapping;
-		}
+	public boolean hasEffectiveValue(TypeDescriptor source, Parameter parameter) {
+		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
+				.hasEffectiveValue(source, parameter);
 	}
 
 	@Override
@@ -246,22 +303,26 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 				.isConfigurable(sourceType);
 	}
 
+	public boolean isConfigured() {
+		return configured;
+	}
+
 	@Override
 	public boolean isDisplay(Class<?> entityClass, ParameterDescriptor descriptor) {
 		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
 				.isDisplay(entityClass, descriptor);
 	}
-	
-	@Override
-	public boolean isEntity(TypeDescriptor source) {
-		return super.isEntity(source) || EntityMappingResolverExtendChain
-				.build(objectRelationalResolverExtendServices.iterator()).isEntity(source);
-	}
-	
+
 	@Override
 	public boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
 		return isEntity(descriptor.getTypeDescriptor()) || EntityMappingResolverExtendChain
 				.build(objectRelationalResolverExtendServices.iterator()).isEntity(entityClass, descriptor);
+	}
+
+	@Override
+	public boolean isEntity(TypeDescriptor source) {
+		return super.isEntity(source) || EntityMappingResolverExtendChain
+				.build(objectRelationalResolverExtendServices.iterator()).isEntity(source);
 	}
 
 	public boolean isHumpNamingReplacement() {
@@ -317,44 +378,5 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 	@Override
 	public void setPlaceholderFormat(@Nullable PlaceholderFormat placeholderFormat) {
 		this.annotationObjectRelationalResolverExtend.setPlaceholderFormat(placeholderFormat);
-	}
-
-	public void configurationProperties(Object source, TypeDescriptor sourceType, Object target,
-			TypeDescriptor targetType) throws ConverterNotFoundException {
-		if (source == null || target == null) {
-			return;
-		}
-
-		if (!isConfigurable(targetType)) {
-			return;
-		}
-
-		transform(source, sourceType, target, targetType);
-	}
-
-	@Override
-	public boolean hasEffectiveValue(TypeDescriptor source, Parameter parameter) {
-		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
-				.hasEffectiveValue(source, parameter);
-	}
-
-	@Override
-	public Elements<? extends Expression> getExpressions(OperationSymbol operationSymbol, TypeDescriptor source,
-			Parameter parameter) {
-		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator()).getExpressions(operationSymbol, source, parameter);
-	}
-
-	@Override
-	public Elements<? extends Column> getColumns(OperationSymbol operationSymbol, TypeDescriptor source,
-			Parameter parameter) {
-		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
-				.getColumns(operationSymbol, source, parameter);
-	}
-
-	@Override
-	public Elements<? extends Repository> getRepositorys(OperationSymbol operationSymbol,
-			TypeDescriptor entityTypeDescriptor, EntityMapping<? extends Property> entityMapping) {
-		return EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.iterator())
-				.getRepositorys(operationSymbol, entityTypeDescriptor, entityMapping);
 	}
 }

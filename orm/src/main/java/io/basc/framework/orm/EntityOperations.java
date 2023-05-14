@@ -7,8 +7,9 @@ import io.basc.framework.core.ResolvableType;
 import io.basc.framework.data.domain.Query;
 import io.basc.framework.data.repository.DeleteOperation;
 import io.basc.framework.data.repository.DeleteOperationSymbol;
-import io.basc.framework.data.repository.InsertOperation;
 import io.basc.framework.data.repository.InsertOperationSymbol;
+import io.basc.framework.data.repository.Operation;
+import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.RepositoryOperations;
 import io.basc.framework.data.repository.SelectOperation;
 import io.basc.framework.data.repository.SelectOperationSymbol;
@@ -21,16 +22,33 @@ import io.basc.framework.value.Value;
 public interface EntityOperations extends RepositoryOperations {
 	EntityMapper getMapper();
 
+	default EntityOperation getEntityOperation(Class<?> entityClass, EntityOperation groundEntityOperation) {
+		return groundEntityOperation;
+	}
+
+	default <T> OptionalLong execute(OperationSymbol operationSymbol, Class<T> entityClass, T entity)
+			throws OrmException {
+		return batchExecute(operationSymbol, entityClass, Elements.singleton(entity)).first();
+	}
+
+	default <T> Elements<OptionalLong> batchExecute(OperationSymbol operationSymbol, Class<T> entityClass,
+			Elements<? extends T> entitys) throws OrmException {
+		TypeDescriptor entityTypeDescriptor = TypeDescriptor.valueOf(entityClass);
+		EntityMapping<? extends Property> entityMapping = getMapper().getMapping(entityClass);
+		Elements<Value> sources = entitys.map((e) -> Value.of(e, entityTypeDescriptor));
+		EntityOperation groundEntityOperation = (os, mapping, es) -> {
+			Elements<Operation> operations = es.map((e) -> getMapper().getOperation(os, e, mapping));
+			return batchExecute(operations);
+		};
+		return groundEntityOperation.execute(operationSymbol, entityMapping, sources);
+	}
+
 	default <T> OptionalLong insert(Class<T> entityClass, T entity) throws OrmException {
 		return batchInsert(entityClass, Elements.singleton(entity)).first();
 	}
 
-	default <T> Elements<OptionalLong> batchInsert(Class<? extends T> entityClass, Elements<? extends T> entitys) {
-		TypeDescriptor entityTypeDescriptor = TypeDescriptor.valueOf(entityClass);
-		EntityMapping<? extends Property> entityMapping = getMapper().getMapping(entityClass);
-		Elements<InsertOperation> operations = entitys.map((e) -> getMapper()
-				.getInsertOperation(InsertOperationSymbol.INSERT, entityMapping, Value.of(e, entityTypeDescriptor)));
-		return batchInsert(operations);
+	default <T> Elements<OptionalLong> batchInsert(Class<T> entityClass, Elements<? extends T> entitys) {
+		return batchExecute(InsertOperationSymbol.INSERT, entityClass, entitys);
 	}
 
 	default <T> OptionalLong insertIfAbsent(Class<T> entityClass, T entity) {
@@ -38,26 +56,15 @@ public interface EntityOperations extends RepositoryOperations {
 	}
 
 	default <T> Elements<OptionalLong> batchInsertIfAbsent(Class<T> entityClass, Elements<? extends T> entitys) {
-		TypeDescriptor entityTypeDescriptor = TypeDescriptor.valueOf(entityClass);
-		EntityMapping<? extends Property> entityMapping = getMapper().getMapping(entityClass);
-		Elements<InsertOperation> operations = entitys
-				.map((e) -> getMapper().getInsertOperation(InsertOperationSymbol.INSERT_IF_ABSENT, entityMapping,
-						Value.of(e, entityTypeDescriptor)));
-		return batchInsertIfAbsent(operations);
+		return batchExecute(InsertOperationSymbol.INSERT_IF_ABSENT, entityClass, entitys);
 	}
 
 	default <T> OptionalLong insertOrUpdate(Class<T> entityClass, T entity) {
 		return batchInsertOrUpdate(entityClass, Elements.singleton(entity)).first();
 	}
 
-	default <T> Elements<OptionalLong> batchInsertOrUpdate(Class<? extends T> entityClass,
-			Elements<? extends T> entitys) {
-		TypeDescriptor entityTypeDescriptor = TypeDescriptor.valueOf(entityClass);
-		EntityMapping<? extends Property> entityMapping = getMapper().getMapping(entityClass);
-		Elements<InsertOperation> operations = entitys
-				.map((e) -> getMapper().getInsertOperation(InsertOperationSymbol.INSERT_OR_UPDATE, entityMapping,
-						Value.of(e, entityTypeDescriptor)));
-		return batchInsertOrUpdate(operations);
+	default <T> Elements<OptionalLong> batchInsertOrUpdate(Class<T> entityClass, Elements<? extends T> entitys) {
+		return batchExecute(InsertOperationSymbol.INSERT_OR_UPDATE, entityClass, entitys);
 	}
 
 	default <T> OptionalLong delete(Class<T> entityClass, T entity) {
@@ -65,18 +72,25 @@ public interface EntityOperations extends RepositoryOperations {
 	}
 
 	default <T> Elements<OptionalLong> batchDelete(Class<T> entityClass, Elements<? extends T> entitys) {
-		TypeDescriptor entityTypeDescriptor = TypeDescriptor.valueOf(entityClass);
-		EntityMapping<? extends Property> entityMapping = getMapper().getMapping(entityClass);
-		Elements<DeleteOperation> operations = entitys.map((e) -> getMapper()
-				.getDeleteOperation(DeleteOperationSymbol.DELETE, Value.of(e, entityTypeDescriptor), entityMapping));
-		return batchDelete(operations);
+		return batchExecute(DeleteOperationSymbol.DELETE, entityClass, entitys);
 	}
 
 	default <T> OptionalLong deleteByPrimaryKeys(Class<T> entityClass, T entity) throws OrmException {
+		return batchDeleteByPrimaryKeys(entityClass, Elements.singleton(entity)).first();
+	}
+
+	default <T> Elements<OptionalLong> batchDeleteByPrimaryKeys(Class<T> entityClass, Elements<? extends T> entitys)
+			throws OrmException {
+		TypeDescriptor entityTypeDescriptor = TypeDescriptor.valueOf(entityClass);
 		EntityMapping<? extends Property> entityMapping = getMapper().getMapping(entityClass);
-		DeleteOperation deleteOperation = getMapper().getDeleteOperationByPrimaryKeys(DeleteOperationSymbol.DELETE,
-				Value.of(entity, TypeDescriptor.valueOf(entityClass)), entityMapping);
-		return delete(deleteOperation);
+		EntityOperation groundEntityOperation = (os, mapping, es) -> {
+			Elements<DeleteOperation> operations = es.map((e) -> {
+				return getMapper().getDeleteOperationByPrimaryKeys(os, e, mapping);
+			});
+			return batchExecute(operations);
+		};
+		return groundEntityOperation.execute(DeleteOperationSymbol.DELETE, entityMapping,
+				entitys.map((e) -> Value.of(e, entityTypeDescriptor)));
 	}
 
 	/**
@@ -102,13 +116,22 @@ public interface EntityOperations extends RepositoryOperations {
 		return delete(deleteOperation);
 	}
 
-	default <T> OptionalLong update(Class<T> entityClass, T oldEntity, T newEntity) {
+	default <T> Elements<OptionalLong> batchUpdate(Class<T> entityClass, T matchEntity, Elements<? extends T> entitys) {
 		TypeDescriptor entityTypeDescriptor = TypeDescriptor.valueOf(entityClass);
 		EntityMapping<? extends Property> entityMapping = getMapper().getMapping(entityClass);
-		UpdateOperation updateOperation = getMapper().getUpdateOperation(UpdateOperationSymbol.UPDATE,
-				Value.of(oldEntity, entityTypeDescriptor), entityMapping, Value.of(newEntity, entityTypeDescriptor),
-				entityMapping);
-		return update(updateOperation);
+		Value matchValue = Value.of(matchEntity, entityTypeDescriptor);
+		EntityOperation groundEntityOperation = (os, mapping, es) -> {
+			Elements<UpdateOperation> operations = es.map((e) -> {
+				return getMapper().getUpdateOperation(os, matchValue, entityMapping, e, entityMapping);
+			});
+			return batchExecute(operations);
+		};
+		return groundEntityOperation.execute(UpdateOperationSymbol.UPDATE, entityMapping,
+				entitys.map((e) -> Value.of(e, entityTypeDescriptor)));
+	}
+
+	default <T> OptionalLong update(Class<T> entityClass, T matchEntity, T newEntity) {
+		return batchUpdate(entityClass, matchEntity, Elements.singleton(newEntity)).first();
 	}
 
 	default <T> OptionalLong updateByPrimaryKeys(Class<T> entityClass, T entity) {
@@ -118,10 +141,14 @@ public interface EntityOperations extends RepositoryOperations {
 	default <T> Elements<OptionalLong> batchUpdateByPrimaryKeys(Class<T> entityClass, Elements<? extends T> entitys) {
 		TypeDescriptor entityTypeDescriptor = TypeDescriptor.valueOf(entityClass);
 		EntityMapping<? extends Property> entityMapping = getMapper().getMapping(entityClass);
-		Elements<UpdateOperation> operations = entitys
-				.map((e) -> getMapper().getUpdateOperationByPrimaryKeys(UpdateOperationSymbol.UPDATE,
-						Value.of(e, entityTypeDescriptor), entityMapping));
-		return batchUpdate(operations);
+		EntityOperation groundEntityOperation = (os, mapping, es) -> {
+			Elements<UpdateOperation> operations = es.map((e) -> {
+				return getMapper().getUpdateOperationByPrimaryKeys(os, e, mapping);
+			});
+			return batchExecute(operations);
+		};
+		return groundEntityOperation.execute(UpdateOperationSymbol.UPDATE, entityMapping,
+				entitys.map((e) -> Value.of(e, entityTypeDescriptor)));
 	}
 
 	default <T, R> Query<R> select(TypeDescriptor resultTypeDescriptor, Class<? extends T> entityClass, T entity) {

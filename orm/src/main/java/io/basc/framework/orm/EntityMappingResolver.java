@@ -7,13 +7,13 @@ import io.basc.framework.data.repository.Expression;
 import io.basc.framework.data.repository.OperationSymbol;
 import io.basc.framework.data.repository.Repository;
 import io.basc.framework.data.repository.Sort;
-import io.basc.framework.mapper.MappingStrategyFactory;
+import io.basc.framework.mapper.MappingStrategy;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Range;
 
-public interface EntityMappingResolver extends MappingStrategyFactory {
+public interface EntityMappingResolver {
 	boolean isIgnore(Class<?> sourceClass);
 
 	boolean isIgnore(Class<?> sourceClass, ParameterDescriptor descriptor);
@@ -73,4 +73,6 @@ public interface EntityMappingResolver extends MappingStrategyFactory {
 
 	Elements<? extends Sort> getSorts(OperationSymbol operationSymbol, TypeDescriptor source,
 			ParameterDescriptor descriptor);
+
+	MappingStrategy getMappingStrategy(TypeDescriptor source, MappingStrategy dottomlessMappingStrategy);
 }

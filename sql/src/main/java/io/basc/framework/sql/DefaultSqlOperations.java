@@ -1,22 +1,21 @@
 package io.basc.framework.sql;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import io.basc.framework.mapper.ObjectMapper;
+import io.basc.framework.orm.EntityMapper;
 import io.basc.framework.sql.transaction.SqlTransactionUtils;
 import io.basc.framework.util.Assert;
 
 public class DefaultSqlOperations implements SqlOperations {
 	private ConnectionFactory connectionFactory;
-	private final ObjectMapper<ResultSet, SQLException> mapper;
+	private final EntityMapper mapper;
 
 	public DefaultSqlOperations(ConnectionFactory connectionFactory) {
 		this(connectionFactory, new ResultSetMapper());
 	}
 
-	public DefaultSqlOperations(ConnectionFactory connectionFactory, ObjectMapper<ResultSet, SQLException> mapper) {
+	public DefaultSqlOperations(ConnectionFactory connectionFactory, EntityMapper mapper) {
 		Assert.requiredArgument(connectionFactory != null, "connectionFactory");
 		Assert.requiredArgument(mapper != null, "mapper");
 		this.connectionFactory = connectionFactory;
@@ -24,7 +23,7 @@ public class DefaultSqlOperations implements SqlOperations {
 	}
 
 	@Override
-	public ObjectMapper<ResultSet, SQLException> getMapper() {
+	public EntityMapper getMapper() {
 		return mapper;
 	}
 

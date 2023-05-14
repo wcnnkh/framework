@@ -218,14 +218,6 @@ public class EntityMappingResolverExtendChain implements EntityMappingResolver {
 	}
 
 	@Override
-	public MappingStrategy getMappingStrategy(TypeDescriptor source) {
-		if (iterator.hasNext()) {
-			return iterator.next().getMappingStrategy(source, this);
-		}
-		return nextChain == null ? null : nextChain.getMappingStrategy(source);
-	}
-
-	@Override
 	public boolean isConfigurable(TypeDescriptor sourceType) {
 		if (iterator.hasNext()) {
 			return iterator.next().isConfigurable(sourceType, this);
@@ -257,7 +249,8 @@ public class EntityMappingResolverExtendChain implements EntityMappingResolver {
 		if (iterator.hasNext()) {
 			return iterator.next().getColumns(operationSymbol, source, parameter, this);
 		}
-		return nextChain == null ? Elements.empty() : nextChain.getColumns(operationSymbol, source, parameter);
+		return nextChain == null ? Elements.singleton(new Column(parameter))
+				: nextChain.getColumns(operationSymbol, source, parameter);
 	}
 
 	@Override
@@ -266,7 +259,16 @@ public class EntityMappingResolverExtendChain implements EntityMappingResolver {
 		if (iterator.hasNext()) {
 			return iterator.next().getRepositorys(operationSymbol, entityTypeDescriptor, entityMapping, this);
 		}
-		return nextChain == null ? Elements.empty()
+		return nextChain == null ? Elements.singleton(new Repository(entityMapping.getName()))
 				: nextChain.getRepositorys(operationSymbol, entityTypeDescriptor, entityMapping);
+	}
+
+	@Override
+	public MappingStrategy getMappingStrategy(TypeDescriptor source, MappingStrategy dottomlessMappingStrategy) {
+		if (iterator.hasNext()) {
+			return iterator.next().getMappingStrategy(source, dottomlessMappingStrategy, this);
+		}
+		return nextChain == null ? dottomlessMappingStrategy
+				: nextChain.getMappingStrategy(source, dottomlessMappingStrategy);
 	}
 }

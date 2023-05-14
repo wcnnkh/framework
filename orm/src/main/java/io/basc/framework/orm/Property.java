@@ -29,4 +29,6 @@ public interface Property extends Field {
 	boolean isVersion();
 
 	boolean isEntity();
+	
+	boolean isNullable();
 }

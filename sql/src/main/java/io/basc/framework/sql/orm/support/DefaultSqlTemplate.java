@@ -15,7 +15,6 @@ import io.basc.framework.util.Assert;
 public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTemplate {
 	private final SqlDialect sqlDialect;
 	private GeneratorProcessor generatorProcessor;
-	private CacheManager cacheManager;
 	private ObjectKeyFormat objectKeyFormat = new DefaultObjectKeyFormat();
 
 	public DefaultSqlTemplate(ConnectionFactory connectionFactory, SqlDialect sqlDialect) {
@@ -35,15 +34,6 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 	public SqlDialect getMapper() {
 		return sqlDialect;
-	}
-
-	@Nullable
-	public CacheManager getCacheManager() {
-		return cacheManager;
-	}
-
-	public void setCacheManager(CacheManager cacheManager) {
-		this.cacheManager = cacheManager;
 	}
 
 	public GeneratorProcessor getGeneratorProcessor() {

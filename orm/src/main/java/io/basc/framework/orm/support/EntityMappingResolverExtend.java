@@ -105,10 +105,6 @@ public interface EntityMappingResolverExtend {
 		return chain.isDisplay(entityClass, descriptor);
 	}
 
-	default MappingStrategy getMappingStrategy(TypeDescriptor sourceType, EntityMappingResolver chain) {
-		return chain.getMappingStrategy(sourceType);
-	}
-
 	default boolean isConfigurable(TypeDescriptor sourceType, EntityMappingResolver chain) {
 		return chain.isConfigurable(sourceType);
 	}
@@ -141,5 +137,10 @@ public interface EntityMappingResolverExtend {
 	default Elements<? extends Sort> getSorts(OperationSymbol operationSymbol, TypeDescriptor source,
 			ParameterDescriptor descriptor, EntityMappingResolver chain) {
 		return chain.getSorts(operationSymbol, source, descriptor);
+	}
+
+	default MappingStrategy getMappingStrategy(TypeDescriptor source, MappingStrategy dottomlessMappingStrategy,
+			EntityMappingResolver chain) {
+		return chain.getMappingStrategy(source, dottomlessMappingStrategy);
 	}
 }
