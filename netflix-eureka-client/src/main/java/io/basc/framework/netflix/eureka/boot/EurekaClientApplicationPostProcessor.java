@@ -23,7 +23,7 @@ public class EurekaClientApplicationPostProcessor implements ApplicationPostProc
 			return enable;
 		}
 
-		for (Class<?> clazz : application.getSourceClasses()) {
+		for (Class<?> clazz : application.getSourceClasses().getServices()) {
 			EnableEurekaClient enableEurekaClient = clazz.getAnnotation(EnableEurekaClient.class);
 			if (enableEurekaClient == null) {
 				continue;

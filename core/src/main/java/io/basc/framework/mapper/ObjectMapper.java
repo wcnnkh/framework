@@ -80,76 +80,80 @@ public interface ObjectMapper extends ReversibleMapperFactory<Object, Conversion
 		if (isTransformerRegistred(sourceType.getType())) {
 			ReversibleMapperFactory.super.transform(source, sourceType, target, targetType);
 		} else {
-			transform(Value.of(source, sourceType), null, Value.of(target, targetType), null,
-					getMappingStrategy(targetType));
+			transform(source, sourceType, null, target, targetType, null, getMappingStrategy(targetType));
 		}
 	}
 
-	default void transform(ObjectAccess sourceAccess, @Nullable MappingContext sourceContext, Value target,
-			@Nullable MappingContext targetContext, MappingStrategy mappingStrategy) throws MappingException {
-		if (isObjectAccessFactoryRegistred(target.getTypeDescriptor().getType())) {
-			ObjectAccess targetAccess = getObjectAccess(target, target.getTypeDescriptor());
+	default void transform(ObjectAccess sourceAccess, @Nullable MappingContext sourceContext, Object target,
+			TypeDescriptor targetType, @Nullable MappingContext targetContext, MappingStrategy mappingStrategy)
+			throws MappingException {
+		if (isObjectAccessFactoryRegistred(targetType.getType())) {
+			ObjectAccess targetAccess = getObjectAccess(target, targetType);
 			transform(sourceAccess, sourceContext, targetAccess, targetContext, mappingStrategy);
 		} else {
-			Mapping<? extends Field> targetMapping = getMapping(target.getTypeDescriptor().getType());
-			transform(sourceAccess, sourceContext, target, targetContext, targetMapping, mappingStrategy);
+			Mapping<? extends Field> targetMapping = getMapping(targetType.getType());
+			transform(sourceAccess, sourceContext, target, targetType, targetContext, targetMapping, mappingStrategy);
 		}
 	}
 
-	default void transform(Value source, @Nullable MappingContext sourceContext, ObjectAccess targetAccess,
-			@Nullable MappingContext targetContext, MappingStrategy mappingStrategy) throws MappingException {
-		if (isObjectAccessFactoryRegistred(source.getTypeDescriptor().getType())) {
-			ObjectAccess sourceAccess = getObjectAccess(source, source.getTypeDescriptor());
+	default void transform(Object source, TypeDescriptor sourceType, @Nullable MappingContext sourceContext,
+			ObjectAccess targetAccess, @Nullable MappingContext targetContext, MappingStrategy mappingStrategy)
+			throws MappingException {
+		if (isObjectAccessFactoryRegistred(sourceType.getType())) {
+			ObjectAccess sourceAccess = getObjectAccess(source, sourceType);
 			transform(sourceAccess, sourceContext, targetAccess, targetContext, mappingStrategy);
 		} else {
-			Mapping<? extends Field> sourceMapping = getMapping(source.getTypeDescriptor().getType());
-			transform(source, sourceContext, sourceMapping, targetAccess, targetContext, mappingStrategy);
+			Mapping<? extends Field> sourceMapping = getMapping(sourceType.getType());
+			transform(source, sourceType, sourceContext, sourceMapping, targetAccess, targetContext, mappingStrategy);
 		}
 	}
 
-	default void transform(Value source, @Nullable MappingContext sourceContext, Value target,
-			@Nullable MappingContext targetContext, MappingStrategy mappingStrategy) throws MappingException {
-		if (isObjectAccessFactoryRegistred(source.getTypeDescriptor().getType())) {
-			ObjectAccess sourceAccess = getObjectAccess(source, source.getTypeDescriptor());
-			transform(sourceAccess, sourceContext, target, targetContext, mappingStrategy);
-		} else if (isObjectAccessFactoryRegistred(target.getTypeDescriptor().getType())) {
-			ObjectAccess targetAccess = getObjectAccess(target, target.getTypeDescriptor());
-			transform(source, sourceContext, targetAccess, targetContext, mappingStrategy);
+	default void transform(Object source, TypeDescriptor sourceType, @Nullable MappingContext sourceContext,
+			Object target, TypeDescriptor targetType, @Nullable MappingContext targetContext,
+			MappingStrategy mappingStrategy) throws MappingException {
+		if (isObjectAccessFactoryRegistred(sourceType.getType())) {
+			ObjectAccess sourceAccess = getObjectAccess(source, sourceType);
+			transform(sourceAccess, sourceContext, target, targetType, targetContext, mappingStrategy);
+		} else if (isObjectAccessFactoryRegistred(targetType.getType())) {
+			ObjectAccess targetAccess = getObjectAccess(target, targetType);
+			transform(source, sourceType, sourceContext, targetAccess, targetContext, mappingStrategy);
 		} else {
-			Mapping<? extends Field> sourceMapping = getMapping(source.getTypeDescriptor().getType());
-			Mapping<? extends Field> targetMapping = getMapping(target.getTypeDescriptor().getType());
-			transform(source, sourceContext, sourceMapping, target, targetContext, targetMapping, mappingStrategy);
+			Mapping<? extends Field> sourceMapping = getMapping(sourceType.getType());
+			Mapping<? extends Field> targetMapping = getMapping(targetType.getType());
+			transform(source, sourceType, sourceContext, sourceMapping, target, targetType, targetContext,
+					targetMapping, mappingStrategy);
 		}
 	}
 
-	default <S extends Field, T extends Field> void transform(Value source, @Nullable MappingContext sourceContext,
-			Mapping<? extends S> sourceMapping, Value target, @Nullable MappingContext targetContext,
-			Mapping<? extends T> targetMapping, MappingStrategy strategy) throws MappingException {
+	default <S extends Field, T extends Field> void transform(Object source, TypeDescriptor sourceType,
+			@Nullable MappingContext sourceContext, Mapping<? extends S> sourceMapping, Object target,
+			TypeDescriptor targetType, @Nullable MappingContext targetContext, Mapping<? extends T> targetMapping,
+			MappingStrategy strategy) throws MappingException {
 		for (Field targetField : targetMapping.getElements()) {
 			if (targetField.isSupportSetter()) {
-				strategy.transform(this, source, sourceContext, sourceMapping, target, targetContext, targetMapping,
-						targetField);
+				strategy.transform(this, source, sourceType, sourceContext, sourceMapping, target, targetType,
+						targetContext, targetMapping, targetField);
 			}
 		}
 	}
 
 	default <T extends Field> void transform(ObjectAccess sourceAccess, @Nullable MappingContext sourceContext,
-			Value target, @Nullable MappingContext targetContext, Mapping<? extends T> targetMapping,
-			MappingStrategy strategy) throws MappingException {
+			Object target, TypeDescriptor targetType, @Nullable MappingContext targetContext,
+			Mapping<? extends T> targetMapping, MappingStrategy strategy) throws MappingException {
 		for (T targetField : targetMapping.getElements()) {
 			if (targetField.isSupportSetter()) {
-				strategy.transform(this, sourceAccess, sourceContext, target, targetContext, targetMapping,
+				strategy.transform(this, sourceAccess, sourceContext, target, targetType, targetContext, targetMapping,
 						targetField);
 			}
 		}
 	}
 
-	default <T extends Field> void transform(Value source, @Nullable MappingContext sourceContext,
-			Mapping<? extends T> sourceMapping, ObjectAccess targetAccess, @Nullable MappingContext targetContext,
-			MappingStrategy strategy) throws MappingException {
+	default <T extends Field> void transform(Object source, TypeDescriptor sourceType,
+			@Nullable MappingContext sourceContext, Mapping<? extends T> sourceMapping, ObjectAccess targetAccess,
+			@Nullable MappingContext targetContext, MappingStrategy strategy) throws MappingException {
 		for (Field sourceField : sourceMapping.getElements()) {
 			if (sourceField.isSupportGetter()) {
-				strategy.transform(this, source, sourceContext, sourceMapping, sourceField, targetAccess,
+				strategy.transform(this, source, sourceType, sourceContext, sourceMapping, sourceField, targetAccess,
 						targetContext);
 			}
 		}

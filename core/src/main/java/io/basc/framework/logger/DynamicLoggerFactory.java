@@ -38,7 +38,7 @@ public class DynamicLoggerFactory extends StandardBroadcastEventDispatcher<Level
 
 		ILoggerFactory loggerFactory = null;
 		try {
-			loggerFactory = serviceLoaderFactory.getServiceLoader(ILoggerFactory.class).first();
+			loggerFactory = serviceLoaderFactory.getServiceLoader(ILoggerFactory.class).getServices().first();
 		} catch (Throwable e) {
 			// 解决循环依赖问题,如果出现异常继续使用旧的日志工厂,待初始化完成后会被动态替换
 			logger.debug(e, "Configuration log factory exception");

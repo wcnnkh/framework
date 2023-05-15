@@ -3,8 +3,8 @@ package io.basc.framework.context.ioc;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.context.Context;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanPostProcessor;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;

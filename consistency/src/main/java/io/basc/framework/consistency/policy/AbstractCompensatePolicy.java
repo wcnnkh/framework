@@ -1,7 +1,7 @@
 package io.basc.framework.consistency.policy;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.consistency.CompensatePolicy;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.BeanFactoryAware;
 import io.basc.framework.logger.Logger;

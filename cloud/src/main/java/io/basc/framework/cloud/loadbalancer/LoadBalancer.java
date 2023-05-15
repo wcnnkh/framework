@@ -19,7 +19,7 @@ import io.basc.framework.util.StringUtils;
  * @param <T>
  */
 public interface LoadBalancer<T extends Node> extends ServiceLoader<T> {
-
+	
 	/**
 	 * 选择一个服务
 	 * 
@@ -68,7 +68,7 @@ public interface LoadBalancer<T extends Node> extends ServiceLoader<T> {
 	 * @return
 	 */
 	default Elements<T> chooses(String name) {
-		return filter((service) -> StringUtils.equals(service.getName(), name));
+		return getServices().filter((service) -> StringUtils.equals(service.getName(), name));
 	}
 
 	/**

@@ -27,7 +27,7 @@ import io.basc.framework.lang.Nullable;
 
 public class PrioritizedParameterNameDiscoverer implements ParameterNameDiscoverer {
 	private static final ParameterNameDiscoverer[] PARAMETER_NAME_DISCOVERERS = SimpleServiceLoaderFactory.INSTANCE
-			.getServiceLoader(ParameterNameDiscoverer.class).toArray(ParameterNameDiscoverer[]::new);
+			.getServiceLoader(ParameterNameDiscoverer.class).getServices().toArray(ParameterNameDiscoverer[]::new);
 
 	private final List<ParameterNameDiscoverer> parameterNameDiscoverers = new ArrayList<>(2);
 

@@ -1,5 +1,6 @@
 package io.basc.framework.factory;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.event.BroadcastEventDispatcher;
 
 public interface BeanLifecycleManager extends BroadcastEventDispatcher<BeanLifecycleEvent> {

@@ -4,6 +4,7 @@ import java.io.File;
 
 import io.basc.framework.core.type.classreading.CachingMetadataReaderFactory;
 import io.basc.framework.util.Assert;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.ResourceClassesLoader;
 
 public class DirectoryClassesLoader extends ResourceClassesLoader {
@@ -13,10 +14,10 @@ public class DirectoryClassesLoader extends ResourceClassesLoader {
 	}
 
 	public DirectoryClassesLoader(File directory, ResourceLoader resourceLoader) {
-		super(() -> {
+		super(Elements.of(() -> {
 			return FileUtils.stream(directory, (f) -> f.getName().endsWith(FILE_SUFFIX))
 					.map((f) -> new FileSystemResource(f.getFile()));
-		});
+		}));
 		Assert.requiredArgument(resourceLoader != null, "resourceLoader");
 		DefaultResourceLoader defaultResourceLoader = new DefaultResourceLoader();
 		defaultResourceLoader.getResourceLoaders().register(resourceLoader);

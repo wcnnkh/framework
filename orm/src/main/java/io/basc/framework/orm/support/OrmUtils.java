@@ -6,7 +6,7 @@ import io.basc.framework.orm.EntityMapper;
 
 public final class OrmUtils {
 	private static final EntityMapper MAPPER = Sys.getEnv()
-			.getServiceLoader(EntityMapper.class, DefaultEntityMapper.class).first();
+			.getServiceLoader(EntityMapper.class, DefaultEntityMapper.class).getServices().first();
 
 	private OrmUtils() {
 		throw new UnsupportedException(getClass().getName());

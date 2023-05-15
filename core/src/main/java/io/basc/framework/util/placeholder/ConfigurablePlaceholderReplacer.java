@@ -11,7 +11,7 @@ public class ConfigurablePlaceholderReplacer extends ConfigurableServices<Placeh
 
 	public String replacePlaceholders(String value, PlaceholderResolver placeholderResolver) {
 		String textToUse = value;
-		for (PlaceholderReplacer replacer : this) {
+		for (PlaceholderReplacer replacer : getServices()) {
 			textToUse = replacer.replacePlaceholders(textToUse, placeholderResolver);
 		}
 		return textToUse;
@@ -19,7 +19,7 @@ public class ConfigurablePlaceholderReplacer extends ConfigurableServices<Placeh
 
 	public String replaceRequiredPlaceholders(String value, PlaceholderResolver placeholderResolver) {
 		String textToUse = value;
-		for (PlaceholderReplacer replacer : this) {
+		for (PlaceholderReplacer replacer : getServices()) {
 			textToUse = replacer.replaceRequiredPlaceholders(textToUse, placeholderResolver);
 		}
 		return textToUse;

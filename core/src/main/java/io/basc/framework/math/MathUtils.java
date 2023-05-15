@@ -6,7 +6,7 @@ import io.basc.framework.math.gcd.GreatestCommonDivisor;
 
 public final class MathUtils {
 	private static final GreatestCommonDivisor GREATEST_COMMON_DIVISOR = Sys.getEnv()
-			.getServiceLoader(GreatestCommonDivisor.class, DivisionAlgorithm.class).first();
+			.getServiceLoader(GreatestCommonDivisor.class, DivisionAlgorithm.class).getServices().first();
 
 	private MathUtils() {
 	};

@@ -1,7 +1,5 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.value.Value;
-
 public interface Setter extends ParameterDescriptor {
 	/**
 	 * 在指定目标中插入值
@@ -9,7 +7,7 @@ public interface Setter extends ParameterDescriptor {
 	 * @param target
 	 * @param value
 	 */
-	void set(Value target, Object value);
+	void set(Object target, Object value);
 
 	@Override
 	Setter rename(String name);

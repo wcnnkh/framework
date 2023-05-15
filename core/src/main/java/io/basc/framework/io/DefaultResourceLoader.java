@@ -49,14 +49,14 @@ public class DefaultResourceLoader extends DefaultClassLoaderAccessor
 	public Resource getResource(String location) {
 		Assert.notNull(location, "Location must not be null");
 
-		for (ProtocolResolver protocolResolver : getProtocolResolvers()) {
+		for (ProtocolResolver protocolResolver : getProtocolResolvers().getServices()) {
 			Resource resource = protocolResolver.resolve(location, this);
 			if (resource != null) {
 				return resource;
 			}
 		}
 
-		for (ResourceLoader resourceLoader : getResourceLoaders()) {
+		for (ResourceLoader resourceLoader : getResourceLoaders().getServices()) {
 			Resource resource = resourceLoader.getResource(location);
 			if (resource != null) {
 				return resource;

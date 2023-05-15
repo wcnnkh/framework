@@ -1,7 +1,6 @@
 package io.basc.framework.netflix.eureka.beans;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
 
 import com.netflix.appinfo.EurekaInstanceConfig;
@@ -17,6 +16,7 @@ import io.basc.framework.netflix.eureka.EurekaInstanceConfigBean;
 import io.basc.framework.netflix.eureka.metadata.DefaultManagementMetadataProvider;
 import io.basc.framework.netflix.eureka.metadata.ManagementMetadata;
 import io.basc.framework.netflix.eureka.metadata.ManagementMetadataProvider;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 
 public class EurekaInstanceConfigBeanDefinition extends EnvironmentBeanDefinition {
@@ -26,7 +26,7 @@ public class EurekaInstanceConfigBeanDefinition extends EnvironmentBeanDefinitio
 	}
 
 	@Override
-	public Collection<String> getNames() {
+	public Elements<String> getNames() {
 		return Arrays.asList(CloudEurekaInstanceConfig.class.getName(), EurekaInstanceConfig.class.getName());
 	}
 

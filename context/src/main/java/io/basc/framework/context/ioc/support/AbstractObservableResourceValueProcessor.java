@@ -2,11 +2,11 @@ package io.basc.framework.context.ioc.support;
 
 import java.nio.charset.Charset;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ioc.ValueDefinition;
 import io.basc.framework.event.Observable;
 import io.basc.framework.event.support.ObservableResource;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.io.Resource;
 import io.basc.framework.mapper.Field;
 

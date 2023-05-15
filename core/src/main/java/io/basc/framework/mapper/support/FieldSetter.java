@@ -1,11 +1,11 @@
 package io.basc.framework.mapper.support;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.Assert;
-import io.basc.framework.value.Value;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -46,8 +46,8 @@ public class FieldSetter extends AbstractSetter {
 	}
 
 	@Override
-	public void set(Value target, Object value) {
-		ReflectionUtils.set(field, target == null ? null : target.getSource(), value);
+	public void set(Object target, Object value) {
+		ReflectionUtils.set(field, Modifier.isStatic(field.getModifiers())? null : target, value);
 	}
 
 	@Override

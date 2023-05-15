@@ -11,20 +11,20 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.LRULinkedHashMap;
 import io.basc.framework.util.Selector;
-import io.basc.framework.util.Services;
+import io.basc.framework.util.ServiceRegistry;
 
 public class DefaultLoadBalancer<T extends Node> extends AbstractLoadBalancer<T> {
 	private static Logger logger = LoggerFactory.getLogger(DefaultLoadBalancer.class);
-	private final Services<T> registry;
+	private final ServiceRegistry<T> registry;
 	private volatile LRULinkedHashMap<String, State> stateMap = new LRULinkedHashMap<>(256);
 
-	public DefaultLoadBalancer(Selector<T> selector, Services<T> registry) {
+	public DefaultLoadBalancer(Selector<T> selector, ServiceRegistry<T> registry) {
 		super(selector);
 		Assert.requiredArgument(registry != null, "registry");
 		this.registry = registry;
 	}
 
-	public Services<T> getRegistry() {
+	public ServiceRegistry<T> getRegistry() {
 		return registry;
 	}
 

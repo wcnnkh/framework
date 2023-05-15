@@ -2,8 +2,8 @@ package io.basc.framework.context;
 
 import java.lang.reflect.Executable;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.core.type.filter.TypeFilter;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.ParameterDescriptor;
 

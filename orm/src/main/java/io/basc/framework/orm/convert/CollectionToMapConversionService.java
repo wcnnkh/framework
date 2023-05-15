@@ -13,10 +13,8 @@ import io.basc.framework.convert.lang.AbstractConversionService;
 import io.basc.framework.convert.lang.ConditionalConversionService;
 import io.basc.framework.convert.lang.ConvertiblePair;
 import io.basc.framework.lang.AlreadyExistsException;
-import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.ObjectMapper;
+import io.basc.framework.mapper.Getter;
 import io.basc.framework.orm.EntityMapper;
-import io.basc.framework.orm.ObjectRelationalFactory;
 import io.basc.framework.orm.Property;
 import io.basc.framework.orm.support.OrmUtils;
 import io.basc.framework.util.CollectionFactory;
@@ -73,9 +71,9 @@ public class CollectionToMapConversionService extends AbstractConversionService
 			TypeDescriptor valueType = targetType.getMapValueTypeDescriptor();
 			while (primaryKeyIterator.hasNext()) {
 				Property primaryKeyField = primaryKeyIterator.next();
-				Object key = primaryKeyField.get(value);
-
-				key = getConversionService().convert(key, new TypeDescriptor(primaryKeyField.getGetter()), keyType);
+				Getter getter = primaryKeyField.getGetters().first();
+				Object key = getter.get(value);
+				key = getConversionService().convert(key, getter.getTypeDescriptor(), keyType);
 				if (primaryKeyIterator.hasNext()) {
 					if (!valueType.isMap()) {
 						throw new ConversionFailedException(sourceType, targetType, source, null);

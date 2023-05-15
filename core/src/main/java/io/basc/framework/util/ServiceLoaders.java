@@ -2,7 +2,6 @@ package io.basc.framework.util;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -10,7 +9,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import io.basc.framework.core.OrderComparator;
 import io.basc.framework.core.Ordered;
@@ -106,18 +104,16 @@ public class ServiceLoaders<S> implements ServiceLoader<S>, DynamicElementRegist
 		}
 	}
 
-	/**
-	 * 获取迭代器并初始化ServiceLoader
-	 */
 	@Override
-	public Iterator<S> iterator() {
+	public Elements<S> getServices() {
+		// 获取迭代器并初始化ServiceLoader
 		touch();
 		ReadLock readLock = lock.readLock();
 		try {
 			readLock.lock();
-			List<S> service = map.values().stream().flatMap((r) -> r.getElements().stream().map((e) -> e.getElement()))
+			List<S> services = map.values().stream().flatMap((r) -> r.getElements().stream().map((e) -> e.getElement()))
 					.collect(Collectors.toList());
-			return service.iterator();
+			return Elements.of(services);
 		} finally {
 			readLock.unlock();
 		}
@@ -205,11 +201,6 @@ public class ServiceLoaders<S> implements ServiceLoader<S>, DynamicElementRegist
 		changed = true;
 	}
 
-	@Override
-	public final Stream<S> stream() {
-		return ServiceLoader.super.stream();
-	}
-
 	/**
 	 * 触发ServiceLoader初始化
 	 */
@@ -228,7 +219,7 @@ public class ServiceLoaders<S> implements ServiceLoader<S>, DynamicElementRegist
 						}
 
 						Registrations<ElementRegistration<S>> registration = registry
-								.registers(entry.getKey().getElement());
+								.registers(entry.getKey().getElement().getServices());
 						if (registration.isEmpty()) {
 							// 初始化没拿到结果，忽略
 							continue;

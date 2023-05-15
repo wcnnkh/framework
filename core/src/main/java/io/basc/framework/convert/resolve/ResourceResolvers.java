@@ -62,7 +62,7 @@ public class ResourceResolvers extends ConfigurableServices<ResourceResolver> im
 	}
 
 	public boolean canResolveResource(Resource resource, TypeDescriptor targetType) {
-		for (ResourceResolver resolver : this) {
+		for (ResourceResolver resolver : getServices()) {
 			if (resolver.canResolveResource(resource, targetType)) {
 				return true;
 			}
@@ -72,7 +72,7 @@ public class ResourceResolvers extends ConfigurableServices<ResourceResolver> im
 	}
 
 	public Object resolveResource(Resource resource, TypeDescriptor targetType) {
-		for (ResourceResolver resolver : this) {
+		for (ResourceResolver resolver : getServices()) {
 			if (resolver.canResolveResource(resource, targetType)) {
 				return resolver.resolveResource(resource, targetType);
 			}

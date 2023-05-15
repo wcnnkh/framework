@@ -32,7 +32,7 @@ public class InheritableThreadLocalConfigurator<T> extends InheritableThreadLoca
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		if (setDefaultService(() -> serviceLoaderFactory.getServiceLoader(serviceClass).first()).isSuccess()) {
+		if (setDefaultService(() -> serviceLoaderFactory.getServiceLoader(serviceClass).getServices().first()).isSuccess()) {
 			this.configured = true;
 		}
 	}

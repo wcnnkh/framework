@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanPostProcessor;
 import io.basc.framework.factory.BeanLifecycleEvent;
 import io.basc.framework.factory.BeanLifecycleEvent.Step;

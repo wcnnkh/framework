@@ -8,10 +8,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ioc.ValueDefinition;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.mapper.Field;

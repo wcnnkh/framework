@@ -21,9 +21,10 @@ import io.basc.framework.mapper.MappingStrategy;
 import io.basc.framework.mapper.ObjectAccessFactory;
 import io.basc.framework.mapper.ObjectMapper;
 import io.basc.framework.mapper.filter.FilterableMappingStrategy;
-import io.basc.framework.mapper.filter.MappingStrategyFilters;
+import io.basc.framework.mapper.filter.MappingStrategyFilter;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.ServiceRegistry;
 import io.basc.framework.util.comparator.TypeComparator;
 import io.basc.framework.value.PropertyFactory;
 
@@ -32,7 +33,7 @@ public class DefaultObjectMapper extends ConversionFactory<Object, ConversionExc
 	private final Map<Class<?>, ObjectAccessFactory<?>> objectAccessFactoryMap = new TreeMap<>(TypeComparator.DEFAULT);
 	private final Map<Class<?>, Mapping<? extends Field>> mappingMap = new ConcurrentHashMap<>();
 	private Set<ConvertiblePair> convertiblePairs;
-	private final MappingStrategyFilters filters = new MappingStrategyFilters();
+	private final ServiceRegistry<MappingStrategyFilter> filterRegistry = new ServiceRegistry<>();
 	private final DefaultMappingStrategy mappingStrategy = new DefaultMappingStrategy();
 
 	public DefaultObjectMapper() {
@@ -57,8 +58,8 @@ public class DefaultObjectMapper extends ConversionFactory<Object, ConversionExc
 		return convertiblePairs == null ? Collections.emptySet() : convertiblePairs;
 	}
 
-	public MappingStrategyFilters getFilters() {
-		return filters;
+	public ServiceRegistry<MappingStrategyFilter> getFilterRegistry() {
+		return filterRegistry;
 	}
 
 	@Override
@@ -82,7 +83,7 @@ public class DefaultObjectMapper extends ConversionFactory<Object, ConversionExc
 
 	@Override
 	public MappingStrategy getMappingStrategy(TypeDescriptor typeDescriptor) {
-		return new FilterableMappingStrategy(getFilters(), getMappingStrategy());
+		return new FilterableMappingStrategy(filterRegistry.getServices(), getMappingStrategy());
 	}
 
 	@SuppressWarnings("unchecked")

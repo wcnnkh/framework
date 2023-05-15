@@ -3,6 +3,7 @@ package io.basc.framework.env;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.lang.ConfigurableConversionService;
 import io.basc.framework.convert.lang.ConverterConversionService;
@@ -12,7 +13,6 @@ import io.basc.framework.convert.resolve.ResourceResolvers;
 import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.event.Observable;
 import io.basc.framework.event.support.ObservableResource;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.Configurable;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.FactoryException;
@@ -32,7 +32,7 @@ import io.basc.framework.util.Processor;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.ServiceLoaders;
-import io.basc.framework.util.Services;
+import io.basc.framework.util.ServiceRegistry;
 import io.basc.framework.util.StringMatchers;
 
 public class DefaultEnvironment extends DefaultBeanFactory implements ConfigurableEnvironment, Configurable {
@@ -64,7 +64,7 @@ public class DefaultEnvironment extends DefaultBeanFactory implements Configurab
 	private final ResourceResolvers resourceResolvers = new ResourceResolvers(propertiesResolvers, conversionService,
 			getObservableCharset());
 
-	private final Services<Resource> resources = new Services<>();
+	private final ServiceRegistry<Resource> resources = new ServiceRegistry<>();
 
 	public DefaultEnvironment() {
 		properties.setConversionService(conversionService);
@@ -163,7 +163,7 @@ public class DefaultEnvironment extends DefaultBeanFactory implements Configurab
 	}
 
 	@Override
-	public Services<Resource> getResources() {
+	public ServiceRegistry<Resource> getResources() {
 		return resources;
 	}
 
@@ -182,7 +182,7 @@ public class DefaultEnvironment extends DefaultBeanFactory implements Configurab
 					configure(this);
 				}
 
-				for (EnvironmentPostProcessor postProcessor : environmentPostProcessors) {
+				for (EnvironmentPostProcessor postProcessor : environmentPostProcessors.getServices()) {
 					try {
 						postProcessor.postProcessEnvironment(this);
 					} catch (Throwable e) {

@@ -2,10 +2,12 @@ package io.basc.framework.mapper.support;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.basc.framework.convert.ConversionService;
+import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.env.Sys;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.Getter;
@@ -104,29 +106,27 @@ public class DefaultMappingStrategy implements MappingStrategy {
 
 	@Override
 	public void transform(ObjectMapper objectMapper, ObjectAccess sourceAccess, MappingContext sourceContext,
-			Value target, MappingContext targetContext, Mapping<? extends Field> targetMapping, Field targetField)
-			throws MappingException {
-		Elements<Field> fields = targetContext.parents().map((e) -> e.getContext()).filter((e) -> e != null).concat(Elements.singleton(targetField));
-		
-		
-		Elements<Elements<String>> parentAliasNames = targetContext.parents().map((e) -> e.getContext().getAliasNames());
-		//组合出各种别名
-		
-		for(Elements<String> alisNames : parentAliasNames) {
+			Object target, TypeDescriptor targetType, MappingContext targetContext,
+			Mapping<? extends Field> targetMapping, Field targetField) throws MappingException {
+		Elements<Field> fields = targetContext.parents().map((e) -> e.getContext()).filter((e) -> e != null)
+				.concat(Elements.singleton(targetField));
+
+		Elements<Elements<String>> parentAliasNames = targetContext.parents()
+				.map((e) -> e.getContext().getAliasNames());
+		// 组合出各种别名
+
+		for (Elements<String> alisNames : parentAliasNames) {
 			List<String> list = new ArrayList<>();
 			Iterator<String> iterator = alisNames.iterator();
-			while(iterator.hasNext()) {
-				
+			while (iterator.hasNext()) {
+
 			}
-			for(String name : alisNames) {
+			for (String name : alisNames) {
 				list.add(name);
 			}
 		}
-		
-		targetContext.parents().map((e) -> e.getContext()).flatMap((e) -> e.getAliasNames())
-		
+
 		Elements<Setter> setters = targetField.getSetters().map((e) -> e.rename(targetField.getName())).toList();
-		
 		for (Setter setter : targetField.getSetters()) {
 			if (!predicateRegistry.test(setter.rename(targetField.getName()))) {
 				// 只要有一个校验不通过就直接return
@@ -139,8 +139,8 @@ public class DefaultMappingStrategy implements MappingStrategy {
 				Object entity = objectMapper.newInstance(setter.getTypeDescriptor());
 				MappingContext entityContext = new MappingContext(targetMapping, targetField, targetContext);
 				MappingStrategy strategy = objectMapper.getMappingStrategy(setter.getTypeDescriptor());
-				objectMapper.transform(sourceAccess, sourceContext, Value.of(entity, setter.getTypeDescriptor()),
-						entityContext, strategy);
+				objectMapper.transform(sourceAccess, sourceContext, entity, setter.getTypeDescriptor(), entityContext,
+						strategy);
 				setter.set(target, entity);
 				return;
 			}
@@ -207,9 +207,10 @@ public class DefaultMappingStrategy implements MappingStrategy {
 	}
 
 	@Override
-	public void transform(ObjectMapper objectMapper, Value source, MappingContext sourceContext,
-			Mapping<? extends Field> sourceMapping, Value target, MappingContext targetContext,
-			Mapping<? extends Field> targetMapping, Field targetField) throws MappingException {
+	public void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType,
+			MappingContext sourceContext, Mapping<? extends Field> sourceMapping, Object target,
+			TypeDescriptor targetType, MappingContext targetContext, Mapping<? extends Field> targetMapping,
+			Field targetField) throws MappingException {
 		for (String name : targetField.getAliasNames()) {
 			Elements<? extends Field> sourceFields = sourceMapping.getElements(name);
 			for (Field sourceField : sourceFields) {
@@ -260,9 +261,9 @@ public class DefaultMappingStrategy implements MappingStrategy {
 	}
 
 	@Override
-	public void transform(ObjectMapper objectMapper, Value source, MappingContext sourceContext,
-			Mapping<? extends Field> sourceMapping, Field sourceField, ObjectAccess targetAccess,
-			MappingContext targetContext) throws MappingException {
+	public void transform(ObjectMapper objectMapper, Object source, TypeDescriptor sourceType,
+			MappingContext sourceContext, Mapping<? extends Field> sourceMapping, Field sourceField,
+			ObjectAccess targetAccess, MappingContext targetContext) throws MappingException {
 		for (Getter getter : sourceField.getGetters()) {
 			// TODO 错了，应该用field过滤
 			if (!predicateRegistry.test(getter)) {

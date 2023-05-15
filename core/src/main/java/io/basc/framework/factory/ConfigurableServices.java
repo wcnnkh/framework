@@ -8,9 +8,9 @@ import io.basc.framework.core.ResolvableType;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.Services;
+import io.basc.framework.util.ServiceRegistry;
 
-public class ConfigurableServices<T> extends Services<T> implements Configurable {
+public class ConfigurableServices<T> extends ServiceRegistry<T> implements Configurable {
 	private Registration configurableRegistration;
 	private Class<T> serviceClass;
 
@@ -80,8 +80,8 @@ public class ConfigurableServices<T> extends Services<T> implements Configurable
 	@Override
 	public String toString() {
 		if (this.serviceClass == null) {
-			return toList().toString();
+			return getServices().toList().toString();
 		}
-		return "[" + serviceClass.getName() + "] services " + toList();
+		return "[" + serviceClass.getName() + "] services " + getServices().toList();
 	}
 }

@@ -2,11 +2,11 @@ package io.basc.framework.druid.beans;
 
 import javax.sql.DataSource;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.db.DataBase;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.sql.ConnectionFactory;
 
 @Provider

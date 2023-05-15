@@ -3,9 +3,9 @@ package io.basc.framework.context.ioc;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.context.Context;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.FactoryException;
 import io.basc.framework.mapper.ParameterDescriptors;
 import io.basc.framework.mapper.support.ExecutableParameterDescriptors;

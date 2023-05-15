@@ -2,11 +2,11 @@ package io.basc.framework.xmemcached.beans;
 
 import java.io.IOException;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.env.Environment;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeansException;
 import io.basc.framework.factory.ConfigurableBeanFactory;
 import io.basc.framework.factory.support.FactoryBeanDefinition;

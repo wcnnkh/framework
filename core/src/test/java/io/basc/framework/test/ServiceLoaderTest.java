@@ -4,16 +4,16 @@ import org.junit.Test;
 
 import io.basc.framework.factory.support.SpiServiceLoader;
 import io.basc.framework.http.client.ClientHttpRequestFactory;
-import io.basc.framework.util.Services;
+import io.basc.framework.util.ServiceRegistry;
 
 public class ServiceLoaderTest {
 	@Test
 	public void test() {
 		SpiServiceLoader<ClientHttpRequestFactory> loader = new SpiServiceLoader<>(ClientHttpRequestFactory.class);
-		Services<ClientHttpRequestFactory> serviceLoader = new Services<>();
+		ServiceRegistry<ClientHttpRequestFactory> serviceLoader = new ServiceRegistry<>();
 		serviceLoader.getServiceLoaders().register(loader);
 
-		Services<ClientHttpRequestFactory> serviceLoader1 = new Services<>();
+		ServiceRegistry<ClientHttpRequestFactory> serviceLoader1 = new ServiceRegistry<>();
 		serviceLoader1.getServiceLoaders().register(serviceLoader);
 		for (ClientHttpRequestFactory clientHttpRequestFactory : serviceLoader1) {
 			System.out.println(clientHttpRequestFactory);

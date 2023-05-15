@@ -6,8 +6,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.MethodInterceptorAccept;
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.util.ArrayUtils;
 
 public interface RuntimeBean {

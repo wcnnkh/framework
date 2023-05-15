@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.ConfigurableContextResolver;
 import io.basc.framework.context.Context;
@@ -24,7 +25,6 @@ import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.env.DefaultEnvironment;
 import io.basc.framework.env.Sys;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.FactoryException;
@@ -37,13 +37,13 @@ import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.ServiceLoaders;
-import io.basc.framework.util.Services;
+import io.basc.framework.util.ServiceRegistry;
 import io.basc.framework.util.StringUtils;
 
 public class DefaultContext extends DefaultEnvironment implements ConfigurableContext {
 	private static Logger logger = LoggerFactory.getLogger(DefaultContext.class);
 	private final DefaultClassScanner classScanner = new DefaultClassScanner();
-	private final Services<Class<?>> contextClassesLoader = new Services<>();
+	private final ServiceRegistry<Class<?>> contextClassesLoader = new ServiceRegistry<>();
 	private final ConfigurableServices<ContextPostProcessor> contextPostProcessors = new ConfigurableServices<ContextPostProcessor>(
 			ContextPostProcessor.class);
 	private final ConfigurableContextResolver contextResolver = new ConfigurableContextResolver();
@@ -53,7 +53,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	private final ConcurrentReferenceHashMap<Class<?>, ProviderClassesLoader> providerClassesLoaderMap = new ConcurrentReferenceHashMap<>(
 			128);
 
-	private final Services<Class<?>> sourceClasses = new Services<Class<?>>();
+	private final ServiceRegistry<Class<?>> sourceClasses = new ServiceRegistry<Class<?>>();
 
 	public DefaultContext() {
 		contextClassesLoader.getServiceLoaders().register(sourceClasses);
@@ -128,7 +128,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	@Override
-	public Services<Class<?>> getContextClasses() {
+	public ServiceRegistry<Class<?>> getContextClasses() {
 		return contextClassesLoader;
 	}
 
@@ -165,7 +165,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	@Override
-	public Services<Class<?>> getSourceClasses() {
+	public ServiceRegistry<Class<?>> getSourceClasses() {
 		return sourceClasses;
 	}
 

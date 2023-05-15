@@ -2,6 +2,7 @@ package io.basc.framework.boot.support;
 
 import java.util.OptionalInt;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.ApplicationAware;
 import io.basc.framework.boot.ApplicationEvent;
@@ -15,7 +16,6 @@ import io.basc.framework.context.support.DefaultContext;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.FactoryException;
 import io.basc.framework.logger.Logger;

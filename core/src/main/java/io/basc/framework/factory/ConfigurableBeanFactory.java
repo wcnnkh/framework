@@ -3,6 +3,7 @@ package io.basc.framework.factory;
 import java.util.function.Supplier;
 
 import io.basc.framework.aop.ConfigurableAop;
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.convert.TypeDescriptor;
 
 public interface ConfigurableBeanFactory

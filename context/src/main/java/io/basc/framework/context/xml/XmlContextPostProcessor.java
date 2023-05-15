@@ -8,12 +8,12 @@ import java.util.Properties;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.env.ConfigurableEnvironment;
 import io.basc.framework.event.Observable;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.http.HttpUtils;
 import io.basc.framework.io.Resource;
 import io.basc.framework.logger.Logger;

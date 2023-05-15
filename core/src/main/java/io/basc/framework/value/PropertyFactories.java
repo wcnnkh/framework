@@ -40,7 +40,7 @@ public class PropertyFactories extends ValueFactories<String, PropertyFactory> i
 
 	@Override
 	public boolean containsKey(String key) {
-		for (PropertyFactory factory : this) {
+		for (PropertyFactory factory : getServices()) {
 			if (factory == null || factory == this) {
 				continue;
 			}
@@ -54,7 +54,7 @@ public class PropertyFactories extends ValueFactories<String, PropertyFactory> i
 
 	@Override
 	public Elements<String> keys() {
-		return Elements.of(() -> stream().flatMap((e) -> e.keys().stream()).distinct());
+		return getServices().flatMap((e) -> e.keys()).distinct();
 	}
 
 	@Override

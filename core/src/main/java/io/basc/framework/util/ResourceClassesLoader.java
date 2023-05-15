@@ -1,9 +1,6 @@
 package io.basc.framework.util;
 
-import java.util.Iterator;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.core.type.classreading.CachingMetadataReaderFactory;
@@ -20,7 +17,7 @@ public class ResourceClassesLoader extends DefaultClassLoaderAccessor implements
 	private static Logger logger = LoggerFactory.getLogger(ResourceClassesLoader.class);
 	private volatile MetadataReaderFactory metadataReaderFactory;
 
-	private final Streamable<Resource> resources;
+	private final Elements<? extends Resource> resources;
 
 	private TypeFilter typeFilter;
 
@@ -31,7 +28,7 @@ public class ResourceClassesLoader extends DefaultClassLoaderAccessor implements
 	 */
 	private boolean notPerformReflectionVerification = Boolean.getBoolean("perform.reflection.verification.disable");
 
-	public ResourceClassesLoader(Streamable<Resource> resources) {
+	public ResourceClassesLoader(Elements<Resource> resources) {
 		Assert.requiredArgument(resources != null, "resources");
 		this.resources = resources;
 	}
@@ -47,35 +44,9 @@ public class ResourceClassesLoader extends DefaultClassLoaderAccessor implements
 		return metadataReaderFactory;
 	}
 
-	public Streamable<Resource> getResources() {
-		return resources;
-	}
-
-	public TypeFilter getTypeFilter() {
-		return typeFilter;
-	}
-
-	public Predicate<? super Class<?>> getClassFilter() {
-		return classFilter;
-	}
-
-	public void setClassFilter(Predicate<? super Class<?>> classFilter) {
-		this.classFilter = classFilter;
-	}
-
 	@Override
-	public Iterator<Class<?>> iterator() {
-		Stream<Class<?>> stream = stream();
-		try {
-			return stream.collect(Collectors.toList()).iterator();
-		} finally {
-			stream.close();
-		}
-	}
-
-	@Override
-	public Stream<Class<?>> stream() {
-		Stream<Class<?>> stream = resources.stream().map((resource) -> {
+	public Elements<Class<?>> getServices() {
+		Elements<Class<?>> elements = resources.map((resource) -> {
 			if (resource == null) {
 				return null;
 			}
@@ -113,7 +84,23 @@ public class ResourceClassesLoader extends DefaultClassLoaderAccessor implements
 				return null;
 			}
 		});
-		return stream.filter((e) -> e != null);
+		return elements.filter((e) -> e != null);
+	}
+
+	public Elements<? extends Resource> getResources() {
+		return resources;
+	}
+
+	public TypeFilter getTypeFilter() {
+		return typeFilter;
+	}
+
+	public Predicate<? super Class<?>> getClassFilter() {
+		return classFilter;
+	}
+
+	public void setClassFilter(Predicate<? super Class<?>> classFilter) {
+		this.classFilter = classFilter;
 	}
 
 	public boolean isNotPerformReflectionVerification() {

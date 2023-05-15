@@ -34,7 +34,7 @@ public class MessageConverters extends ConfigurableServices<MessageConverter> im
 	}
 
 	public Object read(TypeDescriptor type, InputMessage inputMessage) throws IOException, MessageConvertException {
-		for (MessageConverter converter : this) {
+		for (MessageConverter converter : getServices()) {
 			if (converter.canRead(type, inputMessage.getContentType())) {
 				if (logger.isTraceEnabled()) {
 					logger.trace("{} read type={}, contentType={}", converter, type, inputMessage.getContentType());
@@ -51,7 +51,7 @@ public class MessageConverters extends ConfigurableServices<MessageConverter> im
 
 	public void write(TypeDescriptor type, Object body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException {
-		for (MessageConverter converter : this) {
+		for (MessageConverter converter : getServices()) {
 			if (converter.canWrite(type, body, contentType)) {
 				if (logger.isTraceEnabled()) {
 					logger.trace("{} write body={}, contentType={}", converter, body, contentType);
@@ -67,7 +67,7 @@ public class MessageConverters extends ConfigurableServices<MessageConverter> im
 	}
 
 	public boolean canRead(TypeDescriptor type, MimeType mimeType) {
-		for (MessageConverter converter : this) {
+		for (MessageConverter converter : getServices()) {
 			if (converter.canRead(type, mimeType)) {
 				return true;
 			}
@@ -76,7 +76,7 @@ public class MessageConverters extends ConfigurableServices<MessageConverter> im
 	}
 
 	public boolean canWrite(TypeDescriptor type, Object body, MimeType contentType) {
-		for (MessageConverter converter : this) {
+		for (MessageConverter converter : getServices()) {
 			if (converter.canWrite(type, body, contentType)) {
 				return true;
 			}
@@ -86,7 +86,7 @@ public class MessageConverters extends ConfigurableServices<MessageConverter> im
 
 	public MimeTypes getSupportMimeTypes() {
 		MimeTypes mimeTypes = new MimeTypes();
-		for (MessageConverter converter : this) {
+		for (MessageConverter converter : getServices()) {
 			mimeTypes.getMimeTypes().addAll(converter.getSupportMimeTypes().getMimeTypes());
 		}
 		return mimeTypes.readyOnly();

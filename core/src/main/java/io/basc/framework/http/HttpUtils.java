@@ -20,9 +20,10 @@ import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
 
 public final class HttpUtils {
-	private static final InheritableThreadLocalConfigurator<HttpClient> CONFIGURATOR = new InheritableThreadLocalConfigurator<>(HttpClient.class)
-			.ifAbsentDefaultService(
-					() -> Sys.getEnv().getServiceLoader(HttpClient.class, DefaultHttpClient.class).first());
+	private static final InheritableThreadLocalConfigurator<HttpClient> CONFIGURATOR = new InheritableThreadLocalConfigurator<>(
+			HttpClient.class)
+			.ifAbsentDefaultService(() -> Sys.getEnv().getServiceLoader(HttpClient.class, DefaultHttpClient.class)
+					.getServices().first());
 
 	public static HttpClient getClient() {
 		return CONFIGURATOR.get();

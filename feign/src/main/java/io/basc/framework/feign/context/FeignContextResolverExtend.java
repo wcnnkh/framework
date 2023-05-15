@@ -1,10 +1,10 @@
 package io.basc.framework.feign.context;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ContextResolver;
 import io.basc.framework.context.ContextResolverExtend;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.feign.context.annotation.FeignClient;
 
 @Provider

@@ -4,8 +4,8 @@ import java.util.function.Supplier;
 
 import io.basc.framework.aop.ConfigurableAop;
 import io.basc.framework.aop.support.DefaultConfigurableAop;
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.BeanFactoryAware;
 import io.basc.framework.factory.BeanFactoryPostProcessor;

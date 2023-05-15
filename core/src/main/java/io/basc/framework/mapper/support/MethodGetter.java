@@ -1,12 +1,12 @@
 package io.basc.framework.mapper.support;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
-import io.basc.framework.value.Value;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -55,8 +55,8 @@ public class MethodGetter extends AbstractGetter {
 	}
 
 	@Override
-	public Object get(Value source) {
-		return ReflectionUtils.invoke(method, source == null ? null : source.getSource(), new Object[0]);
+	public Object get(Object source) {
+		return ReflectionUtils.invoke(method, Modifier.isStatic(method.getModifiers()) ? null : source, new Object[0]);
 	}
 
 	@Override

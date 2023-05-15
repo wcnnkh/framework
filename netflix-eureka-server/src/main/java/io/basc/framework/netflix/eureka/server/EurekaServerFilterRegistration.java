@@ -35,7 +35,7 @@ public class EurekaServerFilterRegistration implements FilterRegistration {
 				.scan(StringUtils.arrayToCommaDelimitedString(EUREKA_PACKAGES),
 						(e, m) -> e.getAnnotationMetadata().hasAnnotation(Path.class.getName())
 								|| e.getAnnotationMetadata().hasAnnotation(javax.ws.rs.ext.Provider.class.getName()))
-				.toSet();
+				.getServices().toSet();
 		// Construct the Jersey ResourceConfig
 		Map<String, Object> propsAndFeatures = new HashMap<>();
 		propsAndFeatures.put(

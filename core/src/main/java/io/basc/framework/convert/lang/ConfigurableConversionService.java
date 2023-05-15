@@ -10,7 +10,7 @@ import io.basc.framework.util.Registration;
 import io.basc.framework.value.Value;
 
 public class ConfigurableConversionService extends ConfigurableServices<ConversionService>
-		implements ConversionService, Comparable<Object>, Iterable<ConversionService> {
+		implements ConversionService, Comparable<Object> {
 	private static final LinkedThreadLocal<ConversionService> NESTED = new LinkedThreadLocal<ConversionService>(
 			ConfigurableConversionService.class.getName());
 
@@ -25,7 +25,7 @@ public class ConfigurableConversionService extends ConfigurableServices<Conversi
 	}
 
 	public final boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		for (ConversionService service : this) {
+		for (ConversionService service : getServices()) {
 			if (NESTED.isCurrent(service)) {
 				continue;
 			}
@@ -48,7 +48,7 @@ public class ConfigurableConversionService extends ConfigurableServices<Conversi
 			sourceTypeToUse = TypeDescriptor.forObject(source);
 		}
 
-		for (ConversionService service : this) {
+		for (ConversionService service : getServices()) {
 			if (NESTED.isCurrent(service)) {
 				continue;
 			}
@@ -76,7 +76,7 @@ public class ConfigurableConversionService extends ConfigurableServices<Conversi
 	}
 
 	public int compareTo(Object o) {
-		for (ConversionService service : this) {
+		for (ConversionService service : getServices()) {
 			if (ConversionComparator.INSTANCE.compare(service, o) == -1) {
 				return -1;
 			}

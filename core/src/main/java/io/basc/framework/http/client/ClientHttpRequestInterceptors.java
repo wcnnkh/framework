@@ -13,6 +13,6 @@ public class ClientHttpRequestInterceptors extends ConfigurableServices<ClientHt
 
 	@Override
 	public ClientHttpResponse intercept(ClientHttpRequest request, ClientHttpRequestExecutor chain) throws IOException {
-		return new ClientHttpRequestInterceptorChain(iterator(), chain).execute(request);
+		return new ClientHttpRequestInterceptorChain(getServices().iterator(), chain).execute(request);
 	}
 }

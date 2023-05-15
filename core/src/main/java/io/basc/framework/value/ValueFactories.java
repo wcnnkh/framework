@@ -11,7 +11,7 @@ public class ValueFactories<K, F extends ValueFactory<K>> extends ConfigurableSe
 
 	@Override
 	public Value get(K key) {
-		for (F factory : this) {
+		for (F factory : getServices()) {
 			if (factory == null || factory == this) {
 				continue;
 			}

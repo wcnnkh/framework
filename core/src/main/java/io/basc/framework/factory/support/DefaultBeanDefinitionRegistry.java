@@ -3,7 +3,7 @@ package io.basc.framework.factory.support;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.factory.BeanDefinitionFactory;
 import io.basc.framework.factory.BeanDefinitionRegistry;
 import io.basc.framework.lang.AlreadyExistsException;

@@ -2,12 +2,12 @@ package io.basc.framework.context.ioc.support;
 
 import java.nio.charset.Charset;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ioc.ValueDefinition;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.event.Observable;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.MapperUtils;
 import io.basc.framework.util.StringUtils;

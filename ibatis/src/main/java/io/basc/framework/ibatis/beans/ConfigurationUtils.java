@@ -13,8 +13,8 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.ibatis.type.TypeAliasRegistry;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.context.Context;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.ConfigurableBeanFactory;
 import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.ibatis.IbatisException;

@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import io.basc.framework.core.type.classreading.CachingMetadataReaderFactory;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.ResourceClassesLoader;
 import io.basc.framework.util.StaticSupplier;
 
@@ -19,7 +20,7 @@ public class LocationPatternClassesLoader extends ResourceClassesLoader {
 
 	public LocationPatternClassesLoader(ResourcePatternResolver resourcePatternResolver,
 			Supplier<String> locationPatternSupplier) {
-		super(() -> {
+		super(Elements.of(() -> {
 			String location = locationPatternSupplier.get();
 			if (location == null) {
 				return Stream.empty();
@@ -37,7 +38,7 @@ public class LocationPatternClassesLoader extends ResourceClassesLoader {
 			}
 
 			return Stream.of(resources);
-		});
+		}));
 		setMetadataReaderFactory(new CachingMetadataReaderFactory(resourcePatternResolver));
 	}
 }

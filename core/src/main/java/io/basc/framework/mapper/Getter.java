@@ -1,7 +1,5 @@
 package io.basc.framework.mapper;
 
-import io.basc.framework.value.Value;
-
 public interface Getter extends ParameterDescriptor {
 
 	/**
@@ -10,7 +8,7 @@ public interface Getter extends ParameterDescriptor {
 	 * @param source
 	 * @return
 	 */
-	Object get(Value source);
+	Object get(Object source);
 
 	@Override
 	Getter rename(String name);

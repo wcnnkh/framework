@@ -19,7 +19,7 @@ package io.basc.framework.websocket.handler;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.basc.framework.factory.BeanDefinition;
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.factory.BeanFactoryAccessor;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;

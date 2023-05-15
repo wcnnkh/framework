@@ -1,10 +1,10 @@
 package io.basc.framework.context.repository.annotation;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ContextResolver;
 import io.basc.framework.context.ContextResolverExtend;
 import io.basc.framework.context.repository.RepositoryBeanDefinition;
-import io.basc.framework.factory.BeanDefinition;
 
 public class RepositoryContextResolverExtend implements ContextResolverExtend {
 	private final Context context;

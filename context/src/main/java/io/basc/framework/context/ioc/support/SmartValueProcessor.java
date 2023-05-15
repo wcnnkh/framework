@@ -1,9 +1,9 @@
 package io.basc.framework.context.ioc.support;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ioc.ValueDefinition;
 import io.basc.framework.context.ioc.ValueProcessor;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.io.Resource;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;

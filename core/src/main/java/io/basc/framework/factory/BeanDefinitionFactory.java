@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.util.alias.AliasFactory;
 

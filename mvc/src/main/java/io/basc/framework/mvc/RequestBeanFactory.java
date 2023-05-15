@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.support.ContextConfigurator;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.factory.BeanDefinition;
 import io.basc.framework.factory.Destroy;
 import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.factory.ParameterFactory;

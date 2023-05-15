@@ -1,5 +1,6 @@
 package io.basc.framework.factory;
 
+import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.event.Event;
 

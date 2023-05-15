@@ -48,7 +48,7 @@ public final class InetUtils {
 			+ "(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){2}|"
 			+ "^(\\D)*10(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){3})";
 	private static final MultipartMessageResolver MULTIPART_MESSAGE_RESOLVER = Sys.getEnv()
-			.getServiceLoader(MultipartMessageResolver.class).first();
+			.getServiceLoader(MultipartMessageResolver.class).getServices().first();
 
 	@Nullable
 	public static MultipartMessageResolver getMultipartMessageResolver() {

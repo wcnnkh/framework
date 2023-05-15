@@ -16,7 +16,7 @@ public class PropertiesResolvers extends ConfigurableServices<PropertiesResolver
 	}
 
 	public boolean canResolveProperties(Resource resource) {
-		for (PropertiesResolver resolver : this) {
+		for (PropertiesResolver resolver : getServices()) {
 			if (resolver.canResolveProperties(resource)) {
 				return true;
 			}
@@ -29,7 +29,7 @@ public class PropertiesResolvers extends ConfigurableServices<PropertiesResolver
 			return;
 		}
 
-		for (PropertiesResolver resolver : this) {
+		for (PropertiesResolver resolver : getServices()) {
 			if (resolver.canResolveProperties(resource)) {
 				resolver.resolveProperties(properties, resource, charset);
 				return;
@@ -44,7 +44,7 @@ public class PropertiesResolvers extends ConfigurableServices<PropertiesResolver
 			return;
 		}
 
-		for (PropertiesResolver resolver : this) {
+		for (PropertiesResolver resolver : getServices()) {
 			if (resolver.canResolveProperties(resource)) {
 				resolver.persistenceProperties(properties, resource, charset);
 				return;

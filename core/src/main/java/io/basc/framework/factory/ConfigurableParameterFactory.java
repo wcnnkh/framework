@@ -10,7 +10,7 @@ public class ConfigurableParameterFactory extends ConfigurableServices<Parameter
 
 	@Override
 	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
-		for (ParameterFactory factory : this) {
+		for (ParameterFactory factory : getServices()) {
 			if (factory.isAccept(parameterDescriptor)) {
 				return true;
 			}
@@ -20,7 +20,7 @@ public class ConfigurableParameterFactory extends ConfigurableServices<Parameter
 
 	@Override
 	public Object getParameter(ParameterDescriptor parameterDescriptor) {
-		for (ParameterFactory factory : this) {
+		for (ParameterFactory factory : getServices()) {
 			if (factory.isAccept(parameterDescriptor)) {
 				return factory.getParameter(parameterDescriptor);
 			}
