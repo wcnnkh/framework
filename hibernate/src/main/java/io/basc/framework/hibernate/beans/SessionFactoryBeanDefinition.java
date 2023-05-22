@@ -4,9 +4,9 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import io.basc.framework.beans.BeansException;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentBeanDefinition;
-import io.basc.framework.factory.BeansException;
 
 public class SessionFactoryBeanDefinition extends EnvironmentBeanDefinition {
 

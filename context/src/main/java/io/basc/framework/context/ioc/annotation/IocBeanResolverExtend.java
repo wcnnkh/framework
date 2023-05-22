@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import io.basc.framework.beans.BeanPostProcessor;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ioc.AutowiredDefinition;
 import io.basc.framework.context.ioc.AutowiredIocProcessor;
@@ -17,7 +18,6 @@ import io.basc.framework.context.ioc.ValueDefinition;
 import io.basc.framework.context.ioc.ValueIocProcessor;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.factory.BeanPostProcessor;
 import io.basc.framework.factory.BeanResolver;
 import io.basc.framework.factory.BeanResolverExtend;
 import io.basc.framework.mapper.Field;

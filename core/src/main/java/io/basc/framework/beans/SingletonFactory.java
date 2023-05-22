@@ -1,4 +1,4 @@
-package io.basc.framework.factory;
+package io.basc.framework.beans;
 
 import io.basc.framework.lang.Nullable;
 

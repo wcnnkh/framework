@@ -13,7 +13,7 @@ public class GetDeclaredMethodsTest {
 		System.out.println(ObjectUtils.toString(B.class.getInterfaces()));
 		System.out.println(ObjectUtils.toString(E.class.getDeclaredMethods()));
 		System.out.println("-------");
-		ReflectionUtils.getMethods(E.class).withInterfaces().getElements().forEach((e) -> System.out.println(e));
+		ReflectionUtils.getMethods(E.class).all().getElements().forEach((e) -> System.out.println(e));
 	}
 
 	static interface A {

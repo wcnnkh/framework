@@ -1,10 +1,10 @@
 package io.basc.framework.rpc.http.beans;
 
 import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.env.Environment;
-import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.support.BeanDefinitionLoader;
 import io.basc.framework.factory.support.BeanDefinitionLoaderChain;
 import io.basc.framework.factory.support.FactoryBeanDefinition;

@@ -28,4 +28,9 @@ public class ElementSet<E> extends SetWrapper<E> implements Elements<E> {
 	public Elements<E> cacheable() {
 		return this;
 	}
+
+	@Override
+	public boolean isSingleton() {
+		return wrappedTarget.size() == 1;
+	}
 }

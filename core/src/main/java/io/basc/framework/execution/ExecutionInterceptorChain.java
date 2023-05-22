@@ -6,9 +6,8 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
-import io.basc.framework.value.Value;
 
-public class ExecutionInterceptorChain extends AbstractExecutor {
+final class ExecutionInterceptorChain implements Executor {
 	private final Iterator<? extends ExecutionInterceptor> iterator;
 	private final Executable source;
 	private final Executor executor;
@@ -23,13 +22,7 @@ public class ExecutionInterceptorChain extends AbstractExecutor {
 		this.executor = executor;
 	}
 
-	@Override
-	public boolean isExecutable(Elements<? extends TypeDescriptor> types) {
-		return executor.isExecutable(types);
-	}
-
-	@Override
-	public Object execute(Elements<? extends Value> args) throws ExecutionException {
+	public Object execute(Elements<? extends Object> args) throws ExecutionException {
 		if (iterator.hasNext()) {
 			return iterator.next().intercept(source, executor, args);
 		}
@@ -44,6 +37,11 @@ public class ExecutionInterceptorChain extends AbstractExecutor {
 	@Override
 	public Elements<? extends ParameterDescriptor> getParameterDescriptors() {
 		return executor.getParameterDescriptors();
+	}
+
+	@Override
+	public String getName() {
+		return executor.getName();
 	}
 
 }

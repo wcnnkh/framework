@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.BeanPostProcessor;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ContextResolver;
 import io.basc.framework.context.ContextResolverExtend;
@@ -24,7 +25,6 @@ import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.core.type.classreading.MetadataReader;
 import io.basc.framework.core.type.classreading.MetadataReaderFactory;
 import io.basc.framework.core.type.filter.AnnotationTypeFilter;
-import io.basc.framework.factory.BeanPostProcessor;
 import io.basc.framework.factory.BeanResolver;
 import io.basc.framework.factory.BeanResolverExtend;
 import io.basc.framework.lang.Ignore;

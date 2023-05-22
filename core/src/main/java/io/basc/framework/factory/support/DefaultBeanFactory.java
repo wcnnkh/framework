@@ -5,8 +5,8 @@ import java.util.function.Supplier;
 import io.basc.framework.aop.ConfigurableAop;
 import io.basc.framework.aop.support.DefaultConfigurableAop;
 import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.BeanFactoryAware;
 import io.basc.framework.factory.BeanFactoryPostProcessor;
 import io.basc.framework.factory.Configurable;
@@ -20,12 +20,8 @@ import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 
 @SuppressWarnings({ "unchecked" })
-public class DefaultBeanFactory extends DefaultServiceLoaderFactory
-		implements ConfigurableBeanFactory, Init, BeanDefinitionLoader {
+public class DefaultBeanFactory extends DefaultServiceLoaderFactory implements ConfigurableBeanFactory, Init {
 	private static Logger logger = LoggerFactory.getLogger(DefaultBeanFactory.class);
-	private final DefaultConfigurableAop aop = new DefaultConfigurableAop();
-	private final ConfigurableServices<BeanDefinitionLoader> beanDefinitionLoaders = new ConfigurableServices<BeanDefinitionLoader>(
-			BeanDefinitionLoader.class);
 
 	private final ConfigurableServices<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ConfigurableServices<BeanFactoryPostProcessor>(
 			BeanFactoryPostProcessor.class);
@@ -34,8 +30,6 @@ public class DefaultBeanFactory extends DefaultServiceLoaderFactory
 	private BeanFactory parent;
 
 	public DefaultBeanFactory() {
-		beanDefinitionLoaders.registerLast(this);
-		aop.addAopPolicy((instance) -> RuntimeBean.getRuntimeBean(instance) != null);
 		registerSingleton(BeanFactory.class.getName(), this);
 		registerAlias(BeanFactory.class.getName(), InstanceFactory.class.getName());
 		getBeanResolver().register(new InstanceParameterFactory(this));
@@ -70,48 +64,8 @@ public class DefaultBeanFactory extends DefaultServiceLoaderFactory
 		}
 	}
 
-	public ConfigurableAop getAop() {
-		return aop;
-	}
-
-	public ConfigurableServices<BeanDefinitionLoader> getBeanDefinitionLoaders() {
-		return beanDefinitionLoaders;
-	}
-
 	public ConfigurableServices<BeanFactoryPostProcessor> getBeanFactoryPostProcessors() {
 		return beanFactoryPostProcessors;
-	}
-
-	public BeanDefinition getDefinition(ClassLoader classLoader, String name) {
-		BeanDefinition definition = super.getDefinition(name);
-		if (definition == null) {
-			synchronized (getDefinitionMutex()) {
-				definition = super.getDefinition(name);
-				if (definition == null) {
-					definition = new BeanDefinitionLoaderChain(this.beanDefinitionLoaders.iterator()).load(this,
-							classLoader, name);
-					if (definition == null || !definition.isInstance()) {
-						for (String aliase : getAliases(name)) {
-							BeanDefinition aliaseDefinition = getDefinition(aliase);
-							if (aliaseDefinition != null && aliaseDefinition.isInstance()) {
-								definition = aliaseDefinition;
-								break;
-							}
-						}
-					}
-
-					if (definition != null) {
-						definition = registerDefinition(name, definition);
-					}
-				}
-			}
-		}
-		return definition;
-	}
-
-	@Override
-	public final BeanDefinition getDefinition(String name) {
-		return getDefinition(getClassLoader(), name);
 	}
 
 	@Override
@@ -255,12 +209,6 @@ public class DefaultBeanFactory extends DefaultServiceLoaderFactory
 	public boolean isInstance(String name, Object... params) {
 		return isInstance(name, (e) -> e.isInstance())
 				|| (parent != null && !containsDefinition(name) && parent.isInstance(name, params));
-	}
-
-	@Override
-	public BeanDefinition load(BeanFactory beanFactory, ClassLoader classLoader, String name,
-			BeanDefinitionLoaderChain chain) throws FactoryException {
-		return chain.load(beanFactory, classLoader, name);
 	}
 
 	@Override

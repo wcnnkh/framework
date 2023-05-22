@@ -4,8 +4,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.BeanPostProcessor;
 import io.basc.framework.context.Context;
-import io.basc.framework.factory.BeanPostProcessor;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;

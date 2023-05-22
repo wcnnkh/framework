@@ -1,7 +1,6 @@
 package io.basc.framework.execution;
 
 import io.basc.framework.util.Elements;
-import io.basc.framework.value.Value;
 
 /**
  * 执行拦截器
@@ -10,6 +9,14 @@ import io.basc.framework.value.Value;
  *
  */
 public interface ExecutionInterceptor {
-	Object intercept(Executable source, Executor executor, Elements<? extends Value> parameters)
-			throws ExecutionException;
+	/**
+	 * 拦截
+	 * 
+	 * @param source   来源
+	 * @param executor 执行器
+	 * @param args     参数
+	 * @return
+	 * @throws ExecutionException
+	 */
+	Object intercept(Executable source, Executor executor, Elements<? extends Object> args) throws ExecutionException;
 }

@@ -3,8 +3,8 @@ package io.basc.framework.execution.aop.jdk;
 import java.util.Arrays;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.Executable;
 import io.basc.framework.execution.ExecutionInterceptor;
+import io.basc.framework.execution.Executors;
 import io.basc.framework.execution.aop.Proxy;
 import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.ClassUtils;
@@ -49,8 +49,8 @@ public class JdkProxy implements Proxy {
 	}
 
 	@Override
-	public Executable getProxy(Class<?> clazz, Class<?>[] interfaces, ExecutionInterceptor executionInterceptor) {
-		return new JdkProxyExecutable(TypeDescriptor.valueOf(clazz), mergeInterfaces(clazz, interfaces),
+	public Executors getProxy(Class<?> clazz, Class<?>[] interfaces, ExecutionInterceptor executionInterceptor) {
+		return new JdkProxyExecutors(TypeDescriptor.valueOf(clazz), mergeInterfaces(clazz, interfaces),
 				executionInterceptor);
 	}
 

@@ -8,9 +8,9 @@ import java.util.List;
 import org.junit.Test;
 
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.mapper.Copy;
 import io.basc.framework.util.StopWatch;
+import lombok.ToString;
 
 public class CopyTest {
 	@Test
@@ -50,6 +50,7 @@ public class CopyTest {
 		System.out.println(stopWatch.prettyPrint());
 	}
 
+	@ToString(callSuper = true)
 	public static class Target {
 		private List<?> list;
 
@@ -60,13 +61,9 @@ public class CopyTest {
 		public void setList(List<?> list) {
 			this.list = list;
 		}
-
-		@Override
-		public String toString() {
-			return ReflectionUtils.toString(this);
-		}
 	}
 
+	@ToString(callSuper = true)
 	public static class Source {
 		private List<String> list;
 
@@ -76,11 +73,6 @@ public class CopyTest {
 
 		public void setList(List<String> list) {
 			this.list = list;
-		}
-
-		@Override
-		public String toString() {
-			return ReflectionUtils.toString(this);
 		}
 	}
 }

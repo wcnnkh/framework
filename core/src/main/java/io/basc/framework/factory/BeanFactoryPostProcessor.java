@@ -1,5 +1,7 @@
 package io.basc.framework.factory;
 
+import io.basc.framework.beans.BeansException;
+
 @FunctionalInterface
 public interface BeanFactoryPostProcessor {
 	/**

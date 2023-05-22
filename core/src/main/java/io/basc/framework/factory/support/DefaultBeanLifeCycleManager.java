@@ -3,14 +3,15 @@ package io.basc.framework.factory.support;
 import java.util.Collection;
 
 import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.BeanLifecycleManager;
+import io.basc.framework.beans.BeanPostProcessor;
+import io.basc.framework.beans.support.DefaultBeanDefinitionRegistry;
 import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.factory.BeanDefinitionAware;
 import io.basc.framework.factory.BeanLifecycleEvent;
 import io.basc.framework.factory.BeanLifecycleEvent.Step;
-import io.basc.framework.factory.BeanLifecycleManager;
-import io.basc.framework.factory.BeanPostProcessor;
 import io.basc.framework.factory.ConfigurableBeanResolver;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.DefaultParameterFactoryAware;

@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.Set;
 
 import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.ConfigurableContextResolver;
 import io.basc.framework.context.Context;
@@ -25,7 +26,6 @@ import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.env.DefaultEnvironment;
 import io.basc.framework.env.Sys;
-import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.FactoryException;
 import io.basc.framework.factory.support.BeanDefinitionLoaderChain;

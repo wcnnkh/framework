@@ -1,7 +1,7 @@
 package io.basc.framework.context.repository;
 
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.BeanResolver;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.mapper.ParameterDescriptors;

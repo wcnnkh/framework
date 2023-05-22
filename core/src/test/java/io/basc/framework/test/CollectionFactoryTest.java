@@ -6,10 +6,10 @@ import java.util.LinkedList;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.io.SerializerException;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.XUtils;
+import lombok.ToString;
 
 public class CollectionFactoryTest {
 	@Test
@@ -32,6 +32,7 @@ public class CollectionFactoryTest {
 		Assert.assertTrue(clone.getV().equals(bean.getV()) && clone.size() == 1);
 	}
 
+	@ToString(callSuper = true)
 	private static class TestList extends LinkedList<Object> {
 		private static final long serialVersionUID = 1L;
 		private String v;
@@ -43,13 +44,9 @@ public class CollectionFactoryTest {
 		public void setV(String v) {
 			this.v = v;
 		}
-
-		@Override
-		public String toString() {
-			return ReflectionUtils.toString(this);
-		}
 	}
 
+	@ToString(callSuper = true)
 	private static class TestMap extends HashMap<Object, Object> {
 		private static final long serialVersionUID = 1L;
 		private String v;
@@ -60,11 +57,6 @@ public class CollectionFactoryTest {
 
 		public void setV(String v) {
 			this.v = v;
-		}
-
-		@Override
-		public String toString() {
-			return ReflectionUtils.toString(this);
 		}
 	}
 }

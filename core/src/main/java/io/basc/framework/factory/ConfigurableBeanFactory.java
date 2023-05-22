@@ -4,6 +4,9 @@ import java.util.function.Supplier;
 
 import io.basc.framework.aop.ConfigurableAop;
 import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.BeanDefinitionRegistry;
+import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.beans.SingletonRegistry;
 import io.basc.framework.convert.TypeDescriptor;
 
 public interface ConfigurableBeanFactory

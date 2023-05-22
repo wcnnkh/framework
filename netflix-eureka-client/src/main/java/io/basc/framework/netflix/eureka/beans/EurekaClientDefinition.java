@@ -4,9 +4,9 @@ import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
 
+import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.beans.BeansException;
 import io.basc.framework.boot.Application;
-import io.basc.framework.factory.BeanFactory;
-import io.basc.framework.factory.BeansException;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.netflix.eureka.CloudEurekaClient;
 

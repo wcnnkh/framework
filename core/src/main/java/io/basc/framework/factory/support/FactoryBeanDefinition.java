@@ -1,8 +1,8 @@
 package io.basc.framework.factory.support;
 
 import io.basc.framework.aop.Aop;
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.BeanResolver;
 
 public class FactoryBeanDefinition extends DefaultBeanDefinition {

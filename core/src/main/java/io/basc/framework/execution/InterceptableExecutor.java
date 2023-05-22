@@ -4,7 +4,6 @@ import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
-import io.basc.framework.value.Value;
 
 /**
  * 可被拦截的执行器
@@ -33,28 +32,7 @@ public class InterceptableExecutor implements Executor {
 	}
 
 	@Override
-	public boolean isExecutable() {
-		ExecutionInterceptorChain chain = new ExecutionInterceptorChain(source, this.interceptors.iterator(),
-				this.executor);
-		return chain.isExecutable();
-	}
-
-	@Override
-	public Object execute() throws ExecutionException {
-		ExecutionInterceptorChain chain = new ExecutionInterceptorChain(source, this.interceptors.iterator(),
-				this.executor);
-		return chain.execute();
-	}
-
-	@Override
-	public boolean isExecutable(Elements<? extends TypeDescriptor> types) {
-		ExecutionInterceptorChain chain = new ExecutionInterceptorChain(source, this.interceptors.iterator(),
-				this.executor);
-		return chain.isExecutable(types);
-	}
-
-	@Override
-	public Object execute(Elements<? extends Value> args) throws ExecutionException {
+	public Object execute(Elements<? extends Object> args) throws ExecutionException {
 		ExecutionInterceptorChain chain = new ExecutionInterceptorChain(source, this.interceptors.iterator(),
 				this.executor);
 		return chain.execute(args);
@@ -63,5 +41,10 @@ public class InterceptableExecutor implements Executor {
 	@Override
 	public Elements<? extends ParameterDescriptor> getParameterDescriptors() {
 		return this.executor.getParameterDescriptors();
+	}
+
+	@Override
+	public String getName() {
+		return executor.getName();
 	}
 }

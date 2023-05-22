@@ -1,6 +1,6 @@
 package io.basc.framework.swagger.beans;
 
-import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
 

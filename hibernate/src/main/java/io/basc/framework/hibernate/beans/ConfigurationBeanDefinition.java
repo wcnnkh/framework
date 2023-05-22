@@ -6,9 +6,9 @@ import org.hibernate.HibernateException;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
+import io.basc.framework.beans.BeansException;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentBeanDefinition;
-import io.basc.framework.factory.BeansException;
 import io.basc.framework.io.Resource;
 
 public class ConfigurationBeanDefinition extends EnvironmentBeanDefinition {

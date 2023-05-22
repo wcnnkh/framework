@@ -158,6 +158,9 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 		});
 	}
 
+	/**
+	 * 默认使用{@link Streamable#forEach(Consumer)}, 因为迭代的大多数实现都是一次性加载到内容
+	 */
 	@Override
 	default void forEach(Consumer<? super E> action) {
 		Streamable.super.forEach(action);
@@ -228,7 +231,6 @@ public interface Elements<E> extends Streamable<E>, Iterable<E>, Enumerable<E> {
 
 	default Elements<Indexed<E>> index() {
 		return Elements.of(() -> {
-			// 在性能中取舍，使用AtomicLong实现，而不使用BigDecimal,使用BigDecimal可以迭代更多的数据
 			AtomicLong lineNumber = new AtomicLong();
 			return stream().sequential().map((e) -> new Indexed<>(lineNumber.getAndIncrement(), e));
 		});

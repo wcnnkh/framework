@@ -2,12 +2,12 @@ package io.basc.framework.druid.beans;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
+import io.basc.framework.beans.BeansException;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.support.ContextBeanDefinition;
 import io.basc.framework.context.support.ContextConfigurator;
 import io.basc.framework.db.Configurable;
 import io.basc.framework.druid.DruidUtils;
-import io.basc.framework.factory.BeansException;
 import io.basc.framework.factory.InstanceException;
 
 public class DruidDataSourceDefinition extends ContextBeanDefinition {

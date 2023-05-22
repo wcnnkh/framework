@@ -1,6 +1,6 @@
 package io.basc.framework.jedis.beans;
 
-import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.redis.RedisConfiguration;

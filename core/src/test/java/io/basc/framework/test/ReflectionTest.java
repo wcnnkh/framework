@@ -12,6 +12,7 @@ import io.basc.framework.io.ClassPathResource;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
+import lombok.ToString;
 
 public class ReflectionTest {
 	@Test
@@ -27,15 +28,16 @@ public class ReflectionTest {
 		String b = clone.toString();
 		System.out.println(b);
 		assertTrue(a.equals(b));
-		assertTrue(ReflectionUtils.equals(a, b));
-		assertTrue(ReflectionUtils.hashCode(a) == ReflectionUtils.hashCode(b));
+		assertTrue(ReflectionUtils.getDeclaredFields(a.getClass()).equals(a, b));
+		assertTrue(ReflectionUtils.getDeclaredFields(a.getClass()).hashCode(a) == ReflectionUtils
+				.getDeclaredFields(b.getClass()).hashCode(b));
 
 		Map<String, Object> map = Collections.singletonMap(XUtils.getUUID(), XUtils.getUUID());
 		Map<String, Object> cloneMap = CollectionFactory.clone(map, true);
 		assertTrue(map.equals(cloneMap));
 
-		assertTrue(ReflectionUtils.getConstructor("io.basc.framework.io.WatchServiceResourceEventDispatcher",
-				null, ClassPathResource.class) != null);
+		assertTrue(ReflectionUtils.getConstructor("io.basc.framework.io.WatchServiceResourceEventDispatcher", null,
+				ClassPathResource.class) != null);
 	}
 
 	@Test
@@ -47,33 +49,27 @@ public class ReflectionTest {
 		assertTrue(StringUtils.equals(cloneA.a, c.a));
 	}
 
+	@ToString
 	public static class ParentBean {
 		public String pa;
 		public transient String pc;
-
-		@Override
-		public String toString() {
-			return ReflectionUtils.toString(this);
-		}
 	}
 
+	@ToString(callSuper = true)
 	public static class TestBean extends ParentBean {
 		public String a;
 		public Object b;
 		public transient String c;
 		public TestBean d;
-
-		public String toString() {
-			return ReflectionUtils.toString(this);
-		}
 	}
 
+	@ToString
 	private static class CloneA implements Cloneable {
 		private String a;
 
 		@Override
 		public CloneA clone() {
-			return ReflectionUtils.clone(this);
+			return ReflectionUtils.clone(this, false);
 		}
 	}
 }

@@ -16,8 +16,6 @@ public interface ParameterDescriptor extends Named, Predicate<ParameterDescripto
 		return Annotations.isNullable(this.getTypeDescriptor());
 	}
 
-	ParameterDescriptor rename(String name);
-
 	@Override
 	default boolean test(ParameterDescriptor target) {
 		if (target == null) {

@@ -1,9 +1,9 @@
 package io.basc.framework.context.xml;
 
 import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.BeansException;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ioc.FieldIocProcessor;
-import io.basc.framework.factory.BeansException;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.support.DefaultObjectMapping;

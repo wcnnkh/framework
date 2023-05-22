@@ -1,8 +1,8 @@
 package io.basc.framework.factory;
 
-import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.event.Event;
+import io.basc.framework.event.ObjectEvent;
+import lombok.Data;
 
 /**
  * 生命周期事件
@@ -10,36 +10,15 @@ import io.basc.framework.event.Event;
  * @author wcnnkh
  *
  */
-public class BeanLifecycleEvent implements Event {
-	private final long createTime;
-	private final Object bean;
-	private final BeanDefinition definition;
+@Data
+public class BeanLifecycleEvent extends ObjectEvent<Object> {
+	private static final long serialVersionUID = 1L;
 	private final Step step;
 
-	public BeanLifecycleEvent(BeanDefinition definition, Object bean, Step step) {
-		this.createTime = System.currentTimeMillis();
-		this.bean = bean;
-		this.definition = definition;
+	public BeanLifecycleEvent(Object source, Step step) {
+		super(source);
 		this.step = step;
 	}
-
-	public Object getBean() {
-		return bean;
-	}
-
-	public long getCreateTime() {
-		return this.createTime;
-	};
-	
-	public BeanDefinition getDefinition() {
-		return definition;
-	}
-	
-	public Step getStep() {
-		return step;
-	}
-
-
 
 	public static enum Step implements Ordered {
 		/**

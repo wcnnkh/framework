@@ -9,7 +9,7 @@ import org.quartz.simpl.PropertySettingJobFactory;
 import org.quartz.simpl.SimpleJobFactory;
 import org.quartz.spi.TriggerFiredBundle;
 
-import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.factory.BeanFactoryAware;
 
 /**

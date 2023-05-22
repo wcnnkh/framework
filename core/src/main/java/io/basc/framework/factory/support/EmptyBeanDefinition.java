@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.BeansException;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.factory.BeansException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.ParameterDescriptors;
 import io.basc.framework.util.Assert;

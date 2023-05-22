@@ -2,8 +2,8 @@ package io.basc.framework.test;
 
 import org.junit.Test;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.XUtils;
+import lombok.Data;
 
 public class ToStringTest {
 	@Test
@@ -15,6 +15,7 @@ public class ToStringTest {
 		System.out.println(bean);
 	}
 
+	@Data
 	public static class ToStringBean {
 		private int[] a;
 		private String b;
@@ -42,11 +43,6 @@ public class ToStringTest {
 
 		public void setB(String b) {
 			this.b = b;
-		}
-
-		@Override
-		public String toString() {
-			return ReflectionUtils.toString(this);
 		}
 	}
 }

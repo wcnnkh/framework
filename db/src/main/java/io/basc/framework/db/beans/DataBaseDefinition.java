@@ -1,11 +1,11 @@
 package io.basc.framework.db.beans;
 
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.db.Configurable;
 import io.basc.framework.db.DB;
 import io.basc.framework.db.DataBase;
 import io.basc.framework.db.DataBaseResolver;
 import io.basc.framework.db.DefaultDB;
-import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.lang.UnsupportedException;

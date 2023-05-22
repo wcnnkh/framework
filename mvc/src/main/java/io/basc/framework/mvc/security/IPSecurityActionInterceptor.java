@@ -1,9 +1,9 @@
 package io.basc.framework.mvc.security;
 
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Annotations;
-import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mvc.HttpChannel;

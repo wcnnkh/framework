@@ -2,7 +2,7 @@ package io.basc.framework.dubbo.beans;
 
 import org.apache.dubbo.config.ReferenceConfig;
 
-import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
 
 public class DubboBeanDefinition extends FactoryBeanDefinition {

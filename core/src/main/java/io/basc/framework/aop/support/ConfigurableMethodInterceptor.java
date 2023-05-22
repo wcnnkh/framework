@@ -22,7 +22,7 @@ public class ConfigurableMethodInterceptor extends AbstractMethodInterceptors im
 
 	@Override
 	public synchronized void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		this.defaultInterceptors = serviceLoaderFactory.getServiceLoader(MethodInterceptor.class).toList();
+		this.defaultInterceptors = serviceLoaderFactory.getServiceLoader(MethodInterceptor.class).getServices().toList();
 		configured = true;
 	}
 

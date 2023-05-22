@@ -23,7 +23,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
-import io.basc.framework.lang.ParameterException;
+import io.basc.framework.execution.parameter.ParameterException;
 
 /**
  * Miscellaneous utility methods for number conversion and parsing. Mainly for

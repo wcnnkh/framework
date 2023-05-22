@@ -1,7 +1,7 @@
 package io.basc.framework.execution.aop;
 
-import io.basc.framework.execution.Executable;
 import io.basc.framework.execution.ExecutionInterceptor;
+import io.basc.framework.execution.Executors;
 import io.basc.framework.lang.Nullable;
 
 /**
@@ -43,7 +43,7 @@ public interface Proxy {
 	 * @param executionInterceptor
 	 * @return
 	 */
-	Executable getProxy(Class<?> sourceClass, @Nullable Class<?>[] interfaces,
+	Executors getProxy(Class<?> sourceClass, @Nullable Class<?>[] interfaces,
 			ExecutionInterceptor executionInterceptor);
 
 	/**

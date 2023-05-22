@@ -8,8 +8,8 @@ import com.netflix.eureka.cluster.PeerEurekaNodes;
 import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.resources.ServerCodecs;
 
-import io.basc.framework.factory.BeanFactory;
-import io.basc.framework.factory.BeansException;
+import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.beans.BeansException;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
 
 public class EurekaServerContextDefinition extends FactoryBeanDefinition {

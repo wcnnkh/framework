@@ -36,4 +36,9 @@ public class ElementList<E> extends ListWrapper<E> implements Elements<E> {
 	public ElementList<E> toList() {
 		return this;
 	}
+	
+	@Override
+	public boolean isSingleton() {
+		return wrappedTarget.size() == 1;
+	}
 }

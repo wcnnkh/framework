@@ -338,4 +338,26 @@ public interface Streamable<E> {
 			stream.close();
 		}
 	}
+
+	/**
+	 * 是否只有一个元素
+	 * 
+	 * @return
+	 */
+	default boolean isSingleton() {
+		return test((stream) -> {
+			Iterator<E> iterator = stream.iterator();
+			if (iterator.hasNext()) {
+				return false;
+			}
+
+			// 向后迭代一次
+			iterator.next();
+			if (iterator.hasNext()) {
+				// 如果还有说明不是只有一个
+				return false;
+			}
+			return true;
+		});
+	}
 }

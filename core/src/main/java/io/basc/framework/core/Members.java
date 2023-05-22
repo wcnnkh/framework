@@ -262,4 +262,8 @@ public class Members<E> implements Cloneable, Consumer<E> {
 		structure.interfaces = this.interfaces;
 		return structure;
 	}
+
+	public Members<E> concat(Elements<? extends E> elements) {
+		return with((e) -> e.concat(elements));
+	}
 }

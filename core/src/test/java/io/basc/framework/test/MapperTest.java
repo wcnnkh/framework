@@ -23,7 +23,7 @@ public class MapperTest {
 		map.put("bk", "bk");
 		map.put("s.a", XUtils.getUUID());
 		map.put("s.b", XUtils.getUUID());
-		DefaultObjectMapper<Object, RuntimeException> mapper = new DefaultObjectMapper<>();
+		DefaultObjectMapper mapper = new DefaultObjectMapper();
 		A a = mapper.convert(map, A.class);
 		System.out.println(JsonUtils.getSupport().toJsonString(map));
 		System.out.println(JsonUtils.getSupport().toJsonString(a));
@@ -31,7 +31,7 @@ public class MapperTest {
 		assertTrue(map.get("b.bk").equals(a.getB().getBk()));
 		System.out.println(a);
 
-		Mapping<? extends Field> structure = mapper.getStructure(A.class);
+		Mapping<? extends Field> structure = mapper.getMapping(A.class);
 		Field firstField = structure.getElements().first();
 		structure = structure.setParentField(firstField);
 		structure = structure.setNameNestingDepth(1);

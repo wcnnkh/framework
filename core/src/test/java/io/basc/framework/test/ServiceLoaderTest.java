@@ -15,7 +15,7 @@ public class ServiceLoaderTest {
 
 		ServiceRegistry<ClientHttpRequestFactory> serviceLoader1 = new ServiceRegistry<>();
 		serviceLoader1.getServiceLoaders().register(serviceLoader);
-		for (ClientHttpRequestFactory clientHttpRequestFactory : serviceLoader1) {
+		for (ClientHttpRequestFactory clientHttpRequestFactory : serviceLoader1.getServices()) {
 			System.out.println(clientHttpRequestFactory);
 		}
 		System.out.println(serviceLoader1);

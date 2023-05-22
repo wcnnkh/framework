@@ -12,9 +12,9 @@ import org.w3c.dom.NodeList;
 
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.support.UnmodifiableMethodInterceptors;
+import io.basc.framework.beans.BeansException;
 import io.basc.framework.context.Context;
 import io.basc.framework.dom.DomUtils;
-import io.basc.framework.factory.BeansException;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.factory.support.InstanceIterable;
 import io.basc.framework.lang.UnsupportedException;

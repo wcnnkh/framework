@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.FactoryException;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;

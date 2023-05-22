@@ -2,7 +2,7 @@ package io.basc.framework.websocket.adapter.standard;
 
 import javax.websocket.server.ServerEndpointConfig.Configurator;
 
-import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.factory.FactoryLoader;
 
 /**

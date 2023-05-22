@@ -14,14 +14,13 @@ public class MembersTest {
 
 	@Test
 	public void test() {
-		Members<Field> members = ReflectionUtils.getDeclaredFields(B.class).withAll().all().all().all().all()
-				.withMethod(Members.DIRECT).withAll().withMethod(Members.REFUSE).all();
+		Members<Field> members = ReflectionUtils.getDeclaredFields(B.class).all();
 		assertTrue(members.getElements().count() == 7);
-		System.out.println(ReflectionUtils.getDeclaredFields(B.class).withAll().withInterfaces().withSuperclass()
-				.concat(ReflectionUtils.getFields(B.class).getElements()).all().map((e) -> e.getName()).all()
-				.getElements().count() == 7);
-		Assert.assertTrue(ReflectionUtils.getDeclaredFields(B.class).withAll().withAll()
-				.filter((e) -> e.getName().equals("a")).all().getElements().count() == 2);
+		System.out.println(ReflectionUtils.getDeclaredFields(B.class).all()
+				.concat(ReflectionUtils.getFields(B.class).getElements()).all()
+				.convert((es) -> es.map((e) -> e.getName())).all().getElements().count() == 7);
+		Assert.assertTrue(ReflectionUtils.getDeclaredFields(B.class).all().filter((e) -> e.getName().equals("a")).all()
+				.getElements().count() == 2);
 	}
 
 	public static class A {

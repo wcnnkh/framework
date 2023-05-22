@@ -2,8 +2,8 @@ package io.basc.framework.factory.support;
 
 import java.util.function.Supplier;
 
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.lang.Nullable;
 

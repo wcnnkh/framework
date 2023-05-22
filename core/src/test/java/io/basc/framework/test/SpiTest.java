@@ -8,16 +8,17 @@ import org.junit.Test;
 
 public class SpiTest implements SpiTestInterface {
 	private static final String TEST_TEXT = "hello";
-	
+
 	@Override
 	public String test() {
 		return TEST_TEXT;
 	}
 
 	@Test
-	public void run(){
-		SpiServiceLoader<SpiTestInterface> spiServiceLoader = new SpiServiceLoader<SpiTestInterface>(SpiTestInterface.class);
-		SpiTestInterface spiTestInterface = spiServiceLoader.first();
+	public void run() {
+		SpiServiceLoader<SpiTestInterface> spiServiceLoader = new SpiServiceLoader<SpiTestInterface>(
+				SpiTestInterface.class);
+		SpiTestInterface spiTestInterface = spiServiceLoader.getServices().first();
 		String text = spiTestInterface.test();
 		assertTrue(TEST_TEXT.equals(text));
 	}

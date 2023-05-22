@@ -5,8 +5,8 @@ import java.util.Arrays;
 
 import io.basc.framework.aop.cglib.CglibMethodInterceptor;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.Executable;
 import io.basc.framework.execution.ExecutionInterceptor;
+import io.basc.framework.execution.Executors;
 import io.basc.framework.execution.aop.Proxy;
 import io.basc.framework.util.ClassUtils;
 import net.sf.cglib.proxy.Enhancer;
@@ -48,8 +48,8 @@ public class CglibProxy implements Proxy {
 	}
 
 	@Override
-	public Executable getProxy(Class<?> clazz, Class<?>[] interfaces, ExecutionInterceptor executionInterceptor) {
-		return new CglibProxyExecutable(TypeDescriptor.valueOf(clazz), getInterfaces(clazz, interfaces),
+	public Executors getProxy(Class<?> clazz, Class<?>[] interfaces, ExecutionInterceptor executionInterceptor) {
+		return new CglibProxyExecutors(TypeDescriptor.valueOf(clazz), getInterfaces(clazz, interfaces),
 				executionInterceptor);
 	}
 

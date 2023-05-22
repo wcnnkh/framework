@@ -2,9 +2,9 @@ package io.basc.framework.hikari.beans;
 
 import com.zaxxer.hikari.HikariDataSource;
 
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.db.DataBase;
 import io.basc.framework.db.DataBaseResolver;
-import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.hikari.HikariUtils;

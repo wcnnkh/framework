@@ -1,5 +1,7 @@
 package io.basc.framework.lang;
 
+import io.basc.framework.execution.parameter.ParameterException;
+
 /**
  * 参数异常
  * 

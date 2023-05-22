@@ -1,7 +1,8 @@
 package io.basc.framework.execution.aop;
 
-import io.basc.framework.execution.Executable;
 import io.basc.framework.execution.ExecutionInterceptor;
+import io.basc.framework.execution.Executors;
+import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ServiceRegistry;
 
@@ -38,7 +39,8 @@ public class Proxies extends ServiceRegistry<Proxy> implements Proxy {
 	}
 
 	@Override
-	public Executable getProxy(Class<?> sourceClass, Class<?>[] interfaces, ExecutionInterceptor executionInterceptor) {
+	public Executors getProxy(Class<?> sourceClass, Class<?>[] interfaces,
+			@Nullable ExecutionInterceptor executionInterceptor) {
 		for (Proxy proxy : getServices()) {
 			if (proxy.canProxy(sourceClass)) {
 				return proxy.getProxy(sourceClass, interfaces, executionInterceptor);

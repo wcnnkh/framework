@@ -1,6 +1,6 @@
 package io.basc.framework.factory.support;
 
-import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.util.ServiceLoader;
 

@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.util.Elements;
-import io.basc.framework.value.Value;
 
 public class ProxyUtils {
 	public static boolean isIgnoreMethod(Method method) {
@@ -20,15 +19,15 @@ public class ProxyUtils {
 		return instance.getClass().getName() + "@" + Integer.toHexString(invokeHashCode(instance, method));
 	}
 
-	public static boolean invokeEquals(Object instance, Method method, Elements<? extends Value> args) {
-		Object value = args.first().getSource();
+	public static boolean invokeEquals(Object instance, Method method, Elements<? extends Object> args) {
+		Object value = args.first();
 		if (value == null) {
 			return false;
 		}
 		return value.equals(instance);
 	}
 
-	public static Object invokeIgnoreMethod(Object instance, Method method, Elements<? extends Value> args) {
+	public static Object invokeIgnoreMethod(Object instance, Method method, Elements<? extends Object> args) {
 		if (ReflectionUtils.isHashCodeMethod(method)) {
 			return invokeHashCode(instance, method);
 		}

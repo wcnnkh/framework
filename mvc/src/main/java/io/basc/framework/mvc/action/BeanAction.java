@@ -5,8 +5,8 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.function.Supplier;
 
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.NameInstanceSupplier;
 import io.basc.framework.factory.support.InstanceIterable;
 import io.basc.framework.util.SingletonSupplier;

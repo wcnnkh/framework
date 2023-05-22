@@ -2,7 +2,7 @@ package io.basc.framework.ibatis.beans;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.ibatis.MybatisUtils;

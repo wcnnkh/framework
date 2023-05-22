@@ -2,8 +2,8 @@ package io.basc.framework.druid.beans;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.druid.DruidConnectionFactory;
-import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
 

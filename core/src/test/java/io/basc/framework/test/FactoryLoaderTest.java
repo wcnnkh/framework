@@ -7,7 +7,7 @@ import java.util.logging.Level;
 
 import org.junit.Test;
 
-import io.basc.framework.factory.BeanFactory;
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.factory.FactoryLoader;
 import io.basc.framework.factory.support.DefaultBeanFactory;
 import io.basc.framework.logger.LoggerFactory;

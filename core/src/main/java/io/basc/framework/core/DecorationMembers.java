@@ -79,4 +79,10 @@ public abstract class DecorationMembers<E, R extends DecorationMembers<E, R>> ex
 	public Elements<E> getElements() {
 		return super.getElements();
 	}
+
+	@Override
+	public R concat(Elements<? extends E> elements) {
+		Members<E> members = super.concat(elements);
+		return getStructureDecorator().apply(members);
+	}
 }

@@ -20,7 +20,7 @@ public class TestRunner {
 		long t = System.currentTimeMillis();
 		PackageClassesLoader classesLoader = new PackageClassesLoader(new PathMatchingResourcePatternResolver(),
 				ClassUtils.getPackageName(TestRunner.class));
-		Set<Class<?>> classes = classesLoader.toSet();
+		Set<Class<?>> classes = classesLoader.getServices().toSet();
 		logger.info((System.currentTimeMillis() - t) + "ms");
 		assertTrue(!classes.isEmpty());
 		JUnitCore.runClasses(classes.toArray(new Class<?>[0]));

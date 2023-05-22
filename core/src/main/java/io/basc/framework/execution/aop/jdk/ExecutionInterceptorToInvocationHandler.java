@@ -7,7 +7,6 @@ import java.lang.reflect.Method;
 import io.basc.framework.execution.Executable;
 import io.basc.framework.execution.ExecutionInterceptor;
 import io.basc.framework.util.Elements;
-import io.basc.framework.value.Value;
 import lombok.Data;
 
 @Data
@@ -23,7 +22,6 @@ final class ExecutionInterceptorToInvocationHandler implements InvocationHandler
 
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		JdkProxyMethodExecutor executor = new JdkProxyMethodExecutor(proxy, method);
-		Elements<Value> parameters = Elements.forArray(args).map((e) -> Value.of(e));
-		return executionInterceptor.intercept(source, executor, parameters);
+		return executionInterceptor.intercept(source, executor, Elements.forArray(args));
 	}
 }

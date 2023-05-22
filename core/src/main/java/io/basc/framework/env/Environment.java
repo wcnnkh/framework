@@ -4,13 +4,13 @@ import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.function.Function;
 
+import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.resolve.ResourceResolver;
 import io.basc.framework.event.Observable;
 import io.basc.framework.event.support.ObservablePropertiesRegistry;
 import io.basc.framework.event.support.ObservableResource;
-import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.resolver.PropertiesResolver;

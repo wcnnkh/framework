@@ -2,6 +2,7 @@ package io.basc.framework.factory;
 
 import java.util.Collection;
 
+import io.basc.framework.beans.BeanPostProcessor;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.ParameterDescriptor;
