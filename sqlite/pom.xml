@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>sqlite</artifactId>
 	<properties>
-		<sqlite.version>3.36.0.3</sqlite.version>
+		<sqlite.version>3.41.2.2</sqlite.version>
 	</properties>
 	<dependencies>
 		<dependency>
