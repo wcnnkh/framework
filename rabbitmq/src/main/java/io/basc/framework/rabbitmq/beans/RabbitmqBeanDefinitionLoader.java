@@ -10,9 +10,9 @@ import com.rabbitmq.client.ConnectionFactoryConfigurator;
 
 import io.basc.framework.amqp.Exchange;
 import io.basc.framework.amqp.ExchangeDeclare;
-import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.BeansException;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.context.support.ContextBeanDefinition;

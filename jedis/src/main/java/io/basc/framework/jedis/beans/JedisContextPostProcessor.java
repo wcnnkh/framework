@@ -1,10 +1,10 @@
 package io.basc.framework.jedis.beans;
 
+import io.basc.framework.beans.BeanLifecycleEvent.Step;
 import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.factory.BeanLifecycleEvent.Step;
 import io.basc.framework.redis.RedisClient;
 import redis.clients.jedis.JedisPool;
 

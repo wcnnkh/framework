@@ -2,7 +2,7 @@ package io.basc.framework.context.ioc.support;
 
 import java.nio.charset.Charset;
 
-import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ioc.ValueDefinition;
 import io.basc.framework.convert.ConversionService;

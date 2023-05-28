@@ -1,8 +1,8 @@
 package io.basc.framework.beans.support;
 
-import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanPostProcessor;
 import io.basc.framework.beans.BeansException;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.DefaultExecutors;
 import io.basc.framework.factory.ConfigurableServices;
@@ -26,10 +26,8 @@ public class DefaultBeanDefinition extends DefaultExecutors implements BeanDefin
 	private boolean singleton;
 	private boolean external;
 
-	public DefaultBeanDefinition(TypeDescriptor typeDescriptor, String id) {
-		super(typeDescriptor);
-		Assert.requiredArgument(id != null, "id");
-		this.id = id;
+	public DefaultBeanDefinition(TypeDescriptor source) {
+		super(source);
 	}
 
 	@Override

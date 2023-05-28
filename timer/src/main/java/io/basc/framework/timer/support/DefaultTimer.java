@@ -9,9 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import io.basc.framework.beans.Destroy;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.factory.Destroy;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;

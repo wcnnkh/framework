@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.w3c.dom.Node;
 
-import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeansException;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ioc.IocProcessor;
 import io.basc.framework.core.reflect.ReflectionUtils;

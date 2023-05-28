@@ -1,31 +1,35 @@
 package io.basc.framework.beans;
 
+import java.util.NoSuchElementException;
+
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.Executor;
 import io.basc.framework.mapper.ParameterDescriptor;
+import io.basc.framework.util.Optional;
 
-public interface FactoryBean<T> extends ParameterDescriptor {
+public interface FactoryBean<T> extends ParameterDescriptor, Optional<T> {
 
+	/**
+	 * bean的类型描述
+	 */
 	@Override
-	default TypeDescriptor getTypeDescriptor() {
-		return getExecutor().getTypeDescriptor();
-	}
+	TypeDescriptor getTypeDescriptor();
 
 	/**
-	 * bean的构造器
+	 * 作用域
 	 * 
 	 * @return
 	 */
-	Executor getExecutor();
+	Scope getScope();
 
 	/**
-	 * 是否可以创建
+	 * 是否是单例
 	 * 
 	 * @return
 	 */
-	boolean canCreated();
-
 	boolean isSingleton();
-
-	T getObject() throws BeansException;
+	
+	@Override
+	default T get() throws NoSuchElementException, BeansException {
+		return Optional.super.get();
+	}
 }

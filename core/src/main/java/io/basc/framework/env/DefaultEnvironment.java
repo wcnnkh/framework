@@ -3,7 +3,7 @@ package io.basc.framework.env;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
-import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.lang.ConfigurableConversionService;
 import io.basc.framework.convert.lang.ConverterConversionService;

@@ -1,6 +1,6 @@
 package io.basc.framework.context.repository.annotation;
 
-import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ContextResolver;
 import io.basc.framework.context.ContextResolverExtend;

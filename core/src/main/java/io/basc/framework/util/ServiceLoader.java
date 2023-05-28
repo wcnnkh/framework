@@ -8,12 +8,11 @@ public interface ServiceLoader<S> {
 		return (ServiceLoader<T>) EmptyServiceLoader.EMPTY;
 	}
 
-	public static <T> ServiceLoader<T> of(Iterable<T> elements) {
-		if (elements == null) {
+	public static <T> ServiceLoader<T> of(Elements<T> services) {
+		if (services == null) {
 			return empty();
 		}
 
-		Elements<T> services = Elements.of(elements);
 		return new SharedServiceLoader<>(services);
 	}
 

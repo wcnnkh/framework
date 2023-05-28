@@ -19,8 +19,8 @@ package io.basc.framework.websocket.handler;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.basc.framework.beans.BeanDefinition;
-import io.basc.framework.factory.BeanFactoryAccessor;
+import io.basc.framework.beans.BeanFactoryAccessor;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.websocket.CloseStatus;

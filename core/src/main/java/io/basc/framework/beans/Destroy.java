@@ -1,4 +1,4 @@
-package io.basc.framework.factory;
+package io.basc.framework.beans;
 
 public interface Destroy {
 	/**

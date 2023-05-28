@@ -1,37 +1,37 @@
 package io.basc.framework.beans;
 
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.event.BroadcastEventDispatcher;
-import io.basc.framework.factory.BeanLifecycleEvent;
-import io.basc.framework.factory.FactoryException;
-import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ParentDiscover;
+import io.basc.framework.util.alias.AliasFactory;
 
-public interface BeanFactory extends ServiceLoaderFactory, BeanDefinitionFactory, SingletonFactory,
-		BeanLifecycleManager, ParentDiscover<BeanFactory> {
+public interface BeanFactory extends AliasFactory, ParentDiscover<BeanFactory> {
+	Elements<? extends FactoryBean<Object>> getBeans();
 
-	BroadcastEventDispatcher<BeanLifecycleEvent> getBeanLifecycleEventDispatcher();
+	Scope getScope();
 
-	FactoryBean<Object> getFactoryBean(String beanName);
+	boolean containsBean(String beanName);
 
-	<T> FactoryBean<T> getFactoryBean(String beanName, Class<? extends T> requiredType) throws BeansException;
+	<T> FactoryBean<T> getBean(Class<? extends T> requiredType) throws BeansException;
 
-	FactoryBean<Object> getFactoryBean(String beanName, ResolvableType requiredType) throws BeansException;
-	
-	<T> FactoryBean<T> getFactoryBean(Class<? extends T> requiredType) throws BeansException;
-	
-	FactoryBean<Object> getFactoryBean(ResolvableType requiredType) throws BeansException;
+	FactoryBean<Object> getBean(ResolvableType requiredType) throws BeansException;
 
-	<T> Elements<? extends FactoryBean<T>> getFactoryBeans(Class<? extends T> requiredType);
+	@SuppressWarnings("unchecked")
+	default <T> Elements<? extends FactoryBean<T>> getBeans(Class<? extends T> requiredType) {
+		return getBeans().filter(
+				(factoryBean) -> factoryBean.getTypeDescriptor().getResolvableType().isAssignableFrom(requiredType))
+				.map((factoryBean) -> (FactoryBean<T>) factoryBean);
+	}
 
-	Elements<? extends FactoryBean<Object>> getFactoryBeans(ResolvableType requiredType);
+	default Elements<? extends FactoryBean<Object>> getBeans(ResolvableType requiredType) {
+		return getBeans().filter(
+				(factoryBean) -> factoryBean.getTypeDescriptor().getResolvableType().isAssignableFrom(requiredType));
+	}
 
-	<T> T getBean(Class<? extends T> requiredType) throws BeansException;
-
-	<T> T getBean(String beanName, Class<? extends T> requiredType) throws BeansException;
-
-	Object getBean(String beanName, ResolvableType requiredType) throws BeansException;
-
-	<T> void destroy(FactoryBean<T> factoryBean, T bean) throws FactoryException;
+	/**
+	 * 是否已初始化
+	 * 
+	 * @return
+	 */
+	boolean isInitialized();
 }

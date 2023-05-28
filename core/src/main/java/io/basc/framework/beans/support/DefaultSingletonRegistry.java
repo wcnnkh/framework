@@ -1,21 +1,22 @@
-package io.basc.framework.factory.support;
+package io.basc.framework.beans.support;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
 
-import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.BeanLifecycleEvent;
 import io.basc.framework.beans.BeanPostProcessor;
-import io.basc.framework.beans.SingletonFactory;
-import io.basc.framework.beans.SingletonRegistry;
+import io.basc.framework.beans.Destroy;
+import io.basc.framework.beans.BeanLifecycleEvent.Step;
+import io.basc.framework.beans.config.BeanDefinition;
+import io.basc.framework.beans.config.SingletonBeanFactory;
+import io.basc.framework.beans.config.SingletonBeanRegistry;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.factory.BeanLifecycleEvent;
-import io.basc.framework.factory.BeanLifecycleEvent.Step;
 import io.basc.framework.factory.ConfigurableServices;
-import io.basc.framework.factory.Destroy;
 import io.basc.framework.factory.FactoryException;
+import io.basc.framework.factory.support.EmptyBeanDefinition;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -27,7 +28,7 @@ import io.basc.framework.util.StandardReturn;
 import io.basc.framework.util.StringUtils;
 
 public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
-		implements SingletonRegistry, BeanPostProcessor, Destroy {
+		implements SingletonBeanRegistry, BeanPostProcessor, Destroy {
 	private static class SingletonObject<T> implements Supplier<T> {
 		private Step step = Step.BEFORE_DEPENDENCE;
 		private final T instance;
@@ -55,14 +56,14 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 	private final ConfigurableServices<BeanPostProcessor> beanPostProcessors = new ConfigurableServices<BeanPostProcessor>(
 			BeanPostProcessor.class);
 	private volatile Map<String, SingletonObject<?>> singletionMap = new LinkedHashMap<String, SingletonObject<?>>();
-	private SingletonFactory parentSingletonFactory;
+	private SingletonBeanFactory parentSingletonFactory;
 
 	@Nullable
-	public SingletonFactory getParentSingletonFactory() {
+	public SingletonBeanFactory getParentSingletonFactory() {
 		return parentSingletonFactory;
 	}
 
-	public void setParentSingletonFactory(SingletonFactory parentSingletonFactory) {
+	public void setParentSingletonFactory(SingletonBeanFactory parentSingletonFactory) {
 		this.parentSingletonFactory = parentSingletonFactory;
 	}
 
@@ -112,7 +113,7 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 		return getSingleton(beanName, getParentSingletonFactory());
 	}
 
-	public Object getSingleton(String beanName, SingletonFactory parent) {
+	public Object getSingleton(String beanName, SingletonBeanFactory parent) {
 		SingletonObject<?> instance = singletionMap.get(beanName);
 		if (instance != null) {
 			return instance.get();
@@ -148,7 +149,7 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 		return singletionMap.containsKey(definition.getId());
 	}
 
-	public boolean containsSingleton(String beanName, SingletonFactory parent) {
+	public boolean containsSingleton(String beanName, SingletonBeanFactory parent) {
 		if (parent != null && parent.containsSingleton(beanName)) {
 			return true;
 		}
@@ -174,7 +175,7 @@ public class DefaultSingletonRegistry extends DefaultBeanLifeCycleManager
 		return getSingletonNames(getParentSingletonFactory());
 	}
 
-	public String[] getSingletonNames(SingletonFactory parent) {
+	public String[] getSingletonNames(SingletonBeanFactory parent) {
 		synchronized (singletionMap) {
 			String[] array = StringUtils.toStringArray(singletionMap.keySet());
 			return (array != null || parent == null) ? array

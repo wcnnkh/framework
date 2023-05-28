@@ -1,6 +1,6 @@
 package io.basc.framework.jpa.beans;
 
-import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;

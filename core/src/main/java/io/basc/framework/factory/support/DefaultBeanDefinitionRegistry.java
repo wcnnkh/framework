@@ -3,7 +3,7 @@ package io.basc.framework.factory.support;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.factory.BeanDefinitionFactory;
 import io.basc.framework.factory.BeanDefinitionRegistry;
 import io.basc.framework.lang.AlreadyExistsException;
@@ -17,14 +17,14 @@ import io.basc.framework.util.alias.DefaultAliasRegistry;
 public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implements BeanDefinitionRegistry {
 	private static Logger logger = LoggerFactory.getLogger(DefaultBeanDefinitionRegistry.class);
 	private volatile Map<String, BeanDefinition> beanDefinitionMap = new HashMap<String, BeanDefinition>();
-	private BeanDefinitionFactory parentBeanDefinitionFactory;
+	private BeanDefinitionBean parentBeanDefinitionFactory;
 
 	@Nullable
-	public BeanDefinitionFactory getParentBeanDefinitionFactory() {
+	public BeanDefinitionBean getParentBeanDefinitionFactory() {
 		return parentBeanDefinitionFactory;
 	}
 
-	public void setParentBeanDefinitionFactory(BeanDefinitionFactory parentBeanDefinitionFactory) {
+	public void setParentBeanDefinitionFactory(BeanDefinitionBean parentBeanDefinitionFactory) {
 		this.parentBeanDefinitionFactory = parentBeanDefinitionFactory;
 		setParentAliasFactory(parentBeanDefinitionFactory);
 	}
@@ -37,7 +37,7 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 		return getDefinition(name, getParentBeanDefinitionFactory());
 	}
 
-	protected BeanDefinition getDefinition(String name, BeanDefinitionFactory parent) {
+	protected BeanDefinition getDefinition(String name, BeanDefinitionBean parent) {
 		BeanDefinition beanDefinition = beanDefinitionMap.get(name);
 		if (beanDefinition == null) {
 			String[] aliases = getAliases(name);
@@ -58,7 +58,7 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 		return getDefinition(clazz, getParentBeanDefinitionFactory());
 	}
 
-	protected BeanDefinition getDefinition(Class<?> clazz, BeanDefinitionFactory parent) {
+	protected BeanDefinition getDefinition(Class<?> clazz, BeanDefinitionBean parent) {
 		BeanDefinition definition = getDefinition(clazz.getName(), null);
 		return (definition != null || parent == null) ? definition : parent.getDefinition(clazz);
 	}
@@ -121,7 +121,7 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 		return getDefinitionIds(getParentBeanDefinitionFactory());
 	}
 
-	public String[] getDefinitionIds(BeanDefinitionFactory parent) {
+	public String[] getDefinitionIds(BeanDefinitionBean parent) {
 		String[] ids = StringUtils.toStringArray(this.beanDefinitionMap.keySet());
 		return parent == null ? ids : ArrayUtils.merge(ids, parent.getDefinitionIds());
 	}
@@ -130,7 +130,7 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 		return containsDefinition(beanName, getParentBeanDefinitionFactory());
 	}
 
-	public boolean containsDefinition(String beanName, BeanDefinitionFactory parent) {
+	public boolean containsDefinition(String beanName, BeanDefinitionBean parent) {
 		if (beanDefinitionMap.containsKey(beanName)) {
 			return true;
 		}

@@ -1,6 +1,4 @@
-package io.basc.framework.factory;
-
-import io.basc.framework.beans.BeanFactory;
+package io.basc.framework.beans;
 
 public interface BeanFactoryAware {
 	void setBeanFactory(BeanFactory beanFactory);

@@ -1,17 +1,12 @@
 package io.basc.framework.beans.support;
 
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
-import io.basc.framework.beans.BeanDefinition;
-import io.basc.framework.beans.BeanDefinitionRegistry;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.lang.AlreadyExistsException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.ElementSet;
-import io.basc.framework.util.Elements;
 import io.basc.framework.util.alias.DefaultAliasRegistry;
 
 public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implements BeanDefinitionRegistry {
@@ -61,15 +56,15 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 			if (logger.isDebugEnabled()) {
 				logger.debug("register [{}] -> definition: {}", name, beanDefinition);
 			}
+
 			beanDefinitionMap.put(name, beanDefinition);
 		}
 	}
 
 	@Override
-	public Elements<String> getBeanDefinitionNames() {
+	public String[] getBeanDefinitionNames() {
 		synchronized (this) {
-			Set<String> names = new LinkedHashSet<>(beanDefinitionMap.keySet());
-			return new ElementSet<>(names);
+			return beanDefinitionMap.keySet().toArray(new String[0]);
 		}
 	}
 

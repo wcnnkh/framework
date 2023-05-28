@@ -1,6 +1,7 @@
 package io.basc.framework.factory.support;
 
-import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.config.BeanDefinition;
+import io.basc.framework.beans.support.DefaultSingletonRegistry;
 import io.basc.framework.factory.FactoryException;
 import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.util.Assert;

@@ -1,7 +1,6 @@
 package io.basc.framework.execution;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Elements;
 
@@ -38,7 +37,6 @@ public interface Executor extends ParameterDescriptor {
 	 * @param args
 	 * @return
 	 * @throws ExecutionException
-	 * @throws UnsupportedException
 	 */
-	Object execute(Elements<? extends Object> args) throws ExecutionException, UnsupportedException;
+	Object execute(Elements<? extends Object> args) throws ExecutionException;
 }

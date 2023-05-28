@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.Destroy;
+import io.basc.framework.beans.config.BeanDefinition;
+import io.basc.framework.beans.support.DefaultSingletonRegistry;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.support.ContextConfigurator;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.factory.Destroy;
 import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.factory.ParameterFactory;
-import io.basc.framework.factory.support.DefaultSingletonRegistry;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterDescriptors;

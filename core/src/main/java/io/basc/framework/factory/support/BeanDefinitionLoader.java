@@ -1,6 +1,6 @@
 package io.basc.framework.factory.support;
 
-import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.factory.BeanFactory;
 import io.basc.framework.factory.FactoryException;
 

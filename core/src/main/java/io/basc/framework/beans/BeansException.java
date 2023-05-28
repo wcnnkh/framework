@@ -1,8 +1,8 @@
 package io.basc.framework.beans;
 
-import io.basc.framework.lang.NestedRuntimeException;
+import io.basc.framework.factory.FactoryException;
 
-public class BeansException extends NestedRuntimeException {
+public class BeansException extends FactoryException {
 	private static final long serialVersionUID = 1L;
 
 	public BeansException(String message) {

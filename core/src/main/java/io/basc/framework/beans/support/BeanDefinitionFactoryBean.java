@@ -1,63 +1,95 @@
 package io.basc.framework.beans.support;
 
-import io.basc.framework.beans.BeanDefinition;
-import io.basc.framework.beans.BeanLifecycleManager;
-import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.FactoryBean;
+import io.basc.framework.beans.Scope;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.ExecutionException;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.parameter.ExecutionParametersExtractor;
-import io.basc.framework.lang.UnsupportedException;
-import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Elements;
-import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Data
 public class BeanDefinitionFactoryBean<T> implements FactoryBean<T> {
 	private final String name;
 	private final BeanDefinition beanDefinition;
 	private final ExecutionParametersExtractor executionParametersExtractor;
+	private volatile Executor executor;
+	private volatile Object singleton;
+	private volatile TypeDescriptor typeDescriptor;
+
+	public Executor getExecutor() {
+		if (executor == null) {
+			synchronized (this) {
+				if (executor == null) {
+					for (Executor executor : beanDefinition.getExecutors()) {
+						if (executionParametersExtractor.canExtractExecutionParameters(executor)) {
+							this.executor = executor;
+						}
+					}
+				}
+			}
+		}
+		return executor;
+	}
 
 	@Override
-	public String getName() {
-		return name;
+	public boolean isPresent() {
+		return singleton != null || executor != null || getExecutor() != null;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public T orElse(T other) {
+		Executor executor = getExecutor();
+		if (executor == null) {
+			return other;
+		}
+
+		if (isSingleton()) {
+			if (singleton == null) {
+				synchronized (this) {
+					if (singleton == null) {
+						Elements<? extends Object> args = executionParametersExtractor
+								.extractExecutionParameters(executor);
+						singleton = executor.execute(args);
+					}
+				}
+			}
+			return (T) singleton;
+		}
+
+		Elements<? extends Object> args = executionParametersExtractor.extractExecutionParameters(executor);
+		return (T) executor.execute(args);
 	}
 
 	@Override
 	public TypeDescriptor getTypeDescriptor() {
-		// TODO Auto-generated method stub
-		return null;
+		if (typeDescriptor == null) {
+			synchronized (this) {
+				if (typeDescriptor == null) {
+					Executor executor = getExecutor();
+					if (executor == null) {
+						return TypeDescriptor.valueOf(Object.class);
+					}
+
+					this.typeDescriptor = executor.getTypeDescriptor();
+				}
+			}
+		}
+		return typeDescriptor;
 	}
 
 	@Override
-	public Elements<? extends ParameterDescriptor> getParameterDescriptors() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Object execute(Elements<? extends Object> args) throws ExecutionException, UnsupportedException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean canCreated() {
-		// TODO Auto-generated method stub
-		return false;
+	public Scope getScope() {
+		return beanDefinition.getScope();
 	}
 
 	@Override
 	public boolean isSingleton() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public T getObject() throws BeansException {
-		// TODO Auto-generated method stub
-		return null;
+		return singleton != null || beanDefinition.isSingleton();
 	}
 
 }

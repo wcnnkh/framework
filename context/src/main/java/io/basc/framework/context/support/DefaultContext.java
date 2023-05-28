@@ -4,8 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Set;
 
-import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.ConfigurableContextResolver;
 import io.basc.framework.context.Context;

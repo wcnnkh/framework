@@ -2,7 +2,7 @@ package io.basc.framework.boot.support;
 
 import java.util.OptionalInt;
 
-import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.ApplicationAware;
 import io.basc.framework.boot.ApplicationEvent;

@@ -1,23 +1,25 @@
-package io.basc.framework.factory.support;
+package io.basc.framework.beans.support;
 
 import java.util.Collection;
 
-import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.BeanLifecycleEvent;
 import io.basc.framework.beans.BeanLifecycleManager;
+import io.basc.framework.beans.BeanLifecycleStep;
 import io.basc.framework.beans.BeanPostProcessor;
-import io.basc.framework.beans.support.DefaultBeanDefinitionRegistry;
+import io.basc.framework.beans.BeansException;
+import io.basc.framework.beans.ConfigurableBeanResolver;
+import io.basc.framework.beans.Destroy;
+import io.basc.framework.beans.Init;
+import io.basc.framework.beans.BeanLifecycleEvent.Step;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.event.EventListener;
 import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.factory.BeanDefinitionAware;
-import io.basc.framework.factory.BeanLifecycleEvent;
-import io.basc.framework.factory.BeanLifecycleEvent.Step;
-import io.basc.framework.factory.ConfigurableBeanResolver;
 import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.factory.DefaultParameterFactoryAware;
-import io.basc.framework.factory.Destroy;
 import io.basc.framework.factory.FactoryException;
-import io.basc.framework.factory.Init;
+import io.basc.framework.factory.support.RuntimeBean;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Registration;
@@ -31,18 +33,14 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 	private final BroadcastEventDispatcher<BeanLifecycleEvent> eventDispatcher = new StandardBroadcastEventDispatcher<>();
 	private final ConfigurableServices<BeanPostProcessor> initProcessors = new ConfigurableServices<BeanPostProcessor>(
 			BeanPostProcessor.class);
-	private final ConfigurableBeanResolver beanResolver = new ConfigurableBeanResolver();
 
-	protected void _dependence(Object instance, BeanDefinition definition) throws FactoryException {
+	protected void _dependence(Object instance, BeanDefinition definition) throws BeansException {
 		if (instance instanceof BeanDefinitionAware) {
 			((BeanDefinitionAware) instance).setBeanDefinition(definition);
 		}
-		if (instance instanceof DefaultParameterFactoryAware) {
-			((DefaultParameterFactoryAware) instance).setDefaultParameterFactory(beanResolver);
-		}
 	}
 
-	protected void _destroy(Object instance, BeanDefinition definition) throws FactoryException {
+	protected void _destroy(Object instance, BeanDefinition definition) throws BeansException {
 		if (instance == null) {
 			return;
 		}
@@ -168,6 +166,38 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 	public ConfigurableBeanResolver getBeanResolver() {
 		return beanResolver;
 	}
+	
+	@Override
+	public void init(String beanName, Object bean) throws BeansException {
+		if(bean == null) {
+			return ;
+		}
+		
+		try {
+			eventDispatcher.publishEvent(new BeanLifecycleEvent(beanName, bean, BeanLifecycleStep.BEFORE_INIT));
+		} finally {
+			BeanDefinition beanDefinition = getBeanDefinition(beanName);
+			if(beanDefinition != null) {
+				beanDefinition.init(null, beanDefinition);
+			}
+			
+			if (beanResolver != null) {
+				Collection<BeanPostProcessor> processors = beanResolver
+						.resolveInitProcessors(definition.getTypeDescriptor().narrow(instance));
+				if (processors != null) {
+					for (BeanPostProcessor processor : processors) {
+						processor.processPostBean(instance, definition);
+					}
+				}
+			}
+			definition.init(instance);
+			for (BeanPostProcessor processor : initProcessors) {
+				processor.processPostBean(instance, definition);
+			}
+			_init(instance, definition);
+			publishEvent(new BeanLifecycleEvent(definition, instance, Step.AFTER_INIT));
+		}
+	}
 
 	@Override
 	public void init(Object instance, BeanDefinition definition) throws FactoryException {
@@ -186,7 +216,7 @@ public class DefaultBeanLifeCycleManager extends DefaultBeanDefinitionRegistry i
 		}
 
 		try {
-			publishEvent(new BeanLifecycleEvent(definition, instance, Step.BEFORE_INIT));
+			eventDispatcher.publishEvent(new BeanLifecycleEvent(definition, instance, Step.BEFORE_INIT));
 		} finally {
 			if (beanResolver != null) {
 				Collection<BeanPostProcessor> processors = beanResolver

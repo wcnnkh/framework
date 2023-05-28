@@ -1,17 +1,20 @@
 package io.basc.framework.beans;
 
-import io.basc.framework.event.BroadcastEventDispatcher;
-import io.basc.framework.execution.Executor;
-import io.basc.framework.factory.BeanLifecycleEvent;
-import io.basc.framework.factory.FactoryException;
+import io.basc.framework.event.BroadcastEventRegistry;
 
+/**
+ * 生命周期管理
+ * 
+ * @author wcnnkh
+ *
+ */
 public interface BeanLifecycleManager {
 
-	BroadcastEventDispatcher<BeanLifecycleEvent> getBeanLifecycleEventDispatcher();
+	BroadcastEventRegistry<BeanLifecycleEvent> getBeanLifecycleEventRegistry();
 
-	void dependence(String beanName, Executor executor, Object bean) throws FactoryException;
+	void dependence(String beanName, Object bean) throws BeansException;
 
-	void init(String beaName, Executor executor, Object bean) throws FactoryException;
+	void init(String beanName, Object bean) throws BeansException;
 
-	void destroy(String beanName, Executor executor, Object bean) throws FactoryException;
+	void destroy(String beanName, Object bean) throws BeansException;
 }

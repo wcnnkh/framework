@@ -1,6 +1,4 @@
-package io.basc.framework.factory;
-
-import io.basc.framework.beans.BeanFactory;
+package io.basc.framework.beans;
 
 public class BeanFactoryAccessor implements BeanFactoryAware {
 	private transient BeanFactory beanFactory;

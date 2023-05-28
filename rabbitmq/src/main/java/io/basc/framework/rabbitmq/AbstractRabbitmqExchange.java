@@ -12,7 +12,7 @@ import io.basc.framework.amqp.ExchangeException;
 import io.basc.framework.amqp.Message;
 import io.basc.framework.amqp.MessageListener;
 import io.basc.framework.amqp.QueueDeclare;
-import io.basc.framework.factory.Init;
+import io.basc.framework.beans.Init;
 import io.basc.framework.lang.NamedThreadLocal;
 import io.basc.framework.util.DisposableRegistration;
 import io.basc.framework.util.Registration;

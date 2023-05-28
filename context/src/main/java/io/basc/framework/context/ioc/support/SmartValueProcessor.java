@@ -1,6 +1,6 @@
 package io.basc.framework.context.ioc.support;
 
-import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ioc.ValueDefinition;
 import io.basc.framework.context.ioc.ValueProcessor;

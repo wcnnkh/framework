@@ -3,8 +3,8 @@ package io.basc.framework.factory.support;
 import java.util.Collections;
 import java.util.Iterator;
 
-import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.factory.FactoryException;
 import io.basc.framework.lang.Nullable;

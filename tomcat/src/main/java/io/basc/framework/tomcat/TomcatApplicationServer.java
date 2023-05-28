@@ -22,6 +22,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.tomcat.util.descriptor.web.ErrorPage;
 
+import io.basc.framework.beans.Destroy;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.ApplicationServer;
 import io.basc.framework.boot.ConfigurableApplication;
@@ -30,7 +31,6 @@ import io.basc.framework.boot.servlet.support.ServletContextUtils;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.Sys;
-import io.basc.framework.factory.Destroy;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;

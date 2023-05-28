@@ -3,8 +3,8 @@ package io.basc.framework.factory.support;
 import java.util.Collection;
 import java.util.Map;
 
-import io.basc.framework.factory.BeanResolver;
-import io.basc.framework.factory.BeanResolverExtend;
+import io.basc.framework.beans.BeanResolver;
+import io.basc.framework.beans.BeanResolverExtend;
 import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.factory.ParameterFactory;
 import io.basc.framework.lang.Nullable;

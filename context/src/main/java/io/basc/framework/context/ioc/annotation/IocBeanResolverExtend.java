@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.List;
 
 import io.basc.framework.beans.BeanPostProcessor;
+import io.basc.framework.beans.BeanResolver;
+import io.basc.framework.beans.BeanResolverExtend;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ioc.AutowiredDefinition;
 import io.basc.framework.context.ioc.AutowiredIocProcessor;
@@ -18,8 +20,6 @@ import io.basc.framework.context.ioc.ValueDefinition;
 import io.basc.framework.context.ioc.ValueIocProcessor;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.factory.BeanResolver;
-import io.basc.framework.factory.BeanResolverExtend;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.FieldFeature;
 import io.basc.framework.mapper.ParameterDescriptor;

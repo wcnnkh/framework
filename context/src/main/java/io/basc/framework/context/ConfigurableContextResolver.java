@@ -3,7 +3,7 @@ package io.basc.framework.context;
 import java.io.IOException;
 import java.lang.reflect.Executable;
 
-import io.basc.framework.beans.BeanDefinition;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.core.type.AnnotationMetadata;
 import io.basc.framework.core.type.ClassMetadata;
 import io.basc.framework.core.type.classreading.MetadataReader;

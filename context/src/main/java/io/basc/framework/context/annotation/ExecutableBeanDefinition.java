@@ -9,10 +9,10 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.beans.BeanResolver;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.factory.BeanResolver;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.lang.UnsupportedException;

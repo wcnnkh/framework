@@ -1,6 +1,8 @@
-package io.basc.framework.factory;
+package io.basc.framework.beans.config;
 
 import io.basc.framework.beans.BeansException;
+import io.basc.framework.beans.ConfigurableBeanFactory;
+import io.basc.framework.factory.FactoryException;
 
 @FunctionalInterface
 public interface BeanFactoryPostProcessor {

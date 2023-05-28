@@ -7,13 +7,13 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
+import io.basc.framework.beans.BeanLifecycleEvent;
+import io.basc.framework.beans.BeanLifecycleEvent.Step;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.env.ConfigurableEnvironment;
 import io.basc.framework.env.EnvironmentPostProcessor;
 import io.basc.framework.event.EventListener;
-import io.basc.framework.factory.BeanLifecycleEvent;
-import io.basc.framework.factory.BeanLifecycleEvent.Step;
 import io.basc.framework.orm.support.DefaultObjectRelationalMapper;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)

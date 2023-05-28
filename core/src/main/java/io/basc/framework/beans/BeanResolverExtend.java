@@ -1,8 +1,7 @@
-package io.basc.framework.factory;
+package io.basc.framework.beans;
 
 import java.util.Collection;
 
-import io.basc.framework.beans.BeanPostProcessor;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.Parameter;
 import io.basc.framework.mapper.ParameterDescriptor;

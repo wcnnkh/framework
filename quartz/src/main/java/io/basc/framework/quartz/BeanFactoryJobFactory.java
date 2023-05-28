@@ -10,7 +10,7 @@ import org.quartz.simpl.SimpleJobFactory;
 import org.quartz.spi.TriggerFiredBundle;
 
 import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.factory.BeanFactoryAware;
+import io.basc.framework.beans.BeanFactoryAware;
 
 /**
  * 依赖BeanFactory的实现

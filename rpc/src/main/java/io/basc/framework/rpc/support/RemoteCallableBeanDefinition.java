@@ -6,7 +6,7 @@ import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.Proxy;
 import io.basc.framework.aop.support.ProxyUtils;
 import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.factory.BeanResolver;
+import io.basc.framework.beans.BeanResolver;
 import io.basc.framework.factory.InstanceException;
 import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.rpc.CallableFactory;

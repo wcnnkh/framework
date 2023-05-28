@@ -8,8 +8,8 @@ import java.util.Date;
 
 import org.w3c.dom.Node;
 
-import io.basc.framework.beans.BeanDefinition;
 import io.basc.framework.beans.BeansException;
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.core.annotation.EmptyAnnotatedElement;
 import io.basc.framework.env.Environment;
 import io.basc.framework.lang.NotFoundException;

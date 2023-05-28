@@ -1,5 +1,6 @@
 package io.basc.framework.beans;
 
+import io.basc.framework.beans.config.BeanDefinition;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.util.Elements;
 import lombok.Data;

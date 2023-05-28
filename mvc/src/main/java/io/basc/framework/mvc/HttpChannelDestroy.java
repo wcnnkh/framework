@@ -19,8 +19,8 @@ public class HttpChannelDestroy implements ServerHttpAsyncListener {
 	public void destroy() throws IOException {
 		if (!httpChannel.isCompleted()) {
 			try {
-				if (httpChannel instanceof io.basc.framework.factory.Destroy) {
-					((io.basc.framework.factory.Destroy) httpChannel).destroy();
+				if (httpChannel instanceof io.basc.framework.beans.Destroy) {
+					((io.basc.framework.beans.Destroy) httpChannel).destroy();
 				}
 			} catch (Throwable e) {
 				logger.error(e, "[{}] destroy channel error: {}",
