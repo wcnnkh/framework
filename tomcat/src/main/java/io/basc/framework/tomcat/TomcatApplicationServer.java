@@ -22,7 +22,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.tomcat.util.descriptor.web.ErrorPage;
 
-import io.basc.framework.beans.Destroy;
+import io.basc.framework.beans.factory.Destroy;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.ApplicationServer;
 import io.basc.framework.boot.ConfigurableApplication;

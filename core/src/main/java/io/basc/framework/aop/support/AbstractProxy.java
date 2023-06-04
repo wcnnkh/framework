@@ -2,7 +2,7 @@ package io.basc.framework.aop.support;
 
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.Proxy;
-import io.basc.framework.factory.InstanceException;
+import io.basc.framework.beans.factory.InstanceException;
 
 public abstract class AbstractProxy implements Proxy {
 	private final Class<?> targetClass;

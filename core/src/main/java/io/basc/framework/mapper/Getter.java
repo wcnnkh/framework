@@ -10,6 +10,5 @@ public interface Getter extends ParameterDescriptor {
 	 */
 	Object get(Object source);
 
-	@Override
 	Getter rename(String name);
 }

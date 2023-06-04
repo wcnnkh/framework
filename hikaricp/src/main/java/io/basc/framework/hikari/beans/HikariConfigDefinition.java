@@ -2,11 +2,11 @@ package io.basc.framework.hikari.beans;
 
 import com.zaxxer.hikari.HikariConfig;
 
+import io.basc.framework.beans.factory.InstanceException;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.support.ContextBeanDefinition;
 import io.basc.framework.context.support.ContextConfigurator;
 import io.basc.framework.db.Configurable;
-import io.basc.framework.factory.InstanceException;
 import io.basc.framework.hikari.HikariUtils;
 import io.basc.framework.mapper.filter.ParameterNamePrefixFilter;
 

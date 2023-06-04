@@ -6,9 +6,9 @@ import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.BeansException;
-import io.basc.framework.factory.support.FactoryBeanDefinition;
+import io.basc.framework.beans.factory.BeanFactory;
+import io.basc.framework.beans.factory.support.FactoryBeanDefinition;
 
 public class RmiClientBeanDefinition extends FactoryBeanDefinition {
 	private String host;

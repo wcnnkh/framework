@@ -1,6 +1,6 @@
 package io.basc.framework.logger;
 
-import io.basc.framework.factory.support.SimpleServiceLoaderFactory;
+import io.basc.framework.beans.factory.support.SimpleServiceLoaderFactory;
 
 public final class LoggerFactory {
 	private static final DynamicLoggerFactory SOURCE = new DynamicLoggerFactory();

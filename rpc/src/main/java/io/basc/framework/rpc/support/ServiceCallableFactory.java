@@ -3,7 +3,7 @@ package io.basc.framework.rpc.support;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
-import io.basc.framework.factory.InstanceFactory;
+import io.basc.framework.beans.factory.InstanceFactory;
 import io.basc.framework.rpc.CallableFactory;
 
 public class ServiceCallableFactory implements CallableFactory {

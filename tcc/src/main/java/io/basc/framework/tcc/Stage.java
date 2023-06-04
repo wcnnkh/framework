@@ -3,8 +3,8 @@ package io.basc.framework.tcc;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.beans.BeanFactoryAware;
+import io.basc.framework.beans.factory.BeanFactory;
+import io.basc.framework.beans.factory.config.BeanFactoryAware;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.core.reflect.SerializableMethod;
 

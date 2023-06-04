@@ -1,7 +1,7 @@
 package io.basc.framework.io;
 
+import io.basc.framework.beans.factory.config.InheritableThreadLocalConfigurator;
 import io.basc.framework.env.Sys;
-import io.basc.framework.factory.InheritableThreadLocalConfigurator;
 import io.basc.framework.json.JsonSerializer;
 
 public final class SerializerUtils {

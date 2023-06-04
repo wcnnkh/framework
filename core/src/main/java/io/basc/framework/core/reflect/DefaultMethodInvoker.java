@@ -6,8 +6,8 @@ import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
-import io.basc.framework.factory.InstanceFactory;
-import io.basc.framework.factory.NameInstanceSupplier;
+import io.basc.framework.beans.factory.InstanceFactory;
+import io.basc.framework.beans.factory.NameInstanceSupplier;
 
 public class DefaultMethodInvoker implements MethodInvoker, Serializable, Cloneable, Supplier<Object> {
 	private static final long serialVersionUID = 1L;

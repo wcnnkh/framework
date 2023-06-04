@@ -3,7 +3,7 @@ package io.basc.framework.rpc.remote.web;
 import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
-import io.basc.framework.factory.InheritableThreadLocalConfigurator;
+import io.basc.framework.beans.factory.config.InheritableThreadLocalConfigurator;
 import io.basc.framework.http.HttpHeaders;
 import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.net.uri.UriUtils;

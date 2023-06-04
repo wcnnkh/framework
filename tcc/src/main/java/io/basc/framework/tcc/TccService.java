@@ -5,13 +5,13 @@ import java.util.LinkedHashMap;
 
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.MethodInterceptorAccept;
+import io.basc.framework.beans.factory.support.RuntimeBean;
 import io.basc.framework.consistency.CompensateRegistry;
 import io.basc.framework.consistency.Compensator;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.context.ioc.annotation.Autowired;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.factory.support.RuntimeBean;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterUtils;

@@ -13,10 +13,10 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.ibatis.type.TypeAliasRegistry;
 
-import io.basc.framework.beans.ConfigurableBeanFactory;
-import io.basc.framework.beans.config.BeanDefinition;
+import io.basc.framework.beans.factory.InstanceFactory;
+import io.basc.framework.beans.factory.config.BeanDefinition;
+import io.basc.framework.beans.factory.config.ConfigurableBeanFactory;
 import io.basc.framework.context.Context;
-import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.ibatis.IbatisException;
 import io.basc.framework.ibatis.beans.annotation.MapperResources;
 import io.basc.framework.ibatis.beans.annotation.MapperScan;

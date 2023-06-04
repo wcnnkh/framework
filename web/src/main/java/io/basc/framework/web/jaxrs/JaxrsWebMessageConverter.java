@@ -1,12 +1,12 @@
 package io.basc.framework.web.jaxrs;
 
 import io.basc.framework.aop.support.ProxyUtils;
+import io.basc.framework.beans.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.config.Configurable;
+import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.factory.Configurable;
-import io.basc.framework.factory.ConfigurableServices;
-import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpResponse;

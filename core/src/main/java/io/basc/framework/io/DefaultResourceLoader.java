@@ -3,9 +3,9 @@ package io.basc.framework.io;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import io.basc.framework.factory.Configurable;
-import io.basc.framework.factory.ConfigurableServices;
-import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.config.Configurable;
+import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.DefaultClassLoaderAccessor;

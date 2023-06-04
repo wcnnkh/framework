@@ -9,13 +9,13 @@ import java.util.stream.Collectors;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 
-import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.beans.factory.BeanFactory;
+import io.basc.framework.beans.factory.NameInstanceSupplier;
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.factory.NameInstanceSupplier;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.CollectionUtils;

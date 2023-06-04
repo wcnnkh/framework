@@ -2,10 +2,10 @@ package io.basc.framework.sqlite;
 
 import org.sqlite.SQLiteDataSource;
 
+import io.basc.framework.beans.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.db.DefaultDB;
 import io.basc.framework.env.Sys;
-import io.basc.framework.factory.Configurable;
-import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.sql.DataSourceConnectionFactory;
 
 public class SQLiteDB extends DefaultDB implements Configurable {

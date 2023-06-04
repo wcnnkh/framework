@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import io.basc.framework.factory.support.SimpleServiceLoaderFactory;
+import io.basc.framework.beans.factory.support.SimpleServiceLoaderFactory;
 import io.basc.framework.lang.Nullable;
 
 public class PrioritizedParameterNameDiscoverer implements ParameterNameDiscoverer {

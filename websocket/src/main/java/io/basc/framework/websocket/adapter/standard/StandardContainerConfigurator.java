@@ -2,8 +2,8 @@ package io.basc.framework.websocket.adapter.standard;
 
 import javax.websocket.server.ServerEndpointConfig.Configurator;
 
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.factory.FactoryLoader;
+import io.basc.framework.beans.factory.BeanFactory;
+import io.basc.framework.beans.factory.support.FactoryLoader;
 
 /**
  * 使用容器来管理websocket

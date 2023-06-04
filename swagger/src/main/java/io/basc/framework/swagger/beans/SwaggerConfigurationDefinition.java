@@ -1,7 +1,7 @@
 package io.basc.framework.swagger.beans;
 
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.factory.support.FactoryBeanDefinition;
+import io.basc.framework.beans.factory.BeanFactory;
+import io.basc.framework.beans.factory.support.FactoryBeanDefinition;
 import io.swagger.v3.oas.integration.SwaggerConfiguration;
 
 public class SwaggerConfigurationDefinition extends FactoryBeanDefinition {

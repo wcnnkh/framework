@@ -3,9 +3,9 @@ package io.basc.framework.aop.support;
 import io.basc.framework.aop.AopPolicy;
 import io.basc.framework.aop.ConfigurableAop;
 import io.basc.framework.aop.ProxyFactory;
-import io.basc.framework.factory.Configurable;
-import io.basc.framework.factory.ConfigurableServices;
-import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.config.Configurable;
+import io.basc.framework.beans.factory.config.ConfigurableServices;
 
 import java.util.Iterator;
 

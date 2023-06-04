@@ -9,8 +9,8 @@ import com.netflix.eureka.cluster.PeerEurekaNodes;
 import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.resources.ServerCodecs;
 
-import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.BeansException;
+import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentBeanDefinition;
 import io.basc.framework.netflix.eureka.server.RefreshablePeerEurekaNodes;

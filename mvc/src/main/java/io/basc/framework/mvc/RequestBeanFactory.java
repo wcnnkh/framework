@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import io.basc.framework.beans.Destroy;
-import io.basc.framework.beans.config.BeanDefinition;
-import io.basc.framework.beans.support.DefaultSingletonRegistry;
+import io.basc.framework.beans.factory.Destroy;
+import io.basc.framework.beans.factory.InstanceFactory;
+import io.basc.framework.beans.factory.ParameterFactory;
+import io.basc.framework.beans.factory.config.BeanDefinition;
+import io.basc.framework.beans.factory.support.DefaultSingletonBeanRegistry;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.support.ContextConfigurator;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.factory.InstanceFactory;
-import io.basc.framework.factory.ParameterFactory;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterDescriptors;
@@ -25,13 +25,13 @@ import io.basc.framework.web.message.annotation.RequestBody;
 public class RequestBeanFactory extends RequestParameterFactory implements InstanceFactory, Destroy, ParameterFactory {
 	private static final TypeDescriptor REQUEST_BODY_TYPE = TypeDescriptor.map(Map.class, String.class, Object.class);
 	private final Context context;
-	private final DefaultSingletonRegistry singletonRegistry;
+	private final DefaultSingletonBeanRegistry singletonRegistry;
 	private final ServerHttpRequest request;
 
 	public RequestBeanFactory(ServerHttpRequest request, WebMessageConverter messageConverter, Context context) {
 		super(request, messageConverter);
 		this.context = context;
-		this.singletonRegistry = new DefaultSingletonRegistry();
+		this.singletonRegistry = new DefaultSingletonBeanRegistry();
 		this.singletonRegistry.setParentBeanDefinitionFactory(context);
 		this.singletonRegistry.getBeanResolver().setDefaultResolver(context.getBeanResolver());
 		this.request = request;

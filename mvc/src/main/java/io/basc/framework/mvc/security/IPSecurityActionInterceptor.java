@@ -1,6 +1,6 @@
 package io.basc.framework.mvc.security;
 
-import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Annotations;

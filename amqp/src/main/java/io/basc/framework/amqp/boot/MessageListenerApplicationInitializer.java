@@ -5,12 +5,12 @@ import java.util.function.Supplier;
 import io.basc.framework.amqp.BinaryMessageListener;
 import io.basc.framework.amqp.QueueDeclare;
 import io.basc.framework.amqp.boot.annotation.MessageListener;
+import io.basc.framework.beans.factory.NameInstanceSupplier;
 import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.factory.NameInstanceSupplier;
 
 @Provider
 public final class MessageListenerApplicationInitializer implements ApplicationPostProcessor {

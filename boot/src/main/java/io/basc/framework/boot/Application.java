@@ -2,8 +2,8 @@ package io.basc.framework.boot;
 
 import java.util.OptionalInt;
 
-import io.basc.framework.beans.Destroy;
-import io.basc.framework.beans.Init;
+import io.basc.framework.beans.factory.Destroy;
+import io.basc.framework.beans.factory.Init;
 import io.basc.framework.context.Context;
 import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.logger.Logger;

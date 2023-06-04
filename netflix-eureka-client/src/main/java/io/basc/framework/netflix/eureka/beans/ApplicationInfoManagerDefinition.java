@@ -4,9 +4,9 @@ import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.EurekaInstanceConfig;
 import com.netflix.appinfo.InstanceInfo;
 
-import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.BeansException;
-import io.basc.framework.factory.support.FactoryBeanDefinition;
+import io.basc.framework.beans.factory.BeanFactory;
+import io.basc.framework.beans.factory.support.FactoryBeanDefinition;
 import io.basc.framework.netflix.eureka.InstanceInfoFactory;
 
 public class ApplicationInfoManagerDefinition extends FactoryBeanDefinition {

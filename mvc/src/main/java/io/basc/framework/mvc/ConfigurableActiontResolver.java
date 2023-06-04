@@ -3,8 +3,8 @@ package io.basc.framework.mvc;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
+import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.mvc.action.Action;
 import io.basc.framework.security.authority.http.HttpAuthority;
 import io.basc.framework.security.authority.http.HttpAuthorityManager;

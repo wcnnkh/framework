@@ -2,12 +2,12 @@ package io.basc.framework.druid.beans;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
-import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.beans.factory.BeanFactory;
+import io.basc.framework.beans.factory.InstanceException;
+import io.basc.framework.beans.factory.support.FactoryBeanDefinition;
 import io.basc.framework.db.DataBase;
 import io.basc.framework.db.DataBaseResolver;
 import io.basc.framework.druid.DruidUtils;
-import io.basc.framework.factory.InstanceException;
-import io.basc.framework.factory.support.FactoryBeanDefinition;
 
 public class DataBaseDefinition extends FactoryBeanDefinition {
 

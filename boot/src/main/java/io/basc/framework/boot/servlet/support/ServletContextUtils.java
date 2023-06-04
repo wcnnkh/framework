@@ -3,10 +3,10 @@ package io.basc.framework.boot.servlet.support;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 
+import io.basc.framework.beans.factory.InstanceFactory;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.servlet.ServletApplicationStartup;
 import io.basc.framework.env.Sys;
-import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 

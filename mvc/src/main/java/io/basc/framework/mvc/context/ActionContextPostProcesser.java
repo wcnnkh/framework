@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 
-import io.basc.framework.beans.BeanLifecycleEvent.Step;
+import io.basc.framework.beans.factory.BeanLifecycleEvent.Step;
 import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ContextPostProcessor;

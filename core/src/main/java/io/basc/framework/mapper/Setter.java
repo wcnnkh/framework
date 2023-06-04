@@ -9,6 +9,5 @@ public interface Setter extends ParameterDescriptor {
 	 */
 	void set(Object target, Object value);
 
-	@Override
 	Setter rename(String name);
 }

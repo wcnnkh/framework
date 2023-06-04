@@ -2,8 +2,8 @@ package io.basc.framework.web.jaxrs;
 
 import javax.ws.rs.DefaultValue;
 
-import io.basc.framework.beans.BeanResolver;
-import io.basc.framework.beans.BeanResolverExtend;
+import io.basc.framework.beans.factory.BeanResolver;
+import io.basc.framework.beans.factory.BeanResolverExtend;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;

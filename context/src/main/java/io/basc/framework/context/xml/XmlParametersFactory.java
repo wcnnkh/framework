@@ -1,7 +1,7 @@
 package io.basc.framework.context.xml;
 
+import io.basc.framework.beans.factory.support.AbstractParametersFactory;
 import io.basc.framework.env.Environment;
-import io.basc.framework.factory.support.AbstractParametersFactory;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterDescriptors;
 

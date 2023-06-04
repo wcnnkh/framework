@@ -1,5 +1,8 @@
 package io.basc.framework.aop.support;
 
+import java.io.Serializable;
+import java.lang.reflect.Method;
+
 import io.basc.framework.aop.ConfigurableProxyFactory;
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.aop.Proxy;
@@ -7,18 +10,16 @@ import io.basc.framework.aop.ProxyFactory;
 import io.basc.framework.aop.WriteReplaceInterface;
 import io.basc.framework.core.reflect.MethodInvoker;
 import io.basc.framework.core.reflect.ReflectionUtils;
-import io.basc.framework.factory.support.SpiServiceLoader;
 import io.basc.framework.util.ArrayUtils;
-
-import java.io.Serializable;
-import java.lang.reflect.Method;
+import io.basc.framework.util.ServiceLoader;
+import io.basc.framework.util.SpiServiceLoader;
 
 public final class ProxyUtils {
 	private static final ConfigurableProxyFactory FACTORY = new DefaultProxyFactory();
 
 	static {
-		SpiServiceLoader<ProxyFactory> serviceLoader = new SpiServiceLoader<ProxyFactory>(ProxyFactory.class);
-		for (ProxyFactory proxyFactory : serviceLoader) {
+		ServiceLoader<ProxyFactory> serviceLoader = SpiServiceLoader.getServiceLoader(ProxyFactory.class);
+		for (ProxyFactory proxyFactory : serviceLoader.getServices()) {
 			FACTORY.addProxyFactory(proxyFactory);
 		}
 	}

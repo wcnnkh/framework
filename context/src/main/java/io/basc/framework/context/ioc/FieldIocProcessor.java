@@ -1,9 +1,9 @@
 package io.basc.framework.context.ioc;
 
 import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.config.BeanDefinition;
+import io.basc.framework.beans.factory.FactoryException;
+import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.context.Context;
-import io.basc.framework.factory.FactoryException;
 import io.basc.framework.mapper.Field;
 
 public abstract class FieldIocProcessor extends IocProcessor {

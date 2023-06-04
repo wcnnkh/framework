@@ -9,7 +9,8 @@ import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Elements;
 
-public class DefaultExecutionParametersExtractor extends ParameterExtractors implements ExecutionParametersExtractor {
+public class DefaultExecutionParametersExtractor extends ParameterExtractorRegistry
+		implements ExecutionParametersExtractor {
 	/**
 	 * 用于默认实现的日志
 	 */

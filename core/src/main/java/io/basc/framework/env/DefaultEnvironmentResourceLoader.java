@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.event.Observable;
-import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.io.FileSystemResource;
 import io.basc.framework.io.FileSystemResourceLoader;
 import io.basc.framework.io.Resource;

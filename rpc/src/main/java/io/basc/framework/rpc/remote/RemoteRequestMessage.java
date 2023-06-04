@@ -3,7 +3,7 @@ package io.basc.framework.rpc.remote;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 
-import io.basc.framework.factory.InheritableThreadLocalConfigurator;
+import io.basc.framework.beans.factory.config.InheritableThreadLocalConfigurator;
 
 public abstract class RemoteRequestMessage extends DefaultRemoteMessageHeaders {
 	private static final long serialVersionUID = 1L;

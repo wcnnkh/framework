@@ -1,10 +1,10 @@
 package io.basc.framework.test;
 
-import io.basc.framework.factory.support.SpiServiceLoader;
-
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+
+import io.basc.framework.util.SpiServiceLoader;
 
 public class SpiTest implements SpiTestInterface {
 	private static final String TEST_TEXT = "hello";

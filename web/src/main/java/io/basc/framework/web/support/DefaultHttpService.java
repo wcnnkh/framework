@@ -3,7 +3,7 @@ package io.basc.framework.web.support;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.web.HttpService;
 import io.basc.framework.web.HttpServiceInterceptor;
 import io.basc.framework.web.HttpServiceRegistry;

@@ -2,10 +2,10 @@ package io.basc.framework.jpa.beans;
 
 import javax.persistence.EntityManagerFactory;
 
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.beans.BeanResolver;
+import io.basc.framework.beans.factory.BeanFactory;
+import io.basc.framework.beans.factory.BeanResolver;
+import io.basc.framework.beans.factory.support.FactoryBeanDefinition;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.jpa.JpaMethodInterceptor;
 import io.basc.framework.mapper.ParameterDescriptors;
 

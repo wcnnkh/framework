@@ -13,7 +13,7 @@ public interface ServiceLoader<S> {
 			return empty();
 		}
 
-		return new SharedServiceLoader<>(services);
+		return new FinalServiceLoader<>(services);
 	}
 
 	default <U> ServiceLoader<U> convert(Function<? super Elements<S>, ? extends Elements<U>> converter) {
@@ -23,4 +23,10 @@ public interface ServiceLoader<S> {
 	void reload();
 
 	Elements<S> getServices();
+
+	@SuppressWarnings("unchecked")
+	default ServiceLoader<S> concat(ServiceLoader<S> serviceLoader) {
+		Elements<? extends ServiceLoader<S>> serviceLoaders = Elements.forArray(this, serviceLoader);
+		return new MultiServiceLoader<>(serviceLoaders);
+	}
 }

@@ -7,9 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import io.basc.framework.beans.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.factory.Configurable;
-import io.basc.framework.factory.ServiceLoaderFactory;
 import io.basc.framework.http.HttpRequest;
 import io.basc.framework.http.HttpRequestEntity;
 import io.basc.framework.http.HttpResponseEntity;

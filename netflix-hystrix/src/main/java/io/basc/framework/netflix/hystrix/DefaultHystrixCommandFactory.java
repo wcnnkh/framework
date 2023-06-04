@@ -7,10 +7,10 @@ import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
 
+import io.basc.framework.beans.factory.InstanceFactory;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.netflix.hystrix.annotation.Hystrix;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)

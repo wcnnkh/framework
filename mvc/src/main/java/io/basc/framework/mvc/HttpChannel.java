@@ -2,9 +2,9 @@ package io.basc.framework.mvc;
 
 import java.io.IOException;
 
+import io.basc.framework.beans.factory.InstanceFactory;
+import io.basc.framework.beans.factory.ParameterFactory;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.factory.InstanceFactory;
-import io.basc.framework.factory.ParameterFactory;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.security.login.UserToken;

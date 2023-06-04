@@ -5,8 +5,8 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.Collection;
 
+import io.basc.framework.beans.factory.config.InheritableThreadLocalConfigurator;
 import io.basc.framework.env.Sys;
-import io.basc.framework.factory.InheritableThreadLocalConfigurator;
 import io.basc.framework.http.client.DefaultHttpClient;
 import io.basc.framework.http.client.HttpClient;
 import io.basc.framework.lang.Constants;

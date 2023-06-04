@@ -1,7 +1,7 @@
 package io.basc.framework.sql.orm.support;
 
-import io.basc.framework.factory.ConfigurableServices;
-import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.mapper.Field;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.orm.EntityMapping;

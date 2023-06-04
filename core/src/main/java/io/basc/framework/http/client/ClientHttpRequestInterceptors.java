@@ -2,7 +2,7 @@ package io.basc.framework.http.client;
 
 import java.io.IOException;
 
-import io.basc.framework.factory.ConfigurableServices;
+import io.basc.framework.beans.factory.config.ConfigurableServices;
 
 public class ClientHttpRequestInterceptors extends ConfigurableServices<ClientHttpRequestInterceptor>
 		implements ClientHttpRequestInterceptor {

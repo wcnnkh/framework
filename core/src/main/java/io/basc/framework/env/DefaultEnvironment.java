@@ -3,7 +3,16 @@ package io.basc.framework.env;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
-import io.basc.framework.beans.config.BeanDefinition;
+import io.basc.framework.beans.BeansException;
+import io.basc.framework.beans.factory.FactoryException;
+import io.basc.framework.beans.factory.Scope;
+import io.basc.framework.beans.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.config.BeanDefinition;
+import io.basc.framework.beans.factory.config.Configurable;
+import io.basc.framework.beans.factory.config.ConfigurableServices;
+import io.basc.framework.beans.factory.support.ConfigServiceLoader;
+import io.basc.framework.beans.factory.support.DefaultBeanFactory;
+import io.basc.framework.beans.factory.support.DefaultServiceLoaderFactory;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.lang.ConfigurableConversionService;
 import io.basc.framework.convert.lang.ConverterConversionService;
@@ -13,12 +22,7 @@ import io.basc.framework.convert.resolve.ResourceResolvers;
 import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.event.Observable;
 import io.basc.framework.event.support.ObservableResource;
-import io.basc.framework.factory.Configurable;
-import io.basc.framework.factory.ConfigurableServices;
-import io.basc.framework.factory.FactoryException;
-import io.basc.framework.factory.ServiceLoaderFactory;
-import io.basc.framework.factory.support.ConfigServiceLoader;
-import io.basc.framework.factory.support.DefaultBeanFactory;
+import io.basc.framework.execution.parameter.ExecutionParametersExtractor;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.resolver.PropertiesResolver;
@@ -35,7 +39,7 @@ import io.basc.framework.util.ServiceLoaders;
 import io.basc.framework.util.ServiceRegistry;
 import io.basc.framework.util.StringMatchers;
 
-public class DefaultEnvironment extends DefaultBeanFactory implements ConfigurableEnvironment, Configurable {
+public class DefaultEnvironment extends DefaultServiceLoaderFactory implements ConfigurableEnvironment, Configurable {
 	private static final String ENABLE_PREFIX = "io.basc.framework.spi";
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
@@ -66,7 +70,8 @@ public class DefaultEnvironment extends DefaultBeanFactory implements Configurab
 
 	private final ServiceRegistry<Resource> resources = new ServiceRegistry<>();
 
-	public DefaultEnvironment() {
+	public DefaultEnvironment(Scope scope, ExecutionParametersExtractor parametersExtractor) {
+		super(scope, parametersExtractor);
 		properties.setConversionService(conversionService);
 		conversionService.register(new ConverterConversionService(Resource.class, Properties.class,
 				Processor.of(new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers()))));
@@ -81,10 +86,16 @@ public class DefaultEnvironment extends DefaultBeanFactory implements Configurab
 	}
 
 	@Override
-	protected void _dependence(Object instance, BeanDefinition definition) throws FactoryException {
-		super._dependence(instance, definition);
-		if (instance instanceof ConversionServiceAware) {
-			((ConversionServiceAware) instance).setConversionService(getConversionService());
+	public void initializationBean(String beanName, Object bean) throws BeansException {
+		super.initializationBean(beanName, bean);
+
+	}
+
+	@Override
+	protected void dependence(Object bean, String beanName) throws BeansException {
+		super.dependence(bean, beanName);
+		if (bean instanceof ConversionServiceAware) {
+			((ConversionServiceAware) bean).setConversionService(getConversionService());
 		}
 	}
 

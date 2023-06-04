@@ -33,7 +33,6 @@ public class Parameter extends AnyValue implements ParameterDescriptor {
 		return name;
 	}
 
-	@Override
 	public Parameter rename(String name) {
 		Assert.requiredArgument(StringUtils.isNotEmpty(name), "name");
 		return new Parameter(name, this);

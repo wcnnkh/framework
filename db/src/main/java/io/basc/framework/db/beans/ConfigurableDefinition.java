@@ -2,12 +2,12 @@ package io.basc.framework.db.beans;
 
 import java.util.Properties;
 
+import io.basc.framework.beans.factory.InstanceException;
+import io.basc.framework.beans.factory.support.FactoryBeanDefinition;
 import io.basc.framework.db.Configurable;
 import io.basc.framework.db.DBUtils;
 import io.basc.framework.env.Environment;
 import io.basc.framework.event.Observable;
-import io.basc.framework.factory.InstanceException;
-import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.value.PropertiesPropertyFactory;
 
 public class ConfigurableDefinition extends FactoryBeanDefinition {

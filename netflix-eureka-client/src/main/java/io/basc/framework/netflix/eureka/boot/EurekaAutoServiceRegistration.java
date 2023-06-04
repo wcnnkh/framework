@@ -3,8 +3,8 @@ package io.basc.framework.netflix.eureka.boot;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.basc.framework.beans.Destroy;
-import io.basc.framework.beans.Init;
+import io.basc.framework.beans.factory.Destroy;
+import io.basc.framework.beans.factory.Init;
 import io.basc.framework.netflix.eureka.EurekaRegistration;
 import io.basc.framework.netflix.eureka.EurekaServiceRegistry;
 

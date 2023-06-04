@@ -4,7 +4,7 @@ import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.function.Function;
 
-import io.basc.framework.beans.BeanFactory;
+import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.resolve.ResourceResolver;

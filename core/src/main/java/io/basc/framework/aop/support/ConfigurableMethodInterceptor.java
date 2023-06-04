@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import io.basc.framework.aop.MethodInterceptor;
-import io.basc.framework.factory.Configurable;
-import io.basc.framework.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.ServiceLoaderFactory;
+import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.MultiIterator;
 

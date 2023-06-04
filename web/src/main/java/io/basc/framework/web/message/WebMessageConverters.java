@@ -2,8 +2,8 @@ package io.basc.framework.web.message;
 
 import java.io.IOException;
 
+import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.http.HttpMessage;
 import io.basc.framework.http.client.ClientHttpRequest;
 import io.basc.framework.http.client.ClientHttpResponse;

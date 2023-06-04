@@ -3,9 +3,9 @@ package io.basc.framework.rpc.remote.web;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
+import io.basc.framework.beans.factory.InstanceFactory;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.factory.InstanceFactory;
 import io.basc.framework.http.HttpMethod;
 import io.basc.framework.http.MediaType;
 import io.basc.framework.logger.Logger;

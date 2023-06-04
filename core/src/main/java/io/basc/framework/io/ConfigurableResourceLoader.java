@@ -1,6 +1,6 @@
 package io.basc.framework.io;
 
-import io.basc.framework.factory.ConfigurableServices;
+import io.basc.framework.beans.factory.config.ConfigurableServices;
 
 public interface ConfigurableResourceLoader extends ResourceLoader {
 

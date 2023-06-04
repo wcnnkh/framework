@@ -1,8 +1,8 @@
 package io.basc.framework.value;
 
+import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.event.ChangeEvent;
 import io.basc.framework.event.ChangeType;
-import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.RegistrationException;

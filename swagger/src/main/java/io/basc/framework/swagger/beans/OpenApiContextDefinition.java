@@ -3,9 +3,9 @@ package io.basc.framework.swagger.beans;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import io.basc.framework.beans.factory.InstanceException;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.support.ContextBeanDefinition;
-import io.basc.framework.factory.InstanceException;
 import io.basc.framework.swagger.OpenAPIExtensionsReload;
 import io.basc.framework.swagger.WebOpenApiContextBuilder;
 import io.basc.framework.util.CollectionUtils;

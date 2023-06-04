@@ -9,8 +9,8 @@ import org.quartz.simpl.PropertySettingJobFactory;
 import org.quartz.simpl.SimpleJobFactory;
 import org.quartz.spi.TriggerFiredBundle;
 
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.beans.BeanFactoryAware;
+import io.basc.framework.beans.factory.BeanFactory;
+import io.basc.framework.beans.factory.config.BeanFactoryAware;
 
 /**
  * 依赖BeanFactory的实现

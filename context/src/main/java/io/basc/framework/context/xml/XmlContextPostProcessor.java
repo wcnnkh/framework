@@ -8,7 +8,7 @@ import java.util.Properties;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.beans.config.BeanDefinition;
+import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.dom.DomUtils;

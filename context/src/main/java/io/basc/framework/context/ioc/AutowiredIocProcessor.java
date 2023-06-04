@@ -1,7 +1,7 @@
 package io.basc.framework.context.ioc;
 
 import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.config.BeanDefinition;
+import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.context.Context;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.lang.UnsupportedException;

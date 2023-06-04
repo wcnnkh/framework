@@ -12,15 +12,15 @@ import com.netflix.eureka.cluster.PeerEurekaNodes;
 import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.resources.ServerCodecs;
 
-import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.config.BeanDefinition;
+import io.basc.framework.beans.factory.BeanFactory;
+import io.basc.framework.beans.factory.config.BeanDefinition;
+import io.basc.framework.beans.factory.support.BeanDefinitionLoader;
+import io.basc.framework.beans.factory.support.BeanDefinitionLoaderChain;
+import io.basc.framework.beans.factory.support.FactoryBeanDefinition;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentBeanDefinition;
-import io.basc.framework.factory.support.BeanDefinitionLoader;
-import io.basc.framework.factory.support.BeanDefinitionLoaderChain;
-import io.basc.framework.factory.support.FactoryBeanDefinition;
 import io.basc.framework.util.ClassUtils;
 
 @Provider

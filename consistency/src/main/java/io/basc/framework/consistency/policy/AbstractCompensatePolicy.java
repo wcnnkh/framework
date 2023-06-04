@@ -1,8 +1,8 @@
 package io.basc.framework.consistency.policy;
 
-import io.basc.framework.beans.BeanFactory;
-import io.basc.framework.beans.BeanFactoryAware;
-import io.basc.framework.beans.config.BeanDefinition;
+import io.basc.framework.beans.factory.BeanFactory;
+import io.basc.framework.beans.factory.config.BeanDefinition;
+import io.basc.framework.beans.factory.config.BeanFactoryAware;
 import io.basc.framework.consistency.CompensatePolicy;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;

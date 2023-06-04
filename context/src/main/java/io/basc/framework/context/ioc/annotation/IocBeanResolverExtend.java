@@ -6,9 +6,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import io.basc.framework.beans.BeanPostProcessor;
-import io.basc.framework.beans.BeanResolver;
-import io.basc.framework.beans.BeanResolverExtend;
+import io.basc.framework.beans.factory.BeanResolver;
+import io.basc.framework.beans.factory.BeanResolverExtend;
+import io.basc.framework.beans.factory.config.BeanPostProcessor;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ioc.AutowiredDefinition;
 import io.basc.framework.context.ioc.AutowiredIocProcessor;

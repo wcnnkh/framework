@@ -3,10 +3,10 @@ package io.basc.framework.hikari.beans;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import io.basc.framework.beans.BeanFactory;
 import io.basc.framework.beans.BeansException;
-import io.basc.framework.factory.InstanceException;
-import io.basc.framework.factory.support.FactoryBeanDefinition;
+import io.basc.framework.beans.factory.BeanFactory;
+import io.basc.framework.beans.factory.InstanceException;
+import io.basc.framework.beans.factory.support.FactoryBeanDefinition;
 
 public class HikariDataSourceDefinition extends FactoryBeanDefinition {
 

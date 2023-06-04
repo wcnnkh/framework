@@ -7,8 +7,8 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
-import io.basc.framework.beans.BeanLifecycleEvent;
-import io.basc.framework.beans.BeanLifecycleEvent.Step;
+import io.basc.framework.beans.factory.BeanLifecycleEvent;
+import io.basc.framework.beans.factory.BeanLifecycleEvent.Step;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.env.ConfigurableEnvironment;

@@ -3,7 +3,7 @@ package io.basc.framework.io.resolver;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
-import io.basc.framework.factory.ConfigurableServices;
+import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.WritableResource;
 import io.basc.framework.lang.UnsupportedException;

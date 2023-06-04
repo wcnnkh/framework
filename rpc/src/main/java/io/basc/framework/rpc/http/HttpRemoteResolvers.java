@@ -3,9 +3,9 @@ package io.basc.framework.rpc.http;
 import java.lang.reflect.Method;
 import java.net.URI;
 
+import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.env.Environment;
 import io.basc.framework.env.EnvironmentAware;
-import io.basc.framework.factory.ConfigurableServices;
 
 public class HttpRemoteResolvers extends ConfigurableServices<HttpRemoteResolver>
 		implements HttpRemoteResolver, EnvironmentAware {

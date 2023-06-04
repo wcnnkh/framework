@@ -1,7 +1,7 @@
 package io.basc.framework.env;
 
+import io.basc.framework.beans.factory.support.FactoryBeanDefinition;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.factory.support.FactoryBeanDefinition;
 
 public class EnvironmentBeanDefinition extends FactoryBeanDefinition {
 	private final Environment environment;

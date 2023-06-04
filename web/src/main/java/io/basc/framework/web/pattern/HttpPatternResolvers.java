@@ -4,8 +4,8 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
+import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.env.Sys;
-import io.basc.framework.factory.ConfigurableServices;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.placeholder.PlaceholderFormat;
 import io.basc.framework.util.placeholder.PlaceholderFormatAware;

@@ -1,6 +1,6 @@
 package io.basc.framework.swagger.beans;
 
-import io.basc.framework.beans.BeanLifecycleEvent.Step;
+import io.basc.framework.beans.factory.BeanLifecycleEvent.Step;
 import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;

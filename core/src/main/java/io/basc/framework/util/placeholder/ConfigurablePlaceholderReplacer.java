@@ -1,6 +1,6 @@
 package io.basc.framework.util.placeholder;
 
-import io.basc.framework.factory.ConfigurableServices;
+import io.basc.framework.beans.factory.config.ConfigurableServices;
 
 public class ConfigurablePlaceholderReplacer extends ConfigurableServices<PlaceholderReplacer>
 		implements PlaceholderReplacer {
