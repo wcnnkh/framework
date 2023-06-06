@@ -5,18 +5,16 @@ import java.util.Map;
 
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.ConfigurableServiceLoaderFactory;
-import io.basc.framework.execution.parameter.ExecutionParametersExtractor;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.ServiceRegistry;
-import io.basc.framework.util.SpiServiceLoader;
 
 public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements ConfigurableServiceLoaderFactory {
 
-	public DefaultServiceLoaderFactory(Scope scope, ExecutionParametersExtractor parametersExtractor) {
-		super(scope, parametersExtractor);
-	}
-
 	private volatile Map<Class<?>, ServiceRegistry<?>> serviceLoaderMap = new HashMap<>();
+
+	public DefaultServiceLoaderFactory(Scope scope) {
+		super(scope);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -37,7 +35,7 @@ public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements C
 
 	protected <S> ServiceLoader<S> getServiceLoaderInternal(Class<S> serviceClass) {
 		ServiceLoader<S> listableServiceLoader = new ListableServiceLoader<>(this, serviceClass);
-		ServiceLoader<S> spiServiceLoader = new BeanFactoryServiceLoader<S>(serviceClass, this);
+		ServiceLoader<S> spiServiceLoader = new BeanFactorySpiServiceLoader<S>(serviceClass, this);
 		return listableServiceLoader.concat(spiServiceLoader);
 	}
 }

@@ -3,7 +3,6 @@ package io.basc.framework.execution.aop.cglib;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
-import io.basc.framework.aop.cglib.CglibMethodInterceptor;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.ExecutionInterceptor;
 import io.basc.framework.execution.Executors;
@@ -43,7 +42,7 @@ public class CglibProxy implements Proxy {
 
 	public Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
 		Enhancer enhancer = CglibUtils.createEnhancer(clazz, getInterfaces(clazz, interfaces));
-		enhancer.setCallbackType(CglibMethodInterceptor.class);
+		enhancer.setCallbackType(ExecutionInterceptorToMethodInterceptor.class);
 		return enhancer.createClass();
 	}
 

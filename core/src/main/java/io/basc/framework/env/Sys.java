@@ -2,7 +2,7 @@ package io.basc.framework.env;
 
 import java.util.Properties;
 
-import io.basc.framework.beans.factory.FactoryException;
+import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.event.Observable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
@@ -30,7 +30,7 @@ public final class Sys extends DefaultEnvironment {
 		try {
 			env.init();
 		} finally {
-			Runtime.getRuntime().addShutdownHook(new Thread(() -> env.destroy()));
+			Runtime.getRuntime().addShutdownHook(new Thread(() -> env.destroySingletons()));
 		}
 
 		try {
@@ -48,11 +48,12 @@ public final class Sys extends DefaultEnvironment {
 		return env;
 	}
 
-	private Sys() {
+	public Sys() {
+		super(Scope.DEFAULT);
 	}
 
 	@Override
-	public void init() throws FactoryException {
+	protected void _init() {
 		try {
 			String path = getWorkPath();
 			if (path == null) {
@@ -70,7 +71,7 @@ public final class Sys extends DefaultEnvironment {
 			logger.error(e, "Initialization working path exception");
 		}
 
-		super.init();
+		super._init();
 
 		getProperties().registerLast(SystemPropertyFactory.INSTANCE);
 

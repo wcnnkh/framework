@@ -213,7 +213,7 @@ public class UriUtils {
 		if (Value.isBaseType(body.getClass())) {
 			return body.toString();
 		}
-
+		
 		return toQueryString(MapperUtils.toMap(body), encoder, parameterConnector, nameValueConnector);
 	}
 

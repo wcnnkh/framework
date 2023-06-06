@@ -13,7 +13,7 @@ public class ConfigurableClassScanner extends ConfigurableServices<ClassScanner>
 
 	@Override
 	public boolean canScan(String pattern) {
-		for (ClassScanner scanner : this) {
+		for (ClassScanner scanner : this.getServices()) {
 			if (scanner.canScan(pattern)) {
 				return true;
 			}
@@ -23,7 +23,7 @@ public class ConfigurableClassScanner extends ConfigurableServices<ClassScanner>
 
 	@Override
 	public ServiceLoader<Class<?>> scan(String pattern, @Nullable TypeFilter filter) {
-		for (ClassScanner scanner : this) {
+		for (ClassScanner scanner : this.getServices()) {
 			if (scanner.canScan(pattern)) {
 				return scanner.scan(pattern, filter);
 			}

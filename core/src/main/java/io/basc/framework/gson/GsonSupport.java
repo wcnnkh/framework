@@ -9,22 +9,20 @@ import com.google.gson.GsonBuilder;
 import io.basc.framework.json.AbstractJsonSupport;
 import io.basc.framework.json.JsonElement;
 import io.basc.framework.json.JsonException;
+import io.basc.framework.util.Assert;
 
 public final class GsonSupport extends AbstractJsonSupport {
 	public static final GsonSupport INSTANCE = new GsonSupport();
 
-	private final Gson gson;
-
-	public GsonSupport() {
-		this.gson = new GsonBuilder().registerTypeAdapterFactory(ExtendGsonTypeAdapter.FACTORY).create();
-	}
-
-	public GsonSupport(Gson gson) {
-		this.gson = gson;
-	}
+	private Gson gson = new GsonBuilder().create();
 
 	public Gson getGson() {
 		return gson;
+	}
+
+	public void setGson(Gson gson) {
+		Assert.requiredArgument(gson != null, "gson");
+		this.gson = gson;
 	}
 
 	public JsonElement parseJson(String text) {

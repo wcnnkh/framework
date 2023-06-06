@@ -1,7 +1,5 @@
 package io.basc.framework.logger;
 
-import io.basc.framework.beans.factory.support.SimpleServiceLoaderFactory;
-
 public final class LoggerFactory {
 	private static final DynamicLoggerFactory SOURCE = new DynamicLoggerFactory();
 
@@ -11,7 +9,7 @@ public final class LoggerFactory {
 
 	public static Logger getLogger(String name) {
 		if (!SOURCE.isConfigured()) {
-			SOURCE.configure(SimpleServiceLoaderFactory.INSTANCE);
+			SOURCE.configure();
 		}
 		return SOURCE.getLogger(name);
 	}

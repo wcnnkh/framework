@@ -6,15 +6,13 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
-import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.ConsumeProcessor;
 import io.basc.framework.util.Registration;
+import io.basc.framework.util.SpiServiceLoader;
 
-public class DynamicLoggerFactory extends StandardBroadcastEventDispatcher<LevelManager>
-		implements ILoggerFactory, Configurable {
+public class DynamicLoggerFactory extends StandardBroadcastEventDispatcher<LevelManager> implements ILoggerFactory {
 	public static final JdkLoggerFactory GLOBA_LOGGER_FACTORY = new JdkLoggerFactory();
 	public static final LevelManager GLOBAL_LEVEL_MANAGER = new LevelManager();
 
@@ -30,15 +28,14 @@ public class DynamicLoggerFactory extends StandardBroadcastEventDispatcher<Level
 		this.logger = getLogger(DynamicLoggerFactory.class.getName());
 	}
 
-	@Override
-	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+	public void configure() {
 		if (isConfigured()) {
 			return;
 		}
 
 		ILoggerFactory loggerFactory = null;
 		try {
-			loggerFactory = serviceLoaderFactory.getServiceLoader(ILoggerFactory.class).getServices().first();
+			loggerFactory = SpiServiceLoader.getServiceLoader(ILoggerFactory.class).getServices().first();
 		} catch (Throwable e) {
 			// 解决循环依赖问题,如果出现异常继续使用旧的日志工厂,待初始化完成后会被动态替换
 			logger.debug(e, "Configuration log factory exception");
@@ -92,7 +89,6 @@ public class DynamicLoggerFactory extends StandardBroadcastEventDispatcher<Level
 		return loggerFactory;
 	}
 
-	@Override
 	public boolean isConfigured() {
 		return configured.get();
 	}

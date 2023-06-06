@@ -38,7 +38,8 @@ public class ConfigurableContextResolver extends ConfigurableServices<ContextRes
 
 	@Override
 	public boolean canResolveExecutable(Class<?> sourceClass) {
-		return ContextResolverChain.build(iterator(), getDefaultResolver()).canResolveExecutable(sourceClass);
+		return ContextResolverChain.build(getServices().iterator(), getDefaultResolver())
+				.canResolveExecutable(sourceClass);
 	}
 
 	public ContextResolver getDefaultResolver() {
@@ -47,7 +48,7 @@ public class ConfigurableContextResolver extends ConfigurableServices<ContextRes
 
 	@Override
 	public ProviderDefinition getProviderDefinition(Class<?> clazz) {
-		return ContextResolverChain.build(iterator(), getDefaultResolver()).getProviderDefinition(clazz);
+		return ContextResolverChain.build(getServices().iterator(), getDefaultResolver()).getProviderDefinition(clazz);
 	}
 
 	public TypeFilter getTypeFilter() {
@@ -56,26 +57,29 @@ public class ConfigurableContextResolver extends ConfigurableServices<ContextRes
 
 	@Override
 	public boolean hasContext(ParameterDescriptor parameterDescriptor) {
-		return ContextResolverChain.build(iterator(), getDefaultResolver()).hasContext(parameterDescriptor);
+		return ContextResolverChain.build(getServices().iterator(), getDefaultResolver())
+				.hasContext(parameterDescriptor);
 	}
 
 	@Override
 	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
 			throws IOException {
 		return (typeFilter == null || typeFilter.match(metadataReader, metadataReaderFactory))
-				&& JavaVersion.isSupported(metadataReader.getAnnotationMetadata()) && ContextResolverChain
-						.build(iterator(), getDefaultResolver()).match(metadataReader, metadataReaderFactory);
+				&& JavaVersion.isSupported(metadataReader.getAnnotationMetadata())
+				&& ContextResolverChain.build(getServices().iterator(), getDefaultResolver()).match(metadataReader,
+						metadataReaderFactory);
 	}
 
 	@Override
 	public BeanDefinition resolveBeanDefinition(Class<?> sourceClass) {
-		return ContextResolverChain.build(iterator(), getDefaultResolver()).resolveBeanDefinition(sourceClass);
+		return ContextResolverChain.build(getServices().iterator(), getDefaultResolver())
+				.resolveBeanDefinition(sourceClass);
 	}
 
 	@Override
 	public BeanDefinition resolveBeanDefinition(Class<?> sourceClass, Executable executable) {
-		return ContextResolverChain.build(iterator(), getDefaultResolver()).resolveBeanDefinition(sourceClass,
-				executable);
+		return ContextResolverChain.build(getServices().iterator(), getDefaultResolver())
+				.resolveBeanDefinition(sourceClass, executable);
 	}
 
 	public void setDefaultResolver(ContextResolver defaultResolver) {

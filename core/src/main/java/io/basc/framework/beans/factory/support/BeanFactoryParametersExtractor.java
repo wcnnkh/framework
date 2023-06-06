@@ -8,8 +8,8 @@ import io.basc.framework.beans.factory.NoUniqueBeanDefinitionException;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
+import io.basc.framework.execution.parameter.GenericParametersExtractor;
 import io.basc.framework.execution.parameter.ParameterException;
-import io.basc.framework.execution.parameter.ParameterExtractor;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.ServiceLoader;
 import lombok.Getter;
@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class BeanFactoryParametersExtractor implements ParameterExtractor {
+public class BeanFactoryParametersExtractor extends GenericParametersExtractor {
 	private final BeanFactory beanFactory;
 	private final ConversionService conversionService;
 

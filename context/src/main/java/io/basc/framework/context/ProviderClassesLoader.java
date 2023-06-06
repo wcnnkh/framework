@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +13,7 @@ import io.basc.framework.core.OrderComparator;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.ClassUtils;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.ServiceLoader;
 
 public class ProviderClassesLoader implements ServiceLoader<Class<?>>, Comparator<Class<?>> {
@@ -64,9 +64,9 @@ public class ProviderClassesLoader implements ServiceLoader<Class<?>>, Comparato
 	}
 
 	@Override
-	public Iterator<Class<?>> iterator() {
+	public Elements<Class<?>> getServices() {
 		Set<Class<?>> list = new LinkedHashSet<>();
-		for (Class<?> clazz : classesLoader) {
+		for (Class<?> clazz : classesLoader.getServices()) {
 			if (clazz.getName().equals(serviceClass.getName())) {// 防止死循环
 				continue;
 			}
@@ -107,7 +107,7 @@ public class ProviderClassesLoader implements ServiceLoader<Class<?>>, Comparato
 		}
 
 		if (list.isEmpty()) {
-			return Collections.emptyIterator();
+			return Elements.empty();
 		}
 
 		List<Class<?>> classes = new ArrayList<>(list);
@@ -115,7 +115,7 @@ public class ProviderClassesLoader implements ServiceLoader<Class<?>>, Comparato
 		if (logger.isDebugEnabled()) {
 			logger.debug("[{}] providers is {}", serviceClass, classes);
 		}
-		return classes.iterator();
+		return Elements.of(classes);
 	}
 
 	@Override

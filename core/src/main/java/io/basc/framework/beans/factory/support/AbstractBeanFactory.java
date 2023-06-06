@@ -5,23 +5,32 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 
 import io.basc.framework.beans.BeansException;
+import io.basc.framework.beans.FatalBeanException;
+import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.FactoryBean;
 import io.basc.framework.beans.factory.NoSuchBeanDefinitionException;
 import io.basc.framework.beans.factory.config.BeanDefinition;
+import io.basc.framework.beans.factory.config.BeanFactoryPostProcessor;
 import io.basc.framework.beans.factory.config.BeanPostProcessorRegistry;
 import io.basc.framework.beans.factory.config.ConfigurableBeanFactory;
+import io.basc.framework.beans.factory.config.DisposableBean;
+import io.basc.framework.beans.factory.config.InitializingBean;
 import io.basc.framework.beans.factory.config.LifecycleFactoryBean;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Elements;
-import lombok.RequiredArgsConstructor;
+import io.basc.framework.util.ServiceRegistry;
 
-@RequiredArgsConstructor
 public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
 	private static Logger logger = LoggerFactory.getLogger(AbstractBeanFactory.class);
 	private final ConcurrentHashMap<String, FactoryBean<? extends Object>> factoryBeanMap = new ConcurrentHashMap<>();
 	private final BeanPostProcessorRegistry beanPostProcessorRegistry = new BeanPostProcessorRegistry();
+	private final ServiceRegistry<BeanFactoryPostProcessor> beanFactoryPostProcessorRegistry = new ServiceRegistry<>();
+
+	public AbstractBeanFactory() {
+		registerSingleton(BeanFactory.class.getSimpleName(), this);
+	}
 
 	@Override
 	public BeanPostProcessorRegistry getBeanPostProcessorRegistry() {
@@ -149,6 +158,11 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 	public void destroySingletons() {
 		// 获取注册时顺序的倒序，先注册的后销毁
 		for (String singletonName : getRegistrationOrderSingletonNames().reverse()) {
+			if (!isFactoryBean(singletonName)) {
+				// 非工厂bean不销毁
+				continue;
+			}
+
 			try {
 				removeSingleton(singletonName);
 			} catch (Throwable e) {
@@ -266,10 +280,23 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 				((LifecycleFactoryBean<?>) factoryBean).init(bean);
 			}
 		}
+
+		if (bean instanceof InitializingBean) {
+			try {
+				((InitializingBean) bean).afterPropertiesSet();
+			} catch (Exception e) {
+				throw new FatalBeanException(beanName, e);
+			}
+		}
 	}
 
 	@Override
 	public void initializationBean(String beanName, Object bean) throws BeansException {
+		if (!isFactoryBean(beanName)) {
+			// 只有工厂bean才存在生命周期
+			return;
+		}
+
 		beanPostProcessorRegistry.postProcessBeforeDependencies(bean, beanName);
 		dependence(bean, beanName);
 		beanPostProcessorRegistry.postProcessAfterDependencies(bean, beanName);
@@ -280,6 +307,14 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 	}
 
 	protected void destroy(Object bean, String beanName) throws BeansException {
+		if (bean instanceof DisposableBean) {
+			try {
+				((DisposableBean) bean).destroy();
+			} catch (Throwable e) {
+				logger.error(e, "An exception occurred while xxx bean was executing xxx DisposableBean#destroy");
+			}
+		}
+
 		FactoryBean<? extends Object> factoryBean = getFactoryBean(beanName);
 		if (factoryBean != null) {
 			if (factoryBean instanceof LifecycleFactoryBean) {
@@ -290,6 +325,11 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
 	@Override
 	public void destroyBean(String beanName, Object bean) throws BeansException {
+		if (!isFactoryBean(beanName)) {
+			// 只有工厂bean才存在生命周期
+			return;
+		}
+
 		beanPostProcessorRegistry.postProcessBeforeDestory(bean, beanName);
 		dependence(bean, beanName);
 		beanPostProcessorRegistry.postProcessAfterDestory(bean, beanName);
@@ -309,5 +349,43 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 			return definitionFactoryBean.getExecutor().getTypeDescriptor().getAnnotation(annotationType);
 		}
 		return null;
+	}
+
+	/**
+	 * 准备好所有单例
+	 */
+	public void prepareAllSingletons() throws BeansException {
+		for (String name : getBeanNames()) {
+			if (isSingleton(name)) {
+				// 获取单例
+				getSingleton(name);
+			}
+		}
+	}
+
+	private volatile boolean initialized = false;
+
+	public boolean isInitialized() {
+		return initialized;
+	}
+
+	public final void init() {
+		synchronized (this) {
+			if (!initialized) {
+				throw new IllegalStateException("Already initialized [" + this + "]");
+			}
+
+			try {
+				_init();
+			} finally {
+				initialized = true;
+			}
+		}
+	}
+
+	protected void _init() {
+		for (BeanFactoryPostProcessor beanFactoryPostProcessor : beanFactoryPostProcessorRegistry.getServices()) {
+			beanFactoryPostProcessor.postProcessBeanFactory(this);
+		}
 	}
 }

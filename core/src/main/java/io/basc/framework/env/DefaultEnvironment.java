@@ -1,17 +1,15 @@
 package io.basc.framework.env;
 
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.Properties;
 
 import io.basc.framework.beans.BeansException;
-import io.basc.framework.beans.factory.FactoryException;
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
-import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.beans.factory.support.ConfigServiceLoader;
-import io.basc.framework.beans.factory.support.DefaultBeanFactory;
+import io.basc.framework.beans.factory.support.BeanFactoryParametersExtractor;
 import io.basc.framework.beans.factory.support.DefaultServiceLoaderFactory;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.lang.ConfigurableConversionService;
@@ -22,7 +20,6 @@ import io.basc.framework.convert.resolve.ResourceResolvers;
 import io.basc.framework.convert.support.DefaultConversionService;
 import io.basc.framework.event.Observable;
 import io.basc.framework.event.support.ObservableResource;
-import io.basc.framework.execution.parameter.ExecutionParametersExtractor;
 import io.basc.framework.io.Resource;
 import io.basc.framework.io.ResourceUtils;
 import io.basc.framework.io.resolver.PropertiesResolver;
@@ -32,12 +29,14 @@ import io.basc.framework.lang.Nullable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.AntPathMatcher;
+import io.basc.framework.util.CachedServiceLoader;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.Processor;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.ServiceLoaders;
 import io.basc.framework.util.ServiceRegistry;
 import io.basc.framework.util.StringMatchers;
+import io.basc.framework.util.StringUtils;
 
 public class DefaultEnvironment extends DefaultServiceLoaderFactory implements ConfigurableEnvironment, Configurable {
 	private static final String ENABLE_PREFIX = "io.basc.framework.spi";
@@ -70,8 +69,11 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 
 	private final ServiceRegistry<Resource> resources = new ServiceRegistry<>();
 
-	public DefaultEnvironment(Scope scope, ExecutionParametersExtractor parametersExtractor) {
-		super(scope, parametersExtractor);
+	public DefaultEnvironment(Scope scope) {
+		super(scope);
+		// 注册一个默认的参数解析
+		getExecutionParametersExtractorRegistry()
+				.registerLast(new BeanFactoryParametersExtractor(this, getConversionService()));
 		properties.setConversionService(conversionService);
 		conversionService.register(new ConverterConversionService(Resource.class, Properties.class,
 				Processor.of(new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers()))));
@@ -130,14 +132,20 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 
 	@Override
 	protected <S> ServiceLoader<S> getServiceLoaderInternal(Class<S> serviceClass) {
-		ServiceLoader<S> configServiceLoader = new ConfigServiceLoader<S>(serviceClass, getProperties(), this);
+		ServiceLoader<S> serviceLoader = new CachedServiceLoader<>(Elements.of(() -> {
+			String services = properties.getAsString(serviceClass.getName());
+			if (StringUtils.isEmpty(services)) {
+				return Collections.emptyIterator();
+			}
+
+			String[] array = StringUtils.splitToArray(services);
+			return Elements.forArray(array).map((e) -> getBean(e, serviceClass)).iterator();
+		}));
+
 		if (isForceSpi() || serviceClass.getName().startsWith(Constants.SYSTEM_PACKAGE_NAME) || useSpi(serviceClass)) {
-			ServiceLoaders<S> registry = new ServiceLoaders<>();
-			registry.register(configServiceLoader);
-			registry.register(super.getServiceLoaderInternal(serviceClass));
-			return registry;
+			return serviceLoader.concat(super.getServiceLoaderInternal(serviceClass));
 		}
-		return configServiceLoader;
+		return serviceLoader;
 	}
 
 	@Override
@@ -179,33 +187,24 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 	}
 
 	@Override
-	public void init() throws FactoryException {
-		synchronized (this) {
-			if (isInitialized()) {
-				throw new FactoryException("The environment has been initialized");
-			}
+	protected void _init() {
+		super._init();
 
+		logger.debug("Start initializing environment[{}]!", this);
+
+		if (!isConfigured()) {
+			configure(this);
+		}
+
+		for (EnvironmentPostProcessor postProcessor : environmentPostProcessors.getServices()) {
 			try {
-				super.init();
-				logger.debug("Start initializing environment[{}]!", this);
-
-				if (!isConfigured()) {
-					configure(this);
-				}
-
-				for (EnvironmentPostProcessor postProcessor : environmentPostProcessors.getServices()) {
-					try {
-						postProcessor.postProcessEnvironment(this);
-					} catch (Throwable e) {
-						throw new FactoryException("Post process environment[" + postProcessor + "]", e);
-					}
-				}
-
-				logger.debug("Started environment[{}]!", this);
-			} finally {
-				this.initialized = true;
+				postProcessor.postProcessEnvironment(this);
+			} catch (Throwable e) {
+				throw new EnvironmentException("Post process environment[" + postProcessor + "]", e);
 			}
 		}
+
+		logger.debug("Started environment[{}]!", this);
 	}
 
 	@Override

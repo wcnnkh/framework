@@ -75,29 +75,13 @@ public abstract class AbstractHttpClient implements HttpClient, Configurable {
 
 	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		if (serviceLoaderFactory.isInstance(ClientHttpRequestFactory.class)) {
-			this.requestFactory = serviceLoaderFactory.getInstance(ClientHttpRequestFactory.class);
-		}
-
-		if (serviceLoaderFactory.isInstance(CookieHandler.class)) {
-			this.cookieHandler = serviceLoaderFactory.getInstance(CookieHandler.class);
-		}
-
-		if (serviceLoaderFactory.isInstance(RedirectManager.class)) {
-			this.redirectManager = serviceLoaderFactory.getInstance(RedirectManager.class);
-		}
-
-		if (serviceLoaderFactory.isInstance(UriTemplateHandler.class)) {
-			this.uriTemplateHandler = serviceLoaderFactory.getInstance(UriTemplateHandler.class);
-		}
-
-		if (serviceLoaderFactory.isInstance(ClientHttpResponseErrorHandler.class)) {
-			this.responseErrorHandler = serviceLoaderFactory.getInstance(ClientHttpResponseErrorHandler.class);
-		}
-
-		if (serviceLoaderFactory.isInstance(RetryOperations.class)) {
-			this.retryOperations = serviceLoaderFactory.getInstance(RetryOperations.class);
-		}
+		serviceLoaderFactory.loadService(ClientHttpRequestFactory.class).ifPresent((e) -> this.requestFactory = e);
+		serviceLoaderFactory.loadService(CookieHandler.class).ifPresent((e) -> this.cookieHandler = e);
+		serviceLoaderFactory.loadService(RedirectManager.class).ifPresent((e) -> this.redirectManager = e);
+		serviceLoaderFactory.loadService(UriTemplateHandler.class).ifPresent((e) -> this.uriTemplateHandler = e);
+		serviceLoaderFactory.loadService(ClientHttpResponseErrorHandler.class)
+				.ifPresent((e) -> this.responseErrorHandler = e);
+		serviceLoaderFactory.loadService(RetryOperations.class).ifPresent((e) -> this.retryOperations = e);
 		configured = true;
 	}
 

@@ -15,7 +15,6 @@ import io.basc.framework.io.Resources;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Assert;
-import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 
 class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader
@@ -36,19 +35,9 @@ class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader
 	}
 
 	@Override
-	public ClassLoaderProvider getClassLoaderProvider() {
-		ClassLoaderProvider classLoaderProvider = super.getClassLoaderProvider();
-		if (classLoaderProvider == null) {
-			return environment;
-		}
-		return classLoaderProvider;
-	}
-
-	@Override
 	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		if (serviceLoaderFactory.isInstance(ProfilesResolver.class)) {
-			setProfilesResolver(serviceLoaderFactory.getInstance(ProfilesResolver.class));
-		}
+		serviceLoaderFactory.getServiceLoader(ProfilesResolver.class).getServices().findFirst()
+				.ifPresent(this::setProfilesResolver);
 		super.configure(serviceLoaderFactory);
 	}
 

@@ -4,7 +4,7 @@ import java.nio.charset.Charset;
 import java.util.Properties;
 import java.util.function.Function;
 
-import io.basc.framework.beans.factory.BeanFactory;
+import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.convert.ConversionService;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.convert.resolve.ResourceResolver;
@@ -20,7 +20,7 @@ import io.basc.framework.util.ArrayUtils;
 import io.basc.framework.util.ServiceLoader;
 import io.basc.framework.util.StringUtils;
 
-public interface Environment extends BeanFactory {
+public interface Environment extends ServiceLoaderFactory {
 	public static final String CHARSET_PROPERTY = "io.basc.framework.charset.name";
 	public static final String WORK_PATH_PROPERTY = "io.basc.framework.work.path";
 
