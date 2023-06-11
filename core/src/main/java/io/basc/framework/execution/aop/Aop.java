@@ -1,20 +1,20 @@
 package io.basc.framework.execution.aop;
 
 import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.ExecutionInterceptor;
-import io.basc.framework.execution.Executable;
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.util.ServiceRegistry;
+import io.basc.framework.util.ArrayUtils;
+import io.basc.framework.util.Assert;
+import io.basc.framework.util.Elements;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@Data
+@EqualsAndHashCode(callSuper = true)
 public class Aop extends ProxyFactoryRegistry {
 	private final String id;
-	private final ServiceRegistry<ExecutionInterceptor> executionInterceptorRegistry = new ServiceRegistry<>();
-
-	public ServiceRegistry<ExecutionInterceptor> getExecutionInterceptorRegistry() {
-		return executionInterceptorRegistry;
-	}
+	private final ExecutionInterceptorRegistry executionInterceptorRegistry = new ExecutionInterceptorRegistry();
 
 	public Aop() {
 		this.id = XUtils.getUUID();
@@ -32,23 +32,69 @@ public class Aop extends ProxyFactoryRegistry {
 	}
 
 	@Override
-	public Proxy getProxy(Class<?> sourceClass, Class<?>[] interfaces,
+	public Proxy getProxy(Class<?> sourceClass, @Nullable Class<?>[] interfaces,
 			@Nullable ExecutionInterceptor executionInterceptor) {
-		// 合并默认的拦截器
-		return super.getProxy(sourceClass, interfaces, executionInterceptor);
+		Assert.requiredArgument(sourceClass != null, "sourceClass");
+		DelegatedObjectExecutionInterceptor delegatedObjectExecutionInterceptor = new DelegatedObjectExecutionInterceptor(
+				this.id);
+		Elements<? extends ExecutionInterceptor> executionInterceptors;
+		if (executionInterceptor == null) {
+			executionInterceptors = Elements.forArray(delegatedObjectExecutionInterceptor,
+					getExecutionInterceptorRegistry());
+		} else {
+			executionInterceptors = Elements.forArray(delegatedObjectExecutionInterceptor,
+					getExecutionInterceptorRegistry(), executionInterceptor);
+		}
+		ExecutionInterceptor useExecutionInterceptor = new ExecutionInterceptors(executionInterceptors, null);
+
+		Class<?>[] useInterfaces = new Class<?>[] { DelegatedObject.class };
+		if (interfaces != null) {
+			useInterfaces = ArrayUtils.merge(useInterfaces, interfaces);
+		}
+		return super.getProxy(sourceClass, useInterfaces, useExecutionInterceptor);
 	}
 
-	public final Executor getProxy(Class<?> sourceClass) {
+	public final Proxy getProxy(Class<?> sourceClass) {
 		return getProxy(sourceClass, null, null);
 	}
 
-	public final Executable getProxyExecutor(Executable executor) {
+	public final Executor getProxyExecutor(Executor executor) {
 		return getProxyExecutor(executor, null);
 	}
 
-	public Executable getProxyExecutor(Executable executor, @Nullable ExecutionInterceptor executionInterceptor) {
-		// 代理一个拦截器
-		return null;
+	public Executor getProxyExecutor(Executor executor, @Nullable ExecutionInterceptor executionInterceptor) {
+		Assert.requiredArgument(executor != null, "executor");
+		DelegatedObjectExecutionInterceptor delegatedObjectExecutionInterceptor = new DelegatedObjectExecutionInterceptor(
+				this.id);
+		Elements<? extends ExecutionInterceptor> executionInterceptors;
+		if (executionInterceptor == null) {
+			executionInterceptors = Elements.forArray(delegatedObjectExecutionInterceptor,
+					getExecutionInterceptorRegistry());
+		} else {
+			executionInterceptors = Elements.forArray(delegatedObjectExecutionInterceptor,
+					getExecutionInterceptorRegistry(), executionInterceptor);
+		}
+		ExecutionInterceptor useExecutionInterceptor = new ExecutionInterceptors(executionInterceptors, null);
+		return new InterceptableExecutor(executor, useExecutionInterceptor);
+	}
+
+	public final <T> Proxy getProxy(Class<T> sourceClass, T source) {
+		return getProxy(sourceClass, source, null, null);
+	}
+
+	public <T> Proxy getProxy(Class<T> sourceClass, T source, @Nullable Class<?>[] interfaces,
+			@Nullable ExecutionInterceptor executionInterceptor) {
+		Assert.requiredArgument(sourceClass != null, "sourceClass");
+		SwitchableTargetExecutionInterceptor switchableTargetExecutionInterceptor = new SwitchableTargetExecutionInterceptor(
+				source);
+		Elements<? extends ExecutionInterceptor> executionInterceptors;
+		if (executionInterceptor == null) {
+			executionInterceptors = Elements.forArray(switchableTargetExecutionInterceptor);
+		} else {
+			executionInterceptors = Elements.forArray(switchableTargetExecutionInterceptor, executionInterceptor);
+		}
+		ExecutionInterceptor useExecutionInterceptor = new ExecutionInterceptors(executionInterceptors, null);
+		return getProxy(sourceClass, interfaces, useExecutionInterceptor);
 	}
 
 	@Override

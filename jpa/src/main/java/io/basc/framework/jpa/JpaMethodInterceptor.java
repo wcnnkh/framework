@@ -2,10 +2,10 @@ package io.basc.framework.jpa;
 
 import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.execution.ExecutionInterceptor;
-import io.basc.framework.execution.Executable;
+import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.Executables;
-import io.basc.framework.execution.reflect.ExecutableMethod;
+import io.basc.framework.execution.aop.ExecutionInterceptor;
+import io.basc.framework.execution.reflect.MethodExecutor;
 import io.basc.framework.util.Elements;
 
 import java.lang.reflect.Method;
@@ -24,12 +24,12 @@ public class JpaMethodInterceptor implements ExecutionInterceptor {
 	}
 
 	@Override
-	public Object intercept(Executables source, Executable executor, Elements<? extends Object> args) throws Throwable {
-		if(!(executor instanceof ExecutableMethod)) {
+	public Object intercept(Executables source, Executor executor, Elements<? extends Object> args) throws Throwable {
+		if(!(executor instanceof MethodExecutor)) {
 			return executor.execute(args);
 		}
 		
-		ExecutableMethod methodExecutor = (ExecutableMethod) executor;
+		MethodExecutor methodExecutor = (MethodExecutor) executor;
 		Method method = methodExecutor.getExecutable();
 		
 		if (Modifier.isAbstract(executor.getMethod().getModifiers())) {

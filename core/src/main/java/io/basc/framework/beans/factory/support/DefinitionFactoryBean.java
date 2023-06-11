@@ -5,7 +5,7 @@ import io.basc.framework.beans.FatalBeanException;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.LifecycleFactoryBean;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.execution.Executable;
+import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.parameter.ExecutableParametersExtractor;
 import io.basc.framework.util.Elements;
 import lombok.Getter;
@@ -17,14 +17,14 @@ public class DefinitionFactoryBean implements LifecycleFactoryBean<Object> {
 	private final BeanDefinition beanDefinition;
 	private final ExecutableParametersExtractor executionParametersExtractor;
 	private volatile Elements<? extends Object> singletonConstructionParameters;
-	private volatile Executable executor;
+	private volatile Executor executor;
 	private volatile Object singletonObject;
 
-	public Executable getExecutor() {
+	public Executor getExecutor() {
 		if (executor == null) {
 			synchronized (this) {
 				if (executor == null) {
-					for (Executable executor : beanDefinition.getMembers()) {
+					for (Executor executor : beanDefinition.getExecutors()) {
 						if (executionParametersExtractor.canExtractExecutionParameters(executor)) {
 							this.executor = executor;
 							break;
@@ -33,13 +33,16 @@ public class DefinitionFactoryBean implements LifecycleFactoryBean<Object> {
 				}
 			}
 		}
-		// TODO 如果为空就说明不可以构造
+
+		if (executor == null) {
+			throw new FatalBeanException("Unable to construct this bean");
+		}
 		return executor;
 	}
 
 	@Override
 	public ResolvableType getType() {
-		return getExecutor().getTypeDescriptor().getResolvableType();
+		return getExecutor().getReturnType().getResolvableType();
 	}
 
 	@Override
@@ -48,7 +51,7 @@ public class DefinitionFactoryBean implements LifecycleFactoryBean<Object> {
 	}
 
 	private Object createObject() {
-		Executable executor = getExecutor();
+		Executor executor = getExecutor();
 		Elements<? extends Object> args = executionParametersExtractor.extractExecutionParameters(executor);
 		if (isSingleton()) {
 			this.singletonConstructionParameters = args;
@@ -79,16 +82,11 @@ public class DefinitionFactoryBean implements LifecycleFactoryBean<Object> {
 
 	@Override
 	public void destroy(Object instance) throws BeansException {
-		beanDefinition.dependence(getExecutor(), instance);
+		beanDefinition.destroy(getExecutor(), instance);
 	}
 
 	@Override
 	public void init(Object instance) throws BeansException {
 		beanDefinition.init(getExecutor(), instance);
-	}
-
-	@Override
-	public void dependence(Object instance) throws BeansException {
-		beanDefinition.dependence(getExecutor(), instance);
 	}
 }

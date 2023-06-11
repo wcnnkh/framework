@@ -1,6 +1,6 @@
 package io.basc.framework.execution.aop;
 
-import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.Executable;
 
-public interface Proxy extends Executor {
+public interface Proxy extends Executable {
 }

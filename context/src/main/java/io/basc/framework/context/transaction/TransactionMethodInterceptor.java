@@ -3,8 +3,7 @@ package io.basc.framework.context.transaction;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.ExecutionInterceptor;
-import io.basc.framework.execution.Executable;
+import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.tx.RollbackOnly;
@@ -33,7 +32,7 @@ public final class TransactionMethodInterceptor implements ExecutionInterceptor 
 		this.transactionDefinition = transactionDefinition;
 	}
 
-	private void invokerAfter(Transaction transaction, Object rtn, Executable executor) {
+	private void invokerAfter(Transaction transaction, Object rtn, Executor executor) {
 		if (rtn != null && (rtn instanceof RollbackOnly)) {
 			RollbackOnly result = (RollbackOnly) rtn;
 			if (result.isRollbackOnly()) {
@@ -46,9 +45,9 @@ public final class TransactionMethodInterceptor implements ExecutionInterceptor 
 	}
 
 	@Override
-	public Object intercept(Executor source, Executable executor, Elements<? extends Object> args) throws Throwable {
+	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
 		TransactionManager transactionManager = TransactionUtils.getManager();
-		Transactional tx = executor.getTypeDescriptor().getAnnotation(Transactional.class);
+		Transactional tx = executor.getReturnType().getAnnotation(Transactional.class);
 		if (tx == null && transactionManager.hasTransaction()) {
 			Object rtn = executor.execute(args);
 			invokerAfter(transactionManager.getTransaction(), rtn, executor);

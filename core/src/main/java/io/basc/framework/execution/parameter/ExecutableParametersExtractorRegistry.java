@@ -1,6 +1,6 @@
 package io.basc.framework.execution.parameter;
 
-import io.basc.framework.execution.Executable;
+import io.basc.framework.execution.Executor;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.ServiceRegistry;
 
@@ -8,7 +8,7 @@ public class ExecutableParametersExtractorRegistry extends ServiceRegistry<Execu
 		implements ExecutableParametersExtractor {
 
 	@Override
-	public boolean canExtractExecutionParameters(Executable executable) {
+	public boolean canExtractExecutionParameters(Executor executable) {
 		for (ExecutableParametersExtractor extractor : getServices()) {
 			if (extractor.canExtractExecutionParameters(executable)) {
 				return true;
@@ -18,7 +18,7 @@ public class ExecutableParametersExtractorRegistry extends ServiceRegistry<Execu
 	}
 
 	@Override
-	public Elements<? extends Object> extractExecutionParameters(Executable executable) throws ParameterException {
+	public Elements<? extends Object> extractExecutionParameters(Executor executable) throws ParameterException {
 		for (ExecutableParametersExtractor extractor : getServices()) {
 			if (extractor.canExtractExecutionParameters(executable)) {
 				return extractor.extractExecutionParameters(executable);

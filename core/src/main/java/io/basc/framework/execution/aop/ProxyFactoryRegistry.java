@@ -1,6 +1,5 @@
 package io.basc.framework.execution.aop;
 
-import io.basc.framework.execution.ExecutionInterceptor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ServiceRegistry;

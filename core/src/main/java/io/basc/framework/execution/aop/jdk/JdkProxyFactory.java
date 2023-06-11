@@ -3,7 +3,7 @@ package io.basc.framework.execution.aop.jdk;
 import java.util.Arrays;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.ExecutionInterceptor;
+import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.execution.aop.Proxy;
 import io.basc.framework.execution.aop.ProxyFactory;
 import io.basc.framework.util.ArrayUtils;

@@ -1,6 +1,6 @@
 package io.basc.framework.execution.parameter;
 
-import io.basc.framework.execution.Executable;
+import io.basc.framework.execution.Executor;
 import io.basc.framework.util.Elements;
 
 /**
@@ -16,7 +16,7 @@ public interface ExecutableParametersExtractor {
 	 * @param executable
 	 * @return
 	 */
-	boolean canExtractExecutionParameters(Executable executable);
+	boolean canExtractExecutionParameters(Executor executable);
 
 	/**
 	 * 提取执行参数
@@ -24,5 +24,5 @@ public interface ExecutableParametersExtractor {
 	 * @param executable
 	 * @return
 	 */
-	Elements<? extends Object> extractExecutionParameters(Executable executable) throws ParameterException;
+	Elements<? extends Object> extractExecutionParameters(Executor executable) throws ParameterException;
 }

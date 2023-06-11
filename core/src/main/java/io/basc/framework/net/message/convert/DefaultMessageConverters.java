@@ -24,7 +24,7 @@ public class DefaultMessageConverters extends MessageConverters {
 	}
 
 	protected void afterConfigure() {
-		getServiceInjectors().register((service) -> {
+		getServiceInjectorRegistry().register((service) -> {
 			if (service instanceof ConversionServiceAware) {
 				((ConversionServiceAware) service).setConversionService(conversionService);
 			}

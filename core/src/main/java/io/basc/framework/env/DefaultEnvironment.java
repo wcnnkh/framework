@@ -91,8 +91,8 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 	}
 
 	@Override
-	protected void dependence(Object bean, String beanName) throws BeansException {
-		super.dependence(bean, beanName);
+	protected void init(Object bean, String beanName) throws BeansException {
+		super.init(bean, beanName);
 		if (bean instanceof ConversionServiceAware) {
 			((ConversionServiceAware) bean).setConversionService(getConversionService());
 		}

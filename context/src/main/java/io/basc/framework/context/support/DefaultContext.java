@@ -58,7 +58,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 
 	public DefaultContext(Scope scope) {
 		super(scope);
-		contextClassesLoader.getServiceLoaders().register(sourceClasses);
+		contextClassesLoader.getServiceLoaderRegistry().register(sourceClasses);
 		IocBeanResolverExtend iocBeanResolverExtend = new IocBeanResolverExtend(this, iocResolver);
 		iocResolver.registerLast(iocBeanResolverExtend);
 		this.classScanner.setClassLoaderProvider(this);
@@ -151,7 +151,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 		ProviderClassesLoader classesLoader = providerClassesLoaderMap.get(providerClass);
 		if (classesLoader == null) {
 			classesLoader = new ProviderClassesLoader(getContextClasses(), providerClass, contextResolver);
-			if (!classesLoader.iterator().hasNext()) {
+			if (!classesLoader.getServices().iterator().hasNext()) {
 				return classesLoader;
 			}
 
@@ -170,75 +170,61 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	public ServiceRegistry<Class<?>> getSourceClasses() {
 		return sourceClasses;
 	}
-
+	
 	@Override
-	public void init() throws FactoryException {
-		synchronized (this) {
-			if (isInitialized()) {
-				throw new FactoryException("Context has been initialized");
+	protected void _init() {
+		// 扫描框架类
+		componentScan(Constants.SYSTEM_PACKAGE_NAME, contextResolver);
+		
+		super._init();
+		
+		logger.debug("Start initializing context[{}]!", this);
+
+		if (!iocResolver.isConfigured()) {
+			iocResolver.configure(this);
+		}
+
+		postProcessContext(new XmlContextPostProcessor());
+
+		if (!contextResolver.isConfigured()) {
+			contextResolver.configure(this);
+		}
+
+		// 因为typeFilter可能发生变化
+		contextClassesLoader.reload();
+
+		for (Class<?> clazz : getContextClasses().getServices()) {
+			BeanDefinition beanDefinition = contextResolver.resolveBeanDefinition(clazz);
+			if (beanDefinition != null) {
+				registerDefinition(beanDefinition);
 			}
 
-			try {
-				// 扫描框架类
-				componentScan(Constants.SYSTEM_PACKAGE_NAME, contextResolver);
-
-				super.init();
-				logger.debug("Start initializing context[{}]!", this);
-
-				if (!iocResolver.isConfigured()) {
-					iocResolver.configure(this);
-				}
-
-				postProcessContext(new XmlContextPostProcessor());
-
-				if (!contextResolver.isConfigured()) {
-					contextResolver.configure(this);
-				}
-
-				// 因为typeFilter可能发生变化
-				contextClassesLoader.reload();
-
-				for (Class<?> clazz : getContextClasses()) {
-					BeanDefinition beanDefinition = contextResolver.resolveBeanDefinition(clazz);
+			if (contextResolver.canResolveExecutable(clazz)) {
+				for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+					beanDefinition = contextResolver.resolveBeanDefinition(clazz, constructor);
 					if (beanDefinition != null) {
 						registerDefinition(beanDefinition);
 					}
+				}
 
-					if (contextResolver.canResolveExecutable(clazz)) {
-						for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
-							beanDefinition = contextResolver.resolveBeanDefinition(clazz, constructor);
-							if (beanDefinition != null) {
-								registerDefinition(beanDefinition);
-							}
-						}
-
-						for (Method method : clazz.getDeclaredMethods()) {
-							beanDefinition = contextResolver.resolveBeanDefinition(clazz, method);
-							if (beanDefinition != null) {
-								registerDefinition(beanDefinition);
-							}
-						}
+				for (Method method : clazz.getDeclaredMethods()) {
+					beanDefinition = contextResolver.resolveBeanDefinition(clazz, method);
+					if (beanDefinition != null) {
+						registerDefinition(beanDefinition);
 					}
 				}
-
-				if (!contextPostProcessors.isConfigured()) {
-					contextPostProcessors.configure(this);
-				}
-
-				for (ContextPostProcessor postProcessor : contextPostProcessors) {
-					postProcessContext(postProcessor);
-				}
-
-				logger.debug("Started context[{}]!", this);
-			} finally {
-				initialized = true;
 			}
 		}
-	}
 
-	@Override
-	public boolean isInitialized() {
-		return super.isInitialized() && initialized;
+		if (!contextPostProcessors.isConfigured()) {
+			contextPostProcessors.configure(this);
+		}
+
+		for (ContextPostProcessor postProcessor : contextPostProcessors) {
+			postProcessContext(postProcessor);
+		}
+
+		logger.debug("Started context[{}]!", this);
 	}
 
 	@Override

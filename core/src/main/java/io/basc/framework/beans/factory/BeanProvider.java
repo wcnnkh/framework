@@ -4,7 +4,7 @@ import java.util.NoSuchElementException;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.Executable;
+import io.basc.framework.execution.Executor;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Optional;
@@ -37,7 +37,7 @@ public interface BeanProvider<T> extends ParameterDescriptor, Optional<T> {
 	 * @return
 	 */
 	@Nullable
-	Executable getExecutor();
+	Executor getExecutor();
 
 	/**
 	 * 是否是单例

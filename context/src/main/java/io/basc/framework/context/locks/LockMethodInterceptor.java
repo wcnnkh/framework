@@ -6,8 +6,7 @@ import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.ExecutionInterceptor;
-import io.basc.framework.execution.Executable;
+import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.locks.LockFactory;
 import io.basc.framework.locks.ReentrantLockFactory;
@@ -33,8 +32,8 @@ public final class LockMethodInterceptor implements ExecutionInterceptor {
 	}
 
 	@Override
-	public Object intercept(Executor source, Executable executor, Elements<? extends Object> args) throws Throwable {
-		LockConfig lockConfig = Annotations.getAnnotation(LockConfig.class, executor.getTypeDescriptor());
+	public Object intercept(Executor executor, Elements<? extends Object> args) throws Throwable {
+		LockConfig lockConfig = Annotations.getAnnotation(LockConfig.class, executor.getReturnType());
 		if (lockConfig == null) {
 			return executor.execute(args);
 		}

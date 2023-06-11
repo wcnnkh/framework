@@ -1,6 +1,8 @@
 package io.basc.framework.beans.factory.support;
 
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 
@@ -27,6 +29,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 	private final ConcurrentHashMap<String, FactoryBean<? extends Object>> factoryBeanMap = new ConcurrentHashMap<>();
 	private final BeanPostProcessorRegistry beanPostProcessorRegistry = new BeanPostProcessorRegistry();
 	private final ServiceRegistry<BeanFactoryPostProcessor> beanFactoryPostProcessorRegistry = new ServiceRegistry<>();
+	private final Set<String> initializedSingletonSet = new HashSet<>();
 
 	public AbstractBeanFactory() {
 		registerSingleton(BeanFactory.class.getSimpleName(), this);
@@ -264,15 +267,6 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 		return containsSingleton(name) || isFactoryBean(name);
 	}
 
-	protected void dependence(Object bean, String beanName) throws BeansException {
-		FactoryBean<? extends Object> factoryBean = getFactoryBean(beanName);
-		if (factoryBean != null) {
-			if (factoryBean instanceof LifecycleFactoryBean) {
-				((LifecycleFactoryBean<?>) factoryBean).dependence(factoryBean);
-			}
-		}
-	}
-
 	protected void init(Object bean, String beanName) throws BeansException {
 		FactoryBean<? extends Object> factoryBean = getFactoryBean(beanName);
 		if (factoryBean != null) {
@@ -290,6 +284,38 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 		}
 	}
 
+	private boolean removeInitializedSingleton(String beanName) {
+		if (initializedSingletonSet.remove(beanName)) {
+			return true;
+		}
+
+		for (String alias : getAliases(beanName)) {
+			if (initializedSingletonSet.remove(alias)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isInitializedSingleton(String beanName) {
+		if (initializedSingletonSet.contains(beanName)) {
+			return true;
+		}
+
+		for (String alias : getAliases(beanName)) {
+			if (initializedSingletonSet.contains(alias)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	protected void _initializationBean(String beanName, Object bean) throws BeansException {
+		beanPostProcessorRegistry.postProcessBeforeInitialization(bean, beanName);
+		init(bean, beanName);
+		beanPostProcessorRegistry.postProcessAfterInitialization(bean, beanName);
+	}
+
 	@Override
 	public void initializationBean(String beanName, Object bean) throws BeansException {
 		if (!isFactoryBean(beanName)) {
@@ -297,13 +323,21 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 			return;
 		}
 
-		beanPostProcessorRegistry.postProcessBeforeDependencies(bean, beanName);
-		dependence(bean, beanName);
-		beanPostProcessorRegistry.postProcessAfterDependencies(bean, beanName);
+		if (isSingleton(beanName)) {
+			Lock writeLock = getReadWriteLock().writeLock();
+			writeLock.lock();
+			try {
+				if (isInitializedSingleton(beanName)) {
+					throw new BeansException("Already initialized '" + beanName + "'");
+				}
 
-		beanPostProcessorRegistry.postProcessBeforeDependencies(bean, beanName);
-		init(bean, beanName);
-		beanPostProcessorRegistry.postProcessAfterDependencies(bean, beanName);
+				_initializationBean(beanName, bean);
+			} finally {
+				writeLock.unlock();
+			}
+		} else {
+			_initializationBean(beanName, bean);
+		}
 	}
 
 	protected void destroy(Object bean, String beanName) throws BeansException {
@@ -323,6 +357,12 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 		}
 	}
 
+	protected void _destroyBean(String beanName, Object bean) throws BeansException {
+		beanPostProcessorRegistry.postProcessBeforeDestory(bean, beanName);
+		destroy(bean, beanName);
+		beanPostProcessorRegistry.postProcessAfterDestory(bean, beanName);
+	}
+
 	@Override
 	public void destroyBean(String beanName, Object bean) throws BeansException {
 		if (!isFactoryBean(beanName)) {
@@ -330,9 +370,21 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 			return;
 		}
 
-		beanPostProcessorRegistry.postProcessBeforeDestory(bean, beanName);
-		dependence(bean, beanName);
-		beanPostProcessorRegistry.postProcessAfterDestory(bean, beanName);
+		if (isSingleton(beanName)) {
+			Lock writeLock = getReadWriteLock().writeLock();
+			writeLock.lock();
+			try {
+				if (!removeInitializedSingleton(beanName)) {
+					throw new BeansException("Not initialized yet '" + beanName + "'");
+				}
+
+				_destroyBean(beanName, bean);
+			} finally {
+				writeLock.unlock();
+			}
+		} else {
+			_destroyBean(beanName, bean);
+		}
 	}
 
 	@Override
@@ -346,7 +398,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 		FactoryBean<? extends Object> factoryBean = getFactoryBean(beanName);
 		if (factoryBean instanceof DefinitionFactoryBean) {
 			DefinitionFactoryBean definitionFactoryBean = (DefinitionFactoryBean) factoryBean;
-			return definitionFactoryBean.getExecutor().getTypeDescriptor().getAnnotation(annotationType);
+			return definitionFactoryBean.getExecutor().getReturnType().getAnnotation(annotationType);
 		}
 		return null;
 	}

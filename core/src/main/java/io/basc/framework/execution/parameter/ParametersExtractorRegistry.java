@@ -2,20 +2,19 @@ package io.basc.framework.execution.parameter;
 
 import java.util.logging.Level;
 
-import io.basc.framework.execution.Executable;
+import io.basc.framework.execution.Executor;
 import io.basc.framework.logger.Levels;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Elements;
 
-public class ParametersExtractorRegistry extends ExecutableParametersExtractorRegistry
-		implements ParameterExtractor {
+public class ParametersExtractorRegistry extends ExecutableParametersExtractorRegistry implements ParameterExtractor {
 	private static Logger logger = LoggerFactory.getLogger(ParametersExtractorRegistry.class);
 	private final ParameterExtractorRegistry parameterExtractorRegistry = new ParameterExtractorRegistry();
 
 	@Override
-	public boolean canExtractExecutionParameters(Executable executable) {
+	public boolean canExtractExecutionParameters(Executor executable) {
 		if (super.canExtractExecutionParameters(executable)) {
 			return true;
 		}
@@ -42,7 +41,7 @@ public class ParametersExtractorRegistry extends ExecutableParametersExtractorRe
 	}
 
 	@Override
-	public Elements<? extends Object> extractExecutionParameters(Executable executable) throws ParameterException {
+	public Elements<? extends Object> extractExecutionParameters(Executor executable) throws ParameterException {
 		if (super.canExtractExecutionParameters(executable)) {
 			return super.extractExecutionParameters(executable);
 		}
