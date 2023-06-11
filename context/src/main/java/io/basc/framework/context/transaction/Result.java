@@ -1,7 +1,7 @@
 package io.basc.framework.context.transaction;
 
 import io.basc.framework.lang.Nullable;
-import io.basc.framework.transaction.RollbackOnly;
+import io.basc.framework.tx.RollbackOnly;
 import io.basc.framework.util.StandardStatus;
 import io.basc.framework.util.Status;
 

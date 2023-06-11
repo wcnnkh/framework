@@ -1,8 +1,8 @@
 package io.basc.framework.sql.transaction;
 
 import io.basc.framework.sql.ConnectionFactory;
-import io.basc.framework.transaction.Transaction;
-import io.basc.framework.transaction.TransactionUtils;
+import io.basc.framework.tx.Transaction;
+import io.basc.framework.tx.TransactionUtils;
 
 import java.lang.reflect.Proxy;
 import java.sql.Connection;

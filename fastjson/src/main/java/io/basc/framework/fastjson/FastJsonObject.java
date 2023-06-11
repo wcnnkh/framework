@@ -52,7 +52,7 @@ public final class FastJsonObject extends AbstractJson<String> implements JsonOb
 	}
 
 	public String toJsonString() {
-		return JSON.toJSONString(jsonObject, ExtendFastJsonValueFilter.INSTANCE);
+		return JSON.toJSONString(jsonObject);
 	}
 
 	public <T> T getObjectSupport(String key, Class<? extends T> type) {

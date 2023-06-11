@@ -1,21 +1,17 @@
 package io.basc.framework.context.transaction;
 
-import io.basc.framework.aop.MethodInterceptor;
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
-import io.basc.framework.core.annotation.Annotations;
-import io.basc.framework.core.reflect.MethodInvoker;
-import io.basc.framework.execution.Executable;
-import io.basc.framework.execution.ExecutionException;
-import io.basc.framework.execution.ExecutionInterceptor;
 import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.ExecutionInterceptor;
+import io.basc.framework.execution.Executable;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.transaction.RollbackOnly;
-import io.basc.framework.transaction.Transaction;
-import io.basc.framework.transaction.TransactionDefinition;
-import io.basc.framework.transaction.TransactionManager;
-import io.basc.framework.transaction.TransactionUtils;
+import io.basc.framework.tx.RollbackOnly;
+import io.basc.framework.tx.Transaction;
+import io.basc.framework.tx.TransactionDefinition;
+import io.basc.framework.tx.TransactionManager;
+import io.basc.framework.tx.TransactionUtils;
 import io.basc.framework.util.Elements;
 
 /**
@@ -37,7 +33,7 @@ public final class TransactionMethodInterceptor implements ExecutionInterceptor 
 		this.transactionDefinition = transactionDefinition;
 	}
 
-	private void invokerAfter(Transaction transaction, Object rtn, Executor executor) {
+	private void invokerAfter(Transaction transaction, Object rtn, Executable executor) {
 		if (rtn != null && (rtn instanceof RollbackOnly)) {
 			RollbackOnly result = (RollbackOnly) rtn;
 			if (result.isRollbackOnly()) {
@@ -50,8 +46,7 @@ public final class TransactionMethodInterceptor implements ExecutionInterceptor 
 	}
 
 	@Override
-	public Object intercept(Executable source, Executor executor, Elements<? extends Object> args)
-			throws ExecutionException {
+	public Object intercept(Executor source, Executable executor, Elements<? extends Object> args) throws Throwable {
 		TransactionManager transactionManager = TransactionUtils.getManager();
 		Transactional tx = executor.getTypeDescriptor().getAnnotation(Transactional.class);
 		if (tx == null && transactionManager.hasTransaction()) {

@@ -3,8 +3,8 @@ package io.basc.framework.execution.aop.cglib;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
-import io.basc.framework.execution.Executable;
 import io.basc.framework.execution.ExecutionInterceptor;
+import io.basc.framework.execution.Executables;
 import io.basc.framework.util.Elements;
 import lombok.Data;
 import net.sf.cglib.proxy.MethodProxy;
@@ -12,10 +12,10 @@ import net.sf.cglib.proxy.MethodProxy;
 @Data
 final class ExecutionInterceptorToMethodInterceptor implements net.sf.cglib.proxy.MethodInterceptor, Serializable {
 	private static final long serialVersionUID = 1L;
-	private final Executable source;
+	private final Executables source;
 	private final ExecutionInterceptor executionInterceptor;
 
-	public ExecutionInterceptorToMethodInterceptor(Executable source, ExecutionInterceptor executionInterceptor) {
+	public ExecutionInterceptorToMethodInterceptor(Executables source, ExecutionInterceptor executionInterceptor) {
 		this.source = source;
 		this.executionInterceptor = executionInterceptor;
 	}

@@ -1,12 +1,12 @@
 package io.basc.framework.hibernate;
 
-import io.basc.framework.transaction.Transaction;
-import io.basc.framework.transaction.TransactionUtils;
-
 import java.lang.reflect.Proxy;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+
+import io.basc.framework.tx.Transaction;
+import io.basc.framework.tx.TransactionUtils;
 
 public final class HibernateUtils {
 

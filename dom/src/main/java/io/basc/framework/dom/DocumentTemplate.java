@@ -63,7 +63,7 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 
 	@Override
 	public boolean canWrite(TypeDescriptor sourceTypeDescriptor) {
-		for (DocumentWriter writer : getWriters()) {
+		for (DocumentWriter writer : getWriters().getServices()) {
 			if (writer.canWrite(sourceTypeDescriptor)) {
 				return true;
 			}
@@ -74,7 +74,7 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 	@Override
 	public void write(Document document, Node parentNode, String nodeName, Object source,
 			TypeDescriptor sourceTypeDescriptor) {
-		for (DocumentWriter writer : getWriters()) {
+		for (DocumentWriter writer : getWriters().getServices()) {
 			if (writer.canWrite(sourceTypeDescriptor)) {
 				writer.write(document, parentNode, nodeName, source, sourceTypeDescriptor);
 				return;
@@ -91,7 +91,7 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 			return false;
 		}
 
-		for (DocumentParser parser : getParsers()) {
+		for (DocumentParser parser : getParsers().getServices()) {
 			if (parser.canParse(resource)) {
 				return true;
 			}
@@ -106,7 +106,7 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 			return null;
 		}
 
-		for (DocumentParser parser : getParsers()) {
+		for (DocumentParser parser : getParsers().getServices()) {
 			if (parser.canParse(resource)) {
 				try {
 					return parser.parse(resource, processor);
@@ -200,7 +200,7 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 
 	@Override
 	public boolean canTransform(Document document) {
-		for (DocumentTransformer transformer : getTransformers()) {
+		for (DocumentTransformer transformer : getTransformers().getServices()) {
 			if (transformer.canTransform(document)) {
 				return true;
 			}
@@ -217,7 +217,7 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 
 	@Override
 	public void transform(Document document, OutputStream output) throws DomException {
-		for (DocumentTransformer transformer : getTransformers()) {
+		for (DocumentTransformer transformer : getTransformers().getServices()) {
 			if (transformer.canTransform(document)) {
 				try {
 					transformer.transform(document, output);
@@ -232,7 +232,7 @@ public class DocumentTemplate implements Configurable, DocumentParser, DocumentW
 
 	@Override
 	public void transform(Document document, Writer writer) throws DomException {
-		for (DocumentTransformer transformer : getTransformers()) {
+		for (DocumentTransformer transformer : getTransformers().getServices()) {
 			if (transformer.canTransform(document)) {
 				try {
 					transformer.transform(document, writer);

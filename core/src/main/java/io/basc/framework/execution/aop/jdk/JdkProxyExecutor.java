@@ -3,15 +3,14 @@ package io.basc.framework.execution.aop.jdk;
 import java.lang.reflect.InvocationHandler;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.ExecutionException;
-import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.Executable;
 import io.basc.framework.lang.UnsupportedException;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Elements;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class JdkProxyExecutor implements Executor {
+public class JdkProxyExecutor implements Executable {
 	private final TypeDescriptor typeDescriptor;
 	private final Class<?>[] interfaces;
 	private final InvocationHandler invocationHandler;
@@ -35,7 +34,7 @@ public class JdkProxyExecutor implements Executor {
 	}
 
 	@Override
-	public Object execute(Elements<? extends Object> args) throws ExecutionException {
+	public Object execute(Elements<? extends Object> args) {
 		if (!args.isEmpty()) {
 			throw new UnsupportedException(typeDescriptor.toString());
 		}

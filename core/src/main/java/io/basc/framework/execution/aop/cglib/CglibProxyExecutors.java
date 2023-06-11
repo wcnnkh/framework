@@ -3,14 +3,14 @@ package io.basc.framework.execution.aop.cglib;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.execution.ExecutionInterceptor;
-import io.basc.framework.execution.Executors;
+import io.basc.framework.execution.Executables;
 import io.basc.framework.mapper.ParameterUtils;
 import io.basc.framework.util.Elements;
 import lombok.Data;
 import net.sf.cglib.proxy.Enhancer;
 
 @Data
-public class CglibProxyExecutors implements Executors {
+public class CglibProxyExecutors implements Executables {
 	private final TypeDescriptor source;
 	private final Enhancer enhancer;
 	private volatile Elements<? extends CglibEnhanceExecutor> executors;
@@ -28,7 +28,7 @@ public class CglibProxyExecutors implements Executors {
 	}
 
 	@Override
-	public Elements<? extends CglibEnhanceExecutor> getExecutors() {
+	public Elements<? extends CglibEnhanceExecutor> getMembers() {
 		if (executors == null) {
 			synchronized (this) {
 				if (executors == null) {

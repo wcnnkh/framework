@@ -27,7 +27,7 @@ public class DefaultServiceLoaderFactory extends DefaultBeanFactory implements C
 					serviceLoader = new ServiceRegistry<>();
 					serviceLoaderMap.putIfAbsent(serviceClass, serviceLoader);
 				}
-				serviceLoader.getServiceLoaders().register(getServiceLoaderInternal(serviceClass));
+				serviceLoader.getServiceLoaderRegistry().register(getServiceLoaderInternal(serviceClass));
 			}
 		}
 		return serviceLoader;

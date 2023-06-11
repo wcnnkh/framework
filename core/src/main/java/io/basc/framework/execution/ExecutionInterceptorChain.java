@@ -4,44 +4,37 @@ import java.util.Iterator;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-final class ExecutionInterceptorChain implements Executor {
+@Getter
+@RequiredArgsConstructor
+final class ExecutionInterceptorChain implements Executable {
+	private final Executables context;
+	private final Executable executable;
 	private final Iterator<? extends ExecutionInterceptor> iterator;
-	private final Executable source;
-	private final Executor executor;
 
-	public ExecutionInterceptorChain(Executable source, Iterator<? extends ExecutionInterceptor> iterator,
-			Executor executor) {
-		Assert.requiredArgument(source != null, "source");
-		Assert.requiredArgument(iterator != null, "iterator");
-		Assert.requiredArgument(executor != null, "executor");
-		this.source = source;
-		this.iterator = iterator;
-		this.executor = executor;
-	}
-
-	public Object execute(Elements<? extends Object> args) throws ExecutionException {
+	public Object execute(Elements<? extends Object> args) throws Throwable {
 		if (iterator.hasNext()) {
-			return iterator.next().intercept(source, executor, args);
+			return iterator.next().intercept(context, executable, args);
 		}
-		return executor.execute(args);
+		return executable.execute(args);
 	}
 
 	@Override
 	public TypeDescriptor getTypeDescriptor() {
-		return executor.getTypeDescriptor();
+		return executable.getTypeDescriptor();
 	}
 
 	@Override
 	public Elements<? extends ParameterDescriptor> getParameterDescriptors() {
-		return executor.getParameterDescriptors();
+		return executable.getParameterDescriptors();
 	}
 
 	@Override
 	public String getName() {
-		return executor.getName();
+		return executable.getName();
 	}
 
 }

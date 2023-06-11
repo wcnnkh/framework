@@ -1,15 +1,14 @@
 package io.basc.framework.execution.aop;
 
-import io.basc.framework.execution.Executable;
-import io.basc.framework.execution.ExecutionInterceptor;
 import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.Executors;
+import io.basc.framework.execution.ExecutionInterceptor;
+import io.basc.framework.execution.Executable;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.ServiceRegistry;
 import io.basc.framework.util.StringUtils;
 import io.basc.framework.util.XUtils;
 
-public class Aop extends Proxies {
+public class Aop extends ProxyFactoryRegistry {
 	private final String id;
 	private final ServiceRegistry<ExecutionInterceptor> executionInterceptorRegistry = new ServiceRegistry<>();
 
@@ -33,21 +32,21 @@ public class Aop extends Proxies {
 	}
 
 	@Override
-	public Executors getProxy(Class<?> sourceClass, Class<?>[] interfaces,
+	public Proxy getProxy(Class<?> sourceClass, Class<?>[] interfaces,
 			@Nullable ExecutionInterceptor executionInterceptor) {
 		// 合并默认的拦截器
 		return super.getProxy(sourceClass, interfaces, executionInterceptor);
 	}
 
-	public final Executable getProxy(Class<?> sourceClass) {
+	public final Executor getProxy(Class<?> sourceClass) {
 		return getProxy(sourceClass, null, null);
 	}
 
-	public final Executor getProxyExecutor(Executor executor) {
+	public final Executable getProxyExecutor(Executable executor) {
 		return getProxyExecutor(executor, null);
 	}
 
-	public Executor getProxyExecutor(Executor executor, @Nullable ExecutionInterceptor executionInterceptor) {
+	public Executable getProxyExecutor(Executable executor, @Nullable ExecutionInterceptor executionInterceptor) {
 		// 代理一个拦截器
 		return null;
 	}

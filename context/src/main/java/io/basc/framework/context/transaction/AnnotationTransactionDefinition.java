@@ -1,8 +1,8 @@
 package io.basc.framework.context.transaction;
 
-import io.basc.framework.transaction.Isolation;
-import io.basc.framework.transaction.Propagation;
-import io.basc.framework.transaction.TransactionDefinition;
+import io.basc.framework.tx.Isolation;
+import io.basc.framework.tx.Propagation;
+import io.basc.framework.tx.TransactionDefinition;
 
 
 final class AnnotationTransactionDefinition implements TransactionDefinition {

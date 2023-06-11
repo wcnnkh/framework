@@ -48,7 +48,7 @@ public class Members<E> implements Cloneable, Consumer<E> {
 		this.superclass = members.superclass;
 	}
 
-	public Members(Class<?> source, @Nullable Function<? super Class<?>, ? extends Elements<E>> processor) {
+	public Members(Class<?> source, @Nullable final Function<? super Class<?>, ? extends Elements<E>> processor) {
 		this(ResolvableType.forClass(Assert.requiredArgument(source != null, "source", source)), null,
 				processor == null ? null : (type) -> processor.apply(type.getRawClass()));
 	}
@@ -61,7 +61,7 @@ public class Members<E> implements Cloneable, Consumer<E> {
 	 * @param processor 如果为空不会自动加载
 	 */
 	public Members(ResolvableType source, @Nullable Elements<E> elements,
-			@Nullable Function<? super ResolvableType, ? extends Elements<E>> processor) {
+			@Nullable final Function<? super ResolvableType, ? extends Elements<E>> processor) {
 		Assert.requiredArgument(source != null, "source");
 		this.source = source;
 		this.elements = elements;
@@ -155,7 +155,7 @@ public class Members<E> implements Cloneable, Consumer<E> {
 	public Members<E> getSuperclass() {
 		if (superclass == null && processor != null) {
 			ResolvableType superType = this.source.getSuperType();
-			if (superType == null) {
+			if (superType == null || superType == ResolvableType.NONE) {
 				return null;
 			}
 
@@ -253,10 +253,10 @@ public class Members<E> implements Cloneable, Consumer<E> {
 	public Members<E> with(Function<? super Elements<E>, ? extends Elements<E>> withProcessor) {
 		Assert.requiredArgument(withProcessor != null, "withProcessor");
 		Members<E> structure = new Members<>(this.source, null, this.processor);
-		this.elements = withProcessor.apply(this.getElements());
-		if (this.elements == null) {
+		structure.elements = withProcessor.apply(this.getElements());
+		if (structure.elements == null) {
 			// 防止重复加载
-			this.elements = Elements.empty();
+			structure.elements = Elements.empty();
 		}
 		structure.superclass = this.superclass;
 		structure.interfaces = this.interfaces;
@@ -264,6 +264,7 @@ public class Members<E> implements Cloneable, Consumer<E> {
 	}
 
 	public Members<E> concat(Elements<? extends E> elements) {
+		Assert.requiredArgument(elements != null, "elements");
 		return with((e) -> e.concat(elements));
 	}
 }

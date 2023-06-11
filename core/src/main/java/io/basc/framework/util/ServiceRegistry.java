@@ -32,8 +32,8 @@ import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 public class ServiceRegistry<S> implements ServiceLoader<S>, DynamicElementRegistry<S> {
 	private final BroadcastEventDispatcher<ChangeEvent<Elements<S>>> elementEventDispatcher;
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-	private final ServiceInjectors<S> serviceInjectors = new ServiceInjectors<>();
-	private final ServiceLoaders<S> serviceLoaders = new ServiceLoaders<>(this);
+	private final ServiceInjectorRegistry<S> serviceInjectorRegistry = new ServiceInjectorRegistry<>();
+	private final ServiceLoaderRegistry<S> serviceLoaderRegistry = new ServiceLoaderRegistry<>(this);
 	private volatile TreeMap<WeightedElement<S>, Map<ServiceInjector<? super S>, Registration>> serviceMap;
 	private volatile long version = 0;
 
@@ -57,7 +57,7 @@ public class ServiceRegistry<S> implements ServiceLoader<S>, DynamicElementRegis
 			return order;
 		});
 		this.elementEventDispatcher = elementEventDispatcher;
-		serviceInjectors.getElementEventDispatcher().registerListener((event) -> {
+		serviceInjectorRegistry.getElementEventDispatcher().registerListener((event) -> {
 			WriteLock writeLock = this.lock.writeLock();
 			try {
 				writeLock.lock();
@@ -87,7 +87,7 @@ public class ServiceRegistry<S> implements ServiceLoader<S>, DynamicElementRegis
 					map = new LinkedHashMap<>();
 				}
 
-				for (ServiceInjector<? super S> injector : this.serviceInjectors.getElements()) {
+				for (ServiceInjector<? super S> injector : this.serviceInjectorRegistry.getElements()) {
 					Registration registration = injector.inject(element.getElement());
 					map.put(injector, registration);
 				}
@@ -105,7 +105,7 @@ public class ServiceRegistry<S> implements ServiceLoader<S>, DynamicElementRegis
 		WriteLock writeLock = this.lock.writeLock();
 		try {
 			writeLock.lock();
-			Registration registration = serviceLoaders.clear();
+			Registration registration = serviceLoaderRegistry.clear();
 			List<ElementRegistration<S>> list = new ArrayList<>(serviceMap.size());
 			for (Entry<WeightedElement<S>, Map<ServiceInjector<? super S>, Registration>> entry : serviceMap
 					.entrySet()) {
@@ -141,7 +141,7 @@ public class ServiceRegistry<S> implements ServiceLoader<S>, DynamicElementRegis
 
 	@Override
 	public Elements<S> getElements() {
-		serviceLoaders.touch();
+		serviceLoaderRegistry.touch();
 		ReadLock readLock = this.lock.readLock();
 		List<S> list;
 		try {
@@ -158,12 +158,12 @@ public class ServiceRegistry<S> implements ServiceLoader<S>, DynamicElementRegis
 		return lock;
 	}
 
-	public ServiceInjectors<S> getServiceInjectors() {
-		return serviceInjectors;
+	public ServiceInjectorRegistry<S> getServiceInjectorRegistry() {
+		return serviceInjectorRegistry;
 	}
 
-	public ServiceLoaders<S> getServiceLoaders() {
-		return serviceLoaders;
+	public ServiceLoaderRegistry<S> getServiceLoaderRegistry() {
+		return serviceLoaderRegistry;
 	}
 
 	@Override
@@ -212,7 +212,7 @@ public class ServiceRegistry<S> implements ServiceLoader<S>, DynamicElementRegis
 
 	@Override
 	public void reload() {
-		serviceLoaders.reload();
+		serviceLoaderRegistry.reload();
 	}
 
 	private void updateInjector(ChangeEvent<Elements<ServiceInjector<? super S>>> event) {

@@ -10,7 +10,7 @@ public final class FastJsonSupport extends AbstractJsonSupport {
 
 	@Override
 	protected String toJsonStringInternal(Object obj) {
-		return JSON.toJSONString(obj, ExtendFastJsonValueFilter.INSTANCE);
+		return JSON.toJSONString(obj);
 	}
 
 	public JsonElement parseJson(String text) {

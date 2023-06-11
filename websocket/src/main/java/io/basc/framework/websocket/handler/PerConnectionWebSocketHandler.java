@@ -59,7 +59,7 @@ public class PerConnectionWebSocketHandler extends BeanFactoryAccessor implement
 	}
 
 	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-		WebSocketHandler handler = getBeanFactory().getInstance(handlerType);
+		WebSocketHandler handler = getBeanFactory().getBean(handlerType);
 		this.handlers.put(session, handler);
 		handler.afterConnectionEstablished(session);
 	}
@@ -95,6 +95,9 @@ public class PerConnectionWebSocketHandler extends BeanFactoryAccessor implement
 	private void destroyHandler(WebSocketSession session) {
 		WebSocketHandler handler = this.handlers.remove(session);
 		try {
+			if (handler != null) {
+				this.provider.destroy(handler);
+			}
 			if (!getBeanFactory().isSingleton(handlerType)) {
 				if (handler != null) {
 					BeanDefinition definition = getBeanFactory().getDefinition(handlerType);

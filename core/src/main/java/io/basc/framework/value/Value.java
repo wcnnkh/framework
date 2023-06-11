@@ -25,12 +25,12 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 	static final Value[] EMPTY_ARRAY = new Value[0];
 
 	/**
-	 * 这并不是指基本数据类型，这是指Value可以直接转换的类型
+	 * 不可以发生转换的类型
 	 * 
 	 * @param type
 	 * @return
 	 */
-	public static boolean isBaseType(Type type) {
+	public static boolean isUnconvertibleType(Type type) {
 		if (type == null) {
 			return false;
 		}
@@ -43,7 +43,17 @@ public interface Value extends Optional<Value>, IntSupplier, LongSupplier, Doubl
 		}
 
 		return ClassUtils.isPrimitiveOrWrapper(type) || type == String.class || type == BigDecimal.class
-				|| type == BigInteger.class || Number.class == type || type == Class.class;
+				|| type == BigInteger.class || type == Class.class;
+	}
+
+	/**
+	 * 这并不是指基本数据类型，这是指Value可以直接转换的类型
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static boolean isBaseType(Type type) {
+		return isUnconvertibleType(type) || Number.class == type;
 	}
 
 	static Value of(@Nullable Object value) {

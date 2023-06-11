@@ -1,8 +1,7 @@
 package io.basc.framework.execution.aop.cglib;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.execution.ExecutionException;
-import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.Executable;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Elements;
 import lombok.Data;
@@ -11,7 +10,7 @@ import net.sf.cglib.proxy.Enhancer;
 
 @RequiredArgsConstructor
 @Data
-public class CglibEnhanceExecutor implements Executor {
+public class CglibEnhanceExecutor implements Executable {
 	private final TypeDescriptor typeDescriptor;
 	private final Enhancer enhancer;
 	private final Elements<? extends ParameterDescriptor> parameterDescriptors;
@@ -27,7 +26,7 @@ public class CglibEnhanceExecutor implements Executor {
 	}
 
 	@Override
-	public Object execute(Elements<? extends Object> args) throws ExecutionException {
+	public Object execute(Elements<? extends Object> args) {
 		return enhancer.create(parameterDescriptors.map((e) -> e.getTypeDescriptor().getType()).toArray(new Class[0]),
 				args.toArray());
 	}

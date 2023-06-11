@@ -103,7 +103,7 @@ public class DateCodec implements Codec<Date, String> {
 		return encode(d);
 	}
 
-	public boolean contains(Date source, Date target) {
+	public boolean equals(Date source, Date target) {
 		if (source == null) {
 			return target == null;
 		}
@@ -122,7 +122,7 @@ public class DateCodec implements Codec<Date, String> {
 		return date1.equals(date2);
 	}
 
-	public boolean contains(long source, long target) {
-		return contains(new Date(source), new Date(target));
+	public boolean equals(long source, long target) {
+		return equals(new Date(source), new Date(target));
 	}
 }

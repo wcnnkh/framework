@@ -2,8 +2,9 @@ package io.basc.framework.execution;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 可被拦截的执行器
@@ -11,40 +12,32 @@ import io.basc.framework.util.Elements;
  * @author wcnnkh
  *
  */
-public class InterceptableExecutor implements Executor {
+@RequiredArgsConstructor
+@Getter
+public class InterceptableExecutor implements Executable {
+	private final Executables source;
+	private final Executable executable;
 	private final Iterable<? extends ExecutionInterceptor> interceptors;
-	private final Executable source;
-	private final Executor executor;
-
-	public InterceptableExecutor(Executable source, Iterable<? extends ExecutionInterceptor> interceptors,
-			Executor executor) {
-		Assert.requiredArgument(source != null, "source");
-		Assert.requiredArgument(interceptors != null, "interceptors");
-		Assert.requiredArgument(executor != null, "executor");
-		this.source = source;
-		this.interceptors = interceptors;
-		this.executor = executor;
-	}
 
 	@Override
 	public TypeDescriptor getTypeDescriptor() {
-		return executor.getTypeDescriptor();
+		return executable.getTypeDescriptor();
 	}
 
 	@Override
-	public Object execute(Elements<? extends Object> args) throws ExecutionException {
-		ExecutionInterceptorChain chain = new ExecutionInterceptorChain(source, this.interceptors.iterator(),
-				this.executor);
+	public Object execute(Elements<? extends Object> args) throws Throwable {
+		ExecutionInterceptorChain chain = new ExecutionInterceptorChain(source, this.executable,
+				this.interceptors.iterator());
 		return chain.execute(args);
 	}
 
 	@Override
 	public Elements<? extends ParameterDescriptor> getParameterDescriptors() {
-		return this.executor.getParameterDescriptors();
+		return this.executable.getParameterDescriptors();
 	}
 
 	@Override
 	public String getName() {
-		return executor.getName();
+		return executable.getName();
 	}
 }

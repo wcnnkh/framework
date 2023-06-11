@@ -20,7 +20,6 @@ import io.basc.framework.util.ObjectUtils;
 import io.basc.framework.util.StringUtils;
 
 public final class HttpUtils {
-	@SuppressWarnings("unchecked")
 	private static final InheritableThreadLocalConfigurator<HttpClient> CONFIGURATOR = new InheritableThreadLocalConfigurator<>(
 			HttpClient.class)
 			.ifAbsentDefaultService(() -> Sys.getEnv().getServiceLoader(HttpClient.class, DefaultHttpClient.class)

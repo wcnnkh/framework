@@ -52,7 +52,7 @@ public class ConfigurableServices<T> extends ServiceRegistry<T> implements Confi
 			if (configurableRegistration != null) {
 				configurableRegistration.unregister();
 			}
-			configurableRegistration = getServiceLoaders().register(serviceLoader);
+			configurableRegistration = getServiceLoaderRegistry().register(serviceLoader);
 		}
 	}
 

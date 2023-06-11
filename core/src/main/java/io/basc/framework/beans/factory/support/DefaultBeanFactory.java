@@ -8,7 +8,7 @@ import io.basc.framework.beans.factory.NoSuchBeanDefinitionException;
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.BeanDefinitionOverrideException;
-import io.basc.framework.execution.parameter.ExecutionParametersExtractorRegistry;
+import io.basc.framework.execution.parameter.ParametersExtractorRegistry;
 import io.basc.framework.util.Elements;
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +16,8 @@ import lombok.RequiredArgsConstructor;
 public class DefaultBeanFactory extends AbstractHierarchicalBeanFactory {
 	private final Map<String, BeanDefinition> definitionMap = new ConcurrentHashMap<String, BeanDefinition>();
 	private final Scope scope;
-	private final ExecutionParametersExtractorRegistry executionParametersExtractorRegistry = new ExecutionParametersExtractorRegistry();
+	private final ParametersExtractorRegistry parametersExtractorRegistry = new BeanFactoryExecutableParametersExtractor(
+			this);
 
 	protected BeanDefinition getBeanDefinitionOfCache(String beanName) {
 		BeanDefinition beanDefinition = definitionMap.get(beanName);
@@ -53,8 +54,7 @@ public class DefaultBeanFactory extends AbstractHierarchicalBeanFactory {
 			definitionMap.put(beanName, beanDefinition);
 			if (beanDefinition.getScope().equals(scope)) {
 				// 同一个作用域
-				registerFactoryBean(beanName,
-						new DefinitionFactoryBean(beanDefinition, executionParametersExtractorRegistry));
+				registerFactoryBean(beanName, new DefinitionFactoryBean(beanDefinition, parametersExtractorRegistry));
 			}
 		} finally {
 			writeLock.unlock();
@@ -93,7 +93,7 @@ public class DefaultBeanFactory extends AbstractHierarchicalBeanFactory {
 		return Elements.of(definitionMap.keySet());
 	}
 
-	public ExecutionParametersExtractorRegistry getExecutionParametersExtractorRegistry() {
-		return executionParametersExtractorRegistry;
+	public ParametersExtractorRegistry getParametersExtractorRegistry() {
+		return parametersExtractorRegistry;
 	}
 }

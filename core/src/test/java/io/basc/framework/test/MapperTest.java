@@ -7,12 +7,12 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import io.basc.framework.core.reflect.ReflectionUtils;
 import io.basc.framework.json.JsonUtils;
-import io.basc.framework.mapper.Field;
-import io.basc.framework.mapper.Mapping;
 import io.basc.framework.mapper.support.DefaultObjectMapper;
 import io.basc.framework.util.XUtils;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 public class MapperTest {
 	@Test
@@ -30,73 +30,20 @@ public class MapperTest {
 		assertTrue(map.get("k").equals(a.getK()));
 		assertTrue(map.get("b.bk").equals(a.getB().getBk()));
 		System.out.println(a);
-
-		Mapping<? extends Field> structure = mapper.getMapping(A.class);
-		Field firstField = structure.getElements().first();
-		structure = structure.setParentField(firstField);
-		structure = structure.setNameNestingDepth(1);
-		structure.getElements().convert((e) -> e.limit(1))
-				.forEach((e) -> assertTrue(e.getName().startsWith(firstField.getName())));
 	}
 
+	@Data
+	@EqualsAndHashCode(callSuper = true)
+	@ToString(callSuper = true)
 	public static class A extends B {
 		private int v;
 		private String k;
 		private B b;
 		private Map<String, String> s;
-
-		public int getV() {
-			return v;
-		}
-
-		public void setV(int v) {
-			this.v = v;
-		}
-
-		public String getK() {
-			return k;
-		}
-
-		public void setK(String k) {
-			this.k = k;
-		}
-
-		public B getB() {
-			return b;
-		}
-
-		public void setB(B b) {
-			this.b = b;
-		}
-
-		public Map<String, String> getS() {
-			return s;
-		}
-
-		public void setS(Map<String, String> s) {
-			this.s = s;
-		}
-
-		@Override
-		public String toString() {
-			return ReflectionUtils.toString(this);
-		}
 	}
 
+	@Data
 	public static class B {
 		private String bk;
-
-		public String getBk() {
-			return bk;
-		}
-
-		public void setBk(String bk) {
-			this.bk = bk;
-		}
-
-		@Override
-		public String toString() {
-			return ReflectionUtils.toString(this);
-		}
 	}
 }

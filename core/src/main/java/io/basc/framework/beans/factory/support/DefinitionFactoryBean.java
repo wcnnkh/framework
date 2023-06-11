@@ -1,11 +1,12 @@
 package io.basc.framework.beans.factory.support;
 
 import io.basc.framework.beans.BeansException;
+import io.basc.framework.beans.FatalBeanException;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.LifecycleFactoryBean;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.execution.Executor;
-import io.basc.framework.execution.parameter.ExecutionParametersExtractor;
+import io.basc.framework.execution.Executable;
+import io.basc.framework.execution.parameter.ExecutableParametersExtractor;
 import io.basc.framework.util.Elements;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,16 +15,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DefinitionFactoryBean implements LifecycleFactoryBean<Object> {
 	private final BeanDefinition beanDefinition;
-	private final ExecutionParametersExtractor executionParametersExtractor;
+	private final ExecutableParametersExtractor executionParametersExtractor;
 	private volatile Elements<? extends Object> singletonConstructionParameters;
-	private volatile Executor executor;
+	private volatile Executable executor;
 	private volatile Object singletonObject;
 
-	public Executor getExecutor() {
+	public Executable getExecutor() {
 		if (executor == null) {
 			synchronized (this) {
 				if (executor == null) {
-					for (Executor executor : beanDefinition.getExecutors()) {
+					for (Executable executor : beanDefinition.getMembers()) {
 						if (executionParametersExtractor.canExtractExecutionParameters(executor)) {
 							this.executor = executor;
 							break;
@@ -47,12 +48,17 @@ public class DefinitionFactoryBean implements LifecycleFactoryBean<Object> {
 	}
 
 	private Object createObject() {
-		Executor executor = getExecutor();
+		Executable executor = getExecutor();
 		Elements<? extends Object> args = executionParametersExtractor.extractExecutionParameters(executor);
 		if (isSingleton()) {
 			this.singletonConstructionParameters = args;
 		}
-		return executor.execute(args);
+
+		try {
+			return executor.execute(args);
+		} catch (Throwable e) {
+			throw new FatalBeanException("Unable to obtain this instance", e);
+		}
 	}
 
 	@Override

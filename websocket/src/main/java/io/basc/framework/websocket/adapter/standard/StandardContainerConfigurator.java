@@ -24,10 +24,6 @@ public class StandardContainerConfigurator extends Configurator {
 			throw new InstantiationException("Not found bean factory");
 		}
 
-		if (!beanFactory.isInstance(endpointClass)) {
-			throw new InstantiationException("Not instance " + endpointClass.getName());
-		}
-
-		return beanFactory.getInstance(endpointClass);
+		return beanFactory.getBean(endpointClass);
 	}
 }

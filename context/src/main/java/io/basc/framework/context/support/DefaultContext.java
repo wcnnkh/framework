@@ -6,6 +6,7 @@ import java.util.Set;
 
 import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.beans.factory.FactoryException;
+import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.beans.factory.support.BeanDefinitionLoaderChain;
@@ -36,7 +37,7 @@ import io.basc.framework.util.ClassUtils;
 import io.basc.framework.util.ConcurrentReferenceHashMap;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.ServiceLoaders;
+import io.basc.framework.util.ServiceLoaderRegistry;
 import io.basc.framework.util.ServiceRegistry;
 import io.basc.framework.util.StringUtils;
 
@@ -55,7 +56,8 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 
 	private final ServiceRegistry<Class<?>> sourceClasses = new ServiceRegistry<Class<?>>();
 
-	public DefaultContext() {
+	public DefaultContext(Scope scope) {
+		super(scope);
 		contextClassesLoader.getServiceLoaders().register(sourceClasses);
 		IocBeanResolverExtend iocBeanResolverExtend = new IocBeanResolverExtend(this, iocResolver);
 		iocResolver.registerLast(iocBeanResolverExtend);
@@ -114,7 +116,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <S> ServiceLoader<S> getServiceLoaderInternal(Class<S> serviceClass) {
-		ServiceLoaders<S> registry = new ServiceLoaders<>();
+		ServiceLoaderRegistry<S> registry = new ServiceLoaderRegistry<>();
 		ServiceLoader<S> providerServices = (ServiceLoader<S>) getProviderClassesLoader(serviceClass)
 				.filter((e) -> isInstance(e)).map((e) -> getInstance(e));
 		registry.register(providerServices);

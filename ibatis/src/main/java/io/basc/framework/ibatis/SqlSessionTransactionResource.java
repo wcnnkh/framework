@@ -2,8 +2,8 @@ package io.basc.framework.ibatis;
 
 import org.apache.ibatis.session.SqlSession;
 
-import io.basc.framework.transaction.Resource;
-import io.basc.framework.transaction.Transaction;
+import io.basc.framework.tx.Resource;
+import io.basc.framework.tx.Transaction;
 
 public class SqlSessionTransactionResource implements Resource {
 	private final OpenSessionProcessor openSessionProcessor;

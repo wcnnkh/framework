@@ -34,7 +34,7 @@ public final class DefaultObjectMapping extends ObjectMapping<DefaultField, Defa
 		if (fieldMap == null) {
 			synchronized (this) {
 				if (fieldMap == null) {
-					List<DefaultField> list = getSuperclass().getElements().toList();
+					List<DefaultField> list = super.getElements().toList();
 					if (list.isEmpty()) {
 						fieldMap = Collections.emptyMap();
 						return;

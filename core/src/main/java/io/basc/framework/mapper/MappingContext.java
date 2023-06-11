@@ -11,14 +11,14 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public final class MappingContext extends SimpleAttributes<String, Value> implements ParentDiscover<MappingContext> {
 	private final Mapping<? extends Field> mapping;
-	private final Field context;
+	private final Field field;
 	private final MappingContext parent;
 
-	public MappingContext(Mapping<? extends Field> mapping, Field context, MappingContext parent) {
+	public MappingContext(Mapping<? extends Field> mapping, Field field, MappingContext parent) {
 		Assert.requiredArgument(mapping != null, "mapping");
-		Assert.requiredArgument(context != null, "context");
+		Assert.requiredArgument(field != null, "field");
 		this.mapping = mapping;
-		this.context = context;
+		this.field = field;
 		this.parent = parent;
 	}
 }

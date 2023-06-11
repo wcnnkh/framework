@@ -18,10 +18,9 @@ public interface ServiceLoaderFactory extends BeanFactory {
 		return namesServiceLoader.concat(serviceLoader);
 	}
 
-	@SuppressWarnings("unchecked")
-	default <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, Class<? extends S>... defaultClasses) {
-		ClassesServiceLoader<S> classesServiceLoader = new ClassesServiceLoader<>(this,
-				Elements.forArray(defaultClasses));
+	default <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, Class<?>... defaultClasses) {
+		ClassesServiceLoader<S> classesServiceLoader = new ClassesServiceLoader<>(this, serviceClass,
+				Elements.forArray(defaultClasses).filter((e) -> serviceClass.isAssignableFrom(e)));
 		ServiceLoader<S> serviceLoader = getServiceLoader(serviceClass);
 		return classesServiceLoader.concat(serviceLoader);
 	}

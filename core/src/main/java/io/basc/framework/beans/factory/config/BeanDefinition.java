@@ -4,7 +4,7 @@ import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.Executable;
-import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.Executables;
 import io.basc.framework.lang.Nullable;
 import io.basc.framework.util.Elements;
 
@@ -14,7 +14,7 @@ import io.basc.framework.util.Elements;
  * @author wcnnkh
  *
  */
-public interface BeanDefinition extends Executable {
+public interface BeanDefinition extends Executables {
 
 	String getResourceDescription();
 
@@ -25,7 +25,7 @@ public interface BeanDefinition extends Executable {
 	 * @param bean
 	 * @throws BeansException
 	 */
-	<T> void dependence(Executor executor, Object bean) throws BeansException;
+	<T> void dependence(Executable executor, Object bean) throws BeansException;
 
 	/**
 	 * 执行销毁
@@ -34,13 +34,13 @@ public interface BeanDefinition extends Executable {
 	 * @param bean
 	 * @throws BeansException
 	 */
-	<T> void destroy(Executor executor, T bean) throws BeansException;
+	<T> void destroy(Executable executor, T bean) throws BeansException;
 
 	/**
 	 * 可选的构造器
 	 */
 	@Override
-	Elements<? extends Executor> getExecutors();
+	Elements<? extends Executable> getMembers();
 
 	/**
 	 * Return the originating BeanDefinition, or {@code null} if none.
@@ -73,7 +73,7 @@ public interface BeanDefinition extends Executable {
 	 * @param bean
 	 * @throws BeansException
 	 */
-	<T> void init(Executor executor, Object bean) throws BeansException;
+	<T> void init(Executable executor, Object bean) throws BeansException;
 
 	/**
 	 * 是否是一个单例

@@ -8,16 +8,16 @@ import java.util.List;
 import org.junit.Test;
 
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.mapper.Copy;
+import io.basc.framework.mapper.support.Copy;
 import io.basc.framework.util.StopWatch;
 import lombok.ToString;
 
 public class CopyTest {
 	@Test
 	public void copyTest() {
-		System.out.println(ResolvableType.forClass(List.class)
+		assertTrue(ResolvableType.forClass(List.class)
 				.isAssignableFrom(ResolvableType.forClassWithGenerics(List.class, String.class)));
-		System.out.println(Object.class.isAssignableFrom(String.class));
+		assertTrue(Object.class.isAssignableFrom(String.class));
 
 		List<String> list = new ArrayList<>();
 		list.add("a");
@@ -30,7 +30,7 @@ public class CopyTest {
 		Copy.copy(source, target);
 		stopWatch.stop();
 		System.out.println(stopWatch.toString());
-		
+
 		System.out.println(target);
 		assertTrue(target.getList().size() == source.getList().size());
 		target.getList().clear();
@@ -40,7 +40,7 @@ public class CopyTest {
 		deepList.add("b");
 		source.setList(deepList);
 		stopWatch.start();
-		Copy.DEEP.copy(Source.class, source, null, Target.class, target, null);
+		Copy.DEEP.transform(source, Source.class, target, Target.class);
 		stopWatch.stop();
 		System.out.println(target);
 		assertTrue(target.getList().size() == source.getList().size());

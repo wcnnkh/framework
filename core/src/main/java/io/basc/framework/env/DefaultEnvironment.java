@@ -9,7 +9,6 @@ import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.beans.factory.support.BeanFactoryParametersExtractor;
 import io.basc.framework.beans.factory.support.DefaultServiceLoaderFactory;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.lang.ConfigurableConversionService;
@@ -72,14 +71,12 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 	public DefaultEnvironment(Scope scope) {
 		super(scope);
 		// 注册一个默认的参数解析
-		getExecutionParametersExtractorRegistry()
-				.registerLast(new BeanFactoryParametersExtractor(this, getConversionService()));
 		properties.setConversionService(conversionService);
 		conversionService.register(new ConverterConversionService(Resource.class, Properties.class,
 				Processor.of(new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers()))));
 		conversionService.register(new ResourceResolverConversionService(resourceResolvers));
 		registerSingleton(Environment.class.getName(), this);
-		this.properties.getServiceInjectors().register((instance) -> {
+		this.properties.getServiceInjectorRegistry().register((instance) -> {
 			if (instance instanceof EnvironmentAware) {
 				((EnvironmentAware) instance).setEnvironment(this);
 			}

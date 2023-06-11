@@ -4,7 +4,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import io.basc.framework.transaction.Resource;
+import io.basc.framework.tx.Resource;
 
 public class SessionTransactionResource implements Resource {
 	private final SessionFactory sessionFactory;

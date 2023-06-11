@@ -16,7 +16,7 @@ public class ConfigurableConversionService extends ConfigurableServices<Conversi
 
 	public ConfigurableConversionService() {
 		super(ConversionComparator.INSTANCE, ConversionService.class);
-		getServiceInjectors().register((service) -> {
+		getServiceInjectorRegistry().register((service) -> {
 			if (service instanceof ConversionServiceAware) {
 				((ConversionServiceAware) service).setConversionService(this);
 			}

@@ -350,6 +350,6 @@ public class TimeUtils extends DateCodec {
 	 * 判断是否是今天
 	 */
 	public static boolean isToday(long source) {
-		return DAY.contains(System.currentTimeMillis(), source);
+		return DAY.equals(System.currentTimeMillis(), source);
 	}
 }

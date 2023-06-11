@@ -1,12 +1,12 @@
 package io.basc.framework.sql.transaction;
 
-import io.basc.framework.transaction.TransactionException;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 
-public class ConnectionSavepoint implements io.basc.framework.transaction.Savepoint {
+import io.basc.framework.tx.TransactionException;
+
+public class ConnectionSavepoint implements io.basc.framework.tx.Savepoint {
 	private Connection connection;
 	private Savepoint savepoint;
 

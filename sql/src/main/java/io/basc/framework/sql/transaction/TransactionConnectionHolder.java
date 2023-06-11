@@ -6,11 +6,11 @@ import java.sql.SQLException;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.sql.ConnectionFactory;
-import io.basc.framework.transaction.Isolation;
-import io.basc.framework.transaction.Resource;
-import io.basc.framework.transaction.Savepoint;
-import io.basc.framework.transaction.Transaction;
-import io.basc.framework.transaction.TransactionException;
+import io.basc.framework.tx.Isolation;
+import io.basc.framework.tx.Resource;
+import io.basc.framework.tx.Savepoint;
+import io.basc.framework.tx.Transaction;
+import io.basc.framework.tx.TransactionException;
 
 public class TransactionConnectionHolder implements Resource {
 	private static Logger logger = LoggerFactory.getLogger(TransactionConnectionHolder.class);

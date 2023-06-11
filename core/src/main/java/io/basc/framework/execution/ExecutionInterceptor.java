@@ -12,11 +12,11 @@ public interface ExecutionInterceptor {
 	/**
 	 * 拦截
 	 * 
-	 * @param source   来源
+	 * @param context  上下文
 	 * @param executor 执行器
 	 * @param args     参数
 	 * @return
-	 * @throws ExecutionException
+	 * @throws Throwable
 	 */
-	Object intercept(Executable source, Executor executor, Elements<? extends Object> args) throws ExecutionException;
+	Object intercept(Executables context, Executable executable, Elements<? extends Object> args) throws Throwable;
 }

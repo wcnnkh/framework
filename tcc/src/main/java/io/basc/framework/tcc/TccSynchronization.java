@@ -1,8 +1,8 @@
 package io.basc.framework.tcc;
 
 import io.basc.framework.consistency.Compensator;
-import io.basc.framework.transaction.Synchronization;
-import io.basc.framework.transaction.Status;
+import io.basc.framework.tx.Status;
+import io.basc.framework.tx.Synchronization;
 
 public class TccSynchronization implements Synchronization {
 	private final Compensator confirm;

@@ -1,7 +1,6 @@
 package io.basc.framework.execution;
 
 import io.basc.framework.convert.TypeDescriptor;
-import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.Elements;
 
 /**
@@ -10,33 +9,16 @@ import io.basc.framework.util.Elements;
  * @author wcnnkh
  *
  */
-public interface Executor extends ParameterDescriptor {
+public interface Executor {
+	default boolean isExecuted() {
+		return isExecuted(Elements.empty());
+	}
 
-	/**
-	 * 执行器名称
-	 */
-	@Override
-	String getName();
+	default Object execute() throws Throwable {
+		return execute(Elements.empty(), Elements.empty());
+	}
 
-	/**
-	 * 执行器返回类型描述
-	 */
-	@Override
-	TypeDescriptor getTypeDescriptor();
+	boolean isExecuted(Elements<? extends TypeDescriptor> types);
 
-	/**
-	 * 执行需要的参数类型
-	 * 
-	 * @return
-	 */
-	Elements<? extends ParameterDescriptor> getParameterDescriptors();
-
-	/**
-	 * 执行
-	 * 
-	 * @param args
-	 * @return
-	 * @throws ExecutionException
-	 */
-	Object execute(Elements<? extends Object> args) throws ExecutionException;
+	Object execute(Elements<? extends TypeDescriptor> types, Elements<? extends Object> args) throws Throwable;
 }

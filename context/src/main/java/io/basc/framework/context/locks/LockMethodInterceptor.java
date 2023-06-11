@@ -1,16 +1,18 @@
 package io.basc.framework.context.locks;
 
-import io.basc.framework.aop.MethodInterceptor;
-import io.basc.framework.aop.MethodInterceptorAccept;
+import java.util.Iterator;
+
 import io.basc.framework.context.annotation.Provider;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Annotations;
-import io.basc.framework.core.reflect.MethodInvoker;
+import io.basc.framework.execution.Executor;
+import io.basc.framework.execution.ExecutionInterceptor;
+import io.basc.framework.execution.Executable;
 import io.basc.framework.json.JsonUtils;
 import io.basc.framework.locks.LockFactory;
 import io.basc.framework.locks.ReentrantLockFactory;
 import io.basc.framework.mapper.ParameterDescriptor;
-import io.basc.framework.mapper.ParameterUtils;
+import io.basc.framework.util.Elements;
 
 /**
  * 实现方法级别的锁
@@ -19,7 +21,7 @@ import io.basc.framework.mapper.ParameterUtils;
  *
  */
 @Provider(order = Ordered.HIGHEST_PRECEDENCE)
-public final class LockMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
+public final class LockMethodInterceptor implements ExecutionInterceptor {
 	private LockFactory lockFactory;
 
 	public LockMethodInterceptor() {
@@ -30,36 +32,34 @@ public final class LockMethodInterceptor implements MethodInterceptor, MethodInt
 		this.lockFactory = lockFactory;
 	}
 
-	public boolean isAccept(MethodInvoker invoker, Object[] args) {
-		return Annotations.getAnnotation(LockConfig.class, invoker.getMethod(), invoker.getSourceClass()) != null;
-	}
-
-	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
-		LockConfig lockConfig = Annotations.getAnnotation(LockConfig.class, invoker.getMethod(),
-				invoker.getSourceClass());
+	@Override
+	public Object intercept(Executor source, Executable executor, Elements<? extends Object> args) throws Throwable {
+		LockConfig lockConfig = Annotations.getAnnotation(LockConfig.class, executor.getTypeDescriptor());
 		if (lockConfig == null) {
-			return invoker.invoke(args);
+			return executor.execute(args);
 		}
 
 		StringBuilder sb = new StringBuilder(128);
-		sb.append(invoker.getMethod().toString());
-		ParameterDescriptor[] configs = ParameterUtils.getParameters(invoker.getMethod());
-		for (int i = 0; i < configs.length; i++) {
-			ParameterDescriptor config = configs[i];
+		sb.append(executor.toString());
+		Iterator<? extends ParameterDescriptor> paramIterator = executor.getParameterDescriptors().iterator();
+		Iterator<? extends Object> argsIterator = args.iterator();
+		while (paramIterator.hasNext() && argsIterator.hasNext()) {
+			ParameterDescriptor parameterDescriptor = paramIterator.next();
+			Object arg = argsIterator.next();
 			boolean b = lockConfig.all();
-			LockParameter lockParameter = config.getAnnotation(LockParameter.class);
+			LockParameter lockParameter = parameterDescriptor.getTypeDescriptor().getAnnotation(LockParameter.class);
 			if (lockParameter != null) {
 				b = lockParameter.value();
 			}
 
 			if (b) {
-				sb.append(i == 0 ? "?" : "&");
-				sb.append(config.getName());
+				sb.append(sb.length() == 0 ? "?" : "&");
+				sb.append(parameterDescriptor.getName());
 				sb.append("=");
-				sb.append(JsonUtils.getSupport().toJsonString(args[i]));
+				sb.append(JsonUtils.getSupport().toJsonString(arg));
 			}
 		}
 		return lockFactory.process(sb.toString(), lockConfig.tryLockTime(), lockConfig.tryLockTimeUnit(),
-				() -> invoker.invoke(args));
+				() -> executor.execute(args));
 	}
 }

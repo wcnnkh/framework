@@ -71,7 +71,7 @@ public final class FastJsonArray extends AbstractJson<Integer> implements JsonAr
 	}
 
 	public String toJsonString() {
-		return JSON.toJSONString(jsonArray, ExtendFastJsonValueFilter.INSTANCE);
+		return JSON.toJSONString(jsonArray);
 	}
 
 	public <T> T getObject(int index, Class<? extends T> type) {

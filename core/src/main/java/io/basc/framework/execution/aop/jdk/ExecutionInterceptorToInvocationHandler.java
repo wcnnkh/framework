@@ -4,18 +4,18 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-import io.basc.framework.execution.Executable;
 import io.basc.framework.execution.ExecutionInterceptor;
+import io.basc.framework.execution.Executables;
 import io.basc.framework.util.Elements;
 import lombok.Data;
 
 @Data
 final class ExecutionInterceptorToInvocationHandler implements InvocationHandler, Serializable {
 	private static final long serialVersionUID = 1L;
-	private final Executable source;
+	private final Executables source;
 	private final ExecutionInterceptor executionInterceptor;
 
-	public ExecutionInterceptorToInvocationHandler(Executable source, ExecutionInterceptor executionInterceptor) {
+	public ExecutionInterceptorToInvocationHandler(Executables source, ExecutionInterceptor executionInterceptor) {
 		this.source = source;
 		this.executionInterceptor = executionInterceptor;
 	}

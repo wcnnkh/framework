@@ -13,7 +13,7 @@ import io.basc.framework.util.ClassLoaderAccessor;
 import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.CollectionUtils;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.ServiceLoaders;
+import io.basc.framework.util.ServiceLoaderRegistry;
 import io.basc.framework.util.StringUtils;
 
 public class DefaultClassScanner extends ConfigurableClassScanner implements ClassLoaderAccessor {
@@ -46,7 +46,7 @@ public class DefaultClassScanner extends ConfigurableClassScanner implements Cla
 		}
 
 		String[] packageNames = StringUtils.splitToArray(pattern);
-		ServiceLoaders<Class<?>> editableClassesLoader = new ServiceLoaders<>();
+		ServiceLoaderRegistry<Class<?>> editableClassesLoader = new ServiceLoaderRegistry<>();
 		for (String name : packageNames) {
 			if (!StringUtils.verifyPackageName(name)) {
 				continue;
@@ -56,7 +56,7 @@ public class DefaultClassScanner extends ConfigurableClassScanner implements Cla
 			packageClassesLoader.setMetadataReaderFactory(getMetadataReaderFactory());
 			editableClassesLoader.register(packageClassesLoader);
 		}
-		return editableClassesLoader.isEmpty() ? ServiceLoader.empty() : editableClassesLoader;
+		return editableClassesLoader;
 	}
 
 	public MetadataReaderFactory getMetadataReaderFactory() {

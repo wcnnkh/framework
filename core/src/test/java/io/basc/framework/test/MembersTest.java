@@ -15,12 +15,11 @@ public class MembersTest {
 	@Test
 	public void test() {
 		Members<Field> members = ReflectionUtils.getDeclaredFields(B.class).all();
-		assertTrue(members.getElements().count() == 7);
-		System.out.println(ReflectionUtils.getDeclaredFields(B.class).all()
-				.concat(ReflectionUtils.getFields(B.class).getElements()).all()
-				.convert((es) -> es.map((e) -> e.getName())).all().getElements().count() == 7);
-		Assert.assertTrue(ReflectionUtils.getDeclaredFields(B.class).all().filter((e) -> e.getName().equals("a")).all()
-				.getElements().count() == 2);
+		assertTrue(members.getElements().count() == 5);
+		Assert.assertTrue(members.filter((e) -> e.getName().equals("a")).getElements().count() == 2);
+		Members<Field> concatFields = ReflectionUtils.getDeclaredFields(B.class).all()
+				.concat(ReflectionUtils.getFields(B.class).getElements());
+		assertTrue(concatFields.getElements().count() == 7);
 	}
 
 	public static class A {

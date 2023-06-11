@@ -20,7 +20,7 @@ import io.basc.framework.value.Value;
 
 public final class DomUtils {
 	private static final DocumentTemplate TEMPLATE = Sys.getEnv()
-			.getServiceLoader(DocumentTemplate.class, DocumentTemplate.class).first();
+			.getServiceLoader(DocumentTemplate.class, DocumentTemplate.class).getServices().first();
 
 	public static DocumentTemplate getTemplate() {
 		return TEMPLATE;

@@ -13,11 +13,13 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class ClassesServiceLoader<S> implements ServiceLoader<S> {
 	private final BeanFactory beanFactory;
-	private final Elements<? extends Class<? extends S>> classes;
+	private final Class<S> serviceClass;
+	private final Elements<? extends Class<?>> classes;
 	private volatile List<S> services;
 
 	private List<S> getList() {
-		return classes.map((clazz) -> beanFactory.getBean(clazz)).sorted(OrderComparator.INSTANCE).toList();
+		return classes.map((clazz) -> beanFactory.getBean(clazz)).filter((bean) -> serviceClass.isInstance(bean))
+				.map((bean) -> serviceClass.cast(bean)).sorted(OrderComparator.INSTANCE).toList();
 	}
 
 	@Override

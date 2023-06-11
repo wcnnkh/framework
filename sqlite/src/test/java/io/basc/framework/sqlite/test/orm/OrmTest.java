@@ -17,9 +17,9 @@ import io.basc.framework.orm.repository.ConditionsBuilder;
 import io.basc.framework.sql.orm.SqlDialect;
 import io.basc.framework.sqlite.SQLiteDB;
 import io.basc.framework.sqlite.SQLiteDialect;
-import io.basc.framework.transaction.Transaction;
-import io.basc.framework.transaction.TransactionDefinition;
-import io.basc.framework.transaction.TransactionUtils;
+import io.basc.framework.tx.Transaction;
+import io.basc.framework.tx.TransactionDefinition;
+import io.basc.framework.tx.TransactionUtils;
 import io.basc.framework.util.XUtils;
 
 public class OrmTest {

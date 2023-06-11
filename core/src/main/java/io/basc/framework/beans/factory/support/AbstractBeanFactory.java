@@ -371,7 +371,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
 	public final void init() {
 		synchronized (this) {
-			if (!initialized) {
+			if (initialized) {
 				throw new IllegalStateException("Already initialized [" + this + "]");
 			}
 
