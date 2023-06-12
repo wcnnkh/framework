@@ -2,7 +2,6 @@ package io.basc.framework.orm.support;
 
 import java.lang.reflect.AnnotatedElement;
 
-import io.basc.framework.aop.support.ProxyUtils;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.ResolvableType;
 import io.basc.framework.env.Environment;
@@ -34,7 +33,7 @@ public class Configurator extends DefaultEntityMapper {
 			return;
 		}
 
-		transform(target, TypeDescriptor.valueOf(ProxyUtils.getFactory().getUserClass(target.getClass())));
+		transform(target, TypeDescriptor.valueOf(target.getClass()));
 	}
 
 	public void configurationProperties(Object target, AnnotatedElement annotatedElement) {
@@ -42,8 +41,7 @@ public class Configurator extends DefaultEntityMapper {
 			return;
 		}
 
-		TypeDescriptor targetType = new TypeDescriptor(
-				ResolvableType.forClass(ProxyUtils.getFactory().getUserClass(target.getClass())), null,
+		TypeDescriptor targetType = new TypeDescriptor(ResolvableType.forClass(target.getClass()), null,
 				annotatedElement);
 		configurationProperties(target, targetType);
 	}

@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.aop.support.ProxyUtils;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
 import io.basc.framework.beans.factory.config.ConfigurableServices;
@@ -117,7 +116,8 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 	@Override
 	public Elements<String> getAliasNames(Class<?> entityClass, ParameterDescriptor descriptor) {
 		Elements<String> parentNames = EntityMappingResolverExtendChain
-				.build(objectRelationalResolverExtendServices.getServices().iterator()).getAliasNames(entityClass, descriptor);
+				.build(objectRelationalResolverExtendServices.getServices().iterator())
+				.getAliasNames(entityClass, descriptor);
 		Set<String> names = new LinkedHashSet<>(8);
 		String defaultName = getName(entityClass, descriptor);
 		names.add(defaultName);
@@ -168,7 +168,7 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 	}
 
 	private String getDefaultEntityName(Class<?> entityClass) {
-		String className = ProxyUtils.getFactory().getUserClass(entityClass).getSimpleName();
+		String className = entityClass.getSimpleName();
 		return StringUtils.humpNamingReplacement(className, "_");
 	}
 
@@ -241,8 +241,8 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 
 	@Override
 	public String getName(Class<?> entityClass) {
-		String name = EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.getServices().iterator())
-				.getName(entityClass);
+		String name = EntityMappingResolverExtendChain
+				.build(objectRelationalResolverExtendServices.getServices().iterator()).getName(entityClass);
 		if (StringUtils.isEmpty(name)) {
 			name = getDefaultEntityName(entityClass);
 		}
@@ -251,7 +251,8 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 
 	@Override
 	public String getName(Class<?> entityClass, ParameterDescriptor descriptor) {
-		String name = EntityMappingResolverExtendChain.build(objectRelationalResolverExtendServices.getServices().iterator())
+		String name = EntityMappingResolverExtendChain
+				.build(objectRelationalResolverExtendServices.getServices().iterator())
 				.getName(entityClass, descriptor);
 		return StringUtils.isEmpty(name) ? getDefaultName(descriptor) : name;
 	}
@@ -316,7 +317,8 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 	@Override
 	public boolean isEntity(Class<?> entityClass, ParameterDescriptor descriptor) {
 		return isEntity(descriptor.getTypeDescriptor()) || EntityMappingResolverExtendChain
-				.build(objectRelationalResolverExtendServices.getServices().iterator()).isEntity(entityClass, descriptor);
+				.build(objectRelationalResolverExtendServices.getServices().iterator())
+				.isEntity(entityClass, descriptor);
 	}
 
 	@Override
@@ -350,7 +352,8 @@ public class DefaultEntityMapper extends DefaultObjectMapper
 	@Override
 	public boolean isNullable(Class<?> entityClass, ParameterDescriptor descriptor) {
 		return !isPrimaryKey(entityClass, descriptor) && EntityMappingResolverExtendChain
-				.build(objectRelationalResolverExtendServices.getServices().iterator()).isNullable(entityClass, descriptor);
+				.build(objectRelationalResolverExtendServices.getServices().iterator())
+				.isNullable(entityClass, descriptor);
 	}
 
 	@Override

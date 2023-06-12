@@ -78,11 +78,11 @@ public class Aop extends ProxyFactoryRegistry {
 		return new InterceptableExecutor(executor, useExecutionInterceptor);
 	}
 
-	public final <T> Proxy getProxy(Class<T> sourceClass, T source) {
+	public final <T> Proxy getProxy(Class<? extends T> sourceClass, T source) {
 		return getProxy(sourceClass, source, null, null);
 	}
 
-	public <T> Proxy getProxy(Class<T> sourceClass, T source, @Nullable Class<?>[] interfaces,
+	public <T> Proxy getProxy(Class<? extends T> sourceClass, T source, @Nullable Class<?>[] interfaces,
 			@Nullable ExecutionInterceptor executionInterceptor) {
 		Assert.requiredArgument(sourceClass != null, "sourceClass");
 		SwitchableTargetExecutionInterceptor switchableTargetExecutionInterceptor = new SwitchableTargetExecutionInterceptor(

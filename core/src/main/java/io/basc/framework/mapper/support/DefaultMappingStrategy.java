@@ -22,23 +22,13 @@ import io.basc.framework.mapper.Setter;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
 import io.basc.framework.util.PredicateRegistry;
+import lombok.Data;
 
+@Data
 public class DefaultMappingStrategy implements MappingStrategy {
 	private final PredicateRegistry<ParameterDescriptor> predicateRegistry = new PredicateRegistry<>();
 	private boolean ignoreNull;
 	private ConversionService conversionService = new IdentityConversionService();
-
-	public ConversionService getConversionService() {
-		return conversionService;
-	}
-
-	public boolean isIgnoreNull() {
-		return ignoreNull;
-	}
-
-	public void setIgnoreNull(boolean ignoreNull) {
-		this.ignoreNull = ignoreNull;
-	}
 
 	public void setConversionService(ConversionService conversionService) {
 		Assert.requiredArgument(conversionService != null, "conversionService");
