@@ -2,9 +2,8 @@ package io.basc.framework.beans.factory;
 
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.core.ResolvableType;
-import io.basc.framework.util.alias.AliasFactory;
 
-public interface BeanFactory extends AliasFactory {
+public interface BeanFactory {
 	Scope getScope();
 
 	boolean containsBean(String name);

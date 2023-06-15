@@ -35,7 +35,6 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 		registerSingleton(BeanFactory.class.getSimpleName(), this);
 	}
 
-	@Override
 	public BeanPostProcessorRegistry getBeanPostProcessorRegistry() {
 		return beanPostProcessorRegistry;
 	}

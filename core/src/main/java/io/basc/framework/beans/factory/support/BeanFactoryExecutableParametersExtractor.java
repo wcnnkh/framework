@@ -9,7 +9,7 @@ import io.basc.framework.beans.factory.NoUniqueBeanDefinitionException;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.execution.parameter.ParameterException;
-import io.basc.framework.execution.parameter.ParametersExtractorRegistry;
+import io.basc.framework.execution.parameter.ParameterParser;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.util.CollectionFactory;
 import io.basc.framework.util.ServiceLoader;
@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class BeanFactoryExecutableParametersExtractor extends ParametersExtractorRegistry {
+public class BeanFactoryExecutableParametersExtractor extends ParameterParser {
 	private final BeanFactory beanFactory;
 
 	@Override

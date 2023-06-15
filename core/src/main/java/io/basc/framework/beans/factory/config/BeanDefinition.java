@@ -13,6 +13,7 @@ import io.basc.framework.util.Elements;
  *
  */
 public interface BeanDefinition {
+	String getName();
 
 	String getResourceDescription();
 

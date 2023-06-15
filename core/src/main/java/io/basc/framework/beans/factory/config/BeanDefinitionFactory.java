@@ -1,15 +1,10 @@
 package io.basc.framework.beans.factory.config;
 
-import io.basc.framework.beans.factory.BeanDefinitionStoreException;
 import io.basc.framework.beans.factory.NoSuchBeanDefinitionException;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.alias.AliasRegistry;
+import io.basc.framework.util.alias.AliasFactory;
 
-public interface BeanDefinitionRegistry extends AliasRegistry {
-	void registerBeanDefinition(BeanDefinition beanDefinition) throws BeanDefinitionStoreException;
-
-	void removeBeanDefinition(String beanName) throws NoSuchBeanDefinitionException;
-
+public interface BeanDefinitionFactory extends AliasFactory {
 	BeanDefinition getBeanDefinition(String beanName) throws NoSuchBeanDefinitionException;
 
 	/**

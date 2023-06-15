@@ -10,10 +10,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import io.basc.framework.beans.factory.BeanResolver;
-import io.basc.framework.beans.factory.BeanResolverExtend;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.BeanPostProcessor;
+import io.basc.framework.beans.factory.config.BeanResolver;
+import io.basc.framework.beans.factory.config.BeanResolverExtend;
 import io.basc.framework.context.Context;
 import io.basc.framework.context.ContextResolver;
 import io.basc.framework.context.ContextResolverExtend;
