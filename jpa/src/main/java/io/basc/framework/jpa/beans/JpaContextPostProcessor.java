@@ -1,9 +1,9 @@
 package io.basc.framework.jpa.beans;
 
 import io.basc.framework.beans.factory.config.BeanDefinition;
-import io.basc.framework.context.ConfigurableContext;
-import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.jpa.beans.annotation.Repository;
 
 @Provider

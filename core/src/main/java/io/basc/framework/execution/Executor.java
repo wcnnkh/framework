@@ -10,7 +10,7 @@ import io.basc.framework.util.Elements;
  * @author wcnnkh
  *
  */
-public interface Executor {
+public interface Executor extends Executable {
 
 	/**
 	 * 来源
@@ -44,4 +44,15 @@ public interface Executor {
 	 * @throws Throwable
 	 */
 	Object execute(Elements<? extends Object> args) throws Throwable;
+
+	@Override
+	default boolean isExecuted(Elements<? extends TypeDescriptor> types) {
+		return getParameterDescriptors().map((e) -> e.getTypeDescriptor()).equals(types,
+				TypeDescriptor::isAssignableTo);
+	}
+
+	@Override
+	default Object execute(Elements<? extends TypeDescriptor> types, Elements<? extends Object> args) throws Throwable {
+		return execute(args);
+	}
 }

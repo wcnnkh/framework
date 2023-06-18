@@ -2,9 +2,9 @@ package io.basc.framework.netflix.eureka.server.beans;
 
 import com.netflix.eureka.EurekaServerConfig;
 
-import io.basc.framework.context.ConfigurableContext;
-import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.core.Ordered;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)

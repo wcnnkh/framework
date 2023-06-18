@@ -5,11 +5,11 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 
 import io.basc.framework.beans.factory.BeanLifecycleEvent.Step;
-import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.Context;
-import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.EnableConditionUtils;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.event.ChangeType;
 import io.basc.framework.logger.Logger;

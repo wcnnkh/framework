@@ -1,7 +1,5 @@
 package io.basc.framework.context.transaction;
 
-import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.Ordered;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.logger.Logger;
@@ -19,7 +17,6 @@ import io.basc.framework.util.Elements;
  * @author wcnnkh
  *
  */
-@Provider(order = Ordered.HIGHEST_PRECEDENCE)
 public final class TransactionMethodInterceptor implements ExecutionInterceptor {
 	private static Logger logger = LoggerFactory.getLogger(TransactionMethodInterceptor.class);
 	private TransactionDefinition transactionDefinition;

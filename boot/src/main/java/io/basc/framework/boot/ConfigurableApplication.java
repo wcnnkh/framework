@@ -1,6 +1,6 @@
 package io.basc.framework.boot;
 
-import io.basc.framework.context.ConfigurableContext;
+import io.basc.framework.context.config.ConfigurableContext;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.StringUtils;
 

@@ -11,6 +11,4 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface Autowired {
 	String value() default "";
-
-	boolean required() default true;
 }

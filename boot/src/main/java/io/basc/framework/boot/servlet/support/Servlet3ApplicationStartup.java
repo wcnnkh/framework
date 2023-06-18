@@ -20,7 +20,7 @@ public class Servlet3ApplicationStartup extends DefaultServletApplicationStartup
 	@Override
 	protected void afterStarted(ServletContext servletContext, Application application) throws ServletException {
 		int i = 0;
-		for (FilterRegistration registration : application.getServiceLoader(FilterRegistration.class)) {
+		for (FilterRegistration registration : application.getServiceLoader(FilterRegistration.class).getServices()) {
 			Filter filter = registration.getFilter();
 			if (filter == null) {
 				continue;
@@ -36,7 +36,7 @@ public class Servlet3ApplicationStartup extends DefaultServletApplicationStartup
 		}
 
 		for (io.basc.framework.boot.servlet.ServletRegistration registration : application
-				.getServiceLoader(io.basc.framework.boot.servlet.ServletRegistration.class)) {
+				.getServiceLoader(io.basc.framework.boot.servlet.ServletRegistration.class).getServices()) {
 			Servlet servlet = registration.getServlet();
 			if (servlet == null) {
 				continue;
@@ -52,13 +52,14 @@ public class Servlet3ApplicationStartup extends DefaultServletApplicationStartup
 			dynamic.setLoadOnStartup(1);
 		}
 
-		for (ServletContextListener listener : application.getServiceLoader(ServletContextListener.class)) {
+		for (ServletContextListener listener : application.getServiceLoader(ServletContextListener.class)
+				.getServices()) {
 			servletContext.addListener(listener);
 		}
 
-		for (ServletContainerInitializer initializer : application
-				.getServiceLoader(ServletContainerInitializer.class)) {
-			initializer.onStartup(application.getContextClasses().toSet(), servletContext);
+		for (ServletContainerInitializer initializer : application.getServiceLoader(ServletContainerInitializer.class)
+				.getServices()) {
+			initializer.onStartup(application.getContextClasses().getServices().toSet(), servletContext);
 		}
 		super.afterStarted(servletContext, application);
 	}

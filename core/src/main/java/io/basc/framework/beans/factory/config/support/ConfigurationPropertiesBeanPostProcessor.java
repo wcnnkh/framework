@@ -5,6 +5,8 @@ import io.basc.framework.beans.factory.config.BeanPostProcessor;
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.mapper.support.DefaultObjectMapper;
 import io.basc.framework.util.Elements;
+import io.basc.framework.util.Registration;
+import io.basc.framework.value.DynamicPropertyFactory;
 import io.basc.framework.value.PropertyFactory;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,6 +16,7 @@ import lombok.EqualsAndHashCode;
 public abstract class ConfigurationPropertiesBeanPostProcessor extends DefaultObjectMapper
 		implements BeanPostProcessor {
 	private final PropertyFactory propertyFactory;
+	private final BeanRegistrationManager beanRegistrationManager;
 
 	@Override
 	public void postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -24,7 +27,26 @@ public abstract class ConfigurationPropertiesBeanPostProcessor extends DefaultOb
 		configurationProperties(bean, beanName, getConfigurationPropertiesPrefixs(bean, beanName));
 	}
 
+	protected abstract boolean isSingleton(String beanName);
+
 	public void configurationProperties(Object bean, String beanName, Elements<String> prefixs) {
+		if (isSingleton(beanName)) {
+			if (beanRegistrationManager.isRegisted(beanName)) {
+				return;
+			}
+
+			Registration registration = Registration.EMPTY;
+			if (propertyFactory instanceof DynamicPropertyFactory) {
+				DynamicPropertyFactory dynamicPropertyFactory = (DynamicPropertyFactory) propertyFactory;
+				registration = dynamicPropertyFactory.getKeyEventRegistry().registerListener((event) -> {
+					if (event.getSource().anyMatch(prefixs, String::startsWith)) {
+						transform(propertyFactory, bean, prefixs);
+					}
+				});
+			}
+
+			beanRegistrationManager.register(beanName, registration);
+		}
 		transform(propertyFactory, bean, prefixs);
 	}
 
@@ -33,6 +55,14 @@ public abstract class ConfigurationPropertiesBeanPostProcessor extends DefaultOb
 		// TODO 还未处理
 		transform(source, TypeDescriptor.forObject(source), null, target, TypeDescriptor.forObject(target), null,
 				configurationPropertiesMappingStrategy);
+	}
+
+	@Override
+	public void postProcessAfterDestory(Object bean, String beanName) throws BeansException {
+		BeanPostProcessor.super.postProcessAfterDestory(bean, beanName);
+		if (isSingleton(beanName)) {
+			beanRegistrationManager.unregister(beanName);
+		}
 	}
 
 	protected abstract Elements<String> getConfigurationPropertiesPrefixs(Object bean, String beanName);

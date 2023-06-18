@@ -22,7 +22,11 @@ public interface BeanFactory {
 		return (T) getBean(name);
 	}
 
-	<T> T getBean(Class<? extends T> requiredType) throws BeansException, NoUniqueBeanDefinitionException;
+	boolean isUnique(Class<?> requiredType);
+
+	boolean isUnique(ResolvableType requiredType);
+
+	<T> T getBean(Class<T> requiredType) throws BeansException, NoUniqueBeanDefinitionException;
 
 	Object getBean(ResolvableType requiredType) throws BeansException, NoUniqueBeanDefinitionException;
 

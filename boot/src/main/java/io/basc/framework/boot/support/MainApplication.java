@@ -3,6 +3,7 @@ package io.basc.framework.boot.support;
 import java.util.OptionalInt;
 import java.util.concurrent.CountDownLatch;
 
+import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.boot.Application;
 import io.basc.framework.env.MainArgs;
 import io.basc.framework.lang.Nullable;
@@ -14,12 +15,13 @@ import io.basc.framework.util.concurrent.SettableListenableFuture;
 public class MainApplication extends DefaultApplication implements Runnable {
 	private SettableListenableFuture<Application> start;
 	private CountDownLatch startLatch;
-	private final Class<?> sourceClass;
+	private final Class<?> mainClass;
 	private final MainArgs mainArgs;
 
-	public MainApplication(Class<?> sourceClass, @Nullable String[] args) {
-		Assert.requiredArgument(sourceClass != null, "sourceClass");
-		this.sourceClass = sourceClass;
+	public MainApplication(Scope scope, Class<?> mainClass, @Nullable String[] args) {
+		super(scope);
+		Assert.requiredArgument(mainClass != null, "mainClass");
+		this.mainClass = mainClass;
 		this.mainArgs = new MainArgs(args);
 		OptionalInt port = mainArgs.getPort();
 		if (port.isPresent()) {
@@ -28,13 +30,13 @@ public class MainApplication extends DefaultApplication implements Runnable {
 
 		// 设置最高优先级
 		getProperties().registerFirst(mainArgs);
-		setClassLoader(sourceClass.getClassLoader());
-		setLogger(LoggerFactory.getLogger(sourceClass));
+		setClassLoader(mainClass.getClassLoader());
+		setLogger(LoggerFactory.getLogger(mainClass));
 		getLogger().debug("args:{}", this.mainArgs);
 	}
 
-	public Class<?> getSourceClass() {
-		return sourceClass;
+	public Class<?> getMainClass() {
+		return mainClass;
 	}
 
 	public MainArgs getMainArgs() {
@@ -52,9 +54,9 @@ public class MainApplication extends DefaultApplication implements Runnable {
 	}
 
 	@Override
-	public void init() {
-		source(sourceClass);
-		super.init();
+	protected void _init() {
+		source(mainClass);
+		super._init();
 	}
 
 	@Override
@@ -87,38 +89,46 @@ public class MainApplication extends DefaultApplication implements Runnable {
 
 		start = new SettableListenableFuture<>();
 		Thread run = new Thread(this);
-		run.setContextClassLoader(getClassLoader());
-		run.setName(sourceClass.getSimpleName());
+		run.setContextClassLoader(mainClass.getClassLoader());
+		run.setName(mainClass.getSimpleName());
 		run.setDaemon(false);
 		run.start();
 
 		Thread shutdown = new Thread(() -> destroy());
-		shutdown.setContextClassLoader(getClassLoader());
-		shutdown.setName(sourceClass.getSimpleName() + "-shutdown");
+		shutdown.setContextClassLoader(mainClass.getClassLoader());
+		shutdown.setName(mainClass.getSimpleName() + "-shutdown");
 		Runtime.getRuntime().addShutdownHook(shutdown);
 		return start;
 	}
 
-	public static ListenableFuture<Application> run(Class<?> mainClass, @Nullable String[] args) {
-		MainApplication application = new MainApplication(mainClass, args);
+	public static ListenableFuture<Application> run(Scope scope, Class<?> mainClass, @Nullable String[] args) {
+		MainApplication application = new MainApplication(scope, mainClass, args);
 		return application.start();
 	}
 
-	public static ListenableFuture<Application> run(Class<?> mainClass, @Nullable String[] args,
+	public static ListenableFuture<Application> run(Scope scope, Class<?> mainClass, @Nullable String[] args,
 			Class<?>... sourceClasses) {
-		MainApplication application = new MainApplication(mainClass, args);
+		MainApplication application = new MainApplication(scope, mainClass, args);
 		for (Class<?> source : sourceClasses) {
 			application.source(source);
 		}
 		return application.start();
 	}
 
-	public static ListenableFuture<Application> run(Class<?> mainClass) {
-		MainApplication application = new MainApplication(mainClass, null);
+	public static ListenableFuture<Application> run(Scope scope, Class<?> mainClass) {
+		MainApplication application = new MainApplication(scope, mainClass, null);
 		return application.start();
 	}
 
-	public static ListenableFuture<Application> run(Class<?> mainClass, Class<?>... sourceClasses) {
-		return run(mainClass, null, sourceClasses);
+	public static ListenableFuture<Application> run(Scope scope, Class<?> mainClass, Class<?>... sourceClasses) {
+		return run(scope, mainClass, null, sourceClasses);
+	}
+
+	public static ListenableFuture<Application> run(Class<?> mainClass, @Nullable String[] args) {
+		return run(Scope.DEFAULT, mainClass, args);
+	}
+
+	public static ListenableFuture<Application> run(Class<?> mainClass) {
+		return run(Scope.DEFAULT, mainClass);
 	}
 }

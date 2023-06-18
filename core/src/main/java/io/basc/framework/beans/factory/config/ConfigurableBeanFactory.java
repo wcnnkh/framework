@@ -4,9 +4,12 @@ import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.FactoryBean;
 import io.basc.framework.beans.factory.HierarchicalBeanFactory;
 import io.basc.framework.beans.factory.ListableBeanFactory;
+import io.basc.framework.execution.parameter.ParameterParser;
 
 public interface ConfigurableBeanFactory
 		extends ListableBeanFactory, HierarchicalBeanFactory, SingletonBeanRegistry, BeanDefinitionRegistry {
+	ParameterParser getParameterParser();
+
 	void removeFactoryBean(String beanName) throws BeansException;
 
 	void registerFactoryBean(String beanName, FactoryBean<? extends Object> factoryBean) throws BeansException;
@@ -33,4 +36,6 @@ public interface ConfigurableBeanFactory
 	 * 销毁所有单例
 	 */
 	void destroySingletons();
+
+	BeanPostProcessors getBeanPostProcessors();
 }

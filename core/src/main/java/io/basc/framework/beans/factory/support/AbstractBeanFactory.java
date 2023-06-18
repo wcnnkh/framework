@@ -9,11 +9,12 @@ import java.util.concurrent.locks.Lock;
 import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.FatalBeanException;
 import io.basc.framework.beans.factory.BeanFactory;
+import io.basc.framework.beans.factory.BeanFactoryAware;
 import io.basc.framework.beans.factory.FactoryBean;
 import io.basc.framework.beans.factory.NoSuchBeanDefinitionException;
 import io.basc.framework.beans.factory.config.BeanDefinition;
-import io.basc.framework.beans.factory.config.BeanFactoryPostProcessor;
-import io.basc.framework.beans.factory.config.BeanPostProcessorRegistry;
+import io.basc.framework.beans.factory.config.BeanFactoryPostProcessors;
+import io.basc.framework.beans.factory.config.BeanPostProcessors;
 import io.basc.framework.beans.factory.config.ConfigurableBeanFactory;
 import io.basc.framework.beans.factory.config.DisposableBean;
 import io.basc.framework.beans.factory.config.InitializingBean;
@@ -22,21 +23,41 @@ import io.basc.framework.core.ResolvableType;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.util.Elements;
-import io.basc.framework.util.ServiceRegistry;
+import io.basc.framework.util.Registration;
+import io.basc.framework.util.ServiceInjectorRegistry;
 
-public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
+public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry
+		implements ConfigurableBeanFactory, InitializingBean, DisposableBean {
 	private static Logger logger = LoggerFactory.getLogger(AbstractBeanFactory.class);
 	private final ConcurrentHashMap<String, FactoryBean<? extends Object>> factoryBeanMap = new ConcurrentHashMap<>();
-	private final BeanPostProcessorRegistry beanPostProcessorRegistry = new BeanPostProcessorRegistry();
-	private final ServiceRegistry<BeanFactoryPostProcessor> beanFactoryPostProcessorRegistry = new ServiceRegistry<>();
+	private final BeanPostProcessors beanPostProcessors = new BeanPostProcessors();
+	private final BeanFactoryPostProcessors beanFactoryPostProcessors = new BeanFactoryPostProcessors();
 	private final Set<String> initializedSingletonSet = new HashSet<>();
+	private final ServiceInjectorRegistry<Object> serviceInjectorRegistry = new ServiceInjectorRegistry<>();
 
 	public AbstractBeanFactory() {
 		registerSingleton(BeanFactory.class.getSimpleName(), this);
+		beanFactoryPostProcessors.getServiceInjectorRegistry().register(serviceInjectorRegistry);
+		beanPostProcessors.getServiceInjectorRegistry().register(serviceInjectorRegistry);
+
+		serviceInjectorRegistry.register((bean) -> {
+			if (bean instanceof BeanFactoryAware) {
+				((BeanFactoryAware) bean).setBeanFactory(this);
+			}
+			return Registration.EMPTY;
+		});
 	}
 
-	public BeanPostProcessorRegistry getBeanPostProcessorRegistry() {
-		return beanPostProcessorRegistry;
+	public ServiceInjectorRegistry<Object> getServiceInjectorRegistry() {
+		return serviceInjectorRegistry;
+	}
+
+	public BeanPostProcessors getBeanPostProcessors() {
+		return beanPostProcessors;
+	}
+
+	public BeanFactoryPostProcessors getBeanFactoryPostProcessors() {
+		return beanFactoryPostProcessors;
 	}
 
 	public FactoryBean<? extends Object> getFactoryBean(String beanName) throws NoSuchBeanDefinitionException {
@@ -276,7 +297,7 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 
 		if (bean instanceof InitializingBean) {
 			try {
-				((InitializingBean) bean).afterPropertiesSet();
+				((InitializingBean) bean).init();
 			} catch (Exception e) {
 				throw new FatalBeanException(beanName, e);
 			}
@@ -310,9 +331,11 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 	}
 
 	protected void _initializationBean(String beanName, Object bean) throws BeansException {
-		beanPostProcessorRegistry.postProcessBeforeInitialization(bean, beanName);
+		beanPostProcessors.postProcessBeforeInitialization(bean, beanName);
 		init(bean, beanName);
-		beanPostProcessorRegistry.postProcessAfterInitialization(bean, beanName);
+		// 注入
+		serviceInjectorRegistry.inject(bean);
+		beanPostProcessors.postProcessAfterInitialization(bean, beanName);
 	}
 
 	@Override
@@ -357,9 +380,9 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 	}
 
 	protected void _destroyBean(String beanName, Object bean) throws BeansException {
-		beanPostProcessorRegistry.postProcessBeforeDestory(bean, beanName);
+		beanPostProcessors.postProcessBeforeDestory(bean, beanName);
 		destroy(bean, beanName);
-		beanPostProcessorRegistry.postProcessAfterDestory(bean, beanName);
+		beanPostProcessors.postProcessAfterDestory(bean, beanName);
 	}
 
 	@Override
@@ -434,9 +457,22 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry i
 		}
 	}
 
-	protected void _init() {
-		for (BeanFactoryPostProcessor beanFactoryPostProcessor : beanFactoryPostProcessorRegistry.getServices()) {
-			beanFactoryPostProcessor.postProcessBeanFactory(this);
+	@Override
+	public void destroy() {
+		synchronized (this) {
+			if (!initialized) {
+				throw new IllegalStateException("Not initialized yet [" + this + "]");
+			}
+
+			_destory();
 		}
+	}
+
+	protected void _init() {
+		beanFactoryPostProcessors.postProcessBeanFactory(this);
+	}
+
+	protected void _destory() {
+		destroySingletons();
 	}
 }

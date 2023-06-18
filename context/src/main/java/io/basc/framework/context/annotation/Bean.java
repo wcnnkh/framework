@@ -14,10 +14,10 @@ import io.basc.framework.core.annotation.AliasFor;
  * @author wcnnkh
  *
  */
-@Target({ ElementType.TYPE, ElementType.METHOD })
+@Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Indexed
+@Singleton
 public @interface Bean {
 	@AliasFor("name")
 	String[] value() default {};

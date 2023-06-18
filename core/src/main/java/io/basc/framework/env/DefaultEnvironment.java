@@ -4,11 +4,9 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Properties;
 
-import io.basc.framework.beans.BeansException;
 import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.ServiceLoaderFactory;
 import io.basc.framework.beans.factory.config.Configurable;
-import io.basc.framework.beans.factory.config.ConfigurableServices;
 import io.basc.framework.beans.factory.support.DefaultServiceLoaderFactory;
 import io.basc.framework.convert.ConversionServiceAware;
 import io.basc.framework.convert.lang.ConfigurableConversionService;
@@ -17,6 +15,7 @@ import io.basc.framework.convert.lang.ResourceToPropertiesConverter;
 import io.basc.framework.convert.resolve.ResourceResolverConversionService;
 import io.basc.framework.convert.resolve.ResourceResolvers;
 import io.basc.framework.convert.support.DefaultConversionService;
+import io.basc.framework.env.config.EnvironmentPostProcessors;
 import io.basc.framework.event.Observable;
 import io.basc.framework.event.support.ObservableResource;
 import io.basc.framework.io.Resource;
@@ -44,9 +43,7 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 	private boolean configured = false;
 
 	private final DefaultConversionService conversionService = new DefaultConversionService();
-	private final ConfigurableServices<EnvironmentPostProcessor> environmentPostProcessors = new ConfigurableServices<EnvironmentPostProcessor>(
-			EnvironmentPostProcessor.class);
-
+	private final EnvironmentPostProcessors environmentPostProcessors = new EnvironmentPostProcessors();
 	private final DefaultEnvironmentResourceLoader environmentResourceLoader = new DefaultEnvironmentResourceLoader(
 			this);
 
@@ -70,32 +67,31 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 
 	public DefaultEnvironment(Scope scope) {
 		super(scope);
+		conversionService.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
+		environmentPostProcessors.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
+		environmentResourceLoader.getProtocolResolvers().getServiceInjectorRegistry()
+				.register(getServiceInjectorRegistry());
+		environmentResourceLoader.getResourceLoaders().getServiceInjectorRegistry()
+				.register(getServiceInjectorRegistry());
+		properties.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
+
+		getServiceInjectorRegistry().register((bean) -> {
+			if (bean instanceof EnvironmentAware) {
+				((EnvironmentAware) bean).setEnvironment(this);
+			}
+
+			if (bean instanceof ConversionServiceAware) {
+				((ConversionServiceAware) bean).setConversionService(getConversionService());
+			}
+
+			return Registration.EMPTY;
+		});
+
 		// 注册一个默认的参数解析
 		properties.setConversionService(conversionService);
 		conversionService.register(new ConverterConversionService(Resource.class, Properties.class,
 				Processor.of(new ResourceToPropertiesConverter(resourceResolvers.getPropertiesResolvers()))));
 		conversionService.register(new ResourceResolverConversionService(resourceResolvers));
-		registerSingleton(Environment.class.getName(), this);
-		this.properties.getServiceInjectorRegistry().register((instance) -> {
-			if (instance instanceof EnvironmentAware) {
-				((EnvironmentAware) instance).setEnvironment(this);
-			}
-			return Registration.EMPTY;
-		});
-	}
-
-	@Override
-	public void initializationBean(String beanName, Object bean) throws BeansException {
-		super.initializationBean(beanName, bean);
-
-	}
-
-	@Override
-	protected void init(Object bean, String beanName) throws BeansException {
-		super.init(bean, beanName);
-		if (bean instanceof ConversionServiceAware) {
-			((ConversionServiceAware) bean).setConversionService(getConversionService());
-		}
 	}
 
 	@Override
@@ -150,7 +146,7 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 		return conversionService;
 	}
 
-	public ConfigurableServices<EnvironmentPostProcessor> getEnvironmentPostProcessors() {
+	public EnvironmentPostProcessors getEnvironmentPostProcessors() {
 		return environmentPostProcessors;
 	}
 
@@ -193,14 +189,7 @@ public class DefaultEnvironment extends DefaultServiceLoaderFactory implements C
 			configure(this);
 		}
 
-		for (EnvironmentPostProcessor postProcessor : environmentPostProcessors.getServices()) {
-			try {
-				postProcessor.postProcessEnvironment(this);
-			} catch (Throwable e) {
-				throw new EnvironmentException("Post process environment[" + postProcessor + "]", e);
-			}
-		}
-
+		environmentPostProcessors.postProcessEnvironment(this);
 		logger.debug("Started environment[{}]!", this);
 	}
 

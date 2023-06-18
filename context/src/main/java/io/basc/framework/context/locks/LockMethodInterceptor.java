@@ -2,8 +2,6 @@ package io.basc.framework.context.locks;
 
 import java.util.Iterator;
 
-import io.basc.framework.context.annotation.Provider;
-import io.basc.framework.core.Ordered;
 import io.basc.framework.core.annotation.Annotations;
 import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
@@ -19,7 +17,6 @@ import io.basc.framework.util.Elements;
  * @author wcnnkh
  *
  */
-@Provider(order = Ordered.HIGHEST_PRECEDENCE)
 public final class LockMethodInterceptor implements ExecutionInterceptor {
 	private LockFactory lockFactory;
 

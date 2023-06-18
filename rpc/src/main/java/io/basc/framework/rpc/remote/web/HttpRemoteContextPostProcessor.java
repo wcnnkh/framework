@@ -5,10 +5,10 @@ import java.util.function.Supplier;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import io.basc.framework.context.ConfigurableContext;
 import io.basc.framework.context.Context;
-import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.context.xml.XmlBeanUtils;
 import io.basc.framework.dom.DomUtils;
 import io.basc.framework.http.HttpUtils;

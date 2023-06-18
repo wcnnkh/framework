@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class DefaultBeanFactory extends AbstractHierarchicalBeanFactory {
 	private final Scope scope;
-	private final ParameterParser parameterParser = new BeanFactoryExecutableParametersExtractor(this);
+	private final ParameterParser parameterParser = new BeanFactoryParameterExtractor(this);
 
 	@Override
 	public BeanDefinition getBeanDefinition(String beanName) throws NoSuchBeanDefinitionException {

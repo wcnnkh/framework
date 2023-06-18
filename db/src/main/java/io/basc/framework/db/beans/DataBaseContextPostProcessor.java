@@ -1,8 +1,8 @@
 package io.basc.framework.db.beans;
 
-import io.basc.framework.context.ConfigurableContext;
-import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.db.Configurable;
 import io.basc.framework.db.DB;
 import io.basc.framework.orm.repository.Repository;

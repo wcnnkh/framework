@@ -13,5 +13,5 @@ import io.basc.framework.util.ServiceLoader;
 public interface ClassScanner {
 	boolean canScan(String pattern);
 
-	ServiceLoader<Class<?>> scan(String pattern, @Nullable TypeFilter filter);
+	ServiceLoader<Class<?>> scan(String pattern, @Nullable ClassLoader classLoader, @Nullable TypeFilter filter);
 }

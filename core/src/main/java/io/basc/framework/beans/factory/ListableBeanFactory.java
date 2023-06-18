@@ -26,7 +26,7 @@ public interface ListableBeanFactory extends BeanFactory {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	default <T> T getBean(Class<? extends T> requiredType) throws BeansException {
+	default <T> T getBean(Class<T> requiredType) throws BeansException {
 		Elements<String> beanNames = getBeanNamesForType(requiredType).toList();
 		if (beanNames.isEmpty()) {
 			throw new NoSuchBeanDefinitionException(requiredType);
@@ -106,5 +106,15 @@ public interface ListableBeanFactory extends BeanFactory {
 			throws NoSuchBeanDefinitionException {
 		Class<?> type = getType(beanName);
 		return type.getAnnotation(annotationType);
+	}
+
+	@Override
+	default boolean isUnique(Class<?> requiredType) {
+		return getBeanNamesForType(requiredType).isSingleton();
+	}
+
+	@Override
+	default boolean isUnique(ResolvableType requiredType) {
+		return getBeanNamesForType(requiredType).isSingleton();
 	}
 }

@@ -2,9 +2,9 @@ package io.basc.framework.netflix.eureka.beans;
 
 import com.netflix.discovery.EurekaClientConfig;
 
-import io.basc.framework.context.ConfigurableContext;
-import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.core.Ordered;
 import io.basc.framework.netflix.eureka.EurekaClientConfigBean;
 

@@ -1,43 +1,34 @@
 package io.basc.framework.context.support;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.Set;
 
-import io.basc.framework.beans.factory.BeanFactory;
-import io.basc.framework.beans.factory.FactoryException;
 import io.basc.framework.beans.factory.Scope;
-import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.ConfigurableServices;
-import io.basc.framework.beans.factory.support.BeanDefinitionLoaderChain;
-import io.basc.framework.context.ConfigurableContext;
-import io.basc.framework.context.ConfigurableContextResolver;
-import io.basc.framework.context.Context;
 import io.basc.framework.context.ContextAware;
-import io.basc.framework.context.ContextPostProcessor;
-import io.basc.framework.context.ProviderClassesLoader;
-import io.basc.framework.context.annotation.AnnotationContextResolverExtend;
+import io.basc.framework.context.annotation.AnnotationContextPostProcessor;
+import io.basc.framework.context.annotation.AnnotationTypeFilterExtend;
 import io.basc.framework.context.annotation.ComponentScan;
 import io.basc.framework.context.annotation.ComponentScans;
 import io.basc.framework.context.annotation.Import;
 import io.basc.framework.context.annotation.ImportResource;
-import io.basc.framework.context.ioc.ConfigurableIocResolver;
-import io.basc.framework.context.ioc.IocResolver;
-import io.basc.framework.context.ioc.annotation.IocBeanResolverExtend;
-import io.basc.framework.context.repository.annotation.RepositoryContextResolverExtend;
-import io.basc.framework.context.xml.XmlContextPostProcessor;
+import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ConfigurableTypeFilter;
+import io.basc.framework.context.config.ContextPostProcessor;
+import io.basc.framework.context.config.ContextPostProcessors;
+import io.basc.framework.context.config.support.DefaultClassScanner;
+import io.basc.framework.context.jaxrs.JaxrsTypeFilterExtend;
+import io.basc.framework.context.websocket.WebSocketTypeFilterExtend;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
 import io.basc.framework.core.type.filter.TypeFilter;
 import io.basc.framework.env.DefaultEnvironment;
 import io.basc.framework.env.Sys;
+import io.basc.framework.execution.aop.Aop;
 import io.basc.framework.lang.Constants;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
-import io.basc.framework.util.ClassUtils;
-import io.basc.framework.util.ConcurrentReferenceHashMap;
+import io.basc.framework.util.ClassLoaderProvider;
 import io.basc.framework.util.Registration;
 import io.basc.framework.util.ServiceLoader;
-import io.basc.framework.util.ServiceLoaderRegistry;
 import io.basc.framework.util.ServiceRegistry;
 import io.basc.framework.util.StringUtils;
 
@@ -45,46 +36,55 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	private static Logger logger = LoggerFactory.getLogger(DefaultContext.class);
 	private final DefaultClassScanner classScanner = new DefaultClassScanner();
 	private final ServiceRegistry<Class<?>> contextClassesLoader = new ServiceRegistry<>();
-	private final ConfigurableServices<ContextPostProcessor> contextPostProcessors = new ConfigurableServices<ContextPostProcessor>(
-			ContextPostProcessor.class);
-	private final ConfigurableContextResolver contextResolver = new ConfigurableContextResolver();
-	private volatile boolean initialized = false;
-	private final ConfigurableIocResolver iocResolver = new ConfigurableIocResolver();
-
-	private final ConcurrentReferenceHashMap<Class<?>, ProviderClassesLoader> providerClassesLoaderMap = new ConcurrentReferenceHashMap<>(
-			128);
-
+	private final ContextPostProcessors contextPostProcessors = new ContextPostProcessors();
+	private final ConfigurableTypeFilter configurableTypeFilter = new ConfigurableTypeFilter();
 	private final ServiceRegistry<Class<?>> sourceClasses = new ServiceRegistry<Class<?>>();
+	private ClassLoaderProvider classLoaderProvider;
+	private final Aop aop = new Aop();
 
 	public DefaultContext(Scope scope) {
 		super(scope);
-		contextClassesLoader.getServiceLoaderRegistry().register(sourceClasses);
-		IocBeanResolverExtend iocBeanResolverExtend = new IocBeanResolverExtend(this, iocResolver);
-		iocResolver.registerLast(iocBeanResolverExtend);
-		this.classScanner.setClassLoaderProvider(this);
-		contextResolver.register(new AnnotationContextResolverExtend(this));
-		contextResolver.register(new RepositoryContextResolverExtend(this));
-		getBeanResolver().register(new AnnotationContextResolverExtend(this));
-		getBeanResolver().register(iocBeanResolverExtend);
+		classScanner.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
+		contextPostProcessors.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
+		configurableTypeFilter.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
+		getServiceInjectorRegistry().register((bean) -> {
+			if (bean instanceof ContextAware) {
+				((ContextAware) bean).setContext(this);
+			}
+			return Registration.EMPTY;
+		});
 
-		registerSingleton(Context.class.getName(), this);
-		registerSingleton(IocResolver.class.getName(), iocResolver);
+		configurableTypeFilter.register(new AnnotationTypeFilterExtend());
+		configurableTypeFilter.register(new WebSocketTypeFilterExtend());
+		configurableTypeFilter.register(new JaxrsTypeFilterExtend());
+		
+		contextClassesLoader.getServiceLoaderRegistry().register(sourceClasses);
+
+		// 注册后置处理器
+		contextPostProcessors.register(new AnnotationContextPostProcessor());
+
 		setParentEnvironment(Sys.getEnv());
 		// 这是为了执行init时重新选择parentBeanFactory
 		setParentBeanFactory(null);
 	}
 
 	@Override
-	protected void _dependence(Object instance, BeanDefinition definition) throws FactoryException {
-		if (instance != null && definition != null) {
-			ContextConfigurator configurator = new ContextConfigurator(this);
-			configurator.configurationProperties(instance, definition.getTypeDescriptor());
-		}
+	public Aop getAop() {
+		return aop;
+	}
 
-		super._dependence(instance, definition);
-		if (instance instanceof ContextAware) {
-			((ContextAware) instance).setContext(this);
-		}
+	@Override
+	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
+		this.classLoaderProvider = classLoaderProvider;
+	}
+
+	@Override
+	public ClassLoaderProvider getClassLoaderProvider() {
+		return classLoaderProvider;
+	}
+
+	public ConfigurableTypeFilter getConfigurableTypeFilter() {
+		return configurableTypeFilter;
 	}
 
 	private Registration componentScan(ComponentScan componentScan) {
@@ -105,23 +105,12 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 			return Registration.EMPTY;
 		}
 
-		return componentScan(packageName, contextResolver);
+		return componentScan(packageName, configurableTypeFilter);
 	}
 
 	public Registration componentScan(String packageName, TypeFilter typeFilter) {
-		ServiceLoader<Class<?>> classesLoader = getClassScanner().scan(packageName, typeFilter);
-		return getContextClasses().getServiceLoaders().register(classesLoader);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected <S> ServiceLoader<S> getServiceLoaderInternal(Class<S> serviceClass) {
-		ServiceLoaderRegistry<S> registry = new ServiceLoaderRegistry<>();
-		ServiceLoader<S> providerServices = (ServiceLoader<S>) getProviderClassesLoader(serviceClass)
-				.filter((e) -> isInstance(e)).map((e) -> getInstance(e));
-		registry.register(providerServices);
-		registry.register(super.getServiceLoaderInternal(serviceClass));
-		return registry;
+		ServiceLoader<Class<?>> classesLoader = getClassScanner().scan(packageName, getClassLoader(), typeFilter);
+		return getContextClasses().getServiceLoaderRegistry().register(classesLoader);
 	}
 
 	@Override
@@ -139,118 +128,28 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 	}
 
 	@Override
-	public ConfigurableContextResolver getContextResolver() {
-		return contextResolver;
-	}
-
-	public ConfigurableIocResolver getIocResolver() {
-		return iocResolver;
-	}
-
-	public ProviderClassesLoader getProviderClassesLoader(Class<?> providerClass) {
-		ProviderClassesLoader classesLoader = providerClassesLoaderMap.get(providerClass);
-		if (classesLoader == null) {
-			classesLoader = new ProviderClassesLoader(getContextClasses(), providerClass, contextResolver);
-			if (!classesLoader.getServices().iterator().hasNext()) {
-				return classesLoader;
-			}
-
-			ProviderClassesLoader old = providerClassesLoaderMap.putIfAbsent(providerClass, classesLoader);
-			if (old == null) {
-				// 插入成功
-				providerClassesLoaderMap.purgeUnreferencedEntries();
-			} else {
-				classesLoader = old;
-			}
-		}
-		return classesLoader;
-	}
-
-	@Override
 	public ServiceRegistry<Class<?>> getSourceClasses() {
 		return sourceClasses;
 	}
-	
+
 	@Override
 	protected void _init() {
 		// 扫描框架类
-		componentScan(Constants.SYSTEM_PACKAGE_NAME, contextResolver);
-		
+		componentScan(Constants.SYSTEM_PACKAGE_NAME, configurableTypeFilter);
+
 		super._init();
-		
+
 		logger.debug("Start initializing context[{}]!", this);
-
-		if (!iocResolver.isConfigured()) {
-			iocResolver.configure(this);
-		}
-
-		postProcessContext(new XmlContextPostProcessor());
-
-		if (!contextResolver.isConfigured()) {
-			contextResolver.configure(this);
-		}
 
 		// 因为typeFilter可能发生变化
 		contextClassesLoader.reload();
-
-		for (Class<?> clazz : getContextClasses().getServices()) {
-			BeanDefinition beanDefinition = contextResolver.resolveBeanDefinition(clazz);
-			if (beanDefinition != null) {
-				registerDefinition(beanDefinition);
-			}
-
-			if (contextResolver.canResolveExecutable(clazz)) {
-				for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
-					beanDefinition = contextResolver.resolveBeanDefinition(clazz, constructor);
-					if (beanDefinition != null) {
-						registerDefinition(beanDefinition);
-					}
-				}
-
-				for (Method method : clazz.getDeclaredMethods()) {
-					beanDefinition = contextResolver.resolveBeanDefinition(clazz, method);
-					if (beanDefinition != null) {
-						registerDefinition(beanDefinition);
-					}
-				}
-			}
-		}
 
 		if (!contextPostProcessors.isConfigured()) {
 			contextPostProcessors.configure(this);
 		}
 
-		for (ContextPostProcessor postProcessor : contextPostProcessors) {
-			postProcessContext(postProcessor);
-		}
-
+		contextPostProcessors.postProcessContext(this);
 		logger.debug("Started context[{}]!", this);
-	}
-
-	@Override
-	public BeanDefinition load(BeanFactory beanFactory, ClassLoader classLoader, String name,
-			BeanDefinitionLoaderChain chain) throws FactoryException {
-		Class<?> clazz = ClassUtils.getClass(name, classLoader);
-		if (clazz == null) {
-			return super.load(beanFactory, classLoader, name, chain);
-		}
-
-		ProviderClassesLoader providerClassesLoader = getProviderClassesLoader(clazz);
-		for (Class<?> providerClass : providerClassesLoader) {
-			if (beanFactory.isInstance(providerClass)) {
-				logger.info("The provider of {} is {}", clazz, providerClass);
-				return beanFactory.getDefinition(providerClass);
-			}
-		}
-		return super.load(beanFactory, classLoader, name, chain);
-	}
-
-	public void postProcessContext(ContextPostProcessor processor) {
-		try {
-			processor.postProcessContext(this);
-		} catch (Throwable e) {
-			throw new FactoryException("Post process context[" + processor + "]", e);
-		}
 	}
 
 	@Override
@@ -301,7 +200,7 @@ public class DefaultContext extends DefaultEnvironment implements ConfigurableCo
 
 	@Override
 	protected boolean useSpi(Class<?> serviceClass) {
-		for (Class<?> sourceClass : sourceClasses) {
+		for (Class<?> sourceClass : sourceClasses.getServices()) {
 			Package pg = sourceClass.getPackage();
 			if (pg == null) {
 				continue;

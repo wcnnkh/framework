@@ -2,15 +2,15 @@ package io.basc.framework.boot;
 
 import java.util.OptionalInt;
 
-import io.basc.framework.beans.factory.Destroy;
-import io.basc.framework.beans.factory.Init;
+import io.basc.framework.beans.factory.config.DisposableBean;
+import io.basc.framework.beans.factory.config.InitializingBean;
 import io.basc.framework.context.Context;
 import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.net.InetUtils;
 import io.basc.framework.util.Optional;
 
-public interface Application extends Context, Init, Destroy {
+public interface Application extends Context, DisposableBean, InitializingBean {
 	public static final String APPLICATION_NAME_PROPERTY = "application.name";
 	public static final String APPLICATION_PORT_PROPERTY = "application.port";
 
@@ -30,6 +30,14 @@ public interface Application extends Context, Init, Destroy {
 		Integer port = getProperties().getAsObject(APPLICATION_PORT_PROPERTY, Integer.class);
 		return port == null ? OptionalInt.empty() : OptionalInt.of(port);
 	}
+
+	@Override
+	void init();
+
+	boolean isInitialized();
+
+	@Override
+	void destroy();
 
 	static int getAvailablePort() {
 		if (InetUtils.isAvailablePort(DEFAULT_PORT)) {

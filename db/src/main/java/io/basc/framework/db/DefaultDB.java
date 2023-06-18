@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import io.basc.framework.context.ClassScanner;
-import io.basc.framework.context.support.DefaultClassScanner;
+import io.basc.framework.context.config.support.DefaultClassScanner;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
 import io.basc.framework.mapper.Field;

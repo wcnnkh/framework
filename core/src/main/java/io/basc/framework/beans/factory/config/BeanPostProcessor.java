@@ -38,7 +38,7 @@ public interface BeanPostProcessor {
 	 * @param beanName
 	 * @throws BeansException
 	 */
-	default void postProcessBeforeDestory(Object bean, String beanName) throws BeansException {
+	default void postProcessBeforeDestroy(Object bean, String beanName) throws BeansException {
 		// ignore
 	}
 
@@ -49,7 +49,7 @@ public interface BeanPostProcessor {
 	 * @param beanName
 	 * @throws BeansException
 	 */
-	default void postProcessAfterDestory(Object bean, String beanName) throws BeansException {
+	default void postProcessAfterDestroy(Object bean, String beanName) throws BeansException {
 		// ignore
 	}
 }

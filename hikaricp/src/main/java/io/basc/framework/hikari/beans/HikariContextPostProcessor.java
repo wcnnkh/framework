@@ -2,9 +2,9 @@ package io.basc.framework.hikari.beans;
 
 import javax.sql.DataSource;
 
-import io.basc.framework.context.ConfigurableContext;
-import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.db.DataBase;
 import io.basc.framework.sql.ConnectionFactory;
 

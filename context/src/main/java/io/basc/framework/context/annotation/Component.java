@@ -16,6 +16,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Indexed
+@Singleton
 public @interface Component {
 	String value() default "";
 }

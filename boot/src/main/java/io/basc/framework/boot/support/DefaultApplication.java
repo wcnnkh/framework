@@ -2,9 +2,9 @@ package io.basc.framework.boot.support;
 
 import java.util.OptionalInt;
 
-import io.basc.framework.beans.factory.FactoryException;
-import io.basc.framework.beans.factory.config.BeanDefinition;
+import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.ConfigurableServices;
+import io.basc.framework.beans.factory.config.DisposableBean;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.ApplicationAware;
 import io.basc.framework.boot.ApplicationEvent;
@@ -13,6 +13,7 @@ import io.basc.framework.boot.ApplicationPostProcessor;
 import io.basc.framework.boot.ApplicationServer;
 import io.basc.framework.boot.ConfigurableApplication;
 import io.basc.framework.boot.annotation.ApplicationResource;
+import io.basc.framework.boot.config.ApplicationPostProcessors;
 import io.basc.framework.context.annotation.ImportResource;
 import io.basc.framework.context.support.DefaultContext;
 import io.basc.framework.core.annotation.AnnotatedElementUtils;
@@ -20,22 +21,30 @@ import io.basc.framework.event.BroadcastEventDispatcher;
 import io.basc.framework.event.support.StandardBroadcastEventDispatcher;
 import io.basc.framework.logger.Logger;
 import io.basc.framework.logger.LoggerFactory;
+import io.basc.framework.util.Registration;
 import io.basc.framework.util.SplitLine;
 
-public class DefaultApplication extends DefaultContext implements ConfigurableApplication {
+public class DefaultApplication extends DefaultContext implements ConfigurableApplication, DisposableBean {
 	private static final String SERVER_PORT_PROPERTY = "server.port";
 
 	private final BroadcastEventDispatcher<ApplicationEvent> applicationEventDispathcer = new StandardBroadcastEventDispatcher<ApplicationEvent>();
 	private volatile Logger logger;
 	private final long createTime;
-	private final ConfigurableServices<ApplicationPostProcessor> applicationPostProcessors = new ConfigurableServices<ApplicationPostProcessor>(
-			ApplicationPostProcessor.class);
+	private final ApplicationPostProcessors applicationPostProcessors = new ApplicationPostProcessors();
 	private volatile boolean initialized;
 
-	public DefaultApplication() {
+	public DefaultApplication(Scope scope) {
+		super(scope);
 		this.createTime = System.currentTimeMillis();
 		// 添加默认的类
 		registerSingleton(Application.class.getName(), this);
+		applicationPostProcessors.getServiceInjectorRegistry().register(getServiceInjectorRegistry());
+		getServiceInjectorRegistry().register((bean) -> {
+			if (bean instanceof ApplicationAware) {
+				((ApplicationAware) bean).setApplication(this);
+			}
+			return Registration.EMPTY;
+		});
 	}
 
 	public long getCreateTime() {
@@ -58,14 +67,6 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 	}
 
 	@Override
-	protected void _dependence(Object instance, BeanDefinition definition) throws FactoryException {
-		super._dependence(instance, definition);
-		if (instance != null && instance instanceof ApplicationAware) {
-			((ApplicationAware) instance).setApplication(this);
-		}
-	}
-
-	@Override
 	public boolean isInitialized() {
 		return super.isInitialized() && initialized;
 	}
@@ -79,12 +80,13 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 	}
 
 	public void startServer() {
-		if (isInstance(ApplicationServer.class)) {
-			ApplicationServer server = getInstance(ApplicationServer.class);
-			try {
-				server.startup(this);
-			} catch (Throwable e) {
-				throw new ApplicationException(e);
+		if (!getBeanNamesForType(ApplicationServer.class).isEmpty()) {
+			for (ApplicationServer server : getBeansOfType(ApplicationServer.class).values()) {
+				try {
+					server.startup(this);
+				} catch (Throwable e) {
+					throw new ApplicationException(e);
+				}
 			}
 		}
 	}
@@ -104,61 +106,48 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 	}
 
 	@Override
-	public void init() {
-		synchronized (this) {
-			if (isInitialized()) {
-				throw new ApplicationException("This application has been initialized");
-			}
-
-			try {
-				if (isAutoImportResource() && !getSourceClasses().stream()
-						.filter((e) -> AnnotatedElementUtils.hasAnnotation(e, ApplicationResource.class)).findAny()
-						.isPresent()) {
-					// 如果没有注册过资源就将默认资源注册一次，目的是为了兼容在第三方容器运行时找不到默认配置问题
-					ImportResource importResource = ApplicationResource.class.getAnnotation(ImportResource.class);
-					if (importResource != null) {
-						for (String location : importResource.value()) {
-							source(location);
-						}
-					}
+	protected void _init() {
+		if (isAutoImportResource() && !getSourceClasses().getServices().stream()
+				.filter((e) -> AnnotatedElementUtils.hasAnnotation(e, ApplicationResource.class)).findAny()
+				.isPresent()) {
+			// 如果没有注册过资源就将默认资源注册一次，目的是为了兼容在第三方容器运行时找不到默认配置问题
+			ImportResource importResource = ApplicationResource.class.getAnnotation(ImportResource.class);
+			if (importResource != null) {
+				for (String location : importResource.value()) {
+					source(location);
 				}
-
-				OptionalInt port = getPort();
-				if (!port.isPresent()) {
-					// 兼容旧版本
-					int serverPort = getProperties().get(SERVER_PORT_PROPERTY)
-							.orGet(() -> Application.getAvailablePort()).getAsInt();
-					setPort(serverPort);
-					port = OptionalInt.of(serverPort);
-				}
-
-				super.init();
-
-				// 启动服务器
-				if (isEnableServer()) {
-					startServer();
-				}
-
-				if (!applicationPostProcessors.isConfigured()) {
-					applicationPostProcessors.configure(this);
-				}
-
-				for (ApplicationPostProcessor postProcessor : applicationPostProcessors) {
-					postProcessApplication(postProcessor);
-				}
-
-				// 初始化所有单例
-				if (isInitializeAllSingletonObjects()) {
-					initializeAllSingletonObjects();
-				}
-
-				getLogger()
-						.info(new SplitLine("Start up complete in " + (System.currentTimeMillis() - createTime) + "ms")
-								.toString());
-			} finally {
-				initialized = true;
 			}
 		}
+
+		OptionalInt port = getPort();
+		if (!port.isPresent()) {
+			// 兼容旧版本
+			int serverPort = getProperties().get(SERVER_PORT_PROPERTY).orGet(() -> Application.getAvailablePort())
+					.getAsInt();
+			setPort(serverPort);
+			port = OptionalInt.of(serverPort);
+		}
+
+		super._init();
+
+		// 启动服务器
+		if (isEnableServer()) {
+			startServer();
+		}
+
+		if (!applicationPostProcessors.isConfigured()) {
+			applicationPostProcessors.configure(this);
+		}
+
+		applicationPostProcessors.postProcessApplication(this);
+
+		// 初始化所有单例
+		if (isInitializeAllSingletonObjects()) {
+			initializeAllSingletonObjects();
+		}
+
+		getLogger().info(
+				new SplitLine("Start up complete in " + (System.currentTimeMillis() - createTime) + "ms").toString());
 	}
 
 	public boolean isInitializeAllSingletonObjects() {
@@ -173,23 +162,15 @@ public class DefaultApplication extends DefaultContext implements ConfigurableAp
 	 * 初始化所有单例
 	 */
 	public void initializeAllSingletonObjects() {
-		for (String id : getDefinitionIds()) {
-			if (isSingleton(id) && isInstance(id)) {
-				getInstance(id);
+		for (String id : getBeanNames()) {
+			if (containsLocalBean(id) && isSingleton(id)) {
+				getBean(id);
 			}
 		}
 	}
 
 	public ConfigurableServices<ApplicationPostProcessor> getApplicationPostProcessors() {
 		return applicationPostProcessors;
-	}
-
-	protected void postProcessApplication(ApplicationPostProcessor processor) {
-		try {
-			processor.postProcessApplication(this);
-		} catch (Throwable e) {
-			throw new ApplicationException("Post process application[" + processor + "]", e);
-		}
 	}
 
 	@Override

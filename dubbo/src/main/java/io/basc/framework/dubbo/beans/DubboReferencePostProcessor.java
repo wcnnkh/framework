@@ -3,9 +3,9 @@ package io.basc.framework.dubbo.beans;
 import org.apache.dubbo.config.ReferenceConfig;
 
 import io.basc.framework.beans.factory.config.BeanDefinition;
-import io.basc.framework.context.ConfigurableContext;
-import io.basc.framework.context.ContextPostProcessor;
 import io.basc.framework.context.annotation.Provider;
+import io.basc.framework.context.config.ConfigurableContext;
+import io.basc.framework.context.config.ContextPostProcessor;
 import io.basc.framework.dubbo.DubboReferenceRegistry;
 
 //TODO 理论上使用BeanPostProcessor更合理，但不知道为什么会导致无法初始化

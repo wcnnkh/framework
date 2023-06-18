@@ -3,7 +3,7 @@ package io.basc.framework.boot.servlet.support;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 
-import io.basc.framework.beans.factory.InstanceFactory;
+import io.basc.framework.beans.factory.BeanFactory;
 import io.basc.framework.boot.Application;
 import io.basc.framework.boot.servlet.ServletApplicationStartup;
 import io.basc.framework.env.Sys;
@@ -15,7 +15,7 @@ public abstract class ServletContextUtils {
 			ServletApplicationStartup.class,
 			ServletApplicationStartup.class.getPackage().getName() + ".support.Servlet3ApplicationStartup",
 			ServletApplicationStartup.class.getPackage().getName() + ".support.DefaultServletApplicationStartup")
-			.first();
+			.getServices().first();
 
 	public static ServletApplicationStartup getServletApplicationStartup() {
 		return SERVLET_APPLICATION_STARTUP;
@@ -53,7 +53,7 @@ public abstract class ServletContextUtils {
 		return servletContext.getRealPath("/");
 	}
 
-	public static Servlet createServlet(InstanceFactory instanceFactory) {
+	public static Servlet createServlet(BeanFactory beanFactory) {
 		if (instanceFactory.isInstance(Servlet.class)) {
 			return instanceFactory.getInstance(Servlet.class);
 		}

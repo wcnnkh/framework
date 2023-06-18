@@ -18,8 +18,9 @@ public class ClassesServiceLoader<S> implements ServiceLoader<S> {
 	private volatile List<S> services;
 
 	private List<S> getList() {
-		return classes.map((clazz) -> beanFactory.getBean(clazz)).filter((bean) -> serviceClass.isInstance(bean))
-				.map((bean) -> serviceClass.cast(bean)).sorted(OrderComparator.INSTANCE).toList();
+		Elements<Object> objects = classes.map((clazz) -> beanFactory.getBean(clazz));
+		return objects.filter((bean) -> serviceClass.isInstance(bean)).map((bean) -> serviceClass.cast(bean))
+				.sorted(OrderComparator.INSTANCE).toList();
 	}
 
 	@Override
