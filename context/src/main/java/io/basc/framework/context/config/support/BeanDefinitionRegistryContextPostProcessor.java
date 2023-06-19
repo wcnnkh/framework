@@ -6,6 +6,7 @@ import io.basc.framework.beans.factory.Scope;
 import io.basc.framework.beans.factory.config.BeanDefinition;
 import io.basc.framework.beans.factory.config.BeanDefinitionRegistry;
 import io.basc.framework.beans.factory.config.support.ClassBeanDefinition;
+import io.basc.framework.beans.factory.config.support.DefaultBeanDefinition;
 import io.basc.framework.beans.factory.config.support.MethodBeanDefinition;
 import io.basc.framework.context.config.ConfigurableContext;
 import io.basc.framework.context.config.ContextPostProcessor;

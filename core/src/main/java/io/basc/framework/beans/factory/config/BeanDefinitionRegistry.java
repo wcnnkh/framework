@@ -6,7 +6,7 @@ import io.basc.framework.util.Elements;
 import io.basc.framework.util.alias.AliasRegistry;
 
 public interface BeanDefinitionRegistry extends AliasRegistry {
-	void registerBeanDefinition(BeanDefinition beanDefinition) throws BeanDefinitionStoreException;
+	void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) throws BeanDefinitionStoreException;
 
 	void removeBeanDefinition(String beanName) throws NoSuchBeanDefinitionException;
 

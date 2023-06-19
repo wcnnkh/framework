@@ -380,9 +380,9 @@ public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry
 	}
 
 	protected void _destroyBean(String beanName, Object bean) throws BeansException {
-		beanPostProcessors.postProcessBeforeDestory(bean, beanName);
+		beanPostProcessors.postProcessBeforeDestroy(bean, beanName);
 		destroy(bean, beanName);
-		beanPostProcessors.postProcessAfterDestory(bean, beanName);
+		beanPostProcessors.postProcessAfterDestroy(bean, beanName);
 	}
 
 	@Override

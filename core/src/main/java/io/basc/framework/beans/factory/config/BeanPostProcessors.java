@@ -10,10 +10,10 @@ public final class BeanPostProcessors extends ConfigurableServices<BeanPostProce
 
 	@Override
 	public void postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		BeanPostProcessor.super.postProcessBeforeInitialization(bean, beanName);
 		for (BeanPostProcessor beanPostProcessor : getServices()) {
 			beanPostProcessor.postProcessBeforeInitialization(bean, beanName);
 		}
+		BeanPostProcessor.super.postProcessBeforeInitialization(bean, beanName);
 	}
 
 	@Override
@@ -25,18 +25,19 @@ public final class BeanPostProcessors extends ConfigurableServices<BeanPostProce
 	}
 
 	@Override
-	public void postProcessAfterDestory(Object bean, String beanName) throws BeansException {
-		BeanPostProcessor.super.postProcessAfterDestory(bean, beanName);
-		for (BeanPostProcessor beanPostProcessor : getServices()) {
-			beanPostProcessor.postProcessAfterDestory(bean, beanName);
+	public void postProcessBeforeDestroy(Object bean, String beanName) throws BeansException {
+		for (BeanPostProcessor beanPostProcessor : getServices().reverse()) {
+			beanPostProcessor.postProcessBeforeDestroy(bean, beanName);
 		}
+		BeanPostProcessor.super.postProcessBeforeDestroy(bean, beanName);
 	}
 
 	@Override
-	public void postProcessBeforeDestory(Object bean, String beanName) throws BeansException {
-		BeanPostProcessor.super.postProcessBeforeDestory(bean, beanName);
-		for (BeanPostProcessor beanPostProcessor : getServices()) {
-			beanPostProcessor.postProcessBeforeDestory(bean, beanName);
+	public void postProcessAfterDestroy(Object bean, String beanName) throws BeansException {
+		BeanPostProcessor.super.postProcessAfterDestroy(bean, beanName);
+		for (BeanPostProcessor beanPostProcessor : getServices().reverse()) {
+			beanPostProcessor.postProcessAfterDestroy(bean, beanName);
 		}
 	}
+
 }

@@ -26,16 +26,16 @@ public abstract class AbstractListableBeanFactory extends AbstractBeanFactory {
 	}
 
 	@Override
-	public void registerBeanDefinition(BeanDefinition beanDefinition) {
+	public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
 		Lock writeLock = getReadWriteLock().writeLock();
 		writeLock.lock();
 		try {
-			BeanDefinition cache = getBeanDefinitionOfCache(beanDefinition.getName());
+			BeanDefinition cache = getBeanDefinitionOfCache(beanName);
 			if (cache != null) {
-				throw new BeanDefinitionOverrideException(beanDefinition.getName(), beanDefinition, cache);
+				throw new BeanDefinitionOverrideException(beanName, beanDefinition, cache);
 			}
 
-			definitionMap.put(beanDefinition.getName(), beanDefinition);
+			definitionMap.put(beanName, beanDefinition);
 		} finally {
 			writeLock.unlock();
 		}
