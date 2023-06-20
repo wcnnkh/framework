@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.reflect.ReflectionUtils;
+import io.basc.framework.execution.Executor;
 import io.basc.framework.execution.aop.Aop;
 import io.basc.framework.execution.aop.ExecutionInterceptor;
 import io.basc.framework.execution.aop.Proxy;
@@ -13,7 +14,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ConstructorExecutor extends ExecutableExecutor<Constructor<?>> {
+public class ConstructorExecutor extends ReflectionExecutable<Constructor<?>> implements Executor {
 	private Aop aop;
 	private Class<?>[] aopInterfaces;
 	private ExecutionInterceptor executionInterceptor;

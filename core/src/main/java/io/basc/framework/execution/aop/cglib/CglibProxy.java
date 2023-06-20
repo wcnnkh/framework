@@ -20,6 +20,11 @@ public class CglibProxy implements Proxy {
 	}
 
 	@Override
+	public TypeDescriptor getReturnType() {
+		return source;
+	}
+
+	@Override
 	public boolean isExecuted(Elements<? extends TypeDescriptor> types) {
 		return ReflectionUtils.getDeclaredConstructor(source.getType(), types.toArray(new Class[0])) != null;
 	}

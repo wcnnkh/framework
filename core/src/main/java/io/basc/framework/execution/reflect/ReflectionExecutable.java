@@ -4,22 +4,21 @@ import java.lang.reflect.Executable;
 
 import io.basc.framework.convert.TypeDescriptor;
 import io.basc.framework.core.MethodParameter;
-import io.basc.framework.execution.Executor;
 import io.basc.framework.mapper.ParameterDescriptor;
 import io.basc.framework.mapper.ParameterUtils;
 import io.basc.framework.util.Assert;
 import io.basc.framework.util.Elements;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
-public abstract class ExecutableExecutor<T extends Executable> implements Executor {
+@Data
+public class ReflectionExecutable<T extends Executable> implements io.basc.framework.execution.Executable {
 	private final TypeDescriptor source;
 	private final T executable;
 	private volatile String name;
 	private volatile TypeDescriptor returnType;
 	private volatile Elements<? extends ParameterDescriptor> parameterDescriptors;
 
-	public ExecutableExecutor(TypeDescriptor source, T executable) {
+	public ReflectionExecutable(TypeDescriptor source, T executable) {
 		Assert.requiredArgument(source != null, "source");
 		Assert.requiredArgument(executable != null, "executable");
 		this.source = source;

@@ -19,12 +19,13 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 public class JdkProxy implements Proxy {
+	private final TypeDescriptor returnType;
 	private final ClassLoader classLoader;
 	private final Class<?>[] interfaces;
 	private final InvocationHandler invocationHandler;
 
 	public JdkProxy(TypeDescriptor source, Class<?>[] interfaces, ExecutionInterceptor executionInterceptor) {
-		this(source.getType().getClassLoader(), interfaces,
+		this(source, source.getType().getClassLoader(), interfaces,
 				new ExecutionInterceptorToInvocationHandler(source, executionInterceptor));
 	}
 
@@ -42,4 +43,5 @@ public class JdkProxy implements Proxy {
 		return java.lang.reflect.Proxy.newProxyInstance(classLoader, interfaces == null ? new Class<?>[0] : interfaces,
 				invocationHandler);
 	}
+
 }
